@@ -5,8 +5,14 @@ import logging
 import os
 
 import iris
+import matplotlib.pyplot as plt
+import numpy as np
 
-from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
+from esmvaltool.diag_scripts.shared import (
+    get_plot_filename,
+    group_metadata,
+    run_diagnostic,
+)
 
 CWD = os.path.abspath(os.path.dirname(__file__))
 STEPHENS_FILENAME = "Stephens_et_al_2012_obs_Energy_Budget.txt"
@@ -220,7 +226,10 @@ def order_model_data(cubes, obs_names, obs_units):
         variable = {}
         variable["name"] = cube.name()
         variable["unit"] = cube.units
-        variable["data"] = cube.data
+        if np.ma.isMaskedArray(cube.data):
+            variable["data"] = cube.data.data
+        else:
+            variable["data"] = cube.data
         variable_data.append(variable)
 
     ordered_model_data = []
@@ -256,9 +265,9 @@ def read_text_file(filepath):
         items = line.split()
         line_dict["name"] = items[0]
         line_dict["unit"] = " ".join(items[1:3]).strip(",")
-        line_dict["data"] = items[3]
+        line_dict["data"] = float(items[3])
         try:
-            line_dict["error"] = items[4]
+            line_dict["error"] = float(items[4])
         except IndexError:
             pass
         contents.append(line_dict)
@@ -310,8 +319,65 @@ def load_obs_data():
     return names, units, stephens_data, stephens_error, demory_data
 
 
-def plot_data(cubes):
-    pass
+def plot_data(
+    obs_names,
+    obs_units,
+    stephens_data,
+    stephens_error,
+    demory_data,
+    model_data,
+    plot_filename,
+):
+    # print(f"model_data shape: {model_data.shape}")
+    # print(f"stephens_data shape: {stephens_data.shape}")
+    print(f"model_data: {model_data}")
+    print(f"stephens_data: {stephens_data}")
+    model_minus_stephens = np.array(model_data) - np.array(stephens_data)
+    model_minus_demory = np.array(model_data) - np.array(demory_data)
+
+    n_groups = 20
+    fig = plt.Figure(figsize=(12, 8))
+    # plt.FigureCanvas(fig)
+    ax = fig.add_subplot(111)
+    index = np.arange(n_groups) * 2.0
+
+    bar_width, opacity = 0.5, 0.4
+    ax.set_ylim(-20, 20)
+    ax.bar(
+        index + 0.2,
+        model_minus_stephens,
+        bar_width,
+        alpha=opacity + 0.2,
+        color="cornflowerblue",
+        label="MODEL" + "(" + "season" + ")" + " - Stephens(2012)",
+        yerr=stephens_error,
+    )
+    # rects2 = ax.bar(
+    #     index + 0.2 + bar_width,
+    #     model_minus_ebf,
+    #     bar_width,
+    #     alpha=opacity + 0.2,
+    #     color='orange',
+    #     label=MODEL + '(' + season + ')' + ' - CERES' + '(' + season + ')')
+    ax.bar(
+        index + 0.2 + bar_width * 2,
+        model_minus_demory,
+        bar_width,
+        alpha=opacity - 0.2,
+        color="black",
+        label="MODEL" + "(" + "season" + ")" + " - Demory(2014)",
+    )
+    ax.spines["bottom"].set_position(("data", 0))
+    ax.spines["top"].set_position(("data", 0))
+
+    ax.set_xticks(index + bar_width + 0.5)
+    ax.set_xticklabels(obs_names, ha="center", rotation=90, fontsize=10)
+    ax.legend(frameon=False, fontsize=10, loc="upper left")
+
+    # TODO: use static filename, and put additional information into figure
+    # title
+    fig.savefig(plot_filename)
+    fig.clear()
 
 
 def main(config):
@@ -340,11 +406,19 @@ def main(config):
         # 'group' is a list of dictionaries containing metadata.
         logger.info(f"Processing data for {model_dataset}")
         filenames = get_filenames(group)
-        model_data = load_model_data(filenames)
-        all_model_data = derive_additional_variables(model_data)
-        organised_model_data = order_model_data(all_model_data, obs_names,
-                                                obs_units)
-        plot_data(organised_model_data)
+        unordered_model_data = load_model_data(filenames)
+        all_model_data = derive_additional_variables(unordered_model_data)
+        model_data = order_model_data(all_model_data, obs_names, obs_units)
+        plot_filename = get_plot_filename(model_dataset, config)
+        plot_data(
+            obs_names,
+            obs_units,
+            stephens_data,
+            stephens_error,
+            demory_data,
+            model_data,
+            plot_filename,
+        )
 
 
 if __name__ == "__main__":
