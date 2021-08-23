@@ -275,6 +275,7 @@ workflows:
       - test_installation
       - develop
       - documentation
+      - conda_install
       - conda_build
   nightly:
     triggers:
