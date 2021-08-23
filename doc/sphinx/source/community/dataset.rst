@@ -30,7 +30,7 @@ Testing
 =======
 
 When contributing a new script, add an entry for the CMORized data to
-`recipes/examples/recipe_check_obs.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/examples/recipe_check_obs.yml>`__
+`recipes/examples/recipe_check_obs.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_check_obs.yml>`__
 and run the recipe, to make sure the CMOR checks pass without warnings or errors.
 
 To test a pull request for a new CMORizer script:

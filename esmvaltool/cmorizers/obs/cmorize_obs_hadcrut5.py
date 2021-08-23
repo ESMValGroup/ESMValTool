@@ -66,17 +66,17 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
         Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
 
     # Fix coordinates
-    utils._fix_dim_coordnames(cube)
+    utils.fix_dim_coordnames(cube)
     cube_coord = cube.coord('longitude')
     if cube_coord.points[0] < 0. and \
             cube_coord.points[-1] < 181.:
         cube_coord.points = \
             cube_coord.points + 180.
-        utils._fix_bounds(cube, cube_coord)
+        utils.fix_bounds(cube, cube_coord)
         cube.attributes['geospatial_lon_min'] = 0.
         cube.attributes['geospatial_lon_max'] = 360.
         nlon = len(cube_coord.points)
-        utils._roll_cube_data(cube, nlon // 2, -1)
+        utils.roll_cube_data(cube, nlon // 2, -1)
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
 
