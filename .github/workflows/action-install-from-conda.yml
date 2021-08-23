@@ -55,7 +55,7 @@ jobs:
 #    runs-on: "macos-latest"
 #    strategy:
 #      matrix:
-#        python-version: [3.6, 3.7]  # 3.8.5 not working as of 07-Sep-2020; serious issues at env solving
+#        python-version: [3.7, 3.8, 3.9]
 #      fail-fast: false
 #    name: OSX Python ${{ matrix.python-version }}
 #    steps:
