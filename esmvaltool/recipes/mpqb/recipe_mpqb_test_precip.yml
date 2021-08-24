@@ -654,8 +654,8 @@ hist_def: &histdef
   #vmin: 0
   #vmax: 100
   vmin: 0
-  vmax: 5     # was 1: 12
-  number_of_bars: 10      # was 25; 4
+  vmax: 12     # was 1; 12
+  number_of_bars: 4      # was 25; 4
   #histtype: step
   logarithmic: False
  
@@ -702,97 +702,97 @@ diagnostics:
     # # scripts:
       # # mpqb_gl:
         # # <<: *histdef
-  # histogram_without_trop:
-    # description: histogram for 1x1 gridded data
-    # variables:
-      # pr:
-        # preprocessor: pp_mpqb_precip_without_trop
-        # #derive: true
-        # <<: *precipdef
-    # scripts:
-      # mpqb_trop:
-        # <<: *histdef
-        # #<<: *histdef_zoom
-  # histogram_landonly_trop:
-    # description: histogram for 1x1 gridded data
-    # variables:
-      # pr:
-        # preprocessor: pp_mpqb_precip_landonly_trop
-        # #derive: true
-        # <<: *precipdef
-    # additional_datasets:
-      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
-         # tier: 3, alias: ERA5-Land}
-      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
-         # tier: 2, alias: GPCC}
-      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
-         # tier: 3, alias: WFDE5}
-    # scripts:
-      # mpqb_trop:
-        # <<: *histdef
-        # #<<: *histdef_zoom
-  # histogram_seaonly_trop:
-    # description: histogram for 1x1 gridded data
-    # variables:
-      # pr:
-        # preprocessor: pp_mpqb_precip_seaonly_trop
-        # #derive: true
-        # <<: *precipdef
-    # scripts:
-      # mpqb_trop:
-        # <<: *histdef
-        # #<<: *histdef_zoom
-  # histogram_without_itcz:
-    # description: histogram for 1x1 gridded data
-    # variables:
-      # pr:
-        # preprocessor: pp_mpqb_precip_without_itcz
-        # #derive: true
-        # <<: *precipdef
-    # scripts:
-      # mpqb_itcz:
-        # #<<: *histdef_long
-        # <<: *histdef
-  # # # histogram_with_itcz:
-    # # # description: histogram for 1x1 gridded data
-    # # # variables:
-      # # # pr:
-        # # # preprocessor: pp_mpqb_precip_with_itcz
-        # # # #derive: true
-        # # # <<: *precipdef
-    # # # scripts:
-      # # # mpqb_itcz:
-        # # # <<: *histdef
-  # histogram_without_samonsoon:
-    # description: histogram for 1x1 gridded data
-    # variables:
-      # pr:
-        # preprocessor: pp_mpqb_precip_without_samonsoon
-        # #derive: true
-        # <<: *precipdef
-    # scripts:
-      # mpqb_samonsoon:
-        # <<: *histdef
-        # #<<: *histdef_zoom
-  # histogram_without_europe:
-    # description: histogram for 1x1 gridded data
-    # variables:
-      # pr:
-        # preprocessor: pp_mpqb_precip_without_europe
-        # #derive: true
-        # <<: *precipdef
-    # additional_datasets:
-      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
-         # tier: 3, alias: ERA5-Land}
-      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
-         # tier: 2, alias: GPCC}
-      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
-         # tier: 3, alias: WFDE5}
-      # - {dataset: E-OBS, project: OBS, type: ground, version: v21.0e-0.1,
-         # tier: 3, alias: E-OBS}
-    # scripts:
-      # mpqb_europe:
-        # <<: *histdef
+  histogram_without_trop:
+    description: histogram for 1x1 gridded data
+    variables:
+      pr:
+        preprocessor: pp_mpqb_precip_without_trop
+        #derive: true
+        <<: *precipdef
+    scripts:
+      mpqb_trop:
+        <<: *histdef
+        #<<: *histdef_zoom
+  histogram_landonly_trop:
+    description: histogram for 1x1 gridded data
+    variables:
+      pr:
+        preprocessor: pp_mpqb_precip_landonly_trop
+        #derive: true
+        <<: *precipdef
+    additional_datasets:
+      - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         tier: 3, alias: ERA5-Land}
+      - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         tier: 2, alias: GPCC}
+      - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         tier: 3, alias: WFDE5}
+    scripts:
+      mpqb_trop:
+        <<: *histdef
+        #<<: *histdef_zoom
+  histogram_seaonly_trop:
+    description: histogram for 1x1 gridded data
+    variables:
+      pr:
+        preprocessor: pp_mpqb_precip_seaonly_trop
+        #derive: true
+        <<: *precipdef
+    scripts:
+      mpqb_trop:
+        <<: *histdef
+        #<<: *histdef_zoom
+  histogram_without_itcz:
+    description: histogram for 1x1 gridded data
+    variables:
+      pr:
+        preprocessor: pp_mpqb_precip_without_itcz
+        #derive: true
+        <<: *precipdef
+    scripts:
+      mpqb_itcz:
+        #<<: *histdef_long
+        <<: *histdef
+  # # histogram_with_itcz:
+    # # description: histogram for 1x1 gridded data
+    # # variables:
+      # # pr:
+        # # preprocessor: pp_mpqb_precip_with_itcz
+        # # #derive: true
+        # # <<: *precipdef
+    # # scripts:
+      # # mpqb_itcz:
+        # # <<: *histdef
+  histogram_without_samonsoon:
+    description: histogram for 1x1 gridded data
+    variables:
+      pr:
+        preprocessor: pp_mpqb_precip_without_samonsoon
+        #derive: true
+        <<: *precipdef
+    scripts:
+      mpqb_samonsoon:
+        <<: *histdef
+        #<<: *histdef_zoom
+  histogram_without_europe:
+    description: histogram for 1x1 gridded data
+    variables:
+      pr:
+        preprocessor: pp_mpqb_precip_without_europe
+        #derive: true
+        <<: *precipdef
+    additional_datasets:
+      - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         tier: 3, alias: ERA5-Land}
+      - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         tier: 2, alias: GPCC}
+      - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         tier: 3, alias: WFDE5}
+      - {dataset: E-OBS, project: OBS, type: ground, version: v21.0e-0.1,
+         tier: 3, alias: E-OBS}
+    scripts:
+      mpqb_europe:
+        <<: *histdef
   # histogram_without_northamerica:
     # description: histogram for 1x1 gridded data
     # variables:
@@ -824,28 +824,28 @@ diagnostics:
         # script: mpqb/mpqb_resolution.py
 
 ##### MAPPLOTS
-  mapplots:
-    description: mapplots
-    variables:
-      pr:
-        preprocessor: pp_mpqb_precip_nomask
-        # derive: true
-        <<: *precipdef
-    additional_datasets:
-      - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
-         tier: 3, alias: ERA5-Land}
-      - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
-         tier: 2, alias: GPCC}
-      - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
-         tier: 3, alias: WFDE5}
-    scripts:
-      mpqb:
-        #reference_dataset: MultiModelMean
-        reference_dataset: GPCP-SG
-        script: mpqb/mpqb_comparison.py
-      # mpqb_taylor:
-        # reference_dataset: MultiModelMean
-        # script: mpqb/mpqb_taylordiagram.py
+  # mapplots:
+    # description: mapplots
+    # variables:
+      # pr:
+        # preprocessor: pp_mpqb_precip_nomask
+        # # derive: true
+        # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
+      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # tier: 2, alias: GPCC}
+      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         # tier: 3, alias: WFDE5}
+    # scripts:
+      # mpqb:
+        # #reference_dataset: MultiModelMean
+        # reference_dataset: GPCP-SG
+        # script: mpqb/mpqb_comparison.py
+      # # mpqb_taylor:
+        # # reference_dataset: MultiModelMean
+        # # script: mpqb/mpqb_taylordiagram.py
 
 ##### TIMESERIES
   # lineplots_without_gl:

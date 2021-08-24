@@ -5,8 +5,8 @@ write_plots: True
 write_netcdf: True
 log_level: debug
 exit_on_warning: False
-#output_file_type: png
-output_file_type: pdf
+output_file_type: png
+#output_file_type: pdf
 remove_preproc_dir: False
 
 output_dir: /work/bd0854/b309143/ESMValTool/  # user's specific!

@@ -9,6 +9,7 @@ import iris
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
@@ -100,6 +101,10 @@ def _plot_histograms(hists, cfg, grouped_input_data):
     if cfg.pop('logarithmic', False):
         ax1.set_yscale('log', nonposy='clip')
     ax1.tick_params(axis='both', which='major', labelsize=12)
+    ax1.xaxis.set_major_locator(MultipleLocator(3))
+    ax1.xaxis.set_major_formatter('{x:.0f}')
+    ax1.xaxis.set_minor_locator(MultipleLocator(1))
+
 
     print(1.1 * np.max([np.max(content["hist"])
                       for _, content in hists.items()]))
