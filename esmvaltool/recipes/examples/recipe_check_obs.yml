@@ -1326,7 +1326,7 @@ diagnostics:
       tozStderr:
     additional_datasets:
       - {dataset: NIWA-BS, project: OBS, mip: Amon, tier: 3,
-         type: sat, version: v3.3, start_year: 1979, end_year: 2016}
+         type: sat, version: v3.5.1, start_year: 1979, end_year: 2019}
     scripts: null
 
 
