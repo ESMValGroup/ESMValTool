@@ -17,6 +17,8 @@
 ;      ftp://ftp.bodekerscientific.com/CombinedTCOV3.3/Monthly/Patched/NetCDF/
 ;    Newer versions may become available over time, but make sure to download
 ;    the patched one. Only complete years should be downloaded.
+;    !!! NOTE: the latest version of this ozone dataset is now called "BS"
+;    and more information about it can be found in the BS-cmorizer!!!
 ;
 ; Modification history
 ;    20190207-righi_mattia: renamed to NIWA-BS and adapted to v2.
