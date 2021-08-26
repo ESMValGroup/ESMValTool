@@ -310,4 +310,4 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 
 .. [#note2] Derived on the fly from down & net radiation
 
-.. [#note2] Note: the latest version of this dataset is now only called "BS", and there is an extra cmorizer available for this!
+.. [#note3] Note: the latest version of this dataset is now only called "BS", and there is an extra cmorizer available for this!
