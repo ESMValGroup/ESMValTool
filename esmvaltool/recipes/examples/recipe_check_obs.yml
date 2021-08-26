@@ -1356,3 +1356,14 @@ diagnostics:
       - {dataset: UWisc, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v2, start_year: 1988, end_year: 2007}
     scripts: null
+
+
+  BS:
+    description: BS check
+    variables:
+      toz:
+      tozStderr:
+    additional_datasets:
+      - {dataset: BS, project: OBS, mip: Amon, tier: 3,
+         type: sat, version: v3.4, start_year: 1979, end_year: 2016}
+    scripts: null
