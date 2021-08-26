@@ -9,16 +9,16 @@
 ;    http://www.bodekerscientific.com/data/total-column-ozone
 ;
 ; Last access
-;    20210817
+;    20190207
 ;
 ; Download and processing instructions
+;    To get the access data send an email to datasets@bodekerscientific.com
 ;    Download all files from
-;      https://zenodo.org/record/4535247
-;    Newer versions may become available over time. 
-;    Only complete years should be downloaded.
+;      ftp://ftp.bodekerscientific.com/CombinedTCOV3.3/Monthly/Patched/NetCDF/
+;    Newer versions may become available over time, but make sure to download
+;    the patched one. Only complete years should be downloaded.
 ;
 ; Modification history
-;    20210819-hassler_birgit: update for version 3.5.1 of the dataset
 ;    20190207-righi_mattia: renamed to NIWA-BS and adapted to v2.
 ;    20140528-gottschaldt_klaus-dirk: written.
 ;
@@ -32,14 +32,14 @@ begin
   DIAG_SCRIPT = "cmorize_obs_niwa_bs.ncl"
 
   ; Source name
-  OBSNAME = "BS"
+  OBSNAME = "NIWA-BS"
 
   ; Tier
   TIER = 3
 
   ; Period
   YEAR1 = 1979
-  YEAR2 = 2019
+  YEAR2 = 2016
 
   ; Selected variable (standard name)
   VAR = (/"toz", "tozStderr"/)
@@ -60,14 +60,11 @@ begin
   TYPE = "sat"
 
   ; Version
-  VERSION = "V3.5.1"
+  VERSION = "V3.3"
 
   ; Global attributes
-  SOURCE = "https://zenodo.org/record/4535247"
-  REF = "Bodeker et al. (2021), BS Filled Total Column Ozone Database V3.5.1 \
-         (3.5.1) [Data set], Zenodo, https://doi.org/10.5281/zenodo.4535247; \
-         Bodeker et al., Earth Sys. Sci. Data., doi:10.5194/essd-13-3885-2021, \
-         2021"
+  SOURCE = "http://www.bodekerscientific.com/data/total-column-ozone"
+  REF = "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005"
   COMMENT = ""
 
 end
@@ -75,8 +72,8 @@ end
 begin
 
   files = systemfunc("ls " + input_dir_path + \
-                     "BSFilledTCO_" + VERSION + \
-                     "_????_Monthly.nc")
+                     "NIWA-BS_CombinedTCO_" + VERSION + \
+                     "_????_Monthly_Patched.nc")
 
   do vv = 0, dimsizes(VAR) - 1
 

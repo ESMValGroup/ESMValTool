@@ -1,5 +1,5 @@
 ; #############################################################################
-; ESMValTool CMORizer for NIWA-BS data
+; ESMValTool CMORizer for BS (former NIWA-BS) data
 ; #############################################################################
 ;
 ; Tier
@@ -18,7 +18,7 @@
 ;    Only complete years should be downloaded.
 ;
 ; Modification history
-;    20210819-hassler_birgit: update for version 3.5.1 of the dataset
+;    20210819-hassler_birgit: renamed to BS and updated for version 3.5.1
 ;    20190207-righi_mattia: renamed to NIWA-BS and adapted to v2.
 ;    20140528-gottschaldt_klaus-dirk: written.
 ;
@@ -29,7 +29,7 @@ loadscript(getenv("esmvaltool_root") + \
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_niwa_bs.ncl"
+  DIAG_SCRIPT = "cmorize_obs_bs.ncl"
 
   ; Source name
   OBSNAME = "BS"
@@ -63,10 +63,10 @@ begin
   VERSION = "V3.4"
 
   ; Global attributes
-  SOURCE = "https://zenodo.org/record/4535247"
-  REF = "Bodeker et al. (2021), BS Filled Total Column Ozone Database " +\
-        "V3.5.1 (3.5.1) [Data set], Zenodo, " +\
-		"https://doi.org/10.5281/zenodo.4535247; " +\
+  SOURCE = "https://doi.org/10.5281/zenodo.3908787"
+  REF = "Bodeker et al. (2020), BS Filled Total Column Ozone Database " +\
+        "V3.4 (3.4) [Data set], Zenodo, " +\
+		"https://doi.org/10.5281/zenodo.3908787; " +\
          "Bodeker et al., Earth Sys. Sci. Data., " +\
 		 "doi:10.5194/essd-13-3885-2021, 2021"
   COMMENT = ""
