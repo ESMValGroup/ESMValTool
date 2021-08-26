@@ -163,6 +163,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | BerkelyEarth                 | tas, tasa (Amon), sftlf (fx)                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| BS                           | toz, tozStderr (Amon)                                                                                |   3  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CALIPSO-GOCCP                | clcalipso (cfMon)                                                                                    |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CDS-SATELLITE-ALBEDO         | bdalb (Lmon), bhalb (Lmon)                                                                           |   3  | Python          |
@@ -279,7 +281,7 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NDP                          | cVeg (Lmon)                                                                                          |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| NIWA-BS                      | toz, tozStderr (Amon)                                                                                |   3  | NCL             |
+| NIWA-BS [#note3]_            | toz, tozStderr (Amon)                                                                                |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NSIDC-0116-[nh|sh]           | usi, vsi (day)                                                                                       |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -307,3 +309,5 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 .. [#note1] ERA5 cmorization is built into ESMValTool through the native6 project, so there is no separate cmorizer script.
 
 .. [#note2] Derived on the fly from down & net radiation
+
+.. [#note2] Note: the latest version of this dataset is now only called "BS", and there is an extra cmorizer available for this!
