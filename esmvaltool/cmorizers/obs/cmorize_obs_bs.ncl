@@ -64,10 +64,10 @@ begin
 
   ; Global attributes
   SOURCE = "https://doi.org/10.5281/zenodo.3908787"
-  REF = "Bodeker et al. (2020), BS Filled Total Column Ozone Database " +\
-        "V3.4 (3.4) [Data set], Zenodo, " +\
-        "https://doi.org/10.5281/zenodo.3908787; " +\
-        "Bodeker et al., Earth Sys. Sci. Data., " +\
+  REF = "Bodeker et al. (2020), BS Filled Total Column Ozone Database " + \
+        "V3.4 (3.4) [Data set], Zenodo, " + \
+        "https://doi.org/10.5281/zenodo.3908787; " + \
+        "Bodeker et al., Earth Sys. Sci. Data., " + \
         "doi:10.5194/essd-13-3885-2021, 2021"
   COMMENT = ""
 
