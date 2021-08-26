@@ -27,7 +27,7 @@ build:
 requirements:
   run:
     - python>=3.7
-    - iris>=3.0.2,<3.0.4  # iris=3.0.4 dropped support for Python 3.6 but we haven't just yet
+    - iris>=3.0.2
     - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
     - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
     - {{ pin_subpackage('esmvaltool-python', exact=True) }}
@@ -79,10 +79,10 @@ outputs:
         - ecmwf-api-client  # in esmvalgroup channel
         - eofs
         - esmpy
-        - esmvalcore>=2.3.0,<2.4  # in esmvalgroup channel
+        - esmvalcore>=2.3.1,<2.4  # in esmvalgroup channel
         - fiona
         - gdal
-        - iris>=3.0.2,<3.0.4  # iris=3.0.4 dropped support for Python 3.6 but we haven't just yet
+        - iris>=3.0.2
         - jinja2
         - joblib
         - lime
