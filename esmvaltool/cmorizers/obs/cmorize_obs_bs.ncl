@@ -14,7 +14,7 @@
 ; Download and processing instructions
 ;    Download all files from
 ;      https://zenodo.org/record/4535247
-;    Newer versions may become available over time. 
+;    Newer versions may become available over time.
 ;    Only complete years should be downloaded.
 ;
 ; Modification history
@@ -66,9 +66,9 @@ begin
   SOURCE = "https://doi.org/10.5281/zenodo.3908787"
   REF = "Bodeker et al. (2020), BS Filled Total Column Ozone Database " +\
         "V3.4 (3.4) [Data set], Zenodo, " +\
-		"https://doi.org/10.5281/zenodo.3908787; " +\
-         "Bodeker et al., Earth Sys. Sci. Data., " +\
-		 "doi:10.5194/essd-13-3885-2021, 2021"
+        "https://doi.org/10.5281/zenodo.3908787; " +\
+        "Bodeker et al., Earth Sys. Sci. Data., " +\
+        "doi:10.5194/essd-13-3885-2021, 2021"
   COMMENT = ""
 
 end
