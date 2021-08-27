@@ -76,7 +76,7 @@ outputs:
         - cftime>=1.2.1
         - cmocean>=2.0
         - cython
-        - dask>=2021.8.1
+        - dask
         - ecmwf-api-client>=1.6.1  # in esmvalgroup channel
         - eofs>=1.4.0
         - esmpy>=8.0
@@ -123,7 +123,7 @@ outputs:
       noarch: generic
     requirements:
       run:
-        - cdo>=1.9.7
+        - cdo
         - esmvaltool-python
         - imagemagick
         - ncl>=6.6
@@ -135,11 +135,11 @@ outputs:
       post-link: install-r-deps
     requirements:
       run:
-        - cdo>=1.9.7
+        - cdo
         - compilers
         - esmvaltool-python
         - nco
-        - r-base>=3.5
+        - r-base
 
 about:
   home: https://www.esmvaltool.org
