@@ -1,10 +1,10 @@
 """Utils module for Python cmorizers."""
-from pathlib import Path
 import datetime
 import logging
 import os
 import re
 from contextlib import contextmanager
+from pathlib import Path
 
 import iris
 import numpy as np
@@ -13,7 +13,8 @@ from cf_units import Unit
 from dask import array as da
 
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvaltool import __version__ as version, __file__ as esmvaltool_file
+from esmvaltool import __file__ as esmvaltool_file
+from esmvaltool import __version__ as version
 
 logger = logging.getLogger(__name__)
 
@@ -204,8 +205,10 @@ def fix_coords(cube, overwrite_time_bounds=True, overwrite_lon_bounds=True,
                 fix_bounds(cube, cube.coord('air_pressure'))
 
     # remove CS
-    cube.coord('latitude').coord_system = None
-    cube.coord('longitude').coord_system = None
+    if cube.coords('latitude'):
+        cube.coord('latitude').coord_system = None
+    if cube.coords('longitude'):
+        cube.coord('longitude').coord_system = None
 
     return cube
 

@@ -1,0 +1,21 @@
+---
+# Input file name pattern
+# Example file: swoosh-v02.6-198401-202104-latpress-2.5deg-L31.nc
+input_file_pattern: 'swoosh-(?P<version>[^-]+?)-(?P<startyear>\d{4})(?P<startmonth>[0-1][0-9])-(?P<endyear>\d{4})(?P<endmonth>[0-1][0-9])-latpress-(?P<resolution>.+)\.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: SWOOSH
+  tier: 3
+  modeling_realm: sat
+  project_id: OBS6
+  source: 'https://csl.noaa.gov/groups/csl8/swoosh/'
+  reference: swoosh
+  comment: ''
+
+# Variables to cmorize
+variables:
+  combinedanomfillo3q:
+    cmor_name: o3
+    version_suffix: filled
+    mip: AERmonZ
