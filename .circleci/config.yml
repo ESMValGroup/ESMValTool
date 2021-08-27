@@ -198,7 +198,7 @@ jobs:
             # did not help with high memory needed, but it's usually useful
             # conda config --set channel_priority true
             # conda update -y --all
-            conda create -y -n build conda-build conda-verify "python=3.9.6"
+            conda create -y -n build -c conda-forge conda-build conda-verify "python=3.9.6"
             conda activate build
             # Log versions
             dpkg -l > /logs/versions.txt
