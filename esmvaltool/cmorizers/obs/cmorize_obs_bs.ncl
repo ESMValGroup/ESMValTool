@@ -18,7 +18,7 @@
 ;    Only complete years should be downloaded.
 ;
 ; Modification history
-;    20210819-hassler_birgit: renamed to BS and updated for version 3.5.1
+;    20210819-hassler_birgit: renamed to BS and updated for version 3.4
 ;    20190207-righi_mattia: renamed to NIWA-BS and adapted to v2.
 ;    20140528-gottschaldt_klaus-dirk: written.
 ;
