@@ -343,6 +343,6 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 
 .. [#note1] CMORization is built into ESMValTool through the native6 project, so there is no separate CMORizer script.
 
-.. [#note2] Derived on the fly from down & net radiation
+.. [#note2] Derived on the fly from down & net radiation.
 
 .. [#note3] Note: the latest version of this dataset is now only called "BS", and there is an extra cmorizer available for this!
