@@ -1406,4 +1406,3 @@ diagnostics:
       - {dataset: UWisc, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v2, start_year: 1988, end_year: 2007}
     scripts: null
-
