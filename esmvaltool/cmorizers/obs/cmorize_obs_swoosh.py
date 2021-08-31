@@ -10,7 +10,14 @@ Last access
     20210826
 
 Download and processing instructions
-    TBA
+    First tick the box that you agree to the terms and conditions for using the
+    data. Then download at least one of the following files:
+
+    * 10° resolution: swoosh-v02.6-198401-202104-latpress-10deg-L31.nc
+
+    * 5° resolution: swoosh-v02.6-198401-202104-latpress-5deg-L31.nc
+
+    * 2.5° resolution: swoosh-v02.6-198401-202104-latpress-2.5deg-L31.nc
 
 """
 
@@ -42,9 +49,9 @@ def _get_input_file_dicts(in_dir, cfg):
     return input_files_dicts
 
 
-def _extract_variable(raw_name, var, cfg, file_dict, out_dir):
+def _extract_variable(short_name, var, cfg, file_dict, out_dir):
     """Extract variable."""
-    short_name = var.get('cmor_name', raw_name)
+    raw_name = var.get('raw_name', short_name)
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     filename = file_dict['filename']
 
@@ -88,9 +95,8 @@ def cmorization(in_dir, out_dir, cfg, _):
     # Note: The different files correspond to different versions; each file
     # contains all variables.
     for file_dict in input_files_dicts:
-        for (raw_name, var) in cfg['variables'].items():
+        for (short_name, var) in cfg['variables'].items():
             logger.info(
-                "CMORizing variable '%s' from '%s' for file '%s'",
-                var.get('cmor_name', raw_name), raw_name,
+                "CMORizing variable '%s' from file '%s'", short_name,
                 str(file_dict['filename']))
-            _extract_variable(raw_name, var, cfg, file_dict, out_dir)
+            _extract_variable(short_name, var, cfg, file_dict, out_dir)

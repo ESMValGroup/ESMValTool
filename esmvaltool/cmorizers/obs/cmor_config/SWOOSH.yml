@@ -15,7 +15,7 @@ attributes:
 
 # Variables to cmorize
 variables:
-  combinedanomfillo3q:
-    cmor_name: o3
+  o3:
+    raw_name: combinedanomfillo3q
     version_suffix: filled
     mip: AERmonZ
