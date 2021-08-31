@@ -288,3 +288,21 @@ Caveats
 
 - the tool doesn't yet work with derived variables; it will not return any available datasets;
 - operation restricted to CMIP data only, OBS lookup is not available yet.
+
+
+Extracting a list of input files from the provenance
+====================================================
+
+There is a small tool available to extract just the list of input files used to generate
+a figure from the ``*_provenance.xml`` files.
+
+To use it, install ESMValTool from source and run
+
+.. code-block:: bash
+
+    python esmvaltool/utils/prov2files.py /path/to/result_provenance.xml
+
+The tool is based on the `prov <https://prov.readthedocs.io/en/latest/readme.html>`_
+library, a useful library for working with provenance files.
+With minor adaptations, this script could also print out global attributes
+of the input NetCDF files, e.g. the tracking_id.
