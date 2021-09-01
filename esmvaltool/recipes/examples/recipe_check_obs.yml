@@ -1390,16 +1390,16 @@ diagnostics:
     description: SWOOSH check
     variables:
       o3:
+        mip: AERmonZ
+      hus:
+        mip: Amon
     additional_datasets:
-      - {dataset: SWOOSH, project: OBS6, mip: AERmonZ, tier: 3,
-         type: sat, version: 'v02.6-2.5deg-L31-filled', start_year: 1984,
-         end_year: 2020}
-      - {dataset: SWOOSH, project: OBS6, mip: AERmonZ, tier: 3,
-         type: sat, version: 'v02.6-5deg-L31-filled', start_year: 1984,
-         end_year: 2020}
-      - {dataset: SWOOSH, project: OBS6, mip: AERmonZ, tier: 3,
-         type: sat, version: 'v02.6-10deg-L31-filled', start_year: 1984,
-         end_year: 2020}
+      - {dataset: SWOOSH, project: OBS6, tier: 3, type: sat,
+         version: 'v02.6-2.5deg-L31-filled', start_year: 1984, end_year: 2020}
+      - {dataset: SWOOSH, project: OBS6, tier: 3, type: sat,
+         version: 'v02.6-5deg-L31-filled', start_year: 1984, end_year: 2020}
+      - {dataset: SWOOSH, project: OBS6, tier: 3, type: sat,
+         version: 'v02.6-10deg-L31-filled', start_year: 1984, end_year: 2020}
     scripts: null
 
 

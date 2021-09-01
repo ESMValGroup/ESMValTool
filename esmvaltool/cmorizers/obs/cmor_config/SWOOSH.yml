@@ -19,3 +19,7 @@ variables:
     raw_name: combinedanomfillo3q
     version_suffix: filled
     mip: AERmonZ
+  hus:
+    raw_name: combinedanomfillh2oq
+    version_suffix: filled
+    mip: Amon
