@@ -8,6 +8,7 @@ from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=invalid-name
 def download_dataset(config, dataset, _, __, overwrite):
     """Download dataset.
 
