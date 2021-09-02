@@ -1,6 +1,7 @@
 """wget based downloader."""
 
 import logging
+import os
 import subprocess
 
 from .downloader import BaseDownloader
@@ -20,6 +21,10 @@ class WGetDownloader(BaseDownloader):
         wget_options: list(str)
             Extra options for wget
         """
+        if self.overwrite:
+            raise ValueError(
+                'Overwrite does not work with downloading directories through '
+                'wget. Please, remove the unwanted data manually')
         command = ['wget'] + wget_options + self.overwrite_options + [
             f'--directory-prefix={self.local_folder}',
             '--recursive',
@@ -39,11 +44,14 @@ class WGetDownloader(BaseDownloader):
         wget_options: list(str)
             Extra options for wget
         """
+
         command = ['wget'] + wget_options + self.overwrite_options + [
             f'--directory-prefix={self.local_folder}',
             '--no-directories',
             server_path,
         ]
+        if self.overwrite:
+            command.append(f'-O {os.path.basename(server_path)}')
         logger.debug(command)
         subprocess.check_output(command)
 

@@ -488,7 +488,7 @@ class DataCommand():
                 overwrite=False,
                 install=False,
                 **kwargs):
-        """Download a format a set of datasets.
+        """Download and format a set of datasets.
 
         Parameters
         ----------
