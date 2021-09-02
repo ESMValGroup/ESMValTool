@@ -415,6 +415,7 @@ class DataCommand():
         print(dataset)
         print()
         print(f"Tier: {dataset_info['tier']}")
+        print(f"Source: {dataset_info['source']}")
         print(f"Automatic download: {self.formatter.has_downloader(dataset)}")
         print("")
         print(dataset_info['info'])
