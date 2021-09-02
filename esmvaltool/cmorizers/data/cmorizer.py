@@ -100,7 +100,7 @@ class Formatter():
 
     @property
     def log_level(self):
-        """"Console log level."""
+        """Console log level."""
         return self.config['log_level']
 
     @staticmethod
@@ -163,7 +163,18 @@ class Formatter():
         logger.info('%s downloaded', dataset)
 
     def format(self, start, end, install):
-        """Format all available datasets."""
+        """Format all available datasets.
+
+        Parameters
+        ----------
+        start: datetime
+            Start of the period to format
+        end: datetime
+            End of the period to format
+        install: bool
+            If True, automatically copies the data to the final location if
+            there is no
+        """
         logger.info("Running the CMORization scripts.")
         # datasets dictionary of Tier keys
         datasets = self._assemble_datasets()
@@ -174,14 +185,13 @@ class Formatter():
 
         # loop through tier/datasets to be cmorized
         failed_datasets = []
-        for tier in datasets:
-            for dataset in datasets:
-                if not self.format_dataset(dataset, start, end, install):
-                    failed_datasets.append(dataset)
+        for dataset in datasets:
+            if not self.format_dataset(dataset, start, end, install):
+                failed_datasets.append(dataset)
 
-            if failed_datasets:
-                raise Exception(
-                    f'Format failed for datasets {" ".join(failed_datasets)}')
+        if failed_datasets:
+            raise Exception(
+                f'Format failed for datasets {" ".join(failed_datasets)}')
 
     @staticmethod
     def has_downloader(dataset):
@@ -233,6 +243,13 @@ class Formatter():
         ----------
         dataset: str
             Dataset name
+        start: datetime
+            Start of the period to format
+        end: datetime
+            End of the period to format
+        install: bool
+            If True, automatically copies the data to the final location if
+            there is no
         """
         reformat_script_root = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'formatters',
@@ -361,6 +378,7 @@ class Formatter():
                     module.__file__)
         cmor_cfg = read_cmor_config(dataset)
         module.cmorization(in_dir, out_dir, cmor_cfg, self.config, start, end)
+        logger.info('CMORization of dataset %s finished!')
         return True
 
 
@@ -412,9 +430,18 @@ class DataCommand():
 
         Parameters
         ----------
-        datasets
-
-        config_file
+        datasets : list(str), optional
+            List of datasets to format, by default None
+        config_file : str, optional
+            Path to ESMValTool's config user file, by default None
+        start : str, optional
+            Start of the interval to process, by default None. Valid formats
+            are YYYY, YYYYMM and YYYYMMDD.
+        end : str, optional
+            End of the interval to process, by default None. Valid formats
+            are YYYY, YYYYMM and YYYYMMDD.
+        overwrite : bool, optional
+            If true, download already present data again
         """
         start = self._parse_date(start)
         end = self._parse_date(end)
@@ -464,7 +491,20 @@ class DataCommand():
 
         Parameters
         ----------
-        datasets
+        datasets : list(str), optional
+            List of datasets to format, by default None
+        config_file : str, optional
+            Path to ESMValTool's config user file, by default None
+        start : str, optional
+            Start of the interval to process, by default None. Valid formats
+            are YYYY, YYYYMM and YYYYMMDD.
+        end : str, optional
+            End of the interval to process, by default None. Valid formats
+            are YYYY, YYYYMM and YYYYMMDD.
+        install : bool, optional
+            If true, move processed data to the folder, by default False
+        overwrite : bool, optional
+            If true, download already present data again
         """
         start = self._parse_date(start)
         end = self._parse_date(end)
