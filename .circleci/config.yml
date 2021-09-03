@@ -229,7 +229,7 @@ jobs:
             # conda update -y conda > /logs/conda.txt 2>&1
             # Install ESMValTool in a new conda environment
             conda install -y -c conda-forge mamba
-            conda create -y --name esmvaltool
+            mamba create -y --name esmvaltool
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
             # install the package
