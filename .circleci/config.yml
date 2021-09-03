@@ -235,7 +235,7 @@ jobs:
             # install the package
             mamba install -c conda-forge esmvaltool
             # Log versions
-            conda env export > /logs/environment.yml
+            mamba env export > /logs/environment.yml
             # Test installation
             esmvaltool -h
             ncl -V
