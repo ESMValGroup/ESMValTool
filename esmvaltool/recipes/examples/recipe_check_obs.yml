@@ -574,7 +574,9 @@ diagnostics:
     description: WOA check
     variables:
       so:
+      sos:
       thetao:
+      tos:
       no3:
       o2:
       po4:
