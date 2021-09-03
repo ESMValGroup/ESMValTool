@@ -19,7 +19,7 @@ STEPHENS_FILENAME = "Stephens_et_al_2012_obs_Energy_Budget.txt"
 DEMORY_FILENAME = "Demory_et_al_2014_obs_Energy_Budget.txt"
 
 
-def load_model_data(filenames):
+def load_data(filenames):
     """Return the loaded cubes.
 
     Parameters
@@ -153,6 +153,10 @@ def validate_variable_data(variable_data, name, unit):
     """Return the variable from ``variable_data`` that has the same name and
     units as provided by ``name`` and ``unit``.
 
+    If ``name`` doesn't exist in ``variable_data``, the returned variable will
+    have a name and unit equal to ``name`` and ``unit`` and data equal to
+    'NaN'.
+
     Parameters
     ----------
     variable_data : list of dictionaries
@@ -167,7 +171,7 @@ def validate_variable_data(variable_data, name, unit):
     Raises
     ------
     RuntimeError
-        If a single ``name`` doesn't exist in ``variable_data``.
+        If multiple ``name`` exist in ``variable_data``.
         If ``unit`` doesn't match the unit in ``variable_data``.
 
     Returns
@@ -188,21 +192,24 @@ def validate_variable_data(variable_data, name, unit):
     """
     items = [item for item in variable_data if item["name"] == name]
 
-    if len(items) != 1:
-        raise RuntimeError(f"A single '{name}' does not exist in '{items}'.")
+    if not len(items):
+        variable = {"name": name, "unit": unit, "data": np.nan}
 
-    variable = items[0]
-    variable_unit = variable["unit"]
+    if len(items) == 1:
+        variable = items[0]
 
-    if variable_unit != unit:
+    if len(items) > 1:
+        raise RuntimeError(f"Multiple '{name}' exist in '{items}'.")
+
+    if variable["unit"] != unit:
         raise RuntimeError(
-            f"Unit {unit} does not match the unit {variable_unit} "
+            f"Unit {unit} does not match the unit {variable['unit']} "
             f"in {variable} for {name}")
 
     return variable
 
 
-def order_model_data(cubes, obs_names, obs_units):
+def order_data(cubes, obs_names, obs_units):
     """Return the data from the cubes in the order defined by ``obs_names``.
 
     The units from the cubes are checked against ``obs_units``.
@@ -265,17 +272,13 @@ def read_text_file(filepath):
         items = line.split()
         line_dict["name"] = items[0]
         line_dict["unit"] = " ".join(items[1:3]).strip(",")
-        line_dict["data"] = float(items[3])
+        line_dict["data"] = float(items[3])  # float('NaN') == np.nan
         try:
             line_dict["error"] = float(items[4])
         except IndexError:
             pass
         contents.append(line_dict)
     return contents
-
-
-def load_ceres_data():
-    pass
 
 
 def load_obs_data():
@@ -325,15 +328,13 @@ def plot_data(
     stephens_data,
     stephens_error,
     demory_data,
+    ceres_data,
     model_data,
     plot_filename,
 ):
-    # print(f"model_data shape: {model_data.shape}")
-    # print(f"stephens_data shape: {stephens_data.shape}")
-    print(f"model_data: {model_data}")
-    print(f"stephens_data: {stephens_data}")
     model_minus_stephens = np.array(model_data) - np.array(stephens_data)
     model_minus_demory = np.array(model_data) - np.array(demory_data)
+    model_minus_ceres = np.array(model_data) - np.array(ceres_data)
 
     n_groups = 20
     fig = plt.Figure(figsize=(12, 8))
@@ -352,13 +353,15 @@ def plot_data(
         label="MODEL" + "(" + "season" + ")" + " - Stephens(2012)",
         yerr=stephens_error,
     )
-    # rects2 = ax.bar(
-    #     index + 0.2 + bar_width,
-    #     model_minus_ebf,
-    #     bar_width,
-    #     alpha=opacity + 0.2,
-    #     color='orange',
-    #     label=MODEL + '(' + season + ')' + ' - CERES' + '(' + season + ')')
+    ax.bar(
+        index + 0.2 + bar_width,
+        model_minus_ceres,
+        bar_width,
+        alpha=opacity + 0.2,
+        color="orange",
+        label="MODEL" + "(" + "season" + ")" + " - CERES" + "(" + "season" +
+        ")",
+    )
     ax.bar(
         index + 0.2 + bar_width * 2,
         model_minus_demory,
@@ -391,7 +394,7 @@ def main(config):
     logger = logging.getLogger(__name__)
 
     input_data = config["input_data"]
-    model_datasets = group_metadata(input_data.values(), "dataset")
+    datasets = group_metadata(input_data.values(), "dataset")
 
     (
         obs_names,
@@ -401,14 +404,19 @@ def main(config):
         demory_data,
     ) = load_obs_data()
 
-    for model_dataset, group in model_datasets.items():
+    ceres_group = datasets.pop("CERES-EBAF")
+    ceres_filenames = get_filenames(ceres_group)
+    raw_ceres_data = load_data(ceres_filenames)
+    ceres_data = order_data(raw_ceres_data, obs_names, obs_units)
+
+    for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.
         # 'group' is a list of dictionaries containing metadata.
         logger.info(f"Processing data for {model_dataset}")
         filenames = get_filenames(group)
-        unordered_model_data = load_model_data(filenames)
+        unordered_model_data = load_data(filenames)
         all_model_data = derive_additional_variables(unordered_model_data)
-        model_data = order_model_data(all_model_data, obs_names, obs_units)
+        model_data = order_data(all_model_data, obs_names, obs_units)
         plot_filename = get_plot_filename(model_dataset, config)
         plot_data(
             obs_names,
@@ -416,6 +424,7 @@ def main(config):
             stephens_data,
             stephens_error,
             demory_data,
+            ceres_data,
             model_data,
             plot_filename,
         )
