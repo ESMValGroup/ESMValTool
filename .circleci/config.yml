@@ -233,7 +233,7 @@ jobs:
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
             # install the package
-            mamba install -c conda-forge -c esmvalgroup esmvaltool
+            mamba install -c conda-forge esmvaltool
             # Log versions
             conda env export > /logs/environment.yml
             # Test installation
