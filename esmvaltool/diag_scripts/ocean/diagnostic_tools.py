@@ -126,7 +126,7 @@ def bgc_units(cube, name):
         new_units = 'celsius'
 
     if name in ['sos', 'so']:
-       cube.units = '0.001'
+        cube.units = '0.001'
 
     if name in ['no3', 'o2', 'po4', 'si']:
         new_units = 'mmol m-3'
