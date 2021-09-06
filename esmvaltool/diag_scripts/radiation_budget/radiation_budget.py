@@ -426,7 +426,7 @@ def main(config):
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.
         # 'group' is a list of dictionaries containing metadata.
-        logger.info(f"Processing data for {model_dataset}")
+        logger.info("Processing data for %s", model_dataset)
         filenames = get_filenames(group)
         unordered_model_data = load_data(filenames)
         all_model_data = derive_additional_variables(unordered_model_data)
