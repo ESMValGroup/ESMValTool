@@ -36,7 +36,21 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
     else:
         obs_selection = []
 
+    # print out OBS's
+    if obs_selection:
+        logger.info("Observations dataset(s) %s",
+                    [obs['dataset'] for obs in obs_selection])
+
     # determine CONTROL and EXPERIMENT datasets
+
+    # corner case: they could be the same dataset name
+    if cfg['control_model'] == cfg['exper_model']:
+        logger.info("Identical Control/Experiment dataset names: %s",
+                    dataset_selection[0]['dataset'])
+        control, experiment = dataset_selection
+        return control, experiment, obs_selection
+
+    # if they're not the same dataset, fire away
     for model in dataset_selection:
         if model['dataset'] == cfg['control_model']:
             logger.info("Control dataset %s", model['dataset'])
@@ -44,10 +58,6 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
         elif model['dataset'] == cfg['exper_model']:
             logger.info("Experiment dataset %s", model['dataset'])
             experiment = model
-
-    if obs_selection:
-        logger.info("Observations dataset(s) %s",
-                    [obs['dataset'] for obs in obs_selection])
 
     return control, experiment, obs_selection
 
