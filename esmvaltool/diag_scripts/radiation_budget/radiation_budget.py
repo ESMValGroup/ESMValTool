@@ -322,16 +322,30 @@ def load_obs_data():
     return names, units, stephens_data, stephens_error, demory_data
 
 
-def plot_data(
-    obs_names,
-    obs_units,
-    stephens_data,
-    stephens_error,
-    demory_data,
-    ceres_data,
-    model_data,
-    plot_filename,
-):
+def plot_data(obs_names, obs_units, stephens_data, stephens_error, demory_data,
+              ceres_data, model_data, plot_filename):
+    """Produce and save the radiation budget comparison plot.
+
+    Parameters
+    ----------
+    obs_names : list
+        The names of variables included in the observation data.
+    obs_units : list
+        The units of variables included in the observation data.
+    stephens_data : list
+        Stephens observation data values.
+    stephens_error : list
+        Stephens observation data error values.
+    demory_data : list
+        Demory observation data values.
+    ceres_data : list
+        Ceres observation data values.
+    model_data : list
+        Data values from the model for which this comparison plot is being
+        generated.
+    plot_filename : string
+        The name of the image file to be saved.
+    """
     model_minus_stephens = np.array(model_data) - np.array(stephens_data)
     model_minus_demory = np.array(model_data) - np.array(demory_data)
     model_minus_ceres = np.array(model_data) - np.array(ceres_data)
