@@ -399,8 +399,6 @@ def plot_data(obs_names, obs_units, stephens_data, stephens_error, demory_data,
     axis.set_xticklabels(obs_names, ha="center", rotation=90, fontsize=10)
     axis.legend(frameon=False, fontsize=10, loc="upper left")
 
-    # TODO: use static filename, and put additional information into figure
-    # title
     fig.savefig(plot_filename)
     fig.clear()
 
