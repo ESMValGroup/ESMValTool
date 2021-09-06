@@ -1,10 +1,12 @@
-"""Load functions needed by diags with CONTROL and EXPERIMENT"""
-import os
+"""Load functions needed by diags with CONTROL and EXPERIMENT."""
 import logging
+import os
+import sys
+
 import iris
+
 from esmvalcore.preprocessor import climate_statistics
 from esmvaltool.diag_scripts.shared import select_metadata
-
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -23,14 +25,25 @@ def _disentagle_iden_datasets(dat_selection):
         key for key in orig_ctrl.keys() & orig_exper
         if orig_ctrl[key] != orig_exper[key]
     ]
+
+    # do not populate dataset name with these (long) params
     unwanted_pars = ['filename', 'alias', 'recipe_dataset_index']
     dif_pars = [
         dif_par for dif_par in dif_pars if dif_par not in unwanted_pars
     ]
+    if not dif_pars:
+        logger.error("Your CONTROL and EXPERIMENT "
+                     "datasets are completely identical, your analysis "
+                     "will output garbage, exiting.")
+        sys.exit(1)
+
+    # assemble new dataset names
     new_ctrl = [str(orig_ctrl[k]) for k in dif_pars]
     new_ctrl = orig_ctrl['dataset'] + "-" + "-".join(new_ctrl)
     new_exper = [str(orig_exper[k]) for k in dif_pars]
     new_exper = orig_exper['dataset'] + "-" + "-".join(new_exper)
+
+    # recast the new names in the old dicts
     orig_ctrl['dataset'] = new_ctrl
     orig_exper['dataset'] = new_exper
 
@@ -39,7 +52,7 @@ def _disentagle_iden_datasets(dat_selection):
 
 def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
     """
-    Get control, exper and obs datasets
+    Get control, exper and obs datasets.
 
     This function is used when running recipes that need
     a clear distinction between a control dataset, an experiment
@@ -94,7 +107,7 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
 # and OBS (if any) files and applies climate_statistics() to mean the cubes
 def apply_supermeans(ctrl, exper, obs_list):
     """
-    Apply supermeans on data components ie MEAN on time
+    Apply supermeans on data components ie MEAN on time.
 
     This function is an extension of climate_statistics() meant to ease the
     time-meaning procedure when dealing with CONTROL, EXPERIMENT and OBS
