@@ -192,7 +192,7 @@ def validate_variable_data(variable_data, name, unit):
     """
     items = [item for item in variable_data if item["name"] == name]
 
-    if not len(items):
+    if not items:
         variable = {"name": name, "unit": unit, "data": np.nan}
 
     if len(items) == 1:
@@ -204,7 +204,7 @@ def validate_variable_data(variable_data, name, unit):
     if variable["unit"] != unit:
         raise RuntimeError(
             f"Unit {unit} does not match the unit {variable['unit']} "
-            f"in {variable} for {name}")
+            f"in {variable} for {name}.")
 
     return variable
 
