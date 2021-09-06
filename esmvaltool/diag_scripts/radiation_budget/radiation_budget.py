@@ -339,12 +339,12 @@ def plot_data(
     n_groups = 20
     fig = plt.Figure(figsize=(12, 8))
     # plt.FigureCanvas(fig)
-    ax = fig.add_subplot(111)
+    axis = fig.add_subplot(111)
     index = np.arange(n_groups) * 2.0
 
     bar_width, opacity = 0.5, 0.4
-    ax.set_ylim(-20, 20)
-    ax.bar(
+    axis.set_ylim(-20, 20)
+    axis.bar(
         index + 0.2,
         model_minus_stephens,
         bar_width,
@@ -353,7 +353,7 @@ def plot_data(
         label="MODEL" + "(" + "season" + ")" + " - Stephens(2012)",
         yerr=stephens_error,
     )
-    ax.bar(
+    axis.bar(
         index + 0.2 + bar_width,
         model_minus_ceres,
         bar_width,
@@ -362,7 +362,7 @@ def plot_data(
         label="MODEL" + "(" + "season" + ")" + " - CERES" + "(" + "season" +
         ")",
     )
-    ax.bar(
+    axis.bar(
         index + 0.2 + bar_width * 2,
         model_minus_demory,
         bar_width,
@@ -370,12 +370,12 @@ def plot_data(
         color="black",
         label="MODEL" + "(" + "season" + ")" + " - Demory(2014)",
     )
-    ax.spines["bottom"].set_position(("data", 0))
-    ax.spines["top"].set_position(("data", 0))
+    axis.spines["bottom"].set_position(("data", 0))
+    axis.spines["top"].set_position(("data", 0))
 
-    ax.set_xticks(index + bar_width + 0.5)
-    ax.set_xticklabels(obs_names, ha="center", rotation=90, fontsize=10)
-    ax.legend(frameon=False, fontsize=10, loc="upper left")
+    axis.set_xticks(index + bar_width + 0.5)
+    axis.set_xticklabels(obs_names, ha="center", rotation=90, fontsize=10)
+    axis.legend(frameon=False, fontsize=10, loc="upper left")
 
     # TODO: use static filename, and put additional information into figure
     # title
