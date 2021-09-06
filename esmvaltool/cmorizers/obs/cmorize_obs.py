@@ -238,8 +238,8 @@ def _assemble_datasets(raw_obs, obs_list):
                     datasets[tier].append(dataset_name)
                     break
             else:
-                logger.warning("Could not find raw data %s in %s/%s",
-                               dataset_name, raw_obs, tier)
+                logger.warning("Could not find raw data %s in %s",
+                               dataset_name, raw_obs)
 
     # otherwise go through the whole raw_obs dir
     else:
