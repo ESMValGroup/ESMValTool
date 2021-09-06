@@ -431,5 +431,5 @@ def main(config):
 
 
 if __name__ == "__main__":
-    with run_diagnostic() as config:
-        main(config)
+    with run_diagnostic() as CONFIG:
+        main(CONFIG)
