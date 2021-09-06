@@ -9,6 +9,34 @@ from esmvaltool.diag_scripts.shared import select_metadata
 logger = logging.getLogger(os.path.basename(__file__))
 
 
+def _disentagle_iden_datasets(dat_selection):
+    """
+    Disentangle identical dataset names for CONTROL and EXPERIMENT.
+
+    This func takes a list of exactly two dictionaries
+    that have the same value for `dataset` key and returns a composite
+    dataset name assembled from the actual dataset name + parameter that
+    is different between the two dicts (e.g. mip or exp or grid etc.)
+    """
+    orig_ctrl, orig_exper = dat_selection
+    dif_pars = [
+        key for key in orig_ctrl.keys() & orig_exper
+        if orig_ctrl[key] != orig_exper[key]
+    ]
+    unwanted_pars = ['filename', 'alias', 'recipe_dataset_index']
+    dif_pars = [
+        dif_par for dif_par in dif_pars if dif_par not in unwanted_pars
+    ]
+    new_ctrl = [str(orig_ctrl[k]) for k in dif_pars]
+    new_ctrl = orig_ctrl['dataset'] + "-" + "-".join(new_ctrl)
+    new_exper = [str(orig_exper[k]) for k in dif_pars]
+    new_exper = orig_exper['dataset'] + "-" + "-".join(new_exper)
+    orig_ctrl['dataset'] = new_ctrl
+    orig_exper['dataset'] = new_exper
+
+    return orig_ctrl, orig_exper
+
+
 def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
     """
     Get control, exper and obs datasets
@@ -47,7 +75,7 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
     if cfg['control_model'] == cfg['exper_model']:
         logger.info("Identical Control/Experiment dataset names: %s",
                     dataset_selection[0]['dataset'])
-        control, experiment = dataset_selection
+        control, experiment = _disentagle_iden_datasets(dataset_selection)
         return control, experiment, obs_selection
 
     # if they're not the same dataset, fire away
