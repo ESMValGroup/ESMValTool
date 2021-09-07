@@ -306,7 +306,7 @@ Example plots
 .. figure::  /recipes/figures/bock20jgr/tas_Global_CMIP6_historical_anom_1850-2014.png
    :align:   center
 
-   Observed and simulated time series of the anomalies in annual and global mean
+   Fig. 1: Observed and simulated time series of the anomalies in annual and global mean
    surface temperature. All anomalies are differences from the 1850-1900 time
    mean of each individual time series.
 
@@ -315,7 +315,7 @@ Example plots
    :align:   center
    :width:   7cm
 
-   Observed and simulated time series of the anomalies in annual
+   Fig. 2: Observed and simulated time series of the anomalies in annual
    and global mean surface temperature as in Figure 1; all anomalies are
    calculated by subtracting the 1850-1900 time mean from the time series.
    Displayed are the multimodel means of all three CMIP ensembles with
@@ -330,26 +330,18 @@ Example plots
    :align:   center
    :width:   9cm
 
-   Annual mean near‐surface (2 m) air temperature (°C). (a) Multimodel (ensemble)
+   Fig. 3: Annual mean near‐surface (2 m) air temperature (°C). (a) Multimodel (ensemble)
    mean constructed with one realization of CMIP6 historical experiments for the
    period 1995-2014. Multimodel‐mean bias of (b) CMIP6 (1995-2014) compared to
    the corresponding time period of the climatology from ERA5
    (Copernicus Climate Change Service (C3S), 2017).
 
 .. _fig_bock20jgr_4:
-.. figure::  /recipes/figures/bock20jgr/patterncor.png
-   :align:   center
-   :width:   9cm
-
-   Centered pattern correlations between models and observations for the annual 
-   mean climatology over the period 1980–1999. 
-
-.. _fig_bock20jgr_5:
 .. figure::  /recipes/figures/bock20jgr/ta850-global_to_swcre-global_RMSD.png
    :align:   center
    :width:   9cm
 
-   Relative space-time root-mean-square deviation (RMSD) calculated from the 
+   Fig. 6: Relative space-time root-mean-square deviation (RMSD) calculated from the 
    climatological seasonal cycle of the CMIP3, CMIP5, and CMIP6 simulations 
    (1980-1999) compared to observational data sets (Table 5). A relative 
    performance is displayed, with blue shading being better and red shading 
@@ -358,3 +350,11 @@ Example plots
    data set (lower right triangle) and the alternative data set (upper left 
    triangle) which are marked in Table 5. White boxes are used when data are not 
    available for a given model and variable.
+
+.. _fig_bock20jgr_5:
+.. figure::  /recipes/figures/bock20jgr/patterncor.png
+   :align:   center
+   :width:   9cm
+
+   Fig. 7: Centered pattern correlations between models and observations for the annual 
+   mean climatology over the period 1980–1999. 
