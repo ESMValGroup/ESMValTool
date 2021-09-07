@@ -61,6 +61,59 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
+def make_mean_of_cube_list(cube_list, operation='mean'):
+    """
+    Takes the mean of a list of cubes (not an iris.cube.CubeList).
+    Assumes all the cubes are the same shape.
+    """
+    # Fix empty times
+    full_times = {}
+    times = []
+    for cube in cube_list:
+        # make time coords uniform:
+
+        cube.coord('time').long_name='Time axis'
+        cube.coord('time').attributes={'time_origin': '1950-01-01 00:00:00'}
+        times.append(cube.coord('time').points)
+
+        for time in cube.coord('time').points:
+            print(cube.name, time, cube.coord('time').units)
+            try:
+                full_times[time] += 1
+            except:
+                full_times[time] = 1
+
+    for t, v in sorted(full_times.items()):
+        if v != len(cube_list):
+            print('FAIL', t, v, '!=', len(cube_list),'\nfull times:',  full_times)
+            assert 0
+
+    cube_mean=cube_list[0]
+    #try: iris.coord_categorisation.add_year(cube_mean, 'time')
+    #except: pass
+    #try: iris.coord_categorisation.add_month(cube_mean, 'time')
+    #except: pass
+
+    try: cube_mean.remove_coord('year')
+    except: pass
+    #cube.remove_coord('Year')
+    try: model_name = cube_mean.metadata[4]['source_id']
+    except: model_name = ''
+    print(model_name,  cube_mean.coord('time'))
+
+    for i, cube in enumerate(cube_list[1:]):
+        try: cube.remove_coord('year')
+        except: pass
+        #cube.remove_coord('Year')
+        try: model_name = cube_mean.metadata[4]['source_id']
+        except: model_name = ''
+        print(i, model_name, cube.coord('time'))
+        cube_mean+=cube
+        #print(cube_mean.coord('time'), cube.coord('time'))
+    cube_mean = cube_mean/ float(len(cube_list))
+    return cube_mean
+
+
 
 def make_mean_of_cube_list_notime(cube_list):
     """
@@ -83,9 +136,40 @@ def make_mean_of_cube_list_notime(cube_list):
     return cube_mean
 
 
+def make_stddev_of_cube_list(mean_timed_cube):
+    """
+    This takes the standard deviation of the means.
+    What Ana wanted was the mean of the standard deviations (along the time axis).
+
+    Takes the mean of a list of cubes (not an iris.cube.CubeList).
+    Assumes all the cubes are the same shape.
+    """
+    print('std_dev calc mean cube:', mean_cube.units, mean_cube.data.max(),  mean_cube.data.min())
+    if mean_cube is None:
+        mean_cube = make_mean_of_cube_list_notime(cube_list)
+
+    if count_cube is None:
+        count_cube = make_count_of_cube_list_notime(cube_list)
+
+    for i, cube in enumerate(cube_list):
+        cube = cube.copy()
+        try: cube.remove_coord('year')
+        except: pass
+        print('std_dev calc', i, cube.units, cube.data.max(),  cube.data.min())
+        cube.data = np.ma.power((cube.data - mean_cube.data), 2.)
+        cube_var_list.append(cube)
+
+    cube_var = make_mean_of_cube_list_notime(cube_var_list)
+
+    cube_var.data = np.ma.sqrt(cube_var.data/count_cube.data)
+
+    return cube_var
 
 def make_stddev_of_cube_list_notime(cube_list, mean_cube=None, count_cube=None):
     """
+    This takes the standard deviation of the means.
+    What Ana wanted was the mean of the standard deviations (along the time axis).
+
     Takes the mean of a list of cubes (not an iris.cube.CubeList).
     Assumes all the cubes are the same shape.
     """
@@ -111,6 +195,35 @@ def make_stddev_of_cube_list_notime(cube_list, mean_cube=None, count_cube=None):
 
     return cube_var
 
+
+def make_count_of_cube_list(cube_list,):
+    """
+    Takes the mean of a list of cubes (not an iris.cube.CubeList).
+    Assumes all the cubes are the same shape.
+
+    Input cube has time, but output does not.
+    """
+    # Fix empty times
+    cube_count = cube_list[0][0].copy()
+
+    #cube_count.data = (~np.ma.masked_invalid(cube_count.data)).mask.astype(float)
+    cube_count.data = np.ma.masked_invalid(cube_count.data)
+    cube_count.data = np.ma.clip(cube_count.data, 1.,1.)
+
+    if len(cube_list)==1:
+        return cube_count
+
+    for i, cube in enumerate(cube_list[1:]):
+        try: cube.remove_coord('year')
+        except: pass
+        data = np.ma.masked_invalid(cube.data[0]).copy()
+        data = np.ma.clip(data, 1., 1.)
+        print('calc count:', cube_count.data.min(), cube_count.data.max(), data.min(),data.max())
+
+        cube_count.data +=  data
+        #cube_count.data+=(~np.ma.masked_invalid(cube.data).mask).astype(float)
+
+    return cube_count
 
 def make_count_of_cube_list_notime(cube_list,):
     """
@@ -456,8 +569,8 @@ def map_plot(cfg, metadata, cube, unique_keys = []):
     # Making plots for each layer
     if 'counts' in unique_keys:
          qplt.contourf(cube, 11, vmin=0.,vmax=50., )
-         plt.clim(0., 50.,) 
-         #plt.update() 
+         plt.clim(0., 50.,)
+         #plt.update()
     else:
          qplt.contourf(cube, 11,)
 
@@ -500,6 +613,93 @@ def calculate_ensemble_stats(cfg, metadatas, key_short_name, key_scenario, key_s
     Calculate the mean, std_dev & number of contributing multi_model_statistics
     for each point in the 1x1 grid.
     """
+    unique_keys = [key_short_name, key_scenario, str(key_start_year)]
+
+    work_dir = diagtools.folder([cfg['work_dir'], 'variable_group_stats'])
+    mean_timed_path = work_dir+'_'.join((unique_keys))+'_mean_timed.nc'
+    mean_path = work_dir+'_'.join((unique_keys))+'_mean.nc'
+    stddev_path = work_dir+'_'.join((unique_keys))+'_stddev.nc'
+    count_path = work_dir+'_'.join((unique_keys))+'_count.nc'
+
+    if False not in [os.path.exists(pth) for pth in [mean_timed_path, mean_path, stddev_path, count_path]]:
+        make_three_pane_plot(cfg, unique_keys, mean_path, stddev_path, count_path)
+        return
+
+    files_list = []
+    cubes = {}
+    for filename, metadata in sorted(metadatas.items()):
+        short_name = metadata['short_name']
+        if short_name != key_short_name: continue
+
+        scenario = metadata['exp']
+        if scenario != key_scenario: continue
+
+        start_year = metadata['start_year']
+        if start_year != key_start_year: continue
+
+        files_list.append(filename)
+        cube = iris.load_cube(filename)
+
+        # take mean along time axis.
+        print('loading', unique_keys, metadata['dataset'], metadata['ensemble'])
+
+        #cube = climate_statistics(cube, operator='mean')
+        #cube = diagtools.bgc_units(cube, metadata['short_name'])
+        cubes[filename] = cube
+
+    if not len(files_list):
+        return
+
+    cube_list = [cube for fn, cube in cubes.items()]
+
+    # mean_timed:
+    # Timed included full time axis.
+    if os.path.exists(mean_timed_path):
+        mean_cube_timed = iris.load_cube(mean_timed_path)
+    else:
+        mean_cube_timed = make_mean_of_cube_list(cube_list)
+        iris.save(mean_cube_timed, mean_timed_path)
+
+    # mean:
+    # Timed included full time axis. Mean is mean of that in the time direction.
+    if os.path.exists(mean_path):
+        mean_cube = iris.load_cube(mean_path)
+    else:
+        mean_cube = climate_statistics(mean_cube_timed, operator='mean')
+        iris.save(mean_cube, mean_path)
+    map_plot(cfg, {}, mean_cube, unique_keys =  [key_short_name, key_scenario, str(key_start_year), 'mean'])
+    #mean_cube = diagtools.bgc_units(mean_cube, key_short_name)
+
+    # Count cube
+    if os.path.exists(count_path):
+        count_cube = iris.load_cube(count_path)
+    else:
+        count_cube = make_count_of_cube_list(cube_list)
+        iris.save(count_cube, count_path)
+    map_plot(cfg, {}, count_cube, unique_keys =  [key_short_name, key_scenario, str(key_start_year), 'counts'])
+
+
+    # std dev cube:
+    if os.path.exists(stddev_path):
+        pass
+    else:
+        mean_cube = climate_statistics(mean_cube_timed, operator='std_dev')
+        iris.save(stddev_cube, stddev_path)
+    map_plot(cfg, {}, stddev_cube, unique_keys =  [key_short_name, key_scenario, str(key_start_year), 'stddev'])
+
+    # make a plot:
+    make_three_pane_plot(cfg, unique_keys, mean_path, stddev_path, count_path)
+
+
+
+
+def calculate_ensemble_stats_wrong(cfg, metadatas, key_short_name, key_scenario, key_start_year):
+    """
+    Calculate the mean, std_dev & number of contributing multi_model_statistics
+    for each point in the 1x1 grid.
+    """
+    assert 0
+    # this method is wrong. it takes the time average first!
 
     unique_keys = [key_short_name, key_scenario, str(key_start_year)]
 
@@ -529,6 +729,7 @@ def calculate_ensemble_stats(cfg, metadatas, key_short_name, key_scenario, key_s
 
         # take mean along time axis.
         print('loading', unique_keys, metadata['dataset'], metadata['ensemble'])
+
         cube = climate_statistics(cube, operator='mean')
         #cube = diagtools.bgc_units(cube, metadata['short_name'])
         cubes[filename] = cube
@@ -595,12 +796,12 @@ def make_three_pane_plot(cfg, unique_keys, mean_path, stddev_path, count_path):
         if title == 'Count':
             qplt.contourf(cube, 11, vmin=0.,vmax=50.)
             plt.clim(0., 50.)
-            #plt.update() 
+            #plt.update()
         else:
             qplt.contourf(cube, 11,)
         plt.title(title)
         plt.gca().coastlines()
-        
+
 
     # Add title to plot
     title = ' '.join(unique_keys)
@@ -638,7 +839,7 @@ def main(cfg):
 
     for short_name, scenario, start_year in itertools.product(short_names, scenarios, start_years):
         if short_name == 'areacello': continue
-        calculate_ensemble_stats(cfg, metadatas, short_name, scenario, start_year)
+        #calculate_ensemble_stats(cfg, metadatas, short_name, scenario, start_year)
 
     logger.info('Success')
 
