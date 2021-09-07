@@ -67,7 +67,7 @@ def make_mean_of_cube_list_notime(cube_list):
     Takes the mean of a list of cubes (not an iris.cube.CubeList).
     Assumes all the cubes are the same shape.
     """
-    cube_mean=cube_list[0]
+    cube_mean=cube_list[0].copy()
     print('cacl mean:', cube_mean.units)
     try: cube_mean.remove_coord('year')
     except: pass
@@ -98,15 +98,16 @@ def make_stddev_of_cube_list_notime(cube_list, mean_cube=None, count_cube=None):
         count_cube = make_count_of_cube_list_notime(cube_list)
 
     for i, cube in enumerate(cube_list):
+        cube = cube.copy()
         try: cube.remove_coord('year')
         except: pass
         print('std_dev calc', i, cube.units, cube.data.max(),  cube.data.min())
-        cube_var_list.append((cube - mean_cube)*(cube - mean_cube))
+        cube.data = np.ma.power((cube.data - mean_cube.data), 2.)
+        cube_var_list.append(cube)
 
     cube_var = make_mean_of_cube_list_notime(cube_var_list)
 
-
-    cube_var.data = np.sqrt(cube_var.data/count_cube.data)
+    cube_var.data = np.ma.sqrt(cube_var.data/count_cube.data)
 
     return cube_var
 
@@ -117,16 +118,24 @@ def make_count_of_cube_list_notime(cube_list,):
     Assumes all the cubes are the same shape.
     """
     # Fix empty times
-    cube_count = cube_list[0]
-    cube_count.data = -1* np.ma.masked_invalid(cube_count.data).mask
+    cube_count = cube_list[0].copy()
+
+    #cube_count.data = (~np.ma.masked_invalid(cube_count.data)).mask.astype(float)
+    cube_count.data = np.ma.masked_invalid(cube_count.data)
+    cube_count.data = np.ma.clip(cube_count.data, 1.,1.)
+
     if len(cube_list)==1:
         return cube_count
 
     for i, cube in enumerate(cube_list[1:]):
         try: cube.remove_coord('year')
         except: pass
+        data = np.ma.masked_invalid(cube.data).copy()
+        data = np.ma.clip(data, 1., 1.)
+        print('calc count:', cube_count.data.min(), cube_count.data.max(), data.min(),data.max())
 
-        cube_count.data+=-1* np.ma.masked_invalid(cube.data).mask
+        cube_count.data +=  data
+        #cube_count.data+=(~np.ma.masked_invalid(cube.data).mask).astype(float)
 
     return cube_count
 
@@ -445,7 +454,12 @@ def map_plot(cfg, metadata, cube, unique_keys = []):
     fig = plt.figure()
 
     # Making plots for each layer
-    qplt.contourf(cube, 11,)
+    if 'counts' in unique_keys:
+         qplt.contourf(cube, 11, vmin=0.,vmax=50., )
+         plt.clim(0., 50.,) 
+         #plt.update() 
+    else:
+         qplt.contourf(cube, 11,)
 
     plt.gca().coastlines()
 
@@ -495,7 +509,7 @@ def calculate_ensemble_stats(cfg, metadatas, key_short_name, key_scenario, key_s
     count_path = work_dir+'_'.join((unique_keys))+'_count.nc'
 
     if False not in [os.path.exists(pth) for pth in [mean_path, stddev_path, count_path]]:
-        make_three_pane_plot(cfg, unique_keys, mean_path, stddev_path, count_data)
+        make_three_pane_plot(cfg, unique_keys, mean_path, stddev_path, count_path)
         return
 
     files_list = []
@@ -530,7 +544,7 @@ def calculate_ensemble_stats(cfg, metadatas, key_short_name, key_scenario, key_s
     else:
         mean_cube = make_mean_of_cube_list_notime(cube_list)
         iris.save(mean_cube, mean_path)
-        map_plot(cfg, {}, mean_cube, unique_keys =  [key_short_name, key_scenario, str(key_start_year), 'mean'])
+    map_plot(cfg, {}, mean_cube, unique_keys =  [key_short_name, key_scenario, str(key_start_year), 'mean'])
     #mean_cube = diagtools.bgc_units(mean_cube, key_short_name)
 
     # Count cube
@@ -539,7 +553,7 @@ def calculate_ensemble_stats(cfg, metadatas, key_short_name, key_scenario, key_s
     else:
         count_cube = make_count_of_cube_list_notime(cube_list)
         iris.save(count_cube, count_path)
-        map_plot(cfg, {}, mean_cube, unique_keys =  [key_short_name, key_scenario, str(key_start_year), 'counts'])
+    map_plot(cfg, {}, count_cube, unique_keys =  [key_short_name, key_scenario, str(key_start_year), 'counts'])
 
 
     # std dev cube:
@@ -548,13 +562,13 @@ def calculate_ensemble_stats(cfg, metadatas, key_short_name, key_scenario, key_s
     else:
         stddev_cube = make_stddev_of_cube_list_notime(cube_list, mean_cube=mean_cube, count_cube=count_cube)
         iris.save(stddev_cube, stddev_path)
-        map_plot(cfg, {}, mean_cube, unique_keys =  [key_short_name, key_scenario, str(key_start_year), 'stddev'])
+    map_plot(cfg, {}, stddev_cube, unique_keys =  [key_short_name, key_scenario, str(key_start_year), 'stddev'])
 
     # make a plot:
-    make_three_pane_plot(cfg, unique_keys, mean_path, stddev_path, count_data)
+    make_three_pane_plot(cfg, unique_keys, mean_path, stddev_path, count_path)
 
 
-def make_three_pane_plot(cfg, unique_keys, mean_path, stddev_path, count_data):
+def make_three_pane_plot(cfg, unique_keys, mean_path, stddev_path, count_path):
     """
     Make a three pane plot showing mean, std, count.
     """
@@ -567,19 +581,26 @@ def make_three_pane_plot(cfg, unique_keys, mean_path, stddev_path, count_data):
 
     mean_cube= iris.load_cube(mean_path)
     stddev_cube = iris.load_cube(stddev_path)
-    count_cube= iris.load_cube(count_data)
+    count_cube= iris.load_cube(count_path)
 
     fig = plt.figure()
+    fig.set_size_inches(10., 8.)
 
     for sbp, cube, title in zip(
-            [311,312,313],
+            [221,222,223],
             [mean_cube,stddev_cube, count_cube],
             ['Mean', 'Standard deviation', 'Count'],
             ):
-        plt.add_subplot(sbp)
-        qplt.contourf(cube, 11,)
+        fig.add_subplot(sbp)
+        if title == 'Count':
+            qplt.contourf(cube, 11, vmin=0.,vmax=50.)
+            plt.clim(0., 50.)
+            #plt.update() 
+        else:
+            qplt.contourf(cube, 11,)
         plt.title(title)
         plt.gca().coastlines()
+        
 
     # Add title to plot
     title = ' '.join(unique_keys)
