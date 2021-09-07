@@ -723,6 +723,8 @@ domains:
 plot_types:
   errorbar: error bar plot
   bar: bar chart
+  map: world or reginal map
+  metric: Autoassess metric
   circle: different overlapping circles
   diurn: diurnal cycle
   geo: geographical distribution
