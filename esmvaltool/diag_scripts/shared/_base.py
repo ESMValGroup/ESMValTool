@@ -211,6 +211,18 @@ class ProvenanceLogger:
             raise KeyError(
                 "Provenance record for {} already exists.".format(filename))
 
+        # DEPRECATED: remove in v2.7
+        if 'plot_file' in record and record['plot_file'] not in self.table:
+            plot_file = record.pop('plot_file')
+            warning = (
+                "Using a 'plot_file' key to record provenance of a linked "
+                "plot is deprecated and will be removed in version 2.7 of "
+                "ESMValTool. Please log the provenance of each output file "
+                "separately. This warning was generated while logging the "
+                f"provenance of {filename}.")
+            logger.warning(warning)
+            self.table[plot_file] = record
+
         self.table[filename] = record
 
     def _save(self):
