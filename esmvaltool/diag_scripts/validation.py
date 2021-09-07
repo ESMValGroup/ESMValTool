@@ -27,8 +27,11 @@ from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def _get_provenance_record(cfg, plot_file, caption):
+def _get_provenance_record(cfg, plot_file, caption, loc):
     """Create a provenance record describing the diagnostic data and plot."""
+    ancestor_files = [
+        k for k in cfg["input_data"].keys() if k.endswith(".nc")
+    ]
     record = {
         'caption': caption,
         'statistics': ['mean'],
@@ -39,11 +42,11 @@ def _get_provenance_record(cfg, plot_file, caption):
         ],
         'references': [],
         'plot_file': plot_file,
-        'ancestors': "none",
+        'ancestors': ancestor_files,
     }
 
     p_cfg = {}
-    p_cfg['run_dir'] = cfg['work_dir']
+    p_cfg['run_dir'] = loc
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(plot_file, record)
 
@@ -59,7 +62,8 @@ def plot_contour(cube, cfg, plt_title, file_name):
     plt.tight_layout()
     plt.savefig(file_name)
     plt.close()
-    _get_provenance_record(cfg, file_name, plt_title)
+    _get_provenance_record(cfg, file_name,
+                           plt_title, loc=os.path.basename(file_name))
 
 
 def save_plotted_cubes(cube, cfg, plot_name):
@@ -177,7 +181,8 @@ def plot_zonal_cubes(cube_1, cube_2, cfg, plot_data):
                   os.path.basename(plot_file_path)]))
     plt.close()
     caption = period + ' Zonal/Meridional Mean for ' + var + ' ' + data_names
-    _get_provenance_record(cfg, png_name, caption)
+    _get_provenance_record(cfg, plot_file_path,
+                           caption, loc=os.path.join(cfg['plot_dir'], period))
 
 
 def apply_seasons(data_set_dict):
