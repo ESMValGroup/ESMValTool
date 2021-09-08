@@ -6,7 +6,7 @@ Utilities
 This section provides information on tools that are useful when developing
 ESMValTool.
 Tools that are specific to ESMValTool live in the
-`esmvaltool/utils <https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/utils>`_
+`esmvaltool/utils <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/utils>`_
 directory, while others can be installed using the usual package managers.
 
 .. _pre-commit:
@@ -75,7 +75,7 @@ or uninstall the pre-commit hook
 
 
 Note that the configuration of pre-commit lives in
-`.pre-commit-config.yaml <https://github.com/ESMValGroup/ESMValTool/blob/master/.pre-commit-config.yaml>`_.
+`.pre-commit-config.yaml <https://github.com/ESMValGroup/ESMValTool/blob/main/.pre-commit-config.yaml>`_.
 
 .. _nclcodestyle:
 
@@ -115,6 +115,31 @@ Testing recipes
 
 Tools for testing recipes.
 
+Run all recipes
+===============
+
+A cylc suite for running all recipes is available in
+`esmvaltool/utils/testing/regression <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/testing/regression>`__
+
+To prepare for using this tool:
+
+#. Log in to Mistral or another system that uses slurm
+#. Make sure the required CMIP and observational datasets are available and configured in config-user.yml
+#. Make sure the required auxiliary data is available (see recipe documentation)
+#. Install ESMValTool
+#. Update config-user.yml so it points to the right data locations
+
+Next, get started with `cylc <https://cylc.github.io/cylc-doc/stable/html/tutorial.html>`_:
+
+#. Run ``module load cylc``
+#. Register the suite with cylc ``cylc register run-esmvaltool-recipes ~/ESMValTool/esmvaltool/utils/testing/regression``
+#. Edit the suite if needed, this allows e.g. choosing which recipes will be run
+#. Validate the suite ``cylc validate run-esmvaltool-recipes --verbose``, this will e.g. list the recipes in the suite
+#. Run all recipes ``cylc run run-esmvaltool-recipes``
+#. View progress ``cylc log run-esmvaltool-recipes``, use e.g. ``cylc log run-all-esmvaltool-recipes examples-recipe_python_yml.1 --stdout`` to see the log of an individual esmvaltool run. Once the suite has finished running, you will see the message "WARNING - suite stalled" in the log.
+#. Stop the cylc run once everything is done ``cylc stop run-esmvaltool-recipes``.
+#. Create the index.html overview page by running ``python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/``
+
 Test recipe settings
 --------------------
 
@@ -132,7 +157,7 @@ To use it, run
 draft_release_notes.py
 ======================
 
-`draft_release_notes.py <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/utils/draft_release_notes.py>`__
+`draft_release_notes.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/draft_release_notes.py>`__
 is a script for drafting release notes based on the titles and labels of
 the GitHub pull requests that have been merged since the previous release.
 
@@ -165,7 +190,7 @@ Converting Version 1 Namelists to Version 2 Recipes
 ===================================================
 
 The
-`xml2yml <https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/utils/xml2yml>`_
+`xml2yml <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/utils/xml2yml>`_
 converter can turn the old xml namelists into new-style yml
 recipes. It is implemented as a xslt stylesheet that needs a processor
 that is xslt 2.0 capable. With this, you simply process your old

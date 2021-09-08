@@ -89,7 +89,7 @@ def cubes_generator(lazy=True):
 def test_fix_dtype_lazy(cube):
     """Test fix for lazy data."""
     assert is_lazy(cube)
-    utils._fix_dtype(cube)
+    utils.fix_dtype(cube)
     assert cube.dtype == np.float32
     for coord in cube.coords():
         assert coord.dtype == np.float64
@@ -102,7 +102,7 @@ def test_fix_dtype_lazy(cube):
 def test_fix_dtype_not_lazy(cube):
     """Test fix for realized data."""
     assert not is_lazy(cube)
-    utils._fix_dtype(cube)
+    utils.fix_dtype(cube)
     assert cube.dtype == np.float32
     for coord in cube.coords():
         assert coord.dtype == np.float64

@@ -20,17 +20,17 @@ The PRIVATE GitHub repository offers a central protected environment for ESMValT
 
 Both, the PUBLIC and the PRIVATE repository, contain the following kinds of branches:
 
-* *MASTER BRANCH* (official releases),
+* *MAIN BRANCH* (official releases),
 * *DEVELOPMENT BRANCH* (includes approved new contributions but version is not yet fully tested),
 * *FEATURE BRANCH* (development branches for new features and diagnostics created by developers, the naming convention for *FEATURE BRANCHES* is <Project>_<myfeature>).
 
 Access rights
 =============
 
-* Write access to the *MASTER* and *DEVELOPMENT BRANCH* in both, the PUBLIC and the PRIVATE GitHub repositories, is restricted to the :ref:`ESMValTool Core Development Team <core-team>`.
+* Write access to the *MAIN* and *DEVELOPMENT BRANCH* in both, the PUBLIC and the PRIVATE GitHub repositories, is restricted to the :ref:`ESMValTool Core Development Team <core-team>`.
 * *FEATURE BRANCHES* in both the PUBLIC and the PRIVATE repository can be created by all members of the ESMValTool development team (i.e. members in the GitHub organization "ESMValGroup"). If needed, branches can be individually write-protected within each repository so that other developers cannot accidently push changes to these branches.
 
-The *MASTER BRANCH* of the PRIVATE repository will be regularly synchronized with the *MASTER BRANCH* of the PUBLIC repository (currently by hand). This ensures that they are identical at all times (see schematic in Figure :numref:`fig-git`). The recommended workflow for members of the ESMValTool development team is to create additional *FEATURE BRANCHES* in either the PUBLIC or the PRIVATE repository, see further instructions below.
+The *MAIN BRANCH* of the PRIVATE repository will be regularly synchronized with the *MAIN BRANCH* of the PUBLIC repository (currently by hand). This ensures that they are identical at all times (see schematic in Figure :numref:`fig-git`). The recommended workflow for members of the ESMValTool development team is to create additional *FEATURE BRANCHES* in either the PUBLIC or the PRIVATE repository, see further instructions below.
 
 .. _fig-git:
 
@@ -97,7 +97,7 @@ This will clone the ESMValTool repository at GitHub to a local folder. You can n
 
    git status
 
-You will see that you are on a branch called master and your local working copy is up to date with the remote repository. With
+You will see that you are on a branch called main and your local working copy is up to date with the remote repository. With
 
 .. code:: bash
 

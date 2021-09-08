@@ -8,7 +8,7 @@ import natsort
 import numpy as np
 import xarray as xr
 
-from esmvaltool.diag_scripts.shared import ProvenanceLogger, group_metadata
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, group_metadata, io
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -140,3 +140,32 @@ def read_model_data(datasets: list) -> tuple:
     return read_input_data(datasets,
                            dim='model_ensemble',
                            identifier_fmt='{dataset}_{ensemble}_{exp}')
+
+
+def read_model_data_ancestor(cfg, variable_group) -> tuple:
+    """Load model data from ancestor folder."""
+    filepath = io.get_ancestor_file(cfg, 'MODELS_' + variable_group + '.nc')
+    ancestor_ds = xr.open_dataset(filepath)
+
+    anc_da = ancestor_ds[variable_group].load()
+    anc_da = anc_da.rename(variable_group)
+
+    return anc_da, filepath
+
+
+def read_observation_data(datasets: list) -> tuple:
+    """Load observation data from list of metadata."""
+    return read_input_data(datasets,
+                           dim='obs_ensemble',
+                           identifier_fmt='{dataset}')
+
+
+def read_observation_data_ancestor(cfg, variable_group) -> tuple:
+    """Load model data from ancestor folder."""
+    filepath = io.get_ancestor_file(cfg, 'OBS_' + variable_group + '.nc')
+    ancestor_ds = xr.open_dataset(filepath)
+
+    anc_da = ancestor_ds[variable_group].load()
+    anc_da = anc_da.rename(variable_group)
+
+    return anc_da, filepath
