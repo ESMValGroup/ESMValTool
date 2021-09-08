@@ -277,16 +277,39 @@ diagnostics:
     scripts: null
 
 
-  GCP:
-    description: GCP check
+  GCP2018:
+    description: GCP2018 check
     variables:
       nbp:
         mip: Lmon
       fgco2:
         mip: Omon
     additional_datasets:
-      - {dataset: GCP, project: OBS, frequency: yr, tier: 2,
-         type: reanaly, version: 2018, start_year: 1959, end_year: 2017}
+      - {dataset: GCP2018, project: OBS, frequency: yr, tier: 2, type: reanaly,
+         version: '1.0', start_year: 1959, end_year: 2017}
+    scripts: null
+
+
+  GCP2020:
+    description: GCP2020 check
+    variables:
+      nbp:
+        mip: Lmon
+        additional_datasets:
+          - {dataset: GCP2020, project: OBS, frequency: yr, tier: 2,
+             type: reanaly, version: '1.0', start_year: 1959, end_year: 2019}
+      nbp_residual:
+        short_name: nbp
+        mip: Lmon
+        additional_datasets:
+          - {dataset: GCP2020, project: OBS, frequency: yr, tier: 2,
+             type: reanaly, version: '1.0-residual', start_year: 1959,
+             end_year: 2019}
+      fgco2:
+        mip: Omon
+        additional_datasets:
+          - {dataset: GCP2020, project: OBS, frequency: yr, tier: 2,
+             type: reanaly, version: '1.0', start_year: 1959, end_year: 2019}
     scripts: null
 
 
