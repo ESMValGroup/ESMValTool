@@ -2,7 +2,7 @@
 # docker build -t esmvaltool:experimental . -f docker/Dockerfile.exp
 FROM esmvalgroup/esmvalcore:latest
 
-RUN apt install julia -y && apt-get clean
+RUN apt-get update && apt install julia -y && apt-get clean
 COPY ./environment.yml /src/ESMValTool/environment.yml
 WORKDIR /src/ESMValTool
 RUN conda update -n base -y conda && conda env update --name esmvaltool --file environment.yml && conda clean --all -y
