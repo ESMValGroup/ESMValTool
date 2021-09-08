@@ -14,5 +14,10 @@ Download and processing instructions
 
 """
 
-# pylint: disable=unused-import
 from .cmorize_obs_gcp2018 import cmorization
+
+
+# This script is not supposed to be called directly; the main purpose of the
+# following lines is to avoid FLAKE8 errors
+if __name__ == '__main__':
+    print(cmorization)
