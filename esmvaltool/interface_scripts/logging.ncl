@@ -332,10 +332,12 @@ begin
   outstring(6) = "  references: [" + str_join(diag_refs, ", ") + "]"
   outstring(7) = "  statistics: [" + str_join(statistics, ", ") + "]"
 
-  ; Save entries for outfile
-  outstring2 = outstring
-  outstring2(0) = "? " + outfile
-  outstring := array_append_record(outstring, outstring2, 0)
+  ; Save entries for outfile if not "n/a"
+  if (outfile .ne. "n/a") then
+    outstring2 = outstring
+    outstring2(0) = "? " + outfile
+    outstring := array_append_record(outstring, outstring2, 0)
+  end if
 
   ; Save existing information to avoid overwriting
   if (fileexists(yaml_file)) then
