@@ -644,7 +644,7 @@ diagnostics:
         mip: AERmonZ
     additional_datasets:
       - {dataset: BSVertOzone, project: OBS6, tier: 3, type: sat,
-         version: v1.0, start_year: 1979, end_year: 2016}
+         version: v1.0-Tier1.4, start_year: 1979, end_year: 2016}
     scripts: null
 
 

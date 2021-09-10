@@ -11,7 +11,7 @@ attributes:
   reference: bsvertozone
   source: 'https://zenodo.org/record/1217184/'
   tier: 3
-  version: v1.0
+  version: v1.0-Tier1.4
 
 # Variables to cmorize
 variables:
