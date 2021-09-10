@@ -1010,7 +1010,7 @@ diagnostics:
 
 
   ######################################################
-  # Fig. 6
+  # Fig. 7
   ######################################################
 
   tas_cor: &corr_diag
@@ -1176,10 +1176,10 @@ diagnostics:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
          tier: 1, start_year: 2001, end_year: 2015}
 
-  fig_6:
+  fig_7:
     description: Wrapper to collect and plot previously calculated correlations
     scripts:
       cor_collect:
         script: bock20jgr/corr_pattern_collect.ncl
         ancestors: ['*/pattern_cor']
-        diag_order: ['tas', 'pr', 'rlut', 'swcre', 'psl']
+        diag_order: ['tas_cor', 'pr_cor', 'rlut_cor', 'swcre_cor', 'psl_cor']
