@@ -294,7 +294,8 @@ Extracting a list of input files from the provenance
 ====================================================
 
 There is a small tool available to extract just the list of input files used to generate
-a figure from the ``*_provenance.xml`` files.
+a figure from the ``*_provenance.xml`` files (see :ref:`recording-provenance` for more
+information).
 
 To use it, install ESMValTool from source and run
 
