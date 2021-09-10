@@ -1,0 +1,19 @@
+---
+# Input file name
+input_file: 'BSVerticalOzone_MR_PRS_Tier1.4_v1.0.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  comment: ''
+  dataset_id: BSVertOzone
+  modeling_realm: sat
+  project_id: OBS6
+  reference: bsvertozone
+  source: 'https://zenodo.org/record/1217184/'
+  tier: 3
+  version: v1.0
+
+# Variables to cmorize
+variables:
+  o3:
+    mip: AERmonZ
