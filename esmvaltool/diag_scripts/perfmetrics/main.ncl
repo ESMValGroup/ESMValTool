@@ -234,10 +234,8 @@ begin
   end if
 
   ; Create output plot directory
-  if (diag_script_info@write_plots) then
-    plot_dir = config_user_info@plot_dir
-    system("mkdir -p " + plot_dir)
-  end if
+  plot_dir = config_user_info@plot_dir
+  system("mkdir -p " + plot_dir)
 
   ; Plot file type
   file_type = config_user_info@output_file_type
