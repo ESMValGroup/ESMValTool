@@ -100,15 +100,8 @@ begin
   end do
 
   ; Write output
-  if (diag_script_info@write_netcdf) then
-    var_all@ncdf = workpath
-    ncdf_outfile = ncdf_write(var_all, workpath)
-  end if
-
-  ; Plotting
-  if (.not.diag_script_info@write_plots) then
-    return
-  end if
+  var_all@ncdf = workpath
+  ncdf_outfile = ncdf_write(var_all, workpath)
 
   ; Convert units for plotting (if required)
   if (isatt(diag_script_info, "plot_units")) then
