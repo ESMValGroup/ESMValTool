@@ -35,7 +35,7 @@ def get_prov_map(attr, ancestor_files):
     return record
 
 
-def get_prov_transp(attr, ancestor_file, plotname):
+def get_prov_transp(attr, ancestor_file):
     """Create a provenance record for the 1d meridional transports."""
     caption = ("Thermodynamic Diagnostic Tool - Annual mean zonally averaged"
                " meridional {} transports"
@@ -46,7 +46,6 @@ def get_prov_transp(attr, ancestor_file, plotname):
         'statistics': ['mean'],
         'domains': ['global'],
         'plot_type': ['sect'],
-        'plot_file': plotname,
         'authors': ['lembo_valerio'],
         'references': ['lembo16climdyn', 'lembo19gmdd', 'lucarini14revgeop'],
         'ancestors': ancestor_file,
