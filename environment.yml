@@ -26,6 +26,7 @@ dependencies:
   - r-base>=3.5
   # R packages needed for development
   - r-docopt
+  - r-git2r  # dependency of lintr
   - r-lintr
   - r-styler
   - r-yaml
