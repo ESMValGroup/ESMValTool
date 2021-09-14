@@ -1518,7 +1518,7 @@ def main(cfg):
 
 
     # Individual plots - standalone
-    do_standalone = False
+    do_standalone = True 
     if do_standalone:
         multi_model_map_figure(
             cfg,

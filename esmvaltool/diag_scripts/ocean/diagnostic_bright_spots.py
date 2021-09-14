@@ -51,7 +51,7 @@ import iris
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 
-from esmvalcore.preprocessor._time import climate_statistics
+from esmvalcore.preprocessor._time import climate_statistics,regrid_time
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -69,33 +69,35 @@ def make_mean_of_cube_list(cube_list, operation='mean'):
     # Fix empty times
     full_times = {}
     times = []
-    for cube in cube_list:
-        # make time coords uniform:
-
-        cube.coord('time').long_name='Time axis'
-        cube.coord('time').attributes={'time_origin': '1950-01-01 00:00:00'}
-        times.append(cube.coord('time').points)
-
-        for time in cube.coord('time').points:
-            print(cube.name, time, cube.coord('time').units)
-            try:
-                full_times[time] += 1
-            except:
-                full_times[time] = 1
-
-    for t, v in sorted(full_times.items()):
-        if v != len(cube_list):
-            print('FAIL', t, v, '!=', len(cube_list),'\nfull times:',  full_times)
-            assert 0
+#   for cube in cube_list:
+#       # make time coords uniform:
+#       #cube.coord('time').long_name='Time axis'
+#       #cube.coord('time').attributes={'time_origin': '1950-01-01 00:00:00'}
+#       #times.append(cube.coord('time').points)
+#       cube = regrid_time(cube, 'mon')
+#        for time in cube.coord('time').points:
+#            print(cube.name, time, cube.coord('time').units)
+#            try:
+#                full_times[time] += 1
+#            except:
+#                full_times[time] = 1
+#
+#    for t, v in sorted(full_times.items()):
+#        if v != len(cube_list):
+#            print('FAIL', t, v, '!=', len(cube_list),'\nfull times:',  full_times)
+#            assert 0
 
     cube_mean=cube_list[0]
     #try: iris.coord_categorisation.add_year(cube_mean, 'time')
     #except: pass
     #try: iris.coord_categorisation.add_month(cube_mean, 'time')
     #except: pass
-
+    Cube_mean = regrid_time(cube_mean, 'mon')
     try: cube_mean.remove_coord('year')
     except: pass
+    try: cube_mean.remove_coord('day_of_year')
+    except: pass
+
     #cube.remove_coord('Year')
     try: model_name = cube_mean.metadata[4]['source_id']
     except: model_name = ''
@@ -104,7 +106,9 @@ def make_mean_of_cube_list(cube_list, operation='mean'):
     for i, cube in enumerate(cube_list[1:]):
         try: cube.remove_coord('year')
         except: pass
-        #cube.remove_coord('Year')
+        try: cube_mean.remove_coord('day_of_year')
+        except: pass
+        cube = regrid_time(cube, 'mon')
         try: model_name = cube_mean.metadata[4]['source_id']
         except: model_name = ''
         print(i, model_name, cube.coord('time'))
@@ -683,7 +687,7 @@ def calculate_ensemble_stats(cfg, metadatas, key_short_name, key_scenario, key_s
     if os.path.exists(stddev_path):
         pass
     else:
-        mean_cube = climate_statistics(mean_cube_timed, operator='std_dev')
+        stddev_cube = climate_statistics(mean_cube_timed, operator='std_dev')
         iris.save(stddev_cube, stddev_path)
     map_plot(cfg, {}, stddev_cube, unique_keys =  [key_short_name, key_scenario, str(key_start_year), 'stddev'])
 
@@ -839,7 +843,8 @@ def main(cfg):
 
     for short_name, scenario, start_year in itertools.product(short_names, scenarios, start_years):
         if short_name == 'areacello': continue
-        #calculate_ensemble_stats(cfg, metadatas, short_name, scenario, start_year)
+        print('main', short_name, scenario, start_year)
+        calculate_ensemble_stats(cfg, metadatas, short_name, scenario, start_year)
 
     logger.info('Success')
 
