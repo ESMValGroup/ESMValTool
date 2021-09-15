@@ -66,9 +66,8 @@ import cartopy
 import cartopy.crs as ccrs
 
 
-from esmvalcore.preprocessor._time import extract_time
+from esmvalcore.preprocessor._time import extract_time, annual_statistics, regrid_time
 from esmvalcore.preprocessor._regrid import extract_levels, regrid
-
 
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
@@ -222,6 +221,7 @@ def multi_model_time_series(
         colour_scheme = 'IPCC',
         hist_time_range = None,
         ssp_time_range = None,
+        plotting = [ 'means',  '5-95'] #'medians', 'all_models', 'range',
         fig = None,
         ax = None,
         save = False
@@ -273,7 +273,6 @@ def multi_model_time_series(
         cmap = plt.cm.get_cmap(colour_scheme)
 
     # Plot individual model in the group
-    plotting = [ 'means',  '5-95'] #'medians', 'all_models', 'range',
     for variable_group, cubes in model_cubes.items():
         data_values = {}
         for i, cube in enumerate(cubes):
@@ -282,9 +281,13 @@ def multi_model_time_series(
             scenario = metadata['exp']
             dataset = metadata['dataset']
             # Take a moving average, if needed.
-            if moving_average_str:
-                    cube = moving_average(cube,
-                          moving_average_str)
+            if not moving_average_str: pass
+            elif moving_average_str == 'annual':
+                cube = annual_statistics(cube.copy(), operator='mean')
+                cube = regrid_time(cube, 'yr')
+            else:
+                cube = moving_average(cube,
+                    moving_average_str)
             times = diagtools.cube_time_to_float(cube)
 
             for t, d in zip(times, cube.data):
@@ -295,6 +298,7 @@ def multi_model_time_series(
                 else:
                     color = 'blue'
                 label = dataset
+
             if colour_scheme in 'IPCC':
                 color = ipcc_colours[scenario]
                 label =  scenario
@@ -332,22 +336,22 @@ def multi_model_time_series(
             times = sorted(data_values.keys())
             mins = [np.min(data_values[t]) for t in times]
             maxs = [np.max(data_values[t]) for t in times]
-            plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], alpha=0.5)
+            plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.15)
 
         if '5-95' in plotting:
             times = sorted(data_values.keys())
             mins = [np.percentile(data_values[t], 5.) for t in times]
             maxs = [np.percentile(data_values[t], 95.) for t in times]
-            plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], alpha=0.5)
+            plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.15)
 
     #x_lims = ax.get_xlim()
     y_lims = ax.get_ylim()
 
     if hist_time_range:
-        plt.fill_betweenx(y_lims, hist_time_range[0], hist_time_range[1], color= 'k', alpha=0.25, label = 'Historical period')
+        plt.fill_betweenx(y_lims, hist_time_range[0], hist_time_range[1], color= 'k', alpha=0.4, label = 'Historical period')
 
     if ssp_time_range:
-        plt.fill_betweenx(y_lims, ssp_time_range[0], ssp_time_range[1], color= 'purple', alpha=0.25, label = 'SSP period')
+        plt.fill_betweenx(y_lims, ssp_time_range[0], ssp_time_range[1], color= 'purple', alpha=0.4, label = 'SSP period')
         legd = plt.legend(loc='best')
         legd.draw_frame(False)
         legd.get_frame().set_alpha(0.)
@@ -467,13 +471,13 @@ def multi_model_clim_figure(
             times = sorted(data_values.keys())
             mins = [np.min(data_values[t]) for t in times]
             maxs = [np.max(data_values[t]) for t in times]
-            plt.fill_between(times, mins, maxs, color=color, alpha=0.5)
+            plt.fill_between(times, mins, maxs, color=color, alpha=0.15)
 
         if '5-95' in plotting:
             times = sorted(data_values.keys())
             mins = [np.percentile(data_values[t], 5.) for t in times]
             maxs = [np.percentile(data_values[t], 95.) for t in times]
-            plt.fill_between(times, mins, maxs, color=color, alpha=0.5)
+            plt.fill_between(times, mins, maxs, color=color, alpha=0.15)
 
     time_str = '_'.join(['-'.join([str(t) for t in hist_time_range]), 'vs',
                          '-'.join([str(t) for t in ssp_time_range])])
@@ -485,9 +489,10 @@ def multi_model_clim_figure(
     #                       'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ]))
 
     units = cube.units
-    ax.set_xlabel('Months')
+    #ax.set_xlabel('Months')
     ax.set_xticks([1,2,3,4,5,6,7,8,9,10,11,12,])
     ax.set_xticklabels(['J','F','M','A','M','J','J','A','S','O','N','D'])
+    ax.set_xlim([1,12])
     #ax.set_ylabel(' '.join([short_name+',', str(units)]))
 
     if save:
@@ -538,14 +543,14 @@ def plot_z_line(depths, data, ax0, ax1, ls='-', c='blue', lw=2., label = '', zor
     return ax0, ax1
 
 
-def plot_z_area(depths, data_min, data_max, ax0, ax1, color='blue', alpha=0.5, label = '', zorder=1):
+def plot_z_area(depths, data_min, data_max, ax0, ax1, color='blue', alpha=0.15, label = '', zorder=1):
     for ax, drange in zip([ax0, ax1], ['surface', 'depths']):
         data_min2 = extract_depth_range(data_min, depths, drange=drange)
         data_max2 = extract_depth_range(data_max, depths, drange=drange)
         ax.fill_betweenx(depths, data_min2, data_max2,
             color=color,
             alpha = alpha,
-            label= label, 
+            label= label,
             zorder=zorder)
     return ax0, ax1
 
@@ -664,12 +669,12 @@ def make_multi_model_profiles_plots(
         if 'range' in plotting:
             mins = [np.min(data_values[z]) for z in depths]
             maxs = [np.max(data_values[z]) for z in depths]
-            ax0, ax1 =  plot_z_area(depths, mins, maxs,ax0, ax1, color= ipcc_colours[scenario], alpha=0.5)
+            ax0, ax1 =  plot_z_area(depths, mins, maxs,ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
 
         if '5-95' in plotting:
             mins = [np.percentile(data_values[z], 5.) for z in depths]
             maxs = [np.percentile(data_values[z], 95.) for z in depths]
-            ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.5)
+            ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
 
     # for (dataset, scenario, ensemble, metric), cube_mean in cubes.items():
     #     if metric != 'mean': continue
@@ -945,14 +950,14 @@ def make_multi_model_profiles_plotpair(
             maxs = [np.max(data_values[z]) for z in depths]
             data_dict[scenario]['mins'] = mins
             data_dict[scenario]['maxs'] = maxs
-            ax0, ax1 =  plot_z_area(depths, mins, maxs,ax0, ax1, color= ipcc_colours[scenario], alpha=0.5)
+            ax0, ax1 =  plot_z_area(depths, mins, maxs,ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
 
         if '5-95' in plotting:
             mins = [np.percentile(data_values[z], 5.) for z in depths]
             maxs = [np.percentile(data_values[z], 95.) for z in depths]
             data_dict[scenario]['5pc'] = mins
             data_dict[scenario]['95pc'] = maxs
-            ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.5)
+            ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
 
         if '5-95_split' in plotting:
             mins = [np.percentile(data_values[z], 5.) for z in depths]
@@ -960,7 +965,7 @@ def make_multi_model_profiles_plotpair(
             data_dict[scenario]['5pc'] = mins
             data_dict[scenario]['95pc'] = maxs
             if scenario in ['historical', 'hist']:
-                ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.5)
+                ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
 
     # plot rhs
     hist_data = np.array(data_dict['historical']['mean'])
@@ -971,14 +976,14 @@ def make_multi_model_profiles_plotpair(
 
         color = ipcc_colours[scenario]
         if 'means_split' in plotting: # and scenario not in ['historical', 'hist']:
-            ax2, ax3 = plot_z_line(ddict['depths'], 
-                np.array(ddict['mean']) - hist_data, 
+            ax2, ax3 = plot_z_line(ddict['depths'],
+                np.array(ddict['mean']) - hist_data,
                 ax2, ax3, ls='-', c=color, lw=2., label = scenario)
 
         if '5-95_split' in plotting:
             mins = np.array(ddict['5pc']) - hist_data
             maxs = np.array(ddict['95pc']) - hist_data
-            ax2, ax3 =  plot_z_area(ddict['depths'], mins, maxs, ax2, ax3, color=color, alpha=0.5)
+            ax2, ax3 =  plot_z_area(ddict['depths'], mins, maxs, ax2, ax3, color=color, alpha=0.15)
 
     # for (dataset, scenario, ensemble, metric), cube_mean in cubes.items():
     #     if metric != 'mean': continue
@@ -1331,7 +1336,7 @@ def multi_model_map_figure(
     #
     # plt.suptitle(suptitle)
     if len(shaped_ims['hist']):
-        fig.colorbar(shaped_ims['hist'][0], ax=shared_cmap['hist'], label = 'Historical')
+        fig.colorbar(shaped_ims['hist'][0], ax=shared_cmap['hist']) #, label = 'Historical')
 
     if len(shaped_ims['ssp']):
         fig.colorbar(shaped_ims['ssp'][0], ax=shared_cmap['ssp'], label='Difference against Historical')
@@ -1518,8 +1523,21 @@ def main(cfg):
 
 
     # Individual plots - standalone
-    do_standalone = True 
+    do_standalone = True
     if do_standalone:
+
+        plottings = [[ 'means',  '5-95'], ['all_models', ], ['means', ]] #'medians', 'all_models', 'range',
+        for plotting in plottins:
+            multi_model_time_series(
+                cfg,
+                metadatas,
+                ts_dict = time_series_fns,
+                moving_average_str='annual',
+                hist_time_range = [2000., 2010.],
+                ssp_time_range = [2040., 2050.],
+                plotting = plotting,
+            )
+
         multi_model_map_figure(
             cfg,
             metadatas,
@@ -1569,15 +1587,6 @@ def main(cfg):
             ssp_time_range = [2015., 2050.],
         )
 
-        multi_model_time_series(
-                cfg,
-                metadatas,
-                ts_dict = time_series_fns,
-                moving_average_str='2 year',
-                hist_time_range = [2000., 2010.],
-                ssp_time_range = [2040., 2050.],
-        )
-
     #print(time_series_fns)
     #print(profile_fns)
     #print(maps_fns)
@@ -1602,7 +1611,7 @@ def main(cfg):
             cfg,
             metadatas,
             ts_dict = time_series_fns,
-            moving_average_str='2 year',
+            moving_average_str='annual',
             #colour_scheme = 'viridis',
             hist_time_range = hist_time_range,
             ssp_time_range = ssp_time_range,
@@ -1690,32 +1699,32 @@ def main(cfg):
     #                 hist_time_range=hist_time_range,
     #                 ssp_time_range=ssp_time_range,
     #             )
-    return
-
-    moving_average_strs = ['', 'annual', '5 years', '10 years', '20 years']
-    for moving_average_str in moving_average_strs:
-        for index, metadata_filename in enumerate(cfg['input_files']):
-            logger.info('metadata filename:\t%s', metadata_filename)
-
-            metadatas = diagtools.get_input_files(cfg, index=index)
-
-            #######
-            # Multi model time series
-            multi_model_time_series(
-                cfg,
-                metadatas,
-
-                moving_average_str=moving_average_str,
-                colour_scheme = 'IPCC',
-            )
-            continue
-            for filename in sorted(metadatas):
-                if metadatas[filename]['frequency'] != 'fx':
-                    logger.info('-----------------')
-                    logger.info(
-                        'model filenames:\t%s',
-                        filename,
-                    )
+    # return
+    #
+    # moving_average_strs = ['', 'annual', '5 years', '10 years', '20 years']
+    # for moving_average_str in moving_average_strs:
+    #     for index, metadata_filename in enumerate(cfg['input_files']):
+    #         logger.info('metadata filename:\t%s', metadata_filename)
+    #
+    #         metadatas = diagtools.get_input_files(cfg, index=index)
+    #
+    #         #######
+    #         # Multi model time series
+    #         multi_model_time_series(
+    #             cfg,
+    #             metadatas,
+    #
+    #             moving_average_str=moving_average_str,
+    #             colour_scheme = 'IPCC',
+    #         )
+    #         continue
+    #         for filename in sorted(metadatas):
+    #             if metadatas[filename]['frequency'] != 'fx':
+    #                 logger.info('-----------------')
+    #                 logger.info(
+    #                     'model filenames:\t%s',
+    #                     filename,
+    #                 )
 
     logger.info('Success')
 
