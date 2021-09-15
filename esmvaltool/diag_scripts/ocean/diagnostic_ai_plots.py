@@ -291,7 +291,10 @@ def multi_model_time_series(
             times = diagtools.cube_time_to_float(cube)
 
             for t, d in zip(times, cube.data):
+                if moving_average_str == 'annual':
+                    t = int(t) + 0.5
                 data_values = add_dict_list(data_values, t, d)
+
             if colour_scheme in ['viridis', 'jet']:
                 if len(metadata) > 1:
                     color = cmap(index / (len(metadata) - 1.))
@@ -328,7 +331,7 @@ def multi_model_time_series(
             plot_details[path] = {
                 'c': color,
                 'ls': '-',
-                'lw': 1.6.,
+                'lw': 1.6,
                 'label': label,
             }
 
@@ -356,16 +359,14 @@ def multi_model_time_series(
         legd.draw_frame(False)
         legd.get_frame().set_alpha(0.)
 
-#   # Add title, legend to plots
+    # Add title, legend to plots
     plt.title(title)
-    # plt.legend(loc='best')
-    #plt.ylabel(str(model_cubes[filename][layer].units))
 
     # Saving files:
     if save:
-        path = diagtools.folder(cfg['plot_dir']+'/individual_panes')
+        path = diagtools.folder(cfg['plot_dir']+'/individual_panes_')
         path += '_'.join(['multi_model_ts', moving_average_str] )
-        path += '_'.join(plotting)
+        path += '_'+'_'.join(plotting)
         path += diagtools.get_image_format(cfg)
 
         # Resize and add legend outside thew axes.
@@ -498,9 +499,9 @@ def multi_model_clim_figure(
     if save:
         plt.legend()
         # save and close.
-        path = diagtools.folder(cfg['plot_dir']+'/multi_model_clim')
+        path = diagtools.folder(cfg['plot_dir']+'/multi_model_clim_')
         path += '_'.join(['multi_model_clim', time_str])
-        path += '_'.join(plotting)
+        path += '_' +'_'.join(plotting)
         path += diagtools.get_image_format(cfg)
 
         logger.info('Saving plots to %s', path)
@@ -715,13 +716,10 @@ def make_multi_model_profiles_plots(
         return fig, ax
     # Saving files:
 
-    # Load image format extention
-    image_extention = diagtools.get_image_format(cfg)
-
     # Determine image filename:
-    path = diagtools.folder(cfg['plot_dir']+'/profiles')
+    path = diagtools.folder(cfg['plot_dir']+'/profiles_')
     path += '_'.join(['multi_model_profile', time_str])
-    path += '_'.join(plotting)
+    path += '_'+'_'.join(plotting)
     path += diagtools.get_image_format(cfg)
 
     logger.info('Saving plots to %s', path)
@@ -953,13 +951,10 @@ def make_multi_model_profiles_plotpair(
     time_str = '_'.join(['-'.join([str(t) for t in hist_time_range]), 'vs',
                          '-'.join([str(t) for t in ssp_time_range])])
 
-    # Load image format extention
-    image_extention = diagtools.get_image_format(cfg)
-
     # Determine image filename:
-    path = diagtools.folder(cfg['plot_dir']+'/profiles_pair')
+    path = diagtools.folder(cfg['plot_dir']+'/profiles_pair_')
     path += '_'.join(['multi_model_profile', time_str])
-    path += '_'.join(plotting)
+    path += '_'+ '_'.join(plotting)
     path += diagtools.get_image_format(cfg)
 
     logger.info('Saving plots to %s', path)
@@ -1200,7 +1195,7 @@ def multi_model_map_figure(
                          '-'.join([str(t) for t in ssp_time_range])])
 
     if save:
-        path = diagtools.folder(cfg['plot_dir']+'/Maps')
+        path = diagtools.folder(cfg['plot_dir']+'/Maps_')
         path += '_'.join(['maps', figure_style, region, time_str])
         path += diagtools.get_image_format(cfg)
 
@@ -1365,8 +1360,21 @@ def main(cfg):
     # Individual plots - standalone
     do_standalone = True
     if do_standalone:
+        # time series
+        plottings = [[ 'means',  '5-95'], ['all_models', ], ['means', ]] #'medians', 'all_models', 'range',
+        for plotting in plottings:
+            multi_model_time_series(
+                cfg,
+                metadatas,
+                ts_dict = time_series_fns,
+                moving_average_str='annual',
+                hist_time_range = [2000., 2010.],
+                ssp_time_range = [2040., 2050.],
+                plotting = plotting,
+            )
+
         # Profile pair
-        plottings =  [['means_split',] ['5-95_split',], ['means_split', '5-95_split',] ]
+        plottings =  [['means_split',], ['5-95_split',], ['means_split', '5-95_split', ],  ]
         for plotting in plottings:
             make_multi_model_profiles_plotpair(
                     cfg,
@@ -1384,20 +1392,7 @@ def main(cfg):
                     save = False,
                     draw_legend=True
                 )
-
-        # time series
-        plottings = [[ 'means',  '5-95'], ['all_models', ], ['means', ]] #'medians', 'all_models', 'range',
-        for plotting in plottings:
-            multi_model_time_series(
-                cfg,
-                metadatas,
-                ts_dict = time_series_fns,
-                moving_average_str='annual',
-                hist_time_range = [2000., 2010.],
-                ssp_time_range = [2040., 2050.],
-                plotting = plotting,
-            )
-
+        # maps:
         multi_model_map_figure(
             cfg,
             metadatas,
@@ -1407,51 +1402,24 @@ def main(cfg):
             ssp_time_range = [2015., 2050.],
             region='midatlantic',)
 
-        # make_multi_model_profiles_plots(
-        #     cfg,
-        #     metadatas,
-        #     profile_fns = profile_fns,
-        #     #short_name,
-        #     #obs_metadata={},
-        #     #obs_filename='',
-        #     hist_time_range = [1990., 2015.],
-        #     ssp_time_range = [2015., 2050.],
-        #     #figure_style = 'difference',
-        #     fig = None,
-        #     ax = None,
-        #     save = False,
-        #     draw_legend=True
-        # )
-        make_multi_model_profiles_plotpair(
-                    cfg,
-                    metadatas,
-                    profile_fns = profile_fns,
-                    #short_name,
-                    #obs_metadata={},
-                    #obs_filename='',
-                    hist_time_range = [1990., 2015.],
-                    ssp_time_range = [2015., 2050.],
-                    #figure_style = 'difference',
-                    fig = None,
-                    ax = None,
-                    save = False,
-                    draw_legend=True
-                )
-
-
-        multi_model_clim_figure(
-            cfg,
-            metadatas,
-            time_series_fns,
-            hist_time_range = [1990., 2015.],
-            ssp_time_range = [2015., 2050.],
-        )
+        # Climatology plot
+        plottings =  [[ 'means',  '5-95'],  ['means',],  ['5-95',], ['all_models', ]]
+        for plotting in plottings:
+            multi_model_clim_figure(
+                cfg,
+                metadatas,
+                time_series_fns,
+                hist_time_range = [1990., 2015.],
+                ssp_time_range = [2015., 2050.],
+                plotting=plotting,
+            )
 
     #print(time_series_fns)
     #print(profile_fns)
     #print(maps_fns)
+   
+    #plottings = [[ 'means',  '5-95'], ['all_models', ], ['means', ]] #'medians', 'all_models', 'range',
     fig, subplots = do_gridspec(cfg, )
-
     hist_time_range = [2000., 2010.] #[1990., 2015.]
     ssp_time_range = [2040., 2050.]
 
@@ -1475,6 +1443,7 @@ def main(cfg):
             #colour_scheme = 'viridis',
             hist_time_range = hist_time_range,
             ssp_time_range = ssp_time_range,
+            plotting=['means',],
             fig = fig,
             ax =  subplots['timeseries'],
     )
@@ -1487,6 +1456,7 @@ def main(cfg):
         ssp_time_range = ssp_time_range,
         fig = fig,
         ax =  subplots['climatology'],
+        plotting=['means',],
     )
 
     # fig, subplots['profile'] = make_multi_model_profiles_plots(
@@ -1511,6 +1481,7 @@ def main(cfg):
             #obs_filename='',
             hist_time_range = hist_time_range,
             ssp_time_range = ssp_time_range,
+            plotting=['means_split',],
             #figure_style = 'difference',
             fig = fig,
             ax = subplots['profile']
@@ -1526,7 +1497,7 @@ def main(cfg):
     plt.suptitle(suptitle)
 
     # save and close.
-    path = diagtools.folder(cfg['plot_dir']+'/whole_plot')
+    path = diagtools.folder(cfg['plot_dir']+'/whole_plot_')
     path += '_'.join(['multi_model_whole_plot'])
     path += diagtools.get_image_format(cfg)
 
@@ -1534,10 +1505,6 @@ def main(cfg):
     plt.savefig(path)
     plt.close()
 
-    return
-
-
-    assert 0
     #moving_average_str = cfg.get('moving_average', None)
     # short_names = {}
     # metadatas = diagtools.get_input_files(cfg, )
