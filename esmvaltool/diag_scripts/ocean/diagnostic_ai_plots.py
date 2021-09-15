@@ -340,9 +340,6 @@ def multi_model_time_series(
                     'label':dataset}
 
         if 'global_model_means' in plotting:
-                times = sorted(model_data_groups[dataset].keys())
-                mean = [np.mean(model_data_groups[dataset][t]) for t in times]
-
             times = sorted(means.keys())
             mean = [np.mean(means[t]) for t in times]
             plt.plot(times, mean, ls='-', c=color, lw=2.)
