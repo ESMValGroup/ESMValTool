@@ -221,7 +221,7 @@ def multi_model_time_series(
         colour_scheme = 'IPCC',
         hist_time_range = None,
         ssp_time_range = None,
-        plotting = [ 'means',  '5-95'] #'medians', 'all_models', 'range',
+        plotting = [ 'means',  '5-95'], #'medians', 'all_models', 'range',
         fig = None,
         ax = None,
         save = False
@@ -308,7 +308,7 @@ def multi_model_time_series(
                     cube,
                     c=color,
                     ls='-',
-                    lw=0.6,
+                    lw=0.4,
                 )
         if 'means' in plotting:
             times = sorted(data_values.keys())
@@ -317,7 +317,7 @@ def multi_model_time_series(
             plot_details[path] = {
                 'c': color,
                 'ls': '-',
-                'lw': 2.,
+                'lw': 1.4,
                 'label': label,
             }
 
@@ -328,7 +328,7 @@ def multi_model_time_series(
             plot_details[path] = {
                 'c': color,
                 'ls': '-',
-                'lw': 2.,
+                'lw': 1.6.,
                 'label': label,
             }
 
@@ -336,13 +336,13 @@ def multi_model_time_series(
             times = sorted(data_values.keys())
             mins = [np.min(data_values[t]) for t in times]
             maxs = [np.max(data_values[t]) for t in times]
-            plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.15)
+            plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
 
         if '5-95' in plotting:
             times = sorted(data_values.keys())
             mins = [np.percentile(data_values[t], 5.) for t in times]
             maxs = [np.percentile(data_values[t], 95.) for t in times]
-            plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.15)
+            plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
 
     #x_lims = ax.get_xlim()
     y_lims = ax.get_ylim()
@@ -364,7 +364,7 @@ def multi_model_time_series(
     # Saving files:
     if save:
         path = diagtools.folder(cfg['plot_dir']+'/individual_panes')
-        path += '_'.join(['multi_model_ts', ] )
+        path += '_'.join(['multi_model_ts', moving_average_str] )
         path += '_'.join(plotting)
         path += diagtools.get_image_format(cfg)
 
@@ -388,6 +388,7 @@ def multi_model_clim_figure(
         figure_style = 'plot_all_years',
         hist_time_range = [1990., 2000.],
         ssp_time_range = [2040., 2050.],
+        plotting = [ 'means',  '5-95', ], #'all_models'] #'medians', , 'range',
         fig = None,
         ax = None,
         save=False
@@ -439,7 +440,6 @@ def multi_model_clim_figure(
 
 
     #labels = []
-    plotting = [ 'means',  '5-95', ] #'all_models'] #'medians', , 'range',
     for variable_group, cubes in model_cubes.items():
         data_values = {}
         scenario = ''
@@ -565,6 +565,7 @@ def make_multi_model_profiles_plots(
         hist_time_range = [1990., 2000.],
         ssp_time_range = [2040., 2050.],
         figure_style = 'difference',
+        plotting = [ 'means',  '5-95', ], #'all_models'] #'medians', , 'range',
         fig = None,
         ax = None,
         save = False,
@@ -638,8 +639,6 @@ def make_multi_model_profiles_plots(
             model_cubes = add_dict_list(model_cubes, variable_group, cube)
             model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
 
-    plotting = [ 'means',  '5-95', ] #'all_models'] #'medians', , 'range',
-
     for variable_group, cubes in model_cubes.items():
         data_values = {}
         scenario = ''
@@ -676,61 +675,6 @@ def make_multi_model_profiles_plots(
             maxs = [np.percentile(data_values[z], 95.) for z in depths]
             ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
 
-    # for (dataset, scenario, ensemble, metric), cube_mean in cubes.items():
-    #     if metric != 'mean': continue
-    #
-    #     cube_min = cubes[(dataset, scenario, ensemble, 'min')]
-    #     cube_max = cubes[(dataset, scenario, ensemble, 'max')]
-    #     cube_hist = cubes[(dataset, 'historical', ensemble, 'mean')]
-    #
-    #     color = diagtools.ipcc_colours[scenario]
-    #     plot_details = {}
-    #
-    #     for ax, drange in zip([ax0, ax1], ['surface', 'depths']):
-    #
-    #         if figure_style == 'difference':
-    #             z_hist, z_cube_hist = extract_depth_range(cube_hist, cube_hist.coord('depth').points, drange=drange)
-    #             z_min, z_cube_min = extract_depth_range(cube_min, cube_hist.coord('depth').points, drange=drange)
-    #             z_max, z_cube_max = extract_depth_range(cube_max, cube_hist.coord('depth').points, drange=drange)
-    #             z_mean, z_cube_mean = extract_depth_range(cube_mean, cube_hist.coord('depth').points, drange=drange)
-    #
-    #             ax.plot(z_cube_mean.data - z_cube_hist.data, -1.*z_hist,
-    #                 lw=2,
-    #                 c=color,
-    #                 label= scenario)
-    #
-    #             ax.fill_betweenx(-1.*z_hist,
-    #                 z_cube_min.data - z_cube_hist.data,
-    #                 x2=z_cube_max.data - z_cube_hist.data,
-    #                 alpha = 0.2,
-    #                 color=color)
-    #
-    #         if figure_style == 'compare':
-    #             z_min, z_cube_min = extract_depth_range(cube_min, cube_mean.coord('depth').points, drange=drange)
-    #             z_max, z_cube_max = extract_depth_range(cube_max, cube_mean.coord('depth').points, drange=drange)
-    #             z_mean, z_cube_mean = extract_depth_range(cube_mean, cube_mean.coord('depth').points, drange=drange)
-    #
-    #             ax.plot(z_cube_mean.data, -1.*z_mean,
-    #                 lw=2,
-    #                 c=color,
-    #                 label=scenario)
-    #
-    #             ax.fill_betweenx(-1.*z_mean,
-    #                 z_cube_min.data,
-    #                 x2=z_cube_max.data,
-    #                 alpha = 0.2,
-    #                 color=color)
-    #
-    #     plot_details[scenario] = {'c': color, 'ls': '-', 'lw': 1,
-    #                                          'label': scenario}
-    #
-    # # Add units:
-    # units = cubes[(dataset, scenario, ensemble,'mean')].units
-    # if figure_style == 'difference':
-    #     ax.set_xlabel(r'$\Delta$ ' +str(units))
-    # if figure_style == 'compare':
-    #     ax.set_xlabel(str(units))
-
     # Add observational data.
     if obs_filename:
         obs_cube = iris.load_cube(obs_filename)
@@ -761,40 +705,11 @@ def make_multi_model_profiles_plots(
     ax0.xaxis.set_ticklabels([])
     ax1.spines['top'].set_visible(False)
 
-#    ax0.fill_bewteen([xlims.min(), xlims.max()],[-1000., -1000.], [-975., -975.], color= 'k', alpha=0.2)
-#    ax1.fill_bewteen([xlims.min(), xlims.max()],[-1100., -1100.],[-1000., -1000.], color= 'k', alpha=0.2)
-
     # draw a line between figures
     ax0.axhline(-999., ls='--', lw=1.5, c='black')
     ax1.axhline(-1001., ls='--', lw=1.5, c='black')
 
     ax0.set_title('Profile')
-#    if single_pane:
-#        # Add title to plot
-#        title = ' '.join([
-#            # short_name,
-#            # figure_style,
-#            time_str
-#            ])
-#        # ax0.set_title(title)
-#    else:
-        #ax0.yaxis.set_ticks_position('both')
-        #ax1.yaxis.set_ticks_position('both')
-#        if figure_style == 'difference':
-#           ax0.yaxis.set_ticks_position('right')
-#           ax1.yaxis.set_ticks_position('right')
-#           ax0.yaxis.set_ticklabels([])
-#           ax1.yaxis.set_ticklabels([])
-#           ax0.set_title('Difference against historical')
-
- #       else:
-  #           ax0.set_title('Mean and Range')
-
-
-    # Add Legend outside right.
-    #if draw_legend:
-    #    ax1.legend(loc='lower left')
-    #diagtools.add_legend_outside_right(plot_details, plt.gca())
 
     if not save:
         return fig, ax
@@ -827,6 +742,7 @@ def make_multi_model_profiles_plotpair(
         hist_time_range = [1990., 2000.],
         ssp_time_range = [2040., 2050.],
         figure_style = 'difference',
+        plotting = [ 'means_split', '5-95_split', ], #'all_models'] #'medians', , 'range',
         fig = None,
         ax = None,
         save = False,
@@ -906,7 +822,6 @@ def make_multi_model_profiles_plotpair(
             model_cubes = add_dict_list(model_cubes, variable_group, cube)
             model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
 
-    plotting = [ 'means_split', '5-95_split', ] #'all_models'] #'medians', , 'range',
     data_dict = {}
     for variable_group, cubes in model_cubes.items():
         data_values = {}
@@ -985,72 +900,11 @@ def make_multi_model_profiles_plotpair(
             maxs = np.array(ddict['95pc']) - hist_data
             ax2, ax3 =  plot_z_area(ddict['depths'], mins, maxs, ax2, ax3, color=color, alpha=0.15)
 
-    # for (dataset, scenario, ensemble, metric), cube_mean in cubes.items():
-    #     if metric != 'mean': continue
-    #
-    #     cube_min = cubes[(dataset, scenario, ensemble, 'min')]
-    #     cube_max = cubes[(dataset, scenario, ensemble, 'max')]
-    #     cube_hist = cubes[(dataset, 'historical', ensemble, 'mean')]
-    #
-    #     color = diagtools.ipcc_colours[scenario]
-    #     plot_details = {}
-    #
-    #     for ax, drange in zip([ax0, ax1], ['surface', 'depths']):
-    #
-    #         if figure_style == 'difference':
-    #             z_hist, z_cube_hist = extract_depth_range(cube_hist, cube_hist.coord('depth').points, drange=drange)
-    #             z_min, z_cube_min = extract_depth_range(cube_min, cube_hist.coord('depth').points, drange=drange)
-    #             z_max, z_cube_max = extract_depth_range(cube_max, cube_hist.coord('depth').points, drange=drange)
-    #             z_mean, z_cube_mean = extract_depth_range(cube_mean, cube_hist.coord('depth').points, drange=drange)
-    #
-    #             ax.plot(z_cube_mean.data - z_cube_hist.data, -1.*z_hist,
-    #                 lw=2,
-    #                 c=color,
-    #                 label= scenario)
-    #
-    #             ax.fill_betweenx(-1.*z_hist,
-    #                 z_cube_min.data - z_cube_hist.data,
-    #                 x2=z_cube_max.data - z_cube_hist.data,
-    #                 alpha = 0.2,
-    #                 color=color)
-    #
-    #         if figure_style == 'compare':
-    #             z_min, z_cube_min = extract_depth_range(cube_min, cube_mean.coord('depth').points, drange=drange)
-    #             z_max, z_cube_max = extract_depth_range(cube_max, cube_mean.coord('depth').points, drange=drange)
-    #             z_mean, z_cube_mean = extract_depth_range(cube_mean, cube_mean.coord('depth').points, drange=drange)
-    #
-    #             ax.plot(z_cube_mean.data, -1.*z_mean,
-    #                 lw=2,
-    #                 c=color,
-    #                 label=scenario)
-    #
-    #             ax.fill_betweenx(-1.*z_mean,
-    #                 z_cube_min.data,
-    #                 x2=z_cube_max.data,
-    #                 alpha = 0.2,
-    #                 color=color)
-    #
-    #     plot_details[scenario] = {'c': color, 'ls': '-', 'lw': 1,
-    #                                          'label': scenario}
-    #
-    # # Add units:
-    # units = cubes[(dataset, scenario, ensemble,'mean')].units
-    # if figure_style == 'difference':
-    #     ax.set_xlabel(r'$\Delta$ ' +str(units))
-    # if figure_style == 'compare':
-    #     ax.set_xlabel(str(units))
-
     # Add observational data.
     if obs_filename:
         obs_cube = iris.load_cube(obs_filename)
         obs_cube = diagtools.bgc_units(obs_cube, metadata['short_name'])
         obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
-
-        # obs_key = obs_metadata['dataset']
-        # qplt.plot(obs_cube, obs_cube.coord('depth'), c='black')
-        #
-        # plot_details[obs_key] = {'c': 'black', 'ls': '-', 'lw': 1,
-        #                          'label': obs_key}
 
     # set x axis limits:
     xlims = np.array([ax0.get_xlim(), ax1.get_xlim()])
@@ -1504,28 +1358,34 @@ def main(cfg):
         if variable_group.find('_map_')>-1:
             maps_fns = add_dict_list(maps_fns, variable_group, fn)
 
-    #
-    make_multi_model_profiles_plotpair(
-                cfg,
-                metadatas,
-                profile_fns = profile_fns,
-                #short_name,
-                #obs_metadata={},
-                #obs_filename='',
-                hist_time_range = [1990., 2015.],
-                ssp_time_range = [2015., 2050.],
-                #figure_style = 'difference',
-                fig = None,
-                ax = None,
-                save = False,
-                draw_legend=True
-            )
+
+
 
 
     # Individual plots - standalone
     do_standalone = True
     if do_standalone:
+        # Profile pair
+        plottings =  [['means_split',] ['5-95_split',], ['means_split', '5-95_split',] ]
+        for plotting in plottings:
+            make_multi_model_profiles_plotpair(
+                    cfg,
+                    metadatas,
+                    profile_fns = profile_fns,
+                    #short_name,
+                    #obs_metadata={},
+                    #obs_filename='',
+                    hist_time_range = [1990., 2015.],
+                    ssp_time_range = [2015., 2050.],
+                    plotting = plotting,
+                    #figure_style = 'difference',
+                    fig = None,
+                    ax = None,
+                    save = False,
+                    draw_legend=True
+                )
 
+        # time series
         plottings = [[ 'means',  '5-95'], ['all_models', ], ['means', ]] #'medians', 'all_models', 'range',
         for plotting in plottins:
             multi_model_time_series(
