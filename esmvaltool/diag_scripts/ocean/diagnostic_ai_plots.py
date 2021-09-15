@@ -221,7 +221,7 @@ def multi_model_time_series(
         colour_scheme = 'IPCC',
         hist_time_range = None,
         ssp_time_range = None,
-        plotting = [ 'means',  '5-95'] #'medians', 'all_models', 'range',
+        plotting = [ 'means',  '5-95'], #'medians', 'all_models', 'range',
         fig = None,
         ax = None,
         save = False
@@ -1527,7 +1527,7 @@ def main(cfg):
     if do_standalone:
 
         plottings = [[ 'means',  '5-95'], ['all_models', ], ['means', ]] #'medians', 'all_models', 'range',
-        for plotting in plottins:
+        for plotting in plottings:
             multi_model_time_series(
                 cfg,
                 metadatas,
