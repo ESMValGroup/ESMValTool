@@ -246,12 +246,17 @@ def multi_model_time_series(
     model_cubes = {}
     model_cubes_paths = {}
 
+    models = {}
+
     for variable_group, filenames  in ts_dict.items():
         for fn in sorted(filenames):
             print(variable_group, fn)
             #assert 0
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             print('loading', fn)
+
+            dataset = metadatas[fn]['dataset']
+            models[dataset] = True
 
             cube = iris.load_cube(fn)
             cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
@@ -275,11 +280,14 @@ def multi_model_time_series(
     # Plot individual model in the group
     for variable_group, cubes in model_cubes.items():
         data_values = {}
+        model_data_groups = {model:{} for model in models.keys()}
+
         for i, cube in enumerate(cubes):
             path = model_cubes_paths[variable_group][i]
             metadata = metadatas[path]
             scenario = metadata['exp']
             dataset = metadata['dataset']
+
             # Take a moving average, if needed.
             if not moving_average_str: pass
             elif moving_average_str == 'annual':
@@ -288,12 +296,14 @@ def multi_model_time_series(
             else:
                 cube = moving_average(cube,
                     moving_average_str)
+
             times = diagtools.cube_time_to_float(cube)
 
             for t, d in zip(times, cube.data):
                 if moving_average_str == 'annual':
                     t = int(t) + 0.5
                 data_values = add_dict_list(data_values, t, d)
+                model_data_groups[dataset] = add_dict_list(model_data_groups[dataset], t, d)
 
             if colour_scheme in ['viridis', 'jet']:
                 if len(metadata) > 1:
@@ -313,6 +323,36 @@ def multi_model_time_series(
                     ls='-',
                     lw=0.4,
                 )
+
+        means = {}
+        if 'model_means' in plotting or 'global_model_means' in plotting:
+            for dataset in sorted(model_data_groups.keys()):
+                times = sorted(model_data_groups[dataset].keys())
+                mean = [np.mean(model_data_groups[dataset][t]) for t in times]
+                for t, m in zip(times, mean):
+                    means = add_dict_list(means, t, d)
+
+                plt.plot(times, mean, ls='-', c=color, lw=2., label=dataset)
+                plot_details[path] = {
+                    'c': color,
+                    'ls': '-',
+                    'lw': 1.4,
+                    'label':dataset}
+
+        if 'global_model_means' in plotting:
+                times = sorted(model_data_groups[dataset].keys())
+                mean = [np.mean(model_data_groups[dataset][t]) for t in times]
+
+            times = sorted(means.keys())
+            mean = [np.mean(means[t]) for t in times]
+            plt.plot(times, mean, ls='-', c=color, lw=2.)
+            plot_details[path] = {
+                'c': color,
+                'ls': '-',
+                'lw': 1.4,
+                'label': label,
+            }
+
         if 'means' in plotting:
             times = sorted(data_values.keys())
             mean = [np.mean(data_values[t]) for t in times]
@@ -364,7 +404,7 @@ def multi_model_time_series(
 
     # Saving files:
     if save:
-        path = diagtools.folder(cfg['plot_dir']+'/individual_panes_')
+        path = diagtools.folder(cfg['plot_dir']+'/individual_panes')
         path += '_'.join(['multi_model_ts', moving_average_str] )
         path += '_'+'_'.join(plotting)
         path += diagtools.get_image_format(cfg)
@@ -499,7 +539,7 @@ def multi_model_clim_figure(
     if save:
         plt.legend()
         # save and close.
-        path = diagtools.folder(cfg['plot_dir']+'/multi_model_clim_')
+        path = diagtools.folder(cfg['plot_dir']+'/multi_model_clim')
         path += '_'.join(['multi_model_clim', time_str])
         path += '_' +'_'.join(plotting)
         path += diagtools.get_image_format(cfg)
@@ -717,7 +757,7 @@ def make_multi_model_profiles_plots(
     # Saving files:
 
     # Determine image filename:
-    path = diagtools.folder(cfg['plot_dir']+'/profiles_')
+    path = diagtools.folder(cfg['plot_dir']+'/profiles')
     path += '_'.join(['multi_model_profile', time_str])
     path += '_'+'_'.join(plotting)
     path += diagtools.get_image_format(cfg)
@@ -952,7 +992,7 @@ def make_multi_model_profiles_plotpair(
                          '-'.join([str(t) for t in ssp_time_range])])
 
     # Determine image filename:
-    path = diagtools.folder(cfg['plot_dir']+'/profiles_pair_')
+    path = diagtools.folder(cfg['plot_dir']+'/profiles_pair')
     path += '_'.join(['multi_model_profile', time_str])
     path += '_'+ '_'.join(plotting)
     path += diagtools.get_image_format(cfg)
@@ -1195,7 +1235,7 @@ def multi_model_map_figure(
                          '-'.join([str(t) for t in ssp_time_range])])
 
     if save:
-        path = diagtools.folder(cfg['plot_dir']+'/Maps_')
+        path = diagtools.folder(cfg['plot_dir']+'/Maps')
         path += '_'.join(['maps', figure_style, region, time_str])
         path += diagtools.get_image_format(cfg)
 
@@ -1354,14 +1394,11 @@ def main(cfg):
             maps_fns = add_dict_list(maps_fns, variable_group, fn)
 
 
-
-
-
     # Individual plots - standalone
     do_standalone = True
     if do_standalone:
         # time series
-        plottings = [[ 'means',  '5-95'], ['all_models', ], ['means', ]] #'medians', 'all_models', 'range',
+        plottings = [['global_model_means',], ['model_means', ], ['global_model_means', 'model_means', ], ] # [ 'means',  '5-95'], ['all_models', ], ['means', ]] #'medians', 'all_models', 'range',
         for plotting in plottings:
             multi_model_time_series(
                 cfg,
@@ -1372,6 +1409,7 @@ def main(cfg):
                 ssp_time_range = [2040., 2050.],
                 plotting = plotting,
             )
+        assert 0
 
         # Profile pair
         plottings =  [['means_split',], ['5-95_split',], ['means_split', '5-95_split', ],  ]
@@ -1417,7 +1455,7 @@ def main(cfg):
     #print(time_series_fns)
     #print(profile_fns)
     #print(maps_fns)
-   
+
     #plottings = [[ 'means',  '5-95'], ['all_models', ], ['means', ]] #'medians', 'all_models', 'range',
     fig, subplots = do_gridspec(cfg, )
     hist_time_range = [2000., 2010.] #[1990., 2015.]
@@ -1497,7 +1535,7 @@ def main(cfg):
     plt.suptitle(suptitle)
 
     # save and close.
-    path = diagtools.folder(cfg['plot_dir']+'/whole_plot_')
+    path = diagtools.folder(cfg['plot_dir']+'/whole_plot')
     path += '_'.join(['multi_model_whole_plot'])
     path += diagtools.get_image_format(cfg)
 
