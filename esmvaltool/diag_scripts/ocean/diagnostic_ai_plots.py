@@ -99,6 +99,9 @@ long_name_dict = {
     'o2': 'Dissolved Oxygen',
     'intpp': 'Integrated Primary production'}
 
+models_to_skip = ['GISS-E2-1-G', ] #SST is strangely high and there are very few SSP ensembles.
+
+
 def timeplot(cube, **kwargs):
     """
     Create a time series plot from the cube.
@@ -332,6 +335,7 @@ def multi_model_time_series(
                 for t, m in zip(times, mean):
                     means = add_dict_list(means, t, d)
 
+                print('global_model_means',dataset, times, mean)
                 plt.plot(times, mean, ls='-', c=color, lw=2., label=dataset)
                 plot_details[path] = {
                     'c': color,
@@ -343,6 +347,9 @@ def multi_model_time_series(
             times = sorted(means.keys())
             mean = [np.mean(means[t]) for t in times]
             plt.plot(times, mean, ls='-', c=color, lw=2.)
+            print('global_model_means - means:', label, times, mean)
+            assert 0
+
             plot_details[path] = {
                 'c': color,
                 'ls': '-',
@@ -1395,7 +1402,7 @@ def main(cfg):
     do_standalone = True
     if do_standalone:
         # time series
-        plottings = [['global_model_means',], ['model_means', ], ['global_model_means', 'model_means', ], ] # [ 'means',  '5-95'], ['all_models', ], ['means', ]] #'medians', 'all_models', 'range',
+        plottings = [['global_model_means', 'model_means', ], ['global_model_means',], ['model_means', ], ] # [ 'means',  '5-95'], ['all_models', ], ['means', ]] #'medians', 'all_models', 'range',
         for plotting in plottings:
             multi_model_time_series(
                 cfg,
