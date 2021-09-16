@@ -2453,54 +2453,54 @@ diagnostics:
 #
 # ############################################################################
 
-  clouds_matrices_cmip6_ocean:
-    description: cloud matrices - dynamical regimes vs. cloud parameter
-    themes:
-      - clouds
-    realms:
-      - atmos
-    variables:
-      clt:
-        preprocessor: clim_ocean
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        start_year: 2003
-        end_year: 2012
-        reference_dataset: ESACCI-CLOUD
-        additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
-      ts:
-        preprocessor: clim_ocean
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        start_year: 2003
-        end_year: 2012
-        reference_dataset: ERA-Interim
-        additional_datasets:
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
-      lts:
-        preprocessor: clim_ocean
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        start_year: 2003
-        end_year: 2012
-        derive: true
-        reference_dataset: ERA-Interim
-        additional_datasets:
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
-      wap:
-        preprocessor: clim500_ocean
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        start_year: 2003
-        end_year: 2012
-        reference_dataset: ERA-Interim
-        additional_datasets:
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+#  clouds_matrices_cmip6_ocean:
+#    description: cloud matrices - dynamical regimes vs. cloud parameter
+#    themes:
+#      - clouds
+#    realms:
+#      - atmos
+#    variables:
+#      clt:
+#        preprocessor: clim_ocean
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2003
+#        end_year: 2012
+#        reference_dataset: ESACCI-CLOUD
+#        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+#      ts:
+#        preprocessor: clim_ocean
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2003
+#        end_year: 2012
+#        reference_dataset: ERA-Interim
+#        additional_datasets:
+#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+#      lts:
+#        preprocessor: clim_ocean
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2003
+#        end_year: 2012
+#        derive: true
+#        reference_dataset: ERA-Interim
+#        additional_datasets:
+#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+#      wap:
+#        preprocessor: clim500_ocean
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2003
+#        end_year: 2012
+#        reference_dataset: ERA-Interim
+#        additional_datasets:
+#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
 #      clivi:
 #        preprocessor: clim_ocean
 #        mip: Amon
@@ -2770,34 +2770,34 @@ diagnostics:
 #        zdmin: -9
 #        zdmax: 9
 #        filename_add: cmip6_ocean
-      dynlts:
-        script: clouds/clouds_dyn_matrix.ncl
-        var_x: lts
-        var_y: ts
-        var_z: clt
-        xmin: 0
-        xmax: 30
-        ymin: 275
-        ymax: 305
-        zmin: 5
-        zmax: 95
-        zdmin: -9
-        zdmax: 9
-        filename_add: cmip6_ocean
-      dynlts2:
-        script: clouds/clouds_dyn_matrix.ncl
-        var_x: lts
-        var_y: wap
-        var_z: clt
-        xmin: 5
-        xmax: 30
-        ymin: -10
-        ymax: 10
-        zmin: 5
-        zmax: 95
-        zdmin: -45
-        zdmax: 45
-        filename_add: cmip6_ocean
+#      dynlts:
+#        script: clouds/clouds_dyn_matrix.ncl
+#        var_x: lts
+#        var_y: ts
+#        var_z: clt
+#        xmin: 0
+#        xmax: 30
+#        ymin: 275
+#        ymax: 305
+#        zmin: 5
+#        zmax: 95
+#        zdmin: -9
+#        zdmax: 9
+#        filename_add: cmip6_ocean
+#      dynlts2:
+#        script: clouds/clouds_dyn_matrix.ncl
+#        var_x: lts
+#        var_y: wap
+#        var_z: clt
+#        xmin: 5
+#        xmax: 30
+#        ymin: -10
+#        ymax: 10
+#        zmin: 5
+#        zmax: 95
+#        zdmin: -45
+#        zdmax: 45
+#        filename_add: cmip6_ocean
 #
 ## ############################################################################
 #
