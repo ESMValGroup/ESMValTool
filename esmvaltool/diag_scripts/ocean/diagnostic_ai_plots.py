@@ -259,6 +259,7 @@ def multi_model_time_series(
             print('loading', fn)
 
             dataset = metadatas[fn]['dataset']
+            if dataset in models_to_skip: continue
             models[dataset] = True
 
             cube = iris.load_cube(fn)
@@ -288,6 +289,8 @@ def multi_model_time_series(
         for i, cube in enumerate(cubes):
             path = model_cubes_paths[variable_group][i]
             metadata = metadatas[path]
+            if dataset in models_to_skip: continue
+
             scenario = metadata['exp']
             dataset = metadata['dataset']
 
@@ -457,6 +460,8 @@ def multi_model_clim_figure(
             print(variable_group, fn)
             #assert 0
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
+            if metadatas[fn]['dataset'] in models_to_skip: continue
+
             scenario = metadatas[fn]['exp']
 
             print('loading', fn)
@@ -492,6 +497,8 @@ def multi_model_clim_figure(
             fn = model_cubes_paths[variable_group][i]
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             scenario = metadatas[fn]['exp']
+            if metadatas[fn]['dataset'] in models_to_skip: continue
+
 
             months =  cube.coord('month_number').points
             for t, d in zip(months, cube.data):
@@ -660,6 +667,8 @@ def make_multi_model_profiles_plots(
     model_cubes_paths = {}
     for variable_group, filenames in profile_fns.items():
         for i, fn in enumerate(filenames):
+            if metadatas[fn]['dataset'] in models_to_skip: continue
+
             cube = iris.load_cube(fn)
             cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
 
@@ -690,6 +699,8 @@ def make_multi_model_profiles_plots(
         color = ''
         for i, cube in enumerate(cubes):
             fn = model_cubes_paths[variable_group][i]
+            if metadatas[fn]['dataset'] in models_to_skip: continue
+
             metadata = metadatas[fn]
             scenario = metadata['exp']
             color = ipcc_colours[scenario]
@@ -840,6 +851,8 @@ def make_multi_model_profiles_plotpair(
     model_cubes_paths = {}
     for variable_group, filenames in profile_fns.items():
         for i, fn in enumerate(filenames):
+            if metadatas[fn]['dataset'] in models_to_skip: continue
+
             cube = iris.load_cube(fn)
             cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
 
@@ -870,8 +883,11 @@ def make_multi_model_profiles_plotpair(
         scenario = ''
         color = ''
         for i, cube in enumerate(cubes):
+            if metadatas[fn]['dataset'] in models_to_skip: continue
+
             fn = model_cubes_paths[variable_group][i]
             metadata = metadatas[fn]
+
             scenario = metadata['exp']
             color = ipcc_colours[scenario]
 
@@ -1101,6 +1117,8 @@ def multi_model_map_figure(
             if fn.find('CMIP6_UKESM1-0-LL_Omon_ssp370_r9i1p1f2_tos_2049-2050.nc') > -1:
                 # this file doesn't work for some reason.
                 continue
+            if metadatas[fn]['dataset'] in models_to_skip: continue
+
             print('loading:', i, variable_group ,scenario, fn)
             cube = iris.load_cube( fn)
             cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
@@ -1390,6 +1408,8 @@ def main(cfg):
     for fn, metadata in metadatas.items():
         #print(os.path.basename(fn),':',metadata['variable_group'])
         variable_group = metadata['variable_group']
+        if metadata['dataset'] in models_to_skip:
+            continue
         if variable_group.find('_ts_')>-1:
             time_series_fns = add_dict_list(time_series_fns, variable_group, fn)
         if variable_group.find('_profile_')>-1:
