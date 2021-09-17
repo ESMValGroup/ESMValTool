@@ -104,12 +104,16 @@ def derive_additional_variables(cubes):
     hfss = cubes.extract_cube(_constraint("hfss"))
     hfls = cubes.extract_cube(_constraint("hfls"))
 
+    # Derivations for the following two cloud_forcing variables are
+    # performed this way so that they match with the observational data
+    # (all positive), the convention used is to treat SW as positive
+    # downward and LW as positive upward.
     total_sw_cloud_forcing = rsut - rsutcs
+    total_lw_cloud_forcing = rlutcs - rlut
     upward_sw_reflected_surface = rsds - rss
     sw_reflected_clouds = rsut - upward_sw_reflected_surface
     sw_absorbed_atm = rsdt - sw_reflected_clouds - rsds
     upward_lw_emitted_surface = rlds - rls
-    total_lw_cloud_forcing = rlutcs - rlut
     net_surface_radiation = rss + rls
     radiation_adsorbed_surface = rss + rls - hfss - hfls
     radiation_net_toa = rsdt - rsut - rlut
