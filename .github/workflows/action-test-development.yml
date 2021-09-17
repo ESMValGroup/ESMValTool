@@ -12,6 +12,7 @@ on:
   push:
     branches:
     - main
+    - unpin_iris
   schedule:
     - cron: '0 0 * * *'
 
@@ -20,7 +21,7 @@ jobs:
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.7.10, 3.8, 3.9]
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:

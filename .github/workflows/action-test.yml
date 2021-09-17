@@ -5,6 +5,7 @@ on:
   push:
     branches:
     - main
+    - unpin_iris
 
   schedule:
     - cron: '0 0 * * *'
@@ -14,7 +15,7 @@ jobs:
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.7.10, 3.8, 3.9]
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:
@@ -26,6 +27,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           miniconda-version: "latest"
           channels: conda-forge
+          # use-mamba: true  # try this in the future, might speed things up, all the same now though
       - shell: bash -l {0}
         run: mkdir -p test_linux_artifacts_python_${{ matrix.python-version }}
       - shell: bash -l {0}
@@ -51,7 +53,7 @@ jobs:
     runs-on: "macos-latest"
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.7, 3.8, 3.9]
       fail-fast: false
     name: OSX Python ${{ matrix.python-version }}
     steps:

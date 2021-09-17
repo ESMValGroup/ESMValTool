@@ -393,15 +393,13 @@ def main(config):
     """
     load_data(config)
     data = prepare_data(config)
-    if config['write_plots']:
-        plot_path = produce_plots(config, data)
+    plot_path = produce_plots(config, data)
     ancestor_files = list(config['input_data'].keys())
     provenance_record = get_provenance_record(ancestor_files)
-    if config['write_plots']:
-        provenance_record['plot_file'] = plot_path
     netcdf_path = write_data(config, data)
     with ProvenanceLogger(config) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 if __name__ == '__main__':

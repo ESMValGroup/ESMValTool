@@ -396,13 +396,13 @@ def plot_emergent_relationship(cfg, x_data, y_data, x_ref, x_ref_err, y_mean):
         'ancestors': _get_ec_ancestors(cfg),
         'authors': ['schlund_manuel'],
         'caption': f"Emergent relationship between {label} and {feature}.",
-        'plot_file': plot_path,
         'plot_types': ['scatter'],
         'references': ['schlund20jgr'],
         'themes': ['EC'],
     }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, record)
+        provenance_logger.log(plot_path, record)
 
 
 def rescale_labels(cfg, y_data, y_mean, y_std):

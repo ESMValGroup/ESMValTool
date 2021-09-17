@@ -52,19 +52,7 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.3.0 (Release Manager: `Klaus Zimmermann`_)
-
-+------------+--------------------------+
-| 2021-06-07 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2021-06-14 |ESMValCore release        |
-+------------+--------------------------+
-| 2021-06-21 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2021-06-28 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.4.0 (Release Manager: TBD)
+- 2.4.0 (Release Manager: `Klaus Zimmermann`_)
 
 +------------+--------------------------+
 | 2021-10-04 |ESMValCore feature freeze |
@@ -76,7 +64,7 @@ Upcoming releases
 | 2021-10-25 |ESMValTool release        |
 +------------+--------------------------+
 
-- 2.5.0 (Release Manager: TBD)
+- 2.5.0 (Release Manager: `Manuel Schlund`_)
 
 +------------+--------------------------+
 | 2022-02-07 |ESMValCore feature freeze |
@@ -102,6 +90,28 @@ Upcoming releases
 
 Past releases
 ^^^^^^^^^^^^^
+
+- 2.3.1 (Bugfix, Release Manager: `Klaus Zimmermann`_)
+
++------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|    Done    |                                            Event                                            |             Changelog              |
++============+=============================================================================================+====================================+
+| 2021-07-23 | `ESMValCore Release 2.3.1 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.3.1>`_ | :ref:`esmvalcore:changelog-v2-3-1` |
++------------+---------------------------------------------------------------------------------------------+------------------------------------+
+
+- 2.3.0 (Release Manager: `Klaus Zimmermann`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2021-06-07 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-06-14 | 2021-06-14 | `ESMValCore Release 2.3.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.3.0>`_ | :ref:`esmvalcore:changelog-v2-3-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-06-21 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-06-28 | 2021-07-27 | `ESMValTool Release 2.3.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.3.0>`_ |      :ref:`changelog-v2-3-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
 
 - 2.2.0 (Release Manager: `Javier Vegas-Regidor`_)
 
@@ -393,6 +403,7 @@ Changelog
 - 2020-06-08 First draft by Klaus Zimmermann and Bouwe Andela
 
 .. _Bouwe Andela: https://github.com/bouweandela
+.. _Valeriu Predoi: https://github.com/valeriupredoi
+.. _Manuel Schlund: https://github.com/schlunma
 .. _Javier Vegas-Regidor: https://github.com/jvegasbsc
 .. _Klaus Zimmermann: https://github.com/zklaus
-.. _Valeriu Predoi: https://github.com/valeriupredoi
