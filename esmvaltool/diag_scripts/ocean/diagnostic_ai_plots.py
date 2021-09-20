@@ -351,7 +351,6 @@ def multi_model_time_series(
             mean = [np.mean(means[t]) for t in times]
             plt.plot(times, mean, ls='-', c=color, lw=2.)
             print('global_model_means - means:', label, times, mean)
-            assert 0
 
             plot_details[path] = {
                 'c': color,
@@ -1419,10 +1418,11 @@ def main(cfg):
 
 
     # Individual plots - standalone
-    do_standalone = True
+    do_standalone = False
     if do_standalone:
         # time series
-        plottings = [['global_model_means', 'model_means', ], ['global_model_means',], ['model_means', ], ] # [ 'means',  '5-95'], ['all_models', ], ['means', ]] #'medians', 'all_models', 'range',
+        plottings = [['global_model_means', 'model_means', ], ['global_model_means',], ['model_means', ],
+                     [ 'means',  '5-95'], ['all_models', ], ] #'medians', 'all_models', 'range',
         for plotting in plottings:
             multi_model_time_series(
                 cfg,
@@ -1433,7 +1433,6 @@ def main(cfg):
                 ssp_time_range = [2040., 2050.],
                 plotting = plotting,
             )
-        assert 0
 
         # Profile pair
         plottings =  [['means_split',], ['5-95_split',], ['means_split', '5-95_split', ],  ]
@@ -1505,7 +1504,7 @@ def main(cfg):
             #colour_scheme = 'viridis',
             hist_time_range = hist_time_range,
             ssp_time_range = ssp_time_range,
-            plotting=['means',],
+            plotting=['means', '5-95',],
             fig = fig,
             ax =  subplots['timeseries'],
     )
