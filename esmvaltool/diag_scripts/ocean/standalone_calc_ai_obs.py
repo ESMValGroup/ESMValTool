@@ -9,11 +9,16 @@ Ascensionb island region is:
     central_latitude = -7.56 +/3 # East
 
 """
+import matplotlib
+# Force matplotlib to not use any Xwindows backend.
+matplotlib.use('Agg')
+
+import numpy as np
 
 from shelve import open as shopen
 import os
 from glob import glob
-from netCDF4 import Dataset
+from netCDF4 import Dataset, num2date
 from matplotlib import pyplot
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
@@ -45,7 +50,7 @@ def nc_time_to_float(nc):
     times = []
 
     for dtime in datetimes:
-         try:
+        try:
             dayofyr = dtime.dayofyr
         except AttributeError:
             time = datetime(dtime.year, dtime.month, dtime.day)
@@ -62,10 +67,11 @@ def time_series(field='tos', pane='timeseries'):
     """
     Calculates the time series.
     """
-    shelve_path = get_shelve_path(field, pane=pane)
-    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul' 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    shelve_path = get_shelve_path(field, pane='ts')
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-    if os.path.exists(shelve_path):
+    if glob(shelve_path+'*'):
+        print('shelve exists:', shelve_path+'*')
         sh = shopen(shelve_path)
         times, data = sh['times'], sh['data']
         annual_times, annual_data = sh['annual_times'], sh['annual_data']
@@ -79,21 +85,19 @@ def time_series(field='tos', pane='timeseries'):
         if pane == 'clim':
             return months, clim
 
-    files = sorted(glob.glob()'/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc'))
+    if field == 'tos':
+        files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc'))
     times, data = [], []
     annual_times, annual_data = [], []
-
-    data = {}
-
     months_dat = {m:[] for m in months}
 
     central_longitude = -14.25 # +/-3 # West -11.25
     central_latitude = -7.56 # +/3 # North
     for nc_path in sorted(files):
+        print('loading:', nc_path)
         nc = Dataset(nc_path, 'r')
         nctimes = nc_time_to_float(nc)
-        nc.variables['lat'][]
-
+       
         # lons = nc.variables['lon']
         # np.argmin(np.abs(lons[:] -(360-central_longitude -3)))
         # np.argmin(np.abs(lons[:] -(360-central_longitude +3)))
@@ -105,15 +109,17 @@ def time_series(field='tos', pane='timeseries'):
         # np.argmin(np.abs(lats[:] -(central_latitude +3)))
         ncdata =  nc.variables['tos'][:, 106:114+1, 457:465+1].mean(axis=(1,2))
         times.extend(nctimes)
-        data.extendt(ncdata)
+        data.extend(ncdata)
 
         annual_times.append(np.mean(nctimes))
         annual_data.append(np.mean(ncdata))
+        print('data:', np.mean(nctimes), np.mean(ncdata))
 
         #calculate clim
-        if np.min(times) < 2000.: continue
-        if np.max(times) > 2010.: continue
-        for m, d in zip(months, ncdata):
+        if np.min(nctimes) < 2000.: continue
+        if np.max(nctimes) > 2010.: continue
+        for m, d in zip(months, ncdata[:]):
+            print('clim:', m, d)
             months_dat[m].append(d)
 
     clim = [np.mean(months_dat[m]) for m in months]
@@ -127,17 +133,25 @@ def time_series(field='tos', pane='timeseries'):
     sh['files'] = files
     sh.close()
 
+    if pane == 'monthly_timeseries':
+        return times, data
+    if pane == 'timeseries':
+        return annual_times, annual_data
+    if pane == 'clim':
+        return months, clim
+
+
 
 def make_figure(field):
 
     path = diagtools.folder('images/obs/timeseries')
-    path +='_'.join([field, 'ts'])+''.png'
+    path +='_'.join([field, 'ts'])+'.png'
 
     if os.path.exists(path):
         print('Already exists:', path)
         return
 
-    pyplot.figure()
+    fig = pyplot.figure()
     ax = fig.add_subplot(311)
     time, data = time_series(field=field, pane='timeseries')
     pyplot.plot(time,data)
@@ -149,10 +163,14 @@ def make_figure(field):
     pyplot.title('Monthly ' + field)
 
     ax = fig.add_subplot(313)
-    time, data = time_series(field=field, pane='clim')
-    pyplot.plot(time, data)
+    months, data = time_series(field=field, pane='clim')
+    print(months, data)
+    pyplot.plot([t for t,d in enumerate(data)], data)
+    ax.set_xticks([t for t,d in enumerate(data)])
+    ax.set_xticklabels(months)
     pyplot.title('Climatological ' + field)
 
+    print('saving figure:', path)
     pyplot.savefig(path)
     pyplot.close()
 
