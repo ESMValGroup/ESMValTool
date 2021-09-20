@@ -13,6 +13,8 @@ import matplotlib
 # Force matplotlib to not use any Xwindows backend.
 matplotlib.use('Agg')
 
+import iris
+
 import numpy as np
 
 from shelve import open as shopen
@@ -22,6 +24,7 @@ from netCDF4 import Dataset, num2date
 from matplotlib import pyplot
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
+from esmvalcore.preprocessor._time import extract_time, annual_statistics, regrid_time
 
 
 def get_shelve_path(field, pane='timeseries'):
@@ -97,7 +100,7 @@ def time_series(field='tos', pane='timeseries'):
         print('loading:', nc_path)
         nc = Dataset(nc_path, 'r')
         nctimes = nc_time_to_float(nc)
-       
+
         # lons = nc.variables['lon']
         # np.argmin(np.abs(lons[:] -(360-central_longitude -3)))
         # np.argmin(np.abs(lons[:] -(360-central_longitude +3)))
@@ -141,6 +144,35 @@ def time_series(field='tos', pane='timeseries'):
         return months, clim
 
 
+def load_map_netcdf(field='tos', pane='map'):
+    """
+    Time range is 2000-2010.
+    """
+    path = diagtools.folder(['aux', 'obs_ncs'])
+    path += '_'.join([field, pane]) +'.nc'
+
+    if os.path.exists(path):
+        print('netcdf exists:', path)
+        return iris.load_cube(path)
+
+    if field=='tos':
+        files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc'))
+
+    cube_list = []
+    for fn in files:
+        cube = iris.load_cube(fn)
+        times = diagtools.cube_time_to_float(cube)
+        if np.min(times) < 2000.: continue
+        if np.max(times) > 2010.: continue
+        new_cube = cube.collapsed('time', iris.analysis.MEAN)
+        cube_list.append(new_cube.copy())
+
+    outcube  = diagtools.make_mean_of_cube_list_notimecube_list(cube_list)
+
+    print('saving netcdf:', path)
+    iris.save(outcube, path)
+    return outcube
+
 
 def make_figure(field):
 
@@ -174,6 +206,29 @@ def make_figure(field):
     pyplot.savefig(path)
     pyplot.close()
 
+
+def make_map_figure(field):
+    """
+    Make a map of the surface in the historical period.
+    """
+    path = diagtools.folder('images/obs/timeseries')
+    path +='_'.join([field, 'map'])+'.png'
+
+    if os.path.exists(path):
+        print('Already exists:', path)
+        return
+
+    fig = pyplot.figure()
+    ax = fig.add_subplot(111)
+    cube = load_map_netcdf(field=field, pane='map')
+    qplot = iris.plot.contourf(
+        cube,
+        linewidth=0,
+        )
+
+    print('saving figure:', path)
+    pyplot.savefig(path)
+    pyplot.close()
 
 #
 # def load_WOA_data(cfg, short_name, plot, grid='1'):
@@ -209,7 +264,8 @@ def make_figure(field):
 #     sh.close()
 
 def main():
-     make_figure('tos')
+    make_map_figure(field)
+    make_figure('tos')
 
 if __name__ == '__main__':
     main()
