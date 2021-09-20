@@ -102,6 +102,39 @@ long_name_dict = {
 models_to_skip = ['GISS-E2-1-G', ] #SST is strangely high and there are very few SSP ensembles.
 
 
+def load_WOA_data(cfg, short_name, plot, grid='1'):
+    """
+    plan to calculate the WOA data here.
+    """
+    shelve_path = diagtools.folder([cfg['work_dir'], 'obs_shelves'])
+    shelve_path += '_'.join(['woa', short_name,  plot, str(grid)]) +'.shelve'
+
+    # If shelve exists, then return that data
+    if os.path.exists(shelve_path):
+        sh = shopen(shelve_path)
+        times, data = sh['times'], sh['data']
+        sh.close()
+        return times,data
+
+    # Look for the original netcdf data
+
+    # load the data
+
+    # Extract the relevant data region
+
+    # apply some kind of masking.
+
+
+    sh = shopen(shelve_path)
+    sh['times'], sh['data'] = times, data
+    sh.close()
+
+
+
+
+
+
+
 def timeplot(cube, **kwargs):
     """
     Create a time series plot from the cube.
@@ -253,13 +286,10 @@ def multi_model_time_series(
 
     for variable_group, filenames  in ts_dict.items():
         for fn in sorted(filenames):
-            print(variable_group, fn)
-            #assert 0
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
-            print('loading', fn)
-
             dataset = metadatas[fn]['dataset']
             if dataset in models_to_skip: continue
+            print('loading: ',variable_group, dataset, fn)
             models[dataset] = True
 
             cube = iris.load_cube(fn)
