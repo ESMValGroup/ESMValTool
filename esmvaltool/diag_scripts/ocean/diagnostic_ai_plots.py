@@ -253,13 +253,10 @@ def multi_model_time_series(
 
     for variable_group, filenames  in ts_dict.items():
         for fn in sorted(filenames):
-            print(variable_group, fn)
-            #assert 0
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
-            print('loading', fn)
-
             dataset = metadatas[fn]['dataset']
             if dataset in models_to_skip: continue
+            print('loading: ',variable_group, dataset, fn)
             models[dataset] = True
 
             cube = iris.load_cube(fn)
