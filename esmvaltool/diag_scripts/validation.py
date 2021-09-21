@@ -73,6 +73,8 @@ def save_plotted_cubes(cube, cfg, plot_name):
             save_name = plot_name.replace("png", "nc")
             save_path = os.path.join(cfg['work_dir'], save_name)
             iris.save(cube, save_path)
+            _get_provenance_record(cfg, save_name,
+                                   cube.name, loc=save_path)
 
 
 def plot_latlon_cubes(cube_1,
