@@ -25,6 +25,7 @@ from matplotlib import pyplot
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvalcore.preprocessor._time import extract_time, annual_statistics, regrid_time
+from esmvalcore.preprocessor._regrid import extract_levels, regrid
 
 
 def get_shelve_path(field, pane='timeseries'):
@@ -38,6 +39,20 @@ def load_times_from_nc(nc):
     """
     datetimes = num2date(nc.variables['time'],  units=nc.variables['time'].units, calendar=nc.variables['time'].calendar)
     return datetimes
+
+def regrid_intersect(cube, region='global'):
+    central_longitude = -14.25 #W #-160.+3.5
+    central_latitude = -7.56
+    cube = regrid(cube, '1x1', 'linear')
+    #cube = regrid_to_1x1(cube)
+    if region=='global':
+        cube = cube.intersection(longitude=(central_longitude-180., central_longitude+180.))
+    if region=='midatlantic':
+        lat_bnd = 20.
+        lon_bnd = 30.
+        cube = cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
+                                 latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
+    return cube
 
 
 def nc_time_to_float(nc):
@@ -168,7 +183,7 @@ def load_map_netcdf(field='tos', pane='map'):
         cube_list.append(new_cube.copy())
 
     outcube  = diagtools.make_mean_of_cube_list_notimecube_list(cube_list)
-
+    outcube = regrid_intersect(outcube, region='midatlantic')
     print('saving netcdf:', path)
     iris.save(outcube, path)
     return outcube
@@ -230,6 +245,79 @@ def make_map_figure(field):
     pyplot.savefig(path)
     pyplot.close()
 
+
+def load_profile_netcdf(field='tos', pane='profile'):
+    """
+    Perform the calculation of the depth
+
+    """
+
+    path = diagtools.folder(['aux', 'obs_ncs'])
+    path += '_'.join([field, pane]) +'.nc'
+
+    if os.path.exists(path):
+        print('netcdf exists:', path)
+        return iris.load_cube(path)
+
+    #files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_*'))
+    files = ['/gws/nopw/j04/esmeval/obsdata-v2/Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_200001-200012.nc',]
+    cube_list = []
+    for fn in files:
+        cube = iris.load_cube(fn)
+        times = diagtools.cube_time_to_float(cube)
+        if np.min(times) < 2000.: continue
+        if np.max(times) > 2010.: continue
+        new_cube = cube.collapsed('time', iris.analysis.MEAN)
+        cube_list.append(new_cube.copy())
+
+    if len(cube_list) == 1:
+        outcube = cube_list[0]
+    else:
+        outcube  = diagtools.make_mean_of_cube_list_notimecube_list(cube_list)
+
+    outcube = regrid_intersect(outcube, region='midatlantic')
+    outcube = extract_levels(outcube,
+        scheme='linear',
+        levels =  [0.5, 1.0, 5.0, 10.0, 50.0, 100.0, 150., 200.0, 250., 300.0, 350., 400.0, 450., 500.0,
+                   600.0, 650., 700.0, 750., 800.0, 850., 900.0, 950., 999.0,
+                   1001., 1250., 1500.0, 1750., 2000.0, 2250., 2500.0, 2750., 3000.0, 3250., 3500.0, 3750.,
+                   4000.0, 4250., 4500.0, 4750., 5000.0]
+        )
+
+    print('saving netcdf:', path)
+    iris.save(outcube, path)
+    return outcube
+
+
+
+def make_profile_figure(field):
+    """
+    Make a map of the surface in the historical period.
+    """
+    path = diagtools.folder('images/obs/timeseries')
+    path +='_'.join([field, 'profile'])+'.png'
+
+    if os.path.exists(path):
+        print('Already exists:', path)
+        return
+
+    fig = pyplot.figure()
+    ax = fig.add_subplot(111)
+    cube = load_profile_netcdf(field=field, pane='profile')
+    depths = np.abs(cube.coord(axis='Z').points)*-1.
+    ax.plot(cube.data, depths,
+        lw=2,
+        ls='-',
+        c='k',
+        label)
+    pyplot.title(field+ ' profile')
+
+    print('saving figure:', path)
+    pyplot.savefig(path)
+    pyplot.close()
+
+
+
 #
 # def load_WOA_data(cfg, short_name, plot, grid='1'):
 #     """
@@ -264,7 +352,8 @@ def make_map_figure(field):
 #     sh.close()
 
 def main():
-    make_map_figure(field)
+     make_profile_figure('tos')
+    make_map_figure('tos')
     make_figure('tos')
 
 if __name__ == '__main__':
