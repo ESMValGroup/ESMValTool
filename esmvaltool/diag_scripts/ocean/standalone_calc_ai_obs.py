@@ -164,10 +164,11 @@ def load_map_netcdf(field='tos', pane='map'):
         times = diagtools.cube_time_to_float(cube)
         if np.min(times) < 2000.: continue
         if np.max(times) > 2010.: continue
+        print('loaded:', fn)
         new_cube = cube.collapsed('time', iris.analysis.MEAN)
         cube_list.append(new_cube.copy())
 
-    outcube  = diagtools.make_mean_of_cube_list_notimecube_list(cube_list)
+    outcube  = diagtools.make_mean_of_cube_list_notime(cube_list)
 
     print('saving netcdf:', path)
     iris.save(outcube, path)
@@ -225,7 +226,8 @@ def make_map_figure(field):
         cube,
         linewidth=0,
         )
-
+    pyplot.colorbar()
+    pyplot.title()
     print('saving figure:', path)
     pyplot.savefig(path)
     pyplot.close()
@@ -264,7 +266,7 @@ def make_map_figure(field):
 #     sh.close()
 
 def main():
-    make_map_figure(field)
+    make_map_figure('tos')
     make_figure('tos')
 
 if __name__ == '__main__':
