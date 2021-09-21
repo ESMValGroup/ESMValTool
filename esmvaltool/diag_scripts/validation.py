@@ -73,8 +73,13 @@ def save_plotted_cubes(cube, cfg, plot_name):
             save_name = plot_name.replace("png", "nc")
             save_path = os.path.join(cfg['work_dir'], save_name)
             iris.save(cube, save_path)
-            _get_provenance_record(cfg, save_name,
-                                   cube.name, loc=save_path)
+            # files are overwritten once; provenance fails second time
+            try:
+                _get_provenance_record(cfg, save_path,
+                                       plot_name.replace(".png", ""),
+                                       loc=os.path.dirname(save_path))
+            except KeyError:
+                pass
 
 
 def plot_latlon_cubes(cube_1,
