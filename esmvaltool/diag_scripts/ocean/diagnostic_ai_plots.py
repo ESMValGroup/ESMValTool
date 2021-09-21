@@ -64,6 +64,7 @@ import numpy as np
 
 import cartopy
 import cartopy.crs as ccrs
+from shelve import open as shopen
 
 
 from esmvalcore.preprocessor._time import extract_time, annual_statistics, regrid_time
@@ -100,6 +101,13 @@ long_name_dict = {
     'intpp': 'Integrated Primary production'}
 
 models_to_skip = ['GISS-E2-1-G', ] #SST is strangely high and there are very few SSP ensembles.
+
+
+def get_shelve_path(field, pane='timeseries'):
+    # from standalone calc ai obs.
+    shelve_path = diagtools.folder(['aux', 'obs_shelves'])
+    shelve_path += '_'.join([field, pane]) +'.shelve'
+    return shelve_path
 
 
 def timeplot(cube, **kwargs):
@@ -250,6 +258,7 @@ def multi_model_time_series(
     model_cubes_paths = {}
 
     models = {}
+    short_name = ''
 
     for variable_group, filenames  in ts_dict.items():
         for fn in sorted(filenames):
@@ -258,6 +267,7 @@ def multi_model_time_series(
             if dataset in models_to_skip: continue
             print('loading: ',variable_group, dataset, fn)
             models[dataset] = True
+            short_name = metadatas[fn]['short_name']
 
             cube = iris.load_cube(fn)
             cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
@@ -402,6 +412,17 @@ def multi_model_time_series(
         legd.draw_frame(False)
         legd.get_frame().set_alpha(0.)
 
+    plot_obs = True
+    if plot_obs:
+        shpath = get_shelve_path(short_name, 'ts')
+        sh = shopen(shpath)
+        # times, data = sh['times'], sh['data']
+        annual_times, annual_data = sh['annual_times'], sh['annual_data']
+        # clim = sh['clim']
+        sh.close()
+        plt.plot(annual_times, annual_data, ls='-', c='k'', lw=1.5.)
+
+
     # Add title, legend to plots
     plt.title(title)
 
@@ -450,7 +471,7 @@ def multi_model_clim_figure(
     # Load the data for each layer as a separate cube
     model_cubes = {}
     model_cubes_paths = {}
-
+    short_name = ''
     for variable_group, filenames  in ts_dict.items():
         for fn in sorted(filenames):
             print(variable_group, fn)
@@ -459,7 +480,7 @@ def multi_model_clim_figure(
             if metadatas[fn]['dataset'] in models_to_skip: continue
 
             scenario = metadatas[fn]['exp']
-
+            short_name = metadatas[fn]['short_name']
             print('loading', fn)
 
             cube = iris.load_cube(fn)
@@ -532,6 +553,15 @@ def multi_model_clim_figure(
 
     plt.title('Climatology')
 
+    plot_obs = True
+    if plot_obs:
+        shpath = get_shelve_path(short_name, 'ts')
+        sh = shopen(shpath)
+        # times, data = sh['times'], sh['data']
+        # annual_times, annual_data = sh['annual_times'], sh['annual_data']
+        clim = sh['clim']
+        sh.close()
+        plt.plot(times, clim, ls='-', c='k'', lw=1.5.)
     #plt.suptitle(' '.join([long_name_dict[short_name], 'in Ascension'
     #                       ' Island MPA \n Historical', '-'.join([str(t) for t in hist_time_range]),
     #                       'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ]))
@@ -729,13 +759,16 @@ def make_multi_model_profiles_plots(
 
     # Add observational data.
     if obs_filename:
+
+    plot_obs = True
+    if plot_obs:
+        obs_filename = 'aux/obs_ncs/'+short_name+'_profile.nc'
         obs_cube = iris.load_cube(obs_filename)
-        obs_cube = diagtools.bgc_units(obs_cube, metadata['short_name'])
-        obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
-
-        obs_key = obs_metadata['dataset']
-        qplt.plot(obs_cube, obs_cube.coord('depth'), c='black')
-
+        # obs_cube = diagtools.bgc_units(obs_cube, metadata['short_name'])
+        # obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
+        depths = -1.* cube.coord('depth').points
+        ax0, ax1 = plot_z_line(depths, cube.data, ax0, ax1, ls='-', c=color, lw=1., label = obs_key)
+        obs_key = 'Observations' #obs_metadata['dataset']
         plot_details[obs_key] = {'c': 'black', 'ls': '-', 'lw': 1,
                                  'label': obs_key}
 
@@ -1064,7 +1097,7 @@ def multi_model_map_figure(
     if figure_style=='five_means':
         subplots_nums = {231: 'historical', 232: 'ssp126', 233: 'ssp245', 235: 'ssp370', 236: 'ssp585'}
         subplot_style = {231: 'hist', 232:'mean', 233: 'mean', 235: 'mean', 236: 'mean'}
-        cmaps = {231: seq_cmap, 232:seq_cmap, 233: seq_cmap, 235: seq_cmap, 236: seq_cmap}
+        cmaps = {231: seq_cmap, 232:seq_cmap, 233: seq_cmap, 234: seq_cmap, 235: seq_cmap, 236: seq_cmap}
 
     # elif figure_style=='four_ssp_diff':
     #     subplots = {221: 'ssp126', 222:'ssp245', 223:'ssp370', 224: 'ssp585'}
@@ -1073,7 +1106,7 @@ def multi_model_map_figure(
     elif figure_style=='hist_and_ssp':
         subplots_nums = {231: 'historical', 232: 'ssp126', 233: 'ssp245', 235: 'ssp370', 236: 'ssp585'}
         subplot_style = {231: 'hist', 232:'diff', 233: 'diff', 235: 'diff', 236: 'diff'}
-        cmaps = {231: seq_cmap, 232:div_cmap, 233: div_cmap, 235: div_cmap, 236: div_cmap}
+        cmaps = {231: seq_cmap, 232:div_cmap, 233: div_cmap, 234: seq_cmap, 235: div_cmap, 236: div_cmap}
     # elif figure_style in ['ssp126', 'ssp245', 'ssp370', 'ssp585']:
     #     subplots = {221: 'historical', 222:figure_style, 223:figure_style, 224: figure_style}
     #     subplot_style = {221:'hist',222: 'diff', 223: 'min_diff', 224: 'max_diff'}
@@ -1084,8 +1117,11 @@ def multi_model_map_figure(
     gs1 =ax.subgridspec(ncols=3, nrows=2, )
     subplots = {}
     subplots['historical'] = fig.add_subplot(gs1[0,0], projection=proj)
+
+    obs_filename = 'aux/obs_ncs/'+short_name+'_map.nc'
     if obs_filename:
         subplots['obs'] = fig.add_subplot(gs1[1,0], projection=proj)
+
     subplots['ssp126'] = fig.add_subplot(gs1[0,1], projection=proj)
     subplots['ssp245'] = fig.add_subplot(gs1[1,1], projection=proj)
     subplots['ssp370'] = fig.add_subplot(gs1[0,2], projection=proj)
@@ -1242,6 +1278,36 @@ def multi_model_map_figure(
     #                      'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ])
     #
     # plt.suptitle(suptitle)
+
+    plot_obs = True
+    if plot_obs:
+        obs_cube = iris.load_cube(obs_filename)
+        # obs_cube = diagtools.bgc_units(obs_cube, metadata['short_name'])
+        # obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
+
+        obs_key = 'Observations' #obs_metadata['dataset']
+        plot_details[obs_key] = {'c': 'black', 'ls': '-', 'lw': 1,
+                                 'label': obs_key}
+        ax0 = subplots['obs']
+        plt.sca(ax0)
+        sbp_style = 'hist'
+
+        qplot = iris.plot.contourf(
+            cube,
+            nspaces[sbp_style],
+            linewidth=0,
+            cmap=cmaps[234],
+            extend='neither',
+            zmin=style_range[sbp_style][0],
+            zmax=style_range[sbp_style][1],
+            )
+        title = ' '.join(['Observations',]) # long_names.get(sbp_style, sbp_style,)])
+        if region == 'midatlantic':
+            plt.text(0.95, 0.9, title,  ha='right', va='center', transform=ax0.transAxes,color='black',fontweight='bold')
+        else:
+            plt.title(title)
+
+
     if len(shaped_ims['hist']):
         fig.colorbar(shaped_ims['hist'][0], ax=shared_cmap['hist']) #, label = 'Historical')
 
