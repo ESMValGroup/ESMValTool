@@ -119,8 +119,13 @@ def time_series(field='tos', pane='timeseries'):
     central_latitude = -7.56 # +/3 # North
     for nc_path in sorted(files):
         print('loading:', nc_path)
-        nc = Dataset(nc_path, 'r')
-        nctimes = nc_time_to_float(nc)
+
+        cube = iris.load_cube(nc_path
+        cube = diagtools.bgc_units(cube, field)
+
+        #nc = Dataset(nc_path, 'r')
+        #bgc_units
+        nctimes = diagtools.cube_time_to_float(nc)
 
         # lons = nc.variables['lon']
         # np.argmin(np.abs(lons[:] -(360-central_longitude -3)))
@@ -131,9 +136,9 @@ def time_series(field='tos', pane='timeseries'):
         # np.argmin(np.abs(lats[:] -(central_latitude -3))), np.argmin(np.abs(lats[:] -(central_latitude +3)))
         #
         if field == 'tos':
-            ncdata =  nc.variables['tos'][:, 106:114+1, 457:465+1].mean(axis=(1,2))
+            ncdata =  cube[:, 106:114+1, 457:465+1].collapsed(['lat', 'lon'], iris.analysis.MEAN).data #.mean(axis=(1,2))
         elif field =='chl':
-            ncdata =  nc.variables['chl'][:, 0, 317:341+1,1439:1439+1].mean(axis=(1,2))
+            ncdata =  cube[:, 0, 317:341+1,1439:1439+1].collapsed(['latitude', 'longitude'], iris.analysis.MEAN).data
 
         for t,d in zip(nctimes, ncdata):
             datas[t] = d
@@ -218,7 +223,9 @@ def load_map_netcdf(field='tos', pane='map'):
     cube_list = []
     for fn in files:
         cube = iris.load_cube(fn)
+        cube = diagtools.bgc_units(cube, field)
         times = diagtools.cube_time_to_float(cube)
+
         # assumes tium
         if field in ['tos',]:
             if np.min(times) < 2000.: continue
@@ -324,6 +331,7 @@ def load_profile_netcdf(field='tos', pane='profile'):
     cube_list = []
     for fn in files:
         cube = iris.load_cube(fn)
+        cube = diagtools.bgc_units(cube, field)
         times = diagtools.cube_time_to_float(cube)
         if np.min(times) < 2000.: continue
         if np.max(times) > 2010.: continue
