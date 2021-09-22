@@ -270,6 +270,7 @@ def load_profile_netcdf(field='tos', pane='profile'):
         if np.min(times) < 2000.: continue
         if np.max(times) > 2010.: continue
         new_cube = cube.collapsed('time', iris.analysis.MEAN)
+        #new_cube = new_cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN)
         cube_list.append(new_cube.copy())
 
     if len(cube_list) == 1:
@@ -278,6 +279,8 @@ def load_profile_netcdf(field='tos', pane='profile'):
         outcube  = diagtools.make_mean_of_cube_list_notimecube_list(cube_list)
 
     outcube = regrid_intersect(outcube, region='midatlantic')
+    outcube = outcube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN)
+
     outcube = extract_levels(outcube,
         scheme='linear',
         levels =  [0.5, 1.0, 5.0, 10.0, 50.0, 100.0, 150., 200.0, 250., 300.0, 350., 400.0, 450., 500.0,
@@ -311,7 +314,7 @@ def make_profile_figure(field):
         lw=2,
         ls='-',
         c='k',
-        label)
+        label=field)
     pyplot.title(field+ ' profile')
 
     print('saving figure:', path)
