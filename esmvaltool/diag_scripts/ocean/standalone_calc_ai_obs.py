@@ -105,6 +105,9 @@ def time_series(field='tos', pane='timeseries'):
 
     if field == 'tos':
         files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc'))
+    elif field == 'chl':
+        files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/ESACCI-OC/OBS6_ESACCI-OC_sat_fv5.0_Omon_chl_199709-202012.nc'))
+    else: assert 0
     times, data = [], []
     annual_times, annual_data = [], []
     months_dat = {m:[] for m in months}
@@ -121,24 +124,49 @@ def time_series(field='tos', pane='timeseries'):
         # np.argmin(np.abs(lons[:] -(360-central_longitude +3)))
 
         # lons = nc.variables['lon']
-        # np.argmin(np.abs(lons[:] -(360-central_longitude -3)))
-        # np.argmin(np.abs(lons[:] -(360-central_longitude +3)))
-        # np.argmin(np.abs(lats[:] -(central_latitude -3)))
-        # np.argmin(np.abs(lats[:] -(central_latitude +3)))
-        ncdata =  nc.variables['tos'][:, 106:114+1, 457:465+1].mean(axis=(1,2))
+        # np.argmin(np.abs(lons[:] -(360-central_longitude -3))), np.argmin(np.abs(lons[:] -(360-central_longitude +3)))
+        # np.argmin(np.abs(lats[:] -(central_latitude -3))), np.argmin(np.abs(lats[:] -(central_latitude +3)))
+        #
+        if field == 'tos':
+            ncdata =  nc.variables['tos'][:, 106:114+1, 457:465+1].mean(axis=(1,2))
+        elif field =='chl':
+            ncdata =  nc.variables['chl'][:, 0, 317:341+1,1439:1439+1].mean(axis=(1,2))
+
         times.extend(nctimes)
         data.extend(ncdata)
 
-        annual_times.append(np.mean(nctimes))
-        annual_data.append(np.mean(ncdata))
-        print('data:', np.mean(nctimes), np.mean(ncdata))
+    years = {int(t):[] for t in times}
 
-        #calculate clim
-        if np.min(nctimes) < 2000.: continue
-        if np.max(nctimes) > 2010.: continue
-        for m, d in zip(months, ncdata[:]):
+    # calculate annual and climatological data.
+    for t, d in zip(times, data):
+        years[int(t)].append(d)
+
+    for yr in sorted(years.keys()):
+        annual_times.append(yr + 0.5)
+        annual_data.append(np.mean(years[yr]))
+
+        if yr < 2000.: continue
+        if yr > 2010.: continue
+        for m, d in zip(months, years[yr]):
             print('clim:', m, d)
             months_dat[m].append(d)
+
+
+        # elif field in ['chl',]:
+        #     print(nctimes, ncdata)
+        #     assert 0
+        # else: assert 0
+        # print('data:', np.mean(nctimes), np.mean(ncdata))
+        #
+        # #calculate clim
+        # if field in ['tos',]:
+        #     if np.min(nctimes) < 2000.: continue
+        #     if np.max(nctimes) > 2010.: continue
+        #
+        # if field in ['chl',]:
+
+            #cube = extract_time(cube, 2000, 1, 1, 2010, 1, 1)
+
 
     clim = [np.mean(months_dat[m]) for m in months]
 
@@ -147,7 +175,11 @@ def time_series(field='tos', pane='timeseries'):
     sh['annual_times'], sh['annual_data'] = annual_times, annual_data
     sh['clim'] = clim
 
-    sh['header'] = 'TOS calculated from ERA-Interim, monthly data'
+    if field == 'tos':
+        sh['header'] = 'TOS calculated from ERA-Interim, monthly data'
+    elif field =='chl':
+        sh['header'] = 'chl calculated from ESACCI-OC_sat, monthly data'
+
     sh['files'] = files
     sh.close()
 
@@ -172,13 +204,20 @@ def load_map_netcdf(field='tos', pane='map'):
 
     if field=='tos':
         files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc'))
+    elif field == 'chl':
+        files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/ESACCI-OC/OBS6_ESACCI-OC_sat_fv5.0_Omon_chl_199709-202012.nc'))
+    else: assert 0
 
     cube_list = []
     for fn in files:
         cube = iris.load_cube(fn)
         times = diagtools.cube_time_to_float(cube)
-        if np.min(times) < 2000.: continue
-        if np.max(times) > 2010.: continue
+        # assumes tium
+        if field in ['tos',]:
+            if np.min(times) < 2000.: continue
+            if np.max(times) > 2010.: continue
+        if field in ['chl',]:
+            cube = extract_time(cube, 2000, 1, 1, 2010, 1, 1)
         print('loaded:', fn)
         new_cube = cube.collapsed('time', iris.analysis.MEAN)
         cube_list.append(new_cube.copy())
@@ -262,7 +301,12 @@ def load_profile_netcdf(field='tos', pane='profile'):
         return iris.load_cube(path)
 
     #files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_*'))
-    files = ['/gws/nopw/j04/esmeval/obsdata-v2/Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_200001-200012.nc',]
+    if field == 'tos':
+        files = ['/gws/nopw/j04/esmeval/obsdata-v2/Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_200001-200012.nc',]
+    elif field == 'chl':
+        return
+        #files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/ESACCI-OC/OBS6_ESACCI-OC_sat_fv5.0_Omon_chl_199709-202012.nc'))
+
     cube_list = []
     for fn in files:
         cube = iris.load_cube(fn)
