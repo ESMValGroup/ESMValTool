@@ -108,9 +108,12 @@ def time_series(field='tos', pane='timeseries'):
     elif field == 'chl':
         files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/ESACCI-OC/OBS6_ESACCI-OC_sat_fv5.0_Omon_chl_199709-202012.nc'))
     else: assert 0
-    times, data = [], []
+
+    #times, data = [], []
     annual_times, annual_data = [], []
     months_dat = {m:[] for m in months}
+
+    datas = {}
 
     central_longitude = -14.25 # +/-3 # West -11.25
     central_latitude = -7.56 # +/3 # North
@@ -132,9 +135,13 @@ def time_series(field='tos', pane='timeseries'):
         elif field =='chl':
             ncdata =  nc.variables['chl'][:, 0, 317:341+1,1439:1439+1].mean(axis=(1,2))
 
-        times.extend(nctimes)
-        data.extend(ncdata)
+        for t,d in zip(nctimes, ncdata):
+            datas[t] = d
+        #times.extend(nctimes)
+        #data.extend(ncdata)
 
+    times = [t for t in sorted(datas.keys())]
+    data = [datas[t] for t in times]
     years = {int(t):[] for t in times}
 
     # calculate annual and climatological data.
@@ -217,7 +224,10 @@ def load_map_netcdf(field='tos', pane='map'):
             if np.min(times) < 2000.: continue
             if np.max(times) > 2010.: continue
         if field in ['chl',]:
+            if np.min(times) > 2010.: continue
+            if np.max(times) < 2000.: continue
             cube = extract_time(cube, 2000, 1, 1, 2010, 1, 1)
+
         print('loaded:', fn)
         new_cube = cube.collapsed('time', iris.analysis.MEAN)
         cube_list.append(new_cube.copy())
@@ -229,7 +239,11 @@ def load_map_netcdf(field='tos', pane='map'):
     return outcube
 
 
-def make_figure(field):
+def make_ts_figure(field):
+    """
+    3 Pane Time series figure:
+        Monthly, annual and climatology panes.
+    """
 
     path = diagtools.folder('images/obs/timeseries')
     path +='_'.join([field, 'ts'])+'.png'
@@ -401,9 +415,13 @@ def make_profile_figure(field):
 #     sh.close()
 
 def main():
+    make_map_figure('chl')
+    make_ts_figure('chl')
+
+
     make_profile_figure('tos')
     make_map_figure('tos')
-    make_figure('tos')
+    make_ts_figure('tos')
 
 if __name__ == '__main__':
     main()
