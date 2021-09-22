@@ -224,6 +224,7 @@ def load_map_netcdf(field='tos', pane='map'):
             if np.min(times) < 2000.: continue
             if np.max(times) > 2010.: continue
         if field in ['chl',]:
+            cube = cube[:,0] # extract surface layer
             if np.min(times) > 2010.: continue
             if np.max(times) < 2000.: continue
             cube = extract_time(cube, 2000, 1, 1, 2010, 1, 1)
@@ -295,7 +296,7 @@ def make_map_figure(field):
         linewidth=0,
         )
     pyplot.colorbar()
-    pyplot.title()
+    pyplot.title(field)
     print('saving figure:', path)
     pyplot.savefig(path)
     pyplot.close()
