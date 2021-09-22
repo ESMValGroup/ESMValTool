@@ -120,12 +120,12 @@ def time_series(field='tos', pane='timeseries'):
     for nc_path in sorted(files):
         print('loading:', nc_path)
 
-        cube = iris.load_cube(nc_path
+        cube = iris.load_cube(nc_path)
         cube = diagtools.bgc_units(cube, field)
 
         #nc = Dataset(nc_path, 'r')
         #bgc_units
-        nctimes = diagtools.cube_time_to_float(nc)
+        nctimes = diagtools.cube_time_to_float(cube)
 
         # lons = nc.variables['lon']
         # np.argmin(np.abs(lons[:] -(360-central_longitude -3)))
