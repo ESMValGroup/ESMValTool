@@ -181,6 +181,14 @@ To allow the ESMValCore to keep track of provenance (e.g. which input files
 were used to create what plots by the diagnostic script), it needs the
 :ref:`esmvalcore:interface_diagnostic_esmvalcore`.
 
+.. note::
+
+    Provenance is recorded by the ``esmvaltool`` command provided by the
+    ESMValCore package.
+    No ``*_provenance.xml`` files will be generated when re-running just
+    the diagnostic script with the command that is displayed on the screen
+    during a recipe run, because that will only run the diagnostic script.
+
 Provenance items provided by the recipe
 ---------------------------------------
 Provenance tags can be added in several places in the recipe.

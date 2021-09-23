@@ -290,11 +290,11 @@ def main(cfg):
     ancestor_files = [ecs_file, tcr_file]
     provenance_record = get_provenance_record(project, ancestor_files)
     provenance_record.update({
-        'plot_file': plot_path,
         'plot_types': ['scatter'],
     })
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 if __name__ == '__main__':
