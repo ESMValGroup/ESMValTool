@@ -342,7 +342,11 @@ begin
     delete(plotsperline)
   end if
 
-  plotsperline = new((dim_MOD + 1) / 4, integer)
+  n = toint((dim_MOD + 1) / 4)
+  if (n .lt. 1) then
+    n = 1
+  end if
+  plotsperline = new(n, integer)
   plotsperline = 4
 
   if ((isStrSubset(str_lower(projects(plotind(0))), \
