@@ -73,10 +73,12 @@ def save_plotted_cubes(cube, cfg, plot_name):
             save_name = plot_name.replace("png", "nc")
             save_path = os.path.join(cfg['work_dir'], save_name)
             iris.save(cube, save_path)
+            parsed_file_name = plot_name.replace(".png", "").replace("_", " ")
+            prov_name = "Output file: " + parsed_file_name
             # files are overwritten once; provenance fails second time
             try:
                 _get_provenance_record(cfg, save_path,
-                                       plot_name.replace(".png", ""),
+                                       prov_name,
                                        loc=os.path.dirname(save_path))
             except KeyError:
                 pass
