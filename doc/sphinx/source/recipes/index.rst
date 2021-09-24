@@ -12,7 +12,6 @@ Atmosphere
    :maxdepth: 1
 
    recipe_miles
-   recipe_climwip
    recipe_clouds
    recipe_cmug_h2o
    recipe_crem
@@ -34,6 +33,9 @@ Atmosphere
    recipe_spei
    recipe_martin18grl
    recipe_autoassess_stratosphere
+   recipe_autoassess_landsurface_permafrost
+   recipe_autoassess_landsurface_surfrad
+   recipe_autoassess_landsurface_soilmoisture
    recipe_zmnam
    recipe_thermodyn_diagtool
    recipe_validation
@@ -51,6 +53,7 @@ Future projections
 .. toctree::
    :maxdepth: 1
 
+   recipe_climwip
    recipe_li17natcc
    recipe_schlund20jgr
    recipe_meehl20sciadv
@@ -104,9 +107,11 @@ Other
 
    recipe_examples
    recipe_capacity_factor
+   recipe_cmorizers
    recipe_ensclus
    recipe_multimodel_products
    recipe_rainfarm
+   recipe_pv_capacity_factor
    recipe_seaice_feedback
    recipe_seaice
    recipe_seaice_drift

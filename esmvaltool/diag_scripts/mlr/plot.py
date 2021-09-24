@@ -286,12 +286,12 @@ def _write_map_provenance(cfg, cube, plot_path, title, *attrs):
         'authors': ['schlund_manuel'],
         'caption': f"Geographical distribution of {cube.long_name} for "
                    f"{title}.",
-        'plot_file': plot_path,
         'plot_types': ['geo'],
         'references': ['schlund20jgr'],
     }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, record)
+        provenance_logger.log(plot_path, record)
 
 
 def _write_xy_error_provenance(cfg, cubes, plot_path, title, ancestors):
@@ -311,12 +311,12 @@ def _write_xy_error_provenance(cfg, cubes, plot_path, title, ancestors):
         'ancestors': ancestors,
         'authors': ['schlund_manuel'],
         'caption': caption,
-        'plot_file': plot_path,
         'plot_types': ['line', 'errorbar'],
         'references': ['schlund20jgr'],
     }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, record)
+        provenance_logger.log(plot_path, record)
 
 
 def _write_xy_provenance(cfg, cubes, plot_path, title, *attrs):
@@ -339,12 +339,12 @@ def _write_xy_provenance(cfg, cubes, plot_path, title, *attrs):
         'ancestors': ancestors,
         'authors': ['schlund_manuel'],
         'caption': caption,
-        'plot_file': plot_path,
         'plot_types': ['line'],
         'references': ['schlund20jgr'],
     }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, record)
+        provenance_logger.log(plot_path, record)
 
 
 def _xy_plot(cube, x_coord=None, reg_line=False, **plot_kwargs):

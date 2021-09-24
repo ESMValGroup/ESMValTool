@@ -10,7 +10,7 @@ Last access
    20210329
 
 Download and processing instructions
-   FTP server: ftp.brockmann-consult.de, access currently restrictet
+   FTP server: ftp.brockmann-consult.de, access currently restricted
                data/tcwv/dataset3_1/CDR-*/...
    All files need to be in one directory, not in yearly subdirectories.
 
@@ -26,6 +26,7 @@ import os
 import iris
 
 from esmvalcore.preprocessor import concatenate
+from esmvalcore.cmor.check import _get_time_bounds
 from esmvaltool.cmorizers.obs.utilities import (convert_timeunits, fix_coords,
                                                 fix_var_metadata,
                                                 save_variable, set_global_atts)
@@ -42,7 +43,7 @@ def extract_variable(var_info, raw_info, attrs, year):
         if cube.var_name == rawvar:
             fix_var_metadata(cube, var_info)
             convert_timeunits(cube, year)
-            fix_coords(cube)
+            fix_coords(cube, overwrite_time_bounds=False)
             set_global_atts(cube, attrs)
             # Remove disfunctional ancillary data without sandard name
             for ancillary_variable_, dim in cube._ancillary_variables_and_dims:
@@ -70,12 +71,12 @@ def cmorization(in_dir, out_dir, cfg, _):
                 raw_info['file'] = inpfile.format(year=year, month=month)
                 logger.info("CMORizing var %s from file type %s", var,
                             raw_info['file'])
-                cube = extract_variable(var_info, raw_info, glob_attrs, year)
-                monthly_cubes.append(cube)
+                monthly_cubes.append(extract_variable(var_info, raw_info,
+                                                      glob_attrs, year))
             yearly_cube = concatenate(monthly_cubes)
             # Fix monthly time bounds
-            fix_coords(yearly_cube, overwrite_lon_bounds=False,
-                       overwrite_lat_bounds=False)
+            time = yearly_cube.coord('time')
+            time.bounds = _get_time_bounds(time, 'mon')
             save_variable(yearly_cube,
                           var,
                           out_dir,
