@@ -24,9 +24,16 @@ preprocessors:
       period: full
     area_statistics:
       operator: mean
+  seasonal:
+    climate_statistics:
+      operator: mean
+      period: seasonal
+      seasons: ['DJF', 'MAM', 'JJA', 'SON']
+    area_statistics:
+      operator: mean
 
 diagnostics:
-  radiation_budget:
+  single_value_radiation_budget:
     description: Radiation budget for HadGEM3 vs UKESM1.
     variables:
       rss:
@@ -77,3 +84,43 @@ diagnostics:
     scripts:
       radiation_budget:
         script: radiation_budget/radiation_budget.py
+
+  seasonal_radiation_budget:
+    description: Seasonal radiation budget for HadGEM3 vs UKESM1.
+    variables:
+      rss:
+        mip: Emon
+        preprocessor: seasonal
+      rsdt:
+        mip: Amon
+        preprocessor: seasonal
+      rsut:
+        mip: Amon
+        preprocessor: seasonal
+      rsutcs:
+        mip: Amon
+        preprocessor: seasonal
+      rsds:
+        mip: Amon
+        preprocessor: seasonal
+      rls:
+        mip: Emon
+        preprocessor: seasonal
+      rlut:
+        mip: Amon
+        preprocessor: seasonal
+      rlutcs:
+        mip: Amon
+        preprocessor: seasonal
+      rlds:
+        mip: Amon
+        preprocessor: seasonal
+      hfss:
+        mip: Amon
+        preprocessor: seasonal
+      hfls:
+        mip: Amon
+        preprocessor: seasonal
+    scripts:
+      radiation_budget:
+        script: radiation_budget/seasonal_radiation_budget.py

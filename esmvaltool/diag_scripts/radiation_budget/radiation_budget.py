@@ -15,6 +15,7 @@ import os
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
+from common import get_filenames, load_data
 
 from esmvaltool.diag_scripts.shared import (
     get_plot_filename,
@@ -25,40 +26,6 @@ from esmvaltool.diag_scripts.shared import (
 CWD = os.path.abspath(os.path.dirname(__file__))
 STEPHENS_FILENAME = "Stephens_et_al_2012_obs_Energy_Budget.txt"
 DEMORY_FILENAME = "Demory_et_al_2014_obs_Energy_Budget.txt"
-
-
-def load_data(filenames):
-    """Return the loaded cubes.
-
-    Parameters
-    ----------
-    filenames : list of strings
-        The filenames to load.
-
-    Returns
-    -------
-    :class:`iris.cube.Cube`
-        The loaded cubes.
-    """
-    cubes = iris.load(filenames)
-    return cubes
-
-
-def get_filenames(group):
-    """Return all the filenames for the group.
-
-    Parameters
-    ----------
-    group : list(dict)
-        The grouped metadata describing preprocessed data.
-
-    Returns
-    -------
-    list
-        All the filenames for the group.
-    """
-    filenames = [item["filename"] for item in group]
-    return filenames
 
 
 def derive_additional_variables(cubes):
