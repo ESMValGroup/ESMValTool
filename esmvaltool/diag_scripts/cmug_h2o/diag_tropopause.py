@@ -25,7 +25,6 @@ Configuration options
 
 import logging
 import os
-from pprint import pformat
 from copy import deepcopy
 import numpy as np
 import cartopy.crs as cart
@@ -36,10 +35,32 @@ from iris.analysis import Aggregator
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata, sorted_metadata)
-from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
+from esmvaltool.diag_scripts.shared._base import (get_plot_filename)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def _press_interp_cube(cube, pstart=60000, pend=2500, pgrid=221):
+    """Interpolate cube onto dense pressure grid."""
+    # interpolate to dense grid, use equal dist points in log(p)
+    logpr = np.log(np.array([pstart, pend]))
+    sample_points = [('air_pressure', np.exp(np.linspace(logpr[0],
+                                                         logpr[1],
+                                                         pgrid)))]
+    new_cube = cube.interpolate(sample_points, iris.analysis.Linear())
+
+    return new_cube
+
+
+def _set_new_dims(new_tacube, new_svarcube):
+    """Set dimensions to unroll."""
+    dims_to_collapse = set()
+    dims_to_collapse.update(new_svarcube.coord_dims('air_pressure'))
+    untouched_dims = set(range(new_svarcube.ndim)) - set(dims_to_collapse)
+    dims = list(untouched_dims) + list(dims_to_collapse)
+    unrolled_data = np.moveaxis(new_tacube.data, dims,
+                                range(new_svarcube.ndim))
+    return unrolled_data
 
 
 def cube_to_save_ploted_map(var, lats, lons, names):
@@ -184,35 +205,19 @@ def main(cfg):
     for attributes in data['ta']:
         logger.info("Processing dataset %s", attributes['dataset'])
         dataset = attributes['dataset']
+        logger.debug("Loading %s", attributes['filename'])
+        new_tacube = _press_interp_cube(iris.load_cube(attributes['filename']))
         for svar in available_vars_min_tas:
             input_file_svar = attributes['filename'].replace('/ta/',
                                                              '/' + svar + '/')
             input_file_svar = input_file_svar.replace('_ta_', '_' + svar + '_')
 
+            # load, interpolate to dense grid, use equal dist points in log(p)
             logger.debug("Loading %s", input_file_svar)
-            svarcube = iris.load_cube(input_file_svar)
-            logger.debug("Loading %s", attributes['filename'])
-            tacube = iris.load_cube(attributes['filename'])
-            # plev = tacube.coord('air_pressure').points
+            new_svarcube = _press_interp_cube(iris.load_cube(input_file_svar))
 
-            # interpolate to dense grid, use equal dist points in log(p)
-            logpr = np.log(np.array([60000, 2500]))
-            sample_points = [('air_pressure', np.exp(np.linspace(logpr[0],
-                                                                 logpr[1],
-                                                                 221)))]
-
-            new_tacube = tacube.interpolate(sample_points,
-                                            iris.analysis.Linear())
-            new_svarcube = svarcube.interpolate(sample_points,
-                                                iris.analysis.Linear())
-
-            dims_to_collapse = set()
-            dims_to_collapse.update(new_svarcube.coord_dims('air_pressure'))
-            untouched_dims = set(range(new_svarcube.ndim)) -\
-                set(dims_to_collapse)
-            dims = list(untouched_dims) + list(dims_to_collapse)
-            unrolled_data = np.moveaxis(new_tacube.data, dims,
-                                        range(new_svarcube.ndim))
+            # set new dims
+            unrolled_data = _set_new_dims(new_tacube, new_svarcube)
 
             trop_svar = new_svarcube.collapsed('air_pressure', min_pos,
                                                data_min=unrolled_data)
@@ -226,12 +231,6 @@ def main(cfg):
         plot_tp_map(cfg, trop_ta.collapsed('time', iris.analysis.MEAN),
                     dataset + " Cold point tropopause ",
                     "Air Temperature")
-#        plot_tp_map(cfg, trop_hus.collapsed('time', iris.analysis.MEAN),
-#                    dataset + " Cold point tropopause specific humidity",
-#                    "Specific humidity [kg/kg]")
-#        plot_tp_map(cfg, trop_hur.collapsed('time', iris.analysis.MEAN),
-#                    dataset + " Cold point tropopause relative humidity",
-#                    "Relative humidity [%]")
 
 
 if __name__ == '__main__':
