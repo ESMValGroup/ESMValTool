@@ -63,8 +63,8 @@ diagnostics:
         force_derivation: false
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4mips, type: satellite,
-             level: L3B, version: Ed2-8, start_year: 2001,
-             end_year: 2012, tier: 1}
+             level: L3B, version: Ed2-8, start_year: 2003,
+             end_year: 2014, tier: 1}
       tas:
         <<: *spatial_mean3_cmip5_r1i1p1_amon_t2ms
         derive: false
@@ -72,8 +72,10 @@ diagnostics:
         <<: *tropical_cmip5_r1i1p1_amon_t2ms
         derive: false
         additional_datasets:
-          - {dataset: ESACCI-WV, project: OBS, type: sat,
-             version: HOAPS-v4.0, start_year: 2001, end_year: 2012, tier: 2}
+          # - {dataset: ESACCI-WV, project: OBS, type: sat,
+          #    version: HOAPS-v4.0, start_year: 2001, end_year: 2012, tier: 2}
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
+             version: CDR2-L3S-05deg_fv3.1, start_year: 2003, end_year: 2014, tier: 3}
     additional_datasets:
       - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
       - {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 1, end_year: 150}

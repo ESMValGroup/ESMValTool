@@ -118,12 +118,12 @@ Example plots
 
 
 
-.. _fig3b:
-.. figure:: /recipes/figures/deangelis15nat/fig3b_cmug.png
+.. _fig_deangelis_cmug_cdr2:
+.. figure:: /recipes/figures/deangelis15nat/fig_deangelis_cmug_cdr2.png
    :align: center
    :width: 50%
 
-   Scatter plot and regression line the between the ratio of the change of net short wave radiation (rsnst) and the change of the Water Vapor Path (prw) against the ratio of the change of netshort wave radiation for clear skye (rsnstcs) and the the change of surface temperature (tas). The width of horizontal shading for models and the vertical dashed lines for observations (Obs.) represent statistical uncertainties of the ratio, as the 95% confidence interval (CI) of the regression slope to the rsnst versus prw curve. For the observations the minimum of the lower bounds of all CIs to the maximum of the upper bounds of all CIs is shown.
+   Scatter plot and regression line the between the ratio of the change of net short wave radiation (rsnst) and the change of the Water Vapor Path (prw) against the ratio of the change of netshort wave radiation for clear skye (rsnstcs) and the the change of surface temperature (tas). The width of horizontal shading for models and the vertical dashed lines for observations (Obs.) represent statistical uncertainties of the ratio, as the 95% confidence interval (CI) of the regression slope to the rsnst versus prw curve. For the prw observations ESACCI CDR-2 data from 2003 to 2014 are used.
 
 .. _fig_ERA-Interim_Cold_point_tropopause_Specific_Humidity_map:
 .. figure:: /recipes/figures/cmug_h2o/fig_ERA-Interim_Cold_point_tropopause_Specific_Humidity_map.png
