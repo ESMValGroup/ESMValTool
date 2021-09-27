@@ -298,10 +298,14 @@ def make_map_figure(field):
     fig = pyplot.figure()
     ax = fig.add_subplot(111)
     cube = load_map_netcdf(field=field, pane='map')
+    if field == 'chl':
+        cube.data = np.clip(cube.data, 0., 5.)
+
     qplot = iris.plot.contourf(
         cube,
         linewidth=0,
         )
+        
     pyplot.colorbar()
     pyplot.title(field)
     print('saving figure:', path)

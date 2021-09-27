@@ -417,10 +417,11 @@ def multi_model_time_series(
         shpath = get_shelve_path(short_name, 'ts')
         sh = shopen(shpath)
         # times, data = sh['times'], sh['data']
-        annual_times, annual_data = sh['annual_times'], sh['annual_data']
+        if 'annual_times' in sh.keys(): 
+            annual_times, annual_data = sh['annual_times'], sh['annual_data']
+            plt.plot(annual_times, annual_data, ls='-', c='k', lw=1.5)
         # clim = sh['clim']
         sh.close()
-        plt.plot(annual_times, annual_data, ls='-', c='k', lw=1.5)
 
 
     # Add title, legend to plots
@@ -559,9 +560,10 @@ def multi_model_clim_figure(
         sh = shopen(shpath)
         # times, data = sh['times'], sh['data']
         # annual_times, annual_data = sh['annual_times'], sh['annual_data']
-        clim = sh['clim']
+        if 'clim' in sh.keys():
+            clim = sh['clim']
+            plt.plot(times, clim, ls='-', c='k', lw=1.5)
         sh.close()
-        plt.plot(times, clim, ls='-', c='k', lw=1.5)
     #plt.suptitle(' '.join([long_name_dict[short_name], 'in Ascension'
     #                       ' Island MPA \n Historical', '-'.join([str(t) for t in hist_time_range]),
     #                       'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ]))
@@ -759,8 +761,9 @@ def make_multi_model_profiles_plots(
 
     # Add observational data.
     plot_obs = True
-    if plot_obs:
-        obs_filename = 'aux/obs_ncs/'+short_name+'_profile.nc'
+    obs_filename = 'aux/obs_ncs/'+short_name+'_profile.nc'
+
+    if plot_obs and os.path.exists(obs_filename):
         obs_cube = iris.load_cube(obs_filename)
         # obs_cube = diagtools.bgc_units(obs_cube, metadata['short_name'])
         # obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
@@ -881,6 +884,9 @@ def make_multi_model_profiles_plotpair(
             if metadatas[fn]['dataset'] in models_to_skip: continue
 
             cube = iris.load_cube(fn)
+            try: cube.coord('depth')
+            except: continue
+
             cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
             short_name = metadatas[fn]['short_name']
             scenario = metadatas[fn]['exp']
@@ -903,6 +909,9 @@ def make_multi_model_profiles_plotpair(
 
             model_cubes = add_dict_list(model_cubes, variable_group, cube)
             model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
+
+    if not len(model_cubes):
+        return fig, ax
 
     data_dict = {}
     for variable_group, cubes in model_cubes.items():
@@ -988,8 +997,8 @@ def make_multi_model_profiles_plotpair(
     # Add observational data.
 
     plot_obs = True
-    if plot_obs:
-        obs_filename = 'aux/obs_ncs/'+short_name+'_profile.nc'
+    obs_filename = 'aux/obs_ncs/'+short_name+'_profile.nc'
+    if plot_obs and os.path.exists(obs_filename):
         obs_cube = iris.load_cube(obs_filename)
         # obs_cube = diagtools.bgc_units(obs_cube, metadata['short_name'])
         # obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
@@ -1292,8 +1301,8 @@ def multi_model_map_figure(
     #
     # plt.suptitle(suptitle)
 
-    if plot_obs:
-        obs_filename = 'aux/obs_ncs/'+short_name+'_map.nc'
+    obs_filename = 'aux/obs_ncs/'+short_name+'_map.nc'
+    if plot_obs and os.path.exists(obs_filename):
         obs_cube = iris.load_cube(obs_filename)
         # obs_cube = diagtools.bgc_units(obs_cube, metadata['short_name'])
         # obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
@@ -1508,7 +1517,7 @@ def main(cfg):
         plottings = [['global_model_means', 'model_means', ], ['global_model_means',], ['model_means', ],
                      [ 'means',  '5-95'], ['all_models', ], ] #'medians', 'all_models', 'range',
         for plotting in plottings:
-            continue
+            #continue
             multi_model_time_series(
                 cfg,
                 metadatas,
@@ -1522,7 +1531,7 @@ def main(cfg):
         # Profile pair
         plottings =  [['means_split',], ['5-95_split',], ['means_split', '5-95_split', ],  ]
         for plotting in plottings:
-            continue 
+            #continue 
             make_multi_model_profiles_plotpair(
                     cfg,
                     metadatas,
@@ -1551,7 +1560,7 @@ def main(cfg):
         # Climatology plot
         plottings =  [[ 'means',  '5-95'],  ['means',],  ['5-95',], ['all_models', ]]
         for plotting in plottings:
-            continue
+            #continue
             multi_model_clim_figure(
                 cfg,
                 metadatas,
@@ -1637,6 +1646,15 @@ def main(cfg):
 
     if 'tos_ts_hist' in time_series_fns.keys():
         suptitle = 'Temperature, '+r'$\degree$' 'C'
+    elif 'chl_ts_hist' in time_series_fns.keys():
+        suptitle = 'Chlorohpyll concentration'
+    elif 'ph_ts_hist' in time_series_fns.keys():
+        suptitle = 'pH'
+    elif 'intpp_ts_hist' in time_series_fns.keys():
+        suptitle = 'Integrated Primary Production'
+    elif 'no3_ts_hist' in time_series_fns.keys():
+        suptitle = 'Nitrate Concentration'
+
 
     suptitle += ' '.join([
                         '\n Historical', '('+ '-'.join([str(int(t)) for t in hist_time_range]) +')',
