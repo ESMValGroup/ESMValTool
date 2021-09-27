@@ -305,7 +305,7 @@ def make_map_figure(field):
         cube,
         linewidth=0,
         )
-        
+
     pyplot.colorbar()
     pyplot.title(field)
     print('saving figure:', path)

@@ -235,8 +235,9 @@ def multi_model_time_series(
         plotting = [ 'means',  '5-95'], #'medians', 'all_models', 'range',
         fig = None,
         ax = None,
-        save = False
-):
+        save = False,
+        ukesm = 'only'
+        ):
     """
     Make a time series plot showing several preprocesssed datasets.
 
@@ -265,6 +266,9 @@ def multi_model_time_series(
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             dataset = metadatas[fn]['dataset']
             if dataset in models_to_skip: continue
+            if ukesm == 'only' and dataset != 'UKESM1-0-LL': continue
+            if ukesm == 'not' and dataset == 'UKESM1-0-LL': continue
+
             print('loading: ',variable_group, dataset, fn)
             models[dataset] = True
             short_name = metadatas[fn]['short_name']
@@ -346,12 +350,13 @@ def multi_model_time_series(
                     means = add_dict_list(means, t, d)
 
                 print('global_model_means',dataset, times, mean)
-                plt.plot(times, mean, ls='-', c=color, lw=2., label=dataset)
-                plot_details[path] = {
-                    'c': color,
-                    'ls': '-',
-                    'lw': 1.4,
-                    'label':dataset}
+                if 'model_means' in plotting:
+                    plt.plot(times, mean, ls='-', c=color, lw=2., label=dataset)
+                    plot_details[path] = {
+                        'c': color,
+                        'ls': '-',
+                        'lw': 1.4,
+                        'label':dataset}
 
         if 'global_model_means' in plotting:
             times = sorted(means.keys())
@@ -417,7 +422,7 @@ def multi_model_time_series(
         shpath = get_shelve_path(short_name, 'ts')
         sh = shopen(shpath)
         # times, data = sh['times'], sh['data']
-        if 'annual_times' in sh.keys(): 
+        if 'annual_times' in sh.keys():
             annual_times, annual_data = sh['annual_times'], sh['annual_data']
             plt.plot(annual_times, annual_data, ls='-', c='k', lw=1.5)
         # clim = sh['clim']
@@ -432,6 +437,9 @@ def multi_model_time_series(
         path = diagtools.folder(cfg['plot_dir']+'/individual_panes')
         path += '_'.join(['multi_model_ts', moving_average_str] )
         path += '_'+'_'.join(plotting)
+        if ukesm == 'only': path += '_UKESM'
+        if ukesm == 'not': path += '_noUKESM'
+
         path += diagtools.get_image_format(cfg)
 
         # Resize and add legend outside thew axes.
@@ -1511,27 +1519,29 @@ def main(cfg):
 
 
     # Individual plots - standalone
-    do_standalone = True 
+    do_standalone = True
     if do_standalone:
         # time series
         plottings = [['global_model_means', 'model_means', ], ['global_model_means',], ['model_means', ],
                      [ 'means',  '5-95'], ['all_models', ], ] #'medians', 'all_models', 'range',
         for plotting in plottings:
             #continue
-            multi_model_time_series(
-                cfg,
-                metadatas,
-                ts_dict = time_series_fns,
-                moving_average_str='annual',
-                hist_time_range = [2000., 2010.],
-                ssp_time_range = [2040., 2050.],
-                plotting = plotting,
-            )
+            for ukesm in ['not', 'only', 'all']:
+                multi_model_time_series(
+                    cfg,
+                    metadatas,
+                    ts_dict = time_series_fns,
+                    moving_average_str='annual',
+                    hist_time_range = [2000., 2010.],
+                    ssp_time_range = [2040., 2050.],
+                    plotting = plotting,
+                    ukesm=ukesm,
+                )
 
         # Profile pair
         plottings =  [['means_split',], ['5-95_split',], ['means_split', '5-95_split', ],  ]
         for plotting in plottings:
-            #continue 
+            #continue
             make_multi_model_profiles_plotpair(
                     cfg,
                     metadatas,
@@ -1647,7 +1657,7 @@ def main(cfg):
     if 'tos_ts_hist' in time_series_fns.keys():
         suptitle = 'Temperature, '+r'$\degree$' 'C'
     elif 'chl_ts_hist' in time_series_fns.keys():
-        suptitle = 'Chlorohpyll concentration'
+        suptitle = 'Chlorohpyll concentration, mg '+r'$^{-3}$'
     elif 'ph_ts_hist' in time_series_fns.keys():
         suptitle = 'pH'
     elif 'intpp_ts_hist' in time_series_fns.keys():
