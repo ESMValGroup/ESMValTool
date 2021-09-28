@@ -3080,7 +3080,7 @@ def main(cfg):
             make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
             make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
 
-            plot_types = ['pair', 'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
+            plot_types = ['pair', ] #'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
             ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
             for pt, exp in product(plot_types, ssps):
 
@@ -3092,7 +3092,7 @@ def main(cfg):
                    continue
                 make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
             make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
-
+            assert 0
             LHS_panes = [
                 {'x':'time', 'y':'cumul_emissions'},
                 {'x':'time', 'y':'tls'},
@@ -3120,6 +3120,7 @@ def main(cfg):
                     if x == y: continue
                     #if (x, y) in pairs: continue
                     for fill in ['ensemble_means', 'all_ensembles']:
+                        continue
                         make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
                             x=x,
                             y=y,
