@@ -2674,6 +2674,7 @@ def make_cumulative_timeseries(cfg, data_dict,
             lad = lad+ond
             atd = atd + lad # air land sea.
 
+            pltplot(emt, emd, 'k-', lw=1.3,label='Emissions')
         # water:
         # plt.plot(
         #     ont,
