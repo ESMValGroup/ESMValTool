@@ -32,7 +32,6 @@ REQUIREMENTS = {
         'dask>=2.12',
         'ecmwf-api-client',
         'eofs',
-        'esmpy!=8.1.0',  # see github.com/ESMValGroup/ESMValCore/issues/1208
         'esmvalcore>=2.3.1,<2.4',
         'fiona',
         'GDAL',
