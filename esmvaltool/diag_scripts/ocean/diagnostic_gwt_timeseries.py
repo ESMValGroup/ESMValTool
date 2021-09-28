@@ -1698,13 +1698,14 @@ def load_ensemble(data_dict, short_name, exp, ensemble):
 
 
 def make_ts_envellope_figure(
-    cfg, data_dict, thresholds_dict,
-    x='time',
-    y='npp',
-    plot_dataset='CMIP6',
-    fill = 'ensemble_means',
-    fig=None,
-    ax=None,
+        cfg, data_dict, thresholds_dict,
+        x='time',
+        y='npp',
+        plot_dataset='CMIP6',
+        fill = 'ensemble_means',
+        markers='thresholds', 
+        fig=None,
+        ax=None,
     ):
     """
     make a time series envellope figure.
@@ -1716,7 +1717,7 @@ def make_ts_envellope_figure(
     fill = 'all_ensembles:' plots all ensembles, nut not ensemble means.
 
     plot_dataset = 'CMIP6': All datasets
-    plot_datasets = 'model': Only an ensemble of that model.
+    plot_dataset = 'model': Only an ensemble of that model.
 
     Parameters
     ----------
@@ -1724,6 +1725,7 @@ def make_ts_envellope_figure(
         the opened global config dictionairy, passed by ESMValTool.
     """
     if x !='time':return
+    draw_line=True
     exps = {}
     ensembles = {}
     datasets = {}
@@ -1732,7 +1734,7 @@ def make_ts_envellope_figure(
          ensembles[ensemble] = True
          datasets[dataset] = True
 
-    if plot_dataset != 'all_models':
+    if plot_dataset != 'CMIP6':
         if isinstance(plot_dataset, str):
             datasets = {plot_dataset:True}
         else:
@@ -1763,7 +1765,7 @@ def make_ts_envellope_figure(
 
     marker_styles = {1.5: 'o', 2.:'*', 3.:'D', 4.:'s', 5.:'X'}
 
-    if ensemble_mean: ensembles = ['ensemble_mean', ]
+    #if ensemble_mean: ensembles = ['ensemble_mean', ]
     exps = sorted(exps.keys())
     exps.reverse()
     print(exps, ensembles)
@@ -1778,7 +1780,7 @@ def make_ts_envellope_figure(
         plt.sca(ax)
 
     x_label,y_label = [], []
-    number_of_lines=0
+    #number_of_lines=0
 
     label_dicts = {
         'co2': ' '.join(['Atmospheric co2, ppm']),
@@ -1793,9 +1795,8 @@ def make_ts_envellope_figure(
     #dataset_1 = plot_dataset
     #ensemble_1 = 'ensemble_mean'
 
-    envellopes = {}
+    envellopes = {exp: {} for exp in exps}
     for exp_1, ensemble_1,dataset_1 in product(exps, ensembles,datasets):
-        envellopes[exp_1] = {}
         x_data, y_data = [], []
         x_times, y_times = [], []
         for (dataset, short_name, exp, ensemble), cube in data_dict.items():
@@ -1803,46 +1804,55 @@ def make_ts_envellope_figure(
             if exp != exp_1: continue
             if ensemble != ensemble_1: continue
             if dataset != dataset_1: continue
+
+            if fill == 'ensemble_means' and ensemble_1 != 'ensemble_mean':
+                #  plots only ensemble means.
+                continue
+            #if fill == 'all_ensembles' and ensemble_1 == 'ensemble_mean':
+            #    #  plots all ensembles, nut not ensemble means.
+            #    continue
+
+            print('found:', (dataset, short_name, exp, ensemble))
             if x == 'time' and short_name == y:
                 x_label = 'Year'
                 if isinstance(cube, iris.cube.Cube):
                     x_data = diagtools.cube_time_to_float(cube)
                     x_times = x_data.copy()
-                    print('setting x time to ',short_name, exp, ensemble)
+                    #print('setting x time to ',short_name, exp, ensemble)
                 else:
                     x_data = cube['time']
                     x_times = x_data.copy()
-                    print('setting x time to ',short_name, exp, ensemble)
+                    #print('setting x time to ',short_name, exp, ensemble)
             elif x == short_name and x in label_dicts.keys():
                 x_data = cube[x].copy()
                 x_times = cube['time'].copy()
-                print('setting x time to ',short_name, exp, ensemble)
+                #print('setting x time to ',short_name, exp, ensemble)
                 x_label = label_dicts[x]
 
             elif short_name == x:
                 x_data = np.array(cube.data.copy())
                 x_times = diagtools.cube_time_to_float(cube)
-                print('setting x axis to ',short_name, exp, ensemble, np.min(x_data), np.max(x_data))
+                #print('setting x axis to ',short_name, exp, ensemble, np.min(x_data), np.max(x_data))
                 x_label = ' '.join([get_long_name(x), str(cube.units)])
 
             if y == 'time':
-                print('what kind of crazy person plots time on y axis?')
+               #print('what kind of crazy person plots time on y axis?')
                 assert 0
             elif y == short_name and y in label_dicts.keys():
                 #['co2', 'emissions', 'cumul_emissions', 'luegt']:
                 y_data = cube[y].copy()
                 y_times = cube['time'].copy()
                 y_label = label_dicts[y]
-                print('setting y time to ',short_name, exp, ensemble)
+                #print('setting y time to ',short_name, exp, ensemble)
             elif short_name == y:
-                print(short_name, 'is a cube for y ts plot..')
+                #print(short_name, 'is a cube for y ts plot..')
                 y_data = cube.data.copy()
                 y_times = diagtools.cube_time_to_float(cube)
-                print('setting y time to ',short_name, exp, ensemble, y_data)
+                #print('setting y time to ',short_name, exp, ensemble, y_data)
                 y_label = ' '.join([get_long_name(y), str(cube.units)])
 
         if 0 in [len(x_data), len(y_data), len(x_times), len(y_times)]:
-            print('no data found',(exp_1, ensemble_1,dataset_1),  x,'vs',y, 'x:', len(x_data), 'y:',len(y_data))
+            #print('no data found',(exp_1, ensemble_1,dataset_1),  x,'vs',y, 'x:', len(x_data), 'y:',len(y_data))
             continue
 
         if len(x_data) != len(x_times) or len(y_data) != len(y_times):
@@ -1851,9 +1861,13 @@ def make_ts_envellope_figure(
 
         # calculate the datasety for the fills
         for xd, yd in zip(x_data, y_data):
-            if plot_dataset=='CMIP6':
-                # include everything except 'CMIP6 ensemble means.'
-                continue
+            if 'x' == 'time': xd = int(xd) 
+            if xd < 1851.:  
+                print(plot_dataset, fill, (exp_1, ensemble_1, dataset_1, short_name), xd, yd)
+            if plot_dataset=='CMIP6': 
+                if dataset_1 == 'CMIP6':
+                    # include everything except 'CMIP6 ensemble means.'
+                    continue
             else:
                 if dataset_1 != plot_dataset:
                     continue
@@ -1868,13 +1882,14 @@ def make_ts_envellope_figure(
                 envellopes[exp_1][xd].append(yd)
             else:
                 envellopes[exp_1][xd] = [yd, ]
+            print('made it!',exp_1, ensemble_1, fill, xd,yd)
 
         # Only draw line for plot_dataset
         if draw_line and dataset_1 == plot_dataset:
             x_times = np.ma.array(x_times)
             y_times = np.ma.array(y_times)
-            number_of_lines+=1
-            if ensemble_mean:
+            #number_of_lines+=1
+            if plot_dataset=='CMIP6':
                 lw=1.3
             else:
                 lw=0.5
@@ -1883,14 +1898,12 @@ def make_ts_envellope_figure(
                  lw=lw,
                  color=exp_colours[exp_1])
 
-        # Only plot markers for plot_dataset
-        if markers == 'thresholds' and dataset_1 == plot_dataset:
+        # Only plot markers for plot_dataset ensemble_mean
+        if markers == 'thresholds' and dataset_1 == plot_dataset and ensemble_1 == 'ensemble_mean':
             try: threshold_times = thresholds_dict[(dataset_1, 'tas', exp_1, ensemble_1)]
             except:
                threshold_times = {}
             ms = 8
-            if ensemble_mean:
-                ms = 8
             for threshold, time in threshold_times.items():
                 if not time:
                     continue
@@ -1910,15 +1923,17 @@ def make_ts_envellope_figure(
                          #fillstyle='none',
                          color=exp_colours[exp_1])
 
-     add_env = True
-     for exp, ranges in envellopes.items():
+    #add_env = True
+    for exp, ranges in envellopes.items():
          times, mins, maxs = [], [], []
          # This won't work if the ranges aren't the same!
          for t in sorted(ranges.keys()):
              times.append(t)
-             mins.append(np.min(ranges))
-             maxs.append(np.max(ranges))
-
+             mins.append(np.min(ranges[t]))
+             maxs.append(np.max(ranges[t]))
+         print('enveloppe', exp, times, mins, maxs)
+         if not len(times): 
+             continue
          ax.fill_between(
              times,
              mins,
@@ -1927,7 +1942,9 @@ def make_ts_envellope_figure(
              alpha=0.5,
              color=exp_colours[exp])
 
-    if not number_of_lines:
+    #print(x,y,fill, plot_dataset, envellopes)
+
+    if not envellopes:
         print('No lines plotted')
         plt.close()
         return
@@ -3075,32 +3092,33 @@ def main(cfg):
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
+            do_cumulative_plot = False
+            if do_cumulative_plot:
+                make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
+                make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
 
-            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
-            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
+                plot_types = ['pair', 'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
+                ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
+                for pt, exp in product(plot_types, ssps):
 
-            plot_types = ['pair', 'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
-            ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
-            for pt, exp in product(plot_types, ssps):
+                    if pt == 'pair':
+                       make_cumulative_timeseries_pair(cfg, data_dict,
+                           thresholds_dict,
+                           ssp=exp,
+                           ensemble = 'ensemble_mean')
+                       continue
+                    make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
+                make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
 
-                if pt == 'pair':
-                   make_cumulative_timeseries_pair(cfg, data_dict,
-                       thresholds_dict,
-                       ssp=exp,
-                       ensemble = 'ensemble_mean')
-                   continue
-                make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
-            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
-
-            LHS_panes = [
-                {'x':'time', 'y':'cumul_emissions'},
-                {'x':'time', 'y':'tls'},
-                {'x':'time', 'y':'fgco2gt_cumul'},
-                #{'x':'time', 'y':'tas_norm'},
-                #{'x':'time', 'y':'cumul_emissions'},
-                #{'x':'cumul_emissions', 'y':'tas_norm'},
-            ]
-            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
+                LHS_panes = [
+                    {'x':'time', 'y':'cumul_emissions'},
+                    {'x':'time', 'y':'tls'},
+                    {'x':'time', 'y':'fgco2gt_cumul'},
+                    #{'x':'time', 'y':'tas_norm'},
+                    #{'x':'time', 'y':'cumul_emissions'},
+                    #{'x':'cumul_emissions', 'y':'tas_norm'},
+                ]
+                make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
 
         datasets = {'all_models':True}
         for (dataset, short_name, exp, ensemble),cube  in data_dict.items():
@@ -3108,23 +3126,45 @@ def main(cfg):
         #    if do_ma and short_name not in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls', 'atmos_carbon']:
         #        data_dict[(dataset, short_name, exp, ensemble)] = moving_average(cube, '21 years')
 
-        #print(data_dict.keys())
-        #print(datasets)
+
+
+        #make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
+        #                    x='time', 
+        #                    y='tas_norm',
+        #                    plot_dataset='CMIP6',
+        #                    fill = 'all_ensembles')
         #assert 0
-
-        for x in short_names_x:
-
-            for y in short_names_y:
-                for plot_dataset in datasets:
-                    if x == y: continue
-                    #if (x, y) in pairs: continue
-                    for fill in ['ensemble_means', 'all_ensembles']:
-                        make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
-                            x=x,
+        for y, plot_dataset in product(short_names_y, datasets):
+            if plot_dataset == 'all_models':
+                plot_dataset = 'CMIP6'
+                make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
+                            x='time',
                             y=y,
                             plot_dataset=plot_dataset,
-                            fill = fill)
+                            fill = 'ensemble_means')
 
+            make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
+                            x='time',
+                            y=y,
+                            plot_dataset=plot_dataset,
+                            fill = 'all_ensembles')
+
+
+        for x in short_names_x:
+            for y in short_names_y:
+                for plot_dataset in datasets:
+                    if x == y: 
+                        continue
+#                   for fill in ['ensemble_means', 'all_ensembles']:
+#                       if plot_dataset == 'all_models':
+#                            pltsd = 'CMIP6' 
+#                       else: pltsd = plot_dataset
+#                       make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
+#                           x=x,
+#                           y=y,
+#                           plot_dataset=pltsd,
+#                           fill = fill)
+#                   continue
                     print('main:', do_ma, x, y)
                     make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
                                markers='thresholds', do_moving_average=False,
