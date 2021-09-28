@@ -53,8 +53,10 @@ class Formatter():
         options: dict()
             Extra options to overwrite config user file
         """
-        if datasets:
+        if isinstance(datasets, str):
             self.datasets = datasets.split(',')
+        else:
+            self.datasets = datasets
 
         self.config = read_config_user_file(config_file, f'data_{command}',
                                             options)
@@ -431,8 +433,8 @@ class DataCommand():
 
         Parameters
         ----------
-        datasets : list(str), optional
-            List of datasets to format, by default None
+        datasets : list(str)
+            List of datasets to format
         config_file : str, optional
             Path to ESMValTool's config user file, by default None
         start : str, optional
@@ -451,7 +453,7 @@ class DataCommand():
         self.formatter.download(start, end, overwrite)
 
     def format(self,
-               datasets=None,
+               datasets,
                config_file=None,
                start=None,
                end=None,
@@ -461,8 +463,8 @@ class DataCommand():
 
         Parameters
         ----------
-        datasets : list(str), optional
-            List of datasets to format, by default None
+        datasets : list(str)
+            List of datasets to format
         config_file : str, optional
             Path to ESMValTool's config user file, by default None
         start : str, optional
@@ -481,7 +483,7 @@ class DataCommand():
         self.formatter.format(start, end, install)
 
     def prepare(self,
-                datasets=None,
+                datasets,
                 config_file=None,
                 start=None,
                 end=None,
@@ -492,8 +494,8 @@ class DataCommand():
 
         Parameters
         ----------
-        datasets : list(str), optional
-            List of datasets to format, by default None
+        datasets : list(str)
+            List of datasets to format
         config_file : str, optional
             Path to ESMValTool's config user file, by default None
         start : str, optional
