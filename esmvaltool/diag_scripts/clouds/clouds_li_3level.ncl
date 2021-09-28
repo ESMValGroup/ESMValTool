@@ -260,28 +260,28 @@ begin
       if (n .lt. nlev - 1) then
         ptop = 0.5 * (levs(n) + levs(n + 1))
       else
-        ptop = levs(n) - 0.5 * (levs(n - 1)  - levs(n))
+        ptop = levs(n) - 0.5 * (levs(n - 1) - levs(n))
       end if
       if (pbot .ge. levi(0)) then
         wgt(0, n) = pbot - max((/ptop, levi(0)/))
       end if
-      do l = 1, nlev - 1
-        if ((ptop .le. levi(l - 1)) .and. (pbot .ge. levi(l))) then
-          wgt(l, n) = min((/pbot, levi(l - 1)/)) - max((/ptop, levi(l)/))
+      do il = 1, nlev - 1
+        if ((ptop .le. levi(il - 1)) .and. (pbot .ge. levi(il))) then
+          wgt(il, n) = min((/pbot, levi(il - 1)/)) - max((/ptop, levi(il)/))
         end if
       end do
     end do
 
-    wgt = wgt / 9.806  ; wgt contains layer thickness (in Pa) divided by
-                       ; gravity --> corresponds to air mass in layer (kg/m2)
+    wgt = wgt / 9.806   ; wgt contains layer thickness (in Pa) divided by
+                        ; gravity --> corresponds to air mass in layer (kg/m2)
 
     ; calculate vertical sums (level = low, mid, high)
 
     ; filter possibly present NaNs
     data0 = where(isnan_ieee(data0), data0@_FillValue, data0)
 
-    do l = 0, nlev - 1
-      data1(l, :, :) = dim_sum_wgt_n_Wrap(data0, wgt(l, :), 1, 0)
+    do il = 0, nlev - 1
+      data1(il, :, :) = dim_sum_wgt_n_Wrap(data0, wgt(il, :), 1, 0)
     end do
 
     ; clean up
@@ -480,7 +480,7 @@ begin
     pres@gsnPanelBottom     = 0.05
     pres@gsnPanelMainString = names(imod)
 
-    gsn_panel(wks0, maps(imod, :), (/3,1/), pres)
+    gsn_panel(wks0, maps(imod, :), (/3, 1/), pres)
 
     frame(wks0)
 

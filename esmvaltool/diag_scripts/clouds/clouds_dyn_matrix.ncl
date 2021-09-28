@@ -372,7 +372,8 @@ begin
       if (calcswclt(i)) then
         var2 = where(var2 .le. 1.0e-6, var2@_FillValue, var2)
         vars_list[i] = vars_list[i] / var2 * 100.0
-        vars_list[i]@long_name = "Shortwave cloud radiative effect / cloud cover"
+        vars_list[i]@long_name = \
+          "Shortwave cloud radiative effect / cloud cover"
         vars_list[i]@var = "swcreclt"
       end if
 
@@ -381,7 +382,8 @@ begin
       if (calclwclt(i)) then
         var2 = where(var2 .le. 1.0e-6, var2@_FillValue, var2)
         vars_list[i] = vars_list[i] / var2 * 100.0
-        vars_list[i]@long_name = "Longwave cloud radiative effect / cloud cover"
+        vars_list[i]@long_name = \
+          "Longwave cloud radiative effect / cloud cover"
         vars_list[i]@var = "lwcreclt"
       end if
 
