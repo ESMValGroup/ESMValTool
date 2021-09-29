@@ -1703,7 +1703,7 @@ def make_ts_envellope_figure(
         y='npp',
         plot_dataset='CMIP6',
         fill = 'ensemble_means',
-        markers='thresholds', 
+        markers='thresholds',
         fig=None,
         ax=None,
     ):
@@ -1861,10 +1861,10 @@ def make_ts_envellope_figure(
 
         # calculate the datasety for the fills
         for xd, yd in zip(x_data, y_data):
-            if 'x' == 'time': xd = int(xd) 
-            if xd < 1851.:  
+            if 'x' == 'time': xd = int(xd)
+            if xd < 1851.:
                 print(plot_dataset, fill, (exp_1, ensemble_1, dataset_1, short_name), xd, yd)
-            if plot_dataset=='CMIP6': 
+            if plot_dataset=='CMIP6':
                 if dataset_1 == 'CMIP6':
                     # include everything except 'CMIP6 ensemble means.'
                     continue
@@ -1932,7 +1932,7 @@ def make_ts_envellope_figure(
              mins.append(np.min(ranges[t]))
              maxs.append(np.max(ranges[t]))
          print('enveloppe', exp, times, mins, maxs)
-         if not len(times): 
+         if not len(times):
              continue
          ax.fill_between(
              times,
@@ -2358,6 +2358,277 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         return fig, ax
 
 
+def calculate_percentages( cfg,
+    data_dict,
+    threshold = '2.0',
+    land_carbon = 'tls',
+    #ensemble_key = 'all',
+    ):
+
+    data_dict_shelve = diagtools.folder([cfg['work_dir'], 'percentages_dicts'])
+    data_dict_shelve+='_'.join(['allocations', threshold])+'.shelve'
+    load_from_shelve=True
+
+    if load_from_shelve and glob.glob(data_dict_shelve+'*'):
+        print('loading:', data_dict_shelve )
+        sh = shelve.open(data_dict_shelve)
+        remnants = sh['remnants']
+        landcs = sh['landcs']
+        fgco2gts = sh['fgco2gts']
+        sh.close()
+        return remnants, landcs, fgco2gts
+
+    emissions = []
+    threshold_years = []
+    remnants = []
+    landcs = []
+    fgco2gts = []
+    experiments = []
+
+    for (t_dataset, t_short, t_exp, t_ens), threshold_times in thresholds_dict.items():
+        if t_short != 'tas': continue
+        print((t_dataset, t_short, t_exp, t_ens), threshold_times)
+        #if t_dataset != 'CMIP6': continue
+        #if t_ens != 'ensemble_mean': continue
+        #if ensemble_key == 'all': pass
+        #if ensemble_key = 'ensemble_mean' and t_ens != 'ensemble_mean': continue
+
+        print("calculate_percentages", t_short, t_exp, t_ens)
+        cumul_emissions = data_dict.get((t_dataset, 'cumul_emissions', t_exp, t_ens), None) #dict
+        if cumul_emissions is None:  # Because not all sceanrios have emissions data.
+           assert 0
+
+        atmos_carbon = data_dict.get((t_dataset, atmos,  t_exp, t_ens), None) #dict
+        if atmos_carbon is None:  # Because not all sceanrios have emissions data.
+           assert 0
+
+        # if land_carbon == 'nbpgt':
+        #     landc_cumul = data_dict[(t_dataset, 'nbpgt_cumul', t_exp, t_ens)] # cube
+        if land_carbon == 'tls':
+            landc_cumul = data_dict[(t_dataset, 'tls', t_exp, t_ens)] # dict
+
+        fgco2gt_cumul = data_dict[(t_dataset, 'fgco2gt_cumul', t_exp, t_ens)] # cube
+        print('calculate_percentages: vworking here right now', threshold_times)
+        for thresh, time in threshold_times.items():
+            print("calculate_percentages", t_short, t_exp, t_ens, thresh, threshold, time)
+            if float(threshold) != float(thresh):
+                print(threshold, '!=', thresh)
+                continue
+            if not time:
+                print('time', 'isn t there' , time)
+                continue
+            fl_threshold = float(threshold)
+            if fl_threshold > 1850.: # Threshold is a specific point in time.
+                e_xpoint = get_threshold_point(cumul_emissions, fl_threshold)
+                a_xpoint = get_threshold_point(atmos_carbon, fl_threshold)
+                n_xpoint = get_threshold_point(landc_cumul, fl_threshold)
+                f_xpoint = get_threshold_point(fgco2gt_cumul, fl_threshold)
+                if None in [a_xpoint, n_xpoint, f_xpoint]: continue
+
+            print("calculate_percentages",threshold, time)
+            e_xpoint = get_threshold_point(cumul_emissions, time.year)
+            a_xpoint = get_threshold_point(atmos_carbon, time.year)
+            n_xpoint = get_threshold_point(landc_cumul, time.year)
+            f_xpoint = get_threshold_point(fgco2gt_cumul, time.year)
+
+            emission = cumul_emissions['cumul_emissions'][e_xpoint]
+            remnant = atmos_carbon['atmos_carbon'][a_xpoint]
+            fgco2gt = fgco2gt_cumul.data[f_xpoint]
+            if isinstance(landc_cumul, dict):
+                landc = landc_cumul[land_carbon][n_xpoint]
+            else:
+                landc = landc_cumul.data[n_xpoint]
+            t_exp = t_exp.replace('historical-', '').upper()
+
+            unique_key = (t_dataset, t_exp, t_ens, threshold)
+            emissions[unique_key] = emission
+            remnants[unique_key] = remnant
+            fgco2gts[unique_key] = fgco2gt
+            landcs[unique_key] = landc
+
+    print('calculate_percentages: saving:', data_dict_shelve )
+    sh = shelve.open(data_dict_shelve)
+    sh['remnants'] = remnants
+    sh['landcs'] = landcs
+    sh['fgco2gts'] = fgco2gts
+    sh.close()
+
+    return remnants, landcs, fgco2gts
+
+
+def make_ensemble_barchart_pane(
+    cfg,
+    data_dict,
+    thresholds,
+    year0 = None,
+    do_legend=True,
+    land_carbon = 'nbpgt',
+    #atmos='atmos_carbon',
+    ensemble_key = 'ensemble_mean',
+    plot_style = 'percentages',
+    fig=None,
+    ax=None):
+    """
+    Make a bar chart (of my favourite pies)
+
+    Ensemble plot
+    """
+    if fig == None:
+        fig, ax = plt.subplots()
+        make_figure_here = True
+    else:
+        make_figure_here = False
+
+    # single pane, single threshold
+    remnants, landcs, fgco2gts = calculate_percentages(cfg,
+        data_dict,
+        threshold = '2.0',
+        land_carbon = 'tls')
+
+    #totals={}
+    experiments, land, air, sea = [], [], [], []
+    #emissions_bottoms = []
+    for unique_key, remnant in remnants.items():
+        (t_dataset, t_exp, t_ens, t_threshold) = unique_key
+        if ensemble_key == 'all': pass
+        if ensemble_key = 'ensemble_mean' and t_ens != 'ensemble_mean': continue
+        if t_threshold != threshold: continue
+        landc = landcs[unique_key]
+        oceanc = fgco2gts[unique_key]
+
+        total = remnant + landc + oceanc
+        #total
+        if plot_style == 'percentages':
+            land.append(100. * landc/total)
+            ocean.append(100. * oceanc/total)
+            air.append(100. * remnant/total)
+        else:
+            land.append(landc)
+            ocean.append(oceanc)
+            air.append(remnant)
+
+        # bar label.
+        if ensemble_key = 'ensemble_mean':
+            experiment = ' ',join([t_dataset,t_exp])
+        else:
+            experiment = ' ',join([t_dataset,t_exp, t_ens])
+        experiments.append(experiment)
+
+        #emissions_bottoms[unique_key]
+    #totals = [a + f + b for a,f,b in zip(remnant, fgco2gts, landcs)]
+
+    # if atmos=='atmos_carbon':
+    #     emissions_diff = remnant
+    # else:
+    #     emissions_diff = [e - f - b for e,f,b in zip(emissions, fgco2gts, landcs )]
+    #emissions_diff = remnant
+    # emissions_bottoms = [f + b for f,b in zip(fgco2gts, landcs )]
+    # totals = [a + f + b for a,f,b in zip(remnant, fgco2gts, landcs)]
+    #
+    # for i, exp  in enumerate(experiments):
+    #     print("Final values:",threshold, i, exp, totals[i], '=',emissions_diff[i],('or', remnant[i]), '+', landcs[i], '+', fgco2gts[i], '(a, l, o)')
+
+    # Add bars:
+    horizontal = False
+    if horizontal:
+        ax.barh(experiments, land, label='Land', color='mediumseagreen')
+        ax.barh(experiments, ocean, left = landcs,  label='Ocean', color='dodgerblue')
+        ax.barh(experiments, air, left = emissions_bottoms,  label='Atmos', color='silver')
+        ax.set_ylabel('Scenarios')
+    else:
+        ax.barh(experiments, land, label='Land', color='green')
+        ax.barh(experiments, ocean, bottom = landcs,  label='Ocean', color='dodgerblue')
+        ax.barh(experiments, air, bottom = emissions_bottoms,  label='Atmos', color='grey')
+        ax.set_xlabel('Scenarios')
+
+    # Add percentages:
+    # add_pc_text = True
+    # if add_pc_text:
+    #     def pc(a,b): return str("{0:.1f}%".format(100.*a/b))
+    #     for e, exp in enumerate(experiments):
+    #         print(e, exp, landcs[e], fgco2gts[e], emissions_diff[e])
+    #         t = totals[e]
+    #         ax.text(landcs[e]/2, e, pc(landcs[e], t),
+    #                 color='#002200', #'darkgreen',
+    #                 fontsize=8 , # fontweight='bold',
+    #                 verticalalignment='center',horizontalalignment='center')
+    #
+    #         ax.text(landcs[e]+fgco2gts[e]/2., e, pc(fgco2gts[e], t),
+    #                 color='darkblue', fontsize=8 , # fontweight='bold',
+    #                 verticalalignment='center',horizontalalignment='center')
+    #
+    #         ax.text(emissions_bottoms[e]+emissions_diff[e]/2., e, pc(emissions_diff[e],t ),
+    #                 color='black', fontsize=8 , # fontweight='bold',
+    #                 verticalalignment='center',horizontalalignment='center')
+
+    # Add mean year:
+    # add_mean_year = False
+    # if add_mean_year:
+    #     for e, exp in enumerate(experiments):
+    #         t = totals[e]
+    #         yr = threshold_years[e]
+    #         ax.text(t *1.05, e, str(int(yr)),
+    #                 color='black', fontsize=8 , # fontweight='bold',
+    #                 verticalalignment='center',horizontalalignment='center')
+
+    if float(threshold) > 1850.:
+        ax.set_title('Carbon Allocation at '+str(threshold))
+    else:
+        ax.set_title('Carbon Allocation at '+str(threshold)+r'$\degree$'+' warming')
+
+    if do_legend:
+        ax.legend()
+
+    if make_figure_here:
+        image_extention = diagtools.get_image_format(cfg)
+        path = diagtools.folder([cfg['plot_dir'], '_ensemble_barcharts' ])
+        path += '_'.join(['ensemble_barchart'+str(threshold), land_carbon, atmos]) + image_extention
+        plt.savefig(path)
+        plt.close()
+    else:
+        return fig, ax
+
+
+def make_ensemble_barchart(
+        cfg,
+        data_dict,
+        thresholds_dict,
+        # plot_style='percentage',
+        thresholds = ['4.0', '3.0', '2.0'],
+    ):
+    """
+    Make a barchat for the whole ensemble
+    """
+    fig = plt.figure()
+    fig.set_size_inches(7 , 6)
+    gs = gridspec.GridSpec(3, 1, figure=fig, hspace=0.5)
+    ax_4 =  fig.add_subplot(gs[0, 1])
+    ax_3 =  fig.add_subplot(gs[1, 1])
+    ax_2 =  fig.add_subplot(gs[2, 1])
+
+    axes = [ax_4, ax_3, ax_2]
+    # make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '1.5', fig=None, ax=None)
+    for ax, threshold in zip(axes, thresholds):
+        make_ensemble_barchart_pane(cfg, data_dict, threshold = threshold,fig=fig, ax=ax, do_legend=False)
+
+
+    ranges = []
+    for ax in [ax_4, ax_3, ax_2]:
+        plt.sca(ax)
+        ranges.append(ax.get_xlim())
+
+    for ax in [ax_4, ax_3, ax_2]:
+        plt.sca(ax)
+        ax.set_xlim([np.min(ranges), np.max(ranges)])
+
+    image_extention = diagtools.get_image_format(cfg)
+    path = diagtools.folder([cfg['plot_dir'], 'ensemble_barcharts'])
+    path += '_'.join(['ensemble_barcharts', plot_style,]) + image_extention
+    plt.savefig(path)
+    plt.close()
+
+
+
 def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     year0 = None,
     do_legend=True,
@@ -2692,7 +2963,7 @@ def make_cumulative_timeseries(cfg, data_dict,
         if plot_type in ['area_over_zero',] :
             lad = lad+ond
             atd = atd + lad # air land sea.
-            
+
             print('emissions times:', emt[:5], emt[-5:])
             print('LUE times:', lut[:5], lut[-5:])
             print('emissions data:', emd[:5], emd[-5:])
@@ -2700,7 +2971,7 @@ def make_cumulative_timeseries(cfg, data_dict,
             print('sizes:', len(emt), len(emd), len(lut), len(lud))
             if np.max(lut) > np.max(emt):
                 lut = lut[:-1] # Remove 2015.5 (not in histor period)
-                lud = lud[:-1] 
+                lud = lud[:-1]
             plt.plot(emt, emd+lud, 'k-', lw=1.3,label='Emissions+LUE')
             plt.plot(lat, lad, 'k--', lw=1.3, label='LUE')
         # water:
@@ -2894,6 +3165,7 @@ def make_cumulative_timeseries_pair(cfg, data_dict,
     print('saving figure:', path)
     plt.savefig(path)
     plt.close()
+
 
 
 def make_cumulative_vs_threshold(cfg, data_dict,
@@ -3104,8 +3376,10 @@ def main(cfg):
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
-            do_cumulative_plot = True 
+            do_cumulative_plot = True
             if do_cumulative_plot:
+                make_ensemble_barchart(cfg, data_dict, thresholds_dict, plot_style='percentage')
+
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
 
@@ -3186,11 +3460,11 @@ def main(cfg):
         for x in short_names_x:
             for y in short_names_y:
                 for plot_dataset in datasets:
-                    if x == y: 
+                    if x == y:
                         continue
 #                   for fill in ['ensemble_means', 'all_ensembles']:
 #                       if plot_dataset == 'all_models':
-#                            pltsd = 'CMIP6' 
+#                            pltsd = 'CMIP6'
 #                       else: pltsd = plot_dataset
 #                       make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
 #                           x=x,
