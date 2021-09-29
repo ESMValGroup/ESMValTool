@@ -2596,7 +2596,8 @@ def make_cumulative_timeseries(cfg, data_dict,
         'atmos_carbon': 'silver',
         'fgco2gt_cumul':'dodgerblue',
         'nbpgt_cumul':'orange',
-        'tls':'mediumseagreen'}
+        'tls':'mediumseagreen',
+        'luegt': 'purple'}
 
     #colours = {'cumul_emissions': 'grey', 'fgco2gt_cumul':'blue', 'nbpgt_cumul':'orange', 'tls':'green', 'luegt':'red'}
     if ensemble == 'ensemble_mean':
@@ -2677,10 +2678,11 @@ def make_cumulative_timeseries(cfg, data_dict,
     # plot simple time series:
     if plot_type in ['area', 'area_over_zero']:
         #colours = {'cumul_emissions': 'grey', 'fgco2gt_cumul':'blue', 'nbpgt_cumul':'orange', 'tls':'green'}
+        print(data.keys())
         emt, emd = unzip_time(data['cumul_emissions'])
         lat, lad = unzip_time(data['tls'])
         ont, ond = unzip_time(data['fgco2gt_cumul'])
-        #lut, lud = unzip_time(data['luegt'])
+        lut, lud = unzip_time(data['luegt'])
         nbt, nbd = unzip_time(data['nbpgt_cumul'])
         att, atd = unzip_time(data['atmos_carbon'])
 
@@ -2690,8 +2692,17 @@ def make_cumulative_timeseries(cfg, data_dict,
         if plot_type in ['area_over_zero',] :
             lad = lad+ond
             atd = atd + lad # air land sea.
-
-            plt.plot(emt, emd, 'k-', lw=1.3,label='Emissions')
+            
+            print('emissions times:', emt[:5], emt[-5:])
+            print('LUE times:', lut[:5], lut[-5:])
+            print('emissions data:', emd[:5], emd[-5:])
+            print('LUE data :', lud[:5], lud[-5:])
+            print('sizes:', len(emt), len(emd), len(lut), len(lud))
+            if np.max(lut) > np.max(emt):
+                lut = lut[:-1] # Remove 2015.5 (not in histor period)
+                lud = lud[:-1] 
+            plt.plot(emt, emd+lud, 'k-', lw=1.3,label='Emissions+LUE')
+            plt.plot(lat, lad, 'k--', lw=1.3, label='LUE')
         # water:
         # plt.plot(
         #     ont,
@@ -3093,12 +3104,12 @@ def main(cfg):
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
-            do_cumulative_plot = False
+            do_cumulative_plot = True 
             if do_cumulative_plot:
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
 
-                plot_types = ['pair', 'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
+                plot_types = ['pair', 'area_over_zero'] #'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
                 ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
                 for pt, exp in product(plot_types, ssps):
 
@@ -3109,6 +3120,7 @@ def main(cfg):
                            ensemble = 'ensemble_mean')
                        continue
                     make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
+                assert 0
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
 
                 LHS_panes = [
@@ -3121,6 +3133,32 @@ def main(cfg):
                 ]
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
 
+            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
+            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
+
+            plot_types = ['pair', ] #'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
+            ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
+            for pt, exp in product(plot_types, ssps):
+
+                if pt == 'pair':
+                   make_cumulative_timeseries_pair(cfg, data_dict,
+                       thresholds_dict,
+                       ssp=exp,
+                       ensemble = 'ensemble_mean')
+                   continue
+                make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
+            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
+            assert 0
+            LHS_panes = [
+                {'x':'time', 'y':'cumul_emissions'},
+                {'x':'time', 'y':'tls'},
+                {'x':'time', 'y':'fgco2gt_cumul'},
+                #{'x':'time', 'y':'tas_norm'},
+                #{'x':'time', 'y':'cumul_emissions'},
+                #{'x':'cumul_emissions', 'y':'tas_norm'},
+            ]
+            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
+
         datasets = {'all_models':True}
         for (dataset, short_name, exp, ensemble),cube  in data_dict.items():
             datasets[dataset] = True
@@ -3129,28 +3167,22 @@ def main(cfg):
 
 
 
-        #make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
-        #                    x='time', 
-        #                    y='tas_norm',
-        #                    plot_dataset='CMIP6',
-        #                    fill = 'all_ensembles')
-        #assert 0
-        for y, plot_dataset in product(short_names_y, datasets):
-            if plot_dataset == 'all_models':
-                plot_dataset = 'CMIP6'
-                make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
-                            x='time',
-                            y=y,
-                            plot_dataset=plot_dataset,
-                            fill = 'ensemble_means')
-
-            make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
-                            x='time',
-                            y=y,
-                            plot_dataset=plot_dataset,
-                            fill = 'all_ensembles')
-
-
+#        for y, plot_dataset in product(short_names_y, datasets):
+#            if plot_dataset == 'all_models':
+#                plot_dataset = 'CMIP6'
+#                make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
+#                            x='time',
+#                            y=y,
+#                            plot_dataset=plot_dataset,
+#                            fill = 'ensemble_means')
+#
+#            make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
+#                            x='time',
+#                            y=y,
+#                            plot_dataset=plot_dataset,
+#                            fill = 'all_ensembles')
+#
+#
         for x in short_names_x:
             for y in short_names_y:
                 for plot_dataset in datasets:
