@@ -33,6 +33,7 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'esmvalcore>=2.3.1,<2.4',
+        'esmpy',
         'fiona',
         'GDAL',
         'jinja2',
