@@ -41,7 +41,7 @@ REQUIREMENTS = {
         'lime',
         'matplotlib>3.3.1',  # bug in 3.3.1
         'natsort',
-        'nc-time-axis<1.3.1',  # needed by iris.plot, issues with matplotlib 3.4 and 1.3.1
+        'nc-time-axis',  # needed by iris.plot
         'netCDF4',
         'numpy',
         'pandas',
