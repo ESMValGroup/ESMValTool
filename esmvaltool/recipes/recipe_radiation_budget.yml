@@ -10,6 +10,7 @@ documentation:
     change.
   authors:
     - lillis_jon
+    - hogan_emma
 
 datasets:
   - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical,
