@@ -2487,7 +2487,7 @@ def make_ensemble_barchart_pane(
         thresholds_dict,
         threshold = threshold,
         land_carbon = 'tls')
-   
+
     datasets, exps, ensembles, thresholds = {}, {}, {}, {}
     # only_one_ensemble = {}
     for unique_key, remnant in sorted(remnants.items()):
@@ -2506,7 +2506,7 @@ def make_ensemble_barchart_pane(
     datasets = sorted(list(datasets.keys()))
     datasets.insert(0,  datasets.pop(datasets.index('CMIP6')))
 
-    # Build a list of keys. 
+    # Build a list of keys.
     unique_key_order = []
     # order is dataset [CMIP then others], ssps, ensemble means, then ensemble members
     # Order by model:
@@ -2514,7 +2514,7 @@ def make_ensemble_barchart_pane(
         for dset in datasets:
             for exp in exps:
                 for ens in ensembles:
-                    if ensemble_key == 'ensemble_mean' and ens != 'ensemble_mean': 
+                    if ensemble_key == 'ensemble_mean' and ens != 'ensemble_mean':
                         continue
                     if ensemble_key != 'ensemble_mean' and ens == 'ensemble_mean' and dset!= 'CMIP6': continue
                     # if dset.find('UKESM')>-1: print(dset, exp, ens, thr)
@@ -2527,11 +2527,13 @@ def make_ensemble_barchart_pane(
     #print(unique_key_order)
     # assert 0
     #totals={}
-    experiments, land, air, ocean = [], [], [], []
+    labels, land, air, ocean = [], [], [], []
+    xvalues = []
+    widths = []
     emissions_bottoms = []
 
     previous_datasets = {}
-    for unique_key in unique_key_order:
+    for i, unique_key in enumerate(unique_key_order):
     #for unique_key, remnant in sorted(remnants.items()):
         (t_dataset, t_exp, t_ens, t_threshold) = unique_key
         #if ensemble_key == 'all': pass
@@ -2550,7 +2552,34 @@ def make_ensemble_barchart_pane(
 #            air.append(0.)
 #            emissions_bottoms.append(0.)
 #            experiments.append(' ')
-       
+
+        # create bar label.
+        label_keys = [t_dataset, t_exp, label_keys]
+        labels.append(label_keys)
+        # if t_dataset not in previous_datasets:
+        #     label_keys.append(t_dataset)
+        # previous_datasets[t_dataset] = True
+        # label_keys.append(t_exp)
+        # labels.append(label_keys)
+
+        #
+        if i and t_dataset not in labels[i-1]:
+            xvalues.append((xvalues[i-1]+0.5)
+            widths.append(0.5)
+            land.append(0.)
+            ocean.append(0.)
+            air.append(0.)
+            emissions_bottoms.append(0.)
+            labels.append('')
+
+        if not i:
+            xvalues.append(i)
+            widths.append(1)
+        else:
+            xvalues.append(xvalues[i-1]+1.)
+            widths.append(1)
+
+
         if plot_style == 'percentages':
             land.append(100. * landc/total)
             ocean.append(100. * oceanc/total)
@@ -2562,19 +2591,9 @@ def make_ensemble_barchart_pane(
             air.append(remnant)
             emissions_bottoms.append(landc+oceanc)
 
-        # create bar label.
-        label_keys = []
-        if t_dataset not in previous_datasets: 
-            label_keys.append(t_dataset)
-        previous_datasets[t_dataset] = True
-    
-        label_keys.append(t_exp)
-#        if ensemble_key != 'ensemble_mean':
-#            label_keys.append(t_ens)
 
-        experiments.append(' '.join(label_keys))
 
-        # Adds a blank line between models. 
+        # Adds a blank line between models.
         #if t_dataset not in previous_dats:
         #    land.append(0.)
         #    ocean.append(0.)
@@ -2596,21 +2615,28 @@ def make_ensemble_barchart_pane(
     #
     # for i, exp  in enumerate(experiments):
     #     print("Final values:",threshold, i, exp, totals[i], '=',emissions_diff[i],('or', remnant[i]), '+', landcs[i], '+', fgco2gts[i], '(a, l, o)')
-
     # Add bars:
-    horizontal = False
-    if horizontal:
-        ax.barh(experiments, land, label='Land', color='mediumseagreen')
-        ax.barh(experiments, ocean, left = land,  label='Ocean', color='dodgerblue')
-        ax.barh(experiments, air, left = emissions_bottoms,  label='Atmos', color='silver')
-        #ax.set_ylabel('Scenarios')
-        #lt.xticks(rotation=90)
-    else:
-        ax.bar(experiments, land, width=1.0, label='Land', color='green')
-        ax.bar(experiments, ocean, width=1.0, bottom = land,  label='Ocean', color='dodgerblue')
-        ax.bar(experiments, air, width=1.0, bottom = emissions_bottoms,  label='Atmos', color='grey')
-        #ax.set_xlabel('Scenarios')
-        plt.xticks(rotation=90)
+    labels = [' '.join(label) for label in labels]
+    ax.bar(xvalues, land, width=widths, label='Land', color='green', tick_label = labels )
+    ax.bar(xvalues, ocean, width=widths bottom = land,  label='Ocean', color='dodgerblue')
+    ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color='grey')
+    #ax.set_xlabel('Scenarios')
+    plt.xticks(rotation=90)
+
+    # # Add bars:
+    # horizontal = False
+    # if horizontal:
+    #     ax.barh(experiments, land, label='Land', color='mediumseagreen')
+    #     ax.barh(experiments, ocean, left = land,  label='Ocean', color='dodgerblue')
+    #     ax.barh(experiments, air, left = emissions_bottoms,  label='Atmos', color='silver')
+    #     #ax.set_ylabel('Scenarios')
+    #     #lt.xticks(rotation=90)
+    # else:
+    #     ax.bar(experiments, land, width=1.0, label='Land', color='green')
+    #     ax.bar(experiments, ocean, width=1.0, bottom = land,  label='Ocean', color='dodgerblue')
+    #     ax.bar(experiments, air, width=1.0, bottom = emissions_bottoms,  label='Atmos', color='grey')
+    #     #ax.set_xlabel('Scenarios')
+    #     plt.xticks(rotation=90)
     # Add percentages:
     # add_pc_text = True
     # if add_pc_text:
@@ -2683,8 +2709,8 @@ def make_ensemble_barchart(
     axes = [ax_4, ax_3, ax_2]
     # make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '1.5', fig=None, ax=None)
     for ax, threshold in zip(axes, thresholds):
-        make_ensemble_barchart_pane(cfg, data_dict, thresholds_dict,threshold = threshold,fig=fig, ax=ax, do_legend=False, 
-            plot_style= plot_style, 
+        make_ensemble_barchart_pane(cfg, data_dict, thresholds_dict,threshold = threshold,fig=fig, ax=ax, do_legend=False,
+            plot_style= plot_style,
             ensemble_key = ensemble_key,
             )
         plt.xticks(rotation=90)
