@@ -188,7 +188,7 @@ def validate_variable_data(variable_data, name, unit):
     return variable
 
 
-def order_data(cubes, obs_names, obs_units):
+def order_data(cubes, obs_names, obs_unit):
     """Return the data from the cubes in the order defined by ``obs_names``.
 
     The units from the cubes are checked against ``obs_units``.
@@ -199,8 +199,8 @@ def order_data(cubes, obs_names, obs_units):
         The cubes in a random order.
     obs_names : list
         The ordered names from the observation files.
-    obs_units : list
-        The ordered units from the observation files.
+    obs_unit : string
+        The unit of the observation variables.
 
     Returns
     -------
@@ -219,8 +219,7 @@ def order_data(cubes, obs_names, obs_units):
         variable_data.append(variable)
 
     ordered_model_data = []
-    for index, obs_name in enumerate(obs_names):
-        obs_unit = obs_units[index]
+    for obs_name in obs_names:
         validated_variable = validate_variable_data(variable_data, obs_name,
                                                     obs_unit)
         ordered_model_data.append(validated_variable["data"])
@@ -298,30 +297,55 @@ def load_obs_data():
         demory_line = validate_variable_data(demory_contents, name, unit)
         demory_data.append(demory_line["data"])
 
-    return names, units, stephens_data, stephens_error, demory_data
+    if len(set(units)) == 1:
+        unit = units[0]
+    else:
+        raise RuntimeError("Not all observations have the same unit.")
+
+    return names, unit, stephens_data, stephens_error, demory_data
 
 
-def plot_data(obs_names, obs_units, stephens_data, stephens_error, demory_data,
-              ceres_data, model_data, plot_filename):
+def plot_data(
+    model_dataset,
+    model_data,
+    model_period,
+    obs_names,
+    obs_unit,
+    stephens_data,
+    stephens_error,
+    demory_data,
+    ceres_dataset,
+    ceres_data,
+    ceres_period,
+    plot_filename,
+):
     """Produce and save the radiation budget comparison plot.
 
     Parameters
     ----------
+    model_dataset : string
+        The name of the model.
+    model_data : list
+        Data values from the model for which this comparison plot is being
+        generated.
+    model_period : string
+        The start and end years of the model dataset.
     obs_names : list
         The names of variables included in the observation data.
-    obs_units : list
-        The units of variables included in the observation data.
+    obs_unit : list
+        The unit of variables included in the observation data.
     stephens_data : list
         Stephens observation data values.
     stephens_error : list
         Stephens observation data error values.
     demory_data : list
         Demory observation data values.
+    ceres_dataset : string
+        The name of the CERES observation data.
     ceres_data : list
-        Ceres observation data values.
-    model_data : list
-        Data values from the model for which this comparison plot is being
-        generated.
+        CERES observation data values.
+    ceres_period : string
+        The start and end years of the CERES observation data.
     plot_filename : string
         The name of the image file to be saved.
     """
@@ -329,49 +353,53 @@ def plot_data(obs_names, obs_units, stephens_data, stephens_error, demory_data,
     model_minus_demory = np.array(model_data) - np.array(demory_data)
     model_minus_ceres = np.array(model_data) - np.array(ceres_data)
 
-    n_groups = 20
-    fig = plt.Figure(figsize=(12, 8))
-    # plt.FigureCanvas(fig)
-    axis = fig.add_subplot(111)
-    index = np.arange(n_groups) * 2.0
+    figure, axes = plt.subplots(figsize=(12, 8))
+    title = f"Radiation budget for {model_dataset}"
+    y_label = f"Difference between model output and observations [{obs_unit}]"
+    y_lim = (-20, 20)
+    axes.set(title=title, ylabel=y_label, ylim=y_lim)
 
-    bar_width, opacity = 0.5, 0.4
-    axis.set_ylim(-20, 20)
-    axis.bar(
-        index + 0.2,
+    num_x_ticks = len(obs_names)
+    x_ticks = np.arange(0, num_x_ticks * 2, 2)
+
+    bar_width = 0.5
+    opacity = 0.6
+    axes.bar(
+        x_ticks + 0.2,
         model_minus_stephens,
         bar_width,
-        alpha=opacity + 0.2,
+        alpha=opacity,
         color="cornflowerblue",
-        label="MODEL" + "(" + "season" + ")" + " - Stephens(2012)",
+        label=f"{model_dataset} ({model_period}) - Stephens (2012)",
         yerr=stephens_error,
     )
-    axis.bar(
-        index + 0.2 + bar_width,
+    axes.bar(
+        x_ticks + 0.2 + bar_width,
         model_minus_ceres,
         bar_width,
-        alpha=opacity + 0.2,
+        alpha=opacity,
         color="orange",
-        label="MODEL" + "(" + "season" + ")" + " - CERES" + "(" + "season" +
-        ")",
+        label=(f"{model_dataset} ({model_period}) - {ceres_dataset} "
+               f"({ceres_period})"),
     )
-    axis.bar(
-        index + 0.2 + bar_width * 2,
+    axes.bar(
+        x_ticks + 0.2 + bar_width * 2,
         model_minus_demory,
         bar_width,
-        alpha=opacity - 0.2,
-        color="black",
-        label="MODEL" + "(" + "season" + ")" + " - Demory(2014)",
+        alpha=opacity,
+        color="darkgrey",
+        label=f"{model_dataset} ({model_period}) - Demory (2014)",
     )
-    axis.spines["bottom"].set_position(("data", 0))
-    axis.spines["top"].set_position(("data", 0))
+    axes.spines["bottom"].set_position(("data", 0))
+    axes.spines["top"].set_position(("data", 0))
 
-    axis.set_xticks(index + bar_width + 0.5)
-    axis.set_xticklabels(obs_names, ha="center", rotation=90, fontsize=10)
-    axis.legend(frameon=False, fontsize=10, loc="upper left")
+    axes.set_xticks(x_ticks + bar_width + 0.5)
+    axes.set_xticklabels(obs_names, ha="center", rotation=90, fontsize=10)
 
-    fig.savefig(plot_filename)
-    fig.clear()
+    axes.legend(frameon=False, fontsize=10, loc="upper left")
+
+    figure.savefig(plot_filename)
+    figure.clear()
 
 
 def main(config):
@@ -389,16 +417,19 @@ def main(config):
 
     (
         obs_names,
-        obs_units,
+        obs_unit,
         stephens_data,
         stephens_error,
         demory_data,
     ) = load_obs_data()
 
-    ceres_group = datasets.pop("CERES-EBAF")
+    ceres_dataset = "CERES-EBAF"
+    ceres_group = datasets.pop(ceres_dataset)
     ceres_filenames = get_filenames(ceres_group)
     raw_ceres_data = load_data(ceres_filenames)
-    ceres_data = order_data(raw_ceres_data, obs_names, obs_units)
+    ceres_data = order_data(raw_ceres_data, obs_names, obs_unit)
+    ceres_period = (f"{ceres_group[0]['start_year']} - "
+                    f"{ceres_group[0]['end_year']}")
 
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.
@@ -407,16 +438,21 @@ def main(config):
         filenames = get_filenames(group)
         unordered_model_data = load_data(filenames)
         all_model_data = derive_additional_variables(unordered_model_data)
-        model_data = order_data(all_model_data, obs_names, obs_units)
+        model_data = order_data(all_model_data, obs_names, obs_unit)
         plot_filename = get_plot_filename(model_dataset, config)
+        model_period = f"{group[0]['start_year']} - {group[0]['end_year']}"
         plot_data(
+            model_dataset,
+            model_data,
+            model_period,
             obs_names,
-            obs_units,
+            obs_unit,
             stephens_data,
             stephens_error,
             demory_data,
+            ceres_dataset,
             ceres_data,
-            model_data,
+            ceres_period,
             plot_filename,
         )
 
