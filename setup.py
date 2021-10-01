@@ -52,7 +52,7 @@ REQUIREMENTS = {
         'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris>=3.0.2',
+        'scitools-iris>=3.1.0',
         'seaborn',
         'seawater',
         'shapely',
