@@ -12,7 +12,7 @@ on:
   push:
     branches:
     - main
-    - unpin_iris
+    - unpin_matplotlib
   schedule:
     - cron: '0 0 * * *'
 
