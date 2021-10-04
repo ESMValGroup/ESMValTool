@@ -1504,6 +1504,7 @@ def calc_atmos_carbon(cfg, data_dict):
         print('calc_atmos_carbon:',(dataset, short, exp, ensemble))
         if short not in ['cumul_emissions', ]:
             continue
+
         # tmp_data = {time:times, 'cumul_emissions': dat}
         tmp_data = zip_time(tmp_data, short)
         tmp_data = {int(t):d for t, d in tmp_data.items()}
@@ -1533,7 +1534,9 @@ def calc_atmos_carbon(cfg, data_dict):
                 t = int(t)
                 if not tmp_data.get(t,False):
                     print('calc_atmos_carbon: ERROR: unable to find year', t, 'in',(dataset, cube_key, exp, ensemble))
-                    print(tmp_data)
+                    print('output:',tmp_data)
+                    print('input:', cube_key, tmp_cube_data)
+                    assert 0
 
                 tmp_data[t] = tmp_data[t] - d
 
@@ -1543,6 +1546,8 @@ def calc_atmos_carbon(cfg, data_dict):
         tmp_data_dict[(dataset, new_short, exp, ensemble)] = {'time': tmp_times, new_short: tmp_dat}
 
     data_dict.update(tmp_data_dict)
+    print(tmp_data_dict)
+    assert 0  
     return data_dict
 
 
@@ -2467,6 +2472,7 @@ def make_ensemble_barchart_pane(
     #atmos='atmos_carbon',
     ensemble_key = 'ensemble_mean',
     plot_style = 'percentages',
+    group_by = 'group_by_model',
     fig=None,
     ax=None):
     """
@@ -2510,19 +2516,37 @@ def make_ensemble_barchart_pane(
     unique_key_order = []
     # order is dataset [CMIP then others], ssps, ensemble means, then ensemble members
     # Order by model:
-    for thr in thresholds:
-        for dset in datasets:
+    if group_by == 'group_by_model':
+        for thr in thresholds:
+            for dset in datasets:
+               for exp in exps:
+                    for ens in ensembles:
+                        if ensemble_key == 'ensemble_mean' and ens != 'ensemble_mean':
+                            continue
+                        if ensemble_key != 'ensemble_mean' and ens == 'ensemble_mean' and dset!= 'CMIP6': continue
+                        # if dset.find('UKESM')>-1: print(dset, exp, ens, thr)
+                        unique_key = (dset, exp, ens, thr)
+                        if unique_key in unique_key_order: continue
+                        if unique_key not in remnants: continue
+                        print('Key added', unique_key)
+                        unique_key_order.append(unique_key)
+
+    if group_by == 'group_by_ssp':
+        for thr in thresholds:
             for exp in exps:
-                for ens in ensembles:
-                    if ensemble_key == 'ensemble_mean' and ens != 'ensemble_mean':
-                        continue
-                    if ensemble_key != 'ensemble_mean' and ens == 'ensemble_mean' and dset!= 'CMIP6': continue
-                    # if dset.find('UKESM')>-1: print(dset, exp, ens, thr)
-                    unique_key = (dset, exp, ens, thr)
-                    if unique_key in unique_key_order: continue
-                    if unique_key not in remnants: continue
-                    print('Key added', unique_key)
-                    unique_key_order.append(unique_key)
+                for dset in datasets:
+                    for ens in ensembles:
+                        if ensemble_key == 'ensemble_mean' and ens != 'ensemble_mean':
+                            continue
+                        if ensemble_key != 'ensemble_mean' and ens == 'ensemble_mean' and dset!= 'CMIP6': continue
+                        # if dset.find('UKESM')>-1: print(dset, exp, ens, thr)
+                        unique_key = (dset, exp, ens, thr)
+                        if unique_key in unique_key_order: continue
+                        if unique_key not in remnants: continue
+                        print('Key added', unique_key)
+                        unique_key_order.append(unique_key)
+
+
 
     #print(unique_key_order)
     # assert 0
@@ -2533,11 +2557,16 @@ def make_ensemble_barchart_pane(
     emissions_bottoms = []
 
     previous_datasets = {}
+    if ensemble_key == 'ensemble_mean':
+        gap = 0.3
+    else: gap = 0.6
+    quit = False
     for i, unique_key in enumerate(unique_key_order):
     #for unique_key, remnant in sorted(remnants.items()):
         (t_dataset, t_exp, t_ens, t_threshold) = unique_key
-        #if ensemble_key == 'all': pass
-        #if ensemble_key == 'ensemble_mean' and t_ens != 'ensemble_mean': continue
+
+        if ensemble_key == 'ensemble_mean' and t_ens != 'ensemble_mean': continue
+
         if t_threshold != threshold: continue
         #if unique_key not in remnants: continue
 
@@ -2553,30 +2582,40 @@ def make_ensemble_barchart_pane(
 #            emissions_bottoms.append(0.)
 #            experiments.append(' ')
 
-        # create bar label.
-        label_keys = [t_dataset, t_exp, label_keys]
-        labels.append(label_keys)
         # if t_dataset not in previous_datasets:
         #     label_keys.append(t_dataset)
         # previous_datasets[t_dataset] = True
         # label_keys.append(t_exp)
         # labels.append(label_keys)
 
-        #
-        if i and t_dataset not in labels[i-1]:
-            xvalues.append((xvalues[i-1]+0.5)
-            widths.append(0.5)
+        #  look if adding  blank lines:
+      
+        dataset_blank = (i>0 and group_by == 'group_by_model' and t_dataset not in labels[-1])
+        exp_blank =  (i>0 and group_by == 'group_by_ssp' and t_exp not in labels[-1])
+
+        if dataset_blank or exp_blank:
+            xvalues.append((xvalues[-1]+0.2))
+            widths.append(1.)
             land.append(0.)
             ocean.append(0.)
             air.append(0.)
             emissions_bottoms.append(0.)
-            labels.append('')
+            labels.append([''.join(['.' for k in range(i)]), ])
+            
 
-        if not i:
-            xvalues.append(i)
+        # create bar label.
+        #if ensemble_key == 'ensemble_mean':
+        #    label_keys = [t_dataset, t_exp]
+        #else:
+        label_keys = [t_dataset, t_exp, t_ens]
+        labels.append(label_keys)
+
+
+        if i == 0:
+            xvalues.append(0.)
             widths.append(1)
         else:
-            xvalues.append(xvalues[i-1]+1.)
+            xvalues.append(xvalues[-1]+1.)
             widths.append(1)
 
 
@@ -2590,8 +2629,10 @@ def make_ensemble_barchart_pane(
             ocean.append(oceanc)
             air.append(remnant)
             emissions_bottoms.append(landc+oceanc)
-
-
+            if t_dataset.find('UKESM')>-1 and  threshold == '4.0':
+                if landc+oceanc + remnant<600.:
+                    print('ERROR:', label_keys, landc, oceanc, remnant, landc+oceanc + remnant )
+                    quit = True 
 
         # Adds a blank line between models.
         #if t_dataset not in previous_dats:
@@ -2616,9 +2657,37 @@ def make_ensemble_barchart_pane(
     # for i, exp  in enumerate(experiments):
     #     print("Final values:",threshold, i, exp, totals[i], '=',emissions_diff[i],('or', remnant[i]), '+', landcs[i], '+', fgco2gts[i], '(a, l, o)')
     # Add bars:
-    labels = [' '.join(label) for label in labels]
-    ax.bar(xvalues, land, width=widths, label='Land', color='green', tick_label = labels )
-    ax.bar(xvalues, ocean, width=widths bottom = land,  label='Ocean', color='dodgerblue')
+    #if quit: assert 0
+    for x,w,l in zip(xvalues, widths, labels): print(x,w,l)
+
+    label_strs = []
+    for i, lablist in enumerate(labels):
+        if lablist[0][0] == '.': 
+            label_strs.append(' ')
+            continue
+        (t_dataset, t_exp, t_ens) = lablist
+        if group_by == 'group_by_model':
+           if t_dataset  not in labels[i-1]: 
+               label_strs.append(t_dataset)
+           else: label_strs.append(' ') 
+        if group_by == 'group_by_ssp':
+           if t_exp not in labels[i-1]:
+               label_strs.append(t_exp)
+           else: label_strs.append(' ')
+
+#        if ensemble_key == 'ensemble_mean':
+#            label_keys = [t_dataset, t_exp, t_ens]
+#        if group_by == 'group_by_model':
+            
+      
+
+    #labels = [' '.join(label) for label in labels]
+    if len(label_strs)== len(land) == len(widths) == len(xvalues): pass
+    else:
+        print('ERROR:',  len(labels),len(land),len(widths), len(xvalues), len(label_strs))
+        assert 0
+    ax.bar(xvalues, land, width=widths, label='Land', color='green', tick_label = label_strs)
+    ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color='dodgerblue')
     ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color='grey')
     #ax.set_xlabel('Scenarios')
     plt.xticks(rotation=90)
@@ -2694,6 +2763,7 @@ def make_ensemble_barchart(
         thresholds_dict,
         plot_style='percentages',
         ensemble_key = 'ensemble_mean',
+        group_by = 'group_by_model',
         thresholds = ['4.0', '3.0', '2.0'],
     ):
     """
@@ -2712,21 +2782,22 @@ def make_ensemble_barchart(
         make_ensemble_barchart_pane(cfg, data_dict, thresholds_dict,threshold = threshold,fig=fig, ax=ax, do_legend=False,
             plot_style= plot_style,
             ensemble_key = ensemble_key,
+            group_by = group_by,
             )
         plt.xticks(rotation=90)
 
-#   ranges = []
-#   for ax in [ax_4, ax_3, ax_2]:
-#       plt.sca(ax)
-#       ranges.append(ax.get_xlim())
+    ranges = []
+    for ax in [ax_4, ax_3, ax_2]:
+        plt.sca(ax)
+        ranges.append(ax.get_ylim())
 
-#   for ax in [ax_4, ax_3, ax_2]:
-#       plt.sca(ax)
-#       ax.set_xlim([np.min(ranges), np.max(ranges)])
+    for ax in [ax_4, ax_3, ax_2]:
+        plt.sca(ax)
+        ax.set_ylim([np.min(ranges), np.max(ranges)])
 
     image_extention = diagtools.get_image_format(cfg)
     path = diagtools.folder([cfg['plot_dir'], 'ensemble_barcharts'])
-    path += '_'.join(['ensemble_barcharts', plot_style, ensemble_key]) + image_extention
+    path += '_'.join(['ensemble_barcharts', plot_style, ensemble_key, group_by]) + image_extention
     print('Save image:', path)
     plt.savefig(path)
     plt.close()
@@ -3484,10 +3555,11 @@ def main(cfg):
             if do_cumulative_plot:
                 plot_styles = ['percentages', 'values']
                 ens_styles = ['ensemble_mean', 'all_ens']
-                for plot_style, ens in product(plot_styles, ens_styles):
-                    make_ensemble_barchart(cfg, data_dict, thresholds_dict, plot_style=plot_style, ensemble_key=ens)
+                group_bys = ['group_by_ssp', 'group_by_model']
+                for plot_style, ens, group_by in product(plot_styles, ens_styles, group_bys):
+                    make_ensemble_barchart(cfg, data_dict, thresholds_dict, plot_style=plot_style, ensemble_key=ens, group_by=group_by)
 
-                assert 0
+                #continue
 
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
@@ -3503,7 +3575,8 @@ def main(cfg):
                            ensemble = 'ensemble_mean')
                        continue
                     make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
-                assert 0
+                #continue
+
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
 
                 LHS_panes = [
@@ -3531,7 +3604,6 @@ def main(cfg):
                    continue
                 make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
             make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
-            assert 0
             LHS_panes = [
                 {'x':'time', 'y':'cumul_emissions'},
                 {'x':'time', 'y':'tls'},
@@ -3569,6 +3641,7 @@ def main(cfg):
         for x in short_names_x:
             for y in short_names_y:
                 for plot_dataset in datasets:
+                    if plot_dataset.find('UKESM')==-1: continue
                     if x == y:
                         continue
 #                   for fill in ['ensemble_means', 'all_ensembles']:
