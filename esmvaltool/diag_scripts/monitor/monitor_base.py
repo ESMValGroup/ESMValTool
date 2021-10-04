@@ -179,6 +179,8 @@ class MonitorBase():
         }
         folder = os.path.expandvars(
             os.path.expanduser(_replace_tags(self.plot_folder, info)[0]))
+        if self.plot_folder.startswith('/'):
+            folder = '/' + folder
         if not os.path.isdir(folder):
             os.makedirs(folder, exist_ok=True)
         return folder

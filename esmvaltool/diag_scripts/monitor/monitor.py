@@ -25,6 +25,7 @@ class Monitor(MonitorBase):
     def __init__(self, config):
         super().__init__(config)
         self.plots = config.get('plots', {})
+        self.has_errors = False
 
     def compute(self):
         """Main plotting method."""
@@ -38,7 +39,15 @@ class Monitor(MonitorBase):
             for var_name, var_info in variables.items():
                 logger.info('Plotting variable %s', var_name)
                 var_info = var_info[0]
-                cube = iris.load_cube(var_info['filename'])
+                cubes = iris.load(var_info['filename'])
+                if len(cubes) == 1:
+                    cube = cubes[0]
+                else:
+                    for cube in cubes:
+                        if cube.var_name == var_name:
+                            break
+                    else:
+                        raise ValueError(f'Can not find cube {var_name} in {cubes}')
                 cube.var_name = self._real_name(var_name)
                 cube.attributes['plot_name'] = var_info.get('plot_name', '')
 
@@ -47,6 +56,8 @@ class Monitor(MonitorBase):
                 self.plot_monthly_climatology(cube, var_info)
                 self.plot_seasonal_climatology(cube, var_info)
                 self.plot_climatology(cube, var_info)
+        if self.has_errors:
+            raise Exception('Errors detected. Please check log for more details')
 
     @staticmethod
     def _add_month_name(cube):
@@ -184,6 +195,11 @@ class Monitor(MonitorBase):
                        dpi=120)
 
             for cube_slice in cube.slices_over('month_number'):
+                if cube_slice.ndim != 2:
+                    logger.error(
+                        'Climatologies can only be plotted for 2D vars. Skipping...')
+                    self.has_errors = True
+                    return
                 self._plot_monthly_cube(plot_map, months, columns, rows,
                                         map_options, variable_options,
                                         cube_slice)
@@ -254,13 +270,14 @@ class Monitor(MonitorBase):
         ----------
         cube: iris.cube.Cube
             Data to plot. Must be 3D with latitude, longitude and month_number
+            or season
         var_info: dict
             Variable's metadata from ESMValTool
 
         Warning
         -------
-        The seasonal climatology is done inside the function so the users can
-        plot both the monthly, seasonal and yearly climatologies in one go
+        The seasonal climatology can be done inside the function so the users
+        can plot monthly, seasonal and yearly climatologies in one go
         """
         if 'seasonclim' not in self.plots:
             return
@@ -279,10 +296,11 @@ class Monitor(MonitorBase):
             10: 'SON',
             11: 'SON'
         }
-        points = [season[point] for point in cube.coord('month_number').points]
-        cube.add_aux_coord(iris.coords.AuxCoord(points, var_name='season'),
-                           cube.coord_dims('month_number'))
-        cube = cube.aggregated_by('season', iris.analysis.MEAN)
+        if cube.coords('month_number'):
+            points = [season[point] for point in cube.coord('month_number').points]
+            cube.add_aux_coord(iris.coords.AuxCoord(points, var_name='season'),
+                            cube.coord_dims('month_number'))
+            cube = cube.aggregated_by('season', iris.analysis.MEAN)
 
         plot_map = PlotMap()
         maps = self.plots['seasonclim'].get('maps', ['global'])
@@ -294,6 +312,10 @@ class Monitor(MonitorBase):
             for cube_slice in cube.slices_over('season'):
                 index += 1
                 season = cube_slice.coord('season').points[0]
+                if cube_slice.ndim != 2:
+                    logger.error('Climatologies can only be plotted for 2D vars. Skipping...')
+                    self.has_errors = True
+                    return
                 plot_map.plot_cube(
                     cube_slice,
                     save=False,
@@ -346,18 +368,22 @@ class Monitor(MonitorBase):
         ----------
         cube: iris.cube.Cube
             Data to plot. Must be 3D with latitude, longitude and month_number
+            or season or 2D with latitude and longitude
         var_info: dict
             Variable's metadata from ESMValTool
 
         Warning
         -------
-        The climatology is done inside the function so the users can
-        plot both the monthly, seasonal and yearly climatologies in one go
+        The climatology can be done inside the function from the monthly and
+        seasonal climatologies so the users can plot several of them in one go
         """
         if 'clim' not in self.plots:
             return
 
-        cube = cube.collapsed('month_number', iris.analysis.MEAN)
+        if cube.coords('month_number'):
+            cube = cube.collapsed('month_number', iris.analysis.MEAN)
+        elif cube.coords('season'):
+            cube = cube.collapsed('season', iris.analysis.MEAN)
         maps = self.plots['clim'].get('maps', ['global'])
         plot_map = PlotMap(loglevel='INFO')
         plot_map.outdir = self.get_plot_folder(var_info)
@@ -366,6 +392,11 @@ class Monitor(MonitorBase):
 
             variable_options = self._get_variable_options(
                 var_info['variable_group'], map_name)
+            if cube.ndim != 2:
+                logger.error(
+                    'Climatologies can only be plotted for 2D vars. Skipping...')
+                self.has_errors = True
+                return
 
             plot_map.plot_cube(cube,
                                save=False,
