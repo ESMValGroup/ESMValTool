@@ -2693,7 +2693,7 @@ def make_ensemble_barchart_pane(
     label_strs = []
 
     colours_land, colours_ocean, colours_air = [],[],[]
-    / 
+
     ssp119_land, ssp119_ocean, ssp119_air = '', '', ''    
 
     for i, lablist in enumerate(labels):
