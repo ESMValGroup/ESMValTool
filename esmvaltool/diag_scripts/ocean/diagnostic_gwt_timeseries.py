@@ -1170,13 +1170,13 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
              continue
         baseline = baselines.get((dataset, 'tas', ensemble), False)
         if baseline is False:
-             baseline = baselines.get((dataset, 'tas', ensemble.replace('f2', 'f3')), False) 
+             baseline = baselines.get((dataset, 'tas', ensemble.replace('f2', 'f3')), False)
              if baseline is False:
                  print('No Baseline found', (dataset, short_name, exp, ensemble), 'available baselines are:')
                  for bs_index in baselines.keys():
                      if bs_index[0] != dataset: continue
                      print(bs_index, ':', baselines.get(bs_index, 0.))
-                 assert 0 
+                 assert 0
         for ens in ensemble:
             if baseline: continue
             baseline =  baselines.get((dataset, 'tas', ens), False)
@@ -1191,7 +1191,7 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
             thresholds_dict[(dataset, short_name, exp, ensemble)][threshold] = time
             print("load_thresholds: Found Threshold:",(dataset, short_name, exp, ensemble), threshold, ':', time)
             if time is None: continue
-            if float(threshold)>=2. and time.year == 2015: 
+            if float(threshold)>=2. and time.year == 2015:
                 thresholds_dict[(dataset, short_name, exp, ensemble)][threshold] = None
                 print('Bad time!')
                 print('baseline', baseline)
@@ -1199,7 +1199,7 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
 
                 print('data', cube2.data)
                 #assert 0
-            
+
 
     print('Saving:', thresholds_shelve)
     sh = shelve.open(thresholds_shelve)
@@ -2618,7 +2618,7 @@ def make_ensemble_barchart_pane(
         # labels.append(label_keys)
 
         #  look if adding  blank lines:
-      
+
         dataset_blank = (i>0 and group_by == 'group_by_model' and t_dataset not in labels[-1])
         exp_blank =  (i>0 and group_by == 'group_by_ssp' and t_exp not in labels[-1])
 
@@ -2630,7 +2630,7 @@ def make_ensemble_barchart_pane(
             air.append(0.)
             emissions_bottoms.append(0.)
             labels.append([''.join(['.' for k in range(i)]), ])
-            
+
 
         # create bar label.
         #if ensemble_key == 'ensemble_mean':
@@ -2662,7 +2662,7 @@ def make_ensemble_barchart_pane(
                 if landc+oceanc + remnant<600.:
                     print('ERROR:', label_keys, landc, oceanc, remnant, landc+oceanc + remnant )
                     quit = True
-                    assert 0 
+                    assert 0
 
         # Adds a blank line between models.
         #if t_dataset not in previous_dats:
@@ -2693,18 +2693,43 @@ def make_ensemble_barchart_pane(
     label_strs = []
 
     colours_land, colours_ocean, colours_air = [],[],[]
-    / 
-    ssp119_land, ssp119_ocean, ssp119_air = '', '', ''    
+    ssp_land = {
+        #'historical':'black',
+        'ssp119': 'darkgreen',
+        'ssp126': 'dodgerblue',
+        'ssp245': 'darkorange',
+        'ssp370': 'darkpurple',
+        'ssp585': 'darkred',
+        }
+    ssp_ocean = {
+        'ssp119': 'green',
+        'ssp126': 'blue',
+        'ssp245': 'orange',
+        'ssp370': 'purple',
+        'ssp585': 'red',
+    }
+    ssp_air = {
+        'ssp119': 'lightgreen',
+        'ssp126': 'dodgerblue',
+        'ssp245': 'lightorange',
+        'ssp370': 'lightpurple',
+        'ssp585': 'lightred',
+    }
 
     for i, lablist in enumerate(labels):
-        if lablist[0][0] == '.': 
+        if lablist[0][0] == '.':
             label_strs.append(' ')
             continue
         (t_dataset, t_exp, t_ens) = lablist
+
+        colours_land.append(ssp_land[t_exp])
+        colours_ocean.append(ssp_ocean[t_exp])
+        colours_air.append(ssp_air[t_exp])
+
         if group_by == 'group_by_model':
-           if t_dataset  not in labels[i-1]: 
+           if t_dataset  not in labels[i-1]:
                label_strs.append(t_dataset)
-           else: label_strs.append(' ') 
+           else: label_strs.append(' ')
         if group_by == 'group_by_ssp':
            if t_exp not in labels[i-1]:
                label_strs.append(t_exp)
@@ -2713,8 +2738,8 @@ def make_ensemble_barchart_pane(
 #        if ensemble_key == 'ensemble_mean':
 #            label_keys = [t_dataset, t_exp, t_ens]
 #        if group_by == 'group_by_model':
-            
-      
+
+
 
     #labels = [' '.join(label) for label in labels]
     if len(label_strs)== len(land) == len(widths) == len(xvalues): pass
@@ -2722,9 +2747,13 @@ def make_ensemble_barchart_pane(
         print('ERROR:',  len(labels),len(land),len(widths), len(xvalues), len(label_strs))
         assert 0
 
-    ax.bar(xvalues, land, width=widths, label='Land', color='green', tick_label = label_strs)
-    ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color='dodgerblue')
-    ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color='grey')
+    ax.bar(xvalues, land, width=widths, label='Land', color=colours_land, tick_label = label_strs)
+    ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color=colours_ocean)
+    ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color=colours_air)
+
+    # ax.bar(xvalues, land, width=widths, label='Land', color='green', tick_label = label_strs)
+    # ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color='dodgerblue')
+    # ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color='grey')
     #ax.set_xlabel('Scenarios')
     plt.xticks(rotation=90)
 
