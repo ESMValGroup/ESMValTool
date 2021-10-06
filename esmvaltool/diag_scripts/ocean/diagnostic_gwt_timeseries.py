@@ -1147,7 +1147,7 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
     Dict is :
     data_dict[(dataset, short_name, exp, ensemble) ] = {threshold: year}
     """
-    thresholds_shelve = diagtools.folder([cfg['work_dir'], 'gwt_timeseries'])+'thresholds.shelve'
+    thresholds_shelve = diagtools.folder([cfg['work_dir'], 'thresholds_dict'])+'thresholds.shelve'
     if glob.glob(thresholds_shelve+'*'):
         print('opening:', thresholds_shelve)
         sh = shelve.open(thresholds_shelve)
@@ -1157,16 +1157,26 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
 
     thresholds_dict = {}
     baselines = {}
+    baseline_cubes = {}
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name not in short_names:
              continue
         if exp != 'historical': continue
+        baseline_cubes[(dataset, short_name, ensemble)] = cube
         baselines[(dataset, short_name, ensemble)] = calculate_anomaly(cube, [1850, 1900], calc_average=True)
 
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name not in short_names:
              continue
         baseline = baselines.get((dataset, 'tas', ensemble), False)
+        if baseline is False:
+             baseline = baselines.get((dataset, 'tas', ensemble.replace('f2', 'f3')), False) 
+             if baseline is False:
+                 print('No Baseline found', (dataset, short_name, exp, ensemble), 'available baselines are:')
+                 for bs_index in baselines.keys():
+                     if bs_index[0] != dataset: continue
+                     print(bs_index, ':', baselines.get(bs_index, 0.))
+                 assert 0 
         for ens in ensemble:
             if baseline: continue
             baseline =  baselines.get((dataset, 'tas', ens), False)
@@ -1179,6 +1189,17 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
         for threshold in thresholds:
             time = get_threshold_exceedance_date(cube2, threshold)
             thresholds_dict[(dataset, short_name, exp, ensemble)][threshold] = time
+            print("load_thresholds: Found Threshold:",(dataset, short_name, exp, ensemble), threshold, ':', time)
+            if time is None: continue
+            if float(threshold)>=2. and time.year == 2015: 
+                thresholds_dict[(dataset, short_name, exp, ensemble)][threshold] = None
+                print('Bad time!')
+                print('baseline', baseline)
+                print('baseline_cube', baseline_cubes[(dataset, 'tas', ensemble)].data - baseline)
+
+                print('data', cube2.data)
+                #assert 0
+            
 
     print('Saving:', thresholds_shelve)
     sh = shelve.open(thresholds_shelve)
@@ -1527,12 +1548,12 @@ def calc_atmos_carbon(cfg, data_dict):
                      print('Fail to find:', (dataset, cube_key, exp, ensemble))
                      continue
 
-            tmp_cube_data = {'time': diagtools.cube_time_to_float(tmp_cube_data),
+            tmp_cube_data = {'time': [int(t) for t in diagtools.cube_time_to_float(tmp_cube_data)],
                              cube_key: tmp_cube_data.data}
             tmp_cube_data = zip_time(tmp_cube_data, cube_key)
             for t,d in tmp_cube_data.items():
-                t = int(t)
-                if not tmp_data.get(t,False):
+                #t = int(t)
+                if t not in tmp_data: #t(t,False):
                     print('calc_atmos_carbon: ERROR: unable to find year', t, 'in',(dataset, cube_key, exp, ensemble))
                     print('output:',tmp_data)
                     print('input:', cube_key, tmp_cube_data)
@@ -1547,7 +1568,6 @@ def calc_atmos_carbon(cfg, data_dict):
 
     data_dict.update(tmp_data_dict)
     print(tmp_data_dict)
-    assert 0  
     return data_dict
 
 
@@ -2415,13 +2435,15 @@ def calculate_percentages( cfg,
         fgco2gt_cumul = data_dict[(t_dataset, 'fgco2gt_cumul', t_exp, t_ens)] # cube
         print('calculate_percentages: vworking here right now', threshold_times)
         for thresh, time in threshold_times.items():
-            print("calculate_percentages", t_short, t_exp, t_ens, thresh, threshold, time)
+            # print("calculate_percentages", t_short, t_exp, t_ens, thresh, threshold, time)
             if float(threshold) != float(thresh):
-                print(threshold, '!=', thresh)
+                #print(threshold, '!=', thresh)
                 continue
             if not time:
                 print('time', 'isn t there' , time)
                 continue
+            print("calculate_percentages", t_short, t_exp, t_ens, thresh, threshold, 'time:',time)
+
             fl_threshold = float(threshold)
             if fl_threshold > 1850.: # Threshold is a specific point in time.
                 e_xpoint = get_threshold_point(cumul_emissions, fl_threshold)
@@ -2439,11 +2461,18 @@ def calculate_percentages( cfg,
             emission = cumul_emissions['cumul_emissions'][e_xpoint]
             remnant = atmos_carbon['atmos_carbon'][a_xpoint]
             fgco2gt = fgco2gt_cumul.data[f_xpoint]
+
             if isinstance(landc_cumul, dict):
                 landc = landc_cumul[land_carbon][n_xpoint]
             else:
                 landc = landc_cumul.data[n_xpoint]
             t_exp = t_exp.replace('historical-', '').upper()
+
+            if t_dataset.find('UKESM')>-1 and  threshold == '4.0':
+                if landc+fgco2gt+ remnant<600.:
+                    print('ERROR:', t_short, t_exp, t_ens, thresh, threshold, time, (landc,fgco2gt, remnant))
+                    assert 0
+
 
             unique_key = (t_dataset, t_exp, t_ens, threshold)
             emissions[unique_key] = emission
@@ -2524,7 +2553,7 @@ def make_ensemble_barchart_pane(
                         if ensemble_key == 'ensemble_mean' and ens != 'ensemble_mean':
                             continue
                         if ensemble_key != 'ensemble_mean' and ens == 'ensemble_mean' and dset!= 'CMIP6': continue
-                        # if dset.find('UKESM')>-1: print(dset, exp, ens, thr)
+                        if dset.find('UKESM')>-1: print(dset, exp, ens, thr)
                         unique_key = (dset, exp, ens, thr)
                         if unique_key in unique_key_order: continue
                         if unique_key not in remnants: continue
@@ -2539,7 +2568,7 @@ def make_ensemble_barchart_pane(
                         if ensemble_key == 'ensemble_mean' and ens != 'ensemble_mean':
                             continue
                         if ensemble_key != 'ensemble_mean' and ens == 'ensemble_mean' and dset!= 'CMIP6': continue
-                        # if dset.find('UKESM')>-1: print(dset, exp, ens, thr)
+                        if dset.find('UKESM')>-1: print(dset, exp, ens, thr)
                         unique_key = (dset, exp, ens, thr)
                         if unique_key in unique_key_order: continue
                         if unique_key not in remnants: continue
@@ -2632,7 +2661,8 @@ def make_ensemble_barchart_pane(
             if t_dataset.find('UKESM')>-1 and  threshold == '4.0':
                 if landc+oceanc + remnant<600.:
                     print('ERROR:', label_keys, landc, oceanc, remnant, landc+oceanc + remnant )
-                    quit = True 
+                    quit = True
+                    assert 0 
 
         # Adds a blank line between models.
         #if t_dataset not in previous_dats:
@@ -2661,6 +2691,11 @@ def make_ensemble_barchart_pane(
     for x,w,l in zip(xvalues, widths, labels): print(x,w,l)
 
     label_strs = []
+
+    colours_land, colours_ocean, colours_air = [],[],[]
+    / 
+    ssp119_land, ssp119_ocean, ssp119_air = '', '', ''    
+
     for i, lablist in enumerate(labels):
         if lablist[0][0] == '.': 
             label_strs.append(' ')
@@ -2686,6 +2721,7 @@ def make_ensemble_barchart_pane(
     else:
         print('ERROR:',  len(labels),len(land),len(widths), len(xvalues), len(label_strs))
         assert 0
+
     ax.bar(xvalues, land, width=widths, label='Land', color='green', tick_label = label_strs)
     ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color='dodgerblue')
     ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color='grey')
@@ -2831,10 +2867,12 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
         cumul_emissions = data_dict.get((t_dataset, 'cumul_emissions', t_exp, t_ens), None) #dict
         atmos_carbon = data_dict.get((t_dataset, atmos,  t_exp, t_ens), None) #dict
         if cumul_emissions is None:  # Because not all sceanrios have emissions data.
-           continue
+           print('Did not find cumul_emissions', (t_dataset, 'cumul_emissions',  t_exp, t_ens))
+           assert 0
 
         if atmos_carbon is None:  # Because not all sceanrios have emissions data.
-           continue
+           print('Did not find atmoshs_carbon:', (t_dataset, atmos,  t_exp, t_ens))
+           assert 0
 
         if land_carbon == 'nbpgt':
             landc_cumul = data_dict[(t_dataset, 'nbpgt_cumul', t_exp, t_ens)] # cube
@@ -3449,9 +3487,9 @@ def main(cfg):
 
     #jobtype = 'land'
     short_names, short_names_x, short_names_y = [], [], []
-    #jobtype = 'debug'
+    jobtype = 'debug'
     #jobtype = 'bulk'
-    jobtype = 'cumulative_plot'
+    # jobtype = 'cumulative_plot'
 
     if jobtype == 'cumulative_plot':
         short_names = ['tas', 'tas_norm',
@@ -3504,7 +3542,7 @@ def main(cfg):
                        #'bgc', 'bgcgt',
                        #'luegt', #  land-use emissions gt
                        'tls', #true land sink = nbp + land-use emissions
-                       #'atmos_carbon', # remant antrho carbon in atmosphere
+                       'atmos_carbon', # remant antrho carbon in atmosphere
 
                        ]
         short_names_x = ['cumul_emissions',]#'time', 'emissions', 'cumul_emissions',]#'cumul_emissions', 'gppgt'] #'time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
@@ -3544,9 +3582,9 @@ def main(cfg):
     for do_ma in [True, ]:#False]:
         data_dict = load_timeseries(cfg, short_names)
         thresholds_dict = load_thresholds(cfg, data_dict)
-        plot_data_dict(cfg, data_dict)
+        #plot_data_dict(cfg, data_dict)
 
-        if jobtype == 'cumulative_plot':
+        if jobtype in ['cumulative_plot', 'debug']:
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls')
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
