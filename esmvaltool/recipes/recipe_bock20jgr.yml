@@ -2,6 +2,7 @@
 # recipe_bock20jgr.yml
 ---
 documentation:
+  title: Quantifying progress across different CMIP phases
 
   description: |
     Producing figures from Bock et al., 2020, JGR
@@ -346,6 +347,7 @@ CMIP6_rtmt: &cmip6_rtmt
 diagnostics:
 
   fig_1_cmip6: &diag_fig1
+    title: CMIP6 surface temperature anomalies
     description: CMIP6 timeseries of near-surface temperature anomalies
     variables:
       tas: &var_tas_tsline
@@ -378,6 +380,7 @@ diagnostics:
         styleset: CMIP6
 
   fig_1_cmip5:
+    title: CMIP5 surface temperature anomalies
     description: CMIP5 timeseries of near-surface temperature anomalies
     variables:
       tas:
@@ -396,6 +399,7 @@ diagnostics:
         styleset: CMIP5
 
   fig_1_cmip3:
+    title: CMIP3 surface temperature anomalies
     description: CMIP3 timeseries of near-surface temperature anomalies
     variables:
       tas:
@@ -447,6 +451,7 @@ diagnostics:
 
 
   fig_3_cmip6:
+    title: CMIP6 MMM surface temperature
     description: CMIP6 multi-model mean and bias of near-surface temperature
     variables:
       tas: &var_cmip6_bias
@@ -470,6 +475,7 @@ diagnostics:
 
 
   fig_3_cmip5:
+    title: CMIP6 MMM surface temperature
     description: CMIP5 multi-model mean and bias of near-surface temperature
     variables:
       tas:
@@ -487,6 +493,7 @@ diagnostics:
 
 
   fig_3_cmip3:
+    title: CMIP3 MMM surface temperature
     description: CMIP3 multi-model mean and bias of near-surface temperature
     variables:
       tas:
@@ -509,6 +516,7 @@ diagnostics:
 
 
   fig_3_highresmip_low:
+    title: CMIP6 low-res MMM (HighResMIP) surface temperature
     description: CMIP6 multi-model mean and bias of near-surface temperature
     variables:
       tas:
@@ -522,6 +530,7 @@ diagnostics:
 
 
   fig_3_highresmip_high:
+    title: CMIP6 high-res MMM (HighResMIP) surface temperature
     description: CMIP6 multi-model mean and bias of near-surface temperature
     variables:
       tas:
@@ -535,6 +544,7 @@ diagnostics:
 
 
   fig_4_cmip6:
+    title: CMIP6 MMM precipitation
     description: CMIP6 multi-model mean and bias of percipitation
     variables:
       pr:
@@ -550,6 +560,7 @@ diagnostics:
 
 
   fig_4_cmip5:
+    title: CMIP5 MMM precipitation
     description: CMIP5 multi-model mean and bias of percipitation
     variables:
       pr:
@@ -569,6 +580,7 @@ diagnostics:
 
 
   fig_4_cmip3:
+    title: CMIP3 MMM precipitation
     description: CMIP3 multi-model mean and bias of percipitation
     variables:
       pr:
@@ -592,6 +604,7 @@ diagnostics:
 
 
   fig_4_highresmip_low:
+    title: CMIP6 low-res MMM (HighResMIP) precipitation
     description: CMIP6 multi-model mean and bias of percipitation
     variables:
       pr:
@@ -607,6 +620,7 @@ diagnostics:
 
 
   fig_4_highresmip_high:
+    title: CMIP6 low-res MMM (HighResMIP) precipitation
     description: CMIP6 multi-model mean and bias of percipitation
     variables:
       pr:
@@ -677,6 +691,7 @@ diagnostics:
         calculate_mmm: false
 
   fig_8_ecs_barplot:
+    title: Effective Climate Sensitivity (ECS)
     description: Create barplot of ECS for CMIP3, CMIP5 and CMIP6.
     scripts:
       barplot:
@@ -697,6 +712,7 @@ diagnostics:
         y_range: [0.0, 6.0]
 
   fig_10_cmip5:
+    title: CMIP5 cloud feedback
     description: Calculate grid-level CRE feedback parameters for CMIP5 models.
     variables:
       tas_global_rtnt: &fig_10_settings_cmip5
@@ -734,6 +750,7 @@ diagnostics:
           end_year: 150
 
   fig_10_cmip6:
+    title: CMIP6 cloud feedback
     description: Calculate grid_level CRE feedback parameters for CMIP6 models.
     variables:
       tas_global_rtnt: &fig_10_settings_cmip6
