@@ -4,7 +4,8 @@ Tier
    Tier 2: other freely-available dataset.
 
 Source
-   WOA18: https://www.ncei.noaa.gov/access/world-ocean-atlas-2018/
+   WOA18: https://www.ncei.noaa.gov/data/oceans/woa/WOA18/DATA
+   WOA13: https://www.ncei.noaa.gov/data/oceans/woa/WOA13/DATAv2
 
 Last access
    WOA18: 20210311
@@ -12,8 +13,18 @@ Last access
 Download and processing instructions
    All handled by the script (download only if local data are missing)
 
+   Alternatively, download the following files:
+     temperature/netcdf/decav81B0/1.00/woa18_decav81B0_t00_01.nc
+     salinity/netcdf/decav81B0/1.00/woa18_decav81B0_s00_01.nc
+     oxygen/netcdf/all/1.00/woa18_all_o00_01.nc
+     nitrate/netcdf/all/1.00/woa18_all_n00_01.nc
+     phosphate/netcdf/all/1.00/woa18_all_p00_01.nc
+     silicate/netcdf/all/1.00/woa18_all_i00_01.nc
+   (To get WOA13, replace filenames prefix woa18 with woa13)
+
+
 Modification history
-   20210311-lovato_tomas: consolidate WOA18, raw data download, use OBS6
+   20210311-lovato_tomas: handle WOA18/WOA13, raw data download, use OBS6
    20200911-bock_lisa: extend to WOA18
    20190328-lovato_tomas: cmorizer revision
    20190131-predoi_valeriu: adapted to v2.
