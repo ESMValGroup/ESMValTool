@@ -333,35 +333,7 @@ and create the new release from the release branch (i.e. not from ``main``).
 The release tag always starts with the letter ``v`` followed by the version
 number, e.g. ``v2.1.0``.
 
-7. Create and upload the Conda package
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The package is automatically uploaded to the
-`ESMValGroup conda channel <https://anaconda.org/esmvalgroup/esmvaltool>`__
-by a GitHub action.
-If this has failed for some reason, build and upload the package manually by
-following the instructions below.
-
-Follow these steps to create a new conda package:
-
--  Check out the tag corresponding to the release,
-   e.g. ``git checkout tags/v2.1.0``
--  Make sure your current working directory is clean by checking the output
-   of ``git status`` and by running ``git clean -xdf`` to remove any files
-   ignored by git.
--  Edit ``package/meta.yaml`` and uncomment the lines starting with ``git_rev`` and
-   ``git_url``, remove the line starting with ``path`` in the ``source``
-   section.
--  Activate the base environment ``conda activate base``
--  Install the required packages:
-   ``conda install -y conda-build conda-verify ripgrep anaconda-client``
--  Run ``conda build package -c conda-forge -c esmvalgroup`` to build the
-   conda package
--  If the build was successful, upload the package to the esmvalgroup
-   conda channel, e.g.
-   ``anaconda upload --user esmvalgroup /path/to/conda/conda-bld/noarch/esmvaltool-2.1.0-py_0.tar.bz2``.
-
-8. Create and upload the PyPI package
+7. Create and upload the PyPI package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The package is automatically uploaded to the
@@ -392,6 +364,14 @@ Follow these steps to create a new Python package:
 You can read more about this in
 `Packaging Python Projects <https://packaging.python.org/tutorials/packaging-projects/>`__.
 
+8. Update the conda-forge packages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The upload to PyPI will automatically trigger an update PR on the
+esmvaltool-suite-feedstock_. Check that it builds correctly and merge
+the PR to update the conda-forge packages.
+
+.. _esmvaltool-suite-feedstock: https://github.com/conda-forge/esmvaltool-suite-feedstock
 
 Changelog
 ---------
