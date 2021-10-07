@@ -1,11 +1,10 @@
-name: Source Install
+name: Install from Source
 
 # runs on a push on main and at the end of every day
 on:
   push:
     branches:
     - main
-    - mamba_in_GA
   schedule:
     - cron: '0 0 * * *'
 

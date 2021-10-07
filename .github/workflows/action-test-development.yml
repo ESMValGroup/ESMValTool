@@ -5,14 +5,13 @@
 # - runs tests of esmvaltool
 # Triggered by a push to main and nightly
 
-name: Develop Test
+name: Test in Full Development Mode
 
 # runs on a push on main and at the end of every day
 on:
   push:
     branches:
     - main
-    - unpin_iris
   schedule:
     - cron: '0 0 * * *'
 
