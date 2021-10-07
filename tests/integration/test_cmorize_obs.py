@@ -114,7 +114,7 @@ def check_output_exists(output_path):
     """Check if cmorizer outputted."""
     # eg Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_200001-200012.nc
     output_files = os.listdir(output_path)
-    assert len(output_files) == 18
+    assert len(output_files) == 8
     assert 'OBS6_WOA_clim' in output_files[0]
     out_files = [s.split("_")[5] for s in output_files]
     assert 'thetao' in out_files
