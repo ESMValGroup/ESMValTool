@@ -10,6 +10,9 @@ documentation:
 
   authors:
     - predoi_valeriu
+    - sellar_alistair
+
+  titile: Land-surface assessment area diagnostic that computes soilmoisture (from Autoassess).
 
   references:
     - esacci-soilmoisture

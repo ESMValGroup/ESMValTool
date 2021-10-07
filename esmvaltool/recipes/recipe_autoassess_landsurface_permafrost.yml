@@ -11,6 +11,9 @@ documentation:
     
   authors:
     - predoi_valeriu
+    - sellar_alistair
+
+  titile: Land-surface assessment area diagnostic that computes permafrost (from Autoassess).
 
   references:
     - brown02nsidc
