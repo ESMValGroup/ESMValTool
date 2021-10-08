@@ -365,7 +365,7 @@ You can read more about this in
 `Packaging Python Projects <https://packaging.python.org/tutorials/packaging-projects/>`__.
 
 8. Update the conda-forge packages
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The upload to PyPI will automatically trigger an update PR on the
 esmvaltool-suite-feedstock_. Check that it builds correctly and merge
