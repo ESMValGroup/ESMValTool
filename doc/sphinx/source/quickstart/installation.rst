@@ -74,33 +74,6 @@ You can check that conda installed correctly by running
 this should show the path to your conda executable, e.g.
 ``~/miniconda3/bin/conda``.
 
-Julia installation
-------------------
-
-Because Julia cannot be installed from conda, if you want to use the entire
-ESMValTool (or only the ESMValTool Julia functionality), you will also need to
-pre-install Julia.
-
-Installation instructions for Julia can be found on the
-`Julia installation instructions page <https://julialang.org/downloads/platform/>`_.
-One way to install Julia is by using `Jill.py <https://github.com/johnnychen94/jill.py>`_
-
-.. code-block:: bash
-
-    conda create --name jill pip
-    conda activate jill
-    pip install jill
-    jill install
-    conda deactivate
-
-You can check that Julia installed correctly by running
-
-.. code-block:: bash
-
-    which julia
-
-this should show the path to your Julia executable, e.g. ``~/.local/bin/julia``.
-
 ESMValTool installation
 -----------------------
 
@@ -109,7 +82,7 @@ ESMValTool package by running:
 
 .. code-block:: bash
 
-    conda create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool python=3.9
+    conda create --name esmvaltool -c conda-forge esmvaltool python=3.9
 
 Here ``conda`` is the executable calling the conda package manager to install
 ``esmvaltool`` and the ``-c`` flag specifies the conda software channels in which the
@@ -152,6 +125,19 @@ message to the console.
     conda is new enough to be able to install the required version of Python; we
     recommend that the conda version should be at least 4.9.
 
+Julia installation
+------------------
+
+If you want to use the ESMValTool Julia functionality, you will also need to
+install Julia. If you are just getting started, we suggest that you
+come back to this step later when and if you need it.
+To perform the Julia installation, make sure that your conda
+environment is activated and then execute
+
+.. code-block:: bash
+
+    conda install julia
+
 .. _conda subpackages:
 
 Installation of subpackages
@@ -160,9 +146,8 @@ Installation of subpackages
 The diagnostics bundled in ESMValTool are scripts in four different programming
 languages: Python, NCL, R, and Julia.
 
-There are four language specific packages available:
+There are three language specific packages available:
 
-* ``esmvaltool-julia``
 * ``esmvaltool-ncl``
 * ``esmvaltool-python``
 * ``esmvaltool-r``
@@ -179,14 +164,11 @@ environment, run
 
 .. code-block:: bash
 
-    conda install esmvaltool-python esmvaltool-ncl -c esmvalgroup -c conda-forge
+    conda install esmvaltool-python esmvaltool-ncl -c conda-forge
 
 Some of the CMORization scripts are written in Python, while others are written
 in  NCL. Therefore, both ``esmvaltool-python`` and ``esmvaltool-ncl`` need to be
 installed in order to be able to run all CMORization scripts.
-
-Note that it is only necessary to install Julia prior to the conda installation
-if you are going to install the ``esmvaltool-julia`` package.
 
 Note that the ESMValTool source code is contained in the ``esmvaltool-python``
 package, so this package will always be installed as a dependency if you install
@@ -214,7 +196,7 @@ Create a new environment with the ``esmvaltool-python`` package:
 
 .. code-block:: bash
 
-    conda create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool-python python=3.9
+    conda create --name esmvaltool -c conda-forge esmvaltool-python python=3.9
 
 Activate the new environment:
 
@@ -335,7 +317,7 @@ or script to abbreviate the above command, for example
 
 .. code-block:: bash
 
-	 alias esmvaltool="docker run -e HOME -v $HOME:$HOME -v /data:/data esmvalgroup/esmvaltool:stable"
+   alias esmvaltool="docker run -e HOME -v $HOME:$HOME -v /data:/data esmvalgroup/esmvaltool:stable"
 
 would allow using the ``esmvaltool`` command without even noticing that the
 tool is running inside a Docker container.
@@ -365,7 +347,7 @@ or script to abbreviate the above command, for example
 
 .. code-block:: bash
 
-	 alias esmvaltool="singularity run -B $HOME:$HOME -B /data:/data docker://esmvalgroup/esmvaltool:stable"
+   alias esmvaltool="singularity run -B $HOME:$HOME -B /data:/data docker://esmvalgroup/esmvaltool:stable"
 
 would allow using the ``esmvaltool`` command without even noticing that the
 tool is running inside a Singularity container.
@@ -735,7 +717,7 @@ for example by running
 
 .. code-block:: bash
 
-    conda create -n esmvaltool -c conda-forge -c esmvalgroup esmvaltool python=3.8
+    conda create -n esmvaltool -c conda-forge esmvaltool python=3.8
 
 you ask for Python 3.8 specifically and that makes it much easier for conda to
 solve the environment, because now it can ignore any packages that were built

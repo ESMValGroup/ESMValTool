@@ -468,9 +468,8 @@ the following files:
   contains all Python dependencies, regardless of their installation source
 - ``package/meta.yaml``
   contains dependencies for the conda package; all Python and compiled
-  dependencies that can be installed from conda should be listed here, but no R
-  or Julia dependencies because doing that would make it impossible to solve the
-  conda environment
+  dependencies that can be installed from conda should be listed here, but no Julia
+  dependencies because doing that would make it impossible to solve the conda environment
 
 Note that packages may have a different name on
 `conda-forge <https://conda-forge.org/>`__ than on PyPI or CRAN.
