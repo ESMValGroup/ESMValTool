@@ -72,9 +72,10 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            conda create --name esmvaltool julia 'python=3.9' >> /logs/conda.txt 2>&1
+            conda create --name esmvaltool 'python=3.9' >> /logs/conda.txt 2>&1
             conda env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
+            conda install julia >> /logs/conda.txt 2>&1
             pip install .[test] > /logs/install.txt 2>&1
             esmvaltool install Julia
             # Remove source to test installed software
@@ -119,9 +120,10 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            conda create --name esmvaltool julia 'python=3.9' >> /logs/conda.txt 2>&1
+            conda create --name esmvaltool 'python=3.9' >> /logs/conda.txt 2>&1
             conda env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
+            conda install julia >> /logs/conda.txt 2>&1
             pip install -e .[develop] > /logs/install.txt 2>&1
             esmvaltool install Julia
             # Log versions
