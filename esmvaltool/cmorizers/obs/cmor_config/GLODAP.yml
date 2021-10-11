@@ -6,7 +6,7 @@ attributes:
   tier: 2
   modeling_realm: clim
   project_id: OBS6
-  source: 'https://www.nodc.noaa.gov/archive/arc0107/0162565/1.1/data/0-data/mapped/GLODAPv2.2016b_MappedClimatologies.tar.gz'
+  source: 'https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0162565/mapped/GLODAPv2.2016b_MappedClimatologies.tar.gz'
   reference: 'glodap'
   comment: ''
 
