@@ -22,7 +22,7 @@
 ;
 ;
 ; Modification history
-;    20210519-A_bock_lisa: Written with Bettina Gier 
+;    20210519-A_bock_lisa: Written together with Bettina Gier
 ;                          (based on ipcc_ar5/ch09_fig09_6.ncl)
 ;
 ; #############################################################################
