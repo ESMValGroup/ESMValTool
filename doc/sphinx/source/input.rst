@@ -336,7 +336,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | WFDE5                        | tas, pr (Amon, day)                                                                                  |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| WOA                          | no3, o2, po4, si (Oyr), so, thetao (Omon)                                                            |   2  | Python          |
+| WOA                          | thetao, so, tos, sos (Omon)                                                                          |   2  | Python          |
+|                              | no3, o2, po4, si (Oyr)                                                                               |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 
 .. [#note1] CMORization is built into ESMValTool through the native6 project, so there is no separate CMORizer script.

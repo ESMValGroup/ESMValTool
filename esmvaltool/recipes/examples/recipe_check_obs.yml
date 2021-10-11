@@ -577,7 +577,11 @@ diagnostics:
     variables:
       so:
         mip: Omon
+      sos:
+        mip: Omon
       thetao:
+        mip: Omon
+      tos:
         mip: Omon
       no3:
         mip: Oyr
@@ -588,6 +592,8 @@ diagnostics:
       si:
         mip: Oyr
     additional_datasets:
+      - {dataset: WOA, project: OBS6, tier: 2,
+         type: clim, version: 2018, start_year: 2000, end_year: 2000}
       - {dataset: WOA, project: OBS, tier: 2,
          type: clim, version: 2013v2, start_year: 2000, end_year: 2000}
     scripts: null
