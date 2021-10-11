@@ -16,7 +16,7 @@ documentation:
   authors:
     - predoi_valeriu
 
-  titile: Standard comparison between two models (control and experiment, CMIP6 data).
+  title: Standard comparison between two models (control and experiment, CMIP6 data).
 
   maintainer:
     - predoi_valeriu
