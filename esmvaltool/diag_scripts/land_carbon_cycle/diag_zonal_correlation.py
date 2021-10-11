@@ -421,30 +421,27 @@ def main(diag_config):
         " and 2d in Carvalhais et al. (2014).", ['corr', 'perc'], ['zonal'],
         _get_ancestor_files(diag_config, 'tau_ctotal'))
 
-    if diag_config['write_netcdf']:
-        model_cubes = [
-            c for c in zonal_correlation_mod.values()
-            if isinstance(c, iris.cube.Cube)
-        ]
-        obs_cubes = [
-            c for c in zonal_correlation_obs.values()
-            if isinstance(c, iris.cube.Cube)
-        ]
-        netcdf_path = get_diagnostic_filename(base_name, diag_config)
-        save_cubes = iris.cube.CubeList(model_cubes + obs_cubes)
-        iris.save(save_cubes, netcdf_path)
+    model_cubes = [
+        c for c in zonal_correlation_mod.values()
+        if isinstance(c, iris.cube.Cube)
+    ]
+    obs_cubes = [
+        c for c in zonal_correlation_obs.values()
+        if isinstance(c, iris.cube.Cube)
+    ]
+    netcdf_path = get_diagnostic_filename(base_name, diag_config)
+    save_cubes = iris.cube.CubeList(model_cubes + obs_cubes)
+    iris.save(save_cubes, netcdf_path)
 
-        with ProvenanceLogger(diag_config) as provenance_logger:
-            provenance_logger.log(netcdf_path, provenance_record)
+    with ProvenanceLogger(diag_config) as provenance_logger:
+        provenance_logger.log(netcdf_path, provenance_record)
 
-    if diag_config['write_plots']:
-        plot_path = get_plot_filename(base_name, diag_config)
-        _plot_zonal_correlation(plot_path, zonal_correlation_mod,
-                                zonal_correlation_obs, diag_config)
-        provenance_record['plot_file'] = plot_path
+    plot_path = get_plot_filename(base_name, diag_config)
+    _plot_zonal_correlation(plot_path, zonal_correlation_mod,
+                            zonal_correlation_obs, diag_config)
 
-        with ProvenanceLogger(diag_config) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
+    with ProvenanceLogger(diag_config) as provenance_logger:
+        provenance_logger.log(plot_path, provenance_record)
 
 
 if __name__ == '__main__':

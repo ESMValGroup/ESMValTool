@@ -6,6 +6,8 @@ documentation:
     Test recipe for OBS, no proprocessor or diagnostics are applied,
     just to check correct reading of the CMORized data.
 
+  title: Recipe to test run all obs cmorizers.
+
   authors:
     - righi_mattia
 
