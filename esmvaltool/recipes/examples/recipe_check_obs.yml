@@ -322,6 +322,18 @@ diagnostics:
     scripts: null
 
 
+  GLODAP:
+    description: GLODAP check
+    variables:
+      dissic:
+      ph:
+      talk:
+    additional_datasets:
+      - {dataset: GLODAP, project: OBS6, mip: Oyr, tier: 2,
+         type: clim, version: v2.2016b, start_year: 2000, end_year: 2000}
+    scripts: null
+
+
   GPCC:
     description: GPCC check
     variables:

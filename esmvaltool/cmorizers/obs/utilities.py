@@ -177,12 +177,12 @@ def fix_coords(cube, overwrite_time_bounds=True, overwrite_lon_bounds=True,
                         cube_coord.points[-1] < 181.:
                     cube_coord.points = \
                         cube_coord.points + 180.
-                    if overwrite_lon_bounds or not cube_coord.has_bounds():
-                        fix_bounds(cube, cube_coord)
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
                     nlon = len(cube_coord.points)
                     roll_cube_data(cube, nlon // 2, -1)
+            if overwrite_lon_bounds or not cube_coord.has_bounds():
+                fix_bounds(cube, cube_coord)
 
         # fix latitude
         if cube_coord.var_name == 'lat':
