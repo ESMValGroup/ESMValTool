@@ -32,17 +32,17 @@ Diagnostics are stored in diag_scripts/
     Fig. 1:
 
     * bock20jgr/tsline.ncl: timeseries of global mean surface temperature
-    anomalies
+      anomalies
 
     Fig. 2:
 
     * bock20jgr/tsline_collect.ncl: collect different timeseries from
-    tsline.ncl to compare different models ensembles
+      tsline.ncl to compare different models ensembles
 
     Fig. 3 and 4:
 
     * bock20jgr/model_bias.ncl: global maps of the multi-model mean and the
-    multi-model mean bias
+      multi-model mean bias
 
     Fig. 6:
 
