@@ -5,6 +5,8 @@ documentation:
   description: |
     Example recipe that plots a map and timeseries of temperature.
 
+  title: Recipe that runs an example diagnostic written in Python.
+
   authors:
     - andela_bouwe
     - righi_mattia

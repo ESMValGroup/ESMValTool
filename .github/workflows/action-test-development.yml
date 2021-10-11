@@ -5,7 +5,7 @@
 # - runs tests of esmvaltool
 # Triggered by a push to main and nightly
 
-name: Develop Test
+name: Test in Full Development Mode
 
 # runs on a push on main and at the end of every day
 on:
@@ -21,7 +21,7 @@ jobs:
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
-        python-version: [3.7.10, 3.8, 3.9]
+        python-version: [3.7, 3.8, 3.9]
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:
