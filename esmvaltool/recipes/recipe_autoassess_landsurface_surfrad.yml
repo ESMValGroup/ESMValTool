@@ -14,7 +14,7 @@ documentation:
     - predoi_valeriu
     - sellar_alistair
 
-  titile: Land-surface assessment area diagnostic that computes surface radiation (from Autoassess).
+  title: Land-surface diagnostic that computes surface radiation indices (from Autoassess).
 
   references:
     - loeb19jclim

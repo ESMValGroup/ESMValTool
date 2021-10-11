@@ -12,7 +12,7 @@ documentation:
     - predoi_valeriu
     - sellar_alistair
 
-  titile: Land-surface assessment area diagnostic that computes soilmoisture (from Autoassess).
+  title: Land-surface diagnostic that computes soilmoisture indices (from Autoassess).
 
   references:
     - esacci-soilmoisture

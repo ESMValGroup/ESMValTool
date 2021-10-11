@@ -12,7 +12,7 @@ documentation:
   authors:
     - predoi_valeriu
 
-  titile: |
+  title: |
     Example recipe for running a user-written diagnostic, without installing
     ESMValTool as developer.
 

@@ -13,7 +13,7 @@ documentation:
     - predoi_valeriu
     - sellar_alistair
 
-  titile: Land-surface assessment area diagnostic that computes permafrost (from Autoassess).
+  title: Land-surface diagnostic that computes permafrost indices (from Autoassess).
 
   references:
     - brown02nsidc
