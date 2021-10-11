@@ -990,7 +990,7 @@ diagnostics:
   collect:
     description: Wrapper to collect and plot previously calculated metrics
     scripts:
-      RMSD:
+      fig_6_RMSD:
         script: perfmetrics/collect.ncl
         ancestors: ['*/grading*']
         metric: RMSD

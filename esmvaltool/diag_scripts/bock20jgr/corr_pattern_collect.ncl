@@ -28,11 +28,11 @@
 ;     Effect of different regridding methods not yet determined
 ;
 ; Modification history
-;    20191011-A_bock_lisa: Add customizable order of variables
-;    20190205-A_gier_bettina: Adapted to new ncl structures
-;    20181101-A_gier_bettina: moved collect from main script
+;    20210519-A_bock_lisa: Written with Bettina Gier
+;                          (based on ipcc_ar5/ch09_fig09_6.ncl)
 ;
 ; #############################################################################
+
 load "$diag_scripts/../interface_scripts/interface.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 
@@ -452,13 +452,9 @@ begin
   draw(plot)
   frame(wks)
   ; Write output
-  if config_user_info@write_netcdf then
-    system("mkdir -p " + config_user_info@work_dir)
-    workpath = config_user_info@work_dir + "pattern_cor.nc"
-    ncdf_outfile = ncdf_write(data_all, workpath)
-  else
-    ncdf_outfile = workpath
-  end if
+  system("mkdir -p " + config_user_info@work_dir)
+  workpath = config_user_info@work_dir + "pattern_cor.nc"
+  ncdf_outfile = ncdf_write(data_all, workpath)
 
   ; collect meta-data and call ESMValMD function
   caption = "Centered pattern correlations between models and observations" \

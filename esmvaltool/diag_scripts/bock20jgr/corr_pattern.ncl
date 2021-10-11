@@ -1,7 +1,7 @@
 ; #############################################################################
-; DIAGNOSTIC SCRIPT for reproducing IPCC ch. 9 fig. 9.6
-; Author: Bettina Gier (Uni Bremen & DLR, Germany)
-; CRESCENDO project
+; DIAGNOSTIC SCRIPT for correlation pattern figure (see IPCC ch. 9 fig. 9.6)
+; Author: Lisa Bock (DLR, Germany) and Bettina Gier (Uni Bremen & DLR, Germany)
+; CRESCENDO and IPCCAR6 project
 ; #############################################################################
 ;
 ; Description
@@ -22,10 +22,8 @@
 ;
 ;
 ; Modification history
-;    20190205-A_gier_be: Adapted to new ncl structure
-;    20181012-A_gier_be: Ported to v2
-;    20171020-A_laue_ax: added tags for reporting
-;    20170404-A_gier_be: written.
+;    20210519-A_bock_lisa: Written with Bettina Gier 
+;                          (based on ipcc_ar5/ch09_fig09_6.ncl)
 ;
 ; #############################################################################
 
