@@ -123,6 +123,8 @@ def check_output_exists(output_path):
     assert 'po4' in out_files
     assert 'o2' in out_files
     assert 'si' in out_files
+    assert 'sos' in out_files
+    assert 'tos' in out_files
 
 
 def check_conversion(output_path):
