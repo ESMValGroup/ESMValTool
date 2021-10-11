@@ -363,7 +363,7 @@ diagnostics:
 
 
   fig_3_highresmip_low:
-        title: CMIP6 low-res MMM (HighResMIP) surface temperature
+    title: CMIP6 low-res MMM (HighResMIP) surface temperature
     description: CMIP6 multi-model mean and bias of near-surface temperature
     variables:
       tas:
