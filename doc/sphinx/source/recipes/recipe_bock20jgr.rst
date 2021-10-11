@@ -30,26 +30,41 @@ Recipes are stored in recipes/bock20jgr
 Diagnostics are stored in diag_scripts/
 
     Fig. 1:
+
     * bock20jgr/tsline.ncl: timeseries of global mean surface temperature
     anomalies
+
     Fig. 2:
+
     * bock20jgr/tsline_collect.ncl: collect different timeseries from
     tsline.ncl to compare different models ensembles
+
     Fig. 3 and 4:
+
     * bock20jgr/model_bias.ncl: global maps of the multi-model mean and the
     multi-model mean bias
+
     Fig. 6:
+
     * perfmetrics/main.ncl
     * perfmetrics/collect.ncl
+
     Fig. 7:
+
     * bock20jgr/corr_pattern.ncl: calculate pattern correlation
     * bock20jgr/corr_pattern_collect.ncl: create pattern correlation plot
+
     Fig. 8:
+
     * climate_metrics/ecs.py
     * climate_metrics/create_barplot.py
+
     Fig. 9:
+
     * clouds/clouds_ipcc.ncl
+
     Fig. 10:
+
     * climate_metrics/feedback_parameters.py
 
 
@@ -242,12 +257,10 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
+* AIRS (obs4mips) - specific humidity
+
 * CERES-EBAF (obs4mips) - CERES TOA radiation fluxes (used for calculation of
   cloud forcing)
-
-* HadCRUT4 - surface temperature anomalies
-
-  *Reformat script:* cmorizers/obs/cmorize_obs_hadcrut4.ncl
 
 * ERA-Interim - reanalysis of surface temperature, sea surface pressure
 
@@ -257,6 +270,14 @@ Observations and reformat scripts
 
   *Reformat script:* recipes/cmorizers/recipe_era5.yml
 
+* ESACCI-CLOUD - total cloud cover
+
+  *Reformat script:* cmorizers/obs/cmorize_obs_esacci_cloud.ncl
+
+* ESACCI-SST - sea surface temperature
+
+  *Reformat script:* cmorizers/obs/cmorize_obs_esacci_sst.ncl
+
 * GHCN - Global Historical Climatology Network-Monthly gridded land precipitation
 
   *Reformat script:* cmorizers/obs/cmorize_obs_ghcn.ncl
@@ -264,11 +285,24 @@ Observations and reformat scripts
 * GPCP-SG (obs4mips) - Global Precipitation Climatology Project total
   precipitation
 
+* HadCRUT4 - surface temperature anomalies
+
+  *Reformat script:* cmorizers/obs/cmorize_obs_hadcrut4.ncl
+
+* HadISST - surface temperature
+
+  *Reformat script:* cmorizers/obs/cmorize_obs_hadisst.ncl
+
 * JRA-55 (ana4mips) - reanalysis of sea surface pressure
 
 * NCEP - reanalysis of surface temperature
 
   *Reformat script:* cmorizers/obs/cmorize_obs_NCEP.ncl
+
+* PATMOS-x - total cloud cover
+
+  *Reformat script:* cmorizers/obs/cmorize_obs_patmos_x.ncl
+
 
 References
 ----------
@@ -306,16 +340,16 @@ Example plots
 .. figure::  /recipes/figures/bock20jgr/tas_Global_CMIP6_historical_anom_1850-2014.png
    :align:   center
 
-   Fig. 1: Observed and simulated time series of the anomalies in annual and global mean
+   Observed and simulated time series of the anomalies in annual and global mean
    surface temperature. All anomalies are differences from the 1850-1900 time
-   mean of each individual time series.
+   mean of each individual time series (Fig. 1).
 
 .. _fig_bock20jgr_2:
 .. figure::  /recipes/figures/bock20jgr/tas_Global_multimodel_anom_1850-2017.png
    :align:   center
    :width:   7cm
 
-   Fig. 2: Observed and simulated time series of the anomalies in annual
+   Observed and simulated time series of the anomalies in annual
    and global mean surface temperature as in Figure 1; all anomalies are
    calculated by subtracting the 1850-1900 time mean from the time series.
    Displayed are the multimodel means of all three CMIP ensembles with
@@ -323,25 +357,25 @@ Example plots
    data set (HadCRUT4; Morice et al., 2012). Gray shading shows the 5% to
    95% confidence interval of the combined effects of all the uncertainties
    described in the HadCRUT4 error model (measurement and sampling, bias,
-   and coverage uncertainties) (Morice et al., 2012).
+   and coverage uncertainties) (Morice et al., 2012) (Fig. 2).
 
 .. _fig_bock20jgr_3:
 .. figure::  /recipes/figures/bock20jgr/model_bias_tas_annual_CMIP6.png
    :align:   center
    :width:   9cm
 
-   Fig. 3: Annual mean near‐surface (2 m) air temperature (°C). (a) Multimodel (ensemble)
+   Annual mean near‐surface (2 m) air temperature (°C). (a) Multimodel (ensemble)
    mean constructed with one realization of CMIP6 historical experiments for the
    period 1995-2014. Multimodel‐mean bias of (b) CMIP6 (1995-2014) compared to
    the corresponding time period of the climatology from ERA5
-   (Copernicus Climate Change Service (C3S), 2017).
+   (Copernicus Climate Change Service (C3S), 2017). (Fig. 3)
 
 .. _fig_bock20jgr_4:
 .. figure::  /recipes/figures/bock20jgr/ta850-global_to_swcre-global_RMSD.png
    :align:   center
    :width:   9cm
 
-   Fig. 6: Relative space-time root-mean-square deviation (RMSD) calculated from the 
+   Relative space-time root-mean-square deviation (RMSD) calculated from the 
    climatological seasonal cycle of the CMIP3, CMIP5, and CMIP6 simulations 
    (1980-1999) compared to observational data sets (Table 5). A relative 
    performance is displayed, with blue shading being better and red shading 
@@ -349,12 +383,12 @@ Example plots
    split of a grid square shows the relative error with respect to the reference 
    data set (lower right triangle) and the alternative data set (upper left 
    triangle) which are marked in Table 5. White boxes are used when data are not 
-   available for a given model and variable.
+   available for a given model and variable (Fig. 6).
 
 .. _fig_bock20jgr_5:
 .. figure::  /recipes/figures/bock20jgr/patterncor.png
    :align:   center
    :width:   9cm
 
-   Fig. 7: Centered pattern correlations between models and observations for the annual 
-   mean climatology over the period 1980–1999. 
+   Centered pattern correlations between models and observations for the annual 
+   mean climatology over the period 1980–1999 (Fig. 7). 
