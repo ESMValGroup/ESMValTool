@@ -3,6 +3,8 @@
 ---
 documentation:
 
+  title: Quantifying progress across different CMIP phases
+
   description: |
     Producing Fig. 8, 9, 10 from Bock et al., 2020, JGR
     Processing of CMIP3 models currently works only in serial mode, due to
@@ -307,6 +309,7 @@ diagnostics:
   ######################################################
 
   fig_8_ecs_cmip3:
+    title: CMIP3 Effective Climate Sensitivity (ECS)
     description: Calculate ECS for all available CMIP3 models.
     scripts:
       ecs:
@@ -317,6 +320,7 @@ diagnostics:
           project: CMIP3
 
   fig_8_ecs_cmip5:
+    title: CMIP5 Effective Climate Sensitivity (ECS)
     description: Calculate ECS for all available CMIP5 models.
     variables:
       tas_rtnt: &ecs_settings_cmip5
@@ -337,6 +341,7 @@ diagnostics:
         calculate_mmm: false
 
   fig_8_ecs_cmip6:
+    title: CMIP6 Effective Climate Sensitivity (ECS)
     description: Calculate ECS for all available CMIP6 models.
     variables:
       tas_rtnt: &ecs_settings_cmip6
@@ -363,6 +368,7 @@ diagnostics:
         calculate_mmm: false
 
   fig_8_ecs_barplot:
+    title: Effective Climate Sensitivity (ECS)
     description: Create barplot of ECS for CMIP3, CMIP5 and CMIP6.
     scripts:
       barplot:
@@ -388,6 +394,7 @@ diagnostics:
   ######################################################
 
   fig_9_cmip3: &fig_9_settings
+    title: CMIP3 climatoloty shortwave CRE
     description: differences of multi-model mean and reference dataset
     themes:
       - clouds
@@ -420,6 +427,7 @@ diagnostics:
 
   fig_9_cmip5:
     <<: *fig_9_settings
+    title: CMIP5 climatoloty shortwave CRE
     variables:
       swcre:
         <<: *var_swcre
@@ -431,6 +439,7 @@ diagnostics:
 
   fig_9_cmip6:
     <<: *fig_9_settings
+    title: CMIP6 climatoloty shortwave CRE
     variables:
       swcre:
         <<: *var_swcre
@@ -447,6 +456,7 @@ diagnostics:
   ######################################################
 
   fig_10_cmip5:
+    title: CMIP5 cloud feedback
     description: Calculate grid-level CRE feedback parameters for CMIP5 models.
     variables:
       tas_global_rtnt: &fig_10_settings_cmip5
@@ -484,6 +494,7 @@ diagnostics:
           end_year: 150
 
   fig_10_cmip6:
+    title: CMIP6 cloud feedback
     description: Calculate grid_level CRE feedback parameters for CMIP6 models.
     variables:
       tas_global_rtnt: &fig_10_settings_cmip6
@@ -518,6 +529,7 @@ diagnostics:
           end_year: 150
 
   fig_10_netcre:
+    title: Net cloud radiative effect
     description: Plot figure 10 (netcre).
     scripts:
       plot: &script_plot_fig_10
@@ -540,6 +552,7 @@ diagnostics:
         years_in_title: false
 
   fig_10_lwcre:
+    title: Longwave cloud radiative effect
     description: Plot figure 10 (lwcre).
     scripts:
       plot:
@@ -559,6 +572,7 @@ diagnostics:
             vmax: 2.5
 
   fig_10_swcre:
+    title: Shortwave cloud radiative effect
     description: Plot figure 10 (swcre).
     scripts:
       plot:

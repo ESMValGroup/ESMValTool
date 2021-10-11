@@ -3,6 +3,8 @@
 ---
 documentation:
 
+  title: Quantifying progress across different CMIP phases
+
   description: |
     Producing Fig. 1, 2, 3, 4 from Bock et al., 2020, JGR
     Processing of CMIP3 models currently works only in serial mode, due to
@@ -182,6 +184,7 @@ diagnostics:
   ######################################################
 
   fig_1_cmip6: &diag_fig1
+    title: CMIP6 surface temperature anomalies
     description: CMIP6 timeseries of near-surface temperature anomalies
     variables:
       tas: &var_tas_tsline
@@ -214,6 +217,7 @@ diagnostics:
         styleset: CMIP6
 
   fig_1_cmip5:
+    title: CMIP5 surface temperature anomalies
     description: CMIP5 timeseries of near-surface temperature anomalies
     variables:
       tas:
@@ -232,6 +236,7 @@ diagnostics:
         styleset: CMIP5
 
   fig_1_cmip3:
+    title: CMIP3 surface temperature anomalies
     description: CMIP3 timeseries of near-surface temperature anomalies
     variables:
       tas:
@@ -259,6 +264,7 @@ diagnostics:
   ######################################################
 
   fig_2:
+    title: Modelled and observed surface temperature anomalies
     description: Collect all timeseries of near-surface temperature anomalies
     variables:
       tas:
@@ -292,6 +298,7 @@ diagnostics:
   ######################################################
 
   fig_3_cmip6:
+    title: CMIP6 MMM surface temperature
     description: CMIP6 multi-model mean and bias of near-surface temperature
     variables:
       tas: &var_cmip6_bias
@@ -315,6 +322,7 @@ diagnostics:
 
 
   fig_3_cmip5:
+    title: CMIP5 MMM surface temperature
     description: CMIP5 multi-model mean and bias of near-surface temperature
     variables:
       tas:
@@ -332,6 +340,7 @@ diagnostics:
 
 
   fig_3_cmip3:
+    title: CMIP3 MMM surface temperature
     description: CMIP3 multi-model mean and bias of near-surface temperature
     variables:
       tas:
@@ -354,6 +363,7 @@ diagnostics:
 
 
   fig_3_highresmip_low:
+        title: CMIP6 low-res MMM (HighResMIP) surface temperature
     description: CMIP6 multi-model mean and bias of near-surface temperature
     variables:
       tas:
@@ -367,6 +377,7 @@ diagnostics:
 
 
   fig_3_highresmip_high:
+    title: CMIP6 high-res MMM (HighResMIP) surface temperature
     description: CMIP6 multi-model mean and bias of near-surface temperature
     variables:
       tas:
@@ -384,6 +395,7 @@ diagnostics:
   ######################################################
 
   fig_4_cmip6:
+    title: CMIP6 MMM precipitation
     description: CMIP6 multi-model mean and bias of percipitation
     variables:
       pr:
@@ -399,6 +411,7 @@ diagnostics:
 
 
   fig_4_cmip5:
+    title: CMIP5 MMM precipitation
     description: CMIP5 multi-model mean and bias of percipitation
     variables:
       pr:
@@ -418,6 +431,7 @@ diagnostics:
 
 
   fig_4_cmip3:
+    title: CMIP3 MMM precipitation
     description: CMIP3 multi-model mean and bias of percipitation
     variables:
       pr:
@@ -441,6 +455,7 @@ diagnostics:
 
 
   fig_4_highresmip_low:
+    title: CMIP6 low-res MMM (HighResMIP) precipitation
     description: CMIP6 multi-model mean and bias of percipitation
     variables:
       pr:
@@ -456,6 +471,7 @@ diagnostics:
 
 
   fig_4_highresmip_high:
+    title: CMIP6 high-res MMM (HighResMIP) precipitation
     description: CMIP6 multi-model mean and bias of percipitation
     variables:
       pr:

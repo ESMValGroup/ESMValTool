@@ -2,6 +2,9 @@
 # recipe_bock20jgr_fig_6-7.yml
 ---
 documentation:
+
+  title: Quantifying progress across different CMIP phases
+
   description: |
     Producing Fig. 6 and 7 from Bock et al., 2020, JGR
     Processing of CMIP3 models currently works only in serial mode, due to
@@ -190,6 +193,7 @@ diagnostics:
   ######################################################
 
   clt:
+    title: Calculation of performance metrics (total cloud cover)
     description: Total cloud cover
     themes:
       - clouds
@@ -250,6 +254,7 @@ diagnostics:
 
 
   tas:
+    title: Calculation of performance metrics (near-surface air temperature)
     description: Near-surface air temperature
     themes:
       - phys
@@ -299,6 +304,7 @@ diagnostics:
 
 
   ts:
+    title: Calculation of performance metrics (sea-surface (skin) temperature)
     description: Sea-surface (skin) temperature
     themes:
       - phys
@@ -344,6 +350,7 @@ diagnostics:
 
 
   pr:
+    title: Calculation of performance metrics (precipitation)
     description: Precipitation
     themes:
       - phys
@@ -395,6 +402,7 @@ diagnostics:
 
 
   zg500:
+    title: Calculation of performance metrics (geopotential height)
     description: Geopotential height 500 hPa global
     themes:
       - phys
@@ -443,6 +451,7 @@ diagnostics:
 
 
   psl:
+    title: Calculation of performance metrics (sea level pressure)
     description: Pressure at Sea Level.
     themes:
       - phys
@@ -489,6 +498,7 @@ diagnostics:
 
 
   lwcre:
+    title: Calculation of performance metrics (longwave cloud radiative effect)
     description: Longwave cloud radiative effect
     themes:
       - clouds
@@ -528,6 +538,7 @@ diagnostics:
 
 
   swcre:
+    title: Calculation of performance metrics (shortwave cloud radiative effect)
     description: Shortwave cloud radiative effect
     themes:
       - clouds
@@ -565,6 +576,7 @@ diagnostics:
 
 
   rlut:
+    title: Calculation of performance metrics (longwave radiation)
     description: All-sky longwave radiation
     themes:
       - phys
@@ -607,6 +619,7 @@ diagnostics:
 
 
   hus400:
+    title: Calculation of performance metrics (specific humidity)
     description: Specific humidity at 400 hPa global.
     themes:
       - phys
@@ -649,6 +662,7 @@ diagnostics:
 
 
   rsut:
+    title: Calculation of performance metrics (shortwave radiation)
     description: All-sky shortwave radiation
     themes:
       - phys
@@ -688,6 +702,7 @@ diagnostics:
 
 
   ua200:
+    title: Calculation of performance metrics (eastward wind)
     description: Eastward wind at 200 hPa global
     themes:
       - atmDyn
@@ -738,6 +753,7 @@ diagnostics:
 
 
   va850:
+    title: Calculation of performance metrics (northward wind)
     description: Northward wind at 850 hPa global.
     themes:
       - atmDyn
@@ -788,6 +804,7 @@ diagnostics:
 
 
   ua850:
+    title: Calculation of performance metrics (eastward wind)
     description: Eastward wind at 850 hPa global.
     themes:
       - atmDyn
@@ -838,6 +855,7 @@ diagnostics:
 
 
   va200:
+    title: Calculation of performance metrics (northward wind)
     description: Northward wind at 200 hPa global.
     themes:
       - atmDyn
@@ -888,6 +906,7 @@ diagnostics:
 
 
   ta850:
+    title: Calculation of performance metrics (air temperature)
     description: Air temperature at 850 hPa global.
     themes:
       - phys
@@ -938,6 +957,7 @@ diagnostics:
 
 
   ta200:
+    title: Calculation of performance metrics (air temperature)
     description: Air temperature at 200 hPa global.
     themes:
       - phys
@@ -988,6 +1008,7 @@ diagnostics:
 
 
   collect:
+    title: Collection of performance metrics
     description: Wrapper to collect and plot previously calculated metrics
     scripts:
       fig_6_RMSD:
@@ -1014,6 +1035,7 @@ diagnostics:
   ######################################################
 
   tas_cor: &corr_diag
+    title: Pattern correlation (near-surface air temperature)
     description: Calculate pattern correlation value
     variables:
       tas: &var_settings
@@ -1059,6 +1081,7 @@ diagnostics:
 
   pr_cor:
     <<: *corr_diag
+    title: Pattern correlation (precipitation)
     variables:
       pr:
         <<: *var_settings
@@ -1095,6 +1118,7 @@ diagnostics:
 
   psl_cor:
     <<: *corr_diag
+    title: Pattern correlation (sea level pressure)
     variables:
       psl:
         <<: *var_settings
@@ -1127,6 +1151,7 @@ diagnostics:
 
   rlut_cor:
     <<: *corr_diag
+    title: Pattern correlation (longwave radiation)
     variables:
       rlut:
         <<: *var_settings
@@ -1155,6 +1180,7 @@ diagnostics:
 
   swcre_cor:
     <<: *corr_diag
+    title: Pattern correlation (shortwave cloud radiative effect)
     variables:
       swcre:
         <<: *var_settings
@@ -1177,6 +1203,7 @@ diagnostics:
          tier: 1, start_year: 2001, end_year: 2015}
 
   fig_7:
+    title: Collection of pattern correlations
     description: Wrapper to collect and plot previously calculated correlations
     scripts:
       cor_collect:
