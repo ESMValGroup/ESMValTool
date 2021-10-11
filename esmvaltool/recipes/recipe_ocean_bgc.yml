@@ -2,8 +2,6 @@
 # recipe_ocean_bcg.yml
 ---
 documentation:
-  title:
-    Marine biogeochemistry evaluation
   
   description: |
     Recipe to evaluate the marine biogeochemistry models of CMIP5.
@@ -36,11 +34,6 @@ datasets:
   # - {dataset: HadGEM2-AO,    project: CMIP5,   exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
   # - {dataset: HadGEM2-CC,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
   # - {dataset: HadCM3,    project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-
-# Write options for scripts
-# --------------------------------------------------
-WRITE_OPTS: &write_opts
-   - { write_plots: True, write_netcdf: True }
 
 # --------------------------------------------------
 # Preprocessors
@@ -208,7 +201,6 @@ diagnostics:
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
-        <<: *write_opts
 
   # --------------------------------------------------
   # Volume average time series - no data
@@ -237,7 +229,6 @@ diagnostics:
     scripts:
       Global_Volume_verage_timeseries:
         script: ocean/diagnostic_timeseries.py
-        <<: *write_opts
 
 
   # --------------------------------------------------
@@ -267,7 +258,6 @@ diagnostics:
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
-        <<: *write_opts
 
   # --------------------------------------------------
   # Surface time series vs WOA
@@ -311,7 +301,6 @@ diagnostics:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
         observational_dataset: {dataset: WOA, project: OBS}
-        <<: *write_opts
 
 
   # --------------------------------------------------
@@ -326,7 +315,6 @@ diagnostics:
     scripts:
       Scalar_timeseries:
         script: ocean/diagnostic_timeseries.py
-        <<: *write_opts
 
 
   # --------------------------------------------------
@@ -369,7 +357,6 @@ diagnostics:
       Global_profile_vs_WOA:
         script: ocean/diagnostic_profiles.py
         observational_dataset: {dataset: WOA, project: OBS}
-        <<: *write_opts
 
   # --------------------------------------------------
   # Profile diagnostics - no data
@@ -392,7 +379,6 @@ diagnostics:
     scripts:
       Global_profile_no_obs:
         script: ocean/diagnostic_profiles.py
-        <<: *write_opts
 
 
   # --------------------------------------------------
@@ -436,12 +422,10 @@ diagnostics:
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
-        <<: *write_opts
 
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
         observational_dataset: {dataset: WOA, project: OBS}
-        <<: *write_opts
 
 
   # --------------------------------------------------
@@ -471,7 +455,6 @@ diagnostics:
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
-        <<: *write_opts
 
 
 
@@ -508,7 +491,6 @@ diagnostics:
       Transects_vs_WOA:
         script: ocean/diagnostic_transects.py
         # observational_dataset: {dataset: WOA, project: OBS}
-        <<: *write_opts
 
   # # --------------------------------------------------
   # # Map diagnostics - no data
@@ -528,7 +510,6 @@ diagnostics:
     scripts:
       Transects_no_data:
         script: ocean/diagnostic_transects.py
-        <<: *write_opts
 
 
   # # # Depth integrated maps
