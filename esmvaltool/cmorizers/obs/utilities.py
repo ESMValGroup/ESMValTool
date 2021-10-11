@@ -182,7 +182,7 @@ def fix_coords(cube, overwrite_time_bounds=True, overwrite_lon_bounds=True,
                     nlon = len(cube_coord.points)
                     roll_cube_data(cube, nlon // 2, -1)
             if overwrite_lon_bounds or not cube_coord.has_bounds():
-                _fix_bounds(cube, cube_coord)
+                fix_bounds(cube, cube_coord)
 
         # fix latitude
         if cube_coord.var_name == 'lat':
