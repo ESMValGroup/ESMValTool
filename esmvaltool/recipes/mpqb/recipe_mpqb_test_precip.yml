@@ -2,6 +2,8 @@
 # recipe_mpqb.yml
 ---
 documentation:
+  title: Comparison of different precipitation datasets
+  
   description: |
     Test recipe for the MPQB (C3S_511) for soil moisture
 
@@ -702,97 +704,97 @@ diagnostics:
     # # scripts:
       # # mpqb_gl:
         # # <<: *histdef
-  histogram_without_trop:
-    description: histogram for 1x1 gridded data
-    variables:
-      pr:
-        preprocessor: pp_mpqb_precip_without_trop
-        #derive: true
-        <<: *precipdef
-    scripts:
-      mpqb_trop:
-        <<: *histdef
-        #<<: *histdef_zoom
-  histogram_landonly_trop:
-    description: histogram for 1x1 gridded data
-    variables:
-      pr:
-        preprocessor: pp_mpqb_precip_landonly_trop
-        #derive: true
-        <<: *precipdef
-    additional_datasets:
-      - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
-         tier: 3, alias: ERA5-Land}
-      - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
-         tier: 2, alias: GPCC}
-      - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
-         tier: 3, alias: WFDE5}
-    scripts:
-      mpqb_trop:
-        <<: *histdef
-        #<<: *histdef_zoom
-  histogram_seaonly_trop:
-    description: histogram for 1x1 gridded data
-    variables:
-      pr:
-        preprocessor: pp_mpqb_precip_seaonly_trop
-        #derive: true
-        <<: *precipdef
-    scripts:
-      mpqb_trop:
-        <<: *histdef
-        #<<: *histdef_zoom
-  histogram_without_itcz:
-    description: histogram for 1x1 gridded data
-    variables:
-      pr:
-        preprocessor: pp_mpqb_precip_without_itcz
-        #derive: true
-        <<: *precipdef
-    scripts:
-      mpqb_itcz:
-        #<<: *histdef_long
-        <<: *histdef
-  # # histogram_with_itcz:
-    # # description: histogram for 1x1 gridded data
-    # # variables:
-      # # pr:
-        # # preprocessor: pp_mpqb_precip_with_itcz
-        # # #derive: true
-        # # <<: *precipdef
-    # # scripts:
-      # # mpqb_itcz:
-        # # <<: *histdef
-  histogram_without_samonsoon:
-    description: histogram for 1x1 gridded data
-    variables:
-      pr:
-        preprocessor: pp_mpqb_precip_without_samonsoon
-        #derive: true
-        <<: *precipdef
-    scripts:
-      mpqb_samonsoon:
-        <<: *histdef
-        #<<: *histdef_zoom
-  histogram_without_europe:
-    description: histogram for 1x1 gridded data
-    variables:
-      pr:
-        preprocessor: pp_mpqb_precip_without_europe
-        #derive: true
-        <<: *precipdef
-    additional_datasets:
-      - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
-         tier: 3, alias: ERA5-Land}
-      - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
-         tier: 2, alias: GPCC}
-      - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
-         tier: 3, alias: WFDE5}
-      - {dataset: E-OBS, project: OBS, type: ground, version: v21.0e-0.1,
-         tier: 3, alias: E-OBS}
-    scripts:
-      mpqb_europe:
-        <<: *histdef
+  # histogram_without_trop:
+    # description: histogram for 1x1 gridded data
+    # variables:
+      # pr:
+        # preprocessor: pp_mpqb_precip_without_trop
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # mpqb_trop:
+        # <<: *histdef
+        # #<<: *histdef_zoom
+  # histogram_landonly_trop:
+    # description: histogram for 1x1 gridded data
+    # variables:
+      # pr:
+        # preprocessor: pp_mpqb_precip_landonly_trop
+        # #derive: true
+        # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
+      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # tier: 2, alias: GPCC}
+      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         # tier: 3, alias: WFDE5}
+    # scripts:
+      # mpqb_trop:
+        # <<: *histdef
+        # #<<: *histdef_zoom
+  # histogram_seaonly_trop:
+    # description: histogram for 1x1 gridded data
+    # variables:
+      # pr:
+        # preprocessor: pp_mpqb_precip_seaonly_trop
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # mpqb_trop:
+        # <<: *histdef
+        # #<<: *histdef_zoom
+  # histogram_without_itcz:
+    # description: histogram for 1x1 gridded data
+    # variables:
+      # pr:
+        # preprocessor: pp_mpqb_precip_without_itcz
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # mpqb_itcz:
+        # #<<: *histdef_long
+        # <<: *histdef
+  # # # histogram_with_itcz:
+    # # # description: histogram for 1x1 gridded data
+    # # # variables:
+      # # # pr:
+        # # # preprocessor: pp_mpqb_precip_with_itcz
+        # # # #derive: true
+        # # # <<: *precipdef
+    # # # scripts:
+      # # # mpqb_itcz:
+        # # # <<: *histdef
+  # histogram_without_samonsoon:
+    # description: histogram for 1x1 gridded data
+    # variables:
+      # pr:
+        # preprocessor: pp_mpqb_precip_without_samonsoon
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # mpqb_samonsoon:
+        # <<: *histdef
+        # #<<: *histdef_zoom
+  # histogram_without_europe:
+    # description: histogram for 1x1 gridded data
+    # variables:
+      # pr:
+        # preprocessor: pp_mpqb_precip_without_europe
+        # #derive: true
+        # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
+      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # tier: 2, alias: GPCC}
+      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         # tier: 3, alias: WFDE5}
+      # - {dataset: E-OBS, project: OBS, type: ground, version: v21.0e-0.1,
+         # tier: 3, alias: E-OBS}
+    # scripts:
+      # mpqb_europe:
+        # <<: *histdef
   # histogram_without_northamerica:
     # description: histogram for 1x1 gridded data
     # variables:
@@ -868,56 +870,56 @@ diagnostics:
     # scripts:
       # lineplot_gl:
         # script: mpqb/mpqb_lineplot.py
-  # lineplots_without_trop:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_without_trop
-        # #derive: true
-        # <<: *precipdef
-    # scripts:
-      # lineplot_trop:
-        # script: mpqb/mpqb_lineplot.py
-  # lineplots_without_trop_short:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_without_trop
-        # #derive: true
-        # <<: *precipdef_short
-    # additional_datasets:
-      # - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
-         # tier: 1, alias: TRMM-L3}
-    # scripts:
-      # lineplot_trop:
-        # script: mpqb/mpqb_lineplot.py
-  # lineplots_landonly_trop:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_landonly_trop
-        # #derive: true
-        # <<: *precipdef
-    # additional_datasets:
-      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
-         # tier: 3, alias: ERA5-Land}
-      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
-         # tier: 2, alias: GPCC}
-      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
-         # tier: 3, alias: WFDE5}
-    # scripts:
-      # lineplot_trop:
-        # script: mpqb/mpqb_lineplot.py
-  # lineplots_seaonly_trop:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_seaonly_trop
-        # #derive: true
-        # <<: *precipdef
-    # scripts:
-      # lineplot_trop:
-        # script: mpqb/mpqb_lineplot.py
+  lineplots_without_trop:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_without_trop
+        #derive: true
+        <<: *precipdef
+    scripts:
+      lineplot_trop:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_without_trop_short:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_without_trop
+        #derive: true
+        <<: *precipdef_short
+    additional_datasets:
+      - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
+         tier: 1, alias: TRMM-L3}
+    scripts:
+      lineplot_trop:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_landonly_trop:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_landonly_trop
+        #derive: true
+        <<: *precipdef
+    additional_datasets:
+      - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         tier: 3, alias: ERA5-Land}
+      - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         tier: 2, alias: GPCC}
+      - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         tier: 3, alias: WFDE5}
+    scripts:
+      lineplot_trop:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_seaonly_trop:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_seaonly_trop
+        #derive: true
+        <<: *precipdef
+    scripts:
+      lineplot_trop:
+        script: mpqb/mpqb_lineplot.py
   # lineplots_without_itcz:
     # description: lineplots
     # variables:
@@ -994,7 +996,7 @@ diagnostics:
     # variables:
       # pr:
         # preprocessor: pp_lineplots_anncyc_without_trop
-        # derive: true
+        # #derive: true
         # <<: *precipdef
     # scripts:
       # lineplot_trop:
@@ -1004,7 +1006,7 @@ diagnostics:
     # variables:
       # pr:
         # preprocessor: pp_lineplots_anncyc_landonly_trop
-        # derive: true
+        # #derive: true
         # <<: *precipdef
     # additional_datasets:
       # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
@@ -1021,7 +1023,7 @@ diagnostics:
     # variables:
       # pr:
         # preprocessor: pp_lineplots_anncyc_seaonly_trop
-        # derive: true
+        # #derive: true
         # <<: *precipdef
     # scripts:
       # lineplot_trop:

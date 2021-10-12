@@ -1,8 +1,8 @@
 # ESMValTool User's configuration file for DKRZ-MISTRAL
 # Author: Mattia Righi
 
-write_plots: True
-write_netcdf: True
+#write_plots: True
+#write_netcdf: True
 log_level: debug
 exit_on_warning: False
 output_file_type: png
@@ -26,7 +26,7 @@ rootpath:
   OBS:      [/mnt/lustre02/work/bd0854/DATA/ESMValTool2/OBS, /mnt/lustre02/work/bd0854/DATA/ESMValTool2/DEVOBS, /mnt/lustre02/work/bd0854/b309143/Data] 
   OBS6:     [/mnt/lustre02/work/bd0854/DATA/ESMValTool2/OBS, /mnt/lustre02/work/bd0854/DATA/ESMValTool2/DEVOBS, /mnt/lustre02/work/bd0854/b309143/Data]
   #OBS6:     [/mnt/lustre02/work/bd0854/b309143/Data]
-  obs4mips: [/mnt/lustre02/work/bd0854/b309070/obs, /mnt/lustre02/work/bd0854/DATA/ESMValTool2/OBS]
+  obs4MIPs: [/mnt/lustre02/work/bd0854/b309070/obs, /mnt/lustre02/work/bd0854/DATA/ESMValTool2/OBS]
   ana4mips: [/mnt/lustre02/work/bd0854/b309070/obs, /mnt/lustre02/work/bd0854/DATA/ESMValTool2/OBS]
   native6:  /mnt/lustre02/work/bd0854/DATA/ESMValTool2/RAWOBS
   #native6:  /mnt/lustre02/work/bd0854/b309143/Data/RAWOBS

@@ -38,7 +38,8 @@ def _unify_time_coord(cube):
 
 def main(cfg):
     """Create lineplot."""
-    ylims = [cfg.pop('y0', None), cfg.pop('y1', None)]
+    #ylims = [cfg.pop('y0', None), cfg.pop('y1', None)]
+    ylims = [2.4, 5.2]
 
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
@@ -113,8 +114,8 @@ def main(cfg):
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
-        if config['write_plots']:
-            main(config)
-        else:
-            logger.warning("This diagnostic wants to plot,\
-                            but isn't allowed to")
+        #if config['write_plots']:
+        main(config)
+        #else:
+        #    logger.warning("This diagnostic wants to plot,\
+        #                    but isn't allowed to")
