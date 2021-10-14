@@ -1,10 +1,10 @@
-name: Conda Base Install
+name: Install from Conda
 
-# runs on a push on master and at the end of every day
+# runs on a push on main and at the end of every day
 on:
   push:
     branches:
-    - master
+    - main
   schedule:
     - cron: '0 4 * * *'
 
@@ -34,7 +34,9 @@ jobs:
       - shell: bash -l {0}
         run: python -V 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
       - shell: bash -l {0}
-        run: conda install esmvaltool 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/install.txt
+        run: conda install mamba
+      - shell: bash -l {0}
+        run: mamba install esmvaltool 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - shell: bash -l {0}
         run: esmvaltool --help
       - shell: bash -l {0}
@@ -53,7 +55,7 @@ jobs:
 #    runs-on: "macos-latest"
 #    strategy:
 #      matrix:
-#        python-version: [3.6, 3.7]  # 3.8.5 not working as of 07-Sep-2020; serious issues at env solving
+#        python-version: [3.7, 3.8, 3.9]
 #      fail-fast: false
 #    name: OSX Python ${{ matrix.python-version }}
 #    steps:
