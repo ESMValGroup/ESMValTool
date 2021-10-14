@@ -144,6 +144,8 @@ User settings in recipe
 
    * variable "lwp": diag_scripts/shared/plots/rgb/qcm3.rgb
 
+.. _clouds_ipcc.ncl:
+
 #. Script clouds_ipcc.ncl
 
    *Required settings (scripts)*
