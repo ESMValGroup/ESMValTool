@@ -460,6 +460,12 @@ begin
 
     ; variable specific plotting settings
 
+    if (isatt(variable_info[varidx], "units")) then
+      data1@units = variable_info[varidx]@units
+    else
+      data1@units = ""
+    end if
+
     if (var0.eq."pr") then
       res@cnLevels = fspan(0.5, 10, 20)
       ; convert from kg m-2 s-1 to mm day-1
@@ -568,12 +574,6 @@ begin
     end if
 
     data1@var = var0
-
-    if (isatt(variable_info[varidx], "units")) then
-      data1@units = variable_info[varidx]@units
-    else
-      data1@units = ""
-    end if
 
     if (.not. isvar("ref_data")) then
       ref_data = data1

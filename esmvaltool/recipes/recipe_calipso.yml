@@ -16,6 +16,20 @@ documentation:
 
 
 preprocessors:
+  ppITCZPacific:
+    extract_region:
+      start_longitude: 136
+      end_longitude: 275
+      start_latitude: 0
+      end_latitude: 12
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
   ppSEPacific:
     extract_region:
       start_longitude: 265
@@ -1058,9 +1072,10 @@ diagnostics:
 #        exp: historical
 #        start_year: 1996
 #        end_year: 2005
-#        reference_dataset: ESACCI-WV
+#        reference_dataset: ESACCI-WATERVAPOUR
 #        additional_datasets:
-#          - {dataset: ESACCI-WV, project: OBS, type: sat, version: HOAPS-v4.0, tier: 2, start_year: 2001, end_year: 2010}
+#          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
+#             version: CDR2-L3S-05deg_fv3.1, tier: 3, start_year: 2003, end_year: 2012}
 #      swcre:
 #        preprocessor: ppSouthernOcean
 #        mip: Amon
@@ -1069,9 +1084,11 @@ diagnostics:
 #        start_year: 1996
 #        end_year: 2005
 #        derive: true
-#        reference_dataset: CERES-EBAF
+##        reference_dataset: CERES-EBAF
+#        reference_dataset: ESACCI-CLOUD
 #        additional_datasets:
-#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2001, end_year: 2010}
+##          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2001, end_year: 2010}
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, start_year: 2001, end_year: 2010}
 #    additional_datasets:
 #      - {dataset: ACCESS1-0, ensemble: r1i1p1}
 #      - {dataset: ACCESS1-3, ensemble: r1i1p1}
@@ -1225,9 +1242,10 @@ diagnostics:
 #        exp: historical
 #        start_year: 2001
 #        end_year: 2010
-#        reference_dataset: ESACCI-WV
+#        reference_dataset: ESACCI-WATERVAPOUR
 #        additional_datasets:
-#          - {dataset: ESACCI-WV, project: OBS, type: sat, version: HOAPS-v4.0, tier: 2, start_year: 2001, end_year: 2010}
+#          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
+#             version: CDR2-L3S-05deg_fv3.1, tier: 3, start_year: 2003, end_year: 2012}
 #      swcre:
 #        preprocessor: ppSouthernOcean
 #        mip: Amon
@@ -1236,9 +1254,11 @@ diagnostics:
 #        start_year: 2001
 #        end_year: 2010
 #        derive: true
-#        reference_dataset: CERES-EBAF
+##        reference_dataset: CERES-EBAF
+#        reference_dataset: ESACCI-CLOUD
 #        additional_datasets:
-#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+##          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
 #    additional_datasets:
 #      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
 #      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
@@ -1335,7 +1355,276 @@ diagnostics:
 #        ymax_mm: 30.0
 #        filename_add: so_cmip6
 #
-  scatter_sepacific_cmip5:
+#  scatter_sepacific_cmip5:
+#    description: scatter plot cloud fraction vs shortwave cloud forcing
+#    themes:
+#      - phys
+#      - clouds
+#    realms:
+#      - atmos
+#    variables:
+#      clt:
+#        preprocessor: ppSEPacific
+#        mip: Amon
+#        project: CMIP5
+#        exp: historical
+#        start_year: 1996
+#        end_year: 2005
+#        reference_dataset: ESACCI-CLOUD
+#        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, start_year: 2001, end_year: 2010}
+#      lwp:
+#        preprocessor: ppSEPacific
+#        mip: Amon
+#        project: CMIP5
+#        exp: historical
+#        start_year: 1996
+#        end_year: 2005
+#        derive: true
+#        reference_dataset: ESACCI-CLOUD
+#        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, start_year: 2001, end_year: 2010}
+#      lts:
+#        preprocessor: ppSEPacific
+#        mip: Amon
+#        project: CMIP5
+#        exp: historical
+#        start_year: 1996
+#        end_year: 2005
+#        derive: true
+#        reference_dataset: ERA-Interim
+#        additional_datasets:
+#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3, start_year: 2001, end_year: 2010}
+#      swcre:
+#        preprocessor: ppSEPacific
+#        mip: Amon
+#        project: CMIP5
+#        exp: historical
+#        start_year: 1996
+#        end_year: 2005
+#        derive: true
+#        reference_dataset: CERES-EBAF
+#        additional_datasets:
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2001, end_year: 2010}
+#    additional_datasets:
+#      - {dataset: ACCESS1-0, ensemble: r1i1p1}
+#      - {dataset: ACCESS1-3, ensemble: r1i1p1}
+#      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+#      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+#      - {dataset: BNU-ESM, ensemble: r1i1p1}
+#      - {dataset: CanESM2, ensemble: r1i1p1}
+#      - {dataset: CCSM4, ensemble: r1i1p1}
+#      - {dataset: CESM1-BGC, ensemble: r1i1p1}
+#      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
+#      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
+#      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
+#      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+#      - {dataset: FGOALS-g2, ensemble: r1i1p1}
+#      - {dataset: FIO-ESM, ensemble: r1i1p1}
+#      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+#      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+#      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-R, ensemble: r1i1p1}
+##time=int64      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+##time=int64      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+#      - {dataset: inmcm4, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+##error      - {dataset: MIROC4h, ensemble: r1i1p1}
+#      - {dataset: MIROC5, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+#      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+#      - {dataset: MRI-ESM1, ensemble: r1i1p1}
+#      - {dataset: NorESM1-ME, ensemble: r1i1p1}
+#      - {dataset: NorESM1-M, ensemble: r1i1p1}
+#    scripts:
+#      scatter_swcre:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: clt
+#        var_y: swcre
+#        xmin: 0
+#        xmax: 100
+#        ymin_mm: -150.0
+#        ymax_mm: 0.0
+#        filename_add: sep_cmip5
+#      scatter_lwp:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: clt
+#        var_y: lwp
+#        xmin: 0
+#        xmax: 100
+#        ymin_mm: 0.0
+#        ymax_mm: 0.2
+#        filename_add: sep_cmip5
+#      scatter_clt2:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: lts
+#        var_y: clt
+#        xmin: 10
+#        xmax: 30
+#        ymin_mm: 0
+#        ymax_mm: 100
+#        filename_add: sep_cmip5
+#      scatter_swcre2:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: lts
+#        var_y: swcre
+#        xmin: 10
+#        xmax: 30
+#        ymin_mm: -150.0
+#        ymax_mm: 0.0
+#        filename_add: sep_cmip5
+#      scatter_lwp2:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: lts
+#        var_y: lwp
+#        xmin: 10
+#        xmax: 30
+#        ymin_mm: 0.0
+#        ymax_mm: 0.2
+#        filename_add: sep_cmip5
+#
+#  scatter_sepacific_cmip6:
+#    description: scatter plot cloud fraction vs shortwave cloud forcing
+#    themes:
+#      - phys
+#      - clouds
+#    realms:
+#      - atmos
+#    variables:
+#      clt:
+#        preprocessor: ppSEPacific
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2001
+#        end_year: 2010
+#        reference_dataset: ESACCI-CLOUD
+#        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+#      lwp:
+#        preprocessor: ppSEPacific
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2001
+#        end_year: 2010
+#        derive: true
+#        reference_dataset: ESACCI-CLOUD
+#        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+#      lts:
+#        preprocessor: ppSEPacific
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2001
+#        end_year: 2010
+#        derive: true
+#        reference_dataset: ERA-Interim
+#        additional_datasets:
+#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+#      swcre:
+#        preprocessor: ppSEPacific
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2001
+#        end_year: 2010
+#        derive: true
+#        reference_dataset: CERES-EBAF
+#        additional_datasets:
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+#    additional_datasets:
+#      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+##no_prw      - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr}
+#      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+#      - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr}
+#      - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
+#      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+#      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+#    scripts:
+#      scatter_swcre:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: clt
+#        var_y: swcre
+#        xmin: 0
+#        xmax: 100
+#        ymin_mm: -150.0
+#        ymax_mm: 0.0
+#        filename_add: sep_cmip6
+#      scatter_lwp:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: clt
+#        var_y: lwp
+#        xmin: 0
+#        xmax: 100
+#        ymin_mm: 0.0
+#        ymax_mm: 0.2
+#        filename_add: sep_cmip6
+#      scatter_clt2:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: lts
+#        var_y: clt
+#        xmin: 10
+#        xmax: 30
+#        ymin_mm: 0
+#        ymax_mm: 100
+#        filename_add: sep_cmip6
+#      scatter_swcre2:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: lts
+#        var_y: swcre
+#        xmin: 10
+#        xmax: 30
+#        ymin_mm: -150.0
+#        ymax_mm: 0.0
+#        filename_add: sep_cmip6
+#      scatter_lwp2:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: lts
+#        var_y: lwp
+#        xmin: 10
+#        xmax: 30
+#        ymin_mm: 0.0
+#        ymax_mm: 0.2
+#        filename_add: sep_cmip6
+#
+  scatter_itcz_cmip5:
     description: scatter plot cloud fraction vs shortwave cloud forcing
     themes:
       - phys
@@ -1344,7 +1633,17 @@ diagnostics:
       - atmos
     variables:
       clt:
-        preprocessor: ppSEPacific
+        preprocessor: ppITCZPacific
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, start_year: 2001, end_year: 2010}
+      clivi:
+        preprocessor: ppITCZPacific
         mip: Amon
         project: CMIP5
         exp: historical
@@ -1354,7 +1653,7 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, start_year: 2001, end_year: 2010}
       lwp:
-        preprocessor: ppSEPacific
+        preprocessor: ppITCZPacific
         mip: Amon
         project: CMIP5
         exp: historical
@@ -1364,28 +1663,19 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, start_year: 2001, end_year: 2010}
-      lts:
-        preprocessor: ppSEPacific
-        mip: Amon
-        project: CMIP5
-        exp: historical
-        start_year: 1996
-        end_year: 2005
-        derive: true
-        reference_dataset: ERA-Interim
-        additional_datasets:
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3, start_year: 2001, end_year: 2010}
       swcre:
-        preprocessor: ppSEPacific
+        preprocessor: ppITCZPacific
         mip: Amon
         project: CMIP5
         exp: historical
         start_year: 1996
         end_year: 2005
         derive: true
-        reference_dataset: CERES-EBAF
+#        reference_dataset: CERES-EBAF
+        reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2001, end_year: 2010}
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2001, end_year: 2010}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, start_year: 2001, end_year: 2010}
     additional_datasets:
       - {dataset: ACCESS1-0, ensemble: r1i1p1}
       - {dataset: ACCESS1-3, ensemble: r1i1p1}
@@ -1437,45 +1727,18 @@ diagnostics:
         xmax: 100
         ymin_mm: -150.0
         ymax_mm: 0.0
-        filename_add: sep_cmip5
-      scatter_lwp:
+        filename_add: itcz_cmip5
+      scatter_totalcwp:
         script: clouds/clouds_scatter.ncl
         var_x: clt
-        var_y: lwp
+        var_y: totalcwp
         xmin: 0
         xmax: 100
         ymin_mm: 0.0
-        ymax_mm: 0.2
-        filename_add: sep_cmip5
-      scatter_clt2:
-        script: clouds/clouds_scatter.ncl
-        var_x: lts
-        var_y: clt
-        xmin: 10
-        xmax: 30
-        ymin_mm: 0
-        ymax_mm: 100
-        filename_add: sep_cmip5
-      scatter_swcre2:
-        script: clouds/clouds_scatter.ncl
-        var_x: lts
-        var_y: swcre
-        xmin: 10
-        xmax: 30
-        ymin_mm: -150.0
-        ymax_mm: 0.0
-        filename_add: sep_cmip5
-      scatter_lwp2:
-        script: clouds/clouds_scatter.ncl
-        var_x: lts
-        var_y: lwp
-        xmin: 10
-        xmax: 30
-        ymin_mm: 0.0
-        ymax_mm: 0.2
-        filename_add: sep_cmip5
+        ymax_mm: 0.3
+        filename_add: itcz_cmip5
 
-  scatter_sepacific_cmip6:
+  scatter_itcz_cmip6:
     description: scatter plot cloud fraction vs shortwave cloud forcing
     themes:
       - phys
@@ -1484,7 +1747,17 @@ diagnostics:
       - atmos
     variables:
       clt:
-        preprocessor: ppSEPacific
+        preprocessor: ppITCZPacific
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2001
+        end_year: 2010
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+      clivi:
+        preprocessor: ppITCZPacific
         mip: Amon
         project: CMIP6
         exp: historical
@@ -1494,7 +1767,7 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
       lwp:
-        preprocessor: ppSEPacific
+        preprocessor: ppITCZPacific
         mip: Amon
         project: CMIP6
         exp: historical
@@ -1504,28 +1777,19 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
-      lts:
-        preprocessor: ppSEPacific
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        start_year: 2001
-        end_year: 2010
-        derive: true
-        reference_dataset: ERA-Interim
-        additional_datasets:
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
       swcre:
-        preprocessor: ppSEPacific
+        preprocessor: ppITCZPacific
         mip: Amon
         project: CMIP6
         exp: historical
         start_year: 2001
         end_year: 2010
         derive: true
-        reference_dataset: CERES-EBAF
+#        reference_dataset: CERES-EBAF
+        reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
     additional_datasets:
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
       - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
@@ -1566,44 +1830,17 @@ diagnostics:
         xmax: 100
         ymin_mm: -150.0
         ymax_mm: 0.0
-        filename_add: sep_cmip6
-      scatter_lwp:
+        filename_add: itcz_cmip6
+      scatter_totalcwp:
         script: clouds/clouds_scatter.ncl
         var_x: clt
-        var_y: lwp
+        var_y: totalcwp
         xmin: 0
         xmax: 100
         ymin_mm: 0.0
-        ymax_mm: 0.2
-        filename_add: sep_cmip6
-      scatter_clt2:
-        script: clouds/clouds_scatter.ncl
-        var_x: lts
-        var_y: clt
-        xmin: 10
-        xmax: 30
-        ymin_mm: 0
-        ymax_mm: 100
-        filename_add: sep_cmip6
-      scatter_swcre2:
-        script: clouds/clouds_scatter.ncl
-        var_x: lts
-        var_y: swcre
-        xmin: 10
-        xmax: 30
-        ymin_mm: -150.0
-        ymax_mm: 0.0
-        filename_add: sep_cmip6
-      scatter_lwp2:
-        script: clouds/clouds_scatter.ncl
-        var_x: lts
-        var_y: lwp
-        xmin: 10
-        xmax: 30
-        ymin_mm: 0.0
-        ymax_mm: 0.2
-        filename_add: sep_cmip6
-
+        ymax_mm: 0.3
+        filename_add: itcz_cmip6
+#
 #  pdf_clt_so_cmip6:
 #    description: climatological annual means
 #    themes:
@@ -1871,6 +2108,140 @@ diagnostics:
 #        script: clouds/clouds_pdf.ncl
 #        styleset: CMIP5
 #        filename_add: sep_cmip5
+#
+  pdf_clt_itcz_cmip6:
+    description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: ppITCZPacific
+        reference_dataset: ESACCI-CLOUD
+        project: CMIP6
+        mip: Amon
+        exp: historical
+        start_year: 2001
+        end_year: 2010
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+    additional_datasets:
+#error_concatenating_cubes      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r1i1p1f1, grid: gn}
+#error_concatenating_cubes      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAS-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CIESM, ensemble: r1i1p1f1, grid: gr}
+#error      - {dataset: CMCC-CM2-HR4, ensemble: r1i1p1f1, grid: gn}
+#fix needed      - {dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr}
+#error      - {dataset: E3SM-1-1-ECA, ensemble: r1i1p1f1, grid: gr}
+      - {dataset: E3SM-1-1, ensemble: r1i1p1f1, grid: gr}
+#error      - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr}
+      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+#error      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+      - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
+#ERROR_coordinates_screwed      - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr}
+      - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
+#error      - {dataset: MCM-UA-1-0, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorESM2-MM, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+    scripts:
+      pdf:
+        script: clouds/clouds_pdf.ncl
+        styleset: CMIP6
+        filename_add: itcz_cmip6
+
+  pdf_clt_itcz_cmip5:
+    description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: ppITCZPacific
+        reference_dataset: ESACCI-CLOUD
+        project: CMIP5
+        mip: Amon
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+    additional_datasets:
+      - {dataset: ACCESS1-0, ensemble: r1i1p1}
+      - {dataset: ACCESS1-3, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+      - {dataset: BNU-ESM, ensemble: r1i1p1}
+      - {dataset: CanESM2, ensemble: r1i1p1}
+      - {dataset: CCSM4, ensemble: r1i1p1}
+      - {dataset: CESM1-BGC, ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5-1-FV2, ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
+      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
+      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
+      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+      - {dataset: FGOALS-g2, ensemble: r1i1p1}
+      - {dataset: FIO-ESM, ensemble: r1i1p1}
+      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
+      - {dataset: GISS-E2-R, ensemble: r1i1p1}
+#time=int64      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+#time=int64      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+      - {dataset: inmcm4, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+#error      - {dataset: MIROC4h, ensemble: r1i1p1}
+      - {dataset: MIROC5, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+      - {dataset: MRI-ESM1, ensemble: r1i1p1}
+      - {dataset: NorESM1-ME, ensemble: r1i1p1}
+      - {dataset: NorESM1-M, ensemble: r1i1p1}
+    scripts:
+      pdf:
+        script: clouds/clouds_pdf.ncl
+        styleset: CMIP5
+        filename_add: itcz_cmip5
 #
 #  cl_cmip6:
 #    description: 3-dim cloud cover, zonal mean
