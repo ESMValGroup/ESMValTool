@@ -42,7 +42,7 @@ from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def get_provenance_record(plot_file, attributes, obsname, ancestor_files):
+def get_provenance_record(attributes, obsname, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     if obsname != '':
         caption = (
@@ -64,7 +64,6 @@ def get_provenance_record(plot_file, attributes, obsname, ancestor_files):
         'references': [
             'acknow_project',
         ],
-        'plot_file': plot_file,
         'ancestors': ancestor_files,
     }
     return record
@@ -340,13 +339,11 @@ def make_multiple_plots(cfg, metadata, obsname):
         path = diagtools.folder(cfg['plot_dir']) + plot_file
 
         # Saving file:
-        if cfg['write_plots']:
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path, dpi=200)
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path, dpi=200)
 
         # Provenance
-        provenance_record = get_provenance_record(plot_file,
-                                                  metadata[filenames[-1]],
+        provenance_record = get_provenance_record(metadata[filenames[-1]],
                                                   obsname, filenames)
         logger.info("Recording provenance of %s:\n%s", plot_file,
                     pformat(provenance_record))
