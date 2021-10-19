@@ -5,7 +5,7 @@ on:
   push:
     branches:
     - main
-
+    - switch-core-to-2.4.0rc1
   schedule:
     - cron: '0 0 * * *'
 
