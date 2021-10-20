@@ -409,6 +409,8 @@ can ask the `@esmvalbot <https://github.com/apps/esmvalbot>`_ to run it for you.
 To request a run of ``recipe_xyz.yml``, write the following comment below a pull
 request:
 
+This is just to test the bot.
+
 ::
 
    @esmvalbot Please run recipe_xyz.yml
