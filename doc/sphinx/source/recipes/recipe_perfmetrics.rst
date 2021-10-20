@@ -31,6 +31,8 @@ Diagnostics are stored in diag_scripts/perfmetrics/
 User settings in recipe
 -----------------------
 
+.. _perf-main.ncl:
+
 #. Script main.ncl
 
    *Required settings (scripts)*
@@ -69,6 +71,8 @@ User settings in recipe
    * alternative_dataset: a second dataset to compare with.
 
    These settings are passed to the other scripts by main.ncl, depending on the selected plot_type.
+
+.. _perf-collect.ncl:
 
 #. Script collect.ncl
 

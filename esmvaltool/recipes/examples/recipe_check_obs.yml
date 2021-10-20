@@ -6,6 +6,8 @@ documentation:
     Test recipe for OBS, no proprocessor or diagnostics are applied,
     just to check correct reading of the CMORized data.
 
+  title: Recipe to test run all obs cmorizers.
+
   authors:
     - righi_mattia
 
@@ -343,6 +345,18 @@ diagnostics:
     scripts: null
 
 
+  GLODAP:
+    description: GLODAP check
+    variables:
+      dissic:
+      ph:
+      talk:
+    additional_datasets:
+      - {dataset: GLODAP, project: OBS6, mip: Oyr, tier: 2,
+         type: clim, version: v2.2016b, start_year: 2000, end_year: 2000}
+    scripts: null
+
+
   GPCC:
     description: GPCC check
     variables:
@@ -598,7 +612,11 @@ diagnostics:
     variables:
       so:
         mip: Omon
+      sos:
+        mip: Omon
       thetao:
+        mip: Omon
+      tos:
         mip: Omon
       no3:
         mip: Oyr
@@ -609,6 +627,8 @@ diagnostics:
       si:
         mip: Oyr
     additional_datasets:
+      - {dataset: WOA, project: OBS6, tier: 2,
+         type: clim, version: 2018, start_year: 2000, end_year: 2000}
       - {dataset: WOA, project: OBS, tier: 2,
          type: clim, version: 2013v2, start_year: 2000, end_year: 2000}
     scripts: null

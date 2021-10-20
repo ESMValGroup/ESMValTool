@@ -5,6 +5,8 @@ documentation:
   description: |
     Example recipe that plots air temperature.
 
+  title: Example recipe running a diagnostic written in NCL.
+
   authors:
     - righi_mattia
 

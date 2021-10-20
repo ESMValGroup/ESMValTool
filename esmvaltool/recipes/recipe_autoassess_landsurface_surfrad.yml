@@ -12,6 +12,9 @@ documentation:
 
   authors:
     - predoi_valeriu
+    - sellar_alistair
+
+  title: Land-surface diagnostic that computes surface radiation indices (from Autoassess).
 
   references:
     - loeb19jclim
