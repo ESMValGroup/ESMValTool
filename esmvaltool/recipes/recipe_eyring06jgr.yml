@@ -3,6 +3,7 @@
 ---
 documentation:
   title: Stratospheric chemistry and dynamics analyses
+
   description: |
     Diagnostics of stratospheric dynamics and chemistry reproducing selected
     figures from Eyring et al. JGR (2006).
