@@ -115,8 +115,8 @@ def plot_scatter(tidy_df, ancestors, cfg):
     """Plot bias on one axis and change on the other."""
     grid = sns.relplot(
         data=tidy_df,
-        x="Bias (RMSD of all gridpoints)",
-        y="Mean change (Future - Reference)",
+        x="bias",
+        y="change",
         hue="dataset",
         col="variable",
         facet_kws=dict(sharex=False, sharey=False),
@@ -139,7 +139,7 @@ def plot_table(dataframe, ancestors, cfg):
     filename = get_plot_filename('table', cfg)
     fig.savefig(filename, bbox_inches='tight')
 
-    caption = "Bias and change for each variable"
+    caption = "Bias and change for each variable for specified region"
     log_provenance(filename, ancestors, caption, cfg)
 
 
@@ -215,9 +215,7 @@ def main(cfg):
     bias = xr.Dataset(biases)
     change = xr.Dataset(changes)
     combined = xr.concat([bias, change], dim='metric')
-    combined['metric'] = [
-        'Bias (RMSD of all gridpoints)', 'Mean change (Future - Reference)'
-    ]
+    combined['metric'] = ['bias', 'change']
 
     dataframe = combined.rename(
         tas='Temperature (K)',
