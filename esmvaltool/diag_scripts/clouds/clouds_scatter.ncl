@@ -358,7 +358,7 @@ begin
     dim_MOD = dim_MOD + 1
     result_avg := array_append_record(result_avg, mmavg, 0)
     result_std := array_append_record(result_std, mmstd, 0)
-    result_std(dim_MOD -1, :) = 0.0
+    result_std(dim_MOD - 1, :) = 0.0
     names := array_append_record(names, (/"Multi-model average"/), 0)
   end if
 
