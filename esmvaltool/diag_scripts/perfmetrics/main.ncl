@@ -169,6 +169,9 @@ begin
   ; Set dataset names
   datasetnames = metadata_att_as_array(info_items, "dataset")
 
+  ; Save projects
+  projectnames = metadata_att_as_array(info_items, "project")
+
   ; Extend model name by ensemble/experiment on multiple occurence
   if (.not. (dimsizes(datasetnames) .eq. \
       count_unique_values(datasetnames))) then
@@ -259,6 +262,7 @@ begin
     if (isdim(grading, "reference")) then
       grading&reference = datasetnames(ref_inds)
     end if
+    grading@projects = str_join(remove_index(projectnames, ref_inds), " ")
 
     ; Special case Taylor
     if (any(diag_script_info@metric.eq."taylor")) then

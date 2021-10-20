@@ -1,4 +1,4 @@
-name: Conda Base Install
+name: Install from Conda
 
 # runs on a push on main and at the end of every day
 on:

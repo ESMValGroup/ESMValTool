@@ -38,9 +38,8 @@ jobs:
             pip install .[test] > /logs/install.txt
             # Run flake8 check with source code (it doesn't work without it)
             pytest -n 2 -m flake8
-            # Update/install Julia and R dependencies
+            # Update/install Julia dependencies
             esmvaltool install Julia > /logs/install_Julia.txt
-            esmvaltool install R > /logs/install_R.txt
             # Remove source to test installed software
             rm -r esmvaltool
             pytest -n 2 -m 'not flake8'
@@ -61,7 +60,7 @@ jobs:
     # Test Python 3 installation
     working_directory: /test_installation
     docker:
-      - image: continuumio/miniconda3
+      - image: condaforge/mambaforge:latest
     steps:
       - checkout
       - check_changes
@@ -73,21 +72,17 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
-            tar xfz julia-*-linux-x86_64.tar.gz
-            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
-            # conda update -y conda > /logs/conda.txt 2>&1
-            conda create --name esmvaltool 'python=3.9' >> /logs/conda.txt 2>&1
-            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
+            mamba create --name esmvaltool 'python=3.9' >> /logs/conda.txt 2>&1
+            mamba env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
+            mamba install julia >> /logs/conda.txt 2>&1
             pip install .[test] > /logs/install.txt 2>&1
-            esmvaltool install R
             esmvaltool install Julia
             # Remove source to test installed software
             rm -r esmvaltool
             # Log versions
             dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
+            mamba env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
             pytest -n 2
@@ -115,7 +110,7 @@ jobs:
     # Test development installation
     working_directory: /develop
     docker:
-      - image: continuumio/miniconda3
+      - image: condaforge/mambaforge:latest
     steps:
       - checkout
       - check_changes
@@ -125,19 +120,15 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
-            tar xfz julia-*-linux-x86_64.tar.gz
-            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
-            # conda update -y conda > /logs/conda.txt 2>&1
-            conda create --name esmvaltool 'python=3.9' >> /logs/conda.txt 2>&1
-            conda env update --name esmvaltool >> /logs/conda.txt 2>&1
+            mamba create --name esmvaltool 'python=3.9' >> /logs/conda.txt 2>&1
+            mamba env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
+            mamba install julia >> /logs/conda.txt 2>&1
             pip install -e .[develop] > /logs/install.txt 2>&1
-            esmvaltool install R
             esmvaltool install Julia
             # Log versions
             dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
+            mamba env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
             pytest -n 2
@@ -152,7 +143,7 @@ jobs:
     # Test building documentation
     working_directory: /doc
     docker:
-      - image: continuumio/miniconda3
+      - image: condaforge/mambaforge:latest
     steps:
       - checkout
       - restore_cache:
@@ -179,7 +170,7 @@ jobs:
     # Test conda build
     working_directory: /esmvaltool
     docker:
-      - image: continuumio/miniconda3
+      - image: condaforge/mambaforge:latest
     steps:
       - checkout
       - check_changes
@@ -192,17 +183,14 @@ jobs:
             # Install prerequisites
             mkdir /logs
             apt update && apt install time
-            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
-            tar xfz julia-*-linux-x86_64.tar.gz
-            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             # did not help with high memory needed, but it's usually useful
             # conda config --set channel_priority true
             # conda update -y --all
-            conda create -y -n build conda-build conda-verify
+            mamba create -y -n build conda-build conda-verify
             conda activate build
             # Log versions
             dpkg -l > /logs/versions.txt
-            conda env export > /logs/build_environment.yml
+            mamba env export > /logs/build_environment.yml
             # Build conda package
             \time -v conda build package -c conda-forge -c esmvalgroup > /logs/build_log.txt
           no_output_timeout: 60m
@@ -213,7 +201,7 @@ jobs:
     # Test conda package installation
     working_directory: /esmvaltool
     docker:
-      - image: continuumio/miniconda3
+      - image: condaforge/mambaforge
     steps:
       - run:
           environment:
@@ -223,16 +211,14 @@ jobs:
             set -x
             # Install prerequisites
             mkdir /logs
-            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
-            tar xfz julia-*-linux-x86_64.tar.gz
-            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
-            # conda update -y conda > /logs/conda.txt 2>&1
             # Install ESMValTool in a new conda environment
-            conda create -y --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool 'python=3.9'
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.9'
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
+            # install the package
+            mamba install -c conda-forge esmvaltool
             # Log versions
-            conda env export > /logs/environment.yml
+            mamba env export > /logs/environment.yml
             # Test installation
             esmvaltool -h
             ncl -V
@@ -272,6 +258,7 @@ workflows:
       - test_installation
       - develop
       - documentation
+      - conda_install
       - conda_build
   nightly:
     triggers:
