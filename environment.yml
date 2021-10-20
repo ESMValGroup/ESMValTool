@@ -6,6 +6,7 @@ channels:
   - nodefaults
 
 dependencies:
+  - pip!=21.3
   # Python packages that cannot be installed from PyPI:
   - cartopy
   - compilers
