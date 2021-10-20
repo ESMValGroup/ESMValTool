@@ -2,6 +2,8 @@
 # recipe_ecs_scatter.yml
 ---
 documentation:
+  title: Emergent constraints for ECS
+
   description: |
     Calculates equilibrium climate sensitivity (ECS) versus
     1) southern ITCZ index, similar to fig. 2 from Tian (2015)
@@ -62,6 +64,7 @@ preprocessors:
 diagnostics:
 
   cmip5_shhc:
+    title: CMIP5 Hadley cell extent (Lipat et al. 2017)
     description: climatological Hadley cell extent
     themes:
       - EC
@@ -115,6 +118,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip5_itczidx:
+    title: CMIP5 southern ITCZ index (Tian 2015)
     description: southern ITCZ index
     themes:
       - EC
@@ -175,6 +179,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip5_humidx:
+    title: CMIP5 humidity index (Tian 2015)
     description: tropical mid-tropospheric humidity asymmetry index
     themes:
       - EC
@@ -237,6 +242,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip5_ltmi:
+    title: CMIP5 LTMI (Sherwood et al., 2014)
     description: lower tropospheric mixing index
     themes:
       - EC
@@ -307,6 +313,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip5_covrefl:
+    title: CMIP5 covariance of shortwave cloud reflection (Brient and Schneider, 2016)
     description: covariance of shortwave cloud reflection
     themes:
       - EC
@@ -418,6 +425,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip6_itczidx:
+    title: CMIP6 southern ITCZ index (Tian 2015)
     description: southern ITCZ index
     themes:
       - EC
@@ -467,6 +475,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip6_humidx:
+    title: CMIP6 humidity index (Tian 2015)
     description: tropical mid-tropospheric humidity asymmetry index
     themes:
       - EC
@@ -518,6 +527,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip6_ltmi:
+    title: CMIP6 LTMI (Sherwood et al., 2014)
     description: lower tropospheric mixing index
     themes:
       - EC
@@ -575,6 +585,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip6_shhc:
+    title: CMIP6 Hadley cell extent (Lipat et al. 2017)
     description: climatological Hadley cell extent
     themes:
       - EC
@@ -615,6 +626,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip6_covrefl:
+    title: CMIP6 covariance of shortwave cloud reflection (Brient and Schneider, 2016)
     description: covariance of shortwave cloud reflection
     themes:
       - EC
