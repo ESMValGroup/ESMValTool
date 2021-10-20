@@ -4,6 +4,7 @@ channels:
   - conda-forge
 
 dependencies:
+  - pip!=21.3
   # Python packages that cannot be installed from PyPI:
   - cartopy>=0.18
   - compilers
