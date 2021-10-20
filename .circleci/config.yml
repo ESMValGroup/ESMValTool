@@ -166,37 +166,6 @@ jobs:
       - store_artifacts:
           path: /logs
 
-  conda_build:
-    # Test conda build
-    working_directory: /esmvaltool
-    docker:
-      - image: condaforge/mambaforge:latest
-    steps:
-      - checkout
-      - check_changes
-      - run:
-          environment:
-            R_INSTALL_N_CPUS: 2
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            set -x
-            # Install prerequisites
-            mkdir /logs
-            apt update && apt install time
-            # did not help with high memory needed, but it's usually useful
-            # conda config --set channel_priority true
-            # conda update -y --all
-            mamba create -y -n build conda-build conda-verify
-            conda activate build
-            # Log versions
-            dpkg -l > /logs/versions.txt
-            mamba env export > /logs/build_environment.yml
-            # Build conda package
-            \time -v conda build package -c conda-forge -c esmvalgroup > /logs/build_log.txt
-          no_output_timeout: 60m
-      - store_artifacts:
-          path: /logs
-
   conda_install:
     # Test conda package installation
     working_directory: /esmvaltool
@@ -225,32 +194,6 @@ jobs:
             cdo --version
           no_output_timeout: 30m
 
-  ncl_cdo_test:
-    # Test ncl and cdo conda packages
-    working_directory: /ncl
-    docker:
-      - image: continuumio/miniconda3
-    steps:
-      - checkout
-      - run:
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            set -x
-            mkdir /logs
-            # Install
-            # conda update -y conda > /logs/conda.txt 2>&1
-            conda create -y --name ncl > /logs/conda.txt 2>&1
-            set +x; conda activate ncl; set -x
-            conda install -y --channel conda-forge ncl cdo >> /logs/conda.txt 2>&1
-            # Log versions
-            dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
-            # Test if NCL installed successfully
-            ncl -V
-            cdo --version
-      - store_artifacts:
-          path: /logs
-
 workflows:
   commit:
     jobs:
@@ -259,7 +202,6 @@ workflows:
       - develop
       - documentation
       - conda_install
-      - conda_build
   nightly:
     triggers:
       - schedule:
@@ -273,6 +215,4 @@ workflows:
       - test_installation
       - develop
       - documentation
-      - conda_build
       - conda_install
-      - ncl_cdo_test
