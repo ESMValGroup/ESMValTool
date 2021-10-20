@@ -2,6 +2,9 @@
 # recipe_seaice_feedback.yml
 ---
 documentation:
+  title: |
+    Ice Formation Efficiency (IFE).
+
   description: |
     This recipe is related to the negative sea-ice growth–thickness feedback
     In this recipe, one process-based diagnostic named the

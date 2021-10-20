@@ -2,6 +2,9 @@
 # recipe_heatwaves_coldwaves.yml
 ---
 documentation:
+  title: |
+    Heatwaves and coldwaves.
+
   description: |
     Tool to compute the number of days excedding a quantile
     for a minimum number of consecutive days.

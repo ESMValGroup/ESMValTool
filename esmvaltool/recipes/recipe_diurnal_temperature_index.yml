@@ -2,6 +2,9 @@
 # recipe_diurnal_temperature_index.yml
 ---
 documentation:
+  title: |
+    Diurnal temperature indicator (DTR).
+
   description: |
     Tool to compute the  diurnal temperature indicator.
 

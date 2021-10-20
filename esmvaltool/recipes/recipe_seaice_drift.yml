@@ -2,6 +2,9 @@
 # recipe_seaice_drift.yml
 ---
 documentation:
+  title: |
+    Sea-ice drift.
+
   description: |
     'Sea ice drift evaluation'
 

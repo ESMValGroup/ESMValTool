@@ -2,6 +2,9 @@
 # recipe_multimodel_products.yml
 ---
 documentation:
+  title: |
+    Ensemble mean anomalies and agreements.
+
   description: |
     Tool to  compute the ensemble mean anomaly and the ensemble
     variance and agreement and plot the results as maps and time series.
