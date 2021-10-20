@@ -19,7 +19,7 @@ commands:
           fi
 
 jobs:
-  test:
+  run_tests:
     # Run Python 3 tests
     working_directory: /test
     docker:
@@ -56,7 +56,7 @@ jobs:
           # Useful to let forks CI pass without passing secrets
           skip: true
 
-  test_installation:
+  test_installation_from_source_test_mode:
     # Test Python 3 installation
     working_directory: /test_installation
     docker:
@@ -106,7 +106,7 @@ jobs:
       - store_test_results:
           path: test-reports/
 
-  develop:
+  test_installation_from_source_develop_mode:
     # Test development installation
     working_directory: /develop
     docker:
@@ -139,7 +139,7 @@ jobs:
       - store_artifacts:
           path: /logs
 
-  documentation:
+  build_documentation:
     # Test building documentation
     working_directory: /doc
     docker:
@@ -166,7 +166,7 @@ jobs:
       - store_artifacts:
           path: /logs
 
-  conda_install:
+  test_installation_from_conda:
     # Test conda package installation
     working_directory: /esmvaltool
     docker:
@@ -197,11 +197,11 @@ jobs:
 workflows:
   commit:
     jobs:
-      - test
-      - test_installation
-      - develop
-      - documentation
-      - conda_install
+      - run_tests
+      - test_installation_from_source_test_mode
+      - test_installation_from_source_develop_mode
+      - build_documentation
+      - test_installation_from_conda
   nightly:
     triggers:
       - schedule:
@@ -211,8 +211,8 @@ workflows:
               only:
                 - main
     jobs:
-      - test
-      - test_installation
-      - develop
-      - documentation
-      - conda_install
+      - run_tests
+      - test_installation_from_source_test_mode
+      - test_installation_from_source_develop_mode
+      - build_documentation
+      - test_installation_from_conda
