@@ -1,0 +1,44 @@
+###############################################################################
+# CMIP5+6 STYLES
+###############################################################################
+# This file defines the plot attributes for the CMIP5 models.
+# Mostly based on IPCC-AR5 Chapter 9 figures.
+#
+# MODEL NAME: must be the same as given in the main recipe.
+# COLOR: can be either an NCL named color, a RGB code (size 3) on a 0-255 scale
+#        or a RGBA code (size 4) with the last element indicating the opacity
+#        on a 0-1 scale (0 = transparent, 1 = full), see
+#        http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
+#        https://www.ncl.ucar.edu/Document/glossary.shtml#RGB
+#        https://www.ncl.ucar.edu/Document/glossary.shtml#RGBA
+#        https://www.ncl.ucar.edu/Document/Graphics/create_color_table.shtml
+# DASH: the dash pattern index lines, see
+#       https://www.ncl.ucar.edu/Document/Graphics/Images/dashpatterns.png
+# THICK: the line thickness (NCL default is 1)
+# MARK: marker index for markers, see
+#       https://www.ncl.ucar.edu/Document/Graphics/Images/markers.png
+# AVG-STD: 0 = takes part in the calculation of mean and stddev
+#          1 = does not take part in the calculation of mean and stddev
+#          (usually 0 for models, 1 for observations/reanalysis)
+#
+# Mind the formatting: columns are separated by the | symbol , colors given
+# as RGB/RGBA must be comma-separated.
+###########################################################################
+MODEL NAME            # COLOR            # DASH # THICK # MARK # AVG-STD
+###########################################################################
+MultiModelAverage     |   0,   0,   0    |   0  |   3   |  12  |   1
+MultiModelMean        | 255,   0,   0    |   0  |   3   |  12  |   1
+MultiModelMedian      | 255, 127,  63    |   0  |   3   |  12  |   1
+CERES-EBAF            | 100, 200, 200    |   0  |   3   |   4  |   0
+CLARA-AVHRR           | 150, 200, 250    |   0  |   3   |   4  |   0
+CLOUDSAT-L2           |  50, 200, 100    |   0  |   3   |   4  |   0
+ERA5                  | 255, 200,   0    |   0  |   3   |   4  |   0
+ERA-Interim           | 255, 150,   0    |   0  |   3   |   4  |   0
+ESACCI-CLOUD          |   0,  50, 200    |   0  |   3   |   4  |   0
+ESACCI-WATERVAPOUR    |   0,  50, 200    |   0  |   3   |   4  |   0
+ISCCP-FH              | 250,   0,  50    |   0  |   3   |   4  |   0
+MAC-LWP               | 150, 200,  50    |   0  |   3   |   4  |   0
+MODIS                 | 150,   0, 150    |   0  |   3   |   4  |   0
+SSMI-MERIS            |   0, 250,   0    |   0  |   3   |   4  |   0
+PATMOS-x              |   0, 150,   0    |   0  |   3   |   4  |   0
+default               | 200, 200, 200    |   0  |   1   |  16  |   0

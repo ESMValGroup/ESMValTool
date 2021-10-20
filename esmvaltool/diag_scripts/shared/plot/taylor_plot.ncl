@@ -971,108 +971,130 @@ begin
 
     if (isatt(rOpts, "caseLabelsFontHeightF")) then
       caseLabelsFontHeightF = rOpts@caseLabelsFontHeightF
-      else
-        caseLabelsFontHeightF = 0.05
-      end if
+    else
+      caseLabelsFontHeightF = 0.05
+    end if
 
-      lgres                    = True
+    lgres                    = True
+    lgres@lgMarkerSizeF      = gsMarkerSizeF
+    lgres@lgLabelFontHeightF = caseLabelsFontHeightF
+    lgres@lgItemType         = "Markers"
+
+    if (isatt(rOpts, "legend_filter")) then
+      auxind = ind(str_match_bool(str_lower(rOpts@projects), \
+                   str_lower(rOpts@legend_filter)))
+      if(.not. all(ismissing(auxind))) then
+        iselect = ind(.not.str_match_bool(str_lower(rOpts@projects), \
+                      str_lower(rOpts@legend_filter)))
+        color0 = Colors(auxind(0))
+        marker0 = Markers(auxind(0))
+        label0 = rOpts@legend_filter
+        lgres@lgMarkerColors = array_append_record(color0, Colors(iselect), 0)
+        lgres@lgMarkerIndexes = \
+          array_append_record(marker0, Markers(iselect), 0)
+        Labels = array_append_record(label0, rOpts@caseLabels(iselect), 0)
+      else
+        lgres@lgMarkerColors     = Colors
+        lgres@lgMarkerIndexes    = Markers
+      end if
+    else
       lgres@lgMarkerColors     = Colors
       lgres@lgMarkerIndexes    = Markers
-      lgres@lgMarkerSizeF      = gsMarkerSizeF
-      lgres@lgItemType         = "Markers"
-      lgres@lgLabelFontHeightF = caseLabelsFontHeightF
+      Labels = rOpts@caseLabels
+    end if
 
-      nModel                   = dimsizes(rOpts@caseLabels)
-      if (isatt(rOpts, "legendWidth")) then
-        lgres@vpWidthF       = rOpts@legendWidth
-      else
-        lgres@vpWidthF       = 0.15
+    nModel                   = dimsizes(Labels)
+    if (isatt(rOpts, "legendWidth")) then
+      lgres@vpWidthF       = rOpts@legendWidth
+    else
+      lgres@vpWidthF       = 0.15
+    end if
+
+    if (nModel.gt.20) then
+      lgres@vpWidthF = lgres@vpWidthF * 0.5
+      lgres@lgMarkerSizeF = lgres@lgMarkerSizeF * 0.75
+    end if
+
+    lgres@lgPerimOn          = False
+    if (isatt(rOpts, "legendBox")) then
+      if (rOpts@legendBox) then
+        lgres@lgPerimOn = True
+        lgres@lgRightMarginF = 0.1
       end if
+    end if
 
-      if (nModel.gt.20) then
-        lgres@vpWidthF = lgres@vpWidthF * 0.5
-        lgres@lgMarkerSizeF = lgres@lgMarkerSizeF * 0.75
-      end if
-
-      lgres@lgPerimOn          = False
-      if (isatt(rOpts, "legendBox")) then
-        if (rOpts@legendBox) then
-          lgres@lgPerimOn = True
-          lgres@lgRightMarginF = 0.1
+    if (nModel.le.20) then
+      if (isatt(rOpts, "reverseOrder")) then
+        if (rOpts@reverseOrder) then
+          lgres@lgItemOrder = ispan(nModel - 1, 0, 1)
         end if
       end if
+      if (isatt(rOpts, "legendHeight")) then
+        lgres@vpHeightF      = rOpts@legendHeight
+      else
+        lgres@vpHeightF      = 0.030 * nModel
+      end if
+      lbid = gsn_create_legend(legendwks, nModel, Labels, lgres)
+      amres = True
+      if (isatt(rOpts, "legendXpos")) then
+        amres@amParallelPosF = rOpts@legendXpos
+        amres@amJust = "TopLeft"
+      else
+        amres@amParallelPosF = 0.35
+      end if
+      if (isatt(rOpts, "legendYpos")) then
+        amres@amOrthogonalPosF = rOpts@legendYpos
+        amres@amJust = "TopLeft"
+      else
+        amres@amOrthogonalPosF = -0.35
+      end if
+      if (extrafile) then
+        gsn_legend_ndc(legendwks, nModel, Labels(0:nModel - 1), \
+                       0.78, 0.75, lgres)
+      else
+        annoid1 = gsn_add_annotation(taylor, lbid, amres)
+      end if
+    else
+      if (isatt(rOpts, "modelsperrow")) then
+        modelsperrow = rOpts@modelsperrow
+      else
+        modelsperrow = (nModel + 1) / 2
+      end if
 
-      if (nModel.le.20) then
+      do lr = 0, nModel / modelsperrow
+        ix0 = lr * modelsperrow
+        if (ix0.ge.nCase) then
+          break
+        end if
+        ix1 = min((/nCase - 1, ix0 + modelsperrow - 1/))
+        dumdelta = ix1 - ix0 + 1
+
         if (isatt(rOpts, "reverseOrder")) then
           if (rOpts@reverseOrder) then
-            lgres@lgItemOrder = ispan(nModel - 1, 0, 1)
-          end if
-        end if
-        if (isatt(rOpts, "legendHeight")) then
-          lgres@vpHeightF      = rOpts@legendHeight
-        else
-          lgres@vpHeightF      = 0.030 * nCase
-        end if
-        lbid = gsn_create_legend(legendwks, nModel, rOpts@caseLabels, lgres)
-        amres = True
-        if (isatt(rOpts, "legendXpos")) then
-          amres@amParallelPosF = rOpts@legendXpos
-          amres@amJust = "TopLeft"
-        else
-          amres@amParallelPosF = 0.35
-        end if
-        if (isatt(rOpts, "legendYpos")) then
-          amres@amOrthogonalPosF = rOpts@legendYpos
-          amres@amJust = "TopLeft"
-        else
-          amres@amOrthogonalPosF = -0.35
-        end if
-        if (extrafile) then
-          gsn_legend_ndc(legendwks, nModel, rOpts@caseLabels(0:nModel - 1), \
-                         0.78, 0.75, lgres)
-        else
-          annoid1 = gsn_add_annotation(taylor, lbid, amres)
-        end if
-      else
-        if (isatt(rOpts, "modelsperrow")) then
-          modelsperrow = rOpts@modelsperrow
-        else
-          modelsperrow = (nModel + 1) / 2
-        end if
-        do lr = 0, nModel / modelsperrow
-          ix0 = lr * modelsperrow
-          if (ix0.ge.nCase) then
-            break
-          end if
-          ix1 = min((/nCase - 1, ix0 + modelsperrow - 1/))
-          dumdelta = ix1 - ix0 + 1
-
-          if (isatt(rOpts, "reverseOrder")) then
-            if (rOpts@reverseOrder) then
-              if (isatt(lgres, "lgItemOrder")) then
-                delete(lgres@lgItemOrder)
-              end if
-              lgres@lgItemOrder = ispan(dumdelta - 1, 0, 1)
+            if (isatt(lgres, "lgItemOrder")) then
+              delete(lgres@lgItemOrder)
             end if
+            lgres@lgItemOrder = ispan(dumdelta - 1, 0, 1)
           end if
+        end if
 
-          lgres@vpHeightF      = 0.026 * dumdelta
+        lgres@vpHeightF      = 0.026 * dumdelta
 
-          delete(lgres@lgMarkerColors)
-          delete(lgres@lgMarkerIndexes)
-          lgres@lgMarkerColors  = Colors(ix0:ix1)
-          lgres@lgMarkerIndexes = Markers(ix0:ix1)
-          lgres@lgPerimOn = False
+        delete(lgres@lgMarkerColors)
+        delete(lgres@lgMarkerIndexes)
+        lgres@lgMarkerColors  = Colors(ix0:ix1)
+        lgres@lgMarkerIndexes = Markers(ix0:ix1)
+        lgres@lgPerimOn = False
 
-          if (extrafile) then
-            legend_x = 0.05 + 0.11 * lr
-          else
-            legend_x = 0.78 + 0.11 * lr
-          end if
+        if (extrafile) then
+          legend_x = 0.05 + 0.11 * lr
+        else
+          legend_x = 0.78 + 0.11 * lr
+        end if
 
-          gsn_legend_ndc(legendwks, dumdelta, rOpts@caseLabels(ix0:ix1), \
-                         legend_x, 0.75, lgres)
-        end do
+        gsn_legend_ndc(legendwks, dumdelta, Labels(ix0:ix1), \
+                       legend_x, 0.75, lgres)
+      end do
     end if
   end if
 

@@ -34,12 +34,20 @@
 ;   filename_add:    legacy feature: arbitrary string to be added to all
 ;                    filenames of plots and netcdf output produced
 ;                    (default = "")
+;   legend_filter:   do not show individual datasets in legend that are of
+;                    project "legend_filter" (default = "")
 ;   mask_ts_sea_ice: - True = mask T < 272 K as sea ice (only for
 ;                      variable "ts")
 ;                    - False = no additional grid cells masked for
 ;                      variable "ts"
+;   multiobs_exclude: list of *observational* datasets to be excluded when
+;                    calculating uncertainty estimates from multiple
+;                    observational datasets (see also multiobs_uncertainty)
 ;   multiobs_uncertainty: calculate uncertainty estimates from multiple
-;                       observational datasets (true, false)
+;                       observational datasets (true, false); by default,
+;                    all "obs", "obs6", "obs4mips" and "native6" datasets
+;                    are used; any of such datasets can be explicitely
+;                    excluded when also specifying "multiobs_exclude"
 ;   styleset:        "CMIP5", "DEFAULT"
 ;                    (if not set, CLOUDS_TAYLOR will create a color table and
 ;                    symbols for plotting)
@@ -71,6 +79,7 @@
 ;        variable has been calculated from) the *second* (third, ...)
 ;
 ; Modification history
+;   20211018-lauer_axel: added option to remove individual models from legend
 ;   20210407-lauer_axel: added option to estimate observational uncertainty
 ;                        from multiple observational datasets
 ;   20210318-lauer_axel: added option to speficfy variable if more than one
@@ -108,6 +117,8 @@ begin
   set_default_att(diag_script_info, "embracelegend", False)
   set_default_att(diag_script_info, "estimate_obs_uncertainty", False)
   set_default_att(diag_script_info, "mask_ts_sea_ice", False)
+  set_default_att(diag_script_info, "legend_filter", "")
+  set_default_att(diag_script_info, "multiobs_exclude", "")
   set_default_att(diag_script_info, "multiobs_uncertainty", False)
   set_default_att(diag_script_info, "timemean", "annualclim")
   set_default_att(diag_script_info, "valid_fraction", 0.5)
@@ -158,6 +169,7 @@ begin
   end if
 
   flag_multiobs_unc = diag_script_info@multiobs_uncertainty
+  multiobs_exclude = diag_script_info@multiobs_exclude
   if (estimate_obs_uncertainty .and. flag_multiobs_unc) then
     log_info("estimate_obs_uncertainty is not supported when " + \
              "multiobs_uncertainty is enabled. Setting " + \
@@ -284,12 +296,6 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
-  if (diag_script_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
-
 end
 
 begin
@@ -305,7 +311,7 @@ begin
   if (flag_multiobs_unc) then
     ; find indices of all OBS and obs4mips datasets (including "native6" ERA5)
 
-    idxobs = get_obs(names, projects)
+    idxobs = get_obs(names, projects, multiobs_exclude)
 
     if (idxobs(0) .eq. -1) then
       flag_multiobs_unc = False
@@ -339,6 +345,12 @@ begin
 
   if (ismissing(mm_ind)) then
     mm_ind = -1
+  end if
+
+  legend_filter = diag_script_info@legend_filter
+
+  if ((legend_filter .ne. "") .and. mm_ind .gt. -1) then
+    projects(mm_ind) = "CMIP_MMM"
   end if
 
   mask_ts_sea_ice = diag_script_info@mask_ts_sea_ice
@@ -873,7 +885,7 @@ begin
         end if
         ; override alternative obs (if "EMBRACE" legend)
         if (embracelegend) then
-          if ((isStrSubset(str_lower(input_file_info@project(i)), "obs"))) \
+          if ((isStrSubset(str_lower(projects(i)), "obs"))) \
             then
             if (mm_ind .ge. 0) then
               colors(i)  = "(/1.00, 0.00, 0.00/)"  ; red
@@ -900,7 +912,7 @@ begin
         else
           if (embracelegend) then
             colors(i)  = colortab(idx)
-            if ((isStrSubset(str_lower(input_file_info@project(i)), "obs"))) \
+            if ((isStrSubset(str_lower(projects(i)), "obs"))) \
               then
               if (mm_ind .ge. 0) then
                 colors(i)  = "(/1.00, 0.00, 0.00/)"  ; red
@@ -939,12 +951,15 @@ begin
     end if
 
     ropts = True
-    ropts@Colors        = colors
-    ropts@Markers       = markers  ; marker styles
     ropts@gsMarkerSizeF = 0.0125
+    ropts@Colors     = colors
+    ropts@Markers    = markers  ; marker styles
+    ropts@caseLabels = val&models
 
-    modelnames          = val&models
-    ropts@caseLabels    = modelnames
+    if (legend_filter .ne. "") then
+      ropts@legend_filter = legend_filter
+      ropts@projects = projects
+    end if
 
     ropts@stnRad        = (/ 0.5, 1.5, 2.0, 2.5 /)
     ropts@OneX          = "1.00"
@@ -979,23 +994,19 @@ begin
     end if
 
     ; plot
-    if (write_plots) then
-      ropts@tiMainString   = var0 + " (" + season(is) + ")"  ; title
-      ; observational uncertainties as normalized RMS error
-      ropts@rmsobs = rmsobs(is)
+    ropts@tiMainString   = var0 + " (" + season(is) + ")"  ; title
+    ; observational uncertainties as normalized RMS error
+    ropts@rmsobs = rmsobs(is)
 
-      plot = taylor_diagram(wks, legendwks, ratio(:, :, is), cc(:, :, is), \
-                            ropts)
+    plot = taylor_diagram(wks, legendwks, ratio(:, :, is), cc(:, :, is), \
+                          ropts)
 
-      plotfile(is) = wks@fullname
-      log_info("Wrote " + plotfile)
+    plotfile(is) = wks@fullname
+    log_info("Wrote " + plotfile)
 
-      if (embracelegend.and.(is.eq.(numseas-1))) then
-        frame(legendwks)
-      end if
-    else
-      plotfile(is) = ""
-    end if  ; if write_plots
+    if (embracelegend.and.(is.eq.(numseas-1))) then
+      frame(legendwks)
+    end if
   end do  ; is-loop (seasons)
 
   ; write netCDF output

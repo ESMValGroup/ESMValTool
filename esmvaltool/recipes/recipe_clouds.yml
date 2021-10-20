@@ -47,7 +47,7 @@ preprocessors:
       span: overlap
       statistics: [mean]
       exclude: [CERES-EBAF, CLARA-AVHRR, CLOUDSAT-L2, ERA5, ERA-Interim, ESACCI-CLOUD,
-                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x,
                 reference_dataset, SSMI-MERIS]
 
   clim500_ocean:
@@ -67,7 +67,7 @@ preprocessors:
       span: overlap
       statistics: [mean]
       exclude: [CERES-EBAF, CLARA-AVHRR, CLOUDSAT-L2, ERA5, ERA-Interim, ESACCI-CLOUD,
-                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x,
                 reference_dataset, SSMI-MERIS]
 
   clim_ocean:
@@ -83,7 +83,7 @@ preprocessors:
       span: overlap
       statistics: [mean]
       exclude: [CERES-EBAF, CLARA-AVHRR, CLOUDSAT-L2, ERA5, ERA-Interim, ESACCI-CLOUD,
-                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x,
                 reference_dataset, SSMI-MERIS]
 
   clim500_land:
@@ -103,7 +103,7 @@ preprocessors:
       span: overlap
       statistics: [mean]
       exclude: [CERES-EBAF, CLARA-AVHRR, CLOUDSAT-L2, ERA5, ERA-Interim, ESACCI-CLOUD,
-                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x,
                 reference_dataset, SSMI-MERIS]
 
   clim_land:
@@ -119,7 +119,7 @@ preprocessors:
       span: overlap
       statistics: [mean]
       exclude: [CERES-EBAF, CLARA-AVHRR, CLOUDSAT-L2, ERA5, ERA-Interim, ESACCI-CLOUD,
-                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x,
                 reference_dataset, SSMI-MERIS]
 
   ppSEPacific:

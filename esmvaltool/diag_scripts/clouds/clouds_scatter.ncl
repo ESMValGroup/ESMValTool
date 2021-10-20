@@ -35,6 +35,7 @@
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/dataset_selection.ncl"
 load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 
@@ -336,23 +337,29 @@ begin
     delete(y1d)
   end do  ; ii-loop (models)
 
-  ; if MultiModelMean is present, calculate standard deviation of all models
+  ; if multiple models are present, calculate standard deviation of all models
 
-  mm_ind = ind(names .eq. "MultiModelMean")
+  ; find all indices of models w/o MultiModelMean/MultiModelMedian (if present)
 
-  if (.not.ismissing(mm_ind)) then
-    mmstd = new(nbins, float)
-    imod = ispan(0, dim_MOD - 1, 1)
-    idx0 = ind((imod .ne. refidx_x) .and. (imod .ne. mm_ind))
-    if (.not.all(ismissing(idx0))) then
-      do n = 0, nbins - 1
-        mmstd(n) = stddev(result_avg(idx0, n))
-      end do
-    end if
-    delete(idx0)
-    delete(imod)
-  else
+  idxmod = get_mod(names, projects)
+
+  if (idxmod(0) .eq. -1) then
+    flag_multimod = False
     mm_ind = -1
+  else
+    flag_multimod = True
+    mmavg = new((/1, nbins/), float)
+    mmstd = new((/1, nbins/), float)
+    do n = 0, nbins - 1
+      mmavg(0, n) = avg(result_avg(idxmod, n))
+      mmstd(0, n) = stddev(result_avg(idxmod, n))
+    end do
+    mm_ind = dim_MOD
+    dim_MOD = dim_MOD + 1
+    result_avg := array_append_record(result_avg, mmavg, 0)
+    result_std := array_append_record(result_std, mmstd, 0)
+    result_std(dim_MOD -1, :) = 0.0
+    names := array_append_record(names, (/"Multi-model average"/), 0)
   end if
 
   ; ###########################################
@@ -452,11 +459,11 @@ begin
       res_std = True
       res_std@gsnDraw         = False   ; do not draw yet
       res_std@gsnFrame        = False  ; don't advance frame
-      res_std@gsnXYFillColors = "lightpink"
+      res_std@gsnXYFillColors = (/1.0, 0.9, 0.9/)  ; "lightpink"
       res_std@xyLineColor     = -1  ; Make lines transparent
       mmstddev = new((/2, nbins/), float)
-      mmstddev(0, :) = result_avg(mm_ind, :) - mmstd(:)
-      mmstddev(1, :) = result_avg(mm_ind, :) + mmstd(:)
+      mmstddev(0, :) = mmavg(0, :) - mmstd(0, :)
+      mmstddev(1, :) = mmavg(0, :) + mmstd(0, :)
       plotstd = gsn_csm_xy(wks, result_avg&bin, mmstddev, res_std)
       delete(mmstddev)
       overlay(plots(ii), plotstd)

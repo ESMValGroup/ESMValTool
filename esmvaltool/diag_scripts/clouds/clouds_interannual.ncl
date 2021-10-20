@@ -126,7 +126,7 @@ begin
 
   ; find indices of all OBS and obs4mips datasets (including "native6" ERA5)
 
-  idxobs = get_obs(names, projects)
+  idxobs = get_obs(names, projects, "")
 
   if (idxobs(0) .eq. -1) then
     flag_multiobs = False

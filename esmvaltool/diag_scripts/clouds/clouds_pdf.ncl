@@ -12,6 +12,7 @@
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
 ;   filename_add:       optionally add this string to output filenames
+;   plot_average:       show average frequency per bin
 ;   region:             show only selected geographic region given as latmin,
 ;                       latmax, lonmin, lonmax
 ;   styleset:        "CMIP5", "DEFAULT"
@@ -34,6 +35,7 @@ load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/dataset_selection.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/shared/plot/xy_line.ncl"
 
@@ -56,6 +58,7 @@ begin
 
   ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "filename_add", "")
+  set_default_att(diag_script_info, "plot_average", False)
   set_default_att(diag_script_info, "styleset", "DEFAULT")
   set_default_att(diag_script_info, "multi_model_mean", False)
 
@@ -64,6 +67,8 @@ begin
   else
     filename_add = ""
   end if
+
+  plot_average = diag_script_info@plot_average
 
   ; make sure path for (mandatory) netcdf output exists
 
@@ -161,9 +166,6 @@ begin
       data1@units = "mm day-1"
     end if
 
-    if (var0.eq."lwp") then
-    end if
-
     if (var0.eq."tas") then
       ; convert from K to degC
       data1 = data1 - 273.15
@@ -172,21 +174,6 @@ begin
 
     if (var0.eq."clt") then
       res@gsnHistogramClassIntervals = ispan(0, 100, 10)
-    end if
-
-    if (var0.eq."clivi") then
-    end if
-
-    if (var0.eq."clwvi") then
-    end if
-
-    if (var0.eq."swcre") then
-    end if
-
-    if (var0.eq."lwcre") then
-    end if
-
-    if (var0.eq."netcre") then
     end if
 
     ; ###########################################
@@ -373,16 +360,76 @@ begin
 
   ; ========================================================================
 
+  ; line plot
+
+  colors = project_style(info0, diag_script_info, "colors")
+  dashes = project_style(info0, diag_script_info, "dashes")
+  thicks = project_style(info0, diag_script_info, "thicks")
+
   delete(res)
   res = True
+  res@gsnDraw            = False  ; do not draw yet
+  res@gsnFrame           = False  ; don't advance frame
+  res@xyLineColors      = colors  ; change line color
+  res@xyLineThicknesses = thicks  ; make 2nd lines thicker
+  res@xyMonoDashPattern = False
+  res@xyDashPatterns    = dashes
+  res@gsnDraw           = False   ; don't draw yet
+  res@gsnFrame          = False   ; don't advance frame yet
+  res@tiMainFontHeightF = .025    ; font height
+  res@gsnMaximize       = True
+  res@vpHeightF = 0.4
+  res@vpWidthF = 0.8
+  res@trYMinF  = min(data_all)
+  res@trYMaxF  = max(data_all)
   res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
   res@tiYAxisString = "Frequency (" + data_all@units + ")"
-  diag_script_info@xy_line_legend = False
-  data_all@legend_outside = True
-  wks_line@legendfile = get_plot_dir() + "clouds_pdf_" + var0 \
-    + filename_add + "_legend"
-  xy_line(wks_line, data_all, data_all&$var0$, dim_stddev_n(data_all, 0), \
-          res, info0)
+
+  lineplot = gsn_csm_xy(wks_line, data_all&$var0$, data_all, res)
+
+  if (plot_average) then
+    ; model indices w/o MultiModelMean / MultiModelMedian
+    idxmod = get_mod(names, projects)
+    ; calculate mean and stddev
+    result_avg = dim_avg_n(data_all(idxmod, :), 0)
+    result_std = dim_stddev_n(data_all(idxmod, :), 0)
+
+    ; plot average + stddev
+    res_std = True
+    res_std@gsnDraw         = False   ; do not draw yet
+    res_std@gsnFrame        = False  ; don't advance frame
+    res_std@gsnXYFillColors = (/1.0, 0.9, 0.9/)
+    res_std@xyLineColor     = -1  ; Make lines transparent
+    mmstddev = new((/2, bins/), float)
+    mmstddev(0, :) = result_avg - result_std
+    mmstddev(1, :) = result_avg + result_std
+    plotstd = gsn_csm_xy(wks_line, data_all&$var0$, mmstddev, res_std)
+    delete(mmstddev)
+    overlay(lineplot, plotstd)
+
+    res_avg = True
+    res_avg@gsLineColor = "red"
+    res_avg@gsLineThicknessF = 3
+
+    avgline = gsn_add_polyline(wks_line, plotstd, data_all&$var0$, \
+                               result_avg, res_avg)
+  end if
+
+  draw(lineplot)
+
+;  delete(res)
+;  res = True
+;  res@stddev = True
+;  res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
+;  res@tiYAxisString = "Frequency (" + data_all@units + ")"
+;  diag_script_info@xy_line_legend = False
+;  data_all@legend_outside = True
+;  wks_line@legendfile = get_plot_dir() + "clouds_pdf_" + var0 \
+;    + filename_add + "_legend"
+;  xy_line(wks_line, data_all, data_all&$var0$, dim_stddev_n(data_all, 0), \
+;  xy_line(wks_line, data_all, data_all&$var0$, result_std, \
+;          res, info0)
+
   outfile_line = wks_line@fullname
 
   ; ========================================================================

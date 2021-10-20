@@ -12,11 +12,12 @@
 
 ; #############################################################################
 undef("get_obs")
-function get_obs(names[*]:string, projects[*]:string)
+function get_obs(names[*]:string, projects[*]:string, exclude[*]:string)
 ;
 ; Arguments
 ;    names: names of datasets
 ;    projects: project class of datasets
+;    exclude: optional list of observational datasets to explicitely exclude
 ;
 ; Return value
 ;    An integer array containing all indices of observational datasets
@@ -37,6 +38,7 @@ function get_obs(names[*]:string, projects[*]:string)
 ; References
 ;
 ; Modification history
+;    20211018-lauer_axel: added option to exclude observational datasets
 ;    20210415-lauer_axel: written.
 ;
 local funcname, scriptname, i, idx, idxobs
@@ -50,6 +52,7 @@ begin
   ; (treat ERA5 as special case)
 
   idx = new(dimsizes(projects), integer)
+
   do i = 0, dimsizes(projects) - 1
     if (isStrSubset(str_lower(projects(i)), "obs"))
       idx(i) = 1
@@ -62,6 +65,14 @@ begin
         isStrSubset(str_lower(projects(i)), "native")) then
       idx(i) = 1
     end if
+
+    ; check for observational datasets to exclude (optional)
+
+    do j = 0, dimsizes(exclude) - 1
+      if (names(i) .eq. exclude(j)) then
+        idx(i) = 2
+      end if
+    end do
   end do
 
   idxobs = ind(idx .eq. 1)
@@ -69,8 +80,13 @@ begin
   if (all(ismissing(idxobs))) then
     idxobs = -1
   else
-    log_info("The following observational datasets have been found: " \
-             + str_join(names(idxobs), ", "))
+    log_info("The following observational datasets are used for calculating" \
+             + " multiobs products: " + str_join(names(idxobs), ", "))
+    idxexcl = ind(idx .eq. 2)
+    if (.not.all(ismissing(idxexcl))) then
+      log_info("Observational datasets excluded by user: " \
+        + str_join(names(idxexcl), ", "))
+    end if
   end if
 
   leave_msg(scriptname, funcname)
@@ -117,7 +133,7 @@ begin
 
   ; flag all observations (if present)
 
-  idxobs = get_obs(names, projects)
+  idxobs = get_obs(names, projects, "")
 
   if (idxobs(0) .ne. -1) then
     idx(idxobs) = 0

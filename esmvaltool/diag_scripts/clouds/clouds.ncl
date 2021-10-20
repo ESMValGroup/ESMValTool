@@ -17,8 +17,14 @@
 ;   explicit_cn_levels: explicit contour levels (array)
 ;   extralegend:        plot legend(s) to extra file(s)
 ;   filename_add:       optionally add this string to plot filesnames
+;   multiobs_exclude: list of *observational* datasets to be excluded when
+;                    calculating uncertainty estimates from multiple
+;                    observational datasets (see also multiobs_uncertainty)
 ;   multiobs_uncertainty: calculate uncertainty estimates from multiple
-;                       observational datasets (true, false)
+;                       observational datasets (true, false); by default,
+;                    all "obs", "obs6", "obs4mips" and "native6" datasets
+;                    are used; any of such datasets can be explicitely
+;                    excluded when also specifying "multiobs_exclude"
 ;   panel_labels:       label individual panels (true, false)
 ;   PanelTop:           manual override for "@gnsPanelTop" used by panel
 ;                       plot(s)
@@ -85,6 +91,7 @@ begin
   set_default_att(diag_script_info, "embrace_setup", False)
   set_default_att(diag_script_info, "extralegend", False)
   set_default_att(diag_script_info, "filename_add", "")
+  set_default_att(diag_script_info, "multiobs_exclude", "")
   set_default_att(diag_script_info, "multiobs_uncertainty", False)
   set_default_att(diag_script_info, "panel_labels", True)
   set_default_att(diag_script_info, "rel_diff", False)
@@ -124,6 +131,7 @@ begin
   flag_rel_diff = diag_script_info@rel_diff
   flag_rel_diff_min = diag_script_info@rel_diff_min
   flag_multiobs_unc = diag_script_info@multiobs_uncertainty
+  multiobs_exclude = diag_script_info@multiobs_exclude
 
   if (.not.flag_diff .and. flag_rel_diff) then
     log_info("flag_rel_diff = True has no effect until flag_diff is also " \
@@ -168,7 +176,7 @@ begin
 
   if (flag_multiobs_unc) then
     ; find indices of all OBS and obs4mips datasets (including "native6" ERA5)
-    idxobs = get_obs(names, projects)
+    idxobs = get_obs(names, projects, multiobs_exclude)
 
     if (idxobs(0) .eq. -1) then
       flag_multiobs_unc = False
@@ -208,12 +216,6 @@ begin
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
-
-  if (diag_script_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
 
   climofiles = metadata_att_as_array(info0, "filename")
 
@@ -1097,116 +1099,275 @@ begin
 
   end do  ; ii-loop (models)
 
-  if (write_plots) then
+  ; save default color map in case it is needed later for optionally
+  ; plotting color bar to a separate file
+
+  tmp_colors = gsn_retrieve_colormap(wks0)
+  cdims = dimsizes(tmp_colors)
+  nboxes = dimsizes(res@cnLevels)
+  clen = cdims(0)
+  stride = max((/1, ((clen(0)-1) - 2) / nboxes /))
+  fill_colors = ispan(2, clen(0) - 1, stride)
+  mean_colors = tmp_colors(fill_colors, :)
+  delete(tmp_colors)
+  delete(fill_colors)
+  delete(cdims)
+
+  ; sort plots if needed (observations go first)
+
+  plottmp = ispan(0, dim_MOD - 1, 1)
+  plotind = plottmp
+
+  ; move plots of observational datasets (if present) into the first line(s)
+  ; of the panel plot
+
+  j = 0
+  do i = 0, dimsizes(plottmp) - 1
+    if (i.eq.ref_ind) then
+      plotind(j) = plottmp(i)
+      j = j + 1
+    else if (plottmp(i) .lt. dimsizes(projects)) then
+      if (isStrSubset(str_lower(projects(plottmp(i))), "obs")) then
+        plotind(j) = plottmp(i)
+        j = j + 1
+      end if
+    end if
+    end if
+  end do
+
+  do i = 0, dimsizes(plottmp) - 1
+    if ((isStrSubset(str_lower(projects(plottmp(i))), \
+                     "obs")).or.(i.eq.ref_ind)) then
+    else
+      plotind(j) = plottmp(i)
+      j = j + 1
+    end if
+  end do
+
+  pres                      = True    ; needed to override
+                                      ; panelling defaults
+  if (panel_labels) then
+    ; print dataset name on each panel
+    pres@gsnPanelFigureStrings = names(plotind)
+  end if
+  pres@gsnPanelFigureStringsFontHeightF = min((/0.01, 0.01 * 6.0 \
+                                              / tofloat((dim_MOD + 1) / 2)/))
+  pres@lbLabelFontHeightF               = min((/0.015, 0.01 * 6.0 \
+                                              / tofloat((dim_MOD + 1) / 2)/))
+  pres@lbAutoManage                     = False
+  pres@lbTopMarginF                     = 0.1
+  pres@lbPerimOn                        = False   ; draw line around label
+                                                  ; bar area
+  pres@gsnPanelCenter                   = False
+  if (dim_MOD.le.8) then
+    pres@pmLabelBarOrthogonalPosF       = -0.03
+  else
+    pres@pmLabelBarOrthogonalPosF       = -0.01   ; shift label bar a bit to
+                                                  ; the bottom
+  end if
+
+  if (embracesetup) then
+    if (numseas.gt.1) then
+      pres@txString = season(0)
+      outfile(0) = panelling(wks0, maps(plotind, 0), (dim_MOD + 3) / 4, \
+                             4, pres)
+
+      pres@txString = season(1)
+      outfile(1) = panelling(wks1, maps(plotind, 1), (dim_MOD + 3) / 4, \
+                             4, pres)
+
+      pres@txString = season(2)
+      outfile(2) = panelling(wks2, maps(plotind, 2), (dim_MOD + 3) / 4, \
+                             4, pres)
+
+      pres@txString = season(3)
+      outfile(3) = panelling(wks3, maps(plotind, 3), (dim_MOD + 3) / 4, \
+                             4, pres)
+      log_info(" Wrote " + outfile)
+    else
+      pres@gsnPanelRowSpec = True             ; tell panel what order to plt
+      pres@gsnPanelYWhiteSpacePercent = 5
+      pres@gsnPanelXWhiteSpacePercent = 5
+      if (isatt(diag_script_info, "PanelTop")) then
+        top = tofloat(diag_script_info@PanelTop)
+      else
+        top = 0.99  ; default
+      end if
+      pres@gsnPanelTop = top
+
+      if (isvar("plotsperline")) then
+        delete(plotsperline)
+      end if
+
+      plotsperline = new((dim_MOD + 1) / 2, integer)
+      plotsperline = 2
+
+      if ((isStrSubset(str_lower(projects(plotind(0))), "obs")).and. \
+         .not.(isStrSubset(str_lower(projects(plotind(1))), "obs"))) then
+        plotsperline(0) = 1
+      end if
+
+      if (sum(plotsperline).gt.dimsizes(plotind)) then
+        plotsperline(dimsizes(plotsperline) - 1) = 1
+      end if
+
+      if (sum(plotsperline).lt.dimsizes(plotind)) then
+        xadd = 1
+        xtmp = array_append_record(plotsperline, xadd, 0)
+        delete(plotsperline)
+        plotsperline = xtmp
+        delete(xtmp)
+      end if
+
+      gsn_panel(wks0, maps(plotind, 0), plotsperline, pres)
+      outfile(0) = wks0@fullname
+    end if
+  else  ; if embracesetup
+    if (numseas.gt.1) then
+      pres@txString = season(0)
+      outfile(0) = panelling(wks0, maps(plotind, 0), (dim_MOD + 3) / 4, \
+                             4, pres)
+
+      pres@txString = season(1)
+      outfile(1) = panelling(wks1, maps(plotind, 1), (dim_MOD + 3) / 4, \
+                             4, pres)
+
+      pres@txString = season(2)
+      outfile(2) = panelling(wks2, maps(plotind, 2), (dim_MOD + 3) / 4, \
+                             4, pres)
+
+      pres@txString = season(3)
+      outfile(3) = panelling(wks3, maps(plotind, 3), (dim_MOD + 3) / 4, \
+                             4, pres)
+    else
+      outfile(0) = panelling(wks0, maps(plotind, 0), (dim_MOD + 3) / 4, \
+                             4, pres)
+    end if
+  end if  ; if embracesetup
+
+  do is = 0, numseas - 1
+    log_info("Wrote " + outfile(is))
+  end do
+
+  ; ------------------------------------------------------------------------
+  ; write provenance to netcdf output and plot file(s) (mean)
+  ; ------------------------------------------------------------------------
+
+  statistics = (/"clim", "mean"/)
+  if (isatt(diag_script_info, "region")) then
+    domain = "reg"
+  else
+    domain = "global"
+  end if
+  plottype = "geo"
+
+  do is = 0, numseas - 1
+    caption = "Mean values for variable " + var0 \
+              + " (" + allseas + ")."
+    log_provenance(nc_outfile_mean, outfile(is), caption, statistics, \
+                   domain, plottype, "", "", climofiles)
+  end do
+
+  ; ========================================================================
+
+  if (flag_diff) then
+;    pres@lbTitleString = "~F33~D~F21~" + diff@long_name + " (" + \
+;                         diff@units + ")"
+
     ; save default color map in case it is needed later for optionally
     ; plotting color bar to a separate file
 
-    tmp_colors = gsn_retrieve_colormap(wks0)
+    if (isvar("nboxes")) then
+      delete(nboxes)
+    end if
+
+    tmp_colors = gsn_retrieve_colormap(wks0d)
     cdims = dimsizes(tmp_colors)
-    nboxes = dimsizes(res@cnLevels)
+    nboxes = dimsizes(dres@cnLevels)
     clen = cdims(0)
     stride = max((/1, ((clen(0)-1) - 2) / nboxes /))
     fill_colors = ispan(2, clen(0) - 1, stride)
-    mean_colors = tmp_colors(fill_colors, :)
+    diff_colors = tmp_colors(fill_colors, :)
     delete(tmp_colors)
     delete(fill_colors)
     delete(cdims)
 
-    ; sort plots if needed (observations go first)
+    if (isvar("plottmp")) then
+      delete(plottmp)
+    end if
 
-    plottmp = ispan(0, dim_MOD - 1, 1)
+    if (isvar("plotind")) then
+      delete(plotind)
+    end if
+
+    plottmp = ind(ispan(0, dim_MOD - 1, 1).ne.ref_ind)
     plotind = plottmp
 
-    ; move plots of observational datasets (if present) into the first line(s)
-    ; of the panel plot
+    ; if there is a second observational dataset, move the corresponding
+    ; plot to the first line of the panel plot
 
     j = 0
     do i = 0, dimsizes(plottmp) - 1
-      if (i.eq.ref_ind) then
+      if (isStrSubset(str_lower(projects(plottmp(i))), "obs")) then
         plotind(j) = plottmp(i)
         j = j + 1
-      else if (plottmp(i) .lt. dimsizes(projects)) then
-        if (isStrSubset(str_lower(projects(plottmp(i))), \
-                        "obs")) then
-          plotind(j) = plottmp(i)
-          j = j + 1
-        end if
-      end if
       end if
     end do
-
     do i = 0, dimsizes(plottmp) - 1
-      if ((isStrSubset(str_lower(projects(plottmp(i))), \
-                       "obs")).or.(i.eq.ref_ind)) then
+      if (isStrSubset(str_lower(projects(plottmp(i))), "obs")) then
       else
         plotind(j) = plottmp(i)
         j = j + 1
       end if
     end do
 
-    pres                      = True    ; needed to override
-                                        ; panelling defaults
+    if (isatt(pres, "gsnPanelFigureStrings")) then
+      delete(pres@gsnPanelFigureStrings)
+    end if
     if (panel_labels) then
-      ; print dataset name on each panel
       pres@gsnPanelFigureStrings = names(plotind)
     end if
-    pres@gsnPanelFigureStringsFontHeightF = min((/0.01, 0.01 * 6.0 \
-                                                / tofloat((dim_MOD + 1) / 2)/))
-    pres@lbLabelFontHeightF               = min((/0.015, 0.01 * 6.0 \
-                                                / tofloat((dim_MOD + 1) / 2)/))
-    pres@lbAutoManage                     = False
-    pres@lbTopMarginF                     = 0.1
-    pres@lbPerimOn                        = False   ; draw line around label
-                                                    ; bar area
-    pres@gsnPanelCenter                   = False
-    if (dim_MOD.le.8) then
-      pres@pmLabelBarOrthogonalPosF       = -0.03
-    else
-      pres@pmLabelBarOrthogonalPosF       = -0.01   ; shift label bar a bit to
-                                                    ; the bottom
+
+    if (dimsizes(plotind).eq.1) then
+      pres@gsnPanelRight = 0.5
     end if
 
     if (embracesetup) then
       if (numseas.gt.1) then
         pres@txString = season(0)
-        outfile(0) = panelling(wks0, maps(plotind, 0), (dim_MOD + 3) / 4, \
-                               4, pres)
+        outfile_d(0) = panelling(wks0d, maps_d(plotind, 0), \
+                                 (dim_MOD + 3) / 4, 4, pres)
 
         pres@txString = season(1)
-        outfile(1) = panelling(wks1, maps(plotind, 1), (dim_MOD + 3) / 4, \
-                               4, pres)
+        outfile_d(1) = panelling(wks1d, maps_d(plotind, 1), \
+                                 (dim_MOD + 3) / 4, 4, pres)
 
         pres@txString = season(2)
-        outfile(2) = panelling(wks2, maps(plotind, 2), (dim_MOD + 3) / 4, \
-                               4, pres)
+        outfile_d(2) = panelling(wks2d, maps_d(plotind, 2), \
+                                 (dim_MOD + 3) / 4, 4, pres)
 
         pres@txString = season(3)
-        outfile(3) = panelling(wks3, maps(plotind, 3), (dim_MOD + 3) / 4, \
-                               4, pres)
-        log_info(" Wrote " + outfile)
+        outfile_d(3) = panelling(wks3d, maps_d(plotind, 3), \
+                                 (dim_MOD + 3) / 4, 4, pres)
       else
-        pres@gsnPanelRowSpec = True             ; tell panel what order to plt
+        pres@gsnPanelRowSpec = True           ; tell panel what order to plt
         pres@gsnPanelYWhiteSpacePercent = 5
         pres@gsnPanelXWhiteSpacePercent = 5
-        if (isatt(diag_script_info, "PanelTop")) then
-          top = tofloat(diag_script_info@PanelTop)
-        else
-          top = 0.99  ; default
-        end if
-        pres@gsnPanelTop = top
+        pres@gsnPanelTop = tofloat(diag_script_info@PanelTop)
 
         if (isvar("plotsperline")) then
           delete(plotsperline)
         end if
 
-        plotsperline = new((dim_MOD + 1) / 2, integer)
+        plotsperline = new(max((/1, dim_MOD / 2/)), integer)
         plotsperline = 2
 
-        if ((isStrSubset(str_lower(projects(plotind(0))), \
-                         "obs")).and. \
-           .not.(isStrSubset(str_lower(projects(plotind(1))), \
-                             "obs"))) then
-          plotsperline(0) = 1
+        if (dimsizes(plotind).gt.1) then
+          if ((isStrSubset(str_lower(projects(plotind(0))), "obs")).and. \
+             .not. \
+              (isStrSubset(str_lower(projects(plotind(1))), "obs"))) then
+            plotsperline(0) = 1
+          end if
         end if
 
         if (sum(plotsperline).gt.dimsizes(plotind)) then
@@ -1221,239 +1382,113 @@ begin
           delete(xtmp)
         end if
 
-        gsn_panel(wks0, maps(plotind, 0), plotsperline, pres)
-        outfile(0) = wks0@fullname
+        gsn_panel(wks0d, maps_d(plotind, 0), plotsperline, pres)
+        outfile_d(0) = wks0d@fullname
       end if
-    else  ; if embracesetup
+    else  ; embracesetup = False
       if (numseas.gt.1) then
-        pres@txString = season(0)
-        outfile(0) = panelling(wks0, maps(plotind, 0), (dim_MOD + 3) / 4, \
-                               4, pres)
+        pres@txString  = season(0)
+        outfile_d(0) = panelling(wks0d, maps_d(plotind, 0), \
+                                 (dim_MOD + 3) / 4, 4, pres)
 
-        pres@txString = season(1)
-        outfile(1) = panelling(wks1, maps(plotind, 1), (dim_MOD + 3) / 4, \
-                               4, pres)
+        pres@txString  = season(1)
+        outfile_d(1) = panelling(wks1d, maps_d(plotind, 1), \
+                                 (dim_MOD + 3) / 4, 4, pres)
 
-        pres@txString = season(2)
-        outfile(2) = panelling(wks2, maps(plotind, 2), (dim_MOD + 3) / 4, \
-                               4, pres)
+        pres@txString  = season(2)
+        outfile_d(2) = panelling(wks2d, maps_d(plotind, 2), \
+                                 (dim_MOD + 3) / 4, 4, pres)
 
-        pres@txString = season(3)
-        outfile(3) = panelling(wks3, maps(plotind, 3), (dim_MOD + 3) / 4, \
-                               4, pres)
+        pres@txString  = season(3)
+        outfile_d(3) = panelling(wks3d, maps_d(plotind, 3), \
+                                 (dim_MOD + 3) / 4, 4, pres)
       else
-        outfile(0) = panelling(wks0, maps(plotind, 0), (dim_MOD + 3) / 4, \
-                               4, pres)
+        outfile_d(0) = panelling(wks0d, maps_d(plotind, 0), \
+                                 (dim_MOD + 3) / 4, 4, pres)
       end if
-    end if  ; if embracesetup
+    end if  ; end if embracesetup
 
     do is = 0, numseas - 1
-      log_info("Wrote " + outfile(is))
-    end do
+      log_info(" Wrote " + outfile(is))
 
-    ; ------------------------------------------------------------------------
-    ; write provenance to netcdf output and plot file(s) (mean)
-    ; ------------------------------------------------------------------------
+      ; --------------------------------------------------------------------
+      ; write provenance to netcdf output and plot file(s) (bias)
+      ; --------------------------------------------------------------------
 
-    statistics = (/"clim", "mean"/)
-    if (isatt(diag_script_info, "region")) then
-      domain = "reg"
-    else
-      domain = "global"
-    end if
-    plottype = "geo"
+      statistics = (/"clim", "diff"/)
+      if (isatt(diag_script_info, "region")) then
+        domain = "reg"
+      else
+        domain = "global"
+      end if
+      plottype = "geo"
 
-    do is = 0, numseas - 1
-      caption = "Mean values for variable " + var0 \
-                + " (" + allseas + ")."
-      log_provenance(nc_outfile_mean, outfile(is), caption, statistics, \
+      ; note: because function log_provenance does not yet support to attach
+      ;       different captions to netcdf (contains all seasons) and plots
+      ;       (contain one season each), the caption cannot specifiy the
+      ;       season plotted; using "annual" or "DJF/MAM/JJA/SON" instead.
+
+      caption = "Differences for variable " + var0 \
+                + " (" + allseas + "), reference = " + refname + "."
+      log_provenance(nc_outfile_bias, outfile_d(is), caption, statistics, \
                      domain, plottype, "", "", climofiles)
     end do
+  end if  ; if flag_diff
 
-    ; ========================================================================
+  ; optionally save legend(s) to extra file(s)
+
+  if (extralegend) then
+    nboxes = dimsizes(res@cnLevels) + 1
+    wksleg = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 \
+                     + "_legend")
+    pres@lbMonoFillPattern = True
+    pres@lbOrientation = "Horizontal"
+    pres@vpWidthF = 0.7
+    pres@vpHeightF = 0.1
+    pres@lbLabelFontHeightF = 0.015
+    pres@lbLabelAlignment = "InteriorEdges"
+;    pres@lbTitleFontHeightF = 0.015
+;    pres@lbTitleString = data1@long_name + " (" + data1@units + ")"
+
+    labels = tostring(res@cnLevels)
+
+    ; remove trailing zeros from strings
+
+    do i = 0, dimsizes(labels) - 1
+      i1  = str_index_of_substr(labels(i), ".", -1)
+      if (.not.ismissing(i1)) then
+        tmp = stringtochar(labels(i))
+        do j = dimsizes(tmp) - 2, i1, 1
+          if ((tmp(j).ne.".").and.(tmp(j).ne."0")) then
+            break
+          end if
+        end do
+        labels(i) = chartostring(tmp(0:j))
+        delete(tmp)
+      end if
+    end do
+
+    if (isatt(res, "cnFillColors")) then
+      pres@lbFillColors = res@cnFillColors
+    else if (isatt(res, "cnFillPalette")) then
+      pres@lbFillColors = res@cnFillPalette
+    else
+      pres@lbFillColors = mean_colors  ; default colors
+    end if
+    end if
+
+    gsn_labelbar_ndc(wksleg, nboxes, labels, 0.1, 0.9, pres)
+
+    delete(wksleg)
+    delete(labels)
+    delete(pres@lbFillColors)
 
     if (flag_diff) then
-;      pres@lbTitleString = "~F33~D~F21~" + diff@long_name + " (" + \
-;                           diff@units + ")"
-
-      ; save default color map in case it is needed later for optionally
-      ; plotting color bar to a separate file
-
-      if (isvar("nboxes")) then
-        delete(nboxes)
-      end if
-
-      tmp_colors = gsn_retrieve_colormap(wks0d)
-      cdims = dimsizes(tmp_colors)
-      nboxes = dimsizes(dres@cnLevels)
-      clen = cdims(0)
-      stride = max((/1, ((clen(0)-1) - 2) / nboxes /))
-      fill_colors = ispan(2, clen(0) - 1, stride)
-      diff_colors = tmp_colors(fill_colors, :)
-      delete(tmp_colors)
-      delete(fill_colors)
-      delete(cdims)
-
-      if (isvar("plottmp")) then
-        delete(plottmp)
-      end if
-
-      if (isvar("plotind")) then
-        delete(plotind)
-      end if
-
-      plottmp = ind(ispan(0, dim_MOD - 1, 1).ne.ref_ind)
-      plotind = plottmp
-
-      ; if there is a second observational dataset, move the corresponding
-      ; plot to the first line of the panel plot
-
-      j = 0
-      do i = 0, dimsizes(plottmp) - 1
-        if (isStrSubset(str_lower(projects(plottmp(i))), "obs")) then
-          plotind(j) = plottmp(i)
-          j = j + 1
-        end if
-      end do
-      do i = 0, dimsizes(plottmp) - 1
-        if (isStrSubset(str_lower(projects(plottmp(i))), "obs")) then
-        else
-          plotind(j) = plottmp(i)
-          j = j + 1
-        end if
-      end do
-
-      if (isatt(pres, "gsnPanelFigureStrings")) then
-        delete(pres@gsnPanelFigureStrings)
-      end if
-      if (panel_labels) then
-        pres@gsnPanelFigureStrings = names(plotind)
-      end if
-
-      if (dimsizes(plotind).eq.1) then
-        pres@gsnPanelRight = 0.5
-      end if
-
-      if (embracesetup) then
-        if (numseas.gt.1) then
-          pres@txString = season(0)
-          outfile_d(0) = panelling(wks0d, maps_d(plotind, 0), \
-                                   (dim_MOD + 3) / 4, 4, pres)
-
-          pres@txString = season(1)
-          outfile_d(1) = panelling(wks1d, maps_d(plotind, 1), \
-                                   (dim_MOD + 3) / 4, 4, pres)
-
-          pres@txString = season(2)
-          outfile_d(2) = panelling(wks2d, maps_d(plotind, 2), \
-                                   (dim_MOD + 3) / 4, 4, pres)
-
-          pres@txString = season(3)
-          outfile_d(3) = panelling(wks3d, maps_d(plotind, 3), \
-                                   (dim_MOD + 3) / 4, 4, pres)
-        else
-          pres@gsnPanelRowSpec = True           ; tell panel what order to plt
-          pres@gsnPanelYWhiteSpacePercent = 5
-          pres@gsnPanelXWhiteSpacePercent = 5
-          pres@gsnPanelTop = tofloat(diag_script_info@PanelTop)
-
-          if (isvar("plotsperline")) then
-            delete(plotsperline)
-          end if
-
-          plotsperline = new(max((/1, dim_MOD / 2/)), integer)
-          plotsperline = 2
-
-          if (dimsizes(plotind).gt.1) then
-            if ((isStrSubset(str_lower(projects(plotind(0))), "obs")).and. \
-               .not. \
-                (isStrSubset(str_lower(projects(plotind(1))), "obs"))) then
-              plotsperline(0) = 1
-            end if
-          end if
-
-          if (sum(plotsperline).gt.dimsizes(plotind)) then
-            plotsperline(dimsizes(plotsperline) - 1) = 1
-          end if
-
-          if (sum(plotsperline).lt.dimsizes(plotind)) then
-            xadd = 1
-            xtmp = array_append_record(plotsperline, xadd, 0)
-            delete(plotsperline)
-            plotsperline = xtmp
-            delete(xtmp)
-          end if
-
-          gsn_panel(wks0d, maps_d(plotind, 0), plotsperline, pres)
-          outfile_d(0) = wks0d@fullname
-        end if
-      else  ; embracesetup = False
-        if (numseas.gt.1) then
-          pres@txString  = season(0)
-          outfile_d(0) = panelling(wks0d, maps_d(plotind, 0), \
-                                   (dim_MOD + 3) / 4, 4, pres)
-
-          pres@txString  = season(1)
-          outfile_d(1) = panelling(wks1d, maps_d(plotind, 1), \
-                                   (dim_MOD + 3) / 4, 4, pres)
-
-          pres@txString  = season(2)
-          outfile_d(2) = panelling(wks2d, maps_d(plotind, 2), \
-                                   (dim_MOD + 3) / 4, 4, pres)
-
-          pres@txString  = season(3)
-          outfile_d(3) = panelling(wks3d, maps_d(plotind, 3), \
-                                   (dim_MOD + 3) / 4, 4, pres)
-        else
-          outfile_d(0) = panelling(wks0d, maps_d(plotind, 0), \
-                                   (dim_MOD + 3) / 4, 4, pres)
-        end if
-      end if  ; end if embracesetup
-
-      do is = 0, numseas - 1
-        log_info(" Wrote " + outfile(is))
-
-        ; --------------------------------------------------------------------
-        ; write provenance to netcdf output and plot file(s) (bias)
-        ; --------------------------------------------------------------------
-
-        statistics = (/"clim", "diff"/)
-        if (isatt(diag_script_info, "region")) then
-          domain = "reg"
-        else
-          domain = "global"
-        end if
-        plottype = "geo"
-
-        ; note: because function log_provenance does not yet support to attach
-        ;       different captions to netcdf (contains all seasons) and plots
-        ;       (contain one season each), the caption cannot specifiy the
-        ;       season plotted; using "annual" or "DJF/MAM/JJA/SON" instead.
-
-        caption = "Differences for variable " + var0 \
-                  + " (" + allseas + "), reference = " + refname + "."
-        log_provenance(nc_outfile_bias, outfile_d(is), caption, statistics, \
-                       domain, plottype, "", "", climofiles)
-      end do
-
-    end if  ; if flag_diff
-
-    ; optionally save legend(s) to extra file(s)
-
-    if (extralegend) then
-      nboxes = dimsizes(res@cnLevels) + 1
+      nboxes = dimsizes(dres@cnLevels) + 1
       wksleg = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 \
-                       + "_legend")
-      pres@lbMonoFillPattern = True
-      pres@lbOrientation = "Horizontal"
-      pres@vpWidthF = 0.7
-      pres@vpHeightF = 0.1
-      pres@lbLabelFontHeightF = 0.015
-      pres@lbLabelAlignment = "InteriorEdges"
-;      pres@lbTitleFontHeightF = 0.015
-;      pres@lbTitleString = data1@long_name + " (" + data1@units + ")"
+                       + "_diff_legend")
 
-      labels = tostring(res@cnLevels)
+      labels = tostring(dres@cnLevels)
 
       ; remove trailing zeros from strings
 
@@ -1471,64 +1506,25 @@ begin
         end if
       end do
 
-      if (isatt(res, "cnFillColors")) then
-        pres@lbFillColors = res@cnFillColors
-      else if (isatt(res, "cnFillPalette")) then
-        pres@lbFillColors = res@cnFillPalette
+;      if (flag_rel_diff) then
+;        pres@lbTitleString = "~F33~D~F21~" + data1@long_name + " (%)"
+;      else
+;        pres@lbTitleString = "~F33~D~F21~" + data1@long_name + " (" + \
+;                      data1@units + ")"
+;      end if
+
+      if (isatt(dres, "cnFillColors")) then
+        pres@lbFillColors = dres@cnFillColors
+      else if (isatt(dres, "cnFillPalette")) then
+        pres@lbFillColors = dres@cnFillPalette
       else
-        pres@lbFillColors = mean_colors  ; default colors
+        pres@lbFillColors = diff_colors  ; default colors
       end if
       end if
 
       gsn_labelbar_ndc(wksleg, nboxes, labels, 0.1, 0.9, pres)
-
-      delete(wksleg)
-      delete(labels)
-      delete(pres@lbFillColors)
-
-      if (flag_diff) then
-        nboxes = dimsizes(dres@cnLevels) + 1
-        wksleg = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 \
-                         + "_diff_legend")
-
-        labels = tostring(dres@cnLevels)
-
-        ; remove trailing zeros from strings
-
-        do i = 0, dimsizes(labels) - 1
-          i1  = str_index_of_substr(labels(i), ".", -1)
-          if (.not.ismissing(i1)) then
-            tmp = stringtochar(labels(i))
-            do j = dimsizes(tmp) - 2, i1, 1
-              if ((tmp(j).ne.".").and.(tmp(j).ne."0")) then
-                break
-              end if
-            end do
-            labels(i) = chartostring(tmp(0:j))
-            delete(tmp)
-          end if
-        end do
-
-;        if (flag_rel_diff) then
-;          pres@lbTitleString = "~F33~D~F21~" + data1@long_name + " (%)"
-;        else
-;          pres@lbTitleString = "~F33~D~F21~" + data1@long_name + " (" + \
-;                        data1@units + ")"
-;        end if
-
-        if (isatt(dres, "cnFillColors")) then
-          pres@lbFillColors = dres@cnFillColors
-        else if (isatt(dres, "cnFillPalette")) then
-          pres@lbFillColors = dres@cnFillPalette
-        else
-          pres@lbFillColors = diff_colors  ; default colors
-        end if
-        end if
-
-        gsn_labelbar_ndc(wksleg, nboxes, labels, 0.1, 0.9, pres)
-      end if  ; if (flag_diff)
-    end if  ; if (extralegend)
-  end if  ; if write_plots
+    end if  ; if (flag_diff)
+  end if  ; if (extralegend)
 
   ; ==========================================================================
 
