@@ -2,6 +2,7 @@
 # recipe_mpqb_xch4.yml
 ---
 documentation:
+  title: Methane evaluation with ESA CMUG data
   description: |
     Recipe for the comparison of ESA XCH4 data with CMIP6 models
 

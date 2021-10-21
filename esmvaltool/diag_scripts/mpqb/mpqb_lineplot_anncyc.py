@@ -85,8 +85,8 @@ def main(cfg):
     #ax1.xaxis.set_major_locator(months)
     ##ax1.xaxis.set_major_formatter(years_fmt)
     ax1.set_xticks([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-    ax1.set_xticklabels(['J', 'F', 'M', 'A', 'M', 'J',
-                         'J', 'A', 'S', 'O', 'N', 'D'])
+    ax1.set_xticklabels(['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+                         'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'])
     ax1.set_xlabel('month')
     ax1.grid(True, which='major', axis='x')
 
@@ -115,8 +115,8 @@ def main(cfg):
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
-        if config['write_plots']:
-            main(config)
-        else:
-            logger.warning("This diagnostic wants to plot,\
+        #if config['write_plots']:
+        main(config)
+        #else:
+        #    logger.warning("This diagnostic wants to plot,\
                             but isn't allowed to")

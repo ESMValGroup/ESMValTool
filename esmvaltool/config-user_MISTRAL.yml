@@ -1,8 +1,8 @@
 # ESMValTool User's configuration file for DKRZ-MISTRAL
 # Author: Mattia Righi
 
-write_plots: True
-write_netcdf: True
+#write_plots: True
+#write_netcdf: True
 log_level: debug
 exit_on_warning: False
 output_file_type: png
