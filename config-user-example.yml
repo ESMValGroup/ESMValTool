@@ -14,7 +14,7 @@ rootpath:
   #ana4mips: ~/ana4mips_inputpath
   #native6:  ~/native6_inputpath
   #RAWOBS: ~/rawobs_inputpath
-  efault: ~/climate_data
+  default: ~/climate_data
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
 # See config-developer.yml for definitions.
