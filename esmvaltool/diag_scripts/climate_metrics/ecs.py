@@ -428,11 +428,10 @@ def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
         f"including linear regression to calculate ECS for {dataset_name} "
         f"({project}).")
     provenance_record.update({
-        'plot_file': plot_path,
         'plot_types': ['scatter'],
     })
 
-    return (netcdf_path, provenance_record)
+    return (netcdf_path, plot_path, provenance_record)
 
 
 def set_default_cfg(cfg):
@@ -529,13 +528,14 @@ def main(cfg):
         reg = stats.linregress(tas_cube.data, rtnt_cube.data)
 
         # Plot Gregory plots
-        (path, provenance_record) = plot_gregory_plot(cfg, dataset_name,
-                                                      tas_cube, rtnt_cube, reg)
+        (path, plot_path, provenance_record) = plot_gregory_plot(
+            cfg, dataset_name, tas_cube, rtnt_cube, reg)
 
         # Provenance
         provenance_record['ancestors'] = ancestor_files
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(path, provenance_record)
+            provenance_logger.log(plot_path, provenance_record)
 
         # Save data
         if cfg.get('read_external_file') and dataset_name in ecs:

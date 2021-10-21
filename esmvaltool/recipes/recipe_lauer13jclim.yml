@@ -2,6 +2,8 @@
 # recipe_lauer13jclim.yml
 ---
 documentation:
+  title: Cloud diagnostics
+
   description: |
     Diagnostics of clouds and hydrological cycle reproducing selected figures
     from Lauer and Hamilton (2013).
@@ -127,6 +129,7 @@ diagnostics:
   # ==========================================================================
 
   clouds_fig1_lwp:
+    title: Climatology (liquid water path)
     description: climatological annual means
     themes:
       - clouds
@@ -156,6 +159,7 @@ diagnostics:
         showdiff: false
 
   clouds_fig1_clt:
+    title: Climatology (total cloud cover)
     description: climatological annual means
     themes:
       - clouds
@@ -174,6 +178,7 @@ diagnostics:
         <<: *clim_settings
 
   clouds_fig1_pr:
+    title: Climatology (precipitation)
     description: climatological annual means
     themes:
       - clouds
@@ -192,6 +197,7 @@ diagnostics:
         <<: *clim_settings
 
   clouds_fig1_swcre:
+    title: Climaology (shortwave CRE)
     description: climatological annual means
     themes:
       - clouds
@@ -212,6 +218,7 @@ diagnostics:
         <<: *clim_settings
 
   clouds_fig1_lwcre:
+    title: Climaology (longwave CRE)
     description: climatological annual means
     themes:
       - clouds
@@ -237,6 +244,7 @@ diagnostics:
   # ==========================================================================
 
   clouds_fig3_clt:
+    title: Taylor diagram (total cloud cover)
     description: climatological annual means
     themes:
       - clouds
@@ -292,6 +300,7 @@ diagnostics:
         valid_fraction: 0.5
 
   clouds_fig3_lwp:
+    title: Taylor diagram (liquid water path)
     description: climatological annual means
     themes:
       - clouds
@@ -312,6 +321,7 @@ diagnostics:
         <<: *taylor_settings
 
   clouds_fig3_swcre:
+    title: Taylor diagram (shortwave CRE)
     description: climatological annual means
     themes:
       - clouds
@@ -332,6 +342,7 @@ diagnostics:
         <<: *taylor_settings
 
   clouds_fig3_lwcre:
+    title: Taylor diagram (longwave CRE)
     description: climatological annual means
     themes:
       - clouds
@@ -352,6 +363,7 @@ diagnostics:
         <<: *taylor_settings
 
   clouds_fig3_pr:
+    title: Taylor diagram (precipitation)
     description: climatological annual means
     themes:
       - clouds
@@ -377,6 +389,7 @@ diagnostics:
   # ==========================================================================
 
   clouds_fig8_lwp:
+    title: Interannual variability (liquid water path)
     description: interannual variability
     themes:
       - clouds
@@ -413,6 +426,7 @@ diagnostics:
         timemean: annualclim
 
   clouds_fig8_clt:
+    title: Interannual variability (total cloud cover)
     description: interannual variability
     themes:
       - clouds
@@ -431,6 +445,7 @@ diagnostics:
         <<: *intera_settings
 
   clouds_fig8_swcre:
+    title: Interannual variability (shortwave CRE)
     description: interannual variability
     themes:
       - clouds
@@ -451,6 +466,7 @@ diagnostics:
         <<: *intera_settings
 
   clouds_fig8_lwcre:
+    title: Interannual variability (longwave CRE)
     description: interannual variability
     themes:
       - clouds
@@ -471,6 +487,7 @@ diagnostics:
         <<: *intera_settings
 
   clouds_fig8_pr:
+    title: Interannual variability (precipitation)
     description: interannual variability
     themes:
       - clouds

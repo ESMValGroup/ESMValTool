@@ -1,0 +1,37 @@
+---
+# Filename
+filename: 'Global_Carbon_Budget_2020v1.0.xlsx'
+
+# Header line number in the xlsx file
+header_line: 19
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: GCP2020
+  version: '1.0'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS
+  source: 'https://www.icos-cp.eu/science-and-impact/global-carbon-budget/2020'
+  reference: gcp2020
+  comment: ''
+
+# Variables to cmorize
+variables:
+  nbp:
+    mip: Lmon
+    area: 148300000000000.0
+    positive: down
+    comment: 'The original unit of this dataset is GtC/yr. To be CMOR-compliant, the units are given relative to the land surface area of the Earth (given by the attribute area in m2 in this file).'
+  nbp_residual:
+    short_name: nbp
+    mip: Lmon
+    area: 148300000000000.0
+    positive: down
+    version_suffix: residual
+    comment: 'The original unit of this dataset is GtC/yr. To be CMOR-compliant, the units are given relative to the land surface area of the Earth (given by the attribute area in m2 in this file). This version (with suffix _residual) of the dataset does not use the the output of the dynamic global vegetation models (DGVMs) to estimate the atmosphere-land carbon flux S_Land (which is then used to calculate nbp as nbp = S_Land - landuse change emissions), but calculates this as the residuals from other carbon fluxes, i.e., S_Land = Emissions - atmospheric growth - S_Ocean.'
+  fgco2:
+    mip: Omon
+    area: 360000000000000.0
+    positive: down
+    comment: 'The original unit of this dataset is GtC/yr. To be CMOR-compliant, the units are given relative to the ocean surface area of the Earth (given by the attribute area in m2 in this file).'
