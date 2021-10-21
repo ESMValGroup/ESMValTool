@@ -12,6 +12,7 @@ on:
   push:
     branches:
     - main
+    - install_julia_conda
   schedule:
     - cron: '0 0 * * *'
 
