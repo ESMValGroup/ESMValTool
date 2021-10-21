@@ -2,6 +2,8 @@
 # recipe_clouds_ipcc.yml
 ---
 documentation:
+  title: Climatologies cloud radiative effects
+
   description: |
     Diagnostics of clouds and hydrological cycle multi-model mean bias,
     zonal means; similar to IPCC AR5 fig. 9.5.
@@ -130,6 +132,7 @@ diagnostics:
   # **********************************************************************
 
   clouds_ipcc_swcre:
+    title: Climatoloty shortwave CRE
     description: differences of multi-model mean and reference dataset
     themes:
       - clouds
@@ -152,6 +155,7 @@ diagnostics:
         timemean: annualclim
 
   clouds_ipcc_lwcre:
+    title: Climatoloty longwave CRE
     description: differences of multi-model mean and reference dataset
     themes:
       - clouds
@@ -171,6 +175,7 @@ diagnostics:
         <<: *clim_settings
 
   clouds_ipcc_netcre:
+    title: Climatoloty net CRE
     description: differences of multi-model mean and reference dataset
     themes:
       - clouds

@@ -6,6 +6,8 @@ documentation:
     Example recipe to demonstrate grouping of variables in the diagnostic
     section.
 
+  title: Recipe running various examples of grouping of variables in the diagnostic.
+
   authors:
     - schlund_manuel
 
