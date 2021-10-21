@@ -20,14 +20,14 @@ preprocessors:
     weighting_landsea_fraction:
       area_type: land
       exclude: [
-        'GCP',
+        'GCP2018',
         ]
 
   sea_fraction_weighting:
     weighting_landsea_fraction:
       area_type: sea
       exclude: [
-        'GCP', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
+        'GCP2018', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
         ]
     regrid:
       target_grid: CanESM2
@@ -37,7 +37,7 @@ preprocessors:
     weighting_landsea_fraction:
       area_type: land
       exclude: [
-        'GCP', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
+        'GCP2018', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
         ]
     area_statistics:
           operator: sum
@@ -46,7 +46,7 @@ preprocessors:
     weighting_landsea_fraction:
       area_type: land
       exclude: [
-        'GCP', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
+        'GCP2018', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
         ]
     extract_region:
       start_longitude: 0.
@@ -60,11 +60,11 @@ preprocessors:
     weighting_landsea_fraction:
       area_type: sea
       exclude: [
-        'GCP', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
+        'GCP2018', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
         ]
     area_statistics:
       operator: sum
-      fx_variables: 
+      fx_variables:
         areacello:
 
   tropical:
@@ -520,9 +520,9 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1960
         end_year: 2005
-        reference_dataset: GCP
+        reference_dataset: GCP2018
         additional_datasets:
-          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
+          - {dataset: GCP2018, project: OBS, type: reanaly, version: '1.0', tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
       nbp:
         preprocessor: global_land
         project: CMIP5
@@ -532,7 +532,7 @@ diagnostics:
         start_year: 1960
         end_year: 2005
         plot_units: GtC y-1
-        reference_dataset: GCP
+        reference_dataset: GCP2018
         additional_datasets:
           - {dataset: CanESM2, start_year: 1960 ,end_year: 2005}
           - {dataset: CESM1-BGC, start_year: 1960 ,end_year: 2005}
@@ -552,7 +552,7 @@ diagnostics:
         start_year: 1960
         end_year: 2005
         additional_datasets:
-          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
+          - {dataset: GCP2018, project: OBS, type: reanaly, version: '1.0', tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
       tas:
         preprocessor: tropical
         project: CMIP5
