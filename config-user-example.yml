@@ -42,7 +42,7 @@ auxiliary_data_dir: ./auxiliary_data
 # Diagnositcs write NetCDF files? [true]/false
 # write_netcdf: true
 # get data from esgf
-offline: false
+offline: true
 # Set the console log level debug, [info], warning, error
 log_level: info
 # Exit on warning (only for NCL diagnostic scripts)? true/[false]
