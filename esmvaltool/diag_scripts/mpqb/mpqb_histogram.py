@@ -80,6 +80,9 @@ def _plot_histograms(hists, cfg, grouped_input_data):
             )
             plt.vlines(hist["bins"], 0, 1, linestyles='dashed', color="black", alpha=0.3)
             plt.legend()
+            #handles, labels = ax1.get_legend_handles_labels()
+            #new_labels = [short_label.split("_")[1] for short_label in labels]
+            #plt.legend(handles=handles, labels=new_labels)
         elif histtype == 'step':
             ax1.hist(hist["bins"][:-1],
                      hist["bins"],
@@ -90,7 +93,9 @@ def _plot_histograms(hists, cfg, grouped_input_data):
                      linewidth=2)
             handles, labels = ax1.get_legend_handles_labels()
             handles = [Line2D([], [], c=h.get_edgecolor(), lw=2.0) for h in handles]
-            plt.legend(handles=handles, labels=labels)
+            #new_labels = [short_label.split("_")[1] for short_label in labels]
+                
+            plt.legend(handles=handles, labels=new_labels)
         else:
             logger.warning("Unsupported argument for histtype: %s", histtype)
     ax1.tick_params(axis='both', which='major', labelsize='large')
@@ -101,9 +106,14 @@ def _plot_histograms(hists, cfg, grouped_input_data):
     if cfg.pop('logarithmic', False):
         ax1.set_yscale('log', nonposy='clip')
     ax1.tick_params(axis='both', which='major', labelsize=12)
-    ax1.xaxis.set_major_locator(MultipleLocator(3))
+    #ax1.xaxis.set_major_locator(MultipleLocator(3))
+    #ax1.xaxis.set_major_locator(MultipleLocator(0.25))
+    ax1.xaxis.set_major_locator(MultipleLocator(1))
     ax1.xaxis.set_major_formatter('{x:.0f}')
-    ax1.xaxis.set_minor_locator(MultipleLocator(1))
+    #ax1.xaxis.set_major_formatter('{x:.2f}')
+    #ax1.xaxis.set_minor_locator(MultipleLocator(1))
+    #ax1.xaxis.set_minor_locator(MultipleLocator(0.125))
+    ax1.xaxis.set_minor_locator(MultipleLocator(0.5))
 
 
     print(1.1 * np.max([np.max(content["hist"])
@@ -164,8 +174,8 @@ def main(cfg):
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
-        if config['write_plots']:
-            main(config)
-        else:
-            logger.warning("This diagnostic wants to plot,\
-                            but isn't allowed to")
+        #if config['write_plots']:
+        main(config)
+        #else:
+        #    logger.warning("This diagnostic wants to plot,\
+        #                    but isn't allowed to")

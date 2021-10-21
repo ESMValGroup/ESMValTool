@@ -38,8 +38,8 @@ def _unify_time_coord(cube):
 
 def main(cfg):
     """Create lineplot."""
-    #ylims = [cfg.pop('y0', None), cfg.pop('y1', None)]
-    ylims = [2.4, 5.2]
+    ylims = [cfg.pop('y0', None), cfg.pop('y1', None)]
+    #ylims = [2.4, 5.2]
 
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
@@ -79,7 +79,7 @@ def main(cfg):
         iris.quickplot.plot(cube, label=label, color=color, linewidth=linewidth)
         #iris.quickplot.plot(cube_rain, label=label, color=color, linewidth=linewidth)
     plt.xticks(rotation=90)
-    
+        
     plt.title("Precipitation")    # for presentation as rainfall
 
     # Add the zero line when plotting anomalies

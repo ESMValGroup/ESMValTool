@@ -153,11 +153,11 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
-  if (diag_script_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
+  ;;if (diag_script_info@write_plots.eq."True") then
+  write_plots = True
+  ;else
+  ;  write_plots = False
+  ;end if
 
   ref_ind = -1  ; set to invalid value
 
@@ -870,7 +870,7 @@ begin
 
   end do  ; ii-loop (models)
 
-  if (write_plots) then
+  ;if (write_plots) then
     ; save default color map in case it is needed later for optionally
     ; plotting color bar to a separate file
 
@@ -1308,7 +1308,7 @@ begin
         gsn_labelbar_ndc(wksleg, nboxes, labels, 0.1, 0.9, pres)
       end if  ; if (flag_diff)
     end if  ; if (extralegend)
-  end if  ; if write_plots
+  ;end if  ; if write_plots
 
   ; ==========================================================================
 

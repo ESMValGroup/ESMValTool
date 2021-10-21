@@ -38,6 +38,10 @@ datasetnames:
   BNU-ESM: BNU-ESM
   FIO-ESM: FIO-ESM
   MRI-ESM1: MRI-ESM1
+  AWI-CM-1-1-MR: AWI
+  CAMS-CSM1-0: CAMS-CSM1
+  CESM2-FV2: CESM2-FV2
+  MIROC6: MIROC6
 
 datasetcolors:
   ERA-Interim-Land: '#1f77b4'
@@ -77,6 +81,11 @@ datasetcolors:
   BNU-ESM: '#458ef6'
   FIO-ESM: '#2ca02c'
   MRI-ESM1: '#1f77b4'
+  AWI: '#1fadb4'
+  CAMS-CSM1: '#44c1f2'
+  CESM2-FV2: '#aa66ed'
+  MIROC6: '#6037b3' 
+
 
 # From:
 # https://stackoverflow.com/questions/42086276/

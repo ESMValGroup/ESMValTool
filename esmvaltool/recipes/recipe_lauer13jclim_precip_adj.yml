@@ -2,6 +2,7 @@
 # recipe_lauer13jclim.yml
 ---
 documentation:
+  title: Cloud diagnostics
   description: |
     Diagnostics of clouds and hydrological cycle reproducing selected figures
     from Lauer and Hamilton (2013).
@@ -57,20 +58,20 @@ datasets:
      tier: 1, start_year: 1983, end_year: 2016}  
   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, 
      tier: 1, start_year: 1983, end_year: 2016}  
-  - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_25, 
-     tier: 2, start_year: 1983, end_year: 2016}  
+  # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_25, 
+     # tier: 2, start_year: 1983, end_year: 2016}  
   - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
      tier: 3, start_year: 1983, end_year: 2016}  
-  - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
-     tier: 3, start_year: 1983, end_year: 2016}  
+  # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+     # tier: 3, start_year: 1983, end_year: 2016}  
   # - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
      # tier: 1, start_year: 1983, end_year: 2016}
   - {dataset: MERRA2, project: OBS6, type: reanaly, version: 5.12.4,
      tier: 3, start_year: 1983, end_year: 2016}
   # - {dataset: E-OBS, project: OBS, type: ground, version: v21.0e-0.1,
      # tier: 3, start_year: 1983, end_year: 2016}
-  - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
-     tier: 3, start_year: 1983, end_year: 2016}
+  # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+     # tier: 3, start_year: 1983, end_year: 2016}
 
 
 preprocessors:
@@ -85,8 +86,8 @@ preprocessors:
       statistics: [mean]
       exclude: [reference_dataset]
     # <<: *extr_trop
-    mask_landsea:
-      mask_out: sea
+    #mask_landsea:
+    #  mask_out: sea
 
 
 diagnostics:
@@ -127,7 +128,7 @@ diagnostics:
         #region: [42., 53., 0., 20.]     # Europe
         #region: [0., 12., 136., 275.]    # ITCZ
         #region: [5., 30., 65., 95.]    # SA Monsoon
-        region: [-30., 30., 0., 360.]    # Tropics
+        #region: [-30., 30., 0., 360.]    # Tropics
 
   # # ==========================================================================
   # # Lauer and Hamilton (2013) - Figure 3
