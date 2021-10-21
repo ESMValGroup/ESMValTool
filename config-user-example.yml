@@ -5,22 +5,22 @@
 
 # Rootpaths to the data from different projects (lists are also possible)
 rootpath:
-  CMIP3: [~/cmip3_inputpath1, ~/cmip3_inputpath2]
-  CMIP5: [~/cmip5_inputpath1, ~/cmip5_inputpath2]
-  CMIP6: [~/cmip6_inputpath1, ~/cmip6_inputpath2]
-  OBS: ~/obs_inputpath
-  OBS6: ~/obs6_inputpath
-  obs4mips: ~/obs4mips_inputpath
-  ana4mips: ~/ana4mips_inputpath
-  native6:  ~/native6_inputpath
-  RAWOBS: ~/rawobs_inputpath
-  default: ~/default_inputpath
+  #CMIP3: [~/cmip3_inputpath1, ~/cmip3_inputpath2]
+  #CMIP5: [~/cmip5_inputpath1, ~/cmip5_inputpath2]
+  #CMIP6: [~/cmip6_inputpath1, ~/cmip6_inputpath2]
+  #OBS: ~/obs_inputpath
+  #OBS6: ~/obs6_inputpath
+  #obs4mips: ~/obs4mips_inputpath
+  #ana4mips: ~/ana4mips_inputpath
+  #native6:  ~/native6_inputpath
+  #RAWOBS: ~/rawobs_inputpath
+  efault: ~/climate_data
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
 # See config-developer.yml for definitions.
 drs:
-  CMIP5: default
-  CMIP6: default
+  CMIP5: ESGF
+  CMIP6: ESGF
 
 # Run at most this many tasks in parallel [null]/1/2/3/4/..
 # Set to null to use the number of available CPUs.
@@ -38,9 +38,11 @@ output_dir: ./esmvaltool_output
 auxiliary_data_dir: ./auxiliary_data
 
 # Diagnostics create plots? [true]/false
-write_plots: true
+# write_plots: true
 # Diagnositcs write NetCDF files? [true]/false
-write_netcdf: true
+# write_netcdf: true
+# get data from esgf
+offline: false
 # Set the console log level debug, [info], warning, error
 log_level: info
 # Exit on warning (only for NCL diagnostic scripts)? true/[false]
