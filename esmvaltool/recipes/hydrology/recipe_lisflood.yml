@@ -2,6 +2,7 @@
 # recipe_lisflood.yml
 ---
 documentation:
+  title: Generate forcing for the Lisflood hydrological model
   description: |
     Recipe pre-process files for use in the LISFLOOD hydrological model.
 

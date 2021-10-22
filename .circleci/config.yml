@@ -19,7 +19,7 @@ commands:
           fi
 
 jobs:
-  test:
+  run_tests:
     # Run Python 3 tests
     working_directory: /test
     docker:
@@ -56,7 +56,7 @@ jobs:
           # Useful to let forks CI pass without passing secrets
           skip: true
 
-  test_installation:
+  test_installation_from_source_test_mode:
     # Test Python 3 installation
     working_directory: /test_installation
     docker:
@@ -106,7 +106,7 @@ jobs:
       - store_test_results:
           path: test-reports/
 
-  develop:
+  test_installation_from_source_develop_mode:
     # Test development installation
     working_directory: /develop
     docker:
@@ -139,7 +139,7 @@ jobs:
       - store_artifacts:
           path: /logs
 
-  documentation:
+  build_documentation:
     # Test building documentation
     working_directory: /doc
     docker:
@@ -166,38 +166,7 @@ jobs:
       - store_artifacts:
           path: /logs
 
-  conda_build:
-    # Test conda build
-    working_directory: /esmvaltool
-    docker:
-      - image: condaforge/mambaforge:latest
-    steps:
-      - checkout
-      - check_changes
-      - run:
-          environment:
-            R_INSTALL_N_CPUS: 2
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            set -x
-            # Install prerequisites
-            mkdir /logs
-            apt update && apt install time
-            # did not help with high memory needed, but it's usually useful
-            # conda config --set channel_priority true
-            # conda update -y --all
-            mamba create -y -n build conda-build conda-verify
-            conda activate build
-            # Log versions
-            dpkg -l > /logs/versions.txt
-            mamba env export > /logs/build_environment.yml
-            # Build conda package
-            \time -v conda build package -c conda-forge -c esmvalgroup > /logs/build_log.txt
-          no_output_timeout: 60m
-      - store_artifacts:
-          path: /logs
-
-  conda_install:
+  test_installation_from_conda:
     # Test conda package installation
     working_directory: /esmvaltool
     docker:
@@ -212,11 +181,11 @@ jobs:
             # Install prerequisites
             mkdir /logs
             # Install ESMValTool in a new conda environment
-            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.9'
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.9' >> /logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
             # install the package
-            mamba install -c conda-forge esmvaltool
+            mamba install -c conda-forge esmvaltool >> /logs/install.txt 2>&1
             # Log versions
             mamba env export > /logs/environment.yml
             # Test installation
@@ -224,42 +193,17 @@ jobs:
             ncl -V
             cdo --version
           no_output_timeout: 30m
-
-  ncl_cdo_test:
-    # Test ncl and cdo conda packages
-    working_directory: /ncl
-    docker:
-      - image: continuumio/miniconda3
-    steps:
-      - checkout
-      - run:
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            set -x
-            mkdir /logs
-            # Install
-            # conda update -y conda > /logs/conda.txt 2>&1
-            conda create -y --name ncl > /logs/conda.txt 2>&1
-            set +x; conda activate ncl; set -x
-            conda install -y --channel conda-forge ncl cdo >> /logs/conda.txt 2>&1
-            # Log versions
-            dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
-            # Test if NCL installed successfully
-            ncl -V
-            cdo --version
       - store_artifacts:
           path: /logs
 
 workflows:
   commit:
     jobs:
-      - test
-      - test_installation
-      - develop
-      - documentation
-      - conda_install
-      - conda_build
+      - run_tests
+      - test_installation_from_source_test_mode
+      - test_installation_from_source_develop_mode
+      - build_documentation
+      - test_installation_from_conda
   nightly:
     triggers:
       - schedule:
@@ -269,10 +213,8 @@ workflows:
               only:
                 - main
     jobs:
-      - test
-      - test_installation
-      - develop
-      - documentation
-      - conda_build
-      - conda_install
-      - ncl_cdo_test
+      - run_tests
+      - test_installation_from_source_test_mode
+      - test_installation_from_source_develop_mode
+      - build_documentation
+      - test_installation_from_conda

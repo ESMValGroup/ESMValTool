@@ -405,7 +405,7 @@ instructions.*
 
 * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
 * ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
-* GCP (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_gcp.py)
+* GCP2018 (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_gcp2018.py)
 * GPCP-SG (pr - obs4mips)
 * JMA-TRANSCOM (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_jma_transcom.py)
 * HadCRUT4 (tas - esmvaltool/cmorizers/obs/cmorize_obs_hadcrut4.ncl)
