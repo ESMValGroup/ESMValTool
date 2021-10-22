@@ -459,7 +459,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
@@ -518,7 +518,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
@@ -576,7 +576,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
@@ -635,7 +635,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
