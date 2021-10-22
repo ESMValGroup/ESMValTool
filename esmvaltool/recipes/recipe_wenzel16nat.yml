@@ -3,7 +3,7 @@
 ---
 documentation:
   title: Projected land photosynthesis constrained by changes in the 
-  seasonal cycle of atmospheric CO2
+    seasonal cycle of atmospheric CO2
   
   description: |
     This recipe reproduces selected figures of Wenzel et al. (2016).
