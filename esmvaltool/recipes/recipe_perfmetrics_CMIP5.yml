@@ -2,6 +2,8 @@
 # recipe_perfmetrics_CMIP5.yml
 ---
 documentation:
+  title: Performance metrics for essential climate parameters in CMIP5
+
   description: |
     Recipe for plotting the performance metrics for the CMIP5 datasets,
     including the standard ECVs as in Gleckler et al., and some additional
