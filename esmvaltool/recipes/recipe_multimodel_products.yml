@@ -2,6 +2,9 @@
 # recipe_multimodel_products.yml
 ---
 documentation:
+  title: |
+    Ensemble mean anomalies and agreements.
+
   description: |
     Tool to  compute the ensemble mean anomaly and the ensemble
     variance and agreement and plot the results as maps and time series.
@@ -18,12 +21,15 @@ documentation:
     - manubens18ems
 
 datasets:
-  - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
-  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
-  - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
-  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
-  - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
-  - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5, exp: historical,
+     ensemble: r1i1p1, start_year: 1961, end_year: 1990}
+  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5, exp: historical,
+     ensemble: r1i1p1, start_year: 1961, end_year: 1990}
+  - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5, exp: historical,
+     ensemble: r1i1p1, start_year: 1961, end_year: 1990}
+  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+  - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
 
 preprocessors:
   preproc:
