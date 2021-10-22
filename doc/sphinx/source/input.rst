@@ -32,70 +32,35 @@ If you do not have access to such a facility through your institute or the
 project you are working on, you can request access by applying for the
 `IS-ENES3 Trans-national Access call <https://portal.enes.org/data/data-metadata-service/analysis-platforms>`__.
 
-If the options above are not available to you, ESMValTool also offers features
-to make it easier to download the data.
+If the options above are not available to you, ESMValTool also offers a feature
+to make it easy to download CMIP6, CMIP5, CMIP3, CORDEX, and obs4MIPs from ESGF.
+
+The chapter in the ESMValCore documentation on
+:ref:`finding data <esmvalcore:findingdata>` explains how to
+configure the ESMValTool so it can find locally available data and/or
+download it from ESGF if it not available locally yet.
 
 Models
 ======
 
-ESMValTool will look for existing data in the directories specified in the
-user configuration file. Alternatively, it can use an external
-tool called `Synda <http://prodiguer.github.io/synda/index.html>`__. If you
-do not have access to a compute cluster with the data already mounted, this is
-the recommended approach for first-time users to obtain some data for
-running ESMValTool. It is also possible to manually download the files from
-ESGF, see
-`the ESGF user guide <https://esgf.github.io/esgf-user-support/user_guide.html>`__
-for a tutorial.
-
-Installing Synda for use from ESMValTool
-----------------------------------------
-Here, we describe the basic steps to configure EMSValTool so it can use Synda
-to download CMIP6 or CMIP5 model data.
-
-To install Synda, follow the steps listed in the
-`Synda installation documentation <http://prodiguer.github.io/synda/sdt/conda_install.html>`__.
-(This description assumes that Synda is installed using Conda.)
-As the last step, Synda will ask to set your openID credentials.
-Therefore, you'll need to create an account on an ESGF node, e.g.
-`the ESGF node at Lawrence Livermore National Laboratory <https://esgf-node.llnl.gov/projects/esgf-llnl/>`__
-and join a Data Access Control Group, e.g. 'CMIP5 Research'. For more information, see
-`the ESGF user guide <https://esgf.github.io/esgf-user-support/user_guide.html>`__.
-
-Once you have set up Synda, you'll need to configure ESMValTool to find
-your Synda installation. Note that it is not possible to combine the two in a
-single
-`conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`__,
-because Synda requires python 2 and ESMValTool requires Python 3.
-Running
+If you do not have access to a compute cluster with the data already mounted,
+the ESMValTool can automatically download any required data that is available on ESGF.
+This is the recommended approach for first-time users to obtain some data for
+running ESMValTool.
+For example, run
 
 .. code-block:: bash
 
-    which synda
+    esmvaltool run examples/recipe_python.yml --offline=False
 
-on the command line, while your synda environment is active, will print its location.
-To make the ``synda`` program usable from ESMValTool we suggest
-creating a directory
+to run the default example recipe and automatically download the required data
+to the directory ``~/climate_data``.
+See :ref:`esmvalcore:config-esgf` for a more in depth explanation and the
+available configuration options.
 
-.. code-block:: bash
-
-    mkdir ~/bin
-
-and appending that folder to your ``PATH`` environment variable,
-e.g. by adding the following line to your ``~/.bashrc`` file:
-
-.. code-block:: bash
-
-    PATH=$PATH:$HOME/bin
-
-Finally, in the new bin folder, make a link to synda:
-
-.. code-block:: bash
-
-    ln -s /path/to/conda/envs/synda/bin/synda ~/bin/synda
-
-Now, ESMValTool should be able to find your Synda installation. First time
-users can now continue with :ref:`Running ESMValTool <running>`.
+Alternatively, you can use an external tool called
+`Synda <http://prodiguer.github.io/synda/index.html>`__
+to maintain your own collection of ESGF data.
 
 Observations
 ============
