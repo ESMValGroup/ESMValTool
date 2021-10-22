@@ -2,6 +2,8 @@
 # recipe_perfmetrics_land_CMIP5.yml
 ---
 documentation:
+  title: Performance metrics for land variables in CMIP5
+
   description: |
     Recipe for plotting the performance metrics for the CMIP5 datasets,
     including only land variables

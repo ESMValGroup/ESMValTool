@@ -2,6 +2,8 @@
 # recipe_anav13jclim.xml
 ---
 documentation:
+  title: Land and ocean components of the global carbon cycle in CMIP5
+
   description: |
     This recipe reproduces most of the figures of Anav et al. (2013).
 
