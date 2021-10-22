@@ -5,17 +5,16 @@
 
 # Rootpaths to the data from different projects (lists are also possible)
 rootpath:
-  #CMIP3: [~/cmip3_inputpath1, ~/cmip3_inputpath2]
-  #CMIP5: [~/cmip5_inputpath1, ~/cmip5_inputpath2]
-  #CMIP6: [~/cmip6_inputpath1, ~/cmip6_inputpath2]
-  #OBS: ~/obs_inputpath
-  #OBS6: ~/obs6_inputpath
-  #obs4mips: ~/obs4mips_inputpath
-  #ana4mips: ~/ana4mips_inputpath
-  #native6:  ~/native6_inputpath
-  #RAWOBS: ~/rawobs_inputpath
-  default: ~/climate_data
-
+  CMIP3: [~/cmip3_inputpath1, ~/cmip3_inputpath2]
+  CMIP5: [~/cmip5_inputpath1, ~/cmip5_inputpath2]
+  CMIP6: [~/cmip6_inputpath1, ~/cmip6_inputpath2]
+  OBS: ~/obs_inputpath
+  OBS6: ~/obs6_inputpath
+  obs4MIPs: ~/obs4mips_inputpath
+  ana4mips: ~/ana4mips_inputpath
+  native6:  ~/native6_inputpath
+  RAWOBS: ~/rawobs_inputpath
+  default: ~/default_inputpath
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
 # See config-developer.yml for definitions.
 drs:
