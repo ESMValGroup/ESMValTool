@@ -2,6 +2,8 @@
 # recipe_wenzel14jgr.yml
 ---
 documentation:
+  title: Emergent constraints on climate-carbon cycle feedbacks
+  
   description: |
     This recipe reproduces most of the figures of Wenzel et al. (2014).
 
