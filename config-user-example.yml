@@ -10,7 +10,7 @@ rootpath:
   CMIP6: [~/cmip6_inputpath1, ~/cmip6_inputpath2]
   OBS: ~/obs_inputpath
   OBS6: ~/obs6_inputpath
-  obs4mips: ~/obs4mips_inputpath
+  obs4MIPs: ~/obs4mips_inputpath
   ana4mips: ~/ana4mips_inputpath
   native6:  ~/native6_inputpath
   RAWOBS: ~/rawobs_inputpath

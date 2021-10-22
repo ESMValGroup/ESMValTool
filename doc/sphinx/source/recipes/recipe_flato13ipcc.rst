@@ -399,14 +399,14 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4mips data can be used directly without any preprocessing;
-(2) see headers of reformat scripts for non-obs4mips data for download
+*Note: (1) obs4MIPs data can be used directly without any preprocessing;
+(2) see headers of reformat scripts for non-obs4MIPs data for download
 instructions.*
 
-* CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
+* CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4MIPs)
 * ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
 * GCP2018 (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_gcp2018.py)
-* GPCP-SG (pr - obs4mips)
+* GPCP-SG (pr - obs4MIPs)
 * JMA-TRANSCOM (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_jma_transcom.py)
 * HadCRUT4 (tas - esmvaltool/cmorizers/obs/cmorize_obs_hadcrut4.ncl)
 * HadISST (sic, tos - esmvaltool/cmorizers/obs/cmorize_obs_hadisst.ncl)

@@ -15,7 +15,7 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
 
     This function is used when running recipes that need
     a clear distinction between a control dataset, an experiment
-    dataset and have optional obs (OBS, obs4mips etc) datasets;
+    dataset and have optional obs (OBS, obs4MIPs etc) datasets;
     such recipes include recipe_validation, and all the autoassess
     ones;
     short_name: variable short name
