@@ -2,9 +2,8 @@
 # recipe_ocean_quadmap.yml
 ---
 documentation:
-  title:
-    - Tool to produce a four pane map figure
-    
+  title: Tool to produce a four pane map figure
+
   description: |
     Recipe to demonstrate the Diagnostic Maps quad.
     Based on the ocean assess/Marine Assess toolkit plots.

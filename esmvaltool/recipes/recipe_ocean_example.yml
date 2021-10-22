@@ -2,9 +2,8 @@
 # recipe_ocean_example.yml
 ---
 documentation:
-  title: 
-    - Ocean physics analysis suite
-    
+  title: Ocean physics analysis suite
+
   description: |
     Recipe to demonstrate several simple plots based on the monthly ocean
     temperature. Please use this file as a template for adding additional
