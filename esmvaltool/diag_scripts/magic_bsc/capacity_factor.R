@@ -10,11 +10,11 @@ library(yaml)
 # Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
-initial.options <- commandArgs(trailingOnly = FALSE)
+initial_options <- commandArgs(trailingOnly = FALSE)
 file_arg_name <- "--file="
 script_name <- sub(
   file_arg_name, "",
-  initial.options[grep(file_arg_name, initial.options)]
+  initial_options[grep(file_arg_name, initial_options)]
 )
 script_dirname <- dirname(script_name)
 
@@ -66,8 +66,10 @@ for (i in seq(1, length(model_names), 1)) {
     "units"
   )$value, 11, 29))
   nc_close(data_nc)
-  time <- as.Date(time, origin = substr(start_date, 1, 10),
-                  calendar = calendar)
+  time <- as.Date(time,
+    origin = substr(start_date, 1, 10),
+    calendar = calendar
+  )
   time <- as.POSIXct(time, format = "%Y-%m-%d")
   time_dim <- which(names(dim(data)) == "time")
   time <- as.PCICt(time, cal = calendar)
@@ -165,7 +167,7 @@ for (i in seq(1, length(model_names), 1)) {
     " (", start_year, "-", end_year, ")"
   )
 
-  PW_names <- c(
+  pw_names <- c(
     "Enercon E70", "Gamesa G80", "Gamesa G87",
     "Vestas V100", "Vestas V110"
   )
@@ -177,7 +179,7 @@ for (i in seq(1, length(model_names), 1)) {
       length.out = 10
     ), color_fun = clim.palette("yellowred"),
     filled.continents = FALSE, toptitle = title,
-    titles = PW_names, fileout = filepng
+    titles = pw_names, fileout = filepng
   )
 
   filencdf <- paste0(
@@ -237,10 +239,9 @@ for (i in seq(1, length(model_names), 1)) {
     caption = title,
     statistics = list("other"),
     realms = list("atmos"),
-    themes = list("phys"),
-    plot_file = filepng
+    themes = list("phys")
   )
-
+  provenance[[filepng]] <- xprov
   provenance[[filencdf]] <- xprov
 }
 
