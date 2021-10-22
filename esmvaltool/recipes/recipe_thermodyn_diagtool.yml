@@ -2,8 +2,9 @@
 
 ---
 documentation:
-  title:
-        - Diagnostic tool for several thermodynamic aspects of the atmosphere and oceans.
+  title: |
+        Diagnostic tool for several thermodynamic aspects of
+        the atmosphere and oceans.
 
   description: |
         Recipe for the computation of various aspects associated with
