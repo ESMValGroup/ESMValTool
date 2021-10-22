@@ -2,6 +2,8 @@
 # recipe_smpi.yml
 ---
 documentation:
+  title: Single Model Performance Index
+
   description: |
     Recipe for computing Single Model Performance Index. Follows Reichler
     and Kim 2008. Considers the following variables:
@@ -15,6 +17,9 @@ documentation:
     - gier_bettina
     - righi_mattia
     - eyring_veronika
+
+  maintainer:
+    - hassler_birgit
 
   references:
     - rk2008bams

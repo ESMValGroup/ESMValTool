@@ -33,8 +33,7 @@ rmse_plot: dict, optional
 savefig_kwargs: dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    `<https://seaborn.pydata.org/generated/seaborn.set.html>`_.
+    Options for :func:`seaborn.set` (affects all plots).
 weighted_samples: dict
     If specified, use weighted root mean square error. The given keyword
     arguments are directly passed to
@@ -109,12 +108,12 @@ def _write_provenance(cfg, data_frame, plot_path, title, ancestors,
         'ancestors': ancestors,
         'authors': ['schlund_manuel'],
         'caption': f"Boxplot of {title}.",
-        'plot_file': plot_path,
         'plot_types': ['box'],
         'references': ['schlund20jgr'],
     }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, record)
+        provenance_logger.log(plot_path, record)
 
 
 def get_residual_data(cfg):

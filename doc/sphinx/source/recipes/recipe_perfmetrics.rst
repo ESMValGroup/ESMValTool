@@ -31,6 +31,8 @@ Diagnostics are stored in diag_scripts/perfmetrics/
 User settings in recipe
 -----------------------
 
+.. _perf-main.ncl:
+
 #. Script main.ncl
 
    *Required settings (scripts)*
@@ -69,6 +71,8 @@ User settings in recipe
    * alternative_dataset: a second dataset to compare with.
 
    These settings are passed to the other scripts by main.ncl, depending on the selected plot_type.
+
+.. _perf-collect.ncl:
 
 #. Script collect.ncl
 
@@ -125,7 +129,7 @@ Observations and reformat scripts
 ---------------------------------
 
 The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4mips data can be used directly without any reformating. For non-obs4mips data see headers of cmorization scripts (in `/esmvaltool/cmorizers/obs/
-<https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/cmorizers/obs/>`_) for downloading and processing instructions.
+<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/obs/>`_) for downloading and processing instructions.
 #.  recipe_perfmetrics_CMIP5.yml
 
     * AIRS (hus - obs4mips)

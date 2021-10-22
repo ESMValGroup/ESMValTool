@@ -1,3 +1,5 @@
+.. _api:
+
 ESMValTool Code API Documentation
 =================================
 
@@ -11,4 +13,5 @@ API of ESMValTool.
    esmvaltool.diag_scripts.shared
    esmvaltool.diag_scripts
    esmvaltool.diag_scripts.ocean
+   esmvaltool.diag_scripts.emergent_constraints
    esmvaltool.diag_scripts.mlr

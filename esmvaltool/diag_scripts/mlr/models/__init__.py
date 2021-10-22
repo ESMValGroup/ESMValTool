@@ -262,8 +262,7 @@ plot_units: dict
 savefig_kwargs: dict
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict
-    Options for :func:`seaborn.set` (affects all plots), see
-    `<https://seaborn.pydata.org/generated/seaborn.set.html>`_.
+    Options for :func:`seaborn.set` (affects all plots).
 standardize_data: bool (default: True)
     Linearly standardize numerical input data by removing mean and scaling to
     unit variance.
@@ -279,8 +278,6 @@ weighted_samples: dict
     weights. By default, area weights and time weights are used.
 work_dir: str (default: ~/work)
     Root directory to save all other files (mainly ``*.nc`` files).
-write_plots: bool (default: True)
-    If ``False``, do not write any plot.
 
 """
 
@@ -2680,11 +2677,6 @@ class MLRModel():
     def _is_ready_for_plotting(self):
         """Check if the class is ready for plotting."""
         self._check_fit_status('Plotting')
-        if not self._cfg['write_plots']:
-            logger.warning(
-                "Plotting not possible, 'write_plots' was set to 'False' at "
-                "class initialization")
-            return False
         return True
 
     def _load_classes(self):
@@ -3216,7 +3208,6 @@ class MLRModel():
         self._cfg.setdefault('test_size', 0.25)
         self._cfg.setdefault('work_dir',
                              os.path.expanduser(os.path.join('~', 'work')))
-        self._cfg.setdefault('write_plots', True)
         logger.info("Using imputation strategy '%s'",
                     self._cfg['imputation_strategy'])
         if self._cfg['fit_kwargs']:
@@ -3293,12 +3284,12 @@ class MLRModel():
         io.iris_save(cube, netcdf_path)
         record = {
             'authors': ['schlund_manuel'],
-            'plot_file': plot_path,
             'references': ['schlund20jgr'],
             **additional_info,
         }
         with ProvenanceLogger(self._cfg) as provenance_logger:
             provenance_logger.log(netcdf_path, record)
+            provenance_logger.log(plot_path, record)
 
     @staticmethod
     def _convert_units_in_cube(cube, new_units, power=None, text=None):

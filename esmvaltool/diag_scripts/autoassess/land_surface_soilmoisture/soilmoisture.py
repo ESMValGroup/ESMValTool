@@ -4,38 +4,59 @@ import os
 import logging
 import numpy as np
 import iris
-from esmvalcore.preprocessor._regrid import regrid
+from esmvalcore.preprocessor import regrid
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 from esmvaltool.diag_scripts.shared._supermeans import get_supermean
 
-
 logger = logging.getLogger(__name__)
+
+
+def get_provenance_record(caption, run):
+    """Create a provenance record describing the diagnostic data and plot."""
+    record = {
+        'caption': caption,
+        'statistics': ['mean'],
+        'domains': ['global'],
+        'plot_type': 'metrics',
+        'authors': [
+            'rumbold_heather',
+            'sellar_alistair',
+        ],
+        'references': [
+            'esacci-soilmoisture',
+            'dorigo17rse',
+            'gruber19essd',
+        ],
+        'ancestors': run,
+    }
+
+    return record
 
 
 def land_sm_top(run):
     """
     Calculate median absolute errors for soil mosture against CCI data.
 
-    Arguments:
-        run - dictionary containing model run metadata
-              (see auto_assess/model_run.py for description)
+    Parameters
+    ----------
+    run: dict
+        dictionary containing model run metadata
+        (see auto_assess/model_run.py for description)
 
-    Returns:
-        metrics - dictionary of metrics names and values
-
+    Returns
+    -------
+    metrics: dict
+        a dictionary of metrics names and values
     """
     supermean_data_dir = os.path.join(run['data_root'], run['runid'],
                                       run['_area'] + '_supermeans')
 
     seasons = ['djf', 'mam', 'jja', 'son']
 
-    # Constants
-    # density of water and ice
+    # Constant: density of water
     rhow = 1000.
-    rhoi = 917.
-    # first soil layer depth
-    dz1 = 0.1
 
-    #   Work through each season
+    # Work through each season
     metrics = dict()
     for season in seasons:
         fname = 'ecv_soil_moisture_{}.nc'.format(season)
@@ -48,57 +69,29 @@ def land_sm_top(run):
                 ecv_clim.units = 'm3 m-3'
 
         # m01s08i223
-        # standard_name: mrsos
-        smcl_run = get_supermean('moisture_content_of_soil_layer', season,
-                                 supermean_data_dir)
+        # CMOR name: mrsos (soil moisture in top model layer kg/m2)
+        mrsos = get_supermean('mass_content_of_water_in_soil_layer',
+                              season,
+                              supermean_data_dir)
 
-        # m01s08i229i
-        # standard_name: ???
-        # TODO: uncomment when implemented
-        # sthu_run = get_supermean(
-        #     'mass_fraction_of_unfrozen_water_in_soil_moisture', season,
-        #     supermean_data_dir)
+        # Set soil moisture to missing data on ice points (i.e. no soil)
+        np.ma.masked_where(mrsos.data == 0, mrsos.data, copy=False)
 
-        # m01s08i230
-        # standard_name: ??? soil_frozen_water_content - mrfso
-        # TODO: uncomment when implemented
-        # sthf_run = get_supermean(
-        #     'mass_fraction_of_frozen_water_in_soil_moisture', season,
-        #     supermean_data_dir)
-
-        # TODO: remove after correct implementation
-        sthu_run = smcl_run
-        sthf_run = smcl_run
-
-        # extract top soil layer
-        cubes = [smcl_run, sthu_run, sthf_run]
-        for i, cube in enumerate(cubes):
-            if cube.coord('depth').attributes['positive'] != 'down':
-                logger.warning('Cube %s depth attribute is not down', cube)
-            top_level = min(cube.coord('depth').points)
-            topsoil = iris.Constraint(depth=top_level)
-            cubes[i] = cube.extract(topsoil)
-        smcl_run, sthu_run, sthf_run = cubes
-
-        # Set all sea points to missing data np.nan
-        smcl_run.data[smcl_run.data < 0] = np.nan
-        sthu_run.data[sthu_run.data < 0] = np.nan
-        sthf_run.data[sthf_run.data < 0] = np.nan
-
-        # set soil moisture to missing data on ice points (i.e. no soil)
-        sthu_plus_sthf = (dz1 * rhow * sthu_run) + (dz1 * rhoi * sthf_run)
-        ice_pts = sthu_plus_sthf.data == 0
-        sthu_plus_sthf.data[ice_pts] = np.nan
+        # first soil layer depth
+        dz1 = mrsos.coord('depth').bounds[0, 1] - \
+            mrsos.coord('depth').bounds[0, 0]
 
         # Calculate the volumetric soil moisture in m3/m3
-        theta_s_run = smcl_run / sthu_plus_sthf
-        vol_sm1_run = theta_s_run * sthu_run
+        # volumetric soil moisture = volume of water / volume of soil layer
+        # = depth equivalent of water / thickness of soil layer
+        # = (soil moisture content (kg m-2) / water density (kg m-3) )  /
+        #      soil layer thickness (m)
+        # = mosrs / (rhow * dz1)
+        vol_sm1_run = mrsos / (rhow * dz1)
         vol_sm1_run.units = "m3 m-3"
         vol_sm1_run.long_name = "Top layer Soil Moisture"
 
         # update the coordinate system ECV data with a WGS84 coord system
-        # TODO: ask Heather why this is needed
-        # TODO: who is Heather?
         # unify coord systems for regridder
         vol_sm1_run.coord('longitude').coord_system = \
             iris.coord_systems.GeogCS(semi_major_axis=6378137.0,
@@ -115,16 +108,32 @@ def land_sm_top(run):
 
         # Interpolate to the grid of the climatology and form the difference
         vol_sm1_run = regrid(vol_sm1_run, ecv_clim, 'linear')
+
+        # mask invalids
+        vol_sm1_run.data = np.ma.masked_invalid(vol_sm1_run.data)
+        ecv_clim.data = np.ma.masked_invalid(ecv_clim.data)
+
         # diff the cubes
         dff = vol_sm1_run - ecv_clim
 
-        # Remove NaNs from data before aggregating statistics
-        dff.data = np.ma.masked_invalid(dff.data)
-
-        # save output
+        # save output and populate metric
         iris.save(dff, os.path.join(run['dump_output'],
                                     'soilmoist_diff_{}.nc'.format(season)))
         name = 'soilmoisture MedAbsErr {}'.format(season)
-        metrics[name] = float(np.ma.median(np.ma.abs(dff.data)))
+        dffs = dff.data
+        dffs = np.ma.abs(dffs)
+        metrics[name] = float(np.ma.median(dffs))
+
+    # record provenance
+    plot_file = "Autoassess soilmoisture metrics"
+    caption = 'Autoassess soilmoisture MedAbsErr for {}'.format(str(seasons))
+    provenance_record = get_provenance_record(caption, run)
+    cfg = {}
+    cfg['run_dir'] = run['out_dir']
+    # avoid rewriting provenance when running the plot diag
+    if not os.path.isfile(os.path.join(cfg['run_dir'],
+                                       'diagnostic_provenance.yml')):
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(plot_file, provenance_record)
 
     return metrics

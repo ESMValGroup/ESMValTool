@@ -11,15 +11,12 @@ import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
-from climwip.io_functions import (
-    log_provenance,
-    read_model_data,
-)
+from climwip.io_functions import log_provenance, read_model_data
 
 from esmvaltool.diag_scripts.shared import (
-    run_diagnostic,
-    get_plot_filename,
     get_diagnostic_filename,
+    get_plot_filename,
+    run_diagnostic,
 )
 from esmvaltool.diag_scripts.weighting.plot_utilities import (
     calculate_percentiles,
@@ -30,19 +27,59 @@ from esmvaltool.diag_scripts.weighting.plot_utilities import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 
+def set_antimeridian(dataarray, to: str):
+    """Flip the antimeridian (i.e. longitude discontinuity) between Europe
+    (i.e., [0, 360)) and the Pacific (i.e., [-180, 180)).
+
+    Parameters
+    ----------
+    - dataarray : xarray.DataArray
+    - to : string, {'pacific', 'europe'}
+      * 'europe': Longitude will be in [0, 360)
+      * 'pacific': Longitude will be in [-180, 180)
+
+    Returns
+    -------
+    dataarray : xarray.DataArray
+    """
+    lon = dataarray['lon']
+
+    if to.lower() == 'europe':
+        dataarray = dataarray.assign_coords(lon=lon % 360)
+    elif to.lower() == 'pacific':
+        dataarray = dataarray.assign_coords(lon=((lon + 180) % 360) - 180)
+    else:
+        errmsg = "to has to be one of ['europe', 'pacific'] not {}".format(to)
+        raise ValueError(errmsg)
+
+    idx = np.argmin(dataarray['lon'].values)
+    dataarray = dataarray.roll(lon=-idx, roll_coords=True)
+    dataarray['lon'].attrs = lon.attrs
+    return dataarray
+
+
 def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
             **colormesh_args):
     """Visualize weighted temperature."""
-    period = '{start_year}-{end_year}'.format(**read_metadata(cfg)['tas'][0])
-    if 'tas_reference' in read_metadata(cfg).keys():
-        meta = read_metadata(cfg)['tas_reference']
-        period = 'change: {} minus {start_year}-{end_year}'.format(
-            period, **meta[0])
+    metadata = read_metadata(cfg)
+    metadata_future = metadata['tas_CLIM_future']
+    start_year = metadata_future[0]['start_year']
+    end_year = metadata_future[0]['end_year']
+
+    period = f'{start_year}-{end_year}'
+    if 'tas_CLIM_reference' in metadata:
+        metadata_reference = metadata['tas_CLIM_reference']
+        start_year_ref = metadata_reference[0]['start_year']
+        end_year_ref = metadata_reference[0]['end_year']
+        period = f'change: {period} minus {start_year_ref}-{end_year_ref}'
     metric = cfg['model_aggregation']
     if isinstance(metric, int):
         metric = f'{metric}perc'
     proj = ccrs.PlateCarree(central_longitude=0)
     figure, axes = plt.subplots(subplot_kw={'projection': proj})
+
+    dataarray = set_antimeridian(dataarray, cfg.get('antimeridian', 'pacific'))
+    dataarray = dataarray.dropna('lon', how='all').dropna('lat', how='all')
 
     dataarray.plot.pcolormesh(
         ax=axes,
@@ -104,7 +141,7 @@ def visualize_and_save_difference(temperature_difference, cfg: dict,
                                   ancestors: list):
     """Wrap mapplot: temperature difference between weighted and unweighted."""
     title_pattern = '\n'.join([
-        'Difference: weighted minus unweighted {metric} temperature',
+        'Weighted minus unweighted {metric} temperature',
         r'{period} ($\degree$C)',
     ])
     filename_part = 'temperature_change_difference_map'
@@ -141,12 +178,13 @@ def main(cfg):
     weights_path = Path(input_files[0]) / filename
     weights = read_weights(weights_path)
 
-    models = read_metadata(cfg)['tas']
+    metadata = read_metadata(cfg)
+    models = metadata['tas_CLIM_future']
     model_data, model_data_files = read_model_data(models)
 
     # if a historical period is given calculate the change
-    if 'tas_reference' in read_metadata(cfg).keys():
-        models_hist = read_metadata(cfg)['tas_reference']
+    if 'tas_CLIM_reference' in metadata:
+        models_hist = metadata['tas_CLIM_reference']
         model_data_hist, model_data_files_hist = read_model_data(models_hist)
         model_data_files += model_data_files_hist
         model_data = model_data - model_data_hist

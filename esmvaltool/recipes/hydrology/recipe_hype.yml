@@ -2,6 +2,7 @@
 # recipe_hype.yml
 ---
 documentation:
+  title: Generate forcing for the Hype hydrological model
   description: |
     Recipe pre-processes ERA5 and ERA-Interim reanalyses files
     for use in the Hype hydrological model.
@@ -43,8 +44,8 @@ diagnostics:
     variables:
       tas: &var
         mip: day
-        start_year: 1979
-        end_year: 1979
+        start_year: 1990
+        end_year: 2001
         preprocessor: temperature
       tasmin: *var
       tasmax: *var

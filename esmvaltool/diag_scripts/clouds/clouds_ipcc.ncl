@@ -159,7 +159,7 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
-  if (config_user_info@write_plots.eq."True") then
+  if (diag_script_info@write_plots.eq."True") then
     write_plots = True
   else
     write_plots = False
@@ -479,6 +479,8 @@ begin
     log_info(DIAG_SCRIPT + " (var: " + var0 + "):")
     log_info("info: using default contour levels")
     cnLevels = fspan(min(diff), max(diff), 20)
+  else
+    cnLevels = diag_script_info@explicit_cn_levels
   end if
 
   diff@diag_script = DIAG_SCRIPT
@@ -556,6 +558,12 @@ begin
     pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                              + "ipcc-precip-delta.rgb")
     diff@res_cnFillColors         = pal
+  end if
+
+  if (var0 .eq. "swcre") then
+    pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
+                             + "ipcc-ar6_misc_div.rgb")
+    diff@res_cnFillPalette = pal
   end if
 
   plots = new((/2, numseas/), graphic)

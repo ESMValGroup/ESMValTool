@@ -51,7 +51,7 @@ def _import_package(area):
 
 def _fix_cube(cube_list):
     """Apply some ad hoc fixes to cubes."""
-    # force add a long_name; supermeans uses extract_strict
+    # force add a long_name; supermeans uses extract_cube
     # and for derived vars there is only
     # invalid_standard_name which is an attribute
     for cube in cube_list:
@@ -337,10 +337,10 @@ def _create_run_dict(cfg):
     run['from_annual'] = datetime.datetime(year, month, day)
 
     year, month, day = [int(s) for s in run['end'].split('/')]
-    run['to_instantaneous'] = datetime.datetime(year, 11, 30)
-    run['to_daily'] = datetime.datetime(year, 11, 30)
-    run['to_monthly'] = datetime.datetime(year, 11, 1)
-    run['to_seasonal'] = datetime.datetime(year, 9, 1)
+    run['to_instantaneous'] = datetime.datetime(year, 12, 1)
+    run['to_daily'] = datetime.datetime(year, 12, 1)
+    run['to_monthly'] = datetime.datetime(year, 12, 1)
+    run['to_seasonal'] = datetime.datetime(year, 12, 1)
     run['to_annual'] = datetime.datetime(year - 1, 12, 1)
 
     return run

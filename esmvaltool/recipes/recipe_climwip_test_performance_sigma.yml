@@ -1,0 +1,199 @@
+# ESMValTool
+# recipe_climwip.yml
+---
+documentation:
+  title: Recipe to test ClimWIP performance sigma calibration
+  description: >
+    Calculate weights for CMIP type models based on performance and independence.
+    Developed based on the ClimWIP method in the frame of EUCP and CRESCENDO.
+  themes:
+    - phys
+  realms:
+    - atmos
+  authors:
+    - kalverla_peter
+    - smeets_stef
+    - brunner_lukas
+    - camphuijsen_jaro
+    - lorenz_ruth
+  maintainer:
+    - kalverla_peter
+    - smeets_stef
+    - brunner_lukas
+    - lorenz_ruth
+  references:
+    - brunner2019
+    - lorenz2018
+    - knutti2017
+  projects:
+    - eucp
+
+datasets: &model_data  # a selection of model to demonstrate functionality of the perfect model test
+  - {project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-CM2, ensemble: r(1:2)i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-ESM1-5, ensemble: r(1:2)i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: CESM2-WACCM, ensemble: r(1:2)i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: CIESM, ensemble: r1i1p1f1, grid: gr}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: CNRM-CM6-1, ensemble: r(1:2)i1p1f2, grid: gr}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: CNRM-ESM2-1, ensemble: r(1:2)i1p1f2, grid: gr}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: CanESM5-CanOE, ensemble: r(1:2)i1p2f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: CanESM5, ensemble: r(1:2)i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3-Veg, ensemble: r(1:4)i1p1f1, grid: gr}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: FGOALS-g3, ensemble: r(1:2)i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: FIO-ESM-2-0, ensemble: r(1:2)i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: GISS-E2-1-G, ensemble: r(1:2)i1p3f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: HadGEM3-GC31-MM, ensemble: r(1:2)i1p1f3, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: INM-CM4-8, ensemble: r1i1p1f1, grid: gr1}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: INM-CM5-0, ensemble: r1i1p1f1, grid: gr1}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: IPSL-CM6A-LR, ensemble: r(1:2)i1p1f1, grid: gr}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: KACE-1-0-G, ensemble: r(1:2)i1p1f1, grid: gr}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: MCM-UA-1-0, ensemble: r1i1p1f2, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: MIROC6, ensemble: r(1:2)i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: MPI-ESM1-2-LR, ensemble: r(1:2)i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: NESM3, ensemble: r(1:2)i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: NorESM2-MM, ensemble: r1i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: UKESM1-0-LL, ensemble: r(1:2)i1p1f2, grid: gn}
+
+obs_data: &obs_data  # for climwip performance metrics
+  - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
+
+preprocessors:
+  climwip_general: &general
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: linear
+    mask_landsea:
+      mask_out: sea
+    extract_region:
+      start_longitude: 0.0
+      end_longitude: 60.0
+      start_latitude: 30.0
+      end_latitude: 80.0
+
+  climatological_mean:
+    <<: *general
+    climate_statistics:
+      operator: mean
+
+  annual_trend:
+    <<: *general
+    annual_statistics:
+      operator: mean
+    linear_trend:
+      coordinate: time
+    convert_units:
+      units: "K year-1"
+
+  temperature_anomalies:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference: &ref_period
+        start_year: 1981
+        start_month: 1
+        start_day: 1
+        end_year: 2010
+        end_month: 12
+        end_day: 31
+      standardize: false
+
+diagnostics:
+  calculate_weights_climwip:
+    variables:
+      tas_CLIM_reference:
+        short_name: tas
+        start_year: 1995
+        end_year: 2014
+        mip: Amon
+        preprocessor: climatological_mean
+      tas_CLIM_future:
+        short_name: tas
+        start_year: 2081
+        end_year: 2100
+        mip: Amon
+        preprocessor: climatological_mean
+      tas_CLIM: &common_settings
+        short_name: tas
+        start_year: 1995
+        end_year: 2014
+        mip: Amon
+        preprocessor: climatological_mean
+        additional_datasets: *obs_data
+      pr_CLIM:
+        <<: *common_settings
+        short_name: pr
+      tas_TREND:
+        <<: *common_settings
+        preprocessor: annual_trend
+
+    scripts:
+      climwip:
+        script: weighting/climwip/main.py
+        obs_data: native6
+        combine_ensemble_members: true
+        calibrate_performance_sigma:
+          target: tas_CLIM_future
+          target_ref: tas_CLIM_reference
+        performance_contributions:
+          tas_CLIM: 1
+          pr_CLIM: 1
+          tas_TREND: 1
+
+  weighted_temperature_graph:
+    description: >
+      Plot timeseries of all included models including interquartile
+      range for weighted and unweighted case.
+    themes:
+      - phys
+    realms:
+      - atmos
+
+    variables:
+      tas:
+        start_year: 1960
+        end_year: 2100
+        mip: Amon
+        preprocessor: temperature_anomalies
+    scripts:
+      weighted_temperature_graph:
+        script: weighting/weighted_temperature_graph.py
+        ancestors: [calculate_weights_climwip/climwip, tas]
+        weights: 'weights.nc'
+        settings:
+          <<: *ref_period
+          central_estimate: mean
+          lower_bound: 16.7
+          upper_bound: 83.3
+
+  weighted_temperature_map:
+    description: >
+      Plot map of weighted multi-model mean and difference between weighted
+      and unweighted multi-model mean.
+    themes:
+      - phys
+    realms:
+      - atmos
+
+    scripts:
+      weighted_temperature_map:
+        script: weighting/weighted_temperature_map.py
+        ancestors: [calculate_weights_climwip/climwip,
+                    calculate_weights_climwip/tas_CLIM_future,
+                    calculate_weights_climwip/tas_CLIM_reference]
+        weights: 'weights.nc'
+        # optional arguments
+        model_aggregation: mean  # [ mean (default) | median | integer in (0, 100) ]
+        xticks: [0, 15, 30, 45, 60]  # if not given ticks will be set automatically
+        yticks: [30, 40, 50, 60, 70, 80]

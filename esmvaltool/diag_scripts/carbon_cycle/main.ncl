@@ -326,298 +326,295 @@ begin
   ; Plots
   ; ---------------------------------------------------------------------------
 
-  if (config_user_info@write_plots) then
+  ; -------------------------------------------------------------------------
+  ; Seasonal cycle plot
+  ; -------------------------------------------------------------------------
 
-    ; -------------------------------------------------------------------------
-    ; Seasonal cycle plot
-    ; -------------------------------------------------------------------------
+  if (diag_script_info@seasonal_cycle_plot) then
+    data_arr = all_data_monthly
+    data_arr@legend_outside = diag_script_info@legend_outside
 
-    if (diag_script_info@seasonal_cycle_plot) then
-      data_arr = all_data_monthly
-      data_arr@legend_outside = diag_script_info@legend_outside
-
-      ; Add option for PgC/month y-axis that is used in Anav2013 plots 7 and 9
-      if (isatt(diag_script_info, "anav_month") .and. \
-          diag_script_info@anav_month) then
-        data_arr = data_arr / 12.0
-        data_arr@units = "PgC/month"
-      end if
-
-      ; Draw plot
-      outfile = plot_dir + var0 + "_cycle_" + DOMAIN
-      wks = gsn_open_wks(file_type, outfile)
-      wks@legendfile = outfile + "_legend"
-      data_arr@res_tiYAxisString = var0 + " [" + \
-        format_units(data_arr@units) + "]"
-      data_arr@res_tiMainString = (var0 + " - " + region@name + " (" + \
-                                   mean_minyear + "-" + mean_maxyear + ")")
-      plot = cycle_plot(wks, data_arr, var0, INFO0)
-      plot_path = outfile + "." + file_type
-      log_info("Wrote " + plot_path)
-      draw(plot)
-      frame(wks)
-
-      ; Provenance tracking
-      caption = ("Seasonal cycle plot for " + var0 + " over the period " + \
-                 start_year + "-" + end_year + ". Similar to Anav et al. " + \
-                 "(2013), Figure 9.")
-      statistics = (/"mean"/)
-      plot_type = "seas"
-      log_provenance(ncdf_outfile_monthly, plot_path, caption, statistics, \
-                     DOMAIN, plot_type, AUTHORS, REFERENCES, ALL_FILES)
-      delete([/plot, wks, data_arr, caption, statistics, plot_type/])
+    ; Add option for PgC/month y-axis that is used in Anav2013 plots 7 and 9
+    if (isatt(diag_script_info, "anav_month") .and. \
+        diag_script_info@anav_month) then
+      data_arr = data_arr / 12.0
+      data_arr@units = "PgC/month"
     end if
 
-    ; -------------------------------------------------------------------------
-    ; Error-bar plot
-    ; -------------------------------------------------------------------------
+    ; Draw plot
+    outfile = plot_dir + var0 + "_cycle_" + DOMAIN
+    wks = gsn_open_wks(file_type, outfile)
+    wks@legendfile = outfile + "_legend"
+    data_arr@res_tiYAxisString = var0 + " [" + \
+      format_units(data_arr@units) + "]"
+    data_arr@res_tiMainString = (var0 + " - " + region@name + " (" + \
+                                 mean_minyear + "-" + mean_maxyear + ")")
+    plot = cycle_plot(wks, data_arr, var0, INFO0)
+    plot_path = outfile + "." + file_type
+    log_info("Wrote " + plot_path)
+    draw(plot)
+    frame(wks)
 
-    if (diag_script_info@errorbar_plot) then
-      annual_mean = dim_avg_Wrap(all_data_yearly( \
-        :, minyear_ind:maxyear_ind, 0))
-      annual_std = dim_stddev_Wrap(all_data_yearly( \
-        :, minyear_ind:maxyear_ind, 0))
+    ; Provenance tracking
+    caption = ("Seasonal cycle plot for " + var0 + " over the period " + \
+               start_year + "-" + end_year + ". Similar to Anav et al. " + \
+               "(2013), Figure 9.")
+    statistics = (/"mean"/)
+    plot_type = "seas"
+    log_provenance(ncdf_outfile_monthly, plot_path, caption, statistics, \
+                   DOMAIN, plot_type, AUTHORS, REFERENCES, ALL_FILES)
+    delete([/plot, wks, data_arr, caption, statistics, plot_type/])
+  end if
 
-      ; Sort dataset in alphabetical order (observations at the beginning)
-      if (isatt(diag_script_info, "sort")) then
-        projects = metadata_att_as_array(INFO0, "project")
-        if (diag_script_info@sort) then
-          pid = sort_alphabetically(annual_mean&dataset, \
-                                    ind(projects .eq. "OBS"), \
-                                    "begin")
-          annual_mean_s = annual_mean(pid)
-          annual_mean_s&dataset = annual_mean&dataset(pid)
-          annual_mean = annual_mean_s
-          annual_std_s = annual_std(pid)
-          annual_std_s&dataset = annual_std&dataset(pid)
-          annual_std = annual_std_s
-          delete([/annual_mean_s, annual_std_s, pid/])
-        end if
+  ; -------------------------------------------------------------------------
+  ; Error-bar plot
+  ; -------------------------------------------------------------------------
+
+  if (diag_script_info@errorbar_plot) then
+    annual_mean = dim_avg_Wrap(all_data_yearly( \
+      :, minyear_ind:maxyear_ind, 0))
+    annual_std = dim_stddev_Wrap(all_data_yearly( \
+      :, minyear_ind:maxyear_ind, 0))
+
+    ; Sort dataset in alphabetical order (observations at the beginning)
+    if (isatt(diag_script_info, "sort")) then
+      projects = metadata_att_as_array(INFO0, "project")
+      if (diag_script_info@sort) then
+        pid = sort_alphabetically(annual_mean&dataset, \
+                                  ind(projects .eq. "OBS"), \
+                                  "begin")
+        annual_mean_s = annual_mean(pid)
+        annual_mean_s&dataset = annual_mean&dataset(pid)
+        annual_mean = annual_mean_s
+        annual_std_s = annual_std(pid)
+        annual_std_s&dataset = annual_std&dataset(pid)
+        annual_std = annual_std_s
+        delete([/annual_mean_s, annual_std_s, pid/])
       end if
-
-      ; Collect data and save it
-      new_path = work_dir + "errorbar_" + var0 + "_" + DOMAIN + ".nc"
-      data_arr = new((/2, dimsizes(annual_mean)/), float)
-      data_arr!0 = "statistic"
-      data_arr!1 = "dataset"
-      data_arr&statistic = (/"mean", "standard deviation"/)
-      data_arr&dataset = annual_mean&dataset
-      data_arr(0, :) = (/annual_mean/)
-      data_arr(1, :) = (/annual_std/)
-      data_arr@units = annual_mean@units
-      data_arr@var = var0
-      data_arr@diag_script = DIAG_SCRIPT
-      data_arr@ncdf = new_path
-      ncdf_outfile_errorbar = ncdf_write(data_arr, new_path)
-      delete([/annual_mean, annual_std/])
-
-      ; Draw plot
-      outfile = plot_dir + var0 + "_errorbar_" + DOMAIN
-      wks = gsn_open_wks(file_type, outfile)
-      data_arr@res_tiMainString = (var0 + " - " + region@name + " (" + \
-                                   mean_minyear + "-" + mean_maxyear + ")")
-      plot = errorbar_plot(wks, data_arr, var0)
-      plot_path = outfile + "." + file_type
-      log_info("Wrote " + plot_path)
-      draw(plot)
-      frame(wks)
-
-      ; Provenance tracking
-      caption = ("Errorbar plot for " + var0 + " over the period " + \
-                 start_year + "-" + end_year + ". Similar to Anav et al. " + \
-                 "(2013), Figure 6.")
-      statistics = (/"mean", "stddev"/)
-      plot_type = "errorbar"
-      log_provenance(ncdf_outfile_errorbar, plot_path, caption, statistics, \
-                     DOMAIN, plot_type, AUTHORS, REFERENCES, ALL_FILES)
-      delete([/plot, wks, data_arr, caption, statistics, plot_type/])
     end if
 
-    ; -------------------------------------------------------------------------
-    ; Mean and IAV plot
-    ; -------------------------------------------------------------------------
+    ; Collect data and save it
+    new_path = work_dir + "errorbar_" + var0 + "_" + DOMAIN + ".nc"
+    data_arr = new((/2, dimsizes(annual_mean)/), float)
+    data_arr!0 = "statistic"
+    data_arr!1 = "dataset"
+    data_arr&statistic = (/"mean", "standard deviation"/)
+    data_arr&dataset = annual_mean&dataset
+    data_arr(0, :) = (/annual_mean/)
+    data_arr(1, :) = (/annual_std/)
+    data_arr@units = annual_mean@units
+    data_arr@var = var0
+    data_arr@diag_script = DIAG_SCRIPT
+    data_arr@ncdf = new_path
+    ncdf_outfile_errorbar = ncdf_write(data_arr, new_path)
+    delete([/annual_mean, annual_std/])
 
-    if (diag_script_info@mean_IAV_plot) then
+    ; Draw plot
+    outfile = plot_dir + var0 + "_errorbar_" + DOMAIN
+    wks = gsn_open_wks(file_type, outfile)
+    data_arr@res_tiMainString = (var0 + " - " + region@name + " (" + \
+                                 mean_minyear + "-" + mean_maxyear + ")")
+    plot = errorbar_plot(wks, data_arr, var0)
+    plot_path = outfile + "." + file_type
+    log_info("Wrote " + plot_path)
+    draw(plot)
+    frame(wks)
 
-      ; Prepare data
-      annual_mean = new((/DIM_DAT/), float)
-      annual_std = new((/DIM_DAT/), float)
-      annual_mean@_FillValue = all_data_yearly@_FillValue
-      annual_std@_FillValue = all_data_yearly@_FillValue
-      annual_mean@units = all_data_yearly@units
-      annual_std@units = all_data_yearly@units
+    ; Provenance tracking
+    caption = ("Errorbar plot for " + var0 + " over the period " + \
+               start_year + "-" + end_year + ". Similar to Anav et al. " + \
+               "(2013), Figure 6.")
+    statistics = (/"mean", "stddev"/)
+    plot_type = "errorbar"
+    log_provenance(ncdf_outfile_errorbar, plot_path, caption, statistics, \
+                   DOMAIN, plot_type, AUTHORS, REFERENCES, ALL_FILES)
+    delete([/plot, wks, data_arr, caption, statistics, plot_type/])
+  end if
 
-      ; Loop over datasets and compute means and standard deviations
-      do idat = 0, DIM_DAT - 1
-        annual_mean(idat) = dim_avg( \
-          all_data_yearly(idat, minyear_ind:maxyear_ind, 0))
-        annual_std(idat) = dim_stddev( \
-          all_data_yearly(idat, minyear_ind:maxyear_ind, 0))
+  ; -------------------------------------------------------------------------
+  ; Mean and IAV plot
+  ; -------------------------------------------------------------------------
+
+  if (diag_script_info@mean_IAV_plot) then
+
+    ; Prepare data
+    annual_mean = new((/DIM_DAT/), float)
+    annual_std = new((/DIM_DAT/), float)
+    annual_mean@_FillValue = all_data_yearly@_FillValue
+    annual_std@_FillValue = all_data_yearly@_FillValue
+    annual_mean@units = all_data_yearly@units
+    annual_std@units = all_data_yearly@units
+
+    ; Loop over datasets and compute means and standard deviations
+    do idat = 0, DIM_DAT - 1
+      annual_mean(idat) = dim_avg( \
+        all_data_yearly(idat, minyear_ind:maxyear_ind, 0))
+      annual_std(idat) = dim_stddev( \
+        all_data_yearly(idat, minyear_ind:maxyear_ind, 0))
+    end do
+
+    ; Collect data and save it
+    new_path = work_dir + "mean_iav_" + var0 + "_" + DOMAIN + ".nc"
+    data_arr = new((/2, DIM_DAT/), float)
+    data_arr!0 = "statistic"
+    data_arr!1 = "dataset"
+    data_arr&statistic = (/"mean", "interannual variability"/)
+    data_arr&dataset = DATASETS
+    data_arr(0, :) = (/annual_mean/)
+    data_arr(1, :) = (/annual_std/)
+    data_arr@units = (/annual_mean@units, annual_std@units/)
+    data_arr@legend_outside = diag_script_info@legend_outside
+    data_arr@var = var0
+    data_arr@diag_script = DIAG_SCRIPT
+    data_arr@ncdf = new_path
+    ncdf_outfile_mean_iav = ncdf_write(data_arr, new_path)
+    delete([/annual_mean, annual_std/])
+
+    ; Draw plot
+    outfile = plot_dir + var0 + "_scatter_" + DOMAIN
+    wks = gsn_open_wks(file_type, outfile)
+    wks@legendfile = outfile + "_legend"
+    data_arr@res_tiMainString = (var0 + " - " + region@name + " (" + \
+                                 mean_minyear + "-" + mean_maxyear + ")")
+    plot = scatterplot_markers(wks, data_arr, var0, INFO0)
+    plot_path = outfile + "." + file_type
+    log_info("Wrote " + plot_path)
+    draw(plot)
+    frame(wks)
+
+    ; Provenance tracking
+    caption = ("Scatterplot for " + var0 + " over the period " + \
+               start_year + "-" + end_year + ". Similar to Anav et al. " + \
+               "(2013), Figure 16.")
+    statistics = (/"mean", "stddev", "var"/)
+    plot_type = "scatter"
+    log_provenance(ncdf_outfile_mean_iav, plot_path, caption, statistics, \
+                   DOMAIN, plot_type, AUTHORS, REFERENCES, ALL_FILES)
+    delete([/plot, wks, data_arr, caption, statistics, plot_type/])
+  end if
+
+  ; -------------------------------------------------------------------------
+  ; Time evolution plot
+  ; -------------------------------------------------------------------------
+
+  if (diag_script_info@evolution_plot) then
+
+    ; Check if it's supposed to be an anomaly plot
+    anomaly = False
+    if (isatt(diag_script_info, "evolution_plot_anomaly")) then
+      if (diag_script_info@evolution_plot_anomaly) then
+        anomaly = True
+      end if
+    end if
+
+    ; Get index of reference dataset
+    obs_ind = ind(DATASETS .eq. \
+                  diag_script_info@evolution_plot_ref_dataset)
+
+    ; Set list of observations/input_file_info to exclude in the statistics
+    exclude_data = ind(metadata_att_as_array(INFO0, "project") .eq. "OBS")
+    if (isatt(diag_script_info, "evolution_plot_ignore")) then
+      exclude_data := array_append_record( \
+        exclude_data, ind(DATASETS .eq. \
+                          diag_script_info@evolution_plot_ignore), 0)
+    end if
+
+    ; To not get a warning about fillvalues from get1Dindex_Exclude
+    ind_dats = ispan(0, dimsizes(DATASETS) - 1, 1)
+    ind_dats@_FillValue = default_fillvalue("integer")
+    model_ind = get1Dindex_Exclude(ind_dats, exclude_data)
+    delete([/exclude_data, ind_dats/])
+
+    ; data_arr = all_data_yearly -> all_data_yearly: dataset, year, std = 0
+    data_arr = new((/6, dimsizes(all_data_yearly&year)/), float)
+    total_mean = dim_avg_n(all_data_yearly(model_ind, :, 0), 0)
+    total_std = new((/dimsizes(total_mean)/), float)
+    data_arr@ref_name = diag_script_info@evolution_plot_ref_dataset
+    data_arr@units = all_data_yearly@units
+    data_arr@dim_Mod = dimsizes(model_ind)
+    data_arr@project = diag_script_info@ensemble_name
+
+    ; Subtract mean 1901-1930 (coded as "until 1930") if anomaly plot
+    ind_1930 = ind(all_data_yearly&year .eq. 1930)
+    if (anomaly) then
+      data_arr(0, :) = (/all_data_yearly(obs_ind, :, 0)/) - \
+        avg(all_data_yearly(obs_ind, :ind_1930, 0))
+      ref_mean = dim_avg_n(all_data_yearly(model_ind, :ind_1930, 0), 1)
+      data_arr(1, :) = (/total_mean/) - avg(ref_mean)
+      do time_i = 0, dimsizes(all_data_yearly&year) - 1
+        data_arr(2, time_i) = dim_min_n( \
+          all_data_yearly(model_ind, time_i, 0) - ref_mean, 0)
+        data_arr(3, time_i) = dim_max_n( \
+          all_data_yearly(model_ind, time_i, 0) - ref_mean, 0)
+        total_std(time_i)  = dim_stddev_n( \
+          all_data_yearly(model_ind, time_i, 0) - ref_mean, 0)
       end do
+    else
+      data_arr(0, :) = (/all_data_yearly(obs_ind, :, 0)/)
+      data_arr(1, :) = (/total_mean/)
+      data_arr(2, :) = dim_min_n(all_data_yearly(model_ind, :, 0), 0)
+      data_arr(3, :) = dim_max_n(all_data_yearly(model_ind, :, 0), 0)
+      total_std  = dim_stddev_n(all_data_yearly(model_ind, :, 0), 0)
+    end if
+    data_arr(4, :) = (/all_data_yearly&year/)
+    data_arr(5, :) = (/total_std/)
 
-      ; Collect data and save it
-      new_path = work_dir + "mean_iav_" + var0 + "_" + DOMAIN + ".nc"
-      data_arr = new((/2, DIM_DAT/), float)
-      data_arr!0 = "statistic"
-      data_arr!1 = "dataset"
-      data_arr&statistic = (/"mean", "interannual variability"/)
-      data_arr&dataset = DATASETS
-      data_arr(0, :) = (/annual_mean/)
-      data_arr(1, :) = (/annual_std/)
-      data_arr@units = (/annual_mean@units, annual_std@units/)
-      data_arr@legend_outside = diag_script_info@legend_outside
-      data_arr@var = var0
-      data_arr@diag_script = DIAG_SCRIPT
-      data_arr@ncdf = new_path
-      ncdf_outfile_mean_iav = ncdf_write(data_arr, new_path)
-      delete([/annual_mean, annual_std/])
-
-      ; Draw plot
-      outfile = plot_dir + var0 + "_scatter_" + DOMAIN
-      wks = gsn_open_wks(file_type, outfile)
-      wks@legendfile = outfile + "_legend"
-      data_arr@res_tiMainString = (var0 + " - " + region@name + " (" + \
-                                   mean_minyear + "-" + mean_maxyear + ")")
-      plot = scatterplot_markers(wks, data_arr, var0, INFO0)
-      plot_path = outfile + "." + file_type
-      log_info("Wrote " + plot_path)
-      draw(plot)
-      frame(wks)
-
-      ; Provenance tracking
-      caption = ("Scatterplot for " + var0 + " over the period " + \
-                 start_year + "-" + end_year + ". Similar to Anav et al. " + \
-                 "(2013), Figure 16.")
-      statistics = (/"mean", "stddev", "var"/)
-      plot_type = "scatter"
-      log_provenance(ncdf_outfile_mean_iav, plot_path, caption, statistics, \
-                     DOMAIN, plot_type, AUTHORS, REFERENCES, ALL_FILES)
-      delete([/plot, wks, data_arr, caption, statistics, plot_type/])
+    ; Get contour color
+    if (isatt(diag_script_info, "evolution_plot_color")) then
+      data_arr@contour_color = diag_script_info@evolution_plot_color
     end if
 
-    ; -------------------------------------------------------------------------
-    ; Time evolution plot
-    ; -------------------------------------------------------------------------
+    ; Draw plot
+    outfile = plot_dir + var0 + "_evolution_" + DOMAIN
+    wks = gsn_open_wks(file_type, outfile)
+    wks@legendfile = outfile + "_legend"
+    plot1 = evolution_base_plot(wks, data_arr, var0, anomaly)
 
-    if (diag_script_info@evolution_plot) then
-
-      ; Check if it's supposed to be an anomaly plot
-      anomaly = False
-      if (isatt(diag_script_info, "evolution_plot_anomaly")) then
-        if (diag_script_info@evolution_plot_anomaly) then
-          anomaly = True
-        end if
-      end if
-
-      ; Get index of reference dataset
-      obs_ind = ind(DATASETS .eq. \
-                    diag_script_info@evolution_plot_ref_dataset)
-
-      ; Set list of observations/input_file_info to exclude in the statistics
-      exclude_data = ind(metadata_att_as_array(INFO0, "project") .eq. "OBS")
-      if (isatt(diag_script_info, "evolution_plot_ignore")) then
-        exclude_data := array_append_record( \
-          exclude_data, ind(DATASETS .eq. \
-                            diag_script_info@evolution_plot_ignore), 0)
-      end if
-
-      ; To not get a warning about fillvalues from get1Dindex_Exclude
-      ind_dats = ispan(0, dimsizes(DATASETS) - 1, 1)
-      ind_dats@_FillValue = default_fillvalue("integer")
-      model_ind = get1Dindex_Exclude(ind_dats, exclude_data)
-      delete([/exclude_data, ind_dats/])
-
-      ; data_arr = all_data_yearly -> all_data_yearly: dataset, year, std = 0
-      data_arr = new((/6, dimsizes(all_data_yearly&year)/), float)
-      total_mean = dim_avg_n(all_data_yearly(model_ind, :, 0), 0)
-      total_std = new((/dimsizes(total_mean)/), float)
-      data_arr@ref_name = diag_script_info@evolution_plot_ref_dataset
-      data_arr@units = all_data_yearly@units
-      data_arr@dim_Mod = dimsizes(model_ind)
-      data_arr@project = diag_script_info@ensemble_name
-
-      ; Subtract mean 1901-1930 (coded as "until 1930") if anomaly plot
-      ind_1930 = ind(all_data_yearly&year .eq. 1930)
-      if (anomaly) then
-        data_arr(0, :) = (/all_data_yearly(obs_ind, :, 0)/) - \
-          avg(all_data_yearly(obs_ind, :ind_1930, 0))
-        ref_mean = dim_avg_n(all_data_yearly(model_ind, :ind_1930, 0), 1)
-        data_arr(1, :) = (/total_mean/) - avg(ref_mean)
-        do time_i = 0, dimsizes(all_data_yearly&year) - 1
-          data_arr(2, time_i) = dim_min_n( \
-            all_data_yearly(model_ind, time_i, 0) - ref_mean, 0)
-          data_arr(3, time_i) = dim_max_n( \
-            all_data_yearly(model_ind, time_i, 0) - ref_mean, 0)
-          total_std(time_i)  = dim_stddev_n( \
-            all_data_yearly(model_ind, time_i, 0) - ref_mean, 0)
-        end do
-      else
-        data_arr(0, :) = (/all_data_yearly(obs_ind, :, 0)/)
-        data_arr(1, :) = (/total_mean/)
-        data_arr(2, :) = dim_min_n(all_data_yearly(model_ind, :, 0), 0)
-        data_arr(3, :) = dim_max_n(all_data_yearly(model_ind, :, 0), 0)
-        total_std  = dim_stddev_n(all_data_yearly(model_ind, :, 0), 0)
-      end if
-      data_arr(4, :) = (/all_data_yearly&year/)
-      data_arr(5, :) = (/total_std/)
-
-      ; Get contour color
-      if (isatt(diag_script_info, "evolution_plot_color")) then
-        data_arr@contour_color = diag_script_info@evolution_plot_color
-      end if
-
-      ; Draw plot
-      outfile = plot_dir + var0 + "_evolution_" + DOMAIN
-      wks = gsn_open_wks(file_type, outfile)
-      wks@legendfile = outfile + "_legend"
-      plot1 = evolution_base_plot(wks, data_arr, var0, anomaly)
-
-      ; After overlaying the plots add titles and legend manually
-      wks_out = get_wks(wks, DIAG_SCRIPT, var0)
-      res_lines = True                    ; polyline mods desired
-      res_lines@gsLineColor = "black"
-      res_lines@gsLineDashPattern = 16
-      res_lines@gsLineThicknessF = 3.0
-      if (.not. anomaly) then
-        plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot1, \
-                                                        (/start_year, \
-                                                         end_year/), \
-                                                        (/0.0, 0.0/), \
-                                                        res_lines)
-      end if
-
-      res = True
-      res@gsnDraw = False
-      res@gsnFrame = False
-      res@gsnMaximize = True
-      res@gsnPaperOrientation = "landscape"
-      res@xyLineThicknesses = (/2, 2/)
-      res@xyLineColors = (/"black", "white"/)
-      res@xyDashPatterns = (/0.0, 0.0/)      ; make all lines solid
-
-      plot3 = gsn_csm_xy(wks_out, data_arr(4, :), data_arr(:1, :), res)
-
-      NhlAddOverlay(plot1, plot3, plot1)
-      draw(plot1)
-      frame(wks)
-      plot_path = outfile + "." + file_type
-      log_info("Wrote " + plot_path)
-
-      ; Provenance tracking
-      if (anomaly) then
-        tagstr = " (anomalies)"
-        statistics = (/"mean", "stddev", "anomaly"/)
-      else
-        tagstr = ""
-        statistics = (/"mean", "stddev"/)
-      end if
-      caption = ("Time series of " + var0 + tagstr + ". Similar to Anav " + \
-                 "et al. (2013), Figure 1 (top).")
-      plot_type = "times"
-      log_provenance(ncdf_outfile_yearly, plot_path, caption, statistics, \
-                     DOMAIN, plot_type, AUTHORS, REFERENCES, ALL_FILES)
-      delete([/data_arr, caption, statistics, plot_type/])
+    ; After overlaying the plots add titles and legend manually
+    wks_out = get_wks(wks, DIAG_SCRIPT, var0)
+    res_lines = True                    ; polyline mods desired
+    res_lines@gsLineColor = "black"
+    res_lines@gsLineDashPattern = 16
+    res_lines@gsLineThicknessF = 3.0
+    if (.not. anomaly) then
+      plot1@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot1, \
+                                                      (/start_year, \
+                                                       end_year/), \
+                                                      (/0.0, 0.0/), \
+                                                      res_lines)
     end if
+
+    res = True
+    res@gsnDraw = False
+    res@gsnFrame = False
+    res@gsnMaximize = True
+    res@gsnPaperOrientation = "landscape"
+    res@xyLineThicknesses = (/2, 2/)
+    res@xyLineColors = (/"black", "white"/)
+    res@xyDashPatterns = (/0.0, 0.0/)      ; make all lines solid
+
+    plot3 = gsn_csm_xy(wks_out, data_arr(4, :), data_arr(:1, :), res)
+
+    NhlAddOverlay(plot1, plot3, plot1)
+    draw(plot1)
+    frame(wks)
+    plot_path = outfile + "." + file_type
+    log_info("Wrote " + plot_path)
+
+    ; Provenance tracking
+    if (anomaly) then
+      tagstr = " (anomalies)"
+      statistics = (/"mean", "stddev", "anomaly"/)
+    else
+      tagstr = ""
+      statistics = (/"mean", "stddev"/)
+    end if
+    caption = ("Time series of " + var0 + tagstr + ". Similar to Anav " + \
+               "et al. (2013), Figure 1 (top).")
+    plot_type = "times"
+    log_provenance(ncdf_outfile_yearly, plot_path, caption, statistics, \
+                   DOMAIN, plot_type, AUTHORS, REFERENCES, ALL_FILES)
+    delete([/data_arr, caption, statistics, plot_type/])
   end if
 
   leave_msg(DIAG_SCRIPT, "")

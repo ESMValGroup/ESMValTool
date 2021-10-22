@@ -415,7 +415,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
       - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-         version: AVHRR-fv3.0, tier: 2}
+         version: AVHRR-AMPM-fv3.0, tier: 2}
       - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2}
     scripts:
       latlon: &latlon_settings
@@ -592,7 +592,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
       - {dataset: ESACCI-SST, project: OBS, type: sat,
-         version: 2.1, tier: 2}
+         version: 2.2, tier: 2}
       - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:

@@ -1,9 +1,10 @@
-autodocsumm<0.2.0
+autodocsumm>=0.2.2
 cdo
 cdsapi
 cmocean
 cython
 dask[array]
+docutils <0.17
 ecmwf-api-client
 eofs
 fiona

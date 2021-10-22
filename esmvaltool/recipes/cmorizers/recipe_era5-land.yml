@@ -1,0 +1,31 @@
+# ESMValTool
+# recipe_era5-land.yml
+---
+documentation:
+  description: CMORize ERA5-Land data
+
+  authors:
+    - weigel_katja
+
+  references:
+    - era5-land
+
+  projects:
+    - eval4cmip
+
+datasets:
+  - {dataset: ERA5-Land, project: native6, type: reanaly, version: '1',
+     tier: 3, start_year: 1981, end_year: 1982}
+
+diagnostics:
+  monthly:
+    description: CMORize monthly ERA5-Land data, so far for
+                 - pr (ERA5 name total_precipitation)
+    scripts:
+      rename:
+        script: cmorizers/era5.py
+    variables:
+      pr:
+        mip: Amon
+        # era5_name: total_precipitation
+        # era5_freq: monthly

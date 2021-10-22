@@ -5,11 +5,14 @@ import re
 import shutil
 import subprocess
 
-from esmvalcore._task import DiagnosticError
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic)
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+class DiagnosticError(Exception):
+    """Error in diagnostic."""
 
 
 def setup_driver(cfg):
@@ -268,7 +271,6 @@ def set_provenance(cfg):
             'statistics': [_get_stat(filename)],
             'domain': 'global',
             'plot_type': _get_plot_type(filename),
-            'plot_file': filename,
             'authors': [
                 'phillips_adam',
             ],

@@ -17,7 +17,9 @@ Instead, the regular nature of the release guarantees that every feature can be
 released in a timely manner even if a specific target release is missed.
 
 Because of limited resources, only the latest released versions of ESMValTool and ESMValCore is maintained.
-If your project requires longer maintenance or you have other concerns about the release strategy, please contact the ESMValTool core development team.
+If your project requires longer maintenance or you have other concerns about
+the release strategy, please contact the ESMValTool core development team, see
+:ref:`contact`.
 
 
 Overall Procedure
@@ -47,54 +49,120 @@ Release schedule
 
 With the following release schedule, we strive to have three releases per year and to avoid releases too close to holidays, as well as avoiding weekends.
 
+Upcoming releases
+^^^^^^^^^^^^^^^^^
 
-- 2.0.0 (Release Manager: Bouwe Andela)
-
-+------------+--------------------------+
-| 2020-07-01 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2020-07-20 |ESMValCore release        |
-+------------+--------------------------+
-| 2020-07-22 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2020-08-03 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.1.0 (Release Manager: Valeriu Predoi)
+- 2.4.0 (Release Manager: `Klaus Zimmermann`_)
 
 +------------+--------------------------+
-| 2020-10-05 |ESMValCore feature freeze |
+| 2021-10-04 |ESMValCore feature freeze |
 +------------+--------------------------+
-| 2020-10-12 |ESMValCore release        |
+| 2021-10-11 |ESMValCore release        |
 +------------+--------------------------+
-| 2020-10-19 |ESMValTool feature freeze |
+| 2021-10-18 |ESMValTool feature freeze |
 +------------+--------------------------+
-| 2020-10-26 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.2.0 (Release Manager: tbd)
-
-+------------+--------------------------+
-| 2021-02-01 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2021-02-07 |ESMValCore release        |
-+------------+--------------------------+
-| 2021-02-14 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2021-02-21 |ESMValTool release        |
+| 2021-10-25 |ESMValTool release        |
 +------------+--------------------------+
 
-- 2.3.0 (Release Manager: tbd)
+- 2.5.0 (Release Manager: `Manuel Schlund`_)
 
 +------------+--------------------------+
-| 2021-06-07 |ESMValCore feature freeze |
+| 2022-02-07 |ESMValCore feature freeze |
 +------------+--------------------------+
-| 2021-06-14 |ESMValCore release        |
+| 2022-02-14 |ESMValCore release        |
 +------------+--------------------------+
-| 2021-06-21 |ESMValTool feature freeze |
+| 2022-02-21 |ESMValTool feature freeze |
 +------------+--------------------------+
-| 2021-06-28 |ESMValTool release        |
+| 2022-02-28 |ESMValTool release        |
 +------------+--------------------------+
+
+- 2.6.0 (Release Manager: TBD)
+
++------------+--------------------------+
+| 2022-06-06 |ESMValCore feature freeze |
++------------+--------------------------+
+| 2022-06-13 |ESMValCore release        |
++------------+--------------------------+
+| 2022-06-20 |ESMValTool feature freeze |
++------------+--------------------------+
+| 2022-06-27 |ESMValTool release        |
++------------+--------------------------+
+
+Past releases
+^^^^^^^^^^^^^
+
+- 2.3.1 (Bugfix, Release Manager: `Klaus Zimmermann`_)
+
++------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|    Done    |                                            Event                                            |             Changelog              |
++============+=============================================================================================+====================================+
+| 2021-07-23 | `ESMValCore Release 2.3.1 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.3.1>`_ | :ref:`esmvalcore:changelog-v2-3-1` |
++------------+---------------------------------------------------------------------------------------------+------------------------------------+
+
+- 2.3.0 (Release Manager: `Klaus Zimmermann`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2021-06-07 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-06-14 | 2021-06-14 | `ESMValCore Release 2.3.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.3.0>`_ | :ref:`esmvalcore:changelog-v2-3-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-06-21 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-06-28 | 2021-07-27 | `ESMValTool Release 2.3.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.3.0>`_ |      :ref:`changelog-v2-3-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+
+- 2.2.0 (Release Manager: `Javier Vegas-Regidor`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2021-02-01 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-02-07 | 2021-02-09 | `ESMValCore Release 2.2.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.2.0>`_ | :ref:`esmvalcore:changelog-v2-2-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-02-14 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-02-21 | 2021-02-25 | `ESMValTool Release 2.2.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.2.0>`_ |      :ref:`changelog-v2-2-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+
+- 2.1.1 (Bugfix, Release Manager: `Valeriu Predoi`_)
+
++------------+---------------------------------------------------------------------------------------------+-------------------------+
+|    Done    |                                            Event                                            |        Changelog        |
++============+=============================================================================================+=========================+
+| 2020-12-01 | `ESMValTool Release 2.1.1 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.1.1>`_ | :ref:`changelog-v2-1-1` |
++------------+---------------------------------------------------------------------------------------------+-------------------------+
+
+- 2.1.0 (Release Manager: `Valeriu Predoi`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2020-10-05 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2020-10-12 | 2020-10-12 | `ESMValCore Release 2.1.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.1.0>`_ | :ref:`esmvalcore:changelog-v2-1-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2020-10-19 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2020-10-26 | 2020-10-26 | `ESMValTool Release 2.1.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.1.0>`_ |      :ref:`changelog-v2-1-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+
+- 2.0.0 (Release Manager: `Bouwe Andela`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2020-07-01 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2020-07-20 | 2020-07-20 | `ESMValCore Release 2.0.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.0.0>`_ | :ref:`esmvalcore:changelog-v2-0-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2020-07-22 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2020-08-03 | 2020-08-03 | `ESMValTool Release 2.0.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.0.0>`_ |      :ref:`changelog-v2-0-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+
 
 
 Detailed timeline steps
@@ -117,12 +185,12 @@ These are the detailed steps to take to make a release.
 3. Some additional testing of ESMValCore
 
    - Run all the recipes (optionally with a reduced amount of data) to check that they still work
-   - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the master branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
+   - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
 
 
 4. ESMValCore release
 
-   - Make the release by following the `ESMValCore release instructions`_.
+   - Make the release by following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>`.
    - Ask the user engagement team to announce the release to the user mailing list, the development team mailing list, on twitter
 
 
@@ -135,7 +203,7 @@ These are the detailed steps to take to make a release.
 6. Some additional testing of ESMValTool
 
    - Run all the recipes to check that they still work and ask authors to review the plots
-   - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the master branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
+   - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
 
 
 7. ESMValTool release
@@ -164,7 +232,7 @@ Procedure
 ~~~~~~~~~
 
 1. One or more issues are resolved that are deemed (by the core development team) to warrant a bugfix release.
-2. A release branch is created from the last release tag and the commit that fixes the bug/commits that fix the bugs are cherry-picked into it from the master branch.
+2. A release branch is created from the last release tag and the commit that fixes the bug/commits that fix the bugs are cherry-picked into it from the main branch.
 3. Some additional testing of the release branch takes place.
 4. The release takes place.
 
@@ -187,7 +255,7 @@ The person in charge of making the release, both technically and organizationall
 
 Release branch
 ~~~~~~~~~~~~~~
-The release branch can be used to do some additional testing before the release, while normal development work continues in the master branch. It will be branched off from the master branch after the feature freeze and will be used to make the release on the release date. The only way to still get something included in the release after the feature freeze is to ask the release manager to cherry-pick a commit from the master branch into this branch.
+The release branch can be used to do some additional testing before the release, while normal development work continues in the main branch. It will be branched off from the main branch after the feature freeze and will be used to make the release on the release date. The only way to still get something included in the release after the feature freeze is to ask the release manager to cherry-pick a commit from the main branch into this branch.
 
 
 .. _How to make a release:
@@ -206,7 +274,7 @@ To make a new release of the package, follow these steps:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Check the ``nightly``
-`build on CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool/tree/master>`__
+`build on CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool/tree/main>`__
 and the
 `GitHub Actions run <https://github.com/ESMValGroup/ESMValTool/actions>`__.
 All tests should pass before making a release (branch).
@@ -218,7 +286,7 @@ The version number is stored in ``esmvaltool/__init__.py``,
 ``package/meta.yaml``, ``CITATION.cff``. Make sure to update all files.
 Also update the release date in ``CITATION.cff``.
 See https://semver.org for more information on choosing a version number.
-Make a pull request and get it merged into ``master``.
+Make a pull request and get it merged into ``main``.
 
 3. Add release notes
 ~~~~~~~~~~~~~~~~~~~~
@@ -229,11 +297,11 @@ previous release.
 Review the results, and if anything needs changing, change it on GitHub and
 re-run the script until the changelog looks acceptable.
 Copy the result to the file ``doc/sphinx/source/changelog.rst``.
-Make a pull request and get it merged into ``master``.
+Make a pull request and get it merged into ``main``.
 
 4. Create a release branch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-Create a branch off the ``master`` branch and push it to GitHub.
+Create a branch off the ``main`` branch and push it to GitHub.
 Ask someone with administrative permissions to set up branch protection rules
 for it so only you and the person helping you with the release can push to it.
 Announce the name of the branch in an issue and ask the members of the
@@ -243,7 +311,7 @@ to run their favourite recipe using this branch.
 5. Cherry pick bugfixes into the release branch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If a bug is found and fixed (i.e. pull request merged into the
-``master`` branch) during the period of testing, use the command
+``main`` branch) during the period of testing, use the command
 ``git cherry-pick COMMIT_HASH``, where ``COMMIT_HASH`` is the commit hash of the
 commit that needs to be cherry-picked, to include the commit for this bugfix
 into the release branch.
@@ -251,7 +319,7 @@ Cherry-pick any new contributions in the order they were merged, to avoid
 conflicts.
 When the testing period is over, make a pull request to update
 the release notes with the latest changes (do not forget to include the pull
-request itself into the changelog), get it merged into ``master`` and
+request itself into the changelog), get it merged into ``main`` and
 cherry-pick it into the release branch.
 
 6. Make the release on GitHub
@@ -261,7 +329,7 @@ Do a final check that all tests on CircleCI and GitHub Actions completed
 successfully.
 Then click the
 `releases tab <https://github.com/ESMValGroup/ESMValTool/releases>`__
-and create the new release from the release branch (i.e. not from ``master``).
+and create the new release from the release branch (i.e. not from ``main``).
 The release tag always starts with the letter ``v`` followed by the version
 number, e.g. ``v2.1.0``.
 
@@ -334,4 +402,8 @@ Changelog
 - 2020-07-23 Update to timeline format by Bouwe Andela and Klaus Zimmermann
 - 2020-06-08 First draft by Klaus Zimmermann and Bouwe Andela
 
-.. _ESMValCore release instructions: https://docs.esmvaltool.org/projects/esmvalcore/en/latest/contributing.html#how-to-make-a-release
+.. _Bouwe Andela: https://github.com/bouweandela
+.. _Valeriu Predoi: https://github.com/valeriupredoi
+.. _Manuel Schlund: https://github.com/schlunma
+.. _Javier Vegas-Regidor: https://github.com/jvegasbsc
+.. _Klaus Zimmermann: https://github.com/zklaus
