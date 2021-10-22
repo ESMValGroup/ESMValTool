@@ -2,7 +2,7 @@
 # recipe_landcover.yml
 ---
 documentation:
-  title: Landcover
+  title: Landcover diagnostics
 
   description: |
     Recipe for plotting the accumulated area, average fraction
