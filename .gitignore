@@ -109,3 +109,6 @@ esmvaltool.Rproj
 
 # Julia installation
 esmvaltool/install/Julia/Manifest.toml
+
+# Cylc suite
+esmvaltool/utils/testing/regression/.service/

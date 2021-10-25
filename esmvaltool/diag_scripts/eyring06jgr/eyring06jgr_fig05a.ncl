@@ -98,7 +98,7 @@ begin
   latrange(:, 0) = diag_script_info@latmin
   latrange(:, 1) = diag_script_info@latmax
   seasons = diag_script_info@month
-  flag_mod = where(projects.ne."OBS" .and. projects.ne."obs4mips", 1, 0)
+  flag_mod = where(projects.ne."OBS" .and. projects.ne."obs4MIPs", 1, 0)
   index_mod = ind(flag_mod.gt.0)
   index_obs = ind(flag_mod.eq.0)
   dim_MOD = dimsizes(index_mod)

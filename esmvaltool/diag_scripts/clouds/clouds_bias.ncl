@@ -28,6 +28,7 @@
 ;   none
 ;
 ; Modification history
+;   20211006-lauer_axel: removed write_plots
 ;   20190222-lauer_axel: added output of provenance (v2.0)
 ;   20181119-lauer_axel: adapted code to multi-variable capable framework
 ;   20180923-lauer_axel: added writing of results to netcdf
@@ -95,12 +96,6 @@ begin
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
-
-  if (diag_script_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
 
 end
 
@@ -351,56 +346,54 @@ begin
   plotfile = new(numseas, string)
   plotfile(:) = ""
 
-  if (write_plots) then
-    do is = 0, numseas - 1
-      ; --------------------------------------------------------------------
-      ; create workspace
+  do is = 0, numseas - 1
+    ; --------------------------------------------------------------------
+    ; create workspace
 
-      if (isvar("wks")) then
-        delete(wks)
-      end if
+    if (isvar("wks")) then
+      delete(wks)
+    end if
 
-      wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_bias_" + var0 \
-                    + "_" + season(is))
+    wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_bias_" + var0 \
+                  + "_" + season(is))
 
-      plotfile(is) = wks@fullname
+    plotfile(is) = wks@fullname
 
-      if (numseas.gt.1) then
-        pres@txString = season(is)
-        plots(0, is) = contour_map(wks, mmdata(is, :, :), var0)
-        plots(1, is) = contour_map(wks, diff(is, :, :), var0)
-        if (plot_abs_diff) then
-          plots(2, is) = contour_map(wks, absdiff(is, :, :), var0)
-        end if
-        if (plot_rel_diff) then
-          plots(3, is) = contour_map(wks, reldiff(is, :, :), var0)
-        end if
-        gsn_panel(wks, plots(plotind, is), plotsperline, pres)
-      else
-        plots(0, 0) = contour_map(wks, mmdata, var0)
-        plots(1, 0) = contour_map(wks, diff, var0)
-        if (plot_abs_diff) then
-          plots(2, 0) = contour_map(wks, absdiff, var0)
-        end if
-        if (plot_rel_diff) then
-          plots(3, 0) = contour_map(wks, reldiff, var0)
-        end if
-        gsn_panel(wks, plots(plotind, 0), plotsperline, pres)
-      end if
-
-      ; add meta data to plot (for reporting)
-
-      caption = "Multi model values, from top left to bottom right: " \
-                + "mean, bias"
+    if (numseas.gt.1) then
+      pres@txString = season(is)
+      plots(0, is) = contour_map(wks, mmdata(is, :, :), var0)
+      plots(1, is) = contour_map(wks, diff(is, :, :), var0)
       if (plot_abs_diff) then
-        caption = caption + ", absolute error"
+        plots(2, is) = contour_map(wks, absdiff(is, :, :), var0)
       end if
       if (plot_rel_diff) then
-        caption = caption + ", relative error"
+        plots(3, is) = contour_map(wks, reldiff(is, :, :), var0)
       end if
+      gsn_panel(wks, plots(plotind, is), plotsperline, pres)
+    else
+      plots(0, 0) = contour_map(wks, mmdata, var0)
+      plots(1, 0) = contour_map(wks, diff, var0)
+      if (plot_abs_diff) then
+        plots(2, 0) = contour_map(wks, absdiff, var0)
+      end if
+      if (plot_rel_diff) then
+        plots(3, 0) = contour_map(wks, reldiff, var0)
+      end if
+      gsn_panel(wks, plots(plotind, 0), plotsperline, pres)
+    end if
 
-    end do  ; is-loop (seasons)
-  end if  ; if write_plots
+    ; add meta data to plot (for reporting)
+
+    caption = "Multi model values, from top left to bottom right: " \
+              + "mean, bias"
+    if (plot_abs_diff) then
+      caption = caption + ", absolute error"
+    end if
+    if (plot_rel_diff) then
+      caption = caption + ", relative error"
+    end if
+
+  end do  ; is-loop (seasons)
 
   ; ###########################################
   ; # output to netCDF                        #

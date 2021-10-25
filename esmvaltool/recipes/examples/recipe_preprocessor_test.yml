@@ -10,6 +10,8 @@ documentation:
     - andela_bouwe
     - schlund_manuel
 
+  title: Test recipe for ESMValCore preprocessors.
+
   maintainer:
     - righi_mattia
 
@@ -25,21 +27,21 @@ preprocessors:
 
   preprocessor_1:
     extract_levels:
-      levels: ERA-Interim
+      levels: bcc-csm1-1
       # This also works, but allows specifying the pressure coordinate name
-      # levels: {dataset: ERA-Interim, coordinate: air_pressure}
+      # levels: {dataset: bcc-csm1-1, coordinate: air_pressure}
       scheme: linear
     mask_landsea:
       mask_out: land  # if land (sea), will mask land (sea and oceans) out
     regrid:
-      target_grid: ERA-Interim
+      target_grid: bcc-csm1-1
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.90
     multi_model_statistics:
       span: overlap
       statistics: [mean, median]
-      exclude: [NCEP]
+      exclude: [GFDL-ESM2G]
 
   preprocessor_2:
     custom_order: true
@@ -82,9 +84,6 @@ diagnostics:
         mip: Amon
         start_year: 2000
         end_year: 2002
-        additional_datasets:
-          - {dataset: NCEP, project: OBS, tier: 2, type: reanaly, version: 1}
-          - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
       orog:
         mip: fx
       sftlf:
