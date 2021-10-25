@@ -2,8 +2,10 @@
 # recipe_clouds_pdf.yml
 ---
 documentation:
+  title: Cloud diagnostics v2 (pdf)
+
   description: |
-    Diagnostics of cloud parameters - pdf
+    Frequency distributions of cloud parameters.
 
   authors:
     - lauer_axel

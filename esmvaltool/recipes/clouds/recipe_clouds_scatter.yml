@@ -2,8 +2,10 @@
 # recipe_clouds_scatter.yml
 ---
 documentation:
+  title: Cloud diagnostics v2 (scatter)
+
   description: |
-    Diagnostics of cloud parameters - pdf
+    Cloud properties sorted by total cloud cover.
 
   authors:
     - lauer_axel

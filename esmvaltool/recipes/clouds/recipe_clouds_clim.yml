@@ -1,11 +1,10 @@
 # recipe_clouds_clim.yml
 ---
 documentation:
-  title: Cloud diagnostics v2 - climatologies
+  title: Cloud diagnostics v2 (climatologies)
 
   description: |
-    Diagnostics of clouds and hydrological cycle reproducing selected figures
-    from Lauer and Hamilton (2013).
+    Multi-year annaul means of cloud properties.
 
   authors:
     - lauer_axel
@@ -116,7 +115,7 @@ diagnostics:
   # Geographical distribution of multi-year annual/seasonal means (panel plot)
   # ==========================================================================
 
-  clouds_fig1_cmip5:
+  clouds_clim_cmip5:
     description: climatological annual means
     themes:
       - clouds
@@ -274,7 +273,7 @@ diagnostics:
         multiobs_exclude: ["ERA-Interim", "ERA5"]
         filename_add: cmip5
 
-  clouds_fig1_cmip6:
+  clouds_clim_cmip6:
     description: climatological annual means
     themes:
       - clouds

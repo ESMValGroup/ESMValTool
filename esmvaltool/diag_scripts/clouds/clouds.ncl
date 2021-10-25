@@ -59,6 +59,7 @@
 ;   none
 ;
 ; Modification history
+;   20211021-lauer_axel: added output of basic statistics as ascii files
 ;   20210325-lauer_axel: added option to estimate observational uncertainty
 ;                        from multiple observational datasets
 ;   20210318-lauer_axel: added option to speficfy variable if more than one
@@ -347,10 +348,10 @@ begin
     ind_all_sorted(1:n - 1) = ind_wo_ref
   end if
 
-  corr = new((/numseas/), float)
-  gavg = new((/numseas/), float)
-  rmsd = new((/numseas/), float)
-  bias = new((/numseas/), float)
+  corr = new((/nplots, numseas/), float)
+  gavg = new((/nplots, numseas/), float)
+  rmsd = new((/nplots, numseas/), float)
+  bias = new((/nplots, numseas/), float)
 
   ; filenames for netcdf output
 
@@ -603,24 +604,25 @@ begin
                 + "preprocessor settings in recipe).")
     end if
 
-    corr = corr@_FillValue
-    gavg = gavg@_FillValue
+    corr(imod, :) = corr@_FillValue
+    gavg(imod, :) = gavg@_FillValue
 
     if (.not.all(ismissing(data1))) then
       if (numseas.gt.1) then
         do is = 0, numseas - 1
           if (same_grid .and. (ref_ind .ge. 0)) then
-            corr(is) = calculate_metric(ref_data(is, :, :), data1(is, :, :), \
-                                        "correlation")
+            corr(imod, is) = calculate_metric(ref_data(is, :, :), \
+                                              data1(is, :, :), "correlation")
           end if
-          gavg(is) = area_operations(data1(is, :, :), -90., 90., 0., 360., \
-                                     "average", True)
+          gavg(imod, is) = area_operations(data1(is, :, :), -90., 90., \
+                                           0., 360., "average", True)
         end do
       else
         if (same_grid .and. (ref_ind .ge. 0)) then
-          corr(0) = calculate_metric(ref_data, data1, "correlation")
+          corr(imod, 0) = calculate_metric(ref_data, data1, "correlation")
         end if
-        gavg(0) = area_operations(data1, -90., 90., 0., 360., "average", True)
+        gavg(imod, 0) = area_operations(data1, -90., 90., 0., 360., \
+                                        "average", True)
       end if
     end if
 
@@ -671,13 +673,13 @@ begin
 
     if (numseas.gt.1) then
       do is = 0, numseas - 1
-        if (.not.ismissing(corr(is))) then
-          res@gsnRightString = "corr = " + sprintf("%6.3f", corr(is))
+        if (.not.ismissing(corr(imod, is))) then
+          res@gsnRightString = "corr = " + sprintf("%6.3f", corr(imod, is))
         else
           res@gsnRightString = ""
         end if
-        if (.not.ismissing(gavg(is))) then
-          res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg(is))
+        if (.not.ismissing(gavg(imod, is))) then
+          res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg(imod, is))
         else
           res@gsnLeftString = ""
         end if
@@ -700,13 +702,13 @@ begin
         end if
       end do
     else
-      if (.not.ismissing(corr(0))) then
-        res@gsnRightString = "corr = " + sprintf("%6.3f", corr(0))
+      if (.not.ismissing(corr(imod, 0))) then
+        res@gsnRightString = "corr = " + sprintf("%6.3f", corr(imod, 0))
       else
         res@gsnRightString = ""
       end if
-      if (.not.ismissing(gavg(0))) then
-        res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg(0))
+      if (.not.ismissing(gavg(imod, 0))) then
+        res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg(imod, 0))
       else
         res@gsnLeftString = ""
       end if
@@ -746,27 +748,27 @@ begin
 
         dres@tiMainString =  names(imod) + " - " + refname
 
-        rmsd = rmsd@_FillValue
-        bias = bias@_FillValue
+        rmsd(imod, :) = rmsd@_FillValue
+        bias(imod, :) = bias@_FillValue
 
         if (numseas.gt.1) then
           do is = 0, numseas - 1
             if (.not. flag_rel_diff) then
               if (same_grid) then
-                rmsd(is) = calculate_metric(ref_data(is, :, :), \
-                                            data1(is, :, :), "RMSD")
+                rmsd(imod, is) = calculate_metric(ref_data(is, :, :), \
+                                                  data1(is, :, :), "RMSD")
               end if
-              bias(is) = area_operations(diff(is, :, :), -90., 90., 0., 360., \
-                                         "average", True)
+              bias(imod, is) = area_operations(diff(is, :, :), -90., 90., \
+                                               0., 360., "average", True)
             end if
           end do
         else
           if (.not. flag_rel_diff) then
             if (same_grid) then
-              rmsd(0) = calculate_metric(ref_data, data1, "RMSD")
+              rmsd(imod, 0) = calculate_metric(ref_data, data1, "RMSD")
             end if
-            bias(0) = area_operations(diff, -90., 90., 0., 360., "average", \
-                                      True)
+            bias(imod, 0) = area_operations(diff, -90., 90., 0., 360., \
+                                            "average", True)
           end if
         end if
       else if (flag_multiobs_unc) then
@@ -777,8 +779,8 @@ begin
         dres@gsnLeftString  = ""
         dres@gsnRightString = ""
         dres@tiMainString =  refname + " uncertainty"
-        rmsd = rmsd@_FillValue
-        bias = bias@_FillValue
+        rmsd(imod, :) = rmsd@_FillValue
+        bias(imod, :) = bias@_FillValue
       else
         continue
       end if
@@ -995,13 +997,13 @@ begin
 
       if (numseas.gt.1) then
         do is = 0, numseas - 1
-          if (.not.ismissing(rmsd(is))) then
-            dres@gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd(is))
+          if (.not.ismissing(rmsd(imod, is))) then
+            dres@gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd(imod, is))
           else
             dres@gsnRightString = ""
           end if
-          if (.not.ismissing(bias(is))) then
-            dres@gsnLeftString = "bias = " + sprintf("%6.3f", bias(is))
+          if (.not.ismissing(bias(imod, is))) then
+            dres@gsnLeftString = "bias = " + sprintf("%6.3f", bias(imod, is))
           else
             dres@gsnLeftString = ""
           end if
@@ -1020,13 +1022,13 @@ begin
           end if
         end do
       else
-        if (.not.ismissing(rmsd(0))) then
-          dres@gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd(0))
+        if (.not.ismissing(rmsd(imod, 0))) then
+          dres@gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd(imod, 0))
         else
           dres@gsnRightString = ""
         end if
-        if (.not.ismissing(bias(0))) then
-          dres@gsnLeftString = "bias = " + sprintf("%6.3f", bias(0))
+        if (.not.ismissing(bias(imod, 0))) then
+          dres@gsnLeftString = "bias = " + sprintf("%6.3f", bias(imod, 0))
         else
           dres@gsnLeftString = ""
         end if
@@ -1525,6 +1527,123 @@ begin
       gsn_labelbar_ndc(wksleg, nboxes, labels, 0.1, 0.9, pres)
     end if  ; if (flag_diff)
   end if  ; if (extralegend)
+
+  ; ==========================================================================
+
+  ; output some statistics to ASCII files
+
+  statLabel = (/ "    mean", "  stddev", "     min", \
+                 "  lowDec", "  lowOct", "  lowSex", \
+                 "lowQuart", "  lowTri", "  median", \
+                 "   hiTri", " hiQuart", "   hiSex", "   hiOct", "   hiDec", \
+                 "     max", "   range", "  disper", "     RMS", \
+                 "    nTot", "    nUse", "    nMsg", "    %Msg" /)
+
+  idxmod = get_mod(names, projects)  ; model indices w/o MultiModelMean
+
+  if ((idxmod(0) .ne. -1) .and. (idxobs(0) .ne. -1)) then
+
+    do is = 0, numseas - 1
+
+      ; *** mean ***
+
+      ofile = work_dir + var0 + "_mean_" + season(is) + filename_add + ".txt"
+      statmod = stat_dispersion(gavg(idxmod, is), False)
+      statobs = stat_dispersion(gavg(idxobs, is), False)
+
+      statselect = (/0, 1, 2, 14, 3, 6, 8, 10, 13/)
+
+      write_table(ofile, "w", [/names + " " + tostring(gavg(:, is))/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/"statistics models:"/], "%s")
+      write_table(ofile, "a", [/names(idxmod)/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/statLabel(statselect) + " " + \
+                               tostring(statmod(statselect))/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/"statistics observations:"/], "%s")
+      write_table(ofile, "a", [/names(idxobs)/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/statLabel(statselect) + " " + \
+                               tostring(statobs(statselect))/], "%s")
+
+      delete(statselect)
+
+      ; *** bias ***
+
+      ofile = work_dir + var0 + "_bias_" + season(is) + filename_add + ".txt"
+      statmod = stat_dispersion(bias(idxmod, is), False)
+      statobs = stat_dispersion(bias(idxobs, is), False)
+
+      statselect = (/0, 1, 2, 14, 3, 6, 8, 10, 13/)
+
+      write_table(ofile, "w", [/names + " " + tostring(bias(:, is))/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/"statistics models:"/], "%s")
+      write_table(ofile, "a", [/names(idxmod)/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/statLabel(statselect) + " " + \
+                               tostring(statmod(statselect))/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/"statistics observations:"/], "%s")
+      write_table(ofile, "a", [/names(idxobs)/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/statLabel(statselect) + " " + \
+                               tostring(statobs(statselect))/], "%s")
+
+      delete(statselect)
+
+      ; *** correlation ***
+
+      ofile = work_dir + var0 + "_corr_" + season(is) + filename_add + ".txt"
+      statmod = stat_dispersion(corr(idxmod, is), False)
+      statobs = stat_dispersion(corr(idxobs, is), False)
+
+      statselect = (/2, 14, 3, 6, 8, 10, 13/)
+
+      write_table(ofile, "w", [/names + " " + tostring(corr(:, is))/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/"statistics models:"/], "%s")
+      write_table(ofile, "a", [/names(idxmod)/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/statLabel(statselect) + " " + \
+                               tostring(statmod(statselect))/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/"statistics observations:"/], "%s")
+      write_table(ofile, "a", [/names(idxobs)/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/statLabel(statselect) + " " + \
+                               tostring(statobs(statselect))/], "%s")
+
+      delete(statselect)
+
+      ; *** rmsd ***
+
+      ofile = work_dir + var0 + "_rmsd_" + season(is) + filename_add + ".txt"
+      statmod = stat_dispersion(rmsd(idxmod, is), False)
+      statobs = stat_dispersion(rmsd(idxobs, is), False)
+
+      statselect = (/2, 14, 3, 6, 8, 10, 13/)
+
+      write_table(ofile, "w", [/names + " " + tostring(rmsd(:, is))/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/"statistics models:"/], "%s")
+      write_table(ofile, "a", [/names(idxmod)/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/statLabel(statselect) + " " + \
+                               tostring(statmod(statselect))/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/"statistics observations:"/], "%s")
+      write_table(ofile, "a", [/names(idxobs)/], "%s")
+      write_table(ofile, "a", [/"--------------------------------"/], "%s")
+      write_table(ofile, "a", [/statLabel(statselect) + " " + \
+                               tostring(statobs(statselect))/], "%s")
+
+      delete(statselect)
+
+    end do  ; loop over seasons
+
+  end if  ; if there are models and observations
 
   ; ==========================================================================
 

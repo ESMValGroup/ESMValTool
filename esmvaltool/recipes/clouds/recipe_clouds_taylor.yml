@@ -1,7 +1,7 @@
 # recipe_clouds_taylor.yml
 ---
 documentation:
-  title: Cloud diagnostics v2 - Taylor diagrams
+  title: Cloud diagnostics v2 (taylor)
 
   description: |
     Taylor diagrams of clouds properties.
