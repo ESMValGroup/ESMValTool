@@ -2,6 +2,7 @@
 # recipe_deangelis15nat.yml
 ---
 documentation:
+  title: "Evaluate water vapor short wave radiance absorption schemes of ESMs with the observations"
   description: |
     Recipe for reproducing the plots in DeAngelis et al., 2015 Nature
 
