@@ -33,10 +33,23 @@ def _get_provenance_record(cfg, plot_file, caption, loc):
         k for k in cfg["input_data"].keys() if k.endswith(".nc")
     ]
     if "_vs_" in plot_file:
-        ancestor_files = [k for k in all_input_files if "OBS" not in k]
+        model_1 = plot_file.split("_vs_")[0].split("_")[-1]
+        if plot_file.endswith(".png"):
+            model_2 = plot_file.split("_vs_")[1].strip(".png")
+        elif plot_file.endswith(".nc"):
+            model_2 = plot_file.split("_vs_")[1].strip(".nc")
+        ancestor_1 = [
+            k for k in all_input_files if model_1 in os.path.basename(k)
+        ][0]
+        ancestor_2 = [
+            k for k in all_input_files if model_2 in os.path.basename(k)
+        ][0]
+        ancestor_files = [ancestor_1, ancestor_2]
     else:
-        model = plot_file.split("_")[1]
-        ancestor_files = [k for k in all_input_files if model in k]
+        model = os.path.basename(plot_file).split("_")[0]
+        ancestor_files = [
+            k for k in all_input_files if model in os.path.basename(k)
+        ]
     record = {
         'caption': caption,
         'statistics': ['mean'],
