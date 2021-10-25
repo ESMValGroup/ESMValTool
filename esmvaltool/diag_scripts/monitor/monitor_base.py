@@ -2,31 +2,32 @@
 
 import logging
 import os
-import yaml
 
 import cartopy
 import matplotlib.pyplot as plt
+import yaml
+from esmvalcore._data_finder import _replace_tags
 from iris.analysis import MEAN
 from mapgenerator.plotting.timeseries import PlotSeries
 
-from esmvalcore._data_finder import _replace_tags
-from esmvaltool.diag_scripts.shared import ProvenanceLogger
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, names
 
 logger = logging.getLogger(__name__)
 
 
 class MonitorBase():
-    """
-    Base class for monitoring diagnostic.
+    """Base class for monitoring diagnostic.
 
-    It contains the common methods for path creation, provenance recording,
-    option parsing and to create some common plots.
+    It contains the common methods for path creation, provenance
+    recording, option parsing and to create some common plots.
     """
     def __init__(self, config):
         self.cfg = config
-        self.plot_folder = config.get(
-            'plot_folder',
-            '~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}')
+        self.plot_folder = os.path.abspath(
+            config.get(
+                'plot_folder',
+                os.path.join(self.cfg[names.PLOT_DIR], "../..",
+                             '{dataset}/{exp}/{modeling_realm}/{real_name}')))
         self.plot_filename = config.get(
             'plot_filename',
             '{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}')
@@ -61,8 +62,7 @@ class MonitorBase():
         return variable_options
 
     def plot_timeseries(self, cube, var_info, period='', **kwargs):
-        """
-        Plot timeseries from a cube.
+        """Plot timeseries from a cube.
 
         It also automatically smoothes it for long timeseries of monthly data:
         - Between 10 and 70 years long, it also plots the 12-month rolling
@@ -114,11 +114,10 @@ class MonitorBase():
 
     @staticmethod
     def plot_cube(cube, filename, linestyle='-', **kwargs):
-        """
-        Plot a timeseries from a cube.
+        """Plot a timeseries from a cube.
 
-        Supports multiplot layouts for cubes with extra dimensions `shape_id`
-        or `region`
+        Supports multiplot layouts for cubes with extra dimensions
+        `shape_id` or `region`
         """
         plotter = PlotSeries()
         plotter.filefmt = 'svg'
@@ -149,8 +148,7 @@ class MonitorBase():
         return record
 
     def get_plot_path(self, plot_type, var_info, file_type='svg'):
-        """
-        Get plot full path from variable info.
+        """Get plot full path from variable info.
 
         Parameters:
         -----------
@@ -165,8 +163,7 @@ class MonitorBase():
                             self.get_plot_name(plot_type, var_info, file_type))
 
     def get_plot_folder(self, var_info):
-        """
-        Get plot storage folder from variable info.
+        """Get plot storage folder from variable info.
 
         Parameters:
         -----------
@@ -186,8 +183,7 @@ class MonitorBase():
         return folder
 
     def get_plot_name(self, plot_type, var_info, file_type='svg'):
-        """
-        Get plot filename from variable info.
+        """Get plot filename from variable info.
 
         Parameters:
         -----------

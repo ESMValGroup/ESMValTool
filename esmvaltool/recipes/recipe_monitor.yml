@@ -1,8 +1,10 @@
 # ESMValTool
 ---
 documentation:
+  title: Monitoring
   description: |
-    This a recipe to monitor experiments
+    This a recipe to monitor experiments by automatizing the creation of plots
+    from raw preprocessor output.
   authors:
     - vegas-regidor_javier
 
@@ -184,10 +186,6 @@ diagnostics:
         mip: Amon
         preprocessor: climatology
         grid: gr
-      # uas:
-      #   mip: Amon
-      #   preprocessor: climatology
-      #   grid: gr
       rsns:
         derive: true
         mip: Amon
@@ -317,10 +315,7 @@ diagnostics:
         mip: SImon
         preprocessor: climatology
         grid: gn
-      # sivol:
-      #   mip: SImon
-      #   grid: gn
-      #   preprocessor: climatology
+
     scripts:
       plot:
         <<: *plot_default
@@ -345,7 +340,7 @@ diagnostics:
         <<: *plot_default
         plots:
           clim:
-            maps: [north, ]
+            maps: [north,]
 
   sh_clims:
     description: "Plot climatologies"
@@ -360,4 +355,4 @@ diagnostics:
         <<: *plot_default
         plots:
           clim:
-            maps: [south, ]
+            maps: [south,]

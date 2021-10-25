@@ -43,16 +43,20 @@ class Eofs(MonitorBase):
                 eof.long_name = var_info.get('eof_name', eof.long_name)
                 eof.standard_name = None
                 plot_map.plot_cube(eof, save=False, **variable_options)
-                plt.savefig(self.get_plot_path('eof', var_info, 'png'),
+                filename = self.get_plot_path('eof', var_info, 'png')
+                plt.savefig(filename,
                             bbox_inches='tight',
                             pad_inches=.2,
                             dpi=plot_map.dpi)
                 plt.close(plt.gcf())
+                self.record_plot_provenance(filename, var_info, 'eof')
+
                 filename = self.get_plot_path('pc', var_info)
                 pcomp = solver.pcs(npcs=1, pcscaling=1)[:, 0]
                 pcomp.long_name = var_info.get('pc_name', pcomp.long_name)
                 pcomp.standard_name = None
                 self.plot_cube(pcomp, filename)
+                self.record_plot_provenance(filename, var_info, 'pc')
 
 
 def main():
