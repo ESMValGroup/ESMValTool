@@ -29,9 +29,14 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def _get_provenance_record(cfg, plot_file, caption, loc):
     """Create a provenance record describing the diagnostic data and plot."""
-    ancestor_files = [
+    all_input_files = [
         k for k in cfg["input_data"].keys() if k.endswith(".nc")
     ]
+    if "_vs_" in plot_file:
+        ancestor_files = [k for k in all_input_files if "OBS" not in k]
+    else:
+        model = plot_file.split("_")[1]
+        ancestor_files = [k for k in all_input_files if model in k]
     record = {
         'caption': caption,
         'statistics': ['mean'],
