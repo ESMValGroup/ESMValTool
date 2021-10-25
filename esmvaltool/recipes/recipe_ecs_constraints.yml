@@ -2,7 +2,10 @@
 # recipe_ecs_constraints.yml
 ---
 documentation:
-  description: |
+  title: >
+    Emergent constraints for ECS
+
+  description: >
     Multiple emergent constraints for ECS.
 
   authors:
