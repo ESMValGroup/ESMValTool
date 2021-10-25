@@ -10,6 +10,8 @@ documentation:
   references:
     - acknow_project
 
+  title: WHY?
+
 
 YEARS: &years
   start_year: 2013
@@ -122,8 +124,9 @@ diagnostics:
         additional_datasets:
           - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
     scripts:
-      time_series:
-        <<: *script_time_series_obs
+      null
+      # time_series:
+      #   <<: *script_time_series_obs
       # map:
       #   <<: *scrip_map_obs
       #   plot_kwargs_abs:
@@ -148,8 +151,9 @@ diagnostics:
         additional_datasets:
           - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
     scripts:
-      time_series:
-        <<: *script_time_series_obs
+      null
+      # time_series:
+      #   <<: *script_time_series_obs
       # map:
       #   <<: *scrip_map_obs
       #   plot_kwargs_abs:
@@ -173,8 +177,9 @@ diagnostics:
         additional_datasets:
           - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
     scripts:
-      time_series:
-        <<: *script_time_series_obs
+      null
+      # time_series:
+      #   <<: *script_time_series_obs
       # map:
       #   <<: *scrip_map_obs
       #   plot_kwargs_abs:
@@ -199,8 +204,9 @@ diagnostics:
         additional_datasets:
           - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
     scripts:
-      time_series:
-        <<: *script_time_series_obs
+      null
+      # time_series:
+      #   <<: *script_time_series_obs
       # map:
       #   <<: *scrip_map_obs
       #   plot_kwargs_abs:
@@ -225,8 +231,9 @@ diagnostics:
         additional_datasets:
           - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
     scripts:
-      time_series:
-        <<: *script_time_series_obs
+      null
+      # time_series:
+      #   <<: *script_time_series_obs
       # map:
       #   <<: *scrip_map_obs
       #   plot_kwargs_abs:
@@ -251,8 +258,9 @@ diagnostics:
         additional_datasets:
           - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
     scripts:
-      time_series:
-        <<: *script_time_series_obs
+      null
+      # time_series:
+      #   <<: *script_time_series_obs
       # map:
       #   <<: *scrip_map_obs
       #   plot_kwargs_abs:
