@@ -7,7 +7,7 @@ documentation:
     temperature variability
 
   description: >
-    This recuipe reproduces the emergent constraint for the equilibrium climate
+    This recipe reproduces the emergent constraint for the equilibrium climate
     sensitivity (ECS) based on global temperature variability by Cox et al.
     (2018).
 
