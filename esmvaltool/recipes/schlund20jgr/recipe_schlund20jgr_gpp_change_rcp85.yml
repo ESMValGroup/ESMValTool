@@ -2,6 +2,10 @@
 # recipe_schlund20jgr_gpp_change_rcp85.yml
 ---
 documentation:
+  title: |
+    Constraining uncertainty in projected gross primary production (GPP) with
+    machine learning (target variable: fractional change in GPP in the RCP 8.5
+    scenario)
 
   description: |
     Use MLR (Machine Learning Regression) models to contstrain fractional

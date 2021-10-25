@@ -2,6 +2,9 @@
 # recipe_tcr.yml
 ---
 documentation:
+  title: |
+    Transient Climate Response (TCR)
+
   description: |
     Calculate Transient Climate Response (TCR).
 

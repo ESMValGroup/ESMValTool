@@ -2,8 +2,12 @@
 # recipe_ecs.yml
 ---
 documentation:
+  title: |
+    Equilibrium Climate Sensitivity (ECS)
+
   description: |
-    Calculate ECS using linear regression following Gregory et al. (2004).
+    Calculate Equilibrium Climate Sensitivity (ECS) using linear regression
+    following Gregory et al. (2004).
 
   authors:
     - schlund_manuel
