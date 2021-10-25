@@ -2,12 +2,13 @@
 # recipe_schlund20esd.yml
 ---
 documentation:
-  title: |
+  title: >
     Emergent constraints on equilibrium climate sensitivity in CMIP5: do they
     hold for CMIP6?
 
-  description: |
-    Evaluate emergent constraints on ECS on CMIP5 and CMIP6 models.
+  description: >
+    This recipe evaluates several emergent constraints on the equilibrium
+    climate sensitivity (ECS) on CMIP5 and CMIP6 models.
 
   authors:
     - schlund_manuel
