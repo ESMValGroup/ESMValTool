@@ -85,7 +85,7 @@ begin
     idxexcl = ind(idx .eq. 2)
     if (.not.all(ismissing(idxexcl))) then
       log_info("Observational datasets excluded by user: " \
-        + str_join(names(idxexcl), ", "))
+               + str_join(names(idxexcl), ", "))
     end if
   end if
 
