@@ -104,6 +104,13 @@ Observational and reanalysis products in the standard CF/CMOR format used in CMI
 
 Other datasets not available in these archives can be obtained by the user from the respective sources and reformatted to the CF/CMOR standard. ESMValTool currently support two ways to perform this reformatting (aka 'CMORization'). The first is to use a CMORizer script to generate a local pool of reformatted data that can readily be used by the ESMValTool. The second way is to implement specific 'fixes' for your dataset. In that case, the reformatting is performed 'on the fly' during the execution of an ESMValTool recipe (note that one of the first preprocessor tasks is 'CMOR checks and fixes'). Below, both methods are explained in more detail.
 
+A collection of readily CMORized OBS and OBS6 datasets can be accessed directly on CEDA/JASMIN and DKRZ. At CEDA/JASMIN
+OBS and OBS6 data is stored in the `esmeval` Group Workspace (GWS), and to be granted read (and execute) permissions to the
+GWS, one must apply at https://accounts.jasmin.ac.uk/services/group_workspaces/esmeval/ ; after permission has been granted, the user
+is encouraged to use the data in `/gws/nopw/j04/esmeval/obsdata-v2` locally, but not move it to minimize both data transfers and
+stale disk usage; to note that Tier 3 data is subject to data protection restrictions;
+the GWS is adminstered by [Valeriu Predoi](mailto:valeriu.predoi@ncas.ac.uk) for further inquiries.
+
 Using a CMORizer script
 -----------------------
 
