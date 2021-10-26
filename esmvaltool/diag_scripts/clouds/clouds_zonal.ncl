@@ -394,6 +394,10 @@ begin
       data1@var_units = ""
     end if
 
+    res@lbTitleString      = data1@var_units
+    res@lbTitlePosition    = "Bottom"
+    res@lbTitleFontHeightF = 0.015
+
     if (.not. isvar("ref_data")) then
       ref_data = data1
       vcoord_ref = vcoord
