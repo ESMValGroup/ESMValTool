@@ -122,7 +122,7 @@ def bgc_units(cube, name):
         the cube with the new units.
     """
     new_units = ''
-    if name in ['tos', 'thetao']:
+    if name in ['tos', 'thetao', 'thetaoga', ]:
         new_units = 'celsius'
 
     if name in ['sos', 'so']:
@@ -130,6 +130,8 @@ def bgc_units(cube, name):
 
     if name in ['no3', 'o2', 'po4', 'si']:
         new_units = 'mmol m-3'
+        # Set minimum value (remove negative values!)
+        cube.data = np.ma.clip(cube.data, 0.000001, cube.data.max())
 
     if name in ['chl', ]:
         new_units = 'mg m-3'
@@ -139,6 +141,9 @@ def bgc_units(cube, name):
 
     if name in ['fgco2', ]:
         new_units = 'g m-2 d-1'
+
+    if name in ['zostoga', ]:
+        new_units = 'mm'
 
     if name in ['spco2', 'dpco2', ]:
         new_units = 'uatm'
@@ -561,7 +566,7 @@ def get_image_path(
 
 def make_cube_layer_dict(cube):
     """
-    Take a cube and return a dictionairy layer:cube
+    Take a cube and return a dictionairy layer:cube.
 
     Each item in the dict is a layer with a separate cube for each layer.
     ie: cubes[depth] = cube from specific layer
