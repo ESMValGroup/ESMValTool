@@ -2,6 +2,7 @@
 # recipe_climwip.yml
 ---
 documentation:
+  title: Basic test recipe for ClimWIP weighting method
   description: EUCP ClimWIP
 
   authors:

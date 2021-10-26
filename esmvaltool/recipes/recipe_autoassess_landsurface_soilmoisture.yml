@@ -10,6 +10,9 @@ documentation:
 
   authors:
     - predoi_valeriu
+    - sellar_alistair
+
+  title: Land-surface diagnostic that computes soilmoisture indices (from Autoassess).
 
   references:
     - esacci-soilmoisture

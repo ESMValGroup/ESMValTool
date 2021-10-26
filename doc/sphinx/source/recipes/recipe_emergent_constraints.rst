@@ -135,17 +135,17 @@ Observations and reformat scripts
 ---------------------------------
 
 .. note:: (1) Obs4mips data can be used directly without any preprocessing.
-          (2) See headers of reformat scripts for non-obs4mips data for download instructions.
+          (2) See headers of reformat scripts for non-obs4MIPs data for download instructions.
 
-* AIRS (obs4mips): hus, husStderr
-* AIRS-2-0 (obs4mips): hur
-* CERES-EBAF (obs4mips): rsdt, rsut, rsutcs
+* AIRS (obs4MIPs): hus, husStderr
+* AIRS-2-0 (obs4MIPs): hur
+* CERES-EBAF (obs4MIPs): rsdt, rsut, rsutcs
 * ERA-Interim (OBS6): hur, ta, va, wap
-* GPCP-SG (obs4mips): pr
+* GPCP-SG (obs4MIPs): pr
 * HadCRUT4 (OBS): tasa
 * HadISST (OBS): ts
 * MLS-AURA (OBS6): hur
-* TRMM-L3 (obs4mips): pr, prStderr
+* TRMM-L3 (obs4MIPs): pr, prStderr
 
 
 References

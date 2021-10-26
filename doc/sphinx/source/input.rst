@@ -100,7 +100,7 @@ users can now continue with :ref:`Running ESMValTool <running>`.
 Observations
 ============
 
-Observational and reanalysis products in the standard CF/CMOR format used in CMIP and required by the ESMValTool are available via the obs4mips and ana4mips projects at the ESGF (e.g., https://esgf-data.dkrz.de/projects/esgf-dkrz/). Their use is strongly recommended, when possible.
+Observational and reanalysis products in the standard CF/CMOR format used in CMIP and required by the ESMValTool are available via the obs4MIPs and ana4mips projects at the ESGF (e.g., https://esgf-data.dkrz.de/projects/esgf-dkrz/). Their use is strongly recommended, when possible.
 
 Other datasets not available in these archives can be obtained by the user from the respective sources and reformatted to the CF/CMOR standard. ESMValTool currently support two ways to perform this reformatting (aka 'CMORization'). The first is to use a CMORizer script to generate a local pool of reformatted data that can readily be used by the ESMValTool. The second way is to implement specific 'fixes' for your dataset. In that case, the reformatting is performed 'on the fly' during the execution of an ESMValTool recipe (note that one of the first preprocessor tasks is 'CMOR checks and fixes'). Below, both methods are explained in more detail.
 
@@ -126,7 +126,7 @@ The path to the raw data to be CMORized must be specified in the
 :ref:`user configuration file<config-user>` as RAWOBS.
 Within this path, the data are expected to be organized in subdirectories
 corresponding to the data tier: Tier2 for freely-available datasets (other
-than obs4mips and ana4mips) and Tier3 for restricted datasets (i.e., dataset
+than obs4MIPs and ana4mips) and Tier3 for restricted datasets (i.e., dataset
 which requires a registration to be retrieved or provided upon request to
 the respective contact or PI).
 The CMORization follows the
@@ -263,13 +263,17 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | FLUXCOM                      | gpp (Lmon)                                                                                           |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| GCP                          | fgco2 (Omon), nbp (Lmon)                                                                             |   2  | Python          |
+| GCP2018                      | fgco2 (Omon), nbp (Lmon)                                                                             |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| GCP2020                      | fgco2 (Omon), nbp (Lmon)                                                                             |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | GHCN                         | pr (Amon)                                                                                            |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | GHCN-CAMS                    | tas (Amon)                                                                                           |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | GISTEMP                      | tasa (Amon)                                                                                          |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| GLODAP                       | dissic, ph, talk (Oyr)                                                                               |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | GPCC                         | pr (Amon)                                                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -336,7 +340,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | WFDE5                        | tas, pr (Amon, day)                                                                                  |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| WOA                          | no3, o2, po4, si (Oyr), so, thetao (Omon)                                                            |   2  | Python          |
+| WOA                          | thetao, so, tos, sos (Omon)                                                                          |   2  | Python          |
+|                              | no3, o2, po4, si (Oyr)                                                                               |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 
 .. [#note1] CMORization is built into ESMValTool through the native6 project, so there is no separate CMORizer script.

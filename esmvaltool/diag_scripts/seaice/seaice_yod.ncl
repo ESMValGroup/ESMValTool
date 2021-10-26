@@ -25,6 +25,7 @@
 ;   - CMOR units expected: areacello in m2, sic in %
 ;
 ; Modification history
+;    20211006-lauer_axel: removed write_plots
 ;    20191030-lauer_axel: rewritten for v2.0
 ;    20190211-senftleben_daniel: implemented.
 ; #############################################################################
@@ -74,10 +75,8 @@ begin
   end if
 
   ; Create output plot directory
-  if (diag_script_info@write_plots) then
-    plot_dir = config_user_info@plot_dir
-    system("mkdir -p " + plot_dir)
-  end if
+  plot_dir = config_user_info@plot_dir
+  system("mkdir -p " + plot_dir)
 
   ; Create output directory (work)
   system("mkdir -p " + config_user_info@work_dir)

@@ -2,6 +2,7 @@
 # recipe_impact.yml
 ---
 documentation:
+  title: Quick insight for climate impact researchers
   description: >
     This recipe provides quick insight into the spread and performance of multiple models.
 

@@ -2,6 +2,8 @@
 # recipe_seaice.yml
 ---
 documentation:
+  title: Sea ice diagnostics
+
   description: |
     Recipe for Arctic and Antarctic sea ice diagnostics.
 
@@ -52,6 +54,7 @@ datasets:
 
 diagnostics:
   seaice_tsline:
+    title: Sea ice area and extent
     description: Timeseries of September/February Arctic/Antartic sea ice area and extent
     themes:
       - seaIce
@@ -105,6 +108,7 @@ diagnostics:
         fill_pole_hole: false
 
   seaice_trends:
+    title: Trend sea ice extent
     description: Trend of September/February Arctic/Antarctic sea ice extent
     themes:
       - seaIce
@@ -145,6 +149,7 @@ diagnostics:
         month: "2"
 
   seaice_ecs:
+    title: Emergent constraint sea ice extent
     description: Emergent constraints for September Arctic sea ice extent
     themes:
       - seaIce
@@ -210,6 +215,7 @@ diagnostics:
         styleset: "CMIP5"
 
   seaice_yod:
+    title: Sea ice year of near dissapearance
     description: year of near disappearance of September Arctic sea ice
     themes:
       - seaIce
@@ -239,4 +245,3 @@ diagnostics:
         month: "9"
         # Fill polar hole in data with sic = 1.
         fill_pole_hole: true
-

@@ -1,31 +1,33 @@
 ---
 name: esmvaltool
 channels:
+  - conda-forge/label/esmvalcore_rc
   - conda-forge
+  - nodefaults
 
 dependencies:
+  - pip!=21.3
   # Python packages that cannot be installed from PyPI:
-  - cartopy>=0.18
+  - cartopy
   - compilers
   - gdal
   - esmpy
-  - esmvalcore>=2.3.1,<2.4
-  - iris>=3.0.2
-  - matplotlib>3.3.1,<3.4  # bug in 3.3.1, issue with nc-time-axis for >=3.4
-  - mpich<3.4  # issues with 3.4.1 and 3.4.2 that install external_0 build
+  - esmvalcore
+  - matplotlib-base
   # Non-Python dependencies
-  - cdo>=1.9.7
-  - eccodes!=2.19.0  # cdo dependency; something messed up with libeccodes.so
+  - cdo
   - imagemagick
   - nco
   - ruamel.yaml
   - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
+  - xgboost
 
   # Multi language support:
-  - ncl>=6.5.0  # this should always install 6.6.0 though
-  - r-base>=3.5
+  - ncl
+  - r-base
   # R packages needed for development
   - r-docopt
+  - r-git2r  # dependency of lintr
   - r-lintr
   - r-styler
   - r-yaml
