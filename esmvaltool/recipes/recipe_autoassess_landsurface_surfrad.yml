@@ -12,6 +12,9 @@ documentation:
 
   authors:
     - predoi_valeriu
+    - sellar_alistair
+
+  title: Land-surface diagnostic that computes surface radiation indices (from Autoassess).
 
   references:
     - loeb19jclim
@@ -39,7 +42,7 @@ diagnostics:
         force_derivation: false
         mip: Amon
         additional_datasets:
-          - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
+          - {dataset: CERES-EBAF,  project: obs4MIPs,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
       sftlf:
         mip: fx
       rlns: # Surf LW net all sky
@@ -47,7 +50,7 @@ diagnostics:
         force_derivation: false
         mip: Amon
         additional_datasets:
-          - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
+          - {dataset: CERES-EBAF,  project: obs4MIPs,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
       sftlf:
         mip: fx
     scripts:
@@ -58,7 +61,7 @@ diagnostics:
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [CERES-EBAF]
-        obs_type: obs4mips
+        obs_type: obs4MIPs
         start: 1993/12/01
         end: 2002/12/01
 
