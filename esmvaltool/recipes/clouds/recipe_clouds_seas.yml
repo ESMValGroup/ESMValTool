@@ -331,20 +331,20 @@ diagnostics:
       seasclt: &settings6
         script: clouds/clouds_seasonal_cycle.ncl
         projection: CylindricalEquidistant
-        var: clt
         filename_add: cmip6
+        var: clt
       seasclivi:
-        <<: *settings5
+        <<: *settings6
         var: clivi
       seaslwp:
-        <<: *settings5
+        <<: *settings6
         var: lwp
       seaslwcre:
-        <<: *settings5
+        <<: *settings6
         var: lwcre
       seasswcre:
-        <<: *settings5
+        <<: *settings6
         var: swcre
       seasprw:
-        <<: *settings5
+        <<: *settings6
         var: prw

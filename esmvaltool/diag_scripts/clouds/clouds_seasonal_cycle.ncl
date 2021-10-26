@@ -184,7 +184,7 @@ begin
     ; calculate amplitude at each grid cell
 
     monmean = dim_avg_n_Wrap(timeseries, 0)
-    monmean = where(monmean .le. 1.0e-6, monmean@_FillValue, monmean)
+    monmean = where(abs(monmean) .le. 1.0e-6, monmean@_FillValue, monmean)
 
     monmin = monmean
     monmax = monmin

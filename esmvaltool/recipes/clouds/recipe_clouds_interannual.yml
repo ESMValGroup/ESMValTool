@@ -239,7 +239,6 @@ diagnostics:
       varprw:
         <<: *settings5
         var: prw
-        filename_add: cmip5
 
   clouds_intera_cmip6:
     description: interannual variability
