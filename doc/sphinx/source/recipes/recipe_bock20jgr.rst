@@ -257,9 +257,9 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* AIRS (obs4mips) - specific humidity
+* AIRS (obs4MIPs) - specific humidity
 
-* CERES-EBAF (obs4mips) - CERES TOA radiation fluxes (used for calculation of
+* CERES-EBAF (obs4MIPs) - CERES TOA radiation fluxes (used for calculation of
   cloud forcing)
 
 * ERA-Interim - reanalysis of surface temperature, sea surface pressure
@@ -282,7 +282,7 @@ Observations and reformat scripts
 
   *Reformat script:* cmorizers/obs/cmorize_obs_ghcn.ncl
 
-* GPCP-SG (obs4mips) - Global Precipitation Climatology Project total
+* GPCP-SG (obs4MIPs) - Global Precipitation Climatology Project total
   precipitation
 
 * HadCRUT4 - surface temperature anomalies

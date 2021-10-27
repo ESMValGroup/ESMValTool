@@ -78,7 +78,7 @@ begin
   set_default_att(diag_script_info, "e13fig12_end_year", min(y2))
   set_default_att(diag_script_info, "e13fig12_season", "ANN")
   flag_mod = where(projects.ne."OBS6" .and. projects.ne."OBS" .and.\
-                   projects.ne."obs4mips", 1, 0)
+                   projects.ne."obs4MIPs", 1, 0)
 
   exp_MMM = diag_script_info@e13fig12_exp_MMM
   flag_exp = new((/dimsizes(projects), dimsizes(exp_MMM)/), "integer")

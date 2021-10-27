@@ -27,6 +27,7 @@
 ;   CMOR units expected: areacello in m2, sic in %
 ;
 ; Modification history
+;   20211006-lauer_axel: removed write_plots
 ;   20190227-senftleben_daniel: added provenance.
 ;   20190218-senftleben_daniel: ported to ESMValTool v2.0a1
 ;   20180620-senftleben_daniel: ported to ESMValTool v2
@@ -109,10 +110,8 @@ begin
   avgstd = project_style(info, diag_script_info, "avgstd")
 
   ; Create output plot directory
-  if (diag_script_info@write_plots) then
-    plot_dir = config_user_info@plot_dir
-    system("mkdir -p " + plot_dir)
-  end if
+  plot_dir = config_user_info@plot_dir
+  system("mkdir -p " + plot_dir)
 
   ; Plot file type
   file_type = config_user_info@output_file_type
