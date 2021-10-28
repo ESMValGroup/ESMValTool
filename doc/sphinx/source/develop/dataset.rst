@@ -269,8 +269,8 @@ The different parts of the name are explained in more detail here:
   start year and month, and ``201612`` being the end year and month;
 
 .. note::
-   There is a different naming convention for ``obs4mips`` data (see the exact
-   specifications for the obs4mips data file naming convention in the
+   There is a different naming convention for ``obs4MIPs`` data (see the exact
+   specifications for the obs4MIPs data file naming convention in the
    ``config-developer.yml`` file).
 
 7. Test the cmorized dataset

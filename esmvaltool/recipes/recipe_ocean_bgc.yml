@@ -2,9 +2,8 @@
 # recipe_ocean_bcg.yml
 ---
 documentation:
-  title: 
-    - Marine Biogeochemistry analysis suite
-    
+  title: Marine Biogeochemistry analysis suite
+
   description: |
     Recipe to evaluate the marine biogeochemistry models of CMIP5.
     There are also some physical evaluation metrics here too.

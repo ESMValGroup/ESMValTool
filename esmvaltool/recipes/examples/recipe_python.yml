@@ -46,6 +46,8 @@ preprocessors:
   annual_mean_global:
     area_statistics:
       operator: mean
+      fx_variables:
+        areacella:
     annual_statistics:
       operator: mean
 

@@ -128,19 +128,19 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4mips data can be used directly without any reformating. For non-obs4mips data see headers of cmorization scripts (in `/esmvaltool/cmorizers/obs/
+The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4MIPs data can be used directly without any reformating. For non-obs4MIPs data see headers of cmorization scripts (in `/esmvaltool/cmorizers/obs/
 <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/obs/>`_) for downloading and processing instructions.
 #.  recipe_perfmetrics_CMIP5.yml
 
-    * AIRS (hus - obs4mips)
-    * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
+    * AIRS (hus - obs4MIPs)
+    * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4MIPs)
     * ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
     * ESACCI-AEROSOL (od550aer, od870aer, od550abs, od550lt1aer - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-AEROSOL.ncl)
     * ESACCI-CLOUD (clt - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-CLOUD.ncl)
     * ESACCI-OZONE (toz - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-OZONE.ncl)
     * ESACCI-SOILMOISTURE (sm - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-SOILMOISTURE.ncl)
     * ESACCI-SST (ts - esmvaltool/ucmorizers/obs/cmorize_obs_ESACCI-SST.ncl)
-    * GPCP-SG (pr - obs4mips)
+    * GPCP-SG (pr - obs4MIPs)
     * HadISST (ts - esmvaltool/cmorizers/obs/cmorize_obs_HadISST.ncl)
     * MODIS (od550aer - esmvaltool/cmorizers/obs/cmorize_obs_MODIS.ncl)
     * NCEP (tas, ta, ua, va, zg - esmvaltool/cmorizers/obs/cmorize_obs_NCEP.ncl)
@@ -149,7 +149,7 @@ The following list shows the currently used observational data sets for this rec
 
 #. recipe_perfmetrics_land_CMIP5.yml
 
-    * CERES-EBAF (rlus, rlds, rsus, rsds - obs4mips)
+    * CERES-EBAF (rlus, rlds, rsus, rsds - obs4MIPs)
     * ESACCI-SOILMOISTURE (sm - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-SOILMOISTURE.ncl)
     * FLUXCOM (gpp - esmvaltool/cmorizers/obs/cmorize_obs_fluxcom.py)
     * JMA-TRANSCOM (nbp, fgco2 - esmvaltool/cmorizers/obs/cmorize_obs_jma_transcom.py)
