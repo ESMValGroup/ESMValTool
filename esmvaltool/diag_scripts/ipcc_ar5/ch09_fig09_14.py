@@ -24,7 +24,7 @@ import logging
 import os
 
 import iris
-from iris.experimental.equalise_cubes import equalise_attributes
+from iris.util import equalise_attributes
 from iris.exceptions import CoordinateNotFoundError
 import iris.plot as iplt
 import matplotlib
