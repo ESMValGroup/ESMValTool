@@ -54,7 +54,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4mips or OBS or ana4mips can be used.*
+*Note: (1) obs4MIPs or OBS or ana4mips can be used.*
 
 * any observations
 * it is important to note that all observational data should go through the same preprocessing as model data

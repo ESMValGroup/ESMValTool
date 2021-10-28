@@ -403,7 +403,7 @@ diagnostics:
         reference_dataset: GPCP-SG
         additional_datasets: *cmip6_tas
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3,
          tier: 1}
     scripts:
       model_bias:
@@ -423,7 +423,7 @@ diagnostics:
         end_year: 2004
         additional_datasets: *cmip5_tas
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3,
          tier: 1}
     scripts:
       model_bias:
@@ -447,7 +447,7 @@ diagnostics:
         end_year: 1999
         additional_datasets: *cmip3_tas
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3,
          tier: 1, mip: Amon}
     scripts:
       model_bias:
@@ -463,7 +463,7 @@ diagnostics:
         reference_dataset: GPCP-SG
         additional_datasets: *cmip6_highresmip_low
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3,
          tier: 1}
     scripts:
       model_bias:
@@ -479,7 +479,7 @@ diagnostics:
         reference_dataset: GPCP-SG
         additional_datasets: *cmip6_highresmip_high
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3,
          tier: 1}
     scripts:
       model_bias:

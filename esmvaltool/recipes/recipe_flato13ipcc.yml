@@ -334,7 +334,7 @@ diagnostics:
         reference_dataset: GPCP-SG
         mip: Amon
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2,
          start_year: 1986, end_year: 2005, tier: 1}
       - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
@@ -449,7 +449,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
       - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
@@ -556,7 +556,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
       - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
@@ -660,7 +660,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
       - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
@@ -925,7 +925,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
     scripts:
       fig09-6_pattern_cor:
         <<: *fig09_6_pattern_cor
@@ -1011,7 +1011,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2, tier: 1}
       - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
     scripts:
       fig09-6_pattern_cor:
@@ -1093,7 +1093,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
     scripts:
       fig09-6_pattern_cor:
         <<: *fig09_6_pattern_cor
