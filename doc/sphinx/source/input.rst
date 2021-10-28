@@ -55,6 +55,8 @@ For example, run
 
 to run the default example recipe and automatically download the required data
 to the directory ``~/climate_data``.
+The data only needs to be downloaded once, every following run will re-use
+previously downloaded data stored in this directory.
 See :ref:`esmvalcore:config-esgf` for a more in depth explanation and the
 available configuration options.
 
