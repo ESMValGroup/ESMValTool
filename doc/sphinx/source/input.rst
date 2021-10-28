@@ -38,7 +38,7 @@ to make it easy to download CMIP6, CMIP5, CMIP3, CORDEX, and obs4MIPs from ESGF.
 The chapter in the ESMValCore documentation on
 :ref:`finding data <esmvalcore:findingdata>` explains how to
 configure the ESMValTool so it can find locally available data and/or
-download it from ESGF if it not available locally yet.
+download it from ESGF if it isn't available locally yet.
 
 Models
 ======
