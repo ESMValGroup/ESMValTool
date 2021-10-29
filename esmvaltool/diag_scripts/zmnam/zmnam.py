@@ -86,7 +86,7 @@ def main(cfg):
         provenance_record = get_provenance_record(props,
                                                   ancestor_files=[ifile])
         plot_files = zmnam_plot(file_mo_an, out_dir + '/', plot_dir + '/',
-                                ifile_props, fig_fmt, True)
+                                ifile_props, fig_fmt)
         for file in outfiles + plot_files:
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(file, provenance_record)
