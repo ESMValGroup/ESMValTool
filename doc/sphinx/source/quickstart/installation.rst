@@ -256,7 +256,7 @@ and install ESMValTool as well as any remaining Python dependencies with the com
     pip install esmvaltool
 
 If you would like to run Julia diagnostic scripts, you will also need to
-`install Julia <https://julialang.org/downloads/platform/>`_ and the Julia dependencies:
+install the Julia dependencies:
 
 .. code-block:: bash
 
@@ -547,24 +547,8 @@ tool.
 This command will also install extra development dependencies needed for
 building the documentation, running the unit tests, etc.
 
-If you would like to run Julia diagnostic scripts, you will also need to
-`install Julia <https://julialang.org/downloads/platform/>`_.
-One way to install Julia is by using `Jill.py <https://github.com/johnnychen94/jill.py>`_
-
-.. code-block:: bash
-
-    pip install jill
-    jill install
-
-You can check that Julia installed correctly by running
-
-.. code-block:: bash
-
-    which julia
-
-this should show the path to your Julia executable.
-
-Next, install the ESMValTool Julia dependencies:
+If you would like to run Julia diagnostic scripts, you will need to
+install the ESMValTool Julia dependencies:
 
 .. code-block:: bash
 
