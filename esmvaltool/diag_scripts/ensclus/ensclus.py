@@ -49,7 +49,7 @@ def get_provenance_record(gatt, vatt, ancestor_files):
 def main(cfg):
     """Ensemble Clustering Diagnostics."""
     out_dir = cfg['work_dir']
-    write_plots = cfg['write_plots']
+    write_plots = True
     input_data = cfg['input_data'].values()
     input_data = sorted_metadata(input_data, sort='recipe_dataset_index')
     files_dict = group_metadata(input_data, 'filename',
