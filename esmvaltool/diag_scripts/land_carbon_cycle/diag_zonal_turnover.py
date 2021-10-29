@@ -199,24 +199,22 @@ def main(diag_config):
         " figure 2a and 2b in Carvalhais et al. (2014).", ['mean', 'perc'],
         ['zonal'], _get_ancestor_files(diag_config, obs_var))
 
-    if diag_config['write_netcdf']:
-        model_cubes = [
-            c for c in zonal_tau_mod.values() if isinstance(c, iris.cube.Cube)
-        ]
-        obs_cubes = [
-            c for c in zonal_tau_obs.values() if isinstance(c, iris.cube.Cube)
-        ]
-        netcdf_path = get_diagnostic_filename(base_name, diag_config)
-        save_cubes = iris.cube.CubeList(model_cubes + obs_cubes)
-        iris.save(save_cubes, netcdf_path)
-        with ProvenanceLogger(diag_config) as provenance_logger:
-            provenance_logger.log(netcdf_path, provenance_record)
+    model_cubes = [
+        c for c in zonal_tau_mod.values() if isinstance(c, iris.cube.Cube)
+    ]
+    obs_cubes = [
+        c for c in zonal_tau_obs.values() if isinstance(c, iris.cube.Cube)
+    ]
+    netcdf_path = get_diagnostic_filename(base_name, diag_config)
+    save_cubes = iris.cube.CubeList(model_cubes + obs_cubes)
+    iris.save(save_cubes, netcdf_path)
+    with ProvenanceLogger(diag_config) as provenance_logger:
+        provenance_logger.log(netcdf_path, provenance_record)
 
-    if diag_config['write_plots']:
-        plot_path = get_plot_filename(base_name, diag_config)
-        _plot_zonal_tau(plot_path, zonal_tau_mod, zonal_tau_obs, diag_config)
-        with ProvenanceLogger(diag_config) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
+    plot_path = get_plot_filename(base_name, diag_config)
+    _plot_zonal_tau(plot_path, zonal_tau_mod, zonal_tau_obs, diag_config)
+    with ProvenanceLogger(diag_config) as provenance_logger:
+        provenance_logger.log(plot_path, provenance_record)
 
 
 if __name__ == '__main__':
