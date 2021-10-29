@@ -454,8 +454,7 @@ def main(cfg):
     scenarios = select_final_subset(cfg, subsets, prov=provenance)
 
     # Step 4: plot the results
-    if cfg['write_plots']:
-        make_plots(cfg, scenarios)
+    make_plots(cfg, scenarios)
 
 
 if __name__ == '__main__':

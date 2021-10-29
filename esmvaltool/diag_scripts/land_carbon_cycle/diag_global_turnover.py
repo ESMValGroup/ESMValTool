@@ -748,82 +748,77 @@ def main(diag_config):
         global_tau_mod['global'][model_name] = np.float(tau_global
                                                         .core_data())
 
-        if diag_config['write_plots']:
-            base_name_mod = (
-                'global_{title}_{source_label}_'
-                '{grid_label}'.format(
-                    title=global_tau_obs['grid']['tau_ctotal'].long_name,
-                    source_label=model_name,
-                    grid_label=diag_config['obs_info']['grid_label']))
-            plot_path_mod = get_plot_filename(base_name_mod, diag_config)
-            # plot_path_list.append(plot_path_mod)
-            provenance_record_mod = _get_provenance_record(
-                "Map of global distribution of turnover time of carbon",
-                ['mean', 'perc'],
-                ['global'],
-                {model_name: model_dataset})
-            _plot_single_map(plot_path_mod, tau_ctotal,
-                             global_tau_mod['global'][model_name],
-                             model_name,
-                             provenance_record_mod,
-                             diag_config)
-        if diag_config['write_netcdf']:
-            model_cubes = [
-                c for c in global_tau_mod['grid'].values()
-                if isinstance(c, iris.cube.Cube)
-            ]
-            obs_cubes = [
-                c for c in global_tau_obs['grid'].values()
-                if isinstance(c, iris.cube.Cube)
-            ]
-            netcdf_path = get_diagnostic_filename(base_name_mod, diag_config)
-            save_cubes = iris.cube.CubeList(model_cubes + obs_cubes)
-            iris.save(save_cubes, netcdf_path)
+        base_name_mod = (
+            'global_{title}_{source_label}_'
+            '{grid_label}'.format(
+                title=global_tau_obs['grid']['tau_ctotal'].long_name,
+                source_label=model_name,
+                grid_label=diag_config['obs_info']['grid_label']))
+        plot_path_mod = get_plot_filename(base_name_mod, diag_config)
+        # plot_path_list.append(plot_path_mod)
+        provenance_record_mod = _get_provenance_record(
+            "Map of global distribution of turnover time of carbon",
+            ['mean', 'perc'],
+            ['global'],
+            {model_name: model_dataset})
+        _plot_single_map(plot_path_mod, tau_ctotal,
+                         global_tau_mod['global'][model_name],
+                         model_name,
+                         provenance_record_mod,
+                         diag_config)
 
-        else:
-            netcdf_path = None
+        model_cubes = [
+            c for c in global_tau_mod['grid'].values()
+            if isinstance(c, iris.cube.Cube)
+        ]
+        obs_cubes = [
+            c for c in global_tau_obs['grid'].values()
+            if isinstance(c, iris.cube.Cube)
+        ]
+        netcdf_path = get_diagnostic_filename(base_name_mod, diag_config)
+        save_cubes = iris.cube.CubeList(model_cubes + obs_cubes)
+        iris.save(save_cubes, netcdf_path)
 
         with ProvenanceLogger(diag_config) as provenance_logger:
             provenance_logger.log(netcdf_path, provenance_record_mod)
 
-    if diag_config['write_plots']:
-        # multimodel agreement
-        base_name_multimodel = '{prefix}_{base_name}'.format(
-            prefix='global_multimodelAgreement', base_name=base_name)
-        plot_path_multimodel = get_plot_filename(base_name_multimodel,
-                                                 diag_config)
-        _plot_multimodel_agreement(plot_path_multimodel, global_tau_mod,
-                                   global_tau_obs, config)
-        with ProvenanceLogger(diag_config) as provenance_logger:
-            provenance_logger.log(plot_path_multimodel,
-                                  provenance_record_multimodel)
+    # multimodel agreement
+    base_name_multimodel = '{prefix}_{base_name}'.format(
+        prefix='global_multimodelAgreement', base_name=base_name)
+    plot_path_multimodel = get_plot_filename(base_name_multimodel,
+                                             diag_config)
+    _plot_multimodel_agreement(plot_path_multimodel, global_tau_mod,
+                               global_tau_obs, config)
+    with ProvenanceLogger(diag_config) as provenance_logger:
+        provenance_logger.log(plot_path_multimodel,
+                              provenance_record_multimodel)
 
-        # map of observation
-        base_name_obs = '{prefix}_{base_name}'.format(prefix='global',
-                                                      base_name=base_name)
-        plot_path_obs = get_plot_filename(base_name_obs, diag_config)
-        provenance_record_obs = _get_provenance_record(
-            "Map of observed global distribution of turnover time of carbon",
-            ['mean', 'perc'],
-            ['global'],
-            global_tau_obs['input_files'].tolist())
+    # map of observation
+    base_name_obs = '{prefix}_{base_name}'.format(prefix='global',
+                                                  base_name=base_name)
+    plot_path_obs = get_plot_filename(base_name_obs, diag_config)
+    provenance_record_obs = _get_provenance_record(
+        "Map of observed global distribution of turnover time of carbon",
+        ['mean', 'perc'],
+        ['global'],
+        global_tau_obs['input_files'].tolist())
 
-        _plot_single_map(plot_path_obs,
-                         global_tau_obs['grid']['tau_ctotal'],
-                         global_tau_obs['global']['tau_ctotal'],
-                         config['obs_info']['source_label'],
-                         provenance_record_obs,
-                         diag_config)
+    _plot_single_map(plot_path_obs,
+                     global_tau_obs['grid']['tau_ctotal'],
+                     global_tau_obs['global']['tau_ctotal'],
+                     config['obs_info']['source_label'],
+                     provenance_record_obs,
+                     diag_config)
 
-        # matrix of maps
-        base_name_matrix = '{prefix}_{base_name}'.format(
-            prefix='global_matrix_map', base_name=base_name)
-        plot_path_matrix = get_plot_filename(base_name_matrix, diag_config)
-        _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs,
-                         config)
+    # matrix of maps
+    base_name_matrix = '{prefix}_{base_name}'.format(
+        prefix='global_matrix_map', base_name=base_name)
+    plot_path_matrix = get_plot_filename(base_name_matrix, diag_config)
+    _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs,
+                     config)
 
-        with ProvenanceLogger(diag_config) as provenance_logger:
-            provenance_logger.log(plot_path_matrix, provenance_record_matrix)
+    with ProvenanceLogger(diag_config) as provenance_logger:
+        provenance_logger.log(plot_path_matrix, provenance_record_matrix)
 
 
 if __name__ == '__main__':
