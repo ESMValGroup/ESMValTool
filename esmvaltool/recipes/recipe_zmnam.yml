@@ -46,4 +46,3 @@ diagnostics:
         script: zmnam/zmnam.py
         title: "Zonal mean AM diagnostics"
         hemisphere: ["NH", "SH"]
-        write_plots: true
