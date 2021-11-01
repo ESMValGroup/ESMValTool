@@ -2,10 +2,11 @@
 # recipe_EnsClus.yml
 ---
 documentation:
+  title: Sub-ensemble Selection by Clustering
   description: |
     Recipe for sub-ensemble selection.
-    The diagnostics groups ensemble members according to similar 
-    characteristics and selects the most representative member 
+    The diagnostics groups ensemble members according to similar
+    characteristics and selects the most representative member
     for each cluster based on a k-means algorithm
 
   authors:

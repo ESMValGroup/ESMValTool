@@ -2,6 +2,7 @@
 # recipe_zmnam.yml
 ---
 documentation:
+  title: Zonal mean annular modes
   description: |
     Recipe for zonal mean annular mode.
     The diagnostics compute the index and the spatial

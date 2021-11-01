@@ -10,6 +10,7 @@ documentation:
   description: |
     Analysis of column-averaged CO2 (XCO2) emission driven model data in
     comparison to satellite data (Gier et al., 2020).
+  title: Column-averaged CO2 emission (model vs satellite data)
   authors:
     - gier_bettina
 
