@@ -65,7 +65,6 @@ def main(cfg):
     plot_dir = cfg['plot_dir']
     out_dir = cfg['work_dir']
     run_dir = cfg['run_dir']
-    write_plots = cfg['write_plots']
     fig_fmt = cfg['output_file_type']
 
     hemispheres = cfg['hemisphere']
@@ -92,13 +91,11 @@ def main(cfg):
             print("calc")
             outfiles = zmnam_calc(file_da_an_zm, out_dir + '/', ifile_props)
 
-            if write_plots:
-                print("plot_files")
-                plot_files = zmnam_plot(file_mo_an, out_dir + '/',
-                                        plot_dir + '/', ifile_props,
-                                        fig_fmt, write_plots, hemisphere)
-            else:
-                plot_files = []
+            print("plot_files")
+            plot_files = zmnam_plot(file_mo_an, out_dir + '/',
+                                    plot_dir + '/', ifile_props,
+                                    fig_fmt, hemisphere)
+
             for file in outfiles + plot_files:
 
                 if 'pc_da' in file:

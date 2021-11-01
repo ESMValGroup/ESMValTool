@@ -15,7 +15,7 @@ from cartopy.util import add_cyclic_point
 
 
 def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
-               write_plots, hemisphere):
+               hemisphere):
     """Plotting of timeseries and maps for zmnam diagnostics."""
 
     if hemisphere == 'NH':
@@ -104,12 +104,11 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
         plt.xlabel('Time')
         plt.ylabel('Zonal mean ' + index_name)
 
-        if write_plots:
-            fname = (figfolder + '_'.join(src_props) + '_' +
-                     str(int(lev[i_lev])) + 'Pa_mo_ts_' + index_name +
-                     '.' + fig_fmt)
-            plt.savefig(fname, format=fig_fmt)
-            plot_files.append(fname)
+        fname = (figfolder + '_'.join(src_props) + '_' +
+                 str(int(lev[i_lev])) + 'Pa_mo_ts_' + index_name +
+                 '.' + fig_fmt)
+        plt.savefig(fname, format=fig_fmt)
+        plot_files.append(fname)
 
         plt.figure()
 
@@ -140,12 +139,11 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
         plt.ylabel('Normalized probability')
         plt.tight_layout()
 
-        if write_plots:
-            fname = (figfolder + '_'.join(src_props) + '_' +
-                     str(int(lev[i_lev])) + 'Pa_da_pdf_' + index_name +
-                     '.' + fig_fmt)
-            plt.savefig(fname, format=fig_fmt)
-            plot_files.append(fname)
+        fname = (figfolder + '_'.join(src_props) + '_' +
+                 str(int(lev[i_lev])) + 'Pa_da_pdf_' + index_name +
+                 '.' + fig_fmt)
+        plt.savefig(fname, format=fig_fmt)
+        plot_files.append(fname)
 
         plt.close('all')
 
@@ -250,12 +248,11 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
                  fontsize=12,
                  transform=plt.gcf().transFigure)
 
-        if write_plots:
-            fname = (figfolder + '_'.join(src_props) + '_' +
-                     str(int(lev[i_lev])) + 'Pa_mo_reg_' + index_name +
-                     '.' + fig_fmt)
-            plt.savefig(fname, format=fig_fmt)
-            plot_files.append(fname)
+        fname = (figfolder + '_'.join(src_props) + '_' +
+                 str(int(lev[i_lev])) + 'Pa_mo_reg_' + index_name +
+                 '.' + fig_fmt)
+        plt.savefig(fname, format=fig_fmt)
+        plot_files.append(fname)
 
         plt.close('all')
 
