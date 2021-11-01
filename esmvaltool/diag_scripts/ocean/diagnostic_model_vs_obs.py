@@ -238,9 +238,8 @@ def make_model_vs_obs_plots(
         path = path.replace(' ', '') + image_extention
 
         # Saving files:
-        if cfg['write_plots']:
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path, dpi=200)
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path, dpi=200)
 
         plt.close()
 
@@ -452,9 +451,8 @@ def make_scatter(
         path = path.replace(' ', '') + image_extention
 
         # Saving files:
-        if cfg['write_plots']:
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
 
         plt.close()
 

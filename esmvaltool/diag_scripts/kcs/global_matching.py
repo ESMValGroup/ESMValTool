@@ -181,8 +181,7 @@ def main(cfg):
     save(scenarios, cfg, provenance)
 
     # Plot the results
-    if cfg['write_plots']:
-        make_plot(metadata, scenarios, cfg, provenance)
+    make_plot(metadata, scenarios, cfg, provenance)
 
 
 if __name__ == '__main__':

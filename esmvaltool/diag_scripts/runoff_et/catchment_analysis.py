@@ -658,9 +658,8 @@ def main(cfg):
     for model, mcube in allcubes.items():
         filepath = os.path.join(cfg[diag.names.WORK_DIR],
                                 '_'.join(['postproc', model]) + '.nc')
-        if cfg[diag.names.WRITE_NETCDF]:
-            iris.save(mcube, filepath)
-            logger.info("Writing %s", filepath)
+        iris.save(mcube, filepath)
+        logger.info("Writing %s", filepath)
 
     # Write plotdata as ascii files for user information
     write_plotdata(cfg, plotdata, my_catch)

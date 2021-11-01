@@ -382,8 +382,6 @@ class SeaIceDrift():
             sivol_path, caption, ancestors_sithick + ancestors_sispeed)
 
     def _plot_results(self):
-        if not self.cfg[n.WRITE_PLOTS]:
-            return
         logger.info('Plotting results')
         for model in self.siconc:
             if model == 'reference':
