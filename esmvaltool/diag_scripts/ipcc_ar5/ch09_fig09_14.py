@@ -264,10 +264,10 @@ def plot_zonal_mean_errors_ensemble(axes, zonal_mean_errors, ref_line_style):
     labels = []
     cube_list = multi_model_merge(zonal_mean_errors)
     for error in zonal_mean_errors:
-        lines.append(iplt.plot(error, axes=axes)[0])
+        lines.append(iplt.plot(error.coord('latitude'), error, axes=axes)[0])
         labels.append(error.attributes['model_id'])
     ensemble_mean = cube_list.collapsed('model', iris.analysis.MEAN)
-    mean_line = iplt.plot(ensemble_mean,
+    mean_line = iplt.plot(ensemble_mean.coord('latitude'), ensemble_mean,
                           axes=axes, color='#e61f25', **ref_line_style)[0]
     lines = [mean_line] + lines
     labels = ['CMIP5 mean'] + labels
