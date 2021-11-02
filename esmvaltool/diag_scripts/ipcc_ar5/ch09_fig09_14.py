@@ -372,7 +372,7 @@ def produce_plots(config, data):
     all_labels = ref_labels + labels
     legend = draw_legend(fig, all_lines, all_labels)
     path = get_plot_filename('fig-9-14', config)
-    fig.savefig(path, additional_artists=[legend], tight_layout=True)
+    fig.savefig(path, bbox_extra_artists=(legend,))
     return path
 
 
