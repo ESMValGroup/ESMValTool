@@ -150,6 +150,12 @@ def calc_error(data, reference=None):
     if name is None:
         name = data.name()
     error.long_name = '{} error'.format(name)
+    time_coordinates = error.coords('time')
+    if len(time_coordinates) > 1:
+        # if data and reference times differ (usually in calendar),
+        # keep the reference time coordinate for easy merging.
+        data_time_coordinate = data.coord('time')
+        error.remove_coord(data_time_coordinate)
     return error
 
 
@@ -177,7 +183,7 @@ def multi_model_merge(cubes):
     equalise_attributes(cube_list)
     for cube in cube_list:
         cube.cell_methods = tuple()
-        for coord in ['day_of_month', 'month_number', 'year']:
+        for coord in ['day_of_year', 'day_of_month', 'month_number', 'year']:
             try:
                 cube.remove_coord(coord)
             except CoordinateNotFoundError:
