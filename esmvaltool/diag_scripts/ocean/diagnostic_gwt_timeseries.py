@@ -1170,13 +1170,13 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
              continue
         baseline = baselines.get((dataset, 'tas', ensemble), False)
         if baseline is False:
-             baseline = baselines.get((dataset, 'tas', ensemble.replace('f2', 'f3')), False) 
+             baseline = baselines.get((dataset, 'tas', ensemble.replace('f2', 'f3')), False)
              if baseline is False:
                  print('No Baseline found', (dataset, short_name, exp, ensemble), 'available baselines are:')
                  for bs_index in baselines.keys():
                      if bs_index[0] != dataset: continue
                      print(bs_index, ':', baselines.get(bs_index, 0.))
-                 assert 0 
+                 assert 0
         for ens in ensemble:
             if baseline: continue
             baseline =  baselines.get((dataset, 'tas', ens), False)
@@ -1191,7 +1191,7 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
             thresholds_dict[(dataset, short_name, exp, ensemble)][threshold] = time
             print("load_thresholds: Found Threshold:",(dataset, short_name, exp, ensemble), threshold, ':', time)
             if time is None: continue
-            if float(threshold)>=2. and time.year == 2015: 
+            if float(threshold)>=2. and time.year == 2015:
                 thresholds_dict[(dataset, short_name, exp, ensemble)][threshold] = None
                 print('Bad time!')
                 print('baseline', baseline)
@@ -1199,7 +1199,7 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
 
                 print('data', cube2.data)
                 #assert 0
-            
+
 
     print('Saving:', thresholds_shelve)
     sh = shelve.open(thresholds_shelve)
@@ -2391,6 +2391,13 @@ def calculate_percentages( cfg,
     #ensemble_key = 'all',
     ):
 
+    print(thresholds_dict)
+    print(119, thresholds_dict[('CMIP6', 'tas', 'ssp119', 'ensemble_mean')])
+    print(126, thresholds_dict[('CMIP6', 'tas', 'ssp126', 'ensemble_mean')])
+    print(245, thresholds_dict[('CMIP6', 'tas', 'ssp245', 'ensemble_mean')])
+    print(370, thresholds_dict[('CMIP6', 'tas', 'ssp370', 'ensemble_mean')])
+    print(585, thresholds_dict[('CMIP6', 'tas', 'ssp585', 'ensemble_mean')])
+
     data_dict_shelve = diagtools.folder([cfg['work_dir'], 'percentages_dicts'])
     data_dict_shelve+='_'.join(['allocations', threshold])+'.shelve'
     load_from_shelve=True
@@ -2402,6 +2409,17 @@ def calculate_percentages( cfg,
         landcs = sh['landcs']
         fgco2gts = sh['fgco2gts']
         sh.close()
+ 
+        # (t_dataset, t_exp, t_ens, threshold)
+        for k in sorted(remnants.keys()):
+          if 'CMIP6' in k and  'ensemble_mean' in k: print(k, remnants[k])
+        #rint(remnants)
+        if threshold == '2.0':
+           print(585, remnants[('CMIP6', 'SSP585', 'ensemble_mean', '2.0')])
+           print(126, remnants[('CMIP6', 'SSP126', 'ensemble_mean', '2.0')])
+           #print(119, remnants[('CMIP6', 'SSP119', 'ensemble_mean', '2.0')])
+           #assert 0
+
         return remnants, landcs, fgco2gts
 
     emissions = {}
@@ -2468,11 +2486,10 @@ def calculate_percentages( cfg,
                 landc = landc_cumul.data[n_xpoint]
             t_exp = t_exp.replace('historical-', '').upper()
 
-            if t_dataset.find('UKESM')>-1 and  threshold == '4.0':
-                if landc+fgco2gt+ remnant<600.:
-                    print('ERROR:', t_short, t_exp, t_ens, thresh, threshold, time, (landc,fgco2gt, remnant))
-                    assert 0
-
+#            if t_dataset.find('UKESM')>-1 and  threshold == '4.0':
+#                if landc+fgco2gt+ remnant<600.:
+#                    print('ERROR:', t_short, t_exp, t_ens, thresh, threshold, time, (landc,fgco2gt, remnant))
+#                    assert 0
 
             unique_key = (t_dataset, t_exp, t_ens, threshold)
             emissions[unique_key] = emission
@@ -2575,10 +2592,6 @@ def make_ensemble_barchart_pane(
                         print('Key added', unique_key)
                         unique_key_order.append(unique_key)
 
-
-
-    #print(unique_key_order)
-    # assert 0
     #totals={}
     labels, land, air, ocean = [], [], [], []
     xvalues = []
@@ -2590,6 +2603,11 @@ def make_ensemble_barchart_pane(
         gap = 0.3
     else: gap = 0.6
     quit = False
+
+    if ensemble_key == 'ensemble_mean':
+        print(group_by, unique_key_order)
+        #assert 0
+
     for i, unique_key in enumerate(unique_key_order):
     #for unique_key, remnant in sorted(remnants.items()):
         (t_dataset, t_exp, t_ens, t_threshold) = unique_key
@@ -2618,7 +2636,7 @@ def make_ensemble_barchart_pane(
         # labels.append(label_keys)
 
         #  look if adding  blank lines:
-      
+
         dataset_blank = (i>0 and group_by == 'group_by_model' and t_dataset not in labels[-1])
         exp_blank =  (i>0 and group_by == 'group_by_ssp' and t_exp not in labels[-1])
 
@@ -2630,13 +2648,15 @@ def make_ensemble_barchart_pane(
             air.append(0.)
             emissions_bottoms.append(0.)
             labels.append([''.join(['.' for k in range(i)]), ])
-            
+
 
         # create bar label.
         #if ensemble_key == 'ensemble_mean':
         #    label_keys = [t_dataset, t_exp]
         #else:
         label_keys = [t_dataset, t_exp, t_ens]
+ #       if 'CMIP6' in label_keys and 'SSP119' in t_exp and 
+
         labels.append(label_keys)
 
 
@@ -2662,7 +2682,7 @@ def make_ensemble_barchart_pane(
                 if landc+oceanc + remnant<600.:
                     print('ERROR:', label_keys, landc, oceanc, remnant, landc+oceanc + remnant )
                     quit = True
-                    assert 0 
+                    assert 0
 
         # Adds a blank line between models.
         #if t_dataset not in previous_dats:
@@ -2694,37 +2714,71 @@ def make_ensemble_barchart_pane(
 
     colours_land, colours_ocean, colours_air = [],[],[]
 
-    ssp119_land, ssp119_ocean, ssp119_air = '', '', ''    
+    ssp_land = {
+        #'historical':'black',
+        'SSP119': 'darkgreen',
+        'SSP126': 'blue',
+        'SSP245': 'saddlebrown',
+        'SSP370': 'indigo', 
+        'SSP585': 'darkred',
+        }
+    ssp_ocean = {
+        'SSP119': 'green',
+        'SSP126': 'royalblue',
+        'SSP245': 'darkorange',
+        'SSP370': 'purple',
+        'SSP585': 'red',
+    }
+    ssp_air = {
+        'SSP119': 'lightgreen',
+        'SSP126': 'dodgerblue',
+        'SSP245': 'sandybrown', 
+        'SSP370': 'orchid',
+        'SSP585': 'lightcoral',
+    }
 
     for i, lablist in enumerate(labels):
-        if lablist[0][0] == '.': 
-            label_strs.append(' ')
-            continue
-        (t_dataset, t_exp, t_ens) = lablist
-        if group_by == 'group_by_model':
-           if t_dataset  not in labels[i-1]: 
-               label_strs.append(t_dataset)
-           else: label_strs.append(' ') 
-        if group_by == 'group_by_ssp':
-           if t_exp not in labels[i-1]:
-               label_strs.append(t_exp)
-           else: label_strs.append(' ')
 
-#        if ensemble_key == 'ensemble_mean':
-#            label_keys = [t_dataset, t_exp, t_ens]
-#        if group_by == 'group_by_model':
-            
-      
+        if lablist[0][0] == '.':
+            # empty bar   
+            label_strs.append(' ')
+            colours_land.append('white')
+            colours_ocean.append('white')
+            colours_air.append('white')
+            continue
+
+        (t_dataset, t_exp, t_ens) = lablist
+
+        colours_land.append(ssp_land[t_exp])
+        colours_ocean.append(ssp_ocean[t_exp])
+        colours_air.append(ssp_air[t_exp])
+
+        if ensemble_key == 'ensemble_mean':
+            label_strs.append(' '.join([t_dataset, t_exp]))
+        else:
+            if group_by == 'group_by_model':
+               if t_dataset  not in labels[i-1]:
+                   label_strs.append(t_dataset)
+               else: label_strs.append(' ')
+            if group_by == 'group_by_ssp':
+               if t_exp not in labels[i-1]:
+                   label_strs.append(t_exp)
+               else: label_strs.append(' ')
+
 
     #labels = [' '.join(label) for label in labels]
-    if len(label_strs)== len(land) == len(widths) == len(xvalues): pass
+    if len(label_strs)== len(land) == len(widths) == len(xvalues) == len(colours_land): pass
     else:
-        print('ERROR:',  len(labels),len(land),len(widths), len(xvalues), len(label_strs))
+        print('ERROR:',  len(labels),len(land),len(widths), len(xvalues), len(label_strs), len(colours_land))
         assert 0
 
-    ax.bar(xvalues, land, width=widths, label='Land', color='green', tick_label = label_strs)
-    ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color='dodgerblue')
-    ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color='grey')
+    ax.bar(xvalues, land, width=widths, label='Land', color=colours_land, tick_label = label_strs)
+    ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color=colours_ocean)
+    ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color=colours_air)
+
+    # ax.bar(xvalues, land, width=widths, label='Land', color='green', tick_label = label_strs)
+    # ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color='dodgerblue')
+    # ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color='grey')
     #ax.set_xlabel('Scenarios')
     plt.xticks(rotation=90)
 
@@ -3597,7 +3651,7 @@ def main(cfg):
                 for plot_style, ens, group_by in product(plot_styles, ens_styles, group_bys):
                     make_ensemble_barchart(cfg, data_dict, thresholds_dict, plot_style=plot_style, ensemble_key=ens, group_by=group_by)
 
-                #continue
+                return   
 
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
