@@ -111,7 +111,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of cmorization scripts (in esmvaltool/utils/cmorizers/obs) for non-obs4mips data for download instructions.*
+*Note: (1) obs4MIPs data can be used directly without any preprocessing; (2) see headers of cmorization scripts (in esmvaltool/utils/cmorizers/obs) for non-obs4MIPs data for download instructions.*
 
 * HadISST (sic - esmvaltool/utils/cmorizers/obs/cmorize_obs_HadISST.ncl)
 

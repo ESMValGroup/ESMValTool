@@ -2,6 +2,7 @@
 # recipe_russell18jgr.yml
 ---
 documentation:
+  title: Southern Ocean Metrics
   description: |
     Recipe for russell et al figures 1, 2, 3a, 3b, 4, 5, 5g, 6a,
                                      6b, 7, 7h, 7i, 8, 9a, 9b, 9c.
@@ -45,7 +46,7 @@ diagnostics:
       Diagnostic for russell et al figure 1. Plots Annual-mean zonal wind
        stress as polar contour map. Here, we are using tauuo. Figures in
       russell18jgr paper were  made using tauuo, but tauu can also be used if
-      tauuo file is not availble. To use tauu variable in this recipe just
+      tauuo file is not available. To use tauu variable in this recipe just
       uncomment variable 'tauu' and add dataset names in additional datasets of
       respective variable. If there are no dataset in a variable, entire
       variable section needs to be commented out.
@@ -100,7 +101,7 @@ diagnostics:
       Diagnostic for russell et al Figure 2. Plots The zonal and annual means
       of the zonal wind stress (N/m^2). Here, we are using tauuo,
       figures in russell18jgr paper were  made using tauuo, but tauu can
-      also be used if tauuo file is not availble. To use tauu variable
+      also be used if tauuo file is not available. To use tauu variable
       in this recipe just uncomment variable 'tauu' and add dataset names
       in additional datasets of respective variable. If there are no dataset
       in a variable, entire variable section needs to be commented out.

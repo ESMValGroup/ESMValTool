@@ -127,9 +127,6 @@ def cube_to_save_scatter(var1, var2, names):
 
 def plot_rain_and_wind(cfg, dataname, data, future_exp):
     """Plot contour map."""
-    if not cfg[n.WRITE_PLOTS]:
-        return
-
     plotdata = {}
     if data['ar_diff_rain'].ndim == 3:
         plotdata['pr'] = np.mean(data['ar_diff_rain'], axis=2)
@@ -275,9 +272,6 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
 
 def plot_rain(cfg, titlestr, data, lats, lons):
     """Plot contour map."""
-    if not cfg[n.WRITE_PLOTS]:
-        return
-
     # Plot data
     # create figure and axes instances
     fig, axx = plt.subplots(figsize=(7, 5))

@@ -183,9 +183,8 @@ def multi_model_maps(
         path = path.replace(' ', '') + image_extention
 
         # Saving files:
-        if cfg['write_plots']:
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
 
         plt.close()
 

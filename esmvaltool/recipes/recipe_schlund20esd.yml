@@ -2,8 +2,13 @@
 # recipe_schlund20esd.yml
 ---
 documentation:
-  description: |
-    Evaluate emergent constraints on ECS on CMIP5 and CMIP6 models.
+  title: >
+    Emergent constraints on equilibrium climate sensitivity in CMIP5: do they
+    hold for CMIP6?
+
+  description: >
+    This recipe evaluates several emergent constraints on the equilibrium
+    climate sensitivity (ECS) on CMIP5 and CMIP6 models.
 
   authors:
     - schlund_manuel
@@ -852,7 +857,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: GPCP-SG
         additional_datasets:
-          - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
+          - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2, tier: 1}
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -913,7 +918,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: GPCP-SG
         additional_datasets:
-          - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
+          - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2, tier: 1}
     additional_datasets:
       - {dataset: ACCESS-CM2,      ensemble: r1i1p1f1, grid: gn, institute: CSIRO-ARCCSS}
       - {dataset: ACCESS-ESM1-5,   ensemble: r1i1p1f1, grid: gn}
@@ -985,7 +990,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: AIRS
         additional_datasets:
-          - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
+          - {dataset: AIRS, project: obs4MIPs, level: L3, version: RetStd-v5, tier: 1}
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -1046,7 +1051,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: AIRS
         additional_datasets:
-          - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
+          - {dataset: AIRS, project: obs4MIPs, level: L3, version: RetStd-v5, tier: 1}
     additional_datasets:
       - {dataset: ACCESS-CM2,      ensemble: r1i1p1f1, grid: gn, institute: CSIRO-ARCCSS}
       - {dataset: ACCESS-ESM1-5,   ensemble: r1i1p1f1, grid: gn}
@@ -1266,7 +1271,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
       rsutcs:
         <<: *var_settings_cmip5
         preprocessor: default
@@ -1275,7 +1280,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
       rsdt:
         <<: *var_settings_cmip5
         preprocessor: default
@@ -1284,7 +1289,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -1363,7 +1368,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
       rsutcs:
         <<: *var_settings_cmip6
         preprocessor: default
@@ -1372,7 +1377,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
       rsdt:
         <<: *var_settings_cmip6
         preprocessor: default
@@ -1381,7 +1386,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
     additional_datasets:
       - {dataset: ACCESS-CM2,      ensemble: r1i1p1f1, grid: gn, institute: CSIRO-ARCCSS}
       - {dataset: ACCESS-ESM1-5,   ensemble: r1i1p1f1, grid: gn}
@@ -1857,7 +1862,7 @@ diagnostics:
         end_year: 2010
         reference_dataset: 'AIRS-2-0|MLS-AURA'
         additional_datasets:
-          - {dataset: AIRS-2-0, project: obs4mips, level: L3, version: v2, tier: 1}
+          - {dataset: AIRS-2-0, project: obs4MIPs, level: L3, version: v2, tier: 1}
           - {dataset: MLS-AURA, project: OBS6, type: sat, version: '004', tier: 3}
     additional_datasets:
       - {dataset: ACCESS1-0}
@@ -1912,7 +1917,7 @@ diagnostics:
         end_year: 2010
         reference_dataset: 'AIRS-2-0|MLS-AURA'
         additional_datasets:
-          - {dataset: AIRS-2-0, project: obs4mips, level: L3, version: v2, tier: 1}
+          - {dataset: AIRS-2-0, project: obs4MIPs, level: L3, version: v2, tier: 1}
           - {dataset: MLS-AURA, project: OBS6, type: sat, version: '004', tier: 3}
     additional_datasets:
       - {dataset: ACCESS-CM2,      ensemble: r1i1p1f1, grid: gn, institute: CSIRO-ARCCSS}
@@ -2035,12 +2040,12 @@ diagnostics:
             tag: LIP
             data: 1.75
           - dataset: 0
-            project: obs4mips
+            project: obs4MIPs
             var_type: prediction_input_error
             tag: TII
             data: 0.5
           - dataset: 0
-            project: obs4mips
+            project: obs4MIPs
             var_type: prediction_input_error
             tag: TIH
             data: 10.0

@@ -1,17 +1,18 @@
 # ESMValTool
-# recipe_bock20jgr.yml
+# recipe_bock20jgr_fig_8-10.yml
 ---
 documentation:
 
+  title: Quantifying progress across different CMIP phases
+
   description: |
-    Producing figures from Bock et al., 2020, JGR
-    Already included: Fig. 1, 2, 3, 4
+    Producing Fig. 8, 9, 10 from Bock et al., 2020, JGR
     Processing of CMIP3 models currently works only in serial mode, due to
     an issue in the input data still under investigation.
 
   authors:
     - bock_lisa
-    - lauer_axel
+    - schlund_manuel
 
   maintainer:
     - lauer_axel
@@ -30,17 +31,10 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
     multi_model_statistics:
       span: overlap
-      statistics: [mean]
-      exclude: [reference_dataset]
-
-  clim_ref:
-    regrid:
-      target_grid: reference_dataset
-      scheme: linear
-    multi_model_statistics:
-      span: full
       statistics: [mean]
       exclude: [reference_dataset]
 
@@ -54,7 +48,7 @@ preprocessors:
       operator: mean
 
 
-CMIP6_tas: &cmip6_tas
+CMIP6_tas: &cmip6_all
   - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
   - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
   - {dataset: AWI-CM-1-1-MR, grid: gn}
@@ -74,16 +68,10 @@ CMIP6_tas: &cmip6_tas
   - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
   - {dataset: E3SM-1-0}
   - {dataset: E3SM-1-1, institute: E3SM-Project}
-  # - {dataset: E3SM-1-1-ECA, institute: E3SM-Project} #strange outlier
-  # - {dataset: EC-Earth3, ensemble: r22i1p1f1} #not available
-  - {dataset: EC-Earth3-Veg}
   - {dataset: FGOALS-f3-L}
   - {dataset: FGOALS-g3, grid: gn}
-  - {dataset: FIO-ESM-2-0, grid: gn}
-  # - {dataset: GFDL-CM4, grid: gr1} #permission denied
   - {dataset: GFDL-ESM4, grid: gr1}
   - {dataset: GISS-E2-1-G, grid: gn}
-  # - {dataset: GISS-E2-1-G-CC, grid: gn, institute: NASA-GISS} #perm denied
   - {dataset: GISS-E2-1-H, grid: gn}
   - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
   - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
@@ -91,7 +79,6 @@ CMIP6_tas: &cmip6_tas
   - {dataset: INM-CM5-0, grid: gr1}
   - {dataset: IPSL-CM6A-LR}
   - {dataset: KACE-1-0-G}
-  - {dataset: MCM-UA-1-0, grid: gn}
   - {dataset: MIROC6, grid: gn}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
   - {dataset: MPI-ESM-1-2-HAM, grid: gn}
@@ -99,68 +86,45 @@ CMIP6_tas: &cmip6_tas
   - {dataset: MPI-ESM1-2-LR, grid: gn}
   - {dataset: MRI-ESM2-0, grid: gn}
   - {dataset: NESM3, grid: gn}
-  # - {dataset: NorCPM1, grid: gn, institute: NCC} # no pr data
   - {dataset: NorESM2-LM, grid: gn, institute: NCC}
   - {dataset: NorESM2-MM, grid: gn, institute: NCC}
   - {dataset: SAM0-UNICON, grid: gn}
-  # - {dataset: TaiESM1, grid: gn} #permission denied
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
 
-CMIP6_HighResMIP_low: &cmip6_highresmip_low
-  - {dataset: CMCC-CM2-HR4, exp: hist-1950, grid: gn}
-  - {dataset: CNRM-CM6-1, exp: hist-1950, ensemble: r1i1p1f2}
-  - {dataset: ECMWF-IFS-LR, exp: hist-1950, ensemble: r1i1p1f1}
-  - {dataset: HadGEM3-GC31-LL, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
-  - {dataset: MPI-ESM1-2-HR, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
 
-CMIP6_HighResMIP_high: &cmip6_highresmip_high
-  - {dataset: CMCC-CM2-VHR4, exp: hist-1950, grid: gn}
-  - {dataset: CNRM-CM6-1-HR, exp: hist-1950, ensemble: r1i1p1f2}
-  - {dataset: ECMWF-IFS-HR, exp: hist-1950, ensemble: r1i1p1f1}
-  - {dataset: HadGEM3-GC31-HM, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
-  - {dataset: MPI-ESM1-2-XR, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
-
-
-CMIP5_tas: &cmip5_tas
+CMIP5_all: &cmip5_all
   - {dataset: ACCESS1-0}
   - {dataset: ACCESS1-3}
   - {dataset: bcc-csm1-1}
   - {dataset: bcc-csm1-1-m}
   - {dataset: BNU-ESM}
-  # - {dataset: CanCM4} #no data before 1961
   - {dataset: CanESM2}
   - {dataset: CCSM4}
   - {dataset: CESM1-BGC}
-  - {dataset: CESM1-CAM5-1-FV2}
   - {dataset: CESM1-CAM5}
   - {dataset: CESM1-FASTCHEM}
   - {dataset: CESM1-WACCM}
   - {dataset: CMCC-CESM}
   - {dataset: CMCC-CM}
-  - {dataset: CMCC-CMS}
   - {dataset: CNRM-CM5-2}
   - {dataset: CNRM-CM5}
   - {dataset: CSIRO-Mk3-6-0}
   - {dataset: FGOALS-g2}
-  # - {dataset: FGOALS-s2}
   - {dataset: FIO-ESM}
-  - {dataset: GFDL-CM2p1, start_year: 1861}
-  - {dataset: GFDL-CM3, start_year: 1860}
-  - {dataset: GFDL-ESM2G, start_year: 1861}
-  - {dataset: GFDL-ESM2M, start_year: 1861}
+  - {dataset: GFDL-CM3}
+  - {dataset: GFDL-ESM2G}
+  - {dataset: GFDL-ESM2M}
   - {dataset: GISS-E2-H-CC}
   - {dataset: GISS-E2-H}
   - {dataset: GISS-E2-R-CC}
   - {dataset: GISS-E2-R}
-  - {dataset: HadCM3, start_year: 1860}
-  - {dataset: HadGEM2-AO, start_year: 1860}
-  - {dataset: HadGEM2-CC, start_year: 1860}
-  - {dataset: HadGEM2-ES, start_year: 1860}
+  - {dataset: HadGEM2-AO}
+  - {dataset: HadGEM2-CC}
+  - {dataset: HadGEM2-ES}
   - {dataset: inmcm4}
   - {dataset: IPSL-CM5A-LR}
   - {dataset: IPSL-CM5A-MR}
   - {dataset: IPSL-CM5B-LR}
-  # - {dataset: MIROC4h} # start 1950
   - {dataset: MIROC5}
   - {dataset: MIROC-ESM}
   - {dataset: MIROC-ESM-CHEM}
@@ -168,34 +132,29 @@ CMIP5_tas: &cmip5_tas
   - {dataset: MPI-ESM-MR}
   - {dataset: MPI-ESM-P}
   - {dataset: MRI-CGCM3}
-  - {dataset: MRI-ESM1, start_year: 1851}
+  - {dataset: MRI-ESM1}
   - {dataset: NorESM1-M}
   - {dataset: NorESM1-ME}
 
 
-CMIP3_tas: &cmip3_tas
-  - {dataset: bccr_bcm2_0}
+CMIP3_all: &cmip3_all
   - {dataset: cccma_cgcm3_1}
   - {dataset: cccma_cgcm3_1_t63}
-  - {dataset: csiro_mk3_0, start_year: 1871}
-  - {dataset: gfdl_cm2_0, start_year: 1861}
-  - {dataset: gfdl_cm2_1, start_year: 1861}
-  - {dataset: giss_aom}
-  - {dataset: giss_model_e_h, start_year: 1880}
-  - {dataset: giss_model_e_r, start_year: 1880}
+  - {dataset: csiro_mk3_0}
+  - {dataset: gfdl_cm2_0}
+  - {dataset: gfdl_cm2_1}
+  - {dataset: giss_model_e_h}
+  - {dataset: giss_model_e_r}
   - {dataset: iap_fgoals1_0_g}
-  - {dataset: ingv_echam4, start_year: 1870}
-  - {dataset: inmcm3_0, start_year: 1871}
-  - {dataset: ipsl_cm4, start_year: 1860}
-  # - {dataset: miroc3_2_hires, institute: NIES, start_year: 1900}
+  - {dataset: inmcm3_0}
+  - {dataset: ipsl_cm4}
+  - {dataset: miroc3_2_hires}
   - {dataset: miroc3_2_medres}
-  # - {dataset: miub_echo_g} # something wrong with numeration of years
-  - {dataset: mpi_echam5, start_year: 1860}
-  - {dataset: mri_cgcm2_3_2a, start_year: 1851}
-  - {dataset: ncar_ccsm3_0, start_year: 1870}
-  - {dataset: ncar_pcm1, start_year: 1890}
-  - {dataset: ukmo_hadcm3, start_year: 1860}
-  - {dataset: ukmo_hadgem1, start_year: 1860}
+  - {dataset: mpi_echam5}
+  - {dataset: mri_cgcm2_3_2a}
+  - {dataset: ncar_ccsm3_0}
+  - {dataset: ncar_pcm1}
+  - {dataset: ukmo_hadcm3}
 
 
 CMIP5_rtnt: &cmip5_rtnt
@@ -261,8 +220,8 @@ CMIP6_rtnt: &cmip6_rtnt
   - {dataset: ACCESS-CM2,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:  950, end_year: 1099, institute: CSIRO-ARCCSS}
   - {dataset: ACCESS-ESM1-5,   exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  101, end_year:  250}
   - {dataset: ACCESS-ESM1-5,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:  101, end_year:  250}
-  - {dataset: AWI-CM-1-1-MR,   exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 2650, end_year: 2799}
-  - {dataset: AWI-CM-1-1-MR,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  #- {dataset: AWI-CM-1-1-MR,   exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 2650, end_year: 2799}
+  #- {dataset: AWI-CM-1-1-MR,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: BCC-CSM2-MR,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: BCC-CSM2-MR,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: BCC-ESM1,        exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
@@ -345,282 +304,12 @@ CMIP6_rtmt: &cmip6_rtmt
 
 diagnostics:
 
-  fig_1_cmip6: &diag_fig1
-    description: CMIP6 timeseries of near-surface temperature anomalies
-    variables:
-      tas: &var_tas_tsline
-        preprocessor: clim_ref
-        reference_dataset: HadCRUT4
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        start_year: 1850
-        end_year: 2014
-        additional_datasets: *cmip6_tas
-    additional_datasets:
-      - {dataset: HadCRUT4, project: OBS, type: ground, version: 1, tier: 2,
-         end_year: 2017}
-    scripts:
-      tsline_anom: &tsline_settings
-        script: bock20jgr/tsline.ncl
-        time_avg: "yearly"
-        ts_anomaly: "anom"
-        ref_start: 1850
-        ref_end: 1900
-        ref_mask: true
-        plot_units: "degC"
-        y_min: -0.5
-        y_max: 1.6
-        volcanoes: true
-        write_stat: true
-        styleset: CMIP6
-
-  fig_1_cmip5:
-    description: CMIP5 timeseries of near-surface temperature anomalies
-    variables:
-      tas:
-        <<: *var_tas_tsline
-        project: CMIP5
-        ensemble: r1i1p1
-        start_year: 1850
-        end_year: 2004
-        additional_datasets: *cmip5_tas
-    additional_datasets:
-      - {dataset: HadCRUT4, project: OBS, type: ground, version: 1, tier: 2,
-         end_year: 2017}
-    scripts:
-      tsline_anom:
-        <<: *tsline_settings
-        styleset: CMIP5
-
-  fig_1_cmip3:
-    description: CMIP3 timeseries of near-surface temperature anomalies
-    variables:
-      tas:
-        <<: *var_tas_tsline
-        project: CMIP3
-        mip: A1
-        modeling_realm: atm
-        exp: 20c3m
-        frequency: mo
-        ensemble: run1
-        start_year: 1850
-        end_year: 1999
-        additional_datasets: *cmip3_tas
-    additional_datasets:
-      - {dataset: HadCRUT4, project: OBS, type: ground, version: 1, tier: 2,
-         end_year: 2017, mip: Amon}
-    scripts:
-      tsline_anom:
-        <<: *tsline_settings
-        styleset: CMIP3
-
-  fig_2:
-    description: Collect all timeseries of near-surface temperature anomalies
-    variables:
-      tas:
-        <<: *var_tas_tsline
-      tasUnc1:
-        short_name: tasConf5
-        mip: Amon
-      tasUnc2:
-        short_name: tasConf95
-        mip: Amon
-    additional_datasets:
-      - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,
-         start_year: 1850, end_year: 2017, tier: 2}
-    scripts:
-      collect:
-        <<: *tsline_settings
-        script: bock20jgr/tsline_collect.ncl
-        ancestors: [tas, tasUnc1, tasUnc2, 'fig_1_*/tsline_anom*']
-        start_year: 1850
-        end_year: 2017
-        y_max: 1.2
-        ref: ["HadCRUT4"]
-        order: ["CMIP6_historical", "CMIP5_historical", "CMIP3_20c3m"]
-        stat_shading: true
-        ref_shading: false
-        ref_stderr: true
-
-
-  fig_3_cmip6:
-    description: CMIP6 multi-model mean and bias of near-surface temperature
-    variables:
-      tas: &var_cmip6_bias
-        preprocessor: clim
-        reference_dataset: ERA5
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        start_year: 1995
-        end_year: 2014
-        additional_datasets: *cmip6_tas
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      model_bias: &model_bias_settings
-        script: bock20jgr/model_bias.ncl
-        projection: Robinson
-        timemean: annualclim
-
-
-  fig_3_cmip5:
-    description: CMIP5 multi-model mean and bias of near-surface temperature
-    variables:
-      tas:
-        <<: *var_cmip6_bias
-        project: CMIP5
-        ensemble: r1i1p1
-        start_year: 1985
-        end_year: 2004
-        additional_datasets: *cmip5_tas
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_3_cmip3:
-    description: CMIP3 multi-model mean and bias of near-surface temperature
-    variables:
-      tas:
-        <<: *var_cmip6_bias
-        mip: A1
-        project: CMIP3
-        modeling_realm: atm
-        exp: 20c3m
-        frequency: mo
-        ensemble: run1
-        start_year: 1980
-        end_year: 1999
-        additional_datasets: *cmip3_tas
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, mip: Amon, type: reanaly, version: v1,
-         tier: 3}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_3_highresmip_low:
-    description: CMIP6 multi-model mean and bias of near-surface temperature
-    variables:
-      tas:
-        <<: *var_cmip6_bias
-        additional_datasets: *cmip6_highresmip_low
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_3_highresmip_high:
-    description: CMIP6 multi-model mean and bias of near-surface temperature
-    variables:
-      tas:
-        <<: *var_cmip6_bias
-        additional_datasets: *cmip6_highresmip_high
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_4_cmip6:
-    description: CMIP6 multi-model mean and bias of percipitation
-    variables:
-      pr:
-        <<: *var_cmip6_bias
-        reference_dataset: GPCP-SG
-        additional_datasets: *cmip6_tas
-    additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
-         tier: 1}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_4_cmip5:
-    description: CMIP5 multi-model mean and bias of percipitation
-    variables:
-      pr:
-        <<: *var_cmip6_bias
-        reference_dataset: GPCP-SG
-        project: CMIP5
-        ensemble: r1i1p1
-        start_year: 1985
-        end_year: 2004
-        additional_datasets: *cmip5_tas
-    additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
-         tier: 1}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_4_cmip3:
-    description: CMIP3 multi-model mean and bias of percipitation
-    variables:
-      pr:
-        <<: *var_cmip6_bias
-        reference_dataset: GPCP-SG
-        mip: A1
-        project: CMIP3
-        modeling_realm: atm
-        exp: 20c3m
-        frequency: mo
-        ensemble: run1
-        start_year: 1980
-        end_year: 1999
-        additional_datasets: *cmip3_tas
-    additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
-         tier: 1, mip: Amon}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_4_highresmip_low:
-    description: CMIP6 multi-model mean and bias of percipitation
-    variables:
-      pr:
-        <<: *var_cmip6_bias
-        reference_dataset: GPCP-SG
-        additional_datasets: *cmip6_highresmip_low
-    additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
-         tier: 1}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_4_highresmip_high:
-    description: CMIP6 multi-model mean and bias of percipitation
-    variables:
-      pr:
-        <<: *var_cmip6_bias
-        reference_dataset: GPCP-SG
-        additional_datasets: *cmip6_highresmip_high
-    additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
-         tier: 1}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
+  ######################################################
+  # Fig. 8
+  ######################################################
 
   fig_8_ecs_cmip3:
+    title: CMIP3 Effective Climate Sensitivity (ECS)
     description: Calculate ECS for all available CMIP3 models.
     scripts:
       ecs:
@@ -631,6 +320,7 @@ diagnostics:
           project: CMIP3
 
   fig_8_ecs_cmip5:
+    title: CMIP5 Effective Climate Sensitivity (ECS)
     description: Calculate ECS for all available CMIP5 models.
     variables:
       tas_rtnt: &ecs_settings_cmip5
@@ -651,6 +341,7 @@ diagnostics:
         calculate_mmm: false
 
   fig_8_ecs_cmip6:
+    title: CMIP6 Effective Climate Sensitivity (ECS)
     description: Calculate ECS for all available CMIP6 models.
     variables:
       tas_rtnt: &ecs_settings_cmip6
@@ -677,6 +368,7 @@ diagnostics:
         calculate_mmm: false
 
   fig_8_ecs_barplot:
+    title: Effective Climate Sensitivity (ECS)
     description: Create barplot of ECS for CMIP3, CMIP5 and CMIP6.
     scripts:
       barplot:
@@ -696,7 +388,75 @@ diagnostics:
         value_labels: true
         y_range: [0.0, 6.0]
 
+
+  ######################################################
+  # Fig. 9
+  ######################################################
+
+  fig_9_cmip3: &fig_9_settings
+    title: CMIP3 climatoloty shortwave CRE
+    description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      swcre: &var_swcre
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        project: CMIP3
+        exp: 20c3m
+        ensemble: run1
+        mip: A1
+        modeling_realm: atm
+        frequency: mo
+        start_year: 1980
+        end_year: 1999
+        derive: true
+        additional_datasets: *cmip3_all
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        script: clouds/clouds_ipcc.ncl
+        projection: Robinson
+        timemean: annualclim
+        explicit_cn_levels: [-40., -35., -30., -25., -20., -15., -10., -5., 0.,
+                             5., 10., 15., 20., 25., 30., 35., 40.]
+
+  fig_9_cmip5:
+    <<: *fig_9_settings
+    title: CMIP5 climatoloty shortwave CRE
+    variables:
+      swcre:
+        <<: *var_swcre
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        mip: Amon
+        additional_datasets: *cmip5_all
+
+  fig_9_cmip6:
+    <<: *fig_9_settings
+    title: CMIP6 climatoloty shortwave CRE
+    variables:
+      swcre:
+        <<: *var_swcre
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        mip: Amon
+        grid: gr
+        additional_datasets: *cmip6_all
+
+
+  ######################################################
+  # Fig. 10
+  ######################################################
+
   fig_10_cmip5:
+    title: CMIP5 cloud feedback
     description: Calculate grid-level CRE feedback parameters for CMIP5 models.
     variables:
       tas_global_rtnt: &fig_10_settings_cmip5
@@ -734,6 +494,7 @@ diagnostics:
           end_year: 150
 
   fig_10_cmip6:
+    title: CMIP6 cloud feedback
     description: Calculate grid_level CRE feedback parameters for CMIP6 models.
     variables:
       tas_global_rtnt: &fig_10_settings_cmip6
@@ -768,6 +529,7 @@ diagnostics:
           end_year: 150
 
   fig_10_netcre:
+    title: Net cloud radiative effect
     description: Plot figure 10 (netcre).
     scripts:
       plot: &script_plot_fig_10
@@ -790,6 +552,7 @@ diagnostics:
         years_in_title: false
 
   fig_10_lwcre:
+    title: Longwave cloud radiative effect
     description: Plot figure 10 (lwcre).
     scripts:
       plot:
@@ -809,6 +572,7 @@ diagnostics:
             vmax: 2.5
 
   fig_10_swcre:
+    title: Shortwave cloud radiative effect
     description: Plot figure 10 (swcre).
     scripts:
       plot:

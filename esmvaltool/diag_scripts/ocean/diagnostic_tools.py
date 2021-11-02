@@ -41,7 +41,7 @@ def get_obs_projects():
         Returns a list of strings of the various types of observational data.
     """
     obs_projects = [
-        'obs4mips',
+        'obs4MIPs',
     ]
     return obs_projects
 
@@ -126,7 +126,10 @@ def bgc_units(cube, name):
     if name in ['tos', 'thetao', 'tas', 'tsl']:
         new_units = 'celsius'
 
-    if name in ['no3', ]:
+    if name in ['sos', 'so']:
+        cube.units = '0.001'
+
+    if name in ['no3', 'o2', 'po4', 'si']:
         new_units = 'mmol m-3'
 
     if name in ['chl', ]:
@@ -310,15 +313,23 @@ def guess_calendar_datetime(cube):
     """
     time_coord = cube.coord('time')
 
-    if time_coord.units.calendar in ['360_day', ]:
+    if time_coord.units.calendar in [
+            '360_day',
+    ]:
         datetime = cftime.Datetime360Day
     elif time_coord.units.calendar in ['365_day', 'noleap']:
         datetime = cftime.DatetimeNoLeap
-    elif time_coord.units.calendar in ['julian', ]:
+    elif time_coord.units.calendar in [
+            'julian',
+    ]:
         datetime = cftime.DatetimeJulian
-    elif time_coord.units.calendar in ['gregorian', ]:
+    elif time_coord.units.calendar in [
+            'gregorian',
+    ]:
         datetime = cftime.DatetimeGregorian
-    elif time_coord.units.calendar in ['proleptic_gregorian', ]:
+    elif time_coord.units.calendar in [
+            'proleptic_gregorian',
+    ]:
         datetime = cftime.DatetimeProlepticGregorian
     else:
         logger.warning('Calendar set to Gregorian, instead of %s',
@@ -488,17 +499,15 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc='right'):
             plt.plot([], [], c=colour, lw=linewidth, ls=linestyle, label=label)
 
     if loc.lower() == 'right':
-        legd = ax1.legend(
-            loc='center left',
-            ncol=ncols,
-            prop={'size': 10},
-            bbox_to_anchor=(1., 0.5))
+        legd = ax1.legend(loc='center left',
+                          ncol=ncols,
+                          prop={'size': 10},
+                          bbox_to_anchor=(1., 0.5))
     if loc.lower() == 'below':
-        legd = ax1.legend(
-            loc='upper center',
-            ncol=ncols,
-            prop={'size': 10},
-            bbox_to_anchor=(0.5, -2. * column_width))
+        legd = ax1.legend(loc='upper center',
+                          ncol=ncols,
+                          prop={'size': 10},
+                          bbox_to_anchor=(0.5, -2. * column_width))
     legd.draw_frame(False)
     legd.get_frame().set_alpha(0.)
 
@@ -701,7 +710,10 @@ def get_cube_range(cubes):
     for cube in cubes:
         mins.append(cube.data.min())
         maxs.append(cube.data.max())
-    return [np.min(mins), np.max(maxs), ]
+    return [
+        np.min(mins),
+        np.max(maxs),
+    ]
 
 
 def get_cube_range_diff(cubes):
@@ -746,4 +758,7 @@ def get_array_range(arrays):
         mins.append(arr.min())
         maxs.append(arr.max())
     logger.info('get_array_range: %s, %s', np.min(mins), np.max(maxs))
-    return [np.min(mins), np.max(maxs), ]
+    return [
+        np.min(mins),
+        np.max(maxs),
+    ]
