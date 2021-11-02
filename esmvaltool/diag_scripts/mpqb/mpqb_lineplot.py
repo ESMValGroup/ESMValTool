@@ -94,7 +94,7 @@ def main(cfg):
         label = get_mpqb_cfg('datasetname', alias)
         color = get_mpqb_cfg('datasetcolor', alias)
 
-        iris.quickplot.plot(cube, label=label, color=color)
+        iris.quickplot.plot(cube, label=label, color=color, linestyle='dashed')
     plt.xticks(rotation=90)
     # Add the zero line when plotting anomalies
     if 'ano' in dataset_cfg['preprocessor']:
@@ -150,4 +150,4 @@ if __name__ == '__main__':
         main(config)
         #else:
         #    logger.warning("This diagnostic wants to plot,\
-                            but isn't allowed to")
+        #                    but isn't allowed to")

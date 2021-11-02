@@ -26,4 +26,4 @@ rootpath:
 drs:
 #  CMIP5: ETHZ
   CMIP5: DKRZ
-#  CMIP6: DKRZ
+  CMIP6: DKRZ
