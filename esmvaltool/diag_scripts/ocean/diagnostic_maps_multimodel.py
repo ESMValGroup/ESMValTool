@@ -192,6 +192,8 @@ def load_cubes(filenames, obs_filename, metadata):
     for thename in filenames:
         logger.debug('loading: \t%s', thename)
         cube = iris.load_cube(thename)
+        cube.coord('latitude').long_name = "Latitude"
+        cube.coord('longitude').long_name = "Longitude"
         cube = diagtools.bgc_units(cube, metadata[thename]['short_name'])
         model_name = metadata[thename]['dataset']
         cubes[model_name] = diagtools.make_cube_layer_dict(cube)
