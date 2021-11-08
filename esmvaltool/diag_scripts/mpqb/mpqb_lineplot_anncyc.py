@@ -102,7 +102,7 @@ def main(cfg):
     ax.grid(True, which='major', axis='x')
 
     ax.set_ylim(ylims)
-    ax.set_ylabel('Precipitation / mm day-1')  #new for rainfall numbers
+    ax.set_ylabel(r'Precipitation / mm day$^{-1}$')  #new for rainfall numbers
 
     baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
                    

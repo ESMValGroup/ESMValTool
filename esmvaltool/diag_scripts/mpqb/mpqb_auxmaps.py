@@ -87,22 +87,23 @@ def main(cfg):
                 logger.error("Metric %s is not defined. ", metricname)
                 continue
             # Plot the results (if configured to plot)
-            if cfg['write_plots']:
-                baseplotname = f"{alias}_{metricname}" \
-                               f"_{dataset_cfg['variable_group']}" \
-                               f"_{dataset_cfg['start_year']}-" \
-                               f"{dataset_cfg['end_year']}"
-                plot_file = get_plot_filename(baseplotname, cfg)
-                metrics_plot_dictionary = get_mpqb_cfg('colormap',
-                    dataset_cfg['short_name'])
-                plot_kwargs = metrics_plot_dictionary[metricname]
-                # Overwrite plot title to be dataset name
-                plot_kwargs['title'] = alias
-                # Specify to add small text with field mean for timemean
-                if metricname == 'timemean':
-                    plot_kwargs['addglobmeanvalue'] = True
-                mpqb_mapplot(resultcube, cfg, plot_file, **plot_kwargs)
-                #mpqb_mapplot(resultcube_rain, cfg, plot_file, **plot_kwargs)
+            #if cfg['write_plots']:
+            baseplotname = f"{alias}_{metricname}" \
+                           f"_{dataset_cfg['variable_group']}" \
+                           f"_{dataset_cfg['start_year']}-" \
+                           f"{dataset_cfg['end_year']}"
+            plot_file = get_plot_filename(baseplotname, cfg)
+            metrics_plot_dictionary = get_mpqb_cfg('colormap',
+                dataset_cfg['short_name'])
+            plot_kwargs = metrics_plot_dictionary[metricname]
+            # Overwrite plot title to be dataset name
+            plot_kwargs['title'] = alias
+            # Specify to add small text with field mean for timemean
+            if metricname == 'timemean':
+                plot_kwargs['addglobmeanvalue'] = True
+            mpqb_mapplot(resultcube, cfg, plot_file, **plot_kwargs)
+            #mpqb_mapplot(resultcube_rain, cfg, plot_file, **plot_kwargs)
+            
             logger.info("Finished aux plots for dataset: %s", dataset)
     logger.info("Finished!")
 

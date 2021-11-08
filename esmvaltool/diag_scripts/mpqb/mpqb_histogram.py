@@ -101,7 +101,7 @@ def _plot_histograms(hists, cfg, grouped_input_data):
     ax1.tick_params(axis='both', which='major', labelsize='large')
     #plt.xlabel(grouped_input_data[alias][0]['long_name'] + " [" +
     #           grouped_input_data[alias][0]['units'] + "]", fontsize='large')
-    plt.xlabel("Precipitation [mm.day-1]", fontsize='large')
+    plt.xlabel(r"Precipitation [mm day$^{-1}$]", fontsize='large')
     plt.ylabel("frequency",  fontsize='x-large')
     if cfg.pop('logarithmic', False):
         ax1.set_yscale('log', nonposy='clip')

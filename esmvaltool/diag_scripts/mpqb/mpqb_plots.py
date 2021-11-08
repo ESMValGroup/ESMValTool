@@ -24,8 +24,8 @@ def _parse_cmap(plotkwargs):
     # replace the cmap key with the cmap object,
     # and add grey shading for masked values
     # Diverging colorbar centred around zero
-    #nbins = 11 # has to be uneven
-    nbins = 19 # has to be uneven
+    nbins = 11 # has to be uneven
+    #nbins = 18 # has to be uneven
 
     cmapname = plotkwargs.pop('cmap')
     cmap = matplotlib.cm.get_cmap(cmapname)
@@ -85,8 +85,8 @@ def mpqb_mapplot(cube, dataset_cfg, filename, **plotkwargs):
 
     # Colorbar
     colorbar = plt.colorbar(pcols, orientation='horizontal', extend=extend)
-    colorbar.set_label(cube.units)
-    #colorbar.set_label("mm.day-1")
+    #colorbar.set_label(cube.units)
+    colorbar.set_label(r"mm day$^{-1}$")
     colorbar.ax.tick_params(labelsize=8)
 
     if addglobmeanvalue:
@@ -102,7 +102,7 @@ def mpqb_mapplot(cube, dataset_cfg, filename, **plotkwargs):
     # Get first entry from all datasets
     sample_dataset = dataset_cfg['input_data'][next(iter(dataset_cfg['input_data']))]
     # Add timeperiod to plot title
-    timeperiod = f"{sample_dataset['start_year']}-{sample_dataset['end_year']}"
+    timeperiod = f"{sample_dataset['start_year']}$-${sample_dataset['end_year']}"
     plt.title(f"{plottitle} {timeperiod}")
     fig.savefig(filename, bbox_inches='tight')
     plt.close(fig)

@@ -94,7 +94,7 @@ def main(cfg):
     ax.xaxis.set_major_formatter(years_fmt)
     ax.grid(True, which='major', axis='x')
     ax.set_ylim(ylims)
-    ax.set_ylabel('Precipitation / mm day-1')  #new for rainfall numbers
+    ax.set_ylabel(r'Precipitation / mm day$^{-1}$')  #new for rainfall numbers
 
     h,l = ax.get_legend_handles_labels()
     leg = lax.legend(h,l, borderaxespad=0, ncol=4, loc='center')
