@@ -262,7 +262,7 @@ def _best_subset(combinations, n_sample=8):
     # Store the indices in a nice dataframe
     n_segments = combinations.shape[1]
     best_subset = pd.DataFrame(
-        data=None,
+        data=np.empty((n_sample, n_segments), dtype=int),
         columns=[f'Segment {x}' for x in range(n_segments)],
         index=[f'Combination {x}' for x in range(n_sample)])
 
