@@ -8,19 +8,6 @@ Changelog
 v2.4.0
 ------
 
-Please add labels to the following PR:
-https://github.com/ESMValGroup/ESMValTool/pull/2405
-https://github.com/ESMValGroup/ESMValTool/pull/2384
-https://github.com/ESMValGroup/ESMValTool/pull/2383
-https://github.com/ESMValGroup/ESMValTool/pull/2375
-https://github.com/ESMValGroup/ESMValTool/pull/2371
-https://github.com/ESMValGroup/ESMValTool/pull/2366
-https://github.com/ESMValGroup/ESMValTool/pull/2358
-https://github.com/ESMValGroup/ESMValTool/pull/2348
-https://github.com/ESMValGroup/ESMValTool/pull/2278
-https://github.com/ESMValGroup/ESMValTool/pull/2251
-
-
 This release includes
 
 Bug fixes
@@ -35,6 +22,7 @@ Bug fixes
 -  Fix problem with pip 21.3 that prevents installation from source (`#2344 <https://github.com/ESMValGroup/ESMValTool/pull/2344>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 -  Add title to recipe embedded in test_diagnostic_run.py (`#2353 <https://github.com/ESMValGroup/ESMValTool/pull/2353>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 -  Fix capitalization of obs4MIPs (`#2368 <https://github.com/ESMValGroup/ESMValTool/pull/2368>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Specify that areacella is needed for area statistics in the Python example recipe (`#2371 <https://github.com/ESMValGroup/ESMValTool/pull/2371>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Enabling variable `obs550lt1aer` in recipes (`#2388 <https://github.com/ESMValGroup/ESMValTool/pull/2388>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Update a diagnostic to new Iris version (`#2390 <https://github.com/ESMValGroup/ESMValTool/pull/2390>`__) `katjaweigel <https://github.com/katjaweigel>`__
 -  Fixed bug in provenance tracking of ecs_scatter.ncl (`#2391 <https://github.com/ESMValGroup/ESMValTool/pull/2391>`__) `Manuel Schlund <https://github.com/schlunma>`__
@@ -68,19 +56,25 @@ Documentation
 -  Added titles to recipes maintained by lauer_axel (`#2332 <https://github.com/ESMValGroup/ESMValTool/pull/2332>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Update the documentation of the GRACE CMORizer (`#2349 <https://github.com/ESMValGroup/ESMValTool/pull/2349>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Add titles in BSC recipes (`#2351 <https://github.com/ESMValGroup/ESMValTool/pull/2351>`__) `sloosvel <https://github.com/sloosvel>`__
+-  Update esmvalcore dependency to 2.4.0rc1 (`#2348 <https://github.com/ESMValGroup/ESMValTool/pull/2348>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 -  Add titles to recipes maintained by Peter Kalverla (`#2356 <https://github.com/ESMValGroup/ESMValTool/pull/2356>`__) `Peter Kalverla <https://github.com/Peter9192>`__
+-  Adding titles to the recipes with maintainer hb326 (`#2358 <https://github.com/ESMValGroup/ESMValTool/pull/2358>`__) `Birgit Hassler <https://github.com/hb326>`__
 -  Add title for zmnam as for #2354 (`#2363 <https://github.com/ESMValGroup/ESMValTool/pull/2363>`__) `fserva <https://github.com/fserva>`__
 -  Added recipe titles the the ocean recipes.  (`#2364 <https://github.com/ESMValGroup/ESMValTool/pull/2364>`__) `Lee de Mora <https://github.com/ledm>`__
 -  Update recipe_thermodyn_diagtool.yml - add title (`#2365 <https://github.com/ESMValGroup/ESMValTool/pull/2365>`__) `ValerioLembo <https://github.com/ValerioLembo>`__
 -  Fix provenance of figures of several R diagnostics (`#2300 <https://github.com/ESMValGroup/ESMValTool/pull/2300>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Adding titles to Mattia's recipes (`#2367 <https://github.com/ESMValGroup/ESMValTool/pull/2367>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Adding titles to wenzel recipes (`#2366 <https://github.com/ESMValGroup/ESMValTool/pull/2366>`__) `Birgit Hassler <https://github.com/hb326>`__
 -  Fix formatting of some recipe titles merged from PR 2364 (`#2372 <https://github.com/ESMValGroup/ESMValTool/pull/2372>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 -  Adding titles to Bjoern's recipes (`#2369 <https://github.com/ESMValGroup/ESMValTool/pull/2369>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Add titles to ocean recipes (maintainer Lovato) (`#2375 <https://github.com/ESMValGroup/ESMValTool/pull/2375>`__) `Tomas Lovato <https://github.com/tomaslovato>`__
 -  Add titles for three c3s-magic recipes (`#2378 <https://github.com/ESMValGroup/ESMValTool/pull/2378>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 -  Add title for recipe maintained by Ruth Lorenz (`#2379 <https://github.com/ESMValGroup/ESMValTool/pull/2379>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 -  Fix toymodel recipe (`#2381 <https://github.com/ESMValGroup/ESMValTool/pull/2381>`__) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
 -  Added titles for recipes of maintainer `schlund_manuel` (`#2377 <https://github.com/ESMValGroup/ESMValTool/pull/2377>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Write_plots and titles for deangelis15nat, li17natcc, martin18grl, pv_capacity_factor (`#2382 <https://github.com/ESMValGroup/ESMValTool/pull/2382>`__) `katjaweigel <https://github.com/katjaweigel>`__
+-  Add titles for some recipes (`#2383 <https://github.com/ESMValGroup/ESMValTool/pull/2383>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
+-  Adding titles for recipes by von Hardenberg and Arnone (`#2384 <https://github.com/ESMValGroup/ESMValTool/pull/2384>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 -  Last two missing titles (`#2386 <https://github.com/ESMValGroup/ESMValTool/pull/2386>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Update documentation on downloading data (`#2370 <https://github.com/ESMValGroup/ESMValTool/pull/2370>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Fix installation instructions for Julia (`#2335 <https://github.com/ESMValGroup/ESMValTool/pull/2335>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
@@ -91,14 +85,12 @@ Diagnostics
 ~~~~~~~~~~~
 
 -  PV capacity factor for ESMValTool GMD paper  (`#2153 <https://github.com/ESMValGroup/ESMValTool/pull/2153>`__) `katjaweigel <https://github.com/katjaweigel>`__
+-  Add all available CMIP5 and CMIP6 models to recipe_impact.yml (`#2251 <https://github.com/ESMValGroup/ESMValTool/pull/2251>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Add Fig. 6, 7 and 9 of Bock20jgr (`#2252 <https://github.com/ESMValGroup/ESMValTool/pull/2252>`__) `Lisa Bock <https://github.com/LisaBock>`__
 -  Generalize `recipe_validation*` diagnostic to work with identical control and experiment dataset names (`#2284 <https://github.com/ESMValGroup/ESMValTool/pull/2284>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Add missing preprocessor to recipe_gier2020bg and adapt to available data (`#2399 <https://github.com/ESMValGroup/ESMValTool/pull/2399>`__) `Bettina Gier <https://github.com/bettina-gier>`__
-
-Preprocessor
-~~~~~~~~~~~~
-
-
+-  Removed custom version of `AtmosphereSigmaFactory` in diagnostics (`#2405 <https://github.com/ESMValGroup/ESMValTool/pull/2405>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Update version number for 2.4.0 release (`#2410 <https://github.com/ESMValGroup/ESMValTool/pull/2410>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 
 Observational and re-analysis dataset support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -131,19 +123,11 @@ Installation
 Improvements
 ~~~~~~~~~~~~
 
--  Add all available CMIP5 and CMIP6 models to recipe_impact.yml (`#2251 <https://github.com/ESMValGroup/ESMValTool/pull/2251>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Add script for extracting a list of input files from the provenance (`#2278 <https://github.com/ESMValGroup/ESMValTool/pull/2278>`__) `Bouwe Andela <https://github.com/bouweandela>`__
--  Update esmvalcore dependency to 2.4.0rc1 (`#2348 <https://github.com/ESMValGroup/ESMValTool/pull/2348>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
--  Adding titles to the recipes with maintainer hb326 (`#2358 <https://github.com/ESMValGroup/ESMValTool/pull/2358>`__) `Birgit Hassler <https://github.com/hb326>`__
 -  Update github actions (`#2360 <https://github.com/ESMValGroup/ESMValTool/pull/2360>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 -  Removed 'write_plots' from all NCL diagnostics (`#2331 <https://github.com/ESMValGroup/ESMValTool/pull/2331>`__) `Axel Lauer <https://github.com/axel-lauer>`__
--  Adding titles to wenzel recipes (`#2366 <https://github.com/ESMValGroup/ESMValTool/pull/2366>`__) `Birgit Hassler <https://github.com/hb326>`__
--  Specify that areacella is needed for area statistics in the Python example recipe (`#2371 <https://github.com/ESMValGroup/ESMValTool/pull/2371>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Update and modernize `config-user-example.yml` (`#2374 <https://github.com/ESMValGroup/ESMValTool/pull/2374>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Add titles to ocean recipes (maintainer Lovato) (`#2375 <https://github.com/ESMValGroup/ESMValTool/pull/2375>`__) `Tomas Lovato <https://github.com/tomaslovato>`__
--  Add titles for some recipes (`#2383 <https://github.com/ESMValGroup/ESMValTool/pull/2383>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
--  Adding titles for recipes by von Hardenberg and Arnone (`#2384 <https://github.com/ESMValGroup/ESMValTool/pull/2384>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
--  Removed custom version of `AtmosphereSigmaFactory` in diagnostics (`#2405 <https://github.com/ESMValGroup/ESMValTool/pull/2405>`__) `Manuel Schlund <https://github.com/schlunma>`__
+
 
 .. _changelog-v2-3-0:
 
