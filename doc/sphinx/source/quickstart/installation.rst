@@ -224,7 +224,7 @@ Pip installation
 
 It is also possible to install ESMValTool from `PyPI <https://pypi.org/project/ESMValTool/>`_.
 However, this requires first installing dependencies that are not available on PyPI in some other way.
-By far the easiest way to install these dependencies is to use mamba_.
+By far the easiest way to install these dependencies is to use `mamba`.
 For a minimal mamba installation (recommended) go to https://mamba.readthedocs.io/en/latest/installation.html.
 
 After installing mamba, download
