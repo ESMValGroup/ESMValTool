@@ -47,9 +47,6 @@ Deprecations
 Documentation
 ~~~~~~~~~~~~~
 
--  Update version number to 2.3.0 (`#2213 <https://github.com/ESMValGroup/ESMValTool/pull/2213>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
--  Update release schedule for 2.3.0 (`#2247 <https://github.com/ESMValGroup/ESMValTool/pull/2247>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
--  Changelog update to v2.3.0 (`#2214 <https://github.com/ESMValGroup/ESMValTool/pull/2214>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 -  List Manuel Schlund as release manager for v2.5 (`#2268 <https://github.com/ESMValGroup/ESMValTool/pull/2268>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  GlobWat fix download links and gdal command (`#2334 <https://github.com/ESMValGroup/ESMValTool/pull/2334>`__) `Banafsheh Abdollahi <https://github.com/babdollahi>`__
 -  Add titles to recipes authored by `predoi_valeriu` (`#2333 <https://github.com/ESMValGroup/ESMValTool/pull/2333>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
@@ -84,7 +81,6 @@ Documentation
 Diagnostics
 ~~~~~~~~~~~
 
--  PV capacity factor for ESMValTool GMD paper  (`#2153 <https://github.com/ESMValGroup/ESMValTool/pull/2153>`__) `katjaweigel <https://github.com/katjaweigel>`__
 -  Add all available CMIP5 and CMIP6 models to recipe_impact.yml (`#2251 <https://github.com/ESMValGroup/ESMValTool/pull/2251>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Add Fig. 6, 7 and 9 of Bock20jgr (`#2252 <https://github.com/ESMValGroup/ESMValTool/pull/2252>`__) `Lisa Bock <https://github.com/LisaBock>`__
 -  Generalize `recipe_validation*` diagnostic to work with identical control and experiment dataset names (`#2284 <https://github.com/ESMValGroup/ESMValTool/pull/2284>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
