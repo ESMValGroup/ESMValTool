@@ -788,4 +788,4 @@ interface) of `mamba` is identical to `conda`: any command that was run with `co
 will now be run with `mamba` instead, keeping all the other command line arguments and
 flags as they were before. The only place where `conda` should not be replaced with `mamba`
 at command line level is at the environment activation point: `conda activate` will still
-have to be used. [Licence stuff here]
+have to be used.
