@@ -778,3 +778,14 @@ specific versions for the correct functionality of the tool.
 
 Move to Mamba
 =============
+
+Mamba is a much faster alternative to `conda`, and environment creation and updating
+benefits from the use of a much faster (C++ backend) dependency solver; tests have been performed
+to verify the integrity of the `esmvaltool` environment built with `mamba`, and we are
+now confident that the change will not affect the way ESMValTool is installed and run, whether it be on a Linux or OSX platform.
+From the user's perspective, it is a straightforward use change: the CLI (command line
+interface) of `mamba` is identical to `conda`: any command that was run with `conda` before
+will now be run with `mamba` instead, keeping all the other command line arguments and
+flags as they were before. The only place where `conda` should not be replaced with `mamba`
+at command line level is at the environment activation point: `conda activate` will still
+have to be used. [Licence stuff here]
