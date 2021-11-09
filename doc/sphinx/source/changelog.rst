@@ -94,6 +94,7 @@ Documentation
 -  Added notes on use of mamba in the installation documentation chapter (`#2236 <https://github.com/ESMValGroup/ESMValTool/pull/2236>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Update version number for 2.4.0 release (`#2410 <https://github.com/ESMValGroup/ESMValTool/pull/2410>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 -  Update release schedule for 2.4.0 (`#2412 <https://github.com/ESMValGroup/ESMValTool/pull/2412>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
+-  Update changelog for 2.4.0 release (`#2411 <https://github.com/ESMValGroup/ESMValTool/pull/2411>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 
 Diagnostics
 ~~~~~~~~~~~
