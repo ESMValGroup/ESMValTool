@@ -4,7 +4,11 @@
 Installation
 ************
 
-ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.6+.
+.. note::
+   ESMValTool now uses `mamba` instead of `conda` for the recommended installation.
+   For more information about the change, have a look at :ref:`Move to Mamba<move-to-mamba>`.
+
+ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.7+.
 
 The ESMValTool can be installed in multiple ways.
 
@@ -801,3 +805,9 @@ does not work. See also `Mamba fails to solve the environment`_.
 Do not run ``mamba update --update-all`` in the ``esmvaltool``
 environment since that will update some packages that are pinned to
 specific versions for the correct functionality of the tool.
+
+
+.. _move-to-mamba:
+
+Move to Mamba
+=============
