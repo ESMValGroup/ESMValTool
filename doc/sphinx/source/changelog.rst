@@ -8,6 +8,20 @@ Changelog
 v2.4.0
 ------
 
+Highlights
+~~~~~~~~~~
+
+- ESMValTool is moving from Conda to Mamba as the preferred installation method. This will speed up the
+  installation and comes with some improvements behind the scenes.
+  Read more about it at :ref:`Move to Mamba<move-to-mamba>` and in :ref:`the installation guide<install>`.
+
+Please also note the highlights from the corresponding ESMValCore release :ref:`here<esmvalcore:changelog-v2-4-0>`.
+Thanks to that ESMValTool has gained the following features:
+
+- Download any missing data that is available on the ESGF automatically.
+- Resume previous runs, reusing expensive pre-processing results.
+
+
 This release includes
 
 Bug fixes
