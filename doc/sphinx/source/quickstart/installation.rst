@@ -740,7 +740,7 @@ Problems have been reported if the ``R`` interpreter was made available
 through the ``module load`` command in addition to installation from mamba.
 If your ESMValTool conda environment is called ``esmvaltool`` and you want to
 use the R interpreter installed from mamba, the path to the R interpreter should
-end with ``conda/envs/esmvaltool/bin/R``.
+end with ``mamba/envs/esmvaltool/bin/R`` or ``conda/envs/esmvaltool/bin/R``.
 When the conda environment for ESMValTool is activated, you can check which R
 interpreter is used by running
 
