@@ -745,6 +745,7 @@ begin
 
         dres@gsnLeftString  = ""
         dres@gsnRightString = ""
+        dres@mpPerimOn      = perim    ; draw line around map
 
         dres@tiMainString =  names(imod) + " - " + refname
 
@@ -1037,7 +1038,7 @@ begin
         ; obs uncertainty
 
         if (flag_multiobs_unc) then
-          xmask = where(abs(diff) .gt. ref_std, 0.0, 1.0)
+          xmask = where(abs(diff) .gt. ref_std, 1.0, 0.0)
           copy_VarMeta(diff, xmask)
 
 ;          if (ii .eq. 0) then
@@ -1057,7 +1058,7 @@ begin
           xres@cnLevelSelectionMode = "ExplicitLevels"
           xres@cnLevels = 0.5
           xres@cnFillColors = (/"black", "transparent"/)
-          xres@cnFillPattern = 17
+          xres@cnFillPattern = 17  ; 10 = hatching, 17 = stippling
           xres@cnFillOn       = True      ; color plot desired
           xres@cnInfoLabelOn = False
           xres@cnLinesOn = False

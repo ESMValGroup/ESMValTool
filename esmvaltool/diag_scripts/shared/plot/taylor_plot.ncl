@@ -594,6 +594,9 @@ begin
     else
       rxy@tiMainFontHeightF = 0.0225
     end if
+    if (isatt(rOpts, "tiMainOffsetYF")) then
+      rxy@tiMainOffsetYF = rOpts@tiMainOffsetYF
+    end if
   end if
 
   taylor = gsn_xy(wks, xx, yy, rxy)
@@ -981,18 +984,36 @@ begin
     lgres@lgItemType         = "Markers"
 
     if (isatt(rOpts, "legend_filter")) then
-      auxind = ind(str_match_bool(str_lower(rOpts@projects), \
-                   str_lower(rOpts@legend_filter)))
-      if(.not. all(ismissing(auxind))) then
-        iselect = ind(.not.str_match_bool(str_lower(rOpts@projects), \
-                      str_lower(rOpts@legend_filter)))
-        color0 = Colors(auxind(0))
-        marker0 = Markers(auxind(0))
-        label0 = rOpts@legend_filter
-        lgres@lgMarkerColors = array_append_record(color0, Colors(iselect), 0)
-        lgres@lgMarkerIndexes = \
-          array_append_record(marker0, Markers(iselect), 0)
-        Labels = array_append_record(label0, rOpts@caseLabels(iselect), 0)
+      iii = ispan(0, dimsizes(rOpts@projects) - 1, 1)
+      iii = 1
+      do i = 0, dimsizes(rOpts@legend_filter) - 1
+        do ii = 0, dimsizes(rOpts@projects) - 1
+          if (str_lower(rOpts@projects(ii)) .eq. \
+              str_lower(rOpts@legend_filter(i))) then
+            iii(ii) = -1
+          end if
+        end do
+      end do
+      testind = ind(iii .eq. -1)  ; indices of datasets to be filtered out
+      if (.not. all(ismissing(testind))) then
+        iselect = ind(iii .ne. -1)  ; datasets *not* to be filtered out
+        lgres@lgMarkerColors = Colors(iselect)
+        lgres@lgMarkerIndexes = Markers(iselect)
+        Labels = rOpts@caseLabels(iselect)
+        do i = 0, dimsizes(rOpts@legend_filter) - 1
+          auxind = ind(str_lower(rOpts@projects) .eq. \
+                       str_lower(rOpts@legend_filter(i)))
+          if (.not. all(ismissing(auxind))) then
+            color0 := Colors(auxind(0))
+            marker0 := Markers(auxind(0))
+            label0 = rOpts@legend_filter(i)
+            lgres@lgMarkerColors := array_append_record(color0, lgres@lgMarkerColors, 0)
+            lgres@lgMarkerIndexes := \
+              array_append_record(marker0, lgres@lgMarkerIndexes, 0)
+            Labels := array_append_record(label0, Labels, 0)
+          end if
+          delete(auxind)
+        end do
       else
         lgres@lgMarkerColors     = Colors
         lgres@lgMarkerIndexes    = Markers

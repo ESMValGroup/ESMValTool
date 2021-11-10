@@ -79,6 +79,7 @@
 ;        variable has been calculated from) the *second* (third, ...)
 ;
 ; Modification history
+;   20211028-lauer_axel: added option to calculate tcwp as lwp + iwp
 ;   20211018-lauer_axel: added option to remove individual models from legend
 ;   20210407-lauer_axel: added option to estimate observational uncertainty
 ;                        from multiple observational datasets

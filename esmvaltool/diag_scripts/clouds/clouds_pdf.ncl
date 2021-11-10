@@ -8,14 +8,17 @@
 ;   regions.
 ;
 ; Required diag_script_info attributes (diagnostic specific)
-;   none
+;   xmin                min value for bins (x axis)
+;   xmax                max value for bins (y axis)
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
 ;   filename_add:       optionally add this string to output filenames
 ;   plot_average:       show average frequency per bin
 ;   region:             show only selected geographic region given as latmin,
 ;                       latmax, lonmin, lonmax
-;   styleset:        "CMIP5", "DEFAULT"
+;   styleset:           "CMIP5", "DEFAULT"
+;   ymin                min value for frequencies (%) (y axis)
+;   ymax                max value for frequencies (%) (y axis)
 ;
 ; Required variable attributes (variable specific)
 ;   none
@@ -61,6 +64,14 @@ begin
   set_default_att(diag_script_info, "plot_average", False)
   set_default_att(diag_script_info, "styleset", "DEFAULT")
   set_default_att(diag_script_info, "multi_model_mean", False)
+
+  if (.not.isatt(diag_script_info, "xmin") .or. \
+      .not.isatt(diag_script_info, "xmax")) then
+    error_msg("f", DIAG_SCRIPT, "", "no xmin / xmax specified in recipe")
+  end if
+
+  xmin = diag_script_info@xmin
+  xmax = diag_script_info@xmax
 
   if (diag_script_info@filename_add .ne. "") then
     filename_add = "_" + diag_script_info@filename_add
@@ -228,13 +239,9 @@ begin
 
     ; mandatory netcdf output
 
-    if (ii .eq. 0) then
-      opt = False
-    else
-      opt = True
-      opt@bin_min = bin_min
-      opt@bin_max = bin_max
-    end if
+    opt = True
+    opt@bin_min = xmin
+    opt@bin_max = xmax
 
     data_out = pdfx(data1, bins, opt)
     data_out@diag_script = (/DIAG_SCRIPT/)
@@ -380,8 +387,16 @@ begin
   res@gsnMaximize       = True
   res@vpHeightF = 0.4
   res@vpWidthF = 0.8
-  res@trYMinF  = min(data_all)
-  res@trYMaxF  = max(data_all)
+  if (isatt(diag_script_info, "ymin")) then
+    res@trYMinF = diag_script_info@ymin
+  else
+    res@trYMinF  = min(data_all)
+  end if
+  if (isatt(diag_script_info, "ymax")) then
+    res@trYMaxF = diag_script_info@ymax
+  else
+    res@trYMaxF  = max(data_all)
+  end if
   res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
   res@tiYAxisString = "Frequency (" + data_all@units + ")"
 
@@ -401,10 +416,38 @@ begin
     res_std@gsnXYFillColors = (/1.0, 0.9, 0.9/)
     res_std@xyLineColor     = -1  ; Make lines transparent
     mmstddev = new((/2, bins/), float)
-    mmstddev(0, :) = result_avg - result_std
-    mmstddev(1, :) = result_avg + result_std
+    mmp10 = new((/bins/), float)
+    mmp90 = new((/bins/), float)
+
+    do n = 0, bins - 1
+      selection = data_all(idxmod, n)
+      itmp = ind(.not.ismissing(selection))
+      if (.not. ismissing(itmp(0))) then
+        sorted = selection(itmp)
+        qsort(sorted)
+        i10 = toint(dimsizes(sorted) * 0.1 + 0.5)
+        i90 = toint(dimsizes(sorted) * 0.9 - 0.5)
+        mmp10(n) = sorted(i10)
+        mmp90(n) = sorted(i90)
+        delete(sorted)
+      else
+        mmp10(n) = mmp10@_FillValue
+        mmp90(n) = mmp90@_FillValue
+      end if
+      delete(selection)
+      delete(itmp)
+    end do
+
+;    mmstddev(0, :) = result_avg - result_std
+;    mmstddev(1, :) = result_avg + result_std
+;    plotstd = gsn_csm_xy(wks_line, data_all&$var0$, mmstddev, res_std)
+
+    mmstddev(0, :) = mmp10(:)
+    mmstddev(1, :) = mmp90(:)
     plotstd = gsn_csm_xy(wks_line, data_all&$var0$, mmstddev, res_std)
+
     delete(mmstddev)
+
     overlay(lineplot, plotstd)
 
     res_avg = True

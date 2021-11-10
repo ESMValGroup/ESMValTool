@@ -302,8 +302,8 @@ begin
       data1 = data0
       delete(data0)
       ; if attribute is present, overwrite with user specified units
-      if (isatt(variable_info, "units")) then
-        variable_info@units = units_to
+      if (isatt(variable_info[0], "units")) then
+        variable_info[0]@units = units_to
       end if
     end if
 
@@ -388,8 +388,8 @@ begin
 
     data1@var = var0
 
-    if (isatt(variable_info, "units")) then
-      data1@var_units = variable_info@units
+    if (isatt(variable_info[0], "units")) then
+      data1@var_units = variable_info[0]@units
     else
       data1@var_units = ""
     end if
@@ -738,11 +738,11 @@ begin
       ; ###########################################
       ; add to diff as attributes without prefix
 
-      if (isatt(variable_info, "long_name")) then
-        diff@var_long_name = variable_info@long_name
+      if (isatt(variable_info[0], "long_name")) then
+        diff@var_long_name = variable_info[0]@long_name
       end if
-      if (isatt(variable_info, "units")) then
-        diff@var_units = variable_info@units
+      if (isatt(variable_info[0], "units")) then
+        diff@var_units = variable_info[0]@units
       else
         diff@var_units = ""
       end if

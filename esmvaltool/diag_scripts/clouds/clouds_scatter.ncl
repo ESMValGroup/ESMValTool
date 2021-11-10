@@ -326,6 +326,7 @@ begin
       if (.not.all(ismissing(idx0))) then
         result_avg(ii, n) = avg(y1d(idx0))
         result_std(ii, n) = stddev(y1d(idx0))
+
       else
         result_avg(ii, n) = result_avg@_FillValue
         result_std(ii, n) = result_std@_FillValue
@@ -350,9 +351,27 @@ begin
     flag_multimod = True
     mmavg = new((/1, nbins/), float)
     mmstd = new((/1, nbins/), float)
+    mmp10 = new((/1, nbins/), float)
+    mmp90 = new((/1, nbins/), float)
     do n = 0, nbins - 1
       mmavg(0, n) = avg(result_avg(idxmod, n))
       mmstd(0, n) = stddev(result_avg(idxmod, n))
+      selection = result_avg(idxmod, n)
+      itmp = ind(.not.ismissing(selection))
+      if (.not. ismissing(itmp(0))) then
+        sorted = selection(itmp)
+        qsort(sorted)
+        i10 = toint(dimsizes(sorted) * 0.1 + 0.5)
+        i90 = toint(dimsizes(sorted) * 0.9 - 0.5)
+        mmp10(0, n) = sorted(i10)
+        mmp90(0, n) = sorted(i90)
+        delete(sorted)
+      else
+        mmp10(0, n) = mmp10@_FillValue
+        mmp90(0, n) = mmp90@_FillValue
+      end if
+      delete(selection)
+      delete(itmp)
     end do
     mm_ind = dim_MOD
     dim_MOD = dim_MOD + 1
@@ -462,8 +481,10 @@ begin
       res_std@gsnXYFillColors = (/1.0, 0.9, 0.9/)  ; "lightpink"
       res_std@xyLineColor     = -1  ; Make lines transparent
       mmstddev = new((/2, nbins/), float)
-      mmstddev(0, :) = mmavg(0, :) - mmstd(0, :)
-      mmstddev(1, :) = mmavg(0, :) + mmstd(0, :)
+;      mmstddev(0, :) = mmavg(0, :) - mmstd(0, :)
+;      mmstddev(1, :) = mmavg(0, :) + mmstd(0, :)
+      mmstddev(0, :) = mmp10(0, :)
+      mmstddev(1, :) = mmp90(0, :)
       plotstd = gsn_csm_xy(wks, result_avg&bin, mmstddev, res_std)
       delete(mmstddev)
       overlay(plots(ii), plotstd)

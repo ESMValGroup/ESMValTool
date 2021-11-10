@@ -1,11 +1,10 @@
-# ESMValTool
-# recipe_clouds_pdf.yml
+# recipe_clouds_clim.yml
 ---
 documentation:
-  title: Cloud diagnostics v2 (pdf)
+  title: Cloud diagnostics v2 (climatologies)
 
   description: |
-    Frequency distributions of cloud parameters.
+    Multi-year annaul means of cloud properties.
 
   authors:
     - lauer_axel
@@ -13,39 +12,25 @@ documentation:
   maintainer:
     - lauer_axel
 
+  references:
+    - lauer13jclim
+
   projects:
-    - cmug
+    - esmval
+    - embrace
 
 
 preprocessors:
-  ppOcean:
+  clim:
     regrid:
       target_grid: 2x2
       scheme: linear
-#    multi_model_statistics:
-#      span: overlap
-#      statistics: [mean]
-#      exclude: [reference_dataset]
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [HadISST, ESACCI-SST, reference_dataset]
     mask_landsea:
       mask_out: land
-
-  ppSouthernOcean:
-    extract_region:
-      start_longitude: 0
-      end_longitude: 360
-      start_latitude: -65
-      end_latitude: -30
-    extract_season:
-      season: DJF
-    mask_landsea:
-      mask_out: land
-    regrid:
-      target_grid: 2x2
-      scheme: linear
-#    multi_model_statistics:
-#      span: overlap
-#      statistics: [mean]
-#      exclude: [reference_dataset]
 
 
 CMIP5: &cmip5_models
@@ -126,144 +111,66 @@ CMIP6: &cmip6_models
 
 diagnostics:
 
-  pdf_clt_djf_cmip6:
-    description: climatological annual means
-    themes:
-      - clouds
-    realms:
-      - atmos
-    variables:
-      clt:
-        preprocessor: ppSouthernOcean
-        reference_dataset: ESACCI-CLOUD
-        project: CMIP6
-        mip: Amon
-        exp: historical
-        start_year: 1995
-        end_year: 2014
-        additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
-    additional_datasets: *cmip6_models
-    scripts:
-      southernocean:
-        script: clouds/clouds_pdf.ncl
-        styleset: lauer21
-        xmin: 0
-        xmax: 100
-        ymin: 0
-        ymax: 30
-        plot_average: true
-        filename_add: so_cmip6
+  # ==========================================================================
+  # Geographical distribution of multi-year annual/seasonal means (panel plot)
+  # ==========================================================================
 
-  pdf_clt_djf_cmip5:
+  clouds_clim_cmip5:
     description: climatological annual means
     themes:
       - clouds
     realms:
       - atmos
     variables:
-      clt:
-        preprocessor: ppSouthernOcean
-        reference_dataset: ESACCI-CLOUD
-        project: CMIP5
+      ts:
+        preprocessor: clim
         mip: Amon
+        project: CMIP5
         exp: historical
         start_year: 1986
         end_year: 2005
+        reference_dataset: HadISST
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
+          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+          - {dataset: ESACCI-SST, project: OBS, type: sat, version: 2.2, tier: 2}
     additional_datasets: *cmip5_models
     scripts:
-      southernocean:
-        script: clouds/clouds_pdf.ncl
-        styleset: lauer21
-        xmin: 0
-        xmax: 100
-        ymin: 0
-        ymax: 30
-        plot_average: true
-        filename_add: so_cmip5
+      avgsst: &settings5
+        script: clouds/clouds.ncl
+        projection: Robinson
+        timemean: annualclim
+        showdiff: true
+        multiobs_uncertainty: true
+        multiobs_exclude: ["ERA-Interim", "ERA5"]
+        filename_add: cmip5
+        var: ts
 
-  pdf_clt_ann_cmip6:
+  clouds_clim_cmip6:
     description: climatological annual means
     themes:
       - clouds
     realms:
       - atmos
     variables:
-      clt:
-        preprocessor: ppOcean
-        reference_dataset: ESACCI-CLOUD
-        project: CMIP6
+      ts:
+        preprocessor: clim
         mip: Amon
+        project: CMIP6
         exp: historical
         start_year: 1995
         end_year: 2014
+        reference_dataset: HadISST
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
+          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+          - {dataset: ESACCI-SST, project: OBS, type: sat, version: 2.2, tier: 2}
     additional_datasets: *cmip6_models
     scripts:
-      sep:
-        script: clouds/clouds_pdf.ncl
-        region: [-25, -5, 265, 275]
-        styleset: lauer21
-        xmin: 0
-        xmax: 100
-        ymin: 0
-        ymax: 24
-        plot_average: true
-        filename_add: sep_cmip6
-      itcz:
-        script: clouds/clouds_pdf.ncl
-        styleset: lauer21
-        region: [0, 12, 135, 275]
-        xmin: 0
-        xmax: 100
-        ymin: 0
-        ymax: 27
-        plot_average: true
-        filename_add: itcz_cmip6
-
-  pdf_clt_ann_cmip5:
-    description: climatological annual means
-    themes:
-      - clouds
-    realms:
-      - atmos
-    variables:
-      clt:
-        preprocessor: ppOcean
-        reference_dataset: ESACCI-CLOUD
-        project: CMIP5
-        mip: Amon
-        exp: historical
-        start_year: 1986
-        end_year: 2005
-        additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
-    additional_datasets: *cmip5_models
-    scripts:
-      sep:
-        script: clouds/clouds_pdf.ncl
-        styleset: lauer21
-        region: [-25, -5, 265, 275]
-        xmin: 0
-        xmax: 100
-        ymin: 0
-        ymax: 24
-        plot_average: true
-        filename_add: sep_cmip5
-      itcz:
-        script: clouds/clouds_pdf.ncl
-        styleset: lauer21
-        region: [0, 12, 135, 275]
-        xmin: 0
-        xmax: 100
-        ymin: 0
-        ymax: 27
-        plot_average: true
-        filename_add: itcz_cmip5
+      avgsst: &settings6
+        script: clouds/clouds.ncl
+        projection: Robinson
+        timemean: annualclim
+        showdiff: true
+        multiobs_uncertainty: true
+        multiobs_exclude: ["ERA-Interim", "ERA5"]
+        filename_add: cmip6
+        var: ts
