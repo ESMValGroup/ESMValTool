@@ -8,13 +8,19 @@ from unittest import SkipTest
 
 import numpy as np
 import yaml
-# from easytest import EasyTest
 
 import esmvaltool
 
+# from easytest import EasyTest
+
+
+def get_script_root():
+    """Return the location of the ESMValTool installation."""
+    return os.path.abspath(os.path.dirname(esmvaltool.__file__))
+
 
 def _load_config(filename=None):
-    """Load test configuration"""
+    """Load test configuration."""
     if filename is None:
         # look in default locations for config-test.yml
         config_file = 'config-test.yml'
@@ -37,7 +43,7 @@ def _load_config(filename=None):
         os.path.expanduser(cfg['reference']['output']))
 
     if cfg['test'].get('recipes', []) == []:
-        script_root = esmvaltool.get_script_root()
+        script_root = get_script_root()
         recipe_glob = os.path.join(script_root, 'nml', 'recipe_*.yml')
         cfg['test']['recipes'] = glob.glob(recipe_glob)
 
@@ -52,8 +58,8 @@ RECIPES = _CFG['test']['recipes']
 def _create_config_user_file(output_directory):
     """Write a config-user.yml file.
 
-    Write a configuration file for running ESMValTool
-    such that it writes all output to `output_directory`.
+    Write a configuration file for running ESMValTool such that it
+    writes all output to `output_directory`.
     """
     cfg = _CFG['user']
 
@@ -69,10 +75,8 @@ def _create_config_user_file(output_directory):
 
 class ESMValToolTest:  # was ESMValToolTest(EasyTest)
     """Main class for ESMValTool test runs."""
-
     def __init__(self, recipe, output_directory, ignore='', **kwargs):
-        """
-        Create ESMValToolTest instance
+        """Create ESMValToolTest instance.
 
         recipe: str
             The filename of the recipe that should be tested.
@@ -81,18 +85,21 @@ class ESMValToolTest:  # was ESMValToolTest(EasyTest)
         ignore: str or iterable of str
             Glob patterns of files to be ignored when testing.
         """
+
+        self.success = False
+        self.output_directory = output_directory
+
         if not _CFG['test']['run']:
             raise SkipTest("System tests disabled in {}".format(
                 _CFG['configfile']))
 
         self.ignore = (ignore, ) if isinstance(ignore, str) else ignore
 
-        script_root = esmvaltool.get_script_root()
+        script_root = get_script_root()
 
         # Set recipe path
         if not os.path.exists(recipe):
-            recipe = os.path.join(
-                os.path.dirname(script_root), 'recipes', recipe)
+            recipe = os.path.join(script_root, 'recipes', recipe)
         self.recipe_file = os.path.abspath(recipe)
 
         # Simulate input data?
@@ -102,12 +109,13 @@ class ESMValToolTest:  # was ESMValToolTest(EasyTest)
         self.create_reference_output = _CFG['reference']['generate']
 
         # Define reference output path
-        reference_dir = os.path.join(
+        self.reference_dir = os.path.join(
             _CFG['reference']['output'],
             os.path.splitext(os.path.basename(self.recipe_file))[0])
 
         # If reference data is neither available nor should be generated, skip
-        if not (os.path.exists(reference_dir) or self.create_reference_output):
+        if not (os.path.exists(self.reference_dir)
+                or self.create_reference_output):
             raise SkipTest(
                 "No reference data available for recipe {} in {}".format(
                     recipe, _CFG['reference']['output']))
@@ -115,26 +123,15 @@ class ESMValToolTest:  # was ESMValToolTest(EasyTest)
         # Write ESMValTool configuration file
         self.config_user_file = _create_config_user_file(output_directory)
 
-        super(ESMValToolTest, self).__init__(
-            exe='esmvaltool',
-            args=['-n', self.recipe_file, '-c', self.config_user_file],
-            output_directory=output_directory,
-            refdirectory=reference_dir,
-            **kwargs)
-
     def run(self, **kwargs):
         """Run tests or generate reference data."""
         if self.simulate_input:
             from .data_simulator import simulate_input_data
-            simulate_input_data(
-                recipe_file=self.recipe_file,
-                config_user_file=self.config_user_file)
+            simulate_input_data(recipe_file=self.recipe_file,
+                                config_user_file=self.config_user_file)
 
-        if self.create_reference_output:
-            self.generate_reference_output()
-            raise SkipTest("Generated reference data instead of running test")
-        else:
-            super(ESMValToolTest, self).run_tests(**kwargs)
+        self._execute()
+        self.success = True
 
     def generate_reference_output(self):
         """Generate reference output.
@@ -142,24 +139,27 @@ class ESMValToolTest:  # was ESMValToolTest(EasyTest)
         Generate reference data by executing the recipe and then moving
         results to the output directory.
         """
-        if not os.path.exists(self.refdirectory):
+        if not os.path.exists(self.reference_dir):
             self._execute()
             shutil.move(self.output_directory,
-                        os.path.dirname(self.refdirectory))
+                        os.path.dirname(self.reference_dir))
         else:
             print("Warning: not generating reference data, reference "
-                  "directory {} already exists.".format(self.refdirectory))
+                  "directory {} already exists.".format(self.reference_dir))
 
     def _execute(self):
-        """Execute ESMValTool
+        """Execute ESMValTool.
 
         Override the _execute method because we want to run in our own
         Python instance to get coverage reporting and we want to update
         the location of `self.output_directory` afterwards.
         """
         # run ESMValTool
-        sys.argv[1:] = self.args
-        esmvaltool.main.run()
+        sys.argv[1:] = [
+            'run', self.recipe_file, '--config_file', self.config_user_file
+        ]
+        from esmvalcore._main import run
+        run()
 
         # Update the output directory to point to the output of the run
         output_directory = self.output_directory  # noqa
@@ -177,8 +177,8 @@ class ESMValToolTest:  # was ESMValToolTest(EasyTest)
                     output_directory))
 
         if len(output) > 1:
-            print("Warning: found multiple output directories:\n{}\nin output "
-                  "location {}\nusing the first one.".format(
+            print("Warning: found multiple output directories:\n{}\n"
+                  "in output location {}\nusing the first one.".format(
                       output, output_directory))
 
         self.output_directory = output[0] + os.sep  # noqa
@@ -194,10 +194,10 @@ class ESMValToolTest:  # was ESMValToolTest(EasyTest)
         from fnmatch import fnmatchcase
 
         matches = []
-        for root, _, filenames in os.walk(self.refdirectory):
+        for root, _, filenames in os.walk(self.reference_dir):
             for filename in filenames:
                 path = os.path.join(root, filename)
-                relpath = os.path.relpath(path, start=self.refdirectory)
+                relpath = os.path.relpath(path, start=self.reference_dir)
                 for pattern in self.ignore:
                     if fnmatchcase(relpath, pattern):
                         break

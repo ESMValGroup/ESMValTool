@@ -12,13 +12,13 @@
 
 test:
   # Execute system/diagnostic tests [false]/true
-  run: false
+  run: true
   # Simulate input data using the dummydata module [true]/false
   simulate_input: true
   # Limit testing/generating reference data to the following recipes
   # An empty list means any recipe in esmvaltool/nml
   recipes: [
-    recipe_MyVar.yml,
+    recipe_validation_CMIP6.yml,
   ]
 
 # Reference data configuration
@@ -26,7 +26,7 @@ reference:
   # Directory containing reference output
   output: ~/esmvaltool_reference_output
   # Generate reference data instead of checking [false]/true
-  generate: false
+  generate: true # TODO PROTOTYPE: Remove reference data section. We're not doing comparisons for these tests.
 
 # Template for the user configuration file
 user:
@@ -37,8 +37,11 @@ user:
 
   rootpath:
     CMIP5: ~/esmvaltool_simulated_input
+    CMIP6: ~/esmvaltool_simulated_input
     OBS: ~/esmvaltool_simulated_input
     default: ~/esmvaltool_simulated_input
 
   drs:
     CMIP5: default
+    CMIP6: default
+    OBS: default
