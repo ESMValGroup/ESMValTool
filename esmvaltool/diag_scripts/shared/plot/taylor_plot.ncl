@@ -1007,7 +1007,9 @@ begin
             color0 := Colors(auxind(0))
             marker0 := Markers(auxind(0))
             label0 = rOpts@legend_filter(i)
-            lgres@lgMarkerColors := array_append_record(color0, lgres@lgMarkerColors, 0)
+            lgres@lgMarkerColors := array_append_record(color0, \
+                                                        lgres@lgMarkerColors, \
+                                                        0)
             lgres@lgMarkerIndexes := \
               array_append_record(marker0, lgres@lgMarkerIndexes, 0)
             Labels := array_append_record(label0, Labels, 0)
