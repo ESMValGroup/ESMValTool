@@ -14,6 +14,7 @@ COPY . /src/ESMValTool
 RUN pip install -e .[develop]
 RUN mamba install -y -c conda-forge r-base
 RUN esmvaltool install R
+RUN mamba install -y -c conda-forge julia
 RUN esmvaltool install Julia
 RUN pip install ../ESMValCore && pip cache purge
 
