@@ -1,4 +1,4 @@
-name: Conda Base Install
+name: Install from Conda
 
 # runs on a push on main and at the end of every day
 on:
@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           miniconda-version: "latest"
-          channels: esmvalgroup,conda-forge
+          channels: conda-forge
       - shell: bash -l {0}
         run: mkdir -p conda_install_linux_artifacts_python_${{ matrix.python-version }}
       - shell: bash -l {0}
@@ -64,7 +64,7 @@ jobs:
 #        with:
 #          python-version: ${{ matrix.python-version }}
 #          miniconda-version: "latest"
-#          channels: esmvalgroup,conda-forge
+#          channels: conda-forge
 #      - shell: bash -l {0}
 #        run: mkdir -p conda_install_osx_artifacts_python_${{ matrix.python-version }}
 #      - shell: bash -l {0}
