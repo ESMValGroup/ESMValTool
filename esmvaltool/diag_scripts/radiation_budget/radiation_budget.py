@@ -364,7 +364,7 @@ def plot_data(
         bar_width,
         alpha=opacity,
         color="cornflowerblue",
-        label=f"{model_dataset} ({model_period}) - Stephens (2012)",
+        label=f"{model_dataset} ({model_period}) - Stephens et al. (2012)",
         yerr=stephens_error,
     )
     axes.bar(
@@ -382,7 +382,7 @@ def plot_data(
         bar_width,
         alpha=opacity,
         color="darkgrey",
-        label=f"{model_dataset} ({model_period}) - Demory (2014)",
+        label=f"{model_dataset} ({model_period}) - Demory et al. (2014)",
     )
     axes.spines["bottom"].set_position(("data", 0))
     axes.spines["top"].set_position(("data", 0))
