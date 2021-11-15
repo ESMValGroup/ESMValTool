@@ -12,9 +12,9 @@ import numpy as np
 from common import get_filenames, load_data
 
 from esmvaltool.diag_scripts.shared import (
-    get_plot_filename,
     group_metadata,
     run_diagnostic,
+    save_figure,
 )
 
 CWD = os.path.abspath(os.path.dirname(__file__))
@@ -311,7 +311,6 @@ def plot_data(
     ceres_dataset,
     ceres_data,
     ceres_period,
-    plot_filename,
 ):
     """Produce and save the radiation budget comparison plot.
 
@@ -340,8 +339,11 @@ def plot_data(
         CERES observation data values.
     ceres_period : string
         The start and end years of the CERES observation data.
-    plot_filename : string
-        The name of the image file to be saved.
+
+    Returns
+    -------
+    :class:`matplotlib.figure.Figure`
+        The figure containing the plot.
     """
     model_minus_stephens = np.array(model_data) - np.array(stephens_data)
     model_minus_demory = np.array(model_data) - np.array(demory_data)
@@ -392,8 +394,26 @@ def plot_data(
 
     axes.legend(frameon=False, fontsize=10, loc="upper left")
 
-    figure.savefig(plot_filename)
-    figure.clear()
+    return figure
+
+
+def get_provenance_record(filenames):
+    """Return a provenance record describing the plot.
+
+    Parameters
+    ----------
+    filenames : list of strings
+        The filenames containing the data used to create the plot.
+
+    Returns
+    -------
+    dictionary
+        The provenance record describing the plot.
+    """
+    record = {
+        'ancestors': filenames,
+    }
+    return record
 
 
 def main(config):
@@ -433,9 +453,8 @@ def main(config):
         unordered_model_data = load_data(filenames)
         all_model_data = derive_additional_variables(unordered_model_data)
         model_data = order_data(all_model_data, obs_names, obs_unit)
-        plot_filename = get_plot_filename(model_dataset, config)
         model_period = f"{group[0]['start_year']} - {group[0]['end_year']}"
-        plot_data(
+        figure = plot_data(
             model_dataset,
             model_data,
             model_period,
@@ -447,8 +466,13 @@ def main(config):
             ceres_dataset,
             ceres_data,
             ceres_period,
-            plot_filename,
         )
+        provenance_record = get_provenance_record(filenames)
+        save_figure(model_dataset,
+                    provenance_record,
+                    config,
+                    figure,
+                    close=True)
 
 
 if __name__ == "__main__":
