@@ -38,6 +38,7 @@ Atmosphere
    recipe_zmnam
    recipe_thermodyn_diagtool
    recipe_validation
+   recipe_radiation_budget
 
 Climate metrics
 ^^^^^^^^^^^^^^^
