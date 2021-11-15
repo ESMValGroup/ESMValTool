@@ -2,6 +2,7 @@
 # recipe_radiation_budget.yml
 ---
 documentation:
+  title: Radiation Budget
   description:
     The radiation budget defines which factors have more uncertainties compared
     with observations and statistics from other models to figure out where the
