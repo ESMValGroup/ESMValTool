@@ -1,10 +1,4 @@
-"""Radiation budget diagnostic script.
-
-PLACEHOLDER modified from AA docs: The aim of monitoring the energy
-budget is to understand the (im)balance of energy flux between the
-atmosphere and the surface of a model due to its link with the
-hydrological cycle and climate change.
-"""
+"""Plot the global radiation budget."""
 
 # To run the doctests:
 # % cd ESMValTool/esmvaltool/
