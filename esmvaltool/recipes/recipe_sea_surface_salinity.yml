@@ -1,5 +1,7 @@
 ---
 documentation:
+  title: CMUG diagnostics for sea surface salinity
+
   description: |
     Recipe for evaluating models against ESACCI Sea Surface Salinity dataset
 
