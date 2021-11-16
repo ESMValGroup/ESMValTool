@@ -9,7 +9,6 @@ import os
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
-from common import get_filenames, load_data
 
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
@@ -440,8 +439,8 @@ def main(config):
 
     ceres_dataset = "CERES-EBAF"
     ceres_group = datasets.pop(ceres_dataset)
-    ceres_filenames = get_filenames(ceres_group)
-    raw_ceres_data = load_data(ceres_filenames)
+    ceres_filenames = [item["filename"] for item in ceres_group]
+    raw_ceres_data = iris.load(ceres_filenames)
     ceres_data = order_data(raw_ceres_data, obs_names, obs_unit)
     ceres_period = (f"{ceres_group[0]['start_year']} - "
                     f"{ceres_group[0]['end_year']}")
@@ -450,8 +449,8 @@ def main(config):
         # 'model_dataset' is the name of the model dataset.
         # 'group' is a list of dictionaries containing metadata.
         logger.info("Processing data for %s", model_dataset)
-        filenames = get_filenames(group)
-        unordered_model_data = load_data(filenames)
+        filenames = [item["filename"] for item in group]
+        unordered_model_data = iris.load(filenames)
         all_model_data = derive_additional_variables(unordered_model_data)
         model_data = order_data(all_model_data, obs_names, obs_unit)
         model_period = f"{group[0]['start_year']} - {group[0]['end_year']}"

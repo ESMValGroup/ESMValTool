@@ -4,7 +4,7 @@ import csv
 import logging
 import os
 
-from common import get_filenames, load_data
+import iris
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 
@@ -77,8 +77,8 @@ def main(config):
         # 'model_dataset' is the name of the model dataset.
         # 'group' is a list of dictionaries containing metadata.
         logger.info("Processing data for %s", model_dataset)
-        filenames = get_filenames(group)
-        model_data = load_data(filenames)
+        filenames = [item["filename"] for item in group]
+        model_data = iris.load(filenames)
         seasonal_data = organise_seasonal_data(model_data)
 
         write_seasonal_data_output(config["work_dir"], model_dataset,
