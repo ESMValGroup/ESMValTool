@@ -143,8 +143,9 @@ def validate_variable_data(variable_data, name, unit):
 
     Raises
     ------
-    RuntimeError
+    KeyError
         If multiple ``name`` exist in ``variable_data``.
+    ValueError
         If ``unit`` doesn't match the unit in ``variable_data``.
 
     Returns
@@ -172,10 +173,10 @@ def validate_variable_data(variable_data, name, unit):
         variable = items[0]
 
     if len(items) > 1:
-        raise RuntimeError(f"Multiple '{name}' exist in '{items}'.")
+        raise KeyError(f"Multiple '{name}' exist in '{items}'.")
 
     if variable["unit"] != unit:
-        raise RuntimeError(
+        raise ValueError(
             f"Unit {unit} does not match the unit {variable['unit']} "
             f"in {variable} for {name}.")
 
