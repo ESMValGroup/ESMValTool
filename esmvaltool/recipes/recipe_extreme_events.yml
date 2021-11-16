@@ -2,6 +2,8 @@
 # recipe_ExtremeEvents.yml
 ---
 documentation:
+  title: Extreme Events Indices
+
   description: |
      Calculate indices for monitoring changes in extremes based on daily temperature
      and precipitation data. Producing Glecker and timeline plots of this as

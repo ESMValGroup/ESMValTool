@@ -8,7 +8,8 @@ from pathlib import Path
 
 from setuptools import Command, setup
 
-from esmvaltool import __version__
+sys.path.insert(0, os.path.dirname(__file__))
+from esmvaltool import __version__  # noqa: E402
 
 PACKAGES = [
     'esmvaltool',
@@ -28,11 +29,11 @@ REQUIREMENTS = {
         'cf-units',
         'cftime',
         'cmocean',
-        'dask>=2.12',
+        'dask',
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        'esmvalcore>=2.1.0,<2.2',
+        'esmvalcore',
         'fiona',
         'GDAL',
         'jinja2',
@@ -40,21 +41,23 @@ REQUIREMENTS = {
         'lime',
         'matplotlib',
         'natsort',
-        'nc-time-axis',  # needed by iris.plot
+        'nc-time-axis',
         'netCDF4',
         'numpy',
+        'openpyxl',
         'pandas',
-        'pynio',
-        'pyproj>=2.1'
+        'pyproj',
         'pyyaml',
+        'rasterio',
+        'ruamel.yaml',
         'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris>=2.2.1',
+        'scitools-iris',
         'seaborn',
         'seawater',
         'shapely',
-        'xarray>=0.12',
+        'xarray',
         'xesmf',
         'xgboost',
         'xlsxwriter',
@@ -73,7 +76,7 @@ REQUIREMENTS = {
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
-        'autodocsumm<0.2.0',
+        'autodocsumm>=0.2.2',
         'codespell',
         'docformatter',
         'isort',
@@ -216,7 +219,8 @@ setup(
     extras_require={
         'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test']) -
                     {'pycodestyle'}),
-        'test': REQUIREMENTS['test'],
+        'test':
+        REQUIREMENTS['test'],
     },
     entry_points={
         'console_scripts': [
@@ -225,7 +229,9 @@ setup(
             'esmvaltool.cmorizers.mip_convert.esmvt_mipconv_setup:main',
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             'test_recipe = '
-            'esmvaltool.utils.testing.recipe_settings.install_expand_run:main'
+            'esmvaltool.utils.testing.recipe_settings.install_expand_run:main',
+            'recipe_filler = '
+            'esmvaltool.utils.recipe_filler:run'
         ],
         'esmvaltool_commands': [
             'colortables = '

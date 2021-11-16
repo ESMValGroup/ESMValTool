@@ -231,7 +231,7 @@ save(histarr, file = filehist)
 plot_file <- paste0(params$plot_dir, "/", "histplot.png")
 xprov$caption <- "Global latitude-weighted histogram of SPEI index."
 xprov$ancestors <- c(modfile1, modfile2)
-xprov[["plot_file"]] <- plot_file
+provenance[[plot_file]] <- xprov
 provenance[[filehist]] <- xprov
 write_yaml(provenance, provenance_file)
 

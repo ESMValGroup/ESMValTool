@@ -36,29 +36,31 @@ Diagnostics are stored in diag_scripts/
 User settings in recipe
 -----------------------
 
-#. Preprocessor
+* Preprocessor
 
    * ``area_statistics`` (*operation: mean*): Calculate global mean.
 
-#. Script climate_metrics/tcr.py
+.. _tcr.py:
 
-   * ``plot``, *bool*, optional (default: ``True``): Plot temperature anomaly
-     vs. time.
-   * ``read_external_file``, *str*, optional: Read TCR from external file. Can
-     be given relative to the diagnostic
-     script or as absolute path.
-   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
-     method (affects all plots), see
-     https://seaborn.pydata.org/generated/seaborn.set.html.
+* Script climate_metrics/tcr.py
 
-#. Script climate_metrics/create_barplot.py
+   * ``calculate_mmm``, *bool*, optional (default: ``True``): Calculate
+     multi-model mean TCR.
+   * ``plot``, *bool*, optional (default: ``True``): Plot temperature vs. time.
+   * ``read_external_file``, *str*, optional: Read TCR from external file. The
+     path can be given relative to this diagnostic script or as absolute path.
+   * ``savefig_kwargs``, *dict*, optional: Keyword arguments for
+     :func:`matplotlib.pyplot.savefig`.
+   * ``seaborn_settings``, *dict*, optional: Options for :func:`seaborn.set`
+     (affects all plots).
 
-   See :ref:`recipes_ecs`.
+* Script climate_metrics/create_barplot.py
 
-#. Script climate_metrics/create_scatterplot.py
+   See :ref:`here<create_barplot.py>`.
 
-   See :ref:`recipes_ecs`.
+* Script climate_metrics/create_scatterplot.py
 
+   See :ref:`here<create_scatterplot.py>`.
 
 
 Variables

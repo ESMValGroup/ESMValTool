@@ -195,9 +195,8 @@ def make_profiles_plots(
         )
 
     # Saving files:
-    if cfg['write_plots']:
-        logger.info('Saving plots to %s', path)
-        plt.savefig(path)
+    logger.info('Saving plots to %s', path)
+    plt.savefig(path)
 
     plt.close()
 

@@ -1,0 +1,79 @@
+# ESMValTool
+# recipe_capacity_factor.yml
+---
+documentation:
+  title: "Capacity factor for solar photovoltaic (PV) systems"
+  description: |
+     Solar Capacity Factor
+
+  authors:
+    - cionni_irene
+
+  maintainer:
+    - weigel_katja
+
+  references:
+    - bett2016renene
+    - weigel2021gmd
+
+  projects:
+    - crescendo
+
+datasets:
+  - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3,
+     start_year: 1980, end_year: 2005}
+  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: CMCC-CM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+preprocessors:
+  preproc:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    extract_region:
+      start_longitude: -20
+      end_longitude: 60
+      start_latitude: 30
+      end_latitude: 80
+    extract_season: &season
+      season: djf
+
+
+diagnostics:
+  capacity_factor:
+    description: Calculate the photovoltaic capacity factor.
+    variables:
+      tas:
+        reference_dataset: ERA-Interim
+        preprocessor: preproc
+        mip: day
+      rsds:
+        reference_dataset: ERA-Interim
+        preprocessor: preproc
+        mip: day
+    scripts:
+      main:
+        <<: *season
+        script: pv_capacityfactor/pv_capacity_factor.R
+        maxval_colorbar: 0.15

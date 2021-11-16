@@ -79,7 +79,7 @@ autodoc_mock_imports = [
     'GDAL',
     'iris',
     'psutil',
-    'pynio',
+    'rasterio',
     'scipy',
     'sklearn',
     'xesmf',
@@ -172,7 +172,7 @@ html_short_title = "ESMValTool {0}".format(release)
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = 'figures/ESMValTool-logo.png'
+html_logo = 'figures/ESMValTool-logo-2.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -264,7 +264,7 @@ latex_elements = {
      \fi}
      \begin{titlepage}
      \begin{center}
-     \includegraphics[width=\textwidth]{../../source/figures/ESMValTool-logo.pdf}\par
+     \includegraphics[width=\textwidth]{../../source/figures/ESMValTool-logo-2.pdf}\par
      \vspace{2cm}
      {\Huge \bf \sffamily User's and Developer's Guide \par}
      \vspace{1cm}
@@ -425,17 +425,15 @@ intersphinx_mapping = {
     (f'https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/',
      None),
     'esmvaltool': (f'https://docs.esmvaltool.org/en/{rtd_version}/', None),
-    'iris': ('https://scitools.org.uk/iris/docs/latest/', None),
+    'iris': ('https://scitools-iris.readthedocs.io/en/latest/', None),
     'lime': ('https://lime-ml.readthedocs.io/en/latest/', None),
     'matplotlib': ('https://matplotlib.org/', None),
     'numpy': ('https://numpy.org/doc/stable/', None),
-    'pandas': ('http://pandas.pydata.org/pandas-docs/dev', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
     'python': ('https://docs.python.org/3/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
     'seaborn': ('https://seaborn.pydata.org/', None),
-    'sklearn':
-    ('http://scikit-learn.org/stable',
-     (None, './_intersphinx/sklearn-objects.inv')),
+    'sklearn': ('https://scikit-learn.org/stable', None),
 }
 
 # -- Custom Document processing ----------------------------------------------

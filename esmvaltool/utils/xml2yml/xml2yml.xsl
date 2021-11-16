@@ -146,7 +146,7 @@
       </xsl:when>
       <!-- <xsl:when test="$dataset_scheme='OBS_gridfile'"> -->
       <!-- </xsl:when> -->
-      <!-- <xsl:when test="$dataset_scheme='obs4mips'"> -->
+      <!-- <xsl:when test="$dataset_scheme='obs4MIPs'"> -->
       <!-- </xsl:when> -->
       <!-- <xsl:when test="$dataset_scheme='ana4mips'"> -->
       <!-- </xsl:when> -->

@@ -180,107 +180,105 @@ begin
   ; ---------------------------------------------------------------------------
 
   ; Basic plotting settings
-  if (config_user_info@write_plots) then
-    colors = project_style(INFO0, diag_script_info, "colors")
-    thicks = project_style(INFO0, diag_script_info, "thicks")
-    lg_labels = unique_labels_min(INFO0, (/"dataset", "ensemble"/))
-    plot_file = config_user_info@plot_dir + var0 + "_" + season
+  colors = project_style(INFO0, diag_script_info, "colors")
+  thicks = project_style(INFO0, diag_script_info, "thicks")
+  lg_labels = unique_labels_min(INFO0, (/"dataset", "ensemble"/))
+  plot_file = config_user_info@plot_dir + var0 + "_" + season
 
-    ; Plotting instances
-    wks = gsn_open_wks(file_type, plot_file)
-    dum0 = new(DIM_DAT, graphic)
-    error_bar0 = new(DIM_DAT, graphic)
-    ti = ispan(1, dimsizes(val_grad(0, :)), 1)
+  ; Plotting instances
+  wks = gsn_open_wks(file_type, plot_file)
+  dum0 = new(DIM_DAT, graphic)
+  error_bar0 = new(DIM_DAT, graphic)
+  ti = ispan(1, dimsizes(val_grad(0, :)), 1)
 
-    ; Get plot descriptions
-    if (lat_range(0).le.-82.5 .and. lat_range(1).ge.82.5) then
-      lat_string = "NG"
-    else
-      if (lat_range(0) .ge. 0.0) then
-        lat_string = "(" + round(lat_range(0), 3) + "N"
-      else if (lat_range(0) .lt. 0.0) then
-        lat_string = "(" + -1 * round(lat_range(0), 3) + "S"
-      end if
-      end if
-      lat_string = lat_string + "-"
-      if (lat_range(1) .ge. 0.0) then
-        lat_string = lat_string + round(lat_range(1), 3) + "N)"
-      else if (lat_range(1) .lt. 0.0) then
-        lat_string = lat_string + -1 * round(lat_range(1), 3) + "S)"
-      end if
-      end if
+  ; Get plot descriptions
+  if (lat_range(0).le.-82.5 .and. lat_range(1).ge.82.5) then
+    lat_string = "NG"
+  else
+    if (lat_range(0) .ge. 0.0) then
+      lat_string = "(" + round(lat_range(0), 3) + "N"
+    else if (lat_range(0) .lt. 0.0) then
+      lat_string = "(" + -1 * round(lat_range(0), 3) + "S"
     end if
-    if (season .eq. "yearly") then
-      season = "ANN"
     end if
-
-    ; Plot appearance
-    res = True
-    res@tiYAxisString = "W m-2"               ; add units title
-    res@tiMainString = season + " ASR " + lat_string + " gradient (" + \
-      diag_script_info@wdiag_title(0) + ")"
-    res@gsnFrame = False                      ; don't draw yet
-    res@gsnDraw  = False                      ; don't advance frame
-    res@gsnMaximize = True
-    res@xyMarker = thicks(0)                  ; choose type of marker
-    res@xyMonoMarkerColor = False
-    res@xyMarkerColors = colors(0)            ; Marker color
-    res@xyMarkerSizeF = 0.01                  ; Marker size (default 0.01)
-    res@tiMainFontHeightF = 0.022
-    res@trYMinF = min(val_grad(0, :)) - 0.5 * abs(min(val_grad(0, :)))
-    res@trYMaxF = max(val_grad(0, :)) + 0.5 * abs(max(val_grad(0, :)))
-    res@trXMinF = 0
-    res@trXMaxF = DIM_DAT + 1
-    res@vpWidthF  = 0.9                       ; Change the aspect ratio, but
-    res@vpHeightF = 0.4                       ; make plot as large as possible.
-    res@gsnYRefLine = 0.0
-    res@tmXBLabelAngleF = 90.0
-    res@tmXBMode = "Explicit"                 ; explicitly set Y-axis labels
-    res@tmXBLabelJust = "CenterRight"
-    res@tmXBValues = ti
-    res@tmXBLabels = lg_labels
-    res@tmXBLabelFontHeightF = 0.015
-
-    ; Plot data
-    plot = gsn_csm_xy(wks, \
-                      (/ti(0), ti(0)/), \
-                      (/val_grad(0, 0), val_grad(0, 0)/), \
-                      res)
-    mkres = True
-    mkres@gsMarkerSizeF = 0.01
-    mkres@gsMarkerThicknessF = 1.0
-    do t = 0, DIM_DAT - 1
-      mkres@gsMarkerColor = colors(t)
-      mkres@gsMarkerIndex = 16
-      dum0(t) = gsn_add_polymarker(wks, plot(0), ti(t), val_grad(0, t), mkres)
-    end do
-
-    ; Plot error bars
-    polyres = True
-    do t = 0, DIM_DAT - 1
-      polyres@gsLineColor = colors(t)
-      error_bar0(t) = gsn_add_polyline(wks, plot, (/ti(t), ti(t)/), \
-                                       (/val_grad(0, t) - val_grad(1, t), \
-                                       val_grad(0, t) + val_grad(1, t)/), \
-                                       polyres)
-    end do
-    draw(plot)
-    frame(wks)
-
-    ; Write ncdf file
-    new_path = work_dir + "asr_gradient_" + season + ".nc"
-    val_grad@var = var0
-    val_grad@diag_script = DIAG_SCRIPT
-    val_grad@ncdf = new_path
-    outfile_grad = ncdf_write(val_grad, new_path)
-
-    ; Provenance tracking
-    plot_path = plot_file + "." + file_type
-    caption = season + " ASR " + lat_string + " gradient (" + \
-      diag_script_info@wdiag_title(0) + ")."
-    log_provenance(outfile_grad, plot_path, caption, STATISTICS, \
-                   DOMAIN, PLOT_TYPE, AUTHORS, REFERENCES, ANCESTORS)
+    lat_string = lat_string + "-"
+    if (lat_range(1) .ge. 0.0) then
+      lat_string = lat_string + round(lat_range(1), 3) + "N)"
+    else if (lat_range(1) .lt. 0.0) then
+      lat_string = lat_string + -1 * round(lat_range(1), 3) + "S)"
+    end if
+    end if
   end if
+  if (season .eq. "yearly") then
+    season = "ANN"
+  end if
+
+  ; Plot appearance
+  res = True
+  res@tiYAxisString = "W m-2"               ; add units title
+  res@tiMainString = season + " ASR " + lat_string + " gradient (" + \
+    diag_script_info@wdiag_title(0) + ")"
+  res@gsnFrame = False                      ; don't draw yet
+  res@gsnDraw  = False                      ; don't advance frame
+  res@gsnMaximize = True
+  res@xyMarker = thicks(0)                  ; choose type of marker
+  res@xyMonoMarkerColor = False
+  res@xyMarkerColors = colors(0)            ; Marker color
+  res@xyMarkerSizeF = 0.01                  ; Marker size (default 0.01)
+  res@tiMainFontHeightF = 0.022
+  res@trYMinF = min(val_grad(0, :)) - 0.5 * abs(min(val_grad(0, :)))
+  res@trYMaxF = max(val_grad(0, :)) + 0.5 * abs(max(val_grad(0, :)))
+  res@trXMinF = 0
+  res@trXMaxF = DIM_DAT + 1
+  res@vpWidthF  = 0.9                       ; Change the aspect ratio, but
+  res@vpHeightF = 0.4                       ; make plot as large as possible.
+  res@gsnYRefLine = 0.0
+  res@tmXBLabelAngleF = 90.0
+  res@tmXBMode = "Explicit"                 ; explicitly set Y-axis labels
+  res@tmXBLabelJust = "CenterRight"
+  res@tmXBValues = ti
+  res@tmXBLabels = lg_labels
+  res@tmXBLabelFontHeightF = 0.015
+
+  ; Plot data
+  plot = gsn_csm_xy(wks, \
+                    (/ti(0), ti(0)/), \
+                    (/val_grad(0, 0), val_grad(0, 0)/), \
+                    res)
+  mkres = True
+  mkres@gsMarkerSizeF = 0.01
+  mkres@gsMarkerThicknessF = 1.0
+  do t = 0, DIM_DAT - 1
+    mkres@gsMarkerColor = colors(t)
+    mkres@gsMarkerIndex = 16
+    dum0(t) = gsn_add_polymarker(wks, plot(0), ti(t), val_grad(0, t), mkres)
+  end do
+
+  ; Plot error bars
+  polyres = True
+  do t = 0, DIM_DAT - 1
+    polyres@gsLineColor = colors(t)
+    error_bar0(t) = gsn_add_polyline(wks, plot, (/ti(t), ti(t)/), \
+                                     (/val_grad(0, t) - val_grad(1, t), \
+                                     val_grad(0, t) + val_grad(1, t)/), \
+                                     polyres)
+  end do
+  draw(plot)
+  frame(wks)
+
+  ; Write ncdf file
+  new_path = work_dir + "asr_gradient_" + season + ".nc"
+  val_grad@var = var0
+  val_grad@diag_script = DIAG_SCRIPT
+  val_grad@ncdf = new_path
+  outfile_grad = ncdf_write(val_grad, new_path)
+
+  ; Provenance tracking
+  plot_path = plot_file + "." + file_type
+  caption = season + " ASR " + lat_string + " gradient (" + \
+    diag_script_info@wdiag_title(0) + ")."
+  log_provenance(outfile_grad, plot_path, caption, STATISTICS, \
+                 DOMAIN, PLOT_TYPE, AUTHORS, REFERENCES, ANCESTORS)
 
   ; ---------------------------------------------------------------------------
   ; Write NETCDF file for MDER

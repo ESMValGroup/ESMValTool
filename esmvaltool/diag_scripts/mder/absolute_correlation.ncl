@@ -459,30 +459,28 @@ begin
     ; Plot
     ; -------------------------------------------------------------------------
 
-    if (config_user_info@write_plots) then
-      filename  = var0 + "-" + calc_type + "_" + future_exp + "_" + \
-        p_time(pt) + "-" + (/p_time(pt) + p_step/)
-      wks = gsn_open_wks(file_type, plot_dir + filename)
-      MainStg = plot_num(pt) + ") " + p_time(pt) + "-" + \
-        (/p_time(pt) + p_step/) + " (" + future_exp + ")"
-      YStg = "Absolute Correlation Coefficient"
-      plot = error_bar_plot(acorr, corr_sig, wdiag, diag_sign(pt, :), \
-                            MainStg, YStg, wks, "draw")
+    filename  = var0 + "-" + calc_type + "_" + future_exp + "_" + \
+      p_time(pt) + "-" + (/p_time(pt) + p_step/)
+    wks = gsn_open_wks(file_type, plot_dir + filename)
+    MainStg = plot_num(pt) + ") " + p_time(pt) + "-" + \
+      (/p_time(pt) + p_step/) + " (" + future_exp + ")"
+    YStg = "Absolute Correlation Coefficient"
+    plot = error_bar_plot(acorr, corr_sig, wdiag, diag_sign(pt, :), \
+                          MainStg, YStg, wks, "draw")
 
-      ; Write ncdf file
-      new_path = work_dir + filename + ".nc"
-      acorr@var = var0
-      acorr@diag_script = DIAG_SCRIPT
-      acorr@ncdf = new_path
-      outfile_acorr = ncdf_write(acorr, new_path)
+    ; Write ncdf file
+    new_path = work_dir + filename + ".nc"
+    acorr@var = var0
+    acorr@diag_script = DIAG_SCRIPT
+    acorr@ncdf = new_path
+    outfile_acorr = ncdf_write(acorr, new_path)
 
-      ; Provenance tracking
-      plot_path = plot_dir + filename + "." + file_type
-      caption = "Absolute values of the correlation coefficient between " + \
-        var0 + " and multiple present-day diagnostics."
-      log_provenance(outfile_acorr, plot_path, caption, STATISTICS, \
-                     DOMAIN, PLOT_TYPE, AUTHORS, REFERENCES, ANCESTORS)
-    end if
+    ; Provenance tracking
+    plot_path = plot_dir + filename + "." + file_type
+    caption = "Absolute values of the correlation coefficient between " + \
+      var0 + " and multiple present-day diagnostics."
+    log_provenance(outfile_acorr, plot_path, caption, STATISTICS, \
+                   DOMAIN, PLOT_TYPE, AUTHORS, REFERENCES, ANCESTORS)
 
     ; Restore old order
     wdiag = backup_wdiag
