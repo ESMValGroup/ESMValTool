@@ -9,6 +9,7 @@ import os
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
+from esmvalcore.iris_helpers import var_name_constraint
 
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
@@ -48,21 +49,17 @@ def derive_additional_variables(cubes):
     :class:`iris.cube.CubeList`
         The input ``cubes`` with the additional cubes.
     """
-    def _constraint(var_name):
-        return iris.Constraint(
-            cube_func=lambda cube: cube.var_name == var_name)
-
-    rss = cubes.extract_cube(_constraint("rss"))
-    rsdt = cubes.extract_cube(_constraint("rsdt"))
-    rsut = cubes.extract_cube(_constraint("rsut"))
-    rsutcs = cubes.extract_cube(_constraint("rsutcs"))
-    rsds = cubes.extract_cube(_constraint("rsds"))
-    rls = cubes.extract_cube(_constraint("rls"))
-    rlut = cubes.extract_cube(_constraint("rlut"))
-    rlutcs = cubes.extract_cube(_constraint("rlutcs"))
-    rlds = cubes.extract_cube(_constraint("rlds"))
-    hfss = cubes.extract_cube(_constraint("hfss"))
-    hfls = cubes.extract_cube(_constraint("hfls"))
+    rss = cubes.extract_cube(var_name_constraint("rss"))
+    rsdt = cubes.extract_cube(var_name_constraint("rsdt"))
+    rsut = cubes.extract_cube(var_name_constraint("rsut"))
+    rsutcs = cubes.extract_cube(var_name_constraint("rsutcs"))
+    rsds = cubes.extract_cube(var_name_constraint("rsds"))
+    rls = cubes.extract_cube(var_name_constraint("rls"))
+    rlut = cubes.extract_cube(var_name_constraint("rlut"))
+    rlutcs = cubes.extract_cube(var_name_constraint("rlutcs"))
+    rlds = cubes.extract_cube(var_name_constraint("rlds"))
+    hfss = cubes.extract_cube(var_name_constraint("hfss"))
+    hfls = cubes.extract_cube(var_name_constraint("hfls"))
 
     # Derivations for the following two cloud_forcing variables are
     # performed this way so that they match with the observational data
