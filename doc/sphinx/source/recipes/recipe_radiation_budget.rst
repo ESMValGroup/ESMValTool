@@ -10,6 +10,12 @@ The aim of monitoring the energy budget is to understand the (im)balance
 of energy flux between the atmosphere and the surface of a model due to its
 link with the hydrological cycle and climate change.
 
+This diagnostic analyses the radiation budget by separating top-of-atmosphere
+fluxes into clear-sky and cloud forcing components, and surface fluxes into
+downwelling and upwelling components. Model predictions are compared against
+three observational estimates, one of which (Stephens et al, 2012) includes
+uncertainty estimates. When the black error bars overlap the zero line, the
+model is consistent with observations according to Stephens et al.
 
 Available recipes and diagnostics
 ---------------------------------
