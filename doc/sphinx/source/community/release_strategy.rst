@@ -52,7 +52,7 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.5.0 (Release Manager: `Manuel Schlund`_)
+- 2.5.0 (Coordinating Release Manager: `Manuel Schlund`, team members: `Manuel Schlund`, `Rémi Kazeroni`_)
 
 +------------+--------------------------+
 | 2022-02-07 |ESMValCore feature freeze |
@@ -385,6 +385,8 @@ Changelog
 - 2020-06-08 First draft by Klaus Zimmermann and Bouwe Andela
 
 .. _Bouwe Andela: https://github.com/bouweandela
+.. _Rémi Kazeroni: https://github.com/remi-kazeroni
+.. _Axel Lauer: https://github.com/axel-lauer
 .. _Valeriu Predoi: https://github.com/valeriupredoi
 .. _Manuel Schlund: https://github.com/schlunma
 .. _Javier Vegas-Regidor: https://github.com/jvegasbsc
