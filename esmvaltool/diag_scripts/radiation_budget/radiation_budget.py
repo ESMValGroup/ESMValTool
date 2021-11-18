@@ -9,6 +9,7 @@ import os
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
+import yaml
 from esmvalcore.iris_helpers import var_name_constraint
 
 from esmvaltool.diag_scripts.shared import (
@@ -18,8 +19,8 @@ from esmvaltool.diag_scripts.shared import (
 )
 
 CWD = os.path.abspath(os.path.dirname(__file__))
-STEPHENS_FILENAME = "Stephens_et_al_2012_obs_Energy_Budget.txt"
-DEMORY_FILENAME = "Demory_et_al_2014_obs_Energy_Budget.txt"
+STEPHENS_FILENAME = "Stephens_et_al_2012_obs_Energy_Budget.yml"
+DEMORY_FILENAME = "Demory_et_al_2014_obs_Energy_Budget.yml"
 
 
 def derive_additional_variables(cubes):
@@ -218,35 +219,23 @@ def order_data(cubes, obs_names, obs_unit):
     return ordered_model_data
 
 
-def read_text_file(filepath):
-    """Return contents of text file.
+def read_yaml_file(filepath):
+    """Return contents of a yaml file.
 
     Parameters
     ----------
     filepath : string
-        The full path to the text file.
+        The full path to the yaml file.
 
     Returns
     -------
     list of dictionaries
-        The contents of the text file where each dictionary corresponds
+        The contents of the yaml file where each dictionary corresponds
         to a line in the file and the key of the dictionary is the name
         of the column.
     """
-    contents = []
-    with open(filepath, "r") as file_handle:
-        lines = file_handle.readlines()
-    for line in lines:
-        line_dict = {}
-        items = line.split()
-        line_dict["name"] = items[0]
-        line_dict["unit"] = " ".join(items[1:3]).strip(",")
-        line_dict["data"] = float(items[3])  # float('NaN') == np.nan
-        try:
-            line_dict["error"] = float(items[4])
-        except IndexError:
-            pass
-        contents.append(line_dict)
+    with open(filepath, "r") as stream:
+        contents = yaml.safe_load(stream)
     return contents
 
 
@@ -263,13 +252,13 @@ def load_obs_data():
         The names, units, stephens data, stephens error and demory data
         from the observation files.
     """
-    # Stephens data contains name, units part 1, units part 2, data, error.
+    # Stephens data contains name, units, data, error.
     stephens_filepath = os.path.join(CWD, STEPHENS_FILENAME)
-    stephens_contents = read_text_file(stephens_filepath)
+    stephens_contents = read_yaml_file(stephens_filepath)
 
-    # Demory data contains name, units part 1, units part 2, data.
+    # Demory data contains name, units, data.
     demory_filepath = os.path.join(CWD, DEMORY_FILENAME)
-    demory_contents = read_text_file(demory_filepath)
+    demory_contents = read_yaml_file(demory_filepath)
 
     # Arbitrarily use the order as defined in the Stephens filename.
     names = []
@@ -277,6 +266,7 @@ def load_obs_data():
     stephens_data = []
     stephens_error = []
     demory_data = []
+
     for line in stephens_contents:
         name = line["name"]
         unit = line["unit"]
