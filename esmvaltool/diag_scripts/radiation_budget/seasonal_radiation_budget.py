@@ -61,7 +61,8 @@ def write_seasonal_data_output(output_dir, model_dataset, seasonal_data):
 
 
 def main(config):
-    """Seasonal radiation budget for HadGEM3 vs UKESM1.
+    """Seasonal radiation budget comparison for models defined in the
+    radiation_budget recipe file.
 
     Parameters
     ----------

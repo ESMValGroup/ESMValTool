@@ -404,7 +404,8 @@ def get_provenance_record(filenames):
 
 
 def main(config):
-    """Radiation budget for HadGEM3 vs UKESM1.
+    """Radiation budget comparison for models defined in the radiation_budget
+    recipe file.
 
     Parameters
     ----------
