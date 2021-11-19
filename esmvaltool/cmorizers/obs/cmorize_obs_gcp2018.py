@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for GCP data.
+"""ESMValTool CMORizer for GCP2018 data.
 
 Tier
     Tier 2: other freely-available dataset.
@@ -7,16 +7,16 @@ Source
     https://www.icos-cp.eu/GCP/2018
 
 Last access
-    20191017
+    20210908
 
 Download and processing instructions
-    Download the following file:
-        Global_Carbon_Budget_2018v1.0.xlsx
+    Download the following file: '2018 Global Budget v1.0'
 
 """
 
 import logging
 import os
+import warnings
 from datetime import datetime
 
 import iris
@@ -54,24 +54,36 @@ def _get_coords(data_table):
     return [(time_dim, 0), (lat_dim, 1), (lon_dim, 2)]
 
 
-def _extract_variable(short_name, var, cfg, data_table, out_dir):
+def _extract_variable(variable_name, var, cfg, data_table, out_dir):
     """Extract variable."""
-    header = data_table.iloc[18]
-    data_table = data_table[19:]
+    # Set correct header for data_frame and remove lines that do not include
+    # final data (indicated by NaNs)
+    header = data_table.iloc[cfg['header_line']]
+    data_table = data_table[cfg['header_line'] + 1:]
     data_table.columns = header
+    data_table = data_table.dropna()
 
     # Coordinates
     coords = _get_coords(data_table)
 
     # Data
-    if short_name == 'fgco2':
+    if variable_name == 'fgco2':
         new_data = data_table['ocean sink'].values
-    elif short_name == 'nbp':
-        new_data = (data_table['land sink'].values -
-                    data_table['land-use change emissions'].values)
+    elif variable_name == 'nbp':
+        new_data = (
+            data_table['land sink'].values -
+            data_table['land-use change emissions'].values
+        )
+    elif variable_name == 'nbp_residual':
+        new_data = (
+            data_table['fossil emissions excluding carbonation'].values -
+            data_table['atmospheric growth'].values -
+            data_table['ocean sink'].values -
+            data_table['land-use change emissions'].values
+        )
     else:
         raise NotImplementedError(
-            f"Derivation of '{short_name}' not possible yet")
+            f"Derivation of '{variable_name}' not possible yet")
     for _ in range(2):
         new_data = np.expand_dims(new_data, -1)
     new_units = Unit('Gt yr-1')
@@ -83,12 +95,16 @@ def _extract_variable(short_name, var, cfg, data_table, out_dir):
                           units=new_units)
 
     # Fix units
+    short_name = var.pop('short_name', variable_name)
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     cube.convert_units(cmor_info.units)
     utils.convert_timeunits(cube, 1950)
 
     # Fix metadata
-    attrs = cfg['attributes']
+    attrs = dict(cfg['attributes'])
+    version_suffix = var.pop('version_suffix', None)
+    if version_suffix is not None:
+        attrs['version'] += f'-{version_suffix}'
     attrs.update(var)
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
@@ -105,11 +121,18 @@ def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     filepath = os.path.join(in_dir, cfg['filename'])
     logger.info("Reading '%s'", filepath)
-    data_table = pd.read_excel(filepath,
-                               sheet_name='Global Carbon Budget',
-                               index_col=0)
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            'ignore',
+            message='Unknown extension is not supported',
+            category=UserWarning,
+            module='openpyxl',
+        )
+        data_table = pd.read_excel(filepath,
+                                   sheet_name='Global Carbon Budget',
+                                   index_col=0)
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        logger.info("CMORizing variable '%s'", short_name)
-        _extract_variable(short_name, var, cfg, data_table, out_dir)
+    for (variable_name, var) in cfg['variables'].items():
+        logger.info("CMORizing variable '%s'", variable_name)
+        _extract_variable(variable_name, var, cfg, data_table, out_dir)

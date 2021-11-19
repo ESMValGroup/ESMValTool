@@ -6,6 +6,8 @@ documentation:
     Test recipe for OBS, no proprocessor or diagnostics are applied,
     just to check correct reading of the CMORized data.
 
+  title: Recipe to test run all obs cmorizers.
+
   authors:
     - righi_mattia
 
@@ -148,7 +150,7 @@ diagnostics:
       abs550aer:
       od550aer:
       od550aerStderr:
-      # od550lt1aer:   # NEEDS Iris 3.0
+      od550lt1aer:
       od870aer:
       od870aerStderr:
     additional_datasets:
@@ -277,16 +279,39 @@ diagnostics:
     scripts: null
 
 
-  GCP:
-    description: GCP check
+  GCP2018:
+    description: GCP2018 check
     variables:
       nbp:
         mip: Lmon
       fgco2:
         mip: Omon
     additional_datasets:
-      - {dataset: GCP, project: OBS, frequency: yr, tier: 2,
-         type: reanaly, version: 2018, start_year: 1959, end_year: 2017}
+      - {dataset: GCP2018, project: OBS, frequency: yr, tier: 2, type: reanaly,
+         version: '1.0', start_year: 1959, end_year: 2017}
+    scripts: null
+
+
+  GCP2020:
+    description: GCP2020 check
+    variables:
+      nbp:
+        mip: Lmon
+        additional_datasets:
+          - {dataset: GCP2020, project: OBS, frequency: yr, tier: 2,
+             type: reanaly, version: '1.0', start_year: 1959, end_year: 2019}
+      nbp_residual:
+        short_name: nbp
+        mip: Lmon
+        additional_datasets:
+          - {dataset: GCP2020, project: OBS, frequency: yr, tier: 2,
+             type: reanaly, version: '1.0-residual', start_year: 1959,
+             end_year: 2019}
+      fgco2:
+        mip: Omon
+        additional_datasets:
+          - {dataset: GCP2020, project: OBS, frequency: yr, tier: 2,
+             type: reanaly, version: '1.0', start_year: 1959, end_year: 2019}
     scripts: null
 
 
@@ -317,6 +342,18 @@ diagnostics:
     additional_datasets:
       - {dataset: GISTEMP, project: OBS, mip: Amon, tier: 2,
          type: ground, version: v4, start_year: 1880, end_year: 2020}
+    scripts: null
+
+
+  GLODAP:
+    description: GLODAP check
+    variables:
+      dissic:
+      ph:
+      talk:
+    additional_datasets:
+      - {dataset: GLODAP, project: OBS6, mip: Oyr, tier: 2,
+         type: clim, version: v2.2016b, start_year: 2000, end_year: 2000}
     scripts: null
 
 
@@ -575,7 +612,11 @@ diagnostics:
     variables:
       so:
         mip: Omon
+      sos:
+        mip: Omon
       thetao:
+        mip: Omon
+      tos:
         mip: Omon
       no3:
         mip: Oyr
@@ -586,6 +627,8 @@ diagnostics:
       si:
         mip: Oyr
     additional_datasets:
+      - {dataset: WOA, project: OBS6, tier: 2,
+         type: clim, version: 2018, start_year: 2000, end_year: 2000}
       - {dataset: WOA, project: OBS, tier: 2,
          type: clim, version: 2013v2, start_year: 2000, end_year: 2000}
     scripts: null

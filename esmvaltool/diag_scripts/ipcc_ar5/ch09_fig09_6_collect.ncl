@@ -407,13 +407,9 @@ begin
   draw(plot)
   frame(wks)
   ; Write output
-  if diag_script_info@write_netcdf then
-    system("mkdir -p " + config_user_info@work_dir)
-    workpath = config_user_info@work_dir + "pattern_cor.nc"
-    ncdf_outfile = ncdf_write(data_all, workpath)
-  else
-    ncdf_outfile = workpath
-  end if
+  system("mkdir -p " + config_user_info@work_dir)
+  workpath = config_user_info@work_dir + "pattern_cor.nc"
+  ncdf_outfile = ncdf_write(data_all, workpath)
 
   ; collect meta-data and call ESMValMD function
   caption = "Centered pattern correlations between models and observations" \
