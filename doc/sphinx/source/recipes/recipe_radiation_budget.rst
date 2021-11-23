@@ -61,8 +61,8 @@ Observations and reformat scripts
 instructions.*
 
 * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4MIPs)
-* Demory observations can be found in esmvaltool/diag_scripts/radiation_budget/Demory_et_al_2014_obs_Energy_Budget.txt and are from Figure 2 in Demory et al. (2014)
-* Stephens observations can be found in esmvaltool/diag_scripts/radiation_budget/Stephens_et_al_2012_obs_Energy_Budget.txt from figure 1b in Stephens et al. (2012)
+* Demory observations can be found in esmvaltool/diag_scripts/radiation_budget/Demory_et_al_2014_obs_Energy_Budget.yml and are from Figure 2 in Demory et al. (2014).
+* Stephens observations can be found in esmvaltool/diag_scripts/radiation_budget/Stephens_et_al_2012_obs_Energy_Budget.yml from figure 1b in Stephens et al. (2012).
 
 
 References
