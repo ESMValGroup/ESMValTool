@@ -1,0 +1,60 @@
+# recipe_basic_2.dyml
+---
+documentation:
+  title: Testing of basic functionalties used for 2-dim variables.
+
+  description: |
+    Multi-year annaul means.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - lauer13jclim
+
+  projects:
+    - cmug
+
+
+preprocessors:
+  clim:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+    mask_landsea:
+      mask_out: land
+
+
+diagnostics:
+
+  test_clim:
+    description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      ts:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2000
+        end_year: 2000
+        reference_dataset: HadISST
+    additional_datasets:
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+    scripts:
+      avgsst:
+        script: clouds/clouds.ncl
+        projection: Robinson
+        showdiff: true
