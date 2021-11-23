@@ -1,0 +1,58 @@
+# ESMValTool
+# recipe_zonal_hybrid.yml
+---
+documentation:
+  title: Testing of 3-dim variables on hybrid levels
+
+  description: |
+    Zonal means of 3-d variables.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  projects:
+    - cmug
+
+
+preprocessors:
+  pp27:
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev27}
+      coordinate: air_pressure
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean]
+    zonal_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  clw_test:
+    description: testing cloud liquid water zonal mean
+    themes:
+      - phys
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clw:
+        preprocessor: pp27
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2000
+        end_year: 2000
+    additional_datasets:
+      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+    scripts:
+      zonal:
+        script: clouds/clouds_zonal.ncl
