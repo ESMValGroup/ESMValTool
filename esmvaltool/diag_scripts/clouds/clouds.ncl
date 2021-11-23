@@ -33,7 +33,7 @@
 ;   showdiff            calculate and plot differences (default = False)
 ;   rel_diff:           if showdiff = True, then plot relative differences (%)
 ;                       (default = False)
-;   ref_diff_min:       lower cutoff value in case of calculating relative
+;   rel_diff_min:       lower cutoff value in case of calculating relative
 ;                       differences
 ;                       (in units of input variable)
 ;   region:             show only selected geographic region given as latmin,

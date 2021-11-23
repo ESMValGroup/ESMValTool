@@ -23,7 +23,7 @@
 ;   showdiff            calculate and plot differences (default = False)
 ;   rel_diff:           if showdiff = True, then plot relative differences (%)
 ;                       (default = False)
-;   ref_diff_min:       lower cutoff value in case of calculating relative
+;   rel_diff_min:       lower cutoff value in case of calculating relative
 ;                       differences
 ;                       (in units of input variable)
 ;   t_test:             perform t-test when calculating differences
@@ -394,6 +394,7 @@ begin
       data1@var_units = ""
     end if
 
+    res@lbTitleOn          = True
     res@lbTitleString      = data1@var_units
     res@lbTitlePosition    = "Bottom"
     res@lbTitleFontHeightF = 0.015

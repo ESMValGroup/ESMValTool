@@ -16,8 +16,9 @@
 ;   ymax:  max y value for generating y bins
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
+;   clevels: explicit values for probability labelbar (array)
 ;   filename_add: optionally add this string to plot filesnames
-;   nbins: number of equally spaced bins (var_x), default = 20
+;   nbins: number of equally spaced bins (var_x), default = 100
 ;   zdmin:  min z value for labelbar (difference plots)
 ;   zdmax:  max z value for labelbar (difference plots)
 ;   zmin:  min z value for labelbar
@@ -33,6 +34,7 @@
 ;   none
 ;
 ; Modification history
+;   20211118-lauer_axel: added output of frequency distributions
 ;   20210607-lauer_axel: added multi-model-average (= average over all models)
 ;                        as an individual plot
 ;   20210408-lauer_axel: written
@@ -243,6 +245,7 @@ begin
   end if
 
   result = new((/dim_MOD, nbins, nbins/), float)
+  count = new((/dim_MOD, nbins, nbins/), float)
   bincenter_x = new((/nbins/), float)
   bincenter_y = new((/nbins/), float)
   bin_x0 = new((/nbins/), float)
@@ -491,6 +494,7 @@ begin
       if (all(ismissing(selidx))) then
         delete(selidx)
         result(ii, :, n) = result@_FillValue
+        count(ii, :, n) = count@_FillValue
         continue
       end if
       xsel = x1d(selidx)
@@ -501,8 +505,10 @@ begin
         selidx = ind((ysel .ge. bin_y0(m)) .and. (ysel .lt. bin_y1(m)))
         if (.not.all(ismissing(selidx))) then
           result(ii, m, n) = avg(zsel(selidx))
+          count(ii, m, n) = num(.not.ismissing(zsel(selidx)))
         else
           result(ii, m, n) = result@_FillValue
+          count(ii, m, n) = count@_FillValue
         end if
         delete(selidx)
       end do
@@ -519,6 +525,8 @@ begin
     delete(z1d)
 ;    delete(r)
 
+    count(ii, :, :) = count(ii, :, :) / sum(count(ii, :, :)) * 1.0e2
+
   end do  ; ii-loop (models)
 
   ; ###########################################
@@ -527,6 +535,8 @@ begin
 
   nc_filename = work_dir + "clouds_scatter_" + var_x + "_" + var_y + "_" + \
     var_z + filename_add + ".nc"
+  nc_filename2 = work_dir + "clouds_scatter_prob_" + var_x + "_" + var_y + \
+    filename_add + ".nc"
 
   result!0 = "model"
   result!1 = "bin_y"
@@ -542,7 +552,13 @@ begin
   result@var_units = zunits
   result@_FillValue = 1.0e20
 
+  copy_VarCoords(result, count)
+  count@diag_script = (/DIAG_SCRIPT/)
+  count@var = "count"
+  count@var_units = "1e-3 %"
+
   nc_outfile = ncdf_write(result, nc_filename)
+  nc_outfile2 = ncdf_write(count, nc_filename2)
 
   ; ###########################################
   ; # create the plots                        #
@@ -557,7 +573,13 @@ begin
   baseplots = new(nplots, graphic)
   xaddplots = new(nplots, graphic)
   yaddplots = new(nplots, graphic)
+
   dplots = new(nplots, graphic)
+
+  plots_c = new((/nplots, 2/), graphic)
+  baseplots_c = new(nplots, graphic)
+  xaddplots_c = new(nplots, graphic)
+  yaddplots_c = new(nplots, graphic)
 
   res = True
   res@cnFillOn       = True               ; color Fill
@@ -574,6 +596,9 @@ begin
 
   res@pmLabelBarOrthogonalPosF = 0.35
 
+  cres = res
+  cres@lbTitleString = count@var_units
+
   if (isatt(diag_script_info, "zmin") .and. isatt(diag_script_info, "zmax")) \
     then
     res@cnLevelSelectionMode = "ExplicitLevels"
@@ -586,13 +611,23 @@ begin
     dres@cnLevels = fspan(diag_script_info@zdmin, diag_script_info@zdmax, 19)
   end if
 
+  if (isatt(diag_script_info, "clevels")) then
+    cres@cnLevelSelectionMode = "ExplicitLevels"
+    cres@cnLevels = diag_script_info@clevels
+  end if
+
   wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_dyn_matrix_" + \
                 var_x + "_" + var_y + "_" + var_z + filename_add)
   dwks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_dyn_matrix_bias_" + \
                  var_x + "_" + var_y + "_" + var_z + filename_add)
+  cwks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_dyn_matrix_prob_" + \
+                 var_x + "_" + var_y + filename_add)
 
   res@gsnDraw  = False   ; don't draw yet
   res@gsnFrame = False   ; don't advance frame yet
+
+  cres@gsnDraw  = False   ; don't draw yet
+  cres@gsnFrame = False   ; don't advance frame yet
 
   xyres1                 = True         ; xy plot mods desired
   xyres1@tmXBMinorOn     = False        ; no minor tickmarks
@@ -607,12 +642,10 @@ begin
   xyres1@trXMinF = xmin
   xyres1@trXMaxF = xmax
   xyres1@tiXAxisString = var_x + " (" + xunits + ")"
-  xyres1@tiYAxisString = zunits
 
   xyres2@vpWidthF = .20          ; set width of second plot
   xyres2@trYMinF = ymin
   xyres2@trYMaxF = ymax
-  xyres2@tiXAxisString = zunits
   xyres2@tiXAxisSide = "Top"
   xyres2@tmXTLabelsOn = True
   xyres2@tmXBLabelsOn = False
@@ -620,15 +653,34 @@ begin
   do ii = 0, nplots - 1
     if (ii .lt. dim_MOD) then
       plotdata = result(ii, :, :)
+      countdata = count(ii, :, :)
       plotname = names(ii)
     else
       plotdata = dim_avg_n_Wrap(result(idxmod, :, :), 0)
+      countdata = dim_avg_n_Wrap(count(idxmod, :, :), 0)
       plotname = "Multi-model average"
     end if
 
+    countdata = countdata * 1.0e3
+
     res@tiMainString = plotname
 
+    if (ii .eq. ref_ind) then
+      if (refname(varstart(0)) .eq. refname(varstart(1))) then
+        plotname = refname(varstart(0))
+      else
+        plotname = refname(varstart(0)) + "/" + refname(varstart(1))
+      end if
+    end if
+
+    cres@tiMainString = plotname
+
+    ; z-values
+
     baseplots(ii) = gsn_csm_contour(wks, plotdata, res)
+
+    xyres1@tiYAxisString = zunits
+    xyres2@tiXAxisString = zunits
 
     xaddplots(ii) = gsn_csm_xy(wks, result&bin_x, \
                                dim_avg_n(plotdata, 0), xyres1)
@@ -641,6 +693,8 @@ begin
 
     draw(baseplots(ii))
     frame(wks)
+
+    ; differences z-values
 
     if (isdefined("dresplot")) then
       delete(dresplot)
@@ -657,23 +711,49 @@ begin
     copy_VarCoords(plotdata, diff)
     dplots(ii) = gsn_csm_contour(dwks, diff, dresplot)
 
+    ; probability values (%)
+
+    xyres1@tiYAxisString = count@var_units
+    xyres2@tiXAxisString = count@var_units
+
+    baseplots_c(ii) = gsn_csm_contour(cwks, countdata, cres)
+
+    xaddplots_c(ii) = gsn_csm_xy(cwks, count&bin_x, \
+                               dim_avg_n(countdata, 0), xyres1)
+    yaddplots_c(ii) = gsn_csm_xy(cwks, dim_avg_n(countdata, 1), \
+                               count&bin_y, xyres2)
+
+    xyres1@gsnAttachPlotsXAxis = True
+    plots_c(ii, 0) = gsn_attach_plots(baseplots_c(ii), xaddplots_c(ii), cres, xyres1)
+    delete(xyres1@gsnAttachPlotsXAxis)
+    plots_c(ii, 1) = gsn_attach_plots(baseplots_c(ii), yaddplots_c(ii), cres, xyres2)
+
+    draw(baseplots_c(ii))
+    frame(cwks)
+
     delete(plotdata)
+    delete(countdata)
   end do
 
-  pres                      = True    ; needed to override
-                                      ; panelling defaults
-  pres@gsnPanelCenter                   = False
+;  pres                      = True    ; needed to override
+;                                      ; panelling defaults
+;  pres@gsnPanelCenter                   = False
+;
+;  pres@gsnPanelFigureStrings = names
+;  pres@gsnPanelFigureStringsFontHeightF = min((/0.008, 0.008 * 6.0 \
+;                                              / tofloat((dim_MOD + 1) / 2)/))
+;  pres@lbLabelFontHeightF               = min((/0.01, 0.01 * 6.0 \
+;                                              / tofloat((dim_MOD + 1) / 2)/))
+;  outfile = panelling(wks, baseplots, (dim_MOD + 3) / 4, 4, pres)
+;  doutfile = panelling(dwks, dplots, (dim_MOD + 3) / 4, 4, pres)
 
-  pres@gsnPanelFigureStrings = names
-  pres@gsnPanelFigureStringsFontHeightF = min((/0.008, 0.008 * 6.0 \
-                                              / tofloat((dim_MOD + 1) / 2)/))
-  pres@lbLabelFontHeightF               = min((/0.01, 0.01 * 6.0 \
-                                              / tofloat((dim_MOD + 1) / 2)/))
-  outfile = panelling(wks, baseplots, (dim_MOD + 3) / 4, 4, pres)
-  doutfile = panelling(dwks, dplots, (dim_MOD + 3) / 4, 4, pres)
+  outfile = wks@fullname
+  doutfile = dwks@fullname
+  coutfile = cwks@fullname
 
   log_info("Wrote " + outfile)
   log_info("Wrote " + doutfile)
+  log_info("Wrote " + coutfile)
 
   ; ==========================================================================
 

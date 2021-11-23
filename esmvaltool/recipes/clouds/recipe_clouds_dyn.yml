@@ -22,6 +22,11 @@ documentation:
 
 preprocessors:
   clim500_ocean:
+#    extract_region:
+#      start_longitude: 0
+#      end_longitude: 360
+#      start_latitude: -30
+#      end_latitude: 30
     convert_units:
       units: "Pa min-1"
     mask_landsea:
@@ -40,6 +45,11 @@ preprocessors:
       exclude: [reference_dataset]
 
   clim_ocean:
+#    extract_region:
+#      start_longitude: 0
+#      end_longitude: 360
+#      start_latitude: -30
+#      end_latitude: 30
     mask_landsea:
       mask_out: land
       fx_variables:
@@ -213,6 +223,7 @@ diagnostics:
         zmax: 95
         zdmin: -45
         zdmax: 45
+        clevels: [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 100, 130, 160, 190]
         filename_add: cmip5_ocean
       dyntcwp:
         script: clouds/clouds_dyn_matrix.ncl
@@ -227,11 +238,12 @@ diagnostics:
         zmax: 0.5
         zdmin: -0.09
         zdmax: 0.09
+        clevels: [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 100, 130, 160, 190]
         filename_add: cmip5_ocean
 
 # ############################################################################
 
-  clouds_matrices_cmip6_ocean:
+  clouds_dynmatrices_cmip6_ocean:
     description: cloud matrices - dynamical regimes vs. cloud parameter
     themes:
       - clouds
@@ -309,6 +321,7 @@ diagnostics:
         zmax: 95
         zdmin: -45
         zdmax: 45
+        clevels: [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 100, 130, 160, 190]
         filename_add: cmip6_ocean
       dyntcwp:
         script: clouds/clouds_dyn_matrix.ncl
@@ -323,4 +336,5 @@ diagnostics:
         zmax: 0.5
         zdmin: -0.09
         zdmax: 0.09
+        clevels: [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 100, 130, 160, 190]
         filename_add: cmip6_ocean
