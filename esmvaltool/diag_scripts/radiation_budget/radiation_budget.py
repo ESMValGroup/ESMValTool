@@ -10,13 +10,13 @@ import iris
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
-from esmvalcore.iris_helpers import var_name_constraint
 
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
     save_figure,
 )
+from esmvalcore.iris_helpers import var_name_constraint
 
 CWD = os.path.abspath(os.path.dirname(__file__))
 STEPHENS_FILENAME = "Stephens_et_al_2012_obs_Energy_Budget.yml"
