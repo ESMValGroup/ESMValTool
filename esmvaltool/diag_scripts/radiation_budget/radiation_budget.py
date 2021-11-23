@@ -143,7 +143,7 @@ def validate_variable_data(variable_data, name, unit):
     KeyError
         If multiple ``name`` exist in ``variable_data``.
     ValueError
-        If ``unit`` doesn't match the unit in ``variable_data``.
+        If ``unit`` does not match the unit in ``variable_data``.
 
     Returns
     -------
