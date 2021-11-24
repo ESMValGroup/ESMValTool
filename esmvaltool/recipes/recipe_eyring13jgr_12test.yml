@@ -1,0 +1,80 @@
+# ESMValTool
+# recipe_eyring13jgr.yml
+---
+documentation:
+  title: Diagnostics of stratospheric dynamics and chemistry
+
+  description: |
+    Diagnostics of stratospheric dynamics and chemistry reproducing selected
+    figures from Eyring et al. JGR (2013).
+  authors:
+    - cionni_irene
+
+  maintainer:
+    - bock_lisa
+
+  references:
+    - eyring13jgr
+
+  projects:
+    - crescendo
+
+
+datasets:
+  # CMIP6
+  - {dataset: AWI-ESM-1-1-LR, grid: gn}
+  - {dataset: BCC-ESM1, grid: gn}
+  - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+  - {dataset: GFDL-ESM4, grid: gr1}
+  - {dataset: GISS-E2-1-H, grid: gn}
+  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+
+
+preprocessors:
+  zonal:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_levels:
+      scheme: linear
+      levels: reference_dataset
+    zonal_statistics:
+      operator: mean
+    mask_fillvalues:
+      threshold_fraction: 0.95
+
+
+diagnostics:
+
+  # ==========================================================================
+  # Eyring et al. (2013) - Figure 12
+  # Longterm mean and trend of the zonal wind
+  # ==========================================================================
+
+  eyring13jgr_fig12:
+    description: Longterm mean and trend zonal wind
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      ua:
+        preprocessor: zonal
+        reference_dataset: ERA5
+        project: CMIP6
+        mip: Amon
+        exp: historical
+        grid: gr
+        ensemble: r1i1p1f1
+        start_year: 1995
+        end_year: 2004
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, type: reanaly, version: 1,
+         start_year: 1995, end_year: 2004, tier: 3}
+    scripts:
+      clim: &clim_settings
+        script: eyring13jgr/eyring13jgr_fig12.ncl
+        e13fig12_exp_MMM: "historical"
+        e13fig12_season: "DJF"
+        e13fig12_multimean: true
+		
