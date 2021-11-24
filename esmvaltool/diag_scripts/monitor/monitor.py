@@ -47,7 +47,8 @@ class Monitor(MonitorBase):
                         if cube.var_name == var_name:
                             break
                     else:
-                        raise ValueError(f'Can not find cube {var_name} in {cubes}')
+                        raise ValueError(
+                            f'Can not find cube {var_name} in {cubes}')
                 cube.var_name = self._real_name(var_name)
                 cube.attributes['plot_name'] = var_info.get('plot_name', '')
 
@@ -57,7 +58,8 @@ class Monitor(MonitorBase):
                 self.plot_seasonal_climatology(cube, var_info)
                 self.plot_climatology(cube, var_info)
         if self.has_errors:
-            raise Exception('Errors detected. Please check log for more details')
+            raise Exception(
+                'Errors detected. Please check log for more details')
 
     @staticmethod
     def _add_month_name(cube):
@@ -197,7 +199,8 @@ class Monitor(MonitorBase):
             for cube_slice in cube.slices_over('month_number'):
                 if cube_slice.ndim != 2:
                     logger.error(
-                        'Climatologies can only be plotted for 2D vars. Skipping...')
+                        'Climatologies can only be plotted for 2D vars. '
+                        'Skipping...')
                     self.has_errors = True
                     return
                 self._plot_monthly_cube(plot_map, months, columns, rows,
@@ -297,9 +300,11 @@ class Monitor(MonitorBase):
             11: 'SON'
         }
         if cube.coords('month_number'):
-            points = [season[point] for point in cube.coord('month_number').points]
+            points = [
+                season[point] for point in cube.coord('month_number').points
+            ]
             cube.add_aux_coord(iris.coords.AuxCoord(points, var_name='season'),
-                            cube.coord_dims('month_number'))
+                               cube.coord_dims('month_number'))
             cube = cube.aggregated_by('season', iris.analysis.MEAN)
 
         plot_map = PlotMap()
@@ -313,7 +318,9 @@ class Monitor(MonitorBase):
                 index += 1
                 season = cube_slice.coord('season').points[0]
                 if cube_slice.ndim != 2:
-                    logger.error('Climatologies can only be plotted for 2D vars. Skipping...')
+                    logger.error(
+                        'Climatologies can only be plotted for 2D vars. '
+                        'Skipping...')
                     self.has_errors = True
                     return
                 plot_map.plot_cube(
@@ -393,8 +400,8 @@ class Monitor(MonitorBase):
             variable_options = self._get_variable_options(
                 var_info['variable_group'], map_name)
             if cube.ndim != 2:
-                logger.error(
-                    'Climatologies can only be plotted for 2D vars. Skipping...')
+                logger.error('Climatologies can only be plotted for 2D vars. '
+                             'Skipping...')
                 self.has_errors = True
                 return
 
