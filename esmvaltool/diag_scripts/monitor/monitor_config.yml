@@ -1,6 +1,6 @@
 ---
 maps:
-  global: # Map name
+  global:  # Map name
     projection: PlateCarree
     projection_kwargs:
       central_longitude: 285
@@ -10,10 +10,6 @@ maps:
     colorbar_location: bottom
     extent: null
     suptitle_pos: 0.87
-  europe:
-    projection: EuroPP
-    smooth: true
-    extent: [-10, 20, 20, 60]
   arctic:
     projection: NorthPolarStereo
     projection_kwargs:
@@ -83,7 +79,9 @@ variables:
     extend: max
   msftbarot:
     <<: *default
-    bounds: [-2.5e11, -2.25e11, -2.0e11, -1.75e11, -1.5e11, -1.25e11, -1.0e11, -0.75e11, -0.5e11, -0.25e11, 0.0, 0.25e11, 0.5e11, 0.75e11, 1.0e11, 1.25e11, 1.5e11, 1.75e11, 2.0e11, 2.25e11, 2.5e11]
+    bounds: [-2.5e11, -2.25e11, -2.0e11, -1.75e11, -1.5e11, -1.25e11, -1.0e11,
+             -0.75e11, -0.5e11, -0.25e11, 0.0, 0.25e11, 0.5e11, 0.75e11,
+             1.0e11, 1.25e11, 1.5e11, 1.75e11, 2.0e11, 2.25e11, 2.5e11]
     extend: both
   od550aer: &opticaldepth
     <<: *default
