@@ -82,6 +82,7 @@ Each entry in ``maps`` correspond to a map definitions. See below a sample with
 comments to define each option
 
 .. code-block:: yaml
+
    maps:
       global: # Map name, choose a meaningful one
          projection: PlateCarree # Cartopy projection to use
@@ -99,6 +100,7 @@ Use the default entry to apply generic options to al variables.
 See below a sample with comments to define each option
 
 .. code-block:: yaml
+
    variables:
       # Define default. Variable definitions completely override the default
       # not just the values defined. If you want to override only the defined
