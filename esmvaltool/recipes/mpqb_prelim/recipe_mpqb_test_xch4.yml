@@ -15,6 +15,20 @@ documentation:
 # Define some default parameters using anchors #
 ################################################
 
+nh_region: &nh_region
+  extract_region:
+    start_longitude: 0
+    end_longitude: 360
+    start_latitude: 30
+    end_latitude: 90
+    
+sh_region: &sh_region
+  extract_region:
+    start_longitude: 0
+    end_longitude: 360
+    start_latitude: -90
+    end_latitude: -30
+
 mmm_stat_obs: &mmm_stat_obs
   multi_model_statistics:
     span: overlap
@@ -23,33 +37,32 @@ mmm_stat_obs: &mmm_stat_obs
 
 mpqbregridder: &mpqbregridder
   regrid:
-    #target_grid: 1x1
-    target_grid: 2.5x2.5
+    #target_grid: 2.5x2.5
+    target_grid: 5x5
     scheme: area_weighted
+  <<: *nh_region
+  <<: *nh_region
   monthly_statistics:
     operator: mean
  
-# extract_southasianmonsoon: &extr_samonsoon
-  # extract_region:
-    # start_longitude: 65
-    # end_longitude: 105
-    # start_latitude: 10
-    # end_latitude: 40
-
-# extract_europe: &extr_europe
-  # extract_region: 
-    # end_latitude: 53
-    # end_longitude: 20
-    # start_latitude: 42
-    # start_longitude: 0
-
-# extract_northamerica: &extr_northamerica
-  # extract_region: 
-    # end_latitude: 48
-    # end_longitude: 290
-    # start_latitude: 30
-    # start_longitude: 235
-    
+mpqbregridder_sh: &mpqbregridder_sh
+  regrid:
+    #target_grid: 2.5x2.5
+    target_grid: 5x5
+    scheme: area_weighted
+  <<: *sh_region
+  monthly_statistics:
+    operator: mean
+ 
+mpqbregridder_nh: &mpqbregridder_nh
+  regrid:
+    #target_grid: 2.5x2.5
+    target_grid: 5x5
+    scheme: area_weighted
+  <<: *nh_region
+  monthly_statistics:
+    operator: mean
+ 
     
 # The main preprocessor for all
 # input data
@@ -77,10 +90,8 @@ mpqbregridder: &mpqbregridder
   
 default_pp_maps_without_gl: &pp_maps_without_gl
   custom_order: true
-  mask_below_threshold:
-    threshold: 0.0000000001
   <<: *mpqbregridder
-    
+  mask_multimodel:   
 
 default_pp_maps_with_gl: &pp_maps_with_gl
   custom_order: true
@@ -92,7 +103,16 @@ default_pp_maps_with_gl: &pp_maps_with_gl
   <<: *mpqbregridder
   <<: *mmm_stat_obs
 
+default_pp_maps_without_sh: &pp_maps_without_sh
+  custom_order: true
+  <<: *mpqbregridder_sh
+  mask_multimodel:
     
+default_pp_maps_without_nh: &pp_maps_without_nh
+  custom_order: true
+  <<: *mpqbregridder_nh
+  mask_multimodel:
+       
 # default_pp_maps_without_samonsoon: &pp_maps_without_samonsoon
   # custom_order: true
   # mask_below_threshold:
@@ -143,20 +163,58 @@ default_pp_line: &pp_line
 ################################################
 
 datasets:
-  - {dataset: CDS-XCH4, project: OBS, type: sat, version: L3, tier: 3, 
-     derive: false, alias: CDS-XCH4}
+  # - {dataset: CDS-XCH4, project: OBS, type: sat, version: L3, tier: 3, 
+     # derive: false, alias: CDS-XCH4}
+#####################
   # - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
      # exp: esm-hist, derive: true, alias: BCC-CSM2-MR}
   # - {dataset: CNRM-ESM2-1, project: CMIP6, ensemble: r1i1p1f2, grid: gr,
      # exp: esm-hist, derive: true, alias: CNRM-ESM2-1}
   # - {dataset: UKESM1-0-LL, project: CMIP6, ensemble: r1i1p1f2, grid: gn,
      # exp: esm-hist, derive: true, alias: UKESM1-0-LL}
+#####################     
   - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
      exp: historical, derive: true, alias: BCC-CSM2-MR}
   - {dataset: CNRM-ESM2-1, project: CMIP6, ensemble: r1i1p1f2, grid: gr,
      exp: historical, derive: true, alias: CNRM-ESM2-1}
   - {dataset: UKESM1-0-LL, project: CMIP6, ensemble: r1i1p1f2, grid: gn,
      exp: historical, derive: true, alias: UKESM1-0-LL}
+  - {dataset: BCC-ESM1, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
+     exp: historical, derive: true, alias: BCC-ESM1}
+  # - {dataset: MRI-ESM2-0, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
+     # exp: historical, derive: true, alias: MRI-ESM2-0}
+  - {dataset: CESM2-WACCM, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
+     exp: historical, derive: true, alias: CESM2-WACCM}
+  - {dataset: CESM2-WACCM-FV2, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
+     exp: historical, derive: true, alias: CESM2-WACCM-FV2}
+  - {dataset: GFDL-ESM4, project: CMIP6, ensemble: r1i1p1f1, grid: gr1, 
+     exp: historical, derive: true, alias: GFDL-ESM4}   
+######################
+  # - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
+     # exp: ssp585, derive: true, alias: BCC-CSM2-MR}
+  # - {dataset: CNRM-ESM2-1, project: CMIP6, ensemble: r1i1p1f2, grid: gr,
+     # exp: ssp585, derive: true, alias: CNRM-ESM2-1}
+  # - {dataset: UKESM1-0-LL, project: CMIP6, ensemble: r1i1p1f2, grid: gn,
+     # exp: ssp585, derive: true, alias: UKESM1-0-LL}
+  # # - {dataset: MRI-ESM2-0, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
+     # # exp: ssp585, derive: true, alias: MRI-ESM2-0}
+  # - {dataset: CESM2-WACCM, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
+     # exp: ssp585, derive: true, alias: CESM2-WACCM}
+  # - {dataset: GFDL-ESM4, project: CMIP6, ensemble: r1i1p1f1, grid: gr1, 
+     # exp: ssp585, derive: true, alias: GFDL-ESM4}   
+######################
+  # - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
+     # exp: ssp245, derive: true, alias: BCC-CSM2-MR}
+  # - {dataset: CNRM-ESM2-1, project: CMIP6, ensemble: r1i1p1f2, grid: gr,
+     # exp: ssp245, derive: true, alias: CNRM-ESM2-1}
+  # - {dataset: UKESM1-0-LL, project: CMIP6, ensemble: r1i1p1f2, grid: gn,
+     # exp: ssp245, derive: true, alias: UKESM1-0-LL}
+  # # - {dataset: MRI-ESM2-0, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
+     # # exp: ssp245, derive: true, alias: MRI-ESM2-0}
+  # - {dataset: CESM2-WACCM, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
+     # exp: ssp245, derive: true, alias: CESM2-WACCM}
+  # - {dataset: GFDL-ESM4, project: CMIP6, ensemble: r1i1p1f1, grid: gr1, 
+     # exp: ssp245, derive: true, alias: GFDL-ESM4}   
 ######################
   # - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1, 
      # exp: esmHistorical, derive: true, alias: BNU-ESM}
@@ -183,6 +241,12 @@ preprocessors:
     
   pp_mpqb_xch4_without_gl:
     <<: *pp_maps_without_gl    
+
+  pp_mpqb_xch4_without_sh:
+    <<: *pp_maps_without_sh    
+
+  pp_mpqb_xch4_without_nh:
+    <<: *pp_maps_without_nh    
 
   pp_mpqb_xch4_with_gl:
     <<: *pp_maps_with_gl      
@@ -211,6 +275,20 @@ preprocessors:
     convert_units:
       units: ppbv    
     <<: *pp_maps_without_gl
+    <<: *pp_line
+
+  pp_lineplots_without_nh:
+    custom_order: true
+    convert_units:
+      units: ppbv    
+    <<: *pp_maps_without_nh
+    <<: *pp_line
+
+  pp_lineplots_without_sh:
+    custom_order: true
+    convert_units:
+      units: ppbv    
+    <<: *pp_maps_without_sh
     <<: *pp_line
 
   pp_lineplots_with_gl:
@@ -284,7 +362,26 @@ preprocessors:
     climate_statistics:
       operator: mean
       period: month
-      
+
+  pp_lineplots_anncyc_without_nh:
+    custom_order: true
+    convert_units:
+      units: ppbv    
+    <<: *pp_maps_without_nh
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month
+
+  pp_lineplots_anncyc_without_sh:
+    custom_order: true
+    convert_units:
+      units: ppbv    
+    <<: *pp_maps_without_sh
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month
     
   # pp_lineplots_std:
     # anomalies:
@@ -331,6 +428,10 @@ xch4_def: &xch4def
   end_year: 2014
   #end_year: 2005
 
+xch4_def_future: &xch4def_fut
+  mip: Amon
+  start_year: 2016
+  end_year: 2099
   
   
 diagnostics:
@@ -343,17 +444,6 @@ diagnostics:
     scripts:
       lineplot_gl:
         script: mpqb/mpqb_lineplot.py
-  # lineplots_with_gl:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_with_gl
-        # #derive: true
-        # <<: *precipdef
-    # scripts:
-      # lineplot_gl:
-        # script: mpqb/mpqb_lineplot.py
-  ### works!!      
   lineplots_anncyc_without_gl:
     description: lineplots
     variables:
@@ -364,58 +454,41 @@ diagnostics:
     scripts:
       lineplot_gl_anncyc:
         script: mpqb/mpqb_lineplot_anncyc.py
-  # lineplots_anncyc_without_samonsoon:
-    # description: lineplots
-    # variables:
-      # xch4:
-        # preprocessor: pp_lineplots_anncyc_without_samonsoon
-        # <<: *xch4def
-    # scripts:
-      # lineplot_samonsoon:
-        # script: mpqb/mpqb_lineplot_anncyc.py
-  # lineplots_anncyc_without_europe:
-    # description: lineplots
-    # variables:
-      # xch4:
-        # preprocessor: pp_lineplots_anncyc_without_europe
-        # <<: *xch4def
-    # scripts:
-      # lineplot_europe:
-        # script: mpqb/mpqb_lineplot_anncyc.py
-  # lineplots_anncyc_without_northamerica:
-    # description: lineplots
-    # variables:
-      # xch4:
-        # preprocessor: pp_lineplots_anncyc_without_northamerica
-        # <<: *xch4def
-    # scripts:
-      # lineplot_northamerica:
-        # script: mpqb/mpqb_lineplot_anncyc.py
-  ###
-  # lineplots_without_samonsoon:
-    # description: lineplots
-    # variables:
-      # xch4:
-        # preprocessor: pp_lineplots_without_samonsoon
-        # <<: *xch4def
-    # scripts:
-      # lineplot_samonsoon:
-        # script: mpqb/mpqb_lineplot.py
-  # lineplots_without_europe:
-    # description: lineplots
-    # variables:
-      # xch4:
-        # preprocessor: pp_lineplots_without_europe
-        # <<: *xch4def
-    # scripts:
-      # lineplot_europe:
-        # script: mpqb/mpqb_lineplot.py
-  # lineplots_without_northamerica:
-    # description: lineplots
-    # variables:
-      # xch4:
-        # preprocessor: pp_lineplots_without_northamerica
-        # <<: *xch4def
-    # scripts:
-      # lineplot_northamerica:
-        # script: mpqb/mpqb_lineplot.py
+  lineplots_without_nh:
+    description: lineplots
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_without_nh
+        <<: *xch4def
+    scripts:
+      lineplot_gl:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_anncyc_without_nh:
+    description: lineplots
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_anncyc_without_nh
+        derive: true
+        <<: *xch4def
+    scripts:
+      lineplot_gl_anncyc:
+        script: mpqb/mpqb_lineplot_anncyc.py
+  lineplots_without_sh:
+    description: lineplots
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_without_sh
+        <<: *xch4def
+    scripts:
+      lineplot_gl:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_anncyc_without_sh:
+    description: lineplots
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_anncyc_without_sh
+        derive: true
+        <<: *xch4def
+    scripts:
+      lineplot_gl_anncyc:
+        script: mpqb/mpqb_lineplot_anncyc.py

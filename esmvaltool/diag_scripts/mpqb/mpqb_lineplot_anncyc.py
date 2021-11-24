@@ -37,7 +37,8 @@ def get_provenance_record(caption):
 
 def main(cfg):
     """Create lineplot."""
-    ylims = [cfg.pop('y0', None), cfg.pop('y1', None)]
+    #ylims = [cfg.pop('y0', None), cfg.pop('y1', None)]
+    ylims = [1610., 1830.]
 
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
@@ -56,7 +57,8 @@ def main(cfg):
         grouped_input_data.move_to_end('ERA-Interim-Land')
 
     plt.clf()
-    fig = plt.figure(figsize=(10, 4))
+    #fig = plt.figure(figsize=(10, 4))
+    fig = plt.figure(figsize=(6, 4))
     ax1 = fig.add_subplot()
 
     for dataset in grouped_input_data:
@@ -70,7 +72,9 @@ def main(cfg):
         label = get_mpqb_cfg('datasetname', alias)
         color = get_mpqb_cfg('datasetcolor', alias)
 
-        iris.quickplot.plot(cube, label=label, color=color, linestyle='dashed')
+        #iris.quickplot.plot(cube, label=label, color=color, linestyle='dotted')
+        #iris.quickplot.plot(cube, label=label, color=color, linestyle='dashed')
+        iris.quickplot.plot(cube, label=label, color=color)
     plt.legend()
     #plt.xticks(rotation=90)
     ## Add the zero line when plotting anomalies
@@ -91,6 +95,7 @@ def main(cfg):
     ax1.grid(True, which='major', axis='x')
 
     ax1.set_ylim(ylims)
+    ax1.set_ylabel('XCH4 (ppbv)')
 
     baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
 

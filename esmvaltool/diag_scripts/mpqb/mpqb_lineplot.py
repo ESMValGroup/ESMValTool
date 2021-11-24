@@ -94,7 +94,9 @@ def main(cfg):
         label = get_mpqb_cfg('datasetname', alias)
         color = get_mpqb_cfg('datasetcolor', alias)
 
-        iris.quickplot.plot(cube, label=label, color=color, linestyle='dashed')
+        #iris.quickplot.plot(cube, label=label, color=color, linestyle='dotted')
+        #iris.quickplot.plot(cube, label=label, color=color, linestyle='dashed')
+        iris.quickplot.plot(cube, label=label, color=color)
     plt.xticks(rotation=90)
     # Add the zero line when plotting anomalies
     if 'ano' in dataset_cfg['preprocessor']:
@@ -108,6 +110,7 @@ def main(cfg):
     ax1.xaxis.set_major_formatter(years_fmt)
     ax1.grid(True, which='major', axis='x')
     ax1.set_ylim(ylims)
+    ax1.set_ylabel('XCH4 (ppbv)')
 
     h,l = ax1.get_legend_handles_labels()
     leg = lax.legend(h,l, borderaxespad=0, ncol=4, loc='center')
