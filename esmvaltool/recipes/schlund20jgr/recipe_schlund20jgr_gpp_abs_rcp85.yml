@@ -2,8 +2,11 @@
 # recipe_schlund20jgr_gpp_abs_rcp85.yml
 ---
 documentation:
+  title: >
+    Constraining uncertainty in projected gross primary production (GPP) with
+    machine learning
 
-  description: |
+  description: >
     Use MLR (Machine Learning Regression) models to contstrain absolute
     projected gross primary production (GPP) in the emission-driven RCP 8.5
     scenario.

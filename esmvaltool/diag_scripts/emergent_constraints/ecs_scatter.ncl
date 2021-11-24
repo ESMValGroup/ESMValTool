@@ -1543,8 +1543,7 @@ begin
       nc_outfile = ncdf_write(diagdata, nc_filename)
     end if
 
-    plotfile = new(1, string)
-    log_provenance(nc_outfile, plotfile, caption, "other", "reg", "", "", "", \
+    log_provenance(nc_outfile, "n/a", caption, "other", "reg", "", "", "", \
                    infiles)
 
     leave_msg(DIAG_SCRIPT, "")
