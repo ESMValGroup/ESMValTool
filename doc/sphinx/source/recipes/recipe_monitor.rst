@@ -24,28 +24,29 @@ Diagnostics are stored in `diag_scripts/monitor/`
 List of plots available in monitor.py
 -------------------------------------
 
-- Climatology (`clim`): Plot climatology. Requires the following coordinates:
-  (`latitude`, `longitude`, `month_number`)
+- Climatology (`clim`): Plots climatology. Supported coordinates:
+  (`latitude`, `longitude`, `month_number`).
 
 - Seasonal climatologies (`seasonclim`): It produces a multi panel (2x2) plot
-  with the seasonal climatologies. Requires the following coordinates:
-  (`latitude`, `longitude`, `month_number`)
+  with the seasonal climatologies. Supported coordinates:
+  (`latitude`, `longitude`, `month_number`).
 
 - Monthly climatologies (`monclim`): It produces a multi panel (3x4) plot with
   the monthly climatologies. Can be customized to show only certain months
-  and to rearrange the number of columns and rows
+  and to rearrange the number of columns and rows. Supported coordinates:
+  (`latitude`, `longitude`, `month_number`).
 
 - Time series (`timeseries`): Generate time series plots. It will always
   generate the full period time series, but if the period is longer than 75
   years, it will also generate two extra time series for the first and last 50
   years. It will produce multi panel plots for data with `shape_id` or `region`
   coordinates of length > 1. Supported coordinates: `time`, `shape_id`
-  (optional) and `region` (optional)
+  (optional) and `region` (optional).
 
 - Annual cycle (`annual_cycle`): Generate an annual cycle plot (timeseries
   like climatological from January to December). It will produce multi panel
   plots for data with `shape_id` or `region` coordinates of length > 1.
-  Supported coordinates: `time`, `shape_id` (optional) and `region` (optional)
+  Supported coordinates: `time`, `shape_id` (optional) and `region` (optional).
 
 User settings
 =============
@@ -105,7 +106,7 @@ Plot specific options:
 compute_eofs.py
 ---------------
 
- * cartopy_data_dir:
+  * cartopy_data_dir:
     Path to cartopy data dir. Defaults to None.
     See https://scitools.org.uk/cartopy/docs/latest/cartopy.html
   * plot_folder:
@@ -125,7 +126,7 @@ compute_eofs.py
 .. hint::
 
    Extra arguments are ignored, so it is safe to use yaml anchors to share the
-   configuration of common arguments with
+   configuration of common arguments with the `monitor.py` diagnostic script.
 
 monitor_config.yml
 ------------------
