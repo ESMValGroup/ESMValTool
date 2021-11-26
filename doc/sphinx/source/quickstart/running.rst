@@ -70,7 +70,7 @@ using the following command
     esmvaltool recipes show recipe_name.yml
 
 And finally, to get a local copy that can then be customized and run, users can
-use the following command
+run the following command
 
 .. code:: bash
 
