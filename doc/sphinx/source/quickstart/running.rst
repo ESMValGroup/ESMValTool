@@ -42,30 +42,39 @@ provides an explanation of how to create your own config-user.yml file.
 Available diagnostics and metrics
 =================================
 
-If you have the ESMValTool package installed, a number of recipes
-are available.
-See Section :ref:`recipes` for a description of all
-available recipes.
+Although ESMValTool can be used just to simplify the management of data
+and the creation of your own analysis code, one of its main strengths is the
+continuously growing set of diagnostics and metrics that it directly provides to
+the user. These metrics and diagnostics are provided as a set of preconfigured
+recipes that users can run or customize for their own analysis.
+The latest list of available recipes can be found :ref:`here <esmvaltool:recipes>`.
 
-To see a list of installed recipes run
+In order to make the management of these installed recipes easier, ESMValTool
+provides the ``recipes`` command group with utilities that help the users in
+discovering and customizing the provided recipes.
 
-.. code:: bash
-
-	esmvaltool recipes list
-
-To copy an installed recipe to the current working directory, run
-
-.. code:: bash
-
-    esmvaltool recipes get recipe_example.yml
-
-To view an installed recipe on the console, run
+The first command in this group allows users to get the complete list of installed
+recipes printed to the console:
 
 .. code:: bash
 
-    esmvaltool recipes show recipe_example.yml
+    esmvaltool recipes list
 
-The ``esmvaltool run recipe_example.yml`` command will first look if
+If the user then wants to explore any one of this recipes, they can be printed
+using the following command
+
+.. code:: bash
+
+    esmvaltool recipes show recipe_name.yml
+
+And finally, to get a local copy that can then be customized and run, users can
+use the following command
+
+.. code:: bash
+
+    esmvaltool recipes get recipe_name.yml
+
+Note that the ``esmvaltool run recipe_example.yml`` command will first look if
 ``recipe_example.yml`` is the path to an existing file.
 If this is the case, it will run that recipe.
 If not, it will look if the name matches one of the recipes
