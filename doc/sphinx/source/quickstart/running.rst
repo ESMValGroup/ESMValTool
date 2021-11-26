@@ -39,6 +39,8 @@ specified in your user configuration file.
 Recall that the chapter :ref:`Configuring ESMValTool <config-user>`
 provides an explanation of how to create your own config-user.yml file.
 
+.. _recipes_command:
+
 Available diagnostics and metrics
 =================================
 
