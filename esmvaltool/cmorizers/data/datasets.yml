@@ -161,6 +161,31 @@ datasets:
       Put all files in input_dir_path (no subdirectories with years).
       For orders larger than 2 GB a registration is required.
 
+  CLARA-AVHRR:
+    tier: 3
+    source: https://wui.cmsaf.eu/
+    last_access: 2021-03-22
+    info: |
+      Download and processing instructions
+        1) Create ("register") an user account at
+          https://wui.cmsaf.eu/safira/action/viewLogin?menuName=NUTZER_HOME
+        2) login (same URL as above)
+        3) Search data using search form at
+        https://wui.cmsaf.eu/safira/action/viewProduktHome?menuName=PRODUKT_HOME
+          - Product group: Climate Data Records
+          - Product family: CLARA-A ed. 2.1
+          - Product name: CFC - Factional cloud cover
+                          IWP - Ice water path
+                          LWP - Liquid water path
+          - Area: Global
+          - Temporal resolution: Monthly
+        4) Select "CLARA-A ed. 2.1 AVHRR on polar orbiting satellites" from
+          list of results.
+        5) Click on "Add to order cart"
+        6) Follow download instructions in automatic email received when data
+          are ready for download.
+        7) Untar all .tar files into a single directory.
+
   CowtanWay:
     tier: 2
     source: https://www-users.york.ac.uk/~kdc3/papers/coverage2013/series.html
@@ -303,6 +328,14 @@ datasets:
         https://confluence.ecmwf.int/display/CKB/ERA-Interim
         https://confluence.ecmwf.int/display/CKB/ERA-Interim+documentation#ERA-Interimdocumentation-Monthlymeans
         https://confluence.ecmwf.int/display/CKB/ERA-Interim%3A+How+to+calculate+daily+total+precipitation
+
+  ERA5:
+    tier: 3
+    source: https://cds.climate.copernicus.eu
+    last_access: 2021-11-29
+    info: |
+      Reformat preprocessor output from the native6 project to follow the OBS6
+      conventions.
 
   ESACCI-AEROSOL:
     tier: 2
@@ -557,6 +590,19 @@ datasets:
         absolute tas by adding the climatology ("absolute.nc") to the anomalies
         ("HadCRUT.4.6.0.0.median.nc"). It creates 2 output, one with the
         temperature time-series and one with the anomaly time-series
+
+  HadCRUT5:
+    tier: 2
+    source: https://crudata.uea.ac.uk/cru/data/temperature
+    last_access: 2021-11-29
+    info: |
+      Download the following files:
+        infilling
+            [Source]/HadCRUT.5.0.0.0.analysis.anomalies.ensemble_mean.nc
+        no-infilling
+            [Source]/HadCRUT.5.0.0.0.anomalies.ensemble_mean.nc
+        climatology
+            [Source]/absolute_v5.nc
 
   HadISST:
     tier: 2

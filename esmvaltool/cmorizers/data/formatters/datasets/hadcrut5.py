@@ -95,7 +95,7 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
                         unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
