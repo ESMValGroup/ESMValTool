@@ -35,9 +35,10 @@ class CDSDownloader(BaseDownloader):
                  config,
                  request_dictionary,
                  dataset,
+                 dataset_info,
                  overwrite,
                  extra_name=''):
-        super().__init__(config, dataset, overwrite)
+        super().__init__(config, dataset, dataset_info, overwrite)
         self._client = cdsapi.Client()
         self._product_name = product_name
         self._request_dict = request_dictionary

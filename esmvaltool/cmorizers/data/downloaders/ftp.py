@@ -33,11 +33,10 @@ class FTPDownloader(BaseDownloader):
     overwrite : bool
         Overwrite already downloaded files
     """
-    def __init__(self, config, server, dataset, overwrite):
-        super().__init__(config, dataset, overwrite)
+    def __init__(self, config, server, dataset, dataset_info, overwrite):
+        super().__init__(config, dataset, dataset_info, overwrite)
         self._client = None
         self.server = server
-        self.tier = 2
 
     def connect(self):
         """Connect to the FTP server."""

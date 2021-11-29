@@ -67,8 +67,8 @@ class WGetDownloader(BaseDownloader):
 
 class NASADownloader(WGetDownloader):
     """Downloader for the NASA repository."""
-    def __init__(self, config, dataset, overwrite):
-        super().__init__(config, dataset, overwrite)
+    def __init__(self, config, dataset, dataset_info, overwrite):
+        super().__init__(config, dataset, dataset_info, overwrite)
         self.tier = 3
 
         self._wget_common_options = [

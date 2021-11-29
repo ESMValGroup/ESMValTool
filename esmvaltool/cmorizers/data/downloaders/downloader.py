@@ -15,10 +15,11 @@ class BaseDownloader():
     overwrite : bool
         Overwrite already downloaded files
     """
-    def __init__(self, config, dataset, overwrite, tier=3):
+    def __init__(self, config, dataset, dataset_info, overwrite):
         self._config = config
-        self.tier = tier
+        self.tier = dataset_info['tier']
         self.dataset = dataset
+        self.dataset_info = dataset_info
         self.overwrite = overwrite
 
     @property

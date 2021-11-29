@@ -4,7 +4,7 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
 
 # pylint: disable=invalid-name
-def download_dataset(config, dataset, _, __, overwrite):
+def download_dataset(config, dataset, dataset_info, _, __, overwrite):
     """Download dataset.
 
     Parameters
@@ -20,10 +20,12 @@ def download_dataset(config, dataset, _, __, overwrite):
     overwrite : bool
         Overwrite already downloaded files
     """
-    downloader = WGetDownloader(config=config,
-                                dataset=dataset,
-                                overwrite=overwrite,
-                                tier=2)
+    downloader = WGetDownloader(
+        config=config,
+        dataset=dataset,
+        dataset_info=dataset_info,
+        overwrite=overwrite,
+    )
 
     downloader.download_file(
         "http://berkeleyearth.lbl.gov/auto/Global/Gridded/"

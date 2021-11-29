@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 # pylint: disable=invalid-name
-def download_dataset(config, dataset, _, __, overwrite):
+def download_dataset(config, dataset, dataset_info, _, __, overwrite):
     """Download dataset.
 
     Parameters
@@ -27,6 +27,7 @@ def download_dataset(config, dataset, _, __, overwrite):
     downloader = WGetDownloader(
         config=config,
         dataset=dataset,
+        dataset_info=dataset_info,
         overwrite=overwrite,
     )
     for var in ['tmp', 'pre']:

@@ -4,7 +4,7 @@ from esmvaltool.cmorizers.data.downloaders.wget import NASADownloader
 
 
 # pylint: disable=invalid-name
-def download_dataset(config, dataset, _, __, overwrite):
+def download_dataset(config, dataset, dataset_info, _, __, overwrite):
     """Download dataset.
 
     Parameters
@@ -23,6 +23,7 @@ def download_dataset(config, dataset, _, __, overwrite):
     downloader = NASADownloader(
         config=config,
         dataset=dataset,
+        dataset_info=dataset_info,
         overwrite=overwrite,
     )
     for path in FILES:

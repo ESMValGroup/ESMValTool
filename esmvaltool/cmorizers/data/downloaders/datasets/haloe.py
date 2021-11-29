@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 # pylint: disable=invalid-name
-def download_dataset(config, dataset, _, __, overwrite):
+def download_dataset(config, dataset, dataset_info, _, __, overwrite):
     """Download dataset.
 
     Parameters
@@ -27,9 +27,10 @@ def download_dataset(config, dataset, _, __, overwrite):
     downloader = WGetDownloader(
         config=config,
         dataset=dataset,
+        dataset_info=dataset_info,
         overwrite=overwrite,
     )
-    downloader.tier = 2
+
     downloader.download_file(
         "https://acp.copernicus.org/articles/5/2797/2005/"
         "acp-5-2797-2005-supplement.tar",

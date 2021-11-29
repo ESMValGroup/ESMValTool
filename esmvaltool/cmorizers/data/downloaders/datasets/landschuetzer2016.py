@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 # pylint: disable=invalid-name
-def download_dataset(config, dataset, _, __, overwrite):
+def download_dataset(config, dataset, dataset_info, _, __, overwrite):
     """Download dataset.
 
     Parameters
@@ -26,9 +26,10 @@ def download_dataset(config, dataset, _, __, overwrite):
     downloader = WGetDownloader(
         config=config,
         dataset=dataset,
+        dataset_info=dataset_info,
         overwrite=overwrite,
     )
-    downloader.tier = 2
+
     downloader.download_file(
         "https://www.nodc.noaa.gov/archive/arc0105/0160558/3.3/data/0-data/"
         "spco2_1982-2015_MPI_SOM-FFN_v2016.nc",

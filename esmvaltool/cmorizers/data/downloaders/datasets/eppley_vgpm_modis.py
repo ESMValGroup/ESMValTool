@@ -10,7 +10,8 @@ from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, start_date, end_date, overwrite):
+def download_dataset(config, dataset, dataset_info, start_date, end_date,
+                     overwrite):
     """Download dataset.
 
     Parameters
@@ -29,6 +30,7 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
     downloader = WGetDownloader(
         config=config,
         dataset=dataset,
+        dataset_info=dataset_info,
         overwrite=overwrite,
     )
 

@@ -38,7 +38,7 @@ class Formatter():
     """
     def __init__(self, info):
         self.datasets = []
-        self.config = info
+        self.datasets_info = info
 
     def start(self, command, datasets, config_file, options):
         """Read configuration and set up formatter for data processing.
@@ -162,8 +162,9 @@ class Formatter():
             logger.exception('Could not find cmorizer for %s', dataset)
             raise
 
-        downloader.download_dataset(self.config, dataset, start_date, end_date,
-                                    overwrite)
+        downloader.download_dataset(self.config, dataset,
+                                    self.datasets_info['datasets'][dataset],
+                                    start_date, end_date, overwrite)
         logger.info('%s downloaded', dataset)
 
     def format(self, start, end, install):

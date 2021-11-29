@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 # pylint: disable=invalid-name
-def download_dataset(config, dataset, _, __, overwrite):
+def download_dataset(config, dataset, dataset_info, _, __, overwrite):
     """Download dataset.
 
     Parameters
@@ -30,9 +30,10 @@ def download_dataset(config, dataset, _, __, overwrite):
     downloader = WGetDownloader(
         config=config,
         dataset=dataset,
+        dataset_info=dataset_info,
         overwrite=overwrite,
     )
-    downloader.tier = 2
+
     cmor_config = read_cmor_config(dataset)
     raw_path = ("https://opendata.dwd.de/climate_environment/GPCC/"
                 "full_data_2018/full_data_monthly_{version}.nc.gz")
