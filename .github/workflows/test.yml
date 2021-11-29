@@ -5,6 +5,7 @@ on:
   push:
     branches:
     - main
+    - pin_libunwind
   schedule:
     - cron: '0 0 * * *'
 
