@@ -14,19 +14,24 @@ Download and processing instructions
 
 Modification history
    20210528-lovato_tomas: written
-
 """
 
 import logging
 import os
-from warnings import catch_warnings, filterwarnings
 import tarfile
-import requests
+from warnings import catch_warnings, filterwarnings
+
 import iris
+import requests
 from cf_units import Unit
 
-from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
-                        save_variable, set_global_atts)
+from esmvaltool.cmorizers.data.utilities import (
+    constant_metadata,
+    fix_coords,
+    fix_var_metadata,
+    save_variable,
+    set_global_atts,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +48,11 @@ def _fix_data(cube, var):
     return cube
 
 
-def collect_files(in_dir, var, cfg):
+def collect_files(
+    in_dir,
+    var,
+    cfg,
+):
     """Compose input file list and download if missing."""
     var_dict = cfg['variables'][var]
 
@@ -115,7 +124,7 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
     save_variable(cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']

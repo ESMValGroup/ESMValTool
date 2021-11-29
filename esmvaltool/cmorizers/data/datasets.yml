@@ -462,13 +462,19 @@ datasets:
       This constraint will not exist once iris is updated to
       version 2.3.0 Aug 2019
 
-  GCP:
+  GCP2018:
     tier: 2
     source: https://www.icos-cp.eu/GCP/2018
     last_access: 2019-10-17
     info: |
-      Download the following file:
-        Global_Carbon_Budget_2018v1.0.xlsx
+      Download the following file: '2018 Global Budget v1.0'
+
+  GCP2020:
+    tier: 2
+    source: https://www.icos-cp.eu/GCP/2020
+    last_access: 2019-10-17
+    info: |
+      Download the following file: '2020 Global Budget v1.0'
 
   GHCN-CAMS:
     tier: 2
@@ -489,6 +495,12 @@ datasets:
   GISTEMP:
     tier: 2
     source: https://data.giss.nasa.gov/gistemp/ https://data.giss.nasa.gov/pub/gistemp/gistemp250_GHCNv4.nc.gz
+    last_access: 2020-03-03
+    info: "Use automatic download feature to get the data"
+
+  GLODAP:
+    tier: 2
+    source: https://www.glodap.info/index.php/mapped-data-product/
     last_access: 2020-03-03
     info: "Use automatic download feature to get the data"
 

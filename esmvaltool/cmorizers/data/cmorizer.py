@@ -251,7 +251,7 @@ class Formatter():
             End of the period to format
         install: bool
             If True, automatically copies the data to the final location if
-            there is no
+            there is no data there.
         """
         reformat_script_root = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'formatters',
@@ -380,7 +380,7 @@ class Formatter():
                     module.__file__)
         cmor_cfg = read_cmor_config(dataset)
         module.cmorization(in_dir, out_dir, cmor_cfg, self.config, start, end)
-        logger.info('CMORization of dataset %s finished!')
+        logger.info('CMORization of dataset %s finished!', dataset)
         return True
 
 

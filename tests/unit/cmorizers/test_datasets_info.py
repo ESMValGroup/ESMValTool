@@ -45,5 +45,11 @@ def test_datasets_are_added_to_test_recipe():
             for dataset in variable.get('additional_datasets', {}):
                 tested_datasets.add(dataset['dataset'])
 
-    for dataset in cfg['datasets'].keys():
-        assert dataset in tested_datasets
+    info_datasets = set(cfg['datasets'].keys())
+
+    if tested_datasets.symmetric_difference(info_datasets):
+        for dataset in tested_datasets - info_datasets:
+            print(f'Dataset {dataset} missing from datasets.yml')
+        for dataset in info_datasets - tested_datasets:
+            print(f'Dataset {dataset} missing from recipe_check_obs.yml')
+        assert False

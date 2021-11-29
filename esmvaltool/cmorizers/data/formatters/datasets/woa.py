@@ -34,7 +34,7 @@ Modification history
 import logging
 import os
 from warnings import catch_warnings, filterwarnings
-import requests
+
 import iris
 from cf_units import Unit
 
