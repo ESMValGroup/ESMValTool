@@ -21,6 +21,7 @@ dependencies:
   - cdo
   - imagemagick
   - julia
+  - libunwind<1.6  # 1.6 breaks Julia
   - nco
   - ruamel.yaml
   - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
