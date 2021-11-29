@@ -54,7 +54,7 @@ def extract_variable(var_info, raw_info, attrs, year):
             return cube
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorize data."""
     # cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']

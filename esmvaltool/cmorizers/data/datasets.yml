@@ -446,6 +446,17 @@ datasets:
         lt/Analysis/L4/v01.1/
       Put all files under a single directory (no subdirectories with years).
 
+  ESACCI-WATERVAPOUR:
+    tier: 3
+    source: Marc Schröder, ftp.brockmann-consult.de
+    last_access: 2021-03-29
+    info: |
+      Currently still restricted because preliminary.
+      Download and processing instructions:
+        FTP server: ftp.brockmann-consult.de, access currently restricted
+                    data/tcwv/dataset3_1/CDR-*/...
+        All files need to be in one directory, not in yearly subdirectories.
+
   ESRL:
     tier: 2
     source: http://www.esrl.noaa.gov/gmd/dv/data/index.php
@@ -927,6 +938,19 @@ datasets:
     info: |
       Contact Ralf Bennartz (Earth and Environmental Sciences, Vanderbilt
       University, USA).
+
+  WFDE5:
+    tier: 2
+    source: https://doi.org/10.24381/cds.20d54e34
+    last_access: 2021-04-16
+    info: |
+      Download and processing instructions
+        Download the following variables from the cds:
+            Near-surface air temperature ("CRU")
+            Rainfall flux ("CRU" as well as "CRU and GPCC")
+            Snowfall flux ("CRU" as well as "CRU and GPCC")
+        unzip the downloaded files
+        rename to follow syntax '{raw_name}_WFDE5_{reference}_*_v1.0.nc'
 
   WOA:
     tier: 2
