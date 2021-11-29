@@ -63,7 +63,6 @@ def main(cfg):
 
     plot_dir = cfg['plot_dir']
     out_dir = cfg['work_dir']
-    write_plots = cfg['write_plots']
     fig_fmt = cfg['output_file_type']
 
     # Go to work_dir for running
@@ -86,12 +85,8 @@ def main(cfg):
         outfiles = zmnam_calc(file_da_an_zm, out_dir + '/', ifile_props)
         provenance_record = get_provenance_record(props,
                                                   ancestor_files=[ifile])
-        if write_plots:
-            print("plot_files")
-            plot_files = zmnam_plot(file_mo_an, out_dir + '/', plot_dir + '/',
-                                    ifile_props, fig_fmt, write_plots)
-        else:
-            plot_files = []
+        plot_files = zmnam_plot(file_mo_an, out_dir + '/', plot_dir + '/',
+                                ifile_props, fig_fmt)
         for file in outfiles + plot_files:
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(file, provenance_record)

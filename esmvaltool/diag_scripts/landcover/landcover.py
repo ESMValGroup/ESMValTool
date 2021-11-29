@@ -344,9 +344,8 @@ def write_data(cfg, cubes, var, prov_rec):
 
     # Join cubes in one list with ref being the last entry
     outcubes = cubes['exp'][var] + cubes['ref'][var]
-    if cfg[diag.names.WRITE_NETCDF]:
-        iris.save(outcubes, filepath)
-        logger.info("Writing %s", filepath)
+    iris.save(outcubes, filepath)
+    logger.info("Writing %s", filepath)
 
     # provenance tracking
     with ProvenanceLogger(cfg) as provenance_logger:

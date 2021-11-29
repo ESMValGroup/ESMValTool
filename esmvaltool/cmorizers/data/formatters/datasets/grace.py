@@ -5,7 +5,7 @@ Tier
 Source
    https://podaac.jpl.nasa.gov/dataset/TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06_V2
 Last access
-   20201127
+   20211019
 
 Download and processing instructions
  - Go to the above link
@@ -13,17 +13,18 @@ Download and processing instructions
  - Log in with Earthdata account
  - Download the following files:
      - CLM4.SCALE_FACTOR.JPL.MSCNv02CRI.nc
-     - GRCTellus.JPL.200204_202004.GLO.RL06M.MSCNv02CRI.nc
+     - GRCTellus.JPL.200204_202108.GLO.RL06M.MSCNv02CRI.nc
      - LAND_MASK.CRI.nc
  - Download the grace months table  which holds important information
    on data coverage. Save it in the RAWOBSDIR.
-      https://podaac-tools.jpl.nasa.gov/drive/files/allData/tellus/L3/docs/GRACE_GRACE-FO_Months_RL06.csv
+      https://podaac-tools.jpl.nasa.gov/drive/files/allData/gracefo/docs/GRACE_GRACE-FO_Months_RL06.csv
  - Manually inspect and check the months table
 
 
 Modification history
    20200630-crezee_bas: written.
    20201127-kazeroni_remi: updated for latest dataset
+   20211019-kazeroni_remi: updated for extended dataset
 """
 
 import logging

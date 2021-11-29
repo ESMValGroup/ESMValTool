@@ -49,7 +49,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from esmvalcore.cmor.fixes import add_plev_from_altitude, add_sigma_factory
+from esmvalcore.cmor.fixes import add_plev_from_altitude
 from joblib import Parallel, delayed
 from scipy.interpolate import interp1d
 from scipy.stats import linregress
@@ -384,8 +384,6 @@ def _get_zhai_data_frame(datasets, lat_constraint):
     if not cl_cube.coords('air_pressure'):
         if cl_cube.coords('altitude'):
             add_plev_from_altitude(cl_cube)
-        elif cl_cube.coords('atmosphere_sigma_coordinate'):
-            add_sigma_factory(cl_cube)
         else:
             raise ValueError(
                 f"No 'air_pressure' coord available in cube "
@@ -474,8 +472,6 @@ def brient_shal(grouped_data, cfg):
         if not cl_cube.coords('air_pressure'):
             if cl_cube.coords('altitude'):
                 add_plev_from_altitude(cl_cube)
-            elif cl_cube.coords('atmosphere_sigma_coordinate'):
-                add_sigma_factory(cl_cube)
             else:
                 raise ValueError(
                     f"No 'air_pressure' coord available in cube "

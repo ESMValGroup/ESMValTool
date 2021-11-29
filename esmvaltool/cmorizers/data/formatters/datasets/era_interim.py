@@ -153,7 +153,7 @@ def _fix_coordinates(cube, definition):
         coord.var_name = coord_def.out_name
         coord.long_name = coord_def.long_name
         coord.points = coord.core_points().astype('float64')
-        if len(coord.points) > 1:
+        if len(coord.points) > 1 and not coord.var_name == 'plev':
             coord.guess_bounds()
         if coord.var_name == 'plev':
             coord.attributes['positive'] = 'down'
@@ -390,7 +390,7 @@ def _get_in_files_by_year(in_dir, var):
     in_files = defaultdict(list)
     for pattern in var['files']:
         for filename in Path(in_dir).glob(pattern):
-            year = str(filename.stem).split('_')[-1]
+            year = str(filename.stem).rsplit('_', maxsplit=1)[-1]
             in_files[year].append(str(filename))
 
     # Check if files are complete

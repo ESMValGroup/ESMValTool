@@ -41,7 +41,7 @@
 # the user in the hyint_parameters file.
 # R libraries:"tools","PCICt","ncdf4","maps"
 #
-#i Optional
+# i Optional
 # Several options can be selected via the configuration file, e.g. provision
 # of an external normalization functions for the indices; a reference
 # climatology for the R95 index; type of plots; etc.
@@ -242,31 +242,29 @@ if (write_netcdf & run_timeseries) {
 }
 
 ## Create figures
-if (write_plots) {
-  plot_type_list <- plot_type
-  for (plot_type in plot_type_list) {
-    print(paste0("******** PLOT TYPE: ", plot_type, " *********"))
-    for (seas in seasons) {
-      if (plot_type <= 10) {
-        # Plot maps
-        prov_info <- hyint_plot_maps(
-          work_dir,
-          plot_dir,
-          work_dir,
-          ref_idx,
-          seas,
-          prov_info
-        )
-      } else {
-        # Plot timeseries and trends
-        prov_info <- hyint_plot_trends(
-          work_dir,
-          plot_dir,
-          ref_idx,
-          seas,
-          prov_info
-        )
-      }
+plot_type_list <- plot_type
+for (plot_type in plot_type_list) {
+  print(paste0("******** PLOT TYPE: ", plot_type, " *********"))
+  for (seas in seasons) {
+    if (plot_type <= 10) {
+      # Plot maps
+      prov_info <- hyint_plot_maps(
+        work_dir,
+        plot_dir,
+        work_dir,
+        ref_idx,
+        seas,
+        prov_info
+      )
+    } else {
+      # Plot timeseries and trends
+      prov_info <- hyint_plot_trends(
+        work_dir,
+        plot_dir,
+        ref_idx,
+        seas,
+        prov_info
+      )
     }
   }
 }

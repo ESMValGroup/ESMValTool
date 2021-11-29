@@ -1,7 +1,9 @@
 # ESMValTool
 # recipe_flato13ipcc.yml
 ---
-documentation:
+documentation:   
+  title: IPCC AR5, chap. 9 diagnostics
+
   description: |
     Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
     9.2, 9.3, 9.4, 9.5, 9.6, 9.8, 9.14, 9.24, 9.26, 9.27, 9.42, 9.45a.
@@ -47,7 +49,7 @@ preprocessors:
       area_type: land
       exclude: [
         'bcc-csm1-1-m',
-        'GCP',
+        'GCP2018',
         'inmcm4',
         'JMA-TRANSCOM',
       ]
@@ -129,6 +131,7 @@ diagnostics:
   # **********************************************************************
 
   fig09-2:
+    title: Fig. 9.2 (near-surface temperature)
     description: IPCC AR5 Ch. 9, Fig. 9.2 (near-surface temperature)
     themes:
       - phys
@@ -243,6 +246,7 @@ diagnostics:
   # ***************************************************************************
 
   fig09-3:
+    title: Fig. 9.3 (near-surface temperature)
     description: Calculate seasonality of multi-model mean for tas
     themes:
       - phys
@@ -318,6 +322,7 @@ diagnostics:
   # **********************************************************************
 
   fig09-4:
+    title: Fig. 9.4 (precipitation)
     description: IPCC AR5 Ch. 9, Fig. 9.4 (precipitation)
     themes:
       - clouds
@@ -329,7 +334,7 @@ diagnostics:
         reference_dataset: GPCP-SG
         mip: Amon
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2,
          start_year: 1986, end_year: 2005, tier: 1}
       - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
@@ -431,6 +436,7 @@ diagnostics:
   # **********************************************************************
 
   fig09-5a:
+    title: Fig. 9.5a (shortwave CRE)
     description: differences of multi-model mean and reference dataset
     themes:
       - clouds
@@ -443,7 +449,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
       - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
@@ -537,6 +543,7 @@ diagnostics:
         timemean: annualclim
 
   fig09-5b:
+    title: Fig. 9.5b (longwave CRE)
     description: differences of multi-model mean and reference dataset
     themes:
       - clouds
@@ -549,7 +556,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
       - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
@@ -640,6 +647,7 @@ diagnostics:
         <<: *fig-9-5_settings
 
   fig09-5c:
+    title: Fig. 9.5c (net CRE)
     description: differences of multi-model mean and reference dataset
     themes:
       - clouds
@@ -652,7 +660,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
       - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
@@ -752,6 +760,7 @@ diagnostics:
   # ***************************************************************************
 
   fig09-6_tas:
+    title: Fig. 9.6 (near-surface temperature)
     description: Calculate pattern correlation for tas
     variables:
       tas:
@@ -837,6 +846,7 @@ diagnostics:
         script: ipcc_ar5/ch09_fig09_6.ncl
 
   fig09-6_rlut:
+    title: Fig. 9.6 (TOA longwave radiation)
     description: Calculate pattern correlation for all-sky longwave radiation
     variables:
       rlut:
@@ -915,12 +925,13 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
     scripts:
       fig09-6_pattern_cor:
         <<: *fig09_6_pattern_cor
 
   fig09-6_pr:
+    title: Fig. 9.6 (precipitation)
     description: Calculate pattern correlation for precipitation
     variables:
       pr:
@@ -1000,13 +1011,14 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2, tier: 1}
       - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
     scripts:
       fig09-6_pattern_cor:
         <<: *fig09_6_pattern_cor
 
   fig09-6_swcre:
+    title: Fig. 9.6 (shortwave CRE)
     description: Calculate pattern correlation for shortwave cloud radiative effect
     variables:
       swcre:
@@ -1081,7 +1093,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
     scripts:
       fig09-6_pattern_cor:
         <<: *fig09_6_pattern_cor
@@ -1105,6 +1117,7 @@ diagnostics:
   # **********************************************************************
 
   fig09-8:
+    title: Fig. 9.8 (near-surface temperature)
     description: IPCC AR5 Ch. 9, Fig. 9.8 (near-surface temperature)
     themes:
       - phys
@@ -1211,6 +1224,7 @@ diagnostics:
   # **********************************************************************
 
   fig09-14:
+    title: Fig. 9.14 (SST)
     description: |
       IPCC AR5 Ch. 9, Fig. 9.14 (sst error, zonal mean and equatorial)
     themes:
@@ -1285,6 +1299,7 @@ diagnostics:
   # ***********************************************************************
 
   fig09-24:
+    title: Fig. 9.24 (sea ice)
     description: timeseries and trend distributions of sea ice extent
     themes:
       - seaIce
@@ -1388,6 +1403,7 @@ diagnostics:
   # **********************************************************************
 
   fig09-26top:
+    title: Fig. 9.26a (carbon uptake)
     variables:
       fgco2: &fgco2_settings
         preprocessor: sea_fraction_weighting
@@ -1416,12 +1432,12 @@ diagnostics:
           - {dataset: MPI-ESM-LR}
           - {dataset: MPI-ESM-MR}
           - {dataset: NorESM1-ME}
-      fgco2_GCP:
+      fgco2_GCP2018:
         <<: *fgco2_settings
         preprocessor: default
         short_name: fgco2
         additional_datasets:
-          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
+          - {dataset: GCP2018, project: OBS, type: reanaly, version: '1.0', tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
     scripts:
       main_global: &fig09_26_settings
         script: carbon_cycle/main.ncl
@@ -1437,16 +1453,17 @@ diagnostics:
         evolution_plot: true
         evolution_plot_volcanoes: false
         evolution_plot_anomaly: false
-        evolution_plot_ref_dataset: GCP
+        evolution_plot_ref_dataset: GCP2018
 
   fig09-26bottom:
+    title: Fig. 9.26b (carbon uptake)
     variables:
       nbp:
         <<: *fgco2_settings
         preprocessor: land_fraction_weighting
         mip: Lmon
         additional_datasets: &nbp_datasets
-          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
+          - {dataset: GCP2018, project: OBS, type: reanaly, version: '1.0', tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
           - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 2018, tier: 3, start_year: 1986, end_year: 2005}
           - {dataset: BNU-ESM}
           - {dataset: CanESM2}
@@ -1479,16 +1496,17 @@ diagnostics:
   # **********************************************************************
 
   fig09-27top:
+    title: Fig. 9.27a (CO2 fluxes)
     variables:
       fgco2:
         <<: *fgco2_settings
         start_year: 1986
-      fgco2_GCP:
+      fgco2_GCP2018:
         <<: *fgco2_settings
         preprocessor: default
         short_name: fgco2
         additional_datasets:
-          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1986, end_year: 2005, frequency: yr}
+          - {dataset: GCP2018, project: OBS, type: reanaly, version: '1.0', tier: 2, start_year: 1986, end_year: 2005, frequency: yr}
     scripts:
       main_global: &fig09_27_settings
         <<: *fig09_26_settings
@@ -1661,6 +1679,7 @@ diagnostics:
         script: climate_metrics/tcr.py
 
   fig09-42a_cmip5:
+    title: Fig. 9.42a CMIP5 (ECS vs. GMSAT)
     description: Plot ECS vs. GMSAT for CMIP5 models.
     themes:
       - phys
@@ -1738,6 +1757,7 @@ diagnostics:
               ncol: 2
 
   fig09-42b_cmip5:
+    title: Fig. 9.42b CMIP5 (TCR vs. ECS)
     description: Plot TCR vs. ECS for CMIP5 models.
     themes:
       - phys
@@ -1924,6 +1944,7 @@ diagnostics:
         <<: *tcr_script
 
   fig09-42a_cmip6:
+    title: Fig. 9.42a CMIP6 (ECS vs. GMSAT)
     description: Plot ECS vs. GMSAT for CMIP6 models.
     themes:
       - phys
@@ -1998,6 +2019,7 @@ diagnostics:
         dataset_style: cmip6
 
   fig09-42b_cmip6:
+    title: Fig. 9.42b CMIP6 (TCR vs. ECS)
     description: Plot TCR vs. ECS for CMIP6 models.
     themes:
       - phys
@@ -2019,6 +2041,7 @@ diagnostics:
   # ***********************************************************************
 
   fig09-45a:
+    title: Fig. 9.45a (snow-albedo feedback)
     description: springtime snow-albedo feedback values vs. seasonal cycle
     themes:
       - EC

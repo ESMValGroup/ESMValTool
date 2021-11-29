@@ -28,6 +28,7 @@ def keep_cwd():
 
 
 def write_config_user_file(dirname):
+    """Replace config_user file values for testing."""
     config_file = dirname / 'config-user.yml'
     cfg = {
         'output_dir': str(dirname / 'output_dir'),
@@ -40,14 +41,16 @@ def write_config_user_file(dirname):
     return str(config_file)
 
 
-def _create_sample_cube():
+def _create_sample_cube(time_step):
     """Create a quick CMOR-compliant sample cube."""
     coord_sys = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
-    cube_data = np.ones((2, 3, 2, 2))
-    cube_data[1, 1, 1, 1] = 22.
-    time = iris.coords.DimCoord([15, 45],
+    cube_data = np.ones((1, 3, 2, 2))
+    cube_data[0, 1, 1, 1] = 22.
+    time = iris.coords.DimCoord([
+        time_step,
+    ],
                                 standard_name='time',
-                                bounds=[[1., 30.], [30., 60.]],
+                                bounds=[[time_step - 0.5, time_step + 0.5]],
                                 units=Unit('days since 0000-01-01',
                                            calendar='gregorian'))
     zcoord = iris.coords.DimCoord([0.5, 5., 50.],
@@ -73,27 +76,29 @@ def _create_sample_cube():
 
 def put_dummy_data(data_path):
     """Create a small dummy netCDF file to be cmorized."""
-    gen_cube = _create_sample_cube()
-    t_path = os.path.join(data_path, "woa13_decav81B0_t00_01.nc")
-    # correct var names
-    gen_cube.var_name = "t_an"
-    iris.save(gen_cube, t_path)
-    s_path = os.path.join(data_path, "woa13_decav81B0_s00_01.nc")
-    gen_cube.var_name = "s_an"
-    iris.save(gen_cube, s_path)
-    # incorrect var names
-    o2_path = os.path.join(data_path, "woa13_all_o00_01.nc")
-    gen_cube.var_name = "o2"
-    iris.save(gen_cube, o2_path)
-    no3_path = os.path.join(data_path, "woa13_all_n00_01.nc")
-    gen_cube.var_name = "no3"
-    iris.save(gen_cube, no3_path)
-    po4_path = os.path.join(data_path, "woa13_all_p00_01.nc")
-    gen_cube.var_name = "po4"
-    iris.save(gen_cube, po4_path)
-    si_path = os.path.join(data_path, "woa13_all_i00_01.nc")
-    gen_cube.var_name = "si"
-    iris.save(gen_cube, si_path)
+    for count, step in enumerate(np.arange(0.5, 12.5)):
+        mon = "{:02d}".format(count)
+        gen_cube = _create_sample_cube(step)
+        file_path = os.path.join(data_path,
+                                 "woa18_decav81B0_t" + mon + "_01.nc")
+        gen_cube.var_name = "t_an"
+        iris.save(gen_cube, file_path)
+        file_path = os.path.join(data_path,
+                                 "woa18_decav81B0_s" + mon + "_01.nc")
+        gen_cube.var_name = "s_an"
+        iris.save(gen_cube, file_path)
+        file_path = os.path.join(data_path, "woa18_all_o" + mon + "_01.nc")
+        gen_cube.var_name = "o_an"
+        iris.save(gen_cube, file_path)
+        file_path = os.path.join(data_path, "woa18_all_n" + mon + "_01.nc")
+        gen_cube.var_name = "n_an"
+        iris.save(gen_cube, file_path)
+        file_path = os.path.join(data_path, "woa18_all_p" + mon + "_01.nc")
+        gen_cube.var_name = "p_an"
+        iris.save(gen_cube, file_path)
+        file_path = os.path.join(data_path, "woa18_all_i" + mon + "_01.nc")
+        gen_cube.var_name = "i_an"
+        iris.save(gen_cube, file_path)
 
 
 def check_log_file(log_file, no_data=False):
@@ -108,14 +113,19 @@ def check_log_file(log_file, no_data=False):
 
 def check_output_exists(output_path):
     """Check if cmorizer outputted."""
-    # eg Tier2/WOA/OBS_WOA_clim_2013v2_Omon_thetao_200001-200002.nc
+    # eg Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_200001-200012.nc
     output_files = os.listdir(output_path)
-    # ['OBS_WOA_clim_2013v2_Omon_thetao_200001-200002.nc',
-    # 'OBS_WOA_clim_2013v2_Omon_so_200001-200002.nc']
-    assert len(output_files) == 2
-    assert 'OBS_WOA_clim' in output_files[0]
-    assert 'thetao' in [s.split("_")[5] for s in output_files]
-    assert 'so' in [s.split("_")[5] for s in output_files]
+    assert len(output_files) == 8
+    assert 'OBS6_WOA_clim' in output_files[0]
+    out_files = [s.split("_")[5] for s in output_files]
+    assert 'thetao' in out_files
+    assert 'so' in out_files
+    assert 'no3' in out_files
+    assert 'po4' in out_files
+    assert 'o2' in out_files
+    assert 'si' in out_files
+    assert 'sos' in out_files
+    assert 'tos' in out_files
 
 
 def check_conversion(output_path):
@@ -129,6 +139,7 @@ def check_conversion(output_path):
 
 @contextlib.contextmanager
 def arguments(*args):
+    """Arrange contextmanager."""
     backup = sys.argv
     sys.argv = list(args)
     yield
