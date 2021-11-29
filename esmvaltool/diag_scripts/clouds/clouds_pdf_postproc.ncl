@@ -22,79 +22,88 @@ begin
   fname5 = inpath + "/pdf_clt_djf_cmip5/southernocean/" \
     + "clouds_pdf_clt_so_cmip5.nc"
   infile5 = addfile(fname5, "r")
-
-varnames = getfilevarnames(infile5)
-print(varnames)
-exit
-
-
-  count5 = infile5->count
-  ; CMIP6
-  fname6 = inpath + "/pdf_clt_djf_cmip6/southernocean/" \
-    + "clouds_pdf_clt_so_cmip6.nc"
-  infile6 = addfile(fname6, "r")
-  count6 = infile6->count
-
-  tmp = infile5->model
-  dims = dimsizes(tmp)
+  varnames5 = getfilevarnames(infile5)
+  dims = dimsizes(varnames5)
   idxtmp = ispan(0, dims(0) - 1, 1)
-  models5 = new(dims(0), string)
   do i = 0, dims(0) - 1
-    models5(i) = tostring(tmp(i, :))
-    if (isStrSubset(models5(i), "Median") .or. \
-        isStrSubset(models5(i), "Mean") .or. \
-        isStrSubset(models5(i), "Average") .or. \
-        isStrSubset(models5(i), refname)) then
+    if (isStrSubset(varnames5(i), "_pdf_")) then
+      if (isStrSubset(varnames5(i), refname)) then
+        idxtmp(i) = -1
+        refidx5 = i
+      end if
+    else
       idxtmp(i) = -1
     end if
   end do
-  delete(tmp)
   delete(dims)
 
   idx5 = ind(idxtmp .ge. 0)
   delete(idxtmp)
 
-  tmp = infile6->model
-  dims = dimsizes(tmp)
+  ; CMIP6
+  fname6 = inpath + "/pdf_clt_djf_cmip6/southernocean/" \
+    + "clouds_pdf_clt_so_cmip6.nc"
+  infile6 = addfile(fname6, "r")
+  varnames6 = getfilevarnames(infile6)
+  dims = dimsizes(varnames6)
   idxtmp = ispan(0, dims(0) - 1, 1)
-  models6 = new(dims(0), string)
   do i = 0, dims(0) - 1
-    models6(i) = tostring(tmp(i, :))
-    if (isStrSubset(models6(i), "Median") .or. \
-        isStrSubset(models6(i), "Mean") .or. \
-        isStrSubset(models6(i), "Average") .or. \
-        isStrSubset(models6(i), refname)) then
+    if (isStrSubset(varnames6(i), "_pdf_")) then
+      if (isStrSubset(varnames6(i), refname)) then
+        idxtmp(i) = -1
+        refidx6 = i
+      end if
+    else
       idxtmp(i) = -1
     end if
   end do
-  delete(tmp)
   delete(dims)
 
   idx6 = ind(idxtmp .ge. 0)
   delete(idxtmp)
 
-  idxref5 = ind(models5 .eq. refname)
-  idxref6 = ind(models6 .eq. refname)
+  ; read and average data
 
-  ref5 = where(count5(idxref5, :, :) .gt. 1.0e-3, count5(idxref5, :, :), count5@_FillValue)
-  ref6 = where(count6(idxref6, :, :) .gt. 1.0e-3, count6(idxref6, :, :), count6@_FillValue)
+  ref5 = infile5->$varnames5(refidx5)$
+  ref6 = infile6->$varnames6(refidx6)$
 
-  c5 = dim_avg_n_Wrap(count5, 0)
-  c5 = where(c5 .gt. 1.0e-3, c5, c5@_FillValue)
-  c6 = dim_avg_n_Wrap(count6, 0)
-  c6 = where(c6 .gt. 1.0e-3, c6, c6@_FillValue)
+  do i = 0, dimsizes(idx5) - 1
+    data = infile5->$varnames5(idx5(i))$
+    if (i .eq. 0) then
+      mmm5 = data
+    else
+      mmm5 = mmm5 + data
+    end if
+  end do
 
-  diff5 = c5
-  diff5 = (diff5 - ref5); / ref5 * 100.0
-  diff6 = c6
-  diff6 = (diff6 - ref6); / ref6 * 100.0
-  delta56 = c6
-  delta56 = (delta56 - c5) / c5 * 100.0
+  mmm5 = mmm5 / dimsizes(idx5)
+  delete(data)
 
-  system("rm diff.nc")
-  debugfile = addfile("diff.nc", "c")
-  debugfile->diff5 = diff5
-  debugfile->diff6 = diff6
-  debugfile->delta = delta56
+  do i = 0, dimsizes(idx6) - 1
+    data = infile6->$varnames6(idx6(i))$
+    if (i .eq. 0) then
+      mmm6 = data
+    else
+      mmm6 = mmm6 + data
+    end if
+  end do
+  mmm6 = mmm6 / dimsizes(idx6)
+  delete(data)
+
+  x = infile6->x
+
+  idx = ind(x .ge. 80.)
+
+  print("cummulative frequencies clt >= 80%")
+  print("cmip5: " + sum(mmm5(idx)))
+  print("cmip6: " + sum(mmm6(idx)))
+  print("ref: " + sum(ref5(idx)))
+
+  system("rm postpdf.nc")
+  debugfile = addfile("postpdf.nc", "c")
+  debugfile->mmm5 = mmm5
+  debugfile->mmm6 = mmm6
+  debugfile->ref5 = ref5
+  debugfile->ref6 = ref6
 
 end
