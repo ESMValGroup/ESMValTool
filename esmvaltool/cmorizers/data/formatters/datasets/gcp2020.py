@@ -11,7 +11,6 @@ Last access
 
 Download and processing instructions
     Download the following file: '2020 Global Budget v1.0'
-
 """
 
-from .cmorize_obs_gcp2018 import cmorization  # noqa
+from .gcp2018 import cmorization  # noqa

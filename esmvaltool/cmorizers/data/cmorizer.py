@@ -134,6 +134,7 @@ class Formatter():
                 failed_datasets.append(dataset)
         if failed_datasets:
             logger.error('Download failed for datasets %s', self.datasets)
+        return False
 
     def download_dataset(self, dataset, start_date, end_date, overwrite):
         """Download a single dataset.
@@ -207,7 +208,7 @@ class Formatter():
         Returns
         -------
         str
-            'Yes' if the downloader exist, 'No' otherwise
+            'Yes' if the downloader exists, 'No' otherwise
         """
         try:
             importlib.import_module(
@@ -513,7 +514,8 @@ class DataCommand():
         end = self._parse_date(end)
 
         self.formatter.start('download', datasets, config_file, kwargs)
-        self.formatter.download(start, end, overwrite)
+        if not self.formatter.download(start, end, overwrite):
+            return False
         self.formatter.format(start, end, install)
 
     @staticmethod
