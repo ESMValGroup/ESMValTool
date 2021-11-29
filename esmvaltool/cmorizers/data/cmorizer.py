@@ -25,6 +25,7 @@ from esmvalcore._task import write_ncl_settings
 from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
 logger = logging.getLogger(__name__)
+datasets_file = os.path.join(os.path.dirname(__file__), 'datasets.yml')
 
 
 class Formatter():
@@ -388,7 +389,6 @@ class Formatter():
 class DataCommand():
     """Download and format data to use with ESMValTool."""
     def __init__(self):
-        datasets_file = os.path.join(os.path.dirname(__file__), 'datasets.yml')
         with open(datasets_file) as data:
             self._info = yaml.safe_load(data)
         self.formatter = Formatter(self._info)
