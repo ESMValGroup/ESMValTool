@@ -1,5 +1,7 @@
 """Script to download NCEP."""
 
+from datetime import datetime
+
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
@@ -21,6 +23,10 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
     overwrite : bool
         Overwrite already downloaded files
     """
+    if start_date is None:
+        start_date = datetime(1948, 1, 1)
+    if end_date is None:
+        end_date = datetime(2018, 1, 1)
     downloader = FTPDownloader(
         config=config,
         server='ftp.cdc.noaa.gov',

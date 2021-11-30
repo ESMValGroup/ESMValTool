@@ -15,11 +15,8 @@ Download and processing instructions
     A registration is required for downloading the data.
 """
 
-import gzip
 import logging
 import os
-import shutil
-import tarfile
 
 import iris
 import iris.coord_categorisation
@@ -30,13 +27,6 @@ from osgeo import gdal
 from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
-
-
-def _clean(file_dir):
-    """Remove unzipped input files."""
-    if os.path.isdir(file_dir):
-        shutil.rmtree(file_dir)
-        logger.info("Removed cached directory %s", file_dir)
 
 
 def _extract_variable(cmor_info, attrs, var_file, out_dir, cfg):
@@ -80,42 +70,17 @@ def _extract_variable(cmor_info, attrs, var_file, out_dir, cfg):
                         unlimited_dimensions=['time'])
 
 
-def _extract_tar(filepath, out_dir):
-    """Extract `*.tar.gz` file."""
-    logger.info("Starting extraction of %s to %s", filepath, out_dir)
-    with tarfile.open(filepath) as tar:
-        tar.extractall()
-    new_path = os.path.join(out_dir, 'ndp017b', 'revised')
-    logger.info("Succesfully extracted files to %s", new_path)
-    return new_path
-
-
-def _unzip(filepath, out_dir):
-    """Extract `*.gz` file."""
-    logger.info("Starting extraction of %s to %s", filepath, out_dir)
-    new_path = filepath.replace('.gz', '')
-    with gzip.open(filepath, 'rb') as zip_file:
-        with open(new_path, 'wb') as new_file:
-            shutil.copyfileobj(zip_file, new_file)
-    logger.info("Succesfully extracted '%s' to '%s'", filepath, new_path)
-    return new_path
-
-
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
-    tar_file = os.path.join(in_dir, cfg['filename'])
-    logger.info("Found input file '%s'", tar_file)
-    file_dir = _extract_tar(tar_file, out_dir)
 
     # Run the cmorization
     for (var, var_info) in cfg['variables'].items():
         logger.info("CMORizing variable '%s'", var)
         glob_attrs['mip'] = var_info['mip']
         cmor_info = cmor_table.get_variable(var_info['mip'], var)
-        zip_file = os.path.join(file_dir, var_info['filename'])
-        var_file = _unzip(zip_file, out_dir)
+        var_file = os.path.join(in_dir,
+                                var_info['filename'].replace('.gz', ''))
         logger.info("Found input file '%s' for variable '%s'", var_file, var)
         _extract_variable(cmor_info, glob_attrs, var_file, out_dir, cfg)
-    _clean(file_dir)

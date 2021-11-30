@@ -151,6 +151,9 @@ class Formatter():
         overwrite: boolean
             If True, download again existing files
         """
+        if not self.has_downloader(dataset):
+            raise ValueError(
+                f'Dataset {dataset} does not have an automatic downloader')
         dataset_module = self._dataset_to_module(dataset)
         logger.info('Downloading %s', dataset)
         logger.debug("Download module: %s", dataset_module)
@@ -216,9 +219,9 @@ class Formatter():
             importlib.import_module(
                 f'.{dataset.lower().replace("-", "_")}',
                 package='esmvaltool.cmorizers.data.downloaders.datasets')
-            return 'Yes'
+            return True
         except ImportError:
-            return 'No'
+            return False
 
     def _assemble_datasets(self):
         """Get my datasets as dictionary keyed on Tier."""
@@ -394,6 +397,9 @@ class DataCommand():
             self._info = yaml.safe_load(data)
         self.formatter = Formatter(self._info)
 
+    def _has_downloader(self, dataset):
+        return 'Yes' if self.formatter.has_downloader(dataset) else "No"
+
     def list(self):
         """List all supported datasets."""
         print()
@@ -403,7 +409,7 @@ class DataCommand():
             date = datetime.datetime.strptime(str(dataset_info['last_access']),
                                               "%Y-%m-%d")
             print(f"| {dataset:30} | {dataset_info['tier']:4} "
-                  f"| {self.formatter.has_downloader(dataset):13} "
+                  f"| {self._has_downloader(dataset):13} "
                   f"|  {date.strftime('%Y-%m-%d')} |")
         print('-' * 71)
 
@@ -420,7 +426,7 @@ class DataCommand():
         print()
         print(f"Tier: {dataset_info['tier']}")
         print(f"Source: {dataset_info['source']}")
-        print(f"Automatic download: {self.formatter.has_downloader(dataset)}")
+        print(f"Automatic download: {self._has_downloader(dataset)}")
         print("")
         print(dataset_info['info'])
 
