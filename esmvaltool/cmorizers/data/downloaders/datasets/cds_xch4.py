@@ -32,6 +32,7 @@ def download_dataset(config, dataset, dataset_info, _, __, overwrite):
         },
         config=config,
         dataset=dataset,
+        dataset_info=dataset_info,
         overwrite=overwrite,
     )
     downloader.download_request("CDS-XCH4.tar")
