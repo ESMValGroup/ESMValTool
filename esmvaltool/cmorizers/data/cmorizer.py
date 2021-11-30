@@ -1,13 +1,8 @@
-"""Run the CMORization module as a utility executable.
+"""Download and formatting of non-ESGF datasets.
 
-This utility allows the user to call and execute CMOR reformatting
-scripts (support for NCL and Python at the moment), that will use two
-I/O variables passed by this utility: an input directory as specified in
-config-user.yml by the RAWOBS key, and an output dir created in the form
-of output_dir/CMOR_DATE_TIME/TierTIER/DATASET. The user can specify a
-list of DATASETS that the CMOR reformatting can by run on by using -o
-(--obs-list-cmorize) command line argument. The CMOR reformatting
-scripts are to be found in: esmvalcore.cmor/cmorizers/obs
+This module adds new commands to the ESMValTool to allow the user to get
+and reformat to the ESMValTool's data format a set of observations and
+reanalysis.
 """
 import datetime
 import importlib
@@ -135,7 +130,8 @@ class Formatter():
                 failed_datasets.append(dataset)
         if failed_datasets:
             logger.error('Download failed for datasets %s', self.datasets)
-        return False
+            return False
+        return True
 
     def download_dataset(self, dataset, start_date, end_date, overwrite):
         """Download a single dataset.
