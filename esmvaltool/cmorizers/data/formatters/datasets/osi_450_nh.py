@@ -25,7 +25,7 @@ Download and processing instructions
 from esmvaltool.cmorizers.data.formatters.osi_common import OSICmorizer
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     cmorizer = OSICmorizer(in_dir, out_dir, cfg, 'nh')
     cmorizer.cmorize()

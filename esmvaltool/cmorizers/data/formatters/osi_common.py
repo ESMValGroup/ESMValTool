@@ -51,7 +51,10 @@ class OSICmorizer():
                                                      self.hemisphere,
                                                      vals['grid'])
             for year in os.listdir(self.in_dir):
-                year = int(year)
+                try:
+                    year = int(year)
+                except ValueError:
+                    continue
                 logger.info("CMORizing var %s for year %s", var, year)
                 raw_info = {
                     'name':
@@ -81,6 +84,8 @@ class OSICmorizer():
                 cube_func=lambda c: c.var_name == raw_info['name']))
         tracking_ids = self._unify_attributes(cubes)
         cube = cubes.concatenate_cube()
+        for ancilliary_var in list(cube.ancillary_variables()):
+            cube.remove_ancillary_variable(ancilliary_var)
         del cubes
         if tracking_ids:
             cube.attributes['tracking_ids'] = tracking_ids
