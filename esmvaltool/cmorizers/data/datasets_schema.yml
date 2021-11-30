@@ -1,17 +1,12 @@
-# Generic recipe Yamale schema definition.
+# Generic datasets file Yamale schema definition.
 # See https://github.com/23andMe/Yamale for help.
 
 ---
-# Recipe schema
+# Dataset file schema
 datasets: map(include('dataset'), required=True)
 
 ---
-# Recipe item definitions
-documentation:
-  description: str()
-  authors: list(str(), min=1)
-  projects: list(str(), required=False)
-  references: list(str(), required=False)
+# Dataset item definition
 
 dataset:
   tier: int(min=2, max=3, required=False)
