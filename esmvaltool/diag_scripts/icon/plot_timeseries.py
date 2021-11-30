@@ -6,6 +6,7 @@ from pathlib import Path
 import iris
 import matplotlib.pyplot as plt
 
+from esmvaltool.diag_scripts.mlr.plot import unify_time_coord
 from esmvaltool.diag_scripts.shared import (
     get_plot_filename,
     group_metadata,
@@ -21,10 +22,11 @@ def get_plot_kwargs(cfg, dataset, **kwargs):
     plot_kwargs_for_keys = {
         'ERA5': dict(color='black'),
         'ICON': dict(color='C1'),
-        'IRIS REMAPNN': dict(color='black'),
-        'CDO REMAPNN': dict(color='C0'),
-        'CDO REMAPCON': dict(color='C1'),
-        'CDO REMAPDIS': dict(color='C2'),
+        # TODO REMOVE
+        # 'IRIS REMAPNN': dict(color='black'),
+        # 'CDO REMAPNN': dict(color='C0'),
+        # 'CDO REMAPCON': dict(color='C1'),
+        # 'CDO REMAPDIS': dict(color='C2'),
     }
     key = dataset.get(cfg['title_key'])
     if key is None:
@@ -38,6 +40,7 @@ def load_and_preprocess(dataset):
     filename = dataset['filename']
     logger.info("Loading %s", filename)
     cube = iris.load_cube(filename)
+    unify_time_coord(cube)
 
     # Global mean
     if all([cube.coords('latitude', dim_coords=True),
