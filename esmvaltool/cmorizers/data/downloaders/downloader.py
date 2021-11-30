@@ -12,6 +12,8 @@ class BaseDownloader():
         ESMValTool's user configuration
     dataset : str
         Dataset to download
+    dataset_info : dict
+        Dataset information from the datasets.yml file
     overwrite : bool
         Overwrite already downloaded files
     """

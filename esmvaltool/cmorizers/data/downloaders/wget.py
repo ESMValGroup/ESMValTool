@@ -44,7 +44,6 @@ class WGetDownloader(BaseDownloader):
         wget_options: list(str)
             Extra options for wget
         """
-
         command = ['wget'] + wget_options + self.overwrite_options + [
             f'--directory-prefix={self.local_folder}',
             '--no-directories',

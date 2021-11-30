@@ -24,6 +24,8 @@ class CDSDownloader(BaseDownloader):
         Common CDS request parameters
     dataset : str
         Name of the dataset
+    dataset_info : dict
+        Dataset information from the datasets.yml file
     overwrite : bool
         Overwrite already downloaded files
     extra_name : str, optional
