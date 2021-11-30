@@ -321,7 +321,7 @@ def _save_cube(cube, cmor_info, attrs, out_dir):
                         unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     glob_attrs['mip'] = cfg['mip']

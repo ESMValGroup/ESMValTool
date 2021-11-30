@@ -126,7 +126,7 @@ def _extract_tar(filepath, out_dir):
     with tarfile.open(filepath) as tar:
         tar.extractall()
     new_path = os.path.join(out_dir, 'JMA_2018')
-    logger.info("Succesfully extracted files to %s", new_path)
+    logger.info("Successfully extracted files to %s", new_path)
     return new_path
 
 
@@ -160,7 +160,7 @@ def _read_control_file(file_dir, cfg):
     return ctl
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']

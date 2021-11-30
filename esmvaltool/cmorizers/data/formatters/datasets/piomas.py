@@ -41,7 +41,7 @@ NX = 360
 NY = 120
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
 

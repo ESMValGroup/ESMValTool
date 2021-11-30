@@ -27,7 +27,7 @@ Download and processing instructions
         https://confluence.ecmwf.int/display/WEBAPI/Access+ECMWF+Public+Datasets
         https://confluence.ecmwf.int/display/WEBAPI/Python+ERA-interim+examples
     A registration is required for downloading the data.
-    It is alo possible to use the script in:
+    It is also possible to use the script in:
     esmvaltool/cmorizers/obs/download_scripts/download_era-interim.py
     This cmorization script currently supports daily and monthly data of
 the following variables:
@@ -426,13 +426,13 @@ def _run(jobs, n_workers):
                     raise
 
 
-def cmorization(in_dir, out_dir, cfg, config_user, _, __):
+def cmorization(in_dir, out_dir, cfg, cfg_user, _, __):
     """Run CMORizer for ERA-Interim."""
     cfg['attributes']['comment'] = cfg['attributes']['comment'].strip().format(
         year=datetime.now().year)
     cfg.pop('cmor_table')
 
-    n_workers = config_user.get('max_parallel_tasks')
+    n_workers = cfg_user.get('max_parallel_tasks')
     if n_workers is None:
         n_workers = int(cpu_count() / 1.5)
     logger.info("Using at most %s workers", n_workers)

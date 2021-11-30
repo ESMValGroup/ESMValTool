@@ -14,7 +14,7 @@ Download and processing instructions
     (Department of Earth and Environment, Boston University). See link above
     for more information.
 
-    By default, this dataset is regridded to a 1°x1° grid (original resoultion
+    By default, this dataset is regridded to a 1°x1° grid (original resolution
     is 1/12°). If you want to use the original resolution, remove the `regrid`
     section in the configuration file (`LAI3g.yml`). Note that in this case,
     preprocessing the dataset with ESMValTool (i.e. every time you run the
@@ -140,7 +140,7 @@ def _get_coords(year, filename, cfg):
 
 
 def _get_cube_for_year(year, in_dir, cfg):
-    """Exract cube containing one year from raw file."""
+    """Extract cube containing one year from raw file."""
     logger.info("Processing year %i", year)
     bin_files = glob.glob(
         os.path.join(in_dir, f"{cfg['binary_prefix']}{year}*.bin"))
@@ -193,7 +193,7 @@ def _unzip(filepath, out_dir):
     return new_path
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']

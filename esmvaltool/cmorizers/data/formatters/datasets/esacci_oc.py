@@ -152,7 +152,7 @@ def merge_data(in_dir, out_dir, raw_info, bins):
     return (datafile, dsmeta['BINNING'])
 
 
-def cmorization(in_dir, out_dir, cfg, _, start, end):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']

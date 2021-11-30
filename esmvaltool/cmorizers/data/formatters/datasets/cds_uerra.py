@@ -245,7 +245,7 @@ def _regrid_dataset(in_dir, var, cfg):
         da_out.to_netcdf(outfile)
 
 
-def cmorization(in_dir, out_dir, cfg, cfg_user):
+def cmorization(in_dir, out_dir, cfg, cfg_user, _, __):
     """Cmorization func call."""
     # run the cmorization
     # Pass on the workdir to the cfg dictionary

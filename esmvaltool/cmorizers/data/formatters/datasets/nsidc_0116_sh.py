@@ -19,6 +19,6 @@ Download and processing instructions
 from esmvaltool.cmorizers.data.formatters.nsidc_common import cmorize
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     cmorize(cfg, 'sh', in_dir, out_dir)

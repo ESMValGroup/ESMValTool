@@ -180,7 +180,7 @@ class Formatter():
         end: datetime
             End of the period to format
         install: bool
-            If True, automatically copies the data to the final location if
+            If True, automatically moves the data to the final location if
             there is no
         """
         logger.info("Running the CMORization scripts.")
@@ -303,7 +303,7 @@ class Formatter():
             else:
                 logger.info('Installing dataset %s in folder %s', dataset,
                             target_dir)
-                shutil.copytree(out_data_dir, target_dir)
+                shutil.move(out_data_dir, target_dir)
         return True
 
     def _get_dataset_tier(self, dataset):
