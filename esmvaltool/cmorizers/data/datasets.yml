@@ -9,6 +9,7 @@ datasets:
       Register at http://aphrodite.st.hirosaki-u.ac.jp/download/create/
 
       To use the automatic download set your credentials in your .netrc file.
+      See https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html.
 
       To download manually, download the following files from
       http://aphrodite.st.hirosaki-u.ac.jp/product/:
@@ -62,9 +63,12 @@ datasets:
     source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-albedo?tab=form
     last_access: 2019-04-01
     info: |
+      You will need to accept the license prior to use the automatic download.
+      If not, it will fail but will provide you the link to do so.
+
       Download and processing instructions
         - Download the data from source to the right directory
-          using the download script
+          using the download script.
         - Decompress the files within the directory:
             "find . -name '*.tar.gz' -execdir tar -xzvf '{}' \"
 
@@ -73,6 +77,9 @@ datasets:
     source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-lai-fapar?tab=form
     last_access: 2019-07-03
     info: |
+      You will need to accept the license prior to use the automatic download.
+      If not, it will fail but will provide you the link to do so.
+
       Download and processing instructions
       - Open in a browser the data source as specified above
       - Put the right ticks:
@@ -230,7 +237,6 @@ datasets:
         according to ESMValTool practices.
       - Complete the CMOR-config specifications (see instructions in the file
         itself)
-      - Run cmorize_obs
 
   E-OBS:
     tier: 2
@@ -652,6 +658,10 @@ datasets:
     source: https://isccp.giss.nasa.gov/pub/flux-fh/tar-nc4_MPF/
     last_access: 2019-11-07
     info: |
+      To use the automatic download set your credentials in your .netrc file.
+      See https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html.
+
+      To download manually:
       1) Go to https://isccp.giss.nasa.gov/projects/flux.html and click on
         "FH On-line Data"
       2) username and password are provided on this website
@@ -688,6 +698,9 @@ datasets:
     source: https://data.iac.ethz.ch/landflux/
     last_access: 2019-05-16
     info: |
+      To use the automatic download set your credentials in your .netrc file.
+      See https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html.
+
       Download the following files:
         LandFluxEVAL.merged.89-05.monthly.all.nc
       A registration is required for downloading the data (see
@@ -777,17 +790,17 @@ datasets:
           vwnd.mon.mean.nc
           omega.mon.mean.nc
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/pressure/
-          uwnd.????.nc
-          vwnd.????.nc
+          uwnd.YYYY.nc
+          vwnd.YYYY.nc
       Subdirectory surface/:
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/surface/
           air.mon.mean.nc
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/surface_gauss/
           prate.mon.mean.nc
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/surface_gauss/
-          prate.sft.gauss.????.nc
+          prate.sft.gauss.YYYY.nc
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/other_gauss/
-          ulwrf.ntat.gauss.????.nc
+          ulwrf.ntat.gauss.YYYY.nc
 
       Select the section "Pressure" and "Surface" and download the variables
       listed below. Since raw data on pressure levels and for surface have the

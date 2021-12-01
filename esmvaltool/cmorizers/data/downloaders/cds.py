@@ -41,7 +41,15 @@ class CDSDownloader(BaseDownloader):
                  overwrite,
                  extra_name=''):
         super().__init__(config, dataset, dataset_info, overwrite)
-        self._client = cdsapi.Client()
+        try:
+            self._client = cdsapi.Client()
+        except Exception as ex:
+            if str(ex).endswith(".cdsapirc"):
+                logger.error(
+                    'Could not connect to the CDS due to issues with your '
+                    '".cdsapirc" file. More info in '
+                    'https://cds.climate.copernicus.eu/api-how-to.')
+            raise
         self._product_name = product_name
         self._request_dict = request_dictionary
         self.extra_name = extra_name
