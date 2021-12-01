@@ -1,5 +1,6 @@
 """Script to download PERSIANN-CDR."""
 
+import os
 from datetime import datetime
 
 from dateutil import relativedelta
@@ -30,15 +31,18 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         end_date = datetime(2020, 1, 1)
     loop_date = start_date
 
-    downloader = WGetDownloader(
-        config=config,
-        dataset=dataset,
-        dataset_info=dataset_info,
-        overwrite=overwrite,
-    )
     base_path = (
         "https://www.ncei.noaa.gov/data/precipitation-persiann/access/"
         "{year}/")
     while loop_date <= end_date:
+        print(base_path.format(year=loop_date.year))
+        print(base_path)
+        downloader = WGetDownloader(
+            config=config,
+            dataset=dataset,
+            dataset_info=dataset_info,
+            overwrite=overwrite,
+        )
         downloader.download_folder(base_path.format(year=loop_date.year), [])
+        os.remove(os.path.join(downloader.local_folder, 'index.html'))
         loop_date += relativedelta.relativedelta(years=1)
