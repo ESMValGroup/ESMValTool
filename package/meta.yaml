@@ -49,7 +49,7 @@ test:
     - esmvaltool
   commands:
     - pytest -n 2 --ignore="run_test.py" --ignore="tests/unit/test_docs.py"
-    - cmorize_obs --help
+    - esmvaltool data --help
     - nclcodestyle --help
     - esmvaltool colortables --help
     - test_recipe --help

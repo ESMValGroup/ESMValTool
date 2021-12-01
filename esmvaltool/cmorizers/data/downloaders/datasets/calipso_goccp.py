@@ -7,7 +7,8 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
 
-def download_dataset(config, dataset, start_date, end_date, overwrite):
+def download_dataset(config, dataset, dataset_info, start_date, end_date,
+                     overwrite):
     """Download dataset.
 
     Parameters
@@ -27,6 +28,7 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         config=config,
         server='ftp.climserv.ipsl.polytechnique.fr',
         dataset=dataset,
+        dataset_info=dataset_info,
         overwrite=overwrite,
     )
     downloader.connect()

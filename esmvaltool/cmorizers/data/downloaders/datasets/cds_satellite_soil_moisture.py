@@ -9,7 +9,8 @@ from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
 from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
-def download_dataset(config, dataset, start_date, end_date, overwrite):
+def download_dataset(config, dataset, dataset_info, start_date, end_date,
+                     overwrite):
     """Download dataset.
 
     Parameters
@@ -30,26 +31,27 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
     if not end_date:
         end_date = datetime.datetime(2020, 6, 30)
 
-    # loop_date = start_date
-    # downloader = CDSDownloader(
-    #     product_name='satellite-soil-moisture',
-    #     request_dictionary={
-    #         'format': 'tgz',
-    #         'variable': 'volumetric_surface_soil_moisture',
-    #         'type_of_sensor': 'combined_passive_and_active',
-    #         'type_of_record': 'cdr',
-    #         'version': 'v201912.0.0',
-    #         'time_aggregation': 'month_average',
-    #         'day': ['01']
-    #     },
-    #     config=config,
-    #     dataset=dataset,
-    #     overwrite=overwrite,
-    # )
+    loop_date = start_date
+    downloader = CDSDownloader(
+        product_name='satellite-soil-moisture',
+        request_dictionary={
+            'format': 'tgz',
+            'variable': 'volumetric_surface_soil_moisture',
+            'type_of_sensor': 'combined_passive_and_active',
+            'type_of_record': 'cdr',
+            'version': 'v201912.0.0',
+            'time_aggregation': 'month_average',
+            'day': ['01']
+        },
+        config=config,
+        dataset=dataset,
+        dataset_info=dataset_info,
+        overwrite=overwrite,
+    )
 
-    # while loop_date <= end_date:
-    #     downloader.download(loop_date.year, loop_date.month)
-    #     loop_date += relativedelta.relativedelta(months=1)
+    while loop_date <= end_date:
+        downloader.download(loop_date.year, loop_date.month)
+        loop_date += relativedelta.relativedelta(months=1)
 
     downloader = CDSDownloader(
         product_name='satellite-soil-moisture',
@@ -64,6 +66,7 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         },
         config=config,
         dataset=dataset,
+        dataset_info=dataset_info,
         overwrite=overwrite,
         extra_name='_monthly',
     )

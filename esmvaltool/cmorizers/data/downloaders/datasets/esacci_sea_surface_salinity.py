@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 # pylint: disable=invalid-name
-def download_dataset(config, dataset, start_date, end_date, overwrite):
+def download_dataset(config, dataset, dataset_info, start_date, end_date,
+                     overwrite):
     """Download dataset.
 
     Parameters
@@ -36,6 +37,7 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
     downloader = CCIDownloader(
         config=config,
         dataset=dataset,
+        dataset_info=dataset_info,
         overwrite=overwrite,
     )
     downloader.connect()

@@ -12,6 +12,8 @@ def test_formatters_have_required_interface():
                  'end_date')
     unused_arg_names = ('_', '__', '___')
 
+    error = False
+
     for formatter in os.listdir(formatters_folder):
         if not formatter.endswith('.py') or formatter == '__init__.py':
             continue
@@ -27,6 +29,8 @@ def test_formatters_have_required_interface():
         except AssertionError:
             print(f'Bad args in {os.path.join(formatters_folder, formatter)}: '
                   f'{spec.args}')
+            error = True
+    assert not error
 
 
 def test_downloaders_have_required_interface():
@@ -34,6 +38,8 @@ def test_downloaders_have_required_interface():
     arg_names = ('config', 'dataset', 'dataset_info', 'start_date', 'end_date',
                  'overwrite')
     unused_arg_names = ('_', '__', '___')
+
+    error = False
 
     for formatter in os.listdir(formatters_folder):
         if not formatter.endswith('.py') or formatter == '__init__.py':
@@ -51,3 +57,6 @@ def test_downloaders_have_required_interface():
         except AssertionError:
             print(f'Bad args in {os.path.join(formatters_folder, formatter)}: '
                   f'{spec.args}')
+            error = True
+
+    assert not error

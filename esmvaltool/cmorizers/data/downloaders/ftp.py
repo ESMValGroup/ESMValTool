@@ -177,8 +177,9 @@ class CCIDownloader(FTPDownloader):
     overwrite : bool
         Overwrite already downloaded files
     """
-    def __init__(self, config, dataset, overwrite):
-        super().__init__(config, 'anon-ftp.ceda.ac.uk', dataset, overwrite)
+    def __init__(self, config, dataset, dataset_info, overwrite):
+        super().__init__(config, 'anon-ftp.ceda.ac.uk', dataset, dataset_info,
+                         overwrite)
         self.ftp_name = self.dataset_name[7:]
 
     def set_cwd(self, path):

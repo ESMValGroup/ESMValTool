@@ -1,11 +1,14 @@
 """Script to download NSIDC-0116-nh."""
 
+from datetime import datetime
+
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import NASADownloader
 
 
-def download_dataset(config, dataset, start_date, end_date, overwrite):
+def download_dataset(config, dataset, dataset_info, start_date, end_date,
+                     overwrite):
     """Download dataset.
 
     Parameters
@@ -22,10 +25,15 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         Overwrite already downloaded files
     """
     loop_date = start_date
+    if not start_date:
+        start_date = datetime(1997, 1, 1)
+    if not end_date:
+        end_date = datetime(2018, 1, 1)
 
     downloader = NASADownloader(
         config=config,
         dataset=dataset,
+        dataset_info=dataset_info,
         overwrite=overwrite,
     )
 
