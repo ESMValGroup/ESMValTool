@@ -25,9 +25,9 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         Overwrite already downloaded files
     """
     if not start_date:
-        start_date = datetime.datetime(2005, 1, 1)
+        start_date = datetime(2005, 1, 1)
     if not end_date:
-        end_date = datetime.datetime(2011, 1, 1)
+        end_date = datetime(2011, 1, 1)
     loop_date = start_date
 
     downloader = CCIDownloader(config=config,
