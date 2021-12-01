@@ -24,11 +24,11 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     overwrite : bool
         Overwrite already downloaded files
     """
-    loop_date = start_date
     if not start_date:
         start_date = datetime(1997, 1, 1)
     if not end_date:
         end_date = datetime(2018, 1, 1)
+    loop_date = start_date
 
     downloader = NASADownloader(
         config=config,

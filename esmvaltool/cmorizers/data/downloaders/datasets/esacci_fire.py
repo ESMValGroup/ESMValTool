@@ -1,5 +1,7 @@
 """Script to download ESACCI-FIRE."""
 
+from datetime import datetime
+
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
@@ -22,6 +24,10 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     overwrite : bool
         Overwrite already downloaded files
     """
+    if not start_date:
+        start_date = datetime.datetime(2005, 1, 1)
+    if not end_date:
+        end_date = datetime.datetime(2011, 1, 1)
     loop_date = start_date
 
     downloader = CCIDownloader(config=config,

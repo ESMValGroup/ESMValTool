@@ -1,5 +1,7 @@
 """Script to download cds-satellite-albedo from the CDS."""
 
+from datetime import datetime
+
 from dateutil import relativedelta
 
 from ..cds import CDSDownloader
@@ -22,6 +24,10 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     overwrite : bool
         Overwrite already downloaded files
     """
+    if not start_date:
+        start_date = datetime.datetime(2005, 9, 1)
+    if not end_date:
+        end_date = datetime.datetime(2016, 31, 12)
     loop_date = start_date
 
     downloader = CDSDownloader(

@@ -1,5 +1,7 @@
 """Script to download MERRA2."""
 
+from datetime import datetime
+
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import NASADownloader
@@ -22,6 +24,10 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     overwrite : bool
         Overwrite already downloaded files
     """
+    if not start_date:
+        start_date = datetime(1980, 1, 1)
+    if not end_date:
+        end_date = datetime(2021, 1, 1)
     loop_date = start_date
 
     downloader = NASADownloader(
