@@ -286,7 +286,7 @@ class Formatter():
             logger.error('Could not find formatter for %s', dataset)
             return False
         if not success:
-            logger.error('Foramtting failed for dataset %s', dataset)
+            logger.error('Formatting failed for dataset %s', dataset)
             return False
         if install:
             rootpath = self.config['rootpath']

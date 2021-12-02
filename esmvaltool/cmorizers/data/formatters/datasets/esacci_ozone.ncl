@@ -41,6 +41,8 @@ begin
 
   ; Selected variable (standard name)
   VAR = (/"toz", "tozStderr", "tro3prof", "tro3profStderr"/)
+  MIN_YEAR = (/1997, 1997, 2007, 2007/)
+  MAX_YEAR = (/2010, 2010, 2008, 2008/)
 
   ; Name in the raw data
   NAME = (/"atmosphere_mole_content_of_ozone", \
@@ -83,22 +85,41 @@ begin
 
     log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
-    time = create_timec(YEAR1(vv), YEAR2(vv))
+    time = create_timec(YEAR1, YEAR2)
     date = cd_calendar(time, 1)
+    if (YEAR1 .gt. MAX_YEAR(vv)) then
+      continue
+    end if
+    if (YEAR2 .lt. MIN_YEAR(vv)) then
+      continue
+    end if
 
+    if (YEAR1 .lt. MIN_YEAR(vv)) then
+      START_YEAR = MIN_YEAR(vv)
+    else
+      START_YEAR = YEAR1
+    end if
+
+    if (YEAR2 .gt. MAX_YEAR(vv)) then
+      END_YEAR = MAX_YEAR(vv)
+    else
+      END_YEAR = YEAR2
+    end if
+    log_info("Processing years " + START_YEAR + "-" + END_YEAR)
     ; Create timeseries
-    do yy = YEAR1, YEAR2
+    do yy = START_YEAR, END_YEAR
+      log_info("Processing year " + yy)
       do mm = 1, 12
 
         ldate = yy + sprinti("%0.2i", mm)
-
+        fname_pattern = str_sub_str(FNAME(vv), "_DATE_", ldate)
         ; File name
-        fname = systemfunc("ls " + input_dir_path + \
-                           str_sub_str(FNAME(vv), "_DATE_", ldate))
+        fname = systemfunc("ls " + input_dir_path + fname_pattern)
 
         ; Check
         if (all(ismissing(fname))) then
-          error_msg("f", DIAG_SCRIPT, "", "no file found for date " + ldate)
+          error_msg("f", DIAG_SCRIPT, "", "no file found for date " + ldate + \
+                    ". Looking for " + fname_pattern)
         end if
 
         ; Extract data
@@ -137,8 +158,9 @@ begin
       end do
     end do
 
+    log_info("Generating file...")
     ; Format coordinates
-    format_coords(output, YEAR1(vv) + "0101", YEAR2(vv) + "1231", FREQ(vv))
+    format_coords(output, START_YEAR + "0101", END_YEAR + "1231", FREQ(vv))
 
     ; Set variable attributes
     tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
@@ -153,7 +175,7 @@ begin
     gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
     ; Output file
-    DATESTR = YEAR1(vv) + "01-" + YEAR2(vv) + "12"
+    DATESTR = START_YEAR + "01-" + END_YEAR + "12"
     fout = output_dir_path + \
       str_join((/"OBS", OBSNAME, TYPE, VERSION, \
                  MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
