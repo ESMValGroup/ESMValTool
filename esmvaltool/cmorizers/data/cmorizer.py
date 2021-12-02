@@ -483,7 +483,7 @@ class DataCommand():
         start = self._parse_date(start)
         end = self._parse_date(end)
 
-        self.formatter.start('download', datasets, config_file, kwargs)
+        self.formatter.start('formatting', datasets, config_file, kwargs)
         self.formatter.format(start, end, install)
 
     def prepare(self,
@@ -516,7 +516,7 @@ class DataCommand():
         start = self._parse_date(start)
         end = self._parse_date(end)
 
-        self.formatter.start('download', datasets, config_file, kwargs)
+        self.formatter.start('preparation', datasets, config_file, kwargs)
         if not self.formatter.download(start, end, overwrite):
             return False
         self.formatter.format(start, end, install)
