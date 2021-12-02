@@ -39,7 +39,7 @@
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/obs/interface.ncl")
+           "/data/formatters/interface.ncl")
 
 begin
 
