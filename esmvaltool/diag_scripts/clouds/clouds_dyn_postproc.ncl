@@ -20,12 +20,12 @@ begin
 
   ; CMIP5
   fname5 = inpath + "/clouds_dynmatrices_cmip5_ocean/dynclt/" \
-    + "clouds_scatter_ts_wap_clt_cmip5_ocean.nc"
+    + "clouds_scatter_prob_ts_wap_cmip5_ocean.nc"
   infile5 = addfile(fname5, "r")
   count5 = infile5->count
   ; CMIP6
   fname6 = inpath + "/clouds_matrices_cmip6_ocean/dynclt/" \
-    + "clouds_scatter_ts_wap_clt_cmip6_ocean.nc"
+    + "clouds_scatter_prob_ts_wap_cmip6_ocean.nc"
   infile6 = addfile(fname6, "r")
   count6 = infile6->count
 
@@ -70,9 +70,9 @@ begin
   idxref5 = ind(models5 .eq. refname)
   idxref6 = ind(models6 .eq. refname)
 
-  ref5 = where(count5(idxref5, :, :) .gt. 1.0e-3, count5(idxref5, :, :),
+  ref5 = where(count5(idxref5, :, :) .gt. 1.0e-3, count5(idxref5, :, :), \
                count5@_FillValue)
-  ref6 = where(count6(idxref6, :, :) .gt. 1.0e-3, count6(idxref6, :, :),
+  ref6 = where(count6(idxref6, :, :) .gt. 1.0e-3, count6(idxref6, :, :), \
                count6@_FillValue)
 
   c5 = dim_avg_n_Wrap(count5, 0)
@@ -81,9 +81,9 @@ begin
   c6 = where(c6 .gt. 1.0e-3, c6, c6@_FillValue)
 
   diff5 = c5
-  diff5 = diff5 - ref5
+  diff5 = (diff5 - ref5) / ref5 * 100.0
   diff6 = c6
-  diff6 = diff6 - ref6
+  diff6 = (diff6 - ref6) / ref6 * 100.0
   delta56 = c6
   delta56 = (delta56 - c5) / c5 * 100.0
 
