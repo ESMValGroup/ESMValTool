@@ -10,13 +10,13 @@ import iris
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
+from esmvalcore.iris_helpers import var_name_constraint
 
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
     save_figure,
 )
-from esmvalcore.iris_helpers import var_name_constraint
 
 CWD = os.path.abspath(os.path.dirname(__file__))
 STEPHENS_FILENAME = "Stephens_et_al_2012_obs_Energy_Budget.yml"
@@ -113,6 +113,53 @@ def derive_additional_variables(cubes):
         net_surface_radiation,
         radiation_adsorbed_surface,
         radiation_net_toa,
+    ]
+
+    cubes.extend(additional_cubes)
+    return cubes
+
+
+def derive_additional_obs_variables(cubes):
+    """Return input ``cubes`` with the additional cubes.
+
+    ``cubes`` must contain the variables specified in the recipe.
+
+    The additional cubes derived from the cubes in ``cubes`` are as follows:
+
+    * total_sw_cloud_forcing
+    * total_lw_cloud_forcing
+
+    Parameters
+    ----------
+    cubes : :class:`iris.cube.CubeList`
+        The cubes corresponding with the variables in the recipe.
+
+    Returns
+    -------
+    :class:`iris.cube.CubeList`
+        The input ``cubes`` with the additional cubes.
+    """
+    rsut = cubes.extract_cube(var_name_constraint("rsut"))
+    rsutcs = cubes.extract_cube(var_name_constraint("rsutcs"))
+    rlut = cubes.extract_cube(var_name_constraint("rlut"))
+    rlutcs = cubes.extract_cube(var_name_constraint("rlutcs"))
+
+    # Derivations for the following two cloud_forcing variables are
+    # performed this way so that they match with the observational data
+    # (all positive), the convention used is to treat SW as positive
+    # downward and LW as positive upward.
+    total_sw_cloud_forcing = rsut - rsutcs
+    total_lw_cloud_forcing = rlutcs - rlut
+
+    total_sw_cloud_forcing.standard_name = ""
+    total_sw_cloud_forcing.long_name = "total_sw_cloud_forcing"
+
+    total_lw_cloud_forcing.standard_name = ""
+    total_lw_cloud_forcing.long_name = "total_lw_cloud_forcing"
+
+    additional_cubes = [
+        total_sw_cloud_forcing,
+        total_lw_cloud_forcing,
     ]
 
     cubes.extend(additional_cubes)
@@ -429,7 +476,8 @@ def main(config):
     ceres_group = datasets.pop(ceres_dataset)
     ceres_filenames = [item["filename"] for item in ceres_group]
     raw_ceres_data = iris.load(ceres_filenames)
-    ceres_data = order_data(raw_ceres_data, obs_names, obs_unit)
+    all_ceres_data = derive_additional_obs_variables(raw_ceres_data)
+    ceres_data = order_data(all_ceres_data, obs_names, obs_unit)
     ceres_period = (f"{ceres_group[0]['start_year']} - "
                     f"{ceres_group[0]['end_year']}")
 
