@@ -1,4 +1,4 @@
-"""Script to download APHRO-MA from its webpage."""
+"""Script to download NDP from its webpage."""
 import logging
 import os
 
