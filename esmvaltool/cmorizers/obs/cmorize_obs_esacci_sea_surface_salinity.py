@@ -1,4 +1,4 @@
-"""Common tools to CMORize NSIDC-0116 northern and sothern data."""
+"""Common tools to CMORize ESACCI-SEASURFACESALINITY data."""
 
 import logging
 import os
