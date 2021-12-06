@@ -13,7 +13,7 @@ a radar plot showing the correlation between dataset and reference timeseries fo
 each region during the time they both exist.
 
 Preprocessor requirements:
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
 
 The recipe is created in a way that should make possible (although is not
 tested) to use it for other variables and datasets, even for more than one at
@@ -34,7 +34,7 @@ Any number of regions can be choosed also, even though plots may look odd if
 too few or too many are selected.
 
 Regions available on IHO Sea Areas file:
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------
 
 - Adriatic Sea
 - Aegean Sea
