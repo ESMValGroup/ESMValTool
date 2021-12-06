@@ -23,19 +23,24 @@ STEPHENS_FILENAME = "Stephens_et_al_2012_obs_Energy_Budget.yml"
 DEMORY_FILENAME = "Demory_et_al_2014_obs_Energy_Budget.yml"
 
 
-def derive_additional_variables(cubes):
+def derive_additional_variables(cubes, is_model=True):
     """Return input ``cubes`` with the additional cubes.
 
     ``cubes`` must contain the variables specified in the recipe.
 
-    The additional cubes derived from the cubes in ``cubes`` are as follows:
+    When ``cubes`` contains observational data, the additional cubes
+    derived are as follows:
 
     * total_sw_cloud_forcing
+    * total_lw_cloud_forcing
+
+    When ``cubes`` contains model data, the following cubes are derived in
+    addition to those above:
+
     * upward_sw_reflected_surface
     * sw_reflected_clouds
     * sw_absorbed_atm
     * upward_lw_emitted_surface
-    * total_lw_cloud_forcing
     * net_surface_radiation
     * radiation_adsorbed_surface
     * radiation_net_toa
@@ -44,126 +49,75 @@ def derive_additional_variables(cubes):
     ----------
     cubes : :class:`iris.cube.CubeList`
         The cubes corresponding with the variables in the recipe.
+    is_model : bool
+        Flag that dictates whether additional model variables are derived,
+        or just those common to models and observations.
 
     Returns
     -------
     :class:`iris.cube.CubeList`
         The input ``cubes`` with the additional cubes.
     """
-    rss = cubes.extract_cube(var_name_constraint("rss"))
-    rsdt = cubes.extract_cube(var_name_constraint("rsdt"))
-    rsut = cubes.extract_cube(var_name_constraint("rsut"))
-    rsutcs = cubes.extract_cube(var_name_constraint("rsutcs"))
-    rsds = cubes.extract_cube(var_name_constraint("rsds"))
-    rls = cubes.extract_cube(var_name_constraint("rls"))
-    rlut = cubes.extract_cube(var_name_constraint("rlut"))
-    rlutcs = cubes.extract_cube(var_name_constraint("rlutcs"))
-    rlds = cubes.extract_cube(var_name_constraint("rlds"))
-    hfss = cubes.extract_cube(var_name_constraint("hfss"))
-    hfls = cubes.extract_cube(var_name_constraint("hfls"))
+    common_variables = ['rsut', 'rsutcs', 'rlut', 'rlutcs']
+    model_variables = ['rss', 'rsdt', 'rsds', 'rls', 'rlds', 'hfss', 'hfls']
+    var = {}
+
+    for variable in common_variables:
+        var[variable] = cubes.extract_cube(var_name_constraint(variable))
+
+    if is_model:
+        for variable in model_variables:
+            var[variable] = cubes.extract_cube(var_name_constraint(variable))
 
     # Derivations for the following two cloud_forcing variables are
     # performed this way so that they match with the observational data
     # (all positive), the convention used is to treat SW as positive
     # downward and LW as positive upward.
-    total_sw_cloud_forcing = rsut - rsutcs
-    total_lw_cloud_forcing = rlutcs - rlut
-    upward_sw_reflected_surface = rsds - rss
-    sw_reflected_clouds = rsut - upward_sw_reflected_surface
-    sw_absorbed_atm = rsdt - sw_reflected_clouds - rsds
-    upward_lw_emitted_surface = rlds - rls
-    net_surface_radiation = rss + rls
-    radiation_adsorbed_surface = rss + rls - hfss - hfls
-    radiation_net_toa = rsdt - rsut - rlut
+    total_sw_cloud_forcing = var['rsut'] - var['rsutcs']
+    total_lw_cloud_forcing = var['rlutcs'] - var['rlut']
 
-    total_sw_cloud_forcing.standard_name = ""
-    total_sw_cloud_forcing.long_name = "total_sw_cloud_forcing"
+    _update_long_name(total_sw_cloud_forcing, "total_sw_cloud_forcing")
+    _update_long_name(total_lw_cloud_forcing, "total_lw_cloud_forcing")
+    additional_cubes = [total_sw_cloud_forcing, total_lw_cloud_forcing]
 
-    upward_sw_reflected_surface.standard_name = ""
-    upward_sw_reflected_surface.long_name = "upward_sw_reflected_surface"
+    if is_model:
+        upward_sw_reflected_surface = var['rsds'] - var['rss']
+        sw_reflected_clouds = var['rsut'] - upward_sw_reflected_surface
+        sw_absorbed_atm = var['rsdt'] - sw_reflected_clouds - var['rsds']
+        upward_lw_emitted_surface = var['rlds'] - var['rls']
+        net_surface_radiation = var['rss'] + var['rls']
+        radiation_adsorbed_surface = (var['rss'] + var['rls'] - var['hfss'] -
+                                      var['hfls'])
+        radiation_net_toa = var['rsdt'] - var['rsut'] - var['rlut']
 
-    sw_reflected_clouds.standard_name = ""
-    sw_reflected_clouds.long_name = "sw_reflected_clouds"
+        _update_long_name(upward_sw_reflected_surface,
+                          'upward_sw_reflected_surface')
+        _update_long_name(sw_reflected_clouds, 'sw_reflected_clouds')
+        _update_long_name(sw_absorbed_atm, 'sw_absorbed_atm')
+        _update_long_name(upward_lw_emitted_surface,
+                          'upward_lw_emitted_surface')
+        _update_long_name(net_surface_radiation, 'net_surface_radiation')
+        _update_long_name(radiation_adsorbed_surface,
+                          'radiation_adsorbed_surface')
+        _update_long_name(radiation_net_toa, 'radiation_net_toa')
 
-    sw_absorbed_atm.standard_name = ""
-    sw_absorbed_atm.long_name = "sw_absorbed_atm"
-
-    upward_lw_emitted_surface.standard_name = ""
-    upward_lw_emitted_surface.long_name = "upward_lw_emitted_surface"
-
-    total_lw_cloud_forcing.standard_name = ""
-    total_lw_cloud_forcing.long_name = "total_lw_cloud_forcing"
-
-    net_surface_radiation.standard_name = ""
-    net_surface_radiation.long_name = "net_surface_radiation"
-
-    radiation_adsorbed_surface.standard_name = ""
-    radiation_adsorbed_surface.long_name = "radiation_adsorbed_surface"
-
-    radiation_net_toa.standard_name = ""
-    radiation_net_toa.long_name = "radiation_net_toa"
-
-    additional_cubes = [
-        total_sw_cloud_forcing,
-        upward_sw_reflected_surface,
-        sw_reflected_clouds,
-        sw_absorbed_atm,
-        upward_lw_emitted_surface,
-        total_lw_cloud_forcing,
-        net_surface_radiation,
-        radiation_adsorbed_surface,
-        radiation_net_toa,
-    ]
+        additional_cubes.extend([
+            upward_sw_reflected_surface,
+            sw_reflected_clouds,
+            sw_absorbed_atm,
+            upward_lw_emitted_surface,
+            net_surface_radiation,
+            radiation_adsorbed_surface,
+            radiation_net_toa,
+        ])
 
     cubes.extend(additional_cubes)
     return cubes
 
 
-def derive_additional_obs_variables(cubes):
-    """Return input ``cubes`` with the additional cubes.
-
-    ``cubes`` must contain the variables specified in the recipe.
-
-    The additional cubes derived from the cubes in ``cubes`` are as follows:
-
-    * total_sw_cloud_forcing
-    * total_lw_cloud_forcing
-
-    Parameters
-    ----------
-    cubes : :class:`iris.cube.CubeList`
-        The cubes corresponding with the variables in the recipe.
-
-    Returns
-    -------
-    :class:`iris.cube.CubeList`
-        The input ``cubes`` with the additional cubes.
-    """
-    rsut = cubes.extract_cube(var_name_constraint("rsut"))
-    rsutcs = cubes.extract_cube(var_name_constraint("rsutcs"))
-    rlut = cubes.extract_cube(var_name_constraint("rlut"))
-    rlutcs = cubes.extract_cube(var_name_constraint("rlutcs"))
-
-    # Derivations for the following two cloud_forcing variables are
-    # performed this way so that they match with the observational data
-    # (all positive), the convention used is to treat SW as positive
-    # downward and LW as positive upward.
-    total_sw_cloud_forcing = rsut - rsutcs
-    total_lw_cloud_forcing = rlutcs - rlut
-
-    total_sw_cloud_forcing.standard_name = ""
-    total_sw_cloud_forcing.long_name = "total_sw_cloud_forcing"
-
-    total_lw_cloud_forcing.standard_name = ""
-    total_lw_cloud_forcing.long_name = "total_lw_cloud_forcing"
-
-    additional_cubes = [
-        total_sw_cloud_forcing,
-        total_lw_cloud_forcing,
-    ]
-
-    cubes.extend(additional_cubes)
-    return cubes
+def _update_long_name(cube, long_name):
+    cube.standard_name = ""
+    cube.long_name = long_name
 
 
 def validate_variable_data(variable_data, name, unit):
@@ -476,7 +430,8 @@ def main(config):
     ceres_group = datasets.pop(ceres_dataset)
     ceres_filenames = [item["filename"] for item in ceres_group]
     raw_ceres_data = iris.load(ceres_filenames)
-    all_ceres_data = derive_additional_obs_variables(raw_ceres_data)
+    all_ceres_data = derive_additional_variables(raw_ceres_data,
+                                                 is_model=False)
     ceres_data = order_data(all_ceres_data, obs_names, obs_unit)
     ceres_period = (f"{ceres_group[0]['start_year']} - "
                     f"{ceres_group[0]['end_year']}")
