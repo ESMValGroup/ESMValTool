@@ -16,7 +16,7 @@ Preprocessor requirements:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The recipe is created in a way that should make possible (although is not
-tested) to use it for other variables and datasets, even for more that one at
+tested) to use it for other variables and datasets, even for more than one at
 a time. The diagnostic only expects variables with dimensions `time` and `depth_id`
 and it does not assume any other constraint.
 
