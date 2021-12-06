@@ -8,7 +8,7 @@ Overview
 
 This recipe compares the regional means of sea surface salinity with a
 reference dataset (ESACCI-SEA-SURFACE-SALINITY v1 or v2 by default).
-To do this, the recipe generate plots for the timeseries of each region and
+To do this, the recipe generates plots for the timeseries of each region and
 a radar plot showing the correlation of dataset and reference timeseries for
 each region during the time they both exists.
 
