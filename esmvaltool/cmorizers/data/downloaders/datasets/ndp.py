@@ -31,6 +31,8 @@ def download_dataset(config, dataset, dataset_info, _, __, overwrite):
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
+    if not os.path.isdir(downloader.local_folder):
+        os.makedirs(downloader.local_folder)
 
     downloader.download_file(
         "https://data.ess-dive.lbl.gov/catalog/d1/mn/v2/object/"
