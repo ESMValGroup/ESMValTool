@@ -1,28 +1,26 @@
 import logging
-import string
 import os
+import string
 from datetime import datetime
 from functools import reduce
-import matplotlib.pyplot as plt
-from matplotlib.legend_handler import HandlerBase
-from matplotlib.text import Text
-from matplotlib.legend import Legend
-import numpy as np
+
 import cf_units
 import iris
-from iris.util import unify_time_units
 import iris.quickplot as qplot
-
+import matplotlib.pyplot as plt
+import numpy as np
+from esmvalcore.preprocessor._time import regrid_time
 from iris.analysis.stats import pearsonr
 from iris.coord_categorisation import add_month_number, add_year
+from iris.util import unify_time_units
+from matplotlib.legend import Legend
+from matplotlib.legend_handler import HandlerBase
+from matplotlib.text import Text
 
 import esmvaltool.diag_scripts.shared
-import esmvaltool.diag_scripts.shared.names as names
+from esmvaltool.diag_scripts.shared import names
 from esmvaltool.diag_scripts.shared import group_metadata
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
-
-from esmvalcore.preprocessor._time import regrid_time
-
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +30,8 @@ class CompareSalinity(object):
         self.cfg = config
 
     def compute(self):
-        data = group_metadata(self.cfg[names.INPUT_DATA].values(), names.SHORT_NAME)
+        data = group_metadata(self.cfg[names.INPUT_DATA].values(),
+                              names.SHORT_NAME)
         for short_name in data:
             logger.info("Processing variable %s", short_name)
             variables = group_metadata(data[short_name], names.ALIAS)
@@ -56,37 +55,30 @@ class CompareSalinity(object):
                 ancestors = (dataset_info[names.FILENAME], reference_ancestor)
                 for region_slice in dataset.slices_over('shape_id'):
                     region = region_slice.coord('shape_id').points[0]
-                    self.create_timeseries_plot(
-                        region, region_slice, reference, ref_alias,
-                        dataset_info, ancestors
-                    )
-                self.create_radar_plot(
-                    dataset_info, dataset, reference, ref_alias,
-                    ancestors)
+                    self.create_timeseries_plot(region, region_slice,
+                                                reference, ref_alias,
+                                                dataset_info, ancestors)
+                self.create_radar_plot(dataset_info, dataset, reference,
+                                       ref_alias, ancestors)
 
     def create_timeseries_plot(self, region, data, reference, reference_alias,
                                dataset_info, ancestors):
         alias = dataset_info[names.ALIAS]
         qplot.plot(data, label=alias)
-        qplot.plot(
-            reference.extract(iris.Constraint(shape_id=region)),
-            label=reference_alias
-        )
+        qplot.plot(reference.extract(iris.Constraint(shape_id=region)),
+                   label=reference_alias)
         plt.legend()
         plt.title(f"{dataset_info[names.LONG_NAME]} ({region})")
         plt.tight_layout()
         plt.savefig(f'test_timeseries_{region}.png')
         plot_path = os.path.join(
             self.cfg[names.PLOT_DIR],
-            f"{dataset_info[names.SHORT_NAME]}_{region.replace(' ', '')}_{alias}"
-            f".{self.cfg[names.OUTPUT_FILE_TYPE]}"
-        )
+            f"{dataset_info[names.SHORT_NAME]}_{region.replace(' ', '')}"
+            f"_{alias}.{self.cfg[names.OUTPUT_FILE_TYPE]}")
         plt.savefig(plot_path)
         plt.close()
-        caption = (
-            f"{dataset_info[names.SHORT_NAME]} mean in {region} for "
-            f"{alias} and {reference_alias}"
-        )
+        caption = (f"{dataset_info[names.SHORT_NAME]} mean in {region} for "
+                   f"{alias} and {reference_alias}")
         self._create_prov_record(plot_path, caption, ancestors)
 
     def create_radar_plot(self, data_info, data, reference, reference_alias,
@@ -115,13 +107,17 @@ class CompareSalinity(object):
 
         # Draw one axe per variable + add labels labels yet
         letters = [string.ascii_uppercase[i] for i in range(0, corr.shape[0])]
-        plt.xticks(
-            angles[:-1], letters, color='grey', size=8, rotation=angles[:-1])
+        plt.xticks(angles[:-1],
+                   letters,
+                   color='grey',
+                   size=8,
+                   rotation=angles[:-1])
 
         # Draw ylabels
         ax.set_rlabel_position(0)
-        plt.yticks(
-            [0.25, 0.5, 0.75], ["0.25", "0.5", "0.75"], color="grey", size=7)
+        plt.yticks([0.25, 0.5, 0.75], ["0.25", "0.5", "0.75"],
+                   color="grey",
+                   size=7)
         plt.ylim(0, 1)
 
         data = np.append(corr.data, corr.data[0])
@@ -132,34 +128,34 @@ class CompareSalinity(object):
         # Plot data
         ax.plot(more_angles, interp_data, linewidth=1, linestyle='solid')
         ax.fill(more_angles, interp_data, 'b', alpha=0.1)
-        ax.legend(
-            letters, corr.coord('shape_id').points,
-            loc='upper center', ncol=2, frameon=False,
-            bbox_to_anchor=(0.5, -0.1), borderaxespad=0.
-        )
+        ax.legend(letters,
+                  corr.coord('shape_id').points,
+                  loc='upper center',
+                  ncol=2,
+                  frameon=False,
+                  bbox_to_anchor=(0.5, -0.1),
+                  borderaxespad=0.)
         plt.title(
             f'{data_info[names.SHORT_NAME]} correlation\n'
             f'{data_alias} vs {reference_alias}',
-            pad=20
-        )
+            pad=20)
         plt.tight_layout()
         plot_path = os.path.join(
             self.cfg[names.PLOT_DIR],
             f"{data_info[names.SHORT_NAME]}_comparison_{data_alias}_"
-            f"{reference_alias}.{self.cfg[names.OUTPUT_FILE_TYPE]}"
-        )
+            f"{reference_alias}.{self.cfg[names.OUTPUT_FILE_TYPE]}")
         plt.savefig(plot_path)
         plt.close()
-        caption = (
-            f"Correlation comparison in diferent regions for "
-            f"{data_alias} and {reference_alias}"
-        )
+        caption = (f"Correlation comparison in diferent regions for "
+                   f"{data_alias} and {reference_alias}")
         self._create_prov_record(plot_path, caption, ancestors)
 
     def _create_prov_record(self, filepath, caption, ancestors):
         record = {
             'caption': caption,
-            'domains': ['global', ],
+            'domains': [
+                'global',
+            ],
             'autors': ['vegas-regidor_javier'],
             'references': ['acknow_author'],
             'ancestors': ancestors
@@ -242,10 +238,15 @@ class CompareSalinity(object):
 
 
 class TextHandler(HandlerBase):
-    def create_artists(self, legend, text, xdescent, ydescent,
-                       width, height, fontsize, trans):
-        tx = Text(width/2., height/2, text, fontsize=fontsize,
-                  ha="center", va="center", fontweight="bold")
+    def create_artists(self, legend, text, xdescent, ydescent, width, height,
+                       fontsize, trans):
+        tx = Text(width / 2.,
+                  height / 2,
+                  text,
+                  fontsize=fontsize,
+                  ha="center",
+                  va="center",
+                  fontweight="bold")
         return [tx]
 
 
