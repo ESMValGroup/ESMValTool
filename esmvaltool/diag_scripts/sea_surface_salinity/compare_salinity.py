@@ -17,7 +17,7 @@ from iris.analysis.stats import pearsonr
 from iris.coord_categorisation import add_month_number, add_year
 
 import esmvaltool.diag_scripts.shared
-import esmvaltool.diag_scripts.shared.names as n
+import esmvaltool.diag_scripts.shared.names as names
 from esmvaltool.diag_scripts.shared import group_metadata
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
@@ -32,19 +32,19 @@ class CompareSalinity(object):
         self.cfg = config
 
     def compute(self):
-        data = group_metadata(self.cfg[n.INPUT_DATA].values(), n.SHORT_NAME)
+        data = group_metadata(self.cfg[names.INPUT_DATA].values(), names.SHORT_NAME)
         for short_name in data:
             logger.info("Processing variable %s", short_name)
-            variables = group_metadata(data[short_name], n.ALIAS)
+            variables = group_metadata(data[short_name], names.ALIAS)
             ref_alias = list(variables.values())[0][0]['reference_dataset']
             reference_dataset = variables.pop(ref_alias)[0]
-            reference = iris.load_cube(reference_dataset[n.FILENAME])
-            reference_ancestor = reference_dataset[n.FILENAME]
+            reference = iris.load_cube(reference_dataset[names.FILENAME])
+            reference_ancestor = reference_dataset[names.FILENAME]
             logger.debug(reference)
             for alias, dataset_info in variables.items():
                 logger.info("Plotting dataset %s", alias)
                 dataset_info = dataset_info[0]
-                dataset = iris.load_cube(dataset_info[n.FILENAME])
+                dataset = iris.load_cube(dataset_info[names.FILENAME])
                 time_coord = dataset.coord('time')
                 if time_coord.units.calendar == 'proleptic_gregorian':
                     time_coord.units = cf_units.Unit(
@@ -53,7 +53,7 @@ class CompareSalinity(object):
                     )
                 unify_time_units((reference, dataset))
                 logger.debug(dataset)
-                ancestors = (dataset_info[n.FILENAME], reference_ancestor)
+                ancestors = (dataset_info[names.FILENAME], reference_ancestor)
                 for region_slice in dataset.slices_over('shape_id'):
                     region = region_slice.coord('shape_id').points[0]
                     self.create_timeseries_plot(
@@ -66,25 +66,25 @@ class CompareSalinity(object):
 
     def create_timeseries_plot(self, region, data, reference, reference_alias,
                                dataset_info, ancestors):
-        alias = dataset_info[n.ALIAS]
+        alias = dataset_info[names.ALIAS]
         qplot.plot(data, label=alias)
         qplot.plot(
             reference.extract(iris.Constraint(shape_id=region)),
             label=reference_alias
         )
         plt.legend()
-        plt.title(f"{dataset_info[n.LONG_NAME]} ({region})")
+        plt.title(f"{dataset_info[names.LONG_NAME]} ({region})")
         plt.tight_layout()
         plt.savefig(f'test_timeseries_{region}.png')
         plot_path = os.path.join(
-            self.cfg[n.PLOT_DIR],
-            f"{dataset_info[n.SHORT_NAME]}_{region.replace(' ', '')}_{alias}"
-            f".{self.cfg[n.OUTPUT_FILE_TYPE]}"
+            self.cfg[names.PLOT_DIR],
+            f"{dataset_info[names.SHORT_NAME]}_{region.replace(' ', '')}_{alias}"
+            f".{self.cfg[names.OUTPUT_FILE_TYPE]}"
         )
         plt.savefig(plot_path)
         plt.close()
         caption = (
-            f"{dataset_info[n.SHORT_NAME]} mean in {region} for "
+            f"{dataset_info[names.SHORT_NAME]} mean in {region} for "
             f"{alias} and {reference_alias}"
         )
         self._create_prov_record(plot_path, caption, ancestors)
@@ -105,7 +105,7 @@ class CompareSalinity(object):
         add_year(reference, 'time')
         reference.remove_coord('time')
 
-        data_alias = data_info[n.ALIAS]
+        data_alias = data_info[names.ALIAS]
         corr = pearsonr(data, reference, ('month_number', 'year'))
         angles = np.linspace(0, 2 * np.pi, corr.shape[0] + 1)
         # Initialise the spider plot
@@ -138,15 +138,15 @@ class CompareSalinity(object):
             bbox_to_anchor=(0.5, -0.1), borderaxespad=0.
         )
         plt.title(
-            f'{data_info[n.SHORT_NAME]} correlation\n'
+            f'{data_info[names.SHORT_NAME]} correlation\n'
             f'{data_alias} vs {reference_alias}',
             pad=20
         )
         plt.tight_layout()
         plot_path = os.path.join(
-            self.cfg[n.PLOT_DIR],
-            f"{data_info[n.SHORT_NAME]}_comparison_{data_alias}_"
-            f"{reference_alias}.{self.cfg[n.OUTPUT_FILE_TYPE]}"
+            self.cfg[names.PLOT_DIR],
+            f"{data_info[names.SHORT_NAME]}_comparison_{data_alias}_"
+            f"{reference_alias}.{self.cfg[names.OUTPUT_FILE_TYPE]}"
         )
         plt.savefig(plot_path)
         plt.close()
