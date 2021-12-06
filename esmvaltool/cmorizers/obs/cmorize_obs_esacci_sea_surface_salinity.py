@@ -3,8 +3,7 @@
 import logging
 import os
 import iris
-from iris.experimental.equalise_cubes import equalise_attributes
-from iris.util import unify_time_units
+from iris.util import unify_time_units, equalise_attributes
 
 
 from esmvaltool.cmorizers.obs.utilities import fix_var_metadata, \
@@ -35,7 +34,7 @@ def cmorization(in_dir, out_dir, cfg, _):
             equalise_attributes(cubes)
             unify_time_units(cubes)
             cube = cubes.concatenate_cube()
-            cube.units='0.001'
+            cube.units = '0.001'
             logger.info(cube)
             glob_attrs['mip'] = vals['mip']
             glob_attrs['version'] = version

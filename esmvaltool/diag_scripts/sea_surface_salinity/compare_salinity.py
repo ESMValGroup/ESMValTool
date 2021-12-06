@@ -21,6 +21,8 @@ import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
+from esmvalcore.preprocessor._time import regrid_time
+
 
 logger = logging.getLogger(__name__)
 
