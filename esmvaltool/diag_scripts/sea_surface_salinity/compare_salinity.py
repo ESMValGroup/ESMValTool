@@ -38,6 +38,7 @@ class CompareSalinity(object):
             reference_dataset = variables.pop(ref_alias)[0]
             reference = iris.load_cube(reference_dataset[names.FILENAME])
             reference_ancestor = reference_dataset[names.FILENAME]
+            logger.debug("Info reference dataset:")
             logger.debug(reference)
             for alias, dataset_info in variables.items():
                 logger.info("Plotting dataset %s", alias)
@@ -50,6 +51,7 @@ class CompareSalinity(object):
                         calendar='gregorian',
                     )
                 unify_time_units((reference, dataset))
+                logger.debug("Info dataset %s:", alias)
                 logger.debug(dataset)
                 ancestors = (dataset_info[names.FILENAME], reference_ancestor)
                 for region_slice in dataset.slices_over('shape_id'):
