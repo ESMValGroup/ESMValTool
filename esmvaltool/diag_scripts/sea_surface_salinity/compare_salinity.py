@@ -29,7 +29,6 @@ class CompareSalinity(object):
     def __init__(self, config):
         self.cfg = config
 
-
     def compute(self):
         data = group_metadata(self.cfg[n.INPUT_DATA].values(), n.SHORT_NAME)
         for short_name in data:
@@ -155,7 +154,6 @@ class CompareSalinity(object):
         )
         self._create_prov_record(plot_path, caption, ancestors)
 
-
     def _create_prov_record(self, filepath, caption, ancestors):
         record = {
             'caption': caption,
@@ -167,7 +165,6 @@ class CompareSalinity(object):
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(filepath, record)
 
-
     def _get_time_offset(self, time_unit):
         """Return a datetime object equivalent to tunit."""
         # tunit e.g. 'day since 1950-01-01 00:00:00.0000000 UTC'
@@ -175,15 +172,15 @@ class CompareSalinity(object):
         time_offset = cfunit.num2date(0)
         return time_offset
 
-
     def _align_yearly_axes(self, cube):
-        """Perform a time-regridding operation to align time axes for yr data."""
+        """
+        Perform a time-regridding operation to align time axes for yr data.
+        """
         years = [cell.point.year for cell in cube.coord('time').cells()]
         # be extra sure that the first point is not in the previous year
         if 0 not in np.diff(years):
             return regrid_time(cube, 'yr')
         return cube
-
 
     def _datetime_to_int_days(self, cube):
         """Return list of int(days) converted from cube datetime cells."""
@@ -206,7 +203,6 @@ class CompareSalinity(object):
 
         return days
 
-
     def _get_overlap(self, cubes):
         """
         Get discrete time overlaps.
@@ -227,7 +223,6 @@ class CompareSalinity(object):
         if len(time_pts) > 1:
             time_bounds_list = [time_pts[0], time_pts[-1]]
             return time_bounds_list
-
 
     def _slice_cube(self, cube, t_1, t_2):
         """
