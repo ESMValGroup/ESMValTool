@@ -18,8 +18,7 @@ from matplotlib.legend_handler import HandlerBase
 from matplotlib.text import Text
 
 import esmvaltool.diag_scripts.shared
-from esmvaltool.diag_scripts.shared import names
-from esmvaltool.diag_scripts.shared import group_metadata
+from esmvaltool.diag_scripts.shared import group_metadata, names
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 logger = logging.getLogger(__name__)
