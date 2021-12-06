@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def cmorization(in_dir, out_dir, cfg, _):
-    """Cmorize NSIDC-0116 dataset."""
+    """Cmorize ESACCI-SEASURFACESALINITY dataset."""
     glob_attrs = cfg['attributes']
 
     logger.info("Starting cmorization for Tier%s OBS files: %s",
