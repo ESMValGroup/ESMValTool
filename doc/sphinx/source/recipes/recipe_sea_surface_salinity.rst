@@ -189,7 +189,14 @@ Observations and reformat scripts
 References
 ----------
 
-* Please, contact authors
+* Diagnostic: please contact authors
+
+* ESACCI-SEA-SURFACE-SALINITY dataset: Boutin, J., J.-L. Vergely, J. Koehler,
+  F. Rouffi, N. Reul: ESA Sea Surface Salinity Climate Change Initiative
+  (Sea_Surface_Salinity_cci): Version 1.8 data collection. Centre for
+  Environmental Data Analysis, 25 November 2019. doi:
+  10.5285/9ef0ebf847564c2eabe62cac4899ec41.
+  http://dx.doi.org/10.5285/9ef0ebf847564c2eabe62cac4899ec41
 
 
 Example plots
