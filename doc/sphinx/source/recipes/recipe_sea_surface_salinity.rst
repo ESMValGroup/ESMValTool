@@ -20,7 +20,7 @@ tested) to use it for other variables and datasets, even for more than one at
 a time. The diagnostic only expects variables with dimensions `time` and `depth_id`
 and it does not assume any other constraint.
 
-It ist herefore mandatory to keep the `extract_shape` preprocessor for more than
+It is therefore mandatory to keep the `extract_shape` preprocessor for more than
 one region and any form of region operation (`mean`, `max`, `min` ...) to collapse
 the `latitude` and `longitude` coordinates. In case you want to try with variables
 that have extra dimensions (i.e. `depth`) you must add an extra preprocessor
