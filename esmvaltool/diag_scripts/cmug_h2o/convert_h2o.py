@@ -27,17 +27,17 @@ Configuration options
 
 def h2o_to_hus(h2o):
     """Calculate H2O in specific humidity instead of vmr."""
-    mda = 28.966  # melocular mass of dry air
+    mda = 28.966  # molecular mass of dry air
     mwv = 18.016  # molecular mass of water vapour
     helpval = h2o * (mwv / mda)
-    hus = helpval / (1.0 + (helpval))
+    hus = helpval / (1.0 + helpval)
 
     return hus
 
 
 def hus_to_h2o(hus):
     """Calculate H2O in vmr instead of specific humidity."""
-    mda = 28.966  # melocular mass of dry air
+    mda = 28.966  # molecular mass of dry air
     mwv = 18.016  # molecular mass of water vapour
     h2o = mda / mwv * hus / (1.0 - hus)
 
