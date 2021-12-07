@@ -199,7 +199,7 @@ def get_prof_and_plt_data(cfg, data, available_vars_min_tas):
         plot_zonal_timedev(cfg, new_tacube.collapsed('air_pressure',
                                                      min_pos,
                                                      data_min=unrolled_data),
-                           dataset + " Cold point tropopause ",
+                           dataset, "Cold point tropopause ",
                            "Air Temperature")
 
         for svar in available_vars_min_tas:
@@ -222,7 +222,7 @@ def get_prof_and_plt_data(cfg, data, available_vars_min_tas):
                                new_svarcube.collapsed('air_pressure',
                                                       min_pos,
                                                       data_min=unrolled_data),
-                               dataset + " Cold point tropopause ",
+                               dataset, "Cold point tropopause ",
                                new_svarcube.long_name)
 
     return profiles
@@ -230,9 +230,6 @@ def get_prof_and_plt_data(cfg, data, available_vars_min_tas):
 
 def plot_zonal_mean(cfg, mean_cube, dataname, titlestr, variable):
     """Plot zonal mean contour."""
-    # if not cfg[n.WRITE_PLOTS]:
-    #     return
-
     # Plot data
     # create figure and axes instances
     fig, axx = plt.subplots(figsize=(7, 5))
@@ -246,7 +243,6 @@ def plot_zonal_mean(cfg, mean_cube, dataname, titlestr, variable):
         mean_cube.data,
         rps['set_range'],
         cmap='jet',
-        # cmap='RdBu_r',
         extend='both')
 
     axx = plt.gca()
@@ -289,11 +285,8 @@ def plot_zonal_mean(cfg, mean_cube, dataname, titlestr, variable):
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
-def plot_zonal_timedev(cfg, mean_cube, titlestr, variable):
+def plot_zonal_timedev(cfg, mean_cube, dataname, titlestr, variable):
     """Plot zonal mean temporal developement at tropopause."""
-    # if not cfg[n.WRITE_PLOTS]:
-    #     return
-
     # Plot data
     # create figure and axes instances
     fig, axx = plt.subplots(figsize=(7, 12))
@@ -323,23 +316,33 @@ def plot_zonal_timedev(cfg, mean_cube, titlestr, variable):
     axx.set_ylabel('Time')
     axx.set_xlabel('Latitude')
     axx.set_title(titlestr + variable)
-    # axx.set_xticks([40, 65, 90, 115])
-    # axx.set_xticklabels(['40°E', '65°E', '90°E', '115°E'])
-    # axx.set_yticks([-10, 0, 10, 20, 30])
-    # axx.set_yticklabels(['10°S', '0°', '10°N', '20°N', '30°N'])
 
     fig.tight_layout()
-    figname = 'fig_' + titlestr.replace(" ", "_") + variable.replace(" ",
-                                                                     "_")
+    figname = 'fig_' + dataname + "_" + titlestr.replace(" ", "_") + \
+        variable.replace(" ", "_")
+    caption = dataname + " " + titlestr + variable
     fig.savefig(get_plot_filename(figname, cfg), dpi=300)
     plt.close()
+    
+    provenance_record = get_provenance_record(_get_sel_lvardata(cfg,
+                                                                dataname,
+                                                                [variable]),
+                                              caption, ['mean'], ['global'])
+#
+    diagnostic_file = get_diagnostic_filename(figname, cfg)
+#
+    logger.info("Saving analysis results to %s", diagnostic_file)
+#
+    iris.save(mean_cube, target=diagnostic_file)
+#
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
 
 
 def plot_profiles(cfg, profiles, available_vars_min_tas, available_datasets):
     """Plot zonal mean contour."""
-    # if not cfg[n.WRITE_PLOTS]:
-    #     return
-
     # Plot data
     # create figure and axes instances
     for svar in available_vars_min_tas:
