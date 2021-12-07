@@ -285,7 +285,9 @@ class Formatter():
         else:
             logger.error('Could not find formatter for %s', dataset)
             return False
-        if not success:
+        if success:
+            logger.info('Formatting successful for dataset %s', dataset)
+        else:
             logger.error('Formatting failed for dataset %s', dataset)
             return False
         if install:
