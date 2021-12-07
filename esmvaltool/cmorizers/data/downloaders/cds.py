@@ -54,7 +54,12 @@ class CDSDownloader(BaseDownloader):
         self._request_dict = request_dictionary
         self.extra_name = extra_name
 
-    def download(self, year, month, day=None, file_format='tar'):
+    def download(self,
+                 year,
+                 month,
+                 day=None,
+                 file_pattern=None,
+                 file_format='tar'):
         """Download a specific month from the CDS.
 
         Parameters
@@ -75,13 +80,13 @@ class CDSDownloader(BaseDownloader):
             else:
                 request_dict['day'] = f"{day:02d}"
 
-        date_str = f"{self.dataset}{self.extra_name}_{year}{month:02d}"
+        date_str = f"{year}{month:02d}"
         if day:
             if not isinstance(day, Iterable):
                 date_str += f"{day:02d}"
 
         os.makedirs(self.local_folder, exist_ok=True)
-        file_path = f"{self.dataset}_{date_str}.{file_format}"
+        file_path = f"{file_pattern}_{date_str}.{file_format}"
         self.download_request(file_path, request_dict)
 
     def download_request(self, filename, request=None):
