@@ -32,20 +32,23 @@ from ESGF to the local directory ``~/climate_data``, run
 
 The ``--offline=False`` option tells ESMValTool to search for and download
 the necessary datasets.
-If you have data available locally, you can run the tool without the
-``--offline=False`` argument (the default).
+If you have all required data available locally, you can run the tool without
+the ``--offline=False`` argument (the default).
 Note that in that case the required data should be located in the directories
 specified in your user configuration file.
 Recall that the chapter :ref:`Configuring ESMValTool <config-user>`
 provides an explanation of how to create your own config-user.yml file.
+
+See :ref:`running esmvaltool <esmvalcore:running>` in the ESMValCore
+documentation for a more complete introduction to the ``esmvaltool`` command.
 
 .. _recipes_command:
 
 Available diagnostics and metrics
 =================================
 
-Although ESMValTool can be used just to simplify the management of data
-and the creation of your own analysis code, one of its main strengths is the
+Although ESMValTool can be used to download data, analyze it using ESMValCore's
+preprocessing modules, and the creation of your own analysis code, its main purpose is the
 continuously growing set of diagnostics and metrics that it directly provides to
 the user. These metrics and diagnostics are provided as a set of preconfigured
 recipes that users can run or customize for their own analysis.
@@ -62,27 +65,29 @@ recipes printed to the console:
 
     esmvaltool recipes list
 
-If the user then wants to explore any one of this recipes, they can be printed
+If the user then wants to explore any one of these recipes, they can be printed
 using the following command
 
 .. code:: bash
 
     esmvaltool recipes show recipe_name.yml
 
-And finally, to get a local copy that can then be customized and run, users can
+Note that there is no ``recipe_name.yml`` shipped with ESMValTool, replace
+this with a recipes that is available, for example
+`examples/recipe_python.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_python.yml>`_.
+Finally, to get a local copy that can then be customized and run, users can
 run the following command
 
 .. code:: bash
 
     esmvaltool recipes get recipe_name.yml
 
-Note that the ``esmvaltool run recipe_example.yml`` command will first look if
-``recipe_example.yml`` is the path to an existing file.
+Note that the ``esmvaltool run recipe_name.yml`` command will first look if
+``recipe_name.yml`` is the path to an existing file.
 If this is the case, it will run that recipe.
-If not, it will look if the name matches one of the recipes
-in your ESMValTool installation directory, in the subdirectory
+If not, it will look if it is a relative path to an existing recipe with respect to the
 `recipes <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/>`__
-and run that.
+directory in your ESMValTool installation and run that.
 
 Running multiple recipes
 ========================
