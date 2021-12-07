@@ -37,7 +37,7 @@ loadscript(getenv("esmvaltool_root") + \
 ; Read in variable JOBS which defines what combination of
 ; [time resolution] x [sensor] will be processed.
 loadscript(getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/data/cmor_config/" + \
+           "/data/cmor_config/" + \
            "CDS-SATELLITE-SOIL-MOISTURE.ncl")
 
 begin
