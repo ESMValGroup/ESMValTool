@@ -237,6 +237,16 @@ diagnostics:
              type: sat, version: L3, start_year: 2007, end_year: 2008}
     scripts: null
 
+  ESACCI-SEA-SURFACE-SALINITY:
+    description: ESACCI-SEA-SURFACE-SALINITY check
+    variables:
+      sos:
+    additional_datasets:
+      - {dataset: ESACCI-SEA-SURFACE-SALINITY, project: OBS, mip: Omon, tier: 2,
+          type: reanaly, version: fv1.8, start_year: 2010, end_year: 2018}
+      - {dataset: ESACCI-SEA-SURFACE-SALINITY, project: OBS, mip: Omon, tier: 2,
+          type: reanaly, version: fv2.31, start_year: 2010, end_year: 2018}
+    scripts: null
 
   ESACCI-SOILMOISTURE:
     description: ESACCI-SOILMOISTURE check
