@@ -458,7 +458,7 @@ diagnostics:
       alb:
     additional_datasets:
       - {dataset: ISCCP-FH, project: OBS, mip: Amon, tier: 2,
-         type: sat,  version: v0, start_year: 1984, end_year: 2000}
+         type: sat,  version: v0, start_year: 1984, end_year: 2016}
     scripts: null
 
   Landschuetzer2016:

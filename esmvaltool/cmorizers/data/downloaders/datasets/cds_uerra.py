@@ -6,7 +6,6 @@ import datetime
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
-from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
 def download_dataset(config, dataset, dataset_info, start_date, end_date,
@@ -53,10 +52,11 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     loop_date = start_date
     while loop_date <= end_date:
-        downloader.download(loop_date.year, loop_date.month, [
-            f'{i+1:02d}' for i in range(
-                calendar.monthrange(loop_date.year, loop_date.month)[1])
-        ])
+        downloader.download(
+            loop_date.year,
+            loop_date.month, [
+                f'{i+1:02d}' for i in range(
+                    calendar.monthrange(loop_date.year, loop_date.month)[1])
+            ],
+            file_format='nc')
         loop_date += relativedelta.relativedelta(months=1)
-
-    unpack_files_in_folder(downloader.local_folder)

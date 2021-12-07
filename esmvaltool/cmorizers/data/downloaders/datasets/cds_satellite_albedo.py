@@ -36,7 +36,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
             'format': 'tgz',
             'satellite': 'spot',
             'sensor': 'vgt',
-            'product_version': 'V1',
+            'product_version': 'v1',
             'horizontal_resolution': '1km',
             'variable': [
                 'albb_bh',
