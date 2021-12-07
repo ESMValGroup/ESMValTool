@@ -213,7 +213,7 @@ def _regrid_dataset(in_dir, var, cfg):
     in front of filename.
     """
     # Match any year here
-    filepattern = var['file'].format(year='????')
+    filepattern = var['file'].format(year='????', month='??')
     filelist = glob.glob(os.path.join(in_dir, filepattern))
     for infile in filelist:
         _, infile_tail = os.path.split(infile)
@@ -269,15 +269,17 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, _, __):
         logger.info("Start CMORizing")
         for year in range(1961, 2029):
             # File concatenation
-            in_file = os.path.join(cfg['work_dir'],
-                                   var['file'].format(year=year))
-            if os.path.isfile(in_file):
-                # Read in the full dataset here from 'workdir'
-                logger.info(f"Start CMORization of file {in_file}")
-                _cmorize_dataset(in_file, var, cfg, out_dir)
-                logger.info(f"Finished processing year {year}")
-            else:
-                logger.info(f"No files found for year {year}")
-                continue
+            for month in range(1, 13):
+                in_file = os.path.join(
+                    cfg['work_dir'], var['file'].format(year=year,
+                                                        month=f"{month:02}"))
+                if os.path.isfile(in_file):
+                    # Read in the full dataset here from 'workdir'
+                    logger.info(f"Start CMORization of file {in_file}")
+                    _cmorize_dataset(in_file, var, cfg, out_dir)
+                    logger.info(f"Finished processing {year}-{month}")
+                else:
+                    logger.info(f"No files found for {year}-{month}")
+                    continue
 
-            logger.info("Finished CMORIZATION")
+        logger.info("Finished CMORIZATION")
