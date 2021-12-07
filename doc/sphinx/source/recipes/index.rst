@@ -98,6 +98,7 @@ Ocean
    recipe_cvdp
    recipe_combined_indices
    recipe_oceans
+   recipe_sea_surface_salinity
    recipe_russell18jgr
 
 Other
