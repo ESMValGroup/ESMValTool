@@ -26,18 +26,70 @@ Configuration options
 import logging
 import os
 from copy import deepcopy
-import numpy as np
+from pprint import pformat
+
 import cartopy.crs as cart
-from cartopy.util import add_cyclic_point
-import matplotlib.pyplot as plt
 import iris
+import matplotlib.pyplot as plt
+import numpy as np
+from cartopy.util import add_cyclic_point
 from iris.analysis import Aggregator
 
-from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            select_metadata, sorted_metadata)
-from esmvaltool.diag_scripts.shared._base import (get_plot_filename)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    group_metadata,
+    run_diagnostic,
+    select_metadata,
+    sorted_metadata,
+)
+from esmvaltool.diag_scripts.shared._base import (
+    get_diagnostic_filename,
+    get_plot_filename,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def _cube_to_save_ploted(var, lats, lons, names):
+    """Create cube to prepare plotted data for saving to netCDF."""
+    new_cube = iris.cube.Cube(var, var_name=names['var_name'],
+                              long_name=names['long_name'],
+                              units=names['units'])
+    new_cube.add_dim_coord(iris.coords.DimCoord(lats,
+                                                var_name='lat',
+                                                long_name='latitude',
+                                                units='degrees_north'), 0)
+    new_cube.add_dim_coord(iris.coords.DimCoord(lons,
+                                                var_name='lon',
+                                                long_name='longitude',
+                                                units='degrees_east'), 1)
+
+    return new_cube
+
+
+def _get_provenance_record(ancestor_files, caption, statistics,
+                           domains, plot_type='geo'):
+    """Get Provenance record."""
+    print("ancestor_files")
+    print(ancestor_files)
+    print(type(ancestor_files))
+    record = {
+        'caption': caption,
+        'statistics': statistics,
+        'domains': domains,
+        'plot_type': plot_type,
+        'projects': ['cmug'],
+        'realms': ['atmos'],
+        'themes': ['atmDyn'],
+        'authors': [
+            'weigel_katja',
+        ],
+        'references': [
+            'acknow_project',
+        ],
+        'ancestors': ancestor_files,
+    }
+    return record
 
 
 def _press_interp_cube(cube, pstart=60000, pend=2500, pgrid=221):
@@ -92,12 +144,8 @@ def find_min(data, data_min, axis):
     return return_data
 
 
-def plot_tp_map(cfg, mean_cube, titlestr, variable):
+def plot_tp_map(cfg, mean_cube, titlestr, variable, listdata):
     """Plot contour map."""
-    # if not cfg[n.WRITE_PLOTS]:
-    #     return
-
-    # Plot data
     # create figure and axes instances
     fig, axx = plt.subplots(figsize=(7, 5))
     axx = plt.axes(projection=cart.PlateCarree())
@@ -145,10 +193,6 @@ def plot_tp_map(cfg, mean_cube, titlestr, variable):
     axx.set_xlabel('Longitude')
     axx.set_ylabel('Latitude')
     axx.set_title(titlestr + variable)
-    # axx.set_xticks([40, 65, 90, 115])
-    # axx.set_xticklabels(['40°E', '65°E', '90°E', '115°E'])
-    # axx.set_yticks([-10, 0, 10, 20, 30])
-    # axx.set_yticklabels(['10°S', '0°', '10°N', '20°N', '30°N'])
 
     fig.tight_layout()
     figname = 'fig_' + titlestr.replace(" ", "_") +\
@@ -156,32 +200,33 @@ def plot_tp_map(cfg, mean_cube, titlestr, variable):
     fig.savefig(get_plot_filename(figname, cfg), dpi=300)
     plt.close()
 
-#    titlestr = titlestr + ' Box displays the area used to define the ' + \
-#        'average ISM (Indian Summer Monsoon) rainfall. Precipitation ' + \
-#        'changes are normalized by the corresponding global ' + \
-#        'mean SST increase for each model.'
-#
-#    selection = _get_sel_files_var(cfg, ['pr', 'ts'])
-#
-#    provenance_record = get_provenance_record(selection,
-#                                              titlestr, ['diff'], ['reg'])
-#
-#    diagnostic_file = get_diagnostic_filename(figname, cfg)
-#
-#    logger.info("Saving analysis results to %s", diagnostic_file)
-#
-#    iris.save(cube_to_save_ploted(data, lats, lons, {'var_name': 'd_pr',
-#                                                     'long_name': 'Prec' +
-#                                                                  'ipita' +
-#                                                                  'tion ' +
-#                                                                  'Change',
-#                                                     'units': 'mm d-1'}),
-#              target=diagnostic_file)
-#
-#    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
-#                pformat(provenance_record))
-#    with ProvenanceLogger(cfg) as provenance_logger:
-#        provenance_logger.log(diagnostic_file, provenance_record)
+    print("mean_cube.units")
+    print(mean_cube.units)
+
+    print("mean_cube.var_name")
+    print(mean_cube.var_name)
+
+    logger.info("Saving analysis results to %s",
+                get_diagnostic_filename(figname, cfg))
+
+    iris.save(_cube_to_save_ploted(data_c,
+                                   mean_cube.coord('latitude').points,
+                                   lon_c,
+                                   {'var_name': mean_cube.var_name,
+                                    'long_name': variable,
+                                    'units': mean_cube.units}),
+              target=get_diagnostic_filename(figname, cfg))
+
+    logger.info("Recording provenance of %s:\n%s",
+                get_diagnostic_filename(figname, cfg),
+                pformat(_get_provenance_record(listdata,
+                                               titlestr + variable,
+                                               ['other'], ['global'])))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(get_diagnostic_filename(figname, cfg),
+                              _get_provenance_record(listdata,
+                                                     titlestr + variable,
+                                                     ['other'], ['global']))
 
 
 def main(cfg):
@@ -223,14 +268,15 @@ def main(cfg):
                                                data_min=unrolled_data)
             plot_tp_map(cfg, trop_svar.collapsed('time', iris.analysis.MEAN),
                         dataset + " Cold point tropopause ",
-                        new_svarcube.long_name)
+                        new_svarcube.long_name,
+                        [data['ta'][0]['filename'], data[svar][0]['filename']])
 
         trop_ta = new_tacube.collapsed('air_pressure', min_pos,
                                        data_min=unrolled_data)
 
         plot_tp_map(cfg, trop_ta.collapsed('time', iris.analysis.MEAN),
                     dataset + " Cold point tropopause ",
-                    "Air Temperature")
+                    "Air Temperature", [data['ta'][0]['filename']])
 
 
 if __name__ == '__main__':
