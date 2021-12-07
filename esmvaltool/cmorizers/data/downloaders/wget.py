@@ -74,6 +74,7 @@ class NASADownloader(WGetDownloader):
             "--save-cookies=~/.urs_cookies",
             "--auth-no-challenge=on",
             "--keep-session-cookies",
+            "--no-check-certificate",
         ]
 
     def download_folder(self, server_path, wget_options=None):

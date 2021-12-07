@@ -33,5 +33,5 @@ def download_dataset(config, dataset, dataset_info, _, __, overwrite):
 
     downloader.download_file(
         "https://data.giss.nasa.gov/pub/gistemp/gistemp250_GHCNv4.nc.gz",
-        wget_options=[])
+        wget_options=['--no-check-certificate'])
     unpack_files_in_folder(downloader.local_folder)
