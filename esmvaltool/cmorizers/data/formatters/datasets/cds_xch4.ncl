@@ -38,7 +38,7 @@ begin
 
   ; Period
   YEAR1 = 2003
-  YEAR2 = 2016
+  YEAR2 = 2018
 
   ; Selected variable (standard name)
   VAR = (/"xch4"/)
@@ -78,8 +78,9 @@ begin
     log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     ; Read variables
-    fname = input_dir_path + "OBS_" + OBSNAME + "_sat_L3_" + NAME(vv) + \
-      "_200301-201612.nc"
+
+    fname = input_dir_path + "200301_201812-C3S-L3_GHG-GHG_PRODUCTS-" + \
+      "MERGED-MERGED-OBS4MIPS-MERGED-v4.1.nc"
     setfileoption("nc", "MissingToFillValue", False)
     f = addfile(fname, "r")
     output = f->xch4
