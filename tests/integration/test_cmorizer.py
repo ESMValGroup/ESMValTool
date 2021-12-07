@@ -4,9 +4,12 @@ import contextlib
 import os
 import sys
 
-import pytest
 import iris
+import iris.coord_systems
+import iris.coords
+import iris.cube
 import numpy as np
+import pytest
 import yaml
 from cf_units import Unit
 
@@ -15,11 +18,8 @@ from esmvaltool.cmorizers.data.cmorizer import DataCommand
 
 @contextlib.contextmanager
 def keep_cwd():
-    """
-    Use a context manager since the cmorizer enters
-    and stays in the cmorization dir, risking to write
-    test outputs away from test-reports.
-    """
+    """Use a context manager since the cmorizer enters and stays in the
+    cmorization dir, risking to write test outputs away from test-reports."""
     curr_path = os.getcwd()
     try:
         yield
