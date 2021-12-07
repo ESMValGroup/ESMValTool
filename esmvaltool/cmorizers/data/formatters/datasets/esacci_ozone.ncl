@@ -84,9 +84,6 @@ begin
   do vv = 0, dimsizes(VAR) - 1
 
     log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
-
-    time = create_timec(YEAR1, YEAR2)
-    date = cd_calendar(time, 1)
     if (YEAR1 .gt. MAX_YEAR(vv)) then
       continue
     end if
@@ -107,6 +104,8 @@ begin
     end if
     log_info("Processing years " + START_YEAR + "-" + END_YEAR)
     ; Create timeseries
+    time = create_timec(START_YEAR, END_YEAR)
+    date = cd_calendar(time, 1)
     do yy = START_YEAR, END_YEAR
       log_info("Processing year " + yy)
       do mm = 1, 12
