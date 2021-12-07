@@ -185,7 +185,8 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
 
     # The above command does not return bounds for longitude
     # so explicitly get them here.
-    cube.coord('longitude').guess_bounds()
+    if not cube.coord('longitude').has_bounds():
+        cube.coord('longitude').guess_bounds()
 
     # Set correct names
     cube.var_name = definition.short_name
