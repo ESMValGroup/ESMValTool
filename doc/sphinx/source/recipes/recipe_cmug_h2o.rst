@@ -20,7 +20,7 @@ spatial resolution of 100 km, covering the troposphere and lower stratosphere.
 The envisaged coverage is 2010-2014. The calculation of hus from water vapour in ppmv will be part of the cmorizer.
 Here, ERA-Interim data are used.
 
-The diagnostic diag_tropopause_zonalmean.py plots zonal mean for given variable at for
+The diagnostic diag_tropopause_zonalmean.py plots zonal mean for given variable for
 all pressure levels between 250 and 1hPa and at cold point tropopause height.
 Here Specific Humidity (hus) is used. This will be calculated from the
 ESACCI water vapour data CDR-3, which are planed to contain
@@ -59,7 +59,7 @@ deangelisf3f4.py:
 For each model, two experiments must be given:
 a pre industrial control run, and a scenario with 4 times CO\ :sub:`2`\.
 Possibly, 150 years should be given, but shorter time series work as well.
-Currently, HOAPS data are incuded as place holder for expected ESACCI-WV data, type CDR-2:
+Currently, HOAPS data are included as place holder for expected ESACCI-WV data, type CDR-2:
 Gridded monthly time series of TCWV in units of kg/m2 (corresponds to prw)
 that cover the global land and ocean areas with a spatial resolution of 0.05° / 0.5°
 for the period July 2002 to December 2017.
@@ -123,7 +123,7 @@ Example plots
    :align: center
    :width: 50%
 
-   Scatter plot and regression line the between the ratio of the change of net short wave radiation (rsnst) and the change of the Water Vapor Path (prw) against the ratio of the change of netshort wave radiation for clear skye (rsnstcs) and the the change of surface temperature (tas). The width of horizontal shading for models and the vertical dashed lines for observations (Obs.) represent statistical uncertainties of the ratio, as the 95% confidence interval (CI) of the regression slope to the rsnst versus prw curve. For the prw observations ESACCI CDR-2 data from 2003 to 2014 are used.
+   Scatter plot and regression line computed between the ratio of the change of net short wave radiation (rsnst) and the change of the Water Vapor Path (prw) against the ratio of the change of netshort wave radiation for clear skye (rsnstcs) and the the change of surface temperature (tas). The width of horizontal shading for models and the vertical dashed lines for observations (Obs.) represent statistical uncertainties of the ratio, as the 95% confidence interval (CI) of the regression slope to the rsnst versus prw curve. For the prw observations ESACCI CDR-2 data from 2003 to 2014 are used.
 
 .. _fig_ERA-Interim_Cold_point_tropopause_Specific_Humidity_map:
 .. figure:: /recipes/figures/cmug_h2o/fig_ERA-Interim_Cold_point_tropopause_Specific_Humidity_map.png
