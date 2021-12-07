@@ -70,9 +70,6 @@ def _cube_to_save_ploted(var, lats, lons, names):
 def _get_provenance_record(ancestor_files, caption, statistics,
                            domains, plot_type='geo'):
     """Get Provenance record."""
-    print("ancestor_files")
-    print(ancestor_files)
-    print(type(ancestor_files))
     record = {
         'caption': caption,
         'statistics': statistics,
@@ -170,8 +167,6 @@ def plot_tp_map(cfg, mean_cube, titlestr, variable, listdata):
         print_var = mean_cube.long_name
         set_range = np.linspace(np.nanmin(mean_cube.data),
                                 np.nanmax(mean_cube.data), 21)
-    print("mean_cube.units")
-    print(mean_cube.units)
     # draw filled contours
     cnplot = plt.contourf(
         lon_c,
@@ -199,12 +194,6 @@ def plot_tp_map(cfg, mean_cube, titlestr, variable, listdata):
         variable.replace(" ", "_") + '_map'
     fig.savefig(get_plot_filename(figname, cfg), dpi=300)
     plt.close()
-
-    print("mean_cube.units")
-    print(mean_cube.units)
-
-    print("mean_cube.var_name")
-    print(mean_cube.var_name)
 
     logger.info("Saving analysis results to %s",
                 get_diagnostic_filename(figname, cfg))
