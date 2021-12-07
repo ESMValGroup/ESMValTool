@@ -86,6 +86,8 @@ class CDSDownloader(BaseDownloader):
                 date_str += f"{day:02d}"
 
         os.makedirs(self.local_folder, exist_ok=True)
+        if file_pattern is None:
+            file_pattern = f"{self._product_name}"
         file_path = f"{file_pattern}_{date_str}.{file_format}"
         self.download_request(file_path, request_dict)
 
