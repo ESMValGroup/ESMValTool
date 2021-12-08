@@ -160,13 +160,14 @@ def get_provenance_record(ancestor_files, caption, statistics,
         'statistics': statistics,
         'domains': domains,
         'plot_type': plot_type,
+        'projects': ['cmug'],
         'realms': ['atmos'],
         'themes': ['atmDyn'],
         'authors': [
             'weigel_katja',
         ],
         'references': [
-            '',
+            'acknow_project',
         ],
         'ancestors': ancestor_files,
     }
@@ -323,7 +324,7 @@ def plot_zonal_timedev(cfg, mean_cube, dataname, titlestr, variable):
     caption = dataname + " " + titlestr + variable
     fig.savefig(get_plot_filename(figname, cfg), dpi=300)
     plt.close()
-    
+
     provenance_record = get_provenance_record(_get_sel_lvardata(cfg,
                                                                 dataname,
                                                                 [variable]),
@@ -348,10 +349,14 @@ def plot_profiles(cfg, profiles, available_vars_min_tas, available_datasets):
     for svar in available_vars_min_tas:
         fig, axx = plt.subplots(figsize=(7, 5))
 
-        for dataset in available_datasets:
+        for iii, dataset in enumerate(available_datasets):
             plt.plot((profiles[svar][dataset]).data,
                      (profiles[svar][dataset]).coord('air_pressure').points /
                      100.0, label=dataset)
+            if iii == 0:
+                profiles_save = iris.cube.CubeList([profiles[svar][dataset]])
+            else:
+                profiles_save.append(profiles[svar][dataset])
 
         axx = plt.gca()
         axx.invert_yaxis()
@@ -377,6 +382,24 @@ def plot_profiles(cfg, profiles, available_vars_min_tas, available_datasets):
             onedat.long_name.replace(" ", "_")
         fig.savefig(get_plot_filename(figname, cfg), dpi=300)
         plt.close()
+
+        provenance_record = get_provenance_record(_get_sel_files_var(cfg,
+                                                                     svar),
+                                                  'Average ' +
+                                                  onedat.long_name +
+                                                  ' profile', ['mean'],
+                                                  ['global'])
+
+        diagnostic_file = get_diagnostic_filename(figname, cfg)
+#
+        logger.info("Saving analysis results to %s", diagnostic_file)
+#
+        iris.save(profiles_save, target=diagnostic_file)
+#
+        logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                    pformat(provenance_record))
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(diagnostic_file, provenance_record)
 
 
 def main(cfg):
