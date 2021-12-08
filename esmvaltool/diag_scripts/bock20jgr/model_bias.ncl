@@ -25,7 +25,8 @@
 ;   none
 ;
 ; Modification history
-;   20190312-A_bock_ls: adapted code (based on clouds/clouds_bias.ncl)
+;   20211006-lauer_axel: removed write_plots
+;   20190312-bock_lisa: adapted code (based on clouds/clouds_bias.ncl)
 ;
 ; ############################################################################
 
@@ -83,12 +84,6 @@ begin
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
-
-  if (config_user_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
 
 end
 
@@ -316,38 +311,36 @@ begin
   plotfile = new(numseas, string)
   plotfile(:) = ""
 
-  if (write_plots) then
-    do is = 0, numseas - 1
-      ; --------------------------------------------------------------------
-      ; create workspace
+  do is = 0, numseas - 1
+    ; --------------------------------------------------------------------
+    ; create workspace
 
-      if (isvar("wks")) then
-        delete(wks)
-      end if
+    if (isvar("wks")) then
+      delete(wks)
+    end if
 
-      wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "model_bias_" + var0 \
-                    + "_" + season(is) + "_" + project)
+    wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "model_bias_" + var0 \
+                  + "_" + season(is) + "_" + project)
 
-      plotfile(is) = wks@fullname
+    plotfile(is) = wks@fullname
 
-      if (numseas.gt.1) then
-        pres@txString = season(is)
-        plots(0, is) = contour_map(wks, mmdata(is, :, :), var0)
-        plots(1, is) = contour_map(wks, diff(is, :, :), var0)
-        gsn_panel(wks, plots(plotind, is), plotsperline, pres)
-      else
-        plots(0, 0) = contour_map(wks, mmdata, var0)
-        plots(1, 0) = contour_map(wks, diff, var0)
-        gsn_panel(wks, plots(plotind, 0), plotsperline, pres)
-      end if
+    if (numseas.gt.1) then
+      pres@txString = season(is)
+      plots(0, is) = contour_map(wks, mmdata(is, :, :), var0)
+      plots(1, is) = contour_map(wks, diff(is, :, :), var0)
+      gsn_panel(wks, plots(plotind, is), plotsperline, pres)
+    else
+      plots(0, 0) = contour_map(wks, mmdata, var0)
+      plots(1, 0) = contour_map(wks, diff, var0)
+      gsn_panel(wks, plots(plotind, 0), plotsperline, pres)
+    end if
 
-      ; add meta data to plot (for reporting)
+    ; add meta data to plot (for reporting)
 
-      caption = "Multi-model values, from top left to bottom right: " \
-                + "mean, bias"
+    caption = "Multi-model values, from top left to bottom right: " \
+              + "mean, bias"
 
-    end do  ; is-loop (seasons)
-  end if  ; if write_plots
+  end do  ; is-loop (seasons)
 
   ; ###########################################
   ; # output to netCDF                        #
