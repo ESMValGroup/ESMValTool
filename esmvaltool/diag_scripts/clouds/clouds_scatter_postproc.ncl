@@ -18,10 +18,18 @@ begin
 
   refname = "ESACCI-CLOUD"
   mmmname = "Multi-model average"
+;  reg_short = "so"
+;  reg_short = "sep"
+  reg_short = "itcz"
+;  reg_long = "southernocean"
+;  reg_long = "sepacific"
+  reg_long = "itcz"
+  var = "totalcwp"
+;  var = "swcre"
 
   ; CMIP5
-  fname5 = inpath + "/scatter_southernocean_cmip5/scatter_totalcwp/" \
-    + "clouds_scatter_clt_totalcwp_so_cmip5.nc"
+  fname5 = inpath + "/scatter_" + reg_long + "_cmip5/scatter_" + var + "/" \
+    + "clouds_scatter_clt_" + var + "_" + reg_short + "_cmip5.nc"
   infile5 = addfile(fname5, "r")
 
   tmp = infile5->model
@@ -38,11 +46,11 @@ begin
   end do
   delete(tmp)
   delete(dims)
-  totalcwp5 = infile5->totalcwp
+  data5 = infile5->$var$
 
   ; CMIP6
-  fname6 = inpath + "/scatter_southernocean_cmip6/scatter_totalcwp/" \
-    + "clouds_scatter_clt_totalcwp_so_cmip6.nc"
+  fname6 = inpath + "/scatter_" + reg_long + "_cmip6/scatter_" + var + "/" \
+    + "clouds_scatter_clt_" + var + "_" + reg_short + "_cmip6.nc"
   infile6 = addfile(fname6, "r")
 
   tmp = infile6->model
@@ -59,10 +67,10 @@ begin
   end do
   delete(tmp)
   delete(dims)
-  totalcwp6 = infile6->totalcwp
+  data6 = infile6->$var$
 
-  ratio5 = totalcwp5(mmmidx5, :) / totalcwp5(refidx5, :)
-  ratio6 = totalcwp6(mmmidx6, :) / totalcwp6(refidx6, :)
+  ratio5 = data5(mmmidx5, :) / data5(refidx5, :)
+  ratio6 = data6(mmmidx6, :) / data6(refidx6, :)
 
   avg5 = avg(ratio5)
   avg6 = avg(ratio6)

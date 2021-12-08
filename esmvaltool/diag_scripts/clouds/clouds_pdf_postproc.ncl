@@ -18,9 +18,15 @@ begin
 
   refname = "ESACCI-CLOUD"
 
+;  reg = "so"
+;  reg = "sep"
+  reg = "itcz"
+;  season = "djf"
+  season = "ann"
+
   ; CMIP5
-  fname5 = inpath + "/pdf_clt_djf_cmip5/southernocean/" \
-    + "clouds_pdf_clt_so_cmip5.nc"
+  fname5 = inpath + "/pdf_clt_" + season + "_cmip5/" + reg + "/" \
+    + "clouds_pdf_clt_" + reg + "_cmip5.nc"
   infile5 = addfile(fname5, "r")
   varnames5 = getfilevarnames(infile5)
   dims = dimsizes(varnames5)
@@ -41,8 +47,8 @@ begin
   delete(idxtmp)
 
   ; CMIP6
-  fname6 = inpath + "/pdf_clt_djf_cmip6/southernocean/" \
-    + "clouds_pdf_clt_so_cmip6.nc"
+  fname6 = inpath + "/pdf_clt_" + season + "_cmip6/" + reg + "/" \
+    + "clouds_pdf_clt_" + reg + "_cmip6.nc"
   infile6 = addfile(fname6, "r")
   varnames6 = getfilevarnames(infile6)
   dims = dimsizes(varnames6)
@@ -92,12 +98,18 @@ begin
 
   x = infile6->x
 
-  idx = ind(x .ge. 80.)
+  idx60 = ind(x .ge. 60.)
+  idx80 = ind(x .ge. 80.)
 
-  print("cummulative frequencies clt >= 80%")
-  print("cmip5: " + sum(mmm5(idx)))
-  print("cmip6: " + sum(mmm6(idx)))
-  print("ref: " + sum(ref5(idx)))
+  print("cumulative frequencies clt >= 60%")
+  print("cmip5: " + sum(mmm5(idx60)))
+  print("cmip6: " + sum(mmm6(idx60)))
+  print("ref: " + sum(ref5(idx60)))
+  print("")
+  print("cumulative frequencies clt >= 80%")
+  print("cmip5: " + sum(mmm5(idx80)))
+  print("cmip6: " + sum(mmm6(idx80)))
+  print("ref: " + sum(ref5(idx80)))
 
   system("rm postpdf.nc")
   debugfile = addfile("postpdf.nc", "c")
