@@ -1,4 +1,4 @@
-.. _recipes_deangelis15nat_cmug:
+.. _recipes_cmug_h2o:
 
 Evaluate water vapor short wave radiance absorption schemes of ESMs with the observations, including ESACCI data.
 ==========================================================================================================================

@@ -1,6 +1,8 @@
 # recipe_
 ---
-documentation:
+documentation:  
+  title: Evaluate water vapor short wave radiance absorption schemes of 
+         ESMs with the observations, including ESACCI data.
   description: |
     Recipe for ESACCI water vapour data
 
