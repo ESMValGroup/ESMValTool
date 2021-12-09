@@ -76,7 +76,7 @@ for downloading (e.g. providing contact information, licence agreements)
 and using the observations. The unformatted (raw) observations
 should then be stored then in the appropriate of these three folders.
 
-For each newly added dataset, an entry should be made to the file 
+For each additional dataset, an entry need to be made to the file 
 `datasets.yml
 <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/datasets.yml>`_.
 The dataset entry should contain:
@@ -85,24 +85,25 @@ The dataset entry should contain:
 - the ``last_access`` date;
 - the ``info`` that explain how to download the data.
 Note that these fields should be identical to the content of the header
-of the cmorizing script (see Section `6. Create a cmorizer for the dataset`_).
+of the cmorizing script (see Section `4. Create a cmorizer for the dataset`_).
 
 3.1 Downloader script (optional)
 --------------------------------
 
-A Python script can be written to automatically download raw observations 
+A Python script can be written to download raw observations 
 from source and store the data in the appropriate tier subdirectory of the
-folder ``RAWOBS``.
+folder ``RAWOBS`` automatically.
 There are many downloading scripts available in 
 `/esmvaltool/cmorizers/data/downloaders/datasets/
 <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/data/downloaders/datasets/>`_
 where several data download mechanisms are provided: downloaders based on wget,
-for FTP repositories, and commonly used sources (CDS, ESA-CCI, NASA).
+downloaders for FTP repositories, and commonly used sources (CDS, ESA-CCI, NASA).
 Note that the name of this downloading script has to be identical to the
-name of your dataset.
+name of the dataset.
 
-Depending on the source server, the downloading script should contain paths to
-raw observations, filename patterns and necessary fields to retrieve the data.
+Depending on the source server, the downloading script needs to contain paths to
+raw observations, filename patterns and various necessary fields to retrieve 
+the data.
 Default ``start_date`` and ``end_date`` can be provided in cases where raw data 
 are stored in daily, monthly, and yearly files.
 
@@ -113,8 +114,8 @@ The downloading script for the given dataset can be run with:
  esmvaltool data download --config_file <config-user.yml>  <dataset-name>
 
 .. note::
-  The options ``--start`` and ``--end`` can be added to the command above to only
-  donwload raw data for a given time range.  
+  The options ``--start`` and ``--end`` can be added to the command above to 
+  restrict the download of raw data to a time range.  
 
 4. Create a cmorizer for the dataset
 ====================================
@@ -311,8 +312,8 @@ The different parts of the name are explained in more detail here:
   (``mon``);
 - xch4: Is the name of the variable. Each observational data file is supposed
   to only include one variable per file;
-- 200301-201612: Is the period the dataset spans with ``200301`` being the
-  start year and month, and ``201612`` being the end year and month;
+- 200301-201812: Is the period the dataset spans with ``200301`` being the
+  start year and month, and ``201812`` being the end year and month;
 
 .. note::
    There is a different naming convention for ``obs4MIPs`` data (see the exact
