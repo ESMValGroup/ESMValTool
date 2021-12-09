@@ -12,6 +12,7 @@ data set for the use in ESMValTool.
 | `1. Check if your variable is CMOR standard`_
 | `2. Edit your configuration file`_
 | `3. Store your dataset in the right place`_
+| `3.1 Downloader script (optional)`_
 | `4. Create a cmorizer for the dataset`_
 | `4.1 Cmorizer script written in python`_
 | `4.2 Cmorizer script written in NCL`_
@@ -75,14 +76,54 @@ for downloading (e.g. providing contact information, licence agreements)
 and using the observations. The unformatted (raw) observations
 should then be stored then in the appropriate of these three folders.
 
+For each newly added dataset, an entry should be made to the file 
+`datasets.yml
+<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/datasets.yml>`_.
+The dataset entry should contain:
+- the correct ``tier`` information;
+- the ``source`` of the raw data;
+- the ``last_access`` date;
+- the ``info`` that explain how to download the data.
+Note that these fields should be identical to the content of the header
+of the cmorizing script (see Section `6. Create a cmorizer for the dataset`_).
+
+3.1 Downloader script (optional)
+--------------------------------
+
+A Python script can be written to automatically download raw observations 
+from source and store the data in the appropriate tier subdirectory of the
+folder ``RAWOBS``.
+There are many downloading scripts available in 
+`/esmvaltool/cmorizers/data/downloaders/datasets/
+<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/data/downloaders/datasets/>`_
+where several data download mechanisms are provided: downloaders based on wget,
+for FTP repositories, and commonly used sources (CDS, ESA-CCI, NASA).
+Note that the name of this downloading script has to be identical to the
+name of your dataset.
+
+Depending on the source server, the downloading script should contain paths to
+raw observations, filename patterns and necessary fields to retrieve the data.
+Default ``start_date`` and ``end_date`` can be provided in cases where raw data 
+are stored in daily, monthly, and yearly files.
+
+The downloading script for the given dataset can be run with:
+
+.. code-block:: console
+
+ esmvaltool data download --config_file <config-user.yml>  <dataset-name>
+
+.. note::
+  The options ``--start`` and ``--end`` can be added to the command above to only
+  donwload raw data for a given time range.  
+
 4. Create a cmorizer for the dataset
 ====================================
 
-There are many cmorizing scripts available in `/esmvaltool/cmorizers/obs/
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/obs/>`_
+There are many cmorizing scripts available in 
+`/esmvaltool/cmorizers/data/formatters/datasets/
+<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/formatters/datasets/>`_
 where solutions to many kinds of format issues with observational data are
-addressed. Most of these scripts are written in NCL at the moment, but more
-and more examples for Python-based cmorizing scripts become available.
+addressed. These scripts are either written in Python or in NCL.
 
 .. note::
   NCL support will terminate soon, so new cmorizer scripts should preferably be
@@ -99,16 +140,17 @@ and one written in NCL, are explained in more detail.
 -------------------------------------
 
 Find here an example of a cmorizing script, written for the ``MTE`` dataset
-that is available at the MPI for Biogeochemistry in Jena: `cmorize_obs_mte.py
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/obs/cmorize_obs_mte.py>`_.
+that is available at the MPI for Biogeochemistry in Jena: `mte.py
+<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/formatters/datasets/mte.py>`_.
 
 All the necessary information about the dataset to write the filename
 correctly, and which variable is of interest, is stored in a separate
 configuration file: `MTE.yml
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/obs/cmor_config/MTE.yml>`_
-in the directory ``ESMValTool/esmvaltool/cmorizers/obs/cmor_config/``. Note
-that the name of this configuration file has to be identical to the name of
-your data set. It is recommended that you set ``project`` to ``OBS6`` in the
+<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/cmor_config/MTE.yml>`_
+in the directory ``ESMValTool/esmvaltool/cmorizers/data/cmor_config/``. Note
+that both the name of this configuration file and the cmorizing script have to be
+identical to the name of your dataset. 
+It is recommended that you set ``project`` to ``OBS6`` in the
 configuration file. That way, the variables defined in the CMIP6 CMOR table,
 augmented with the custom variables described above, are available to your script.
 
@@ -124,7 +166,7 @@ If a single dataset has more than one reference,
 it is possible to add tags as a list e.g. ``reference: ['tag1', 'tag2']``.
 The third part in the configuration file defines the variables that are supposed to be cmorized.
 
-The actual cmorizing script ``cmorize_obs_mte.py`` consists of a header with
+The actual cmorizing script ``mte.py`` consists of a header with
 information on where and how to download the data, and noting the last access
 of the data webpage.
 
@@ -132,7 +174,7 @@ The main body of the CMORizer script must contain a function called
 
 .. code-block:: python
 
-   def cmorization(in_dir, out_dir, cfg, config_user):
+   def cmorization(in_dir, out_dir, cfg, _, __, ___):
 
 with this exact call signature. Here, ``in_dir`` corresponds to the input
 directory of the raw files, ``out_dir`` to the output directory of final
@@ -145,7 +187,7 @@ by
 
 .. code-block:: python
 
-   from . import utilities as utils
+   from esmvaltool.cmorizers.data import utilities as utils
 
 Apart from a function to easily save data, this module contains different kinds
 of small fixes to the data attributes, coordinates, and metadata which are
@@ -157,7 +199,7 @@ that code style). For example, the function ``_get_filepath`` converts the raw
 filepath to the correct one and the function ``_extract_variable`` extracts and
 saves a single variable from the raw data.
 
-.. _utilities.py: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/obs/utilities.py
+.. _utilities.py: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/utilities.py
 
 
 4.2 Cmorizer script written in NCL
@@ -165,8 +207,8 @@ saves a single variable from the raw data.
 
 Find here an example of a cmorizing script, written for the ``ESACCI XCH4``
 dataset that is available on the Copernicus Climate Data Store:
-`cmorize_obs_cds_xch4.ncl
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/obs/cmorize_obs_cds_xch4.ncl>`_.
+`cds_xch4.ncl
+<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/formatters/datasets/cds_xch4.ncl>`_.
 
 The first part of the script collects all the information about the dataset
 that are necessary to write the filename correctly and to understand which
@@ -183,20 +225,14 @@ CMOR_TABLE.
   through the loading of the script interface.ncl_. There are similar
   functions available for python scripts.
 
-.. _interface.ncl: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/obs/interface.ncl
+.. _interface.ncl: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/formatters/interface.ncl
 
-.. _utilities.ncl: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/obs/utilities.ncl
+.. _utilities.ncl: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/formatters/utilities.ncl
 
 In the second part of the script each variable defined in ``VAR`` is separately
 extracted from the original data file and processed. Most parts of the code are
 commented, and therefore it should be easy to follow. ESMValTool provides a set
-of predefined utilities.ncl_, which can be imported into your CMORizer
-by
-
-.. code-block:: NCL
-
-   loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/utilities.ncl")
-
+of predefined utilities.ncl_, which are imported by default into your CMORizer.
 This module contains different kinds of small fixes to the data attributes,
 coordinates, and metadata which are necessary for the data field to be
 CMOR-compliant.
@@ -208,20 +244,30 @@ The cmorizing script for the given dataset can be run with:
 
 .. code-block:: console
 
- cmorize_obs -c <config-user.yml> -o <dataset-name>
+ esmvaltool data format --config_file <config-user.yml> <dataset-name>
 
 
 .. note::
 
    The output path given in the configuration file is the path where
    your cmorized dataset will be stored. The ESMValTool will create a folder
-   with the correct tier information (see Section `2. Edit your configuration file`_) if that tier folder is not
-   already available, and then a folder named after the data set. In this
-   folder the cmorized data set will be stored as a netCDF file.
+   with the correct tier information 
+   (see Section `2. Edit your configuration file`_) if that tier folder is not
+   already available, and then a folder named after the data set. 
+   In this folder the cmorized data set will be stored as a NetCDF file.
+   The cmorized dataset will be automatically move to the correct tier
+   subfolder of your OBS or OBS6 directory if the option 
+   ``--install=True`` is used in the command above.
 
 If your run was successful, one or more NetCDF files are produced in your
 output directory.
 
+If a downloading script is available for the dataset, the downloading and
+the cmorizing scripts can be run in a single command with:
+
+.. code-block:: console
+
+ esmvaltool data prepare --config_file <config-user.yml> <dataset-name>
 
 6. Naming convention of the observational data files
 ====================================================
