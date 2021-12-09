@@ -68,6 +68,7 @@ from shelve import open as shopen
 
 
 from esmvalcore.preprocessor._time import extract_time, annual_statistics, regrid_time
+
 from esmvalcore.preprocessor._regrid import extract_levels, regrid
 
 
@@ -253,6 +254,15 @@ def multi_model_time_series(
         The metadata dictionairy for a specific model.
 
     """
+   
+    impath = diagtools.folder(cfg['plot_dir']+'/individual_panes')
+    impath += '_'.join(['multi_model_ts', moving_average_str] )
+    impath += '_'+'_'.join(plotting)
+    if ukesm == 'only': impath += '_UKESM'
+    if ukesm == 'not': impath += '_noUKESM'
+    impath += diagtools.get_image_format(cfg)
+    if os.path.exists(impath): return
+
     ####
     # Load the data for each layer as a separate cube
     model_cubes = {}
@@ -434,21 +444,20 @@ def multi_model_time_series(
 
     # Saving files:
     if save:
-        path = diagtools.folder(cfg['plot_dir']+'/individual_panes')
-        path += '_'.join(['multi_model_ts', moving_average_str] )
-        path += '_'+'_'.join(plotting)
-        if ukesm == 'only': path += '_UKESM'
-        if ukesm == 'not': path += '_noUKESM'
-
-        path += diagtools.get_image_format(cfg)
+        #impath = diagtools.folder(cfg['plot_dir']+'/individual_panes')
+        #impath += '_'.join(['multi_model_ts', moving_average_str] )
+        #impath += '_'+'_'.join(plotting)
+        #if ukesm == 'only': impath += '_UKESM'
+        #if ukesm == 'not': impath += '_noUKESM'
+        #impath += diagtools.get_image_format(cfg)
 
         # Resize and add legend outside thew axes.
         fig.set_size_inches(9., 6.)
         diagtools.add_legend_outside_right(
             plot_details, plt.gca(), column_width=0.15)
 
-        logger.info('Saving plots to %s', path)
-        plt.savefig(path)
+        logger.info('Saving plots to %s', impath)
+        plt.savefig(impath)
         plt.close()
     else:
         return fig, ax
@@ -858,6 +867,9 @@ def make_multi_model_profiles_plotpair(
         The preprocessed observational dataset file.
 
     """
+    if not profile_fns:
+        return fig, ax
+
     # Load cube and set up units
     if fig is None or ax is None:
         save = True
@@ -1158,6 +1170,7 @@ def multi_model_map_figure(
 
     model_cubes = {}
     model_cubes_paths = {}
+ 
     mean_model_cubes = {}
     exps = {}
 
@@ -1176,9 +1189,9 @@ def multi_model_map_figure(
             continue
 
         for i, fn in enumerate(filenames):
-            if fn.find('CMIP6_UKESM1-0-LL_Omon_ssp370_r9i1p1f2_tos_2049-2050.nc') > -1:
-                # this file doesn't work for some reason.
-                continue
+#            if fn.find('CMIP6_UKESM1-0-LL_Omon_ssp370_r9i1p1f2_tos_2049-2050.nc') > -1:
+#                # this file doesn't work for some reason.
+#                continue
             if metadatas[fn]['dataset'] in models_to_skip: continue
 
             print('loading:', i, variable_group ,scenario, fn)
@@ -1195,7 +1208,14 @@ def multi_model_map_figure(
                     cube = extract_time(cube, ssp_time_range[0], 1, 1, ssp_time_range[1], 12, 31)
                 cube = cube.collapsed('time', iris.analysis.MEAN)
 
+            if 'depth' in [c.standard_name for c in cube.coords()]:
+                if fn.find('o2')== -1: assert 0
+                cube = extract_levels(cube, scheme = 'linear', levels = [750.])
+            else:
+                print([c.standard_name for c in cube.coords()])
+                #assert 0
             print('regrid:', variable_group, i)
+            print('map plot', cube) 
             cube = regrid_intersect(cube, region=region)
             model_cubes = add_dict_list(model_cubes, variable_group, cube)
 
@@ -1214,7 +1234,14 @@ def multi_model_map_figure(
 
     # Calculate the diff range.
     style_range = {'hist':[], 'mean':[], 'diff':[], } #'min_diff':[], 'max_diff':[]}
-    style_range['hist'].extend([hist_cube.data.min(), hist_cube.data.max()])
+    obs_filename = 'aux/obs_ncs/'+short_name+'_map.nc'
+    if plot_obs and os.path.exists(obs_filename):
+        ranges = [hist_cube.data.min(), hist_cube.data.max()]
+        obs_cube = iris.load_cube(obs_filename)
+        ranges.extend([obs_cube.data.min(), obs_cube.data.max()]) 
+        style_range['hist'].extend([np.min(ranges), np.max(ranges)])
+    else:
+        style_range['hist'].extend([hist_cube.data.min(), hist_cube.data.max()])
     style_range['historical'] =  style_range['hist']
 
     # Calculate the diff cubes.
@@ -1296,6 +1323,7 @@ def multi_model_map_figure(
            'hist':'mean',
            'historial':'mean',
         }
+        print(exp, cube.data.min(),cube.data.max())
 
         title = ' '.join([exp,]) # long_names.get(sbp_style, sbp_style,)])
         if region == 'midatlantic':
@@ -1310,9 +1338,14 @@ def multi_model_map_figure(
     # plt.suptitle(suptitle)
 
     obs_filename = 'aux/obs_ncs/'+short_name+'_map.nc'
+    print('maps: obs file:', obs_filename)
     if plot_obs and os.path.exists(obs_filename):
         obs_cube = iris.load_cube(obs_filename)
-        # obs_cube = diagtools.bgc_units(obs_cube, metadata['short_name'])
+        if short_name == 'chl':
+            obs_cube.var_name = 'chl' 
+#            obs_cube.data = obs_cube.data*1000. 
+#       obs_cube = diagtools.bgc_units(obs_cube, short_name)
+           
         # obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
         obs_cube = regrid_intersect(obs_cube, region=region)
 
@@ -1330,6 +1363,7 @@ def multi_model_map_figure(
             zmin=style_range[sbp_style][0],
             zmax=style_range[sbp_style][1],
             )
+        print('obs:', obs_cube.data.min(),obs_cube.data.max())
         plt.gca().coastlines()
         # Compute the required radius in projection native coordinates:
         r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
@@ -1344,13 +1378,18 @@ def multi_model_map_figure(
             plt.text(0.95, 0.9, title,  ha='right', va='center', transform=ax0.transAxes,color='black',fontweight='bold')
         else:
             plt.title(title)
+    else:
+        # no hist plot.
+        ax0 = subplots['obs']
+        plt.sca(ax0)
+        plt.axis('off')
 
 
     if len(shaped_ims['hist']):
         fig.colorbar(shaped_ims['hist'][0], ax=shared_cmap['hist']) #, label = 'Historical')
 
     if len(shaped_ims['ssp']):
-        fig.colorbar(shaped_ims['ssp'][0], ax=shared_cmap['ssp'], label='Difference against Historical')
+        fig.colorbar(shaped_ims['ssp'][0], ax=shared_cmap['ssp'], label='Difference against historical')
 
     # save and close.
     time_str = '_'.join(['-'.join([str(t) for t in hist_time_range]), 'vs',
@@ -1519,14 +1558,24 @@ def main(cfg):
 
 
     # Individual plots - standalone
-    do_standalone = True
+    do_standalone = True  
     if do_standalone:
+        # maps:
+        multi_model_map_figure(
+            cfg,
+            metadatas,
+            maps_fns = maps_fns,
+            figure_style = 'hist_and_ssp',
+            hist_time_range = [1990., 2015.],
+            ssp_time_range = [2015., 2050.],
+            region='midatlantic',)
         # time series
-        plottings = [['global_model_means', 'model_means', ], ['global_model_means',], ['model_means', ],
-                     [ 'means',  '5-95'], ['all_models', ], ] #'medians', 'all_models', 'range',
+        plottings = [['global_model_means', 'model_means', ], #['global_model_means',], ['model_means', ],
+                     #[ 'means',  '5-95'], 
+                     ['all_models', ], ] #'medians', 'all_models', 'range',
         for plotting in plottings:
             #continue
-            for ukesm in ['not', 'only', 'all']:
+            for ukesm in ['all', ]: #'not', 'only', 'all']:
                 multi_model_time_series(
                     cfg,
                     metadatas,
@@ -1539,7 +1588,7 @@ def main(cfg):
                 )
 
         # Profile pair
-        plottings =  [['means_split',], ['5-95_split',], ['means_split', '5-95_split', ],  ]
+        plottings =  [['all_models',], ['means_split',], ['5-95_split',], ['means_split', '5-95_split', ],  ]
         for plotting in plottings:
             #continue
             make_multi_model_profiles_plotpair(
@@ -1558,17 +1607,9 @@ def main(cfg):
                     save = False,
                     draw_legend=True
                 )
-        # maps:
-        multi_model_map_figure(
-            cfg,
-            metadatas,
-            maps_fns = maps_fns,
-            figure_style = 'hist_and_ssp',
-            hist_time_range = [1990., 2015.],
-            ssp_time_range = [2015., 2050.],
-            region='midatlantic',)
+
         # Climatology plot
-        plottings =  [[ 'means',  '5-95'],  ['means',],  ['5-95',], ['all_models', ]]
+        plottings =  [['all_models',],[ 'means',  '5-95'], ]#  ['means',],  ['5-95',], ['all_models', ]]
         for plotting in plottings:
             #continue
             multi_model_clim_figure(
@@ -1664,6 +1705,15 @@ def main(cfg):
         suptitle = 'Integrated Primary Production'
     elif 'no3_ts_hist' in time_series_fns.keys():
         suptitle = 'Nitrate Concentration'
+    elif 'mld_ts_hist' in time_series_fns.keys() or 'mlotst_ts_hist' in time_series_fns.keys():
+        suptitle = 'Mixed Layer Depth'
+    elif 'o2_ts_hist' in time_series_fns.keys():
+        suptitle = 'Disolved Oxygen Concentration at 750m, mmol m'r'$^{-3}$'
+    elif 'so_ts_hist' in time_series_fns.keys() or 'sos_ts_hist' in time_series_fns.keys():
+        suptitle = 'Salinity'
+    else:
+        print('suptitle not found:', time_series_fns.keys())
+        assert 0
 
 
     suptitle += ' '.join([

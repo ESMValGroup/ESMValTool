@@ -26,7 +26,7 @@ from matplotlib import pyplot
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvalcore.preprocessor._time import extract_time, annual_statistics, regrid_time
 from esmvalcore.preprocessor._regrid import extract_levels, regrid
-
+from esmvalcore.preprocessor._area import extract_region
 
 def get_shelve_path(field, pane='timeseries'):
     shelve_path = diagtools.folder(['aux', 'obs_shelves'])
@@ -81,6 +81,48 @@ def nc_time_to_float(nc):
     return times
 
 
+def get_obsdata_paths(field, data_type='3d'):
+
+    #files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_*'))
+    #OBS6_WOA_clim_2018_Omon_so_200007-200007.nc      OBS6_WOA_clim_2018_Oyr_no3_200001-200012.nc  OBS_WOA_clim_2013v2_Omon_so_200001-200012.nc      OBS_WOA_clim_2013v2_Oyr_no3_200001-200012.nc
+    #OBS6_WOA_clim_2018_Omon_sos_200007-200007.nc     OBS6_WOA_clim_2018_Oyr_o2_200001-200012.nc   OBS_WOA_clim_2013v2_Omon_sos_200007-200007.nc     OBS_WOA_clim_2013v2_Oyr_o2_200001-200012.nc
+    #OBS6_WOA_clim_2018_Omon_thetao_200007-200007.nc  OBS6_WOA_clim_2018_Oyr_po4_200001-200012.nc  OBS_WOA_clim_2013v2_Omon_thetao_200001-200012.nc  OBS_WOA_clim_2013v2_Oyr_po4_200001-200012.nc
+    #OBS6_WOA_clim_2018_Omon_tos_200007-200007.nc     OBS6_WOA_clim_2018_Oyr_si_200001-200012.nc   OBS_WOA_clim_2013v2_Omon_tos_200007-200007.nc     OBS_WOA_clim_2013v2_Oyr_si_200001-200012.nc
+
+    t2 = '/gws/nopw/j04/esmeval/obsdata-v2/Tier2/WOA/'
+    # temperature
+    if field in ['tos', 'thetao'] and data_type=='surface':
+        return [t2 + 'OBS6_WOA_clim_2018_Omon_tos_200007-200007.nc']
+        #ob('/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc'))
+    if field in ['tos', 'thetao'] and data_type=='3d':
+        #return [t2+'OBS6_WOA_clim_2018_Omon_thetao_200001-200012.nc', ]
+        return [t2 + 'OBS6_WOA_clim_2018_Omon_thetao_200007-200007.nc', ]
+    # sal
+    if field in ['sos', 'so', 'sal'] and data_type=='surface':
+        return [t2 + 'OBS6_WOA_clim_2018_Omon_sos_200007-200007.nc', ]
+    if field in ['sos', 'so', 'sal'] and data_type=='3d':
+        return [t2 + 'OBS6_WOA_clim_2018_Omon_so_200007-200007.nc', ]
+
+    # nutrients 
+    if field in ['no3', ]:
+       return [t2 + 'OBS6_WOA_clim_2018_Oyr_no3_200001-200012.nc', ]
+    if field in ['o2', ]:
+       return [t2 + 'OBS6_WOA_clim_2018_Oyr_o2_200001-200012.nc', ]
+    if field in ['po4', ]:
+       return [t2 + 'OBS6_WOA_clim_2018_Oyr_po4_200001-200012.nc', ]
+    if field in ['si', ]:
+       return [t2 + 'OBS6_WOA_clim_2018_Oyr_si_200001-200012.nc', ]
+    if field in ['pH', 'ph']:
+        if data_type in ['3d', 'profile', 'map']: 
+            return ["/gws/nopw/j04/esmeval/obsdata-v2/Tier2/GLODAP/OBS6_GLODAP_clim_v2.2016b_Oyr_ph_200001-200012.nc", ]
+
+    if field in ['chl', ]:
+        return sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/ESACCI-OC/OBS6_ESACCI-OC_sat_fv5.0_Omon_chl_199709-202012.nc'))
+   
+    print('Unable to find:', field, data_type)
+    assert 0
+
+
 def time_series(field='tos', pane='timeseries'):
     """
     Calculates the time series.
@@ -103,42 +145,64 @@ def time_series(field='tos', pane='timeseries'):
         if pane == 'clim':
             return months, clim
 
-    if field == 'tos':
-        files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc'))
-    elif field == 'chl':
-        files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/ESACCI-OC/OBS6_ESACCI-OC_sat_fv5.0_Omon_chl_199709-202012.nc'))
-    else: assert 0
+    files = get_obsdata_paths(field, data_type='surface')
 
-    #times, data = [], []
     annual_times, annual_data = [], []
     months_dat = {m:[] for m in months}
 
     datas = {}
-
     central_longitude = -14.25 # +/-3 # West -11.25
     central_latitude = -7.56 # +/3 # North
+
     for nc_path in sorted(files):
         print('loading:', nc_path)
 
         cube = iris.load_cube(nc_path)
         cube = diagtools.bgc_units(cube, field)
 
-        #nc = Dataset(nc_path, 'r')
-        #bgc_units
         nctimes = diagtools.cube_time_to_float(cube)
+        nc = Dataset(nc_path)
+        lons = nc.variables['lon']
+        lats = nc.variables['lat']
 
-        # lons = nc.variables['lon']
-        # np.argmin(np.abs(lons[:] -(360-central_longitude -3)))
-        # np.argmin(np.abs(lons[:] -(360-central_longitude +3)))
+        lon_min = np.argmin(np.abs(lons[:] -(central_longitude +360.-3.)))
+        lon_max = np.argmin(np.abs(lons[:] -(central_longitude +360.+3.)))
+        print('lon_min', lon_min, lons[lon_min])
+        print('lon_max', lon_max, lons[lon_max])
+        print('source lon range', np.min(lons), np.max(lons))
+        lon_mins = [np.argmin(np.abs(lons[:] -(360.+central_longitude -3.))), np.argmin(np.abs(lons[:] -(360.+central_longitude +3.)))]
+        lat_maxs = [np.argmin(np.abs(lats[:] -(central_latitude -3.))), np.argmin(np.abs(lats[:] -(central_latitude +3.)))]
+        print('lonsmin', lon_mins, lons[lon_mins[0]], lons[lon_mins[1]])
+        print('latsmin', lat_maxs, lats[lat_maxs[0]], lats[lat_maxs[1]])
 
-        # lons = nc.variables['lon']
-        # np.argmin(np.abs(lons[:] -(360-central_longitude -3))), np.argmin(np.abs(lons[:] -(360-central_longitude +3)))
-        # np.argmin(np.abs(lats[:] -(central_latitude -3))), np.argmin(np.abs(lats[:] -(central_latitude +3)))
-        #
-        if field == 'tos':
-            ncdata =  cube[:, 106:114+1, 457:465+1].collapsed(['lat', 'lon'], iris.analysis.MEAN).data #.mean(axis=(1,2))
-        elif field =='chl':
-            ncdata =  cube[:, 0, 317:341+1,1439:1439+1].collapsed(['latitude', 'longitude'], iris.analysis.MEAN).data
+ #       print(cube.dimensions)
+        if cube.ndim == 3: 
+            latdim = 1
+            londim = 2
+        elif cube.ndim == 4:
+            latdim = 2
+            londim = 3
+        else: assert 0
+
+        if cube.dim_coords[latdim].var_name == 'lat' and cube.dim_coords[londim].var_name == 'lon':
+            pass
+        else: assert 0
+
+        if cube.ndim == 3:
+            ncdata = cube[...,lat_maxs[0]:lat_maxs[1]+1, lon_mins[0]:lon_mins[1]+1]
+        elif cube.ndim == 4:
+            ncdata = cube[:,0,lat_maxs[0]:lat_maxs[1]+1, lon_mins[0]:lon_mins[1]+1]
+        else: assert 0 
+
+        try: 
+            ncdata = ncdata.collapsed(['lat', 'lon'], iris.analysis.MEAN).data
+        except: 
+            ncdata = ncdata.collapsed(['latitude', 'longitude'], iris.analysis.MEAN).data
+
+#       if field == 'tos':
+#           ncdata =  cube[:, 106:114+1, 457:465+1].collapsed(['lat', 'lon'], iris.analysis.MEAN).data #.mean(axis=(1,2))
+#       elif field =='chl':
+#           ncdata =  cube[:, 0, 317:341+1,1439:1439+1].collapsed(['latitude', 'longitude'], iris.analysis.MEAN).data
 
         for t,d in zip(nctimes, ncdata):
             datas[t] = d
@@ -152,6 +216,7 @@ def time_series(field='tos', pane='timeseries'):
     # calculate annual and climatological data.
     for t, d in zip(times, data):
         years[int(t)].append(d)
+        print('calculationg clim', int(t), t, d)
 
     for yr in sorted(years.keys()):
         annual_times.append(yr + 0.5)
@@ -162,23 +227,6 @@ def time_series(field='tos', pane='timeseries'):
         for m, d in zip(months, years[yr]):
             print('clim:', m, d)
             months_dat[m].append(d)
-
-
-        # elif field in ['chl',]:
-        #     print(nctimes, ncdata)
-        #     assert 0
-        # else: assert 0
-        # print('data:', np.mean(nctimes), np.mean(ncdata))
-        #
-        # #calculate clim
-        # if field in ['tos',]:
-        #     if np.min(nctimes) < 2000.: continue
-        #     if np.max(nctimes) > 2010.: continue
-        #
-        # if field in ['chl',]:
-
-            #cube = extract_time(cube, 2000, 1, 1, 2010, 1, 1)
-
 
     clim = [np.mean(months_dat[m]) for m in months]
 
@@ -191,7 +239,8 @@ def time_series(field='tos', pane='timeseries'):
         sh['header'] = 'TOS calculated from ERA-Interim, monthly data'
     elif field =='chl':
         sh['header'] = 'chl calculated from ESACCI-OC_sat, monthly data'
-
+    else:
+        sh['header'] = 'WOA 2018 ' +field
     sh['files'] = files
     sh.close()
 
@@ -214,27 +263,35 @@ def load_map_netcdf(field='tos', pane='map'):
         print('netcdf exists:', path)
         return iris.load_cube(path)
 
-    if field=='tos':
-        files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc'))
-    elif field == 'chl':
-        files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/ESACCI-OC/OBS6_ESACCI-OC_sat_fv5.0_Omon_chl_199709-202012.nc'))
-    else: assert 0
+    files = get_obsdata_paths(field, data_type='surface')
+
+#    if field=='tos':
+#        files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc'))
+#    elif field == 'chl':
+#        files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/ESACCI-OC/OBS6_ESACCI-OC_sat_fv5.0_Omon_chl_199709-202012.nc'))
+#    else: assert 0
 
     cube_list = []
     for fn in files:
         cube = iris.load_cube(fn)
         cube = diagtools.bgc_units(cube, field)
         times = diagtools.cube_time_to_float(cube)
+        if cube.ndim == 4:
+            cube = cube[:,0]
+        cube = extract_time(cube, 2000, 1, 1, 2010, 1, 1)
+
+#        if np.min(times) < 2000.: continue
+#        if np.max(times) > 2010.: continue
 
         # assumes tium
-        if field in ['tos',]:
-            if np.min(times) < 2000.: continue
-            if np.max(times) > 2010.: continue
-        if field in ['chl',]:
-            cube = cube[:,0] # extract surface layer
-            if np.min(times) > 2010.: continue
-            if np.max(times) < 2000.: continue
-            cube = extract_time(cube, 2000, 1, 1, 2010, 1, 1)
+#       if field in ['tos',]:
+#           if np.min(times) < 2000.: continue
+#           if np.max(times) > 2010.: continue
+#        if field in ['chl',]:
+#            cube = cube[:,0] # extract surface layer
+#           if np.min(times) > 2010.: continue
+#           if np.max(times) < 2000.: continue
+#            cube = extract_time(cube, 2000, 1, 1, 2010, 1, 1)
 
         print('loaded:', fn)
         new_cube = cube.collapsed('time', iris.analysis.MEAN)
@@ -307,7 +364,7 @@ def make_map_figure(field):
         )
 
     pyplot.colorbar()
-    pyplot.title(field)
+    pyplot.title(' '.join([field, ',', str(cube.units)]))
     print('saving figure:', path)
     pyplot.savefig(path)
     pyplot.close()
@@ -326,20 +383,21 @@ def load_profile_netcdf(field='tos', pane='profile'):
         print('netcdf exists:', path)
         return iris.load_cube(path)
 
-    #files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_*'))
-    if field == 'tos':
-        files = ['/gws/nopw/j04/esmeval/obsdata-v2/Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_200001-200012.nc',]
-    elif field == 'chl':
-        return
-        #files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/ESACCI-OC/OBS6_ESACCI-OC_sat_fv5.0_Omon_chl_199709-202012.nc'))
-
+    files = get_obsdata_paths(field, data_type='3d')
     cube_list = []
+    central_longitude = -14.25 #W #-160.+3.5
+    central_latitude = -7.56
+
     for fn in files:
+        print('load_profile_netcdf:', fn)
         cube = iris.load_cube(fn)
         cube = diagtools.bgc_units(cube, field)
         times = diagtools.cube_time_to_float(cube)
         if np.min(times) < 2000.: continue
         if np.max(times) > 2010.: continue
+        cube = extract_region(cube, central_longitude -3., central_longitude+3.,
+            central_latitude-3., central_latitude+3.)
+
         new_cube = cube.collapsed('time', iris.analysis.MEAN)
         #new_cube = new_cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN)
         cube_list.append(new_cube.copy())
@@ -428,13 +486,16 @@ def make_profile_figure(field):
 #     sh.close()
 
 def main():
-    make_map_figure('chl')
-    make_ts_figure('chl')
+    twodfields = ['chl', ]
+    threedfields = [] #'so','ph'] #'tos',  'no3', 'si',]
+    for field in twodfields:
+        make_map_figure(field)
+#        make_ts_figure(field)
 
-
-    make_profile_figure('tos')
-    make_map_figure('tos')
-    make_ts_figure('tos')
+    for field in threedfields:
+        make_profile_figure(field)
+        make_map_figure(field)
+        make_ts_figure(field)
 
 if __name__ == '__main__':
     main()
