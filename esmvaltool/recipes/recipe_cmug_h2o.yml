@@ -1,8 +1,10 @@
 # recipe_
 ---
 documentation:  
-  title: Evaluate water vapor short wave radiance absorption schemes of 
-         ESMs with the observations, including ESACCI data.
+  title: Diagnositcs for ESACCI data, which 
+         Evaluate water vapor short wave radiance absorption schemes,
+         water vapour profiles,
+         and climatologies at the tropopause
   description: |
     Recipe for ESACCI water vapour data
 
