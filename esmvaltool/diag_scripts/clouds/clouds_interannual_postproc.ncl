@@ -29,7 +29,7 @@ begin
 
     ; CMIP5
     fname5 = inpath + "/clouds_intera_cmip5/var" + var + "/" \
-        + "clouds_interannual_" + var + ".nc"
+      + "clouds_interannual_" + var + ".nc"
     infile5 = addfile(fname5, "r")
     varnames5 = getfilevarnames(infile5)
     dims = dimsizes(varnames5)
@@ -65,7 +65,7 @@ begin
 
     ; CMIP6
     fname6 = inpath + "/clouds_intera_cmip6/var" + var + "/" \
-        + "clouds_interannual_" + var + ".nc"
+      + "clouds_interannual_" + var + ".nc"
     infile6 = addfile(fname6, "r")
     varnames6 = getfilevarnames(infile6)
     dims = dimsizes(varnames6)
