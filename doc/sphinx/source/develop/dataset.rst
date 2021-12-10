@@ -180,7 +180,7 @@ The main body of the CMORizer script must contain a function called
 
 .. code-block:: python
 
-   def cmorization(in_dir, out_dir, cfg, _, __, ___):
+   def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
 with this exact call signature. Here, ``in_dir`` corresponds to the input
 directory of the raw files, ``out_dir`` to the output directory of final
