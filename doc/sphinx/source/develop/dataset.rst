@@ -85,6 +85,7 @@ The dataset entry should contain:
 - the ``source`` of the raw data;
 - the ``last_access`` date;
 - the ``info`` that explain how to download the data.
+
 Note that these fields should be identical to the content of the header
 of the cmorizing script (see Section `4. Create a cmorizer for the dataset`_).
 
