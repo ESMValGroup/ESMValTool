@@ -76,10 +76,11 @@ for downloading (e.g. providing contact information, licence agreements)
 and using the observations. The unformatted (raw) observations
 should then be stored then in the appropriate of these three folders.
 
-For each additional dataset, an entry need to be made to the file 
+For each additional dataset, an entry needs to be made to the file 
 `datasets.yml
 <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/datasets.yml>`_.
 The dataset entry should contain:
+
 - the correct ``tier`` information;
 - the ``source`` of the raw data;
 - the ``last_access`` date;
@@ -254,9 +255,9 @@ The cmorizing script for the given dataset can be run with:
    your cmorized dataset will be stored. The ESMValTool will create a folder
    with the correct tier information 
    (see Section `2. Edit your configuration file`_) if that tier folder is not
-   already available, and then a folder named after the data set. 
+   already available, and then a folder named after the dataset. 
    In this folder the cmorized data set will be stored as a NetCDF file.
-   The cmorized dataset will be automatically move to the correct tier
+   The cmorized dataset will be automatically moved to the correct tier
    subfolder of your OBS or OBS6 directory if the option 
    ``--install=True`` is used in the command above.
 
