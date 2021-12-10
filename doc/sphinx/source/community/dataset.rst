@@ -41,7 +41,7 @@ To test a pull request for a new CMORizer script:
    it in the ``RAWOBS`` path specified in your ``config-user.yml``
 #. If available, use the downloading script by running
    ``esmvaltool data download --config_file <config-file>  <dataset>``
-#. Run the CMORizer script by running ``esmvaltool data format <config-file> <dataset>``
+#. Run the cmorization by running ``esmvaltool data format <config-file> <dataset>``
 #. Copy the resulting data to the ``OBS`` (for CMIP5 compliant data) or ``OBS6``
    (for CMIP6 compliant data) path specified in your
    ``config-user.yml``
