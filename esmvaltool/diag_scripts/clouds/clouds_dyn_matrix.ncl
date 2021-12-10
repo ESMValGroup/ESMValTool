@@ -719,14 +719,16 @@ begin
     baseplots_c(ii) = gsn_csm_contour(cwks, countdata, cres)
 
     xaddplots_c(ii) = gsn_csm_xy(cwks, count&bin_x, \
-                               dim_avg_n(countdata, 0), xyres1)
+                                 dim_avg_n(countdata, 0), xyres1)
     yaddplots_c(ii) = gsn_csm_xy(cwks, dim_avg_n(countdata, 1), \
-                               count&bin_y, xyres2)
+                                 count&bin_y, xyres2)
 
     xyres1@gsnAttachPlotsXAxis = True
-    plots_c(ii, 0) = gsn_attach_plots(baseplots_c(ii), xaddplots_c(ii), cres, xyres1)
+    plots_c(ii, 0) = gsn_attach_plots(baseplots_c(ii), \
+                                      xaddplots_c(ii), cres, xyres1)
     delete(xyres1@gsnAttachPlotsXAxis)
-    plots_c(ii, 1) = gsn_attach_plots(baseplots_c(ii), yaddplots_c(ii), cres, xyres2)
+    plots_c(ii, 1) = gsn_attach_plots(baseplots_c(ii), \
+                                      yaddplots_c(ii), cres, xyres2)
 
     draw(baseplots_c(ii))
     frame(cwks)
