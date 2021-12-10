@@ -4,6 +4,10 @@ from unittest.mock import Mock
 
 import dask.array as da
 import iris
+import iris.coord_systems
+import iris.coords
+import iris.cube
+import iris.fileformats
 import numpy as np
 import pytest
 from cf_units import Unit
@@ -36,17 +40,17 @@ def is_lazy(cube):
 def cubes_generator(lazy=True):
     """Generate a list of cubes via test parametrization."""
     cube_datas = [
-        np.array([[0, 1], [-1, 0]], dtype=np.int),
+        np.array([[0, 1], [-1, 0]], dtype=np.int32),
         np.array([[0.0, 1.0], [-1.0, 0.0]], dtype=np.float32),
         np.array([[0.0, 1.0], [-1.0, 0.0]], dtype=np.float64),
-        np.ma.masked_equal([[0, 1], [2, 3]], 3).astype(np.int),
+        np.ma.masked_equal([[0, 1], [2, 3]], 3).astype(np.int32),
         np.ma.masked_values([[0.0, 1.0], [2.0, 3.0]], 3.0).astype(np.float32),
         np.ma.masked_values([[0.0, 1.0], [2.0, 3.0]], 3.0).astype(np.float64),
     ]
     x_coords = [
-        (np.array([1, 3], dtype=np.int), None),
+        (np.array([1, 3], dtype=np.int32), None),
         (np.array([1, 3],
-                  dtype=np.int), np.array([[0, 2], [2, 4]], dtype=np.int)),
+                  dtype=np.int32), np.array([[0, 2], [2, 4]], dtype=np.int32)),
         (np.array([1.0, 3.0], dtype=np.float32),
          np.array([[0.0, 2.0], [2.0, 4.0]], dtype=np.float32)),
         (np.array([1.0, 3.0], dtype=np.float64), None),
@@ -54,12 +58,13 @@ def cubes_generator(lazy=True):
          np.array([[0.0, 2.0], [2.0, 4.0]], dtype=np.float64)),
     ]
     y_coords = [
-        (np.array([1, 3], dtype=np.int),
+        (np.array([1, 3], dtype=np.int32),
          np.array([[0.0, 2.0], [2.0, 4.0]], dtype=np.float32)),
         (np.array([1.0, 3.0], dtype=np.float32),
          np.array([[0.0, 2.0], [2.0, 4.0]], dtype=np.float64)),
         (np.array([1.0, 3.0],
-                  dtype=np.float64), np.array([[0, 2], [2, 4]], dtype=np.int)),
+                  dtype=np.float64), np.array([[0, 2], [2, 4]],
+                                              dtype=np.int32)),
     ]
     for cube_data in cube_datas:
         cube_data = np_to_da(cube_data, lazy)

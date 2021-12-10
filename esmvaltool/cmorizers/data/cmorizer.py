@@ -129,7 +129,7 @@ class Formatter():
                 logger.exception('Failed to download %s', dataset)
                 failed_datasets.append(dataset)
         if failed_datasets:
-            logger.error('Download failed for datasets %s', self.datasets)
+            logger.error('Download failed for datasets %s', failed_datasets)
             return False
         return True
 
@@ -252,7 +252,7 @@ class Formatter():
         end: datetime
             End of the period to format
         install: bool
-            If True, automatically copies the data to the final location if
+            If True, automatically moves the data to the final location if
             there is no data there.
         """
         reformat_script_root = os.path.join(

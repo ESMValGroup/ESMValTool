@@ -8,6 +8,7 @@ import iris
 import iris.coord_systems
 import iris.coords
 import iris.cube
+import iris.fileformats
 import numpy as np
 import pytest
 import yaml
