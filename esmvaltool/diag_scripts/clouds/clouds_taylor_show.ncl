@@ -13,7 +13,8 @@
 
 begin
 
-  inpath = "/pf/b/b380103/workesm/esmvaltool_output/recipe_clouds_taylor2_20211109_085428/work/clouds_tay"
+  inpath = "/pf/b/b380103/workesm/esmvaltool_output/" + \
+           "recipe_clouds_taylor2_20211109_085428/work/clouds_tay"
   var = "clivi"
 
   diag = "clouds_taylor_show.ncl"
