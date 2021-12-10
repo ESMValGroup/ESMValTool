@@ -91,7 +91,7 @@ For other datasets, downloading instructions can be obtained with:
     esmvaltool data info [DATASET]
 
 ESMValTool currently support two ways to perform this reformatting (aka 'CMORization').
-The first is to use a CMORizer script to generate a local pool of reformatted data that can
+The first is to use a CMORizer to generate a local pool of reformatted data that can
 readily be used by the ESMValTool.
 The second way is to implement specific 'fixes' for your dataset.
 In that case, the reformatting is performed 'on the fly' during the execution of an ESMValTool
