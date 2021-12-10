@@ -100,7 +100,10 @@ datasets:
     tier: 3
     source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-soil-moisture?tab=form
     last_access: 2019-03-14
-    info: ""
+    info: |
+      - Use the download command to retrieve the data.
+      - Available years: 1992-2019 (ACTIVE) or 1979-2019 (others).
+      - Versions: v201812.0.0 and v201912.0.0
 
   CDS-UERRA:
     tier: 3
