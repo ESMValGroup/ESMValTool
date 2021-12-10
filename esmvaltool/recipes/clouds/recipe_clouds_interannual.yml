@@ -25,7 +25,6 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
-#    mask_multimodel:
     multi_model_statistics:
       span: overlap
       statistics: [mean]

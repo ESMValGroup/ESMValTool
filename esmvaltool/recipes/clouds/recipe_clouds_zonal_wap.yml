@@ -47,14 +47,16 @@ diagnostics:
     variables:
       wap:
         preprocessor: pp27
-        reference_dataset: ERA-Interim
+        reference_dataset: ERA5
         mip: Amon
         project: CMIP6
         exp: historical
         start_year: 1995
         end_year: 2014
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+#      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+#         start_year: 1982, end_year: 2016}
+      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
          start_year: 1982, end_year: 2016}
       - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r1i1p1f1, grid: gn}
       - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
@@ -123,14 +125,16 @@ diagnostics:
     variables:
       wap:
         preprocessor: pp27
-        reference_dataset: ERA-Interim
+        reference_dataset: ERA5
         mip: Amon
         project: CMIP5
         exp: historical
         start_year: 1986
         end_year: 2005
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+#      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+#         start_year: 1982, end_year: 2016}
+      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
          start_year: 1982, end_year: 2016}
       - {dataset: ACCESS1-0, ensemble: r1i1p1}
       - {dataset: ACCESS1-3, ensemble: r1i1p1}
