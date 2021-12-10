@@ -2,6 +2,7 @@
 # recipe_era5-land.yml
 ---
 documentation:
+  title: CMORizer for ERA5-Land
   description: CMORize ERA5-Land data
 
   authors:

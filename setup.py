@@ -23,40 +23,41 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
-        'cartopy>=0.18',
+        'cartopy',
         'cdo',
         'cdsapi',
         'cf-units',
         'cftime',
         'cmocean',
-        'dask>=2.12',
+        'dask',
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        'esmvalcore>=2.2.0,<2.3',
+        'esmvalcore',
         'fiona',
         'GDAL',
         'jinja2',
         'joblib',
         'lime',
-        'matplotlib>3.3.1',  # bug in 3.3.1, 3.3.2 and 3 fine
+        'matplotlib',
         'natsort',
-        'nc-time-axis',  # needed by iris.plot
+        'nc-time-axis',
         'netCDF4',
         'numpy',
+        'openpyxl',
         'pandas',
-        'pyproj>=2.1'
+        'pyproj',
         'pyyaml',
-        'rasterio',  # replaces pynio
+        'rasterio',
         'ruamel.yaml',
         'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris>=3.0.1',
+        'scitools-iris',
         'seaborn',
         'seawater',
         'shapely',
-        'xarray>=0.12',
+        'xarray',
         'xesmf',
         'xgboost',
         'xlsxwriter',
@@ -218,7 +219,8 @@ setup(
     extras_require={
         'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test']) -
                     {'pycodestyle'}),
-        'test': REQUIREMENTS['test'],
+        'test':
+        REQUIREMENTS['test'],
     },
     entry_points={
         'console_scripts': [

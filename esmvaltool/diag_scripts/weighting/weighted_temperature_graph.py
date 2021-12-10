@@ -27,40 +27,63 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def visualize_and_save_temperatures(temperature: 'xr.DataArray',
-                                    iqr: 'xr.DataArray',
-                                    iqr_weighted: 'xr.DataArray', cfg: dict,
-                                    ancestors: list):
+                                    central_estimate: 'xr.DataArray',
+                                    central_estimate_weighted: 'xr.DataArray',
+                                    uncertainty_range: 'xr.DataArray',
+                                    uncertainty_range_weighted: 'xr.DataArray',
+                                    cfg: dict, ancestors: list):
     """Visualize weighted temperature."""
     figure, axes = plt.subplots(dpi=300)
 
     def plot_shaded(xrange, upper, lower, color, **kwargs):
         axes.fill_between(
-            xrange,
-            upper,
-            lower,
+            xrange.data,
+            upper.data,
+            lower.data,
             facecolor=color,
             edgecolor='none',
-            alpha=0.5,
+            alpha=0.3,
             zorder=100,
+            **kwargs,
+        )
+
+    def plot_line(xrange, central, **kwargs):
+        axes.plot(
+            xrange,
+            central,
+            zorder=1000,
             **kwargs,
         )
 
     color_non_weighted = 'red'
     color_weighted = 'green'
     color_data = 'gray'
+    central_string = cfg['settings'].get('central_estimate', 50)
+    range_string = '{}-{}perc'.format(cfg['settings'].get('lower_bound', 25),
+                                      cfg['settings'].get('upper_bound', 75))
+    if not isinstance(central_string, str):
+        central_string = f'{central_string}perc'
 
-    plot_shaded(iqr.time,
-                iqr.data[:, 0],
-                iqr.data[:, 1],
+    plot_line(central_estimate.time,
+              central_estimate,
+              color=color_non_weighted,
+              label='Non-weighted {}'.format(central_string))
+    plot_shaded(uncertainty_range.time,
+                uncertainty_range[:, 0],
+                uncertainty_range[:, 1],
                 color=color_non_weighted,
-                label='Non-weighted inter-quartile range')
+                label=f'Non-weighted {range_string} range')
 
+    plot_line(central_estimate_weighted.time,
+              central_estimate_weighted,
+              color=color_weighted,
+              label='Weighted {}'.format(central_string))
     plot_shaded(
-        iqr_weighted.time,
-        iqr_weighted.data[:, 0],
-        iqr_weighted.data[:, 1],
+        uncertainty_range_weighted.time,
+        uncertainty_range_weighted[:, 0],
+        uncertainty_range_weighted[:, 1],
         color=color_weighted,
-        label='Weighted inter-quartile range',
+        label='Weighted {} range'.format(range_string),
     )
 
     for temp in temperature.data:
@@ -77,7 +100,10 @@ def visualize_and_save_temperatures(temperature: 'xr.DataArray',
     by_label = dict(zip(labels, handles))  # dict removes dupes
     axes.legend(by_label.values(), by_label.keys())
 
-    plt.title('Temperature anomaly relative to 1981-2010')
+    start_year = cfg['settings']['start_year']
+    end_year = cfg['settings']['end_year']
+    caption = f'Temperature anomaly relative to {start_year}-{end_year}'
+    plt.title(caption)
     plt.xlabel('Year')
     plt.ylabel(r'Temperature anomaly $\degree$C')
 
@@ -90,7 +116,6 @@ def visualize_and_save_temperatures(temperature: 'xr.DataArray',
                                             extension='nc')
     temperature.to_netcdf(filename_data)
 
-    caption = 'Temperature anomaly relative to 1981-2010'
     log_provenance(caption, filename_plot, cfg, ancestors)
     log_provenance(caption, filename_data, cfg, ancestors)
 
@@ -105,14 +130,33 @@ def main(cfg):
     models = read_metadata(cfg, 'short_name')['tas']
     model_data, model_data_files = read_model_data(models)
 
-    percentiles = np.array([25, 75])
+    settings = cfg['settings']
+    central_estimate_var = settings.get('central_estimate', 50)
+    if isinstance(central_estimate_var, (int, float)):
+        central_estimate = calculate_percentiles(
+            model_data,
+            np.array([central_estimate_var]),
+        )
+        central_estimate_weighted = calculate_percentiles(
+            model_data,
+            np.array([central_estimate_var]),
+            weights=weights,
+        )
+    elif central_estimate_var == 'mean':
+        central_estimate = model_data.mean('model_ensemble')
+        central_estimate_weighted = model_data.weighted(weights).mean(
+            'model_ensemble')
 
-    iqr = calculate_percentiles(
+    percentiles = np.array(
+        [settings.get('lower_bound', 25),
+         settings.get('upper_bound', 75)])
+
+    uncertainty_range = calculate_percentiles(
         model_data,
         percentiles,
     )
 
-    iqr_weighted = calculate_percentiles(
+    uncertainty_range_weighted = calculate_percentiles(
         model_data,
         percentiles,
         weights=weights,
@@ -120,8 +164,10 @@ def main(cfg):
 
     visualize_and_save_temperatures(
         model_data,
-        iqr,
-        iqr_weighted,
+        central_estimate,
+        central_estimate_weighted,
+        uncertainty_range,
+        uncertainty_range_weighted,
         cfg,
         model_data_files,
     )

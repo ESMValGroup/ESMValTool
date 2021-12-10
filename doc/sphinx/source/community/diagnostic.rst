@@ -18,7 +18,7 @@ Creating a recipe and diagnostic script(s)
 First create a recipe in esmvaltool/recipes to define the input data your analysis script needs
 and optionally preprocessing and other settings.
 Also create a script in the
-`esmvaltool/diag_scripts <https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts>`_
+`esmvaltool/diag_scripts <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/diag_scripts>`_
 directory and make sure it is referenced from your recipe.
 The easiest way to do this is probably to copy the example recipe and diagnostic
 script and adjust those to your needs.
@@ -28,17 +28,17 @@ However, NCL, R, and Julia scripts are also supported.
 
 Good example recipes for the different languages are:
 
--  python: `esmvaltool/recipes/examples/recipe_python.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/examples/recipe_python.yml>`_
--  R: `esmvaltool/recipes/examples/recipe_r.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/examples/recipe_r.yml>`_
--  julia: `esmvaltool/recipes/examples/recipe_julia.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/examples/recipe_julia.yml>`_
--  ncl: `esmvaltool/recipes/examples/recipe_ncl.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/examples/recipe_ncl.yml>`_
+-  python: `esmvaltool/recipes/examples/recipe_python.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_python.yml>`_
+-  R: `esmvaltool/recipes/examples/recipe_r.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_r.yml>`_
+-  julia: `esmvaltool/recipes/examples/recipe_julia.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_julia.yml>`_
+-  ncl: `esmvaltool/recipes/examples/recipe_ncl.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_ncl.yml>`_
 
 Good example diagnostics are:
 
--  python: `esmvaltool/diag_scripts/examples/diagnostic.py <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.py>`_
--  R: `esmvaltool/diag_scripts/examples/diagnostic.R <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.R>`_
--  julia: `esmvaltool/diag_scripts/examples/diagnostic.jl <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.jl>`_
--  ncl: `esmvaltool/diag_scripts/examples/diagnostic.ncl <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.ncl>`_
+-  python: `esmvaltool/diag_scripts/examples/diagnostic.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.py>`_
+-  R: `esmvaltool/diag_scripts/examples/diagnostic.R <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.R>`_
+-  julia: `esmvaltool/diag_scripts/examples/diagnostic.jl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.jl>`_
+-  ncl: `esmvaltool/diag_scripts/examples/diagnostic.ncl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.ncl>`_
 
 For an explanation of the recipe format, you might want to read about the
 :ref:`ESMValTool recipe <esmvalcore:recipe_overview>` and have a look at the
@@ -47,7 +47,7 @@ For further inspiration, check out the already
 :ref:`available recipes and diagnostics <recipes>`.
 
 There is a directory
-`esmvaltool/diag_scripts/shared <https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/shared>`_
+`esmvaltool/diag_scripts/shared <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/diag_scripts/shared>`_
 for code that is shared by many diagnostics.
 This directory contains code for creating common plot types, generating output
 file names, selecting input data, and other commonly needed functions.
@@ -83,10 +83,10 @@ Recipes should have a page in the :ref:`recipes` chapter which describes what
 the recipe/diagnostic calculates.
 
 When adding a completely new recipe, please start by copying
-`doc/sphinx/source/recipes/recipe_template.rst.template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
+`doc/sphinx/source/recipes/recipe_template.rst.template <https://github.com/ESMValGroup/ESMValTool/blob/main/doc/sphinx/source/recipes/recipe_template.rst.template>`_
 to a new file ``doc/sphinx/source/recipes/recipe_<name of diagnostic>.rst``
 and do not forget to add your recipe to the
-`index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
+`index <https://github.com/ESMValGroup/ESMValTool/blob/main/doc/sphinx/source/recipes/index.rst>`_.
 
 Fill all sections from the template:
 
@@ -99,7 +99,7 @@ Fill all sections from the template:
 An example image for each type of plot produced by the recipe should be added
 to the documentation page to show the kind of output the recipe produces.
 The '.png' files can be stored in a subdirectory specific for the recipe under
-`doc/sphinx/source/recipes/figures <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/figures>`_
+`doc/sphinx/source/recipes/figures <https://github.com/ESMValGroup/ESMValTool/blob/main/doc/sphinx/source/recipes/figures>`_
 and linked from the recipe documentation page.
 A resolution of 150 `dpi <https://en.wikipedia.org/wiki/Dots_per_inch>`_ is
 recommended for these image files, as this is high enough for the images to look
@@ -181,6 +181,14 @@ To allow the ESMValCore to keep track of provenance (e.g. which input files
 were used to create what plots by the diagnostic script), it needs the
 :ref:`esmvalcore:interface_diagnostic_esmvalcore`.
 
+.. note::
+
+    Provenance is recorded by the ``esmvaltool`` command provided by the
+    ESMValCore package.
+    No ``*_provenance.xml`` files will be generated when re-running just
+    the diagnostic script with the command that is displayed on the screen
+    during a recipe run, because that will only run the diagnostic script.
+
 Provenance items provided by the recipe
 ---------------------------------------
 Provenance tags can be added in several places in the recipe.
@@ -193,7 +201,7 @@ For each diagnostic in the recipe, ESMValCore supports the following additional 
 - :code:`themes` a list of themes
 
 Please see the (installed version of the) file
-`esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/config-references.yml>`_
+`esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/config-references.yml>`_
 for all available information on each item.
 
 Provenance items provided by the diagnostic script
@@ -218,7 +226,7 @@ It is also possible to add more information for the implemented diagnostics usin
 Arbitrarily named other items are also supported.
 
 Please see the (installed version of the) file
-`esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/config-references.yml>`_
+`esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/config-references.yml>`_
 for all available information on each item, see :ref:`esmvalcore:config-ref` for
 an introduction.
 In this file, the information is written in the form of ``key: value``.
@@ -282,7 +290,7 @@ The ``provenance_record`` is a dictionary of provenance items, for example:
       }
 
 Have a look at the example Python diagnostic in
-`esmvaltool/diag_scripts/examples/diagnostic.py <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.py>`_
+`esmvaltool/diag_scripts/examples/diagnostic.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.py>`_
 for a complete example.
 
 Recording provenance in an NCL diagnostic script
@@ -308,7 +316,7 @@ For example:
                  metadata_att_as_array(info0, "filename"))
 
 Have a look at the example NCL diagnostic in
-`esmvaltool/diag_scripts/examples/diagnostic.ncl <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.ncl>`_
+`esmvaltool/diag_scripts/examples/diagnostic.ncl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.ncl>`_
 for a complete example.
 
 Recording provenance in a Julia diagnostic script
@@ -344,7 +352,7 @@ For example:
   provenance_records[output_file] = provenance_record
 
 Have a look at the example Julia diagnostic in
-`esmvaltool/diag_scripts/examples/diagnostic.jl <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.jl>`_
+`esmvaltool/diag_scripts/examples/diagnostic.jl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.jl>`_
 for a complete example.
 
 Recording provenance in an R diagnostic script

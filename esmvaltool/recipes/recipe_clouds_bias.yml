@@ -2,6 +2,8 @@
 # recipe_clouds_bias.yml
 ---
 documentation:
+  title: Annual mean climatologies (MMM)
+
   description: |
     Diagnostics of clouds and hydrological cycle multi-model mean, mean bias,
     absolute bias, relative bias.
@@ -129,6 +131,7 @@ diagnostics:
   # **********************************************************************
 
   clouds_bias_tas:
+    title: Near-surface temperature climatology (MMM)
     description: IPCC AR5 Ch. 9, Fig. 9.2 (near-surface temperature)
     themes:
       - clouds
@@ -159,6 +162,7 @@ diagnostics:
   # **********************************************************************
 
   clouds_bias_pr:
+    title: Precipitation climatology (MMM)
     description: IPCC AR5 Ch. 9, Fig. 9.4 (precipitation)
     themes:
       - clouds
@@ -170,7 +174,7 @@ diagnostics:
         reference_dataset: GPCP-SG
         mip: Amon
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2,
          start_year: 1986, end_year: 2005, tier: 1}
     scripts:
       clim:
@@ -184,6 +188,7 @@ diagnostics:
   # **********************************************************************
 
   clouds_bias_clt:
+    title: Total cloud cover climatology (MMM)
     description: multi-model mean bias of annual mean compared with a
                  reference dataset (observations).
     themes:
@@ -196,7 +201,7 @@ diagnostics:
         reference_dataset: MODIS
         mip: Amon
     additional_datasets:
-      - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
+      - {dataset: MODIS, project: obs4MIPs, level: L3, version: C5,
          start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim:

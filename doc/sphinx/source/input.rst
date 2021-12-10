@@ -32,125 +32,125 @@ If you do not have access to such a facility through your institute or the
 project you are working on, you can request access by applying for the
 `IS-ENES3 Trans-national Access call <https://portal.enes.org/data/data-metadata-service/analysis-platforms>`__.
 
-If the options above are not available to you, ESMValTool also offers features
-to make it easier to download the data.
+If the options above are not available to you, ESMValTool also offers a feature
+to make it easy to download CMIP6, CMIP5, CMIP3, CORDEX, and obs4MIPs from ESGF.
+
+The chapter in the ESMValCore documentation on
+:ref:`finding data <esmvalcore:findingdata>` explains how to
+configure the ESMValTool so it can find locally available data and/or
+download it from ESGF if it isn't available locally yet.
 
 Models
 ======
 
-ESMValTool will look for existing data in the directories specified in the
-user configuration file. Alternatively, it can use an external
-tool called `Synda <http://prodiguer.github.io/synda/index.html>`__. If you
-do not have access to a compute cluster with the data already mounted, this is
-the recommended approach for first-time users to obtain some data for
-running ESMValTool. It is also possible to manually download the files from
-ESGF, see
-`the ESGF user guide <https://esgf.github.io/esgf-user-support/user_guide.html>`__
-for a tutorial.
-
-Installing Synda for use from ESMValTool
-----------------------------------------
-Here, we describe the basic steps to configure EMSValTool so it can use Synda
-to download CMIP6 or CMIP5 model data.
-
-To install Synda, follow the steps listed in the
-`Synda installation documentation <http://prodiguer.github.io/synda/sdt/conda_install.html>`__.
-(This description assumes that Synda is installed using Conda.)
-As the last step, Synda will ask to set your openID credentials.
-Therefore, you'll need to create an account on an ESGF node, e.g.
-`the ESGF node at Lawrence Livermore National Laboratory <https://esgf-node.llnl.gov/projects/esgf-llnl/>`__
-and join a Data Access Control Group, e.g. 'CMIP5 Research'. For more information, see
-`the ESGF user guide <https://esgf.github.io/esgf-user-support/user_guide.html>`__.
-
-Once you have set up Synda, you'll need to configure ESMValTool to find
-your Synda installation. Note that it is not possible to combine the two in a
-single
-`conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`__,
-because Synda requires python 2 and ESMValTool requires Python 3.
-Running
+If you do not have access to a compute cluster with the data already mounted,
+the ESMValTool can automatically download any required data that is available on ESGF.
+This is the recommended approach for first-time users to obtain some data for
+running ESMValTool.
+For example, run
 
 .. code-block:: bash
 
-    which synda
+    esmvaltool run examples/recipe_python.yml --offline=False
 
-on the command line, while your synda environment is active, will print its location.
-To make the ``synda`` program usable from ESMValTool we suggest
-creating a directory
+to run the default example recipe and automatically download the required data
+to the directory ``~/climate_data``.
+The data only needs to be downloaded once, every following run will re-use
+previously downloaded data stored in this directory.
+See :ref:`esmvalcore:config-esgf` for a more in depth explanation and the
+available configuration options.
 
-.. code-block:: bash
-
-    mkdir ~/bin
-
-and appending that folder to your ``PATH`` environment variable,
-e.g. by adding the following line to your ``~/.bashrc`` file:
-
-.. code-block:: bash
-
-    PATH=$PATH:$HOME/bin
-
-Finally, in the new bin folder, make a link to synda:
-
-.. code-block:: bash
-
-    ln -s /path/to/conda/envs/synda/bin/synda ~/bin/synda
-
-Now, ESMValTool should be able to find your Synda installation. First time
-users can now continue with :ref:`Running ESMValTool <running>`.
+Alternatively, you can use an external tool called
+`Synda <http://prodiguer.github.io/synda/index.html>`__
+to maintain your own collection of ESGF data.
 
 Observations
 ============
 
-Observational and reanalysis products in the standard CF/CMOR format used in CMIP and required by the ESMValTool are available via the obs4mips and ana4mips projects at the ESGF (e.g., https://esgf-data.dkrz.de/projects/esgf-dkrz/). Their use is strongly recommended, when possible.
+Observational and reanalysis products in the standard CF/CMOR format used in CMIP and required by the ESMValTool are available via the obs4MIPs and ana4mips projects at the ESGF (e.g., https://esgf-data.dkrz.de/projects/esgf-dkrz/). Their use is strongly recommended, when possible.
 
-Other datasets not available in these archives can be obtained by the user from the respective sources and reformatted to the CF/CMOR standard. ESMValTool currently support two ways to perform this reformatting (aka 'cmorization'). The first is to use a cmorizer script to generate a local pool of reformatted data that can readily be used by the ESMValTool. The second way is to implement specific 'fixes' for your dataset. In that case, the reformatting is performed 'on the fly' during the execution of an ESMValTool recipe (note that one of the first preprocessor tasks is 'cmor checks and fixes'). Below, both methods are explained in more detail.
+Other datasets not available in these archives can be obtained by the user from the respective sources and reformatted to the CF/CMOR standard. ESMValTool currently support two ways to perform this reformatting (aka 'CMORization'). The first is to use a CMORizer script to generate a local pool of reformatted data that can readily be used by the ESMValTool. The second way is to implement specific 'fixes' for your dataset. In that case, the reformatting is performed 'on the fly' during the execution of an ESMValTool recipe (note that one of the first preprocessor tasks is 'CMOR checks and fixes'). Below, both methods are explained in more detail.
 
-Using a cmorizer script
+Using a CMORizer script
 -----------------------
 
-ESMValTool comes with a set of cmorizers readily available. The cmorizers are dataset-specific scripts that can be run once to generate a local pool of CMOR-compliant data. The necessary information to download and process the data is provided in the header of each cmorizing script. These scripts also serve as template to create new cmorizers for datasets not yet included. Note that datasets cmorized for ESMValTool v1 may not be working with v2, due to the much stronger constraints on metadata set by the iris library.
+ESMValTool comes with a set of CMORizers readily available.
+The CMORizers are dataset-specific scripts that can be run once to generate
+a local pool of CMOR-compliant data. The necessary information to download
+and process the data is provided in the header of each CMORizing script.
+These scripts also serve as template to create new CMORizers for datasets not
+yet included.
+Note that datasets CMORized for ESMValTool v1 may not be working with v2, due
+to the much stronger constraints on metadata set by the iris library.
 
-To cmorize one or more datasets, run:
+To CMORize one or more datasets, run:
 
 .. code-block:: bash
 
     cmorize_obs -c [CONFIG_FILE] -o [DATASET_LIST]
 
-The path to the raw data to be cmorized must be specified in the CONFIG_FILE as RAWOBS. Within this path, the data are expected to be organized in subdirectories corresponding to the data tier: Tier2 for freely-available datasets (other than obs4mips and ana4mips) and Tier3 for restricted datasets (i.e., dataset which requires a registration to be retrieved or provided upon request to the respective contact or PI). The cmorization follows the CMIP5 CMOR tables. The resulting output is saved in the output_dir, again following the Tier structure. The output file names follow the definition given in ``config-developer.yml`` for the ``OBS`` project: ``OBS_[dataset]_[type]_[version]_[mip]_[short_name]_YYYYMM_YYYYMM.nc``, where ``type`` may be ``sat`` (satellite data), ``reanaly`` (reanalysis data), ``ground`` (ground observations), ``clim`` (derived climatologies), ``campaign`` (aircraft campaign).
+The path to the raw data to be CMORized must be specified in the
+:ref:`user configuration file<config-user>` as RAWOBS.
+Within this path, the data are expected to be organized in subdirectories
+corresponding to the data tier: Tier2 for freely-available datasets (other
+than obs4MIPs and ana4mips) and Tier3 for restricted datasets (i.e., dataset
+which requires a registration to be retrieved or provided upon request to
+the respective contact or PI).
+The CMORization follows the
+`CMIP5 CMOR tables <https://github.com/PCMDI/cmip5-cmor-tables>`_ or
+`CMIP6 CMOR tables <https://github.com/PCMDI/cmip6-cmor-tables>`_ for the
+OBS and OBS6 projects respectively.
+The resulting output is saved in the output_dir, again following the Tier
+structure.
+The output file names follow the definition given in
+:ref:`config-developer file <esmvalcore:config-developer>` for the ``OBS``
+project:
+
+.. code-block::
+
+    [project]_[dataset]_[type]_[version]_[mip]_[short_name]_YYYYMM_YYYYMM.nc
+
+where ``project`` may be OBS (CMIP5 format) or OBS6 (CMIP6 format), ``type``
+may be ``sat`` (satellite data), ``reanaly`` (reanalysis data),
+``ground`` (ground observations), ``clim`` (derived climatologies),
+``campaign`` (aircraft campaign).
 
 At the moment, cmorize_obs supports Python and NCL scripts.
 
 .. _cmorization_as_fix:
 
-Cmorization as a fix
+CMORization as a fix
 --------------------
-As of early 2020, ESMValTool also provides (limited) support for data in their native format. In this case, the steps needed to reformat the data are executed as datasets fixes during the execution of an ESMValTool recipe, as one of the first preprocessor steps. Compared to the workflow described above, this has the advantage that the user does not need to store a duplicate (cmorized) copy of the data. Instead, the cmorization is performed 'on the fly' when running a recipe. ERA5 is the first dataset for which this 'cmorization on the fly' is supported.
+ESMValCore also provides support for some datasets in their native format.
+In this case, the steps needed to reformat the data are executed as datasets
+fixes during the execution of an ESMValTool recipe, as one of the first
+preprocessor steps, see :ref:`fixing data <esmvalcore:fixing_data>`.
+Compared to the workflow described above, this has the advantage that the user
+does not need to store a duplicate (CMORized) copy of the data.
+Instead, the CMORization is performed 'on the fly' when running a recipe.
+The native6 project supports files named according to the format defined in
+the :ref:`config-developer file <esmvalcore:config-developer>`.
+Some of ERA5, ERA5-Land and MSWEP data are currently supported, see
+:ref:`supported datasets <supported_datasets>`.
 
-To use this functionality, users need to provide a path for the ``native6`` project data in the :ref:`user configuration file<config-user>`. Then, in the recipe, they can refer to the native6 project, like so:
+To use this functionality, users need to provide a path for the ``native6``
+project data in the :ref:`user configuration file<config-user>`.
+Then, in the recipe, they can refer to the native6 project.
+For example:
 
 .. code-block:: yaml
 
     datasets:
     - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1990}
 
-Currently, the native6 project only supports ERA5 and ERA5-Land data in the format defined in the `config-developer file <https://github.com/ESMValGroup/ESMValCore/blob/a9312a7d5be4fa3aac55c0b2ef089c6b4e1a61a9/esmvalcore/config-developer.yml#L191-L201>`_. ERA5 data can be downloaded using `era5cli <https://era5cli.readthedocs.io>`_ To support other datasets as well, we need to make it possible to have a dataset specific DRS. This is still on the horizon.
-
-While it is not strictly necessary, it may still be useful in some cases to create a local pool of cmorized observations. This can be achieved by using a cmorizer *recipe*. For an example, see `recipe_era5.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/cmorizers/recipe_era5.yml>`_. This recipe reads native, hourly ERA5 data, performs a daily aggregation preprocessor, and then calls a diagnostic that operates on the data. In this example, the diagnostic renames the data to the standard OBS6 format. The output are thus daily, cmorized ERA5 data, that can be used through the OBS6 project. As such, this example recipe does exactly the same as the cmorizer scripts described above: create a local pool of cmorized data. The advantage, in this case, is that the daily aggregation is performed only once, which can save a lot of time and compute if it is used often.
-
-The example cmorizer recipe can be run like any other ESMValTool recipe:
-
-.. code-block:: bash
-
-    esmvaltool run cmorizers/recipe_era5.yml
-
-(Note that the ``recipe_era5.yml`` adds the next day of the new year to the input data. This is because one of the fixes needed for the ERA5 data is to shift (some of) the data half an hour back in time, resulting in a missing record on the last day of the year.)
-
-To add support for new variables using this method, one needs to add dataset-specific fixes to the ESMValCore. For more information about fixes, see: :ref:`fixing data <esmvalcore:fixing_data>`.
+More examples can be found in the diagnostics ``ERA5_native6`` in the recipe
+`examples/recipe_check_obs.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_check_obs.yml>`_.
 
 .. _supported_datasets:
 
 Supported datasets
 ------------------
-A list of the datasets for which a cmorizers is available is provided in the following table.
+A list of the datasets for which a CMORizers is available is provided in the following table.
 
 .. tabularcolumns:: |p{3cm}|p{6cm}|p{3cm}|p{3cm}|
 
@@ -182,6 +182,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | CERES-SYN1deg                | rlds, rldscs, rlus, rluscs, rlut, rlutcs, rsds, rsdscs, rsus, rsuscs, rsut, rsutcs (3hr)             |   3  | NCL             |
 |                              | rlds, rldscs, rlus, rlut, rlutcs, rsds, rsdt, rsus, rsut, rsutcs (Amon)                              |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| CLARA-AVHRR                  | clt, clivi, lwp (Amon)                                                                               |   3  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CowtanWay                    | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CRU                          | tas, pr (Amon)                                                                                       |   2  | Python          |
@@ -194,11 +196,10 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Eppley-VGPM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA5 [*]_                    | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rsds, rsdt, rss, uas, vas, tas, |   3  | n/a             |
-|                              | tasmax, tasmin, tdps, ts, tsn (E1hr/Amon), orog (fx)                                                 |      |                 |
+| ERA5 [#note1]_               | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rlns, rlus [#note2]_, rsds,     |   3  | n/a             |
+|                              | rsns, rsus [#note2]_, rsdt, rss, uas, vas, tas, tasmax, tasmin, tdps, ts, tsn (E1hr/Amon), orog (fx) |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA5-Land                    | pr                                                                                                   |   3  | n/a             |
-|                                                                                                                                     |      |                 |
+| ERA5-Land [#note1]_          | pr                                                                                                   |   3  | n/a             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA-Interim                  | clivi, clt, clwvi, evspsbl, hur, hus, pr, prsn, prw, ps, psl, rlds, rsds, rsdt, ta, tas, tauu, tauv, |   3  | Python          |
 |                              | ts, ua, uas, va, vas, wap, zg (Amon), ps, rsdt (CFday), clt, pr, prsn, psl, rsds, rss, ta, tas,      |      |                 |
@@ -209,7 +210,7 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-AEROSOL               | abs550aer, od550aer, od550aerStderr, od550lt1aer, od870aer, od870aerStderr (aero)                    |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ESACCI-CLOUD                 | clivi, clt, cltStderr, clwvi (Amon)                                                                  |   2  | NCL             |
+| ESACCI-CLOUD                 | clivi, clt, cltStderr, lwp, rlut, rlutcs, rsut, rsutcs, rsdt, rlus, rsus, rsuscs (Amon)              |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-FIRE                  | burntArea (Lmon)                                                                                     |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -219,21 +220,29 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-OZONE                 | toz, tozStderr, tro3prof, tro3profStderr (Amon)                                                      |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ESACCI-SEA-SURFACE-SALINITY  | sos (Omon)                                                                                           |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-SOILMOISTURE          | dos, dosStderr, sm, smStderr (Lmon)                                                                  |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-SST                   | ts, tsStderr (Amon)                                                                                  |   2  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ESACCI-WATERVAPOUR           | prw (Amon)                                                                                           |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESRL                         | co2s (Amon)                                                                                          |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | FLUXCOM                      | gpp (Lmon)                                                                                           |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| GCP                          | fgco2 (Omon), nbp (Lmon)                                                                             |   2  | Python          |
+| GCP2018                      | fgco2 (Omon), nbp (Lmon)                                                                             |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| GCP2020                      | fgco2 (Omon), nbp (Lmon)                                                                             |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | GHCN                         | pr (Amon)                                                                                            |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | GHCN-CAMS                    | tas (Amon)                                                                                           |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | GISTEMP                      | tasa (Amon)                                                                                          |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| GLODAP                       | dissic, ph, talk (Oyr)                                                                               |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | GPCC                         | pr (Amon)                                                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -269,6 +278,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MODIS                        | cliwi, clt, clwvi, iwpStderr, lwpStderr (Amon), od550aer (aero)                                      |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| MSWEP [#note1]_              | pr                                                                                                   |   3  | n/a             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MTE                          | gpp, gppStderr (Lmon)                                                                                |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NCEP                         | hur, hus, pr, ta, tas, ua, va, wap, zg (Amon)                                                        |   2  | NCL             |
@@ -296,7 +307,12 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | UWisc                        | clwvi, lwpStderr (Amon)                                                                              |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| WOA                          | no3, o2, po4, si (Oyr), so, thetao (Omon)                                                            |   2  | Python          |
+| WFDE5                        | tas, pr (Amon, day)                                                                                  |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| WOA                          | thetao, so, tos, sos (Omon)                                                                          |   2  | Python          |
+|                              | no3, o2, po4, si (Oyr)                                                                               |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 
-.. [*] ERA5 cmorization is built into ESMValTool through the native6 project, so there is no separate cmorizer script.
+.. [#note1] CMORization is built into ESMValTool through the native6 project, so there is no separate CMORizer script.
+
+.. [#note2] Derived on the fly from down & net radiation.

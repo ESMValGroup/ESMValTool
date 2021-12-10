@@ -1,10 +1,13 @@
 # ESMValTool
 ---
 documentation:
+  title: |
+    Annual and seasonal means of the maximum Eady Growth Rate (EGR).
+
   description: |
-    Recipe to compute the annual mean or the seasonal mean of the maximum Eady Growth Rate 
-    (EGR, Brian J Hoskins and Paul J Valdes. On the existence of storm-tracks. 
-    Journal of the atmospheric sciences, 47(15):1854–1864, 1990.). 
+    Recipe to compute the annual mean or the seasonal mean of the maximum Eady Growth Rate
+    (EGR, Brian J Hoskins and Paul J Valdes. On the existence of storm-tracks.
+    Journal of the atmospheric sciences, 47(15):1854–1864, 1990.).
     The output produces netcdf files for each model. In the case of the seasonal means, a plot is
     produced for each specified level showing the EGR values over the North-Atlantic region.
 
@@ -15,6 +18,9 @@ documentation:
 
   maintainer:
     - loosveldt-tomas_saskia
+
+  references:
+    - morenochamarro2021
 
   projects:
     - primavera

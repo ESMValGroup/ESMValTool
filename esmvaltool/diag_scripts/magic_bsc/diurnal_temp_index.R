@@ -160,6 +160,23 @@ for (i in seq_along(projection_files)) {
     "-",
     end_projection
   )
+  plot_file <- file.path(
+    plot_dir,
+    paste0(
+      "Seasonal_DTRindicator_",
+      model_names,
+      "_",
+      start_projection,
+      "_",
+      end_projection,
+      "_",
+      start_historical,
+      "_",
+      end_historical,
+      ".png"
+    )
+  )
+
   PlotLayout(
     PlotEquiMap,
     plot_dims = c("lon", "lat"),
@@ -180,22 +197,7 @@ for (i in seq_along(projection_files)) {
     extra_margin = c(0, 0, 1, 0),
     bar_extra_labels = c(2, 0, 0, 0),
     title_scale = 0.7,
-    fileout = file.path(
-      plot_dir,
-      paste0(
-        "Seasonal_DTRindicator_",
-        model_names,
-        "_",
-        start_projection,
-        "_",
-        end_projection,
-        "_",
-        start_historical,
-        "_",
-        end_historical,
-        ".png"
-      )
-    ),
+    fileout = plot_file,
     col_inf = "white",
     col_sup = "darkred"
   )
@@ -230,7 +232,7 @@ for (i in seq_along(projection_files)) {
       ),
       longname = paste0(
         "Number of days exceeding in 5 degrees ",
-        "the Diurnal Temeprature Range for ",
+        "the Diurnal Temperature Range for ",
         "the reference period"
       )
     )
@@ -273,25 +275,9 @@ for (i in seq_along(projection_files)) {
       caption = title,
       statistics = list("other"),
       realms = list("atmos"),
-      themes = list("phys"),
-      plot_file = file.path(
-        plot_dir,
-        paste0(
-          "Seasonal_DTRindicator_",
-          model_names,
-          "_",
-          start_projection,
-          "_",
-          end_projection,
-          "_",
-          start_historical,
-          "_",
-          end_historical,
-          ".png"
-        )
-      )
+      themes = list("phys")
     )
-
+  provenance[[plot_file]] <- xprov
   provenance[[filencdf]] <- xprov
 }
 

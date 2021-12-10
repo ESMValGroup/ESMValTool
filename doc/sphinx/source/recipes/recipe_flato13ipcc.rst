@@ -328,6 +328,8 @@ User settings in recipe
      :func:`matplotlib.pyplot.savefig`.
    * seaborn_settings: Options for :func:`seaborn.set` (affects all plots).
 
+.. _ch09_fig09_42b.py:
+
 #. Script ipcc_ar5/ch09_fig09_42b.py
 
    *Required settings for script*
@@ -336,11 +338,20 @@ User settings in recipe
 
    *Optional settings for script*
 
-   * dataset_style: name of the style file (located in
-     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
+   * dataset_style: Dataset style file (located in
+     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`). The entry
+     ``marker`` is ignored when ``marker_file`` is given.
    * log_x: Apply logarithm to X axis (ECS).
    * log_y: Apply logarithm to Y axis (TCR).
+   * marker_column: Name of the column to look up markers in ``marker_file``.
+   * marker_file: CSV file with markers (can also be integers). Must have the
+     columns ``dataset`` and ``marker`` (or the column specified by
+     ``marker_column``).  If a relative path is given, assumes that this is a
+     pattern to search for ancestor files.
+   * savefig_kwargs: Keyword arguments for :func:`matplotlib.pyplot.savefig`.
    * seaborn_settings: Options for :func:`seaborn.set` (affects all plots).
+   * x_lim: Plot limits for X axis (ECS).
+   * y_lim: Plot limits for Y axis (TCR).
 
 #. Script emergent_constraints/snowalbedo.ncl
 
@@ -388,14 +399,14 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4mips data can be used directly without any preprocessing;
-(2) see headers of reformat scripts for non-obs4mips data for download
+*Note: (1) obs4MIPs data can be used directly without any preprocessing;
+(2) see headers of reformat scripts for non-obs4MIPs data for download
 instructions.*
 
-* CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
+* CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4MIPs)
 * ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
-* GCP (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_gcp.py)
-* GPCP-SG (pr - obs4mips)
+* GCP2018 (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_gcp2018.py)
+* GPCP-SG (pr - obs4MIPs)
 * JMA-TRANSCOM (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_jma_transcom.py)
 * HadCRUT4 (tas - esmvaltool/cmorizers/obs/cmorize_obs_hadcrut4.ncl)
 * HadISST (sic, tos - esmvaltool/cmorizers/obs/cmorize_obs_hadisst.ncl)

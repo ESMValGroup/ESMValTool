@@ -16,7 +16,7 @@ variables:
   lweGrace:
     mip: Lmon
     raw: lwe_thickness
-    file: 'GRCTellus.JPL.200204_202009.GLO.RL06M.MSCNv02CRI.nc'
+    file: 'GRCTellus.JPL.200204_202108.GLO.RL06M.MSCNv02CRI.nc'
 
 auxfiles:
   land_mask:
