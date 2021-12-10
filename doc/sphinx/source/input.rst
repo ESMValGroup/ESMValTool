@@ -78,11 +78,11 @@ The list of datasets supported by ESMValTool can be obtained with:
 
     esmvaltool data list
 
-Datasets for which auto-download is supported can be obtained with:
+Datasets for which auto-download is supported can be downloaded with:
 
 .. code-block:: bash
 
-    esmvaltool data download --config_file [CONFIG_FILE] -o [DATASET_LIST]
+    esmvaltool data download --config_file [CONFIG_FILE] [DATASET_LIST]
 
 For other datasets, downloading instructions can be obtained with:
 
