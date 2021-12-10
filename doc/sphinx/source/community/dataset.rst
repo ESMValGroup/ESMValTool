@@ -15,13 +15,14 @@ Dataset documentation
 The documentation required for a CMORizer script is the following:
 
 - Make sure that the new dataset is added to the list of
-  :ref:`supported_datasets` and to the file `datasets.yml
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/datasets.yml>`__
+  :ref:`supported_datasets` and to the file datasets.yml_.
 - The in code documentation should contain clear instructions on how to obtain
-  the data
+  the data.
 - A BibTeX file named ``<dataset>.bibtex`` defining the reference for the new
   dataset should be placed in the directory ``esmvaltool/references/``, see
   :ref:`adding_references` for detailed instructions.
+
+.. _datasets.yml: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/datasets.yml
 
 For more general information on writing documentation, see :ref:`documentation`.
 
@@ -135,14 +136,14 @@ Run downloader script
 ---------------------
 
 If available, make sure the downloader script is working by running
- ``esmvaltool data download ---config_file <config-file> <dataset>``
+``esmvaltool data download --config_file <config-file> <dataset>``
 
 
 Run CMORizer
 ------------
 
 Make sure CMORizer is working by running
- ``esmvaltool data format ---config_file <config-file> <dataset>``
+``esmvaltool data format --config_file <config-file> <dataset>``
 
 Check output of CMORizer
 ------------------------
