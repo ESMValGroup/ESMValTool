@@ -2,6 +2,8 @@
 # recipe_clouds_lifrac_scatter.yml
 ---
 documentation:
+  title: Cloud diagnostics v2 (liquid/ice fraction)
+
   description: |
     Diagnostics of 3-d cloud parameters.
 
