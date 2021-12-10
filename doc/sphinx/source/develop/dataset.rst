@@ -98,10 +98,12 @@ folder ``RAWOBS`` automatically.
 There are many downloading scripts available in 
 `/esmvaltool/cmorizers/data/downloaders/datasets/
 <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/data/downloaders/datasets/>`_
-where several data download mechanisms are provided: 
+where several data download mechanisms are provided:
+
 - A `wget` get based downloader for http(s) downloads, with a specific derivation for NASA datasets.
 - A `ftp` downloader with a specific derivation for ESACCI datasets available from CEDA.
 - A Climate Data Store downloader based on `cdsapi`.
+
 Note that the name of this downloading script has to be identical to the
 name of the dataset.
 
@@ -263,8 +265,8 @@ The cmorizing script for the given dataset can be run with:
    In this folder the cmorized data set will be stored as a NetCDF file.
    The cmorized dataset will be automatically moved to the correct tier
    subfolder of your OBS or OBS6 directory if the option 
-   ``--install=True`` is used in the command above and there is not such directory
-   already created.
+   ``--install=True`` is used in the command above and no such directory
+   was already created.
 
 If your run was successful, one or more NetCDF files are produced in your
 output directory.
