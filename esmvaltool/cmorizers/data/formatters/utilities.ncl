@@ -76,7 +76,7 @@ local funcname, scriptname, yy, mm, out
 begin
 
   funcname = "create_timec"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   out = new(12 * (y2 - y1 + 1), double)
   do yy = y1, y2
@@ -120,7 +120,7 @@ local funcname, scriptname, ctime, ntime, year1, month1, day1, year2, month2, \
 begin
 
   funcname = "format_time"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; Check supported frequency
   if (all(frequency.ne.(/"3hr", "6hr", "day", "mon", "yr"/))) then
@@ -352,7 +352,7 @@ local funcname, scriptname, rank, cplev, newplev
 begin
 
   funcname = "format_plev"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; Set rank
   rank = dimsizes(dimsizes(var))
@@ -414,7 +414,7 @@ local funcname, scriptname, rank, clev, newlev
 begin
 
   funcname = "format_lev"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; Set rank
   rank = dimsizes(dimsizes(var))
@@ -477,7 +477,7 @@ local funcname, scriptname, rank, clev, newlev
 begin
 
   funcname = "format_alt40"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; Set rank
   rank = dimsizes(dimsizes(var))
@@ -540,7 +540,7 @@ local funcname, scriptname, rank, dims, dpos, lcheck, clat, newlat
 begin
 
   funcname = "format_lat"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; Set rank
   rank = dimsizes(dimsizes(var))
@@ -623,7 +623,7 @@ local funcname, scriptname, clon, newlon
 begin
 
   funcname = "format_lon"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; Check monotonicity but not for point variables
   if (isMonotonic(var&lon) .eq. 0 .and. \
@@ -683,7 +683,7 @@ procedure format_coords(var:numeric,
 begin
 
   funcname = "format_coords"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; Get variable dimensions
   dnames = getvardims(var)
@@ -759,7 +759,7 @@ local funcname, scriptname, data, idxu, idxd, attn, attv, out
 begin
 
   funcname = "read_cmor"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; Read attributes from cmor table
   if (.not.fileexists(table)) then
@@ -847,7 +847,7 @@ local funcname, scriptname, coordattr, out, tmp, att, ii
 begin
 
   funcname = "var_attrib"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; Set fill value first
   if(isatt(var, "_FillValue")) then
@@ -913,7 +913,7 @@ local funcname, scriptname, date, year, month, day, opt, units, tyear, tmonth
 begin
 
   funcname = "guess_bounds_time"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; This function assumes that units of days are used
   if (.not.isStrSubset(coord@units, "days since")) then
@@ -1019,7 +1019,7 @@ local funcname, scriptname, size, top
 begin
 
   funcname = "guess_bounds_lev"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   bounds = new((/dimsizes(coord), 2/), double)
   bounds!0 = "lev"
@@ -1068,7 +1068,7 @@ local funcname, scriptname, size, top
 begin
 
   funcname = "guess_bounds_alt40"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   bounds = new((/dimsizes(coord), 2/), double)
   bounds!0 = "alt40"
@@ -1119,7 +1119,7 @@ local funcname, scriptname
 begin
 
   funcname = "guess_bounds_lat"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   bounds = new((/dimsizes(coord), 2/), double)
   bounds!0 = "lat"
@@ -1165,7 +1165,7 @@ local funcname, scriptname
 begin
 
   funcname = "guess_bounds_lon"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   bounds = new((/dimsizes(coord), 2/), double)
   bounds!0 = "lon"
@@ -1193,7 +1193,7 @@ local funcname, scriptname, time_bnds, plev_bnds, lev_bnds, lat_bnds, lon_bnds
 begin
 
   funcname = "guess_coord_bounds"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; Check supported frequency
   if (all(frequency.ne.(/"3hr", "6hr", "day", "mon", "yr", "fx"/))) then
@@ -1284,7 +1284,7 @@ local funcname, scriptname,
 begin
 
   funcname = "set_global_atts"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   global = True
   global@title = obsname + " data reformatted for the ESMValTool v2.0"
@@ -1336,7 +1336,7 @@ local funcname, scriptname, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
 begin
 
   funcname = "write_nc"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; Open file
   if (fileexists(outfile)) then
@@ -1430,7 +1430,7 @@ local funcname, scriptname, w, coords, cc, jj, locname, locvar, cname
 begin
 
   funcname = "write_nc_profile"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; Open file
   if (fileexists(outfile)) then
@@ -1510,7 +1510,7 @@ local funcname, scriptname, minsize, maxsize, nbins, bin, out
 begin
 
   funcname = "set_size_array"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; Size range (0.5 nm - 10 um)
   minsize = 0.5e-9
@@ -1575,7 +1575,7 @@ local timec, datec, vID, fID, bn, en, head, hh, cline, syear, smonth, sday, \
 begin
 
   funcname = "process_EBAS_data"
-  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/cmorizers/data/formatters/utilities.ncl"
 
   ; EBAS flags for valid measurements
   ; (see http://www.nilu.no/projects/ccc/flags/index.html)
