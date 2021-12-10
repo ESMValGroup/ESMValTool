@@ -199,6 +199,34 @@ begin
       A0@units = "mm day-1"
     end if
 
+    ; check if time dimension is a multiple of 12
+    ; if not, use only complete years
+
+    idx = ind(dims .eq. "time")
+    if (.not.ismissing(idx)) then
+      dimsize = dimsizes(A0)
+      nt = dimsize(idx)
+      if (mod(nt, 12) .ne. 0) then
+        if (nt .lt. 12) then
+          error_msg("f", DIAG_SCRIPT, "", "time dimension < 12 (" \
+                    + names(imod) + ")")
+        else
+          tfull = nt - mod(nt, 12)
+          log_info("warning, using only first " + tostring(tfull) \
+                   + " time steps (" + names(imod) + ")")
+          if (dimsizes(dims) .eq. 2) then
+            A0 := A0(0:tfull - 1, :)
+          else if (dimsizes(dims) .eq. 3) then
+            A0 := A0(0:tfull - 1, :, :)
+          else
+            error_msg("f", DIAG_SCRIPT, "", "number of dimensions " \
+                      + "must be 2 or 3 (" + names(imod) + ")")
+          end if
+          end if
+        end if
+      end if
+    end if
+
     ; subtract climatological seasonal cycle from time series
 
     if (isvar("timeseries")) then

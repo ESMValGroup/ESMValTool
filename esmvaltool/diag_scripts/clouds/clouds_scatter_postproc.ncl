@@ -24,7 +24,8 @@ begin
 ;  reg_long = "southernocean"
 ;  reg_long = "sepacific"
   reg_long = "itcz"
-  var = "totalcwp"
+;  var = "totalcwp"
+  var = "lwp"
 ;  var = "swcre"
 
   ; CMIP5
