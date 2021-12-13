@@ -6,23 +6,24 @@ import matplotlib.pyplot as plt
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as names
-from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, group_metadata, run_diagnostic
 
 
-class DecadalExample
+class DecadalExample:
     def __init__(self, config):
         self.cfg = config
 
+    @staticmethod
     def get_provenance_record(title, ancestor_files):
         """Create a provenance record describing the diagnostic data and plot."""
-        caption = ("Comparison of {title} between a DCPP experiment"
-                   "and an observational dataset.").format(title)
+        caption = (f"Comparison of {title} between a DCPP experiment"
+                   "and an observational dataset.")
 
         record = {
             'caption': caption,
             'statistics': ['mean'],
             'domains': ['global'],
-            'plot_types': ['timeseries'],
+            'plot_types': ['times'],
             'authors': [
                 'loosveldt-tomas_saskia',
             ],
@@ -44,7 +45,7 @@ class DecadalExample
             iris.coord_categorisation.add_year(cube, 'time')
             cube.coord('time').bounds = None
             plt.plot(cube.coord('time').points, cube.data, label=f'{name}')
-            ancestors.append(dataset['filename']
+            ancestors.append(dataset['filename'])
 
         for dataset in data['CMIP6']:
             cube = iris.load_cube(dataset['filename'])
@@ -67,12 +68,13 @@ class DecadalExample
 
 
         extension = self.cfg['output_file_type']
-        plotname = 'decadal_test' + f'.{extension}'
-        plt.savefig(os.path.join(self.cfg[names.PLOT_DIR], plotname), dpi=3000)
+        plot_name = 'decadal_test' + f'.{extension}'
+        plot_path = os.path.join(self.cfg[names.PLOT_DIR], plot_name)
+        plt.savefig(plot_path)
 
-        provenance_record = get_provenance_record(title, ancestors)
+        provenance_record = self.get_provenance_record(title, ancestors)
         with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plotname, provenance_record)
+            provenance_logger.log(plot_path, provenance_record)
         plt.close()
 
         
