@@ -1,12 +1,14 @@
 import os
 
 import iris
-import iris.plot as iplt
 import matplotlib.pyplot as plt
 
-import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as names
-from esmvaltool.diag_scripts.shared import ProvenanceLogger, group_metadata, run_diagnostic
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    group_metadata,
+    run_diagnostic,
+)
 
 
 class DecadalExample:
@@ -15,7 +17,8 @@ class DecadalExample:
 
     @staticmethod
     def get_provenance_record(title, ancestor_files):
-        """Create a provenance record describing the diagnostic data and plot."""
+        """Create a provenance record describing the diagnostic data and
+        plot."""
         caption = (f"Comparison of {title} between a DCPP experiment"
                    "and an observational dataset.")
 
@@ -34,10 +37,9 @@ class DecadalExample:
         }
         return record
 
-
     def compute(self):
+        """Plot time series of a decadal experiment against observations."""
         data = group_metadata(self.cfg['input_data'].values(), 'project')
-        time = []
         ancestors = []
         for dataset in data['OBS6']:
             cube = iris.load_cube(dataset['filename'])
@@ -53,19 +55,22 @@ class DecadalExample:
             name = dataset['dataset']
             sub_exp = dataset['sub_experiment']
             cube.coord('time').bounds = None
-            plt.plot(cube.coord('time').points, cube.data, label=f'{name}-{sub_exp}')
+            plt.plot(cube.coord('time').points,
+                     cube.data,
+                     label=f'{name}-{sub_exp}')
             ancestors.append(dataset['filename'])
-        
-        plt.rcParams["figure.figsize"] = (40,6)
-        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': 5.5})
+
+        plt.rcParams["figure.figsize"] = (40, 6)
+        plt.legend(loc='center left',
+                   bbox_to_anchor=(1, 0.5),
+                   prop={'size': 5.5})
         plt.xlabel("time (days since 01-01-1850)")
         plt.ylabel("Temperature (K)")
         title = 'Global mean of Near-Surface Air Temperature (tas)'
         plt.title(title)
         plt.tight_layout()
-    
-        plt.grid(True)
 
+        plt.grid(True)
 
         extension = self.cfg['output_file_type']
         plot_name = 'decadal_test' + f'.{extension}'
@@ -77,14 +82,11 @@ class DecadalExample:
             provenance_logger.log(plot_path, provenance_record)
         plt.close()
 
-        
-
 
 def main():
     with run_diagnostic() as config:
         DecadalExample(config).compute()
 
+
 if __name__ == "__main__":
     main()
-
-
