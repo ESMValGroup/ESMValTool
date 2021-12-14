@@ -1,0 +1,892 @@
+# ESMValTool
+# icon/recipe_icon_eval_clouds.yml
+---
+documentation:
+  title: Cloud evaluation of ICON.
+
+  description: Evaluation of cloud parameters from a single model.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  projects:
+    - cmug
+
+
+ICON_MODEL: &icon_model
+  - dataset: ICON
+    project: ICON
+    component: atm
+    exp: amip
+    grid: R2B5
+    ensemble: r1v1i1p1l1f1
+    var_type: atm_2d_ml
+    version: icon-2.6.1
+
+
+preprocessors:
+
+  clim:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+      lon_offset: false
+
+  clim_icon:
+    regrid:
+      target_grid: 2x2
+      scheme: unstructured_nearest
+      lon_offset: false
+
+  clim500Ocean:
+    convert_units:
+      units: "Pa min-1"
+    extract_levels:
+      levels: 50000
+      scheme: linear
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+      lon_offset: false
+
+  clim500Ocean_icon:
+    convert_units:
+      units: "Pa min-1"
+    extract_levels:
+      levels: 50000
+      scheme: linear
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 2x2
+      scheme: unstructured_nearest
+      lon_offset: false
+
+  climOcean:
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+      lon_offset: false
+
+  climOcean_icon:
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 2x2
+      scheme: unstructured_nearest
+      lon_offset: false
+
+  pp27:
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev27}
+      coordinate: air_pressure
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+      lon_offset: false
+    zonal_statistics:
+      operator: mean
+
+  pp27_icon:
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev27}
+      coordinate: air_pressure
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: unstructured_nearest
+      lon_offset: false
+    zonal_statistics:
+      operator: mean
+
+  ppSouthernOcean:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -65
+      end_latitude: -30
+    extract_season:
+      season: DJF
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+      lon_offset: false
+
+  ppSouthernOcean_icon:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -65
+      end_latitude: -30
+    extract_season:
+      season: DJF
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 2x2
+      scheme: unstructured_nearest
+      lon_offset: false
+
+  ppSEPacific:
+    extract_region:
+      start_longitude: 265
+      end_longitude: 275
+      start_latitude: -25
+      end_latitude: -5
+    extract_season:
+      season: DJF
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+      lon_offset: false
+
+  ppSEPacific_icon:
+    extract_region:
+      start_longitude: 265
+      end_longitude: 275
+      start_latitude: -25
+      end_latitude: -5
+    extract_season:
+      season: DJF
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 1x1
+      scheme: unstructured_nearest
+      lon_offset: false
+
+
+diagnostics:
+
+  # ###########################################################################
+  # Diagnostic block 1
+  # ------------------
+  # Maps of 2-dim parameters (cloud liquid water path, cloud ice water path
+  # total cloud cover, shortwave cloud radiative effect,
+  # longwave cloud radiative effect, water vapor path).
+  # ###########################################################################
+
+  maps2d:
+    description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2006
+        end_year: 2006
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+          - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3}
+          - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      clivi:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2006
+        end_year: 2006
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      lwp:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2006
+        end_year: 2006
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+          - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3}
+          - {dataset: MAC-LWP, project: OBS, type: sat, version: v1, tier: 3}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      swcre:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2006
+        end_year: 2006
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+      lwcre:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2006
+        end_year: 2006
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+      prw:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2006
+        end_year: 2006
+        reference_dataset: ESACCI-WATERVAPOUR
+        additional_datasets:
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat, version: CDR2-L3S-05deg_fv3.1, tier: 3}
+          - {dataset: SSMI-MERIS, project: obs4mips, level: L3, version: v1-00, tier: 1}
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      clt_icon:
+        short_name: clt
+        preprocessor: clim_icon
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2006
+        end_year: 2006
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets: *icon_model
+      clivi_icon:
+        short_name: clivi
+        preprocessor: clim_icon
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2006
+        end_year: 2006
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets: *icon_model
+      lwp_icon:
+        short_name: lwp
+        preprocessor: clim_icon
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2006
+        end_year: 2006
+        derive: true
+        force_derivation: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets: *icon_model
+      swcre_icon:
+        short_name: swcre
+        preprocessor: clim_icon
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2006
+        end_year: 2006
+        derive: true
+        force_derivation: true
+        reference_dataset: CERES-EBAF
+        additional_datasets: *icon_model
+      lwcre_icon:
+        short_name: lwcre
+        preprocessor: clim_icon
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2006
+        end_year: 2006
+        derive: true
+        force_derivation: true
+        reference_dataset: CERES-EBAF
+        additional_datasets: *icon_model
+      prw_icon:
+        short_name: prw
+        preprocessor: clim_icon
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2006
+        end_year: 2006
+        reference_dataset: ESACCI-WATERVAPOUR
+        additional_datasets: *icon_model
+    scripts:
+      # avgclt:
+      #   script: clouds/clouds.ncl
+      #   projection: CylindricalEquidistant
+      #   timemean: annualclim
+      #   var: clt
+      #   showdiff: true
+      #   multiobs_uncertainty: true
+      # avgclivi:
+      #   script: clouds/clouds.ncl
+      #   projection: CylindricalEquidistant
+      #   timemean: annualclim
+      #   var: clivi
+      #   showdiff: true
+      #   multiobs_uncertainty: true
+      # avglwp:
+      #   script: clouds/clouds.ncl
+      #   projection: CylindricalEquidistant
+      #   timemean: annualclim
+      #   var: lwp
+      #   showdiff: true
+      #   multiobs_uncertainty: true
+      avgswcre:
+        script: clouds/clouds.ncl
+        projection: CylindricalEquidistant
+        timemean: annualclim
+        var: swcre
+        showdiff: true
+        multiobs_uncertainty: true
+      # avglwcre:
+      #   script: clouds/clouds.ncl
+      #   projection: CylindricalEquidistant
+      #   timemean: annualclim
+      #   var: lwcre
+      #   showdiff: true
+      #   multiobs_uncertainty: true
+      # avgprw:
+      #   script: clouds/clouds.ncl
+      #   projection: CylindricalEquidistant
+      #   timemean: annualclim
+      #   var: prw
+      #   showdiff: true
+      #   multiobs_uncertainty: true
+
+
+  # ###########################################################################
+  # Diagnostic block 2
+  # ------------------
+  # Zonal means of 3-dim parameters (cloud liquid, cloud ice, cloud fraction,
+  # cloud ice fraction, temperature, specific humidity).
+  # ###########################################################################
+
+  # clw3d:
+  #   description: cloud liquid water zonal mean
+  #   themes:
+  #     - phys
+  #     - clouds
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     clw:
+  #       preprocessor: pp27
+  #       reference_dataset: CLOUDSAT-L2
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       additional_datasets:
+  #         - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip, mip: Amon, tier: 2}
+  #   additional_datasets: *icon_model
+  #   scripts:
+  #     zonal:
+  #       script: clouds/clouds_zonal.ncl
+  #       timemean: annualclim
+  #       embracesetup: false
+  #       extralegend: false
+  #       panel_labels: true
+  #       explicit_cn_levels: [0., 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.12, 0.13, 0.14]
+  #       explicit_cn_dlevels: [-0.05, -0.04, -0.03, -0.02, -0.01, 0., 0.01, 0.02, 0.03, 0.04, 0.05]
+  #       units_to: g/kg
+  #       showdiff: true
+  #       rel_diff: false
+  #       t_test: true
+
+  # cli3d:
+  #   description: cloud ice content zonal mean
+  #   themes:
+  #     - phys
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     cli:
+  #       preprocessor: pp27
+  #       reference_dataset: CALIPSO-ICECLOUD
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2007
+  #       end_year: 2007
+  #       additional_datasets:
+  #         - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, mip: Amon, tier: 2}
+  #   additional_datasets: *icon_model
+  #   scripts:
+  #     zonal:
+  #       script: clouds/clouds_zonal.ncl
+  #       timemean: annualclim
+  #       t_test: false
+  #       explicit_cn_levels: [0., 0.002, 0.004, 0.006, 0.008, 0.01, 0.012, 0.014, 0.016, 0.018, 0.02, 0.022, 0.024, 0.026, 0.028]
+  #       explicit_cn_dlevels: [-0.01, -0.008, -0.006, -0.004, -0.002, 0., 0.002, 0.004, 0.006, 0.008, 0.01]
+  #       extralegend: false
+  #       panel_labels: true
+  #       showdiff: true
+  #       t_test: true
+  #       rel_diff: false
+  #       units_to: g/kg
+
+  # cl3d:
+  #   description: 3-dim cloud cover, zonal mean
+  #   themes:
+  #     - phys
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     cl:
+  #       preprocessor: pp27
+  #       reference_dataset: ERA5
+  #       mip: Amon
+  #       project: CMIP6
+  #       start_year: 2006
+  #       end_year: 2006
+  #       project: CMIP6
+  #       exp: historical
+  #       additional_datasets:
+  #         - {dataset: ERA5, project: OBS6, type: reanaly, version: v1b, tier: 3}
+  #   additional_datasets: *icon_model
+  #   scripts:
+  #     zonal:
+  #       script: clouds/clouds_zonal.ncl
+  #       timemean: annualclim
+  #       explicit_cn_dlevels: [-25., -20., -15., -10., -5., 0., 5., 10., 15., 20., 25.]
+  #       explicit_cn_levels: [5., 10., 15., 20., 25., 30., 35., 40., 45., 50.]
+  #       extralegend: false
+  #       panel_labels: true
+  #       showdiff: true
+  #       t_test: true
+  #       rel_diff: false
+
+  # lifrac:
+  #   description: zonal mean ice / liquid fraction
+  #   themes:
+  #     - phys
+  #     - clouds
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     clw:
+  #       preprocessor: pp27
+  #       mip: Amon
+  #       project: CMIP6
+  #       start_year: 2007
+  #       end_year: 2007
+  #       exp: historical
+  #       reference_dataset: CLOUDSAT-L2
+  #       additional_datasets:
+  #         - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip, tier: 2}
+  #     cli:
+  #       preprocessor: pp27
+  #       mip: Amon
+  #       project: CMIP6
+  #       start_year: 2007
+  #       end_year: 2007
+  #       exp: historical
+  #       reference_dataset: CALIPSO-ICECLOUD
+  #       additional_datasets:
+  #         - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, mip: Amon, tier: 2}
+  #   additional_datasets: *icon_model
+  #   scripts:
+  #     lifrac:
+  #       script: clouds/clouds_lifrac.ncl
+  #       timemean: annualclim
+  #       min_mass: 1.0e-6
+  #       panel_labels: true
+
+  # ta3d:
+  #   description: temperature zonal mean
+  #   themes:
+  #     - phys
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     ta:
+  #       preprocessor: pp27
+  #       reference_dataset: ERA5
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2003
+  #       end_year: 2003
+  #       additional_datasets:
+  #         - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+  #   additional_datasets: *icon_model
+  #   scripts:
+  #     zonal:
+  #       script: clouds/clouds_zonal.ncl
+  #       timemean: annualclim
+  #       explicit_cn_levels: [200., 205, 210., 215., 220., 225., 230., 235., 240., 245., 250., 255., 260., 265., 270., 275., 280., 285., 290., 295., 300.]
+  #       explicit_cn_dlevels: [-7., -6., -5., -4., -3., -2, -1, 0., 1, 2, 3, 4., 5., 6., 7.]
+  #       extralegend: false
+  #       panel_labels: true
+  #       showdiff: true
+  #       t_test: true
+  #       rel_diff: false
+
+  # hus3d:
+  #   description: water vapor zonal mean
+  #   themes:
+  #     - phys
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     hus:
+  #       preprocessor: pp27
+  #       reference_dataset: AIRS
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2003
+  #       end_year: 2003
+  #       additional_datasets:
+  #         - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
+  #   additional_datasets: *icon_model
+  #   scripts:
+  #     zonal:
+  #       script: clouds/clouds_zonal.ncl
+  #       timemean: annualclim
+  #       explicit_cn_levels: [0., 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1., 2., 5., 10., 20.]
+  #       explicit_cn_dlevels: [-5., -2., -1., -0.5, -0.2, -0.1, 0.1, 0.2, 0.5, 1., 2., 5.]
+  #       extralegend: false
+  #       panel_labels: true
+  #       showdiff: true
+  #       t_test: true
+  #       rel_diff: false
+  #       units_to: g/kg
+
+
+  # # ###########################################################################
+  # # Diagnostic block 3
+  # # ------------------
+  # # Taylor diagrams (total cloud fraction, liquid water path, ice water path,
+  # # water vapor path, shortwave cloud radiative effect,
+  # # longwave cloud radiative effect)
+  # # ###########################################################################
+
+  # taylor:
+  #   description: climatological annual means
+  #   themes:
+  #     - clouds
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     clt:
+  #       preprocessor: clim
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       reference_dataset: ESACCI-CLOUD
+  #       additional_datasets:
+  #         - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+  #         - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3}
+  #         - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2}
+  #         - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3}
+  #         - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+  #         - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+  #     clivi:
+  #       preprocessor: clim
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       reference_dataset: ESACCI-CLOUD
+  #       additional_datasets:
+  #         - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+  #         - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3}
+  #         - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+  #         - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+  #     lwp:
+  #       preprocessor: clim
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       derive: true
+  #       reference_dataset: ESACCI-CLOUD
+  #       additional_datasets:
+  #         - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+  #         - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3}
+  #         - {dataset: MAC-LWP, project: OBS, type: sat, version: v1, tier: 3}
+  #         - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3}
+  #         - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+  #         - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+  #     swcre:
+  #       preprocessor: clim
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       derive: true
+  #       reference_dataset: CERES-EBAF
+  #       additional_datasets:
+  #         - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+  #         - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+  #     lwcre:
+  #       preprocessor: clim
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       derive: true
+  #       reference_dataset: CERES-EBAF
+  #       additional_datasets:
+  #         - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+  #         - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+  #     prw:
+  #       preprocessor: clim
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       reference_dataset: ESACCI-WATERVAPOUR
+  #       additional_datasets:
+  #         - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat, version: CDR2-L3S-05deg_fv3.1, tier: 3}
+  #         - {dataset: SSMI-MERIS, project: obs4mips, level: L3, version: v1-00, tier: 1}
+  #         - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2}
+  #         - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+  #   additional_datasets: *icon_model
+  #   scripts:
+  #     tayclt:
+  #       script: clouds/clouds_taylor.ncl
+  #       embracelegend: false
+  #       estimate_obs_uncertainty: false
+  #       multiobs_uncertainty: true
+  #       styleset: CMIP6
+  #       timemean: annualclim
+  #       valid_fraction: 0.5
+  #       var: clt
+  #     tayclivi:
+  #       script: clouds/clouds_taylor.ncl
+  #       embracelegend: false
+  #       estimate_obs_uncertainty: false
+  #       multiobs_uncertainty: true
+  #       styleset: CMIP6
+  #       timemean: annualclim
+  #       valid_fraction: 0.5
+  #       var: clivi
+  #     taylwp:
+  #       script: clouds/clouds_taylor.ncl
+  #       embracelegend: false
+  #       estimate_obs_uncertainty: false
+  #       multiobs_uncertainty: true
+  #       styleset: CMIP6
+  #       timemean: annualclim
+  #       valid_fraction: 0.5
+  #       var: lwp
+  #     tayswcre:
+  #       script: clouds/clouds_taylor.ncl
+  #       embracelegend: false
+  #       estimate_obs_uncertainty: false
+  #       multiobs_uncertainty: true
+  #       styleset: CMIP6
+  #       timemean: annualclim
+  #       valid_fraction: 0.5
+  #       var: swcre
+  #     taylwcre:
+  #       script: clouds/clouds_taylor.ncl
+  #       embracelegend: false
+  #       estimate_obs_uncertainty: false
+  #       multiobs_uncertainty: true
+  #       styleset: CMIP6
+  #       timemean: annualclim
+  #       valid_fraction: 0.5
+  #       var: lwcre
+  #     tayprw:
+  #       script: clouds/clouds_taylor.ncl
+  #       embracelegend: false
+  #       estimate_obs_uncertainty: false
+  #       multiobs_uncertainty: true
+  #       styleset: CMIP6
+  #       timemean: annualclim
+  #       valid_fraction: 0.5
+  #       var: prw
+
+
+  # # ###########################################################################
+  # # Diagnostic block 4
+  # # ------------------
+  # # Southern Ocean diagnostic.
+  # # ###########################################################################
+
+  # scatter_so:
+  #   description: scatter plot cloud fraction vs shortwave cloud forcing
+  #   themes:
+  #     - phys
+  #     - clouds
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     clt:
+  #       preprocessor: ppSouthernOcean
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       reference_dataset: ESACCI-CLOUD
+  #       additional_datasets:
+  #         - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+  #     swcre:
+  #       preprocessor: ppSouthernOcean
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       derive: true
+  #       reference_dataset: CERES-EBAF
+  #       additional_datasets:
+  #         - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+  #   additional_datasets: *icon_model
+  #   scripts:
+  #     scatter_swcre:
+  #       script: clouds/clouds_scatter.ncl
+  #       var_x: clt
+  #       var_y: swcre
+  #       xmin: 0
+  #       xmax: 100
+  #       ymin_mm: -150.0
+  #       ymax_mm: 0.0
+
+  # pdf_clt_so:
+  #   description: climatological annual means
+  #   themes:
+  #     - clouds
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     clt:
+  #       preprocessor: ppSouthernOcean
+  #       reference_dataset: ESACCI-CLOUD
+  #       project: CMIP6
+  #       mip: Amon
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       additional_datasets:
+  #         - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+  #   additional_datasets: *icon_model
+  #   scripts:
+  #     pdf:
+  #       script: clouds/clouds_pdf.ncl
+  #       styleset: CMIP6
+
+
+  # # ###########################################################################
+  # # Diagnostic block 5
+  # # ------------------
+  # # Southeastern Pacific diagnostic.
+  # # ###########################################################################
+
+  # pdf_clt_sep:
+  #   description: climatological annual means
+  #   themes:
+  #     - clouds
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     clt:
+  #       preprocessor: ppSEPacific
+  #       reference_dataset: ESACCI-CLOUD
+  #       project: CMIP6
+  #       mip: Amon
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       additional_datasets:
+  #         - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+  #   additional_datasets: *icon_model
+  #   scripts:
+  #     pdf:
+  #       script: clouds/clouds_pdf.ncl
+  #       styleset: CMIP6
+
+
+  # # ###########################################################################
+  # # Diagnostic block 6
+  # # ------------------
+  # # Dynamical regime diagnostic.
+  # # ###########################################################################
+
+  # matrix_ocean:
+  #   description: cloud matrices - dynamical regimes vs. cloud parameter
+  #   themes:
+  #     - clouds
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     clt:
+  #       preprocessor: climOcean
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       reference_dataset: ESACCI-CLOUD
+  #       additional_datasets:
+  #         - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+  #     ts:
+  #       preprocessor: climOcean
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       reference_dataset: ERA-Interim
+  #       additional_datasets:
+  #         - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+  #     wap:
+  #       preprocessor: clim500Ocean
+  #       mip: Amon
+  #       project: CMIP6
+  #       exp: historical
+  #       start_year: 2006
+  #       end_year: 2006
+  #       reference_dataset: ERA-Interim
+  #       additional_datasets:
+  #         - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+  #   additional_datasets: *icon_model
+  #   scripts:
+  #     dynclt:
+  #       script: clouds/clouds_dyn_matrix.ncl
+  #       var_x: ts
+  #       var_y: wap
+  #       var_z: clt
+  #       xmin: 275
+  #       xmax: 305
+  #       ymin: -10
+  #       ymax: 10
+  #       zmin: 0
+  #       zmax: 100
+  #       zdmin: -45
+  #       zdmax: 45
