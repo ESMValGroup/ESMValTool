@@ -153,7 +153,7 @@ def make_model_vs_obs_plots(
     cubes = {}
     for model_type, input_file in filenames.items():
         logger.debug('loading: \t%s, \t%s', model_type, input_file)
-        cube = iris.load_cube(input_file)
+        cube = iris.util.squeeze(iris.load_cube(input_file))
         cube = diagtools.bgc_units(cube, metadata[input_file]['short_name'])
         cubes[model_type] = diagtools.make_cube_layer_dict(cube)
         for layer in cubes[model_type]:
@@ -396,10 +396,10 @@ def make_scatter(
         fig.set_size_inches(7, 6)
 
         # Create the cubes
-        model_data = np.ma.array(cubes['model'][layer].data)
-        obs_data = np.ma.array(cubes['obs'][layer].data)
+        model_data = cubes['model'][layer].data.squeeze()
+        obs_data = cubes['obs'][layer].data.squeeze()
 
-        mask = model_data.mask + obs_data.mask
+        mask = np.ma.getmask(model_data) + np.ma.getmask(obs_data)
         model_data = np.ma.masked_where(mask, model_data).compressed()
         obs_data = np.ma.masked_where(mask, obs_data).compressed()
 
