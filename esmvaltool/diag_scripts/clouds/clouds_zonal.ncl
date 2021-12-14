@@ -328,7 +328,7 @@ begin
     ; annotation
 
 ;    res@tiMainOn             = False
-    res@tiMainString = names(ii)
+    res@tiMainString = names(imod)
     res@cnLevelSelectionMode = "ExplicitLevels"
     res@cnLinesOn            = False
 
@@ -629,7 +629,7 @@ begin
                                             / tofloat((dim_MOD + 1) / 2)/))
 
 ;      dres@tiMainOn       = False
-      dres@tiMainString = names(ii) + " - " + refname
+      dres@tiMainString = names(imod) + " - " + refname
 
       dres@cnFillOn       = True      ; color plot desired
       dres@cnLineLabelsOn = False     ; contour lines
