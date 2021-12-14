@@ -201,8 +201,8 @@ def generate_overview(output_dir):
         entry_txt = div(
             div(
                 "\n".join([
-                    f"<img src='{figure.relative_to(output_dir)}' class='card-img-top'/>"
-                    if figure else "",
+                    f"<img src='{figure.relative_to(output_dir)}' "
+                    "class='card-img-top'/>" if figure else "",
                     div(
                         "\n".join([
                             f'<h5 class="card-title">{title}</h5>',
@@ -283,23 +283,40 @@ def write_index_html(lines, output_dir):
 
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <title>ESMValTool results</title>
       </head>
       <body>
         <div class="container-fluid">
-          <h1>ESMValTool results
-          <a class="btn btn-outline-info" href="debug.html" role="button">Debug</a>
+          <h1>
+          <img src="https://github.com/ESMValGroup/ESMValTool/raw/main/doc/sphinx/source/figures/ESMValTool-logo-2.png" class="img-fluid">
           </h1>
-          <div class="row row-cols-1 row-cols-md-3 g-4" data-masonry='{"percentPosition": true }'>
-    """)
+          <p>
+          See <a href=https://docs.esmvaltool.org/en/latest/recipes/index.html>Available recipes</a>
+          for a description of these recipes.
+          Missing something? Have a look at the <a href=debug.html>debug page</a>.
+          <p>
+          <input class="form-control searchbox-input" type="text" placeholder="Type something here to search...">
+          <br>
+          <div class="row row-cols-1 row-cols-md-3 g-4">
+    """)  # noqa: E501
     footer = textwrap.dedent("""
           </div>
         </div>
+        <script>
+          $(document).ready(function(){
+            $('.searchbox-input').on("keyup", function() {
+              var value = $(this).val().toLowerCase();
+              $(".col").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+              });
+            });
+          });
+        </script>
       </body>
     </html>
-    """)
+    """)  # noqa: E501
 
     lines = ["        " + line for line in lines]
     text = header + "\n".join(lines) + footer
