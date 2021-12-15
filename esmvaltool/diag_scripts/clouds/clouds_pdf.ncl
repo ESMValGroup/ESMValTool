@@ -9,7 +9,7 @@
 ;
 ; Required diag_script_info attributes (diagnostic specific)
 ;   xmin                min value for bins (x axis)
-;   xmax                max value for bins (y axis)
+;   xmax                max value for bins (x axis)
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
 ;   filename_add:       optionally add this string to output filenames

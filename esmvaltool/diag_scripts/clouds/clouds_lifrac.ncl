@@ -45,9 +45,9 @@ begin
   enter_msg(DIAG_SCRIPT, "")
 
   diag = "clouds_lifrac.ncl"
-  variables = metadata_att_as_array(variable_info, "short_name")
+  variables = get_unique_values(metadata_att_as_array(variable_info, \
+                                                      "short_name"))
   dim_VAR = dimsizes(variables)
-  refname = new(dim_VAR, string)
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + variables + ")")
@@ -68,6 +68,15 @@ begin
     error_msg("f", DIAG_SCRIPT, "", errstr)
   end if
 
+  delete(varlist)
+  delete(idx)
+
+  ; make sure that only the variables "clw" and "cli" are used and that their
+  ; order is correct
+  variables := (/"clw", "cli"/)
+  dim_VAR = dimsizes(variables)
+  refname = new(dim_VAR, string)
+
   ; save input files for writing provenance
 
   infiles = metadata_att_as_array(input_file_info, "filename")
@@ -76,10 +85,13 @@ begin
   ; is equal for each variable
 
   do i = 0, dim_VAR - 1
-    if (isatt(variable_info[idx(i)], "reference_dataset")) then
-      refname(i) = variable_info[idx(i)]@reference_dataset
+    var = variables(i)
+    var_info = select_metadata_by_name(variable_info, var)
+    var_info := var_info[0]
+    if (isatt(var_info, "reference_dataset")) then
+      refname(i) = var_info@reference_dataset
     end if
-    info = select_metadata_by_name(input_file_info, variables(idx(i)))
+    info = select_metadata_by_name(input_file_info, var)
     if (i .eq. 0) then
       dim_MOD = ListCount(info)
     else
@@ -91,9 +103,9 @@ begin
       end if
     end if
     delete(info)
+    delete(var)
+    delete(var_info)
   end do
-
-  delete(idx)
 
   ; Set default values for non-required diag_script_info attributes
 

@@ -44,7 +44,8 @@ begin
   enter_msg(DIAG_SCRIPT, "")
 
   diag = "clouds_scatter.ncl"
-  variables = metadata_att_as_array(variable_info, "short_name")
+  variables = get_unique_values(metadata_att_as_array(variable_info, \
+                                                      "short_name"))
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"var_x", "var_y", "xmin", "xmax"/))
@@ -98,21 +99,26 @@ begin
   ; is equal for each variable
 
   do i = 0, nVAR - 1
-    if (isatt(variable_info[idx(i)], "reference_dataset")) then
-      refname(i) = variable_info[idx(i)]@reference_dataset
+    var = variables(idx(i))
+    var_info = select_metadata_by_name(variable_info, var)
+    var_info := var_info[0]
+    if (isatt(var_info, "reference_dataset")) then
+      refname(i) = var_info@reference_dataset
     end if
-    info = select_metadata_by_name(input_file_info, variables(idx(i)))
+    info = select_metadata_by_name(input_file_info, var)
     if (i .eq. 0) then
       dim_MOD = ListCount(info)
     else
       dim_test = ListCount(info)
       if (dim_test .ne. dim_MOD) then
         error_msg("f", DIAG_SCRIPT, "", "number of datasets for variable " \
-                  + variables(i) + " does not match number of datasets for " \
-                  + variables(0))
+                  + var + " does not match number of datasets for " \
+                  + variables(idx(0)))
       end if
     end if
     delete(info)
+    delete(var)
+    delete(var_info)
   end do
 
   ; Set default values for non-required diag_script_info attributes
