@@ -1,4 +1,4 @@
-"""Script to download NSIDC-0116-nh from the Climate Data Store(CDS)."""
+"""Script to download NSIDC-0116-sh."""
 
 from datetime import datetime
 

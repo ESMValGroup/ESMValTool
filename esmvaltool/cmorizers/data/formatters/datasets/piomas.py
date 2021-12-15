@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for WOA data.
+"""ESMValTool CMORizer for PIOMAS data.
 
 Tier
    Tier 2: other freely-available dataset.

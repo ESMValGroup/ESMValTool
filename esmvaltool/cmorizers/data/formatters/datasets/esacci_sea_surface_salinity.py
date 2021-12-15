@@ -1,4 +1,20 @@
-"""Common tools to CMORize NSIDC-0116 northern and sothern data."""
+"""ESMValTool CMORizer for ESACCI-SOS data.
+
+Tier
+   Tier 2: other freely-available dataset.
+
+Source
+   ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sea_surface_salinity/data
+
+Last access
+   20200921
+
+Download and processing instructions
+   Download the data from:
+       v01.8/30days/
+       v02.31/30days/
+   Put all files under a single directory (no subdirectories with years).
+"""
 
 import logging
 import os
@@ -16,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 def cmorization(in_dir, out_dir, cfg, _, __, ___):
-    """Cmorize NSIDC-0116 dataset."""
+    """Cmorize ESACCI-SOS dataset."""
     glob_attrs = cfg['attributes']
 
     logger.info("Starting cmorization for Tier%s OBS files: %s",

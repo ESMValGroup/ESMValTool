@@ -1,4 +1,4 @@
-"""Script to download ESACCI-SOIL-MOISTURE."""
+"""Script to download ESACCI-SOILMOISTURE."""
 from datetime import datetime
 
 from dateutil import relativedelta

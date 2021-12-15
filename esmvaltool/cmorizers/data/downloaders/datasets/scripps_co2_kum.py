@@ -1,4 +1,4 @@
-"""Script to download CowtanWay from its webpage."""
+"""Script to download Scripps-CO2-KUM."""
 import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
