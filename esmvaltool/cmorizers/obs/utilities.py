@@ -1,19 +1,20 @@
 """Utils module for Python cmorizers."""
-from pathlib import Path
 import datetime
 import logging
 import os
 import re
 from contextlib import contextmanager
+from pathlib import Path
 
 import iris
 import numpy as np
 import yaml
 from cf_units import Unit
 from dask import array as da
-
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvaltool import __version__ as version, __file__ as esmvaltool_file
+
+from esmvaltool import __file__ as esmvaltool_file
+from esmvaltool import __version__ as version
 
 logger = logging.getLogger(__name__)
 
@@ -197,15 +198,17 @@ def fix_coords(cube, overwrite_time_bounds=True, overwrite_lon_bounds=True,
                 fix_bounds(cube, cube.coord('depth'))
 
         # fix air_pressure
-        if cube_coord.var_name == 'air_pressure':
+        if cube_coord.var_name == 'plev':
             logger.info("Fixing air pressure...")
             if overwrite_airpres_bounds \
                     or not cube.coord('air_pressure').has_bounds():
                 fix_bounds(cube, cube.coord('air_pressure'))
 
     # remove CS
-    cube.coord('latitude').coord_system = None
-    cube.coord('longitude').coord_system = None
+    if cube.coords('latitude'):
+        cube.coord('latitude').coord_system = None
+    if cube.coords('longitude'):
+        cube.coord('longitude').coord_system = None
 
     return cube
 
@@ -432,20 +435,22 @@ def fix_dim_coordnames(cube):
 
         if coord_type == 'T':
             coord.var_name = 'time'
+            coord.standard_name = 'time'
+            coord.long_name = 'time'
             coord.attributes = {}
 
         if coord_type == 'X':
             coord.var_name = 'lon'
             coord.standard_name = 'longitude'
-            coord.long_name = 'longitude coordinate'
-            coord.units = Unit('degrees')
+            coord.long_name = 'Longitude'
+            coord.convert_units('degrees')
             coord.attributes = {}
 
         if coord_type == 'Y':
             coord.var_name = 'lat'
             coord.standard_name = 'latitude'
-            coord.long_name = 'latitude coordinate'
-            coord.units = Unit('degrees')
+            coord.long_name = 'Latitude'
+            coord.convert_units('degrees')
             coord.attributes = {}
 
         if coord_type == 'Z':
@@ -455,11 +460,11 @@ def fix_dim_coordnames(cube):
                     'ocean depth coordinate'
                 coord.var_name = 'lev'
                 coord.attributes['positive'] = 'down'
-            if coord.var_name == 'pressure':
+            if coord.var_name == 'plev':
                 coord.standard_name = 'air_pressure'
                 coord.long_name = 'pressure'
-                coord.var_name = 'air_pressure'
-                coord.attributes['positive'] = 'up'
+                coord.convert_units('Pa')
+                coord.attributes['positive'] = 'down'
     return cube
 
 
