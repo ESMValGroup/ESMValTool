@@ -1,4 +1,4 @@
-r"""ESMValTool CMORizer for cds-satellite-albedo data.
+"""ESMValTool CMORizer for cds-satellite-albedo data.
 
 Tier
    Tier 3
