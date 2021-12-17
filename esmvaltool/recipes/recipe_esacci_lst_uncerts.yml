@@ -12,13 +12,8 @@ documentation:
   references:
     - esacci-lst
 
-  projects:
-    - cmug
-
-#datasets:
-#  - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r(2:3)i1p1f1, start_year: 2004, end_year: 2005, grid: gn}
-# - {dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, start_year: 2010, end_year: 2010, grid: gn, frequency: monthly}
-#  - {dataset: ESACCI_LST_UNCERT, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00', frequecy: monthly}
+datasets:
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 2010, end_year: 2010, grid: gn, frequency: monthly}
 
 preprocessors:
 
@@ -27,7 +22,7 @@ preprocessors:
       target_grid: UKESM1-0-LL
       scheme: linear
 
-    extract_region:
+    extract_region: 
       start_longitude: 35
       end_longitude: 45
       start_latitude: 60
@@ -36,51 +31,18 @@ preprocessors:
     mask_landsea:
       mask_out: sea
 
-    area_statistics:
-      operator: mean
-
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, std]
-  #   #   exclude: [ESACCI_LST_UNCERT]
-  
-  uncert_preprocessor:
-    extract_region:
-      start_longitude: 35
-      end_longitude: 45
-      start_latitude: 60
-      end_latitude: 70
-
 diagnostics:
-
-   timeseries:
-     description: ESACCI LST difference to model historical ensemble average
-     themes:
-       - phys
-     realms:
-       - atmos
-     variables:
-      # tsLocalSfcErrDay:
-      #   preprocessor: uncert_preprocessor
-      #   additional_datasets:
-          - {dataset: ESACCI_LST_UNCERTS, project: OBS, mip: custom, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
-      # tsLocalSfcErrNight:
-      #   preprocessor: uncert_preprocessor
-      #   additional_datasets:
-      #     - {dataset: ESACCI_LST_UNCERTS, project: OBS, mip: Amon, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
-
-      # tsLocalAtmErrDay:
-      #   preprocessor: uncert_preprocessor
-      #   additional_datasets:
-      #     - {dataset: ESACCI_LST_UNCERTS, project: OBS, mip: Amon, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
-      # tsLocalAtmErrNight:
-      #   preprocessor: uncert_preprocessor
-      #   additional_datasets:
-      #     - {dataset: ESACCI_LST_UNCERTS, project: OBS, mip: Amon, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
-      ts:
-          preprocessor: lst_preprocessor
-          additional_datasets:
-            - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: historical, ensemble: r1i1p1f2, start_year: 2010, end_year: 2010, grid: gn}
-     scripts:
-       script1:
-         script: lst_uncert/lst_uncert.py
+  timeseries:
+    description: ESACCI LST difference to model historical ensemble average
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tsLocalSfcErrDay:
+        preprocessor: lst_preprocessor
+        additional_datasets:
+          - {dataset: esacci_lst_uncerts, mip: CMIP6, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+    scripts:
+      script1:
+        script: lst_uncert/lst_uncert.py
