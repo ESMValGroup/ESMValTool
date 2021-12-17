@@ -21,6 +21,8 @@
 ;   PanelTop:           manual override for "@gnsPanelTop" used by panel
 ;                       plot(s)
 ;   showdiff            calculate and plot differences (default = False)
+;   showyears           Print start and end year in the plot titles (default =
+;                       False)
 ;   rel_diff:           if showdiff = True, then plot relative differences (%)
 ;                       (default = False)
 ;   rel_diff_min:       lower cutoff value in case of calculating relative
@@ -327,8 +329,20 @@ begin
 
     ; annotation
 
+    ; if desired, add years to plot title
+    years_str = ""
+    if (isatt(diag_script_info, "showyears")) then
+      if (diag_script_info@showyears) then
+        years_str = " (" + variable_info[0]@start_year
+        if (variable_info[0]@start_year .ne. variable_info[0]@end_year) then
+          years_str = years_str + "-" + variable_info[0]@end_year
+        end if
+        years_str = years_str + ")"
+      end if
+    end if
+
 ;    res@tiMainOn             = False
-    res@tiMainString = names(imod)
+    res@tiMainString = names(imod) + years_str
     res@cnLevelSelectionMode = "ExplicitLevels"
     res@cnLinesOn            = False
 
@@ -629,7 +643,7 @@ begin
                                             / tofloat((dim_MOD + 1) / 2)/))
 
 ;      dres@tiMainOn       = False
-      dres@tiMainString = names(imod) + " - " + refname
+      dres@tiMainString = names(imod) + " - " + refname + years_str
 
       dres@cnFillOn       = True      ; color plot desired
       dres@cnLineLabelsOn = False     ; contour lines
