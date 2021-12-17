@@ -475,7 +475,6 @@ diagnostics:
       zonal:
         script: clouds/clouds_zonal.ncl
         timemean: annualclim
-        t_test: false
         explicit_cn_levels: [0., 0.002, 0.004, 0.006, 0.008, 0.01, 0.012, 0.014, 0.016, 0.018, 0.02, 0.022, 0.024, 0.026, 0.028]
         explicit_cn_dlevels: [-0.01, -0.008, -0.006, -0.004, -0.002, 0., 0.002, 0.004, 0.006, 0.008, 0.01]
         extralegend: false
@@ -499,7 +498,6 @@ diagnostics:
         project: CMIP6
         start_year: 2006
         end_year: 2006
-        project: CMIP6
         exp: historical
         additional_datasets:
           - {dataset: ERA5, project: OBS6, type: reanaly, version: v1b, tier: 3}
@@ -511,7 +509,6 @@ diagnostics:
         project: CMIP6
         start_year: 2006
         end_year: 2006
-        project: CMIP6
         exp: historical
         additional_datasets: *icon_model_3d
     scripts:
