@@ -236,7 +236,7 @@ diagnostics:
 #        t_test: true
 #        filename_add: cmip6
 #
-#  clcalispo_cmip5:
+#  clcalipso_cmip5:
 #    description: cloud fraction zonal mean
 #    themes:
 #      - phys
