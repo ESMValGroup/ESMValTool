@@ -31,6 +31,8 @@
 ;   projection:         map projection for plotting (default =
 ;                       "CylindricalEquidistant")
 ;   showdiff            calculate and plot differences (default = False)
+;   showyears           Print start and end year in the plot titles (default =
+;                       False)
 ;   rel_diff:           if showdiff = True, then plot relative differences (%)
 ;                       (default = False)
 ;   rel_diff_min:       lower cutoff value in case of calculating relative
@@ -453,8 +455,20 @@ begin
 
     ; annotation
 
+    ; if desired, add years to plot title
+    years_str = ""
+    if (isatt(diag_script_info, "showyears")) then
+      if (diag_script_info@showyears) then
+        years_str = " (" + var0_info@start_year
+        if (var0_info@start_year .ne. var0_info@end_year) then
+          years_str = years_str + "-" + var0_info@end_year
+        end if
+        years_str = years_str + ")"
+      end if
+    end if
+
 ;    res@tiMainOn             = False
-    res@tiMainString = names(imod)
+    res@tiMainString = names(imod) + years_str
 
     res@cnLevelSelectionMode = "ExplicitLevels"
     res@cnLinesOn            = False
@@ -748,7 +762,7 @@ begin
         dres@gsnRightString = ""
         dres@mpPerimOn      = perim    ; draw line around map
 
-        dres@tiMainString =  names(imod) + " - " + refname
+        dres@tiMainString =  names(imod) + " - " + refname + years_str
 
         rmsd(imod, :) = rmsd@_FillValue
         bias(imod, :) = bias@_FillValue
@@ -780,7 +794,7 @@ begin
         end if
         dres@gsnLeftString  = ""
         dres@gsnRightString = ""
-        dres@tiMainString =  refname + " uncertainty"
+        dres@tiMainString =  refname + " uncertainty" + years_str
         rmsd(imod, :) = rmsd@_FillValue
         bias(imod, :) = bias@_FillValue
       else
