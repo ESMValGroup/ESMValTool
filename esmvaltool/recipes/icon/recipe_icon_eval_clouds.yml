@@ -223,11 +223,12 @@ diagnostics:
         mip: Amon
         project: CMIP6
         exp: historical
-        start_year: 2006
-        end_year: 2006
+        start_year: 2007
+        end_year: 2007
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip, tier: 2}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3}
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
@@ -300,8 +301,8 @@ diagnostics:
         mip: Amon
         project: CMIP6
         exp: historical
-        start_year: 2006
-        end_year: 2006
+        start_year: 2007
+        end_year: 2007
         reference_dataset: ESACCI-CLOUD
         additional_datasets: *icon_model_2d
       lwp_icon:
@@ -358,6 +359,7 @@ diagnostics:
         var: clt
         showdiff: true
         multiobs_uncertainty: true
+        showyears: true
       avgclivi:
         script: clouds/clouds.ncl
         projection: CylindricalEquidistant
@@ -365,6 +367,7 @@ diagnostics:
         var: clivi
         showdiff: true
         multiobs_uncertainty: true
+        showyears: true
       avglwp:
         script: clouds/clouds.ncl
         projection: CylindricalEquidistant
@@ -372,6 +375,7 @@ diagnostics:
         var: lwp
         showdiff: true
         multiobs_uncertainty: true
+        showyears: true
       avgswcre:
         script: clouds/clouds.ncl
         projection: CylindricalEquidistant
@@ -379,6 +383,7 @@ diagnostics:
         var: swcre
         showdiff: true
         multiobs_uncertainty: true
+        showyears: true
       avglwcre:
         script: clouds/clouds.ncl
         projection: CylindricalEquidistant
@@ -386,6 +391,7 @@ diagnostics:
         var: lwcre
         showdiff: true
         multiobs_uncertainty: true
+        showyears: true
       avgprw:
         script: clouds/clouds.ncl
         projection: CylindricalEquidistant
@@ -393,6 +399,7 @@ diagnostics:
         var: prw
         showdiff: true
         multiobs_uncertainty: true
+        showyears: true
 
 
   # ###########################################################################
@@ -443,6 +450,7 @@ diagnostics:
         showdiff: true
         rel_diff: false
         t_test: true
+        showyears: true
 
   cli3d:
     description: cloud ice content zonal mean
@@ -483,6 +491,7 @@ diagnostics:
         t_test: true
         rel_diff: false
         units_to: g/kg
+        showyears: true
 
   cl3d:
     description: 3-dim cloud cover, zonal mean
@@ -522,6 +531,47 @@ diagnostics:
         showdiff: true
         t_test: true
         rel_diff: false
+        showyears: true
+
+  clcalipso3d:
+    description: 3-dim cloud cover for CALIPSO, zonal mean
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      cl:
+        preprocessor: pp27
+        reference_dataset: ERA5
+        mip: cfMon
+        project: CMIP6
+        start_year: 2007
+        end_year: 2007
+        exp: historical
+        additional_datasets:
+          - {dataset: CALIPSO-GOCCP, project: OBS, type: sat, version: 3.1.2, tier: 2}
+      cl_icon:
+        short_name: cl
+        preprocessor: pp27_icon
+        reference_dataset: CALIPSO-GOCCP
+        mip: Amon
+        project: CMIP6
+        start_year: 2007
+        end_year: 2007
+        exp: historical
+        additional_datasets: *icon_model_3d
+    scripts:
+      zonal:
+        script: clouds/clouds_zonal.ncl
+        timemean: annualclim
+        explicit_cn_dlevels: [-25., -20., -15., -10., -5., 0., 5., 10., 15., 20., 25.]
+        explicit_cn_levels: [5., 10., 15., 20., 25., 30., 35., 40., 45., 50.]
+        extralegend: false
+        panel_labels: true
+        showdiff: true
+        t_test: true
+        rel_diff: false
+        showyears: true
 
   lifrac:
     description: zonal mean ice / liquid fraction
@@ -616,6 +666,7 @@ diagnostics:
         showdiff: true
         t_test: true
         rel_diff: false
+        showyears: true
 
   hus3d:
     description: water vapor zonal mean
@@ -656,6 +707,7 @@ diagnostics:
         t_test: true
         rel_diff: false
         units_to: g/kg
+        showyears: true
 
 
   # ###########################################################################
