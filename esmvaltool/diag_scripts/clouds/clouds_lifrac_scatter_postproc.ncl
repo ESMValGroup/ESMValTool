@@ -38,8 +38,10 @@ begin
   results = new((/nmod, nbins, 2/), float)
   refdata = new(nbins, float)
   mmmedian = new((/nbins, 2/), float)
+  mmmean = new((/nbins, 2/), float)
   mmp10 = new((/nbins, 2/), float)
   mmp90 = new((/nbins, 2/), float)
+  mmstd = new((/nbins, 2/), float)
 
   ; CMIP5
   fname5 = inpath + "/lifrac_scatter_cmip5/lifrac_scatter/" \
@@ -108,7 +110,7 @@ begin
     end if
   end do
 
-  ; calculate multi-model median and p10 and p90
+  ; calculate multi-model, p10 and p90, mean and standard deviation
 
   do n = 0, nbins - 1
     selection = icefrac5(idx5, n)
@@ -123,11 +125,16 @@ begin
       mmmedian(n, 0) = sorted(i50)
       mmp90(n, 0) = sorted(i90)
       delete(sorted)
+      mmmean(n, 0) = avg(selection)
+      mmstd(n, 0) = stddev(selection)
     else
       mmp10(n, 0) = mmp10@_FillValue
       mmedian(n, 0) = mmmedian@_FillValue
       mmp90(n, 0) = mmp90@_FillValue
+      mmmean(n, 0) = mmmean@_FillValue
+      mmstd(n, 0) = mmstd@_FillValue
     end if
+
     delete(selection)
     delete(itmp)
 
@@ -143,20 +150,30 @@ begin
       mmmedian(n, 1) = sorted(i50)
       mmp90(n, 1) = sorted(i90)
       delete(sorted)
+      mmmean(n, 1) = avg(selection)
+      mmstd(n, 1) = stddev(selection)
     else
       mmp10(n, 1) = mmp10@_FillValue
       mmedian(n, 0) = mmmedian@_FillValue
       mmp90(n, 1) = mmp90@_FillValue
+      mmmean(n, 1) = mmmean@_FillValue
+      mmstd(n, 1) = mmstd@_FillValue
     end if
+
     delete(selection)
     delete(itmp)
+
+print(tostring(n) + ", " + tostring(mmmean(n, 0)) + ", " + tostring(mmstd(n, 0)))
+print(tostring(n) + ", " + tostring(mmmean(n, 1)) + ", " + tostring(mmstd(n, 1)))
+
+
   end do
 
   ; ###########################################
   ; # create the plots                        #
   ; ###########################################
 
-  plots = new(nmod + 1, graphic)
+  plots = new(nmod + 2, graphic)
 
   res = True
   res@gsnDraw        = False  ; do not draw yet
@@ -195,37 +212,56 @@ begin
 
   data = new((/3, nbins/), float)
 
-  do ii = 0, nmod
+  do ii = 0, nmod + 1
     if (ii .lt. nmod) then
       data(0, :) = results(ii, :, 0)
       data(1, :) = results(ii, :, 1)
       data(2, :) = refdata(:)
       labels = (/models(ii, 0), models(ii, 1), "observations"/)
-    else
+    else if (ii .eq. nmod) then
       data(0, :) = (/mmmedian(:, 0)/)
       data(1, :) = (/mmmedian(:, 1)/)
       data(2, :) = refdata(:)
       labels = (/"CMIP5 MMMedian", "CMIP6 MMMedian", "observations"/)
+    else if (ii .eq. nmod + 1) then
+      data(0, :) = (/mmmean(:, 0)/)
+      data(1, :) = (/mmmean(:, 1)/)
+      data(2, :) = refdata(:)
+      labels = (/"CMIP5 MMMean", "CMIP6 MMMean", "observations"/)
+    end if
+    end if
     end if
 
     plots(ii) = gsn_csm_xy(wks, results&bin, data, res)
 
     gsn_legend_ndc(wks, 3, labels, 0.58, 0.78, lgres)
 
-    if (ii .eq. nmod) then
+    if (ii .ge. nmod) then
       res2 = True
       res2@gsnDraw         = False   ; do not draw yet
       res2@gsnFrame        = False  ; don't advance frame
       res2@xyLineColor     = -1  ; Make lines transparent
       mmvar = new((/2, nbins/), float)
-      mmvar(0, :) = mmp10(:, 0)
-      mmvar(1, :) = mmp90(:, 0)
-      res2@gsnXYFillColors = (/1.0, 0.9, 0.9, 1.0/)  ; "lightpink"
+      if (ii .eq. nmod) then  ; median + percentiles
+        mmvar(0, :) = mmp10(:, 0)
+        mmvar(1, :) = mmp90(:, 0)
+      else if (ii .eq. nmod + 1) then  ; mean + stddev
+        mmvar(0, :) = mmmean(:, 0) - mmstd(:, 0)
+        mmvar(1, :) = mmmean(:, 0) + mmstd(:, 0)
+      end if
+      end if
+      res2@gsnXYFillColors = (/0.9, 0.9, 1.0, 1.0/)  ; "lightblue"
       plotvar5 = gsn_csm_xy(wks, results&bin, mmvar, res2)
       overlay(plots(ii), plotvar5)
-      mmvar(0, :) = mmp10(:, 1)
-      mmvar(1, :) = mmp90(:, 1)
-      res2@gsnXYFillColors = (/0.9, 0.9, 1.0, 0.3/)  ; "lightpink"
+      if (ii .eq. nmod) then  ; median + percentiles
+        mmvar(0, :) = mmp10(:, 1)
+        mmvar(1, :) = mmp90(:, 1)
+      else if (ii .eq. nmod + 1) then
+        mmvar(0, :) = mmmean(:, 1) - mmstd(:, 1)
+        mmvar(1, :) = mmmean(:, 1) + mmstd(:, 1)
+      end if
+      end if
+      res2@gsnXYFillColors = (/1.0, 0.9, 0.9, 0.3/)  ; "lightpink"
       plotvar6 = gsn_csm_xy(wks, results&bin, mmvar, res2)
       overlay(plots(ii), plotvar6)
       delete(mmvar)
