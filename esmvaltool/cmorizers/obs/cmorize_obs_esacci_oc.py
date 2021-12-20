@@ -25,6 +25,7 @@ import glob
 import logging
 import os
 
+from datetime import datetime
 import iris
 import numpy as np
 import xarray as xr
@@ -85,6 +86,21 @@ def _add_depth_coord(cube):
     return cube
 
 
+def _fix_time(cube, frequency):
+    if frequency == "mon":
+        time = cube.coord("time")
+        units = time.units
+        new_dates = units.date2num(np.array([
+            [datetime(d.year, d.month, 1),
+             datetime(d.year, d.month, 15),
+             datetime(d.year+(d.month // 12), (d.month % 12)+1, 1)]
+            for d in units.num2date(time.points)
+        ]))
+        np.savetxt("time.txt", new_dates)
+        time.points = new_dates[:, 1]
+        time.bounds = new_dates[:, (0, 2)]
+
+
 def extract_variable(var_info, raw_info, out_dir, attrs):
     """Extract to all vars."""
     var = var_info.short_name
@@ -94,7 +110,8 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
     for cube in cubes:
         if cube.var_name == rawvar:
             fix_var_metadata(cube, var_info)
-            fix_coords(cube)
+            _fix_time(cube, var_info.frequency)
+            fix_coords(cube, overwrite_time_bounds=False)
             cube = _add_depth_coord(cube)
             _fix_data(cube, var)
             set_global_atts(cube, attrs)
