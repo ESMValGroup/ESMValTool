@@ -1,6 +1,7 @@
 # Recipe to call ESA CCI LST diagnostic.
 ---
 documentation:
+  title: ESA CCI LST diagnostic
   description: |
     Please add description here
   authors:
@@ -10,7 +11,7 @@ documentation:
     - king_robert
 
   references:
-    - esacci-lst
+    - esacci_lst
 
   projects:
     - cmug
@@ -41,7 +42,7 @@ preprocessors:
 
     multi_model_statistics:
       span: overlap
-      statistics: [mean, std]
+      statistics: [mean, std_dev]
       exclude: [ESACCI-LST]
 
 

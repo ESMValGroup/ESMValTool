@@ -6,6 +6,8 @@ Tier
 Source
    On CEDA-JASMIN
    /gws/nopw/j04/esacci_lst/public
+   For access to this JASMIN group workspace please register at
+   https://accounts.jasmin.ac.uk/services/group_workspaces/esacci_lst/
 
 Download and processing instructions
    Put all files under a single directory (no subdirectories with years)

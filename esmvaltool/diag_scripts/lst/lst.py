@@ -181,8 +181,8 @@ def _diagnostic(config):
     loaded_data['MultiModelMean']['ts'].remove_coord('time')
     loaded_data['MultiModelMean']['ts'].add_dim_coord(
         loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
-    loaded_data['MultiModelStd']['ts'].remove_coord('time')
-    loaded_data['MultiModelStd']['ts'].add_dim_coord(
+    loaded_data['MultiModelStd_Dev']['ts'].remove_coord('time')
+    loaded_data['MultiModelStd_Dev']['ts'].add_dim_coord(
         loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
 
     # Make a cube of the LST difference, and with +/- std of model variation
@@ -190,10 +190,10 @@ def _diagnostic(config):
         'MultiModelMean']['ts']
     lst_diff_cube_low = loaded_data['ESACCI-LST']['ts'] - (
         loaded_data['MultiModelMean']['ts'] +
-        loaded_data['MultiModelStd']['ts'])
+        loaded_data['MultiModelStd_Dev']['ts'])
     lst_diff_cube_high = loaded_data['ESACCI-LST']['ts'] - (
         loaded_data['MultiModelMean']['ts'] -
-        loaded_data['MultiModelStd']['ts'])
+        loaded_data['MultiModelStd_Dev']['ts'])
 
     # Plotting
     _make_plots(lst_diff_cube, lst_diff_cube_low, lst_diff_cube_high, config)
