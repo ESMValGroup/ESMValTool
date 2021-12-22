@@ -5,7 +5,7 @@ Tier
 
 Source
    On CEDA-JASMIN
-   /group_workspaces/jasmin2/esacci_lst/public
+   /gws/nopw/j04/esacci_lst/public
 
 Download and processing instructions
    Put all files under a single directory (no subdirectories with years)
