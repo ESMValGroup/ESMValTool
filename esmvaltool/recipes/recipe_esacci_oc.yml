@@ -1,11 +1,10 @@
 # ESMValTool
-# recipe_cmug_example.yml
+# recipe_esacci_oc.yml
 ---
 documentation:
   title: ESACCI Ocean Color Evaluation
   description: |
-    Example recipe for implementing ECV specific diagnostics for comparison
-    of CMIP5 / CMIP6 models with ESA CCI datasets.
+    Recipe for Ocean Color diagnostics.
 
   authors:
     - willen_ulrika
@@ -14,9 +13,6 @@ documentation:
   maintainer:
     - willen_ulrika
     - zimmermann_klaus
-
-  references:
-    - lauer13jclim
 
   projects:
     - cmug

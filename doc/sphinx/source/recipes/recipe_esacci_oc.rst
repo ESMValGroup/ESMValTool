@@ -30,39 +30,22 @@ User settings in recipe
 
    *Required settings for script*
 
-   * xxx: zzz
-
-   *Optional settings for script*
-
-   *Required settings for variables*
-
-   *Optional settings for variables*
-
-   *Required settings for preprocessor*
-
-   *Optional settings for preprocessor*
-
-   *Color tables*
-
-   * list required color tables (if any) here
+   * observational_dataset: name of reference dataset (e.g. {dataset: ESACCI-OC,})
 
 
 Variables
 ---------
 
-* chlor_a (ocean, monthly mean, longitude, latitude, time)
+* chl (ocean, monthly mean, longitude, latitude, time)
 
 
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4MIPs data can be used directly without any preprocessing;
-(2) see headers of reformat scripts for non-obs4MIPs data for download
-instructions.*
+* ESACCI-OC (chl)
 
-* http://dx.doi.org/10.5285/00b5fc99f9384782976a4453b0148f49
+  *Reformat script:* reformat_scripts/obs/reformat_obs_esacci_oc.py
 
-  *Reformat script:* <myreformatscript.py>
 
 References
 ----------
