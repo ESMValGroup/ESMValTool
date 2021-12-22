@@ -163,8 +163,10 @@ begin
     delete(selection)
     delete(itmp)
 
-print(tostring(n) + ", " + tostring(mmmean(n, 0)) + ", " + tostring(mmstd(n, 0)))
-print(tostring(n) + ", " + tostring(mmmean(n, 1)) + ", " + tostring(mmstd(n, 1)))
+    delta = mmmean(n, 0) - mmmean(n, 1)
+
+    print(tostring(results&bin(n)) + ", " + tostring(delta) + " (" \
+          + tostring(delta / mmmean(n, 0) * 100.0 + "%)"))
 
 
   end do
