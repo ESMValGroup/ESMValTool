@@ -642,13 +642,15 @@ authors:
     name: Tilmes, Simone
     institute: NCAR, US
     orcid:
+  crocker_thomas:
+    name: Crocker, Thomas
+    institute: MetOffice
 
 # Note: the reference section has been replaced by the folder esmvaltool/references that contains bibtex files.
 # How to add a bibtex file to esmvaltool/references:
 #  - make a bibtex file for a reference entry. There are some online tools to convert a doi to bibtex format like https://doi2bib.org/
 #  - rename the file to the tag used in the recipe or diagnostic.
 #  - add the file to the folder esmvaltool/references.
-
 
 projects:
   4c: EU H2020 project 4C
@@ -673,7 +675,6 @@ projects:
   usmile: ERC Synergy Grant USMILE
   isenes3: EU H2020 Infrastructure for the European Network for Earth System Modelling - Phase 3
   eucp: EU H2020 European Climate prediction
-
 
 realms:
   aerosol: aerosol
@@ -737,7 +738,7 @@ plot_types:
   taylor: taylor diagram
   times: time series
   zonal: zonal mean
-  pro: profile  # (any other kind of line chart)
+  pro: profile # (any other kind of line chart)
   box: boxplot
   line: line plot
   probability: probability distribution
