@@ -1,0 +1,51 @@
+# ESMValTool
+# recipe_annual_cycle.yml
+---
+documentation:
+  description: |
+    Compute and plot annual cycles of different variables from different datasets
+
+  authors:
+    - crocker_thomas
+
+  maintainer:
+    - crocker_thomas
+
+  #references:
+
+
+datasets:
+  # datasets
+  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, mip: Amon}
+  #- {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  #- {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: mi-ba795, project: Antigua_NAP, exp: historical, mip: mon, driver: MOHC-HadGEM2-ES}
+
+preprocessors:
+  proc1:
+    regrid:
+      target_grid: mi-ba795
+      scheme: linear
+    extract_region:
+      start_longitude: -65
+      end_longitude: -57.5
+      start_latitude: 10
+      end_latitude: 20
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: month
+    
+diagnostics:
+  annual_cycles:
+    description: Plot cycles of variables from the model
+    variables:
+      precip:
+        short_name: pr
+        preprocessor: proc1
+        start_year: 1980
+        end_year: 1988
+    scripts:
+      script1:
+        script: toms/cycles.py
