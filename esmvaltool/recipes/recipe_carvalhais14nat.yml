@@ -2,6 +2,7 @@
 # recipe_carvalhais14nat.yml
 ---
 documentation:
+  title: Ecosystem Turnover Time of Carbon
   description: |
     Recipe to evaluate the ecosystem turnover time of carbon based on
     Carvalhais et al., 2014, Nature.

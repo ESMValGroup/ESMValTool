@@ -40,7 +40,7 @@ def get_obs_projects():
         Returns a list of strings of the various types of observational data.
     """
     obs_projects = [
-        'obs4mips',
+        'obs4MIPs',
     ]
     return obs_projects
 

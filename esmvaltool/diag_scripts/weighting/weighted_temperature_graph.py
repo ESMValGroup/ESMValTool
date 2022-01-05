@@ -37,9 +37,9 @@ def visualize_and_save_temperatures(temperature: 'xr.DataArray',
 
     def plot_shaded(xrange, upper, lower, color, **kwargs):
         axes.fill_between(
-            xrange,
-            upper,
-            lower,
+            xrange.data,
+            upper.data,
+            lower.data,
             facecolor=color,
             edgecolor='none',
             alpha=0.3,
@@ -69,8 +69,8 @@ def visualize_and_save_temperatures(temperature: 'xr.DataArray',
               color=color_non_weighted,
               label='Non-weighted {}'.format(central_string))
     plot_shaded(uncertainty_range.time,
-                uncertainty_range.data[:, 0],
-                uncertainty_range.data[:, 1],
+                uncertainty_range[:, 0],
+                uncertainty_range[:, 1],
                 color=color_non_weighted,
                 label=f'Non-weighted {range_string} range')
 
@@ -80,8 +80,8 @@ def visualize_and_save_temperatures(temperature: 'xr.DataArray',
               label='Weighted {}'.format(central_string))
     plot_shaded(
         uncertainty_range_weighted.time,
-        uncertainty_range_weighted.data[:, 0],
-        uncertainty_range_weighted.data[:, 1],
+        uncertainty_range_weighted[:, 0],
+        uncertainty_range_weighted[:, 1],
         color=color_weighted,
         label='Weighted {} range'.format(range_string),
     )
