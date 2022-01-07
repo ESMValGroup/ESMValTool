@@ -1,3 +1,3 @@
 import iris
 import iris.coord_systems
-import iris.fileformats
+import iris.fileformats  # noqa
