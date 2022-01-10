@@ -278,8 +278,8 @@ def multi_model_time_series(
             variable_groups[variable_group] = True
             models[dataset] = True
             short_names[metadatas[fn]['short_name']] = True
-            ensembles[[metadatas[fn]['ensemble']] = True
-            scenarios[[metadatas[fn]['exp']] = True
+            ensembles[metadatas[fn]['ensemble']] = True
+            scenarios[metadatas[fn]['exp']] = True
 
     if len(short_names.keys()) != 1: assert 0
     short_name = list(short_names.keys())[0]
@@ -297,7 +297,7 @@ def multi_model_time_series(
        data_values= sh['data_values']
        model_cubes_paths = sh['model_cubes_paths']
        sh.close()
-   else:
+    else:
        model_cubes_paths = {}
        data_values = {}
 
@@ -315,8 +315,8 @@ def multi_model_time_series(
 
             print('loading: ',variable_group, dataset, fn)
             short_name = metadatas[fn]['short_name']
-            scenario = metadata['exp']
-            ensemble = metadata['ensemble']
+            scenario = metadatas[fn]['exp']
+            ensemble = metadatas[fn]['ensemble']
             nc_index = (variable_group, short_name, dataset, scenario, ensemble)
 
             # if already loaded, then skip.
@@ -352,7 +352,7 @@ def multi_model_time_series(
             model_cubes_paths = add_dict_list(model_cubes_paths, fn, True)
             changes+=1
 
-   if changes:
+    if changes:
        print('adding ', changes, 'new files to', out_shelve)
 #       sh = shopen(out_shelve)
        sh['data_values'] = data_values
@@ -424,13 +424,13 @@ def multi_model_time_series(
         # calculate model mean.
         if len(set(plotting) & set(('model_means', 'Global_mean', 'Global_range'))):
             model_mean = {}
-            for t, ds in dat_scen_data.keys():
-                model_mean[t] = np.mean(ds))
+            for t, ds in dat_scen_data.items():
+                model_mean[t] = np.mean(ds)
             # model_mean = {t:d for t,d in zip(times, model_mean)}
             datas_ds[(dataset_x, scenario_x)] = model_mean
 
         if 'model_means' in plotting:
-            model_mean = datas_ds.get(dataset_x, scenario_x), {}]
+            model_mean = datas_ds.get((dataset_x, scenario_x), {})
             times = [t for t in sorted(model_mean.keys())]
             model_mean = [model_mean[t] for t in times]
             plt.plot(times, model_mean, ls='.', c=color, lw=2.) #, label=dataset)
@@ -474,7 +474,7 @@ def multi_model_time_series(
 
         global_model_means = {}
         for dataset_x in datasets:
-            model_mean = datas_ds.get(dataset_x, scenario_x), {}]
+            model_mean = datas_ds.get((dataset_x, scenario_x), {})
             for t,d in model_mean.items():
                 global_model_means = add_dict_list(global_model_means, t, d)
 
