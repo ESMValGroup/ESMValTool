@@ -81,6 +81,58 @@ def nc_time_to_float(nc):
     return times
 
 
+def get_obsdata_paths_ts(field, data_type='3d'):
+    """
+    Time series obs files:
+    """
+    t2 = '/gws/nopw/j04/esmeval/obsdata-v2/Tier2/WOA/'
+    # temperature
+    if field in ['tos', 'thetao'] and data_type=='surface':
+    #    return [t2 + 'OBS6_WOA_clim_2018_Omon_tos_200007-200007.nc']
+        #ob('/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc'))
+    #if field in ['tos', 'thetao'] and data_type=='3d':
+        #return [t2+'OBS6_WOA_clim_2018_Omon_thetao_200001-200012.nc', ]
+        return sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc')) 
+        #return [t2 + 'OBS6_WOA_clim_2018_Omon_thetao_200007-200007.nc', ]
+    # sal
+    if field in ['sos', 'so', 'sal'] and data_type=='surface':
+        return [t2 + 'OBS6_WOA_clim_2018_Omon_sos_200007-200007.nc', ]
+    if field in ['sos', 'so', 'sal'] and data_type=='3d':
+        return [t2 + 'OBS6_WOA_clim_2018_Omon_so_200007-200007.nc', ]
+
+    # nutrients
+    if field in ['no3', ]:
+       return [t2 + 'OBS6_WOA_clim_2018_Oyr_no3_200001-200012.nc', ]
+
+    if field in ['o2', ]:
+       return ['/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o01_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o02_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o03_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o04_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o05_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o06_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o07_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o08_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o09_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o10_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o11_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o12_01.nc', ] 
+
+       #return sorted(glob('/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o{01,02,03,04,05,06,07,08,09,10,11,12}_01.nc'))
+
+    if field in ['po4', ]:
+       return [t2 + 'OBS6_WOA_clim_2018_Oyr_po4_200001-200012.nc', ]
+    if field in ['si', ]:
+       return [t2 + 'OBS6_WOA_clim_2018_Oyr_si_200001-200012.nc', ]
+    if field in ['pH', 'ph']:
+        assert 0
+        # return ["/gws/nopw/j04/esmeval/obsdata-v2/Tier2/GLODAP/OBS6_GLODAP_clim_v2.2016b_Oyr_ph_200001-200012.nc", ]
+
+    if field in ['intpp', ]:
+        return ['/gws/nopw/j04/esmeval/obsdata-v2/Tier2/Eppley-VGPM-MODIS/OBS_Eppley-VGPM-MODIS_sat_R2018_Omon_intpp_200207-201903.nc', ]
+
+    if field in ['chl', ]:
+        return sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/ESACCI-OC/OBS6_ESACCI-OC_sat_fv5.0_Omon_chl_199709-202012.nc'))
+
+    if field in ['mld', ]:
+        return ['/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/MLD/mld_DR003_c1m_reg2.0.nc', ]
+
+
+
+    print('Unable to find:', field, data_type)
+    assert 0
+
+
+
 def get_obsdata_paths(field, data_type='3d'):
 
     #files = sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_*'))
@@ -118,7 +170,13 @@ def get_obsdata_paths(field, data_type='3d'):
 
     if field in ['chl', ]:
         return sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier2/ESACCI-OC/OBS6_ESACCI-OC_sat_fv5.0_Omon_chl_199709-202012.nc'))
-   
+
+    if field in ['intpp', ]:
+        return ['/gws/nopw/j04/esmeval/obsdata-v2/Tier2/Eppley-VGPM-MODIS/OBS_Eppley-VGPM-MODIS_sat_R2018_Omon_intpp_200207-201903.nc', ]
+
+    if field in ['mld', ]:
+        return ['/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/MLD/mld_DR003_c1m_reg2.0.nc', ]
+ 
     print('Unable to find:', field, data_type)
     assert 0
 
@@ -145,8 +203,10 @@ def time_series(field='tos', pane='timeseries'):
         if pane == 'clim':
             return months, clim
 
-    files = get_obsdata_paths(field, data_type='surface')
-
+    files = get_obsdata_paths_ts(field, data_type='surface')
+    if not len(files):
+        print('No files found:', files, field)
+        assert 0
     annual_times, annual_data = [], []
     months_dat = {m:[] for m in months}
 
@@ -156,12 +216,32 @@ def time_series(field='tos', pane='timeseries'):
 
     for nc_path in sorted(files):
         print('loading:', nc_path)
+        if field in ['mld', ]:
+            cube = iris.load_raw(nc_path)[2]
+            cube.data = np.ma.masked_where(cube.data == 1000000000., cube.data)
+            nctimes = diagtools.cube_time_to_float(cube)
 
-        cube = iris.load_cube(nc_path)
-        cube = diagtools.bgc_units(cube, field)
+        elif field in ['o2', ]:
+            cube = iris.load_raw(nc_path)[4] #
+            # woa18_all_o01_01.nc
+            nctimes = [float(nc_path[-8:-6])/12. + 2000., ]
+#           nctimes = np.arange(12)/12.+2000.
+            #cube = diagtools.bgc_units(cube, field) 
+            print(nc_path, nctimes, cube.data.max())
+            #assert 0
+        else:
+            cube = iris.load_cube(nc_path)
+            cube = diagtools.bgc_units(cube, field)
 
-        nctimes = diagtools.cube_time_to_float(cube)
+            nctimes = diagtools.cube_time_to_float(cube)
         nc = Dataset(nc_path)
+
+        if field == 'o2':
+            cube = extract_levels(cube,
+                scheme='linear',
+                levels =  [750., ]
+            )
+
         lons = nc.variables['lon']
         lats = nc.variables['lat']
 
@@ -205,6 +285,7 @@ def time_series(field='tos', pane='timeseries'):
 #           ncdata =  cube[:, 0, 317:341+1,1439:1439+1].collapsed(['latitude', 'longitude'], iris.analysis.MEAN).data
 
         for t,d in zip(nctimes, ncdata):
+            print('adding data:', field, t, d, cube.units)
             datas[t] = d
         #times.extend(nctimes)
         #data.extend(ncdata)
@@ -273,12 +354,23 @@ def load_map_netcdf(field='tos', pane='map'):
 
     cube_list = []
     for fn in files:
-        cube = iris.load_cube(fn)
-        cube = diagtools.bgc_units(cube, field)
-        times = diagtools.cube_time_to_float(cube)
-        if cube.ndim == 4:
-            cube = cube[:,0]
-        cube = extract_time(cube, 2000, 1, 1, 2010, 1, 1)
+        if field in ['mld', ]:
+            cube = iris.load_raw(fn)[2]
+            cube.data = np.ma.masked_where(cube.data == 1000000000., cube.data)
+        else:
+            cube = iris.load_cube(fn)
+
+            cube = diagtools.bgc_units(cube, field)
+            times = diagtools.cube_time_to_float(cube)
+            if cube.ndim == 4:
+                cube = cube[:,0]
+            cube = extract_time(cube, 2000, 1, 1, 2010, 1, 1)
+            if field == 'o2':
+                cube = extract_levels(cube,
+                scheme='linear',
+                levels =  [750., ]
+                )
+ 
 
 #        if np.min(times) < 2000.: continue
 #        if np.max(times) > 2010.: continue
@@ -486,15 +578,15 @@ def make_profile_figure(field):
 #     sh.close()
 
 def main():
-    twodfields = ['chl', ]
-    threedfields = [] #'so','ph'] #'tos',  'no3', 'si',]
+    twodfields = []#'mld', ] #'intpp', 'chl', ]# 'mld' ]
+    threedfields = ['o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
     for field in twodfields:
-        make_map_figure(field)
-#        make_ts_figure(field)
+#        make_map_figure(field)
+        make_ts_figure(field)
 
     for field in threedfields:
-        make_profile_figure(field)
-        make_map_figure(field)
+#        make_profile_figure(field)
+#        make_map_figure(field)
         make_ts_figure(field)
 
 if __name__ == '__main__':
