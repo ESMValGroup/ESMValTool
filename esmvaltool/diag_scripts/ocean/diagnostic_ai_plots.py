@@ -255,8 +255,8 @@ def multi_model_time_series(
         The metadata dictionairy for a specific model.
 
     """
-    overwrite = True 
-    impath = diagtools.folder(cfg['plot_dir']+'/individual_panes')
+    overwrite = True
+    impath = diagtools.folder(cfg['plot_dir']+'/individual_panes_timeseries')
     impath += '_'.join(['multi_model_ts', moving_average_str] )
     impath += '_'+'_'.join(plotting)
     if ukesm == 'only': impath += '_UKESM'
@@ -264,31 +264,48 @@ def multi_model_time_series(
     impath += diagtools.get_image_format(cfg)
     if not overwrite and os.path.exists(impath): return fig, ax
 
+    # Determine short name & model list:
+    variable_groups = {}
+    models = {}
+    short_names = {}
+    ensembles = {}
+    scenarios = {}
+    for variable_group, filenames  in ts_dict.items():
+        for fn in sorted(filenames):
+            if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
+            dataset = metadatas[fn]['dataset']
+            if dataset in models_to_skip: continue
+            variable_groups[variable_group] = True
+            models[dataset] = True
+            short_names[metadatas[fn]['short_name']] = True
+            ensembles[[metadatas[fn]['ensemble']] = True
+            scenarios[[metadatas[fn]['exp']] = True
+
+    if len(short_names.keys()) != 1: assert 0
+    short_name = list(short_names.keys())[0]
+
     ####
     # Load the data for each layer as a separate cube
     out_shelve = diagtools.folder([cfg['work_dir'], 'timeseries_shelves', ])
-    out_shelve += 'time_series.shelve'
-# #   if len(glob.glob(out_shelve+'*')):
-#    
-#        sh = shopen(out_shelve)
-#        model_cubes = sh['model_cubes']
-#        model_cubes_paths = sh['model_cubes_paths']
-#        sh.close()
-#    else:
-#        model_cubes = {}
-#        model_cubes_paths = {}
-
+    out_shelve += 'time_series_'+short_name+'.shelve'
 
     model_cubes = {}
-    model_cubes_paths = {}
+    if len(glob.glob(out_shelve+'*')):
+       print('loading from shelve:', out_shelve)
+       sh = shopen(out_shelve)
+       #model_cubes = sh['model_cubes']
+       data_values= sh['data_values']
+       model_cubes_paths = sh['model_cubes_paths']
+       sh.close()
+   else:
+       model_cubes_paths = {}
+       data_values = {}
 
     changes = 0
-    models = {}
-    short_name = ''
     variable_groups = {}
 
+    # load the netcdfs and populate the shelve dicts
     for variable_group, filenames  in ts_dict.items():
-        variable_groups[variable_group] = True
         for fn in sorted(filenames):
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             dataset = metadatas[fn]['dataset']
@@ -297,26 +314,52 @@ def multi_model_time_series(
             if ukesm == 'not' and dataset == 'UKESM1-0-LL': continue
 
             print('loading: ',variable_group, dataset, fn)
-            models[dataset] = True
-            if fn in model_cubes_paths.get(variable_group,[]): continue
-
             short_name = metadatas[fn]['short_name']
+            scenario = metadata['exp']
+            ensemble = metadata['ensemble']
+            nc_index = (variable_group, short_name, dataset, scenario, ensemble)
 
+            # if already loaded, then skip.
+            if model_cubes_paths.get(fn, False): continue
+            if data_values.get(nc_index, False): continue
+
+            print('loading', nc_index, 'fn:', fn)
+            # load netcdf as a cube
             cube = iris.load_cube(fn)
-            cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
+            cube = diagtools.bgc_units(cube, short_name)
 
-            model_cubes = add_dict_list(model_cubes, variable_group, cube)
-            model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
+            #model_cubes = add_dict_list(model_cubes, variable_group, cube)
+
+            # Take a moving average, if needed.
+            if not moving_average_str: pass
+            elif moving_average_str == 'annual':
+                cube = annual_statistics(cube.copy(), operator='mean')
+                cube = regrid_time(cube, 'yr')
+            else:
+                cube = moving_average(cube, moving_average_str)
+
+            # load times:
+            times = diagtools.cube_time_to_float(cube)
+
+            data = {}
+            for t, d in zip(times, cube.data):
+                if moving_average_str == 'annual':
+                    t = int(t) + 0.5
+                data[t] = d
+                #data_values = add_dict_list(data_values, t, d)
+                #model_data_groups[dataset] = add_dict_list(model_data_groups[dataset], t, d)
+            data_values[nc_index] = data
+            model_cubes_paths = add_dict_list(model_cubes_paths, fn, True)
             changes+=1
 
-#    if changes:
-#        print('adding ', changes, 'new files to', out_shelve)
-# #       sh = shopen(out_shelve)
-#        sh['model_cubes'] = model_cubes
-#        sh['model_cubes_paths'] = model_cubes_paths
-#        sh.close()
-    
+   if changes:
+       print('adding ', changes, 'new files to', out_shelve)
+#       sh = shopen(out_shelve)
+       sh['data_values'] = data_values
+       sh['model_cubes_paths'] = model_cubes_paths
+       sh.close()
 
+    # Make the figure
     if fig is None or ax is None:
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -330,119 +373,197 @@ def multi_model_time_series(
     if colour_scheme in ['viridis', 'jet']:
         cmap = plt.cm.get_cmap(colour_scheme)
 
-    # Plot individual model in the group
-    for variable_group, cubes in model_cubes.items():
-        if variable_group not in variable_groups: continue
-        data_values = {}
-        model_data_groups = {model:{} for model in models.keys()}
+    # Plot every single ensemble member
+    # plottings:
+    #     all: every single ensemble member shown as thin line.
+    #     model_means: the mean of every model ensmble is shown as a thicker dotted line
+    #     model_median: the median of every model ensmble is shown as a thicker dotted line
+    #     model_range: the range of every model ensmble is shown as a coloured band (or line if only one)
+    #     model_5_95: the range of every model ensmble is shown as a coloured band (or line if only one)
+    #     Global_mean: the mean of every model_means is shown as a thick solid line
+    #     Global_range: the mean of every model_means is shown as a thick solid line
 
-        for i, cube in enumerate(cubes):
-            path = model_cubes_paths[variable_group][i]
-            metadata = metadatas[path]
-            if dataset in models_to_skip: continue
-
-            scenario = metadata['exp']
-            dataset = metadata['dataset']
-
-            # Take a moving average, if needed.
-            if not moving_average_str: pass
-            elif moving_average_str == 'annual':
-                cube = annual_statistics(cube.copy(), operator='mean')
-                cube = regrid_time(cube, 'yr')
+    for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
+        if 'all' not in plotting: continue
+        if colour_scheme in ['viridis', 'jet']:
+            if len(metadata) > 1:
+                color = cmap(index / (len(metadata) - 1.))
             else:
-                cube = moving_average(cube,
-                    moving_average_str)
+                color = 'blue'
+            #label = dataset
 
-            times = diagtools.cube_time_to_float(cube)
+        if colour_scheme in 'IPCC':
+            color = ipcc_colours[scenario]
+            #label =  scenario
 
-            for t, d in zip(times, cube.data):
-                if moving_average_str == 'annual':
-                    t = int(t) + 0.5
-                data_values = add_dict_list(data_values, t, d)
-                model_data_groups[dataset] = add_dict_list(model_data_groups[dataset], t, d)
+            timeplot(
+                cube,
+                c=color,
+                ls='-',
+                lw=0.4,
+            )
+    datas_ds = {}
 
-            if colour_scheme in ['viridis', 'jet']:
-                if len(metadata) > 1:
-                    color = cmap(index / (len(metadata) - 1.))
-                else:
-                    color = 'blue'
-                label = dataset
+    # single model lines:
+    for dataset_x,scenario_x in zip(sorted(datasets.keys()), sorted(scenarios)):
+        if not len(set(plotting) & set(
+            ('model_means', 'model_median', 'model_range', 'model_5_95', 'Global_mean', 'Global_range', ))):
+            continue # none needed.
 
-            if colour_scheme in 'IPCC':
-                color = ipcc_colours[scenario]
-                label =  scenario
+        dat_scen_data = {}
+        for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
+            if dataset_x!= dataset: continue
+            if scenario_x != scenario: continue
+            for t,d in data.items():
+                dat_scen_data = add_dict_list(dat_scen_data, t, d)
 
-            if 'all_models' in plotting:
-                timeplot(
-                    cube,
-                    c=color,
-                    ls='-',
-                    lw=0.4,
-                )
+        if not len(dat_scen_data):
+            print('nothinhg found for ', dataset_x, scenario_x)
+            continue
 
-        means = {}
-        if 'model_means' in plotting or 'global_model_means' in plotting:
-            for dataset in sorted(model_data_groups.keys()):
-                times = sorted(model_data_groups[dataset].keys())
-                mean = [np.mean(model_data_groups[dataset][t]) for t in times]
-                for t, m in zip(times, mean):
-                    means = add_dict_list(means, t, d)
+        # calculate model mean.
+        if len(set(plotting) & set(('model_means', 'Global_mean', 'Global_range'))):
+            model_mean = {}
+            for t, ds in dat_scen_data.keys():
+                model_mean[t] = np.mean(ds))
+            # model_mean = {t:d for t,d in zip(times, model_mean)}
+            datas_ds[(dataset_x, scenario_x)] = model_mean
 
-                print('global_model_means',dataset, times, mean)
-                if 'model_means' in plotting:
-                    plt.plot(times, mean, ls='-', c=color, lw=2., label=dataset)
-                    plot_details[path] = {
-                        'c': color,
-                        'ls': '-',
-                        'lw': 1.4,
-                        'label':dataset}
+        if 'model_means' in plotting:
+            model_mean = datas_ds.get(dataset_x, scenario_x), {}]
+            times = [t for t in sorted(model_mean.keys())]
+            model_mean = [model_mean[t] for t in times]
+            plt.plot(times, model_mean, ls='.', c=color, lw=2.) #, label=dataset)
 
-        if 'global_model_means' in plotting:
-            times = sorted(means.keys())
-            mean = [np.mean(means[t]) for t in times]
-            plt.plot(times, mean, ls='-', c=color, lw=2.)
-            print('global_model_means - means:', label, times, mean)
+        if 'model_medians' in plotting:
+            times = [t for t in sorted(dat_scen_data.keys())]
+            model_median = []
+            for t, ds in dat_scen_data.keys():
+                model_median.append(np.median(ds))
+            plt.plot(times, model_median, ls='.', c=color, lw=2.) #, label=dataset)
 
-            plot_details[path] = {
-                'c': color,
-                'ls': '-',
-                'lw': 1.4,
-                'label': label,
-            }
+        if 'model_range' in plotting:
+            times = [t for t in sorted(dat_scen_data.keys())]
+            model_mins = []
+            model_maxs = []
+            for t, ds in dat_scen_data.keys():
+                model_mins.append(np.min(ds))
+                model_maxs.append(np.max(ds))
+            if model_mins == model_maxs:
+                plt.plot(times, model_mins, ls='.', c=color, lw=2.)
+            else:
+                plt.fill_between(times, model_mins, model_maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
 
-        if 'means' in plotting:
-            times = sorted(data_values.keys())
-            mean = [np.mean(data_values[t]) for t in times]
-            plt.plot(times, mean, ls='-', c=color, lw=2.)
-            plot_details[path] = {
-                'c': color,
-                'ls': '-',
-                'lw': 1.4,
-                'label': label,
-            }
+        if 'model_5_95' in plotting:
+            assert 0
+            times = [t for t in sorted(dat_scen_data.keys())]
+            model_mins = []
+            model_maxs = []
+            for t, ds in dat_scen_data.keys():
+                model_mins.append(np.min(ds))
+                model_maxs.append(np.max(ds))
+            if model_mins == model_maxs:
+                plt.plot(times, model_mins, ls='.', c=color, lw=2.)
+            else:
+                plt.fill_between(times, model_mins, model_maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
 
-        if 'medians' in plotting:
-            times = sorted(data_values.keys())
-            mean = [np.median(data_values[t]) for t in times]
-            plt.plot(times, mean, ls='-', c=color, lw=2.)
-            plot_details[path] = {
-                'c': color,
-                'ls': '-',
-                'lw': 1.6,
-                'label': label,
-            }
+    # global model lines:
+    for scenario_x in sorted(scenarios):
+        if not len(set(plotting) & set(('Global_mean', 'Global_range', ))):
+            continue # none needed.
 
-        if 'range' in plotting:
-            times = sorted(data_values.keys())
-            mins = [np.min(data_values[t]) for t in times]
-            maxs = [np.max(data_values[t]) for t in times]
-            plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
+        global_model_means = {}
+        for dataset_x in datasets:
+            model_mean = datas_ds.get(dataset_x, scenario_x), {}]
+            for t,d in model_mean.items():
+                global_model_means = add_dict_list(global_model_means, t, d)
 
-        if '5-95' in plotting:
-            times = sorted(data_values.keys())
-            mins = [np.percentile(data_values[t], 5.) for t in times]
-            maxs = [np.percentile(data_values[t], 95.) for t in times]
-            plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
+
+        if not len(dat_scen_data):
+            print('nothinhg found for ', dataset_x, scenario_x)
+
+        if 'Global_mean' in plotting:
+            times = [t for t in sorted(global_model_means.keys())]
+            global_mean = [np.mnean(global_model_means[t]) for t in times]
+            plt.plot(times, global_mean, ls='-', c=color, lw=2.) #, label=dataset)
+
+        if 'Global_range' in plotting:
+            times = [t for t in sorted(global_model_means.keys())]
+            model_mins = []
+            model_maxs = []
+            for t, ds in global_model_means.keys():
+                model_mins.append(np.min(ds))
+                model_maxs.append(np.max(ds))
+            if model_mins == model_maxs:
+                plt.plot(times, model_mins, ls='-', c=color, lw=2.)
+            else:
+                plt.fill_between(times, model_mins, model_maxs, color= ipcc_colours[scenario_x], ec=None, alpha=0.3)
+
+
+        #
+        # means = {}
+        # if 'model_means' in plotting or 'global_model_means' in plotting:
+        #     for dataset in sorted(model_data_groups.keys()):
+        #         times = sorted(model_data_groups[dataset].keys())
+        #         mean = [np.mean(model_data_groups[dataset][t]) for t in times]
+        #         for t, m in zip(times, mean):
+        #             means = add_dict_list(means, t, d)
+        #
+        #         print('global_model_means',dataset, times, mean)
+        #         if 'model_means' in plotting:
+        #             plt.plot(times, mean, ls='-', c=color, lw=2., label=dataset)
+        #             plot_details[path] = {
+        #                 'c': color,
+        #                 'ls': '-',
+        #                 'lw': 1.4,
+        #                 'label':dataset}
+        #
+        # if 'global_model_means' in plotting:
+        #     times = sorted(means.keys())
+        #     mean = [np.mean(means[t]) for t in times]
+        #     plt.plot(times, mean, ls='-', c=color, lw=2.)
+        #     print('global_model_means - means:', label, times, mean)
+        #
+        #     plot_details[path] = {
+        #         'c': color,
+        #         'ls': '-',
+        #         'lw': 1.4,
+        #         'label': label,
+        #     }
+        #
+        # if 'means' in plotting:
+        #     times = sorted(data_values.keys())
+        #     mean = [np.mean(data_values[t]) for t in times]
+        #     plt.plot(times, mean, ls='-', c=color, lw=2.)
+        #     plot_details[path] = {
+        #         'c': color,
+        #         'ls': '-',
+        #         'lw': 1.4,
+        #         'label': label,
+        #     }
+        #
+        # if 'medians' in plotting:
+        #     times = sorted(data_values.keys())
+        #     mean = [np.median(data_values[t]) for t in times]
+        #     plt.plot(times, mean, ls='-', c=color, lw=2.)
+        #     plot_details[path] = {
+        #         'c': color,
+        #         'ls': '-',
+        #         'lw': 1.6,
+        #         'label': label,
+        #     }
+        #
+        # if 'range' in plotting:
+        #     times = sorted(data_values.keys())
+        #     mins = [np.min(data_values[t]) for t in times]
+        #     maxs = [np.max(data_values[t]) for t in times]
+        #     plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
+        #
+        # if '5-95' in plotting:
+        #     times = sorted(data_values.keys())
+        #     mins = [np.percentile(data_values[t], 5.) for t in times]
+        #     maxs = [np.percentile(data_values[t], 95.) for t in times]
+        #     plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
 
     #x_lims = ax.get_xlim()
     y_lims = ax.get_ylim()
@@ -452,9 +573,10 @@ def multi_model_time_series(
 
     if ssp_time_range:
         plt.fill_betweenx(y_lims, ssp_time_range[0], ssp_time_range[1], color= 'purple', alpha=0.4, label = 'SSP period')
-        legd = plt.legend(loc='best')
-        legd.draw_frame(False)
-        legd.get_frame().set_alpha(0.)
+        
+    legd = plt.legend(loc='best')
+    legd.draw_frame(False)
+    legd.get_frame().set_alpha(0.)
 
     plot_obs = True
     if plot_obs:
@@ -473,13 +595,6 @@ def multi_model_time_series(
 
     # Saving files:
     if save:
-        #impath = diagtools.folder(cfg['plot_dir']+'/individual_panes')
-        #impath += '_'.join(['multi_model_ts', moving_average_str] )
-        #impath += '_'+'_'.join(plotting)
-        #if ukesm == 'only': impath += '_UKESM'
-        #if ukesm == 'not': impath += '_noUKESM'
-        #impath += diagtools.get_image_format(cfg)
-
         # Resize and add legend outside thew axes.
         fig.set_size_inches(9., 6.)
         diagtools.add_legend_outside_right(
@@ -491,6 +606,275 @@ def multi_model_time_series(
     else:
         return fig, ax
 
+
+
+
+#
+#
+# def multi_model_time_series(
+#         cfg,
+#         metadatas,
+#         ts_dict = {},
+#         moving_average_str='',
+#         colour_scheme = 'IPCC',
+#         hist_time_range = None,
+#         ssp_time_range = None,
+#         plotting = [ 'means',  '5-95'], #'medians', 'all_models', 'range',
+#         fig = None,
+#         ax = None,
+#         save = False,
+#         ukesm = 'only'
+#         ):
+#     """
+#     Make a time series plot showing several preprocesssed datasets.
+#
+#     This tool loads several cubes from the files, checks that the units are
+#     sensible BGC units, checks for layers, adjusts the titles accordingly,
+#     determines the ultimate file name and format, then saves the image.
+#
+#     Parameters
+#     ----------
+#     cfg: dict
+#         the opened global config dictionairy, passed by ESMValTool.
+#     metadata: dict
+#         The metadata dictionairy for a specific model.
+#
+#     """
+#     overwrite = True
+#     impath = diagtools.folder(cfg['plot_dir']+'/individual_panes')
+#     impath += '_'.join(['multi_model_ts', moving_average_str] )
+#     impath += '_'+'_'.join(plotting)
+#     if ukesm == 'only': impath += '_UKESM'
+#     if ukesm == 'not': impath += '_noUKESM'
+#     impath += diagtools.get_image_format(cfg)
+#     if not overwrite and os.path.exists(impath): return fig, ax
+#
+#     ####
+#     # Load the data for each layer as a separate cube
+#     out_shelve = diagtools.folder([cfg['work_dir'], 'timeseries_shelves', ])
+#     out_shelve += 'time_series.shelve'
+# # #   if len(glob.glob(out_shelve+'*')):
+# #
+# #        sh = shopen(out_shelve)
+# #        model_cubes = sh['model_cubes']
+# #        model_cubes_paths = sh['model_cubes_paths']
+# #        sh.close()
+# #    else:
+# #        model_cubes = {}
+# #        model_cubes_paths = {}
+#
+#
+#     model_cubes = {}
+#     model_cubes_paths = {}
+#
+#     changes = 0
+#     models = {}
+#     short_name = ''
+#     variable_groups = {}
+#
+#     for variable_group, filenames  in ts_dict.items():
+#         variable_groups[variable_group] = True
+#         for fn in sorted(filenames):
+#             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
+#             dataset = metadatas[fn]['dataset']
+#             if dataset in models_to_skip: continue
+#             if ukesm == 'only' and dataset != 'UKESM1-0-LL': continue
+#             if ukesm == 'not' and dataset == 'UKESM1-0-LL': continue
+#
+#             print('loading: ',variable_group, dataset, fn)
+#             models[dataset] = True
+#             if fn in model_cubes_paths.get(variable_group,[]): continue
+#
+#             short_name = metadatas[fn]['short_name']
+#
+#             cube = iris.load_cube(fn)
+#             cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
+#
+#             model_cubes = add_dict_list(model_cubes, variable_group, cube)
+#             model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
+#             changes+=1
+#
+# #    if changes:
+# #        print('adding ', changes, 'new files to', out_shelve)
+# # #       sh = shopen(out_shelve)
+# #        sh['model_cubes'] = model_cubes
+# #        sh['model_cubes_paths'] = model_cubes_paths
+# #        sh.close()
+#
+#
+#     if fig is None or ax is None:
+#         fig = plt.figure()
+#         ax = fig.add_subplot(111)
+#         save = True
+#     else:
+#         plt.sca(ax)
+#
+#     title = 'Time series'
+#     z_units = ''
+#     plot_details = {}
+#     if colour_scheme in ['viridis', 'jet']:
+#         cmap = plt.cm.get_cmap(colour_scheme)
+#
+#     # Plot individual model in the group
+#     for variable_group, cubes in model_cubes.items():
+#         if variable_group not in variable_groups: continue
+#         data_values = {}
+#         model_data_groups = {model:{} for model in models.keys()}
+#
+#         for i, cube in enumerate(cubes):
+#             path = model_cubes_paths[variable_group][i]
+#             metadata = metadatas[path]
+#             if dataset in models_to_skip: continue
+#
+#             scenario = metadata['exp']
+#             dataset = metadata['dataset']
+#
+#             # Take a moving average, if needed.
+#             if not moving_average_str: pass
+#             elif moving_average_str == 'annual':
+#                 cube = annual_statistics(cube.copy(), operator='mean')
+#                 cube = regrid_time(cube, 'yr')
+#             else:
+#                 cube = moving_average(cube,
+#                     moving_average_str)
+#
+#             times = diagtools.cube_time_to_float(cube)
+#
+#             for t, d in zip(times, cube.data):
+#                 if moving_average_str == 'annual':
+#                     t = int(t) + 0.5
+#                 data_values = add_dict_list(data_values, t, d)
+#                 model_data_groups[dataset] = add_dict_list(model_data_groups[dataset], t, d)
+#
+#             if colour_scheme in ['viridis', 'jet']:
+#                 if len(metadata) > 1:
+#                     color = cmap(index / (len(metadata) - 1.))
+#                 else:
+#                     color = 'blue'
+#                 label = dataset
+#
+#             if colour_scheme in 'IPCC':
+#                 color = ipcc_colours[scenario]
+#                 label =  scenario
+#
+#             if 'all_models' in plotting:
+#                 timeplot(
+#                     cube,
+#                     c=color,
+#                     ls='-',
+#                     lw=0.4,
+#                 )
+#
+#         means = {}
+#         if 'model_means' in plotting or 'global_model_means' in plotting:
+#             for dataset in sorted(model_data_groups.keys()):
+#                 times = sorted(model_data_groups[dataset].keys())
+#                 mean = [np.mean(model_data_groups[dataset][t]) for t in times]
+#                 for t, m in zip(times, mean):
+#                     means = add_dict_list(means, t, d)
+#
+#                 print('global_model_means',dataset, times, mean)
+#                 if 'model_means' in plotting:
+#                     plt.plot(times, mean, ls='-', c=color, lw=2., label=dataset)
+#                     plot_details[path] = {
+#                         'c': color,
+#                         'ls': '-',
+#                         'lw': 1.4,
+#                         'label':dataset}
+#
+#         if 'global_model_means' in plotting:
+#             times = sorted(means.keys())
+#             mean = [np.mean(means[t]) for t in times]
+#             plt.plot(times, mean, ls='-', c=color, lw=2.)
+#             print('global_model_means - means:', label, times, mean)
+#
+#             plot_details[path] = {
+#                 'c': color,
+#                 'ls': '-',
+#                 'lw': 1.4,
+#                 'label': label,
+#             }
+#
+#         if 'means' in plotting:
+#             times = sorted(data_values.keys())
+#             mean = [np.mean(data_values[t]) for t in times]
+#             plt.plot(times, mean, ls='-', c=color, lw=2.)
+#             plot_details[path] = {
+#                 'c': color,
+#                 'ls': '-',
+#                 'lw': 1.4,
+#                 'label': label,
+#             }
+#
+#         if 'medians' in plotting:
+#             times = sorted(data_values.keys())
+#             mean = [np.median(data_values[t]) for t in times]
+#             plt.plot(times, mean, ls='-', c=color, lw=2.)
+#             plot_details[path] = {
+#                 'c': color,
+#                 'ls': '-',
+#                 'lw': 1.6,
+#                 'label': label,
+#             }
+#
+#         if 'range' in plotting:
+#             times = sorted(data_values.keys())
+#             mins = [np.min(data_values[t]) for t in times]
+#             maxs = [np.max(data_values[t]) for t in times]
+#             plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
+#
+#         if '5-95' in plotting:
+#             times = sorted(data_values.keys())
+#             mins = [np.percentile(data_values[t], 5.) for t in times]
+#             maxs = [np.percentile(data_values[t], 95.) for t in times]
+#             plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
+#
+#     #x_lims = ax.get_xlim()
+#     y_lims = ax.get_ylim()
+#
+#     if hist_time_range:
+#         plt.fill_betweenx(y_lims, hist_time_range[0], hist_time_range[1], color= 'k', alpha=0.4, label = 'Historical period')
+#
+#     if ssp_time_range:
+#         plt.fill_betweenx(y_lims, ssp_time_range[0], ssp_time_range[1], color= 'purple', alpha=0.4, label = 'SSP period')
+#         legd = plt.legend(loc='best')
+#         legd.draw_frame(False)
+#         legd.get_frame().set_alpha(0.)
+#
+#     plot_obs = True
+#     if plot_obs:
+#         shpath = get_shelve_path(short_name, 'ts')
+#         sh = shopen(shpath)
+#         # times, data = sh['times'], sh['data']
+#         if 'annual_times' in sh.keys():
+#             annual_times, annual_data = sh['annual_times'], sh['annual_data']
+#             plt.plot(annual_times, annual_data, ls='-', c='k', lw=1.5)
+#         # clim = sh['clim']
+#         sh.close()
+#
+#
+#     # Add title, legend to plots
+#     plt.title(title)
+#
+#     # Saving files:
+#     if save:
+#         #impath = diagtools.folder(cfg['plot_dir']+'/individual_panes')
+#         #impath += '_'.join(['multi_model_ts', moving_average_str] )
+#         #impath += '_'+'_'.join(plotting)
+#         #if ukesm == 'only': impath += '_UKESM'
+#         #if ukesm == 'not': impath += '_noUKESM'
+#         #impath += diagtools.get_image_format(cfg)
+#
+#         # Resize and add legend outside thew axes.
+#         fig.set_size_inches(9., 6.)
+#         diagtools.add_legend_outside_right(
+#             plot_details, plt.gca(), column_width=0.15)
+#
+#         logger.info('Saving plots to %s', impath)
+#         plt.savefig(impath)
+#         plt.close()
+#     else:
+#         return fig, ax
 
 
 def multi_model_clim_figure(
@@ -1128,7 +1512,7 @@ def single_map_figure(cfg, cube, variable_group, exp='', model='', ensemble='', 
     """
     Make a figure of a single cube.
     """
-    
+
     time_str = '-'.join([str(t) for t in time_range])
     path = diagtools.folder([cfg['plot_dir'],'Maps', variable_group])
     if ensemble in ['', 'AllEnsembles', 'All',]:
@@ -1137,10 +1521,10 @@ def single_map_figure(cfg, cube, variable_group, exp='', model='', ensemble='', 
         path = diagtools.folder([path, model])
     path += '_'.join(['maps',model, exp, ensemble, region, time_str])
     path += diagtools.get_image_format(cfg)
-    
+
     if os.path.exists(path):
         return
-    
+
     fig = plt.figure()
     fig.set_size_inches(10,6)
     gs = matplotlib.gridspec.GridSpec(ncols=1, nrows=1)
@@ -1167,7 +1551,7 @@ def single_map_figure(cfg, cube, variable_group, exp='', model='', ensemble='', 
         lat_bnd = 20.
         lon_bnd = 30.
         central_longitude = -14.25 #W #-160.+3.5
-        central_latitude = -7.56        
+        central_latitude = -7.56
         ax0.set_extent([central_longitude-lon_bnd,
                        central_longitude+lon_bnd,
                        central_latitude-lat_bnd,
@@ -1180,19 +1564,19 @@ def single_map_figure(cfg, cube, variable_group, exp='', model='', ensemble='', 
         plt.gca().coastlines()
     except AttributeError:
         logger.warning('Not able to add coastlines')
-        
+
     print(exp, cube.data.min(),cube.data.max())
     title = ' '.join([model, exp, ensemble, str(cube.units) ]) # long_names.get(sbp_style, sbp_style,)])
     plt.title(title)
 
     if region == 'midatlantic':
         plt.text(0.95, 0.9, exp,  ha='right', va='center', transform=ax0.transAxes, color=ipcc_colours[exp], fontweight='bold')
-        
+
     logger.info('Saving plots to %s', path)
     plt.savefig(path)
     plt.close()
 
-                           
+
 
 def prep_cube_map(fn, metadata, time_range, region):
     #print('loading:', i, variable_group ,scenario, fn)
@@ -1201,7 +1585,7 @@ def prep_cube_map(fn, metadata, time_range, region):
 
     if 'time' in [c.name for c in cube.coords()]:
         print('prep_cube_map: extract time: ', time_range)
-    
+
         cube = extract_time(cube, time_range[0], 1, 1, time_range[1], 12, 31)
         cube = cube.collapsed('time', iris.analysis.MEAN)
 
@@ -1213,7 +1597,7 @@ def prep_cube_map(fn, metadata, time_range, region):
     print('map plot', region, cube)
     cube = regrid_intersect(cube, region=region)
     return cube
-            
+
 def multi_model_map_figure(
         cfg,
         metadatas,
@@ -1296,7 +1680,7 @@ def multi_model_map_figure(
     for variable_group, filenames in maps_fns.items():
         for i, fn in enumerate(filenames):
             models[metadatas[fn]['dataset']] = True
-            
+
     # Load and do basic map manipulation data
     for variable_group, filenames in maps_fns.items():
         work_dir = diagtools.folder([cfg['work_dir'], 'var_group_means', ])
@@ -1308,23 +1692,23 @@ def multi_model_map_figure(
             short_name =  metadatas[filenames[0]]['short_name']
             exps[scenario] = variable_group
             continue
-        
+
         for model_itr in models:
             if model_itr in models_to_skip: continue
-        
+
             work_dir = diagtools.folder([cfg['work_dir'], 'model_group_means', model_itr])
             model_path = work_dir+'_'.join([variable_group, model_itr])+'.nc'
             scenario = metadatas[filenames[0]]['exp']
             short_name =  metadatas[filenames[0]]['short_name']
-        
+
             exps[scenario] = variable_group
             model_cubes_paths = add_dict_list(model_cubes_paths, (variable_group, model_itr), filenames[0])
-            
+
             if scenario == 'historical':
                 time_range = hist_time_range
             else:
                 time_range = ssp_time_range
-                    
+
             if os.path.exists(model_path):
                 print('path exists:', model_path)
                 model_cubes[(variable_group, model_itr)] = iris.load_cube(model_path)
@@ -1339,41 +1723,41 @@ def multi_model_map_figure(
                 if model != model_itr: continue
                 if model_itr in models_to_skip: continue
                 print('loading:', i, variable_group ,scenario, fn)
-                
+
                 cube = prep_cube_map(fn, metadatas[filenames[0]], time_range, region)
                 if short_name == 'chl':
                     if cube.data.max()>500.:
                         print('WHAT!? Thats too much ChlorophYLL!', cube.data.max(), cube.units)
                         cube.data = cube.data/1000.
-#                       assert 0 
+#                       assert 0
                 model_cubes = add_dict_list(model_cubes, (variable_group, model), cube)
-                
-                single_map_figure(cfg, cube, variable_group, 
-                    exp=scenario, 
-                    model=model, 
-                    ensemble=ensemble, 
-                    time_range=time_range, 
+
+                single_map_figure(cfg, cube, variable_group,
+                    exp=scenario,
+                    model=model,
+                    ensemble=ensemble,
+                    time_range=time_range,
                     region = region)
-            
-            if not model_cubes.get((variable_group, model_itr), False): 
+
+            if not model_cubes.get((variable_group, model_itr), False):
                 continue
             # make the model mean cube here:
             model_cubes[(variable_group, model_itr)] = diagtools.make_mean_of_cube_list_notime(model_cubes[(variable_group, model_itr)])
             single_map_figure(
-                cfg, 
+                cfg,
                 model_cubes[(variable_group, model_itr)],
-                variable_group, 
-                exp=scenario, 
-                model=model_itr, 
-                ensemble='AllEnsembles', 
-                time_range=time_range, 
+                variable_group,
+                exp=scenario,
+                model=model_itr,
+                ensemble='AllEnsembles',
+                time_range=time_range,
                 region = region)
             iris.save(model_cubes[(variable_group, model_itr)], model_path)
 
             # add model mean cube to dict.
             variablegroup_model_cubes = add_dict_list(
-                variablegroup_model_cubes, 
-                variable_group, 
+                variablegroup_model_cubes,
+                variable_group,
                 model_cubes[(variable_group, model_itr)])
 
         print('making make_mean_of_cube_list_notime:', variable_group)
@@ -1381,15 +1765,15 @@ def multi_model_map_figure(
 
         # make the model mean cube here:
         single_map_figure(
-            cfg, 
+            cfg,
             variablegroup_model_cubes[variable_group],
-            variable_group, 
-            exp=scenario, 
-            model='AllModels', 
-            ensemble='AllEnsembles', 
-            time_range=time_range, 
-            region = region)        
-        
+            variable_group,
+            exp=scenario,
+            model='AllModels',
+            ensemble='AllEnsembles',
+            time_range=time_range,
+            region = region)
+
         print('saving:', vg_path)
         iris.save(variablegroup_model_cubes[variable_group], vg_path)
 
@@ -1654,7 +2038,7 @@ def multi_model_map_figure_old(
 
     model_cubes = {}
     model_cubes_paths = {}
- 
+
     mean_model_cubes = {}
     exps = {}
 
@@ -1699,7 +2083,7 @@ def multi_model_map_figure_old(
                 print([c.standard_name for c in cube.coords()])
                 #assert 0
             print('regrid:', variable_group, i)
-            print('map plot', cube) 
+            print('map plot', cube)
             cube = regrid_intersect(cube, region=region)
             model_cubes = add_dict_list(model_cubes, variable_group, cube)
 
@@ -1722,7 +2106,7 @@ def multi_model_map_figure_old(
     if plot_obs and os.path.exists(obs_filename):
         ranges = [hist_cube.data.min(), hist_cube.data.max()]
         obs_cube = iris.load_cube(obs_filename)
-        ranges.extend([obs_cube.data.min(), obs_cube.data.max()]) 
+        ranges.extend([obs_cube.data.min(), obs_cube.data.max()])
         style_range['hist'].extend([np.min(ranges), np.max(ranges)])
     else:
         style_range['hist'].extend([hist_cube.data.min(), hist_cube.data.max()])
@@ -1826,10 +2210,10 @@ def multi_model_map_figure_old(
     if plot_obs and os.path.exists(obs_filename):
         obs_cube = iris.load_cube(obs_filename)
         if short_name == 'chl':
-            obs_cube.var_name = 'chl' 
-#            obs_cube.data = obs_cube.data*1000. 
+            obs_cube.var_name = 'chl'
+#            obs_cube.data = obs_cube.data*1000.
 #       obs_cube = diagtools.bgc_units(obs_cube, short_name)
-           
+
         # obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
         obs_cube = regrid_intersect(obs_cube, region=region)
 
@@ -2042,11 +2426,11 @@ def main(cfg):
 
 
     # Individual plots - standalone
-    do_standalone = True  
+    do_standalone = True
     if do_standalone:
         # time series
         plottings = [['global_model_means', 'model_means', ], #['global_model_means',], ['model_means', ],
-                     #[ 'means',  '5-95'], 
+                     #[ 'means',  '5-95'],
                      ['all_models', ], ] #'medians', 'all_models', 'range',
         for plotting in plottings:
             #continue
@@ -2061,7 +2445,7 @@ def main(cfg):
                     plotting = plotting,
                     ukesm=ukesm,
                 )
-        assert 0 
+        assert 0
 
         # maps:
         multi_model_map_figure(
