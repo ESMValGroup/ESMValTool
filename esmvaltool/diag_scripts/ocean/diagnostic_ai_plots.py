@@ -573,7 +573,7 @@ def multi_model_time_series(
 
     if ssp_time_range:
         plt.fill_betweenx(y_lims, ssp_time_range[0], ssp_time_range[1], color= 'purple', alpha=0.4, label = 'SSP period')
-        
+
     legd = plt.legend(loc='best')
     legd.draw_frame(False)
     legd.get_frame().set_alpha(0.)
@@ -2428,10 +2428,18 @@ def main(cfg):
     # Individual plots - standalone
     do_standalone = True
     if do_standalone:
-        # time series
-        plottings = [['global_model_means', 'model_means', ], #['global_model_means',], ['model_means', ],
-                     #[ 'means',  '5-95'],
-                     ['all_models', ], ] #'medians', 'all_models', 'range',
+        # plottings:
+        #     all: every single ensemble member shown as thin line.
+        #     model_means: the mean of every model ensmble is shown as a thicker dotted line
+        #     model_median: the median of every model ensmble is shown as a thicker dotted line
+        #     model_range: the range of every model ensmble is shown as a coloured band (or line if only one)
+        #     model_5_95: the range of every model ensmble is shown as a coloured band (or line if only one)
+        #     Global_mean: the mean of every model_means is shown as a thick solid line
+        #     Global_range: the mean of every model_means is shown as a thick solid line
+        plottings = [['all', 'model_means', 'Global_mean' ],
+                     ['Global_mean', 'Global_range'],
+                     ['model_means', 'Global_range'],
+                     ] #'medians', 'all_models', 'range',
         for plotting in plottings:
             #continue
             for ukesm in ['all', ]: #'not', 'only', 'all']:
@@ -2521,7 +2529,7 @@ def main(cfg):
             #colour_scheme = 'viridis',
             hist_time_range = hist_time_range,
             ssp_time_range = ssp_time_range,
-            plotting=['means', '5-95',],
+            plotting=['Global_mean', 'Global_range'],#['means', '5-95',],
             fig = fig,
             ax =  subplots['timeseries'],
     )
