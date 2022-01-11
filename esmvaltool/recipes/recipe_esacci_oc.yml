@@ -20,8 +20,7 @@ documentation:
 
 datasets:
   # - {dataset: EC-Earth3-Veg, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
-  - {dataset: IPSL-CM6A-LR, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
-  # - {dataset: MPI-ESM1-LR, project: CMIP6, ensemble: r1i1p1, grid: gr}
+  # - {dataset: IPSL-CM6A-LR, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
   - {dataset: NorESM2-LM, project: CMIP6, ensemble: r1i1p1f1, grid: gr}
   # - {dataset: CNRM-ESM2-1, project: CMIP6, ensemble: r1i1p1f2, grid: gn}
   # - {dataset: MIROC6, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
