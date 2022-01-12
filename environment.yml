@@ -22,6 +22,7 @@ dependencies:
   - imagemagick
   - julia
   - nco
+  - python-cdo
   - ruamel.yaml
   - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
   - xgboost
