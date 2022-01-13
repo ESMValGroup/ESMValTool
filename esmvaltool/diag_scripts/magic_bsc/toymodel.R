@@ -22,11 +22,13 @@ provenance <- list()
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
 
-model_names <- lapply(input_files_per_var, function(x)
-  x$model)
+model_names <- lapply(input_files_per_var, function(x) {
+  x$model
+})
 model_names <- unname(model_names)
-var0 <- lapply(input_files_per_var, function(x)
-  x$short_name)
+var0 <- lapply(input_files_per_var, function(x) {
+  x$short_name
+})
 fullpath_filenames <- names(var0)
 var0 <- unname(var0)[1]
 a <- 1
@@ -76,16 +78,16 @@ time_dim <- which(names(dim(data)) == "time")
 
 ToyModel <- # nolint
   function(alpha = 0.1,
-             beta = 0.4,
-             gamma = 1,
-             sig = 1,
-             # nolint
-             trend = 0,
-             nstartd = 30,
-             nleadt = 4,
-             nmemb = 10,
-             obsini = NULL,
-             fxerr = NULL) {
+           beta = 0.4,
+           gamma = 1,
+           sig = 1,
+           # nolint
+           trend = 0,
+           nstartd = 30,
+           nleadt = 4,
+           nmemb = 10,
+           obsini = NULL,
+           fxerr = NULL) {
     if (any(!is.numeric(c(
       alpha, beta, gamma, sig, trend, nstartd,
       nleadt, nmemb
@@ -152,8 +154,7 @@ ToyModel <- # nolint
           auto_term <- obs_ano[1, 1, j, f]
           if (is.numeric(fxerr)) {
             conf_term <- fxerr
-          }
-          else {
+          } else {
             conf_term <- rnorm(nmemb, mean = 0, sd = beta)
           }
           trend_term <- gamma[g] * trend * j
@@ -254,10 +255,9 @@ xprov <- list(
   caption = title,
   statistics = list("other"),
   realms = list("atmos"),
-  themes = list("phys"),
-  plot_file = filepng
+  themes = list("phys")
 )
-
+provenance[[filepng]] <- xprov
 provenance[[filencdf]] <- xprov
 
 # Write provenance to file

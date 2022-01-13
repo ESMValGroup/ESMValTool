@@ -2,6 +2,7 @@
 # recipe_collins13ipcc.yml
 ---
 documentation:
+  title: Long-term Climate Change, selected figures
   description: |
     Recipe reproducing selected figures from IPCC AR5,
     chap. 12 (Collins et al., 2013) mainly difference maps between

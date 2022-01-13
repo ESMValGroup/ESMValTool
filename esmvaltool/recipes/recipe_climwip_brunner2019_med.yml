@@ -2,6 +2,7 @@
 # recipe_climwip_brunner2019.yml
 ---
 documentation:
+  title: ClimWIP implementation after Brunner et al. (2019)
   description: >
     Calculate weights similar to Brunner et al. (2019).
     Changes compared to Brunner et al. (2019):
@@ -188,7 +189,7 @@ preprocessors:
       operator: mean
     anomalies:
       period: full
-      reference:
+      reference: &ref_period
         start_year: 1981
         start_month: 1
         start_day: 1
@@ -273,16 +274,21 @@ diagnostics:
         script: weighting/weighted_temperature_graph.py
         ancestors: [calculate_weights_climwip/climwip, tas]
         weights: 'weights.nc'
+        settings:
+          <<: *ref_period
+          central_estimate: mean
+          lower_bound: 16.7
+          upper_bound: 83.3
 
   weighted_temperature_map:
     variables:
-      tas:
+      tas_CLIM_future:
         short_name: tas
         start_year: 2081
         end_year: 2100
         mip: Amon
         preprocessor: region_mean
-      tas_reference:
+      tas_CLIM_reference:
         short_name: tas
         start_year: 1995
         end_year: 2014
@@ -291,7 +297,7 @@ diagnostics:
     scripts:
       weighted_temperature_map:
         script: weighting/weighted_temperature_map.py
-        ancestors: [calculate_weights_climwip/climwip, tas, tas_reference]
+        ancestors: [calculate_weights_climwip/climwip, tas_CLIM_future, tas_CLIM_reference]
         weights: 'weights.nc'
         # optional arguments
         antimeridian: pacific

@@ -2,6 +2,8 @@
 # recipe_hyint_extreme_events.yml
 ---
 documentation:
+  title: Extreme events and HyInt diagnostics
+
   description: |
     Recipe calling the extreme_events diagnostic followed by the hyint diagnostic
 

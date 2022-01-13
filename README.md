@@ -44,7 +44,7 @@ ESMValTool can run with the following types of data as input:
 - CMIP5
 - CMIP6
 - OBS, OBS6
-- obs4mips
+- obs4MIPs
 - ana4mips
 - CORDEX
 

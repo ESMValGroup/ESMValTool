@@ -163,8 +163,8 @@ This recipe includes the following fields:
 included it as HadGEM2-ES doesn't include a phosphate field.
 
 This recipe uses the World Ocean Atlas data, which can be downloaded from:
-https://www.nodc.noaa.gov/OC5/woa13/woa13data.html
-(last access 10/25/2018)
+https://www.ncei.noaa.gov/products/world-ocean-atlas
+(last access 02/08/2021)
 
 Instructions: Select the "All fields data links (1° grid)" netCDF file,
 which contain all fields.
@@ -425,13 +425,13 @@ and an example of an appropriate diagnostic section of the recipe would be:
 	  additional_datasets:
 	#        filename: tos_ATSR_L3_ARC-v1.1.1_199701-201112.nc
 	#        download from: https://datashare.is.ed.ac.uk/handle/10283/536
-	    - {dataset: ATSR,  project: obs4mips,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 3}
+	    - {dataset: ATSR,  project: obs4MIPs,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 3}
 	  scripts:
 	    Global_Ocean_map:
 	      script: ocean/diagnostic_maps_quad.py
 	      control_model: {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
 	      exper_model: {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-	      observational_dataset: {dataset: ATSR, project: obs4mips,}
+	      observational_dataset: {dataset: ATSR, project: obs4MIPs,}
 
 Note that the details about the control model, the experiment models
 and the observational dataset are all provided in the script section of the
