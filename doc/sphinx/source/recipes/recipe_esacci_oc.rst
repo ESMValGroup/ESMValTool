@@ -14,7 +14,7 @@ The recipe_esacci_oc.yml produces an image showing four maps. Each of these four
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in esmvaltool/recipes/
+Recipes are stored in esmvaltool/recipes/ocean/
 
     * recipe_esacci_oc.yml
 
