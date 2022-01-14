@@ -92,7 +92,7 @@ def get_obsdata_paths_ts(field, data_type='3d'):
         #ob('/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc'))
     #if field in ['tos', 'thetao'] and data_type=='3d':
         #return [t2+'OBS6_WOA_clim_2018_Omon_thetao_200001-200012.nc', ]
-        return sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc')) 
+        return sorted(glob('/gws/nopw/j04/esmeval/obsdata-v2/Tier3/ERA-Interim/OBS6_ERA-Interim_reanaly_1_Omon_tos_*.nc'))
         #return [t2 + 'OBS6_WOA_clim_2018_Omon_thetao_200007-200007.nc', ]
     # sal
     if field in ['sos', 'so', 'sal'] and data_type=='surface':
@@ -105,7 +105,7 @@ def get_obsdata_paths_ts(field, data_type='3d'):
        return [t2 + 'OBS6_WOA_clim_2018_Oyr_no3_200001-200012.nc', ]
 
     if field in ['o2', ]:
-       return ['/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o01_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o02_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o03_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o04_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o05_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o06_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o07_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o08_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o09_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o10_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o11_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o12_01.nc', ] 
+       return ['/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o01_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o02_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o03_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o04_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o05_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o06_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o07_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o08_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o09_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o10_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o11_01.nc', '/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o12_01.nc', ]
 
        #return sorted(glob('/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/WOA_oxygen/woa18_all_o{01,02,03,04,05,06,07,08,09,10,11,12}_01.nc'))
 
@@ -155,7 +155,7 @@ def get_obsdata_paths(field, data_type='3d'):
     if field in ['sos', 'so', 'sal'] and data_type=='3d':
         return [t2 + 'OBS6_WOA_clim_2018_Omon_so_200007-200007.nc', ]
 
-    # nutrients 
+    # nutrients
     if field in ['no3', ]:
        return [t2 + 'OBS6_WOA_clim_2018_Oyr_no3_200001-200012.nc', ]
     if field in ['o2', ]:
@@ -165,7 +165,7 @@ def get_obsdata_paths(field, data_type='3d'):
     if field in ['si', ]:
        return [t2 + 'OBS6_WOA_clim_2018_Oyr_si_200001-200012.nc', ]
     if field in ['pH', 'ph']:
-        if data_type in ['3d', 'profile', 'map']: 
+        if data_type in ['3d', 'profile', 'map']:
             return ["/gws/nopw/j04/esmeval/obsdata-v2/Tier2/GLODAP/OBS6_GLODAP_clim_v2.2016b_Oyr_ph_200001-200012.nc", ]
 
     if field in ['chl', ]:
@@ -176,7 +176,7 @@ def get_obsdata_paths(field, data_type='3d'):
 
     if field in ['mld', ]:
         return ['/home/users/ldemora/workspace/ESMValTool/run-mpas/auxiliary_data/MLD/mld_DR003_c1m_reg2.0.nc', ]
- 
+
     print('Unable to find:', field, data_type)
     assert 0
 
@@ -226,7 +226,7 @@ def time_series(field='tos', pane='timeseries'):
             # woa18_all_o01_01.nc
             nctimes = [float(nc_path[-8:-6])/12. + 2000., ]
 #           nctimes = np.arange(12)/12.+2000.
-            #cube = diagtools.bgc_units(cube, field) 
+            #cube = diagtools.bgc_units(cube, field)
             print(nc_path, nctimes, cube.data.max())
             #assert 0
         else:
@@ -256,7 +256,7 @@ def time_series(field='tos', pane='timeseries'):
         print('latsmin', lat_maxs, lats[lat_maxs[0]], lats[lat_maxs[1]])
 
  #       print(cube.dimensions)
-        if cube.ndim == 3: 
+        if cube.ndim == 3:
             latdim = 1
             londim = 2
         elif cube.ndim == 4:
@@ -272,11 +272,20 @@ def time_series(field='tos', pane='timeseries'):
             ncdata = cube[...,lat_maxs[0]:lat_maxs[1]+1, lon_mins[0]:lon_mins[1]+1]
         elif cube.ndim == 4:
             ncdata = cube[:,0,lat_maxs[0]:lat_maxs[1]+1, lon_mins[0]:lon_mins[1]+1]
-        else: assert 0 
+        else: assert 0
 
-        try: 
+        if len(files) == 1 and len(nctimes) ==1:
+
+            print('ONLY one time point:')
+            print(cube)
+            print('times:', nctimes)
+            print('ncdata:range:  min', ncdata.min(), nc.data.mean(), ncdata.data.max())
+            print('file:', nc_path)
+            assert 0
+
+        try:
             ncdata = ncdata.collapsed(['lat', 'lon'], iris.analysis.MEAN).data
-        except: 
+        except:
             ncdata = ncdata.collapsed(['latitude', 'longitude'], iris.analysis.MEAN).data
 
 #       if field == 'tos':
@@ -370,7 +379,7 @@ def load_map_netcdf(field='tos', pane='map'):
                 scheme='linear',
                 levels =  [750., ]
                 )
- 
+
 
 #        if np.min(times) < 2000.: continue
 #        if np.max(times) > 2010.: continue

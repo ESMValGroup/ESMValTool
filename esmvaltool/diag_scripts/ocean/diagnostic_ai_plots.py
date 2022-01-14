@@ -105,6 +105,13 @@ long_name_dict = {
 
 models_to_skip = ['GISS-E2-1-G', ] #SST is strangely high and there are very few SSP ensembles.
 
+# used to
+hard_wired_obs = {
+    ('so', 'timeseries', 'min'): {1990:35., 2010:35.},
+    ('so', 'timeseries', 'max'): {1990:35.5, 2010:35.5},
+    ('so', 'clim', 'min'): {1990:35., 2010:35.},
+    ('so', 'clim', 'max'): {1990:35.5, 2010:35.5},
+}
 
 def get_shelve_path(field, pane='timeseries'):
     # from standalone calc ai obs.
@@ -396,11 +403,11 @@ def multi_model_time_series(
         if colour_scheme in 'IPCC':
             color = ipcc_colours[scenario]
             #label =  scenario
-    
+
 
         times = [t for t in sorted(data.keys())]
         values = [data[t] for t in times]
-        
+
         plt.plot(times, values, ls='-', c=color, lw=0.4) #, label=dataset)
 
 #            timeplot(
@@ -504,12 +511,12 @@ def multi_model_time_series(
 
         if 'Global_range' in plotting:
             #print(plotting)
-            
+
             times = [t for t in sorted(global_model_means.keys())]
             model_mins = []
             model_maxs = []
             for t, ds in global_model_means.items():
-                #print('global_range',scenario_x, t, ds) 
+                #print('global_range',scenario_x, t, ds)
                 model_mins.append(np.min(ds))
                 model_maxs.append(np.max(ds))
 
@@ -519,7 +526,7 @@ def multi_model_time_series(
                 plt.plot(times, model_mins, ls='-', c=color, lw=3.,alpha=0.3,)
             else:
                 plt.fill_between(times, model_mins, model_maxs, color= color, ec=None, alpha=0.3)
-            #assert 0 
+            #assert 0
         # means = {}
         # if 'model_means' in plotting or 'global_model_means' in plotting:
         #     for dataset in sorted(model_data_groups.keys()):
@@ -2678,6 +2685,7 @@ def main(cfg):
     #                 )
 
     logger.info('Success')
+
 
 
 if __name__ == '__main__':
