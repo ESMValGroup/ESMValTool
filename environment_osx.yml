@@ -22,6 +22,7 @@ dependencies:
   - imagemagick
   - nco
   - python-cdo
+  - rasterio
   - ruamel.yaml
   # may hit hw-specific issue if from pypi
   # https://github.com/scikit-learn/scikit-learn/issues/14485
