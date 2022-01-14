@@ -37,8 +37,8 @@ def get_provenance_record(caption):
 
 def main(cfg):
     """Create lineplot."""
-    #ylims = [cfg.pop('y0', None), cfg.pop('y1', None)]
-    ylims = [1610., 1830.]
+    ylims = [cfg.pop('y0', None), cfg.pop('y1', None)]
+    #ylims = [1610., 1830.]
 
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()

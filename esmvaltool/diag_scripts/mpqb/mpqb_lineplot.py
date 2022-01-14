@@ -149,8 +149,4 @@ def main(cfg):
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
-        #if config['write_plots']:
         main(config)
-        #else:
-        #    logger.warning("This diagnostic wants to plot,\
-        #                    but isn't allowed to")
