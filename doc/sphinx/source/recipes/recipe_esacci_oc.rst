@@ -18,7 +18,7 @@ Recipes are stored in esmvaltool/recipes/ocean/
 
     * recipe_esacci_oc.yml
 
-Diagnostics are stored in esmvaltool/diag_scripts/<mynewdiag>/
+Diagnostics are stored in esmvaltool/diag_scripts/ocean/
 
     * diagnostic_model_vs_obs.py
 
@@ -56,8 +56,19 @@ References
 Example plots
 -------------
 
-.. _fig_mynewdiag_1:
-.. figure::  /recipes/figures/<mynewdiagnostic>/awesome1.png
+.. _fig_ocdiag_maps:
+.. figure::  /recipes/figures/ocean/model_vs_obs_MassConcentrationofTotalPhytoplanktonExpressedasChlorophyllinSeaWater_NorESM2-LM_ESACCI-OC__maps.png
    :align:   center
+   :width:   12cm
 
-* Here we show the surface chlorophyll from ESA-CCI-OC ocean colour data version 5.0 and the CMIP6 model NorESM2-LM. This model overestimates chlorophyll compared to the observations.
+   Surface chlorophyll from ESACCI-OC ocean colour data version 5.0 and the
+   CMIP6 model NorESM2-LM. This model overestimates chlorophyll compared to
+   the observations.
+
+.. _fig_ocdiag_scatter:
+.. figure::  /recipes/figures/ocean/model_vs_obs_MassConcentrationofTotalPhytoplanktonExpressedasChlorophyllinSeaWater_NorESM2-LM_ESACCI-OC__scatter.png
+   :align:   center
+   :width:   8cm
+
+   Scatter plots of surface chlorophyll from ESACCI-OC ocean colour data
+   version 5.0 and the CMIP6 model NorESM2-LM.
