@@ -17,7 +17,8 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          python-version: "3.9"
+          activate-environment: esmvaltool-fromlock
+          python-version: "latest"
           miniconda-version: "latest"
           channels: conda-forge
       - name: Show conda config
@@ -41,23 +42,6 @@ jobs:
       - name: Rename file
         shell: bash -l {0}
         run: mv conda-linux-64.lock conda-linux-64-GA.lock
-  verify:
-    name: verify / python-${{ matrix.python-version }} / ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ['ubuntu-latest']  # 'macos-latest' has issues with the conda lock file creation
-        python-version: ["3.7", "3.8", "3.9"]
-    runs-on: ${{ matrix.os }}
-    needs: create-lock-file
-    steps:
-      - uses: actions/checkout@v2
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: esmvaltool-fromlock
-          python-version: ${{ matrix.python-version }}
-          miniconda-version: "latest"
-          channels: conda-forge
       - shell: bash -l {0}
         run: mkdir -p source_install_linux_artifacts_python_${{ matrix.python-version }}
       - shell: bash -l {0}
