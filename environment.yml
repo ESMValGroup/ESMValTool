@@ -22,6 +22,7 @@ dependencies:
   - imagemagick
   - julia
   - nco
+  - python<3.10  # teething issues with python=3.10; see https://github.com/ESMValGroup/ESMValTool/issues/2476
   - python-cdo
   - ruamel.yaml
   - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
