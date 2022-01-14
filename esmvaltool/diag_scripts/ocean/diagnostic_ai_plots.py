@@ -53,6 +53,7 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import glob
+import itertools
 
 import iris
 import iris.quickplot as qplt
@@ -266,7 +267,7 @@ def multi_model_time_series(
 
     # Determine short name & model list:
     variable_groups = {}
-    models = {}
+    datasets = {}
     short_names = {}
     ensembles = {}
     scenarios = {}
@@ -276,7 +277,7 @@ def multi_model_time_series(
             dataset = metadatas[fn]['dataset']
             if dataset in models_to_skip: continue
             variable_groups[variable_group] = True
-            models[dataset] = True
+            datasets[dataset] = True
             short_names[metadatas[fn]['short_name']] = True
             ensembles[metadatas[fn]['ensemble']] = True
             scenarios[metadatas[fn]['exp']] = True
@@ -354,7 +355,7 @@ def multi_model_time_series(
 
     if changes:
        print('adding ', changes, 'new files to', out_shelve)
-#       sh = shopen(out_shelve)
+       sh = shopen(out_shelve)
        sh['data_values'] = data_values
        sh['model_cubes_paths'] = model_cubes_paths
        sh.close()
@@ -395,20 +396,29 @@ def multi_model_time_series(
         if colour_scheme in 'IPCC':
             color = ipcc_colours[scenario]
             #label =  scenario
+    
 
-            timeplot(
-                cube,
-                c=color,
-                ls='-',
-                lw=0.4,
-            )
+        times = [t for t in sorted(data.keys())]
+        values = [data[t] for t in times]
+        
+        plt.plot(times, values, ls='-', c=color, lw=0.4) #, label=dataset)
+
+#            timeplot(
+#                cube,
+#                c=color,
+#                ls='-',
+#                lw=0.4,
+#            )
     datas_ds = {}
 
     # single model lines:
-    for dataset_x,scenario_x in zip(sorted(datasets.keys()), sorted(scenarios)):
+    for dataset_x,scenario_x in itertools.product(sorted(datasets.keys()), sorted(scenarios.keys())):
         if not len(set(plotting) & set(
             ('model_means', 'model_median', 'model_range', 'model_5_95', 'Global_mean', 'Global_range', ))):
             continue # none needed.
+
+        if colour_scheme in 'IPCC':
+            color = ipcc_colours[scenario_x]
 
         dat_scen_data = {}
         for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
@@ -428,49 +438,54 @@ def multi_model_time_series(
                 model_mean[t] = np.mean(ds)
             # model_mean = {t:d for t,d in zip(times, model_mean)}
             datas_ds[(dataset_x, scenario_x)] = model_mean
+            print('calculate model mean',(dataset_x, scenario_x))
 
         if 'model_means' in plotting:
             model_mean = datas_ds.get((dataset_x, scenario_x), {})
             times = [t for t in sorted(model_mean.keys())]
             model_mean = [model_mean[t] for t in times]
-            plt.plot(times, model_mean, ls='.', c=color, lw=2.) #, label=dataset)
+            plt.plot(times, model_mean, ls=':', c=color, lw=2.) #, label=dataset)
 
         if 'model_medians' in plotting:
             times = [t for t in sorted(dat_scen_data.keys())]
             model_median = []
-            for t, ds in dat_scen_data.keys():
+            for t, ds in dat_scen_data.items():
                 model_median.append(np.median(ds))
-            plt.plot(times, model_median, ls='.', c=color, lw=2.) #, label=dataset)
+            plt.plot(times, model_median, ls=':', c=color, lw=2.) #, label=dataset)
 
         if 'model_range' in plotting:
             times = [t for t in sorted(dat_scen_data.keys())]
             model_mins = []
             model_maxs = []
-            for t, ds in dat_scen_data.keys():
+            for t, ds in dat_scen_data.items():
                 model_mins.append(np.min(ds))
                 model_maxs.append(np.max(ds))
+
             if model_mins == model_maxs:
-                plt.plot(times, model_mins, ls='.', c=color, lw=2.)
+                plt.plot(times, model_mins, ls='-', c=color, lw=3., alpha=0.3)
             else:
-                plt.fill_between(times, model_mins, model_maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
+                plt.fill_between(times, model_mins, model_maxs, color= color, ec=None, alpha=0.3)
 
         if 'model_5_95' in plotting:
             assert 0
             times = [t for t in sorted(dat_scen_data.keys())]
             model_mins = []
             model_maxs = []
-            for t, ds in dat_scen_data.keys():
+            for t, ds in dat_scen_data.items():
                 model_mins.append(np.min(ds))
                 model_maxs.append(np.max(ds))
             if model_mins == model_maxs:
-                plt.plot(times, model_mins, ls='.', c=color, lw=2.)
+                plt.plot(times, model_mins, ls=':', c=color, lw=2.)
             else:
-                plt.fill_between(times, model_mins, model_maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
+                plt.fill_between(times, model_mins, model_maxs, color = color, ec=None, alpha=0.3)
 
     # global model lines:
     for scenario_x in sorted(scenarios):
         if not len(set(plotting) & set(('Global_mean', 'Global_range', ))):
             continue # none needed.
+
+        if colour_scheme in 'IPCC':
+            color = ipcc_colours[scenario_x]
 
         global_model_means = {}
         for dataset_x in datasets:
@@ -484,23 +499,27 @@ def multi_model_time_series(
 
         if 'Global_mean' in plotting:
             times = [t for t in sorted(global_model_means.keys())]
-            global_mean = [np.mnean(global_model_means[t]) for t in times]
+            global_mean = [np.mean(global_model_means[t]) for t in times]
             plt.plot(times, global_mean, ls='-', c=color, lw=2.) #, label=dataset)
 
         if 'Global_range' in plotting:
+            #print(plotting)
+            
             times = [t for t in sorted(global_model_means.keys())]
             model_mins = []
             model_maxs = []
-            for t, ds in global_model_means.keys():
+            for t, ds in global_model_means.items():
+                #print('global_range',scenario_x, t, ds) 
                 model_mins.append(np.min(ds))
                 model_maxs.append(np.max(ds))
+
             if model_mins == model_maxs:
-                plt.plot(times, model_mins, ls='-', c=color, lw=2.)
+                #print('model_mins == model_maxs,', model_mins,model_maxs)
+                #assert 0
+                plt.plot(times, model_mins, ls='-', c=color, lw=3.,alpha=0.3,)
             else:
-                plt.fill_between(times, model_mins, model_maxs, color= ipcc_colours[scenario_x], ec=None, alpha=0.3)
-
-
-        #
+                plt.fill_between(times, model_mins, model_maxs, color= color, ec=None, alpha=0.3)
+            #assert 0 
         # means = {}
         # if 'model_means' in plotting or 'global_model_means' in plotting:
         #     for dataset in sorted(model_data_groups.keys()):
@@ -2437,6 +2456,9 @@ def main(cfg):
         #     Global_mean: the mean of every model_means is shown as a thick solid line
         #     Global_range: the mean of every model_means is shown as a thick solid line
         plottings = [['all', 'model_means', 'Global_mean' ],
+                     ['model_range',],
+                     ['Global_range', ],
+                     ['model_range', 'Global_mean',],
                      ['Global_mean', 'Global_range'],
                      ['model_means', 'Global_range'],
                      ] #'medians', 'all_models', 'range',
@@ -2453,7 +2475,7 @@ def main(cfg):
                     plotting = plotting,
                     ukesm=ukesm,
                 )
-        assert 0
+        #assert 0
 
         # maps:
         multi_model_map_figure(
@@ -2529,7 +2551,7 @@ def main(cfg):
             #colour_scheme = 'viridis',
             hist_time_range = hist_time_range,
             ssp_time_range = ssp_time_range,
-            plotting=['Global_mean', 'Global_range'],#['means', '5-95',],
+            plotting= ['model_range', 'Global_mean',], #['Global_mean', 'Global_range'],#['means', '5-95',],
             fig = fig,
             ax =  subplots['timeseries'],
     )
@@ -2573,11 +2595,10 @@ def main(cfg):
             ax = subplots['profile']
     )
 
-
     if 'tos_ts_hist' in time_series_fns.keys():
         suptitle = 'Temperature, '+r'$\degree$' 'C'
     elif 'chl_ts_hist' in time_series_fns.keys():
-        suptitle = 'Chlorohpyll concentration, mg '+r'$^{-3}$'
+        suptitle = 'Chlorohpyll concentration, mg m'+r'$^{-3}$'
     elif 'ph_ts_hist' in time_series_fns.keys():
         suptitle = 'pH'
     elif 'intpp_ts_hist' in time_series_fns.keys():
@@ -2594,14 +2615,13 @@ def main(cfg):
         print('suptitle not found:', time_series_fns.keys())
         assert 0
 
-
     suptitle += ' '.join([
                         '\n Historical', '('+ '-'.join([str(int(t)) for t in hist_time_range]) +')',
                         'vs SSP', '('+'-'.join([str(int(t)) for t in ssp_time_range])+')' ])
     plt.suptitle(suptitle)
 
     # save and close.
-    path = diagtools.folder(cfg['plot_dir']+'/whole_plot')
+    path = diagtools.folder(cfg['plot_dir']+'/whole_plot_modelrange')
     path += '_'.join(['multi_model_whole_plot'])
     path += diagtools.get_image_format(cfg)
 
