@@ -609,6 +609,12 @@ def multi_model_time_series(
         shpath = get_shelve_path(short_name, 'ts')
         sh = shopen(shpath)
         # times, data = sh['times'], sh['data']
+        if hard_wired_obs.get((short_name, 'timeseries', 'min'), False):
+            ctimes = [t for t in hard_wired_obs[(short_name, 'timeseries', 'min')]]
+            mins =  [hard_wired_obs[(short_name, 'timeseries', 'min')][t] for t in ctimes]
+            maxs =  [hard_wired_obs[(short_name, 'timeseries', 'max')][t] for t in ctimes]
+            plt.fill_between(ctimes, mins, maxs, color='k'', alpha=0.3)
+
         if 'annual_times' in sh.keys():
             annual_times, annual_data = sh['annual_times'], sh['annual_data']
             plt.plot(annual_times, annual_data, ls='-', c='k', lw=1.5)
@@ -1012,6 +1018,12 @@ def multi_model_clim_figure(
 
     plot_obs = True
     if plot_obs:
+        if hard_wired_obs.get((short_name, 'clim', 'min'), False):
+            ctimes = [t for t in hard_wired_obs[(short_name, 'clim', 'min')]]
+            mins =  [hard_wired_obs[(short_name, 'clim', 'min')][t] for t in ctimes]
+            maxs =  [hard_wired_obs[(short_name, 'clim', 'max')][t] for t in ctimes]
+            plt.fill_between(ctimes, mins, maxs, color='k'', alpha=0.3)
+
         shpath = get_shelve_path(short_name, 'ts')
         sh = shopen(shpath)
         # times, data = sh['times'], sh['data']
