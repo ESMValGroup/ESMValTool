@@ -48,6 +48,7 @@ REQUIREMENTS = {
         'pandas',
         'pyproj',
         'pyyaml',
+        'python<3.10',  # teething issues with python=3.10; see https://github.com/ESMValGroup/ESMValTool/issues/2476
         'rasterio',
         'ruamel.yaml',
         'scikit-image',
