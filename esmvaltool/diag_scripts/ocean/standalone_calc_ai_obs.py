@@ -279,7 +279,7 @@ def time_series(field='tos', pane='timeseries'):
             print('ONLY one time point:')
             print(cube)
             print('times:', nctimes)
-            print('ncdata:range:  min', ncdata.min(), nc.data.mean(), ncdata.data.max())
+            print('ncdata:range:  min', ncdata.data.min(), ncdata.data.mean(), ncdata.data.max())
             print('file:', nc_path)
             assert 0
 
@@ -405,7 +405,7 @@ def load_map_netcdf(field='tos', pane='map'):
     return outcube
 
 
-def make_ts_figure(field):
+def make_ts_figure(field, overwrite=True):
     """
     3 Pane Time series figure:
         Monthly, annual and climatology panes.
@@ -414,7 +414,7 @@ def make_ts_figure(field):
     path = diagtools.folder('images/obs/timeseries')
     path +='_'.join([field, 'ts'])+'.png'
 
-    if os.path.exists(path):
+    if not overwrite and os.path.exists(path):
         print('Already exists:', path)
         return
 
@@ -588,7 +588,7 @@ def make_profile_figure(field):
 
 def main():
     twodfields = []#'mld', ] #'intpp', 'chl', ]# 'mld' ]
-    threedfields = ['o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
+    threedfields = ['ph', ]#'so', ]# 'o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
     for field in twodfields:
 #        make_map_figure(field)
         make_ts_figure(field)

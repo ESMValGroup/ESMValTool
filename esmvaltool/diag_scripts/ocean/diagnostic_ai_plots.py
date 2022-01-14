@@ -107,11 +107,15 @@ models_to_skip = ['GISS-E2-1-G', ] #SST is strangely high and there are very few
 
 # used to
 hard_wired_obs = {
-    ('so', 'timeseries', 'min'): {1990:35., 2010:35.},
-    ('so', 'timeseries', 'max'): {1990:35.5, 2010:35.5},
-    ('so', 'clim', 'min'): {1990:35., 2010:35.},
-    ('so', 'clim', 'max'): {1990:35.5, 2010:35.5},
-}
+    ('so', 'timeseries', 'min'): {1980:35.8812, 2010:35.8812}, # time range assumed from https://www.ncei.noaa.gov/sites/default/files/2020-04/woa18_vol2.pdf page 1
+    ('so', 'timeseries', 'max'): {1980:36.50431, 2010:36.50431},
+    ('so', 'clim', 'min'): {1980:35.8812, 2010:35.8812},
+    ('so', 'clim', 'max'): {1980:36.50431, 2010:36.50431},
+    }
+#for key in ['sos', 'sal','psu']:
+for key, a,b in itertools.product(['sos', 'sal','psu'], ['timeseries', 'clim'],['min', 'max']): 
+    hard_wired_obs[key, a, b] = hard_wired_obs['so', a, b]
+
 
 def get_shelve_path(field, pane='timeseries'):
     # from standalone calc ai obs.
@@ -613,7 +617,7 @@ def multi_model_time_series(
             ctimes = [t for t in hard_wired_obs[(short_name, 'timeseries', 'min')]]
             mins =  [hard_wired_obs[(short_name, 'timeseries', 'min')][t] for t in ctimes]
             maxs =  [hard_wired_obs[(short_name, 'timeseries', 'max')][t] for t in ctimes]
-            plt.fill_between(ctimes, mins, maxs, color='k'', alpha=0.3)
+            plt.fill_between(ctimes, mins, maxs, color='k', alpha=0.3)
 
         if 'annual_times' in sh.keys():
             annual_times, annual_data = sh['annual_times'], sh['annual_data']
@@ -1022,7 +1026,7 @@ def multi_model_clim_figure(
             ctimes = [t for t in hard_wired_obs[(short_name, 'clim', 'min')]]
             mins =  [hard_wired_obs[(short_name, 'clim', 'min')][t] for t in ctimes]
             maxs =  [hard_wired_obs[(short_name, 'clim', 'max')][t] for t in ctimes]
-            plt.fill_between(ctimes, mins, maxs, color='k'', alpha=0.3)
+            plt.fill_between([times[0], times[-1]], mins, maxs, color='k', alpha=0.3)
 
         shpath = get_shelve_path(short_name, 'ts')
         sh = shopen(shpath)
