@@ -1,4 +1,4 @@
-.. _recipes_<mynewrecipe>:
+.. _recipes_esaccioc:
    
 Ocean chlorophyll in ESMs compared to ESA-CCI observations.
 ===========================================================
@@ -70,5 +70,5 @@ Example plots
    :align:   center
    :width:   8cm
 
-   Scatter plots of surface chlorophyll from ESACCI-OC ocean colour data
+   Scatter plot of surface chlorophyll from ESACCI-OC ocean colour data
    version 5.0 and the CMIP6 model NorESM2-LM.
