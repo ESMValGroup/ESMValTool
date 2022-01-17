@@ -1,0 +1,2 @@
+ESMValCore: 2.4.0
+ESMValTool: 2.4.0
