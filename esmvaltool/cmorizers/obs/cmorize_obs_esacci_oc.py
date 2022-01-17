@@ -3,7 +3,7 @@
 Tier
 
 Source
-   ftp://oceancolour.org/occci-v3.1/geographic/netcdf/monthly/chlor_a/
+   ftp://oceancolour.org/occci-v5.0/geographic/netcdf/monthly/chlor_a/
    user: oc-cci-data
    pass: ELaiWai8ae
 
