@@ -96,6 +96,7 @@ def main(cfg):
 
     ax1.set_ylim(ylims)
     ax1.set_ylabel('XCH4 (ppbv)')
+    ax1.set_title('XCH4 annual cycle')
 
     baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
 

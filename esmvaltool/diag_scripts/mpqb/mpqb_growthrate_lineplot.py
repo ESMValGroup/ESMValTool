@@ -90,7 +90,6 @@ def main(cfg):
         diff_data = np.diff(cube.data)
         cube = cube[1:]
         cube.data = diff_data
-        #[0 : ]
 
         # Set default if not defined.
         label = get_mpqb_cfg('datasetname', alias)
@@ -103,7 +102,7 @@ def main(cfg):
     # Add the zero line 
     plt.axhline(y=0, linestyle=':', color='k')
     plt.tight_layout()
-    
+
     # Time axis formatting
     years = mdates.YearLocator()  # every year
     years_fmt = mdates.DateFormatter('%Y')
@@ -111,9 +110,10 @@ def main(cfg):
     ax1.xaxis.set_major_locator(years)
     ax1.xaxis.set_major_formatter(years_fmt)
     ax1.grid(True, which='major', axis='x')
-    
+
     ax1.set_ylim(ylims)
-    ax1.set_ylabel('Difference XCH4 (ppbv)')
+    ax1.set_ylabel('Change XCH4 (ppbv)')
+    ax1.set_title('Time series of annual XCH4 growth rate')
 
     h,l = ax1.get_legend_handles_labels()
     leg = lax.legend(h,l, borderaxespad=0, ncol=4, loc='center')
@@ -126,28 +126,17 @@ def main(cfg):
     filename = get_plot_filename(baseplotname, cfg)
     logger.info("Saving as %s", filename)
     fig.savefig(filename, bbox_inches='tight')
-    
-    # Provenance
-    # provenance_record = get_provenance_record(baseplotname,
-                                              # metadata[filenames[-1]],
-                                              # obsname, filenames)
-    # logger.info("Recording provenance of %s:\n%s", plot_file,
-                # pformat(provenance_record))
-    # with ProvenanceLogger(cfg) as provenance_logger:
-         # provenance_logger.log(plot_file, provenance_record)
- 
+
     caption = (
         "Global mean time series of {long_name} between "
         "{start_year} and {end_year} ")
 
     provenance_record = get_provenance_record(caption)
-    #provenance_record['ancestors'] = ancestor_files
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance_record)
-    
+
     plt.close(fig)
     logger.info("Finished!")
-
 
 
 if __name__ == '__main__':

@@ -111,6 +111,7 @@ def main(cfg):
     ax1.grid(True, which='major', axis='x')
     ax1.set_ylim(ylims)
     ax1.set_ylabel('XCH4 (ppbv)')
+    ax1.set_title('Time series of monthly mean XCH4')
 
     h,l = ax1.get_legend_handles_labels()
     leg = lax.legend(h,l, borderaxespad=0, ncol=4, loc='center')
