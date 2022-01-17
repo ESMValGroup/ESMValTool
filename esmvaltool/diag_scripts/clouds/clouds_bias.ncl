@@ -122,7 +122,7 @@ begin
 
   ; get multi-model mean index
 
-  mm_ind = ind(names .eq. "MultiModelMean")
+  mm_ind = ind(names .eq. "ICON")
 
   if (ismissing(mm_ind)) then
     error_msg("f", DIAG_SCRIPT, "", "multi-model mean is missing (required)")
@@ -140,6 +140,10 @@ begin
   ;       2) multi-model mean is calculated by the backend
 
   ; read data
+
+  start_year = info0[mm_ind]@start_year
+  end_year = info0[mm_ind]@end_year
+  time_str = " (" + start_year + "-" + end_year + ")"
 
   A0 = read_data(info0[mm_ind])
   mmdata = time_operations(A0, -1, -1, "average", timemean, True)
@@ -232,7 +236,7 @@ begin
 
   diff@res_tiMainFontHeightF  = 0.016
 
-  diff@res_tiMainString = "Multi Model Mean Bias"
+  diff@res_tiMainString = "Bias ICON vs. " + refname + time_str
 
   copy_VarMeta(diff, mmdata)
   delete(mmdata@res_cnLevels)
@@ -271,7 +275,7 @@ begin
     end if
   end if
 
-  mmdata@res_tiMainString = "Multi Model Mean"
+  mmdata@res_tiMainString = "ICON" + time_str
 
   plotsperline = (/2, 0/)
   plotind = (/0, 1/)  ; mmm and mean bias are always plotted
@@ -297,7 +301,7 @@ begin
     absdiff@res_cnLevels = tmp(1:dimsizes(tmp)-1)
     delete(tmp)
 
-    absdiff@res_tiMainString = "Multi Model Mean of Absolute Error"
+    absdiff@res_tiMainString = "Absolute error ICON vs. " + refname + time_str
 
     iadd = 2
     itmp = array_append_record(plotind, iadd, 0)
@@ -318,7 +322,7 @@ begin
     copy_VarMeta(diff, reldiff)
     delete(reldiff@res_cnLevels)
     reldiff@res_cnLevels = fspan(-90.0, 90.0, 13)
-    reldiff@res_tiMainString = "Multi Model Mean of Relative Error"
+    reldiff@res_tiMainString = "Relative bias ICON vs. " + refname + time_str
     reldiff@units = "%"
     reldiff@res_lbTitleString = "(" + reldiff@units + ")"
     if (isvar("pal4")) then

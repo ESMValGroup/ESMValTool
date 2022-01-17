@@ -208,7 +208,7 @@ begin
   ; Calculating necessary values
   ; Number of Projects needed to determine span
   ; For now just CMIP projects
-  c_projects = str_match_ic(data_all&models@project, "CMIP")
+  c_projects = str_match_ic(data_all&models@project, "native")
   projects = get_unique_entries(c_projects)
   n_var = dimsizes(data_all&vars)
 
@@ -393,9 +393,9 @@ begin
   do iproj = 0, dimsizes(projects)-1
     res_text@txFontColor = fcolors(iproj)
     ; CMIP5 label has to be reduced to CMIP5 sometimes
-    if str_match_ind_ic(plabel, "CMIP5").eq.iproj then
-      plabel(iproj) = "CMIP5"
-    end if
+    ; if str_match_ind_ic(plabel, "CMIP5").eq.iproj then
+    ;   plabel(iproj) = "CMIP5"
+    ; end if
     plot@$unique_string("dum_l")$ = gsn_add_text(wks, plot, plabel(iproj),\
                                                  x_val(0), y_min_label + \
                                                  lb_stride*(iproj+1), res_text)

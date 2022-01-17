@@ -136,7 +136,7 @@ begin
   end if
 
   ; get multi-model mean index
-  mmm_ind = ind(datasetnames .eq. "MultiModelMean")
+  mmm_ind = ind(datasetnames .eq. "ICON")
 
   ; Set index of the reference dataset and read it
   if (isatt(variable_info[0], "reference_dataset")) then
