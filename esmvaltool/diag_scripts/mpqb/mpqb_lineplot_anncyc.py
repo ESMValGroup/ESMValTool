@@ -38,7 +38,6 @@ def get_provenance_record(caption):
 def main(cfg):
     """Create lineplot."""
     ylims = [cfg.pop('y0', None), cfg.pop('y1', None)]
-    #ylims = [1610., 1830.]
 
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
@@ -76,18 +75,9 @@ def main(cfg):
         #iris.quickplot.plot(cube, label=label, color=color, linestyle='dashed')
         iris.quickplot.plot(cube, label=label, color=color)
     plt.legend()
-    #plt.xticks(rotation=90)
-    ## Add the zero line when plotting anomalies
-    #if 'ano' in dataset_cfg['preprocessor']:
-    #    plt.axhline(y=0, linestyle=':', color='k')
     plt.tight_layout()
     # Time axis formatting
-    #months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]  # every year
-    #my_xticks = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
-    ##years_fmt = mdates.DateFormatter('%Y')
     ax1 = plt.gca()
-    #ax1.xaxis.set_major_locator(months)
-    ##ax1.xaxis.set_major_formatter(years_fmt)
     ax1.set_xticks([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
     ax1.set_xticklabels(['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
                          'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'])
@@ -110,7 +100,6 @@ def main(cfg):
         "{start_year} and {end_year} ")
 
     provenance_record = get_provenance_record(caption)
-    #provenance_record['ancestors'] = ancestor_files
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance_record)
 
@@ -121,8 +110,4 @@ def main(cfg):
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
-        #if config['write_plots']:
         main(config)
-        #else:
-        #    logger.warning("This diagnostic wants to plot,\
-        #                    but isn't allowed to")

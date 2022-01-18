@@ -78,7 +78,7 @@ def main(cfg):
         grouped_input_data.move_to_end('ERA-Interim-Land')
 
     plt.clf()
-    fig, (ax1,lax) = plt.subplots(nrows=2, 
+    fig, (ax1,lax) = plt.subplots(nrows=2,
         gridspec_kw={"height_ratios":[10,1]}, figsize=(10,5))
 
     plt.sca(ax1)
@@ -124,28 +124,18 @@ def main(cfg):
     filename = get_plot_filename(baseplotname, cfg)
     logger.info("Saving as %s", filename)
     fig.savefig(filename, bbox_inches='tight')
-    
-    # Provenance
-    # provenance_record = get_provenance_record(baseplotname,
-                                              # metadata[filenames[-1]],
-                                              # obsname, filenames)
-    # logger.info("Recording provenance of %s:\n%s", plot_file,
-                # pformat(provenance_record))
-    # with ProvenanceLogger(cfg) as provenance_logger:
-         # provenance_logger.log(plot_file, provenance_record)
- 
+
+
     caption = (
         "Global mean time series of {long_name} between "
         "{start_year} and {end_year} ")
 
     provenance_record = get_provenance_record(caption)
-    #provenance_record['ancestors'] = ancestor_files
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance_record)
-    
+
     plt.close(fig)
     logger.info("Finished!")
-
 
 
 if __name__ == '__main__':

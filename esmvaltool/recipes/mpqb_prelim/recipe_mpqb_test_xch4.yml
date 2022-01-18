@@ -114,14 +114,14 @@ datasets:
      exp: historical, derive: true, alias: CNRM-ESM2-1}
   - {dataset: UKESM1-0-LL, project: CMIP6, ensemble: r1i1p1f2, grid: gn,
      exp: historical, derive: true, alias: UKESM1-0-LL}
-  - {dataset: BCC-ESM1, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
+  - {dataset: BCC-ESM1, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
      exp: historical, derive: true, alias: BCC-ESM1}
   - {dataset: CESM2-WACCM, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
      exp: historical, derive: true, alias: CESM2-WACCM}
   - {dataset: CESM2-WACCM-FV2, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
      exp: historical, derive: true, alias: CESM2-WACCM-FV2}
   - {dataset: GFDL-ESM4, project: CMIP6, ensemble: r1i1p1f1, grid: gr1,
-     exp: historical, derive: true, alias: GFDL-ESM4}   
+     exp: historical, derive: true, alias: GFDL-ESM4}
 ### CMIP6 (ssp585)
   # - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
      # exp: ssp585, derive: true, alias: BCC-CSM2-MR}
@@ -134,7 +134,7 @@ datasets:
   # - {dataset: CESM2-WACCM, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
      # exp: ssp585, derive: true, alias: CESM2-WACCM}
   # - {dataset: GFDL-ESM4, project: CMIP6, ensemble: r1i1p1f1, grid: gr1,
-     # exp: ssp585, derive: true, alias: GFDL-ESM4}   
+     # exp: ssp585, derive: true, alias: GFDL-ESM4}
 ### CMIP6 (ssp245)
   # - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
      # exp: ssp245, derive: true, alias: BCC-CSM2-MR}
@@ -147,7 +147,7 @@ datasets:
   # - {dataset: CESM2-WACCM, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
      # exp: ssp245, derive: true, alias: CESM2-WACCM}
   # - {dataset: GFDL-ESM4, project: CMIP6, ensemble: r1i1p1f1, grid: gr1,
-     # exp: ssp245, derive: true, alias: GFDL-ESM4}   
+     # exp: ssp245, derive: true, alias: GFDL-ESM4}
 
 preprocessors:
   pp_lineplots_gl_mon: &pp_lineplots_gl_mon
@@ -207,11 +207,6 @@ preprocessors:
       operator: mean
       period: month
 
-
-xch4_def_cmip5: &xch4def_cmip5
-  mip: Amon
-  start_year: 2003
-  end_year: 2005
 
 xch4_def_cmip6: &xch4def_cmip6
   mip: Amon

@@ -84,7 +84,7 @@ colormaps:
       vmin: 0.
       vmax: 0.6
       extend: max
-      
+
   xch4:
     pearsonr:
       title: pearsonr

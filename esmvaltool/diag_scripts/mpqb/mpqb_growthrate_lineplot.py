@@ -74,7 +74,7 @@ def main(cfg):
         "\n%s", pformat(grouped_input_data))
 
     plt.clf()
-    fig, (ax1,lax) = plt.subplots(nrows=2, 
+    fig, (ax1,lax) = plt.subplots(nrows=2,
         gridspec_kw={"height_ratios":[10,1]}, figsize=(10,5))
 
     plt.sca(ax1)
