@@ -2,6 +2,8 @@
 # recipe_consecdrydays
 ---
 documentation:
+  title: Consecutive dry days
+
   description: |
     Recipe to calculate consecutive dry days
 

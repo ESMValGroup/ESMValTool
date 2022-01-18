@@ -50,6 +50,7 @@
 ;        plot is written to 2 separate netCDFs.
 ;
 ; Modification history
+;   20211006-lauer_axel: removed write_plots
 ;   20190222-lauer_axel: added output of provenance (v2.0)
 ;   20181119-lauer_axel: adapted code to multi-variable capable framework
 ;   20180923-lauer_axel: added writing of results to netcdf
@@ -154,16 +155,9 @@ begin
 
   ; make sure path for (mandatory) netcdf output exists
 
-  write_nc = True
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
-
-  if (diag_script_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
 
 end
 
@@ -711,17 +705,15 @@ begin
 
     ; --------------------------------------------------------------------
 
-    if (write_plots) then
-      pres                = True
-      pres@gsnPanelCenter = False
-      pres@gsnPanelXF     = (/0.075, 0.625/)  ; hor. pos. of sub-plots
-      pres@txString       = season(is)
+    pres                = True
+    pres@gsnPanelCenter = False
+    pres@gsnPanelXF     = (/0.075, 0.625/)  ; hor. pos. of sub-plots
+    pres@txString       = season(is)
 
-      outfile = panelling(wks, plots(:, is), 1, 2, pres)
-      log_info("Wrote " + wks@fullname)
+    outfile = panelling(wks, plots(:, is), 1, 2, pres)
+    log_info("Wrote " + wks@fullname)
 
-      plotfile(is) = wks@fullname
-    end if  ; if write_plots
+    plotfile(is) = wks@fullname
   end do  ; is-loop (seasons)
 
   ; ###########################################

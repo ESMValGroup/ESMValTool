@@ -133,7 +133,7 @@ diagnostics:
         end_year: 2005
         project: CMIP5
         additional_datasets:
-          - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
+          - {dataset: TRMM-L3, project: obs4MIPs, level: v7, version: 7A,
              start_year: 1998, end_year: 2013, tier: 1}
           - {dataset: ACCESS1-0, ensemble: r1i1p1}
           # - {dataset: ACCESS1-3, ensemble: r1i1p1}
@@ -166,7 +166,7 @@ diagnostics:
         mip: Amon
         frequency: mon
         additional_datasets:
-          - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
+          - {dataset: TRMM-L3, project: obs4MIPs, level: v7, version: 7A,
              start_year: 1998, end_year: 2013, tier: 1}
     scripts:
       ecs_scatter:
@@ -195,7 +195,7 @@ diagnostics:
         end_year: 2005
         project: CMIP5
         additional_datasets:
-          - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5,
+          - {dataset: AIRS, project: obs4MIPs, level: L3, version: RetStd-v5,
              start_year: 2003, end_year: 2010, tier: 1}
           - {dataset: ACCESS1-0, ensemble: r1i1p1}
           # - {dataset: ACCESS1-3, ensemble: r1i1p1}
@@ -229,7 +229,7 @@ diagnostics:
         mip: Amon
         frequency: mon
         additional_datasets:
-          - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5,
+          - {dataset: AIRS, project: obs4MIPs, level: L3, version: RetStd-v5,
              start_year: 2003, end_year: 2010, tier: 1}
     scripts:
       ecs_scatter:
@@ -396,7 +396,7 @@ diagnostics:
         exp: historical
         project: CMIP5
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
              start_year: 2001, end_year: 2005, tier: 1}
       rsutcs:
         reference_dataset: CERES-EBAF
@@ -404,7 +404,7 @@ diagnostics:
         exp: historical
         project: CMIP5
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
              start_year: 2001, end_year: 2005, tier: 1}
       rsdt:
         reference_dataset: CERES-EBAF
@@ -412,7 +412,7 @@ diagnostics:
         exp: historical
         project: CMIP5
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
              start_year: 2001, end_year: 2005, tier: 1}
     scripts:
       ecs_scatter:
@@ -440,7 +440,7 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: TRMM-L3, project: obs4mips, level: v7,
+          - {dataset: TRMM-L3, project: obs4MIPs, level: v7,
              version: 7A, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
@@ -463,7 +463,7 @@ diagnostics:
         start_year: 1998
         end_year: 2013
         additional_datasets:
-          - {dataset: TRMM-L3, project: obs4mips, level: v7,
+          - {dataset: TRMM-L3, project: obs4MIPs, level: v7,
              version: 7A, tier: 1}
     scripts:
       ecs_scatter:
@@ -491,7 +491,7 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: AIRS, project: obs4mips, level: L3,
+          - {dataset: AIRS, project: obs4MIPs, level: L3,
              version: RetStd-v5, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
@@ -515,7 +515,7 @@ diagnostics:
         start_year: 2003
         end_year: 2010
         additional_datasets:
-          - {dataset: AIRS, project: obs4mips, level: L3,
+          - {dataset: AIRS, project: obs4MIPs, level: L3,
              version: RetStd-v5, tier: 1}
     scripts:
       ecs_scatter:
@@ -689,7 +689,7 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
              version: Ed2-7, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
@@ -713,7 +713,7 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
              version: Ed2-7, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
@@ -737,7 +737,7 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
              version: Ed2-7, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}

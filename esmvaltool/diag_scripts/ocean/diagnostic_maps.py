@@ -122,10 +122,8 @@ def make_map_plots(
             )
 
         # Saving files:
-        if cfg['write_plots']:
-
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
 
         plt.close()
 
@@ -227,9 +225,8 @@ def make_map_contour(
             )
 
         # Saving files:
-        if cfg['write_plots']:
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
 
         plt.close()
 
@@ -336,19 +333,18 @@ def multi_model_contours(
         plt.legend(loc='best')
 
         # Saving files:
-        if cfg['write_plots']:
-            path = diagtools.get_image_path(
-                cfg,
-                metadata[filename],
-                prefix='MultipleModels_',
-                suffix='_'.join(['_contour_map_',
-                                 str(threshold),
-                                 str(layer) + image_extention]),
-                metadata_id_list=[
-                    'field', 'short_name', 'preprocessor', 'diagnostic',
-                    'start_year', 'end_year'
-                ],
-            )
+        path = diagtools.get_image_path(
+            cfg,
+            metadata[filename],
+            prefix='MultipleModels_',
+            suffix='_'.join(['_contour_map_',
+                             str(threshold),
+                             str(layer) + image_extention]),
+            metadata_id_list=[
+                'field', 'short_name', 'preprocessor', 'diagnostic',
+                'start_year', 'end_year'
+            ],
+        )
 
         # Resize and add legend outside thew axes.
         plt.gcf().set_size_inches(9., 6.)

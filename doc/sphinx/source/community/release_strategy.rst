@@ -52,19 +52,7 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.4.0 (Release Manager: `Klaus Zimmermann`_)
-
-+------------+--------------------------+
-| 2021-10-04 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2021-10-11 |ESMValCore release        |
-+------------+--------------------------+
-| 2021-10-18 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2021-10-25 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.5.0 (Release Manager: `Manuel Schlund`_)
+- 2.5.0 (Coordinating Release Manager: `Axel Lauer`_, team members: `Manuel Schlund`_, `Rémi Kazeroni`_)
 
 +------------+--------------------------+
 | 2022-02-07 |ESMValCore feature freeze |
@@ -90,6 +78,20 @@ Upcoming releases
 
 Past releases
 ^^^^^^^^^^^^^
+
+- 2.4.0 (Release Manager: `Klaus Zimmermann`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2021-10-04 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-10-11 | 2021-11-08 | `ESMValCore Release 2.4.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.4.0>`_ | :ref:`esmvalcore:changelog-v2-4-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-10-18 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-10-25 | 2021-11-09 | `ESMValTool Release 2.4.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.4.0>`_ |      :ref:`changelog-v2-4-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
 
 - 2.3.1 (Bugfix, Release Manager: `Klaus Zimmermann`_)
 
@@ -333,35 +335,7 @@ and create the new release from the release branch (i.e. not from ``main``).
 The release tag always starts with the letter ``v`` followed by the version
 number, e.g. ``v2.1.0``.
 
-7. Create and upload the Conda package
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The package is automatically uploaded to the
-`ESMValGroup conda channel <https://anaconda.org/esmvalgroup/esmvaltool>`__
-by a GitHub action.
-If this has failed for some reason, build and upload the package manually by
-following the instructions below.
-
-Follow these steps to create a new conda package:
-
--  Check out the tag corresponding to the release,
-   e.g. ``git checkout tags/v2.1.0``
--  Make sure your current working directory is clean by checking the output
-   of ``git status`` and by running ``git clean -xdf`` to remove any files
-   ignored by git.
--  Edit ``package/meta.yaml`` and uncomment the lines starting with ``git_rev`` and
-   ``git_url``, remove the line starting with ``path`` in the ``source``
-   section.
--  Activate the base environment ``conda activate base``
--  Install the required packages:
-   ``conda install -y conda-build conda-verify ripgrep anaconda-client``
--  Run ``conda build package -c conda-forge -c esmvalgroup`` to build the
-   conda package
--  If the build was successful, upload the package to the esmvalgroup
-   conda channel, e.g.
-   ``anaconda upload --user esmvalgroup /path/to/conda/conda-bld/noarch/esmvaltool-2.1.0-py_0.tar.bz2``.
-
-8. Create and upload the PyPI package
+7. Create and upload the PyPI package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The package is automatically uploaded to the
@@ -392,6 +366,14 @@ Follow these steps to create a new Python package:
 You can read more about this in
 `Packaging Python Projects <https://packaging.python.org/tutorials/packaging-projects/>`__.
 
+8. Update the conda-forge packages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The upload to PyPI will automatically trigger an update PR on the
+esmvaltool-suite-feedstock_. Check that it builds correctly and merge
+the PR to update the conda-forge packages.
+
+.. _esmvaltool-suite-feedstock: https://github.com/conda-forge/esmvaltool-suite-feedstock
 
 Changelog
 ---------
@@ -403,6 +385,8 @@ Changelog
 - 2020-06-08 First draft by Klaus Zimmermann and Bouwe Andela
 
 .. _Bouwe Andela: https://github.com/bouweandela
+.. _Rémi Kazeroni: https://github.com/remi-kazeroni
+.. _Axel Lauer: https://github.com/axel-lauer
 .. _Valeriu Predoi: https://github.com/valeriupredoi
 .. _Manuel Schlund: https://github.com/schlunma
 .. _Javier Vegas-Regidor: https://github.com/jvegasbsc

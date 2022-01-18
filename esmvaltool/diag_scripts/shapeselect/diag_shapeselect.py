@@ -50,15 +50,14 @@ def main(cfg):
             caption = 'Selected gridpoints within shapefile.'
             get_provenance_record(
                 cfg, xname, caption, 'xlsx', ancestor_files=[filename])
-        if cfg['write_netcdf']:
-            path = os.path.join(
-                cfg['work_dir'],
-                name + '.nc',
-            )
-            write_netcdf(path, ncts, nclon, nclat, cube, cfg)
-            caption = 'Selected gridpoints within shapefile.'
-            get_provenance_record(
-                cfg, name, caption, 'nc', ancestor_files=[filename])
+        path = os.path.join(
+            cfg['work_dir'],
+            name + '.nc',
+        )
+        write_netcdf(path, ncts, nclon, nclat, cube, cfg)
+        caption = 'Selected gridpoints within shapefile.'
+        get_provenance_record(
+            cfg, name, caption, 'nc', ancestor_files=[filename])
 
 
 def write_keyvalue_toxlsx(worksheet, row, key, value):
