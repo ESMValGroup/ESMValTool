@@ -126,13 +126,6 @@ PREPROCESS_FRACTION_TO_PERCENTAGE_SCRIPT: &preprocess_fraction_to_percentage_scr
   scalar_operations:
     subtract: 1.0
 
-PREPROCESS_ZONAL_MEANS_SCRIPT: &preprocess_zonal_means_script
-  script: mlr/preprocess.py
-  collapse:
-    mean: longitude
-  ignore:
-    - {var_type: null}
-
 PREPROCESS_ERROR_SCRIPT: &preprocess_error_script
   script: mlr/preprocess.py
   ancestors: ['diag_rescale_gpp_fraction_with_emergent_constraint/rescale']
@@ -265,7 +258,7 @@ preprocessors:
       target_grid: 2x2
     mask_landsea: &mask_sea_NE_mask
       mask_out: sea
-      always_use_ne_mask: true
+      fx_variables: null
     extract_region: &extract_region
       start_latitude: -60.0
       end_latitude: 75.0
@@ -713,7 +706,7 @@ diagnostics:
 
   diag_mmm:
     <<: *provenance
-    description: Use simple multi-model mean to predict target variable (zonal means).
+    description: Use simple multi-model mean to predict target variable.
     scripts:
       mlr:
         <<: *mmm_script
@@ -738,7 +731,7 @@ diagnostics:
 
   diag_mmm_rescaled:
     <<: *provenance
-    description: Use simple multi-model mean to predict target variable from rescaled data (zonal means).
+    description: Use simple multi-model mean to predict target variable from rescaled data.
     scripts:
       mlr:
         <<: *mmm_script
@@ -828,46 +821,6 @@ diagnostics:
         mlr_model_name: LASSO
 
   # Plots
-
-  diag_plot_rescaled_zonal_means:
-    <<: *provenance
-    scripts:
-      preprocess_original_data:
-        <<: *preprocess_zonal_means_script
-        ancestors: ['diag_gpp_fraction_map/preprocess_for_rescaling']
-      preprocess_rescaled_data:
-        <<: *preprocess_zonal_means_script
-        ancestors: ['diag_rescale_gpp_fraction_with_emergent_constraint/rescale']
-      plot:
-        <<: *plot_script
-        ancestors: [
-          'diag_plot_rescaled_zonal_means/preprocess_original_data',
-          'diag_plot_rescaled_zonal_means/preprocess_rescaled_data',
-        ]
-        ignore:
-          - {var_type: prediction_output_error}
-        plot_xy:
-          pyplot_kwargs:
-            xlim: [-70.0, 90.0]
-            xlabel: 'latitude [°]'
-            ylabel: 'GPP change (2100 vs. 2000) [%]'
-            title: Global GPP change during 21st century
-        additional_plot_kwargs_xy_plots:
-          label___CanESM2:               {color: C0, alpha: 1.0}
-          label___CESM1-BGC:             {color: C1, alpha: 1.0}
-          label___GFDL-ESM2M:            {color: C2, alpha: 1.0}
-          label___HadGEM2-ES:            {color: C3, alpha: 1.0}
-          label___MIROC-ESM:             {color: C4, alpha: 1.0}
-          label___MPI-ESM-LR:            {color: C5, alpha: 1.0}
-          label___NorESM1-ME:            {color: C6, alpha: 1.0}
-          label_to_rescale___CanESM2:    {color: C0, alpha: 0.5, linestyle: '--', label: null}
-          label_to_rescale___CESM1-BGC:  {color: C1, alpha: 0.5, linestyle: '--', label: null}
-          label_to_rescale___GFDL-ESM2M: {color: C2, alpha: 0.5, linestyle: '--', label: null}
-          label_to_rescale___HadGEM2-ES: {color: C3, alpha: 0.5, linestyle: '--', label: null}
-          label_to_rescale___MIROC-ESM:  {color: C4, alpha: 0.5, linestyle: '--', label: null}
-          label_to_rescale___MPI-ESM-LR: {color: C5, alpha: 0.5, linestyle: '--', label: null}
-          label_to_rescale___NorESM1-ME: {color: C6, alpha: 0.5, linestyle: '--', label: null}
-
 
   diag_plot_mlr_models:
     <<: *provenance
