@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - main
+      - add_py310_GActions
 
 jobs:
   build-n-publish:
@@ -14,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v1
         with:
-          python-version: 3.9
+          python-version: 3.10
       - name: Install pep517
         run: >-
           python -m
