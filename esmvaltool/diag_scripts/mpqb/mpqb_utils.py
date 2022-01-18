@@ -7,7 +7,7 @@ import yaml
 def get_mpqb_cfg(cfgtype, cfgkey):
     """cfgtype: colormap, datasetcolor, datasetname"""
     # First read cfg file
-    cfg_filename = os.path.join(os.path.split(__file__)[0], 'mpqb_cfg.yml')
+    cfg_filename = os.path.join(os.path.split(__file__)[0], 'mpqb_cfg_xch4.yml')
     with open(cfg_filename, 'r') as handle:
         mpqb_cfg = yaml.safe_load(handle)
     # Defaults to specified defaults in yml file
