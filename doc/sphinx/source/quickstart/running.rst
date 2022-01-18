@@ -25,10 +25,10 @@ This recipe finds data from BCC-ESM1 and CanESM2 and creates two plot types:
 - a time series plot that shows the globally averaged annual mean 2m surface
   air temperature and compares it to the one in Amsterdam.
 
-You can download the recipe from `GitHub
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_python.yml>`_
-and save it in your project directory as (e.g.) ``recipe_python.yml`` and then
-run ESMValTool with
+You can download the recipe from :download:`here 
+<../../../../esmvaltool/recipes/examples/recipe_python.yml>` and save it in
+your project directory as (e.g.) ``recipe_python.yml`` and then run ESMValTool
+with
 
 .. code:: bash
 
