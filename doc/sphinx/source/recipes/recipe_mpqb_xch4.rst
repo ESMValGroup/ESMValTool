@@ -98,7 +98,7 @@ All variables are necessary to calculate the derived variable xch4.
 Example plots
 -------------
 
-.. _lineplot_xch4_2003-2014_monmean:
+.. _lineplot_xch4_2003-2014_monmean: 
 .. figure::  /recipes/figures/mpqb/lineplot_xch4_2003-2014_monmean.png
    :align:   center
 
