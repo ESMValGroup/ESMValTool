@@ -15,6 +15,7 @@ import numpy as np
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
+    get_plot_filename,
     group_metadata,
     run_diagnostic,
 )
@@ -110,7 +111,8 @@ def _make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config):
 
     fig.suptitle('ESACCI LST - CMIP6 Historical Ensemble Mean', fontsize=24)
 
-    plt.savefig('%s/timeseries.png' % config['plot_dir'])
+    plot_path = get_plot_filename('timeseries', config)
+    plt.savefig(plot_path)
     plt.close('all')  # Is this needed?
 
 
@@ -218,9 +220,9 @@ def _diagnostic(config):
         data_attributes['ensembles'] += "%s " % item['alias']
 
     record = _get_provenance_record(data_attributes, ancestor_list)
-    for file in ['%s/timeseries.png' % config['plot_dir']]:
-        with ProvenanceLogger(config) as provenance_logger:
-            provenance_logger.log(file, record)
+    plot_file = get_plot_filename('timeseries', config)
+    with ProvenanceLogger(config) as provenance_logger:
+        provenance_logger.log(plot_file, record)
 
 
 if __name__ == '__main__':
