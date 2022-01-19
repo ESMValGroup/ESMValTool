@@ -13,6 +13,7 @@ Atmosphere
 
    recipe_miles
    recipe_clouds
+   recipe_cmug_h2o
    recipe_crem
    recipe_combined_climate_extreme_index
    recipe_consecdrydays
@@ -38,6 +39,7 @@ Atmosphere
    recipe_zmnam
    recipe_thermodyn_diagtool
    recipe_validation
+   recipe_radiation_budget
 
 Climate metrics
 ^^^^^^^^^^^^^^^
@@ -97,6 +99,7 @@ Ocean
    recipe_cvdp
    recipe_combined_indices
    recipe_oceans
+   recipe_sea_surface_salinity
    recipe_russell18jgr
 
 Other

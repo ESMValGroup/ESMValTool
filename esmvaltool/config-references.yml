@@ -226,6 +226,10 @@ authors:
     name: Hempelmann, Nils
     institute: IPSL, France
     orcid:
+  hogan_emma:
+    name: Hogan, Emma
+    institute: MetOffice, UK
+    orcid:
   hunter_alasdair:
     name: Hunter, Alasdair
     institute: BSC, Spain
@@ -274,6 +278,10 @@ authors:
     name: Levine, Richard
     institute: MetOffice, UK
     orcid: https://orcid.org/0000-0003-1210-0415
+  lillis_jon:
+    name: Lillis, Jon
+    institute: MetOffice, UK
+    orcid:
   little_bill:
     name: Little, Bill
     institute: MetOffice, UK
@@ -649,7 +657,8 @@ authors:
 
 # Note: the reference section has been replaced by the folder esmvaltool/references that contains bibtex files.
 # How to add a bibtex file to esmvaltool/references:
-#  - make a bibtex file for a reference entry. There are some online tools to convert a doi to bibtex format like https://doi2bib.org/
+#  - make a bibtex file for a reference entry.
+#    There are some online tools to convert a doi to bibtex format like https://doi2bib.org/
 #  - rename the file to the tag used in the recipe or diagnostic.
 #  - add the file to the folder esmvaltool/references.
 
@@ -727,6 +736,8 @@ domains:
 plot_types:
   errorbar: error bar plot
   bar: bar chart
+  map: world map
+  metrics: Autoassess metrics
   circle: different overlapping circles
   diurn: diurnal cycle
   geo: geographical distribution

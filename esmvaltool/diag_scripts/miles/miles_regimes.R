@@ -130,55 +130,53 @@ for (model_idx in c(1:(length(models_dataset)))) {
 ##
 ## Make the plots
 ##
-if (write_plots) {
-  if (!is.null(reference_exp)) {
-    ref_idx <- which((models_dataset == reference_dataset) &&
-                     (models_exp == reference_exp))
-  } else {
-    ref_idx <- which(models_dataset == reference_dataset)
-  }
-  if (length(ref_idx) == 0) {
-    ref_idx <- length(models_dataset)
-  }
-  dataset_ref <- models_dataset[ref_idx]
-  exp_ref <- models_exp[ref_idx]
-  ensemble_ref <- models_ensemble[ref_idx]
-  year1_ref <- models_start_year[ref_idx]
-  year2_ref <- models_end_year[ref_idx]
+if (!is.null(reference_exp)) {
+  ref_idx <- which((models_dataset == reference_dataset) &&
+                   (models_exp == reference_exp))
+} else {
+  ref_idx <- which(models_dataset == reference_dataset)
+}
+if (length(ref_idx) == 0) {
+  ref_idx <- length(models_dataset)
+}
+dataset_ref <- models_dataset[ref_idx]
+exp_ref <- models_exp[ref_idx]
+ensemble_ref <- models_ensemble[ref_idx]
+year1_ref <- models_start_year[ref_idx]
+year2_ref <- models_end_year[ref_idx]
 
-  for (model_idx in c(1:(length(models_dataset)))) {
-    if (model_idx != ref_idx) {
-      exp <- models_exp[model_idx]
-      dataset <- models_dataset[model_idx]
-      ensemble <- models_ensemble[model_idx]
-      year1 <- models_start_year[model_idx]
-      year2 <- models_end_year[model_idx]
-      for (seas in seasons) {
-        filenames <- miles_regimes_figures(
-          expid = exp,
-          year1 = year1,
-          year2 = year2,
-          dataset = dataset,
-          ens = ensemble,
-          dataset_ref = dataset_ref,
-          expid_ref = exp_ref,
-          year1_ref = year1_ref,
-          ens_ref = ensemble_ref,
-          year2_ref = year2_ref,
-          season = seas,
-          FIGDIR = plot_dir,
-          FILESDIR = work_dir,
-          REFDIR = work_dir,
-          nclusters
-        )
-        # Set provenance for output files (same as diagnostic files)
-        xprov <- provenance_record(list(
-          climofiles[model_idx],
-          climofiles[ref_idx]
-        ))
-        for (fname in filenames$figs) {
-          provenance[[fname]] <- xprov
-        }
+for (model_idx in c(1:(length(models_dataset)))) {
+  if (model_idx != ref_idx) {
+    exp <- models_exp[model_idx]
+    dataset <- models_dataset[model_idx]
+    ensemble <- models_ensemble[model_idx]
+    year1 <- models_start_year[model_idx]
+    year2 <- models_end_year[model_idx]
+    for (seas in seasons) {
+      filenames <- miles_regimes_figures(
+        expid = exp,
+        year1 = year1,
+        year2 = year2,
+        dataset = dataset,
+        ens = ensemble,
+        dataset_ref = dataset_ref,
+        expid_ref = exp_ref,
+        year1_ref = year1_ref,
+        ens_ref = ensemble_ref,
+        year2_ref = year2_ref,
+        season = seas,
+        FIGDIR = plot_dir,
+        FILESDIR = work_dir,
+        REFDIR = work_dir,
+        nclusters
+      )
+      # Set provenance for output files (same as diagnostic files)
+      xprov <- provenance_record(list(
+        climofiles[model_idx],
+        climofiles[ref_idx]
+      ))
+      for (fname in filenames$figs) {
+        provenance[[fname]] <- xprov
       }
     }
   }

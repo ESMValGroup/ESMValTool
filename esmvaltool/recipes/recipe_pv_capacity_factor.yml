@@ -2,6 +2,7 @@
 # recipe_capacity_factor.yml
 ---
 documentation:
+  title: "Capacity factor for solar photovoltaic (PV) systems"
   description: |
      Solar Capacity Factor
 
