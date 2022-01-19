@@ -12,7 +12,6 @@ on:
   push:
     branches:
     - main
-    - add_py310_GActions
   schedule:
     - cron: '0 0 * * *'
 

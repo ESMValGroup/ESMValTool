@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - add_py310_GActions
 
 jobs:
   build-n-publish:
