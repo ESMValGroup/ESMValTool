@@ -104,6 +104,10 @@ preprocessors:
       coordinate: air_pressure
     regrid: *regrid_nonicon
 
+  temporal_mean:
+    climate_statistics:
+      operator: mean
+
 
 diagnostics:
 
@@ -133,204 +137,207 @@ diagnostics:
       icon:
         short_name: tas
         mip: Amon
-        preprocessor: regrid_icon
+        # preprocessor: regrid_icon
+        preprocessor: temporal_mean
         additional_datasets:
           - {<<: *icon_base}
-      nonicon:
-        short_name: tas
-        mip: Amon
-        preprocessor: regrid_nonicon
-        additional_datasets:
-          - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+      # nonicon:
+      #   short_name: tas
+      #   mip: Amon
+      #   preprocessor: regrid_nonicon
+      #   additional_datasets:
+      #     - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
     scripts:
-      time_series:
-        <<: *script_time_series_obs
-      map:
-        <<: *scrip_map_obs
-        plot_kwargs_abs:
-          levels: [-50., -42., -34., -26., -18., -10., -2., 6., 14., 22., 30.]
-          extend: both
-        plot_kwargs_bias:
-          levels: [-10., -8., -6., -4., -2., 0., 2., 4., 6., 8., 10.]
-          extend: both
+      plot:
+        script: icon/plot_native_model_map.py
+      # time_series:
+      #   <<: *script_time_series_obs
+      # map:
+      #   <<: *scrip_map_obs
+      #   plot_kwargs_abs:
+      #     levels: [-50., -42., -34., -26., -18., -10., -2., 6., 14., 22., 30.]
+      #     extend: both
+      #   plot_kwargs_bias:
+      #     levels: [-10., -8., -6., -4., -2., 0., 2., 4., 6., 8., 10.]
+      #     extend: both
 
-  clt_obs:
-    variables:
-      icon:
-        short_name: clt
-        mip: Amon
-        preprocessor: regrid_icon
-        additional_datasets:
-          - {<<: *icon_base}
-      nonicon:
-        short_name: clt
-        mip: Amon
-        preprocessor: regrid_nonicon
-        additional_datasets:
-          - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      time_series:
-        <<: *script_time_series_obs
-      map:
-        <<: *scrip_map_obs
-        plot_kwargs_abs:
-          levels: [0., 10., 20., 30., 40., 50., 60., 70., 80., 90., 100.]
-        plot_kwargs_bias:
-          levels: [-40., -32., -24., -16., -8., 0., 8., 16., 24., 32., 40.]
-          extend: both
+  # clt_obs:
+  #   variables:
+  #     icon:
+  #       short_name: clt
+  #       mip: Amon
+  #       preprocessor: regrid_icon
+  #       additional_datasets:
+  #         - {<<: *icon_base}
+  #     nonicon:
+  #       short_name: clt
+  #       mip: Amon
+  #       preprocessor: regrid_nonicon
+  #       additional_datasets:
+  #         - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+  #   scripts:
+  #     time_series:
+  #       <<: *script_time_series_obs
+  #     map:
+  #       <<: *scrip_map_obs
+  #       plot_kwargs_abs:
+  #         levels: [0., 10., 20., 30., 40., 50., 60., 70., 80., 90., 100.]
+  #       plot_kwargs_bias:
+  #         levels: [-40., -32., -24., -16., -8., 0., 8., 16., 24., 32., 40.]
+  #         extend: both
 
-  pr_obs:
-    variables:
-      icon:
-        short_name: pr
-        mip: Amon
-        preprocessor: regrid_icon
-        additional_datasets:
-          - {<<: *icon_base}
-      nonicon:
-        short_name: pr
-        mip: Amon
-        preprocessor: regrid_nonicon
-        additional_datasets:
-          - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      time_series:
-        <<: *script_time_series_obs
-      map:
-        <<: *scrip_map_obs
-        plot_kwargs_abs:
-          levels: [0., 0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6., 6.75, 7.5]
-          extend: max
-        plot_kwargs_bias:
-          levels: [-7.5, -6., -4.5, -3., -1.5, 0., 1.5, 3., 4.5, 6., 7.5]
-          extend: both
+  # pr_obs:
+  #   variables:
+  #     icon:
+  #       short_name: pr
+  #       mip: Amon
+  #       preprocessor: regrid_icon
+  #       additional_datasets:
+  #         - {<<: *icon_base}
+  #     nonicon:
+  #       short_name: pr
+  #       mip: Amon
+  #       preprocessor: regrid_nonicon
+  #       additional_datasets:
+  #         - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+  #   scripts:
+  #     time_series:
+  #       <<: *script_time_series_obs
+  #     map:
+  #       <<: *scrip_map_obs
+  #       plot_kwargs_abs:
+  #         levels: [0., 0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6., 6.75, 7.5]
+  #         extend: max
+  #       plot_kwargs_bias:
+  #         levels: [-7.5, -6., -4.5, -3., -1.5, 0., 1.5, 3., 4.5, 6., 7.5]
+  #         extend: both
 
-  prw_obs:
-    variables:
-      icon:
-        short_name: prw
-        mip: Amon
-        preprocessor: regrid_icon
-        additional_datasets:
-          - {<<: *icon_base}
-      nonicon:
-        short_name: prw
-        mip: Amon
-        preprocessor: regrid_nonicon
-        additional_datasets:
-          - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      time_series:
-        <<: *script_time_series_obs
-      map:
-        <<: *scrip_map_obs
-        plot_kwargs_abs:
-          levels: [0., 6., 12., 18., 24., 30., 36., 42., 48., 54., 60.]
-          extend: max
-        plot_kwargs_bias:
-          levels: [-10., -8., -6., -4., -2., 0., 2., 4., 6., 8., 10.]
-          extend: both
+  # prw_obs:
+  #   variables:
+  #     icon:
+  #       short_name: prw
+  #       mip: Amon
+  #       preprocessor: regrid_icon
+  #       additional_datasets:
+  #         - {<<: *icon_base}
+  #     nonicon:
+  #       short_name: prw
+  #       mip: Amon
+  #       preprocessor: regrid_nonicon
+  #       additional_datasets:
+  #         - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+  #   scripts:
+  #     time_series:
+  #       <<: *script_time_series_obs
+  #     map:
+  #       <<: *scrip_map_obs
+  #       plot_kwargs_abs:
+  #         levels: [0., 6., 12., 18., 24., 30., 36., 42., 48., 54., 60.]
+  #         extend: max
+  #       plot_kwargs_bias:
+  #         levels: [-10., -8., -6., -4., -2., 0., 2., 4., 6., 8., 10.]
+  #         extend: both
 
-  rsdt_obs:
-    variables:
-      icon:
-        short_name: rsdt
-        mip: Amon
-        preprocessor: regrid_icon
-        additional_datasets:
-          - {<<: *icon_base}
-      nonicon:
-        short_name: rsdt
-        mip: Amon
-        preprocessor: regrid_nonicon
-        additional_datasets:
-          - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      time_series:
-        <<: *script_time_series_obs
-      map:
-        <<: *scrip_map_obs
-        plot_kwargs_abs:
-          levels: [150., 180., 210., 240., 270., 300., 330., 360., 390., 420., 450.]
-          extend: both
-        plot_kwargs_bias:
-          levels: [-2.5, -2., -1.5, -1., -0.5, 0., 0.5, 1., 1.5, 2., 2.5]
-          extend: both
+  # rsdt_obs:
+  #   variables:
+  #     icon:
+  #       short_name: rsdt
+  #       mip: Amon
+  #       preprocessor: regrid_icon
+  #       additional_datasets:
+  #         - {<<: *icon_base}
+  #     nonicon:
+  #       short_name: rsdt
+  #       mip: Amon
+  #       preprocessor: regrid_nonicon
+  #       additional_datasets:
+  #         - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+  #   scripts:
+  #     time_series:
+  #       <<: *script_time_series_obs
+  #     map:
+  #       <<: *scrip_map_obs
+  #       plot_kwargs_abs:
+  #         levels: [150., 180., 210., 240., 270., 300., 330., 360., 390., 420., 450.]
+  #         extend: both
+  #       plot_kwargs_bias:
+  #         levels: [-2.5, -2., -1.5, -1., -0.5, 0., 0.5, 1., 1.5, 2., 2.5]
+  #         extend: both
 
-  clivi_obs:
-    variables:
-      icon:
-        short_name: clivi
-        mip: Amon
-        preprocessor: regrid_icon
-        additional_datasets:
-          - {<<: *icon_base}
-      nonicon:
-        short_name: clivi
-        mip: Amon
-        preprocessor: regrid_nonicon
-        additional_datasets:
-          - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      time_series:
-        <<: *script_time_series_obs
-      map:
-        <<: *scrip_map_obs
-        plot_kwargs_abs:
-          levels: [0.0, 0.015, 0.03, 0.045, 0.06, 0.075, 0.09, 0.105, 0.12, 0.135, 0.15]
-          extend: max
-        plot_kwargs_bias:
-          levels: [-0.15, -0.12, -0.09, -0.06, -0.03, 0.0, 0.03, 0.06, 0.09, 0.12, 0.15]
-          extend: both
+  # clivi_obs:
+  #   variables:
+  #     icon:
+  #       short_name: clivi
+  #       mip: Amon
+  #       preprocessor: regrid_icon
+  #       additional_datasets:
+  #         - {<<: *icon_base}
+  #     nonicon:
+  #       short_name: clivi
+  #       mip: Amon
+  #       preprocessor: regrid_nonicon
+  #       additional_datasets:
+  #         - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+  #   scripts:
+  #     time_series:
+  #       <<: *script_time_series_obs
+  #     map:
+  #       <<: *scrip_map_obs
+  #       plot_kwargs_abs:
+  #         levels: [0.0, 0.015, 0.03, 0.045, 0.06, 0.075, 0.09, 0.105, 0.12, 0.135, 0.15]
+  #         extend: max
+  #       plot_kwargs_bias:
+  #         levels: [-0.15, -0.12, -0.09, -0.06, -0.03, 0.0, 0.03, 0.06, 0.09, 0.12, 0.15]
+  #         extend: both
 
-  ta_obs:
-    variables:
-      icon:
-        short_name: ta
-        mip: Amon
-        preprocessor: regrid_3d_icon
-        additional_datasets:
-          - {<<: *icon_base, var_type: atm_3d_ml}
-      nonicon:
-        short_name: ta
-        mip: Amon
-        preprocessor: regrid_3d_nonicon
-        additional_datasets:
-          - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      zonal_mean:
-        <<: *script_zonal_mean_obs
-        plot_kwargs_abs:
-          levels: [-90., -75., -60., -45., -30., -15., 0., 15., 30.]
-        plot_kwargs_bias:
-          levels: [-8., -6., -4., -2., 0., 2., 4., 6., 8.]
-          extend: both
+  # ta_obs:
+  #   variables:
+  #     icon:
+  #       short_name: ta
+  #       mip: Amon
+  #       preprocessor: regrid_3d_icon
+  #       additional_datasets:
+  #         - {<<: *icon_base, var_type: atm_3d_ml}
+  #     nonicon:
+  #       short_name: ta
+  #       mip: Amon
+  #       preprocessor: regrid_3d_nonicon
+  #       additional_datasets:
+  #         - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+  #   scripts:
+  #     zonal_mean:
+  #       <<: *script_zonal_mean_obs
+  #       plot_kwargs_abs:
+  #         levels: [-90., -75., -60., -45., -30., -15., 0., 15., 30.]
+  #       plot_kwargs_bias:
+  #         levels: [-8., -6., -4., -2., 0., 2., 4., 6., 8.]
+  #         extend: both
 
-  hus_obs:
-    variables:
-      icon:
-        short_name: hus
-        mip: Amon
-        preprocessor: regrid_3d_icon
-        additional_datasets:
-          - {<<: *icon_base, var_type: atm_3d_ml}
-      nonicon:
-        short_name: hus
-        mip: Amon
-        preprocessor: regrid_3d_nonicon
-        additional_datasets:
-          - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      zonal_mean:
-        <<: *script_zonal_mean_obs
-        axes_kwargs:
-          set_ylim: [[1000.0, 400.0]]
-        plot_kwargs_abs:
-          levels: [0., 2.5, 5., 7.5, 10., 12.5, 15., 17.5]
-        plot_kwargs_bias:
-          levels: [-1.2, -0.8, -0.4, 0., 0.4, 0.8, 1.2]
-          extend: both
-        show_y_minorticks: true
+  # hus_obs:
+  #   variables:
+  #     icon:
+  #       short_name: hus
+  #       mip: Amon
+  #       preprocessor: regrid_3d_icon
+  #       additional_datasets:
+  #         - {<<: *icon_base, var_type: atm_3d_ml}
+  #     nonicon:
+  #       short_name: hus
+  #       mip: Amon
+  #       preprocessor: regrid_3d_nonicon
+  #       additional_datasets:
+  #         - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+  #   scripts:
+  #     zonal_mean:
+  #       <<: *script_zonal_mean_obs
+  #       axes_kwargs:
+  #         set_ylim: [[1000.0, 400.0]]
+  #       plot_kwargs_abs:
+  #         levels: [0., 2.5, 5., 7.5, 10., 12.5, 15., 17.5]
+  #       plot_kwargs_bias:
+  #         levels: [-1.2, -0.8, -0.4, 0., 0.4, 0.8, 1.2]
+  #         extend: both
+  #       show_y_minorticks: true
 
   # tas_regrid:
   #   variables:
