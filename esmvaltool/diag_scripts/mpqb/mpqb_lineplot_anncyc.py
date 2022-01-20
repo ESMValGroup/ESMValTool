@@ -6,11 +6,13 @@ from pprint import pformat
 
 import iris
 import matplotlib.pyplot as plt
-
 from mpqb_utils import get_mpqb_cfg
+
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
-from esmvaltool.diag_scripts.shared._base import get_plot_filename
-from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+from esmvaltool.diag_scripts.shared._base import (
+    ProvenanceLogger,
+    get_plot_filename,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 

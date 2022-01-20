@@ -9,11 +9,13 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 from cf_units import Unit
-
 from mpqb_utils import get_mpqb_cfg
+
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
-from esmvaltool.diag_scripts.shared._base import get_plot_filename
-from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+from esmvaltool.diag_scripts.shared._base import (
+    ProvenanceLogger,
+    get_plot_filename,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -115,8 +117,8 @@ def main(cfg):
     ax1.set_ylabel('Change XCH4 (ppbv)')
     ax1.set_title('Time series of annual XCH4 growth rate')
 
-    h,l = ax1.get_legend_handles_labels()
-    leg = lax.legend(h,l, borderaxespad=0, ncol=4, loc='center')
+    h1,l1 = ax1.get_legend_handles_labels()
+    leg = lax.legend(h1 ,l1, borderaxespad=0, ncol=4, loc='center')
     for legobj in leg.legendHandles:
         legobj.set_linewidth(2.0)
     lax.axis("off")

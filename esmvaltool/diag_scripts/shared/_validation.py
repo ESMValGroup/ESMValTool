@@ -4,8 +4,8 @@ import os
 import sys
 
 import iris
-
 from esmvalcore.preprocessor import climate_statistics
+
 from esmvaltool.diag_scripts.shared import select_metadata
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -118,7 +118,6 @@ def apply_supermeans(ctrl, exper, obs_list):
 
     Returns: control and experiment cubes and list of obs cubes
     """
-    from esmvalcore.preprocessor import time_average
     ctrl_file = ctrl['filename']
     exper_file = exper['filename']
     ctrl_cube = iris.load_cube(ctrl_file)
