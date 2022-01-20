@@ -551,7 +551,6 @@ preprocessors:
     multi_model_statistics:
       span: full
       statistics: [mean]
-      keep_input_datasets: false
     seasonal_statistics:
       operator: mean
   djf_preproc:
@@ -736,11 +735,5 @@ diagnostics:
         future_periods: *future
         region: *region
         region_name: *reg_name
-        N:
-          CMIP5_26: 25
-          CMIP5_45: 31
-          CMIP5_85: 38
-          CMIP6_26: 33
-          CMIP6_45: 36
-          CMIP6_85: 34
+
 

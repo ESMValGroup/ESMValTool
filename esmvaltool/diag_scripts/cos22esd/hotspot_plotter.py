@@ -14,6 +14,8 @@ from matplotlib.patches import Patch
 
 from esmvaltool.diag_scripts.shared import (
     names,
+    get_cfg,
+    group_metadata,
     run_diagnostic,
     io,
     save_figure,
@@ -47,6 +49,13 @@ class HotspotPlot(object):
     def compute(self):
         hotspot_fields = io.get_all_ancestor_files(
             self.cfg, pattern='hotspot_*.nc')
+        metadata_files = [file for file in self.cfg["input_files"] if "tas/metadata.yml" in file]
+        # find number of models inside every multi-model mean
+        self.cfg["N"] = {}
+        for meta_file in metadata_files:
+            N_identifyer = meta_file.split("/tas/")[0].split("/tas_")[-1]
+            metadata = group_metadata(get_cfg(meta_file).values(), "dataset")
+            self.cfg["N"][N_identifyer] = len(metadata.keys())-1
         # call hotspot field plots
         for scenario in self.scenarios:
             fields_dict = {}
@@ -172,7 +181,7 @@ class HotspotPlot(object):
                 )
 
             for p, project in enumerate(self.projects):
-                N = self.cfg["N"][f"{project.upper()}_{scenario}"]
+                N = self.cfg["N"][f"{project}_{scenario}"]
                 plt.figtext(
                     left + 0.18 + p * (right - left) / 2,
                     0.85,
@@ -317,7 +326,7 @@ class HotspotPlot(object):
                 ax[pannel].plot(large_scale_signal_ts, y,
                                 color=base_colors[project])
                 if len(legend_elements[scen]) < 2:
-                    N = self.cfg["N"][f"{project.upper()}_{scen}"]
+                    N = self.cfg["N"][f"{project}_{scen}"]
                     legend_elements[scen].append(
                         Patch(
                             facecolor=base_colors[project],
