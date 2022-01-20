@@ -100,12 +100,6 @@ VARIABLE_SETTINGS_GPP_2100: &variable_settings_gpp_2100
 PREPROCESS_MEAN_SCRIPT: &preprocess_mean_script
   script: mlr/preprocess.py
 
-PREPROCESS_ZONAL_MEANS_SCRIPT: &preprocess_zonal_means_script
-  script: mlr/preprocess.py
-  collapse:
-    mean: [month_number, longitude]
-  convert_units_to: g m-2 yr-1
-
 PREPROCESS_ERROR_SCRIPT: &preprocess_error_script
   script: mlr/preprocess.py
   ancestors: ['diag_mlr_label_gpp_rescaled/preprocess']
@@ -241,7 +235,7 @@ preprocessors:
       target_grid: 2x2
     mask_landsea: &mask_sea_NE_mask
       mask_out: sea
-      always_use_ne_mask: true
+      fx_variables: null
     extract_region: &extract_region
       start_latitude: -60.0
       end_latitude: 90.0
@@ -452,15 +446,6 @@ diagnostics:
         ancestors: ['diag_gpp_2100/preprocess']
         output_attributes:
           var_type: label_to_rescale
-      plot:
-        <<: *plot_script
-        ancestors: ['diag_gpp_2100/preprocess']
-        plot_map:
-          plot_kwargs:
-            cbar_label: 'GPP [gC m$^{-2}$ yr$^{-1}$]'
-            cbar_ticks: [0, 1000, 2000, 3000, 4000, 5000, 6000]
-            vmin: 0
-            vmax: 6000
 
   diag_rescale_gpp_fraction_with_emergent_constraint:
     <<: *provenance
@@ -581,17 +566,6 @@ diagnostics:
           - {var_type: null}
         output_attributes:
           tag: GPP
-      plot:
-        <<: *plot_script
-        ancestors: ['diag_mlr_label_gpp_rescaled/preprocess']
-        ignore:
-          - {var_type: prediction_output_error}
-        plot_map:
-          plot_kwargs:
-            cbar_label: 'GPP (2091-2100) / gC m$^{-2}$ yr$^{-1}$'
-            cbar_ticks: [0, 1000, 2000, 3000, 4000, 5000, 6000]
-            vmin: 0
-            vmax: 6000
       preprocess_error_mmm_rescaled:
         <<: *preprocess_error_script
         output_attributes:
@@ -651,12 +625,6 @@ diagnostics:
         output_attributes:
           tag: GPP
         convert_units_to: g m-2 yr-1
-      plot:
-        <<: *plot_script
-        ancestors: ['diag_mlr_feature_gpp_mean/preprocess_mean']
-        plot_map:
-          plot_kwargs:
-            cbar_label: 'GPP [gC m$^{-2}$ yr$^{-1}$]'
 
   diag_mlr_feature_lai_mean:
     <<: *provenance
@@ -682,12 +650,6 @@ diagnostics:
         <<: *preprocess_mean_script
         output_attributes:
           tag: LAI
-      plot:
-        <<: *plot_script
-        ancestors: ['diag_mlr_feature_lai_mean/preprocess_mean']
-        plot_map:
-          plot_kwargs:
-            cbar_label: 'LAI [1]'
 
   diag_mlr_feature_pr_mean:
     <<: *provenance
@@ -714,12 +676,6 @@ diagnostics:
         output_attributes:
           tag: PR
         convert_units_to: kg m-2 day-1
-      plot:
-        <<: *plot_script
-        ancestors: ['diag_mlr_feature_pr_mean/preprocess_mean']
-        plot_map:
-          plot_kwargs:
-            cbar_label: 'PR [kg m$^{-2}$ day$^{-1}$]'
 
   diag_mlr_feature_rsds_mean:
     <<: *provenance
@@ -745,12 +701,6 @@ diagnostics:
         <<: *preprocess_mean_script
         output_attributes:
           tag: RSDS
-      plot:
-        <<: *plot_script
-        ancestors: ['diag_mlr_feature_rsds_mean/preprocess_mean']
-        plot_map:
-          plot_kwargs:
-            cbar_label: 'RSDS [W m$^{-2}$]'
 
   diag_mlr_feature_tas_mean:
     <<: *provenance
@@ -777,12 +727,6 @@ diagnostics:
         output_attributes:
           tag: T
         convert_units_to: celsius
-      plot:
-        <<: *plot_script
-        ancestors: ['diag_mlr_feature_tas_mean/preprocess_mean']
-        plot_map:
-          plot_kwargs:
-            cbar_label: 'T [°C]'
 
   # MLR models (Step 2a in paper)
 
@@ -963,47 +907,6 @@ diagnostics:
 
   # Plots
 
-  diag_plot_rescaled_zonal_means:
-    <<: *provenance
-    scripts:
-      preprocess_original_data:
-        <<: *preprocess_zonal_means_script
-        ancestors: ['diag_gpp_2100/preprocess_for_rescaling']
-      preprocess_rescaled_data:
-        <<: *preprocess_zonal_means_script
-        ancestors: ['diag_mlr_label_gpp_rescaled/preprocess']
-        output_attributes:
-          tag: GPP
-      plot:
-        <<: *plot_script
-        ancestors: [
-          'diag_plot_rescaled_zonal_means/preprocess_original_data',
-          'diag_plot_rescaled_zonal_means/preprocess_rescaled_data',
-        ]
-        ignore:
-          - {var_type: prediction_output_error}
-        plot_xy:
-          pyplot_kwargs:
-            xlim: [-70.0, 90.0]
-            xlabel: 'latitude [°]'
-            ylabel: 'GPP (2091-2100) / gC m$^{-2}$ yr$^{-1}$'
-            title: Global GPP at the end of the 21st century
-        additional_plot_kwargs_xy_plots:
-          label___CanESM2:               {color: C0, alpha: 1.0}
-          label___CESM1-BGC:             {color: C1, alpha: 1.0}
-          label___GFDL-ESM2M:            {color: C2, alpha: 1.0}
-          label___HadGEM2-ES:            {color: C3, alpha: 1.0}
-          label___MIROC-ESM:             {color: C4, alpha: 1.0}
-          label___MPI-ESM-LR:            {color: C5, alpha: 1.0}
-          label___NorESM1-ME:            {color: C6, alpha: 1.0}
-          label_to_rescale___CanESM2:    {color: C0, alpha: 0.5, linestyle: '--', label: null}
-          label_to_rescale___CESM1-BGC:  {color: C1, alpha: 0.5, linestyle: '--', label: null}
-          label_to_rescale___GFDL-ESM2M: {color: C2, alpha: 0.5, linestyle: '--', label: null}
-          label_to_rescale___HadGEM2-ES: {color: C3, alpha: 0.5, linestyle: '--', label: null}
-          label_to_rescale___MIROC-ESM:  {color: C4, alpha: 0.5, linestyle: '--', label: null}
-          label_to_rescale___MPI-ESM-LR: {color: C5, alpha: 0.5, linestyle: '--', label: null}
-          label_to_rescale___NorESM1-ME: {color: C6, alpha: 0.5, linestyle: '--', label: null}
-
   diag_plot_cmip5_gbrt:
     <<: *provenance
     description: Create CMIP5 vs. GBRT plots.
@@ -1064,22 +967,28 @@ diagnostics:
     <<: *provenance
     description: Create plots for the different MLR models.
     scripts:
+      preprocess_plot:
+        script: mlr/preprocess.py
+        ancestors: [
+          'diag_mmm/mlr',
+          'diag_mmm_rescaled/mlr',
+          'diag_mlr_label_gpp_rescaled/preprocess_error_mmm_rescaled',
+          'diag_lasso_1d/mlr',
+          'diag_mlr_label_gpp_rescaled/preprocess_error_lasso_1d',
+          'diag_lasso/mlr',
+          'diag_mlr_label_gpp_rescaled/preprocess_error_lasso',
+          'diag_gbrt_1d/mlr',
+          'diag_mlr_label_gpp_rescaled/preprocess_error_gbrt_1d',
+          'diag_gbrt/mlr',
+          'diag_mlr_label_gpp_rescaled/preprocess_error_gbrt',
+        ]
+        collapse:
+          mean: ['month_number']
+        ignore:
+          - {var_type: null}
       plot:
         <<: *plot_script_map_plots
-        ancestors: &ancestors_plot_mlr_models
-          [
-            'diag_mmm/mlr',
-            'diag_mmm_rescaled/mlr',
-            'diag_mlr_label_gpp_rescaled/preprocess_error_mmm_rescaled',
-            'diag_lasso_1d/mlr',
-            'diag_mlr_label_gpp_rescaled/preprocess_error_lasso_1d',
-            'diag_lasso/mlr',
-            'diag_mlr_label_gpp_rescaled/preprocess_error_lasso',
-            'diag_gbrt_1d/mlr',
-            'diag_mlr_label_gpp_rescaled/preprocess_error_gbrt_1d',
-            'diag_gbrt/mlr',
-            'diag_mlr_label_gpp_rescaled/preprocess_error_gbrt',
-          ]
+        ancestors: ['diag_plot_mlr_models/preprocess_plot']
         plot_map_abs_biases:
           plot_kwargs:
             cbar_label: 'ΔGPP [gC m$^{-2}$ yr$^{-1}$]'
@@ -1095,7 +1004,7 @@ diagnostics:
             vmax: 1.3
       plot_errors:
         <<: *plot_script_map_plots
-        ancestors: *ancestors_plot_mlr_models
+        ancestors: ['diag_plot_mlr_models/preprocess_plot']
         ignore:
           - {var_type: prediction_input}
           - {var_type: prediction_input_error}
