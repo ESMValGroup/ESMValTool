@@ -26,8 +26,6 @@ import logging
 from calendar import monthrange
 
 import iris
-from iris import cube  # needed to prevent error
-                       # AttributeError: module 'iris' has no attribute 'cube'
 
 from . import utilities as utils
 
