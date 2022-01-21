@@ -105,7 +105,6 @@ def main(cfg):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance_record)
 
-
     plt.close(fig)
     logger.info("Finished!")
 
