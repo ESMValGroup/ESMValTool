@@ -130,7 +130,7 @@ def main(cfg):
     fig.savefig(filename, bbox_inches='tight')
 
     caption = (
-        "Global mean time series of {long_name} between "
+        "global mean annual growth rates of {long_name} between "
         "{start_year} and {end_year} ")
 
     provenance_record = get_provenance_record(caption)
