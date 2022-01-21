@@ -24,7 +24,7 @@ def get_provenance_record(caption):
     record = {
         'caption': caption,
         'statistics': ['mean'],
-        'domains': ['global'],
+        'domains': ['global', 'nh', 'sh'],
         'plot_type': 'lineplot',
         'authors': [
             'mueller_benjamin',
