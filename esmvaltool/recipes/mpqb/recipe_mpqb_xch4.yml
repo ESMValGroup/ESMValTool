@@ -98,8 +98,8 @@ nh_ann: &nh_ann
 
 datasets:
 ### observations
-  # - {dataset: CDS-XCH4, project: OBS, type: sat, version: L3, tier: 3,
-     # derive: false, alias: CDS-XCH4}
+  - {dataset: CDS-XCH4, project: OBS, type: sat, version: L3, tier: 3,
+     derive: false, alias: CDS-XCH4}
 ### CMIP6 (esm-hist)
   # - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
      # exp: esm-hist, derive: true, alias: BCC-CSM2-MR}
