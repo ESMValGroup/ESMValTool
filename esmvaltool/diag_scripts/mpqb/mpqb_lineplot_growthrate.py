@@ -134,8 +134,8 @@ def main(cfg):
     fig.savefig(filename, bbox_inches='tight')
 
     caption = (
-        f"global mean annual growth rates of {dataset_cfg['variable_group']} between "
-        f"{dataset_cfg['start_year']} and {dataset_cfg['end_year']}")
+        f"global mean annual growth rates of {dataset_cfg['variable_group']} "
+        f"between {dataset_cfg['start_year']} and {dataset_cfg['end_year']}")
 
     provenance_record = get_provenance_record(caption)
     with ProvenanceLogger(cfg) as provenance_logger:
