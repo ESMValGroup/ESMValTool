@@ -126,16 +126,16 @@ def main(cfg):
         legobj.set_linewidth(2.0)
     lax.axis("off")
 
-    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_"\
-                   "{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
+    baseplotname = (f"lineplot_{dataset_cfg['variable_group']}_"
+                    f"{dataset_cfg['start_year']}-{dataset_cfg['end_year']}")
 
     filename = get_plot_filename(baseplotname, cfg)
     logger.info("Saving as %s", filename)
     fig.savefig(filename, bbox_inches='tight')
 
     caption = (
-        "global mean annual growth rates of {long_name} between "
-        "{start_year} and {end_year} ")
+        f"global mean annual growth rates of {dataset_cfg['variable_group']} between "
+        f"{dataset_cfg['start_year']} and {dataset_cfg['end_year']}")
 
     provenance_record = get_provenance_record(caption)
     with ProvenanceLogger(cfg) as provenance_logger:
