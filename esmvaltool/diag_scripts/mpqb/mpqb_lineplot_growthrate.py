@@ -76,8 +76,9 @@ def main(cfg):
         "\n%s", pformat(grouped_input_data))
 
     plt.clf()
-    fig, (ax1,lax) = plt.subplots(nrows=2,
-        gridspec_kw={"height_ratios":[10,1]}, figsize=(10,5))
+    fig, (ax1, lax) = plt.subplots(nrows=2,
+                                   gridspec_kw={"height_ratios": [10, 1]},
+                                   figsize=(10, 5))
 
     plt.sca(ax1)
     for dataset in grouped_input_data:
@@ -88,7 +89,7 @@ def main(cfg):
         cube = iris.load_cube(dataset_cfg['filename'])
         _unify_time_coord(cube)
 
-        # caluclate the growth rates 
+        # caluclate the growth rates
         diff_data = np.diff(cube.data)
         cube = cube[1:]
         cube.data = diff_data
@@ -97,11 +98,13 @@ def main(cfg):
         label = get_mpqb_cfg('datasetname', alias)
         color = get_mpqb_cfg('datasetcolor', alias)
 
-        #iris.quickplot.plot(cube, label=label, color=color, linestyle='dotted')
-        #iris.quickplot.plot(cube, label=label, color=color, linestyle='dashed')
+        # iris.quickplot.plot(cube, label=label, color=color,
+        #                     linestyle='dotted')
+        # iris.quickplot.plot(cube, label=label, color=color,
+        #                     linestyle='dashed')
         iris.quickplot.plot(cube, label=label, color=color)
     plt.xticks(rotation=90)
-    # Add the zero line 
+    # Add the zero line
     plt.axhline(y=0, linestyle=':', color='k')
     plt.tight_layout()
 
@@ -117,13 +120,14 @@ def main(cfg):
     ax1.set_ylabel('Change XCH4 (ppbv)')
     ax1.set_title('Time series of annual XCH4 growth rate')
 
-    h1,l1 = ax1.get_legend_handles_labels()
-    leg = lax.legend(h1 ,l1, borderaxespad=0, ncol=4, loc='center')
+    h1, l1 = ax1.get_legend_handles_labels()
+    leg = lax.legend(h1, l1, borderaxespad=0, ncol=4, loc='center')
     for legobj in leg.legendHandles:
         legobj.set_linewidth(2.0)
     lax.axis("off")
 
-    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
+    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_"\
+                   "{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
 
     filename = get_plot_filename(baseplotname, cfg)
     logger.info("Saving as %s", filename)

@@ -80,8 +80,9 @@ def main(cfg):
         grouped_input_data.move_to_end('ERA-Interim-Land')
 
     plt.clf()
-    fig, (ax1,lax) = plt.subplots(nrows=2,
-        gridspec_kw={"height_ratios":[10,1]}, figsize=(10,5))
+    fig, (ax1, lax) = plt.subplots(nrows=2,
+                                   gridspec_kw={"height_ratios": [10, 1]},
+                                   figsize=(10, 5))
 
     plt.sca(ax1)
     for dataset in grouped_input_data:
@@ -96,8 +97,10 @@ def main(cfg):
         label = get_mpqb_cfg('datasetname', alias)
         color = get_mpqb_cfg('datasetcolor', alias)
 
-        #iris.quickplot.plot(cube, label=label, color=color, linestyle='dotted')
-        #iris.quickplot.plot(cube, label=label, color=color, linestyle='dashed')
+        # iris.quickplot.plot(cube, label=label, color=color,
+        #                     linestyle='dotted')
+        # iris.quickplot.plot(cube, label=label, color=color,
+        #                     linestyle='dashed')
         iris.quickplot.plot(cube, label=label, color=color)
     plt.xticks(rotation=90)
     # Add the zero line when plotting anomalies
@@ -115,18 +118,18 @@ def main(cfg):
     ax1.set_ylabel('XCH4 (ppbv)')
     ax1.set_title('Time series of monthly mean XCH4')
 
-    h1,l1 = ax1.get_legend_handles_labels()
+    h1, l1 = ax1.get_legend_handles_labels()
     leg = lax.legend(h1, l1, borderaxespad=0, ncol=4, loc='center')
     for legobj in leg.legendHandles:
         legobj.set_linewidth(2.0)
     lax.axis("off")
 
-    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
+    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_"\
+                   "{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
 
     filename = get_plot_filename(baseplotname, cfg)
     logger.info("Saving as %s", filename)
     fig.savefig(filename, bbox_inches='tight')
-
 
     caption = (
         "Global mean time series of {long_name} between "

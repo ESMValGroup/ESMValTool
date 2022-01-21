@@ -44,7 +44,6 @@ def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
-
     grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
 
     logger.info(
@@ -58,7 +57,7 @@ def main(cfg):
         grouped_input_data.move_to_end('ERA-Interim-Land')
 
     plt.clf()
-    #fig = plt.figure(figsize=(10, 4))
+    # fig = plt.figure(figsize=(10, 4))
     fig = plt.figure(figsize=(6, 4))
     ax1 = fig.add_subplot()
 
@@ -73,8 +72,10 @@ def main(cfg):
         label = get_mpqb_cfg('datasetname', alias)
         color = get_mpqb_cfg('datasetcolor', alias)
 
-        #iris.quickplot.plot(cube, label=label, color=color, linestyle='dotted')
-        #iris.quickplot.plot(cube, label=label, color=color, linestyle='dashed')
+        # iris.quickplot.plot(cube, label=label, color=color,
+        #                     linestyle='dotted')
+        # iris.quickplot.plot(cube, label=label, color=color,
+        #                     linestyle='dashed')
         iris.quickplot.plot(cube, label=label, color=color)
     plt.legend()
     plt.tight_layout()
@@ -90,7 +91,8 @@ def main(cfg):
     ax1.set_ylabel('XCH4 (ppbv)')
     ax1.set_title('XCH4 annual cycle')
 
-    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
+    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_"\
+                   "{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
 
     filename = get_plot_filename(baseplotname, cfg)
     logger.info("Saving as %s", filename)
