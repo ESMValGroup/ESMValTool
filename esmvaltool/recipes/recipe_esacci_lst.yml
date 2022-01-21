@@ -17,9 +17,12 @@ documentation:
     - cmug
 
 datasets:
-  - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r(2:3)i1p1f1, start_year: 2004, end_year: 2005, grid: gn}
-  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r(1:2)i1p1f2, start_year: 2004, end_year: 2005, grid: gn}
-  - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2004, end_year: 2005, version: '1.00'}
+  - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r(2:3)i1p1f1,
+     start_year: 2004, end_year: 2005, grid: gn}
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical,
+     ensemble: r(1:2)i1p1f2, start_year: 2004, end_year: 2005, grid: gn}
+  - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2,
+     start_year: 2004, end_year: 2005, version: '1.00'}
 
 preprocessors:
 
