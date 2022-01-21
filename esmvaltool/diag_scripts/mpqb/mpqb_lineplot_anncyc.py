@@ -21,8 +21,8 @@ def get_provenance_record(caption):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption': caption,
-        'statistics': ['mean'],
-        'domains': ['global'],
+        'statistics': ['clim'],
+        'domains': ['global', 'nh', 'sh'],
         'plot_type': 'lineplot',
         'authors': [
             'mueller_benjamin',
