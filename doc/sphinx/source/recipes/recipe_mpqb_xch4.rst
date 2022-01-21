@@ -27,6 +27,19 @@ Diagnostics are stored in esmvaltool/diag_scripts/mpqb/
 * mpqb_lineplot_anncyc.py
 * mpqb_lineplot_growthrate.py
 
+Observations and reformat scripts
+---------------------------------
+
+Observations used in this recipe are:
+
+* CDS-XCH4 (ESA CCI dataset served on the Copernicus Climate data store)
+
+A cmorizing script for this dataset is available (cmorize_obs_cds_xch4.ncl).
+
+XCH4 is a derived variable that needs to be calculated from four different variables (ch4, hus, zg, ps).
+A derivation script is included in the ESMValCore.
+
+
 User settings in recipe
 -----------------------
 #. Preprocessor
