@@ -1,7 +1,8 @@
+# ESMValTool
 # recipe_hyint.yml
 ---
-
 documentation:
+  title: Hydroclimatic Indices by HyInt
   description: |
     Recipe for the HyInt package by E. Arnone and J. von Hardenberg (ISAC-CNR)
 

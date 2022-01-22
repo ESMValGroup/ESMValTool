@@ -8,7 +8,7 @@ from unittest import SkipTest
 
 import numpy as np
 import yaml
-from easytest import EasyTest
+# from easytest import EasyTest
 
 import esmvaltool
 
@@ -67,7 +67,7 @@ def _create_config_user_file(output_directory):
     return filename
 
 
-class ESMValToolTest(EasyTest):
+class ESMValToolTest:  # was ESMValToolTest(EasyTest)
     """Main class for ESMValTool test runs."""
 
     def __init__(self, recipe, output_directory, ignore='', **kwargs):

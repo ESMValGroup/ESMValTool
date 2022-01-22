@@ -1,0 +1,27 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: CDS-SATELLITE-ALBEDO
+  project_id: OBS6
+  tier: 3
+  version: 'V1'
+  modeling_realm: sat
+  source: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-albedo'
+  reference: 'cds-satellite-albedo'
+  comment: |
+    'Surface albedo 10-daily gridded data from 1981 to present'
+
+# Variables to CMORize
+variables:
+  bdalb:
+    mip: Lmon
+    raw: AL_DH_BB
+    file: 'c3s_ALBB-DH_????????000000_GLOBE_VGT_V1.0.1.nc'
+  bhalb:
+    mip: Lmon
+    raw: AL_BH_BB
+    file: 'c3s_ALBB-BH_????????000000_GLOBE_VGT_V1.0.1.nc'
+
+# Parameters
+custom:
+  regrid_resolution: '0.25x0.25'

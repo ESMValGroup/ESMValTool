@@ -36,6 +36,12 @@ if (exists(".lm.fit")) {
 #----------------Naming functions------------------------#
 ##########################################################
 
+# function to flatten nested lists
+flatten_lists <- function(x) {
+  if (!inherits(x, "list")) return(list(x))
+  else return(unlist(c(lapply(x, flatten_lists)), recursive = FALSE))
+}
+
 getfilename_regridded <- function(spath, rgrid, var0, model_idx) {
   exp <- models_name[model_idx]
   year1 <- models_start_year[model_idx]
@@ -154,9 +160,9 @@ getfilename_etccdi <-
         "_",
         yrmon,
         "_",
-        model_exp,
-        "_",
         exp,
+        "_",
+        model_exp,
         "_",
         model_ens,
         "_",

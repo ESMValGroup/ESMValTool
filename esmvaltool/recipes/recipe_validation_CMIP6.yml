@@ -1,4 +1,5 @@
 # ESMValTool
+# recipe_validation_CMIP6.yml
 ---
 documentation:
   description: |
@@ -14,6 +15,8 @@ documentation:
 
   authors:
     - predoi_valeriu
+
+  title: Standard comparison between two models (control and experiment, CMIP6 data).
 
   maintainer:
     - predoi_valeriu

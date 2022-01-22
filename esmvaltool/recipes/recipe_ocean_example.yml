@@ -2,6 +2,8 @@
 # recipe_ocean_example.yml
 ---
 documentation:
+  title: Ocean physics analysis suite
+
   description: |
     Recipe to demonstrate several simple plots based on the monthly ocean
     temperature. Please use this file as a template for adding additional
@@ -151,10 +153,9 @@ preprocessors:
       scheme: linear
     climate_statistics:
       operator: mean
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
-
+    # multi_model_statistics:
+    #   span: overlap
+    #   statistics: [mean ]
 
   prep_map_3: # For specific levels of 3D fields with regrid
     custom_order: true
@@ -166,9 +167,9 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+    # multi_model_statistics:
+    #   span: overlap
+    #   statistics: [mean ]
 
   prep_map_4: # For a specific region with regrid
     custom_order: true
@@ -182,9 +183,9 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+    # multi_model_statistics:
+    #   span: overlap
+    #   statistics: [mean ]
 
   prep_map_5: # For a specific region at depth levels,
     custom_order: true
@@ -201,9 +202,9 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean ]
+    # multi_model_statistics:
+    #   span: overlap
+    #   statistics: [mean ]
 
   # --------------------------------------------------
   # Transects preprocessors

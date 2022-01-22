@@ -2,6 +2,8 @@
 # recipe_williams09climdyn_CREM.yml
 ---
 documentation:
+  title: Cloud Regime Error Metric (CREM)
+
   description: |
     Cloud Regime Error Metric (CREM) by Williams and Webb (2009).
 
@@ -19,14 +21,6 @@ documentation:
     - cmug
 
 
-#datasets:
-#  - {dataset: CanAM4, project: CMIP5, ensemble: r1i1p1}
-#  - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
-#  - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
-#  - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-#  - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
-
-
 preprocessors:
   preproc25x25:
     regrid:
@@ -41,6 +35,7 @@ diagnostics:
   # **********************************************************************
 
   crem:
+    title: CREM
     description: Cloud Regime Error Message (CREM)
     themes:
       - phys

@@ -1,10 +1,15 @@
+# ESMValTool
 # recipe_cox18nature.yml
 ---
 documentation:
+  title: >
+    Emergent constraint on equilibrium climate sensitivity from global
+    temperature variability
 
-  description: |
-    Reproducing the emergent constraint for ECS based on global temperature
-    variability (Cox et al., 2018).
+  description: >
+    This recipe reproduces the emergent constraint for the equilibrium climate
+    sensitivity (ECS) based on global temperature variability by Cox et al.
+    (2018).
 
   authors:
     - schlund_manuel
@@ -24,6 +29,8 @@ preprocessors:
   spatial_mean:
     area_statistics:
       operator: mean
+      fx_variables:
+        areacella:
 
 
 diagnostics:

@@ -53,6 +53,8 @@
 ; Caveats
 ;
 ; Modification history
+;    20200506-gier_bettina: implemented support for multiple occurence of
+;                           models with different experiments and ensembles
 ;    20190405-righi_mattia: added provenance logging
 ;    20190315-hassler_birgit: extended to smpi metric
 ;    20180503-righi_mattia: completely rewritten and modularized
@@ -167,6 +169,50 @@ begin
   ; Set dataset names
   datasetnames = metadata_att_as_array(info_items, "dataset")
 
+  ; Save projects
+  projectnames = metadata_att_as_array(info_items, "project")
+
+  ; Extend model name by ensemble/experiment on multiple occurence
+  if (.not. (dimsizes(datasetnames) .eq. \
+      count_unique_values(datasetnames))) then
+    new_datasetnames = datasetnames
+    experiments = metadata_att_as_array(info_items, "exp")
+    ensembles = metadata_att_as_array(info_items, "ensemble")
+
+    do imod = 0, dimsizes(datasetnames) - 1
+      do jmod = 0, dimsizes(datasetnames) - 1
+        if imod.eq.jmod then
+          continue
+        else
+          if (datasetnames(imod) .eq. datasetnames(jmod)) then
+            if (experiments(imod) .ne. experiments(jmod)) then
+              new_datasetnames(imod) = new_datasetnames(imod) + " " + \
+                                        experiments(imod)
+              break
+            end if
+          end if
+        end if
+      end do
+    end do
+    do imod = 0, dimsizes(datasetnames) - 1
+      do jmod = 0, dimsizes(datasetnames) - 1
+        if imod.eq.jmod then
+          continue
+        else
+          if (datasetnames(imod) .eq. datasetnames(jmod)) then
+            if (ensembles(imod) .ne. ensembles(jmod)) then
+              new_datasetnames(imod) = new_datasetnames(imod) + " " + \
+                                        ensembles(imod)
+              break
+            end if
+          end if
+        end if
+      end do
+    end do
+    datasetnames = new_datasetnames
+    delete(new_datasetnames)
+  end if
+
   ; Save list of preproc files for provenance in collect.ncl
   preproc_files = metadata_att_as_array(info_items, "filename")
 
@@ -188,10 +234,8 @@ begin
   end if
 
   ; Create output plot directory
-  if (config_user_info@write_plots) then
-    plot_dir = config_user_info@plot_dir
-    system("mkdir -p " + plot_dir)
-  end if
+  plot_dir = config_user_info@plot_dir
+  system("mkdir -p " + plot_dir)
 
   ; Plot file type
   file_type = config_user_info@output_file_type
@@ -218,6 +262,7 @@ begin
     if (isdim(grading, "reference")) then
       grading&reference = datasetnames(ref_inds)
     end if
+    grading@projects = str_join(remove_index(projectnames, ref_inds), " ")
 
     ; Special case Taylor
     if (any(diag_script_info@metric.eq."taylor")) then

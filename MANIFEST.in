@@ -1,0 +1,4 @@
+exclude .*
+prune .*
+prune doc
+include .zenodo.json

@@ -45,6 +45,7 @@ __pycache__/
 
 #Create by VSCode
 .vscode
+*.code-workspace
 
 #pytest
 .cache
@@ -100,5 +101,13 @@ doc/sphinx/source/gallery.rst
 
 # ESMF log files
 *.ESMF_LogFile
+
+# Rstudio files
 .Rproj.user
 esmvaltool.Rproj
+
+# Julia installation
+esmvaltool/install/Julia/Manifest.toml
+
+# Cylc suite
+esmvaltool/utils/testing/regression/.service/

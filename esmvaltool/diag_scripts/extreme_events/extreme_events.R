@@ -29,9 +29,18 @@ library(ncdf4.helpers)
 library(scales)
 library(RColorBrewer) # nolint
 
+# function to flatten nested lists
+flatten_lists <- function(x) {
+  if (!inherits(x, "list")) {
+    return(x)
+  } else {
+    return(unlist(c(lapply(x, flatten_lists)), recursive = FALSE))
+  }
+}
+
 provenance_record <- function(infile) {
   xprov <- list(
-    ancestors = as.list(infile),
+    ancestors = flatten_lists(as.list(infile)),
     authors = list(
       "broetz_bjoern",
       "sandstad_marit",
@@ -272,6 +281,7 @@ for (model_idx in c(1:length(models_name))) { # nolint
     write_plots <- FALSE
   } else if (!any(grepl("mon", idx_select))) {
     timeres <- "annual"
+    write_plots <- TRUE
   } else {
     timeres <- "all"
     write_plots <- FALSE
@@ -392,7 +402,7 @@ if (write_plots) { # nolint
       start_yr = analysis_range[1],
       end_yr = analysis_range[2]
     )
-    xprov <- provenance_record(climofiles)
+    xprov <- provenance_record(list(climofiles))
     for (fname in plotfiles) {
       provenance[[fname]] <- xprov
     }
@@ -403,7 +413,7 @@ if (write_plots) { # nolint
         pattern = model,
         full.names = TRUE
       )
-      xprov <- provenance_record(climofiles[models == model])
+      xprov <- provenance_record(list(climofiles[models == model]))
       for (fname in ncfiles) {
         provenance[[fname]] <- xprov
       }
@@ -477,7 +487,7 @@ if (write_plots) { # nolint
       provenance[[fname]] <- xprov
     }
     ncfiles <- list.files(file.path(work_dir, "gleckler/Gleck*"))
-    xprov <- provenance_record(climofiles)
+    xprov <- provenance_record(list(climofiles))
     for (fname in ncfiles) {
       provenance[[fname]] <- xprov
     }

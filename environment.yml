@@ -1,26 +1,40 @@
 ---
 name: esmvaltool
 channels:
+  # The release candidate channel should only be activated
+  # during the rc phase right before the next release of the
+  # ESMValCore.
+  # - conda-forge/label/esmvalcore_rc
   - conda-forge
-  - esmvalgroup
+  - nodefaults
 
 dependencies:
+  - pip!=21.3
   # Python packages that cannot be installed from PyPI:
+  - cartopy
+  - compilers
   - gdal
-  - esmvalcore>=2.0.0b6,<2.1
+  - esmpy
+  - esmvalcore
+  - matplotlib-base
   # Non-Python dependencies
-  - graphviz
-  - cdo>=1.9.7
+  - cdo
   - imagemagick
+  - julia
   - nco
+  - python-cdo
+  - rasterio
+  - ruamel.yaml
+  - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
+  - xgboost
 
   # Multi language support:
-  - python>=3.6
-  - libunwind  # Needed for Python3.7+
-  - tiledb=1.6.0  # Needed by the new ncl=6.6.2; evolved to 1.6.2 but ncl 6.6.2 still needs libtiledb1.6.0.so
-  - ncl>=6.5.0
+  - ncl
   - r-base
-  - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
-  - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
-  # - julia>=1.0.0  # The Julia package on conda is apparently broken
-  - libblas=3.8.0=12_openblas  # Does build 13_openblas not seem to work with R requirements
+  # R packages needed for development
+  - r-docopt
+  - r-git2r  # dependency of lintr
+  - r-lintr
+  - r-styler
+  - r-yaml
+  - r-udunits2  # needed by the docker build

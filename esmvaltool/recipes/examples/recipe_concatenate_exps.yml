@@ -5,6 +5,8 @@ documentation:
   description: |
     Concatenate time series of different experiments at the preprocessor level.
 
+  title: Recipe to test time concatenation in preprocesor.
+
   authors:
     - schlund_manuel
 

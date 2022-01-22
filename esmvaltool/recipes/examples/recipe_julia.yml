@@ -2,7 +2,10 @@
 # recipe_julia.yml
 ---
 documentation:
-  description: Recipe for example diagnostic written in Julia.
+  description: |
+    Recipe for example diagnostic written in Julia.
+
+  title: Recipe running an example diagnostic written in Julia Roberts.
 
   authors:
     - vonhardenberg_jost
@@ -11,7 +14,7 @@ documentation:
     - vonhardenberg_jost
 
 datasets:
-  - {dataset: CESM1-CAM5, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
 
 preprocessors:
   preproc:
@@ -28,7 +31,7 @@ diagnostics:
         start_year: 1997
         end_year: 1997
         preprocessor: preproc
-        reference_dataset: "CESM1-CAM5"
+        reference_dataset: "CanESM2"
 
     scripts:
       main:

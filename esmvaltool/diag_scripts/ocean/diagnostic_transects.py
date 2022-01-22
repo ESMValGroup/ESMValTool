@@ -16,7 +16,7 @@ An approproate preprocessor for a 3D+time field would be::
     prep_transect:
       climate_statistics:
         operator: mean
-      extract_slice: # Atlantic Meridional Transect
+      extract_transect: # Atlantic Meridional Transect
         latitude: [-50.,50.]
         longitude: 332.
 
@@ -26,10 +26,10 @@ Author: Lee de Mora (PML)
         ledm@pml.ac.uk
 
 """
+import itertools
 import logging
 import os
 import sys
-from itertools import product
 
 import iris
 import iris.quickplot as qplt
@@ -288,9 +288,8 @@ def make_transects_plots(
             )
 
         # Saving files:
-        if cfg['write_plots']:
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
 
         plt.close()
 
@@ -403,9 +402,8 @@ def make_transect_contours(
             )
 
         # Saving files:
-        if cfg['write_plots']:
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
 
         plt.close()
 
@@ -457,7 +455,7 @@ def multi_model_contours(
     image_extention = diagtools.get_image_format(cfg)
 
     # Make a plot for each layer and each threshold
-    for region, threshold in product(regions, thresholds):
+    for region, threshold in itertools.product(regions, thresholds):
         logger.info('plotting threshold: \t%s', threshold)
         title = ''
         plot_details = {}
@@ -513,20 +511,19 @@ def multi_model_contours(
         plt.legend(loc='best')
 
         # Saving files:
-        if cfg['write_plots']:
-            path = diagtools.get_image_path(
-                cfg,
-                metadatas[filename],
-                prefix='MultipleModels',
-                suffix='_'.join([
-                    'contour_tramsect', region,
-                    str(threshold) + image_extention
-                ]),
-                metadata_id_list=[
-                    'field', 'short_name', 'preprocessor', 'diagnostic',
-                    'start_year', 'end_year'
-                ],
-            )
+        path = diagtools.get_image_path(
+            cfg,
+            metadatas[filename],
+            prefix='MultipleModels',
+            suffix='_'.join([
+                'contour_tramsect', region,
+                str(threshold) + image_extention
+            ]),
+            metadata_id_list=[
+                'field', 'short_name', 'preprocessor', 'diagnostic',
+                'start_year', 'end_year'
+            ],
+        )
 
         # Resize and add legend outside thew axes.
         plt.gcf().set_size_inches(9., 6.)

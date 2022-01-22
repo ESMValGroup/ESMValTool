@@ -1,7 +1,8 @@
+# ESMValTool
 # recipe_collins13ipcc.yml
-
 ---
 documentation:
+  title: Long-term Climate Change, selected figures
   description: |
     Recipe reproducing selected figures from IPCC AR5,
     chap. 12 (Collins et al., 2013) mainly difference maps between
@@ -10,7 +11,7 @@ documentation:
     Only a subset of models are included for most examples!
     Diagnostic IAV_calc_thetao (zonal ocean temperature, variable thetao) needs
     a lot of memory, make sure you have enough memory available to read
-    piControl runs or exclude! 
+    piControl runs or exclude!
 
   authors:
     - lorenz_ruth
@@ -900,7 +901,7 @@ diagnostics:
         # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP8.5 2081-2100 DJF", "RCP8.5 2181-2200 DJF",
                 "RCP8.5 2081-2100 MAM", "RCP8.5 2181-2200 MAM",
-                "RCP8.5 2081-2100 JJA", "RCP8.5 2181-2200 JJA", 
+                "RCP8.5 2081-2100 JJA", "RCP8.5 2181-2200 JJA",
                 "RCP8.5 2081-2100 SON", "RCP8.5 2181-2200 SON"]
 
         ### Optional attributes
@@ -944,8 +945,8 @@ diagnostics:
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
-        
-        
+
+
   ###  Mean Total Radiation change in RCPs for multi model mean ###############
   IAV_calc_rtmt:
     description: Calculate total radiation interannual variability
