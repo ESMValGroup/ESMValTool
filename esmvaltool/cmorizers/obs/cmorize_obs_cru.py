@@ -4,22 +4,30 @@ Tier
     Tier 2: other freely-available dataset.
 
 Source
-    https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/
+    https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.04/cruts.2004151855.v4.04/
 
 Last access
-    20190516
+    20210113
 
 Download and processing instructions
     Download the following files:
-        {raw_name}/cru_ts4.02.1901.2017.{raw_name}.dat.nc.gz
+        {raw_name}/cru_ts4.04.1901.2019.{raw_name}.dat.nc.gz
     where {raw_name} is the name of the desired variable(s).
 
+Two files are generated per variable, one with version (i.e. TS4.04),
+one with version + -stn1 (i.e. TS4.04-stn1), which is constrained on holding
+gridpoint values relying on data from at least one station (i.e. removing
+gridpoints solely relying on climatological infilling).
 """
 
 import gzip
 import logging
 import os
 import shutil
+import cftime
+
+import numpy as np
+from cf_units import Unit
 
 import iris
 
@@ -45,12 +53,17 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
         cube.units = var['raw_units']
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     cube.convert_units(cmor_info.units)
-    utils.convert_timeunits(cube, 1950)
+    # fix time units
+    cube.coord('time').convert_units(
+        Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
 
     # Fix coordinates
     utils.fix_coords(cube)
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
+
+    # Fix time coordinate
+    _get_centered_timecoord(cube)
 
     # Fix metadata
     attrs = cfg['attributes']
@@ -64,6 +77,48 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
+
+    # build contrainted cube on stn < 1
+    constraint_var = var.get('constraint', short_name)
+    constr_cube = iris.load_cube(filepath,
+                                 utils.var_name_constraint(constraint_var))
+    utils.fix_coords(constr_cube)
+    cube.data = np.ma.masked_where(constr_cube.data < 1., cube.data)
+
+    # Save variable
+    attrs = cfg['attributes_constraint']
+    attrs['mip'] = var['mip']
+
+    utils.save_variable(cube,
+                        short_name,
+                        out_dir,
+                        attrs,
+                        unlimited_dimensions=['time'])
+
+
+def _get_centered_timecoord(cube):
+    """CRU timepoints are not in the center of the month.
+
+    Added bounds by utils.fix_coords are incorrect.
+    """
+    time = cube.coord('time')
+    times = time.units.num2date(time.points)
+
+    # get bounds
+    starts = [
+        cftime.DatetimeNoLeap(c.year, c.month, 1)
+        for c in times
+    ]
+    ends = [
+        cftime.DatetimeNoLeap(c.year, c.month + 1, 1) if c.month < 12
+        else cftime.DatetimeNoLeap(c.year + 1, 1, 1)
+        for c in times
+    ]
+
+    time.bounds = time.units.date2num(np.stack([starts, ends], -1))
+
+    # get points
+    time.points = [np.mean((t1, t2)) for t1, t2 in time.bounds]
 
 
 def _unzip(short_name, var, raw_filepath, out_dir):
