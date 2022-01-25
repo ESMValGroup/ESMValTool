@@ -22,7 +22,7 @@ def get_provenance_record(caption):
     record = {
         'caption': caption,
         'statistics': ['clim'],
-        'domains': ['global', 'nh', 'sh'],
+        'domains': ['user'],
         'plot_type': 'lineplot',
         'authors': [
             'mueller_benjamin',
@@ -100,8 +100,8 @@ def main(cfg):
 
     # Provenance
     caption = (
-        f"Global mean annual cycle of {dataset_cfg['variable_group']} between "
-        f"{dataset_cfg['start_year']} and {dataset_cfg['end_year']}")
+        f"Domain average annual cycle of {dataset_cfg['variable_group']} "
+        f"between {dataset_cfg['start_year']} and {dataset_cfg['end_year']}")
 
     provenance_record = get_provenance_record(caption)
     with ProvenanceLogger(cfg) as provenance_logger:

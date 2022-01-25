@@ -25,7 +25,7 @@ def get_provenance_record(caption):
     record = {
         'caption': caption,
         'statistics': ['diff'],
-        'domains': ['global', 'nh', 'sh'],
+        'domains': ['user'],
         'plot_type': 'lineplot',
         'authors': [
             'mueller_benjamin',
@@ -134,7 +134,8 @@ def main(cfg):
     fig.savefig(filename, bbox_inches='tight')
 
     caption = (
-        f"global mean annual growth rates of {dataset_cfg['variable_group']} "
+        f"Domain average annual growth rates of "
+        f"{dataset_cfg['variable_group']} "
         f"between {dataset_cfg['start_year']} and {dataset_cfg['end_year']}")
 
     provenance_record = get_provenance_record(caption)

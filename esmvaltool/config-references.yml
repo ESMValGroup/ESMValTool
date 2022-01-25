@@ -728,6 +728,7 @@ domains:
   shpolar: southern polar
   shtrop: southern tropics
   trop: tropics
+  user: user-defined (see preprocessor settings)
 
 plot_types:
   errorbar: error bar plot

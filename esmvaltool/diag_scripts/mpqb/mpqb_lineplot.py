@@ -24,7 +24,7 @@ def get_provenance_record(caption):
     record = {
         'caption': caption,
         'statistics': ['mean'],
-        'domains': ['global', 'nh', 'sh'],
+        'domains': ['user'],
         'plot_type': 'lineplot',
         'authors': [
             'mueller_benjamin',
@@ -132,7 +132,8 @@ def main(cfg):
     fig.savefig(filename, bbox_inches='tight')
 
     caption = (
-        f"Global mean time series of {dataset_cfg['variable_group']} between "
+        f"Time series of the domain average of "
+        f"{dataset_cfg['variable_group']} between "
         f"{dataset_cfg['start_year']} and {dataset_cfg['end_year']}")
 
     provenance_record = get_provenance_record(caption)
