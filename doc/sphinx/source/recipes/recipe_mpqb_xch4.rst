@@ -6,7 +6,7 @@ Diagnostics of integrated atmospheric methane (XCH4)
 Overview
 --------
 
-This recipe recipe_mpqb_xch4.yml allows the comparison of integrated atmospheric methane
+This recipe ``recipe_mpqb_xch4.yml`` allows the comparison of integrated atmospheric methane
 between CMIP6 model simulations and observations, and produces lineplots of monthly mean
 methane values, annual cycles and annual growth rates:
 
