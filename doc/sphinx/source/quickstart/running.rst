@@ -18,20 +18,26 @@ An
 is available in the ESMValTool installation folder as
 ``examples/recipe_python.yml``.
 
-This recipe finds data from CanESM2 and MPI-ESM-LR for 2000 - 2002,
-extracts a single level (850 hPa), regrids it to a 1x1 degree mesh and runs
-a diagnostic script that creates some plots of Air temperature and
-precipitation flux. You can download the recipe from
-`github <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_python.yml>`_
-and save it in your project directory as (e.g.) ``recipe_python.yml``
-and then run ESMValTool with
+This recipe finds data from BCC-ESM1 and CanESM2 and creates two plot types:
+
+- a global map plot that shows the monthly mean 2m surface air temperature in
+  January 2000.
+- a time series plot that shows the globally averaged annual mean 2m surface
+  air temperature and compares it to the one in Amsterdam.
+
+You can download the recipe from :download:`here 
+<../../../../esmvaltool/recipes/examples/recipe_python.yml>` and save it in
+your project directory as (e.g.) ``recipe_python.yml`` and then run ESMValTool
+with
 
 .. code:: bash
 
-	esmvaltool run recipe_python.yml --synda-download
+   esmvaltool run --offline=False recipe_python.yml
 
-The ``--synda-download`` option tells ESMValTool to use Synda to search for and download
-the necessary datasets.
+The ``--offline=False`` option tells ESMValTool to automatically download
+missing data. This might require additional :ref:`configuration
+<esmvalcore:config-esgf>` to work. The data only needs to be downloaded once,
+every following run will re-use previously downloaded data.
 
 ESMValTool will also find recipes that are stored in its installation directory.
 A copy of the example recipe is shipped with ESMValTool as:
@@ -42,10 +48,11 @@ Thus, the following also works:
 
 	esmvaltool run examples/recipe_python.yml
 
-Note that this command does not call Synda. The required data should thus be
-located in the directories specified in your user configuration file.
-Recall that the chapter :ref:`Configuring ESMValTool <config-user>`
-provides an explanation of how to create your own config-user.yml file.
+Note that this command does not automatically download missing data. The
+required data should thus be located in the directories specified in your user
+configuration file.  Recall that the chapter :ref:`Configuring ESMValTool
+<config-user>` provides an explanation of how to create your own
+config-user.yml file.
 
 To get help on additional commands, please use
 

@@ -1,13 +1,16 @@
 ---
-name: Test
-
-# runs on a push on main and at the end of every day
+name: Monitor Tests
 on:
   push:
     branches:
       - main
+  # run the test only if the PR is to main
+  # turn it on if required
+  # pull_request:
+  #   branches:
+  #   - main
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * *'  # nightly
 
 jobs:
   linux:
@@ -34,6 +37,9 @@ jobs:
         run: |
           mamba --version 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           python -V 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - name: Install pytest-monitor
+        shell: bash -l {0}
+        run: pip install pytest-monitor
       - name: Install ESMValTool
         shell: bash -l {0}
         run: pip install -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
@@ -45,7 +51,12 @@ jobs:
         run: esmvaltool install Julia
       - name: Run tests
         shell: bash -l {0}
-        run: pytest -n 2 -m "not installation" 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
+        run: >
+          pytest -n 2 --ignore=/home/runner/work/ESMValTool/ESMValTool/.pymon-journal -m "not installation" 2>&1
+          | tee test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
+      - name: Parse monitor information
+        shell: bash -l {0}
+        run: python tests/parse_pymon.py
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
         uses: actions/upload-artifact@v2
@@ -79,12 +90,22 @@ jobs:
         run: |
           mamba --version 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           python -V 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - name: Install pytest-monitor
+        shell: bash -l {0}
+        run: pip install pytest-monitor
       - name: Install ESMValTool
         shell: bash -l {0}
-        run: pip install -e .[develop] 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
+        run: >
+          pip install -e .[develop] 2>&1
+          | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Run tests
         shell: bash -l {0}
-        run: pytest -n 2 -m "not installation" 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/test_report.txt
+        run: >
+          pytest -n 2 --ignore=/Users/runner/work/ESMValTool/ESMValTool/.pymon-journal -m "not installation" 2>&1
+          | tee test_osx_artifacts_python_${{ matrix.python-version }}/test_report.txt
+      - name: Parse monitor information
+        shell: bash -l {0}
+        run: python tests/parse_pymon.py
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
         uses: actions/upload-artifact@v2

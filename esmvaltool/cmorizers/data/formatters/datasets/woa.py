@@ -79,7 +79,6 @@ def collect_files(in_dir, var, cfg):
     fname = cfg['attributes']['short_name'].lower(
     ) + '_' + var_dict['file'] + '00_01.nc'
     in_file = os.path.join(in_dir, fname)
-    file_list.append(in_file)
 
     return file_list
 

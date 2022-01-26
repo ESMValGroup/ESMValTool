@@ -44,7 +44,7 @@ def write_config_user_file(dirname):
 
 def _create_sample_cube(time_step):
     """Create a quick CMOR-compliant sample cube."""
-    coord_sys = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
+    coord_sys = coord_systems.GeogCS(fileformats.pp.EARTH_RADIUS)
     cube_data = np.ones((1, 3, 2, 2))
     cube_data[0, 1, 1, 1] = 22.
     time = iris.coords.DimCoord([
@@ -77,29 +77,25 @@ def _create_sample_cube(time_step):
 
 def put_dummy_data(data_path):
     """Create a small dummy netCDF file to be cmorized."""
-    for count, step in enumerate(np.arange(0.5, 12.5)):
-        mon = "{:02d}".format(count)
-        gen_cube = _create_sample_cube(step)
-        file_path = os.path.join(data_path,
-                                 "woa18_decav81B0_t" + mon + "_01.nc")
-        gen_cube.var_name = "t_an"
-        iris.save(gen_cube, file_path)
-        file_path = os.path.join(data_path,
-                                 "woa18_decav81B0_s" + mon + "_01.nc")
-        gen_cube.var_name = "s_an"
-        iris.save(gen_cube, file_path)
-        file_path = os.path.join(data_path, "woa18_all_o" + mon + "_01.nc")
-        gen_cube.var_name = "o_an"
-        iris.save(gen_cube, file_path)
-        file_path = os.path.join(data_path, "woa18_all_n" + mon + "_01.nc")
-        gen_cube.var_name = "n_an"
-        iris.save(gen_cube, file_path)
-        file_path = os.path.join(data_path, "woa18_all_p" + mon + "_01.nc")
-        gen_cube.var_name = "p_an"
-        iris.save(gen_cube, file_path)
-        file_path = os.path.join(data_path, "woa18_all_i" + mon + "_01.nc")
-        gen_cube.var_name = "i_an"
-        iris.save(gen_cube, file_path)
+    data_info = [
+        # dir_name, file_name_prefix, var_name
+        ("temperature", "woa18_decav81B0_t", "t_an"),
+        ("salinity", "woa18_decav81B0_s", "s_an"),
+        ("oxygen", "woa18_all_o", "o_an"),
+        ("nitrate", "woa18_all_n", "n_an"),
+        ("phosphate", "woa18_all_p", "p_an"),
+        ("silicate", "woa18_all_i", "i_an"),
+    ]
+
+    for (dir_name, file_name_prefix, var_name) in data_info:
+        file_dir = os.path.join(data_path, dir_name)
+        os.makedirs(file_dir)
+        for month, step in enumerate(np.arange(0.5, 12.5)):
+            gen_cube = _create_sample_cube(step)
+            file_name = f"{file_name_prefix}{month:02d}_01.nc"
+            file_path = os.path.join(file_dir, file_name)
+            gen_cube.var_name = var_name
+            iris.save(gen_cube, file_path)
 
 
 def check_log_file(log_file, no_data=False):
@@ -166,9 +162,7 @@ def test_cmorize_obs_woa_data(tmp_path):
     """Test for example run of cmorize_obs command."""
 
     config_user_file = write_config_user_file(tmp_path)
-    os.makedirs(os.path.join(tmp_path, 'raw_stuff'))
     data_path = os.path.join(tmp_path, 'raw_stuff', 'Tier2', 'WOA')
-    os.makedirs(data_path)
     put_dummy_data(data_path)
     with keep_cwd():
         DataCommand().format('WOA', config_user_file)

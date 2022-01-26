@@ -30,6 +30,8 @@ but many more exist around the world.
 
 If you do not have access to such a facility through your institute or the
 project you are working on, you can request access by applying for the
+`ENES Climate Analytics Service <https://portal.enes.org/data/data-metadata-service/climate-analytics-service>`__
+or, if you need longer term access or more computational resources, the
 `IS-ENES3 Trans-national Access call <https://portal.enes.org/data/data-metadata-service/analysis-platforms>`__.
 
 If the options above are not available to you, ESMValTool also offers a feature
@@ -52,7 +54,7 @@ For example, run
 
 .. code-block:: bash
 
-    esmvaltool run examples/recipe_python.yml --offline=False
+    esmvaltool run --offline=False examples/recipe_python.yml
 
 to run the default example recipe and automatically download the required data
 to the directory ``~/climate_data``.
@@ -242,6 +244,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | ESACCI-FIRE                  | burntArea (Lmon)                                                                                     |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-LANDCOVER             | baresoilFrac, cropFrac, grassFrac, shrubFrac, treeFrac (Lmon)                                        |   2  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ESACCI-LST                   | ts (Amon)                                                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-OC                    | chl (Omon)                                                                                           |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+

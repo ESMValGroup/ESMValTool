@@ -265,8 +265,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, _, __):
         logger.info("Start regridding to: %s", cfg['custom']['regrid'])
         _regrid_dataset(in_dir, var, cfg)
         logger.info("Finished regridding")
-
         logger.info("Start CMORizing")
+
         for year in range(1961, 2029):
             # File concatenation
             for month in range(1, 13):
