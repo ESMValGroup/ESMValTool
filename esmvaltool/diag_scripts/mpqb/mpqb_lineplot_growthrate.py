@@ -117,8 +117,8 @@ def main(cfg):
     ax1.grid(True, which='major', axis='x')
 
     ax1.set_ylim(ylims)
-    ax1.set_ylabel('Change XCH4 (ppbv)')
-    ax1.set_title('Time series of annual XCH4 growth rate')
+    ax1.set_ylabel(f"Change in {cube.var_name.upper()} ({cube.units})")
+    ax1.set_title(f"Time series of annual {cube.var_name.upper()} growth rate")
 
     h1, l1 = ax1.get_legend_handles_labels()
     leg = lax.legend(h1, l1, borderaxespad=0, ncol=4, loc='center')
