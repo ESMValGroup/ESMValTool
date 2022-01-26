@@ -401,11 +401,26 @@ datasets:
           -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
       Put the resulting processed data in input_dir_path.
 
-      Caveat
+      Caveats
         The CCI-LC Tools must be applied before running this script.
         The CCI-LC Tools require Java Version 7 or higher.
         The input data are available for a single year and are copied over to
         generate a time series over their time range of validity.
+
+  ESACCI-LST:
+    tier: 2
+    source: On CEDA-JASMIN, /gws/nopw/j04/esacci_lst/public
+    last_access: 2022-01-26
+    info: |
+      For access to this JASMIN group workspace please register at:
+        https://accounts.jasmin.ac.uk/services/group_workspaces/esacci_lst/
+      Download and processing instructions:
+        Put all files under a single directory (no subdirectories with years)
+        in ${RAWOBS}/Tier2/ESACCI-LST
+        BOTH DAY and NIGHT files are needed for each month
+
+      Caveats
+        Currently set to work with only the MODIS AQUA L3 monthly data
 
   ESACCI-OC:
     tier: 2
