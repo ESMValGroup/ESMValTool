@@ -115,8 +115,8 @@ def main(cfg):
     ax1.xaxis.set_major_formatter(years_fmt)
     ax1.grid(True, which='major', axis='x')
     ax1.set_ylim(ylims)
-    ax1.set_ylabel('XCH4 (ppbv)')
-    ax1.set_title('Time series of monthly mean XCH4')
+    ax1.set_ylabel(f"{cube.var_name.upper()} ({cube.units})")
+    ax1.set_title(f"Time series of monthly mean {cube.var_name.upper()}")
 
     h1, l1 = ax1.get_legend_handles_labels()
     leg = lax.legend(h1, l1, borderaxespad=0, ncol=4, loc='center')
