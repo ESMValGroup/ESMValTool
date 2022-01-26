@@ -5,7 +5,7 @@
 ; ############################################################################
 ;
 ; Description:
-;    Time series of seasonal mean anomalie of total column of ozones
+;    Time series of seasonal mean anomalies of total column ozone
 ;    calculated with a methodology described in Appendix A of Eyring06
 ;    Annual cycle for the reference years are also shown
 ;    Ad more bullets if required
