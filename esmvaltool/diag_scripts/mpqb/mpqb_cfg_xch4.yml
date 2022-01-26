@@ -2,8 +2,6 @@
 #
 # Configuration related to plotting of different ECVs
 # for usage in the different MPQB diagnostics.
-#
-# mpqb_cfg.yml
 ---
 
 datasetnames:
