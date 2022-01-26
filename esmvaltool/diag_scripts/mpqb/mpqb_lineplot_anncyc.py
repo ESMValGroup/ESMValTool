@@ -88,8 +88,8 @@ def main(cfg):
     ax1.grid(True, which='major', axis='x')
 
     ax1.set_ylim(ylims)
-    ax1.set_ylabel('XCH4 (ppbv)')
-    ax1.set_title('XCH4 annual cycle')
+    ax1.set_ylabel(f"{cube.var_name.upper()} ({cube.units})")
+    ax1.set_title(f"{cube.var_name.upper()} annual cycle")
 
     baseplotname = (f"lineplot_{dataset_cfg['variable_group']}_"
                     f"{dataset_cfg['start_year']}-{dataset_cfg['end_year']}")
