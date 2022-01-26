@@ -4,6 +4,8 @@ import datetime
 import textwrap
 from pathlib import Path
 
+import yaml
+
 
 def read_resource_usage_file(recipe_dir):
     """Read resource usage from the log."""
@@ -76,6 +78,35 @@ def get_resource_usage(recipe_dir):
     return [f"{runtime}", f"{memory:.1f}", f"{avg_cpu:.1f}"]
 
 
+def get_first_figure(recipe_dir):
+    """Get the first figure."""
+    plot_dir = recipe_dir / 'plots'
+    figures = plot_dir.glob("**/*.png")
+    try:
+        return next(figures)
+    except StopIteration:
+        return None
+
+
+def get_recipe_name(recipe_dir):
+    """Extract recipe name from output dir."""
+    return recipe_dir.stem[7:-16]
+
+
+def get_title_and_description(recipe_dir):
+    """Get recipe title and description."""
+    name = get_recipe_name(recipe_dir)
+    recipe_file = recipe_dir / 'run' / f'recipe_{name}.yml'
+
+    with open(recipe_file, 'rb') as file:
+        recipe = yaml.safe_load(file)
+
+    docs = recipe['documentation']
+    title = docs.get('title', name.replace('_', ' ').title())
+
+    return title, docs['description']
+
+
 def link(url, text):
     """Format text as html link."""
     return '<a href="' + url + '">' + text + '</a>'
@@ -96,8 +127,13 @@ def td(txt):
     return "<td>" + txt + "</td>"
 
 
+def div(txt, class_):
+    """Format text as html div."""
+    return f"<div class='{class_}'>{txt}</div>"
+
+
 def generate_summary(output_dir):
-    """Generate the lines of text for the summary view."""
+    """Generate the lines of text for the debug summary view."""
     lines = []
 
     column_titles = [
@@ -135,8 +171,60 @@ def generate_summary(output_dir):
     return lines
 
 
-def write_index_html(lines, output_dir):
-    """Write lines to index.html."""
+def generate_overview(output_dir):
+    """Generate the lines of text for the overview page."""
+    recipes = {}
+
+    def get_date(recipe_dir):
+        return datetime.datetime.strptime(recipe_dir.stem[-15:],
+                                          "%Y%m%d_%H%M%S")
+
+    for recipe_dir in sorted(Path(output_dir).glob('recipe_*')):
+        log = recipe_dir / 'run' / 'main_log.txt'
+        success = log.read_text().endswith('Run was successful\n')
+        if not success:
+            continue
+        name = get_recipe_name(recipe_dir)
+        if name not in recipes:
+            recipes[name] = []
+        recipes[name].append(recipe_dir)
+
+    for name, recipe_dirs in recipes.items():
+        recipes[name] = sorted(recipe_dirs, key=get_date)[-1]
+
+    print(f"Found {len(recipes)} recipes")
+    lines = []
+    for name, recipe_dir in recipes.items():
+        title, description = get_title_and_description(recipe_dir)
+        figure = get_first_figure(recipe_dir)
+        recipe_url = recipe_dir.relative_to(output_dir)
+        entry_txt = div(
+            div(
+                "\n".join([
+                    f"<img src='{figure.relative_to(output_dir)}' "
+                    "class='card-img-top'/>" if figure else "",
+                    div(
+                        "\n".join([
+                            f'<h5 class="card-title">{title}</h5>',
+                            f'<p class="card-text">{description} '
+                            f'<a href="{recipe_url}">'
+                            '<i class="bi bi-arrow-right-circle"></i>'
+                            '</a></p>',
+                        ]),
+                        "card-body",
+                    ),
+                ]),
+                "card",
+            ),
+            "col",
+        )
+        lines.append(entry_txt)
+
+    return lines
+
+
+def write_debug_html(lines, output_dir):
+    """Write lines to debug.html."""
     header = textwrap.dedent("""
     <!doctype html>
     <html>
@@ -178,6 +266,61 @@ def write_index_html(lines, output_dir):
     lines = ["      " + line for line in lines]
     text = header + "\n".join(lines) + footer
 
+    index_file = output_dir / 'debug.html'
+    index_file.write_text(text)
+    print(f"Wrote file://{index_file.absolute()}")
+
+
+def write_index_html(lines, output_dir):
+    """Write lines to index.html."""
+    header = textwrap.dedent("""
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <title>ESMValTool results</title>
+      </head>
+      <body>
+        <div class="container-fluid">
+          <h1>
+          <img src="https://github.com/ESMValGroup/ESMValTool/raw/main/doc/sphinx/source/figures/ESMValTool-logo-2.png" class="img-fluid">
+          </h1>
+          <p>
+          See <a href=https://docs.esmvaltool.org/en/latest/recipes/index.html>Available recipes</a>
+          for a description of these recipes.
+          Missing something? Have a look at the <a href=debug.html>debug page</a>.
+          <p>
+          <input class="form-control searchbox-input" type="text" placeholder="Type something here to search...">
+          <br>
+          <div class="row row-cols-1 row-cols-md-3 g-4">
+    """)  # noqa: E501
+    footer = textwrap.dedent("""
+          </div>
+        </div>
+        <script>
+          $(document).ready(function(){
+            $('.searchbox-input').on("keyup", function() {
+              var value = $(this).val().toLowerCase();
+              $(".col").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+              });
+            });
+          });
+        </script>
+      </body>
+    </html>
+    """)  # noqa: E501
+
+    lines = ["        " + line for line in lines]
+    text = header + "\n".join(lines) + footer
+
     index_file = output_dir / 'index.html'
     index_file.write_text(text)
     print(f"Wrote file://{index_file.absolute()}")
@@ -192,7 +335,8 @@ def main():
                         help='ESMValTool output directory.')
     args = parser.parse_args()
 
-    write_index_html(generate_summary(args.output_dir), args.output_dir)
+    write_debug_html(generate_summary(args.output_dir), args.output_dir)
+    write_index_html(generate_overview(args.output_dir), args.output_dir)
 
 
 if __name__ == '__main__':
