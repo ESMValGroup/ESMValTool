@@ -5,6 +5,7 @@ on:
   push:
     branches:
     - main
+    - force_mamba_conda_forge_githubAction
   schedule:
     - cron: '0 4 * * *'
 
