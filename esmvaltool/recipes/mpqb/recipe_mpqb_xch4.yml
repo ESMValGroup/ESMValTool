@@ -100,13 +100,6 @@ datasets:
 ### observations
   - {dataset: CDS-XCH4, project: OBS, type: sat, version: L3, tier: 3,
      derive: false, alias: CDS-XCH4}
-### CMIP6 (esm-hist)
-  # - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
-     # exp: esm-hist, derive: true, alias: BCC-CSM2-MR}
-  # - {dataset: CNRM-ESM2-1, project: CMIP6, ensemble: r1i1p1f2, grid: gr,
-     # exp: esm-hist, derive: true, alias: CNRM-ESM2-1}
-  # - {dataset: UKESM1-0-LL, project: CMIP6, ensemble: r1i1p1f2, grid: gn,
-     # exp: esm-hist, derive: true, alias: UKESM1-0-LL}
 ### CMIP6 (historical)
   - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
      exp: historical, derive: true, alias: BCC-CSM2-MR}
