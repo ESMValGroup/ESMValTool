@@ -75,6 +75,7 @@ def collect_files(in_dir, var, cfg):
     """Compose input file list and download if missing."""
     file_list = []
     var_dict = cfg['variables'][var]
+    in_dir = os.path.join(in_dir, var_dict['name'])
 
     fname = cfg['attributes']['short_name'].lower(
     ) + '_' + var_dict['file'] + '00_01.nc'
