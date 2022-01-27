@@ -20,7 +20,7 @@ variables:
   talk:
     mip: Oyr
     raw_var: TAlk
-    file: GLODAPv2.2016b 
+    file: GLODAPv2.2016b
   ph:
     mip: Oyr
     raw_var: pHtsinsitutp

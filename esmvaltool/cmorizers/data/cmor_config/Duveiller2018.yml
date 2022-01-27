@@ -1,8 +1,8 @@
 ---
 # Common global attributes for Cmorizer output
 attributes:
-  dataset_id: Duveiller2018 
-  version: 'v2018' 
+  dataset_id: Duveiller2018
+  version: 'v2018'
   tier: 2
   modeling_realm: clim
   project_id: OBS

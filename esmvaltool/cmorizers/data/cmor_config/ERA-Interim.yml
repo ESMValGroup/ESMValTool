@@ -77,7 +77,7 @@ variables:
     short_name: ta
     mip: day
     raw: t
-    file: 'ERA-Interim_t_daily_*.nc'  
+    file: 'ERA-Interim_t_daily_*.nc'
   tas_day:
     short_name: tas
     mip: day
