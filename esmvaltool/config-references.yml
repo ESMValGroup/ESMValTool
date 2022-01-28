@@ -254,6 +254,10 @@ authors:
     name: Kindermann, Stephan
     institute: DKRZ, Germany
     orcid: https://orcid.org/0000-0001-9335-1093
+  king_robert:
+    name: King, Robert
+    institute: MetOffice, UK
+    orcid:
   koirala_sujan:
     name: Koirala, Sujan
     institute: MPI-BGC, Germany
@@ -467,6 +471,10 @@ authors:
     name: Wenzel, Sabrina
     institute: DLR, Germany
     orcid: https://orcid.org/0000-0001-5343-2446
+  willen_ulrika:
+    name: Willén, Ulrika
+    institute: SMHI, Sweden
+    orcid:
   zechlau_sabrina:
     name: Zechlau, Sabrina
     institute: DLR, Germany
@@ -728,6 +736,7 @@ domains:
   shpolar: southern polar
   shtrop: southern tropics
   trop: tropics
+  user: user-defined (see preprocessor settings)
 
 plot_types:
   errorbar: error bar plot
