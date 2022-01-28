@@ -11,7 +11,6 @@ Last access
 
 Download and processing instructions
     Download the following file: '2018 Global Budget v1.0'
-
 """
 
 import logging

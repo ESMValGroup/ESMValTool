@@ -36,7 +36,6 @@ import os
 import yaml
 from ecmwfapi import ECMWFDataServer
 
-
 DAY_TIMESTEPS = {
     'fc': {
         'step': '3/6/9/12',

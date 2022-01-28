@@ -23,8 +23,8 @@ Modification history
 import glob
 import logging
 import os
-
 from datetime import datetime
+
 import iris
 import numpy as np
 import xarray as xr

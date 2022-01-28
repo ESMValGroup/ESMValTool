@@ -15,6 +15,7 @@ Download and processing instructions
 """
 
 from esmvaltool.cmorizers.data.formatters.datasets.era_interim import (
-    cmorization, )
+    cmorization,
+)
 
 __all__ = ['cmorization']

@@ -27,10 +27,7 @@ from calendar import monthrange
 
 import iris
 
-from ...utilities import (
-    fix_coords,
-    save_variable,
-)
+from ...utilities import fix_coords, save_variable
 
 logger = logging.getLogger(__name__)
 
