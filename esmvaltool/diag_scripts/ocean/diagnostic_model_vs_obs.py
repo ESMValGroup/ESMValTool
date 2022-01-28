@@ -44,6 +44,7 @@ Author: Lee de Mora (PML)
 """
 import logging
 import os
+from pathlib import Path
 import sys
 import math
 
@@ -55,9 +56,10 @@ import iris
 import iris.quickplot as qplt
 import numpy as np
 from scipy.stats import linregress
+import yaml
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared import run_diagnostic, ProvenanceLogger
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -153,7 +155,7 @@ def make_model_vs_obs_plots(
     cubes = {}
     for model_type, input_file in filenames.items():
         logger.debug('loading: \t%s, \t%s', model_type, input_file)
-        cube = iris.load_cube(input_file)
+        cube = iris.util.squeeze(iris.load_cube(input_file))
         cube = diagtools.bgc_units(cube, metadata[input_file]['short_name'])
         cubes[model_type] = diagtools.make_cube_layer_dict(cube)
         for layer in cubes[model_type]:
@@ -229,8 +231,9 @@ def make_model_vs_obs_plots(
                 title=' '.join([model, 'over', obs]),
                 log=True)
 
+        caption = f'{long_name} [{units}]'
         # Add overall title
-        fig.suptitle(long_name + ' [' + units + ']', fontsize=14)
+        fig.suptitle(caption, fontsize=14)
 
         # Determine image filename:
         fn_list = ['model_vs_obs', long_name, model, obs, str(layer), 'maps']
@@ -242,6 +245,18 @@ def make_model_vs_obs_plots(
         plt.savefig(path, dpi=200)
 
         plt.close()
+
+        provenance_record = _prepare_provenance_record(
+            cfg,
+            caption=caption,
+            statistics=['mean', 'clim', 'diff'],
+            domain=['global'],
+            plot_type=['map'],
+            ancestors=[model_filename, obs_filename],
+        )
+
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
 
 def rounds_sig(value, sig=3):
@@ -396,10 +411,10 @@ def make_scatter(
         fig.set_size_inches(7, 6)
 
         # Create the cubes
-        model_data = np.ma.array(cubes['model'][layer].data)
-        obs_data = np.ma.array(cubes['obs'][layer].data)
+        model_data = cubes['model'][layer].data.squeeze()
+        obs_data = cubes['obs'][layer].data.squeeze()
 
-        mask = model_data.mask + obs_data.mask
+        mask = np.ma.getmask(model_data) + np.ma.getmask(obs_data)
         model_data = np.ma.masked_where(mask, model_data).compressed()
         obs_data = np.ma.masked_where(mask, obs_data).compressed()
 
@@ -455,6 +470,38 @@ def make_scatter(
         plt.savefig(path)
 
         plt.close()
+
+        provenance_record = _prepare_provenance_record(
+            cfg,
+            caption=long_name,
+            statistics=['mean', 'clim', 'diff'],
+            domain=['global'],
+            plot_type=['scatter'],
+            ancestors=[model_filename, obs_filename],
+        )
+
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
+
+
+def _prepare_provenance_record(cfg, **provenance_record):
+    recipe_path = Path(cfg['run_dir']).parents[1] / cfg['recipe']
+    with recipe_path.open() as recipe_file:
+        recipe = yaml.safe_load(recipe_file)
+
+    doc = recipe['documentation']
+    authors = doc.get('authors', [])
+    authors += [maintainer
+                for maintainer in doc.get('maintainer', [])
+                if maintainer not in authors]
+    provenance_record['authors'] = authors
+    for key in ['title', 'description', 'projects']:
+        if (val := doc[key]):
+            provenance_record[key] = val
+    for key in ['realms', 'themes']:
+        if (val := cfg[key]):
+            provenance_record[key] = val
+    return provenance_record
 
 
 def main(cfg):

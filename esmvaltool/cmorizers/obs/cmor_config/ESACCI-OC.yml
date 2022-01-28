@@ -2,11 +2,11 @@
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: ESACCI-OC
-  version: 'fv3.1'
+  version: 'fv5.0'
   tier: 2
   modeling_realm: sat
-  project_id: OBS
-  source: 'ftp://oc-cci-data:ELaiWai8ae@oceancolour.org/occci-v3.1/geographic/netcdf/monthly/chlor_a/'
+  project_id: OBS6
+  source: 'ftp://oc-cci-data:ELaiWai8ae@oceancolour.org/occci-v5.0/geographic/netcdf/monthly/chlor_a/'
   reference: "esacci-oc"
   comment: ""
 
