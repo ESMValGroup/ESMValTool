@@ -25,9 +25,9 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         Overwrite already downloaded files
     """
     if not start_date:
-        start_date = datetime(1997, 1, 1)
+        start_date = datetime(1997, 9, 1)
     if not end_date:
-        end_date = datetime(2018, 1, 1)
+        end_date = datetime(2020, 12, 1)
 
     loop_date = start_date
 
@@ -40,7 +40,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.ftp_name = 'ocean_colour'
     downloader.connect()
 
-    downloader.set_cwd('v3.1-release/geographic/netcdf/chlor_a/monthly/v3.1/')
+    downloader.set_cwd('v5.0-release/geographic/netcdf/chlor_a/monthly/v5.0/')
     while loop_date <= end_date:
         year = loop_date.year
         downloader.download_year(f'{year}')

@@ -424,11 +424,12 @@ datasets:
 
   ESACCI-OC:
     tier: 2
-    source: ftp://oceancolour.org/occci-v3.1/geographic/netcdf/monthly/chlor_a/
-    last_access: 2019-02-27
+    source: ftp://oceancolour.org/occci-v5.0/geographic/netcdf/monthly/chlor_a/
+    last_access: 2021-02-02
     info: |
       In case of issues with data download, check also the information provided at
         OceanColour webpage https://esa-oceancolour-cci.org/
+      Username and password are provided on this website
       Put all files under a single directory (no subdirectories with years)
       in ${RAWOBS}/Tier2/ESACCI-OC
 
