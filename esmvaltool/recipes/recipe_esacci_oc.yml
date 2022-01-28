@@ -50,9 +50,9 @@ diagnostics:
   oc_chl:
     description: climatological annual means
     themes:
-      - clouds
+      - phys
     realms:
-      - atmos
+      - ocean
     variables:
       chl:
         preprocessor: prep_chl
