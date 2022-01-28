@@ -337,7 +337,8 @@ begin
     ; annotation
 
     res@tiMainString = names(imod)
-    res@gsnLeftStringFontHeightF = 0.015
+    res@tiMainFontHeightF = 0.025
+    res@gsnStringFontHeightF = 0.02
     res@cnLevelSelectionMode = "ExplicitLevels"
 
     if (diag_script_info@projection.eq."Robinson") then
@@ -429,7 +430,8 @@ begin
 
     res@lbTitleString      = data1@units
     res@lbTitlePosition    = "Bottom"
-    res@lbTitleFontHeightF = 0.015
+    res@lbTitleFontHeightF = 0.02
+    res@lbLabelFontHeightF = 0.02
 
     ; function in aux_plotting.ncl
 

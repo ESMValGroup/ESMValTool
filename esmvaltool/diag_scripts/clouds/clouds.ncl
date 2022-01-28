@@ -454,6 +454,7 @@ begin
 
 ;    res@tiMainOn             = False
     res@tiMainString = names(imod)
+    res@tiMainFontHeightF = 0.025
 
     res@cnLevelSelectionMode = "ExplicitLevels"
     res@cnLinesOn            = False
@@ -541,6 +542,8 @@ begin
     res@cnInfoLabelOn      = False    ; turn off cn info label
     res@mpPerimOn          = perim    ; draw line around map
 
+    res@gsnStringFontHeightF = 0.02
+
     ; specified in namelist
 
     res@mpProjection       = projection
@@ -626,14 +629,10 @@ begin
       end if
     end if
 
-;    res@gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
-;                                              / tofloat((dim_MOD + 1) / 2)/))
-;    res@gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
-;                                              / tofloat((dim_MOD + 1) / 2)/))
-
     res@lbTitleString      = data1@units
     res@lbTitlePosition    = "Bottom"
-    res@lbTitleFontHeightF = 0.015
+    res@lbTitleFontHeightF = 0.02
+    res@lbLabelFontHeightF = 0.02
 
     ; ###########################################
     ; # create the plot                         #
@@ -746,8 +745,10 @@ begin
         dres@gsnLeftString  = ""
         dres@gsnRightString = ""
         dres@mpPerimOn      = perim    ; draw line around map
+        dres@gsnStringFontHeightF = 0.02
 
         dres@tiMainString =  names(imod) + " - " + refname
+        dres@tiMainFontHeightF = 0.025
 
         rmsd(imod, :) = rmsd@_FillValue
         bias(imod, :) = bias@_FillValue
@@ -793,20 +794,14 @@ begin
       ; # plot ressources                         #
       ; ###########################################
 
-;      dres@gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
-;                                           / tofloat((dim_MOD + 1) / 2)/))
-;      dres@gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
-;                                           / tofloat((dim_MOD + 1) / 2)/))
-
-;      dres@tiMainOn       = False
-
       dres@cnFillOn       = True      ; color plot desired
       dres@cnLineLabelsOn = False     ; contour lines
       dres@cnLinesOn      = False
 
       dres@lbTitleString      = diff@units
       dres@lbTitlePosition    = "Bottom"
-      dres@lbTitleFontHeightF = 0.015
+      dres@lbTitleFontHeightF = 0.02
+      dres@lbLabelFontHeightF = 0.02
 
       ; colors
       ; http://www.ncl.ucar.edu/Document/Graphics/color_table_gallery.shtml

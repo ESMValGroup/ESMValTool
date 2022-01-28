@@ -19,6 +19,8 @@
 ;   clevels: explicit values for probability labelbar (array)
 ;   filename_add: optionally add this string to plot filesnames
 ;   nbins: number of equally spaced bins (var_x), default = 100
+;   xlabel: label overriding variable name for x-axis (e.g. SST)
+;   ylabel: label overriding variable name for y-axis (e.g. omega500)
 ;   zdmin:  min z value for labelbar (difference plots)
 ;   zdmax:  max z value for labelbar (difference plots)
 ;   zmin:  min z value for labelbar
@@ -34,6 +36,7 @@
 ;   none
 ;
 ; Modification history
+;   20220126-lauer_axel: added optional variable labels for x- and y-axes
 ;   20211118-lauer_axel: added output of frequency distributions
 ;   20210607-lauer_axel: added multi-model-average (= average over all models)
 ;                        as an individual plot
@@ -179,6 +182,8 @@ begin
 
   set_default_att(diag_script_info, "filename_add", "")
   set_default_att(diag_script_info, "nbins", 100)
+  set_default_att(diag_script_info, "xlabel", var_x)
+  set_default_att(diag_script_info, "ylabel", var_y)
 
   if (diag_script_info@filename_add .ne. "") then
     filename_add = "_" + diag_script_info@filename_add
@@ -585,12 +590,13 @@ begin
   res@cnFillOn       = True               ; color Fill
   res@cnFillMode     = "RasterFill"       ; Raster Mode
   res@cnLinesOn      =  False             ; Turn off contour lines
-  res@tiXAxisString  = var_x + " (" + xunits + ")"
-  res@tiYAxisString  = var_y + " (" + yunits + ")"
+  res@tiXAxisString  = diag_script_info@xlabel + " (" + xunits + ")"
+  res@tiYAxisString  = diag_script_info@ylabel + " (" + yunits + ")"
   res@lbOrientation  = "Vertical"
   res@lbTitleString      = zunits
   res@lbTitlePosition    = "Right"
-  res@lbTitleFontHeightF = 0.015
+  res@lbTitleFontHeightF = 0.0275
+  res@lbLabelFontHeightF = 0.0275
 
   dres = res
 
@@ -635,13 +641,15 @@ begin
   xyres1@gsnDraw         = False        ; don't draw yet
   xyres1@gsnFrame        = False        ; don't advance frame yet
   xyres1@xyLineThicknessF = 2.0
+  xyres1@tmEqualizeXYSizes = True
+  xyres1@tmXBLabelFontHeightF = 0.0275
 
   xyres2 = xyres1
 
   xyres1@vpHeightF = .20          ; set width of second plot
   xyres1@trXMinF = xmin
   xyres1@trXMaxF = xmax
-  xyres1@tiXAxisString = var_x + " (" + xunits + ")"
+  xyres1@tiXAxisString = diag_script_info@xlabel + " (" + xunits + ")"
 
   xyres2@vpWidthF = .20          ; set width of second plot
   xyres2@trYMinF = ymin
@@ -664,6 +672,7 @@ begin
     countdata = countdata * 1.0e3
 
     res@tiMainString = plotname
+    res@tiMainFontHeightF = 0.03
 
     if (ii .eq. ref_ind) then
       if (refname(varstart(0)) .eq. refname(varstart(1))) then
