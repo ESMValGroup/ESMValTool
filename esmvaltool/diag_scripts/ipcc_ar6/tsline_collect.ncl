@@ -432,7 +432,7 @@ begin
   if (diag_script_info@ref_shading) then
 
     ; ---------------------------------------------------------------------
-    ; yellow shading of reference period
+    ; grey shading of reference period
     ; ---------------------------------------------------------------------
     gsres                = True
     gsres@gsFillColor    = "Grey70"
