@@ -25,6 +25,7 @@ constraints: list of dict, optional
 
 """
 import logging
+from collections.abc import Iterable
 from copy import deepcopy
 from pathlib import Path
 from pprint import pformat
@@ -32,6 +33,7 @@ from pprint import pformat
 import iris
 import matplotlib.pyplot as plt
 import psyplot.project as psy
+from iris.exceptions import CoordinateNotFoundError
 
 from esmvaltool.diag_scripts.shared import (
     get_plot_filename,
@@ -143,16 +145,61 @@ def plot_dataset_without_ref(cfg, dataset):
     return (plt.gcf(), basename)
 
 
+def apply_constraints(cube, filename, constraints):
+    """Apply list of constraints to cube."""
+    for (coord, vals) in constraints.items():
+        if not cube.coords(coord):
+            raise CoordinateNotFoundError(
+                f"Cube {cube.summary(shorten=True)} loaded from {filename} "
+                f"does not contain coordinate '{coord}' necessary for "
+                f"applying constraints")
+        constraint = iris.Constraint(
+            coord_values={coord: lambda cell: vals[0] <= cell <= vals[1]},
+        )
+        cube = cube.extract(constraint)
+        if cube is None:
+            raise ValueError(
+                f"After application of constraint '{coord}: {vals}', the cube "
+                f"loaded from '{filename}' is empty")
+    return cube
+
+
+def get_default_cfg(cfg):
+    """Get default options for configuration dictionary."""
+    cfg = deepcopy(cfg)
+
+    # Set defaults
+    cfg.setdefault('constraints', {})
+
+    # Validation
+    for (coord, vals) in cfg['constraints'].items():
+        if not isinstance(vals, Iterable):
+            raise TypeError(
+                f"Values for constraints need to be iterable, got type "
+                f"{type(vals)} for coordinate '{coord}'")
+        if len(vals) != 2:
+            raise ValueError(
+                f"Values for constraints need to contain exactly 2 elements, "
+                f"got {len(vals):d} for coordinate '{coord}'")
+    if cfg['constraints']:
+        logger.info("The following constraints are applied to each cube:\n%s",
+                    pformat(cfg['constraints']))
+
+    return cfg
+
+
 def main(cfg):
     """Run diagnostic."""
-    cfg = deepcopy(cfg)
+    cfg = get_default_cfg(cfg)
     input_data = list(cfg['input_data'].values())
 
     # Create individual plots for each dataset
     for dataset in input_data:
         filename = dataset['filename']
+        logger.info("Loading %s", filename)
         cube = iris.load_cube(filename)
-        print(filename)
+        cube = apply_constraints(cube, filename, cfg['constraints'])
+
         print(cube)
 
 
