@@ -51,7 +51,7 @@ def _get_slow_tests(cur):
 
 def _parse_pymon_database():
     # Create a SQL connection to our SQLite database
-    con = sqlite3.connect(".pymon")
+    con = sqlite3.connect("../.pymon")
     cur = con.cursor()
 
     # The result of a "cursor.execute" can be iterated over by row

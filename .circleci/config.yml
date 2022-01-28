@@ -72,7 +72,7 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            mamba create --name esmvaltool 'python=3.9' >> /logs/conda.txt 2>&1
+            mamba create --name esmvaltool 'python=3.10' >> /logs/conda.txt 2>&1
             mamba env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             mamba install julia >> /logs/conda.txt 2>&1
@@ -120,7 +120,7 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            mamba create --name esmvaltool 'python=3.9' >> /logs/conda.txt 2>&1
+            mamba create --name esmvaltool 'python=3.10' >> /logs/conda.txt 2>&1
             mamba env update --name esmvaltool >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             mamba install julia >> /logs/conda.txt 2>&1
@@ -181,7 +181,7 @@ jobs:
             # Install prerequisites
             mkdir /logs
             # Install ESMValTool in a new conda environment
-            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.9' >> /logs/conda.txt 2>&1
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.10' >> /logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
             # install the package
