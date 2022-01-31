@@ -36,6 +36,11 @@ ICON_MODEL_3D: &icon_model_3d
     version: icon-2.6.1
 
 
+# Note: Right now, this recipes uses a minimum number of years to accelerate
+# the evaluation. This needs to be adapted (for each diagnostic individually)
+# to get good results.
+
+
 preprocessors:
 
   clim:
