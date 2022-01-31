@@ -53,7 +53,6 @@ import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
-from matplotlib import pyplot
 from matplotlib.colors import LogNorm
 from scipy.stats import linregress
 
@@ -111,7 +110,7 @@ def add_map_subplot(subplot,
                                    extend=extend,
                                    zmin=nspace.min(),
                                    zmax=nspace.max())
-        cbar = pyplot.colorbar(orientation='horizontal')
+        cbar = plt.colorbar(orientation='horizontal')
         cbar.set_ticks(
             [nspace.min(), (nspace.max() + nspace.min()) / 2.,
              nspace.max()])
@@ -262,8 +261,7 @@ def make_model_vs_obs_plots(cfg, metadata, model_filename, obs_filename):
 
 
 def rounds_sig(value, sig=3):
-    """Round a float to a specific number of sig. figs. & return it as a
-    string.
+    """Round a float to sig significant digits & return it as a string.
 
     Parameters
     ----------
@@ -318,12 +316,12 @@ def add_linear_regression(plot_axes,
     thetext = '\n'.join(texts)
 
     if showtext:
-        pyplot.text(0.04,
-                    0.96,
-                    thetext,
-                    horizontalalignment='left',
-                    verticalalignment='top',
-                    transform=plot_axes.transAxes)
+        plt.text(0.04,
+                 0.96,
+                 thetext,
+                 horizontalalignment='left',
+                 verticalalignment='top',
+                 transform=plot_axes.transAxes)
 
     if extent is None:
         x_values = np.arange(arr_x.min(), arr_x.max(),
@@ -340,13 +338,13 @@ def add_linear_regression(plot_axes,
         x_values = np.ma.masked_where(mask, x_values)
         y_values = np.ma.masked_where(mask, y_values)
 
-    pyplot.plot(x_values, y_values, 'k')
+    plt.plot(x_values, y_values, 'k')
 
     if add_diagonal:
-        axis = pyplot.gca().axis()
+        axis = plt.gca().axis()
         step = (max(axis) - min(axis)) / 100.
         one_to_one = np.arange(min(axis), max(axis) + step, step)
-        pyplot.plot(one_to_one, one_to_one, 'k--')
+        plt.plot(one_to_one, one_to_one, 'k--')
 
 
 def make_scatter(cfg, metadata, model_filename, obs_filename):
@@ -368,7 +366,6 @@ def make_scatter(cfg, metadata, model_filename, obs_filename):
     obs_filename: str
         the preprocessed observations file.
     """
-
     filenames = {'model': model_filename, 'obs': obs_filename}
     logger.debug('make_model_vs_obs_plots: \t%s', filenames)
     # ####
@@ -421,7 +418,7 @@ def make_scatter(cfg, metadata, model_filename, obs_filename):
             logger.info('Skip scatter for %s. Min is < 0', long_name)
             return
 
-        pyplot.hexbin(
+        plt.hexbin(
             model_data,
             obs_data,
             xscale=x_scale,
@@ -429,24 +426,24 @@ def make_scatter(cfg, metadata, model_filename, obs_filename):
             bins='log',
             # extent=np.log10(plotrange),
             gridsize=50,
-            cmap=pyplot.get_cmap(colours),
+            cmap=plt.get_cmap(colours),
             mincnt=0)
-        cbar = pyplot.colorbar()
+        cbar = plt.colorbar()
         cbar.set_label('log10(N)')
 
-        pyplot.gca().set_aspect("equal")
-        pyplot.axis(plotrange)
+        plt.gca().set_aspect("equal")
+        plt.axis(plotrange)
 
-        add_linear_regression(pyplot.gca(),
+        add_linear_regression(plt.gca(),
                               model_data,
                               obs_data,
                               showtext=True,
                               add_diagonal=True,
                               extent=plotrange)
 
-        pyplot.title(long_name)
-        pyplot.xlabel(model)
-        pyplot.ylabel(obs)
+        plt.title(long_name)
+        plt.xlabel(model)
+        plt.ylabel(obs)
 
         # Determine image filename:
         fn_list = [
