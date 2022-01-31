@@ -496,10 +496,12 @@ def _prepare_provenance_record(cfg, **provenance_record):
                 if maintainer not in authors]
     provenance_record['authors'] = authors
     for key in ['title', 'description', 'projects']:
-        if (val := doc[key]):
+        val = doc[key]
+        if val:
             provenance_record[key] = val
     for key in ['realms', 'themes']:
-        if (val := cfg[key]):
+        val = cfg[key]
+        if val:
             provenance_record[key] = val
     return provenance_record
 
