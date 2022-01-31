@@ -101,6 +101,7 @@ Make sure that the permissions of the ``~/.netrc`` file are set so only you and 
 can read it, i.e. 
 
 .. code-block:: bash
+
     chmod 600 ~/.netrc
     ls -l ~/.netrc
 
