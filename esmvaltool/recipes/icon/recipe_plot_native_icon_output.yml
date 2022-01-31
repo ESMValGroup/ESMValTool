@@ -1,0 +1,210 @@
+# ESMValTool
+# icon/recipe_plot_native_icon_output.yml
+
+documentation:
+  title: Plot native ICON model output.
+
+  description: Plot ICON model output without regridding to a regular grid.
+
+  authors:
+    - schlund_manuel
+
+  references:
+    - acknow_project
+
+# Please specify the start and end years here
+YEARS: &years
+  start_year: 2013
+  end_year: 2014
+
+# Please specify the ICON simulation you want to evaluate
+ICON_2D: &icon_2d
+  - <<: *years
+    project: ICON
+    dataset: ICON
+    component: atm
+    exp: amip
+    grid: R2B5
+    ensemble: r1v1i1p1l1f1
+    var_type: atm_2d_ml
+    version: icon-2.6.1
+ICON_3D: &icon_3d
+  - <<: *years
+    project: ICON
+    dataset: ICON
+    component: atm
+    exp: amip
+    grid: R2B5
+    ensemble: r1v1i1p1l1f1
+    var_type: atm_3d_ml
+    version: icon-2.6.1
+
+
+# Please do not change anything below this line
+
+SCRIPT_PLOT_ICON: &script_plot_icon
+  script: icon/plot_native_model_map.py
+
+
+preprocessors:
+
+  temporal_mean:
+    climate_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  tas:
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: temporal_mean
+        additional_datasets: *icon_2d
+    scripts:
+      plot:
+        <<: *script_plot_icon
+
+  # clt_ref:
+  #   variables:
+  #     icon:
+  #       short_name: clt
+  #       mip: Amon
+  #       preprocessor: regrid_icon
+  #       additional_datasets: *icon_2d
+  #   scripts:
+  #     time_series:
+  #       <<: *script_time_series_ref
+  #     map:
+  #       <<: *scrip_map_ref
+  #       plot_kwargs_abs:
+  #         levels: [0., 10., 20., 30., 40., 50., 60., 70., 80., 90., 100.]
+  #       plot_kwargs_bias:
+  #         levels: [-40., -32., -24., -16., -8., 0., 8., 16., 24., 32., 40.]
+  #         extend: both
+
+  # pr_ref:
+  #   variables:
+  #     icon:
+  #       short_name: pr
+  #       mip: Amon
+  #       preprocessor: regrid_icon
+  #       additional_datasets: *icon_2d
+  #   scripts:
+  #     time_series:
+  #       <<: *script_time_series_ref
+  #     map:
+  #       <<: *scrip_map_ref
+  #       plot_kwargs_abs:
+  #         levels: [0., 0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6., 6.75, 7.5]
+  #         extend: max
+  #       plot_kwargs_bias:
+  #         levels: [-7.5, -6., -4.5, -3., -1.5, 0., 1.5, 3., 4.5, 6., 7.5]
+  #         extend: both
+
+  # prw_ref:
+  #   variables:
+  #     icon:
+  #       short_name: prw
+  #       mip: Amon
+  #       preprocessor: regrid_icon
+  #       additional_datasets: *icon_2d
+  #     nonicon:
+  #       <<: *ref_preproc_2d
+  #       short_name: prw
+  #       mip: Amon
+  #       additional_datasets: *ref_2d
+  #   scripts:
+  #     time_series:
+  #       <<: *script_time_series_ref
+  #     map:
+  #       <<: *scrip_map_ref
+  #       plot_kwargs_abs:
+  #         levels: [0., 6., 12., 18., 24., 30., 36., 42., 48., 54., 60.]
+  #         extend: max
+  #       plot_kwargs_bias:
+  #         levels: [-10., -8., -6., -4., -2., 0., 2., 4., 6., 8., 10.]
+  #         extend: both
+
+  # rsdt_ref:
+  #   variables:
+  #     icon:
+  #       short_name: rsdt
+  #       mip: Amon
+  #       preprocessor: regrid_icon
+  #       additional_datasets: *icon_2d
+  #     nonicon:
+  #       <<: *ref_preproc_2d
+  #       short_name: rsdt
+  #       mip: Amon
+  #       additional_datasets: *ref_2d
+  #   scripts:
+  #     time_series:
+  #       <<: *script_time_series_ref
+  #     map:
+  #       <<: *scrip_map_ref
+  #       plot_kwargs_abs:
+  #         levels: [150., 180., 210., 240., 270., 300., 330., 360., 390., 420., 450.]
+  #         extend: both
+  #       plot_kwargs_bias:
+  #         levels: [-2.5, -2., -1.5, -1., -0.5, 0., 0.5, 1., 1.5, 2., 2.5]
+  #         extend: both
+
+  # clivi_ref:
+  #   variables:
+  #     icon:
+  #       short_name: clivi
+  #       mip: Amon
+  #       preprocessor: regrid_icon
+  #       additional_datasets: *icon_2d
+  #     nonicon:
+  #       <<: *ref_preproc_2d
+  #       short_name: clivi
+  #       mip: Amon
+  #       additional_datasets: *ref_2d
+  #   scripts:
+  #     time_series:
+  #       <<: *script_time_series_ref
+  #     map:
+  #       <<: *scrip_map_ref
+  #       plot_kwargs_abs:
+  #         levels: [0.0, 0.015, 0.03, 0.045, 0.06, 0.075, 0.09, 0.105, 0.12, 0.135, 0.15]
+  #         extend: max
+  #       plot_kwargs_bias:
+  #         levels: [-0.15, -0.12, -0.09, -0.06, -0.03, 0.0, 0.03, 0.06, 0.09, 0.12, 0.15]
+  #         extend: both
+
+  # ta_ref:
+  #   variables:
+  #     icon:
+  #       short_name: ta
+  #       mip: Amon
+  #       preprocessor: regrid_3d_icon
+  #       additional_datasets: *icon_3d
+  #   scripts:
+  #     zonal_mean:
+  #       <<: *script_zonal_mean_ref
+  #       plot_kwargs_abs:
+  #         levels: [-90., -75., -60., -45., -30., -15., 0., 15., 30.]
+  #       plot_kwargs_bias:
+  #         levels: [-8., -6., -4., -2., 0., 2., 4., 6., 8.]
+  #         extend: both
+
+  # hus_ref:
+  #   variables:
+  #     icon:
+  #       short_name: hus
+  #       mip: Amon
+  #       preprocessor: regrid_3d_icon
+  #       additional_datasets: *icon_3d
+  #   scripts:
+  #     zonal_mean:
+  #       <<: *script_zonal_mean_ref
+  #       axes_kwargs:
+  #         set_ylim: [[1000.0, 400.0]]
+  #       plot_kwargs_abs:
+  #         levels: [0., 2.5, 5., 7.5, 10., 12.5, 15., 17.5]
+  #       plot_kwargs_bias:
+  #         levels: [-1.2, -0.8, -0.4, 0., 0.4, 0.8, 1.2]
+  #         extend: both
+  #       show_y_minorticks: true
