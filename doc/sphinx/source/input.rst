@@ -86,6 +86,26 @@ Datasets for which auto-download is supported can be downloaded with:
 
     esmvaltool data download --config_file [CONFIG_FILE] [DATASET_LIST]
 
+Note that all Tier3 and some Tier2 datasets for which auto-download is supported
+will require an authentification. In such cases enter your credentials in your
+``~/.netrc`` file as explained
+`here <https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html>`_.
+
+An entry to the ``~/.netrc`` should look like:
+
+.. code-block:: bash
+
+    machine [server_name] login [user_name] password [password]
+
+Make sure that the permissions of the ``~/.netrc`` file are set so only you and administrators
+can read it, i.e. 
+
+.. code-block:: bash
+    chmod 600 ~/.netrc
+    ls -l ~/.netrc
+
+The latter command should show ``-rw-------``.
+
 For other datasets, downloading instructions can be obtained with:
 
 .. code-block:: bash
