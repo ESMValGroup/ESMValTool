@@ -23,7 +23,7 @@ hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has no time component, a small number of depth layers,
 and a latitude and longitude coordinates.
 
-An approproate preprocessor for a 3D + time field would be::
+An appropriate preprocessor for a 3D + time field would be::
 
   preprocessors:
     prep_map:
@@ -43,33 +43,36 @@ Author: Lee de Mora (PML)
         ledm@pml.ac.uk
 """
 import logging
-import os
-from pathlib import Path
-import sys
 import math
-
-from matplotlib import pyplot
-from matplotlib.colors import LogNorm
-import matplotlib.pyplot as plt
+import os
+import sys
+from pathlib import Path
 
 import iris
 import iris.quickplot as qplt
+import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import linregress
 import yaml
+from matplotlib import pyplot
+from matplotlib.colors import LogNorm
+from scipy.stats import linregress
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import run_diagnostic, ProvenanceLogger
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def add_map_subplot(subplot, cube, nspace, title='',
-                    cmap='', extend='neither', log=False):
-    """
-    Add a map subplot to the current pyplot figure.
+def add_map_subplot(subplot,
+                    cube,
+                    nspace,
+                    title='',
+                    cmap='',
+                    extend='neither',
+                    log=False):
+    """Add a map subplot to the current pyplot figure.
 
     Parameters
     ----------
@@ -92,24 +95,22 @@ def add_map_subplot(subplot, cube, nspace, title='',
     plt.subplot(subplot)
     logger.info('add_map_subplot: %s', subplot)
     if log:
-        qplot = qplt.contourf(
-            cube,
-            nspace,
-            linewidth=0,
-            cmap=plt.cm.get_cmap(cmap),
-            norm=LogNorm(),
-            zmin=nspace.min(),
-            zmax=nspace.max())
+        qplot = qplt.contourf(cube,
+                              nspace,
+                              linewidth=0,
+                              cmap=plt.cm.get_cmap(cmap),
+                              norm=LogNorm(),
+                              zmin=nspace.min(),
+                              zmax=nspace.max())
         qplot.colorbar.set_ticks([0.1, 1., 10.])
     else:
-        qplot = iris.plot.contourf(
-            cube,
-            nspace,
-            linewidth=0,
-            cmap=plt.cm.get_cmap(cmap),
-            extend=extend,
-            zmin=nspace.min(),
-            zmax=nspace.max())
+        qplot = iris.plot.contourf(cube,
+                                   nspace,
+                                   linewidth=0,
+                                   cmap=plt.cm.get_cmap(cmap),
+                                   extend=extend,
+                                   zmin=nspace.min(),
+                                   zmax=nspace.max())
         cbar = pyplot.colorbar(orientation='horizontal')
         cbar.set_ticks(
             [nspace.min(), (nspace.max() + nspace.min()) / 2.,
@@ -119,13 +120,8 @@ def add_map_subplot(subplot, cube, nspace, title='',
     plt.title(title)
 
 
-def make_model_vs_obs_plots(
-        cfg,
-        metadata,
-        model_filename,
-        obs_filename):
-    """
-    Make a figure showing four maps and the other shows a scatter plot.
+def make_model_vs_obs_plots(cfg, metadata, model_filename, obs_filename):
+    """Make a figure showing four maps and the other shows a scatter plot.
 
     The four pane image is a latitude vs longitude figures showing:
 
@@ -144,7 +140,6 @@ def make_model_vs_obs_plots(
         the preprocessed model file.
     obs_filename: str
         the preprocessed observations file.
-
     """
     filenames = {'model': model_filename, 'obs': obs_filename}
     logger.debug('make_model_vs_obs_plots filenames: %s', filenames)
@@ -172,8 +167,8 @@ def make_model_vs_obs_plots(
     long_name = cubes['model'][list(layers.keys())[0]].long_name
     units = str(cubes['model'][list(layers.keys())[0]].units)
 
-    # Load image format extention
-    image_extention = diagtools.get_image_format(cfg)
+    # Load image format extension
+    image_extension = diagtools.get_image_format(cfg)
 
     # Make a plot for each layer
     for layer in layers:
@@ -201,35 +196,42 @@ def make_model_vs_obs_plots(
         cube224.data = np.ma.clip(cube224.data, 0.1, 10.)
 
         n_points = 12
-        linspace12 = np.linspace(
-            zrange12[0], zrange12[1], n_points, endpoint=True)
-        linspace3 = np.linspace(
-            zrange3[0], zrange3[1], n_points, endpoint=True)
+        linspace12 = np.linspace(zrange12[0],
+                                 zrange12[1],
+                                 n_points,
+                                 endpoint=True)
+        linspace3 = np.linspace(zrange3[0],
+                                zrange3[1],
+                                n_points,
+                                endpoint=True)
         logspace4 = np.logspace(-1., 1., 12, endpoint=True)
 
         # Add the sub plots to the figure.
-        add_map_subplot(
-            221, cube221, linspace12, cmap='viridis', title=model,
-            extend=extend)
-        add_map_subplot(
-            222, cube222, linspace12, cmap='viridis',
-            title=' '.join([obs]),
-            extend=extend)
-        add_map_subplot(
-            223,
-            cube223,
-            linspace3,
-            cmap='bwr',
-            title=' '.join([model, 'minus', obs]),
-            extend=extend)
+        add_map_subplot(221,
+                        cube221,
+                        linspace12,
+                        cmap='viridis',
+                        title=model,
+                        extend=extend)
+        add_map_subplot(222,
+                        cube222,
+                        linspace12,
+                        cmap='viridis',
+                        title=' '.join([obs]),
+                        extend=extend)
+        add_map_subplot(223,
+                        cube223,
+                        linspace3,
+                        cmap='bwr',
+                        title=' '.join([model, 'minus', obs]),
+                        extend=extend)
         if np.min(zrange12) > 0.:
-            add_map_subplot(
-                224,
-                cube224,
-                logspace4,
-                cmap='bwr',
-                title=' '.join([model, 'over', obs]),
-                log=True)
+            add_map_subplot(224,
+                            cube224,
+                            logspace4,
+                            cmap='bwr',
+                            title=' '.join([model, 'over', obs]),
+                            log=True)
 
         caption = f'{long_name} [{units}]'
         # Add overall title
@@ -238,7 +240,7 @@ def make_model_vs_obs_plots(
         # Determine image filename:
         fn_list = ['model_vs_obs', long_name, model, obs, str(layer), 'maps']
         path = diagtools.folder(cfg['plot_dir']) + '_'.join(fn_list)
-        path = path.replace(' ', '') + image_extention
+        path = path.replace(' ', '') + image_extension
 
         # Saving files:
         logger.info('Saving plots to %s', path)
@@ -260,8 +262,8 @@ def make_model_vs_obs_plots(
 
 
 def rounds_sig(value, sig=3):
-    """
-    Round a float to a specific number of sig. figs. & return it as a string.
+    """Round a float to a specific number of sig. figs. & return it as a
+    string.
 
     Parameters
     ----------
@@ -274,14 +276,13 @@ def rounds_sig(value, sig=3):
     ----------
     str:
         The rounded output string.
-
     """
     if value == 0.:
         return str(0.)
     if value < 0.:
         value = abs(value)
-        return str(
-            -1. * round(value, sig - int(math.floor(math.log10(value))) - 1))
+        return str(-1. *
+                   round(value, sig - int(math.floor(math.log10(value))) - 1))
     return str(round(value, sig - int(math.floor(math.log10(value))) - 1))
 
 
@@ -291,8 +292,7 @@ def add_linear_regression(plot_axes,
                           showtext=True,
                           add_diagonal=False,
                           extent=None):
-    """
-    Add a straight line fit to an axis.
+    """Add a straight line fit to an axis.
 
     Parameters
     ----------
@@ -312,21 +312,18 @@ def add_linear_regression(plot_axes,
     beta1, beta0, r_value, p_value, std_err = linregress(arr_x, arr_y)
     texts = [
         r'$\^\beta_0$ = ' + rounds_sig(beta0),
-        r'$\^\beta_1$ = ' + rounds_sig(beta1),
-        r'R = ' + rounds_sig(r_value),
-        r'P = ' + rounds_sig(p_value),
-        r'N = ' + str(int(len(arr_x)))
+        r'$\^\beta_1$ = ' + rounds_sig(beta1), r'R = ' + rounds_sig(r_value),
+        r'P = ' + rounds_sig(p_value), r'N = ' + str(int(len(arr_x)))
     ]
     thetext = '\n'.join(texts)
 
     if showtext:
-        pyplot.text(
-            0.04,
-            0.96,
-            thetext,
-            horizontalalignment='left',
-            verticalalignment='top',
-            transform=plot_axes.transAxes)
+        pyplot.text(0.04,
+                    0.96,
+                    thetext,
+                    horizontalalignment='left',
+                    verticalalignment='top',
+                    transform=plot_axes.transAxes)
 
     if extent is None:
         x_values = np.arange(arr_x.min(), arr_x.max(),
@@ -352,13 +349,8 @@ def add_linear_regression(plot_axes,
         pyplot.plot(one_to_one, one_to_one, 'k--')
 
 
-def make_scatter(
-        cfg,
-        metadata,
-        model_filename,
-        obs_filename):
-    """
-    Makes Scatter plots of model vs observational data.
+def make_scatter(cfg, metadata, model_filename, obs_filename):
+    """Makes Scatter plots of model vs observational data.
 
     Make scatter plot showing the matched model and observational data with the
     model data as the x-axis coordinate and the observational data as the
@@ -401,8 +393,8 @@ def make_scatter(
 
     long_name = cubes['model'][list(layers.keys())[0]].long_name
 
-    # Load image format extention
-    image_extention = diagtools.get_image_format(cfg)
+    # Load image format extension
+    image_extension = diagtools.get_image_format(cfg)
 
     # Make a plot for each layer
     for layer in layers:
@@ -445,13 +437,12 @@ def make_scatter(
         pyplot.gca().set_aspect("equal")
         pyplot.axis(plotrange)
 
-        add_linear_regression(
-            pyplot.gca(),
-            model_data,
-            obs_data,
-            showtext=True,
-            add_diagonal=True,
-            extent=plotrange)
+        add_linear_regression(pyplot.gca(),
+                              model_data,
+                              obs_data,
+                              showtext=True,
+                              add_diagonal=True,
+                              extent=plotrange)
 
         pyplot.title(long_name)
         pyplot.xlabel(model)
@@ -463,7 +454,7 @@ def make_scatter(
             str(layer), 'scatter'
         ]
         path = diagtools.folder(cfg['plot_dir']) + '_'.join(fn_list)
-        path = path.replace(' ', '') + image_extention
+        path = path.replace(' ', '') + image_extension
 
         # Saving files:
         logger.info('Saving plots to %s', path)
@@ -491,9 +482,10 @@ def _prepare_provenance_record(cfg, **provenance_record):
 
     doc = recipe['documentation']
     authors = doc.get('authors', [])
-    authors += [maintainer
-                for maintainer in doc.get('maintainer', [])
-                if maintainer not in authors]
+    authors += [
+        maintainer for maintainer in doc.get('maintainer', [])
+        if maintainer not in authors
+    ]
     provenance_record['authors'] = authors
     for key in ['title', 'description', 'projects']:
         val = doc[key]
@@ -507,14 +499,12 @@ def _prepare_provenance_record(cfg, **provenance_record):
 
 
 def main(cfg):
-    """
-    Load the config file, and send it to the plot maker.
+    """Load the config file, and send it to the plot maker.
 
     Parameters
     ----------
     cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
-
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
