@@ -3,6 +3,8 @@
 ---
 documentation:
 
+  title: IPCC AR6 WG1 Chapter 3 figures
+
   description: |
     Producing Fig. 3.3, 3.4, 3.5, 3.13, 3.15 in the IPCC Working Group I
     Contribution to the Sixth Assessment Report: Chapter 3
@@ -10,6 +12,9 @@ documentation:
   authors:
     - bock_lisa
     - eyring_veronika
+
+  mantainer:
+    - bock_ls
 
   projects:
     - ipcc_ar6
@@ -370,7 +375,7 @@ models_cmip6_piControl: &models_cmip6_piControl #piControl, Amon, tas+pr
   - {dataset: CESM2-WACCM-FV2, institute: NCAR, grid: gn, start_year: 1, end_year: 500}
   - {dataset: CIESM, start_year: 1, end_year: 500}
   - {dataset: CMCC-CM2-SR5, grid: gn, start_year: 1850, end_year: 2099}
-  - {dataset: CMCC-ESM2, grid: gn, start_year: 1850, end_year: 2099}
+  #- {dataset: CMCC-ESM2, grid: gn, start_year: 1850, end_year: 2099} #no data available
   - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, start_year: 1850, end_year: 2349}
   - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, start_year: 1850, end_year: 2149}
   - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, start_year: 1850, end_year: 2349}
@@ -807,318 +812,318 @@ diagnostics:
         stippandhatch: True
 
 
-  # **********************************************************************
-  # IPCC WGI AR6, chap. 3
-  # Sect. 3.3 
-  # Fig 3.4
-  # **********************************************************************
-  # Timeseries of Global Near-Surface Air Temperature Anomaly
-  # ***********************************************************************
-
-  fig_3_4_cmip6:
-    description: Timeseries of Global Near-Surface Air Temperature Anomaly
-    variables:
-      tas: &tas_settings_cmip6
-        preprocessor: regrid_5_5_mmm
-        mip: Amon
-        project: CMIP6
-        exp: [historical, ssp245]
-        grid: gr
-        ensemble: r1i1p1f1
-        start_year: 1850
-        end_year: 2020
-        additional_datasets: *cmip6_models
-      tasa:
-        <<: *tas_settings_cmip6
-        preprocessor: regrid_5_5
-        additional_datasets:
-          - {dataset: HadCRUT5, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
-    scripts:
-      fig-3-4: &tsline_settings
-        script: ipcc_ar6/tas_anom.ncl
-        ref_start: 1850
-        ref_end: 1900
-        plot_units: "degC"
-        y_min: -0.7
-        y_max: 2.1
-        volcanoes: true
-        blending: False
-        ref_mask: True
-        write_stat: True
-        styleset: CMIP6
-
-
-  fig_3_4_cmip5:
-    description: Blended surface temperature.
-    variables:
-      tas: &tas_settings_cmip5
-        preprocessor: regrid_5_5_mmm
-        mip: Amon
-        project: CMIP5
-        exp: [historical, rcp45]
-        ensemble: r1i1p1
-        start_year: 1850
-        end_year: 2020
-        additional_datasets: *cmip5_models
-      tasa:
-        <<: *tas_settings_cmip5
-        preprocessor: regrid_5_5
-        additional_datasets:
-          - {dataset: HadCRUT5, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
-    scripts:
-      fig-3-4:
-        <<: *tsline_settings
-        styleset: CMIP5
-
-
-  fig_3_4_collect:
-    description: Collect all timeseries of blended surface temperature.
-    variables:
-      tasa: 
-        <<: *tas_settings_cmip6
-        end_year: 2020
-        preprocessor: regrid_5_5
-        additional_datasets:
-          - {dataset: HadCRUT5, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
-          - {dataset: BerkeleyEarth, project: OBS, type: ground, version: H4, tier: 2}
-          - {dataset: NOAAGlobalTemp-Interim, project: OBS, type: ground, version: interim2020, tier: 2}
-          - {dataset: Kadow, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
-          #- {dataset: GISTEMP, project: OBS, type: ground, version: v4-all, tier: 2,
-          #   start_year: 1880}
-          #- {dataset: CowtanWay, project: OBS, type: median, version: version2.0, tier: 2}
-    scripts:
-      collect: 
-        <<: *tsline_settings
-        script: ipcc_ar6/tsline_blend_collect.ncl
-        ancestors: [tasa, 'fig_3_4_*/fig-3-4']
-        start_year: 1850
-        end_year: 2020
-        ref: ["HadCRUT5"]
-        order: ["CMIP6_historical-ssp245", "CMIP5_historical-rcp45"]
-        stat_shading: True
-        ref_shading: True
-        ref_stderr: True
-
-
-  # **********************************************************************
-  # IPCC WGI AR6, chap. 3
-  # Sect. 3.3 
-  # Fig 3.5
-  # **********************************************************************
-  # Global climate variability - surface temperature
-  # **********************************************************************
-
-  fig_3_5:
-    description: IPCC AR6 Ch. 3, Fig. 3.5 (near-surface temperature)
-    variables:
-      tas:
-        preprocessor: regrid_5_5
-        mip: Amon
-        project: CMIP6
-        exp: piControl
-        ensemble: r1i1p1f1
-        grid: gr
-        additional_datasets: *models_cmip6_piControl_short
-      tasa:
-        preprocessor: regrid_5_5
-        mip: Amon
-        project: CMIP6
-        exp: piControl
-        ensemble: r1i1p1f1
-        grid: gr
-        start_year: 1950 #1850
-        end_year: 2014 #1900
-        additional_datasets:
-          #- {dataset: GISTEMP, project: OBS, type: ground, version: v4-all, start_year: 1880, tier: 2}
-          #- {dataset: GISTEMP, project: OBS, type: ground, version: v4-all, tier: 2}
-          #- {dataset: CowtanWay, project: OBS, type: median, version: version2.0, tier: 2}
-          - {dataset: Kadow, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
-          - {dataset: NOAAGlobalTemp-Interim, project: OBS, type: ground, version: interim2020, tier: 2}
-          - {dataset: BerkeleyEarth, project: OBS, type: ground, version: H4, tier: 2}
-          - {dataset: HadCRUT5, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
-    scripts:
-      fig_3_5:
-        script: ipcc_ar6/zonal_st_dev.ncl
-        multi_model_mean: True
-        time_avg: "yearly"
-        plot_units: "degC"
-        plot_legend: False
-        styleset: CMIP6
-
-
-
-  # **********************************************************************
-  # IPCC WGI AR6, chap. 3
-  # Sect. 3.3
-  # Fig. 3.13
-  # **********************************************************************
-  # Lisa
-  # **********************************************************************
-  # Multi model mean, multi model mean bias and root mean square error 
-  # (geographical distributions) for CMIP6, CMIP5 and HighResMIP
-  # **********************************************************************
-
-  IAV_calc_pr_cmip6:
-    <<: *diag_IAV
-    variables:
-      pr:
-        preprocessor: preproc_map
-        project: CMIP6
-        mip: Amon
-        exp: piControl
-        ensemble: r1i1p1f1
-        grid: gr
-
-  IAV_calc_pr_cmip5: 
-    <<: *diag_IAV
-    variables:
-      pr:
-        preprocessor: preproc_map
-        project: CMIP5
-        mip: Amon
-        exp: piControl
-        ensemble: r1i1p1
-    additional_datasets: *models_cmip5_piControl
-
-
-
-  fig_3_13_cmip6:
-    description: IPCC AR6 Ch. 3, Fig. 3.2 (near-surface temperature)
-    variables:
-      pr:
-        preprocessor: clim
-        reference_dataset: GPCP-SG
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        start_year: 1995
-        end_year: 2014
-        additional_datasets: *models_cmip6_historical
-    additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1}
-    scripts:
-      fig_3_13: 
-        script: ipcc_ar6/model_bias.ncl
-        ancestors: ['pr', 'IAV_calc_pr_cmip6/calc_IAV_for_stippandhatch']
-        projection: Robinson
-        mean_caption: "CMIP6"
-        bias_caption: "CMIP6 bias"
-        plot_rms_diff: True
-        rmsd_caption: "CMIP6 root mean square error"
-        stippandhatch: True
-        panel_title: "Precipitation"
-
-
-  fig_3_13_cmip5:
-    description: IPCC AR6 Ch. 3, Fig. 3.2 (near-surface temperature)
-    variables:
-      pr:
-        preprocessor: clim
-        reference_dataset: GPCP-SG
-        mip: Amon
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 1985
-        end_year: 2004
-        additional_datasets: *models_cmip5_historical
-    additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1}
-    scripts:
-      fig_3_13: 
-        script: ipcc_ar6/model_bias.ncl
-        ancestors: ['pr', 'IAV_calc_pr_cmip5/calc_IAV_for_stippandhatch']
-        projection: Robinson
-        mean_caption: "CMIP5"
-        bias_caption: "CMIP5 bias"
-        panel_num: ['c)', 'd)']
-        stippandhatch: True
-
-
-
-
-  # **********************************************************************
-  # IPCC WGI AR6, chap. 3
-  # Sect. 3.3 
-  # Fig 3.15
-  # **********************************************************************
-  # Global and zonal average anomalies in annual mean precipitation
-  # **********************************************************************
- 
-  fig_3_15_precip_anom:   
-    description: IPCC AR6 Ch. 3, Fig. 3.12 (precipitation)
-    variables:
-      pr_historical_global: &var_pr
-        short_name: pr
-        preprocessor: clim_5x5_land
-        reference_dataset: GHCN   
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        start_year: 1950
-        end_year: 2014
-        additional_datasets: *cmip6_models_pr #*models_cmip6_historical
-      pr_hist-nat_global:
-        <<: *var_pr
-        exp: hist-nat
-        additional_datasets: *models_cmip6_hist-nat
-      pr_historical_60N-90N:
-        <<: *var_pr
-        preprocessor: clim_5x5_land_60N-90N
-      pr_hist-nat_60N-90N:
-        <<: *var_pr
-        preprocessor: clim_5x5_land_60N-90N
-        exp: hist-nat
-        additional_datasets: *models_cmip6_hist-nat
-      pr_historical_30N-60N:
-        <<: *var_pr
-        preprocessor: clim_5x5_land_30N-60N
-      pr_hist-nat_30N-60N:
-        <<: *var_pr
-        preprocessor: clim_5x5_land_30N-60N
-        exp: hist-nat
-        additional_datasets: *models_cmip6_hist-nat
-      pr_historical_30S-30N:
-        <<: *var_pr
-        preprocessor: clim_5x5_land_30S-30N
-      pr_hist-nat_30S-30N:
-        <<: *var_pr
-        preprocessor: clim_5x5_land_30S-30N
-        exp: hist-nat
-        additional_datasets: *models_cmip6_hist-nat
-      pr_historical_30S-60S:
-        <<: *var_pr
-        preprocessor: clim_5x5_land_30S-60S
-      pr_hist-nat_30S-60S:
-        <<: *var_pr
-        preprocessor: clim_5x5_land_30S-60S
-        exp: hist-nat
-        additional_datasets: *models_cmip6_hist-nat
-    additional_datasets:
-      - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1, start_year: 1979}
-      - {dataset: CRU, mip: Amon, project: OBS, type: reanaly, version: TS4.02, tier: 2}
-    scripts:
-      tsline:
-        script: ipcc_ar6/precip_anom.ncl
-        ref_start: 1961
-        ref_end: 1990
-        ref_mask: True
-        start_year: 1950
-        end_year: 2014
-        trend: True
-        experiments: ["historical", "hist-nat"]
-        header: ["Global", "60N-90N", "30N-60N", "30S-30N", "60S-30S"]
-        panels: [["pr_historical_global", "pr_hist-nat_global"],
-                 ["pr_historical_60N-90N", "pr_hist-nat_60N-90N"],
-                 ["pr_historical_30N-60N", "pr_hist-nat_30N-60N"],
-                 ["pr_historical_30S-30N", "pr_hist-nat_30S-30N"],
-                 ["pr_historical_30S-60S", "pr_hist-nat_30S-60S"]]
-        stat: "MinMax"
-        plot_units: "mm/day"
-        y_min: -0.2
-        y_max: 0.2
+#  # **********************************************************************
+#  # IPCC WGI AR6, chap. 3
+#  # Sect. 3.3 
+#  # Fig 3.4
+#  # **********************************************************************
+#  # Timeseries of Global Near-Surface Air Temperature Anomaly
+#  # ***********************************************************************
+#
+#  fig_3_4_cmip6:
+#    description: Timeseries of Global Near-Surface Air Temperature Anomaly
+#    variables:
+#      tas: &tas_settings_cmip6
+#        preprocessor: regrid_5_5_mmm
+#        mip: Amon
+#        project: CMIP6
+#        exp: [historical, ssp245]
+#        grid: gr
+#        ensemble: r1i1p1f1
+#        start_year: 1850
+#        end_year: 2020
+#        additional_datasets: *cmip6_models
+#      tasa:
+#        <<: *tas_settings_cmip6
+#        preprocessor: regrid_5_5
+#        additional_datasets:
+#          - {dataset: HadCRUT5, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
+#    scripts:
+#      fig-3-4: &tsline_settings
+#        script: ipcc_ar6/tas_anom.ncl
+#        ref_start: 1850
+#        ref_end: 1900
+#        plot_units: "degC"
+#        y_min: -0.7
+#        y_max: 2.1
+#        volcanoes: true
+#        blending: False
+#        ref_mask: True
+#        write_stat: True
+#        styleset: CMIP6
+#
+#
+#  fig_3_4_cmip5:
+#    description: Blended surface temperature.
+#    variables:
+#      tas: &tas_settings_cmip5
+#        preprocessor: regrid_5_5_mmm
+#        mip: Amon
+#        project: CMIP5
+#        exp: [historical, rcp45]
+#        ensemble: r1i1p1
+#        start_year: 1850
+#        end_year: 2020
+#        additional_datasets: *cmip5_models
+#      tasa:
+#        <<: *tas_settings_cmip5
+#        preprocessor: regrid_5_5
+#        additional_datasets:
+#          - {dataset: HadCRUT5, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
+#    scripts:
+#      fig-3-4:
+#        <<: *tsline_settings
+#        styleset: CMIP5
+#
+#
+#  fig_3_4_collect:
+#    description: Collect all timeseries of blended surface temperature.
+#    variables:
+#      tasa: 
+#        <<: *tas_settings_cmip6
+#        end_year: 2020
+#        preprocessor: regrid_5_5
+#        additional_datasets:
+#          - {dataset: HadCRUT5, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
+#          - {dataset: BerkeleyEarth, project: OBS, type: ground, version: H4, tier: 2}
+#          - {dataset: NOAAGlobalTemp-Interim, project: OBS, type: ground, version: interim2020, tier: 2}
+#          - {dataset: Kadow, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
+#          #- {dataset: GISTEMP, project: OBS, type: ground, version: v4-all, tier: 2,
+#          #   start_year: 1880}
+#          #- {dataset: CowtanWay, project: OBS, type: median, version: version2.0, tier: 2}
+#    scripts:
+#      collect: 
+#        <<: *tsline_settings
+#        script: ipcc_ar6/tsline_collect.ncl
+#        ancestors: [tasa, 'fig_3_4_*/fig-3-4']
+#        start_year: 1850
+#        end_year: 2020
+#        ref: ["HadCRUT5"]
+#        order: ["CMIP6_historical-ssp245", "CMIP5_historical-rcp45"]
+#        stat_shading: True
+#        ref_shading: True
+#        ref_stderr: True
+#
+#
+#  # **********************************************************************
+#  # IPCC WGI AR6, chap. 3
+#  # Sect. 3.3 
+#  # Fig 3.5
+#  # **********************************************************************
+#  # Global climate variability - surface temperature
+#  # **********************************************************************
+#
+#  fig_3_5:
+#    description: IPCC AR6 Ch. 3, Fig. 3.5 (near-surface temperature)
+#    variables:
+#      tas:
+#        preprocessor: regrid_5_5
+#        mip: Amon
+#        project: CMIP6
+#        exp: piControl
+#        ensemble: r1i1p1f1
+#        grid: gr
+#        additional_datasets: *models_cmip6_piControl_short
+#      tasa:
+#        preprocessor: regrid_5_5
+#        mip: Amon
+#        project: CMIP6
+#        exp: piControl
+#        ensemble: r1i1p1f1
+#        grid: gr
+#        start_year: 1950 #1850
+#        end_year: 2014 #1900
+#        additional_datasets:
+#          #- {dataset: GISTEMP, project: OBS, type: ground, version: v4-all, start_year: 1880, tier: 2}
+#          #- {dataset: GISTEMP, project: OBS, type: ground, version: v4-all, tier: 2}
+#          #- {dataset: CowtanWay, project: OBS, type: median, version: version2.0, tier: 2}
+#          - {dataset: Kadow, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
+#          - {dataset: NOAAGlobalTemp-Interim, project: OBS, type: ground, version: interim2020, tier: 2}
+#          - {dataset: BerkeleyEarth, project: OBS, type: ground, version: H4, tier: 2}
+#          - {dataset: HadCRUT5, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
+#    scripts:
+#      fig_3_5:
+#        script: ipcc_ar6/zonal_st_dev.ncl
+#        multi_model_mean: True
+#        time_avg: "yearly"
+#        plot_units: "degC"
+#        plot_legend: False
+#        styleset: CMIP6
+#
+#
+#
+#  # **********************************************************************
+#  # IPCC WGI AR6, chap. 3
+#  # Sect. 3.3
+#  # Fig. 3.13
+#  # **********************************************************************
+#  # Lisa
+#  # **********************************************************************
+#  # Multi model mean, multi model mean bias and root mean square error 
+#  # (geographical distributions) for CMIP6, CMIP5 and HighResMIP
+#  # **********************************************************************
+#
+#  IAV_calc_pr_cmip6:
+#    <<: *diag_IAV
+#    variables:
+#      pr:
+#        preprocessor: preproc_map
+#        project: CMIP6
+#        mip: Amon
+#        exp: piControl
+#        ensemble: r1i1p1f1
+#        grid: gr
+#
+#  IAV_calc_pr_cmip5: 
+#    <<: *diag_IAV
+#    variables:
+#      pr:
+#        preprocessor: preproc_map
+#        project: CMIP5
+#        mip: Amon
+#        exp: piControl
+#        ensemble: r1i1p1
+#    additional_datasets: *models_cmip5_piControl
+#
+#
+#
+#  fig_3_13_cmip6:
+#    description: IPCC AR6 Ch. 3, Fig. 3.2 (near-surface temperature)
+#    variables:
+#      pr:
+#        preprocessor: clim
+#        reference_dataset: GPCP-SG
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        ensemble: r1i1p1f1
+#        grid: gr
+#        start_year: 1995
+#        end_year: 2014
+#        additional_datasets: *models_cmip6_historical
+#    additional_datasets:
+#      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1}
+#    scripts:
+#      fig_3_13: 
+#        script: ipcc_ar6/model_bias.ncl
+#        ancestors: ['pr', 'IAV_calc_pr_cmip6/calc_IAV_for_stippandhatch']
+#        projection: Robinson
+#        mean_caption: "CMIP6"
+#        bias_caption: "CMIP6 bias"
+#        plot_rms_diff: True
+#        rmsd_caption: "CMIP6 root mean square error"
+#        stippandhatch: True
+#        panel_title: "Precipitation"
+#
+#
+#  fig_3_13_cmip5:
+#    description: IPCC AR6 Ch. 3, Fig. 3.2 (near-surface temperature)
+#    variables:
+#      pr:
+#        preprocessor: clim
+#        reference_dataset: GPCP-SG
+#        mip: Amon
+#        project: CMIP5
+#        exp: historical
+#        ensemble: r1i1p1
+#        start_year: 1985
+#        end_year: 2004
+#        additional_datasets: *models_cmip5_historical
+#    additional_datasets:
+#      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1}
+#    scripts:
+#      fig_3_13: 
+#        script: ipcc_ar6/model_bias.ncl
+#        ancestors: ['pr', 'IAV_calc_pr_cmip5/calc_IAV_for_stippandhatch']
+#        projection: Robinson
+#        mean_caption: "CMIP5"
+#        bias_caption: "CMIP5 bias"
+#        panel_num: ['c)', 'd)']
+#        stippandhatch: True
+#
+#
+#
+#
+#  # **********************************************************************
+#  # IPCC WGI AR6, chap. 3
+#  # Sect. 3.3 
+#  # Fig 3.15
+#  # **********************************************************************
+#  # Global and zonal average anomalies in annual mean precipitation
+#  # **********************************************************************
+# 
+#  fig_3_15_precip_anom:   
+#    description: IPCC AR6 Ch. 3, Fig. 3.12 (precipitation)
+#    variables:
+#      pr_historical_global: &var_pr
+#        short_name: pr
+#        preprocessor: clim_5x5_land
+#        reference_dataset: GHCN   
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        ensemble: r1i1p1f1
+#        grid: gr
+#        start_year: 1950
+#        end_year: 2014
+#        additional_datasets: *cmip6_models_pr #*models_cmip6_historical
+#      pr_hist-nat_global:
+#        <<: *var_pr
+#        exp: hist-nat
+#        additional_datasets: *models_cmip6_hist-nat
+#      pr_historical_60N-90N:
+#        <<: *var_pr
+#        preprocessor: clim_5x5_land_60N-90N
+#      pr_hist-nat_60N-90N:
+#        <<: *var_pr
+#        preprocessor: clim_5x5_land_60N-90N
+#        exp: hist-nat
+#        additional_datasets: *models_cmip6_hist-nat
+#      pr_historical_30N-60N:
+#        <<: *var_pr
+#        preprocessor: clim_5x5_land_30N-60N
+#      pr_hist-nat_30N-60N:
+#        <<: *var_pr
+#        preprocessor: clim_5x5_land_30N-60N
+#        exp: hist-nat
+#        additional_datasets: *models_cmip6_hist-nat
+#      pr_historical_30S-30N:
+#        <<: *var_pr
+#        preprocessor: clim_5x5_land_30S-30N
+#      pr_hist-nat_30S-30N:
+#        <<: *var_pr
+#        preprocessor: clim_5x5_land_30S-30N
+#        exp: hist-nat
+#        additional_datasets: *models_cmip6_hist-nat
+#      pr_historical_30S-60S:
+#        <<: *var_pr
+#        preprocessor: clim_5x5_land_30S-60S
+#      pr_hist-nat_30S-60S:
+#        <<: *var_pr
+#        preprocessor: clim_5x5_land_30S-60S
+#        exp: hist-nat
+#        additional_datasets: *models_cmip6_hist-nat
+#    additional_datasets:
+#      - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
+#      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1, start_year: 1979}
+#      - {dataset: CRU, mip: Amon, project: OBS, type: reanaly, version: TS4.02, tier: 2}
+#    scripts:
+#      tsline:
+#        script: ipcc_ar6/precip_anom.ncl
+#        ref_start: 1961
+#        ref_end: 1990
+#        ref_mask: True
+#        start_year: 1950
+#        end_year: 2014
+#        trend: True
+#        experiments: ["historical", "hist-nat"]
+#        header: ["Global", "60N-90N", "30N-60N", "30S-30N", "60S-30S"]
+#        panels: [["pr_historical_global", "pr_hist-nat_global"],
+#                 ["pr_historical_60N-90N", "pr_hist-nat_60N-90N"],
+#                 ["pr_historical_30N-60N", "pr_hist-nat_30N-60N"],
+#                 ["pr_historical_30S-30N", "pr_hist-nat_30S-30N"],
+#                 ["pr_historical_30S-60S", "pr_hist-nat_30S-60S"]]
+#        stat: "MinMax"
+#        plot_units: "mm/day"
+#        y_min: -0.2
+#        y_max: 0.2
