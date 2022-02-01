@@ -20,6 +20,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         ESMValTool's user configuration
     dataset : str
         Name of the dataset
+    dataset_info : dict
+         Dataset information from the datasets.yml file
     start_date : datetime
         Start of the interval to download
     end_date : datetime
