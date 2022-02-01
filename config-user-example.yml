@@ -19,7 +19,7 @@
 ---
 
 # Directory where results are stored
-output_dir: ./esmvaltool_output
+output_dir: ~/esmvaltool_output
 
 # Directory for storing downloaded climate data
 download_dir: ~/climate_data
