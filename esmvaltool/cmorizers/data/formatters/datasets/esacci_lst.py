@@ -100,7 +100,7 @@ def load_cubes(in_dir, file_day, file_night, year, month, variable):
 
     variable = land surface temperature
     platform = AQUA not used for now
-               but in place for future expansion to all ESC CCI LST plaforms
+               but in place for future expansion to all ESC CCI LST platforms
     """
     logger.info('Loading %s/%s%s%s*.nc', in_dir, file_day, year, month)
     day_cube = iris.load_cube('%s/%s%s%02d*.nc' % (in_dir, file_day,
@@ -121,7 +121,7 @@ def make_monthly_average(day_cube, night_cube, year, month):
 
     co_time = night_cube.coord('time')
     co_time.points = co_time.points + 100.0
-    # maybe the arbitary difference should go on day cubes to
+    # maybe the arbitrary difference should go on day cubes to
     # take the timestamp to 12Z?
     # not really an issue when using monthly files
 
