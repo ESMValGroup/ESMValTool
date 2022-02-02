@@ -254,12 +254,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, _, __):
     # If it doesn't exist, create it
     if not os.path.isdir(cfg['work_dir']):
         logger.info("Creating working directory for "
-                    f"regridding: {cfg['work_dir']}")
+                    "regridding: %s", cfg['work_dir'])
         os.mkdir(cfg['work_dir'])
 
     for short_name, var in cfg['variables'].items():
         var['short_name'] = short_name
-        logger.info(f"Processing var {short_name}")
+        logger.info("Processing var %s", short_name)
 
         # Regridding
         logger.info("Start regridding to: %s", cfg['custom']['regrid'])
@@ -275,11 +275,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, _, __):
                                                         month=f"{month:02}"))
                 if os.path.isfile(in_file):
                     # Read in the full dataset here from 'workdir'
-                    logger.info(f"Start CMORization of file {in_file}")
+                    logger.info("Start CMORization of file %s", in_file)
                     _cmorize_dataset(in_file, var, cfg, out_dir)
-                    logger.info(f"Finished processing {year}-{month}")
+                    logger.info("Finished processing %s-%s", year, month)
                 else:
-                    logger.info(f"No files found for {year}-{month}")
+                    logger.info("No files found for %s-%s", year, month)
                     continue
 
         logger.info("Finished CMORIZATION")
