@@ -73,12 +73,17 @@ logger = logging.getLogger(os.path.basename(__file__))
 # List of ensemble members to skip.
 data_dict_skips = {
     'CanESM5':['r11i1p2f1', 'r12i1p1f1', 'r12i1p2f1'], # hist data doesn't exist
+    'CanESM5-CanOE': ['r1i1p2f1', 'r2i1p2f1', 'r3i1p2f1',], # hist data doesn't exist
     'ACCESS-ESM1-5': ['r2i1p1f1', 'r3i1p1f1'], #  # hist data doesn't exist
     'CESM2-WACCM':['r2i1p1f1', 'r3i1p1f1'], # no hist data.
     'CESM2-WACCM-FV2': ['r1i1p1f1', 'r2i1p1f1', 'r3i1p1f1'], # no SSP data at all.
+    'MPI-ESM-1-2-HAM': ['r2i1p1f1', ], # no hist data.
+    'MIROC-ES2L': ['r1i1p1f2', 'r2i1p1f2'],  # no hist data.
     'MPI-ESM1-2-LR': ['r2i1p1f1', 'r3i1p1f1'], # no hist data.
     'NorCPM1': ['r1i1p1f1', ], #fgco2 off by 1e-10
+    'NorESM2-LM': ['r1i1p1f1', 'r2i1p1f1'], # missing years 2015-2020, and sometimes after 2055 too.
     }
+
 
 # For models (like UKESM), where the hist and ssp have different ensemble ids:
 data_dict_linked_ens = {# model: {ssp:hist'
@@ -178,7 +183,7 @@ def make_mean_of_cube_list(cube_list):
     if len(year_counts.keys())>1:
         print('make_mean_of_cube_list: ERROR: more than one dataset length:', year_counts)
         print('make_mean_of_cube_list: ERROR: list of years:', full_times)
-        assert 0
+        #assert 0
 
     print('make_mean_of_cube_list: INFO:, everything is right size:', year_counts)
     output_datas = {}
@@ -628,7 +633,6 @@ def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
         tmp_dict[(dataset, cumul_name, exp, ensemble)] = hist_cumul_cube
         hist_datas[(dataset, ensemble)] = {'time': times, 'data': hist_cumul_cube.data}
 
-
     # For models (like UKESM), where the hist and ssp have different ensemble ids:
     for mod, ens in data_dict_linked_ens.items():
         for ens_ssp, ens_hist in ens.items():
@@ -640,7 +644,7 @@ def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
             continue
         if exp in ['historical', ]:
             continue
-        print('calculate_cumulative', (dataset, short, exp, ensemble), cube )
+        print('calculate_cumulative', (dataset, short, exp, ensemble), cube.data.shape )
         cumul_cube = cube.copy()
         times = diagtools.cube_time_to_float(cumul_cube)
         if isinstance(ensemble, str):
@@ -656,15 +660,34 @@ def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
                 print('unable to find', ('tas', ensemble))
                 assert 0
         if hist_dat is False:
-            print('Unable to find hist_dat:', (dataset, short, exp, ensemble), cube)
+            print('failed:', cube)
+            print('Unable to find hist_dat:', (dataset, short, exp, ensemble))
+            for (dax, shortx, expx, ensemblex) in data_dict.keys():
+                if dax != dataset: continue
+                if shortx != short_name: continue
+                if expx != 'historical': continue
+                print('candidates:', (dax, shortx, expx, ensemblex))
             assert 0
+
         hist_point = get_threshold_point(hist_dat, np.min(times))
+        print('found hist point:', hist_point, hist_dat['data'][hist_point], np.min(times))
+        if hist_point is None:
+            print('Problem with hist point:', hist_point)
+            print('hist_dat:', hist_dat)
+            print('times', times)
+            assert 0
         hist_cumul = hist_dat['data'][hist_point]
 
         #hist_point = get_threshold_point(hist_datas[ensemble], np.min(times))
         #hist_cumul = hist_datas[ensemble]['data'][hist_point]
+        print('iter 4:', cumul_cube.data.shape, hist_cumul.shape)
+
         cumul_cube.data = cumul_cube.data
+        print(hist_cumul, np.cumsum(np.ma.masked_invalid(cumul_cube.data)), times) 
+        print((dataset, short, exp, ensemble))
+        print('iter 5:', cumul_cube.data.shape, hist_cumul.shape)
         cumul_cube.data = np.cumsum(np.ma.masked_invalid(cumul_cube.data)) + hist_cumul
+      
         if new_units:
             cumul_cube.units = cf_units.Unit(new_units)
         tmp_dict[(dataset, cumul_name, exp, ensemble)] = cumul_cube
@@ -2205,7 +2228,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         label = ' '.join([exp_1, ]) #ensemble_1])
         # masks fromn the year 2005 of hist data, so that they can line up properly.
 
-        hist_ssp_sync = False
+        hist_ssp_sync = True #
         if draw_line:
             x_times = np.ma.array(x_times)
             y_times = np.ma.array(y_times)
@@ -2225,6 +2248,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                     histy_t = y_times
                     histx_d = x_data
                     histy_d = y_data
+
                 # print('historical', histx_t, histy_t, histx_d, histy_d)
 
                 #plt.plot(np.ma.masked_where(x_times > 2005., x_data),
@@ -2264,6 +2288,11 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                              lw=lw,
                              color=exp_colours[exp_1])
                 else:
+                    if len(x_data) != len(y_data): 
+                        print('WARNING: x!=y:', len(x_data), '!=', len(y_data), 'x:', x, 'y:',y)
+                        print(x, 'x_times:', x_times)
+                        print(y, 'y_times:', y_times)
+
                     plt.plot(x_data,
                          y_data,
                          lw=lw,
@@ -2391,12 +2420,12 @@ def calculate_percentages( cfg,
     #ensemble_key = 'all',
     ):
 
-    print(thresholds_dict)
-    print(119, thresholds_dict[('CMIP6', 'tas', 'ssp119', 'ensemble_mean')])
-    print(126, thresholds_dict[('CMIP6', 'tas', 'ssp126', 'ensemble_mean')])
-    print(245, thresholds_dict[('CMIP6', 'tas', 'ssp245', 'ensemble_mean')])
-    print(370, thresholds_dict[('CMIP6', 'tas', 'ssp370', 'ensemble_mean')])
-    print(585, thresholds_dict[('CMIP6', 'tas', 'ssp585', 'ensemble_mean')])
+    #print(thresholds_dict)
+    #print(119, thresholds_dict.get(('CMIP6', 'tas', 'ssp119', 'ensemble_mean'), None))
+    #print(126, thresholds_dict[('CMIP6', 'tas', 'ssp126', 'ensemble_mean')])
+    #print(245, thresholds_dict[('CMIP6', 'tas', 'ssp245', 'ensemble_mean')])
+    #print(370, thresholds_dict[('CMIP6', 'tas', 'ssp370', 'ensemble_mean')])
+    #print(585, thresholds_dict[('CMIP6', 'tas', 'ssp585', 'ensemble_mean')])
 
     data_dict_shelve = diagtools.folder([cfg['work_dir'], 'percentages_dicts'])
     data_dict_shelve+='_'.join(['allocations', threshold])+'.shelve'
@@ -2443,6 +2472,7 @@ def calculate_percentages( cfg,
 
         atmos_carbon = data_dict.get((t_dataset, 'atmos_carbon',  t_exp, t_ens), None) #dict
         if atmos_carbon is None:  # Because not all sceanrios have emissions data.
+           print('couldnt find atmos carbon:', t_dataset, 'atmos_carbon',  t_exp, t_ens)
            assert 0
 
         # if land_carbon == 'nbpgt':
@@ -3541,9 +3571,9 @@ def main(cfg):
 
     #jobtype = 'land'
     short_names, short_names_x, short_names_y = [], [], []
-    jobtype = 'debug'
+    #jobtype = 'debug'
     #jobtype = 'bulk'
-    # jobtype = 'cumulative_plot'
+    jobtype = 'cumulative_plot'
 
     if jobtype == 'cumulative_plot':
         short_names = ['tas', 'tas_norm',
@@ -3651,7 +3681,7 @@ def main(cfg):
                 for plot_style, ens, group_by in product(plot_styles, ens_styles, group_bys):
                     make_ensemble_barchart(cfg, data_dict, thresholds_dict, plot_style=plot_style, ensemble_key=ens, group_by=group_by)
 
-                return   
+                #return   
 
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
