@@ -884,13 +884,14 @@ diagnostics:
 #        end_year: 2020
 #        preprocessor: regrid_5_5
 #        additional_datasets:
-#          - {dataset: HadCRUT5, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
-#          - {dataset: BerkeleyEarth, project: OBS, type: ground, version: H4, tier: 2}
-#          - {dataset: NOAAGlobalTemp-Interim, project: OBS, type: ground, version: interim2020, tier: 2}
-#          - {dataset: Kadow, project: OBS, type: mean, version: 5.0.1.0, tier: 2}
-#          #- {dataset: GISTEMP, project: OBS, type: ground, version: v4-all, tier: 2,
-#          #   start_year: 1880}
-#          #- {dataset: CowtanWay, project: OBS, type: median, version: version2.0, tier: 2}
+#          - {dataset: HadCRUT5, project: OBS, type: mean, version: 5.0.1.0,
+#             tier: 2}
+#          - {dataset: BerkeleyEarth, project: OBS, type: reanaly,
+#             version: 2020, tier: 2}
+#          - {dataset: NOAAGlobalTemp-Interim, project: OBS, type: ground
+#             version: v5, tier: 2, start_year: 1880}
+#          - {dataset: Kadow, project: OBS, type: mean, version: 5.0.1.0,
+#             tier: 2}
 #    scripts:
 #      collect: 
 #        <<: *tsline_settings
