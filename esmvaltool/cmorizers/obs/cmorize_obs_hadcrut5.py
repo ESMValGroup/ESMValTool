@@ -68,7 +68,6 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
         if cube.units != cmor_info.units:
             cube.convert_units(cmor_info.units)
 
-
     # fix time units
     cube.coord('time').convert_units(
         Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
