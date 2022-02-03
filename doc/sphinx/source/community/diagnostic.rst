@@ -414,7 +414,7 @@ request:
    @esmvalbot Please run recipe_xyz.yml
 
 Note that only members of the `@ESMValGroup/esmvaltool-developmentteam`_
-can request runs. The memory of the `@esmvalbot`_ is limited to 16 GB and it only
+can request runs. The memory of the `@esmvalbot`_ is limited to 64 GB and it only
 has access to data available at DKRZ.
 
 When reviewing a pull request, at the very least check that a recipes runs
