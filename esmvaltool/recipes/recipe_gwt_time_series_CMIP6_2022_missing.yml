@@ -106,9 +106,9 @@ diagnostics:
             # - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp245, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp245, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp370, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100} # years missing
-            - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp370, ensemble: r2i1p1f1, start_year: 2015, end_year: 2054} # years missing
-            - {project: CMIP6, mip: Amon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: ssp370, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
-            - {project: CMIP6, mip: Amon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: ssp370, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
+            # - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp370, ensemble: r2i1p1f1, start_year: 2015, end_year: 2054} # years missing
+            # - {project: CMIP6, mip: Amon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: ssp370, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
+            # - {project: CMIP6, mip: Amon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: ssp370, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
 
 
       ########################
@@ -144,10 +144,10 @@ diagnostics:
             # - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp245, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp245, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp370, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp370, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
+            # - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp370, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
 
-            - {project: CMIP6, mip: Omon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: ssp370, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: ssp370, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
+            # - {project: CMIP6, mip: Omon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: ssp370, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
+            # - {project: CMIP6, mip: Omon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: ssp370, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
 
 
 
@@ -183,10 +183,10 @@ diagnostics:
             # - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp245, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp245, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp370, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
-            - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp370, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
+            # - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: ssp370, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
 
-            - {project: CMIP6, mip: Lmon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: ssp370, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
-            - {project: CMIP6, mip: Lmon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: ssp370, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
+            # - {project: CMIP6, mip: Lmon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: ssp370, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
+            # - {project: CMIP6, mip: Lmon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: ssp370, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
 
 
     scripts:
