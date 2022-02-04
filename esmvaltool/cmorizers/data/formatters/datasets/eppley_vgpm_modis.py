@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """ESMValTool CMORizer for Eppley-VGPM-MODIS data from Oregon State University.
 
 Tier
