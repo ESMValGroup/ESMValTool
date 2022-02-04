@@ -65,7 +65,7 @@ preprocessors:
     custom_order: true
     extract_levels:
       levels: [0., 10., 100., 1000.]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     area_statistics:
       operator: mean
     multi_model_statistics:
@@ -89,7 +89,7 @@ preprocessors:
     custom_order: true
     extract_levels:
       levels: [0., 10., 100., 1000.]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     extract_region:
       start_longitude: -80.
       end_longitude: 30.
@@ -161,7 +161,7 @@ preprocessors:
     custom_order: true
     extract_levels:
       levels: [0., 10., 100., 1000.,]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     climate_statistics:
       operator: mean
     regrid:
@@ -191,7 +191,7 @@ preprocessors:
     custom_order: true
     extract_levels:
       levels: [0., 10., 100., 1000.,]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     climate_statistics:
       operator: mean
     extract_region:

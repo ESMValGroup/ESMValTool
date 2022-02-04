@@ -53,7 +53,7 @@ For example, run
 
 .. code-block:: bash
 
-    esmvaltool run examples/recipe_python.yml --offline=False
+    esmvaltool run --offline=False examples/recipe_python.yml
 
 to run the default example recipe and automatically download the required data
 to the directory ``~/climate_data``.
@@ -217,6 +217,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | ESACCI-FIRE                  | burntArea (Lmon)                                                                                     |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-LANDCOVER             | baresoilFrac, cropFrac, grassFrac, shrubFrac, treeFrac (Lmon)                                        |   2  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ESACCI-LST                   | ts (Amon)                                                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-OC                    | chl (Omon)                                                                                           |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
