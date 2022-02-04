@@ -52,7 +52,7 @@ def _fix_fx_areacello(xr_time, var):
                                  coords={
                                      'lat': xr_time.temp.coords['lat'],
                                      'lon': xr_time.temp.coords['lon']
-                                 },
+                                     },
                                  dims=['lat', 'lon'],
                                  name=var)
     grid_areas_xr.attrs = OrderedDict([('cell_area', 'Ocean Grid-Cell Area'),

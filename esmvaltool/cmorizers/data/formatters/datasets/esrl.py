@@ -271,12 +271,14 @@ def _get_filenames(stations, cfg, in_dir, all_stat):
                     stations = [x for x in stations if x not in rm_stat]
                 else:
                     raise ValueError(
-                        "No data found for %s on the ftp server. " % rm_stat)
+                        f"No data found for {rm_stat} on the ftp server. "
+                        )
         else:
             if not all_stat:
-                raise ValueError("No local data found for stations %s, "
-                                 "consider turning on the download option." %
-                                 download_files)
+                raise ValueError(
+                    f"No local data found for stations {download_files}, "
+                    "consider turning on the download option."
+                    )
     logger.debug("Found input files:\n%s", pformat(input_files))
     return input_files, stations
 
@@ -311,8 +313,8 @@ def cmorization(in_dir, out_dir, cfg, _, __, ___):
                 _extract_variable(short_name, var, cfg, out_dir,
                                   station_dict[station.upper()])
         else:
-            raise ValueError("Could not find the following station(s): %s. "
+            raise ValueError(f"Could not find the following station(s): "
+                             f"{false_keys}. "
                              "Please double-check your spelling in the "
                              "cmor config file. The following is a list of "
-                             "valid stations: %s." %
-                             (false_keys, list(station_dict.keys())))
+                             f"valid stations: {list(station_dict.keys())}.")

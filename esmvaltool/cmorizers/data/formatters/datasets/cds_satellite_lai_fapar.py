@@ -66,8 +66,10 @@ def _attrs_are_the_same(cubelist):
             }
         if len(unique_attr_vals) > 1:
             attrs_the_same = False
-            print("Different values found for {0}-attribute: {1}".format(
-                key, unique_attr_vals))
+            print(
+                f"Different values found for {key}-attribute: "
+                f"{unique_attr_vals}"
+                )
     return attrs_the_same
 
 

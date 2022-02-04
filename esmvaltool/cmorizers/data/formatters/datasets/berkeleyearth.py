@@ -52,7 +52,7 @@ def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
         var_name='time',
         standard_name='time',
         long_name='time',
-        units=cf_units.Unit('days since {}-01-01 00:00:00'.format(start_year),
+        units=cf_units.Unit(f'days since {start_year}-01-01 00:00:00',
                             calendar=cf_units.CALENDAR_STANDARD))
 
     # init a dummy cube to enable coord_categorisation
@@ -188,10 +188,10 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
         'tas':
         "Temperature time-series calculated from the anomaly "
         "time-series by adding the temperature climatology "
-        "for {}-{}".format(climstart, climend),
+        f"for {climstart}-{climend}",
         'tasa':
         "Temperature anomaly with respect to the period"
-        " {}-{}".format(climstart, climend)
+        " {climstart}-{climend}"
     }
 
     for s_name, cube in zip(short_names, [cube_abs, cube_anom]):

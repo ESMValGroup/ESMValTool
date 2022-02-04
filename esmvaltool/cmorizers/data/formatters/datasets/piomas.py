@@ -137,7 +137,7 @@ class PIOMAS():
             np.arange(0, data.shape[0]),
             standard_name='time',
             var_name='time',
-            units=Unit('days since {}-01-01'.format(year), calendar='noleap'),
+            units=Unit(f'days since {year}-01-01', calendar='noleap'),
         )
 
         cube = iris.cube.Cube(
