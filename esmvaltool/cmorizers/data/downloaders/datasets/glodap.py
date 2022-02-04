@@ -3,7 +3,10 @@
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
+logger = logging.getLogger(__name__)
 
+
+# pylint: disable=invalid-name
 def download_dataset(config, dataset, dataset_info, _, __, overwrite):
     """Download dataset.
 

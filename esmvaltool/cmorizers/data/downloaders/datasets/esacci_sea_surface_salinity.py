@@ -10,7 +10,6 @@ from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 logger = logging.getLogger(__name__)
 
 
-# pylint: disable=invalid-name
 def download_dataset(config, dataset, dataset_info, start_date, end_date,
                      overwrite):
     """Download dataset.
