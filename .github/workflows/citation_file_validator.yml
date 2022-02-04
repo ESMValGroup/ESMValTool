@@ -1,9 +1,14 @@
-name: cffconvert
+# workflow that performs a validity check of CITATION.cff file
+# authors: Abel S. Siqueira, Faruk Diblen, Jurriaan Spaaks GH: @abelsiqueira, @fdiblen, @jspaaks
+
+name: CFF File Validator
 
 on:
   push:
     paths:
       - CITATION.cff
+  schedule:
+    - cron: '0 0 1 * *'
 
 jobs:
   validate:
