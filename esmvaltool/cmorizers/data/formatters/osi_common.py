@@ -47,9 +47,9 @@ class OSICmorizer():
             var_info = {}
             for mip in vals['mip']:
                 var_info[mip] = self.cfg['cmor_table'].get_variable(mip, var)
-            file_pattern = '{0}_{1}_{2}_*.nc'.format(vals['raw'],
-                                                     self.hemisphere,
-                                                     vals['grid'])
+            file_pattern = (
+                f"{vals['raw']}_{self.hemisphere}_{vals['grid']}_*.nc"
+                )
             for year in os.listdir(self.in_dir):
                 try:
                     year = int(year)
