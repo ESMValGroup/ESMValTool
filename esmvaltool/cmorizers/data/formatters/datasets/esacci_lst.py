@@ -95,8 +95,7 @@ def cmorization(in_dir, out_dir, cfg, _, __, ___):
 
 
 def load_cubes(in_dir, file_day, file_night, year, month, variable):
-    """
-    Variable description.
+    """Variable description.
 
     variable = land surface temperature
     platform = AQUA not used for now
