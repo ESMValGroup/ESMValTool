@@ -50,6 +50,6 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
             if downloader.exists(str(loop_date.year)):
                 downloader.download_year(loop_date.year)
             else:
-                logger.info(f'Year {loop_date.year} not available for '
-                            f'version {version}')
+                logger.info('Year %s not available for version %s',
+                            loop_date.year, version)
             loop_date += relativedelta.relativedelta(years=1)
