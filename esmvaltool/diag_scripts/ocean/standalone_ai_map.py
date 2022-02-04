@@ -22,6 +22,7 @@ from glob import glob
 from netCDF4 import Dataset, num2date
 from matplotlib import pyplot
 import matplotlib.patches as mpatches
+import itertools
 
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
@@ -56,13 +57,15 @@ def add_shadow(fig,ax, proj,):
     return fig, ax
 
 
-def main():
-    path = diagtools.folder('images/')+'AI_map_4.png'
+def ai_plot(lat=-12.3, lon=-14.50):
+
+    path = diagtools.folder('images/auto')+'AI_map_'+str(int(lon))+'E_'+str(int(lat))+'N.png'
     #if os.path.exists(path):
         
     fig = pyplot.figure()
-    #proj = ccrs.Orthographic(-10, -20)
-    proj = ccrs.PlateCarree()
+    fig.set_size_inches(6., 6) 
+    proj = ccrs.Orthographic(lon, lat)
+    proj2 = ccrs.PlateCarree()
     ax = fig.add_subplot(1, 1, 1, projection=proj)
 #   ax.stock_img()
 
@@ -70,30 +73,43 @@ def main():
     #ax.add_feature(cfeature.LAND, zorder=2, edgecolor='black')
 
 
-    # lat_bnd = 20.
-    # lon_bnd = 30.
+    lat_bnd = 70.
+    lon_bnd = 120.
     central_longitude = -14.25 #W #-160.+3.5
     central_latitude = -7.56
-    # ax.set_extent([central_longitude-lon_bnd,
-    #                central_longitude+lon_bnd,
-    #                central_latitude-lat_bnd,
-    #                central_latitude+lat_bnd, ])
+    #ax.set_extent([central_longitude-lon_bnd,
+    #               central_longitude+lon_bnd,
+    #               central_latitude-lat_bnd,
+    #               central_latitude+lat_bnd, ])
 
     # Add transect transect at longitude 23°W, latitude -3°:3° and depth from 0 to 400m
 
-    r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
-    ax.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=r_ortho, color='black', alpha=0.3, transform=proj, zorder=30))
+    r_ortho = compute_radius(proj2, 3., proj=proj2, lat = central_latitude, lon=central_longitude,)
+    ax.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=r_ortho, color='black', alpha=0.5, transform=proj2, zorder=30, label= 'AI MPA'),)
+      
+    #ax.scatter([-14.25, ], [-7.56,], c='blue', transform=proj2, ) #transform=ccrs.PlateCarree(), zorder=20,)
 
-    ax.plot([-23, -23], [-3, 3], c='green', lw=2., transform=proj, ) #transform=ccrs.PlateCarree(), zorder=20,)
+    #ax.plot([-23, -23], [-3, 3], c='black', lw=2., transform=proj2, label='AEU transect') #transform=ccrs.PlateCarree(), zorder=20,)
+    ax.plot([-23, -23], [-3, 3], c='black', lw=2., transform=ccrs.Geodetic(), label='AEU transect')
+    #ax.set_extent([minLon, maxLon, minLat, maxLat])
 
-    #ax.set_global()
+    ax.set_global()
     ax.gridlines()
-    # ax.background_img(name='50-natural-earth-1-downsampled.png')
     ax.stock_img()
 
+    #get handles and labels
+    handles, labels = pyplot.gca().get_legend_handles_labels()
 
-    fig, ax = add_shadow(fig, ax, proj)
-    #pyplot.show()
+    #specify order of items in legend
+    order = [1, 0]
+
+    #add legend to plot
+    leg = pyplot.legend([handles[idx] for idx in order],[labels[idx] for idx in order], loc='lower left',  framealpha=0.) 
+
+    # leg = pyplot.legend(loc='lower left',  framealpha=0.)
+
+    pyplot.tight_layout()
+    # fig, ax = add_shadow(fig, ax, proj)
     print('saving figure to:', path)
     pyplot.savefig(path)
     pyplot.close()
@@ -101,6 +117,15 @@ def main():
     copy_path = diagtools.folder('/home/users/ldemora/Master_CRACAB_plots/figure1')+os.path.basename(path)
     print('copying to ', copy_path)
     shutil.copy(path, copy_path)
+    
+
+
+def main():
+    ai_plot()
+    ai_plot(lat=-4., lon=-19,)
+    values = [-25, -20, -15, -10, -5, 0, 5, 10, 15, 20]
+    #for lon, lat in itertools.product(values, values):
+   #     ai_plot(lat=lat, lon=lon,)
     
     print('Now run on pmpc:')
     print('rsync -avP ldemora@xfer1.jasmin.ac.uk:/home/users/ldemora/Master_CRACAB_plots /users/modellers/ledm/ImagesFromJasmin/.')

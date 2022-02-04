@@ -111,10 +111,31 @@ hard_wired_obs = {
     ('so', 'timeseries', 'max'): {1980:36.50431, 2010:36.50431},
     ('so', 'clim', 'min'): {1980:35.8812, 2010:35.8812},
     ('so', 'clim', 'max'): {1980:36.50431, 2010:36.50431},
+
+    ('ph', 'timeseries', 'min'): {1973:8.04368, 2013:8.04368}, # doi:10.5194/essd-8-325-2016 
+    ('ph', 'timeseries', 'max'): {1973:8.070894, 2013:8.070894},
+    ('ph', 'clim', 'min'): {1973:8.04368, 2013:8.04368},
+    ('ph', 'clim', 'max'): {1973:8.070894, 2013:8.070894},
+
+    ('mld', 'timeseries', 'min'): {1961:51.72, 2008:51.72}, 
+    ('mld', 'timeseries', 'max'): {1961:8.070894, 2008:8.070894},
+    ('mld', 'clim', 'min'): {1961:51.72, 2008:51.72},
+    ('mld', 'clim', 'max'): {1961:8.070894, 2008:8.070894},
+
+    ('o2', 'timeseries', 'min'): {1961:93.3, 2017:93.3},
+    ('o2', 'timeseries', 'max'): {1961:123.1, 2017:123.1},
+#    ('o2', 'clim', 'min'): {1961:93.3, 2017:93.3}, # clim exists seprately.
+#    ('o2', 'clim', 'max'): {1961:123.1, 2017:123.1},
+
     }
+
+
 #for key in ['sos', 'sal','psu']:
 for key, a,b in itertools.product(['sos', 'sal','psu'], ['timeseries', 'clim'],['min', 'max']): 
     hard_wired_obs[key, a, b] = hard_wired_obs['so', a, b]
+
+for a,b in itertools.product(['timeseries', 'clim'],['min', 'max']):
+    hard_wired_obs['mlotst', a, b] = hard_wired_obs['mld', a, b]
 
 
 def get_shelve_path(field, pane='timeseries'):
@@ -617,7 +638,7 @@ def multi_model_time_series(
             ctimes = [t for t in hard_wired_obs[(short_name, 'timeseries', 'min')]]
             mins =  [hard_wired_obs[(short_name, 'timeseries', 'min')][t] for t in ctimes]
             maxs =  [hard_wired_obs[(short_name, 'timeseries', 'max')][t] for t in ctimes]
-            plt.fill_between(ctimes, mins, maxs, color='k', alpha=0.3)
+            plt.fill_between(ctimes, mins, maxs, fc=(0,0,0,0), ec='k',lw=2. )
 
         if 'annual_times' in sh.keys():
             annual_times, annual_data = sh['annual_times'], sh['annual_data']
@@ -973,6 +994,8 @@ def multi_model_clim_figure(
             model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
 
 
+
+
     #labels = []
     for variable_group, cubes in model_cubes.items():
         data_values = {}
@@ -1026,7 +1049,7 @@ def multi_model_clim_figure(
             ctimes = [t for t in hard_wired_obs[(short_name, 'clim', 'min')]]
             mins =  [hard_wired_obs[(short_name, 'clim', 'min')][t] for t in ctimes]
             maxs =  [hard_wired_obs[(short_name, 'clim', 'max')][t] for t in ctimes]
-            plt.fill_between([times[0], times[-1]], mins, maxs, color='k', alpha=0.3)
+            plt.fill_between([times[0], times[-1]], mins, maxs, color='k', alpha=0.15)
 
         shpath = get_shelve_path(short_name, 'ts')
         sh = shopen(shpath)

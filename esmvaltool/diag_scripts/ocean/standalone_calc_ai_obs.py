@@ -114,6 +114,8 @@ def get_obsdata_paths_ts(field, data_type='3d'):
     if field in ['si', ]:
        return [t2 + 'OBS6_WOA_clim_2018_Oyr_si_200001-200012.nc', ]
     if field in ['pH', 'ph']:
+        return ["/gws/nopw/j04/esmeval/obsdata-v2/Tier2/GLODAP/OBS6_GLODAP_clim_v2.2016b_Oyr_ph_200001-200012.nc", ]
+
         assert 0
         # return ["/gws/nopw/j04/esmeval/obsdata-v2/Tier2/GLODAP/OBS6_GLODAP_clim_v2.2016b_Oyr_ph_200001-200012.nc", ]
 
@@ -181,14 +183,14 @@ def get_obsdata_paths(field, data_type='3d'):
     assert 0
 
 
-def time_series(field='tos', pane='timeseries'):
+def time_series(field='tos', pane='timeseries', overwrite=False):
     """
     Calculates the time series.
     """
     shelve_path = get_shelve_path(field, pane='ts')
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-    if glob(shelve_path+'*'):
+    if not overwrite and glob(shelve_path+'*'):
         print('shelve exists:', shelve_path+'*')
         sh = shopen(shelve_path)
         times, data = sh['times'], sh['data']
@@ -217,30 +219,82 @@ def time_series(field='tos', pane='timeseries'):
     for nc_path in sorted(files):
         print('loading:', nc_path)
         if field in ['mld', ]:
+            print('loading:', nc_path)
             cube = iris.load_raw(nc_path)[2]
             cube.data = np.ma.masked_where(cube.data == 1000000000., cube.data)
             nctimes = diagtools.cube_time_to_float(cube)
-
+            #print(cube)
+            #assert 0
         elif field in ['o2', ]:
-            cube = iris.load_raw(nc_path)[4] #
+    #        float o_an(time, depth, lat, lon) ;
+    #            o_an:standard_name = "mole_concentration_of_dissolved_molecular_oxygen_in_sea_water" ;
+    #            o_an:long_name = "Objectively analyzed mean fields for mole_concentration_of_dissolved_molecular_oxygen_in_sea_water at standard depth levels." ;
+    #            o_an:coordinates = "time lat lon depth" ;
+    #            o_an:cell_methods = "area: mean depth: mean time: mean within years time: mean over years" ;
+    #            o_an:grid_mapping = "crs" ;
+    #            o_an:units = "micromoles_per_kilogram" ;
+    #            o_an:_FillValue = 9.96921e+36f ;
+
+
+            cube = iris.load_raw(nc_path, 'o_an')[0]
+            print(cube.units)
+            #assert 0
+
+#            for c in cubes:
+ 
+            cube.data = np.ma.masked_where(cube.data.mask+(cube.data==0.)+(cube.data>1e10), cube.data)
+            #cube = diagtools.bgc_units(cube, field)
+
+
             # woa18_all_o01_01.nc
-            nctimes = [float(nc_path[-8:-6])/12. + 2000., ]
+            nctimes = [(float(nc_path[-8:-6])-1.)/12. + 2000., ]
 #           nctimes = np.arange(12)/12.+2000.
             #cube = diagtools.bgc_units(cube, field)
             print(nc_path, nctimes, cube.data.max())
             #assert 0
+
         else:
             cube = iris.load_cube(nc_path)
             cube = diagtools.bgc_units(cube, field)
 
             nctimes = diagtools.cube_time_to_float(cube)
+        if field == 'chl':
+            cube.data = cube.data *1000.
         nc = Dataset(nc_path)
 
         if field == 'o2':
+            print('depth',  np.abs(cube.coord(axis='Z').points)*-1.)
+            #assert 0
+
+            #cube = extract_levels(cube,
+            #    scheme='linear',
+            #    levels =  [550., 600., 650.,700., 750.,800.,850., 900., 950., ],
+            #)
+            #cube.data = np.ma.masked_where(cube.data.mask+(cube.data==0.), cube.data)
+            #cube = cube.collapsed(['depth',], iris.analysis.MEAN) # can do this as layers are equal.
+
+            print('ncdata 0a :range:  min', cube.data.min(), cube.data.mean(), cube.data.max())
+
+
             cube = extract_levels(cube,
                 scheme='linear',
-                levels =  [750., ]
+                levels =  [750.,]
             )
+            print('ncdata 0b :range:  min', cube.data.min(), cube.data.mean(), cube.data.max())
+
+            cube.data = np.ma.masked_where(cube.data.mask+(cube.data==0.)+(cube.data>1e10), cube.data)
+            print('ncdata 0c :range:  min', cube.data.min(), cube.data.mean(), cube.data.max())
+
+            print('file:', nc_path)
+            print('times:', nctimes)
+            print('ncdata:range:  min', cube.data.min(), cube.data.mean(), cube.data.max())
+            print('file:', nc_path)
+#            assertlater = True
+            #assert 0
+
+            #cube = cube.collapsed(['depth',], iris.analysis.MEAN) # can do this as layers are equal.
+
+            #cube.data = np.ma.masked_where(cube.data.mask+(cube.data==0.), cube.data)
 
         lons = nc.variables['lon']
         lats = nc.variables['lat']
@@ -255,6 +309,8 @@ def time_series(field='tos', pane='timeseries'):
         print('lonsmin', lon_mins, lons[lon_mins[0]], lons[lon_mins[1]])
         print('latsmin', lat_maxs, lats[lat_maxs[0]], lats[lat_maxs[1]])
 
+        print('ncdata:1  range:  min', cube.data.min(), cube.data.mean(), cube.data.max())
+
  #       print(cube.dimensions)
         if cube.ndim == 3:
             latdim = 1
@@ -267,6 +323,8 @@ def time_series(field='tos', pane='timeseries'):
         if cube.dim_coords[latdim].var_name == 'lat' and cube.dim_coords[londim].var_name == 'lon':
             pass
         else: assert 0
+        print('ncdata:2  range:  min', cube.data.min(), cube.data.mean(), cube.data.max())
+
 
         if cube.ndim == 3:
             ncdata = cube[...,lat_maxs[0]:lat_maxs[1]+1, lon_mins[0]:lon_mins[1]+1]
@@ -274,19 +332,31 @@ def time_series(field='tos', pane='timeseries'):
             ncdata = cube[:,0,lat_maxs[0]:lat_maxs[1]+1, lon_mins[0]:lon_mins[1]+1]
         else: assert 0
 
+        print('ncdata:3  range:  min', ncdata.data.min(), ncdata.data.mean(), ncdata.data.max())
+
         if len(files) == 1 and len(nctimes) ==1:
 
             print('ONLY one time point:')
             print(cube)
             print('times:', nctimes)
-            print('ncdata:range:  min', ncdata.data.min(), ncdata.data.mean(), ncdata.data.max())
+            print('ncdata 4a :range:  min', ncdata.data.min(), ncdata.data.mean(), ncdata.data.max())
             print('file:', nc_path)
             assert 0
+        else:
+            print('file:', nc_path)
+            print('times:', nctimes)
+            print('ncdata 4b:range:  min', ncdata.data.min(), ncdata.data.mean(), ncdata.data.max())
+            print('file:', nc_path)
+#            assertlater = True
+#            assert 0
 
         try:
             ncdata = ncdata.collapsed(['lat', 'lon'], iris.analysis.MEAN).data
         except:
             ncdata = ncdata.collapsed(['latitude', 'longitude'], iris.analysis.MEAN).data
+
+        print('ncdata 5 :range:  min', ncdata.min(), ncdata.mean(), ncdata.max())
+
 
 #       if field == 'tos':
 #           ncdata =  cube[:, 106:114+1, 457:465+1].collapsed(['lat', 'lon'], iris.analysis.MEAN).data #.mean(axis=(1,2))
@@ -295,10 +365,12 @@ def time_series(field='tos', pane='timeseries'):
 
         for t,d in zip(nctimes, ncdata):
             print('adding data:', field, t, d, cube.units)
+            #if 08
             datas[t] = d
         #times.extend(nctimes)
         #data.extend(ncdata)
-
+    #print(files)
+    #assert 0
     times = [t for t in sorted(datas.keys())]
     data = [datas[t] for t in times]
     years = {int(t):[] for t in times}
@@ -312,10 +384,10 @@ def time_series(field='tos', pane='timeseries'):
         annual_times.append(yr + 0.5)
         annual_data.append(np.mean(years[yr]))
 
-        if yr < 2000.: continue
-        if yr > 2010.: continue
+#        if yr < 2000.: continue
+#        if yr > 2010.: continue
         for m, d in zip(months, years[yr]):
-            print('clim:', m, d)
+            print('clim:', yr, m, d)
             months_dat[m].append(d)
 
     clim = [np.mean(months_dat[m]) for m in months]
@@ -420,7 +492,7 @@ def make_ts_figure(field, overwrite=True):
 
     fig = pyplot.figure()
     ax = fig.add_subplot(311)
-    time, data = time_series(field=field, pane='timeseries')
+    time, data = time_series(field=field, pane='timeseries',overwrite=overwrite)
     pyplot.plot(time,data)
     pyplot.title('Annual ' + field)
 
@@ -588,7 +660,7 @@ def make_profile_figure(field):
 
 def main():
     twodfields = []#'mld', ] #'intpp', 'chl', ]# 'mld' ]
-    threedfields = ['ph', ]#'so', ]# 'o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
+    threedfields = ['o2',] #'no3', ] #'ph', ]#'so', ]# 'o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
     for field in twodfields:
 #        make_map_figure(field)
         make_ts_figure(field)
