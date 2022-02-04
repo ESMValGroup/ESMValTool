@@ -31,7 +31,7 @@ from esmvaltool.cmorizers.data.utilities import (
 logger = logging.getLogger(__name__)
 
 
-def cmorization(in_dir, out_dir, cfg, _, __, ___):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize ESACCI-SOS dataset."""
     glob_attrs = cfg['attributes']
 

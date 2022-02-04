@@ -281,7 +281,7 @@ def _get_filenames(stations, cfg, in_dir, all_stat):
     return input_files, stations
 
 
-def cmorization(in_dir, out_dir, cfg, _, __, ___):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     # read station information
     station_dict = _get_station_dictionary()

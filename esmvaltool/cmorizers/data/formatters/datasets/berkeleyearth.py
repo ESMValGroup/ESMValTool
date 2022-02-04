@@ -229,7 +229,7 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
                         attrs_sftlf)
 
 
-def cmorization(in_dir, out_dir, cfg, _, __, ___):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     raw_filepath = os.path.join(in_dir, cfg['filename'])
 
