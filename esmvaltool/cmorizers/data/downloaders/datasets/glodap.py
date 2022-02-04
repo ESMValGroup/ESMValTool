@@ -4,7 +4,8 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
-def download_dataset(config, dataset, dataset_info, _, __, overwrite):
+def download_dataset(config, dataset, dataset_info, start_date, end_date,
+                     overwrite):
     """Download dataset.
 
     Parameters
