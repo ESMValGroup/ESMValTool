@@ -83,7 +83,7 @@ def _unzip(short_name, var, raw_filepath, out_dir):
     return new_path
 
 
-def cmorization(in_dir, out_dir, cfg, _, __, ___):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     raw_filepath = os.path.join(in_dir, cfg['filename'])
 

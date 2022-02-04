@@ -32,7 +32,7 @@ from ...utilities import fix_coords, save_variable
 logger = logging.getLogger(__name__)
 
 
-def cmorization(in_dir, out_dir, cfg, _, __, ___):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     # cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
@@ -63,16 +63,12 @@ def cmorization(in_dir, out_dir, cfg, _, __, ___):
             for month0 in range(12):  # Change this in final version
                 month = month0 + 1
                 logger.info(month)
-                day_cube, night_cube = load_cubes(in_dir,
-                                                  vals['file_day'],
-                                                  vals['file_night'],
-                                                  year,
-                                                  month,
-                                                  variable
-                                                  )
+                day_cube, night_cube = load_cubes(in_dir, vals['file_day'],
+                                                  vals['file_night'], year,
+                                                  month, variable)
 
-                monthly_cube = make_monthly_average(day_cube, night_cube,
-                                                    year, month)
+                monthly_cube = make_monthly_average(day_cube, night_cube, year,
+                                                    month)
 
                 # use CMORizer utils
                 monthly_cube = fix_coords(monthly_cube)
@@ -102,13 +98,11 @@ def load_cubes(in_dir, file_day, file_night, year, month, variable):
                but in place for future expansion to all ESC CCI LST platforms
     """
     logger.info('Loading %s/%s%s%s*.nc', in_dir, file_day, year, month)
-    day_cube = iris.load_cube('%s/%s%s%02d*.nc' % (in_dir, file_day,
-                                                   year, month),
-                              variable)
+    day_cube = iris.load_cube(
+        '%s/%s%s%02d*.nc' % (in_dir, file_day, year, month), variable)
     logger.info('Loading %s/%s%s%s*.nc', in_dir, file_night, year, month)
-    night_cube = iris.load_cube('%s/%s%s%02d*.nc' % (in_dir, file_night,
-                                                     year, month),
-                                variable)
+    night_cube = iris.load_cube(
+        '%s/%s%s%02d*.nc' % (in_dir, file_night, year, month), variable)
 
     return day_cube, night_cube
 
@@ -143,13 +137,14 @@ def make_monthly_average(day_cube, night_cube, year, month):
     monthly_co_time.points = time_point
 
     num_days = monthrange(year, month)[1]
-    monthly_co_time.bounds = [time_point,
-                              time_point + ((num_days - 1) * 24 * 3600)]
+    monthly_co_time.bounds = [
+        time_point, time_point + ((num_days - 1) * 24 * 3600)
+    ]
     # should this be num_days or num_days-1 ### question for Valeriu or Axel
     # or 23:59:59 ???
 
-    monthly_cube.attributes = {'information':
-                               'Mean of Day and Night Aqua MODIS monthly LST'
-                               }
+    monthly_cube.attributes = {
+        'information': 'Mean of Day and Night Aqua MODIS monthly LST'
+    }
 
     return monthly_cube

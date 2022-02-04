@@ -3,8 +3,8 @@
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
 
-# pylint: disable=invalid-name
-def download_dataset(config, dataset, dataset_info, _, __, overwrite):
+def download_dataset(config, dataset, dataset_info, start_date, end_date,
+                     overwrite):
     """Download dataset.
 
     Parameters

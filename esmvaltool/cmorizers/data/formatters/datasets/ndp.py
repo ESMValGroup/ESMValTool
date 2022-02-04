@@ -70,7 +70,7 @@ def _extract_variable(cmor_info, attrs, var_file, out_dir, cfg):
                         unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir, cfg, _, __, ___):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']

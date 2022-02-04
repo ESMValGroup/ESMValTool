@@ -69,17 +69,14 @@ def _extract_variable(variable_name, var, cfg, data_table, out_dir):
     if variable_name == 'fgco2':
         new_data = data_table['ocean sink'].values
     elif variable_name == 'nbp':
-        new_data = (
-            data_table['land sink'].values -
-            data_table['land-use change emissions'].values
-        )
+        new_data = (data_table['land sink'].values -
+                    data_table['land-use change emissions'].values)
     elif variable_name == 'nbp_residual':
         new_data = (
             data_table['fossil emissions excluding carbonation'].values -
             data_table['atmospheric growth'].values -
             data_table['ocean sink'].values -
-            data_table['land-use change emissions'].values
-        )
+            data_table['land-use change emissions'].values)
     else:
         raise NotImplementedError(
             f"Derivation of '{variable_name}' not possible yet")
@@ -116,7 +113,7 @@ def _extract_variable(variable_name, var, cfg, data_table, out_dir):
                         unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir, cfg, _, __, ___):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     filepath = os.path.join(in_dir, cfg['filename'])
     logger.info("Reading '%s'", filepath)

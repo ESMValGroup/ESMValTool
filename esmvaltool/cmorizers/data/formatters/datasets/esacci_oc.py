@@ -55,25 +55,24 @@ def _add_depth_coord(cube):
         if dim == 0:
             return dim
         return dim + 1
+
     if not cube.coords('depth'):
         assert len(cube.shape) == 3
-        depth_coord = iris.coords.DimCoord(
-            [0.],
-            standard_name='depth',
-            long_name='depth',
-            var_name='lev',
-            units='m',
-            bounds=[0., 2.5],
-            attributes={'positive': 'down'})
+        depth_coord = iris.coords.DimCoord([0.],
+                                           standard_name='depth',
+                                           long_name='depth',
+                                           var_name='lev',
+                                           units='m',
+                                           bounds=[0., 2.5],
+                                           attributes={'positive': 'down'})
         dim_coords = cube.coords(dim_coords=True)
         aux_coords = cube.coords(dim_coords=False)
-        dim_coords_and_dims = [
-            (coord, adjust_dim(cube.coord_dims(coord)[0]))
-            for coord in dim_coords]
+        dim_coords_and_dims = [(coord, adjust_dim(cube.coord_dims(coord)[0]))
+                               for coord in dim_coords]
         dim_coords_and_dims.append((depth_coord, 1))
-        aux_coords_and_dims = [
-            (coord, (adjust_dim(d) for d in cube.coord_dims(coord)))
-            for coord in aux_coords]
+        aux_coords_and_dims = [(coord, (adjust_dim(d)
+                                        for d in cube.coord_dims(coord)))
+                               for coord in aux_coords]
         old_cube = cube
         new_data = cube.core_data()[:, np.newaxis, :, :]
         cube = iris.cube.Cube(
@@ -94,12 +93,12 @@ def _fix_time(cube, frequency):
     if frequency == "mon":
         time = cube.coord("time")
         units = time.units
-        new_dates = units.date2num(np.array([
-            [datetime(d.year, d.month, 1),
-             datetime(d.year, d.month, 15),
-             datetime(d.year+(d.month // 12), (d.month % 12)+1, 1)]
-            for d in units.num2date(time.points)
-        ]))
+        new_dates = units.date2num(
+            np.array([[
+                datetime(d.year, d.month, 1),
+                datetime(d.year, d.month, 15),
+                datetime(d.year + (d.month // 12), (d.month % 12) + 1, 1)
+            ] for d in units.num2date(time.points)]))
         np.savetxt("time.txt", new_dates)
         time.points = new_dates[:, 1]
         time.bounds = new_dates[:, (0, 2)]
@@ -197,7 +196,7 @@ def merge_data(in_dir, out_dir, raw_info, bins):
     return (datafile, dsmeta['BINNING'])
 
 
-def cmorization(in_dir, out_dir, cfg, _, __, ___):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']

@@ -226,7 +226,7 @@ class Formatter():
         # assume a RAWOBS/TierX/DATASET input structure
 
         # get all available tiers in source dir
-        tiers = ['Tier{}'.format(i) for i in [2, 3]]
+        tiers = [f'Tier{i}' for i in [2, 3]]
         tiers = [
             tier for tier in tiers
             if os.path.exists(os.path.join(self.rawobs, tier))
@@ -363,11 +363,11 @@ class Formatter():
         # call NCL
         ncl_call = ['ncl', script]
         logger.info("Executing cmd: %s", ' '.join(ncl_call))
-        process = subprocess.Popen(ncl_call,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT,
-                                   env=env)
-        output, err = process.communicate()
+        with subprocess.Popen(ncl_call,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT,
+                              env=env) as process:
+            output, err = process.communicate()
         for oline in str(output.decode('utf-8')).split('\n'):
             logger.info('[NCL] %s', oline)
         if err:

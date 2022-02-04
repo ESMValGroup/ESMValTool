@@ -156,7 +156,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     return in_file
 
 
-def cmorization(in_dir, out_dir, cfg, cfg_user, _, __):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     cfg['work_dir'] = cfg_user['work_dir']
     # Pass on some parameters to cfg file

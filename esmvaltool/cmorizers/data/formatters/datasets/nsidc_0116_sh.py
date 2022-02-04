@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """ESMValTool CMORizer for NSIDC-0116 data.
 
 Tier
@@ -19,6 +18,6 @@ Download and processing instructions
 from esmvaltool.cmorizers.data.formatters.nsidc_common import cmorize
 
 
-def cmorization(in_dir, out_dir, cfg, _, __, ___):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     cmorize(cfg, 'sh', in_dir, out_dir)
