@@ -92,6 +92,8 @@ def get_downloader(config, dataset, dataset_info, overwrite, sensor,
         ESMValTool's user configuration
     dataset : str
         Name of the dataset
+    dataset_info : dict
+         Dataset information from the datasets.yml file
     overwrite : bool
         Overwrite already downloaded files
     sensor : str
