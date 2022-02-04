@@ -87,14 +87,14 @@ ESMValTool package by running:
 
 .. code-block:: bash
 
-    mamba create --name esmvaltool esmvaltool python=3.9
+    mamba create --name esmvaltool esmvaltool 'python=3.10'
 
 Here ``mamba`` is the executable calling the mamba package manager to install
-``esmvaltool``. The reason why we are also specifying ``python=3.9`` is that it
-will make it easier for mamba to find a working combination of all required
-packages, see `Mamba fails to solve the environment`_ in `common installation issues`_
-for an in-depth explanation. Python 3.7 and 3.8 are also supported, in case you
-prefer to work with an older version of Python.
+``esmvaltool``. The reason why we are also specifying ``'python=3.10'`` is that
+it will make it easier for mamba to find a working combination of all required
+packages, see `Mamba fails to solve the environment`_ in `common installation
+issues`_ for an in-depth explanation. Python 3.7, 3.8 and 3.9 are also
+supported, in case you prefer to work with an older version of Python.
 
 This will create a new
 `conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`_
@@ -193,7 +193,7 @@ Create a new environment with the ``esmvaltool-python`` package:
 
 .. code-block:: bash
 
-    mamba create --name esmvaltool esmvaltool-python python=3.9
+    mamba create --name esmvaltool esmvaltool-python 'python=3.10'
 
 Activate the new environment:
 
@@ -488,7 +488,7 @@ containing just Python with the command
 
 .. code-block:: bash
 
-    mamba create --name esmvaltool 'python=3.9'
+    mamba create --name esmvaltool 'python=3.10'
 
 if needed, older versions of Python can also be selected.
 Next, install many of the required dependencies, including the ESMValCore package
@@ -699,13 +699,13 @@ for example by running
 
 .. code-block:: bash
 
-    mamba create -n esmvaltool esmvaltool python=3.9
+    mamba create -n esmvaltool esmvaltool 'python=3.10'
 
-you ask for Python 3.9 specifically and that makes it much easier for mamba to
+you ask for Python 3.10 specifically and that makes it much easier for mamba to
 solve the environment, because now it can ignore any packages that were built
-for other Python versions. Note that, since the esmvaltool package is built with Python>=3.7,
-asking for an older Python version, e.g. `python=3.6`, in this way, it will result in
-installation failure.
+for other Python versions. Note that, since the esmvaltool package is built
+with Python>=3.7, asking for an older Python version, e.g. `python=3.6`, in
+this way, it will result in installation failure.
 
 Problems with proxies
 ---------------------
