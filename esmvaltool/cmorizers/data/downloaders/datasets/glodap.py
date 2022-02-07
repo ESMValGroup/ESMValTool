@@ -1,4 +1,5 @@
 """Script to download GLODAP."""
+import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
