@@ -45,7 +45,7 @@ preprocessors:
 
     multi_model_statistics:
       span: overlap
-      statistics: [mean, std_dev]
+      statistics: [mean, std]
       exclude: [ESACCI-LST]
 
 
