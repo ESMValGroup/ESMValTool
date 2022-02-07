@@ -956,13 +956,41 @@ def multi_model_clim_figure(
     plt.sca(ax)
 
     ####
-    # Load the data for each layer as a separate cube
-    model_cubes = {}
-    omov_cubes = {}
-    omov_cubes_paths = {}
-    model_cubes_paths = {}
-    short_name = ''
+    short_names = {}
     models = {}
+    for variable_group, filenames  in ts_dict.items():
+        for fn in sorted(filenames):
+            if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
+            if metadatas[fn]['dataset'] in models_to_skip: continue
+            model = metadatas[fn]['dataset']
+            models[model] = True
+            short_names[metadatas[fn]['short_name']] = True
+
+    if len(short_names) > 1:#
+        assert 0
+    short_name = list(short_names.keys())[0]
+
+    ####
+    # Load the data for each layer as a separate cube
+    out_shelve = diagtools.folder([cfg['work_dir'], 'clim_shelves', ])
+    out_shelve += 'clim_'+short_name+'.shelve'
+    changes = 0
+
+    if len(glob.glob(out_shelve+'*')):
+       print('loading from shelve:', out_shelve)
+       sh = shopen(out_shelve)
+       #model_cubes = sh['model_cubes']
+       model_cubes= sh['model_cubes']
+       omov_cubes= sh['omov_cubes']
+       model_cubes_paths = sh['model_cubes_paths']
+       omov_cubes_paths = sh['omov_cubes_paths']
+       sh.close()
+    else:
+        model_cubes = {}
+        omov_cubes = {}
+        omov_cubes_paths = {}
+        model_cubes_paths = {}
+
     for variable_group, filenames  in ts_dict.items():
         for fn in sorted(filenames):
             print(variable_group, fn)
@@ -971,11 +999,14 @@ def multi_model_clim_figure(
             if metadatas[fn]['dataset'] in models_to_skip: continue
 
             model = metadatas[fn]['dataset']
-            models[model] = True
             scenario = metadatas[fn]['exp']
             short_name = metadatas[fn]['short_name']
-            print('loading', fn)
 
+            if fn in model_cubes_paths[variable_group] and fn in omov_cubes_paths[(variable_group, model)]:
+                print('already loaded', fn)
+                continue
+
+            print('loading', fn)
             cube = iris.load_cube(fn)
             cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
 
@@ -1000,6 +1031,17 @@ def multi_model_clim_figure(
 
             omov_cubes = add_dict_list(omov_cubes, (variable_group, model ), cube)
             omov_cubes_paths= add_dict_list(omov_cubes_paths, (variable_group, model ), fn)
+            changes+=1
+
+    if changes>0:
+       print('Saving new shelve:', out_shelve)
+       sh = shopen(out_shelve)
+       #model_cubes = sh['model_cubes']
+       sh['model_cubes'] = model_cubes
+       sh['omov_cubes'] = omov_cubes
+       sh['model_cubes_paths'] = model_cubes_paths
+       sh['omov_cubes_paths'] = omov_cubes_paths
+       sh.close()
 
     if 'OneModelOneVote' in plotting:
         omoc_means = {}
