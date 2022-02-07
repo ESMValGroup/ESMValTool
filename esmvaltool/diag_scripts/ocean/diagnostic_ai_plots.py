@@ -999,12 +999,12 @@ def multi_model_clim_figure(
             model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
 
             omov_cubes = add_dict_list(omov_cubes, (variable_group, model ), cube)
-            omov_cubes_paths= add_dict_list(omov_cubes, (variable_group, model ), fn)
+            omov_cubes_paths= add_dict_list(omov_cubes_paths, (variable_group, model ), fn)
 
     if 'OneModelOneVote' in plotting:
         omoc_means = {}
         variable_groups = {}
-        for (variable_group, model) cubes in omov_cubes.items():
+        for (variable_group, model), cubes in omov_cubes.items():
             variable_groups[variable_group] = True
             data_values = {} # one of these for each model and scenario.
             for i, cube in enumerate(cubes):
@@ -1015,14 +1015,15 @@ def multi_model_clim_figure(
                 months =  cube.coord('month_number').points
                 for t, d in zip(months, cube.data):
                     data_values = add_dict_list(data_values, t, d)
-            omoc_means[(variable_group, model, scenario)] = {t, np.mean(data_values[t]) for t in months]
+            omoc_means[(variable_group, model, scenario)] = {t: np.mean(data_values[t]) for t in months}
+
 
         for variable_group_master in variable_groups.keys():
             omoc_mean = {}
-            for (variable_group, model, scenario) in omoc_means.items():
+            for (variable_group, model, scenario),model_mean in omoc_means.items():
                 if variable_group!= variable_group_master: continue
-                for t, d in omoc_means.items():
-                    omoc_mean = = add_dict_list(omoc_mean, t, d)
+                for t, d in model_mean.items():
+                    omoc_mean = add_dict_list(omoc_mean, t, d)
             times = sorted(omoc_mean.keys())
             mean = [np.mean(omoc_mean[t]) for t in times]
             color = ipcc_colours[scenario]
