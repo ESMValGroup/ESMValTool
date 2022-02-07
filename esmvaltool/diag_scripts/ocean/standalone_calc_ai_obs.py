@@ -659,8 +659,8 @@ def make_profile_figure(field):
 #     sh.close()
 
 def main():
-    twodfields = []#'mld', ] #'intpp', 'chl', ]# 'mld' ]
-    threedfields = ['o2',] #'no3', ] #'ph', ]#'so', ]# 'o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
+    twodfields = ['mld', ] #'intpp', 'chl', ]# 'mld' ]
+    threedfields = [] #'o2',] #'no3', ] #'ph', ]#'so', ]# 'o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
     for field in twodfields:
 #        make_map_figure(field)
         make_ts_figure(field)

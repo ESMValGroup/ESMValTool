@@ -84,9 +84,31 @@ def ai_plot(lat=-12.3, lon=-14.50):
 
     # Add transect transect at longitude 23°W, latitude -3°:3° and depth from 0 to 400m
 
-    r_ortho = compute_radius(proj2, 3., proj=proj2, lat = central_latitude, lon=central_longitude,)
-    ax.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=r_ortho, color='black', alpha=0.5, transform=proj2, zorder=30, label= 'AI MPA'),)
-      
+#   r_ortho = compute_radius(proj2, 3., proj=proj2, lat = central_latitude, lon=central_longitude,)
+#   ax.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=r_ortho, color='black', alpha=0.5, transform=proj2, zorder=30, label= 'AI MPA'),)
+     
+
+    ax.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=2.88, color='black', alpha=0.5, transform=proj2, zorder=30, label= 'AI MPA'),)
+
+
+#   extract_region: &mpa_region
+#      start_longitude: -17.25 #14.25W
+#      end_longitude: -11.25 #
+#      start_latitude: -10.56 # -7.56
+#      end_latitude: -4.56 #
+    left = -17.25
+    right = -11.25
+    bottom = -10.56
+    top = -4.56
+    verts = [
+       (left, bottom),
+       (left, top), 
+       (right, top),
+       (right, bottom),
+       (left, bottom),
+    ]
+    ax.add_patch(pyplot.Rectangle((left, bottom), right-left, top - bottom, lw=2, ec="b", fc="None", transform=proj2, label='Study Area'), )
+
     #ax.scatter([-14.25, ], [-7.56,], c='blue', transform=proj2, ) #transform=ccrs.PlateCarree(), zorder=20,)
 
     #ax.plot([-23, -23], [-3, 3], c='black', lw=2., transform=proj2, label='AEU transect') #transform=ccrs.PlateCarree(), zorder=20,)
@@ -101,7 +123,7 @@ def ai_plot(lat=-12.3, lon=-14.50):
     handles, labels = pyplot.gca().get_legend_handles_labels()
 
     #specify order of items in legend
-    order = [1, 0]
+    order = [1, 0, 2]
 
     #add legend to plot
     leg = pyplot.legend([handles[idx] for idx in order],[labels[idx] for idx in order], loc='lower left',  framealpha=0.) 

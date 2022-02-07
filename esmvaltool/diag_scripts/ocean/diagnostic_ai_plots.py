@@ -1002,7 +1002,7 @@ def multi_model_clim_figure(
             scenario = metadatas[fn]['exp']
             short_name = metadatas[fn]['short_name']
 
-            if fn in model_cubes_paths[variable_group] and fn in omov_cubes_paths[(variable_group, model)]:
+            if fn in model_cubes_paths.get(variable_group,[]) and fn in omov_cubes_paths.get((variable_group, model), []):
                 print('already loaded', fn)
                 continue
 
@@ -1033,6 +1033,8 @@ def multi_model_clim_figure(
             omov_cubes_paths= add_dict_list(omov_cubes_paths, (variable_group, model ), fn)
             changes+=1
 
+
+    # fuck  you can't save a cube.
     if changes>0:
        print('Saving new shelve:', out_shelve)
        sh = shopen(out_shelve)
@@ -1050,6 +1052,7 @@ def multi_model_clim_figure(
             variable_groups[variable_group] = True
             data_values = {} # one of these for each model and scenario.
             for i, cube in enumerate(cubes):
+                print('calculating:', i, (variable_group, model), i, 'of', len(cubes))
                 fn = omov_cubes_paths[(variable_group, model)][i]
                 if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
                 scenario = metadatas[fn]['exp']
@@ -1059,19 +1062,21 @@ def multi_model_clim_figure(
                     data_values = add_dict_list(data_values, t, d)
             omoc_means[(variable_group, model, scenario)] = {t: np.mean(data_values[t]) for t in months}
 
-
         for variable_group_master in variable_groups.keys():
             omoc_mean = {}
+             
             for (variable_group, model, scenario),model_mean in omoc_means.items():
                 if variable_group!= variable_group_master: continue
+                scen = scenario
                 for t, d in model_mean.items():
                     omoc_mean = add_dict_list(omoc_mean, t, d)
+
             times = sorted(omoc_mean.keys())
             mean = [np.mean(omoc_mean[t]) for t in times]
-            color = ipcc_colours[scenario]
+            color = ipcc_colours[scen]
             plt.plot(times, mean, ls='-', c=color, lw=2.)
 
-
+    #assert 0
 
     #labels = []
     for variable_group, cubes in model_cubes.items():
@@ -1699,8 +1704,8 @@ def single_map_figure(cfg, cube, variable_group, exp='', model='', ensemble='', 
                        central_latitude-lat_bnd,
                        central_latitude+lat_bnd, ])
         # Compute the required radius in projection native coordinates:
-        r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
-        ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=r_ortho, color='black', alpha=0.3, transform=proj, zorder=30))
+        #r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
+        ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=2.88, color='black', alpha=0.3, transform=proj, zorder=30))
 
     try:
         plt.gca().coastlines()
@@ -1931,13 +1936,33 @@ def multi_model_map_figure(
     style_range = {'hist':[], 'mean':[], 'diff':[], } #'min_diff':[], 'max_diff':[]}
     obs_filename = 'aux/obs_ncs/'+short_name+'_map.nc'
     if plot_obs and os.path.exists(obs_filename):
-        ranges = [hist_cube.data.min(), hist_cube.data.max()]
         obs_cube = iris.load_cube(obs_filename)
-        ranges.extend([obs_cube.data.min(), obs_cube.data.max()])
+        #method = 'min_max' # hist and obs go between min and max.
+        #method = '5pc-95pc' # hist and obs plotted between 5-95 percentiles.
+        method = '1pc-99pc' # hist and obs plotted between 5-95 percentiles.
+
+        if method == 'min_max':
+            ranges = [hist_cube.data.min(), hist_cube.data.max()]
+            ranges.extend([obs_cube.data.min(), obs_cube.data.max()])
+        if method == '5pc-95pc':
+            ranges = []
+            for dat, pc in itertools.product([hist_cube.data, obs_cube.data], [5, 95]):
+                ranges.append(np.percentile(dat.compressed(), pc))
+
+        if method == '1pc-99pc':
+            ranges = []
+            for dat, pc in itertools.product([hist_cube.data, obs_cube.data], [5, 95]):
+                ranges.append(np.percentile(dat.compressed(), pc))
+
+        print('hist plot range', method, ranges)
+
         style_range['hist'].extend([np.min(ranges), np.max(ranges)])
+
     else:
         style_range['hist'].extend([hist_cube.data.min(), hist_cube.data.max()])
     style_range['historical'] =  style_range['hist']
+    #print('style_range', style_range)
+    #assert 0
 
     # Calculate the diff cubes.
     for variable_group, cube in variablegroup_model_cubes.items():
@@ -2003,12 +2028,14 @@ def multi_model_map_figure(
                            central_latitude+lat_bnd, ])
 
         # Compute the required radius in projection native coordinates:
-        r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
-        ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=r_ortho, color='black', alpha=0.3, transform=proj, zorder=30))
+        #r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
+        ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=2.88, color='black', alpha=0.3, transform=proj, zorder=30))
         #plt.colorbar()
 
         try:
-            plt.gca().coastlines()
+            plt.gca().add_feature(cartopy.feature.LAND, zorder=2, facecolor='#D3D3D3')
+            plt.gca().coastlines(zorder=3)
+
         except AttributeError:
             logger.warning('Not able to add coastlines')
 
@@ -2023,6 +2050,8 @@ def multi_model_map_figure(
         title = ' '.join([exp,]) # long_names.get(sbp_style, sbp_style,)])
         if region == 'midatlantic':
             plt.text(0.95, 0.9, title,  ha='right', va='center', transform=ax0.transAxes,color=ipcc_colours[exp],fontweight='bold')
+            #plt.text(0.99, 0.94, title,  ha='right', va='center', transform=ax0.transAxes,color=ipcc_colours[exp],fontweight='bold')
+
         else:
             plt.title(title)
 
@@ -2059,18 +2088,22 @@ def multi_model_map_figure(
             zmax=style_range[sbp_style][1],
             )
         print('obs:', obs_cube.data.min(),obs_cube.data.max())
-        plt.gca().coastlines()
+        #plt.gca().coastlines()
+        plt.gca().add_feature(cartopy.feature.LAND, zorder=2, facecolor='#D3D3D3')
+        plt.gca().coastlines(zorder=3)
+
         # Compute the required radius in projection native coordinates:
-        r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
+        #r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
         ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude],
-             radius=r_ortho, color='black', alpha=0.3, transform=proj, zorder=30))
+             radius=2.88, color='black', alpha=0.3, transform=proj, zorder=30))
 
         shared_cmap['hist'].append(ax0)
         shaped_ims['hist'].append(qplot)
 
         title = ' '.join(['Observations',]) # long_names.get(sbp_style, sbp_style,)])
         if region == 'midatlantic':
-            plt.text(0.95, 0.9, title,  ha='right', va='center', transform=ax0.transAxes,color='black',fontweight='bold')
+            #plt.text(0.95, 0.9, title,  ha='right', va='center', transform=ax0.transAxes,color='black',fontweight='bold')
+            plt.text(0.99, 0.92, title,  ha='right', va='center', transform=ax0.transAxes,color='black',fontweight='bold',fontsize='small')
         else:
             plt.title(title)
     else:
@@ -2119,9 +2152,9 @@ def multi_model_map_figure_old(
         ax = None,
         save = False,
     ):
+    assert 0
     """
     produce a monthly climatology figure.
-    """
     central_longitude = -14.25 #W #-160.+3.5
     central_latitude = -7.56
     if region == 'global':
@@ -2246,13 +2279,26 @@ def multi_model_map_figure_old(
     style_range = {'hist':[], 'mean':[], 'diff':[], } #'min_diff':[], 'max_diff':[]}
     obs_filename = 'aux/obs_ncs/'+short_name+'_map.nc'
     if plot_obs and os.path.exists(obs_filename):
-        ranges = [hist_cube.data.min(), hist_cube.data.max()]
         obs_cube = iris.load_cube(obs_filename)
-        ranges.extend([obs_cube.data.min(), obs_cube.data.max()])
+        method = 'min_max' # hist and obs go between min and max.
+        #method = '5pc-95pc' # hist and obs plotted between 5-95 percentiles. 
+        if method == 'min_max':
+            ranges = [hist_cube.data.min(), hist_cube.data.max()]
+            ranges.extend([obs_cube.data.min(), obs_cube.data.max()])
+            print(method, ranges)
+        method = '5pc-95pc' # hist and obs plotted between 5-95 percentiles.
+        if method == '5pc-95pc':
+            ranges = []
+            for dat, pc in itertools.product([hist_cube.data, obs_cube.data], [5, 95]):
+                ranges.append(np.percentile(dat.compressed(), pc))
+        print(method, ranges)
+        
         style_range['hist'].extend([np.min(ranges), np.max(ranges)])
     else:
         style_range['hist'].extend([hist_cube.data.min(), hist_cube.data.max()])
     style_range['historical'] =  style_range['hist']
+    print('style_range', style_range)
+    assert 0
 
     # Calculate the diff cubes.
     for variable_group, cube in mean_model_cubes.items():
@@ -2415,7 +2461,7 @@ def multi_model_map_figure_old(
         plt.close()
     else:
         return fig, ax
-
+   """
 
 def regrid_intersect(cube, region='global'):
     central_longitude = -14.25 #W #-160.+3.5
@@ -2570,6 +2616,21 @@ def main(cfg):
     # Individual plots - standalone
     do_standalone = True
     if do_standalone:
+
+        # Climatology plot
+        plottings =  [['OneModelOneVote',],['means', 'OneModelOneVote',], ['all_models',],[ 'means',  '5-95'], ]#  ['means',],  ['5-95',], ['all_models', ]]
+        for plotting in plottings:
+            #continue
+            multi_model_clim_figure(
+                cfg,
+                metadatas,
+                time_series_fns,
+                hist_time_range = [1990., 2015.],
+                ssp_time_range = [2015., 2050.],
+                plotting=plotting,
+            )
+
+
         # plottings:
         #     all: every single ensemble member shown as thin line.
         #     model_means: the mean of every model ensmble is shown as a thicker dotted line
@@ -2586,7 +2647,7 @@ def main(cfg):
                      ['model_means', 'Global_range'],
                      ] #'medians', 'all_models', 'range',
         for plotting in plottings:
-            #continue
+            continue
             for ukesm in ['all', ]: #'not', 'only', 'all']:
                 multi_model_time_series(
                     cfg,
@@ -2601,20 +2662,22 @@ def main(cfg):
         #assert 0
 
         # maps:
-        multi_model_map_figure(
-            cfg,
-            metadatas,
-            maps_fns = maps_fns,
-            figure_style = 'hist_and_ssp',
-            hist_time_range = [1990., 2015.],
-            ssp_time_range = [2015., 2050.],
-            region='midatlantic',)
+        for a in [1, ]:
+            continue
+            multi_model_map_figure(
+                cfg,
+                metadatas,
+                maps_fns = maps_fns,
+                figure_style = 'hist_and_ssp',
+                hist_time_range = [1990., 2015.],
+                ssp_time_range = [2015., 2050.],
+                region='midatlantic',)
 
 
         # Profile pair
         plottings =  [['all_models',], ['means_split',], ['5-95_split',], ['means_split', '5-95_split', ],  ]
         for plotting in plottings:
-            #continue
+            continue
             make_multi_model_profiles_plotpair(
                     cfg,
                     metadatas,
@@ -2632,18 +2695,6 @@ def main(cfg):
                     draw_legend=True
                 )
 
-        # Climatology plot
-        plottings =  [['OneModelOneVote',],['means', 'OneModelOneVote',], ['all_models',],[ 'means',  '5-95'], ]#  ['means',],  ['5-95',], ['all_models', ]]
-        for plotting in plottings:
-            #continue
-            multi_model_clim_figure(
-                cfg,
-                metadatas,
-                time_series_fns,
-                hist_time_range = [1990., 2015.],
-                ssp_time_range = [2015., 2050.],
-                plotting=plotting,
-            )
 
     #print(time_series_fns)
     #print(profile_fns)
