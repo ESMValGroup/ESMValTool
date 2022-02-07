@@ -1,0 +1,27 @@
+---
+documentation:
+  description: 'Consecutive dry days'
+  authors: ['berg_peter']
+  projects: ['c3s-magic']
+  references: ['acknow_project']
+
+diagnostics:
+
+  dry_days:
+    description: Calculating number of dry days.
+    variables:
+      pr:
+        short_name: pr
+        project: CMIP6
+        mip: day
+        exp: historical
+        start_year: 2001
+        end_year: 2002 
+    scripts:
+      consecutive_dry_days:
+        script: droughtindex/diag_cdd.py
+        dryindex: 'cdd'
+        plim: 1
+        frlim: 5
+        quickplot:
+          plot_type: pcolormesh

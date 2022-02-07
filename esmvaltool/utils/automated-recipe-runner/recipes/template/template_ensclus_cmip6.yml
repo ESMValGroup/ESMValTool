@@ -1,0 +1,65 @@
+# recipe_EnsClus.yml
+---
+documentation:
+  description: |
+    Recipe for sub-ensemble selection.
+    The diagnostics groups ensemble members according to similar 
+    characteristics and selects the most representative member 
+    for each cluster based on a k-means algorithm
+
+  authors:
+    - mavilia_irene
+    - vonhardenberg_jost
+    - arnone_enrico
+    - corti_susanna
+
+  maintainer:
+    - vonhardenberg_jost
+
+  references:
+    - straus07jcli
+
+  projects:
+    - c3s-magic
+
+preprocessors:
+  preproc:
+    extract_levels: false
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: linear_extrapolate
+
+
+diagnostics:
+  EnsClus:
+    description: Ensemble clustering
+    variables:
+      pr:
+        short_name: pr
+        project: CMIP6
+        mip: Amon
+        exp: historical
+        start_year: 1900
+        end_year: 2005
+        preprocessor: preproc
+    scripts:
+      main:
+        script: ensclus/ensclus.py
+        title: "Ensemble clustering diagnostic"
+
+        ## Information required:
+        ##-------------------------------about data-------------------------------------------
+        ## Write only letters or numbers, no punctuation marks!
+        season: 'JJA'               #seasonal average
+        area: 'EU'                  #regional average (examples:'EAT':Euro-Atlantic
+                                    #                           'PNA': Pacific North American
+                                    #                           'NH': Northern Hemisphere)
+                                    #                           'EU': Europe)
+        extreme: '75th_percentile'  #XXth_percentile (XX arbitrary), mean, maximum, std, trend
+        #---------------------about cluster analysis------------------------------------------
+        numclus: 3             #number of clusters
+        #Either set perc or numpcs:
+        perc: 80               #cluster analysis is applied on a number of PCs such as they explain
+                               #'perc' of total variance
+        numpcs: 0              #number of PCs to retain. Has priority over perc unless set to 0
+        max_plot_panels: 72 #threshold in number of panels in a plot to create multiple figures

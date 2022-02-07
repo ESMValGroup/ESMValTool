@@ -1,0 +1,123 @@
+# ESMValTool
+# recipe_clouds_ipcc.yml
+---
+documentation:
+  description: |
+    Diagnostics of clouds and hydrological cycle multi-model mean bias,
+    zonal means; similar to IPCC AR5 fig. 9.5.
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - flato13ipcc
+
+  projects:
+     - esmval
+
+preprocessors:
+  clim:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+
+diagnostics:
+
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.5
+  # **********************************************************************
+  # Difference of multi-model mean and reference data set (geographical
+  # distribution, annual mean) + zonal averages of individual models
+  # and multi-model mean (annual means).
+  # **********************************************************************
+
+  clouds_ipcc_swcre:
+    description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      swcre:
+        short_name: swcre
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        exp: historical
+        project: CMIP6
+        start_year: 1986
+        end_year: 2005
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim: 
+        script: clouds/clouds_ipcc.ncl
+        projection: Robinson
+        colormap: WhiteBlueGreenYellowRed
+        timemean: annualclim
+
+  clouds_ipcc_lwcre:
+    description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      lwcre:
+        short_name: lwcre
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        exp: historical
+        project: CMIP6
+        start_year: 1986
+        end_year: 2005
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        script: clouds/clouds_ipcc.ncl
+        projection: Robinson
+        colormap: WhiteBlueGreenYellowRed
+        timemean: annualclim
+
+  clouds_ipcc_netcre:
+    description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      netcre:
+        short_name: netcre
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        exp: historical
+        project: CMIP6
+        start_year: 1986
+        end_year: 2005
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        script: clouds/clouds_ipcc.ncl
+        projection: Robinson
+        colormap: WhiteBlueGreenYellowRed
+        timemean: annualclim

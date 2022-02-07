@@ -1,0 +1,136 @@
+# ESMValTool
+# recipe_clouds_bias.yml
+---
+documentation:
+  description: |
+    Diagnostics of clouds and hydrological cycle multi-model mean, mean bias,
+    absolute bias, relative bias.
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - flato13ipcc
+
+  projects:
+    - embrace
+
+
+preprocessors:
+  clim:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+
+diagnostics:
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.2 a/b/c
+  # **********************************************************************
+  # Multi model mean, multi model mean bias, and mean absolute error
+  # (geographical distributions)
+  # **********************************************************************
+
+  clouds_bias_tas:
+    description: IPCC AR5 Ch. 9, Fig. 9.2 (near-surface temperature)
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      tas:
+        short_name: tas
+        preprocessor: clim
+        reference_dataset: ERA-Interim
+        mip: Amon
+        exp: historical
+        project: CMIP6
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
+         start_year: 1986, end_year: 2005, tier: 3}
+    scripts:
+      clim:
+        script: clouds/clouds_bias.ncl
+        projection: Robinson
+        timemean: annualclim
+        plot_abs_diff: true
+        plot_rel_diff: false
+
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.4
+  # **********************************************************************
+  # Multi model mean, multi model mean bias, mean absolute error, and
+  # mean relative error (geographical ditributions)
+  # **********************************************************************
+
+  clouds_bias_pr:
+    description: IPCC AR5 Ch. 9, Fig. 9.4 (precipitation)
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      pr:
+        short_name: pr
+        preprocessor: clim
+        reference_dataset: GPCP-SG
+        mip: Amon
+        exp: historical
+        project: CMIP6
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
+         start_year: 1986, end_year: 2005, tier: 1}
+    scripts:
+      clim:
+        script: clouds/clouds_bias.ncl
+        projection: Robinson
+        timemean: annualclim
+        plot_abs_diff: true
+        plot_rel_diff: true
+
+  # **********************************************************************
+  # Multi model mean, multi model mean bias, mean absolute error, and
+  # mean relative error (geographical ditributions) of total cloud cover
+  # **********************************************************************
+
+  clouds_bias_clt:
+    description: multi-model mean bias of annual mean compared with a
+                 reference dataset (observations).
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        short_name: clt
+        preprocessor: clim
+        reference_dataset: MODIS
+        mip: Amon
+        exp: historical
+        project: CMIP6
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        script: clouds/clouds_bias.ncl
+        projection: Robinson
+        timemean: annualclim
+        plot_abs_diff: true
+        plot_rel_diff: true

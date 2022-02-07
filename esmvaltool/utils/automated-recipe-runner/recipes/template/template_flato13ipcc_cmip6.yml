@@ -1,0 +1,255 @@
+
+# ESMValTool
+# recipe_flato13ipcc.yml
+---
+documentation:
+
+  description: |
+    Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
+    9.2, 9.4, 9.5, 9.8, 9.42a.
+  authors:
+    - bock_lisa
+    - lauer_axel
+    - schlund_manuel
+
+  maintainer:
+    - righi_mattia
+
+  references:
+    - flato13ipcc
+
+  projects:
+    - embrace
+    - esmval
+    - crescendo
+
+
+
+preprocessors:
+
+  clim:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+  spatial_mean:
+    area_statistics:
+      operator: mean
+
+  clim_ref:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+diagnostics:
+
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.2 a/b/c
+  # **********************************************************************
+  # Multi model mean, multi model mean bias, and mean absolute error
+  # (geographical distributions)
+  # **********************************************************************
+
+  fig09-2:
+    description: IPCC AR5 Ch. 9, Fig. 9.2 (near-surface temperature)
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        short_name: tas
+        preprocessor: clim
+        reference_dataset: ERA-Interim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
+         start_year: 1986, end_year: 2005, tier: 3}
+    scripts:
+      fig09-2: 
+        script: clouds/clouds_bias.ncl
+        projection: Robinson
+        timemean: annualclim
+        plot_abs_diff: true
+        plot_rel_diff: false
+
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.4
+  # **********************************************************************
+  # Multi model mean, multi model mean bias, mean absolute error, and
+  # mean relative error (geographical ditributions)
+  # **********************************************************************
+
+  fig09-4:
+    description: IPCC AR5 Ch. 9, Fig. 9.4 (precipitation)
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      pr:
+        short_name: pr
+        preprocessor: clim
+        reference_dataset: GPCP-SG
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
+         start_year: 1986, end_year: 2005, tier: 1}
+    scripts:
+      fig09-4:
+        script: clouds/clouds_bias.ncl
+        projection: Robinson
+        timemean: annualclim
+        plot_abs_diff: true
+        plot_rel_diff: true
+
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.5
+  # **********************************************************************
+  # Difference of multi-model mean and reference data set (geographical
+  # distribution, annual mean) + zonal averages of individual models
+  # and multi-model mean (annual means).
+  # **********************************************************************
+
+  fig09-5a:
+    description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      swcre:
+        short_name: swcre
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1986
+        end_year: 2005
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      fig09-5a: 
+        script: clouds/clouds_ipcc.ncl
+        projection: Robinson
+        colormap: WhiteBlueGreenYellowRed
+        timemean: annualclim
+
+  fig09-5b:
+    description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      lwcre:
+        short_name: lwcre
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1986
+        end_year: 2005
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      fig09-5b:
+        script: clouds/clouds_ipcc.ncl
+        projection: Robinson
+        colormap: WhiteBlueGreenYellowRed
+        timemean: annualclim      
+
+  fig09-5c:
+    description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      netcre:
+        short_name: netcre
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1986
+        end_year: 2005
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      fig09-5c:
+        script: clouds/clouds_ipcc.ncl
+        projection: Robinson
+        colormap: WhiteBlueGreenYellowRed
+        timemean: annualclim
+        
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.8
+  # **********************************************************************
+  # Time series of anomalies of annual and global surface temperature
+  # **********************************************************************
+
+  fig09-8:
+    description: IPCC AR5 Ch. 9, Fig. 9.8 (near-surface temperature)
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        short_name: tas
+        preprocessor: clim_ref
+        reference_dataset: HadCRUT4
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1870
+        end_year: 2004
+    additional_datasets:
+      - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,
+         start_year: 1870, end_year: 2017, tier: 2}
+    scripts:
+      fig09-8:
+        script: ipcc_ar5/tsline.ncl
+        time_avg: "yearly"
+        ts_anomaly: "anom"    #"anom" for anomaly-plot else "noanom"
+        ref_start: 1961       #start year of reference period for anomalies
+        ref_end: 1990         #end year of reference period for anomalies
+        range_option: 0
+        plot_units: "degC"
+        # Plot style
+        styleset: CMIP6
+ 
+ 
+ #### 9.42 excluded since it includes piControl experiments

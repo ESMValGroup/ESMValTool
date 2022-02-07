@@ -1,0 +1,13 @@
+# Configuration file for the automated creation of CMIP analysis results
+# with all available datasets
+
+
+log_file: ~/cmip_results.log
+log_level: info #debug #info #warning #error
+recipe_dir: recipes/template #use default or specify full path of folder
+created_recipe_dir: recipes/generated_recipes #use default or specify full path of folder
+old_created_recipe_dir: recipes/old_generated_recipes  #use default or specify full path of folder
+work_dir: ~/cmip_resultbrowser
+job_dir: job_output/
+sbatch_dir: temp/
+esm_config_file: config-esm.yml

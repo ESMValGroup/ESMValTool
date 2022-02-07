@@ -1,0 +1,90 @@
+# ESMValTool
+# namelist_landcover.yml
+---
+documentation:
+  description: |
+    Recipe for plotting the accumulated area, average fraction
+    and bias of landcover classes in comparison to ESA_CCI_LC data
+    for the full globe and large scale regions.
+  authors:
+    - hagemann_stefan
+    - loew_alexander
+    - mueller_benjamin
+    - stacke_tobias
+
+  maintainer:
+    righi_mattia
+
+  references:
+    - georgievski18tac
+
+  observation references:
+    - esacci-landcover
+
+  projects:
+    - crescendo
+
+datasets:
+  - {dataset: ESACCI-LANDCOVER, project: OBS,   type: sat,   version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg, tier: 2, start_year: 2008,  end_year: 2012}
+
+preprocessors:
+  prep0:
+    regrid:
+      target_grid: ESACCI-LANDCOVER
+      scheme: area_weighted
+
+
+diagnostics:
+  landcover:
+    description: Doing ESACCI land cover analysis.
+    variables:
+      baresoilFrac:
+        short_name: baresoilFrac
+        preprocessor: prep0
+        reference_dataset: ESACCI-LANDCOVER
+        project: CMIP6
+        exp: historical
+        start_year: 2008
+        end_year: 2012
+        mip: Lmon
+      grassFrac:
+        short_name: grassFrac
+        preprocessor: prep0
+        reference_dataset: ESACCI-LANDCOVER
+        mip: Lmon
+        project: CMIP6
+        exp: historical
+        start_year: 2008
+        end_year: 2012
+      treeFrac:
+        short_name: treeFrac
+        preprocessor: prep0
+        reference_dataset: ESACCI-LANDCOVER
+        project: CMIP6
+        exp: historical
+        start_year: 2008
+        end_year: 2012
+        mip: Lmon
+      shrubFrac:
+        short_name: shrubFrac
+        preprocessor: prep0
+        reference_dataset: ESACCI-LANDCOVER
+        project: CMIP6
+        exp: historical
+        start_year: 2008
+        end_year: 2012
+        mip: Lmon
+      cropFrac:
+        short_name: cropFrac
+        preprocessor: prep0
+        reference_dataset: ESACCI-LANDCOVER
+        project: CMIP6
+        exp: historical
+        start_year: 2008
+        end_year: 2012
+        mip: Lmon
+    scripts:
+      landcover:
+        script: landcover/landcover.py
+        comparison: variable
+        colorscheme: seaborn-darkgrid

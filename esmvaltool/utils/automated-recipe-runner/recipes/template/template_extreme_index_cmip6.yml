@@ -1,0 +1,79 @@
+# ESMValTool
+# recipe_extreme_index.yml
+---
+documentation:
+  description: |
+    Tool to compute time series of a number of extreme events: heatwave,
+    coldwave, heavy precipitation, drought and high wind.
+  authors:
+    - hunter_alasdair
+    - perez-zanon_nuria
+    - manubens_nicolau
+    - caron_louis-philippe
+
+  projects:
+    - c3s-magic
+
+  references:
+    - alexander
+
+preprocessors:
+  preproc:
+    extract_region:
+      start_longitude: -20
+      end_longitude: 40
+      start_latitude: 30
+      end_latitude: 70
+
+diagnostics:
+  extreme_index:
+    description: Calculate insurance extreme indices and their combination.
+    variables:
+      tasmax:
+        short_name : tasmax
+        preprocessor: preproc
+        mip: day
+        project: CMIP6
+        start_year : [1971,2020]
+        end_year : [2000,2040]
+        special_flag: mixed_scenario
+        exp : [historical,ssp126]
+      tasmin:
+        short_name : tasmin    
+        preprocessor: preproc
+        mip: day
+        project: CMIP6
+        special_flag: mixed_scenario
+        start_year : [1971,2020]
+        end_year : [2000,2040]
+        exp : [historical,ssp126]       
+      sfcWind:
+        short_name : sfcWind
+        preprocessor: preproc
+        project: CMIP6
+        start_year : [1971,2020]
+        end_year : [2000,2040]
+        exp : [historical, ssp126]    
+        mip: day
+        special_flag: mixed_scenario
+      pr:
+        short_name : pr
+        preprocessor: preproc
+        mip: day
+        project: CMIP6
+        start_year : [1971,2020]
+        end_year : [2000,2040]
+        exp : [historical,ssp126]
+        special_flag: mixed_scenario
+    scripts:
+      metric:
+        script: magic_bsc/extreme_index.R
+
+        weight_t90p: 0.2
+        weight_t10p: 0.2
+        weight_Wx: 0.2
+        weight_rx5day: 0.2
+        weight_cdd: 0.2
+
+        # Compute running mean?
+        running_mean: 5 #3

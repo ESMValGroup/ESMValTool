@@ -1,0 +1,136 @@
+# ESMValTool
+# recipe_ExtremeEvents.yml
+---
+documentation:
+  description: |
+     Calculate indices for monitoring changes in extremes based on daily
+     temperature and precipitation data. Producing Glecker and timeline plots
+     of this as shown in the IPCC_AR4 report
+  authors:
+    - broetz_bjoern
+    - sandstad_marit
+    - mohr_christianwilhelm
+    - arnone_enrico
+    - vonhardenberg_jost
+
+  maintainer:
+    - sandstad_marit
+
+  references:
+    - zhang11wcc
+
+  projects:
+    - crescendo
+    - c3s-magic
+
+datasets:
+  - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, start_year: 1981, end_year: 2000, tier: 3}
+
+diagnostics:
+  extreme_events:
+    description: calculate extreme events
+    variables:
+      pr:
+        short_name: pr
+        mip: day
+        project: CMIP6
+        exp: historical
+        start_year: 1981
+        end_year: 2000
+      tas:
+        short_name: tas
+        mip: day
+        project: CMIP6
+        exp: historical
+        start_year: 1981
+        end_year: 2000
+      tasmax:
+        short_name: tasmax
+        mip: day
+        project: CMIP6
+        exp: historical
+        start_year: 1981
+        end_year: 2000
+      tasmin:
+        mip: day
+        short_name: tasmin
+        project: CMIP6
+        exp: historical
+        start_year: 1981
+        end_year: 2000
+
+    scripts:
+      main:
+        script: extreme_events/extreme_events.R
+        reference_datasets: ["ERA-Interim"]
+        regrid_dataset: ERA-Interim
+        mip_name: CMIP
+        timeseries_idx:
+          - altcddETCCDI_yr
+          - altcsdiETCCDI_yr
+          - altcwdETCCDI_yr
+          - altwsdiETCCDI_yr
+          - cddETCCDI_yr
+          - csdiETCCDI_yr
+          - cwdETCCDI_yr
+          - dtrETCCDI_yr
+          - fdETCCDI_yr
+          - gslETCCDI_yr
+          - idETCCDI_yr
+          - prcptotETCCDI_yr
+          - r10mmETCCDI_yr
+          - r1mmETCCDI_yr
+          - r20mmETCCDI_yr
+          - r95pETCCDI_yr
+          - r99pETCCDI_yr
+          - rx1dayETCCDI_yr
+          - rx5dayETCCDI_yr
+          - sdiiETCCDI_yr
+          - suETCCDI_yr
+          - tn10pETCCDI_yr
+          - tn90pETCCDI_yr
+          - tnnETCCDI_yr
+          - tnxETCCDI_yr
+          - trETCCDI_yr
+          - tx10pETCCDI_yr
+          - tx90pETCCDI_yr
+          - txnETCCDI_yr
+          - txxETCCDI_yr
+          - wsdiETCCDI_yr
+        gleckler_idx:
+          - altcddETCCDI_yr
+          - altcsdiETCCDI_yr
+          - altcwdETCCDI_yr
+          - altwsdiETCCDI_yr
+          - cddETCCDI_yr
+          - csdiETCCDI_yr
+          - cwdETCCDI_yr
+          - dtrETCCDI_yr
+          - fdETCCDI_yr
+          - gslETCCDI_yr
+          - idETCCDI_yr
+          - prcptotETCCDI_yr
+          - r10mmETCCDI_yr
+          - r1mmETCCDI_yr
+          - r20mmETCCDI_yr
+          - r95pETCCDI_yr
+          - r99pETCCDI_yr
+          - rx1dayETCCDI_yr
+          - rx5dayETCCDI_yr
+          - sdiiETCCDI_yr
+          - suETCCDI_yr
+          - tn10pETCCDI_yr
+          - tn90pETCCDI_yr
+          - tnnETCCDI_yr
+          - tnxETCCDI_yr
+          - trETCCDI_yr
+          - tx10pETCCDI_yr
+          - tx90pETCCDI_yr
+          - txnETCCDI_yr
+          - txxETCCDI_yr
+          - wsdiETCCDI_yr
+        ts_plt: true
+        glc_plt: true
+        climdex_parallel: 16
+        base_range: [1981, 2000]
+        analysis_range: [1981, 2000]
