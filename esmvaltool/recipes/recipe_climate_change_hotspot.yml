@@ -553,19 +553,6 @@ preprocessors:
       statistics: [mean]
     seasonal_statistics:
       operator: mean
-  djf_preproc:
-    <<: *ensemble 
-    extract_season:
-      season: jja
-  jja_preproc:
-    <<: *ensemble 
-    extract_season:
-      season: jja
-  annual_preproc:
-    <<: *ensemble 
-    annual_statistics:
-      operator: mean
-
 
 diagnostics:
   tas_cmip6_85:
