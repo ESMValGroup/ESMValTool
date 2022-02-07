@@ -979,17 +979,19 @@ def multi_model_clim_figure(
     if len(glob.glob(out_shelve+'*')):
        print('loading from shelve:', out_shelve)
        sh = shopen(out_shelve)
-       #model_cubes = sh['model_cubes']
+       #model_cubes = sh['model_cubes'] # these aren't cubes as you can't shelve a cube.
        model_cubes= sh['model_cubes']
        omov_cubes= sh['omov_cubes']
        model_cubes_paths = sh['model_cubes_paths']
        omov_cubes_paths = sh['omov_cubes_paths']
+       units = sh['units']
        sh.close()
     else:
         model_cubes = {}
         omov_cubes = {}
         omov_cubes_paths = {}
         model_cubes_paths = {}
+        units = ''
 
     for variable_group, filenames  in ts_dict.items():
         for fn in sorted(filenames):
@@ -1009,6 +1011,7 @@ def multi_model_clim_figure(
             print('loading', fn)
             cube = iris.load_cube(fn)
             cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
+            units = cube.units
 
             if not cube.coords('year'):
                 iris.coord_categorisation.add_year(cube, 'time')
@@ -1025,6 +1028,7 @@ def multi_model_clim_figure(
             cube = cube.aggregated_by(['month_number', ], iris.analysis.MEAN)
             #cube_min = cube.copy().aggregated_by(['month_number', ], iris.analysis.MIN)
             #cube_max = cube.copy().aggregated_by(['month_number', ], iris.analysis.MAX)
+            cube = {'month_number': cube.coord('month_number').points, 'data': cube.data}
 
             model_cubes = add_dict_list(model_cubes, variable_group, cube)
             model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
@@ -1033,9 +1037,7 @@ def multi_model_clim_figure(
             omov_cubes_paths= add_dict_list(omov_cubes_paths, (variable_group, model ), fn)
             changes+=1
 
-
-    # fuck  you can't save a cube.
-    if changes>0:
+    if changes > 0:
        print('Saving new shelve:', out_shelve)
        sh = shopen(out_shelve)
        #model_cubes = sh['model_cubes']
@@ -1043,9 +1045,11 @@ def multi_model_clim_figure(
        sh['omov_cubes'] = omov_cubes
        sh['model_cubes_paths'] = model_cubes_paths
        sh['omov_cubes_paths'] = omov_cubes_paths
+       sh['units'] = units
        sh.close()
 
-    if 'OneModelOneVote' in plotting:
+    if {'OMOC_modelmeans','OneModelOneVote','OMOC_modelranges'}.intersection(set(plotting)):
+
         omoc_means = {}
         variable_groups = {}
         for (variable_group, model), cubes in omov_cubes.items():
@@ -1057,14 +1061,33 @@ def multi_model_clim_figure(
                 if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
                 scenario = metadatas[fn]['exp']
 
-                months =  cube.coord('month_number').points
-                for t, d in zip(months, cube.data):
+                months =  cube['month_number']
+                for t, d in zip(months, cube['data']):
                     data_values = add_dict_list(data_values, t, d)
             omoc_means[(variable_group, model, scenario)] = {t: np.mean(data_values[t]) for t in months}
+            color = ipcc_colours[scen]
+
+            if 'OMOC_modelmeans' in plotting:
+                dat = omoc_means[(variable_group, model, scenario)]
+                times = sorted(dat.keys())
+                mean = [np.mean(dat[t]) for t in times]
+                color = ipcc_colours[scen]
+
+                plt.plot(times, mean, ls='-', c=color, lw=1.)
+            if 'OMOC_modelranges' in plotting:
+                dat = omoc_means[(variable_group, model, scenario)]
+                times = sorted(dat.keys())
+                mins = [np.min(dat[t]) for t in times]
+                maxs = [np.max(dat[t]) for t in times]
+                if mins == maxs:
+                    plt.plot(times, mean, ls='-', c=color, lw=1.5)
+                else:
+                    plt.fill_between(times, mins, maxs, color=color, alpha=0.15)
+
 
         for variable_group_master in variable_groups.keys():
             omoc_mean = {}
-             
+
             for (variable_group, model, scenario),model_mean in omoc_means.items():
                 if variable_group!= variable_group_master: continue
                 scen = scenario
@@ -1074,7 +1097,9 @@ def multi_model_clim_figure(
             times = sorted(omoc_mean.keys())
             mean = [np.mean(omoc_mean[t]) for t in times]
             color = ipcc_colours[scen]
-            plt.plot(times, mean, ls='-', c=color, lw=2.)
+            if 'OneModelOneVote' in plotting:
+                plt.plot(times, mean, ls='-', c=color, lw=2.)
+
 
     #assert 0
 
@@ -1089,15 +1114,15 @@ def multi_model_clim_figure(
             if metadatas[fn]['dataset'] in models_to_skip: continue
 
 
-            months =  cube.coord('month_number').points
-            for t, d in zip(months, cube.data):
+            months =  cube['month_number']
+            for t, d in zip(months, cube['data']):
                 data_values = add_dict_list(data_values, t, d)
                 #years_range = sorted({yr:True for yr in cube.coord('year').points}.keys())
             color = ipcc_colours[scenario]
             label =  scenario
 
             if 'all_models' in plotting:
-                plt.plot(months, cube.data, ls='-', c=color, lw=0.6)
+                plt.plot(months, cube['data'], ls='-', c=color, lw=0.6)
 
         times = sorted(data_values.keys())
         if 'means' in plotting:
@@ -1145,7 +1170,6 @@ def multi_model_clim_figure(
     #                       ' Island MPA \n Historical', '-'.join([str(t) for t in hist_time_range]),
     #                       'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ]))
 
-    units = cube.units
     #ax.set_xlabel('Months')
     ax.set_xticks([1,2,3,4,5,6,7,8,9,10,11,12,])
     ax.set_xticklabels(['J','F','M','A','M','J','J','A','S','O','N','D'])
@@ -2281,7 +2305,7 @@ def multi_model_map_figure_old(
     if plot_obs and os.path.exists(obs_filename):
         obs_cube = iris.load_cube(obs_filename)
         method = 'min_max' # hist and obs go between min and max.
-        #method = '5pc-95pc' # hist and obs plotted between 5-95 percentiles. 
+        #method = '5pc-95pc' # hist and obs plotted between 5-95 percentiles.
         if method == 'min_max':
             ranges = [hist_cube.data.min(), hist_cube.data.max()]
             ranges.extend([obs_cube.data.min(), obs_cube.data.max()])
@@ -2292,7 +2316,7 @@ def multi_model_map_figure_old(
             for dat, pc in itertools.product([hist_cube.data, obs_cube.data], [5, 95]):
                 ranges.append(np.percentile(dat.compressed(), pc))
         print(method, ranges)
-        
+
         style_range['hist'].extend([np.min(ranges), np.max(ranges)])
     else:
         style_range['hist'].extend([hist_cube.data.min(), hist_cube.data.max()])
@@ -2618,7 +2642,7 @@ def main(cfg):
     if do_standalone:
 
         # Climatology plot
-        plottings =  [['OneModelOneVote',],['means', 'OneModelOneVote',], ['all_models',],[ 'means',  '5-95'], ]#  ['means',],  ['5-95',], ['all_models', ]]
+        plottings =  [['OneModelOneVote',],['means', 'OneModelOneVote',], ['OMOC_modelmeans','OneModelOneVote','OMOC_modelranges'],] # ['all_models',],[ 'means',  '5-95'], ]#  ['means',],  ['5-95',], ['all_models', ]]
         for plotting in plottings:
             #continue
             multi_model_clim_figure(
