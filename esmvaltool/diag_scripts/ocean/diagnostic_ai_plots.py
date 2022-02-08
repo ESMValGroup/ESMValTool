@@ -379,12 +379,12 @@ def multi_model_time_series(
         mp_fn.write(mod_scen_str)
         mp_fn.close()
 
-        mod_scen_str = 'short_name, model, scenario, model count, ensemble count, \n'
+        mod_scen_str = 'short_name, scenario, model count, ensemble count, \n'
         for (short_name, scenario ) in sorted(models_per_sceanrio.keys()):
             modelcount = models_per_sceanrio[(short_name, scenario)]
             ensemble_count = total_counts[(short_name, scenario)]
 
-            line = ', '.join([short_name, dataset, scenario, str(count), str(ensemble_count), '\n'])
+            line = ', '.join([short_name, scenario, str(count), str(ensemble_count), '\n'])
             mod_scen_str = ''.join([mod_scen_str, line])
         model_path  = diagtools.folder(cfg['work_dir']+'/model_table')
         model_path += short_name+'_scenarios_counts.csv'
