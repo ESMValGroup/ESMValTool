@@ -271,14 +271,12 @@ def _get_filenames(stations, cfg, in_dir, all_stat):
                     stations = [x for x in stations if x not in rm_stat]
                 else:
                     raise ValueError(
-                        f"No data found for {rm_stat} on the ftp server. "
-                        )
+                        f"No data found for {rm_stat} on the ftp server. ")
         else:
             if not all_stat:
                 raise ValueError(
                     f"No local data found for stations {download_files}, "
-                    "consider turning on the download option."
-                    )
+                    "consider turning on the download option.")
     logger.debug("Found input files:\n%s", pformat(input_files))
     return input_files, stations
 

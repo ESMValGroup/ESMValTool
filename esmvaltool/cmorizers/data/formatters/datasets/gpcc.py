@@ -5,7 +5,8 @@ Tier
 
 Source
     https://opendata.dwd.de/climate_environment/GPCC/html/fulldata-monthly_v2018_doi_download.html
-    https://opendata.dwd.de/climate_environment/GPCC/full_data_2018/full_data_monthly_v2018_[025 05 10 25].nc.gz # noqa
+    https://opendata.dwd.de/climate_environment/GPCC/
+        full_data_2018/full_data_monthly_v2018_[025 05 10 25].nc.gz
 Last access
     20200225
 

@@ -385,11 +385,12 @@ def set_global_atts(cube, attrs):
             'project_id':
             attrs.pop('project_id'),
         }
-    except KeyError:
-        raise KeyError(
-            "All CMORized datasets need the global attributes 'dataset_id', "
-            "'version', 'tier', 'source', 'reference', 'comment' and "
-            "'project_id' specified in the configuration file")
+    except KeyError as original_error:
+        msg = ("All CMORized datasets need the global attributes "
+               "'dataset_id', 'version', 'tier', 'source', 'reference', "
+               "'comment' and 'project_id' "
+               "specified in the configuration file")
+        raise KeyError(msg) from original_error
 
     # Additional attributes
     glob_dict.update(attrs)

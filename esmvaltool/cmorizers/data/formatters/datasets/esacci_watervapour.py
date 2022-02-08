@@ -49,8 +49,8 @@ def extract_variable(var_info, raw_info, attrs, year):
             fix_coords(cube, overwrite_time_bounds=False)
             set_global_atts(cube, attrs)
             # Remove dysfunctional ancillary data without sandard name
-            for ancillary_variable_, dim in cube._ancillary_variables_and_dims:
-                cube.remove_ancillary_variable(ancillary_variable_)
+            for ancillary_variable in cube.ancillary_variables():
+                cube.remove_ancillary_variable(ancillary_variable)
             return cube
 
 

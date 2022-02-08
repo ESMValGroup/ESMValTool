@@ -50,8 +50,8 @@ def _fix_fx_areacello(xr_time, var):
     grid_areas_xr = xr.DataArray(grid_areas[0, 0, :, :],
                                  coords={
                                      'lat': xr_time.temp.coords['lat'],
-                                     'lon': xr_time.temp.coords['lon']
-                                     },
+                                     'lon': xr_time.temp.coords['lon'],
+                                 },
                                  dims=['lat', 'lon'],
                                  name=var)
     grid_areas_xr.attrs = OrderedDict([('cell_area', 'Ocean Grid-Cell Area'),
@@ -82,14 +82,13 @@ def _fix_data(xr_time, var):
                                        'sea_water_potential_temperature'),
                                       ('units', 'K')])
         cube = temp_new.to_iris()
-        return cube.copy()
     elif var == 'so':
         cube = xr_time.salt.to_iris()
-        return cube.copy()
     elif var == 'areacello':
         cube = _fix_fx_areacello(xr_time, var)
-        return cube.copy()
-    return None
+    else:
+        return None
+    return cube.copy()
 
 
 def extract_variable(var_info, raw_info, out_dir, attrs):

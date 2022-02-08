@@ -27,9 +27,7 @@ def cmorize(cfg, region, in_dir, out_dir):
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
 
-    file_expr = os.path.join(
-        in_dir, f'icemotion_daily_{region}_*.nc'
-        )
+    file_expr = os.path.join(in_dir, f'icemotion_daily_{region}_*.nc')
     for filepath in glob.glob(file_expr):
         logger.info('Cmorizing file %s', filepath)
         cubes = iris.load(filepath)
