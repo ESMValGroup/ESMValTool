@@ -133,26 +133,26 @@ def merge_data(in_dir, out_dir, raw_info, bins):
     var = raw_info['name']
     do_bin = (bins != 0) and (bins % 2 == 0)
     datafile = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.nc'))
-    for x in datafile:
-        ds = xr.open_dataset(x)
-        da = ds[var].sel(lat=slice(None, None, -1))
+    for dataset_id in datafile:
+        dataset = xr.open_dataset(dataset_id)
+        data_array = dataset[var].sel(lat=slice(None, None, -1))
         # remove inconsistent attributes
         for thekeys in [
                 'grid_mapping', 'ancillary_variables', 'parameter_vocab_uri'
         ]:
-            da.attrs.pop(thekeys, None)
+            data_array.attrs.pop(thekeys, None)
 
         if do_bin:
-            da = da.coarsen(lat=bins, boundary='exact').mean()
-            da = da.coarsen(lon=bins, boundary='exact').mean()
+            data_array = data_array.coarsen(lat=bins, boundary='exact').mean()
+            data_array = data_array.coarsen(lon=bins, boundary='exact').mean()
 
-        if x == datafile[0]:
-            newda = da
+        if dataset_id == datafile[0]:
+            new_data_array = data_array
             thekeys = [
                 'creator_name', 'creator_url', 'license', 'sensor',
                 'processing_level'
             ]
-            dsmeta = dict((y, ds.attrs[y]) for y in thekeys)
+            dsmeta = dict((y, dataset.attrs[y]) for y in thekeys)
             if do_bin:
                 dsmeta['BINNING'] = ' '.join([
                     'Data binned using ', "{}".format(bins), 'by',
@@ -162,14 +162,14 @@ def merge_data(in_dir, out_dir, raw_info, bins):
                 dsmeta['BINNING'] = ""
             continue
 
-        newda = xr.concat((newda, da), dim='time')
+        new_data_array = xr.concat((new_data_array, data_array), dim='time')
 
     # create dataset
-    ds = newda.to_dataset(name=var)
-    for x, y in dsmeta.items():
-        ds.attrs[x] = y
-    ds['lon'].attrs = {'standard_name': 'longitude'}
-    ds['lat'].attrs = {'standard_name': 'latitude'}
+    dataset = new_data_array.to_dataset(name=var)
+    for key, value in dsmeta.items():
+        dataset.attrs[key] = value
+    dataset['lon'].attrs = {'standard_name': 'longitude'}
+    dataset['lat'].attrs = {'standard_name': 'latitude'}
 
     # encoding
     thekeys = {
@@ -189,7 +189,7 @@ def merge_data(in_dir, out_dir, raw_info, bins):
 
     # save to file
     datafile = os.path.join(out_dir, raw_info['file'] + '_merged.nc')
-    ds.to_netcdf(datafile, encoding=thekeys, unlimited_dims='time')
+    dataset.to_netcdf(datafile, encoding=thekeys, unlimited_dims='time')
 
     logger.info("Merged data written to: %s", datafile)
 
