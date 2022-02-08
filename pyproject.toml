@@ -1,12 +1,3 @@
 [build-system]
 requires = ["setuptools >= 40.6.0", "wheel"]
 build-backend = "setuptools.build_meta"
-
-[tool.pylint.messages_control]
-disable = [
-    # Disable too many and too few checks.
-    "too-many-arguments",
-
-    # Many functions (e.g. callbacks) will naturally have unused arguments.
-    "unused-argument",
-]
