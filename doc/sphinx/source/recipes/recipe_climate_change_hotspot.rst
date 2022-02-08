@@ -30,7 +30,7 @@ against larger scale means to obtain the hotspot magnitudes for both
 CMIP5 and CMIP6 in the 2.6, 4.5 and 8.5 $Wm^-2$ radiative forcings 
 by the year 2100 against the preindustrial Era 
 (RCP2.6, RCP4.5, RCP8.5 for CMIP5 and SSP1-2.6, SSP2-4.5, SSP5-8.5 for CMIP6).
-Recipe based on the work by `Cos et al. (2022) <**DOI**>`
+Recipe based on the work by `Cos et al. (2022) <https://doi.org/10.5194/esd-13-321-2022>`
 
 Note: This recipe is currently set to evaluate the Mediterranean
 hotspot but it can be set to any other rectangular region.
@@ -52,7 +52,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/cos22esd/
     * ``hotspot_plotter.py``: Gathers the data output from the 
     ``climate_change_hotspot.py`` script and plots the hotspot fields and 
     the rolling mean timeseries [Figures 2, 3, S2 and S4 by 
-    `Cos et al. (2022) <**DOI**>`]. 
+    `Cos et al. (2022) <https://doi.org/10.5194/esd-13-321-2022>`]. 
 
 User settings in the recipe
 -----------------------
@@ -175,7 +175,7 @@ Variables
 References
 ----------
 
-* Cos et al. 2022 <DOI>`_, Earth Syst. Dynam., *, *
+* `Cos et al. 2022 <https://doi.org/10.5194/esd-13-321-2022>`_, Earth Syst. Dynam., 13, 321–340
 
 
 Example plots
