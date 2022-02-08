@@ -1065,13 +1065,13 @@ def multi_model_clim_figure(
                 for t, d in zip(months, cube['data']):
                     data_values = add_dict_list(data_values, t, d)
             omoc_means[(variable_group, model, scenario)] = {t: np.mean(data_values[t]) for t in months}
-            color = ipcc_colours[scen]
+            color = ipcc_colours[scenario]
 
             if 'OMOC_modelmeans' in plotting:
                 dat = omoc_means[(variable_group, model, scenario)]
                 times = sorted(dat.keys())
                 mean = [np.mean(dat[t]) for t in times]
-                color = ipcc_colours[scen]
+                color = ipcc_colours[scenario]
 
                 plt.plot(times, mean, ls='-', c=color, lw=1.)
             if 'OMOC_modelranges' in plotting:
