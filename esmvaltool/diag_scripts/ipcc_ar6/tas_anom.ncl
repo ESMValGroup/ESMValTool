@@ -195,7 +195,7 @@ begin
       tas0 = convert_units(tas0, "degC")
     end if
 
-    if (diag_script_info@blending .and.
+    if (diag_script_info@blending .and. \
         all(imod .ne. (/ref_ind, mmm_ind/))) then
 
       ; Read data
@@ -257,7 +257,7 @@ begin
       tas0_anom(i, :, :) = tas0(i, :, :) - base_mon(mod(i, 12), :, :)
     end do
 
-    if (diag_script_info@blending .and.
+    if (diag_script_info@blending .and. \
         all(imod .ne. (/ref_ind, mmm_ind/))) then
 
       ; calculate tos anomaly for each grid point
@@ -316,7 +316,7 @@ begin
 
     procmod := diag_tas
 
-    if (diag_script_info@blending .and.
+    if (diag_script_info@blending .and. \
         all(imod .ne. (/ref_ind, mmm_ind/))) then
 
       if (diag_script_info@ref_mask) then
