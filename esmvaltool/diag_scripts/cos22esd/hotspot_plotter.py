@@ -309,6 +309,7 @@ class HotspotPlot(object):
                 title_format = {
                     "26": "RCP2.6/SSP1-2.6",
                     "45": "RCP4.5/SSP2-4.5",
+                    "60": "RCP6.0/SSP4-6.0",
                     "85": "RCP8.5/SSP5-8.5",
                 }
 
@@ -437,6 +438,7 @@ class HotspotPlot(object):
             "RCP45": "RCP4.5",
             "RCP26": "RCP2.6",
             "cmip5-85": "RCP8.5",
+            "cmip5-60": "RCP6.0",
             "cmip5-45": "RCP4.5",
             "cmip5-26": "RCP2.6",
             "ssp585": "SSP5-8.5",
@@ -446,8 +448,12 @@ class HotspotPlot(object):
             "SSP245": "SSP2-4.5",
             "SSP126": "SSP1-2.6",
             "cmip6-85": "SSP5-8.5",
+            "cmip6-70": "SSP3-7.0",
+            "cmip6-60": "SSP4-6.0",
+            "cmip6-34": "SSP4-3.4",
             "cmip6-45": "SSP2-4.5",
             "cmip6-26": "SSP1-2.6",
+            "cmip6-19": "SSP1-1.9",
             "1": "%",
             "era5": "ERA5",
             "gpcc025x025_v8": "GPCC",
