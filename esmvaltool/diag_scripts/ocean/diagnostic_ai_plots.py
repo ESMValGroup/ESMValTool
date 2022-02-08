@@ -324,6 +324,7 @@ def multi_model_time_series(
     model_path += short_name+'.csv'
     model_table = 'short_name, model, scenario, ensemble member, \n'
     # load the netcdfs and populate the shelve dicts
+    lines = []
     for variable_group, filenames  in ts_dict.items():
         for fn in sorted(filenames):
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
@@ -332,11 +333,14 @@ def multi_model_time_series(
             short_name = metadatas[fn]['short_name']
             scenario = metadatas[fn]['exp']
             ensemble = metadatas[fn]['ensemble']
-            line = ', '.join([short_name, dataset, scenario, ensemble,'\n'])
-            model_table = ''.join([model_table, line])
-    mp_fn = open(model_path)
+            lines.append(', '.join([short_name, dataset, scenario, ensemble,'\n']))
+    for line in sorted(lines):
+        model_table = ''.join([model_table, line])
+    mp_fn = open(model_path, 'w')
     mp_fn.write(model_table)
     mp_fn.close()
+    print('output:', model_table)
+    print('saved model path:', model_path)
     assert 0
 
     ####
