@@ -39,7 +39,7 @@ REQUIREMENTS = {
         'jinja2',
         'joblib',
         'lime',
-        'mapgenerator>=1.0.4',
+        'mapgenerator>=1.0.5',
         'matplotlib',
         'natsort',
         'nc-time-axis',
