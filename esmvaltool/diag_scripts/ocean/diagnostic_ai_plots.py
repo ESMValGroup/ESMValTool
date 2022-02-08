@@ -320,28 +320,79 @@ def multi_model_time_series(
 
     # create a csv of the model contents:
     # short_name, model, scenario, ensemble member
-    model_path  = diagtools.folder(cfg['work_dir']+'/model_table')
-    model_path += short_name+'.csv'
-    model_table = 'short_name, model, scenario, ensemble member, \n'
-    # load the netcdfs and populate the shelve dicts
-    lines = []
-    for variable_group, filenames  in ts_dict.items():
-        for fn in sorted(filenames):
-            if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
-            dataset = metadatas[fn]['dataset']
-            if dataset in models_to_skip: continue
-            short_name = metadatas[fn]['short_name']
-            scenario = metadatas[fn]['exp']
-            ensemble = metadatas[fn]['ensemble']
-            lines.append(', '.join([short_name, dataset, scenario, ensemble,'\n']))
-    for line in sorted(lines):
-        model_table = ''.join([model_table, line])
-    mp_fn = open(model_path, 'w')
-    mp_fn.write(model_table)
-    mp_fn.close()
-    print('output:', model_table)
-    print('saved model path:', model_path)
-    assert 0
+    make_csvs = True
+    if make_csvs:
+        # load the netcdfs and populate the shelve dicts
+        lines = []
+        mod_scen_counts = {}
+        total_counts = {}
+        models_per_sceanrio = {}
+        ensembles_per_sceanrio = {}
+
+        for variable_group, filenames  in ts_dict.items():
+            for fn in sorted(filenames):
+                if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
+                dataset = metadatas[fn]['dataset']
+                if dataset in models_to_skip: continue
+                short_name = metadatas[fn]['short_name']
+                scenario = metadatas[fn]['exp']
+                ensemble = metadatas[fn]['ensemble']
+                lines.append(', '.join([short_name, dataset, scenario, ensemble,'\n']))
+
+                sds = (short_name, dataset, scenario )
+                if sds in mod_scen_counts: mod_scen_counts[sds] +=1
+                else: mod_scen_counts[sds] = 1
+
+                ss = (short_name, scenario )
+                if ss in total_counts: total_counts[ss] +=1
+                else: total_counts[ss] = 1
+
+                if len(models_per_sceanrio.get(ss, [])):
+                    models_per_sceanrio[ss][dataset] = True
+                else: models_per_sceanrio[ss] = {dataset: True}
+
+                # if ensembles_per_sceanrio.get(ss, 0):
+                #     ensembles_per_sceanrio[ss] +=1
+                # else: ensembles_per_sceanrio[ss] = 1
+
+
+        model_table = 'short_name, model, scenario, ensemble member, \n'
+        for line in sorted(lines):
+            model_table = ''.join([model_table, line])
+        model_path  = diagtools.folder(cfg['work_dir']+'/model_table')
+        model_path += short_name+'_full.csv'
+        mp_fn = open(model_path, 'w')
+        mp_fn.write(model_table)
+        mp_fn.close()
+        print('output:', model_table)
+        print('saved model path:', model_path)
+
+        # csv for the individual model scenario count.
+        mod_scen_str = 'short_name, model, scenario, count, \n'
+        for (short_name, dataset, scenario ) in sorted(mod_scen_counts.keys()):
+            count = mod_scen_counts[(short_name, dataset, scenario)]
+            line = ', '.join([short_name, dataset, scenario, str(count), '\n'])
+            mod_scen_str = ''.join([mod_scen_str, line])
+        model_path  = diagtools.folder(cfg['work_dir']+'/model_table')
+        model_path += short_name+'_model_scenario_count.csv'
+        mp_fn = open(model_path, 'w')
+        mp_fn.write(mod_scen_str)
+        mp_fn.close()
+
+        mod_scen_str = 'short_name, model, scenario, model count, ensemble count, \n'
+        for (short_name, scenario ) in sorted(models_per_sceanrio.keys()):
+            modelcount = models_per_sceanrio[(short_name, scenario)]
+            ensemble_count = total_counts[(short_name, scenario)]
+
+            line = ', '.join([short_name, dataset, scenario, str(count), str(ensemble_count), '\n'])
+            mod_scen_str = ''.join([mod_scen_str, line])
+        model_path  = diagtools.folder(cfg['work_dir']+'/model_table')
+        model_path += short_name+'_scenarios_counts.csv'
+        mp_fn = open(model_path, 'w')
+        mp_fn.write(mod_scen_str)
+        mp_fn.close()
+
+        assert 0
 
     ####
     # Load the data for each layer as a separate cube
