@@ -69,34 +69,34 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
 
 def merge_data(in_dir, out_dir, raw_info):
     """Merge all data into a single file."""
-    da = []
+    data_array = []
     var = raw_info['name']
     filelist = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.hdf'))
     for filename in filelist:
-        ds = xr.open_rasterio(filename).rename({
+        dataset = xr.open_rasterio(filename).rename({
             'y': 'lat',
             'x': 'lon'
         }).squeeze().drop('band')
         # create coordinates
-        ds = ds.assign_coords(
+        dataset = dataset.assign_coords(
             time=pd.to_datetime(filename[-11:-4], format='%Y%j'))
-        ds = ds.expand_dims(dim='time', axis=0)
-        dx = 90. / ds.lat.size
-        ds = ds.assign_coords(lat=np.linspace(-90. + dx, 90. -
-                                              dx, ds.lat.size))
-        ds.lat.attrs = {'long_name': 'Latitude', 'units': 'degrees_north'}
-        ds = ds.assign_coords(lon=np.linspace(-180. + dx, 180. -
-                                              dx, ds.lon.size))
-        ds.lon.attrs = {'long_name': 'Longitude', 'units': 'degrees_east'}
+        dataset = dataset.expand_dims(dim='time', axis=0)
+        spacing = 90. / dataset.lat.size
+        dataset = dataset.assign_coords(
+            lat=np.linspace(-90. + spacing, 90. - spacing, dataset.lat.size))
+        dataset.lat.attrs = {'long_name': 'Latitude', 'units': 'degrees_north'}
+        dataset = dataset.assign_coords(
+            lon=np.linspace(-180. + spacing, 180. - spacing, dataset.lon.size))
+        dataset.lon.attrs = {'long_name': 'Longitude', 'units': 'degrees_east'}
         # get current file data
-        da.append(ds)
-    damerge = xr.concat(da, dim='time')
+        data_array.append(dataset)
+    damerge = xr.concat(data_array, dim='time')
 
     # need data flip to match coordinates
     damerge.data = np.fliplr(damerge.data)
 
     # save to file
-    ds = damerge.to_dataset(name=var)
+    dataset = damerge.to_dataset(name=var)
     thekeys = {
         'lat': {
             '_FillValue': False
@@ -112,7 +112,7 @@ def merge_data(in_dir, out_dir, raw_info):
         }
     }
     filename = os.path.join(out_dir, raw_info['file'] + '_merged.nc')
-    ds.to_netcdf(filename, encoding=thekeys, unlimited_dims='time')
+    dataset.to_netcdf(filename, encoding=thekeys, unlimited_dims='time')
 
     logger.info("Merged data written to: %s", filename)
 
