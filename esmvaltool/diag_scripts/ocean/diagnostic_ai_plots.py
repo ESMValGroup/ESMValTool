@@ -297,6 +297,7 @@ def multi_model_time_series(
     impath += diagtools.get_image_format(cfg)
     if not overwrite and os.path.exists(impath): return fig, ax
 
+
     # Determine short name & model list:
     variable_groups = {}
     datasets = {}
@@ -316,6 +317,27 @@ def multi_model_time_series(
 
     if len(short_names.keys()) != 1: assert 0
     short_name = list(short_names.keys())[0]
+
+    # create a csv of the model contents:
+    # short_name, model, scenario, ensemble member
+    model_path  = diagtools.folder(cfg['work_dir']+'/model_table')
+    model_path += short_name+'.csv'
+    model_table = 'short_name, model, scenario, ensemble member, \n'
+    # load the netcdfs and populate the shelve dicts
+    for variable_group, filenames  in ts_dict.items():
+        for fn in sorted(filenames):
+            if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
+            dataset = metadatas[fn]['dataset']
+            if dataset in models_to_skip: continue
+            short_name = metadatas[fn]['short_name']
+            scenario = metadatas[fn]['exp']
+            ensemble = metadatas[fn]['ensemble']
+            line = ', '.join([short_name, dataset, scenario, ensemble,'\n'])
+            model_table = ''.join([model_table, line])
+    mp_fn = open(model_path)
+    mp_fn.write(model_table)
+    mp_fn.close()
+    assert 0
 
     ####
     # Load the data for each layer as a separate cube
@@ -2641,20 +2663,6 @@ def main(cfg):
     do_standalone = True
     if do_standalone:
 
-        # Climatology plot
-        plottings =  [['OneModelOneVote',],['means', 'OneModelOneVote',], ['OMOC_modelmeans','OneModelOneVote','OMOC_modelranges'],] # ['all_models',],[ 'means',  '5-95'], ]#  ['means',],  ['5-95',], ['all_models', ]]
-        for plotting in plottings:
-            #continue
-            multi_model_clim_figure(
-                cfg,
-                metadatas,
-                time_series_fns,
-                hist_time_range = [1990., 2015.],
-                ssp_time_range = [2015., 2050.],
-                plotting=plotting,
-            )
-
-
         # plottings:
         #     all: every single ensemble member shown as thin line.
         #     model_means: the mean of every model ensmble is shown as a thicker dotted line
@@ -2671,7 +2679,7 @@ def main(cfg):
                      ['model_means', 'Global_range'],
                      ] #'medians', 'all_models', 'range',
         for plotting in plottings:
-            continue
+            # continue
             for ukesm in ['all', ]: #'not', 'only', 'all']:
                 multi_model_time_series(
                     cfg,
@@ -2684,7 +2692,18 @@ def main(cfg):
                     ukesm=ukesm,
                 )
         #assert 0
-
+        # Climatology plot
+        plottings =  [['OneModelOneVote',],['means', 'OneModelOneVote',], ['OMOC_modelmeans','OneModelOneVote','OMOC_modelranges'],] # ['all_models',],[ 'means',  '5-95'], ]#  ['means',],  ['5-95',], ['all_models', ]]
+        for plotting in plottings:
+            #continue
+            multi_model_clim_figure(
+                cfg,
+                metadatas,
+                time_series_fns,
+                hist_time_range = [1990., 2015.],
+                ssp_time_range = [2015., 2050.],
+                plotting=plotting,
+            )
         # maps:
         for a in [1, ]:
             continue
