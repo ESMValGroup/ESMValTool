@@ -320,7 +320,7 @@ def multi_model_time_series(
 
     # create a csv of the model contents:
     # short_name, model, scenario, ensemble member
-    make_csvs = True
+    make_csvs = False
     if make_csvs:
         # load the netcdfs and populate the shelve dicts
         lines = []
@@ -468,6 +468,46 @@ def multi_model_time_series(
        sh['data_values'] = data_values
        sh['model_cubes_paths'] = model_cubes_paths
        sh.close()
+
+
+    make_diff_csv = True
+    if make_diff_csv:
+        # want a table that includes:
+        # field: historical mean 2000-2010 +/1 std, each scenario +/- std
+        model_values = {}
+        for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
+            times = np.array([t for t in sorted(data.keys())])
+            values = np.array([data[t] for t in times])
+            if scenario == 'historical':
+                times = np.ma.masked_outside(times, 2000., 2010.)
+            else:
+                times = np.ma.masked_outside(times, 2040., 2050.)
+            value = np.ma.masked_where(times.mask, values).mean()
+            key = (short_name, dataset, scenario)
+            model_values = add_dict_list(model_values, key, value)
+
+        scenario_values = {}
+        for (short_name, dataset, scenario), means in model_values.items():
+            model_mean =  np.mean(means)
+            scenario_values = add_dict_list(scenario_values, (short_name, scenario), model_mean)
+
+        header = ['field', ]
+        line = [short_name, ]
+        for (short_name, scenario) in sorted(scenario_values.keys()):
+            header.append(scenario)
+            model_means = np.array(scenario_values[(short_name, scenario)])
+            line.append(' '.join([str(model_means.mean()),'\pm', str(model_means.std())]))
+        header.append('\n')
+        line.append('\n')
+
+        csv_path  = diagtools.folder(cfg['work_dir']+'/model_table')
+        csv_path += 'diff_table_'+short_name+'.csv'
+        mp_fn = open(csv_path, 'w')
+        mp_fn.write(''.join([header, line]))
+        mp_fn.close()
+
+        assert 0
+
 
     # Make the figure
     if fig is None or ax is None:
