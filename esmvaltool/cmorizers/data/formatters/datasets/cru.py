@@ -15,10 +15,8 @@ Download and processing instructions
     where {raw_name} is the name of the desired variable(s).
 """
 
-import gzip
 import logging
 import os
-import shutil
 
 import iris
 

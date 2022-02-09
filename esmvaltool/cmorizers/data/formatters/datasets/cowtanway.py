@@ -21,10 +21,8 @@ Download and processing instructions
         'had4_krig_v2_0_0.nc.gz'
 """
 
-import gzip
 import logging
 import os
-import shutil
 
 import iris
 
