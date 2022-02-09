@@ -477,6 +477,7 @@ def multi_model_time_series(
         # want a table that includes:
         # field: historical mean 2000-2010 +/1 std, each scenario +/- std
         model_values = {}
+        ensembles_dict = {}
         for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
             times = np.array([t for t in sorted(data.keys())])
             values = np.array([data[t] for t in times])
@@ -487,6 +488,9 @@ def multi_model_time_series(
             value = np.ma.masked_where(times.mask, values).mean()
             key = (short_name, dataset, scenario)
             model_values = add_dict_list(model_values, key, value)
+
+            model_ensembles_dict = add_dict_list(model_values, key, ensemble)
+            ensembles_dict = add_dict_list(ensembles_dict, (short_name, scenario), ensemble)
 
         scenario_values = {}
         for (short_name, dataset, scenario), means in model_values.items():
@@ -507,6 +511,45 @@ def multi_model_time_series(
         csv_str = ''.join([header, line])
         csv_path  = diagtools.folder(cfg['work_dir']+'/model_table')
         csv_path += 'diff_table_'+short_name+'.csv'
+        mp_fn = open(csv_path, 'w')
+        mp_fn.write(csv_str)
+        mp_fn.close()
+        print('csv_str:',csv_str)
+        print('saved to path:', csv_path)
+
+        # number of ensembles
+        # Number of models, number of ensembles, (ensembles per model)
+        header = ['field', ]
+        line = [short_name, ]
+        line2 = [' ', ]
+        # model_ensembles_dict = add_dict_list(model_values, key, ensemble)
+        # ensembles_dict = add_dict_list(ensembles_dict, key, ensemble)
+
+        for (short_name, scenario) in sorted(ensembles_dict.keys()):
+            model_ensembles = {}
+            for (sn1, d1, sc1) in sorted(model_ensembles_dict.keys()):
+                if short_name != sn1: continue
+                if sc1 != scenario: continue
+                model_ensembles[d1] = model_ensembles_dict[(sn1, d1, sc1)]
+
+            num_models = str(len(model_ensembles.keys()))
+            num_ensembles = str(len(ensembles_dict[(short_name, scenario)]))
+            num_mod_ensembles = [str(len(model_ensembles[mod])) for mod in sorted(model_ensembles.keys())]
+            header.append(scenario)
+            line.append(num_ensembles)
+            line2.append('-'.join(num_mod_ensembles))
+
+        header.append('\n')
+        line.append('\n')
+        lin2.append('\n')
+
+        header = ', '.join(header)
+        line   = ', '.join(line)
+        line2  = ', '.join(line2)
+
+        csv_str = ''.join([header, line, line2])
+        csv_path  = diagtools.folder(cfg['work_dir']+'/model_table')
+        csv_path += 'ensemble_count_table_'+short_name+'.csv'
         mp_fn = open(csv_path, 'w')
         mp_fn.write(csv_str)
         mp_fn.close()
