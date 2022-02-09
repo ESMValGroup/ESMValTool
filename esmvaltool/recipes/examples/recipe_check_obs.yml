@@ -613,7 +613,7 @@ diagnostics:
       co2s:
     additional_datasets:
       - {dataset: Scripps-CO2-KUM, project: OBS6, mip: Amon, tier: 2,
-         type: ground, version: 15-Nov-2019, start_year: 1979, end_year: 2019}
+         type: ground, version: 14-Oct-2021, start_year: 1979, end_year: 2021}
     scripts: null
 
 
