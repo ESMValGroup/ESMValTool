@@ -21,13 +21,6 @@ from esmvaltool.cmorizers.data import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def _clean(filepath):
-    """Remove unzipped input file."""
-    if os.path.isfile(filepath):
-        os.remove(filepath)
-        logger.info("Removed cached file %s", filepath)
-
-
 def _extract_variable(short_name, var, cfg, filepath, out_dir):
     """Extract variable."""
     raw_var = var.get('raw', short_name)
@@ -65,4 +58,3 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     for (short_name, var) in cfg['variables'].items():
         logger.info("CMORizing variable '%s'", short_name)
         _extract_variable(short_name, var, cfg, filepath, out_dir)
-        _clean(filepath)

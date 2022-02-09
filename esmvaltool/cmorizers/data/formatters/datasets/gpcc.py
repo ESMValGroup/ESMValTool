@@ -35,13 +35,6 @@ from esmvaltool.cmorizers.data import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def _clean(filepath):
-    """Remove unzipped input file."""
-    if os.path.isfile(filepath):
-        os.remove(filepath)
-        logger.info("Removed cached file %s", filepath)
-
-
 def _get_centered_timecoord(cube):
     """Fix time coordinate.
 
@@ -181,4 +174,3 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             filepath = raw_filepath.format(version=version, raw_name=raw_var)
             logger.info("CMORizing variable '%s'", short_name)
             _extract_variable(short_name, var, version, cfg, filepath, out_dir)
-            _clean(filepath)
