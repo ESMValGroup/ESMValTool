@@ -46,7 +46,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         "salinity/netcdf/decav81B0/1.00/woa18_decav81B0_s00_01.nc",
         "silicate/netcdf/all/1.00/woa18_all_i00_01.nc",
         "temperature/netcdf/decav81B0/1.00/woa18_decav81B0_t00_01.nc"
-        ]
+    ]
 
     for source_file in data_paths:
         download(source_file)

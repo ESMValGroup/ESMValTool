@@ -82,8 +82,10 @@ class NASADownloader(WGetDownloader):
 
         Parameters
         ----------
-        folder_path: str
+        server_path: str
             Path to remote folder
+        wget_options: list(str)
+            Extra options for wget, by default None
         """
         if wget_options is None:
             wget_options = []
@@ -96,8 +98,10 @@ class NASADownloader(WGetDownloader):
 
         Parameters
         ----------
-        folder_path: str
+        server_path: str
             Path to remote folder
+        wget_options: list(str)
+            Extra options for wget, by default None
         """
         if wget_options is None:
             wget_options = []

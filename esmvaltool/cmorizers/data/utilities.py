@@ -109,7 +109,6 @@ def convert_timeunits(cube, start_year):
     iris.cube.Cube
         Returns the original iris cube with time coordinate reformatted.
     """
-    # TODO any more weird cases?
     if cube.coord('time').units == 'months since 0000-01-01 00:00:00':
         real_unit = 'months since {}-01-01 00:00:00'.format(str(start_year))
     elif cube.coord('time').units == 'days since 0000-01-01 00:00:00':

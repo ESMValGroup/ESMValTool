@@ -70,6 +70,10 @@ class CDSDownloader(BaseDownloader):
             Month to download
         day : int, list(int), optional
             Day or days to download, by default None
+        file_pattern : str, optional
+            Filename pattern, by default None
+        file_format : str, optional
+            File format, by default tar
         """
         request_dict = self._request_dict.copy()
         request_dict['year'] = f'{year}'
