@@ -68,6 +68,8 @@ import cartopy
 import cartopy.crs as ccrs
 from shelve import open as shopen
 
+from sigfig import round
+
 
 from esmvalcore.preprocessor._time import extract_time, annual_statistics, regrid_time
 
@@ -496,16 +498,20 @@ def multi_model_time_series(
         for (short_name, scenario) in sorted(scenario_values.keys()):
             header.append(scenario)
             model_means = np.array(scenario_values[(short_name, scenario)])
-            line.append(' '.join([str(model_means.mean()),'\pm', str(model_means.std())]))
+            line.append(' '.join([str(round(model_means.mean(),sigfigs=4)),'\pm', str(round(model_means.std(), sigfigs=3))]))
         header.append('\n')
         line.append('\n')
+        header = ', '.join(header)
+        line   = ', '.join(line  )
 
+        csv_str = ''.join([header, line])
         csv_path  = diagtools.folder(cfg['work_dir']+'/model_table')
         csv_path += 'diff_table_'+short_name+'.csv'
         mp_fn = open(csv_path, 'w')
-        mp_fn.write(''.join([header, line]))
+        mp_fn.write(csv_str)
         mp_fn.close()
-
+        print('csv_str:',csv_str)
+        print('saved to path:', csv_path)
         assert 0
 
 
