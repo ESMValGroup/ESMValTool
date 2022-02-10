@@ -22,13 +22,14 @@ logger = logging.getLogger(__name__)
 
 class Monitor(MonitorBase):
     """Diagnostic to plot preprocessor output."""
+
     def __init__(self, config):
         super().__init__(config)
         self.plots = config.get('plots', {})
         self.has_errors = False
 
     def compute(self):
-        """Main plotting method."""
+        """Plot preprocessed data."""
         for module in ['matplotlib', 'fiona']:
             module_logger = logging.getLogger(module)
             module_logger.setLevel(logging.WARNING)
@@ -106,9 +107,9 @@ class Monitor(MonitorBase):
             self.plot_timeseries(cube.extract(
                 iris.Constraint(
                     year=lambda cell: cell <= (var_info[n.START_YEAR] + 50))),
-                                 var_info,
-                                 period='start',
-                                 suptitle='First 50 years')
+                                var_info,
+                                period='start',
+                                suptitle='First 50 years')
             self.plot_timeseries(cube.extract(
                 iris.Constraint(
                     year=lambda cell: cell >= (var_info[n.END_YEAR] - 50))),

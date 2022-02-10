@@ -21,6 +21,7 @@ class MonitorBase():
     It contains the common methods for path creation, provenance
     recording, option parsing and to create some common plots.
     """
+
     def __init__(self, config):
         self.cfg = config
         self.plot_folder = os.path.abspath(
@@ -151,7 +152,7 @@ class MonitorBase():
         """Get plot full path from variable info.
 
         Parameters:
-        -----------
+        ----------
         plot_type: str
             Name of the plot
         var_info: dict
@@ -166,7 +167,7 @@ class MonitorBase():
         """Get plot storage folder from variable info.
 
         Parameters:
-        -----------
+        ----------
         var_info: dict
             Variable information from ESMValTool
         """
@@ -186,7 +187,7 @@ class MonitorBase():
         """Get plot filename from variable info.
 
         Parameters:
-        -----------
+        ----------
         plot_type: str
             Name of the plot
         var_info: dict

@@ -23,6 +23,7 @@ class Eofs(MonitorBase):
     plotting capabilities in diagnostics that can not be done using only
     the preprocessor.
     """
+
     def compute(self):
         """Compute the diagnostic."""
         for module in ['matplotlib', 'fiona']:
@@ -60,7 +61,7 @@ class Eofs(MonitorBase):
 
 
 def main():
-    """Main method."""
+    """Run EOFs diagnostic."""
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
         Eofs(config).compute()
 
