@@ -1,18 +1,27 @@
+"""Diagnostic to reproduce figures in IS-ENES D9.5."""
 import os
 
 import iris
 import matplotlib.pyplot as plt
 
-import esmvaltool.diag_scripts.shared.names as names
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     group_metadata,
+    names,
     run_diagnostic,
 )
 
 
 class DecadalExample:
+    """Class used to plots comparing OBS data with DCPP data."""
     def __init__(self, config):
+        """
+        Set diagnostic parameters and constants.
+        Parameters
+        ----------
+            config : dict
+                Dictionary containing configuration settings.
+        """
         self.cfg = config
 
     @staticmethod
@@ -84,6 +93,7 @@ class DecadalExample:
 
 
 def main():
+    """Run Decadal Example diagnostic."""
     with run_diagnostic() as config:
         DecadalExample(config).compute()
 
