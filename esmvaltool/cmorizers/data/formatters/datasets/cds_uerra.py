@@ -267,7 +267,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         logger.info("Finished regridding")
         logger.info("Start CMORizing")
 
-        for year in range(1961, 2029):
+        for year in range(1961, 2019):
             # File concatenation
             for month in range(1, 13):
                 in_file = os.path.join(
