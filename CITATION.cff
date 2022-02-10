@@ -335,6 +335,11 @@ authors:
     family-names: Soares Siqueira
     given-names: Abel
     orcid: "https://orcid.org/0000-0003-4451-281X"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Kazeroni
+    given-names: Rémi
+    orcid: "https://orcid.org/0000-0001-7205-9528"
 
 cff-version: 1.2.0
 date-released: 2021-11-09
