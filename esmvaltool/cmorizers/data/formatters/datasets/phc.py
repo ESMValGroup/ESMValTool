@@ -47,13 +47,12 @@ def _fix_fx_areacello(xr_time, var):
     cube.coord('latitude').guess_bounds()
     cube.coord('longitude').guess_bounds()
     grid_areas = iris.analysis.cartography.area_weights(cube)
-    grid_areas_xr = xr.DataArray(grid_areas[0, 0, :, :],
-                                 coords={
-                                     'lat': xr_time.temp.coords['lat'],
-                                     'lon': xr_time.temp.coords['lon'],
-                                     },
-                                 dims=['lat', 'lon'],
-                                 name=var)
+    grid_areas_xr = xr.DataArray(
+        grid_areas[0, 0, :, :],
+        coords={'lat': xr_time.temp.coords['lat'],
+                'lon': xr_time.temp.coords['lon'],},
+        dims=['lat', 'lon'],
+        name=var)
     grid_areas_xr.attrs = OrderedDict([('cell_area', 'Ocean Grid-Cell Area'),
                                        ('units', 'm2')])
     cube = grid_areas_xr.to_iris()
@@ -69,15 +68,14 @@ def _fix_data(xr_time, var):
             depth3d[i, :, :] = xr_time.depth[i]
         ptemp = sw.ptmp(xr_time.salt[0, :], xr_time.temp[0, :], depth3d)
         ptemp = np.expand_dims(ptemp, axis=0)
-        temp_new = xr.DataArray(ptemp + 273.15,
-                                coords={
-                                    'time': xr_time.temp.coords['time'],
-                                    'depth': xr_time.temp.coords['depth'],
-                                    'lat': xr_time.temp.coords['lat'],
-                                    'lon': xr_time.temp.coords['lon'],
-                                },
-                                dims=['time', 'depth', 'lat', 'lon'])
-
+        temp_new = xr.DataArray(
+            ptemp + 273.15,
+            coords={'time': xr_time.temp.coords['time'],
+                    'depth': xr_time.temp.coords['depth'],
+                    'lat': xr_time.temp.coords['lat'],
+                    'lon': xr_time.temp.coords['lon'],},
+            dims=['time', 'depth', 'lat', 'lon'])
+        
         temp_new.attrs = OrderedDict([('standard_name',
                                        'sea_water_potential_temperature'),
                                       ('units', 'K')])

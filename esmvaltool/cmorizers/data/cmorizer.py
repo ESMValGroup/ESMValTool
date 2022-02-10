@@ -125,7 +125,7 @@ class Formatter():
         for dataset in self.datasets:
             try:
                 self.download_dataset(dataset, start_date, end_date, overwrite)
-            except Exception:
+            except ValueError:
                 logger.exception('Failed to download %s', dataset)
                 failed_datasets.append(dataset)
         if failed_datasets:
@@ -350,13 +350,12 @@ class Formatter():
         settings_file = self._write_ncl_settings(project, dataset,
                                                  self.run_dir, script, start,
                                                  end)
-        esmvaltool_root = os.path.dirname(
-            os.path.dirname(os.path.dirname(os.path.dirname(script))))
 
         # put settings in environment
         env = dict(os.environ)
         env['settings'] = settings_file
-        env['esmvaltool_root'] = esmvaltool_root
+        env['esmvaltool_root'] = os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.dirname(script))))
         env['cmor_tables'] = str(
             Path(esmvalcore.cmor.__file__).parent / 'tables')
         logger.info("Using CMOR tables at %s", env['cmor_tables'])

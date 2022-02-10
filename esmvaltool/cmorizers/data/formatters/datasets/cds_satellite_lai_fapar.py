@@ -217,7 +217,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             logger.info("Saving as: %s", savename)
             iris.save(cube, savename)
             logger.info("Finished file concatenation over time")
-            in_file = savename
-            logger.info("Start CMORization of file %s", in_file)
-            _cmorize_dataset(in_file, var, cfg, out_dir)
-            logger.info("Finished regridding and CMORizing %s", in_file)
+            logger.info("Start CMORization of file %s", savename)
+            _cmorize_dataset(savename, var, cfg, out_dir)
+            logger.info("Finished regridding and CMORizing %s", savename)
