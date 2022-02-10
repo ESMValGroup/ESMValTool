@@ -27,8 +27,10 @@ from netCDF4 import Dataset
 from scipy import interpolate, stats
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
-from esmvaltool.diag_scripts.thermodyn_diagtool import (fourier_coefficients,
-                                                        provenance_meta)
+from esmvaltool.diag_scripts.thermodyn_diagtool import (
+    fourier_coefficients,
+    provenance_meta,
+)
 
 
 def balances(cfg, wdir, plotpath, filena, name, model):
@@ -103,7 +105,7 @@ def balances(cfg, wdir, plotpath, filena, name, model):
             attr = ['{} meridional enthalpy transports'.format(nameout), model]
             provrec = provenance_meta.get_prov_transp(attr, filename)
             provlog.log(nc_f, provrec)
-            provlog.log(plotentname, provrec)
+            # provlog.log(plotentname, provrec)
             plot_1m_transp(lats, transp_mean[i, :], transpty, strings)
         plt.grid()
         plt.savefig(plotentname)
@@ -123,7 +125,7 @@ def balances(cfg, wdir, plotpath, filena, name, model):
         attr = ['water mass transport', model]
         provrec = provenance_meta.get_prov_transp(attr, filename)
         provlog.log(nc_f, provrec)
-        provlog.log(plotwmbname, provrec)
+        # provlog.log(plotwmbname, provrec)
         nc_f = wdir + '/{}_transp_mean_{}.nc'.format('latent', model)
         removeif(nc_f)
         filena[1] = filena[1].split('.nc', 1)[0]
@@ -132,7 +134,7 @@ def balances(cfg, wdir, plotpath, filena, name, model):
         attr = ['latent energy transport', model]
         provrec = provenance_meta.get_prov_transp(attr, filename)
         provlog.log(nc_f, provrec)
-        provlog.log(plotlatname, provrec)
+        # provlog.log(plotlatname, provrec)
         strings = ['Water mass transports', 'Latitude [deg]', '[kg*s-1]']
         fig = plt.figure()
         plot_1m_transp(dims[1], transp_mean[0, :], transpwy, strings)

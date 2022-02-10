@@ -18,6 +18,9 @@ Some example shapefiles for use with this recipe are available
 `here <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/diag_scripts/shapeselect/testdata>`__,
 make sure to download all files with the same name but different extensions.
 
+The recipe examples/recipe_julia.yml produces a map plot with the mean temperature
+over the year 1997 plus a number that is configurable from the recipe.
+
 For detailed instructions on obtaining input data, please refer to
 :ref:`inputdata`. However, in case you just quickly want to run through the
 example, you can use the following links to obtain the data from ESGF:
@@ -36,11 +39,12 @@ Recipes are stored in esmvaltool/recipes/
 
     * examples/recipe_python.yml
     * examples/recipe_extract_shape.yml
+    * examples/recipe_jula.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
     * examples/diagnostic.py: visualize results and store provenance information
-
+    * examples/diagnostic.jl: visualize results and store provenance information
 
 User settings in recipe
 -----------------------
@@ -57,6 +61,12 @@ User settings in recipe
 
    * ``write_netcdf``: ``true`` (default) or ``false``.
      This can be used to disable writing the results to netcdf files.
+
+#. Script ``examples/diagnostic.jl``
+
+   *Required settings for script*
+
+   * ``parameter1``: example parameter, this number will be added to the mean (over time) value of the input data.
 
 Variables
 ---------
