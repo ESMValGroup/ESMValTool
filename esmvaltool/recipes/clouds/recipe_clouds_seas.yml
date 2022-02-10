@@ -224,8 +224,8 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
              version: CDR2-L3S-05deg_fv3.1, tier: 3, start_year: 2003, end_year: 2017}
-          - {dataset: SSMI-MERIS, project: obs4mips, level: L3, version: v1-00,
-             start_year: 2003, end_year: 2008, tier: 1}
+#          - {dataset: SSMI-MERIS, project: obs4mips, level: L3, version: v1-00,
+#             start_year: 2003, end_year: 2008, tier: 1}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
              start_year: 1984, end_year: 2016}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
@@ -360,8 +360,8 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
              version: CDR2-L3S-05deg_fv3.1, tier: 3, start_year: 2003, end_year: 2017}
-          - {dataset: SSMI-MERIS, project: obs4mips, level: L3, version: v1-00,
-             start_year: 2003, end_year: 2008, tier: 1}
+#          - {dataset: SSMI-MERIS, project: obs4mips, level: L3, version: v1-00,
+#             start_year: 2003, end_year: 2008, tier: 1}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
              start_year: 1984, end_year: 2016}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
