@@ -50,7 +50,7 @@ def _fix_fx_areacello(xr_time, var):
     grid_areas_xr = xr.DataArray(
         grid_areas[0, 0, :, :],
         coords={'lat': xr_time.temp.coords['lat'],
-                'lon': xr_time.temp.coords['lon'],},
+                'lon': xr_time.temp.coords['lon'], },
         dims=['lat', 'lon'],
         name=var)
     grid_areas_xr.attrs = OrderedDict([('cell_area', 'Ocean Grid-Cell Area'),
@@ -73,9 +73,9 @@ def _fix_data(xr_time, var):
             coords={'time': xr_time.temp.coords['time'],
                     'depth': xr_time.temp.coords['depth'],
                     'lat': xr_time.temp.coords['lat'],
-                    'lon': xr_time.temp.coords['lon'],},
+                    'lon': xr_time.temp.coords['lon'], },
             dims=['time', 'depth', 'lat', 'lon'])
-        
+
         temp_new.attrs = OrderedDict([('standard_name',
                                        'sea_water_potential_temperature'),
                                       ('units', 'K')])
