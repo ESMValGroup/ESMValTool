@@ -34,6 +34,7 @@ class Formatter():
     def __init__(self, info):
         self.datasets = []
         self.datasets_info = info
+        self.config = ''
 
     def start(self, command, datasets, config_file, options):
         """Read configuration and set up formatter for data processing.
