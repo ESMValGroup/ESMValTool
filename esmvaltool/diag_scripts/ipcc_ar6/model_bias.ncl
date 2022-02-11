@@ -763,10 +763,11 @@ begin
   statistics = (/"clim", "diff"/)
   domain = ("global")
   plottype = ("geo")
-  references = (/"flato13ipcc"/)
+  references = (/"eyring21ipcc"/)
   prov_caption = caption + " for variable " + var0 \
     + ", reference = " + names(ref_ind) + "."
-  infiles = metadata_att_as_array(info0, "filename")
+  ; infiles = metadata_att_as_array(info0, "filename")
+  infiles := diag_script_info@input_files
 
   log_provenance(nc_filename, plotfile, prov_caption, statistics, \
                  domain, plottype, authors, references, infiles)

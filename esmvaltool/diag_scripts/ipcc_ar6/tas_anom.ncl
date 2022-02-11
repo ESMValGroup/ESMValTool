@@ -11,6 +11,7 @@
 ;    styleset: as in diag_scripts/shared/plot/style.ncl functions
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
+;    blending: if true, calculates blended surface temperature
 ;    ref_start: start year of reference period for anomalies
 ;    ref_end: end year of reference period for anomalies
 ;    ref_value: if true, right panel with mean values is attached
@@ -20,6 +21,7 @@
 ;    y-min: set min of y-axis
 ;    y-max: set max of y-axis
 ;    header: if true, region name as header
+;    volcanoes: if true, adds volcanoes to the plot
 ;    write_stat: if true, write multi model statistics in nc-file
 ;
 ; Caveats
@@ -40,9 +42,6 @@ load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/shared/plot/xy_line.ncl"
 
 load "$diag_scripts/ipcc_ar6/percentiles.ncl"
-
-undef("blend")
-function blend()
 
 begin
 
@@ -676,7 +675,7 @@ begin
                  domain, \
                  "times", \
                  contrib_authors, \
-                 (/"flato13ipcc", "cowtan15grl"/), \
+                 (/"eyring21ipcc"/), \
                  metadata_att_as_array(input_file_info, "filename"))
 
   leave_msg(DIAG_SCRIPT, "")

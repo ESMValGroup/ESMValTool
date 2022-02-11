@@ -8,28 +8,21 @@
 ;    anomaly of precipitation.
 ;
 ; Required diag_script_info attributes (diagnostic specific)
+;    panels: list of variables plotted in each panel
+;    start_year: start of time coordinate
+;    end_year: end of time coordinate
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
-;    time_avg: type of time average (currently only "yearly" and "monthly" are
-;              available).
-;    ts_anomaly: calculates anomalies with respect to the defined period;
-;                for each gird point by removing the mean for the given
-;                calendar month (requiring at least 50% of the data to be
-;                non-missing)
+;    anomaly: true if anomaly should be calculated
 ;    ref_start: start year of reference period for anomalies
 ;    ref_end: end year of reference period for anomalies
 ;    ref_mask: if true, model fields will be masked by reference fields
 ;    region: name of domain
 ;    plot_units: variable unit for plotting
-;    y-min: set min of y-axis
-;    y-max: set max of y-axis
-;    mean_nh_sh: if true, calculate first NH and SH mean
-;    volcanoes: if true, lines of main volcanic eruptions will be added
-;    run_ave: if not equal 0 than calculate running mean over this number
-;             of years
 ;    header: if true, region name as header
-;    write_stat: if true, write multi model statistics in nc-file
 ;    stat: statistics for multi model nc-file (MinMax,5-95,10-90)
+;    y_min: set min of y-axis
+;    y_max: set max of y-axis
 ;
 ; Caveats
 ;
@@ -701,7 +694,7 @@ begin
                  domain, \
                  "times", \
                  contrib_authors, \
-                 (/""/), \
+                 (/"eyring21ipcc"/), \
                  metadata_att_as_array(input_file_info, "filename"))
 
   leave_msg(DIAG_SCRIPT, "")

@@ -10,11 +10,18 @@
 ;     This script has been developed to reproduce Fig. 9.33 in
 ;     IPCC AR5 Chapter 9.
 ;
-;  Required variable_info attributes (variable specific)
+;  Optional variable_info attributes (variable specific)
+;     reference_dataset: reference dataset; REQUIRED when calculating
+;                        anomalies
 ;
 ;  Required diag_script_info attributes (diagnostics specific)
+;     styleset: as in diag_scripts/shared/plot/style.ncl functions
 ;
 ;  Optional diag_script_info attributes (diagnostic specific)
+;     plot_legend: if true, plot legend will be plotted
+;     plot_units: variable unit for plotting
+;     multi_model_mean: if true, multi-model mean and uncertaintiy will be
+;                       plotted
 ;
 ;  Modification history
 ;  20190304-A_bock_li: written
@@ -36,6 +43,9 @@ begin
 
   enter_msg(DIAG_SCRIPT, "")
 
+  ; Check for required settings
+  exit_if_missing_atts(diag_script_info, "styleset")
+
   var0 = "tas"
   info_items = select_metadata_by_name(input_file_info, var0)
   datasetnames = metadata_att_as_array(info_items, "dataset")
@@ -56,6 +66,7 @@ begin
 
   ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "plot_legend", True)
+  set_default_att(diag_script_info, "multi_model_mean", True)
 
   ; Create output plot directory
   plot_dir = config_user_info@plot_dir
@@ -336,7 +347,7 @@ begin
   statistics = (/"stddev"/)
   domain = ("global")
   plottype = ("line")
-  references = (/"flato13ipcc"/)
+  references = (/"eyring21ipcc"/)
   prov_caption = "Temporal variability of Near-Surface Air Temperature"
   infiles = metadata_att_as_array(info_items, "filename")
 

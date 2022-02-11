@@ -5,12 +5,13 @@
 ; #############################################################################
 ; Description
 ;    Collects timeseries and their statistics previously calculated by
-;    tsline.ncl and passes them to a new tsline plot
+;    teas_anom.ncl and passes them to a new tsline plot
 ;
 ; Required diag_script_info attributes
-;    styleset: as in diag_scripts/shared/plot/style.ncl functions
+;    None
 ;
 ; Optional diag_script_info attributes
+;    blending: if true, then var="gmst" otherwise "gsat"
 ;    ref_start: start year of reference period for anomalies
 ;    ref_end: end year of reference period for anomalies
 ;    region: name of domain
@@ -18,9 +19,6 @@
 ;    y-min: set min of y-axis
 ;    y-max: set max of y-axis
 ;    order: order in which experiments should be plotted
-;    run_ave: if not equal 0 than calculate running mean over this number
-;             of years
-;    header: if true, region name as header
 ;    stat_shading: if true: shading of statistic range
 ;    ref_shading: if true: shading of reference period
 ;
@@ -73,8 +71,6 @@ begin
 
   ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "region", "Global")
-  set_default_att(diag_script_info, "run_ave", 0)
-  set_default_att(diag_script_info, "header", True)
   set_default_att(diag_script_info, "stat_shading", False)
   set_default_att(diag_script_info, "ref_shading", False)
 
@@ -534,7 +530,7 @@ begin
 ;                 domain, \
 ;                 "times", \
 ;                 contrib_authors, \
-;                 (/"flato13ipcc", "jones13jgr"/), \
+;                 (/"eyring21ipcc"/), \
 ;                 metadata_att_as_array(input_file_info, "filename"))
 
   leave_msg(DIAG_SCRIPT, "")
