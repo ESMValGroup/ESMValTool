@@ -178,9 +178,10 @@ begin
 
   if (stippandhatch) then
     log_info("Read precalculated natural variability for multi-model")
-    natvar_file = addfile(input_dir + "/" + "IAV_mmm_piControl_" + \
-                          var0 + "_annualclim.nc", "r")
-    natvar_mmm = natvar_file->iav
+    natvar_file = input_dir + "/" + "IAV_mmm_piControl_" + \
+                  var0 + "_annualclim.nc"
+    natvar = addfile(natvar_file, "r")
+    natvar_mmm = natvar->iav
     tmp = natvar_mmm
     delete(natvar_mmm)
     natvar_mmm = rm_single_dims(tmp)
@@ -766,8 +767,7 @@ begin
   references = (/"eyring21ipcc"/)
   prov_caption = caption + " for variable " + var0 \
     + ", reference = " + names(ref_ind) + "."
-  ; infiles = metadata_att_as_array(info0, "filename")
-  infiles := diag_script_info@input_files
+  infiles := array_append_record(infiles, natvar_file, 0)
 
   log_provenance(nc_filename, plotfile, prov_caption, statistics, \
                  domain, plottype, authors, references, infiles)

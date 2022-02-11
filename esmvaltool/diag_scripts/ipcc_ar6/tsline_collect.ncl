@@ -247,7 +247,7 @@ begin
     data_ref@ncdf = out_path
     data_ref@diag_script = DIAG_SCRIPT
     data_ref@var = var
-    ncdf_outfile = ncdf_write(data_ref, out_path1)
+    ncdf_outfile_ref = ncdf_write(data_ref, out_path1)
   end if
 
   ; -------------------------------------------
@@ -506,32 +506,32 @@ begin
 
   log_info(" wrote " + outfile + "." + file_type)
 
-;  ; ***************************************
-;  ; add meta data to plot (for reporting)
-;  ; ***************************************
-;
-;  if (diag_script_info@region .eq. "Global") then
-;    domain = "global"
-;  else
-;    domain = "reg"
-;  end if
-;
-;  statistics = "anomaly"
-;
-;  caption = "Multi model mean time series of the " + statistics + \
-;             " for variable " + varname + ", similar to IPCC AR5, fig. 10.21."
-;  contrib_authors = (/""bock_lisa"/)
-;
-;  ; Call provenance logger
-;  log_provenance(ncdf_outfile, \
-;                 outfile + "." + file_type, \
-;                 caption, \
-;                 statistics, \
-;                 domain, \
-;                 "times", \
-;                 contrib_authors, \
-;                 (/"eyring21ipcc"/), \
-;                 metadata_att_as_array(input_file_info, "filename"))
+  ; ***************************************
+  ; add meta data to plot (for reporting)
+  ; ***************************************
+
+  if (diag_script_info@region .eq. "Global") then
+    domain = "global"
+  else
+    domain = "reg"
+  end if
+
+  caption = "Multi-model mean time series of the anomaly of near-surface air" \
+            + "temperature"
+
+  infiles = metadata_att_as_array(input_file_info, "filename")
+  infiles := array_append_record(infiles, input_files, 0)
+
+  ; Call provenance logger
+  log_provenance(ncdf_outfile, \
+                 outfile + "." + file_type, \
+                 caption, \
+                 "anomaly", \
+                 domain, \
+                 "times", \
+                 (/"bock_lisa"/), \
+                 (/"eyring21ipcc"/), \
+                 infiles)
 
   leave_msg(DIAG_SCRIPT, "")
 
