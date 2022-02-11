@@ -10,7 +10,7 @@ name: Conda-lock Install
 on:
   push:
     branches:
-    - main
+      - main
     - condalock  # just testing
   # run the test only if the PR is to main
   # turn it on if required
