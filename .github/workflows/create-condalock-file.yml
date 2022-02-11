@@ -1,10 +1,13 @@
 name: Conda lock file creation
 
 on:
-  push:
-    branches:
-    - main
-    - condalock
+  # Trigger on push on main or other branch for testing
+  # NOTE that push: main will create the file very often
+  # and hence lots of automated PRs 
+  # push:
+  #   branches:
+  #   - main
+  #   - condalock
   schedule:
     - cron: '0 4 */10 * *'
 
