@@ -53,7 +53,7 @@ framework.
 .. _Support-and-Contact:
 
 Support
-======
+=======
 
 Support for ESMValTool can be found here `ESMValTool Discussions page <https://github.com/ESMValGroup/ESMValTool/discussions>`__
 where users can open an issue and a member of the User Engangement Team of ESMValTool will reach you.
@@ -161,5 +161,3 @@ importance for securing future funding. You should consider this an
 obligation if you have taken advantage of the ESMValTool, which
 represents the end product of considerable effort by the development
 team.
-
-
