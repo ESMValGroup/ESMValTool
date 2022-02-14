@@ -41,7 +41,7 @@ See `common installation issues`_ if you run into trouble.
 
 .. _install_with_mamba:
 
-Mamba installation
+Mamba/Conda installation
 ==================
 
 In order to install the `conda <https://docs.conda.io>`_ package, you will need
@@ -80,7 +80,7 @@ this should show the path to your mamba executable, e.g.
 ``~/mambaforge/bin/mamba``.
 
 ESMValTool installation
------------------------
+======================
 
 Once you have installed the above prerequisites, you can install the entire
 ESMValTool package by running:
@@ -418,114 +418,6 @@ file.
 If you choose to use this option, download the compressed file and extract its
 contents at the desired location.
 
-
-Prerequisites
--------------
-
-It is recommended to use mamba to manage ESMValTool dependencies.
-For a minimal mamba installation go to https://mamba.readthedocs.io/en/latest/installation.html.
-To simplify the installation process, an environment definition file is provided
-in the repository (``environment.yml`` in the root folder).
-
-.. attention::
-    Some systems provide a preinstalled version of conda (e.g., via the module environment).
-    However, several users reported problems when installing NCL with such versions. It is
-    therefore preferable to use a local, fully user-controlled mamba installation.
-    Using an older version of mamba can also be a source of problems, so if you have mamba
-    installed already, make sure it is up to date by running ``mamba update -n base mamba``.
-
-To enable the ``mamba`` command, please source the appropriate configuration file
-from your ``~/.bashrc``  file:
-
-.. code-block:: bash
-
-    source <prefix>/etc/profile.d/conda.sh
-
-or ``~/.cshrc``/``~/.tcshrc`` file:
-
-.. code-block:: bash
-
-    source <prefix>/etc/profile.d/conda.csh
-
-where ``<prefix>`` is the install location of your anaconda or miniconda
-(e.g. ``/home/$USER/mambaforge``, ``/home/$USER/anaconda3`` or ``/home/$USER/miniconda3``).
-
-
-.. note::
-    Note that during the installation, mamba will ask you
-    if you want the installation to be automatically sourced from your
-    ``.bashrc`` or ``.bash-profile`` files; if you answered yes, then mamba
-    will write bash directives to those files and every time you get to your
-    shell, you will automatically be inside conda's ``(base)`` environment.
-    To deactivate this feature, look for the ``# >>> conda initialize >>>``
-    code block in your ``.bashrc`` or ``.bash-profile`` and comment the whole block out.
-
-
-The ESMValTool conda environment file can also be used as a requirements list
-for those cases in which a mamba installation is not possible or advisable.
-From now on, we will assume that the installation is going to be done through
-mamba.
-
-Ideally, you should create a separate conda environment for ESMValTool, so it is
-independent from any other Python tools present in the system.
-
-Note that it is advisable to update mamba to the latest version before
-installing ESMValTool, using the command (as mentioned above)
-
-.. code-block:: bash
-
-    mamba update --name base mamba
-
-To create an environment, go to the directory containing the ESMValTool source
-code (called ``ESMValTool`` if you did not choose a different name)
-
-.. code-block:: bash
-
-    cd ESMValTool
-
-and (when on Linux) create a new environment called ``esmvaltool``
-containing just Python with the command
-
-.. code-block:: bash
-
-    mamba create --name esmvaltool 'python=3.9'
-
-if needed, older versions of Python can also be selected.
-Next, install many of the required dependencies, including the ESMValCore package
-and Python, R, and NCL interpreters, into this environment by running
-
-.. code-block:: bash
-
-    mamba env update --name esmvaltool --file environment.yml
-
-**MacOSX note:** ESMValTool functionalities in Julia, NCL, and R are not
-supported on MacOSX, due to conflicts in the conda environment. To install a
-conda environment on MacOSX, use the dedicated environment file:
-
-.. code-block:: bash
-
-    mamba env create --name esmvaltool --file environment_osx.yml
-
-The environment is called ``esmvaltool`` by default, but it is possible to use
-the option ``--name SOME_ENVIRONMENT_NAME`` to define a custom name. You should
-then activate the environment using the command:
-
-.. code-block:: bash
-
-    conda activate esmvaltool
-
-It is also possible to update an existing environment from the environment
-file. This may be useful when updating an older installation of ESMValTool:
-
-.. code-block:: bash
-
-    mamba env update --name esmvaltool --file environment.yml
-
-but if you run into trouble, please try creating a new environment.
-
-.. attention::
-    From now on, we assume that the conda environment for ESMValTool is
-    activated.
 
 Software installation
 ---------------------
