@@ -50,7 +50,7 @@ these challenging objectives the ESMValTool is conceived as a framework
 which allows community contributions to be bound into a coherent
 framework.
 
-.. _Support and Contact:
+.. _Support-and-Contact:
 
 Support
 ======
