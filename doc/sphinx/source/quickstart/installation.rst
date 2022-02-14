@@ -42,7 +42,7 @@ See `common installation issues`_ if you run into trouble.
 .. _install_with_mamba:
 
 Mamba/Conda installation
-==================
+========================
 
 In order to install the `conda <https://docs.conda.io>`_ package, you will need
 mamba pre-installed.
