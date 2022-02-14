@@ -80,7 +80,7 @@ this should show the path to your mamba executable, e.g.
 ``~/mambaforge/bin/mamba``.
 
 ESMValTool installation
-======================
+=======================
 
 Once you have installed the above prerequisites, you can install the entire
 ESMValTool package by running:
