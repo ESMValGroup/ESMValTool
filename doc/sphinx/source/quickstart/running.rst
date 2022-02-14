@@ -29,6 +29,7 @@ This recipe finds data from BCC-ESM1 and CanESM2 and creates two plot types:
   January 2000.
 - a time series plot that shows the globally averaged annual mean 2m surface
   air temperature and compares it to the one in Amsterdam.
+
 To run this recipe and automatically download the required climate data
 from ESGF to the local directory ``~/climate_data``, run
 
