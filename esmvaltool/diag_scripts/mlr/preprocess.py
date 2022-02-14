@@ -203,7 +203,7 @@ def _apply_trend_aggregator(cfg, cube, data, coord_name):
         cube_stderr.units = units
     else:
         cube_stderr = None
-    units = _get_coord_units(cube, coord_name)
+    units = _get_coord_units(cube, dim_coord.name())
     (cube, data) = _set_trend_metadata(cfg, cube, cube_stderr, data, units)
     data['trend'] = f'aggregated along coordinate {coord_name}'
     return (cube, data)
@@ -651,7 +651,7 @@ def _set_trend_metadata(cfg, cube, cube_stderr, data, units):
     data['standard_name'] = None
     data['short_name'] += '_trend'
     data['long_name'] += ' (trend)'
-    data['units'] += str(cube.units)
+    data['units'] = str(cube.units)
     if cube_stderr is not None:
         cube_stderr.units /= units
         stderr_data = deepcopy(data)

@@ -23,6 +23,12 @@ An
 is available in the ESMValTool installation folder as
 ``examples/recipe_python.yml``.
 
+This recipe finds data from BCC-ESM1 and CanESM2 and creates two plot types:
+
+- a global map plot that shows the monthly mean 2m surface air temperature in
+  January 2000.
+- a time series plot that shows the globally averaged annual mean 2m surface
+  air temperature and compares it to the one in Amsterdam.
 To run this recipe and automatically download the required climate data
 from ESGF to the local directory ``~/climate_data``, run
 
@@ -31,7 +37,9 @@ from ESGF to the local directory ``~/climate_data``, run
 	esmvaltool run examples/recipe_python.yml --offline=False
 
 The ``--offline=False`` option tells ESMValTool to search for and download
-the necessary datasets.
+the necessary climate data files, if they cannot be found locally.
+The data only needs to be downloaded once, every following run will re-use
+previously downloaded data.
 If you have all required data available locally, you can run the tool without
 the ``--offline=False`` argument (the default).
 Note that in that case the required data should be located in the directories
