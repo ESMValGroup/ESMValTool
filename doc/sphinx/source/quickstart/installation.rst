@@ -419,7 +419,7 @@ If you choose to use this option, download the compressed file and extract its
 contents at the desired location.
 
 Installation Using Mamba from Source
--------------
+------------------------------------
 
 It is recommended to use mamba to manage ESMValTool dependencies.
 For a minimal mamba installation go to https://mamba.readthedocs.io/en/latest/installation.html.
