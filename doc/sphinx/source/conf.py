@@ -431,7 +431,7 @@ intersphinx_mapping = {
     'numpy': ('https://numpy.org/doc/stable/', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
     'python': ('https://docs.python.org/3/', None),
-    'scipy': ('https://scipy.github.io/devdocs/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/', None),
     'seaborn': ('https://seaborn.pydata.org/', None),
     'sklearn': ('https://scikit-learn.org/stable', None),
 }
