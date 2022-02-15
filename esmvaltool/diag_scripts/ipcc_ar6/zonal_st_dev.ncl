@@ -214,6 +214,8 @@ begin
   res@gsnDraw           = False   ; don't draw yet
   res@gsnFrame          = False   ; don't advance frame yet
   res@tiMainFontHeightF = .02    ; font height
+  res@tiXAxisFontHeightF = .015
+  res@tiYAxisFontHeightF = .015
   res@gsnMaximize       = True
   res@vpHeightF = 0.4
   res@vpWidthF = 0.8
@@ -235,7 +237,7 @@ begin
   res@trYMinF  = min(model_arr) - 0.05 * (max(model_arr) - min(model_arr))
   res@trYMaxF  = max(model_arr) + 0.05 * (max(model_arr) - min(model_arr))
 
-  res@tiMainString = "Temporal Variability of Near-Surface Air Temperature"
+  res@tiMainString = "Temporal variability of near-surface air temperature"
   res@tiXAxisString = "Latitude"
 
   if (model_arr@units .eq. "degC") then
@@ -243,7 +245,7 @@ begin
   else
     units = model_arr@units
   end if
-  res@tiYAxisString = "(" + units + ")"
+  res@tiYAxisString = "Standard deviation of temperature (" + units + ")"
 
   model_arr&lat = sin(d2r * model_arr&lat)
 
