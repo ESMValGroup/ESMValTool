@@ -179,7 +179,7 @@ begin
   if (stippandhatch) then
     log_info("Read precalculated natural variability for multi-model")
     natvar_file = input_dir + "/" + "IAV_mmm_piControl_" + \
-                  var0 + "_annualclim.nc"
+                              var0 + "_annualclim.nc"
     natvar = addfile(natvar_file, "r")
     natvar_mmm = natvar->iav
     tmp = natvar_mmm
