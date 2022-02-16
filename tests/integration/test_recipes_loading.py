@@ -23,7 +23,7 @@ def config_user(tmp_path_factory):
     # The fixture scope is set to module to avoid very slow
     # test runs, as the following line also reads the CMOR tables
     cfg = esmvalcore._config.read_config_user_file(filename, 'recipe_test')
-    cfg['synda_download'] = False
+    cfg['offline'] = True
     cfg['auxiliary_data_dir'] = str(path / 'auxiliary_data_dir')
     cfg['check_level'] = esmvalcore.cmor.check.CheckLevels['DEFAULT']
     return cfg

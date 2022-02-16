@@ -19,4 +19,4 @@ i.e. the full path to the personal diagnostic that the user needs to run.
 There is also a lesson available in the 
 `ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
 that describes in a step-by-step procedure how to write your own recipe. It can be found
-`here <https://esmvalgroup.github.io/ESMValTool_Tutorial/05-preprocessor/index.html>`_.
+`here <https://esmvalgroup.github.io/ESMValTool_Tutorial/06-preprocessor/index.html>`_.

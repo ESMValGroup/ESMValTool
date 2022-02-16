@@ -33,6 +33,7 @@ END_YEAR = 'end_year'
 
 INPUT_DATA = 'input_data'
 INPUT_FILES = 'input_files'
+FILENAME = 'filename'
 FX_FILES = 'fx_files'
 METADATA_YAML_FILE = 'metadata.yml'
 OUTPUT_FILE_TYPE = 'output_file_type'
