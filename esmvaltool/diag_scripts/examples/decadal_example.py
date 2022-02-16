@@ -1,4 +1,4 @@
-"""Diagnostic to reproduce figures in IS-ENES D9.5."""
+"""Diagnostic to reproduce figures in IS-ENES D9.4."""
 import os
 
 import iris
@@ -13,7 +13,7 @@ from esmvaltool.diag_scripts.shared import (
 
 
 class DecadalExample:
-    """Class used to plots comparing OBS data with DCPP data."""
+    """Class used to create plots comparing OBS data with DCPP data."""
     def __init__(self, config):
         """
         Set diagnostic parameters and constants.

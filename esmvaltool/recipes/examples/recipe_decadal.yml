@@ -23,7 +23,8 @@ diagnostics:
     additional_datasets:
       - &dcpp {dataset: EC-Earth3, project: CMIP6, exp: dcppA-hindcast, ensemble: r1i1p1f1,
                sub_experiment: 's(1980:2018)', timerange: '*'}
-      - &obs {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3, timerange: '198011/201812'}
+      - &obs {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3,
+              timerange: '198011/201812'}
     variables:
       tas:
         grid: gr
