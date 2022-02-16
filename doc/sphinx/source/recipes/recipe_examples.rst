@@ -102,7 +102,7 @@ Example plots
    Mean air temperature over the Elbe catchment during 2000-2002 according to CMIP5 CanESM2.
 
 .. _decadal_first_example:
-.. figure:   /recipes/figures/examples/decadal_first_example.png
+.. figure::   /recipes/figures/examples/decadal_first_example.png
    :align:   center
 
    
