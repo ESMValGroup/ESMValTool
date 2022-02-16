@@ -46,7 +46,7 @@ def test_recipe_valid(recipe_file, config_user, monkeypatch):
     find_files = create_autospec(esmvalcore._data_finder.find_files,
                                  spec_set=True)
     find_files.side_effect = lambda *_, **__: [
-        'test_0000-1849.nc',
+        'test_0001-1849.nc',
         'test_1850-9999.nc',
     ]
     monkeypatch.setattr(esmvalcore._data_finder, 'find_files', find_files)
