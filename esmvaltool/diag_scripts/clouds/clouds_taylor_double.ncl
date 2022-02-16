@@ -419,17 +419,29 @@ begin
         var = data(imod, is, :, :)
       end if
 
+      ; common mask
+      mask1 = where(.not.ismissing(var), 0., var@_FillValue)
+      mask2 = where(.not.ismissing(ref), 0., ref@_FillValue)
+      amask = mask1 + mask2
+      delete(mask1)
+      delete(mask2)
+      refmasked = ref
+      refmasked = refmasked + amask
+      var = var + amask
+      delete(amask)
+
       ; calculate rate of standard deviations
 
       ; val(mod_i, 0, is) = calculate_metric(var, ref, "stddev_ratio_nowgt")
-      val(mod_i, 0, is) = calculate_metric(var, ref, "stddev_ratio")
+      val(mod_i, 0, is) = calculate_metric(var, refmasked, "stddev_ratio")
 
       ; calculate pattern correlation
 
       ; val(mod_i, 1, is) = calculate_metric(var, ref, "correlation_nowgt")
-      val(mod_i, 1, is) = calculate_metric(var, ref, "correlation")
+      val(mod_i, 1, is) = calculate_metric(var, refmasked, "correlation")
 
       delete(var)
+      delete(refmasked)
       mod_i = mod_i + 1
 
     end do  ; loop over datasets

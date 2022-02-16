@@ -614,15 +614,46 @@ begin
       if (numseas.gt.1) then
         do is = 0, numseas - 1
           if (same_grid .and. (ref_ind .ge. 0)) then
-            corr(imod, is) = calculate_metric(ref_data(is, :, :), \
-                                              data1(is, :, :), "correlation")
+            mask1 = ref_data(is, :, :)
+            mask2 = data1(is, :, :)
+            mask1 = where(.not.ismissing(mask1), 0., mask1@_FillValue)
+            mask2 = where(.not.ismissing(mask2), 0., mask2@_FillValue)
+            amask = mask1 + mask2
+            delete(mask1)
+            delete(mask2)
+            refmasked = ref_data(is, :, :)
+            refmasked = refmasked + amask
+            datmasked = data1(is, :, :)
+            datmasked = datmasked + amask
+            corr(imod, is) = calculate_metric(refmasked, datmasked, \
+                                              "correlation")
+;            corr(imod, is) = calculate_metric(ref_data(is, :, :), \
+;                                              data1(is, :, :), "correlation")
+            delete(amask)
+            delete(refmasked)
+            delete(datmasked)
           end if
           gavg(imod, is) = area_operations(data1(is, :, :), -90., 90., \
                                            0., 360., "average", True)
         end do
       else
         if (same_grid .and. (ref_ind .ge. 0)) then
-          corr(imod, 0) = calculate_metric(ref_data, data1, "correlation")
+          mask1 = ref_data
+          mask2 = data1
+          mask1 = where(.not.ismissing(mask1), 0., mask1@_FillValue)
+          mask2 = where(.not.ismissing(mask2), 0., mask2@_FillValue)
+          amask = mask1 + mask2
+          delete(mask1)
+          delete(mask2)
+          refmasked = ref_data
+          refmasked = refmasked + amask
+          datmasked = data1
+          datmasked = datmasked + amask
+          corr(imod, 0) = calculate_metric(refmasked, datmasked, "correlation")
+;          corr(imod, 0) = calculate_metric(ref_data, data1, "correlation")
+          delete(amask)
+          delete(refmasked)
+          delete(datmasked)
         end if
         gavg(imod, 0) = area_operations(data1, -90., 90., 0., 360., \
                                         "average", True)
