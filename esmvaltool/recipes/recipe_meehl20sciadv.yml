@@ -144,7 +144,7 @@ ECS_CMIP6_RTNT: &ecs_cmip6_rtnt
   - {dataset: INM-CM4-8,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 1999}
   - {dataset: IPSL-CM6A-LR,    exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 1870, end_year: 2019}
   - {dataset: IPSL-CM6A-LR,    exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
-  - {dataset: KACE-1-0-G,      exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 2300, end_year: 2449}
+  - {dataset: KACE-1-0-G,      exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 2150, end_year: 2299}
   - {dataset: KACE-1-0-G,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
   - {dataset: MIROC6,          exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3349}
   - {dataset: MIROC6,          exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3349}
@@ -291,8 +291,7 @@ TCR_CMIP6: &tcr_cmip6
   - {dataset: INM-CM4-8,       exp: 1pctCO2,   ensemble: r1i1p1f1,   grid: gr1, start_year: 1850, end_year: 1989}
   - {dataset: IPSL-CM6A-LR,    exp: piControl, ensemble: r1i1p1f1,   grid: gr,  start_year: 1870, end_year: 2009}
   - {dataset: IPSL-CM6A-LR,    exp: 1pctCO2,   ensemble: r1i1p1f1,   grid: gr,  start_year: 1850, end_year: 1989}
-  # Wrong start year for piControl (must be 1850)
-  - {dataset: KACE-1-0-G,      exp: piControl, ensemble: r1i1p1f1,   grid: gr,  start_year: 2300, end_year: 2439}
+  - {dataset: KACE-1-0-G,      exp: piControl, ensemble: r1i1p1f1,   grid: gr,  start_year: 2150, end_year: 2289}
   - {dataset: KACE-1-0-G,      exp: 1pctCO2,   ensemble: r1i1p1f1,   grid: gr,  start_year: 1850, end_year: 1989}
   # branch_time_in_child weird
   - {dataset: MCM-UA-1-0,      exp: piControl, ensemble: r1i1p1f1,   grid: gn,  start_year:    1, end_year:  140}
