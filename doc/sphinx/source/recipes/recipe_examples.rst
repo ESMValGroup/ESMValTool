@@ -105,4 +105,5 @@ Example plots
 .. figure::   /recipes/figures/examples/decadal_first_example.png
    :align:   center
 
+   Global mean temperature of CMIP6 dcppA-hindcast EC-Earth3 and OBS ERA-Interim.
    
