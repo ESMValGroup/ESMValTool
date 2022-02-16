@@ -4,14 +4,19 @@
 Running
 *******
 
-ESMValTool is mostly used as a command line tool. Whenever your
-conda environment for ESMValTool is active, you can just run the command
-``esmvaltool``. See
-:ref:`running esmvaltool <esmvalcore:running>`
-in the ESMValCore documentation for a short introduction.
+ESMValTool is mostly used as a command line tool.
+Whenever your Conda environment for ESMValTool is active, you can run the
+command ``esmvaltool``.
+See :ref:`running esmvaltool <esmvalcore:running>` in the ESMValCore
+documentation for an introduction to the ``esmvaltool`` command.
 
-Running a recipe
-================
+Running your first recipe
+=========================
+
+There is a step-by-step tutorial available in the
+`ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
+on how to run your first recipe. It can be found
+`here <https://esmvalgroup.github.io/ESMValTool_Tutorial/04-recipe/index.html>`_.
 
 An
 `example recipe <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_python.yml>`_
@@ -25,124 +30,76 @@ This recipe finds data from BCC-ESM1 and CanESM2 and creates two plot types:
 - a time series plot that shows the globally averaged annual mean 2m surface
   air temperature and compares it to the one in Amsterdam.
 
-You can download the recipe from :download:`here 
-<../../../../esmvaltool/recipes/examples/recipe_python.yml>` and save it in
-your project directory as (e.g.) ``recipe_python.yml`` and then run ESMValTool
-with
+To run this recipe and automatically download the required climate data
+from ESGF to the local directory ``~/climate_data``, run
 
 .. code:: bash
 
-   esmvaltool run --offline=False recipe_python.yml
+	esmvaltool run examples/recipe_python.yml --offline=False
 
-The ``--offline=False`` option tells ESMValTool to automatically download
-missing data. This might require additional :ref:`configuration
-<esmvalcore:config-esgf>` to work. The data only needs to be downloaded once,
-every following run will re-use previously downloaded data.
+The ``--offline=False`` option tells ESMValTool to search for and download
+the necessary climate data files, if they cannot be found locally.
+The data only needs to be downloaded once, every following run will re-use
+previously downloaded data.
+If you have all required data available locally, you can run the tool without
+the ``--offline=False`` argument (the default).
+Note that in that case the required data should be located in the directories
+specified in your user configuration file.
+Recall that the chapter :ref:`Configuring ESMValTool <config-user>`
+provides an explanation of how to create your own config-user.yml file.
 
-ESMValTool will also find recipes that are stored in its installation directory.
-A copy of the example recipe is shipped with ESMValTool as:
-``/path/to/installation/esmvaltool/recipes/examples/recipe_python.yml``.
-Thus, the following also works:
+See :ref:`running esmvaltool <esmvalcore:running>` in the ESMValCore
+documentation for a more complete introduction to the ``esmvaltool`` command.
 
-.. code:: bash
-
-	esmvaltool run examples/recipe_python.yml
-
-Note that this command does not automatically download missing data. The
-required data should thus be located in the directories specified in your user
-configuration file.  Recall that the chapter :ref:`Configuring ESMValTool
-<config-user>` provides an explanation of how to create your own
-config-user.yml file.
-
-To get help on additional commands, please use
-
-.. code:: bash
-
-	esmvaltool --help
-
-It is also possible to get help on specific commands, e.g.
-
-.. code:: bash
-
-	esmvaltool run --help
-
-will display the help message with all options for the ``run`` command.
-
-There is a step-by-step description available in the
-`ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
-on how to run your first recipe. It can be found
-`here <https://esmvalgroup.github.io/ESMValTool_Tutorial/04-recipe/index.html>`_.
+.. _recipes_command:
 
 Available diagnostics and metrics
 =================================
 
-See Section :doc:`Recipes <../recipes/index>` for a description of all
-available recipes.
+Although ESMValTool can be used to download data, analyze it using ESMValCore's
+preprocessing modules, and the creation of your own analysis code, its main purpose is the
+continuously growing set of diagnostics and metrics that it directly provides to
+the user. These metrics and diagnostics are provided as a set of preconfigured
+recipes that users can run or customize for their own analysis.
+The latest list of available recipes can be found :ref:`here <esmvaltool:recipes>`.
 
-To see a list of installed recipes run
+In order to make the management of these installed recipes easier, ESMValTool
+provides the ``recipes`` command group with utilities that help the users in
+discovering and customizing the provided recipes.
+
+The first command in this group allows users to get the complete list of installed
+recipes printed to the console:
 
 .. code:: bash
 
-	esmvaltool recipes list
+    esmvaltool recipes list
+
+If the user then wants to explore any one of these recipes, they can be printed
+using the following command
+
+.. code:: bash
+
+    esmvaltool recipes show recipe_name.yml
+
+Note that there is no ``recipe_name.yml`` shipped with ESMValTool, replace
+this with a recipes that is available, for example
+`examples/recipe_python.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_python.yml>`_.
+Finally, to get a local copy that can then be customized and run, users can
+run the following command
+
+.. code:: bash
+
+    esmvaltool recipes get recipe_name.yml
+
+Note that the ``esmvaltool run recipe_name.yml`` command will first look if
+``recipe_name.yml`` is the path to an existing file.
+If this is the case, it will run that recipe.
+If not, it will look if it is a relative path to an existing recipe with respect to the
+`recipes <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/>`__
+directory in your ESMValTool installation and run that.
 
 Running multiple recipes
 ========================
 
-It is possible to run more than one recipe in one go: currently this relies on the user
-having access to a HPC that has ``rose`` and ``cylc`` installed since the procedure involves
-installing and submitting a Rose suite. the utility that allows you to do this is
-``esmvaltool/utils/rose-cylc/esmvt_rose_wrapper.py``.
-
-Base suite:
------------
-The base suite to run esmvaltool via rose-cylc is `u-bd684`; you can find
-this suite in the Met Office Rose repository at:
-
-https://code.metoffice.gov.uk/svn/roses-u/b/d/6/8/4/trunk/
-
-When ``rose`` will be working with python3.x, this location will become
-default and the pipeline will aceess it independently of user, unless, of
-course the user will specify ``-s $SUITE_LOCATION``; until then the user needs
-to grab a copy of it in ``$HOME`` or specify the default location via ``-s`` option.
-
-Environment:
-------------
-We will move to a unified and centrally-installed esmvaltool environment;
-until then, the user will have to alter the env_setup script:
-
-``u-bd684/app/esmvaltool/env_setup``
-
-with the correct pointers to esmvaltool installation, if desired.
-
-To be able to submit to cylc, you need to have the `/metomi/` suite in path
-AND use a `python2.7` environment. Use the Jasmin-example below for guidance.
-
-Jasmin-example:
----------------
-This shows how to interact with rose-cylc and run esmvaltool under cylc
-using this script:
-
-.. code:: bash
-
-   export PATH=/apps/contrib/metomi/bin:$PATH
-   export PATH=/home/users/valeriu/miniconda2/bin:$PATH
-   mkdir esmvaltool_rose
-   cd esmvaltool_rose
-   cp ESMValTool/esmvaltool/utils/rose-cylc/esmvt_rose_wrapper.py .
-   svn checkout https://code.metoffice.gov.uk/svn/roses-u/b/d/6/8/4/trunk/ ~/u-bd684
-   [enter Met Office password]
-   [configure ~/u-bd684/rose_suite.conf]
-   [configure ~/u-bd684/app/esmvaltool/env_setup]
-   python esmvt_rose_wrapper.py -c config-user.yml \
-   -r recipe_autoassess_stratosphere.yml recipe_OceanPhysics.yml \
-   -d $HOME/esmvaltool_rose
-   rose suite-run u-bd684
-
-Note that you need to pass FULL PATHS to cylc, no `.` or `..` because all
-operations are done remotely on different nodes.
-
-A practical actual example of running the tool can be found on JASMIN:
-``/home/users/valeriu/esmvaltool_rose``.
-There you will find the run shell: ``run_example``, as well as an example
-how to set the configuration file. If you don't have Met Office credentials,
-a copy of `u-bd684` is always located in ``/home/users/valeriu/roses/u-bd684`` on Jasmin.
+Have a look at :ref:`running_multiple_recipes` if you are interested in running multiple
+recipes in parallel.
