@@ -81,7 +81,7 @@ def collect_files(in_dir, var, cfg):
     if not os.path.isfile(in_file):
         if not os.path.isdir(in_dir):
             os.makedirs(in_dir)
-        logger.info('Input file %s is missing. Start download ... ', fname)
+        logger.info('Input file %s is missing. Start download ... ', in_file)
         url = os.path.join(cfg['attributes']['source'], var_dict['name'],
                            'netcdf', var_dict['file'].split('_')[0],
                            cfg['custom']['resolution'], fname)

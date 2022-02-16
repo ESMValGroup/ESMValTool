@@ -1,6 +1,9 @@
 ---
 name: esmvaltool
 channels:
+  # The release candidate channel should only be activated
+  # during the rc phase right before the next release of the
+  # ESMValCore.
   - conda-forge/label/esmvalcore_rc
   - conda-forge
   - nodefaults
@@ -17,7 +20,10 @@ dependencies:
   # Non-Python dependencies
   - cdo
   - imagemagick
+  - julia
   - nco
+  - python-cdo
+  - rasterio
   - ruamel.yaml
   - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
   - xgboost

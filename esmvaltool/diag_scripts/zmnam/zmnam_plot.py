@@ -15,17 +15,23 @@ from cartopy.util import add_cyclic_point
 
 
 def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
-               write_plots):
+               hemisphere):
     """Plotting of timeseries and maps for zmnam diagnostics."""
+
+    if hemisphere == 'NH':
+        index_name = 'NAM'
+    if hemisphere == 'SH':
+        index_name = 'SAM'
+
     plot_files = []
     # Open daily and monthly PCs
-    file_name = '_'.join(src_props) + '_pc_da.nc'
+    file_name = '_'.join(src_props) + '_pc_da_' + index_name + '.nc'
     # print(datafolder + file_name)
     with netCDF4.Dataset(datafolder + file_name, "r") as in_file:
         lev = np.array(in_file.variables['plev'][:], dtype='d')
         pc_da = np.array(in_file.variables['PC_da'][:], dtype='d')
 
-    file_name = '_'.join(src_props) + '_pc_mo.nc'
+    file_name = '_'.join(src_props) + '_pc_mo_' + index_name + '.nc'
     # print(datafolder + file_name)
     with netCDF4.Dataset(datafolder + file_name, "r") as in_file:
         time_mo = np.array(in_file.variables['time'][:], dtype='d')
@@ -96,13 +102,13 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
         plt.title(
             str(int(lev[i_lev])) + ' Pa  ' + src_props[1] + ' ' + src_props[2])
         plt.xlabel('Time')
-        plt.ylabel('Zonal mean NAM')
+        plt.ylabel('Zonal mean ' + index_name)
 
-        if write_plots:
-            fname = (figfolder + '_'.join(src_props) + '_' +
-                     str(int(lev[i_lev])) + 'Pa_mo_ts.' + fig_fmt)
-            plt.savefig(fname, format=fig_fmt)
-            plot_files.append(fname)
+        fname = (figfolder + '_'.join(src_props) + '_' +
+                 str(int(lev[i_lev])) + 'Pa_mo_ts_' + index_name +
+                 '.' + fig_fmt)
+        plt.savefig(fname, format=fig_fmt)
+        plot_files.append(fname)
 
         plt.figure()
 
@@ -129,15 +135,15 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
         plt.xlim(min_var, max_var)
         plt.title('Daily PDF ' + str(int(lev[i_lev])) + ' Pa  ' +
                   src_props[1] + ' ' + src_props[2])
-        plt.xlabel('Zonal mean NAM')
+        plt.xlabel('Zonal mean ' + index_name)
         plt.ylabel('Normalized probability')
         plt.tight_layout()
 
-        if write_plots:
-            fname = (figfolder + '_'.join(src_props) + '_' +
-                     str(int(lev[i_lev])) + 'Pa_da_pdf.' + fig_fmt)
-            plt.savefig(fname, format=fig_fmt)
-            plot_files.append(fname)
+        fname = (figfolder + '_'.join(src_props) + '_' +
+                 str(int(lev[i_lev])) + 'Pa_da_pdf_' + index_name +
+                 '.' + fig_fmt)
+        plt.savefig(fname, format=fig_fmt)
+        plot_files.append(fname)
 
         plt.close('all')
 
@@ -160,8 +166,13 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
         # Fixed contour levels. May be improved somehow.
         regr_levs = -1000 + np.arange(201) * 10
 
-        # Create the projections
-        ortho = ccrs.Orthographic(central_longitude=0, central_latitude=90)
+        # Create the projections, selecting hemisphere based on latitudes
+        if min(lat) > 0.:  # NH
+            ortho = ccrs.Orthographic(central_longitude=0,
+                                      central_latitude=90)
+        if min(lat) < 0.:  # SH
+            ortho = ccrs.Orthographic(central_longitude=0,
+                                      central_latitude=-90)
         ccrs.Geodetic()
 
         # Create the geoaxes for an orthographic projection
@@ -237,11 +248,11 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
                  fontsize=12,
                  transform=plt.gcf().transFigure)
 
-        if write_plots:
-            fname = (figfolder + '_'.join(src_props) + '_' +
-                     str(int(lev[i_lev])) + 'Pa_mo_reg.' + fig_fmt)
-            plt.savefig(fname, format=fig_fmt)
-            plot_files.append(fname)
+        fname = (figfolder + '_'.join(src_props) + '_' +
+                 str(int(lev[i_lev])) + 'Pa_mo_reg_' + index_name +
+                 '.' + fig_fmt)
+        plt.savefig(fname, format=fig_fmt)
+        plot_files.append(fname)
 
         plt.close('all')
 
@@ -249,8 +260,8 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
         regr_arr[i_lev, :, :] = slope
 
     # Save 3D regression results in output netCDF
-    with netCDF4.Dataset(datafolder + '_'.join(src_props) + '_regr_map.nc',
-                         mode='w') as file_out:
+    with netCDF4.Dataset(datafolder + '_'.join(src_props) + '_regr_map_' +
+                         index_name + '.nc', mode='w') as file_out:
         file_out.title = 'Zonal mean annular mode (4)'
         file_out.contact = 'F. Serva (federico.serva@artov.ismar.cnr.it); \
         C. Cagnazzo (chiara.cagnazzo@cnr.it)'
@@ -293,6 +304,7 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
         regr_var = file_out.createVariable('regr', 'f', ('plev', 'lat', 'lon'))
         regr_var.setncattr('long_name',
                            'Zonal mean annular mode regression map')
+        regr_var.setncattr('index_type', index_name)
         regr_var.setncattr(
             'comment',
             'Reference: Baldwin and Thompson ' + '(2009), doi:10.1002/qj.479')

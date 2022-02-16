@@ -62,9 +62,8 @@ class NegativeSeaIceFeedback(object):
                 p_value.append(p_val)
                 datasets.append(alias)
 
-        if self.cfg[n.WRITE_PLOTS]:
-            self._plot_comparison(negative_feedback, datasets)
-            self._plot_comparison(p_value, datasets, p_values=True)
+        self._plot_comparison(negative_feedback, datasets)
+        self._plot_comparison(p_value, datasets, p_values=True)
 
     def _compute_dataset(self, alias, dataset):
         var_info = group_metadata(dataset, 'short_name')
@@ -326,8 +325,9 @@ class NegativeSeaIceFeedback(object):
                              "Input volume: %f Vmin: %f dv: %f",
                              volume, vol_min, dvol)
                 raise
-        if self.cfg[n.WRITE_PLOTS]:
-            self._plot_ife(dataset_info, vol_min, dvol, fit_complete)
+
+        self._plot_ife(dataset_info, vol_min, dvol, fit_complete)
+
         return [fit, [corr, pval, std], [vol_min, dvol]]
 
     def _plot_ife(self, dataset_info, vol_min, dvol, fit_complete):

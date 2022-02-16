@@ -11,7 +11,7 @@ hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has no time component, a small number of depth layers,
 and a latitude and longitude coordinates.
 
-An approproate preprocessor for a 2D + time field would be::
+An appropriate preprocessor for a 2D + time field would be::
 
   preprocessors:
     prep_map:
@@ -35,6 +35,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
@@ -70,8 +71,7 @@ def get_provenance_record(attributes, obsname, ancestor_files):
 
 
 def add_map_plot(axs, plot_cube, cols):
-    """
-    Add a map in the current pyplot suplot.
+    """Add a map in the current pyplot suplot.
 
     Parameters
     ----------
@@ -116,8 +116,7 @@ def add_map_plot(axs, plot_cube, cols):
 
 
 def make_subplots(cubes, layout, obsname, fig):
-    """
-    Realize subplots using cubes input data.
+    """Realize subplots using cubes input data.
 
     Parameters
     ----------
@@ -165,8 +164,7 @@ def make_subplots(cubes, layout, obsname, fig):
 
 
 def load_cubes(filenames, obs_filename, metadata):
-    """
-    Organize data provided by recipe.
+    """Organize data provided by recipe.
 
     Parameters
     ----------
@@ -192,6 +190,8 @@ def load_cubes(filenames, obs_filename, metadata):
     for thename in filenames:
         logger.debug('loading: \t%s', thename)
         cube = iris.load_cube(thename)
+        cube.coord('latitude').long_name = "Latitude"
+        cube.coord('longitude').long_name = "Longitude"
         cube = diagtools.bgc_units(cube, metadata[thename]['short_name'])
         model_name = metadata[thename]['dataset']
         cubes[model_name] = diagtools.make_cube_layer_dict(cube)
@@ -205,8 +205,7 @@ def load_cubes(filenames, obs_filename, metadata):
 
 
 def select_cubes(cubes, layer, obsname, metadata):
-    """
-    Create a dictionary of input layer data & metadata to plot.
+    """Create a dictionary of input layer data & metadata to plot.
 
     Parameters
     ----------
@@ -280,8 +279,8 @@ def select_cubes(cubes, layer, obsname, metadata):
 
 
 def make_multiple_plots(cfg, metadata, obsname):
-    """
-    Produce multiple panel comparison maps of model(s) and data (if provided).
+    """Produce multiple panel comparison maps of model(s) and data (if
+    provided).
 
     If observations are not provided, plots of each model data are drawn.
     Put on top row observational data (if available) and in following subplots
@@ -354,14 +353,12 @@ def make_multiple_plots(cfg, metadata, obsname):
 
 
 def main(cfg):
-    """
-    Load the config file, and send it to the plot maker.
+    """Load the config file, and send it to the plot maker.
 
     Parameters
     ----------
     cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
-
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
