@@ -89,7 +89,7 @@ Plot specific options:
    + months:
      Select only specific months. Defaults to ``None`` (do not select).
    + plot_size:
-     Size of ech individual figure. Default's to ``(5, 4)``.
+     Size of each individual figure. Default's to ``(5, 4)``.
    + columns:
      Number of columns in the plot. Defaults to ``3``.
    + rows:
@@ -135,7 +135,7 @@ A yaml file containing map and variable specific options.
 
 Contains two dictionaries, ``maps`` and ``variables``.
 
-Each entry in ``maps`` correspond to a map definitions. See below a sample with
+Each entry in ``maps`` corresponds to a map definition. See below for a sample with
 comments to define each option
 
 .. code-block:: yaml
@@ -143,7 +143,7 @@ comments to define each option
    maps:
       global: # Map name, choose a meaningful one
          projection: PlateCarree # Cartopy projection to use
-         projection_kwargs: # Dictionary with Cartopy's projection kwargs.
+         projection_kwargs: # Dictionary with Cartopy's projection keyword arguments.
             central_longitude: 285
          smooth: true # If true, interpolate values to get smoother maps. If not, all points in a cells will get the exact same color
          lon: [-120, -60, 0, 60, 120, 180] # Set longitude ticks
@@ -152,8 +152,8 @@ comments to define each option
          extent: null # If defined, restrict the projection to a region. Format [lon1, lon2, lat1, lat2]
          suptitle_pos: 0.87 # Title position in the figure.
 
-Each entry in ``variable`` correspond to a variable definitions.
-Use the default entry to apply generic options to al variables.
+Each entry in ``variable`` corresponds to a variable definition.
+Use the default entry to apply generic options to all variables.
 See below a sample with comments to define each option
 
 .. code-block:: yaml
@@ -163,7 +163,7 @@ See below a sample with comments to define each option
       # not just the values defined. If you want to override only the defined
       # values, use yaml anchors as shown
       default: &default
-         colors: RdYlBu_r # Matplotlib colormap to use for the co,orbar
+         colors: RdYlBu_r # Matplotlib colormap to use for the colorbar
          N: 20 # Number of map intervals to plot
          bad: [0.9, 0.9, 0.9] # Color to use when no data
       pr:

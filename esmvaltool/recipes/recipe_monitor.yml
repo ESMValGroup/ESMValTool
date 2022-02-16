@@ -1,7 +1,7 @@
 # ESMValTool
 ---
 documentation:
-  title: Monitoring
+  title: Model Monitoring
   description: |
     This a recipe to monitor experiments by automatizing the creation of plots
     from raw preprocessor output.
