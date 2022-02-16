@@ -5,10 +5,9 @@
 ; ############################################################################
 ;
 ; Description:
-;    Time series of seasonal  mean anomalie of total column of ozones
+;    Time series of seasonal mean anomalies of total column ozone
 ;    calculated with a methodology described in Appendix A of Eyring06
 ;    Annual cycle for the reference years are also shown
-;   Ad more bullets if required
 ;
 ; Required diag_script_info attributes: (diagnostics specific)
 ;    latrange:  minimum and maximum latitude for regional average,
@@ -103,7 +102,7 @@ begin
   thicks = tofloat(project_style(info0, diag_script_info, "thicks"))
   markers = project_style(info0, diag_script_info, "markers")
 
-  flag_mod = where(projects.ne."OBS" .and. projects.ne."obs4mips", 1, 0)
+  flag_mod = where(projects.ne."OBS" .and. projects.ne."obs4MIPs", 1, 0)
   index_mod = ind(flag_mod.gt.0)
   index_obs = ind(flag_mod.eq.0)
   dim_MOD = dimsizes(index_mod)

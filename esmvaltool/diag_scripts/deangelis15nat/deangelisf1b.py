@@ -102,9 +102,6 @@ def get_provenance_record(ancestor_files, caption, statistics,
 
 def plot_bar_deangelis(cfg, data_var_sum, available_exp, available_vars):
     """Plot linear regression used to calculate ECS."""
-    if not cfg[n.WRITE_PLOTS]:
-        return
-
     # Plot data
     fig, axx = plt.subplots()
 

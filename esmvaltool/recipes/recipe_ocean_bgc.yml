@@ -2,6 +2,8 @@
 # recipe_ocean_bcg.yml
 ---
 documentation:
+  title: Marine Biogeochemistry analysis suite
+
   description: |
     Recipe to evaluate the marine biogeochemistry models of CMIP5.
     There are also some physical evaluation metrics here too.
@@ -34,9 +36,6 @@ datasets:
   # - {dataset: HadGEM2-CC,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
   # - {dataset: HadCM3,    project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
 
-
-
-
 ###
 # Problem with times
 #  - {dataset: MIROC-ESM,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
@@ -58,33 +57,33 @@ preprocessors:
     custom_order: true
     volume_statistics:
       operator: mean
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
-      exclude: ['WOA']
+    #multi_model_statistics:
+    #  span: overlap
+    #  statistics: [mean]
+    #  exclude: ['WOA']
 
   # Global area-weighted Average from 2D field
   prep_global_Surface_average_timeseries_2D:
     custom_order: true
     area_statistics:
       operator: mean
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
-      exclude: ['WOA']
+    #multi_model_statistics:
+    #  span: overlap
+    #  statistics: [mean]
+    #  exclude: ['WOA']
 
   # Global area -weighted surface Average from 3D field
   prep_global_Surface_average_timeseries_3D:
     custom_order: true
     extract_levels:
       levels:  [0., ]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     area_statistics:
       operator: mean
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
-      exclude: ['WOA']
+    #multi_model_statistics:
+    #  span: overlap
+    #  statistics: [mean]
+    #  exclude: ['WOA']
 
   prep_timeseries_scalar: # Load file as is.
     custom_order: true
@@ -99,7 +98,7 @@ preprocessors:
   prep_surface_map_3D:
     extract_levels:
       levels:  [0., ]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     climate_statistics:
       operator: mean
 
@@ -107,7 +106,7 @@ preprocessors:
     custom_order: true
     extract_levels:
       levels:  [0., ]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     climate_statistics:
       operator: mean
     regrid:
@@ -207,8 +206,6 @@ diagnostics:
         mip: Oyr
         additional_datasets:
           - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
-      volcello:
-        mip: fx
     #   po4: # phosphate # No HadGEM2-ES phosphate.
     #     preprocessor: prep_timeseries_global_volume_average
     #     mip: Oyr
@@ -239,8 +236,6 @@ diagnostics:
       talk: # alkalinity
         preprocessor: prep_timeseries_global_volume_average
         mip: Oyr
-      volcello:
-        mip: fx
     #   dic: # Dissolved inorganic carbon
     #     preprocessor: prep_timeseries_global_volume_average
     #     mip: Oyr
@@ -366,8 +361,6 @@ diagnostics:
         mip: Oyr
         additional_datasets:
           - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
-      volcello:
-        mip: fx
     #   po4: # Phosphate
     #     preprocessor: prep_global_profile
     #     mip: Oyr
@@ -393,8 +386,6 @@ diagnostics:
       talk: # alkalinity
         preprocessor: prep_global_profile
         mip: Oyr
-      volcello:
-        mip: fx
     #   dic: # Dissolved inorganic carbon
     #     preprocessor: prep_global_profile
     #     mip: Oyr
@@ -444,9 +435,11 @@ diagnostics:
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
+
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
         observational_dataset: {dataset: WOA, project: OBS}
+
 
   # --------------------------------------------------
   # Map diagnostics - no data
@@ -475,7 +468,6 @@ diagnostics:
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
-
 
 
 
@@ -531,9 +523,6 @@ diagnostics:
     scripts:
       Transects_no_data:
         script: ocean/diagnostic_transects.py
-
-
-
 
 
   # # # Depth integrated maps

@@ -203,8 +203,8 @@ def _within_bounds(values, bounds):
 def _get_subset(top1000, info, period):
     """Select samples based on the percentile bounds.
 
-    Select samples for which summer pr, and summer and winter tas
-    are within the percentile bounds specified in the recipe.
+    Select samples for which summer pr, and summer and winter tas are
+    within the percentile bounds specified in the recipe.
     """
     pr_summer = _within_bounds(top1000['pr_summer'],
                                info[f'pr_summer_{period}'])
@@ -219,11 +219,11 @@ def _get_subset(top1000, info, period):
 def get_percentile_subsets(cfg, segment_season_means, top1000s):
     """Get subsets based on percentile ranges.
 
-    For each set of 1000 samples, compute summer precipitation,
-    and summer and winter temperature.
-    Then, for each scenario, select samples for which
-    summer precipitation, and summer and winter temperature are
-    within the percentile bounds specified in the recipe.
+    For each set of 1000 samples, compute summer precipitation, and
+    summer and winter temperature. Then, for each scenario, select
+    samples for which summer precipitation, and summer and winter
+    temperature are within the percentile bounds specified in the
+    recipe.
     """
     # Overwrite top1000s with seasonal mean characteristics
     for name, dataframe in top1000s.items():
@@ -266,7 +266,7 @@ def _best_subset(combinations, n_sample=8):
     # Store the indices in a nice dataframe
     n_segments = combinations.shape[1]
     best_subset = pd.DataFrame(
-        data=None,
+        data=np.empty((n_sample, n_segments), dtype=int),
         columns=[f'Segment {x}' for x in range(n_segments)],
         index=[f'Combination {x}' for x in range(n_sample)])
 
@@ -290,11 +290,10 @@ def _best_subset(combinations, n_sample=8):
 def select_final_subset(cfg, subsets, prov=None):
     """Select sample with minimal reuse of ensemble segments.
 
-    Final set of eight samples should have with minimal reuse
-    of the same ensemble member for the same period.
-    From 10.000 randomly selected sets of 8 samples, count
-    and penalize re-used segments (1 for 3*reuse, 5 for 4*reuse).
-    Choose the set with the lowest penalty.
+    Final set of eight samples should have with minimal reuse of the
+    same ensemble member for the same period. From 10.000 randomly
+    selected sets of 8 samples, count and penalize re-used segments (1
+    for 3*reuse, 5 for 4*reuse). Choose the set with the lowest penalty.
     """
     n_samples = cfg['n_samples']
     all_scenarios = {}
@@ -493,8 +492,7 @@ def main(cfg):
     climates = get_climatologies(cfg, scenario_tables, prov=provenance)
 
     # Step 5: plot the results
-    if cfg['write_plots']:
-        make_plots(cfg, climates)
+    make_plots(cfg, climates)
 
 
 if __name__ == '__main__':

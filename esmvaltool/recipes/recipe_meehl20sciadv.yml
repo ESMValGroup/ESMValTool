@@ -2,9 +2,13 @@
 # recipe_meehl20sciadv.yml
 ---
 documentation:
+  title: >
+    Context for interpreting equilibrium climate sensitivity and transient
+    climate response from the CMIP6 Earth system models
 
-  description: |
-    Evaluate ECS and TCR for various CMIP generations.
+  description: >
+    This recipe evaluates the equilibrium climate sensitivity (ECS) and the
+    transient climate response (TCR) for various CMIP generations.
 
   authors:
     - schlund_manuel
@@ -22,6 +26,8 @@ preprocessors:
   spatial_mean:
     area_statistics:
       operator: mean
+      fx_variables:
+        areacella:
 
 
 ECS_CMIP5_RTNT: &ecs_cmip5_rtnt

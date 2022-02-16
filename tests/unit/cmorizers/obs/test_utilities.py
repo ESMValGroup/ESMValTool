@@ -4,6 +4,9 @@ from unittest.mock import Mock
 
 import dask.array as da
 import iris
+import iris.coords
+import iris.cube
+import iris.fileformats
 import numpy as np
 import pytest
 from cf_units import Unit

@@ -2,6 +2,8 @@
 # recipe_smpi.yml
 ---
 documentation:
+  title: Single Model Performance Index
+
   description: |
     Recipe for computing Single Model Performance Index. Follows Reichler
     and Kim 2008. Considers the following variables:
@@ -229,7 +231,7 @@ diagnostics:
         preprocessor: ppNOLEV
         reference_dataset: GPCP-SG
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2, tier: 1}
     scripts:
       grading:
         script: perfmetrics/main.ncl

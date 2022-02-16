@@ -23,40 +23,41 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
-        'cartopy>=0.18',
+        'cartopy',
         'cdo',
         'cdsapi',
         'cf-units',
         'cftime',
         'cmocean',
-        'dask>=2.12',
+        'dask',
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        'esmvalcore>=2.3.0,<2.4',
+        'esmvalcore',
         'fiona',
         'GDAL',
         'jinja2',
         'joblib',
         'lime',
-        'matplotlib>3.3.1,<3.4',  # bug in 3.3.1, issue with nc-time-axis for >3.3.4
+        'matplotlib',
         'natsort',
-        'nc-time-axis<1.3.1',  # needed by iris.plot, issues with matplotlib 3.4 and 1.3.1
+        'nc-time-axis',
         'netCDF4',
         'numpy',
+        'openpyxl',
         'pandas',
-        'pyproj>=2.1'
+        'pyproj',
         'pyyaml',
-        'rasterio',  # replaces pynio
+        'rasterio',
         'ruamel.yaml',
         'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris>=3.0.1',
+        'scitools-iris',
         'seaborn',
         'seawater',
         'shapely',
-        'xarray>=0.12',
+        'xarray',
         'xesmf',
         'xgboost',
         'xlsxwriter',
@@ -64,6 +65,7 @@ REQUIREMENTS = {
     # Test dependencies
     # Execute `pip install .[test]` once and the use `pytest` to run tests
     'test': [
+        'flake8<4',
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
         'pytest-cov>=2.10.1',
         'pytest-env',
@@ -200,9 +202,10 @@ setup(
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Atmospheric Science',
         'Topic :: Scientific/Engineering :: GIS',
@@ -218,7 +221,8 @@ setup(
     extras_require={
         'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test']) -
                     {'pycodestyle'}),
-        'test': REQUIREMENTS['test'],
+        'test':
+        REQUIREMENTS['test'],
     },
     entry_points={
         'console_scripts': [

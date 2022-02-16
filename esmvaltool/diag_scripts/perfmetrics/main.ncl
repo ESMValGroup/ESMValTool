@@ -169,6 +169,9 @@ begin
   ; Set dataset names
   datasetnames = metadata_att_as_array(info_items, "dataset")
 
+  ; Save projects
+  projectnames = metadata_att_as_array(info_items, "project")
+
   ; Extend model name by ensemble/experiment on multiple occurence
   if (.not. (dimsizes(datasetnames) .eq. \
       count_unique_values(datasetnames))) then
@@ -231,10 +234,8 @@ begin
   end if
 
   ; Create output plot directory
-  if (diag_script_info@write_plots) then
-    plot_dir = config_user_info@plot_dir
-    system("mkdir -p " + plot_dir)
-  end if
+  plot_dir = config_user_info@plot_dir
+  system("mkdir -p " + plot_dir)
 
   ; Plot file type
   file_type = config_user_info@output_file_type
@@ -261,6 +262,7 @@ begin
     if (isdim(grading, "reference")) then
       grading&reference = datasetnames(ref_inds)
     end if
+    grading@projects = str_join(remove_index(projectnames, ref_inds), " ")
 
     ; Special case Taylor
     if (any(diag_script_info@metric.eq."taylor")) then

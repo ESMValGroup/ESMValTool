@@ -5,7 +5,7 @@
 # conda build package -c conda-forge -c esmvalgroup
 
 # Package version number
-{% set version = "2.2.0" %}
+{% set version = "2.4.0" %}
 
 package:
   name: esmvaltool
@@ -38,6 +38,7 @@ test:
     - tests
     - setup.cfg
   requires:
+    - flake8<4
     - pytest>=3.9,!=6.0.0rc1,!=6.0.0
     - pytest-cov
     - pytest-env
@@ -79,19 +80,19 @@ outputs:
         - ecmwf-api-client  # in esmvalgroup channel
         - eofs
         - esmpy
-        - esmvalcore>=2.3.0,<2.4  # in esmvalgroup channel
+        - esmvalcore>=2.3.1,<2.4  # in esmvalgroup channel
         - fiona
         - gdal
-        - iris>=3.0.1
+        - iris>=3.0.2
         - jinja2
         - joblib
         - lime
         - matplotlib>3.3.1,<3.4  # bug in 3.3.1, issue with nc-time-axis for >=3.4
-        - mpich<3.4  # avoid 3.4.1 external_2 from conda-forge like the plague
         - natsort
         - nc-time-axis<1.3.1
         - netCDF4
         - numpy
+        - openpyxl
         - pandas
         - pyproj>=2.1
         - python>=3.7

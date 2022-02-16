@@ -11,6 +11,9 @@ documentation:
     
   authors:
     - predoi_valeriu
+    - sellar_alistair
+
+  title: Land-surface diagnostic that computes permafrost indices (from Autoassess).
 
   references:
     - brown02nsidc

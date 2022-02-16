@@ -36,18 +36,21 @@ provenance <- list()
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
 
-model_names <- lapply(input_files_per_var, function(x)
-  x$dataset)
+model_names <- lapply(input_files_per_var, function(x) {
+  x$dataset
+})
 model_names <- unique(unlist(unname(model_names)))
 
 
-var0 <- lapply(input_files_per_var, function(x)
-  x$short_name)
+var0 <- lapply(input_files_per_var, function(x) {
+  x$short_name
+})
 fullpath_filenames <- names(var0)
 var0 <- unname(var0)[1]
 
-experiment <- lapply(input_files_per_var, function(x)
-  x$exp)
+experiment <- lapply(input_files_per_var, function(x) {
+  x$exp
+})
 experiment <- unlist(unname(experiment))
 
 reference_files <- which(unname(experiment) == "historical")
@@ -61,14 +64,16 @@ region <- params$plot_type
 # Start and end periods for the historical and projection periods
 start_historical <- lapply(
   input_files_per_var,
-  function(x)
+  function(x) {
     x$start_year
+  }
 )[reference_files]
 starting1 <- c(unlist(unname(start_historical)))[1]
 end_historical <- lapply(
   input_files_per_var,
-  function(x)
+  function(x) {
     x$end_year
+  }
 )[reference_files]
 ending1 <- c(unlist(unname(end_historical)))[1]
 start_historical <- as.POSIXct(as.Date(
@@ -80,14 +85,16 @@ end_historical <-
 
 start_projection <- lapply(
   input_files_per_var,
-  function(x)
+  function(x) {
     x$start_year
+  }
 )[projection_files]
 starting2 <- c(unlist(unname(start_projection)))[1]
 end_projection <- lapply(
   input_files_per_var,
-  function(x)
+  function(x) {
     x$end_year
+  }
 )[projection_files]
 ending2 <- c(unlist(unname(end_projection)))[1]
 start_projection <- as.POSIXct(as.Date(
@@ -106,7 +113,6 @@ cluster_method <- params$cluster_method
 if (cluster_method != "kmeans") {
   cluster_method <- "complete"
 }
-EOFS <- params$EOFS
 frequency <- params$frequency
 detrend_order <- params$detrend_order
 
@@ -118,7 +124,7 @@ if (grepl("OImon", fullpath_filenames[1])) {
   var_lon <- "lon"
 }
 # ---------------------------
-# Reading and formating
+# Reading and formatting
 # ---------------------------
 ref_nc <- nc_open(fullpath_filenames[reference_files])
 var0 <- unlist(var0)
@@ -230,7 +236,7 @@ dim(reference_data) <- dims
 names(dim(reference_data))[c(time_dim, time_dim + 1)] <-
   c("sdate", "ftime")
 
-Loess <- function(clim, loess_span) {
+compute_loess <- function(clim, loess_span) {
   if (sum(is.na(clim)) != length(clim)) {
     data <- data.frame(ensmean = clim, day = seq_along(clim))
     loess_filt <- loess(ensmean ~ day, data,
@@ -255,18 +261,18 @@ if (data_type == "day" | !is.na(sea)) {
     c(seq_along(dim(
       clim_obs
     )))[-which(names(dim(clim_obs)) == "sdate")],
-    Loess,
+    compute_loess,
     loess_span = 1
   ), c(2, 3, 1, 4, 5))
 }
-names(dim(clim_obs))[3] <- 'sdate'
+names(dim(clim_obs))[3] <- "sdate"
 anom_obs <- Ano(reference_data, clim_obs)
 print(dim(anom_obs))
 print(length(lon))
-WR_obs <-
+wr_obs <-
   WeatherRegime(
     data = anom_obs,
-    EOFS = EOFS,
+    EOFS = params$EOFS,
     lat = lat,
     # nolint
     lon = lon,
@@ -274,11 +280,11 @@ WR_obs <-
     method = cluster_method
   )
 if (cluster_method != "kmeans" & data_type == "day") {
-  WR_obs$composite <- aperm(WR_obs$composite, c(2, 1, 3, 4, 5))
+  wr_obs$composite <- aperm(wr_obs$composite, c(2, 1, 3, 4, 5))
 }
-names(dim(WR_obs$composite)) <-
+names(dim(wr_obs$composite)) <-
   c("lat", "lon", "Cluster", "Mod", "exp")
-names(dim(WR_obs$cluster))[1] <- "Evolution"
+names(dim(wr_obs$cluster))[1] <- "Evolution"
 # -------------------------------
 ## Plotting the WR_obs output
 # -------------------------------
@@ -286,19 +292,19 @@ names(dim(WR_obs$cluster))[1] <- "Evolution"
 if (cluster_method == "kmeans") {
   clim_frequencies <- paste0(
     "freq = ",
-    round(Mean1Dim(WR_obs$frequency, 1), 1), "%"
+    round(Mean1Dim(wr_obs$frequency, 1), 1), "%"
   )
 } else {
   freq_clus <- NULL
   for (i in 1:ncenters) {
-    freq_clus <- c(freq_clus, round(sum(WR_obs$cluster[, 1, 1] == i) /
-      length(WR_obs$cluster[, 1, 1]) * 100, 1))
+    freq_clus <- c(freq_clus, round(sum(wr_obs$cluster[, 1, 1] == i) /
+      length(wr_obs$cluster[, 1, 1]) * 100, 1))
   }
   clim_frequencies <- paste0("freq = ", freq_clus, "%")
-  WR_obs$frequency <- freq_clus
+  wr_obs$frequency <- freq_clus
 }
 
-cosa <- aperm(drop(WR_obs$composite), c(3, 1, 2))
+cosa <- aperm(drop(wr_obs$composite), c(3, 1, 2))
 lim <- max(abs(cosa / 100), na.rm = TRUE)
 if (lim < 1) {
   x <- floor(log10(lim)) + 1
@@ -386,24 +392,24 @@ metadata <- list(variable = list(dim = list(list(
   name = "time",
   unlim = FALSE
 ))))
-dim(WR_obs$frequency) <- c(frequency = length(WR_obs$frequency))
-dim(WR_obs$pvalue) <- c(pvalue = length(WR_obs$pvalue))
-dim(WR_obs$cluster) <- c(cluster = length(WR_obs$cluster))
+dim(wr_obs$frequency) <- c(frequency = length(wr_obs$frequency))
+dim(wr_obs$pvalue) <- c(pvalue = length(wr_obs$pvalue))
+dim(wr_obs$cluster) <- c(cluster = length(wr_obs$cluster))
 if (cluster_method != "kmeans") {
-  names(dim(WR_obs$composite))[c(1, 2)] <- c("lon", "lat")
+  names(dim(wr_obs$composite))[c(1, 2)] <- c("lon", "lat")
 }
-if (length(lon) != dim(WR_obs$composite)["lon"]) {
-  pos_lon <- which(names(dim(WR_obs$composite)) == "lon")
-  pos_lat <- which(names(dim(WR_obs$composite)) == "lat")
-  names(dim(WR_obs$composite))[pos_lon] <- "lat"
-  names(dim(WR_obs$composite))[pos_lat] <- "lon"
+if (length(lon) != dim(wr_obs$composite)["lon"]) {
+  pos_lon <- which(names(dim(wr_obs$composite)) == "lon")
+  pos_lat <- which(names(dim(wr_obs$composite)) == "lat")
+  names(dim(wr_obs$composite))[pos_lon] <- "lat"
+  names(dim(wr_obs$composite))[pos_lat] <- "lon"
 }
 variable_list <-
   list(
-    variable = WR_obs$composite,
-    pvalue = WR_obs$pvalue,
-    cluster = WR_obs$cluster,
-    frequency = WR_obs$frequency,
+    variable = wr_obs$composite,
+    pvalue = wr_obs$pvalue,
+    cluster = wr_obs$cluster,
+    frequency = wr_obs$frequency,
     lat = lat,
     lon = lon,
     time = time
@@ -452,14 +458,13 @@ xprov <-
     frequency = params$frequency,
     detrend_order = params$detrend_order,
     realms = list("atmos"),
-    themes = list("phys"),
-    plot_file = filepng1
+    themes = list("phys")
   )
-
+provenance[[filepng1]] <- xprov
 provenance[[filencdf1]] <- xprov
 # ---------------------------
 # ---------------------------
-# Reading and formating
+# Reading and formatting
 # ---------------------------
 proj_nc <- nc_open(fullpath_filenames[projection_files])
 projection_data <- ncvar_get(proj_nc, var0)
@@ -546,13 +551,13 @@ if (data_type == "day" | !is.na(sea)) {
     clim_ref
   )))
   [-which(names(dim(clim_ref)) == "sdate")],
-  Loess,
+  compute_loess,
   loess_span = 1
   ), c(2, 3, 1, 4, 5))
 }
-names(dim(clim_ref))[3] <- 'sdate'
+names(dim(clim_ref))[3] <- "sdate"
 anom_exp <- Ano(projection_data, clim_ref)
-reference <- drop(WR_obs$composite)
+reference <- drop(wr_obs$composite)
 if (cluster_method == "kmeans") {
   names(dim(reference)) <- c("lat", "lon", "nclust")
   reference <- aperm(reference, c(3, 2, 1))
@@ -600,7 +605,7 @@ if ((
   names(dim(reference))[pos_lon] == "lat"
   names(dim(reference))[pos_lat] == "lon"
 }
-WR_exp <-
+wr_exp <-
   RegimesAssign(
     var_ano = anom_exp,
     ref_maps = reference,
@@ -615,10 +620,10 @@ WR_exp <-
 # ---------------------------
 
 if (cluster_method == "kmeans") {
-  cosa <- aperm(WR_exp$composite, c(3, 2, 1))
-  names(dim(WR_exp$composite))[3] <- "nclust"
+  cosa <- aperm(wr_exp$composite, c(3, 2, 1))
+  names(dim(wr_exp$composite))[3] <- "nclust"
 } else {
-  names(dim(WR_exp$composite))[3] <- "nclust"
+  names(dim(wr_exp$composite))[3] <- "nclust"
 }
 lim <- max(abs(cosa / 100), na.rm = TRUE)
 if (lim < 1) {
@@ -636,7 +641,7 @@ if (region == "polar") {
     "Cluster ",
     1:dim(cosa)[1],
     " (",
-    paste0("freq = ", round(WR_exp$frequency, 1), "%"),
+    paste0("freq = ", round(wr_exp$frequency, 1), "%"),
     " )"
   ))
   PlotLayout(
@@ -662,7 +667,7 @@ if (region == "polar") {
     "Cluster ",
     1:dim(cosa)[1],
     " (",
-    paste0("freq = ", round(WR_exp$frequency, 1), "%"),
+    paste0("freq = ", round(wr_exp$frequency, 1), "%"),
     " )"
   ))
   PlotLayout(
@@ -711,16 +716,16 @@ metadata <- list(variable = list(dim = list(list(
   unlim = FALSE
 ))))
 
-dim(WR_exp$frequency) <- c(frequency = length(WR_exp$frequency))
-dim(WR_exp$pvalue) <- c(pvalue = length(WR_exp$pvalue))
-dim(WR_exp$cluster) <- c(cluster = length(WR_exp$cluster))
+dim(wr_exp$frequency) <- c(frequency = length(wr_exp$frequency))
+dim(wr_exp$pvalue) <- c(pvalue = length(wr_exp$pvalue))
+dim(wr_exp$cluster) <- c(cluster = length(wr_exp$cluster))
 
 variable_list <-
   list(
-    variable = WR_exp$composite,
-    pvalue = WR_exp$pvalue,
-    cluster = WR_exp$cluster,
-    frequency = WR_exp$frequency,
+    variable = wr_exp$composite,
+    pvalue = wr_exp$pvalue,
+    cluster = wr_exp$cluster,
+    frequency = wr_exp$frequency,
     lat = lat,
     lon = lon,
     time = time
@@ -772,10 +777,9 @@ xprov <- list(
   frequency = params$frequency,
   detrend_order = params$detrend_order,
   realms = list("atmos"),
-  themes = list("phys"),
-  plot_file = filepng2
+  themes = list("phys")
 )
-
+provenance[[filepng2]] <- xprov
 provenance[[filencdf2]] <- xprov
 # ---------------------------
 # Computing the RMSE:
@@ -784,7 +788,7 @@ if (cluster_method != "kmeans") {
   cosa <- aperm(cosa, c(2, 3, 1))
   reference <- aperm(reference, c(3, 1, 2))
 } else {
-  cosa <- aperm(WR_exp$composite, c(2, 1, 3))
+  cosa <- aperm(wr_exp$composite, c(2, 1, 3))
 }
 if (length(lon) != dim(cosa)["lon"]) {
   pos_lon <- which(names(dim(cosa)) == "lon")
@@ -921,10 +925,9 @@ xprov <- list(
   frequency = params$frequency,
   detrend_order = params$detrend_order,
   realms = list("atmos"),
-  themes = list("phys"),
-  plot_file = filepng3
+  themes = list("phys")
 )
-
+provenance[[filepng3]] <- xprov
 provenance[[filencdf3]] <- xprov
 
 # Write provenance to file

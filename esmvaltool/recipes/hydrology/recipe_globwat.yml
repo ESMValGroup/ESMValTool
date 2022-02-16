@@ -2,6 +2,7 @@
 # globwat.yml
 ---
 documentation:
+  title: Generate forcing for the GlobWat hydrological model
   description: |
     Recipe pre-processes ERA-Interim and ERA-5 data
     for use in the GlobWat hydrological model.
@@ -25,7 +26,7 @@ documentation:
   authors:
     - abdollahi_banafsheh
     - alidoost_sarah
-  
+
   maintainer:
     - abdollahi_banafsheh
 
@@ -83,7 +84,7 @@ diagnostics:
           mip: Amon
           start_year: 1986
           end_year: 2016
-          # comment preprocessor to process data on the global scale 
+          # comment preprocessor to process data on the global scale
           preprocessor: area_selection
         tas: *var_monthly
         # comment psl, rsds and rsdt if langbein_pet is True
