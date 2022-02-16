@@ -35,22 +35,28 @@ Recipes are stored in esmvaltool/recipes/ipccwg1ar6ch3/
 Diagnostics are stored in esmvaltool/diag_scripts/
 
     Fig. 3.3:
+
     * ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl: See :ref:`here:<ch12_calc_IAV_for_stippandhatch.ncl>`.
     * ipcc_ar6/model_bias.ncl
 
     Fig. 3.4:
+
     * ipcc_ar6/tas_anom.ncl
     * ipcc_ar6/tsline_collect.ncl
 
     Fig. 3.5:
+
     * ipcc_ar6/zonal_st_dev.ncl
 
     Fig. 3.13:
+
     * ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl: See :ref:`here:<ch12_calc_IAV_for_stippandhatch.ncl>`.
     * ipcc_ar6/model_bias.ncl
 
     Fig. 3.15:
+
     * ipcc_ar6/precip_anom.ncl
+
 
 User settings in recipe
 -----------------------
@@ -153,8 +159,6 @@ User settings in recipe
    * reference_dataset: reference dataset; REQUIRED when calculating
      anomalies
 
---> to continue
-
 #. Script ipcc_ar6/precip_anom.ncl
 
    *Required settings for script*
@@ -175,6 +179,7 @@ User settings in recipe
    * stat: statistics for multi model nc-file (MinMax,5-95,10-90)
    * y_min: set min of y-axis
    * y_max: set max of y-axis
+
 
 Variables
 ---------
@@ -214,17 +219,112 @@ References
 Example plots
 -------------
 
-.. figure::  /recipes/figures/flato13ipcc/fig-9-2.png
+.. figure::  /recipes/figures/ipccwg1ar6ch3/model_bias_tas_annualclim_CMIP6.png
    :align:   center
 
-   Figure 9.2 a,b,c: Annual-mean surface air temperature for the period
-   1980-2005. a) multi-model mean, b) bias as the difference between the
-   CMIP5 multi-model mean and the climatology from ERA-Interim
-   (Dee et al., 2011), c) mean absolute model error with respect to the
-   climatology from ERA-Interim.
+   Figure 3.3: Annual mean near-surface (2 m) air temperature (°C) for the
+   period 1995–2014. (a) Multi-model (ensemble) mean constructed with one
+   realization of the CMIP6 historical experiment from each model. (b)
+   Multi-model mean bias, defined as the difference between the CMIP6
+   multi-model mean and the climatology of the fifth generation European
+   Centre for Medium-Range Weather Forecasts (ECMWF) atmospheric reanalysis
+   of the global climate (ERA5). (c) Multi-model mean of the root mean square
+   error calculated over all months separately and averaged, with respect to
+   the climatology from ERA5. Uncertainty is represented using the advanced
+   approach: No overlay indicates regions with robust signal, where ≥66% of
+   models show change greater than the variability threshold and ≥80% of all
+   models agree on sign of change; diagonal lines indicate regions with no
+   change or no robust signal, where <66% of models show a change greater
+   than the variability threshold; crossed lines indicate regions with
+   conflicting signal, where ≥66% of models show change greater than the
+   variability threshold and <80% of all models agree on sign of change.
 
-.. figure::  /recipes/figures/seaice/trend_sic_extend_Arctic_September_histogram.png
+.. figure::  /recipes/figures/ipccwg1ar6ch3/gsat_Global_CMIP6_historical-ssp245_anom_1850-2020.png
    :align:   center
-   :width:   9cm
 
-   Figure 9.24c: Sea ice extent trend distribution for the Arctic in September.
+   Figure 3.4a: Observed and simulated time series of the anomalies in annual
+   and global mean surface air temperature (GSAT). All anomalies are
+   differences from the 1850–1900 time-mean of each individual time series.
+   The reference period 1850–1900 is indicated by grey shading. (a) Single
+   simulations from CMIP6 models (thin lines) and the multi-model mean (thick
+   red line). Observational data (thick black lines) are from the Met Office
+   Hadley Centre/Climatic Research Unit dataset (HadCRUT5), and are blended
+   surface temperature (2 m air temperature over land and sea surface
+   temperature over the ocean). All models have been subsampled using the
+   HadCRUT5 observational data mask. Vertical lines indicate large historical
+   volcanic eruptions. Inset: GSAT for each model over the reference period,
+    not masked to any observations.
+
+.. figure::  /recipes/figures/ipccwg1ar6ch3/gsat_Global_multimodel_anom_1850-2020.png
+   :align:   center
+
+   Figure 3.4b: Observed and simulated time series of the anomalies in annual
+   and global mean surface air temperature (GSAT). All anomalies are
+   differences from the 1850–1900 time-mean of each individual time series.
+   The reference period 1850–1900 is indicated by grey shading. (b) Multi-model
+   means of CMIP5 (blue line) and CMIP6 (red line) ensembles and associated 5th
+   to 95th percentile ranges (shaded regions). Observational data are HadCRUT5,
+   Berkeley Earth, National Oceanic and Atmospheric Administration
+   NOAAGlobalTemp and Kadow et al. (2020). Masking was done as in (a). CMIP6
+   historical simulations were extended with SSP2-4.5 simulations for the
+   period 2015–2020 and CMIP5 simulations were extended with RCP4.5 simulations
+   for the period 2006–2020. All available ensemble members were used. The
+   multi-model means and percentiles were calculated solely from simulations
+   available for the whole time span (1850–2020).
+
+.. figure::  /recipes/figures/ipccwg1ar6ch3/tas_std_dev_zonmean.png
+   :align:   center
+
+   Figure 3.5: The standard deviation of annually averaged zonal-mean
+   near-surface air temperature. This is shown for four detrended observed
+   temperature datasets (HadCRUT5, Berkeley Earth, NOAAGlobalTemp and Kadow et
+   al. (2020), for the years 1995-2014) and 59 CMIP6 pre-industrial control
+   simulations (one ensemble member per model, 65 years) (after Jones et al.,
+   2013). For line colours see the legend of Figure 3.4. Additionally, the
+   multi-model mean (red) and standard deviation (grey shading) are shown.
+   Observational and model datasets were detrended by removing the
+   least-squares quadratic trend. 
+
+.. figure::  /recipes/figures/ipccwg1ar6ch3/model_bias_pr_annualclim_CMIP6.png
+   :align:   center
+
+   Figure 3.13:  Annual-mean precipitation rate (mm day–1) for the period
+   1995–2014. (a) Multi-model (ensemble) mean constructed with one realization
+   of the CMIP6 historical experiment from each model. (b) Multi-model mean
+   bias, defined as the difference between the CMIP6 multi-model mean and
+   precipitation analysis from the Global Precipitation Climatology Project
+   (GPCP) version 2.3 (Adler et al., 2003). (c) Multi-model mean of the root
+   mean square error calculated over all months separately and averaged with
+   respect to the precipitation analysis from GPCP version 2.3. Uncertainty is
+   represented using the advanced approach. No overlay indicates regions with
+   robust signal, where ≥66% of models show change greater than the variability
+   threshold and ≥80% of all models agree on sign of change; diagonal lines
+   indicate regions with no change or no robust signal, where <66% of models
+   show a change greater than the variability threshold; crossed lines indicate
+   regions with conflicting signal, where ≥66% of models show change greater
+   than the variability threshold and <80% of all models agree on the sign of
+   change. 
+
+.. figure::  /recipes/figures/ipccwg1ar6ch3/precip_anom_1950-2014.png
+   :align:   center
+
+   Figure 3.15: Observed and simulated time series of anomalies in zonal
+   average annual mean precipitation. (a), (c–f) Evolution of global and zonal
+   average annual mean precipitation (mm day–1) over areas of land where there
+   are observations, expressed relative to the base period of 1961–1990,
+   simulated by CMIP6 models (one ensemble member per model) forced with both
+   anthropogenic and natural forcings (brown) and natural forcings only
+   (green). Multi-model means are shown in thick solid lines and shading
+   shows the 5–95% confidence interval of the individual model simulations.
+   The data is smoothed using a low pass filter. Observations from three
+   different datasets are included: gridded values derived from Global
+   Historical Climatology Network (GHCN version 2) station data, updated
+   from Zhang et al. (2007), data from the Global Precipitation Climatology
+   Product (GPCP L3 version 2.3, Adler et al. (2003)) and from the Climate
+   Research Unit (CRU TS4.02, Harris et al. (2014)). Also plotted are
+   boxplots showing interquartile and 5–95% ranges of simulated trends over
+   the period for simulations forced with both anthropogenic and natural
+   forcings (brown) and natural forcings only (blue). Observed trends for each
+   observational product are shown as horizontal lines. Panel (b) shows annual
+   mean precipitation rate (mm day–1) of GHCN version 2 for the years 1950–2014
+   over land areas used to compute the plots. 
