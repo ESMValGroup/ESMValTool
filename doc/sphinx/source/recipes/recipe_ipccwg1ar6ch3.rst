@@ -253,7 +253,7 @@ Example plots
    temperature over the ocean). All models have been subsampled using the
    HadCRUT5 observational data mask. Vertical lines indicate large historical
    volcanic eruptions. Inset: GSAT for each model over the reference period,
-    not masked to any observations.
+   not masked to any observations.
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/gsat_Global_multimodel_anom_1850-2020.png
    :align:   center
