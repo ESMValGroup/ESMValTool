@@ -526,11 +526,14 @@ class DataCommand():
     @staticmethod
     def _parse_date(date):
         if date is None:
-            date = ''
-        date = str(date)
-        if len(date) == 8:
-            return datetime.datetime.strptime(date, "%Y%m%d")
-        if len(date) == 6:
-            return datetime.datetime.strptime(date, "%Y%m")
-        if len(date) == 4:
-            return datetime.datetime.strptime(date, "%Y")
+            return None
+        date_string = str(date)
+        FORMATS = {
+            4: "%Y",
+            6: "%Y%m",
+            8: "%Y%m%d",
+        }
+        format_string = FORMATS.get(len(date_string), None)
+        if format_string is None:
+            return None
+        return datetime.datetime.strptime(date_string, format_string)
