@@ -4,10 +4,10 @@
 documentation:
   title: Zonal mean annular modes
   description: |
-    Recipe for zonal mean Northern Annular Mode.
+    Recipe for zonal mean annular mode.
     The diagnostics compute the index and the spatial
     pattern to assess the simulation of the
-    strat-trop coupling in the boreal hemisphere
+    strat-trop coupling in the extratropical regions
 
   authors:
     - serva_federico
@@ -35,20 +35,15 @@ preprocessors:
     regrid:
       target_grid: 3x3
       scheme: area_weighted
-    extract_region:
-      start_longitude: 0.
-      end_longitude: 360.
-      start_latitude: 20.
-      end_latitude: 90.
-
 
 diagnostics:
   zmnam:
-    description: Zonal mean Northern Annular Mode
+    description: Zonal mean annular mode
     variables:
       zg:
         preprocessor: preproc
     scripts:
       main:
         script: zmnam/zmnam.py
-        title: "Zonal mean NAM diagnostics"
+        title: "Zonal mean AM diagnostics"
+        hemisphere: ["NH", "SH"]
