@@ -51,16 +51,20 @@ logger = logging.getLogger(__name__)
 
 def extract_variable(var_info, raw_info, attrs, year):
     """Extract to all vars."""
-    cubes = iris.load(raw_info['file'])
     rawvar = raw_info['name']
+    constraint = iris.NameConstraint(var_name=rawvar)
+    try:
+        cube = iris.load_cube(raw_info['file'], constraint)
+    except iris.exceptions.ConstraintMismatchError:
+        raise ValueError(f"No data available for variable {rawvar}"
+                         f"and year {year}")
 
-    for cube in cubes:
-        if cube.var_name == rawvar:
-            fix_var_metadata(cube, var_info)
-            convert_timeunits(cube, year)
-            fix_coords(cube)
-            set_global_atts(cube, attrs)
-            return cube
+    # Fix cube
+    fix_var_metadata(cube, var_info)
+    convert_timeunits(cube, year)
+    fix_coords(cube)
+    set_global_atts(cube, attrs)
+    return cube
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
