@@ -2952,13 +2952,13 @@ def main(cfg):
             maps_fns = add_dict_list(maps_fns, variable_group, fn)
 
 
-    jobs:
-    Make UKESM-only version of everything (or single model?)
-    prepare data for export.
-    fix chlorophyll map.
-    add text about Being right for the wrong reason
-    maybe make some bias correction methods?
-        subtract the time series by the mean of the observatioinal; time range
+    #jobs:
+    #Make UKESM-only version of everything (or single model?)
+    #prepare data for export.
+    #fix chlorophyll map.
+    #add text about Being right for the wrong reason
+    #maybe make some bias correction methods?
+    #    subtract the time series by the mean of the observatioinal; time range
 
 
 
