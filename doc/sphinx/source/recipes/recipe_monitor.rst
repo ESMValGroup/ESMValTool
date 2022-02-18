@@ -207,8 +207,7 @@ See below a sample with comments to define each option
 Variables
 =========
 
-* Any, but the variables' number of dimensions should match the ones expected
-by each plot.
+* Any, but the variables' number of dimensions should match the ones expected by each plot.
 
 Example plots
 =============

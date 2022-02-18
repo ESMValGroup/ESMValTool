@@ -2,7 +2,7 @@
 
 It is part of the monitoring recipe. Imports class MonitorBase and
 class PlotMap from mapgenerator in order to create plots, build
-paths and record provenance. 
+paths and record provenance.
 """
 import logging
 
