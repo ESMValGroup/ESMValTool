@@ -39,7 +39,7 @@ def mean_of_target_models(metadata):
     target_model_data = select_metadata(metadata, variable_group='tas_target')
     files = [
         tmd['filename'] for tmd in target_model_data
-        if 'MultiModel' not in tmd['dataset']
+        if 'MultiModel' not in tmd['filename']
     ]
     datasets = xr.open_mfdataset(files, combine='nested', concat_dim='ens')
     provenance = create_provenance_record(files)
@@ -110,7 +110,7 @@ def make_plot(metadata, scenarios, cfg, provenance):
                       dataset.tas.values,
                       color='k',
                       linewidth=2,
-                      label='CMIP ' + Path(filename).stem.split('_')[0][10:])
+                      label='CMIP ' + member['alias'][10:])
 
     for member in select_metadata(metadata, variable_group='tas_target'):
         filename = member['filename']

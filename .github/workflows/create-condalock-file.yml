@@ -6,8 +6,8 @@ on:
   # and hence lots of automated PRs 
   # push:
   #   branches:
-  #   - main
-  #   - condalock
+  #     - force_condalock_creation_forCoreRC
+  #     - condalock
   schedule:
     - cron: '0 4 */10 * *'
 
