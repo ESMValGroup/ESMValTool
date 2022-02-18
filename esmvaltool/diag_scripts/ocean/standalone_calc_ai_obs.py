@@ -278,7 +278,7 @@ def time_series(field='tos', pane='timeseries', overwrite=False):
 
             cube = extract_levels(cube,
                 scheme='linear',
-                levels =  [750.,]
+                levels =  [500.,]
             )
             print('ncdata 0b :range:  min', cube.data.min(), cube.data.mean(), cube.data.max())
 
@@ -443,14 +443,16 @@ def load_map_netcdf(field='tos', pane='map'):
 
             cube = diagtools.bgc_units(cube, field)
             times = diagtools.cube_time_to_float(cube)
-            if cube.ndim == 4:
-                cube = cube[:,0]
+#           if cube.ndim == 4:
+#               cube = cube[:,0]
             cube = extract_time(cube, 2000, 1, 1, 2010, 1, 1)
             if field == 'o2':
                 cube = extract_levels(cube,
                 scheme='linear',
-                levels =  [750., ]
+                levels =  [500., ]
                 )
+            elif cube.ndim == 4:
+                cube = cube[:,0]
 
 
 #        if np.min(times) < 2000.: continue
@@ -659,15 +661,15 @@ def make_profile_figure(field):
 #     sh.close()
 
 def main():
-    twodfields = ['mld', ] #'intpp', 'chl', ]# 'mld' ]
-    threedfields = [] #'o2',] #'no3', ] #'ph', ]#'so', ]# 'o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
+    twodfields = []#ld', ] #'intpp', 'chl', ]# 'mld' ]
+    threedfields = ['o2', ] #'no3','po4', ]#'tos',] #'o2',] #'no3', ] #'ph', ]#'so', ]# 'o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
     for field in twodfields:
 #        make_map_figure(field)
         make_ts_figure(field)
 
     for field in threedfields:
-#        make_profile_figure(field)
-#        make_map_figure(field)
+        make_profile_figure(field)
+        make_map_figure(field)
         make_ts_figure(field)
 
 if __name__ == '__main__':
