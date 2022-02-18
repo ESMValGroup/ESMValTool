@@ -3117,23 +3117,32 @@ def main(cfg):
 
 
         if 'tos_ts_hist' in time_series_fns.keys():
+            short_name = 'tos'
             suptitle = 'Temperature, '+r'$\degree$' 'C'
         elif 'chl_ts_hist' in time_series_fns.keys():
+            short_name = 'chl'
             suptitle = 'Chlorohpyll concentration, mg m'+r'$^{-3}$'
         elif 'ph_ts_hist' in time_series_fns.keys():
             suptitle = 'pH'
+            short_name = 'pH'
         elif 'intpp_ts_hist' in time_series_fns.keys():
             suptitle = 'Integrated Primary Production, mol m'+r'$^{-2}$'+' d'+r'$^{-1}$'
+            short_name = 'intpp'
         elif 'po4_ts_hist' in time_series_fns.keys():
             suptitle = 'Phosphate Concentration, mmol m'+r'$^{-3}$'
+            short_name = 'po4'
         elif 'no3_ts_hist' in time_series_fns.keys():
             suptitle = 'Nitrate Concentration, mmol m'+r'$^{-3}$'
+            short_name = 'no3'
         elif 'mld_ts_hist' in time_series_fns.keys() or 'mlotst_ts_hist' in time_series_fns.keys():
             suptitle = 'Mixed Layer Depth, m'
+            short_name = 'mld'
         elif 'o2_ts_hist' in time_series_fns.keys():
             suptitle = 'Disolved Oxygen Concentration at 500m, mmol m'r'$^{-3}$'
+            short_name = 'o2'
         elif 'so_ts_hist' in time_series_fns.keys() or 'sos_ts_hist' in time_series_fns.keys():
             suptitle = 'Salinity'
+            short_name = 'sal'
         else:
             print('suptitle not found:', time_series_fns.keys())
             assert 0
@@ -3141,15 +3150,15 @@ def main(cfg):
         suptitle += ' '.join([
                             '\n Historical', '('+ '-'.join([str(int(t)) for t in hist_time_range]) +')',
                             'vs SSP', '('+'-'.join([str(int(t)) for t in ssp_time_range])+')' ])
-        if full_plot == 'ukesm':
-            suptitle = 'UKESM1 '+suptitle
+        if single_model != 'all':
+            suptitle = single_model+' '+suptitle
         plt.suptitle(suptitle)
 
         # save and close.
         path = diagtools.folder(cfg['plot_dir']+'/whole_plot_modelrange')
-        path += '_'.join(['multi_model_whole_plot'])
-        if full_plot == 'ukesm':
-            path += '_ukesm'
+        path += '_'.join(['multi_model_whole_plot', short_name, single_model])
+        # if full_plot == 'ukesm':
+        #     path += '_ukesm'
         path += diagtools.get_image_format(cfg)
 
         logger.info('Saving plots to %s', path)
