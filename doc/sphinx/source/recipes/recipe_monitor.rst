@@ -21,29 +21,29 @@ Diagnostics are stored in `diag_scripts/monitor/`
     A sample on how to use the monitor structure to show other metrics.
     Computes and plots the map of the first EOF and the associated PC timeseries.
 
-List of plots available in monitor.py
--------------------------------------
+List of plot types available in monitor.py
+------------------------------------------
 
-- Climatology (`clim`): Plots climatology. Supported coordinates:
+- Climatology (plot_type `clim`): Plots climatology. Supported coordinates:
   (`latitude`, `longitude`, `month_number`).
 
-- Seasonal climatologies (`seasonclim`): It produces a multi panel (2x2) plot
+- Seasonal climatologies (plot_type `seasonclim`): It produces a multi panel (2x2) plot
   with the seasonal climatologies. Supported coordinates:
   (`latitude`, `longitude`, `month_number`).
 
-- Monthly climatologies (`monclim`): It produces a multi panel (3x4) plot with
+- Monthly climatologies (plot_type `monclim`): It produces a multi panel (3x4) plot with
   the monthly climatologies. Can be customized to show only certain months
   and to rearrange the number of columns and rows. Supported coordinates:
   (`latitude`, `longitude`, `month_number`).
 
-- Time series (`timeseries`): Generate time series plots. It will always
+- Time series (plot_type `timeseries`): Generate time series plots. It will always
   generate the full period time series, but if the period is longer than 75
   years, it will also generate two extra time series for the first and last 50
   years. It will produce multi panel plots for data with `shape_id` or `region`
   coordinates of length > 1. Supported coordinates: `time`, `shape_id`
   (optional) and `region` (optional).
 
-- Annual cycle (`annual_cycle`): Generate an annual cycle plot (timeseries
+- Annual cycle (plot_type `annual_cycle`): Generate an annual cycle plot (timeseries
   like climatological from January to December). It will produce multi panel
   plots for data with `shape_id` or `region` coordinates of length > 1.
   Supported coordinates: `time`, `shape_id` (optional) and `region` (optional).
@@ -75,7 +75,7 @@ monitor.py
     Filename pattern for the plots. it is defined as the input
     files in in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``
+    for more details. Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
   * config_file:
     Path to the monitor config file. Defaults to
     ``monitor_config.yml`` in the same folder as the diagnostic script.
@@ -113,12 +113,12 @@ compute_eofs.py
     Path to the folder to store the figures. It is defined as the
     input paths in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to ``~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}``
+    for more details. Defaults to ``~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}``.
   * plot_filename:
     Filename pattern for the plots. it is defined as the input
     files in in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``
+    for more details. Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
   * config_file:
     Path to the monitor config file. Defaults to
     ``monitor_config.yml`` in the same folder as the diagnostic script.
@@ -207,13 +207,8 @@ See below a sample with comments to define each option
 Variables
 =========
 
-* Any, but the dimensionality should match the expected by each plot
-
-
-Observations and reformat scripts
-=================================
-
-*None*
+* Any, but the variables' number of dimensions should match the ones expected
+by each plot.
 
 Example plots
 =============
