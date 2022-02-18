@@ -2,7 +2,6 @@
 # docker build -t esmvaltool:experimental . -f docker/Dockerfile.exp
 FROM esmvalgroup/esmvalcore:latest
 
-RUN apt-get update && apt install julia -y && apt-get clean
 COPY ./environment.yml /src/ESMValTool/environment.yml
 WORKDIR /src/ESMValTool
 RUN conda update -n base -y conda && conda install -y -c conda-forge mamba && mamba env create --name esmvaltool --file environment.yml && conda clean --all -y
@@ -14,6 +13,7 @@ COPY . /src/ESMValTool
 RUN pip install -e .[develop]
 RUN mamba install -y -c conda-forge r-base
 RUN esmvaltool install R
+RUN mamba install -y -c conda-forge julia
 RUN esmvaltool install Julia
 RUN pip install ../ESMValCore && pip cache purge
 
