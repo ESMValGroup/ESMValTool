@@ -323,7 +323,7 @@ def select_final_subset(cfg, subsets, prov=None):
     return all_scenarios
 
 
-def _cmip_envelope(datasetlist, variable, target_year):
+def _cmip_envelope(datasetlist, variable, target_year, control_period):
     """Determine the change in <variable> PDF of each CMIP model.
 
     Note: using mf_dataset not possible due to different calendars.
@@ -333,7 +333,8 @@ def _cmip_envelope(datasetlist, variable, target_year):
     ancestors = []
     for data_dict in cmip:
         dataset = xr.open_dataset(data_dict['filename'])[variable]
-        control = dataset.sel(time=slice('1981', '2010'))
+        control = dataset.sel(time=slice(str(control_period[0]),
+                                         str(control_period[1])))
         future = dataset.sel(time=slice(str(target_year -
                                             15), str(target_year + 15)))
 
@@ -437,11 +438,14 @@ def make_plots(cfg, climates):
     # tas/pr and once to get the multimodel pdf of the quantile changes
     metadata = cfg['input_data'].values()
 
-    for year in [2050, 2085]:
+    years = np.unique([scenario['scenario_year']
+                       for scenario in cfg['scenarios'].values()])
+    for year in years:
         fig, subplots = plt.subplots(2, 2, figsize=(12, 8))
 
         for row, variable in zip(subplots, ['pr', 'tas']):
-            cmip, prov = _cmip_envelope(metadata, variable, year)
+            cmip, prov = _cmip_envelope(metadata, variable, year,
+                                        cfg['control_period'])
 
             for axes, season in zip(row, ['DJF', 'JJA']):
                 percentiles = cmip.percentile.values
