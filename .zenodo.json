@@ -298,6 +298,46 @@
             "affiliation": "University of Bremen, Germany",
             "name": "Weigel, Katja",
             "orcid": "0000-0001-6133-7801"
+        },
+        {
+            "affiliation": "University of Reading, UK",
+            "name": "Roberts, Charles",
+            "orcid": "0000-0002-1147-8961"
+        },
+        {
+            "affiliation": "Netherlands eScience Center",
+            "name": "Kalverla, Peter",
+            "orcid": "0000-0002-5025-7862"
+        },
+        {
+            "affiliation": "Netherlands eScience Center",
+            "name": "Alidoost, Sarah",
+            "orcid": "0000-0001-8407-6472"
+        },
+        {
+            "affiliation": "Netherlands eScience Center",
+            "name": "Verhoeven, Stefan",
+            "orcid": "0000-0002-5821-2060"
+        },
+        {
+            "affiliation": "Netherlands eScience Center",
+            "name": "Vreede, Barbara",
+            "orcid": "0000-0002-5023-4601"
+        },
+        {
+            "affiliation": "Netherlands eScience Center",
+            "name": "Smeets, Stef",
+            "orcid": "0000-0002-5413-9038"
+        },
+        {
+            "affiliation": "Netherlands eScience Center",
+            "name": "Soares Siqueira, Abel",
+            "orcid": "0000-0003-4451-281X"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Kazeroni, Rémi",
+            "orcid": "0000-0001-7205-9528"
         }
     ],
     "description": "ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.",
