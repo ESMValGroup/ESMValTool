@@ -35,7 +35,7 @@ def mean_of_target_models(metadata):
     target_model_data = select_metadata(metadata, variable_group='tas_target')
     files = [
         tmd['filename'] for tmd in target_model_data
-        if 'MultiModel' not in tmd['dataset']
+        if 'MultiModel' not in tmd['filename']
     ]
     datasets = xr.open_mfdataset(files, combine='nested', concat_dim='ens')
     provenance = create_provenance_record(files)
