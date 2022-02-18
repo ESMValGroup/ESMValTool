@@ -137,7 +137,7 @@ hard_wired_obs = {
    ('o2', 'timeseries', 'min'): {1961:107.3, 2017:107.3}, # 750m
    ('o2', 'timeseries', 'max'): {1961:123.5, 2017:123.5}, # 750m
 
-   
+
 # [110.69357735770089, 108.27589634486607, 117.27530343191964, 119.49379185267857, 116.9248046875, 107.2939453125, 121.88762555803571, 107.13483537946429, 115.68745640345982, 123.4818115234375, 109.77983747209821, 113.68933977399554]
 
 #    ('o2', 'clim', 'min'): {1961:93.3, 2017:93.3}, # clim exists seprately.
@@ -167,7 +167,7 @@ def get_shelve_path(field, pane='timeseries'):
 
 def fix_chl(cube):
     """
-    Several datasets seem to have really strange CHL values, 
+    Several datasets seem to have really strange CHL values,
     so I'm fixing them
     """
     print('pre fix_chl:',cube.data.min(), cube.data.max())
@@ -305,7 +305,7 @@ def multi_model_time_series(
         fig = None,
         ax = None,
         save = False,
-        ukesm = 'only'
+        single_model = 'all',
         ):
     """
     Make a time series plot showing several preprocesssed datasets.
@@ -320,14 +320,17 @@ def multi_model_time_series(
         the opened global config dictionairy, passed by ESMValTool.
     metadata: dict
         The metadata dictionairy for a specific model.
+    single_model:
+        set to all, plots all models, otherwise it's just an single model results
 
     """
     overwrite = True
     impath = diagtools.folder(cfg['plot_dir']+'/individual_panes_timeseries')
     impath += '_'.join(['multi_model_ts', moving_average_str] )
     impath += '_'+'_'.join(plotting)
-    if ukesm == 'only': impath += '_UKESM'
-    if ukesm == 'not': impath += '_noUKESM'
+    if single_model == 'all': passed
+    else: impath += '_'+single_model
+    #if ukesm == 'not': impath += '_noUKESM'
     impath += diagtools.get_image_format(cfg)
     if not overwrite and os.path.exists(impath): return fig, ax
 
@@ -343,6 +346,8 @@ def multi_model_time_series(
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             dataset = metadatas[fn]['dataset']
             if dataset in models_to_skip: continue
+            if single_model == 'all': pass
+            elif dataset != single_model: continue
             variable_groups[variable_group] = True
             datasets[dataset] = True
             short_names[metadatas[fn]['short_name']] = True
@@ -354,8 +359,8 @@ def multi_model_time_series(
 
     # create a csv of the model contents:
     # short_name, model, scenario, ensemble member
-    make_csvs = True 
-    if make_csvs:
+    make_csvs = True
+    if make_csvs and single_model=='all':
         # load the netcdfs and populate the shelve dicts
         lines = []
         mod_scen_counts = {}
@@ -431,7 +436,10 @@ def multi_model_time_series(
     ####
     # Load the data for each layer as a separate cube
     out_shelve = diagtools.folder([cfg['work_dir'], 'timeseries_shelves', ])
-    out_shelve += 'time_series_'+short_name+'.shelve'
+    if single_model == 'all':
+        out_shelve += 'time_series_'+short_name+'.shelve'
+    else:
+        out_shelve += 'time_series_'+short_name+'_'+single_model+'.shelve'
 
     model_cubes = {}
     if len(glob.glob(out_shelve+'*')):
@@ -454,8 +462,9 @@ def multi_model_time_series(
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             dataset = metadatas[fn]['dataset']
             if dataset in models_to_skip: continue
-            if ukesm == 'only' and dataset != 'UKESM1-0-LL': continue
-            if ukesm == 'not' and dataset == 'UKESM1-0-LL': continue
+            if single_model == 'all': pass
+            elif dataset != single_model: continue
+            #if ukesm == 'not' and dataset == 'UKESM1-0-LL': continue
 
             #print('loading: ',variable_group, dataset, fn)
             short_name = metadatas[fn]['short_name']
@@ -509,8 +518,8 @@ def multi_model_time_series(
        sh.close()
 
 
-    make_diff_csv = True 
-    if make_diff_csv:
+    make_diff_csv = True
+    if make_diff_csv and single_model=='all':
         # want a table that includes:
         # field: historical mean 2000-2010 +/1 std, each scenario +/- std
         model_values = {}
@@ -606,7 +615,11 @@ def multi_model_time_series(
     else:
         plt.sca(ax)
 
-    title = 'Time series'
+    if single_model == 'all':
+        title = 'Time series'
+    else:
+        title = ' '.join([single_model,  'Time series'])
+
     z_units = ''
     plot_details = {}
     if colour_scheme in ['viridis', 'jet']:
@@ -744,7 +757,7 @@ def multi_model_time_series(
             times = [t for t in sorted(global_model_means.keys())]
             global_mean = [np.mean(global_model_means[t]) for t in times]
             color = ipcc_colours[scenario_x]
- 
+
             plt.plot(times, global_mean, ls='-', c='black', lw=2.5) #, label=dataset)
             plt.plot(times, global_mean, ls='-', c=color, lw=2.) #, label=dataset)
 
@@ -1159,7 +1172,8 @@ def multi_model_clim_figure(
         plotting = [ 'means',  '5-95', ], #'all_models'] #'medians', , 'range',
         fig = None,
         ax = None,
-        save=False
+        save=False,
+        single_model='all'
     ):
     """
     produce a monthly climatology figure.
@@ -1177,6 +1191,8 @@ def multi_model_clim_figure(
         for fn in sorted(filenames):
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             if metadatas[fn]['dataset'] in models_to_skip: continue
+            if single_model == 'all': pass
+            elif metadatas[fn]['dataset'] != single_model: continue
             model = metadatas[fn]['dataset']
             models[model] = True
             short_names[metadatas[fn]['short_name']] = True
@@ -1188,14 +1204,18 @@ def multi_model_clim_figure(
     ####
     # Load the data for each layer as a separate cube
     out_shelve = diagtools.folder([cfg['work_dir'], 'clim_shelves', ])
-    out_shelve += 'clim_'+short_name+'.shelve'
+    if single_model == 'all':
+        out_shelve += 'clim_'+short_name+'.shelve'
+    else:
+        out_shelve += 'clim_'+short_name+'_'+single_model+'.shelve'
+
     changes = 0
 
     if len(glob.glob(out_shelve+'*')):
        print('loading from shelve:', out_shelve)
        sh = shopen(out_shelve)
        #model_cubes = sh['model_cubes'] # these aren't cubes as you can't shelve a cube.
-   
+
        model_cubes= sh['model_cubes']
        omov_cubes= sh['omov_cubes']
        model_cubes_paths = sh['model_cubes_paths']
@@ -1215,6 +1235,9 @@ def multi_model_clim_figure(
             #assert 0
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             if metadatas[fn]['dataset'] in models_to_skip: continue
+            #if ukesm == 'only' and dataset != 'UKESM1-0-LL': continue
+            if single_model == 'all': pass
+            elif metadatas[fn]['dataset'] != single_model: continue
 
             model = metadatas[fn]['dataset']
             scenario = metadatas[fn]['exp']
@@ -1226,7 +1249,7 @@ def multi_model_clim_figure(
 
             print('loading', fn)
             cube = iris.load_cube(fn)
-            
+
             cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
             if short_name == 'chl':
                  cube = fix_chl(cube)
@@ -1367,7 +1390,10 @@ def multi_model_clim_figure(
     time_str = '_'.join(['-'.join([str(t) for t in hist_time_range]), 'vs',
                          '-'.join([str(t) for t in ssp_time_range])])
 
-    plt.title('Climatology')
+    if save and single_model != 'all':
+        plt.title('Climatology - '+single_model)
+    else:
+        plt.title('Climatology')
 
     plot_obs = True
     if plot_obs:
@@ -1401,6 +1427,8 @@ def multi_model_clim_figure(
         path = diagtools.folder(cfg['plot_dir']+'/multi_model_clim')
         path += '_'.join(['multi_model_clim', time_str])
         path += '_' +'_'.join(plotting)
+        if single_model == 'all': pass
+        else path+= '_'+single_model
         path += diagtools.get_image_format(cfg)
 
         logger.info('Saving plots to %s', path)
@@ -1654,7 +1682,9 @@ def make_multi_model_profiles_plotpair(
         fig = None,
         ax = None,
         save = False,
-        draw_legend=True
+        draw_legend=True,
+        single_model = 'all',
+
     ):
     """
     Make a profile plot for an individual model.
@@ -1710,6 +1740,8 @@ def make_multi_model_profiles_plotpair(
     for variable_group, filenames in profile_fns.items():
         for i, fn in enumerate(filenames):
             if metadatas[fn]['dataset'] in models_to_skip: continue
+            if single_model == 'all': pass
+            elif metadatas[fn]['dataset'] != single_model: continue
 
             cube = iris.load_cube(fn)
             try: cube.coord('depth')
@@ -1751,6 +1783,8 @@ def make_multi_model_profiles_plotpair(
         color = ''
         for i, cube in enumerate(cubes):
             if metadatas[fn]['dataset'] in models_to_skip: continue
+            if single_model == 'all': pass
+            elif metadatas[fn]['dataset'] != single_model: continue
 
             fn = model_cubes_paths[variable_group][i]
             metadata = metadatas[fn]
@@ -1891,11 +1925,13 @@ def make_multi_model_profiles_plotpair(
 
     time_str = '_'.join(['-'.join([str(t) for t in hist_time_range]), 'vs',
                          '-'.join([str(t) for t in ssp_time_range])])
-
+    plt.suptitle(' '.join([single_model, time_str]))
     # Determine image filename:
     path = diagtools.folder(cfg['plot_dir']+'/profiles_pair')
     path += '_'.join(['multi_model_profile', time_str])
     path += '_'+ '_'.join(plotting)
+    if single_model == 'all': pass
+    else: path += '_'+single_model
     path += diagtools.get_image_format(cfg)
 
     logger.info('Saving plots to %s', path)
@@ -1946,7 +1982,7 @@ def single_map_figure(cfg, cube, variable_group, exp='', model='', ensemble='', 
     plt.colorbar()
 
     if region in ['midatlantic', 'tightmidatlantic']:
-     
+
         lat_bnd = 20.
         lon_bnd = 30.
         if region == 'tightmidatlantic':
@@ -2005,6 +2041,8 @@ def prep_cube_map(fn, metadata, time_range, region):
     #print('regrid:', variable_group, time_range)
     print('map plot', region, cube)
     cube = regrid_intersect(cube, region=region)
+    if metadata['short_name'] == 'chl':
+         cube = fix_chl(cube)
     return cube
 
 def multi_model_map_figure(
@@ -2020,6 +2058,7 @@ def multi_model_map_figure(
         fig = None,
         ax = None,
         save = False,
+        single_model = 'all',
     ):
     """
     produce a monthly climatology figure.
@@ -2088,12 +2127,16 @@ def multi_model_map_figure(
     models = {}
     for variable_group, filenames in maps_fns.items():
         for i, fn in enumerate(filenames):
-            models[metadatas[fn]['dataset']] = True
+            dataset = metadatas[fn]['dataset']
+            if dataset in models_to_skip: continue
+            if single_model == 'all': pass
+            elif dataset != single_model: continue
+            models[dataset] = True
 
     # Load and do basic map manipulation data
     for variable_group, filenames in maps_fns.items():
         work_dir = diagtools.folder([cfg['work_dir'], 'var_group_means', ])
-        vg_path = work_dir+'_'.join([variable_group, ])+'.nc'
+        vg_path = work_dir+'_'.join([variable_group, single_model ])+'.nc'
         if os.path.exists(vg_path):
             print('path exists:', vg_path)
             variablegroup_model_cubes[variable_group] = iris.load_cube(vg_path)
@@ -2104,6 +2147,8 @@ def multi_model_map_figure(
 
         for model_itr in models:
             if model_itr in models_to_skip: continue
+            if single_model == 'all': pass
+            elif model_itr != single_model: continue
 
             work_dir = diagtools.folder([cfg['work_dir'], 'model_group_means', model_itr])
             model_path = work_dir+'_'.join([variable_group, model_itr])+'.nc'
@@ -2131,14 +2176,18 @@ def multi_model_map_figure(
                 ensemble = metadatas[fn]['ensemble']
                 if model != model_itr: continue
                 if model_itr in models_to_skip: continue
+                if single_model == 'all': pass
+                elif model != single_model: continue
                 print('loading:', i, variable_group ,scenario, fn)
 
                 cube = prep_cube_map(fn, metadatas[filenames[0]], time_range, region)
                 if short_name == 'chl':
+                    cube = fix_chl(cube)
                     if cube.data.max()>500.:
                         print('WHAT!? Thats too much ChlorophYLL!', cube.data.max(), cube.units)
                         cube.data = cube.data/1000.
-#                       assert 0
+                        assert 0
+                    cube = fix_chl(cube)
                 model_cubes = add_dict_list(model_cubes, (variable_group, model), cube)
 
                 single_map_figure(cfg, cube, variable_group,
@@ -2266,7 +2315,7 @@ def multi_model_map_figure(
                 variable_group = exps[exp]
                 cube = diff_cubes[variable_group]
 
-        print('plotting', exp, sbp)
+        print('plotting', exp, sbp, single_model)
         #print(figure_style, sbp, exp, sbp_style, style_range[sbp_style])
         qplot = iris.plot.contourf(
             cube,
@@ -2318,14 +2367,16 @@ def multi_model_map_figure(
         print(exp, cube.data.min(),cube.data.max())
 
         title = ' '.join([exp,]) # long_names.get(sbp_style, sbp_style,)])
+        if single_model !='all':
+            title = ' '.join([title, single_model])
         if region in ['midatlantic', ]:
-            plt.text(0.95, 0.9, title,  ha='right', va='center', 
+            plt.text(0.95, 0.9, title,  ha='right', va='center',
                      transform=ax0.transAxes,
                      color=ipcc_colours_dark[exp],fontweight='bold')
             #plt.text(0.99, 0.94, title,  ha='right', va='center', transform=ax0.transAxes,color=ipcc_colours[exp],fontweight='bold')
 
         elif region in ['tightmidatlantic', ]:
-            plt.text(0.95, 1.01, exp,  ha='right', va='bottom',
+            plt.text(0.95, 1.01, title,  ha='right', va='bottom',
                      transform=ax0.transAxes,
                      color=ipcc_colours_dark[exp],fontweight='bold')
 
@@ -2405,7 +2456,7 @@ def multi_model_map_figure(
 
     if save:
         path = diagtools.folder(cfg['plot_dir']+'/Maps')
-        path += '_'.join(['maps', figure_style, region, time_str])
+        path += '_'.join(['maps', figure_style, region, time_str, single_model])
         path += diagtools.get_image_format(cfg)
 
         logger.info('Saving plots to %s', path)
@@ -2760,7 +2811,7 @@ def regrid_intersect(cube, region='global'):
         lon_bnd = 25.
         cube = cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
                                  latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
-   
+
     return cube
 
 
@@ -2885,12 +2936,14 @@ def main(cfg):
     time_series_fns = {}
     profile_fns = {}
     maps_fns = {}
-
+    models = {}
     for fn, metadata in metadatas.items():
         #print(os.path.basename(fn),':',metadata['variable_group'])
         variable_group = metadata['variable_group']
+
         if metadata['dataset'] in models_to_skip:
             continue
+        models[metadata['dataset']] = True
         if variable_group.find('_ts_')>-1:
             time_series_fns = add_dict_list(time_series_fns, variable_group, fn)
         if variable_group.find('_profile_')>-1:
@@ -2906,7 +2959,7 @@ def main(cfg):
     add text about Being right for the wrong reason
     maybe make some bias correction methods?
         subtract the time series by the mean of the observatioinal; time range
-        
+
 
 
 
@@ -2955,6 +3008,7 @@ def main(cfg):
                 hist_time_range = [1990., 2015.],
                 ssp_time_range = [2015., 2050.],
                 plotting=plotting,
+                ukesm='all',
             )
         # maps:
         for a in [1, ]:
@@ -2995,24 +3049,17 @@ def main(cfg):
     #print(profile_fns)
     #print(maps_fns)
 
-    #plottings = [[ 'means',  '5-95'], ['all_models', ], ['means', ]] #'medians', 'all_models', 'range',
-    fig, subplots = do_gridspec(cfg, )
-    hist_time_range = [2000., 2010.] #[1990., 2015.]
-    ssp_time_range = [2040., 2050.]
+    do_whole_plot = True
+    models['all'] = True
+    for single_model in sorted(models.keys()): # ['all', 'only']:
+        if not  do_whole_plot: continue
+        if model in models_to_skip: continue
 
-    fig, subplots['maps'] = multi_model_map_figure(
-            cfg,
-            metadatas,
-            maps_fns = maps_fns,
-            figure_style = 'hist_and_ssp',
-            hist_time_range = hist_time_range,
-            ssp_time_range = ssp_time_range,
-            region='tightmidatlantic', #midatlantic',
-            fig = fig,
-            ax =  subplots['maps'],
-            )
+        fig, subplots = do_gridspec(cfg, )
+        hist_time_range = [2000., 2010.] #[1990., 2015.]
+        ssp_time_range = [2040., 2050.]
 
-    fig, subplots['timeseries'] = multi_model_time_series(
+        fig, subplots['timeseries'] = multi_model_time_series(
             cfg,
             metadatas,
             ts_dict = time_series_fns,
@@ -3022,34 +3069,23 @@ def main(cfg):
             ssp_time_range = ssp_time_range,
             plotting= ['model_range', 'Global_mean',], #['Global_mean', 'Global_range'],#['means', '5-95',],
             fig = fig,
-            ax =  subplots['timeseries'],
-    )
+            ax = subplots['timeseries'],
+            single_model = single_model
+            )
 
-    fig, subplots['climatology'] =  multi_model_clim_figure(
-        cfg,
-        metadatas,
-        time_series_fns,
-        hist_time_range = hist_time_range,
-        ssp_time_range = ssp_time_range,
-        fig = fig,
-        ax =  subplots['climatology'],
-        plotting=['OneModelOneVote', ], #'means',],
-    )
+        fig, subplots['climatology'] =  multi_model_clim_figure(
+            cfg,
+            metadatas,
+            time_series_fns,
+            hist_time_range = hist_time_range,
+            ssp_time_range = ssp_time_range,
+            fig = fig,
+            ax =  subplots['climatology'],
+            plotting=['OneModelOneVote', ], #'means',],
+            single_model = single_model,
+        )
 
-    # fig, subplots['profile'] = make_multi_model_profiles_plots(
-    #         cfg,
-    #         metadatas,
-    #         profile_fns = profile_fns,
-    #         #short_name,
-    #         #obs_metadata={},
-    #         #obs_filename='',
-    #         hist_time_range = hist_time_range,
-    #         ssp_time_range = ssp_time_range,
-    #         #figure_style = 'difference',
-    #         fig = fig,
-    #         ax = subplots['profile']
-    # )
-    fig, subplots['profile'] = make_multi_model_profiles_plotpair(
+        fig, subplots['profile'] = make_multi_model_profiles_plotpair(
             cfg,
             metadatas,
             profile_fns = profile_fns,
@@ -3061,44 +3097,64 @@ def main(cfg):
             plotting=['means_split',],
             #figure_style = 'difference',
             fig = fig,
-            ax = subplots['profile']
-    )
+            ax = subplots['profile'],
+            single_model = single_model,
 
-    if 'tos_ts_hist' in time_series_fns.keys():
-        suptitle = 'Temperature, '+r'$\degree$' 'C'
-    elif 'chl_ts_hist' in time_series_fns.keys():
-        suptitle = 'Chlorohpyll concentration, mg m'+r'$^{-3}$'
-    elif 'ph_ts_hist' in time_series_fns.keys():
-        suptitle = 'pH'
-    elif 'intpp_ts_hist' in time_series_fns.keys():
-        suptitle = 'Integrated Primary Production, mol m'+r'$^{-2}$'+' d'+r'$^{-1}$'
-    elif 'po4_ts_hist' in time_series_fns.keys():
-        suptitle = 'Phosphate Concentration, mmol m'+r'$^{-3}$'
-    elif 'no3_ts_hist' in time_series_fns.keys():
-        suptitle = 'Nitrate Concentration, mmol m'+r'$^{-3}$'
-    elif 'mld_ts_hist' in time_series_fns.keys() or 'mlotst_ts_hist' in time_series_fns.keys():
-        suptitle = 'Mixed Layer Depth, m'
-    elif 'o2_ts_hist' in time_series_fns.keys():
-        suptitle = 'Disolved Oxygen Concentration at 500m, mmol m'r'$^{-3}$'
-    elif 'so_ts_hist' in time_series_fns.keys() or 'sos_ts_hist' in time_series_fns.keys():
-        suptitle = 'Salinity'
-    else:
-        print('suptitle not found:', time_series_fns.keys())
-        assert 0
+            )
 
-    suptitle += ' '.join([
-                        '\n Historical', '('+ '-'.join([str(int(t)) for t in hist_time_range]) +')',
-                        'vs SSP', '('+'-'.join([str(int(t)) for t in ssp_time_range])+')' ])
-    plt.suptitle(suptitle)
+        fig, subplots['maps'] = multi_model_map_figure(
+            cfg,
+            metadatas,
+            maps_fns = maps_fns,
+            figure_style = 'hist_and_ssp',
+            hist_time_range = hist_time_range,
+            ssp_time_range = ssp_time_range,
+            region='tightmidatlantic', #midatlantic',
+            fig = fig,
+            ax =  subplots['maps'],
+            single_model = single_model,
+            )
 
-    # save and close.
-    path = diagtools.folder(cfg['plot_dir']+'/whole_plot_modelrange')
-    path += '_'.join(['multi_model_whole_plot'])
-    path += diagtools.get_image_format(cfg)
 
-    logger.info('Saving plots to %s', path)
-    plt.savefig(path)
-    plt.close()
+        if 'tos_ts_hist' in time_series_fns.keys():
+            suptitle = 'Temperature, '+r'$\degree$' 'C'
+        elif 'chl_ts_hist' in time_series_fns.keys():
+            suptitle = 'Chlorohpyll concentration, mg m'+r'$^{-3}$'
+        elif 'ph_ts_hist' in time_series_fns.keys():
+            suptitle = 'pH'
+        elif 'intpp_ts_hist' in time_series_fns.keys():
+            suptitle = 'Integrated Primary Production, mol m'+r'$^{-2}$'+' d'+r'$^{-1}$'
+        elif 'po4_ts_hist' in time_series_fns.keys():
+            suptitle = 'Phosphate Concentration, mmol m'+r'$^{-3}$'
+        elif 'no3_ts_hist' in time_series_fns.keys():
+            suptitle = 'Nitrate Concentration, mmol m'+r'$^{-3}$'
+        elif 'mld_ts_hist' in time_series_fns.keys() or 'mlotst_ts_hist' in time_series_fns.keys():
+            suptitle = 'Mixed Layer Depth, m'
+        elif 'o2_ts_hist' in time_series_fns.keys():
+            suptitle = 'Disolved Oxygen Concentration at 500m, mmol m'r'$^{-3}$'
+        elif 'so_ts_hist' in time_series_fns.keys() or 'sos_ts_hist' in time_series_fns.keys():
+            suptitle = 'Salinity'
+        else:
+            print('suptitle not found:', time_series_fns.keys())
+            assert 0
+
+        suptitle += ' '.join([
+                            '\n Historical', '('+ '-'.join([str(int(t)) for t in hist_time_range]) +')',
+                            'vs SSP', '('+'-'.join([str(int(t)) for t in ssp_time_range])+')' ])
+        if full_plot == 'ukesm':
+            suptitle = 'UKESM1 '+suptitle
+        plt.suptitle(suptitle)
+
+        # save and close.
+        path = diagtools.folder(cfg['plot_dir']+'/whole_plot_modelrange')
+        path += '_'.join(['multi_model_whole_plot'])
+        if full_plot == 'ukesm':
+            path += '_ukesm'
+        path += diagtools.get_image_format(cfg)
+
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
+        plt.close()
 
     #moving_average_str = cfg.get('moving_average', None)
     # short_names = {}
