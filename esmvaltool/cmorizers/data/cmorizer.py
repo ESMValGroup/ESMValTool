@@ -528,12 +528,12 @@ class DataCommand():
         if date is None:
             return None
         date_string = str(date)
-        FORMATS = {
+        date_formats = {
             4: "%Y",
             6: "%Y%m",
             8: "%Y%m%d",
         }
-        format_string = FORMATS.get(len(date_string), None)
+        format_string = date_formats.get(len(date_string), None)
         if format_string is None:
             return None
         return datetime.datetime.strptime(date_string, format_string)

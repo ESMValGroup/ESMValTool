@@ -56,8 +56,9 @@ def extract_variable(var_info, raw_info, attrs, year):
     try:
         cube = iris.load_cube(raw_info['file'], constraint)
     except iris.exceptions.ConstraintMismatchError:
-        raise ValueError(f"No data available for variable {rawvar}"
-                         f"and year {year}")
+        logger.error("No data available for variable %s and year %s",
+                     rawvar, year)
+        raise
 
     # Fix cube
     fix_var_metadata(cube, var_info)
