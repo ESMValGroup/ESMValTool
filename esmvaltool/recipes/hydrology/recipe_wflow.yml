@@ -54,5 +54,5 @@ diagnostics:
       script:
         script: hydrology/wflow.py
         basin: Meuse
-        dem_file: 'wflow_parameterset/meuse/staticmaps/wflow_dem.map'
+        dem_file: 'wflow_parameterset/wflow_rhine_sbm/staticmaps/wflow_dem.map'
         regrid: area_weighted
