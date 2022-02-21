@@ -87,7 +87,7 @@ Plot specific options:
    + maps:
      List of maps to plot, as defined in the config file. Defaults to ``[global]``.
    + months:
-     Select only specific months. Defaults to ``None`` (do not select).
+     Select only specific months. Defaults to ``None`` (ie it does not select any month).
    + plot_size:
      Size of each individual figure. Default's to ``(5, 4)``.
    + columns:
