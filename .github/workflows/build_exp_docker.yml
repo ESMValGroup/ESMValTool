@@ -1,0 +1,24 @@
+name: Build Docker Image/Dockerfile.exp
+
+on:
+  push:
+    branches:
+      - fix_exp_docker_2
+    paths:
+      - docker/Dockerfile.exp
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  linux:
+    runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10"]
+    name: Build docker image
+    steps:
+      - uses: actions/checkout@v2
+      - shell: bash -l {0}
+        run: docker build -t esmvaltool:experimental . -f docker/Dockerfile.exp
+
