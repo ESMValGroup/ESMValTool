@@ -519,9 +519,8 @@ class DataCommand():
         end = self._parse_date(end)
 
         self.formatter.start('preparation', datasets, config_file, kwargs)
-        if not self.formatter.download(start, end, overwrite):
-            return False
-        self.formatter.format(start, end, install)
+        if self.formatter.download(start, end, overwrite):
+            self.formatter.format(start, end, install)
 
     @staticmethod
     def _parse_date(date):
