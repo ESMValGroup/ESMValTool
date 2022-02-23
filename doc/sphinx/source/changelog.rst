@@ -71,6 +71,7 @@ Diagnostics
 -  CMUG Sea Surface Salinity dataset and diagnostic (`#1832 <https://github.com/ESMValGroup/ESMValTool/pull/1832>`__) `Javier Vegas-Regidor <https://github.com/jvegreg>`__
 -  Recipe with new diagnostics for ESA-CMUG H2O (`#1834 <https://github.com/ESMValGroup/ESMValTool/pull/1834>`__) `katjaweigel <https://github.com/katjaweigel>`__
 -  Cleaned Schlund et al. (2020) recipe and fixed small bugs in corresponding diagnostic (`#2484 <https://github.com/ESMValGroup/ESMValTool/pull/2484>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Add ESA CCI LST cmorizer and diagnostic (`#1897 <https://github.com/ESMValGroup/ESMValTool/pull/1897>`__) `morobking <https://github.com/morobking>`__
 -  XCH4 ESA CMUG diagnostics (subset of the MPQB diagnostics) (`#1960 <https://github.com/ESMValGroup/ESMValTool/pull/1960>`__) `Birgit Hassler <https://github.com/hb326>`__
 -  Add support for ESACCI Ocean Color (Chlorophyll) observations (`#2055 <https://github.com/ESMValGroup/ESMValTool/pull/2055>`__) `ulrikaw-cloud <https://github.com/ulrikaw-cloud>`__
 -  Updated `recipe_zmnam.yml` with hemisphere selection (`#2230 <https://github.com/ESMValGroup/ESMValTool/pull/2230>`__) `fserva <https://github.com/fserva>`__
