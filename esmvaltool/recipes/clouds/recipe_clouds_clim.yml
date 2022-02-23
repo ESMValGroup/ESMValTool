@@ -172,7 +172,7 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1982, end_year: 2016}
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3,
              start_year: 1982, end_year: 2018}
@@ -314,7 +314,7 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1982, end_year: 2016}
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3,
              start_year: 1982, end_year: 2018}
