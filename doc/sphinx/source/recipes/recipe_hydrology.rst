@@ -106,6 +106,8 @@ All hydrological recipes require a shapefile as an input to produce forcing data
 	    * basin: name of the catchment
 	    * dem_file: netcdf file containing a digital elevation model with
 	      elevation in meters and coordinates latitude and longitude.
+              A wflow example dataset is available at: https://github.com/openstreams/wflow/tree/master/examples/wflow_rhine_sbm
+              The example dem_file can be obtained from https://github.com/openstreams/wflow/blob/master/examples/wflow_rhine_sbm/staticmaps/wflow_dem.map 
 	    * regrid: the regridding scheme for regridding to the digital elevation model. Choose ``area_weighted`` (slow) or ``linear``.
 
 #. recipe_lisflood.yml
