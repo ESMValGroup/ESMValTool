@@ -150,7 +150,7 @@ diagnostics:
       abs550aer:
       od550aer:
       od550aerStderr:
-      # od550lt1aer:   # NEEDS Iris 3.0
+      od550lt1aer:
       od870aer:
       od870aerStderr:
     additional_datasets:
@@ -205,14 +205,25 @@ diagnostics:
          start_year: 1998, end_year: 2012}
     scripts: null
 
+  ESACCI-LST:
+    # TODO change years to full data coverage
+    description: ESACCI-LST check
+    variables:
+      ts:
+    additional_datasets:
+      - {dataset: ESACCI-LST, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: "1.00",
+         start_year: 2003, end_year: 2018}
+    scripts: null
+
 
   ESACCI-OC:
     description: ESACCI-OC check
     variables:
       chl:
     additional_datasets:
-      - {dataset: ESACCI-OC, project: OBS, mip: Omon, tier: 2,
-         type: sat, version: fv3.1, start_year: 1997, end_year: 2016}
+      - {dataset: ESACCI-OC, project: OBS6, mip: Omon, tier: 2,
+         type: sat, version: fv5.0, start_year: 1998, end_year: 2020}
     scripts: null
 
 
@@ -237,6 +248,16 @@ diagnostics:
              type: sat, version: L3, start_year: 2007, end_year: 2008}
     scripts: null
 
+  ESACCI-SEA-SURFACE-SALINITY:
+    description: ESACCI-SEA-SURFACE-SALINITY check
+    variables:
+      sos:
+    additional_datasets:
+      - {dataset: ESACCI-SEA-SURFACE-SALINITY, project: OBS6, mip: Omon, tier: 2,
+          type: reanaly, version: fv1.8, start_year: 2010, end_year: 2018}
+      - {dataset: ESACCI-SEA-SURFACE-SALINITY, project: OBS6, mip: Omon, tier: 2,
+          type: reanaly, version: fv2.31, start_year: 2010, end_year: 2018}
+    scripts: null
 
   ESACCI-SOILMOISTURE:
     description: ESACCI-SOILMOISTURE check

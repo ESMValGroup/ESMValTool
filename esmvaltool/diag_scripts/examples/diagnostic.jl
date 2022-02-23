@@ -64,6 +64,9 @@ function compute_diagnostic(metadata, varname, diag_base, parameter,
         # Compute time average and add parameter
         varm = mean(var, dims = 3) .+ parameter
 
+        # Create provenance record for the output files
+        xprov = provenance_record(infile)
+
         # Output filename
         outfile = string(work_dir, "/", varname, "_", dataset, "_", exp, "_",
                          ensemble, "_", start_year, "-",
@@ -72,9 +75,7 @@ function compute_diagnostic(metadata, varname, diag_base, parameter,
         # Use the RainFARM function write_netcdf2d to write variable to
         # output file copying original attributes from infile
         write_netcdf2d(outfile, varm, lon, lat, varname, infile)
-
-        # Create provenance record for the output file
-        xprov = provenance_record(infile)
+        provenance[outfile] = xprov
 
         # Plot the field
         plotfile = string(plot_dir, "/", varname, "_", dataset, "_", exp, "_",
@@ -84,8 +85,7 @@ function compute_diagnostic(metadata, varname, diag_base, parameter,
                        " ", start_year, "-", end_year)
         plotmap(lon, lat, var, title = title, proj = "robinson", clabel = units)
         savefig(plotfile)
-        xprov["plot_file"] = plotfile
-        provenance[outfile] = xprov
+        provenance[plotfile] = xprov
     end
     return provenance
 end
