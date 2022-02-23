@@ -28,8 +28,6 @@ This release includes
 Bug fixes
 ~~~~~~~~~
 
--  Fix diagnostic that uses `xarray`: `dtype` correctly set and harmonize `xarray` and `matplotlib` (`#2409 <https://github.com/ESMValGroup/ESMValTool/pull/2409>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
--  Deactivate provenance logging for plots in thermodyn toolbox (`#2414 <https://github.com/ESMValGroup/ESMValTool/pull/2414>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 -  Remove the use of `esmvalgroup` channel from the conda install Github Action workflow (`#2420 <https://github.com/ESMValGroup/ESMValTool/pull/2420>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Ignore .pymon-journal file in test discovery (`#2491 <https://github.com/ESMValGroup/ESMValTool/pull/2491>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 -  Relocate pytest-monitor outputted database `.pymon` so `.pymon-journal` file should not be looked for by `pytest` (`#2501 <https://github.com/ESMValGroup/ESMValTool/pull/2501>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
