@@ -521,6 +521,8 @@ class DataCommand():
         self.formatter.start('preparation', datasets, config_file, kwargs)
         if self.formatter.download(start, end, overwrite):
             self.formatter.format(start, end, install)
+        else:
+            logger.warning("Download failed, skipping format step")
 
     @staticmethod
     def _parse_date(date):
