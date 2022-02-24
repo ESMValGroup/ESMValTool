@@ -1,18 +1,19 @@
-"""Tests for the documentation."""
+"""Tests for the changelog."""
 import collections
 import os
 import re
+from typing import List
 
-# For entries in the following list, two appearances (but not more) are
-# allowed. This can be useful if a pull request needs to appear in multiple
-# sections.
-ALLOWED_EXCEPTIONS = [
+# For entries in the following list, two appearances in the changelog (but not
+# more) are allowed. This can be useful if a pull request needs to appear in
+# multiple sections.
+ALLOWED_DUPLICATES: List[str] = [
     '<https://github.com/ESMValGroup/ESMValTool/pull/1897>',
 ]
 
 
 def test_duplications_in_changelog():
-    changelog_path = os.path.join(os.path.dirname(__file__), '../..',
+    changelog_path = os.path.join(os.path.dirname(__file__), '../../..',
                                   'doc/sphinx/source/changelog.rst')
     with open(changelog_path) as changelog:
         changelog = changelog.read()
@@ -23,7 +24,7 @@ def test_duplications_in_changelog():
     links = pr_links.findall(changelog)
 
     # Remove one entry for the allowed exceptions
-    for pr_link in ALLOWED_EXCEPTIONS:
+    for pr_link in ALLOWED_DUPLICATES:
         if pr_link in links:
             links.remove(pr_link)
 
