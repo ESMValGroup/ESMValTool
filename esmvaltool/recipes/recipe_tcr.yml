@@ -168,7 +168,6 @@ diagnostics:
           # - {dataset: INM-CM5-0,       ensemble: r1i1p1f1,   grid: gr1, start_year: 1850, end_year: 1989}
           - {dataset: INM-CM4-8,       ensemble: r1i1p1f1,   grid: gr1, start_year: 1850, end_year: 1989}
           - {dataset: IPSL-CM6A-LR,    ensemble: r1i1p1f1,   grid: gr,  start_year: 1850, end_year: 1989}
-          # Wrong start year for piControl (must be 1850)
           - {dataset: KACE-1-0-G,      ensemble: r1i1p1f1,   grid: gr,  start_year: 1850, end_year: 1989}
           # branch_time_in_child weird
           - {dataset: MCM-UA-1-0,      ensemble: r1i1p1f1,   grid: gn,  start_year:    1, end_year:  140}
@@ -222,8 +221,7 @@ diagnostics:
           # - {dataset: INM-CM5-0,       ensemble: r1i1p1f1,   grid: gr1, start_year: 2099, end_year: 2238}
           - {dataset: INM-CM4-8,       ensemble: r1i1p1f1,   grid: gr1, start_year: 1947, end_year: 2086}
           - {dataset: IPSL-CM6A-LR,    ensemble: r1i1p1f1,   grid: gr,  start_year: 1870, end_year: 2009}
-          # Wrong start year for piControl (must be 1850)
-          - {dataset: KACE-1-0-G,      ensemble: r1i1p1f1,   grid: gr,  start_year: 2300, end_year: 2439}
+          - {dataset: KACE-1-0-G,      ensemble: r1i1p1f1,   grid: gr,  start_year: 2150, end_year: 2289}
           # branch_time_in_child weird
           - {dataset: MCM-UA-1-0,      ensemble: r1i1p1f1,   grid: gn,  start_year:    1, end_year:  140}
           - {dataset: MIROC6,          ensemble: r1i1p1f1,   grid: gn,  start_year: 3200, end_year: 3339}

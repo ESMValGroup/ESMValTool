@@ -894,7 +894,7 @@ begin
       cfint2 = cdft_t(0.05 / 2.0, df) ^ 2 * ( \
         1.0 + hlp # inverse_matrix(transpose(D) # D) # transpose(hlp))
       cfint2 := cfint2(0, 0) * sigmae2
-      cfint2 := sqrt(cfint2 # xx(:, ppt))
+      cfint2 := sqrt(abs(cfint2 # xx(:, ppt)))
 
       yfit_std(ppt, 0, ti) = yfit_reg(ppt, ti) + cfint2
       yfit_std(ppt, 1, ti) = yfit_reg(ppt, ti) - cfint2
