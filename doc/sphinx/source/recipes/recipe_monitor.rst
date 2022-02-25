@@ -9,7 +9,7 @@ Overview
 Available recipes and diagnostics
 =================================
 
-Recipes are stored in `recipes/``
+Recipes are stored in `recipes/`
 
   - recipe_monitor.yml
 
@@ -18,7 +18,7 @@ Diagnostics are stored in `diag_scripts/monitor/`
   - monitor.py:
     Plots preprocessor output directly from the preprocessor.
   - compute_eofs.py:
-    A sample on how to use the monitor structure to show other metrics.
+    An example on how to use the monitor structure to show other metrics.
     Computes and plots the map of the first EOF and the associated PC timeseries.
 
 List of plot types available in monitor.py
@@ -56,7 +56,7 @@ User setting files are stored in recipes and in a dedicated yaml config file.
 In the variable definitions, users can set the attribute `plot_name` to fix
 the variable name that will be used for the plot's title. If it is not set,
 mapgenerator will try to choose a sensible one from the standard name
-attributes (`long_name`, `standard_name` and `var_name`)
+attributes (`long_name`, `standard_name` and `var_name`).
 
 monitor.py
 ----------
@@ -66,14 +66,14 @@ monitor.py
     Available type of plots are listed in :ref:`List of plot types available in monitor.py` .
   * cartopy_data_dir:
     Path to cartopy data dir. Defaults to None.
-    See https://scitools.org.uk/cartopy/docs/latest/cartopy.html
+    See https://scitools.org.uk/cartopy/docs/latest/cartopy.html.
   * plot_folder:
     Path to the folder to store the figures. It is defined as the
     input paths in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to ``~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}``
+    for more details. Defaults to ``~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}``.
   * plot_filename:
-    Filename pattern for the plots. it is defined as the input
+    Filename pattern for the plots. It is defined as the input
     files in in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
     for more details. Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
@@ -88,7 +88,7 @@ Plot specific options:
    + maps:
      List of maps to plot, as defined in the config file. Defaults to ``[global]``.
    + months:
-     Select only specific months. Defaults to ``None`` (do not select).
+     Select only specific months. Defaults to ``None`` (i.e. it does not select any month).
    + plot_size:
      Size of each individual figure. Default's to ``(5, 4)``.
    + columns:
@@ -101,7 +101,7 @@ Plot specific options:
 - clim:
    + maps:
      List of maps to plot, as defined in the config file. Defaults to ``[global]``.
-- annual_cycle: No options
+- annual_cycle: No options.
 - timeseries: No options.
 
 compute_eofs.py
@@ -109,14 +109,14 @@ compute_eofs.py
 
   * cartopy_data_dir:
     Path to cartopy data dir. Defaults to None.
-    See https://scitools.org.uk/cartopy/docs/latest/cartopy.html
+    See https://scitools.org.uk/cartopy/docs/latest/cartopy.html.
   * plot_folder:
     Path to the folder to store the figures. It is defined as the
     input paths in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
     for more details. Defaults to ``~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}``.
   * plot_filename:
-    Filename pattern for the plots. it is defined as the input
+    Filename pattern for the plots. It is defined as the input
     files in in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
     for more details. Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
@@ -225,7 +225,7 @@ Global climatology of tas.
    :align:   center
    :width:   14cm
 
-Seasonal climatology of pr, with a custom colorbar
+Seasonal climatology of pr, with a custom colorbar.
 
 .. _fig_monthlyclimglobal:
 .. figure::  /recipes/figures/monitor/monclim.png
