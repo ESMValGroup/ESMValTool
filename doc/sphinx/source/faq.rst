@@ -110,8 +110,8 @@ a symbolic link to it so it gets picked up at every re-run iteration:
 .. CMOR checks and could not be fixed on the fly.
 
 
-Can the ESMValTool plot arbitrary model output
-==============================================
+Can ESMValTool plot arbitrary model output?
+===========================================
 
 Recipe :ref:`recipe_monitor` allows for the plotting of any preprocessed model.
 The plotting parameters are set through a yaml configuration file, and the
