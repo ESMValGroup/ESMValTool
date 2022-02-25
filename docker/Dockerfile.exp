@@ -10,7 +10,7 @@ RUN conda update -n base -y conda && conda install -y -c conda-forge mamba && ma
 SHELL ["conda", "run", "--name", "esmvaltool", "/bin/bash", "-c"]
 
 COPY . /src/ESMValTool
-RUN mamba install -y -c conda-forge rasterio
+# RUN mamba install -y -c conda-forge rasterio
 RUN pip install -e .[develop]
 RUN mamba install -y -c conda-forge r-base
 RUN esmvaltool install R
