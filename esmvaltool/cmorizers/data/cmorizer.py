@@ -535,6 +535,9 @@ class DataCommand():
             8: "%Y%m%d",
         }
         format_string = date_formats.get(len(date_string), None)
-        if format_string is None:
-            return None
+        if len(date_string) not in [4, 6, 8]:
+            raise ValueError(
+                f'Unsupported date format for {date}. '
+                'Supported formats for "start" and "end" are: '
+                '"None", "YYYY", "YYYYMM", "YYYYMMDD"')
         return datetime.datetime.strptime(date_string, format_string)
