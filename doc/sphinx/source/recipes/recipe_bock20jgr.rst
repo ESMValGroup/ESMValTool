@@ -272,36 +272,36 @@ Observations and reformat scripts
 
 * ESACCI-CLOUD - total cloud cover
 
-  *Reformat script:* cmorizers/obs/cmorize_obs_esacci_cloud.ncl
+  *Reformat script:* cmorizers/data/formatters/datasets/esacci_cloud.ncl
 
 * ESACCI-SST - sea surface temperature
 
-  *Reformat script:* cmorizers/obs/cmorize_obs_esacci_sst.ncl
+  *Reformat script:* cmorizers/data/formatters/datasets/esacci_sst.py
 
 * GHCN - Global Historical Climatology Network-Monthly gridded land precipitation
 
-  *Reformat script:* cmorizers/obs/cmorize_obs_ghcn.ncl
+  *Reformat script:* cmorizers/data/formatters/datasets/ghcn.ncl
 
 * GPCP-SG (obs4MIPs) - Global Precipitation Climatology Project total
   precipitation
 
 * HadCRUT4 - surface temperature anomalies
 
-  *Reformat script:* cmorizers/obs/cmorize_obs_hadcrut4.ncl
+  *Reformat script:* cmorizers/data/formatters/datasets/hadcrut4.ncl
 
 * HadISST - surface temperature
 
-  *Reformat script:* cmorizers/obs/cmorize_obs_hadisst.ncl
+  *Reformat script:* cmorizers/data/formatters/datasets/hadisst.ncl
 
 * JRA-55 (ana4mips) - reanalysis of sea surface pressure
 
 * NCEP - reanalysis of surface temperature
 
-  *Reformat script:* cmorizers/obs/cmorize_obs_NCEP.ncl
+  *Reformat script:* cmorizers/data/formatters/datasets/ncep.ncl
 
 * PATMOS-x - total cloud cover
 
-  *Reformat script:* cmorizers/obs/cmorize_obs_patmos_x.ncl
+  *Reformat script:* cmorizers/data/formatters/datasets/patmos_x.ncl
 
 
 References

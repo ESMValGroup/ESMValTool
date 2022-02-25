@@ -36,6 +36,7 @@ or, if you need longer term access or more computational resources, the
 
 If the options above are not available to you, ESMValTool also offers a feature
 to make it easy to download CMIP6, CMIP5, CMIP3, CORDEX, and obs4MIPs from ESGF.
+ESMValTool also provides support to download some observational dataset from source.
 
 The chapter in the ESMValCore documentation on
 :ref:`finding data <esmvalcore:findingdata>` explains how to
@@ -71,7 +72,54 @@ Observations
 
 Observational and reanalysis products in the standard CF/CMOR format used in CMIP and required by the ESMValTool are available via the obs4MIPs and ana4mips projects at the ESGF (e.g., https://esgf-data.dkrz.de/projects/esgf-dkrz/). Their use is strongly recommended, when possible.
 
-Other datasets not available in these archives can be obtained by the user from the respective sources and reformatted to the CF/CMOR standard. ESMValTool currently support two ways to perform this reformatting (aka 'CMORization'). The first is to use a CMORizer script to generate a local pool of reformatted data that can readily be used by the ESMValTool. The second way is to implement specific 'fixes' for your dataset. In that case, the reformatting is performed 'on the fly' during the execution of an ESMValTool recipe (note that one of the first preprocessor tasks is 'CMOR checks and fixes'). Below, both methods are explained in more detail.
+Other datasets not available in these archives can be obtained by the user from the respective sources
+and reformatted to the CF/CMOR standard.
+The list of datasets supported by ESMValTool can be obtained with:
+
+.. code-block:: bash
+
+    esmvaltool data list
+
+Datasets for which auto-download is supported can be downloaded with:
+
+.. code-block:: bash
+
+    esmvaltool data download --config_file [CONFIG_FILE] [DATASET_LIST]
+
+Note that all Tier3 and some Tier2 datasets for which auto-download is supported
+will require an authentification. In such cases enter your credentials in your
+``~/.netrc`` file as explained
+`here <https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html>`_.
+
+An entry to the ``~/.netrc`` should look like:
+
+.. code-block:: bash
+
+    machine [server_name] login [user_name] password [password]
+
+Make sure that the permissions of the ``~/.netrc`` file are set so only you and administrators
+can read it, i.e. 
+
+.. code-block:: bash
+
+    chmod 600 ~/.netrc
+    ls -l ~/.netrc
+
+The latter command should show ``-rw-------``.
+
+For other datasets, downloading instructions can be obtained with:
+
+.. code-block:: bash
+
+    esmvaltool data info [DATASET]
+
+ESMValTool currently support two ways to perform this reformatting (aka 'CMORization').
+The first is to use a CMORizer to generate a local pool of reformatted data that can
+readily be used by the ESMValTool.
+The second way is to implement specific 'fixes' for your dataset.
+In that case, the reformatting is performed 'on the fly' during the execution of an ESMValTool
+recipe (note that one of the first preprocessor tasks is 'CMOR checks and fixes').
+Below, both methods are explained in more detail.
 
 Using a CMORizer script
 -----------------------
@@ -89,7 +137,7 @@ To CMORize one or more datasets, run:
 
 .. code-block:: bash
 
-    cmorize_obs -c [CONFIG_FILE] -o [DATASET_LIST]
+    esmvaltool data format --config_file [CONFIG_FILE] [DATASET_LIST]
 
 The path to the raw data to be CMORized must be specified in the
 :ref:`user configuration file<config-user>` as RAWOBS.
@@ -117,7 +165,7 @@ may be ``sat`` (satellite data), ``reanaly`` (reanalysis data),
 ``ground`` (ground observations), ``clim`` (derived climatologies),
 ``campaign`` (aircraft campaign).
 
-At the moment, cmorize_obs supports Python and NCL scripts.
+At the moment, ``esmvaltool data format`` supports Python and NCL scripts.
 
 .. _cmorization_as_fix:
 

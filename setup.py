@@ -48,6 +48,7 @@ REQUIREMENTS = {
         'pandas',
         'pyproj',
         'pyyaml',
+        'progressbar2',
         'rasterio',
         'ruamel.yaml',
         'scikit-image',
@@ -226,7 +227,6 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'cmorize_obs = esmvaltool.cmorizers.obs.cmorize_obs:main',
             'mip_convert_setup = '
             'esmvaltool.cmorizers.mip_convert.esmvt_mipconv_setup:main',
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
@@ -239,6 +239,7 @@ setup(
             'colortables = '
             'esmvaltool.utils.color_tables.show_color_tables:ColorTables',
             'install = esmvaltool.install:Install',
+            'data = esmvaltool.cmorizers.data.cmorizer:DataCommand'
         ]
     },
     cmdclass={
