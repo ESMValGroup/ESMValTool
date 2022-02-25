@@ -113,6 +113,6 @@ a symbolic link to it so it gets picked up at every re-run iteration:
 Can the ESMValTool plot arbitrary model output
 ==============================================
 
-Recipe :ref:`recipe_monitor.yml` allows for the plotting of any preprocessed model.
+Recipe :ref:`recipe_monitor` allows for the plotting of any preprocessed model.
 The plotting parameters are set through a yaml configuration file, and the
 type of plots to be generated are determined in the recipe. 
