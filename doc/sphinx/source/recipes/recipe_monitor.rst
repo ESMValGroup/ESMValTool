@@ -21,6 +21,7 @@ Diagnostics are stored in `diag_scripts/monitor/`
     An example on how to use the monitor structure to show other metrics.
     Computes and plots the map of the first EOF and the associated PC timeseries.
 
+
 List of plot types available in monitor.py
 ------------------------------------------
 
@@ -63,7 +64,7 @@ monitor.py
 
   * plots:
     a dictionary containing the plots to make, with its own options.
-    Available type of plots are listed in :ref:`List of plot types available in monitor.py` .
+    Available types of plot are listed in section `List of plot types available in monitor.py`_.
   * cartopy_data_dir:
     Path to cartopy data dir. Defaults to None.
     See https://scitools.org.uk/cartopy/docs/latest/cartopy.html.
