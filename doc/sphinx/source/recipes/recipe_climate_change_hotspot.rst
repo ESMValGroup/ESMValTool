@@ -33,7 +33,7 @@ by the year 2100 against the preindustrial Era
 Recipe based on the work by `Cos et al. (2022) <https://doi.org/10.5194/esd-13-321-2022>`
 
 Note: This recipe is currently set to evaluate the Mediterranean
-hotspot but it can be set to any other rectangular region.
+hotspot (with bounds start_longitude: -10, end_longitude: 40, start_latitude: 30, end_latitude: 45) but it can be set to any other rectangular region.
 
 Available recipes and diagnostics
 ---------------------------------
