@@ -11,7 +11,7 @@ RUN echo "conda activate esmvaltool" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
 COPY . /src/ESMValTool
-RUN mamba env update --name esmvaltool --file environment.yml && conda clean --all -y
+RUN conda env update --name esmvaltool --file environment.yml && conda clean --all -y
 RUN conda info && conda list
 RUN pip install -e .[develop]
 RUN mamba install -y -c conda-forge r-base
