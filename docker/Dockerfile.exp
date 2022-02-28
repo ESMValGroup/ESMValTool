@@ -7,10 +7,13 @@ WORKDIR /src/ESMValTool
 RUN conda update -n base -y conda && conda install -y -c conda-forge mamba && mamba env create --name esmvaltool --file environment.yml && conda clean --all -y
 
 # Make RUN commands use the new environment:
-SHELL ["conda", "run", "--name", "esmvaltool", "/bin/bash", "-c"]
+# SHELL ["conda", "run", "--name", "esmvaltool", "/bin/bash", "-c"]
+RUN echo "conda activate esmvaltool" >> ~/.bashrc
+SHELL ["/bin/bash", "--login", "-c"]
 
 COPY . /src/ESMValTool
 # RUN mamba install -y -c conda-forge rasterio
+RUN conda info && conda list
 RUN pip install -e .[develop]
 RUN mamba install -y -c conda-forge r-base
 RUN esmvaltool install R
