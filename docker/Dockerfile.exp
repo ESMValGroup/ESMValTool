@@ -8,7 +8,7 @@ RUN conda update -n base -y conda && conda install -y -c conda-forge mamba && ma
 
 # Make RUN commands use the new environment:
 # SHELL ["conda", "run", "--name", "esmvaltool", "/bin/bash", "-c"]
-RUN echo "conda activate esmvaltool" >> ~/.bashrc
+RUN echo "conda activate esmvaltool/envs/esmvaltool" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
 COPY . /src/ESMValTool
