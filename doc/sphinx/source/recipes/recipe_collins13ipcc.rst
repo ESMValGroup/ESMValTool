@@ -392,7 +392,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* HadISST (sic - esmvaltool/cmorizers/data/formatters/datasets/hadisst.ncl)
+* HadISST (sic - esmvaltool/utils/cmorizers/obs/cmorize_obs_HadISST.ncl)
 
 Reference
 ---------

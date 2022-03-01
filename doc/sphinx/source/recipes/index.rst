@@ -28,7 +28,6 @@ Atmosphere
    recipe_hyint
    recipe_impact
    recipe_modes_of_variability
-   recipe_mpqb_xch4
    recipe_quantilebias
    recipe_bock20jgr
    recipe_spei
@@ -99,7 +98,6 @@ Ocean
    recipe_arctic_ocean
    recipe_cvdp
    recipe_combined_indices
-   recipe_esacci_oc
    recipe_oceans
    recipe_sea_surface_salinity
    recipe_russell18jgr
@@ -113,8 +111,6 @@ Other
    recipe_capacity_factor
    recipe_cmorizers
    recipe_ensclus
-   recipe_esacci_lst
-   recipe_monitor
    recipe_multimodel_products
    recipe_rainfarm
    recipe_pv_capacity_factor
