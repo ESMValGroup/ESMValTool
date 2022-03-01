@@ -5,15 +5,16 @@ FROM esmvalgroup/esmvalcore:latest
 COPY ./environment.yml /src/ESMValTool/environment.yml
 WORKDIR /src/ESMValTool
 RUN conda update -n base -y conda && conda install -y -n base -c conda-forge mamba
+RUN mamba env create -n esmvaltool -f environment.yml
 
 # Make RUN commands use the new environment:
 RUN echo "conda activate esmvaltool" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
 COPY . /src/ESMValTool
-RUN mamba env update -n esmvaltool -f environment.yml
 RUN conda info && conda list
 RUN pip install -e .[develop]
+RUN conda info && conda list
 RUN mamba install -y -c conda-forge r-base
 RUN esmvaltool install R
 RUN mamba install -y -c conda-forge julia
