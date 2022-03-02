@@ -72,22 +72,23 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 # List of ensemble members to skip.
 data_dict_skips = {
-    'CanESM5':['r11i1p2f1', 'r12i1p1f1', 'r12i1p2f1'], # hist data doesn't exist
-    'CanESM5-CanOE': ['r1i1p2f1', 'r2i1p2f1', 'r3i1p2f1',], # hist data doesn't exist
-    'ACCESS-ESM1-5': ['r2i1p1f1', 'r3i1p1f1'], #  # hist data doesn't exist
-    'CESM2-WACCM':['r2i1p1f1', 'r3i1p1f1'], # no hist data.
-    'CESM2-WACCM-FV2': ['r1i1p1f1', 'r2i1p1f1', 'r3i1p1f1'], # no SSP data at all.
-    'MPI-ESM-1-2-HAM': ['r2i1p1f1', ], # no hist data.
-    'MIROC-ES2L': ['r1i1p1f2', 'r2i1p1f2'],  # no hist data.
-    'MPI-ESM1-2-LR': ['r2i1p1f1', 'r3i1p1f1'], # no hist data.
-    'NorCPM1': ['r1i1p1f1', ], #fgco2 off by 1e-10
-    'NorESM2-LM': ['r1i1p1f1', 'r2i1p1f1'], # missing years 2015-2020, and sometimes after 2055 too.
+#'    'CanESM5':['r11i1p2f1', 'r12i1p1f1', 'r12i1p2f1'], # hist data doesn't exist
+#    'CanESM5-CanOE': ['r1i1p2f1', 'r2i1p2f1', 'r3i1p2f1',], # hist data doesn't exist
+#    'ACCESS-ESM1-5': ['r2i1p1f1', 'r3i1p1f1'], #  # hist data doesn't exist
+#    'CESM2-WACCM':['r2i1p1f1', 'r3i1p1f1'], # no hist data.
+#    'CESM2-WACCM-FV2': ['r1i1p1f1', 'r2i1p1f1', 'r3i1p1f1'], # no SSP data at all.
+#    'MPI-ESM-1-2-HAM': ['r2i1p1f1', ], # no hist data.
+#    'MIROC-ES2L': ['r1i1p1f2', 'r2i1p1f2'],  # no hist data.
+#    'MPI-ESM1-2-LR': ['r2i1p1f1', 'r3i1p1f1'], # no hist data.
+#    'NorCPM1': ['r1i1p1f1', ], #fgco2 off by 1e-10
+    'NorESM2-LM': ['r2i1p1f1'], # missing historical run. #years 2015-2020, and sometimes after 2055 too.
     }
 
 
 # For models (like UKESM), where the hist and ssp have different ensemble ids:
 data_dict_linked_ens = {# model: {ssp:hist'
-    'UKESM1-0-LL': {'r5i1p1f2':'r5i1p1f3','r6i1p1f2':'r6i1p1f3','r7i1p1f2':'r7i1p1f3',}
+    'UKESM1-0-LL': {'r5i1p1f2':'r5i1p1f3','r6i1p1f2':'r6i1p1f3','r7i1p1f2':'r7i1p1f3',},
+    'CanESM5': {'r11i1p2f1': 'r11i1p1f1', 'r12i1p2f1': 'r12i1p1f1'},
     }
 
 
@@ -1192,14 +1193,21 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
         if short_name not in short_names:
              continue
         baseline = baselines.get((dataset, 'tas', ensemble), False)
+
+        if baseline is False and dataset in data_dict_linked_ens.keys():
+           new_ens = data_dict_linked_ens[dataset].get(ensemble, False) 
+           baseline = baselines.get((dataset, 'tas', new_ens), False)
+
         if baseline is False:
-             baseline = baselines.get((dataset, 'tas', ensemble.replace('f2', 'f3')), False)
-             if baseline is False:
-                 print('No Baseline found', (dataset, short_name, exp, ensemble), 'available baselines are:')
-                 for bs_index in baselines.keys():
-                     if bs_index[0] != dataset: continue
-                     print(bs_index, ':', baselines.get(bs_index, 0.))
-                 assert 0
+            baseline = baselines.get((dataset, 'tas', ensemble.replace('f2', 'f3')), False)
+
+        if baseline is False:
+             print('No Baseline found', (dataset, short_name, exp, ensemble), 'available baselines are:')
+             for bs_index in baselines.keys():
+                 if bs_index[0] != dataset: continue
+                 print(bs_index, ':', baselines.get(bs_index, 0.))
+             assert 0
+
         for ens in ensemble:
             if baseline: continue
             baseline =  baselines.get((dataset, 'tas', ens), False)
@@ -2638,6 +2646,70 @@ def make_ensemble_barchart_pane(
         print(group_by, unique_key_order)
         #assert 0
 
+    make_table_here = True
+    if make_table_here:
+        csvpath = diagtools.folder([cfg['plot_dir'], 'ensemble_barcharts_csv' ])
+        csvpath += '_'.join(['ensemble_barchart'+str(threshold), land_carbon, ensemble_key]) + '.txt'
+        out_txt = 'Count, model, exp, ensemble, threshold, atmos, land, ocean, total, \n'
+        for i, unique_key in enumerate(unique_key_order):
+
+            if ensemble_key == 'ensemble_mean' and t_ens != 'ensemble_mean': continue
+            if t_threshold != threshold: continue
+            remnant = remnants[unique_key]
+            landc = landcs[unique_key]
+            oceanc = fgco2gts[unique_key]
+            total = remnant + landc + oceanc
+
+            (t_dataset, t_exp, t_ens, t_threshold) = unique_key
+            line1 = ', '.join([str(i), t_dataset, t_exp, t_ens, t_threshold])
+            line2 = ', '.join([str(v) for v in [remnant, landc, oceanc, total, '\n']])
+            out_txt  += line1 +', '+line2
+       
+        csv_file = open(csvpath,'w')
+        csv_file.write(out_txt)
+        csv_file.close()
+
+        csvpath = diagtools.folder([cfg['plot_dir'], 'ensemble_counts_csv' ])
+        csvpath += '_'.join(['ensemble_barchart_count'+str(threshold), land_carbon, ensemble_key]) + '.txt'
+        out_txt = '# Count for thrshold: '+str(threshold)+'\n'
+        out_txt += '# land_carbon:' + land_carbon+'\n'
+        out_txt += '# ensemble_key:' + ensemble_key+'\n'
+        #out_txt += 'Model, scenario, count,\n'
+        counts = {}
+        models = {}
+        ssps = {}
+        for i, unique_key in enumerate(unique_key_order):
+
+            if ensemble_key == 'ensemble_mean' and t_ens != 'ensemble_mean': continue
+            if t_threshold != threshold: continue
+            (t_dataset, t_exp, t_ens, t_threshold) = unique_key
+            models[t_dataset] = True
+            ssps[t_exp] = True
+            count_key = (t_dataset, t_exp)
+            if counts.get(count_key, False):
+                counts[count_key]+=1
+            else:
+                counts[count_key] = 1 
+        out_txt  = 'Model, ' + ', '.join(sorted(ssps.keys()))+'\n'
+        for moded_csv in sorted(models.keys()):
+           line1 = moded_csv+', '
+           for exp_csv in sorted(ssps.keys()):
+               if (moded_csv, exp_csv) in counts:
+
+                   line1 += str(counts[(moded_csv, exp_csv)])+', '
+               else:
+                   line1 += '0, '
+           out_txt += line1 +'\n'
+       #for (t_dataset, t_exp) in sorted(counts.keys()):
+       #     line1 = ','.join([t_dataset, t_exp, str(counts[(t_dataset, t_exp)])])
+       #     out_txt  += line1 +',\n'
+
+        csv_file = open(csvpath,'w')
+        csv_file.write(out_txt)
+        csv_file.close()
+
+        
+
     for i, unique_key in enumerate(unique_key_order):
     #for unique_key, remnant in sorted(remnants.items()):
         (t_dataset, t_exp, t_ens, t_threshold) = unique_key
@@ -2667,11 +2739,12 @@ def make_ensemble_barchart_pane(
 
         #  look if adding  blank lines:
 
+        adding_gaps = False 
         dataset_blank = (i>0 and group_by == 'group_by_model' and t_dataset not in labels[-1])
         exp_blank =  (i>0 and group_by == 'group_by_ssp' and t_exp not in labels[-1])
 
-        if dataset_blank or exp_blank:
-            xvalues.append((xvalues[-1]+0.2))
+        if adding_gaps and (dataset_blank or exp_blank):
+            xvalues.append((xvalues[-1]+0.4))
             widths.append(1.)
             land.append(0.)
             ocean.append(0.)
@@ -2692,10 +2765,10 @@ def make_ensemble_barchart_pane(
 
         if i == 0:
             xvalues.append(0.)
-            widths.append(1)
+            widths.append(1.)
         else:
             xvalues.append(xvalues[-1]+1.)
-            widths.append(1)
+            widths.append(1.)
 
 
         if plot_style == 'percentages':
@@ -2738,7 +2811,7 @@ def make_ensemble_barchart_pane(
     #     print("Final values:",threshold, i, exp, totals[i], '=',emissions_diff[i],('or', remnant[i]), '+', landcs[i], '+', fgco2gts[i], '(a, l, o)')
     # Add bars:
     #if quit: assert 0
-    for x,w,l in zip(xvalues, widths, labels): print(x,w,l)
+    #for x,w,l in zip(xvalues, widths, labels): print(x,w,l)
 
     label_strs = []
 
@@ -2801,6 +2874,7 @@ def make_ensemble_barchart_pane(
     else:
         print('ERROR:',  len(labels),len(land),len(widths), len(xvalues), len(label_strs), len(colours_land))
         assert 0
+
 
     ax.bar(xvalues, land, width=widths, label='Land', color=colours_land, tick_label = label_strs)
     ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color=colours_ocean)
@@ -2867,9 +2941,11 @@ def make_ensemble_barchart_pane(
     if do_legend:
         ax.legend()
 
+
+
     if make_figure_here:
         image_extention = diagtools.get_image_format(cfg)
-        path = diagtools.folder([cfg['plot_dir'], '_ensemble_barcharts' ])
+        path = diagtools.folder([cfg['plot_dir'], 'single_barcharts' ])
         path += '_'.join(['ensemble_barchart'+str(threshold), land_carbon, atmos]) + image_extention
         plt.savefig(path)
         plt.close()
@@ -3572,7 +3648,7 @@ def main(cfg):
     #jobtype = 'land'
     short_names, short_names_x, short_names_y = [], [], []
     #jobtype = 'debug'
-    #jobtype = 'bulk'
+    jobtype = 'bulk'
     jobtype = 'cumulative_plot'
 
     if jobtype == 'cumulative_plot':
