@@ -48,107 +48,37 @@ diagnostics:
       albisccp: &var_settings
         preprocessor: preproc25x25
         start_year: 1985
-        end_year: 1987
-        grid: gr
-        mip: cfDay
+        end_year: 1989
         exp: amip
+        project: CMIP5
+        mip: cfDay
         additional_datasets:
-          - {dataset: CanAM4, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, mip: CFday, ensemble: r1i1p1f2}
+          - {dataset: CanAM4, ensemble: r1i1p1}
       pctisccp:
         <<: *var_settings
-        additional_datasets:
-          - {dataset: CanAM4, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, mip: CFday, ensemble: r1i1p1f2}
       cltisccp:
         <<: *var_settings
-        additional_datasets:
-          - {dataset: CanAM4, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, mip: CFday, ensemble: r1i1p1f2}
       rsut:
         <<: *var_settings
-        additional_datasets:
-          - {dataset: CanAM4, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, mip: CFday, ensemble: r1i1p1f2}
       rlut:
         <<: *var_settings
-        additional_datasets:
-          - {dataset: CanAM4, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, mip: day, ensemble: r1i1p1f2}
+        mip: day
       rsutcs:
         <<: *var_settings
-        additional_datasets:
-          - {dataset: CanAM4, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, mip: CFday, ensemble: r1i1p1f2}
       rlutcs:
         <<: *var_settings
-        additional_datasets:
-          - {dataset: CanAM4, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, mip: CFday, ensemble: r1i1p1f2}
       snc:
         <<: *var_settings
         mip: day
-        additional_datasets:
-          - {dataset: CanAM4, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2}
-      # snw:
-      #   <<: *var_settings
-      #   mip: day
-      #   additional_datasets:
-      #    - {dataset: CanAM4, project: CMIP5, ensemble: r1i1p1}
-      #    - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
-      #    - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
-      #    - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-      #    - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
-      #     - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2}
+#      snw:
+#        <<: *var_settings
+#        mip: day
       sic:
         <<: *var_settings
         mip: day
-        additional_datasets:
-          - {dataset: CanAM4, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
-      siconc:
-        <<: *var_settings
-        grid: gn
-        mip: SIday
-        exp: historical
-        additional_datasets:
-          - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2}
+#      siconc:
+#        <<: *var_settings
+#        mip: SIday
     scripts:
       clim:
         script: crem/ww09_esmvaltool.py
