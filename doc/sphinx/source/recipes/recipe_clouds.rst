@@ -229,7 +229,7 @@ Observations and reformat scripts
 ---------------------------------
 
 *Note: (1) obs4MIPs data can be used directly without any preprocessing;
-(2) see headers of reformat scripts for non-obs4MIPs data for download
+(2) use `esmvaltool data info DATASET` or see headers of reformat scripts for non-obs4MIPs data for download
 instructions.*
 
 * CERES-EBAF (obs4MIPs) - CERES TOA radiation fluxes (used for calculation of
@@ -241,7 +241,7 @@ instructions.*
   on satellite observbations from TMI, SSM/I, and AMSR-E, reference: O'Dell et
   al. (2008), J. Clim.
 
-  *Reformat script:* reformat_scripts/obs/reformat_obs_UWisc.ncl
+  *Reformat script:* esmvaltool/cmorizers/data/formatters/datasets/uwisc.ncl
 
 References
 ----------

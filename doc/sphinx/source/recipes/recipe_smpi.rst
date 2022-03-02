@@ -72,11 +72,10 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4MIPs data can be used directly without any reformating. For non-obs4MIPs data see headers of cmorization scripts (in `/esmvaltool/cmorizers/obs/
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/obs/>`_) for downloading and processing instructions.
+The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4MIPs data can be used directly without any reformating. For non-obs4MIPs data use `esmvaltool data info DATASET` or see headers of cmorization scripts for downloading and processing instructions.
 
-* ERA-Interim (hfds, hus, psl, ta, tas, tauu, tauv, ua, va - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
-* HadISST (sic, tos - reformat_scripts/obs/reformat_obs_HadISST.ncl)
+* ERA-Interim (hfds, hus, psl, ta, tas, tauu, tauv, ua, va - esmvaltool/data/formatters/datasets/era-interim.py)
+* HadISST (sic, tos - esmvaltool/data/formatters/datasets/hadisst.ncl)
 * GPCP-SG (pr - obs4MIPs)
 
 References

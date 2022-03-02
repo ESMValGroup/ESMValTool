@@ -50,7 +50,7 @@ test:
     - esmvaltool
   commands:
     - pytest -n 2 --ignore="run_test.py" --ignore="tests/unit/test_docs.py"
-    - cmorize_obs --help
+    - esmvaltool data --help
     - nclcodestyle --help
     - esmvaltool colortables --help
     - test_recipe --help
@@ -94,6 +94,7 @@ outputs:
         - numpy
         - openpyxl
         - pandas
+        - progressbar2
         - pyproj>=2.1
         - python>=3.7
         - python-cdo
