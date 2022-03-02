@@ -67,6 +67,9 @@ Alternatively, you can use an external tool called
 `Synda <http://prodiguer.github.io/synda/index.html>`__
 to maintain your own collection of ESGF data.
 
+
+.. _inputdata_observations:
+
 Observations
 ============
 

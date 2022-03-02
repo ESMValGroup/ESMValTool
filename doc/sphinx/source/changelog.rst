@@ -12,8 +12,8 @@ v2.5.0
 Highlights
 ~~~~~~~~~~
 
-- Recipe to plot generic preprocessor output (#2184)...more details will be added after merge.
-- Automatic download feature for observational datasets (#1657)...more details will be added after the merge.
+- A new recipe to plot generic preprocessor output is now available. For details, see :ref:`recipe_monitor`.
+- The CMORization of observational and other datasets has been overhauled. For many datasets, an automatic download script is now available. For details, see :ref:`inputdata_observations` and :ref:`new-cmorizer`.
 
 Please also note the highlights from the corresponding ESMValCore release :ref:`here<esmvalcore:changelog-v2-5-0>`.
 Thanks to that ESMValTool has gained the following features:
@@ -24,6 +24,11 @@ Thanks to that ESMValTool has gained the following features:
 
 
 This release includes
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Streamline observations download (`#1657 <https://github.com/ESMValGroup/ESMValTool/pull/1657>`__) `Javier Vegas-Regidor <https://github.com/jvegreg>`__. This change removes the ``cmorize_obs`` command which has previously been used to CMORize observations and other datasets. The new command ``esmvaltool data`` provides many new features apart from the CMORization (``esmvaltool data format``), for example, automatic downloading of observational datasets (``esmvaltool data download``). More details on this can be found :ref:`here<inputdata_observations>` and :ref:`here<new-cmorizer>`.
 
 Bug fixes
 ~~~~~~~~~
@@ -38,6 +43,7 @@ Bug fixes
 -  Fixed `recipe_kcs.yml` (`#2541 <https://github.com/ESMValGroup/ESMValTool/pull/2541>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Fix MDER diagnostic regression_stepwise (`#2545 <https://github.com/ESMValGroup/ESMValTool/pull/2545>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Fix for recipe_wenzel16nat (`#2547 <https://github.com/ESMValGroup/ESMValTool/pull/2547>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Fixed `recipe_carvalhais14nat` and removed deprecated use of np.float (`#2558 <https://github.com/ESMValGroup/ESMValTool/pull/2558>`__) `Manuel Schlund <https://github.com/schlunma>`__
 
 Deprecations
 ~~~~~~~~~~~~
@@ -63,6 +69,7 @@ Documentation
 -  Add authors to citation cff (`#2525 <https://github.com/ESMValGroup/ESMValTool/pull/2525>`__) `SarahAlidoost <https://github.com/SarahAlidoost>`__
 -  Update documentation on running a recipe (`#2432 <https://github.com/ESMValGroup/ESMValTool/pull/2432>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Fix recipe `hydrology/recipe_wflow.yml` (`#2549 <https://github.com/ESMValGroup/ESMValTool/pull/2549>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Update `draft_release_notes.py` for new release (`#2553 <https://github.com/ESMValGroup/ESMValTool/pull/2553>`__) `Manuel Schlund <https://github.com/schlunma>`__
 
 Diagnostics
 ~~~~~~~~~~~
@@ -78,12 +85,13 @@ Diagnostics
 -  Add recipe and diagnostic scripts to compute figures of D9.4 of ISENES3 (`#2441 <https://github.com/ESMValGroup/ESMValTool/pull/2441>`__) `sloosvel <https://github.com/sloosvel>`__
 -  Save resampled climates from KCS diagnostic local_resampling.py (`#2221 <https://github.com/ESMValGroup/ESMValTool/pull/2221>`__) `Emma Daniels <https://github.com/Emmadd>`__
 -  Use years from KCS recipe (`#2223 <https://github.com/ESMValGroup/ESMValTool/pull/2223>`__) `Emma Daniels <https://github.com/Emmadd>`__
+-  Recipe to plot generic output from the preprocessor (`#2184 <https://github.com/ESMValGroup/ESMValTool/pull/2184>`__) `Javier Vegas-Regidor <https://github.com/jvegreg>`__
 
 Observational and re-analysis dataset support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Ensure dummy data for cmorize_obs_woa test are written to the correct directory (`#2451 <https://github.com/ESMValGroup/ESMValTool/pull/2451>`__) `Emma Hogan <https://github.com/ehogan>`__
--  Add ESA CCI LST cmorizer and diagnostic (`#1897 <https://github.com/ESMValGroup/ESMValTool/pull/1897>`__) `morobking <https://github.com/morobking>`__
+-  Add ESA CCI LST cmorizer and diagnostic (see previous section `Diagnostics`)
 
 Automatic testing
 ~~~~~~~~~~~~~~~~~
@@ -112,6 +120,7 @@ Improvements
 -  Expanded `recipe_preprocessor_test.yml` to account for new `multi_model_statistics` features (`#2519 <https://github.com/ESMValGroup/ESMValTool/pull/2519>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Updated piControl periods for recipes that use KACE-1-0-G (`#2537 <https://github.com/ESMValGroup/ESMValTool/pull/2537>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Reduced time range in `recipe_globwat.yml` (`#2548 <https://github.com/ESMValGroup/ESMValTool/pull/2548>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Removed models with missing data from recipe_williams09climdyn.yml (`#2566 <https://github.com/ESMValGroup/ESMValTool/pull/2566>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 
 
 .. _changelog-v2-4-0:
