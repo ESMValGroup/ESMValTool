@@ -4,8 +4,7 @@ FROM esmvalgroup/esmvalcore:latest
 
 COPY ./environment.yml /src/ESMValTool/environment.yml
 WORKDIR /src/ESMValTool
-RUN conda update -n base -y conda && conda install -y -n base -c conda-forge mamba
-RUN mamba env update -n esmvaltool -f environment.yml
+RUN conda update -n base -y conda && conda install -y -n base -c conda-forge mamba && mamba env update -n esmvaltool -f environment.yml && conda clean --all -y
 
 # Make RUN commands use the new environment:
 RUN echo "conda activate esmvaltool" >> ~/.bashrc
