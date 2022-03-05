@@ -1467,7 +1467,8 @@ def plot_target_distributions(training_data, pred_input_data, attributes,
         # Provenance
         provenance_record = get_provenance_record(
             attributes, [feature, label],
-            caption=f"Probability densitiy of {label}.",
+            caption=(f"{attributes[feature]['plot_title']}: Probability "
+                     f"densitiy of {label}."),
             plot_type='probability')
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
