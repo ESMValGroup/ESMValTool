@@ -701,7 +701,7 @@ for example by running
 
     mamba create -n esmvaltool esmvaltool 'python=3.10'
 
-you ask for Python 3.9 specifically and that makes it much easier for mamba to
+you ask for Python 3.10 specifically and that makes it much easier for mamba to
 solve the environment, because now it can ignore any packages that were built
 for other Python versions. Note that, since the esmvaltool package is built with Python>=3.7,
 asking for an older Python version, e.g. `python=3.6`, in this way, it will result in

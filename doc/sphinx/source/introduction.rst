@@ -56,13 +56,13 @@ Support
 =======
 
 Support for ESMValTool can be found here `ESMValTool Discussions page <https://github.com/ESMValGroup/ESMValTool/discussions>`__
-where users can open an issue and a member of the User Engangement Team of ESMValTool will reach you.
+where users can open an issue and a member of the User Engangement Team of ESMValTool will reply as soon as possible.
 
 .. _contact:
 Contact
 -------
 
-You can also contact the user engagement team directly by sending an email to: [esmvaltool_user_engagement_team@listserv.dfn.de](mailto:esmvaltool_user_engagement_team@listserv.dfn.de)
+The user engagement team can also be directly contacted by sending an email to: [esmvaltool_user_engagement_team@listserv.dfn.de](mailto:esmvaltool_user_engagement_team@listserv.dfn.de)
 
 .. _mailing-list:
 
