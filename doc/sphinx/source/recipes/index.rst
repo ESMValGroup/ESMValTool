@@ -40,6 +40,7 @@ Atmosphere
    recipe_thermodyn_diagtool
    recipe_validation
    recipe_radiation_budget
+   
 
 Climate metrics
 ^^^^^^^^^^^^^^^
@@ -89,6 +90,7 @@ Land
    recipe_landcover
    recipe_anav13jclim
    recipe_runoff_et
+   recipe_esacci_lst
 
 Ocean
 ^^^^^
