@@ -28,6 +28,7 @@ Atmosphere
    recipe_hyint
    recipe_impact
    recipe_modes_of_variability
+   recipe_mpqb_xch4
    recipe_quantilebias
    recipe_bock20jgr
    recipe_spei
@@ -40,7 +41,6 @@ Atmosphere
    recipe_thermodyn_diagtool
    recipe_validation
    recipe_radiation_budget
-   
 
 Climate metrics
 ^^^^^^^^^^^^^^^
