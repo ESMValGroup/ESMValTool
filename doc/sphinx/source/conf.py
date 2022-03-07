@@ -420,7 +420,7 @@ numfig = True
 
 # Configuration for intersphinx
 intersphinx_mapping = {
-    'cf_units': ('https://scitools.org.uk/cf-units/docs/latest/', None),
+    'cf_units': ('https://cf-units.readthedocs.io/en/latest/', None),
     'esmvalcore':
     (f'https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/',
      None),
