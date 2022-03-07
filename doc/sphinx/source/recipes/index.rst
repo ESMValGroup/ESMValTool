@@ -104,6 +104,7 @@ Ocean
    recipe_sea_surface_salinity
    recipe_russell18jgr
    recipe_esacci_oc
+
 Other
 ^^^^^
 .. toctree::
