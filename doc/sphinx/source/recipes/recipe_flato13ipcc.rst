@@ -89,18 +89,18 @@ following figures from Flato et al. (2013) can currently be reproduced:
       calculated as the standard deviation of the annual means over the period
       1986–2005.
 
-    * Figure 9.38: Seasonal cycle for the surface temperature over land within 
-      defined regions multi-model mean and comparison to refefence data set 
-      can be choosen. 
+    * Figure 9.38: Seasonal cycle for the surface temperature over land within
+      defined regions multi-model mean and comparison to refefence data set
+      can be choosen.
 
-    * Figure 9.39: Seasonal bias box plot within 
-      SREX (IPCC Special Report on Managing the Risks of Extreme Events and 
-      Disasters to Advance Climate Change Adaptation) regions. 
+    * Figure 9.39: Seasonal bias box plot within
+      SREX (IPCC Special Report on Managing the Risks of Extreme Events and
+      Disasters to Advance Climate Change Adaptation) regions.
 
-    * Figure 9.40: Seasonal bias box plot within defined polar and 
+    * Figure 9.40: Seasonal bias box plot within defined polar and
       ocean regions.
 
-    * Figure 9.41: Comparison between observations and models for variable 
+    * Figure 9.41: Comparison between observations and models for variable
       values within defined regions.
 
     * Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global
@@ -331,10 +331,10 @@ User settings in recipe
 #. Script regional_downscaling/Figure9.38.ncl
 
    *Required settings (scripts)*
-    
+
    * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
-   * fig938_region_label: Labels for regions, which should be included 
-     (["WNA", "ENA", "CAM", "TSA", "SSA", "EUM", "NAF","CAF", "SAF", "NAS", 
+   * fig938_region_label: Labels for regions, which should be included
+     (["WNA", "ENA", "CAM", "TSA", "SSA", "EUM", "NAF","CAF", "SAF", "NAS",
      "CAS", "EAS", "SAS", "SEA", "AUS"]), default "WNA"
    * fig938_project_MMM: projects to average, default "CMIP5"
    * fig938_experiment_MMM: experiments to average, default "historical"
@@ -345,17 +345,19 @@ User settings in recipe
    * fig938_MMM: Plot multi-model mean (true/false)
 
    *Optional settings (scripts)*
-   
+
+   * fig938_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
+   * fig938_colors_MMM  : colors (/"red","blue"/)
    * fig938_YMin: minimum Y Axis
    * fig938_YMax: maximum Y Axis
- 
+
 #. Script regional_downscaling/Figure9.39.ncl
 
    *Required settings (scripts)*
-    
+
    * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
    * fig939_season : seasons i.e. (["DJF","JJA","ANN"]), default "DJF"
-   * fig939_region_label: Labels for regions, which should be included 
+   * fig939_region_label: Labels for regions, which should be included
      (["ALAs","CGIs","WNAs","CNAs","ENAs","CAMs","AMZs","NEBs","WSAs","SSAs",
      "NEUs","CEUs","MEDs","SAHs","WAFs","EAFs","SAFs","NASs","WASs","CASs",
      "TIBs","EASs","SASs","SEAs","NAUs","SAUs"]), default "ALAs"
@@ -366,9 +368,10 @@ User settings in recipe
    * fig939_names_MMM: names in legend  i.e. (["CMIP5","CMIP3"])
    * fig939_colors_MMM: Color for multi-model mean (e.g. ["red"])
    * fig939_MMM: Plot multi-model mean (true/false)
-   
+
    *Optional settings (scripts)*
-   
+
+   * fig939_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
    * fig939_YMin: minimum Y Axis
    * fig939_YMax: maximum Y Axis
    * fig939_vert_line_pos: i.e. ([6,10,13,17,24,26])
@@ -379,10 +382,10 @@ User settings in recipe
 #. Script regional_downscaling/Figure9.40.ncl
 
    *Required settings (scripts)*
-    
+
    * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
    * fig940_season : seasons i.e. (["DJF","JJA","ANN"]), default "DJF"
-   * fig940_region_label: Labels for regions, which should be included 
+   * fig940_region_label: Labels for regions, which should be included
      (["Arctic_land","Arctic_sea","Antarctic_land","Antarctic_sea",
      "Caribbean","WesternIndianOcean","NorthernIndianOcean",
      "NorthernTropicalPacific","EquatorialTropicalPacific",
@@ -394,9 +397,9 @@ User settings in recipe
    * fig940_refModel: Reference data set for differences default "CRU"
    * fig940_colors_MMM: Color for multi-model mean (e.g. ["red"])
    * fig940_MMM: Plot multi-model mean (true/false)
-   
+
    *Optional settings (scripts)*
-   
+
    * fig940_names_MMM: names in legend  i.e. (["CMIP5","CMIP3"])
    * fig940_YMin: minimum Y Axis
    * fig940_YMax: maximum Y Axis
@@ -408,15 +411,15 @@ User settings in recipe
 #. Script regional_downscaling/Figure9.41.ncl
 
    *Required settings (scripts)*
-   
+
    * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
-   * fig941_region_label: Labels for regions, which should be included 
+   * fig941_region_label: Labels for regions, which should be included
      (["ALAs","CGIs","WNAs","CNAs","ENAs","CAMs","AMZs","NEBs","WSAs","SSAs",
      "NEUs","CEUs","MEDs","SAHs","WAFs","EAFs","SAFs","NASs","WASs","CASs",
      "TIBs","EASs","SASs","SEAs","NAUs","SAUs"]), default "MEDs"
-   
+
    *Optional settings (scripts)*
-   
+
    none
 
 #. Script ipcc_ar5/ch09_fig09_42a.py
@@ -543,16 +546,16 @@ References
   variations to anthropogenic and natural causes using CMIP5 simulations. Journal
   of Geophysical Research: Atmosphere, 118, 4001-4024, doi:10.1002/jgrd.50239.
 
-* Seneviratne, S. I., Nicholls, N., Easterling, D., Goodess, C. M., Kanae, S., 
-  Kossin, J., Luo, Y., Marengo, J., McInnes, K., Rahimi, M., Reichstein, M., 
+* Seneviratne, S. I., Nicholls, N., Easterling, D., Goodess, C. M., Kanae, S.,
+  Kossin, J., Luo, Y., Marengo, J., McInnes, K., Rahimi, M., Reichstein, M.,
   Sorteberg, A., Vera, C., and Zhang, X., 2012:
-  Changes in climate extremes and their impacts on the naturalphysical 
-  environment. , in: Managing the Risks of Extreme Events and Disasters to 
-  Advance Climate Change Adaptation.  A Special Report of Working Groups I and 
-  II of the Intergovernmental Panel on ClimateChange (IPCC), edited by: 
-  Field, C. B., Barros, V., Stocker, T. F., Qin, D., Dokken, D. J., 
-  Ebi, K. L., Mastrandrea, M. D., Mach, K. J., Plattner, G.-K., Allen, S. K., 
-  Tignor, M., and Midgley, P. M., Cambridge University Press, Cambridge, UK, 
+  Changes in climate extremes and their impacts on the naturalphysical
+  environment. , in: Managing the Risks of Extreme Events and Disasters to
+  Advance Climate Change Adaptation.  A Special Report of Working Groups I and
+  II of the Intergovernmental Panel on ClimateChange (IPCC), edited by:
+  Field, C. B., Barros, V., Stocker, T. F., Qin, D., Dokken, D. J.,
+  Ebi, K. L., Mastrandrea, M. D., Mach, K. J., Plattner, G.-K., Allen, S. K.,
+  Tignor, M., and Midgley, P. M., Cambridge University Press, Cambridge, UK,
   and New York, NY, USA, 109-230.
 
 
@@ -670,65 +673,65 @@ Example plots
    shown. The error bars for the ESMs and observations represent interannual
    variability in the fluxes, calculated as the standard deviation of the
    annual means over the period 1986–2005.
-   
+
 .. figure:: /recipes/figures/flato13ipcc/fig-9-38.png
    :align: center
-   
-   Figure 9.38: Mean seasonal cycle for the surface temperature (tas) 
-   as multi model mean of 38 CMIP 5 models and ERA-Interim data averaged 
-   for 1980-1999 over land in different regions: 
-   Western North America (WNA), Eastern North America (ENA), 
-   Central America (CAM), Tropical South America (TSA), 
-   Southern South America (SSA), Europe and Mediterranean (EUM), 
-   North Africa (NAF), Central Africa (CAF), South Africa (SAF), 
-   North Asia (NAS), Central Asia (CAS), East Asia (EAS), 
+
+   Figure 9.38: Mean seasonal cycle for the surface temperature (tas)
+   as multi model mean of 38 CMIP 5 models and ERA-Interim data averaged
+   for 1980-1999 over land in different regions:
+   Western North America (WNA), Eastern North America (ENA),
+   Central America (CAM), Tropical South America (TSA),
+   Southern South America (SSA), Europe and Mediterranean (EUM),
+   North Africa (NAF), Central Africa (CAF), South Africa (SAF),
+   North Asia (NAS), Central Asia (CAS), East Asia (EAS),
    South Asia (SAS), Southeast Asia (SEA), and Australia (AUS).
-   
-   
+
+
 .. figure:: /recipes/figures/flato13ipcc/fig-9-38_regions.png
    :align: center
-   
+
    Figure 9.38reg: Positions of the regions used in Figure 9.38.
-   
+
 .. figure:: /recipes/figures/flato13ipcc/fig-9-39.png
    :align: center
-   
+
    Figure 9.39: Box and whisker plots showing the 5th, 25th, 50th, 75th
-   and 95th percentiles of the seasonal- and annual mean biases for 
-   the surface temperature (tas) between 34 CMIP5 models and ERA-Interim data. 
-   The regions are: Alaska/NW Canada (ALAs), 
-   Eastern Canada/Greenland/Iceland (CGIs), Western North America(WNAs), 
-   Central North America (CNAs), Eastern North America (ENAs), 
-   Central America/Mexico (CAMs), Amazon (AMZs), NE Brazil (NEBs), 
-   West Coast South America (WSAs), South-Eastern South America (SSAs), 
-   Northern Europe (NEUs), Central Europe (CEUs), 
-   Southern Europe/the Mediterranean (MEDs), Sahara (SAHs), 
-   Western Africa (WAFs), Eastern Africa (EAFs), Southern Africa (SAFs), 
-   Northern Asia (NASs), Western Asia (WASs), Central Asia (CASs), 
-   Tibetan Plateau (TIBs), Eastern Asia (EASs), Southern Asia (SASs), 
-   Southeast Asia (SEAs), Northern Australia (NASs) and 
-   Southern Australia/New Zealand (SAUs). 
-   The positions of these regions is defined following 
+   and 95th percentiles of the seasonal- and annual mean biases for
+   the surface temperature (tas) between 34 CMIP5 models and ERA-Interim data.
+   The regions are: Alaska/NW Canada (ALAs),
+   Eastern Canada/Greenland/Iceland (CGIs), Western North America(WNAs),
+   Central North America (CNAs), Eastern North America (ENAs),
+   Central America/Mexico (CAMs), Amazon (AMZs), NE Brazil (NEBs),
+   West Coast South America (WSAs), South-Eastern South America (SSAs),
+   Northern Europe (NEUs), Central Europe (CEUs),
+   Southern Europe/the Mediterranean (MEDs), Sahara (SAHs),
+   Western Africa (WAFs), Eastern Africa (EAFs), Southern Africa (SAFs),
+   Northern Asia (NASs), Western Asia (WASs), Central Asia (CASs),
+   Tibetan Plateau (TIBs), Eastern Asia (EASs), Southern Asia (SASs),
+   Southeast Asia (SEAs), Northern Australia (NASs) and
+   Southern Australia/New Zealand (SAUs).
+   The positions of these regions is defined following
    (Seneviratne et al., 2012) and differs from the ones in Fig. 9.38.
-   
-   
+
+
 .. figure:: /recipes/figures/flato13ipcc/fig-9-39_regions.png
    :align: center
-   
+
    Figure 9.39reg: Positions of the regions used in Figure 9.39.
-   
+
 
 .. figure:: /recipes/figures/flato13ipcc/fig-9-40.png
    :align: center
-   
-   Figure 9.40: Box and whisker plots showing the 5th, 25th, 50th, 75th 
-   and 95th percentiles of the seasonal- and annual mean biases for 
-   the precipitation (pr) for oceanic and polar regions between 38 CMIP5 
-   models and CRU data for 1979–2000. 
+
+   Figure 9.40: Box and whisker plots showing the 5th, 25th, 50th, 75th
+   and 95th percentiles of the seasonal- and annual mean biases for
+   the precipitation (pr) for oceanic and polar regions between 38 CMIP5
+   models and CRU data for 1979–2000.
 
 .. figure:: /recipes/figures/flato13ipcc/fig-9-41b.png
    :align: center
-   
+
    Figure 9.41b: Ranked modelled versus ERA-Interim mean temperature for
    38 CMIP5 models in the Mediterranean region for 1979–2000.
 

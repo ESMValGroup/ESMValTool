@@ -20,9 +20,9 @@
 ; #
 ; # Required variable_info attributes (variable specific):
 ; #
-; #    * @refModel: reference model name
-; #    * @fig940_season : seasons i.e. (/"DJF","JJA","ANN"/)
-; #    * @fig940_region_label :(/(/"Arctic_land","Arctic_sea",\
+; #    * refModel: reference model name
+; #    * fig940_season : seasons i.e. (/"DJF","JJA","ANN"/)
+; #    * fig940_region_label :(/(/"Arctic_land","Arctic_sea",\
 ; #                           "Antarctic_land",\
 ; #                           "Antarctic_sea","Caribbean",\
 ; #                           "WesternIndianOcean",\
@@ -34,27 +34,28 @@
 ; #        – Notes and technical details on Chapter 3 figures.
 ; #       In: Managing the Risks of Extreme Events and Disasters to Advance
 ; #          Climate Change Adaptation(IPCC). <www.ipcc.ch>.
-; #      *@fig940_MMM  True
-; #      *@fig940_project_MMM: projects to average
-; #      *@fig940_experiment_MMM: experiments to average
-; #      *@fig940_mip_MMM: mip to average
-; #      *Dimensions of @fig940_project_MMM, @fig940_experiment_MMM and
-; #        @fig940_mip_MMM must be the same i.e.
-; #        @fig940_project_MMM=(/"CMIP5", "CMIP3"/)
-; #        @fig940_experiment_MMM=(/"historical", "historical"/)
-; #        @fig940_mip_MMM=(/"Amon", "Amon"/)
+; #      * fig940_MMM  True
+; #      * fig940_project_MMM: projects to average
+; #      * fig940_experiment_MMM: experiments to average
+; #      * fig940_mip_MMM: mip to average
+; #      *Dimensions of fig940_project_MMM, fig940_experiment_MMM and
+; #         fig940_mip_MMM must be the same i.e.
+; #        fig940_project_MMM=(/"CMIP5", "CMIP3"/)
+; #        fig940_experiment_MMM=(/"historical", "historical"/)
+; #        fig940_mip_MMM=(/"Amon", "Amon"/)
 ; #
 ; # Optional diag_script_info attributes
 ; #
-; #      *@Vertical lines divide groups of region
-; #        @fig940_vert_line_pos
+; #      * fig940_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
+; #      * Vertical lines divide groups of region
+; #         fig940_vert_line_pos
 ; #          i.e. (/6,10,13,17,24,26/)
-; #      *@labels of vertical lines
-; #       @fig940_vert_line_label
-; # .e.(/"North America","South America","Europe","Africa","Asia","Australia"/)
-; #       @fig940_mode    : True= cumulative mode
-; #       @fig940_YMin        : minimum Y Axis
-; #       @fig940_YMax        : maximum Y Axis
+; #      * labels of vertical lines
+; #        fig940_vert_line_label
+; # e.g.(/"North America","South America","Europe","Africa","Asia","Australia"/)
+; #       fig940_mode    : True= cumulative mode
+; #       fig940_YMin        : minimum Y Axis
+; #       fig940_YMax        : maximum Y Axis
 ; # Caveats:
 ; #      This script requires NCL version 6.40
 ; #      Regions border are poligons defined in function select_region_940

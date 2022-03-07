@@ -20,9 +20,9 @@
 ; #
 ; # Required variable_info attributes (variable specific):
 ; #
-; #    * @fig939_refModel: reference model name
-; #    * @fig939_season : seasons i.e. (/"DJF","JJA","ANN"/)
-; #    * @fig939_region_label :
+; #    *  fig939_refModel: reference model name
+; #    *  fig939_season : seasons i.e. (/"DJF","JJA","ANN"/)
+; #    *  fig939_region_label :
 ; #      (/"ALA","CGI","WNA","CNA","ENA","CAM","AMZ","NEB","WSA","SSA","NEU",
 ; #       "CEU","MED","SAH","WAF","EAF","SAF","NAS","WAS","CAS","TIB","EAS",
 ; #       "SAS","SEA","NAU","SAU"/)
@@ -30,28 +30,28 @@
 ; #        – Notes and technical details on Chapter 3 figures.
 ; #       In: Managing the Risks of Extreme Events and Disasters to Advance
 ; #          Climate Change Adaptation(IPCC). <www.ipcc.ch>.
-; #      *@fig939_MMM  True
-; #      *@fig939_project_MMM: projects to average
-; #      *@fig939_experiment_MMM: experiments to average
-; #      *@fig939_mip_MMM: mip to average
-; #      *Dimensions of @fig939_project_MMM, @fig939_experiment_MMM and
-; #        @fig939_mip_MMM must have the number of elements i.e.
-; #        @fig939_project_MMM=(/"CMIP5", "CMIP3"/)
-; #        @fig939_experiment_MMM=(/"historical", "historical"/)
-; #        @fig939_mip_MMM=(/"Amon", "Amon"/)
+; #      * fig939_MMM  True
+; #      * fig939_project_MMM: projects to average
+; #      * fig939_experiment_MMM: experiments to average
+; #      * fig939_mip_MMM: mip to average
+; #      *Dimensions of fig939_project_MMM, fig939_experiment_MMM and
+; #         fig939_mip_MMM must have the number of elements i.e.
+; #         fig939_project_MMM=(/"CMIP5", "CMIP3"/)
+; #         fig939_experiment_MMM=(/"historical", "historical"/)
+; #         fig939_mip_MMM=(/"Amon", "Amon"/)
 ; #
 ; # Optional diag_script_info attributes
 ; #
-; #      *@fig939_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
-; #      *@Vertical lines divide groups of region
-; #        @fig939_vert_line_pos
+; #      * fig939_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
+; #      * Vertical lines divide groups of region
+; #         fig939_vert_line_pos
 ; #          i.e. (/6,10,13,17,24,26/)
-; #      *@labels of vertical lines
-; #       @fig939_vert_line_label
+; #      * labels of vertical lines
+; #        fig939_vert_line_label
 ; # .e.(/"North America","South America","Europe","Africa","Asia","Australia"/)
-; #       @fig939_mode    : True= cumulative mode
-; #       @fig939_YMin        : minimum Y Axis
-; #       @fig939_YMax        : maximum Y Axis
+; #        fig939_mode    : True= cumulative mode
+; #        fig939_YMin        : minimum Y Axis
+; #        fig939_YMax        : maximum Y Axis
 ; # Caveats:
 ; #      This script requires NCL version 6.40
 ; #      Regions border are poligons defined in function select_region_939
@@ -777,7 +777,7 @@ begin
                  (/"reg"/), \
                  "box", \
                  (/"cionni_irene"/), \
-                 (/"flato13ipcc"/), \
+                 (/"flato13ipcc", "seneviratne12ipcc"/), \
                  metadata_att_as_array(info0, "filename"))
 
 end

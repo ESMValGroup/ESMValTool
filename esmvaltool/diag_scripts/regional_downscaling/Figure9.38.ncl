@@ -18,27 +18,27 @@
 ; #
 ; # Required variable_info attributes (variable specific):
 ; #
-; #     * @fig938_region_label:
+; #     *  fig938_region_label:
 ; #       (/"WNA","ENA","CAM","TSA","SSA","EUM","NAF","CAF","SAF",
 ; #         "NAS","CAS","EAS","SAS","SEA","AUS"/)
 ; #        these reagions are defined in function select_region
 ; #        (./diag_scripts/lib/ncl/latlon.ncl
 ; #        according to a personal comunication of Sin Chan Chou
-; #     * @fig938_project_MMM: projects to average
-; #     * @fig938_experiment_MMM: experiments to average
-; #     * @fig938_mip_MMM: mip to average
+; #     *  fig938_project_MMM: projects to average
+; #     *  fig938_experiment_MMM: experiments to average
+; #     *  fig938_mip_MMM: mip to average
 ; #
-; #        @fig938_mip_MMM must have the same number of elements i.e.
-; #        @fig938_project_MMM=(/"CMIP5", "CMIP3"/)
-; #        @fig938_experiment_MMM=(/"historical", "historical"/)
-; #        @fig938_mip_MMM=(/"Amon", "Amon"/)
+; #         fig938_mip_MMM must have the same number of elements i.e.
+; #         fig938_project_MMM=(/"CMIP5", "CMIP3"/)
+; #         fig938_experiment_MMM=(/"historical", "historical"/)
+; #         fig938_mip_MMM=(/"Amon", "Amon"/)
 ; #
 ; # Optional diag_script_info attributes (diagnostics specific):
 ; #
-; #        @fig938_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
-; #        @fig938_colors_MMM  : colors (/"red","blue"/)
-; #        @fig938_YMin        : minimum Y Axis
-; #        @fig938_YMax        : maximum Y Axis
+; #         fig938_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
+; #         fig938_colors_MMM  : colors (/"red","blue"/)
+; #         fig938_YMin        : minimum Y Axis
+; #         fig938_YMax        : maximum Y Axis
 ; #
 ; # Caveats:                                                    #
 ; #                                                             #
