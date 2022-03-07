@@ -1105,7 +1105,7 @@ diagnostics:
       - {dataset: CCSM4}
       - {dataset: CESM1-BGC}
       - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-CAM5-1-FV2}
+      # - {dataset: CESM1-CAM5-1-FV2}  # data is missing on ESGF
       - {dataset: CESM1-FASTCHEM}
       - {dataset: CESM1-WACCM}
       - {dataset: CMCC-CESM}
