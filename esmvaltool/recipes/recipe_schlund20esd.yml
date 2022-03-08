@@ -1840,7 +1840,9 @@ diagnostics:
       - {dataset: BCC-CSM2-MR,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn}
       - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn}
-      - {dataset: CAS-ESM2-0,      ensemble: r1i1p1f1, grid: gn, institute: CAS}
+      # Dataset issue: lev: has values > valid_max = 1.0
+      # see https://github.com/ESMValGroup/ESMValCore/issues/1527 for details
+      # - {dataset: CAS-ESM2-0,      ensemble: r1i1p1f1, grid: gn, institute: CAS}
       - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-FV2,       ensemble: r1i1p1f1, grid: gn, institute: NCAR}
       - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn, institute: NCAR}
