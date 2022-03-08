@@ -228,10 +228,10 @@ Variables
 
 Observations and reformat scripts
 ---------------------------------
-*Note: see headers of cmorization scripts (in esmvaltool/cmorizers/obs) for download instructions.*
+*Note: download instructions can be obtained with `esmvaltool data info DATASET` or in headers of cmorization scripts.*
 
-*  ERA-Interim (esmvaltool/cmorizers/obs/cmorize_obs_era_interim.py)
-*  ERA5 (esmvaltool/cmorizers/obs/cmorize_obs_era5.py)
+*  ERA-Interim (esmvaltool/cmorizers/data/formatters/datasets/era_interim.py)
+*  ERA5 (esmvaltool/diag_scripts/cmorizers/era5.py)
 
 Output
 ---------

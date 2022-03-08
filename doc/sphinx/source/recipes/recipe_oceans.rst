@@ -800,7 +800,7 @@ The following WOA datasets are used by the ocean diagnostics:
  - Silicate
  - Dissolved Oxygen
 
-These files need to be reformatted using the `cmorize_obs_py` script with output name `WOA`.
+These files need to be reformatted using the `esmvaltool data format WOA` command.
 
 
 Landschuetzer 2016
@@ -814,7 +814,7 @@ The following variables are used by the ocean diagnostics:
  - spco2, Surface Aqueous Partial Pressure of CO2
  - dpco2, Delta CO2 Partial Pressure
 
-The file needs to be reformatted using the `cmorize_obs_py` script with output name `Landschuetzer2016`.
+The file needs to be reformatted using the `esmvaltool data format Landschuetzer2016` command.
 
 
 
