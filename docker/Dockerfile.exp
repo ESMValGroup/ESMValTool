@@ -15,7 +15,6 @@ RUN conda info && conda list
 RUN pip install -e .[develop]
 RUN conda info && conda list
 RUN esmvaltool install R
-RUN mamba install -y -c conda-forge julia
 RUN esmvaltool install Julia
 RUN pip install ../ESMValCore && pip cache purge
 
