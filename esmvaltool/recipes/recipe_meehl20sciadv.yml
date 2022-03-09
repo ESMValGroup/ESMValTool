@@ -276,8 +276,8 @@ TCR_CMIP6: &tcr_cmip6
   - {dataset: GFDL-CM4,        exp: 1pctCO2,   ensemble: r1i1p1f1,   grid: gr1, start_year:    1, end_year:  140}
   - {dataset: GFDL-ESM4,       exp: piControl, ensemble: r1i1p1f1,   grid: gr1, start_year:  101, end_year:  240}
   - {dataset: GFDL-ESM4,       exp: 1pctCO2,   ensemble: r1i1p1f1,   grid: gr1, start_year:    1, end_year:  140}
-  - {dataset: GISS-E2-1-G,     exp: piControl, ensemble: r102i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
-  - {dataset: GISS-E2-1-G,     exp: 1pctCO2,   ensemble: r102i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+  - {dataset: GISS-E2-1-G,     exp: piControl, ensemble: r101i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+  - {dataset: GISS-E2-1-G,     exp: 1pctCO2,   ensemble: r101i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
   - {dataset: GISS-E2-1-H,     exp: piControl, ensemble: r1i1p1f1,   grid: gn,  start_year: 3180, end_year: 3319}
   - {dataset: GISS-E2-1-H,     exp: 1pctCO2,   ensemble: r1i1p1f1,   grid: gn,  start_year: 1850, end_year: 1989}
   - {dataset: GISS-E2-2-G,     exp: piControl, ensemble: r1i1p1f1,   grid: gn,  start_year: 2000, end_year: 2139, institute: NASA-GISS}
