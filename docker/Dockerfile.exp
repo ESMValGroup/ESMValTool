@@ -2,21 +2,19 @@
 # docker build -t esmvaltool:experimental . -f docker/Dockerfile.exp
 FROM esmvalgroup/esmvalcore:latest
 
+SHELL ["/bin/bash", "--login", "-c"]
+
 COPY ./environment.yml /src/ESMValTool/environment.yml
 WORKDIR /src/ESMValTool
 RUN conda update -n base -y conda && conda install -y -n base -c conda-forge mamba && mamba env update -n esmvaltool -f environment.yml && conda clean --all -y
 
-# Make RUN commands use the new environment:
-RUN echo "conda activate esmvaltool" >> ~/.bashrc
-SHELL ["/bin/bash", "--login", "-c"]
+SHELL ["conda", "run", "--name", "esmvaltool", "/bin/bash", "-c"]
 
 COPY . /src/ESMValTool
 RUN conda info && conda list
 RUN pip install -e .[develop]
 RUN conda info && conda list
-RUN mamba install -y -c conda-forge r-base
 RUN esmvaltool install R
-RUN mamba install -y -c conda-forge julia
 RUN esmvaltool install Julia
 RUN pip install ../ESMValCore && pip cache purge
 
