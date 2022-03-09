@@ -24,11 +24,13 @@ class MonitorBase():
 
     def __init__(self, config):
         self.cfg = config
-        self.plot_folder = os.path.abspath(
-            config.get(
-                'plot_folder',
-                os.path.join(self.cfg[names.PLOT_DIR], "../..",
-                             '{dataset}/{exp}/{modeling_realm}/{real_name}')))
+        plot_folder = config.get(
+            'plot_folder',
+            '{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}',
+        )
+        plot_folder = plot_folder.replace('{plot_dir}',
+                                          self.cfg[names.PLOT_DIR])
+        self.plot_folder = os.path.abspath(plot_folder)
         self.plot_filename = config.get(
             'plot_filename',
             '{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}')

@@ -72,12 +72,20 @@ monitor.py
     Path to the folder to store the figures. It is defined as the
     input paths in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to ``~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}``.
+    for more details.
+    Defaults to ``{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}``.
+    All tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replace with the corresponding tags).
+    ``{plot_dir}`` is replaced with the default ESMValTool plot directory
+    (i.e., ``output_dir/plots/diagnostic_name/script_name/``, see
+    :ref:`esmvalcore:user configuration file`).
   * plot_filename:
     Filename pattern for the plots. It is defined as the input
     files in in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
     for more details. Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
+    All tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replace with the corresponding tags).
   * config_file:
     Path to the monitor config file. Defaults to
     ``monitor_config.yml`` in the same folder as the diagnostic script.
@@ -115,12 +123,19 @@ compute_eofs.py
     Path to the folder to store the figures. It is defined as the
     input paths in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to ``~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}``.
+    for more details.
+    All tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replace with the corresponding tags).
+    ``{plot_dir}`` is replaced with the default ESMValTool plot directory
+    (i.e., ``output_dir/plots/diagnostic_name/script_name/``, see
+    :ref:`esmvalcore:user configuration file`).
   * plot_filename:
     Filename pattern for the plots. It is defined as the input
     files in in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
     for more details. Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
+    All tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replace with the corresponding tags).
   * config_file:
     Path to the monitor config file. Defaults to
     ``monitor_config.yml`` in the same folder as the diagnostic script.
