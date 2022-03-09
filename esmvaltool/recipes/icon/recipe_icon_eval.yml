@@ -134,8 +134,8 @@ diagnostics:
         mip: Amon
         additional_datasets: *ref_2d
     scripts:
-      plot:
-        script: icon/plot_native_model_map.py
+      # plot:
+      #   script: icon/plot_native_model_map.py
       time_series:
         <<: *script_time_series_ref
       map:
