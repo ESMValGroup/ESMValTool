@@ -18,7 +18,7 @@ maps:
     lat: [50, 60, 70, 80, 90]
     smooth: true
     draw_labels: true
-    suptitle_pos: 1.
+    suptitle_pos: 1.06
   antarctic:
     projection: SouthPolarStereo
     projection_kwargs:
@@ -27,7 +27,7 @@ maps:
     lat: [-50, -60, -70, -80, -90]
     draw_labels: true
     smooth: true
-    suptitle_pos: 1.
+    suptitle_pos: 1.06
   north:
     projection: NorthPolarStereo
     projection_kwargs:
@@ -35,7 +35,7 @@ maps:
     lon: [-180, -150, -120, -90, -60, 0, 30, 60, 90, 120, 150, 180]
     lat: [40, 50, 60, 70, 80, 90]
     smooth: true
-    suptitle_pos: 1.
+    suptitle_pos: 1.06
   south:
     projection: SouthPolarStereo
     projection_kwargs:
@@ -43,7 +43,7 @@ maps:
     lon: [-180, -150, -120, -90, -60, 0, 30, 60, 90, 120, 150, 180]
     lat: [-40, -50, -60, -70, -80, -90]
     smooth: true
-    suptitle_pos: 1.
+    suptitle_pos: 1.06
 
 
 variables:
