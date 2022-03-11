@@ -217,7 +217,7 @@ class Monitor(MonitorBase):
                 f'({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})'
                 f'\n{cube.long_name} ({cube.units})',
                 fontsize=plot_map.fontsize + 4.,
-                y=1.085 - rows * 0.025,
+                y=1.155 - rows * 0.025,
             )
             plt.subplots_adjust(
                 top=0.85,
