@@ -29,6 +29,7 @@ Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Streamline observations download (`#1657 <https://github.com/ESMValGroup/ESMValTool/pull/1657>`__) `Javier Vegas-Regidor <https://github.com/jvegreg>`__. This change removes the ``cmorize_obs`` command which has previously been used to CMORize observations and other datasets. The new command ``esmvaltool data`` provides many new features apart from the CMORization (``esmvaltool data format``), for example, automatic downloading of observational datasets (``esmvaltool data download``). More details on this can be found :ref:`here<inputdata_observations>` and :ref:`here<new-cmorizer>`.
+-  Dropped Python 3.7 (`#2585 <https://github.com/ESMValGroup/ESMValTool/pull/2585>`__) `Manuel Schlund <https://github.com/schlunma>`__. ESMValTool v2.5.0 dropped support for Python 3.7. From now on Python >=3.8 is required to install ESMValTool. The main reason for this is that conda-forge dropped support for Python 3.7 for OSX and arm64 (more details are given `here <https://github.com/ESMValGroup/ESMValTool/issues/2584#issuecomment-1063853630>`__).
 
 Bug fixes
 ~~~~~~~~~
@@ -44,6 +45,11 @@ Bug fixes
 -  Fix MDER diagnostic regression_stepwise (`#2545 <https://github.com/ESMValGroup/ESMValTool/pull/2545>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Fix for recipe_wenzel16nat (`#2547 <https://github.com/ESMValGroup/ESMValTool/pull/2547>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Fixed `recipe_carvalhais14nat` and removed deprecated use of np.float (`#2558 <https://github.com/ESMValGroup/ESMValTool/pull/2558>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Fix `recipe_wenzel14jgr` (`#2577 <https://github.com/ESMValGroup/ESMValTool/pull/2577>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fixed various recipes by removing faulty or non-available datasets (`#2563 <https://github.com/ESMValGroup/ESMValTool/pull/2563>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Remove missing CMIP5 data from 2 recipes (`#2579 <https://github.com/ESMValGroup/ESMValTool/pull/2579>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fix `recipe_seaice` (`#2578 <https://github.com/ESMValGroup/ESMValTool/pull/2578>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fix `recipe_climwip_brunner20esd` (`#2581 <https://github.com/ESMValGroup/ESMValTool/pull/2581>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 
 Deprecations
 ~~~~~~~~~~~~
@@ -70,6 +76,10 @@ Documentation
 -  Update documentation on running a recipe (`#2432 <https://github.com/ESMValGroup/ESMValTool/pull/2432>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Fix recipe `hydrology/recipe_wflow.yml` (`#2549 <https://github.com/ESMValGroup/ESMValTool/pull/2549>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Update `draft_release_notes.py` for new release (`#2553 <https://github.com/ESMValGroup/ESMValTool/pull/2553>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Added stand with Ukraine badge (`#2565 <https://github.com/ESMValGroup/ESMValTool/pull/2565>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Updated CREM docu (recipe_williams09climdyn.yml) (`#2567 <https://github.com/ESMValGroup/ESMValTool/pull/2567>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  First draft for v2.5.0 changelog (`#2554 <https://github.com/ESMValGroup/ESMValTool/pull/2554>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Replace nonfunctional Github Actions badge with cool one in README (`#2582 <https://github.com/ESMValGroup/ESMValTool/pull/2582>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 
 Diagnostics
 ~~~~~~~~~~~
@@ -86,6 +96,7 @@ Diagnostics
 -  Save resampled climates from KCS diagnostic local_resampling.py (`#2221 <https://github.com/ESMValGroup/ESMValTool/pull/2221>`__) `Emma Daniels <https://github.com/Emmadd>`__
 -  Use years from KCS recipe (`#2223 <https://github.com/ESMValGroup/ESMValTool/pull/2223>`__) `Emma Daniels <https://github.com/Emmadd>`__
 -  Recipe to plot generic output from the preprocessor (`#2184 <https://github.com/ESMValGroup/ESMValTool/pull/2184>`__) `Javier Vegas-Regidor <https://github.com/jvegreg>`__
+-  Fixed provenance tracking for emergent constraint diagnostics (`#2573 <https://github.com/ESMValGroup/ESMValTool/pull/2573>`__) `Manuel Schlund <https://github.com/schlunma>`__
 
 Observational and re-analysis dataset support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -121,6 +132,7 @@ Improvements
 -  Updated piControl periods for recipes that use KACE-1-0-G (`#2537 <https://github.com/ESMValGroup/ESMValTool/pull/2537>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Reduced time range in `recipe_globwat.yml` (`#2548 <https://github.com/ESMValGroup/ESMValTool/pull/2548>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Removed models with missing data from recipe_williams09climdyn.yml (`#2566 <https://github.com/ESMValGroup/ESMValTool/pull/2566>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Restored original versions of `recipe_schlund20esd.yml` and `recipe_meehl20sciadv.yml` (`#2583 <https://github.com/ESMValGroup/ESMValTool/pull/2583>`__) `Manuel Schlund <https://github.com/schlunma>`__
 
 
 .. _changelog-v2-4-0:

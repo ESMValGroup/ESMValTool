@@ -8,7 +8,7 @@ Installation
    ESMValTool now uses `mamba` instead of `conda` for the recommended installation.
    For more information about the change, have a look at :ref:`Move to Mamba<move-to-mamba>`.
 
-ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.7+.
+ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.8+.
 
 The ESMValTool can be installed in multiple ways.
 
@@ -93,8 +93,8 @@ Here ``mamba`` is the executable calling the mamba package manager to install
 ``esmvaltool``. The reason why we are also specifying ``'python=3.10'`` is that
 it will make it easier for mamba to find a working combination of all required
 packages, see `Mamba fails to solve the environment`_ in `common installation
-issues`_ for an in-depth explanation. Python 3.7, 3.8 and 3.9 are also
-supported, in case you prefer to work with an older version of Python.
+issues`_ for an in-depth explanation. Python 3.8 and 3.9 are also supported, in
+case you prefer to work with an older version of Python.
 
 This will create a new
 `conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`_
@@ -734,7 +734,7 @@ for example by running
 you ask for Python 3.10 specifically and that makes it much easier for mamba to
 solve the environment, because now it can ignore any packages that were built
 for other Python versions. Note that, since the esmvaltool package is built
-with Python>=3.7, asking for an older Python version, e.g. `python=3.6`, in
+with Python>=3.8, asking for an older Python version, e.g. `python=3.7`, in
 this way, it will result in installation failure.
 
 Problems with proxies
