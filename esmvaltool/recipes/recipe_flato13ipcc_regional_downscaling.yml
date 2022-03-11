@@ -2,6 +2,7 @@
 # recipe_flato13ipcc_regional_downscaling.yml
 ---
 documentation:
+  title: "Only regional figures 9.38-9.41"
   description: |
     Diagnostics for regional downscaling 
 
@@ -214,16 +215,23 @@ diagnostics:
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
          start_year: 1986, end_year: 2005, tier: 3}
+      - {dataset: MIROC6, institute: MIROC, mip: Amon,
+         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
+         grid: gn, start_year: 1986, end_year: 2005}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL, mip: Amon,
+         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
+         grid: gr, start_year: 1986, end_year: 2005}
+
     scripts:
       clim: &Fig939_settings
         script: regional_downscaling/Figure9.39.ncl
         styleset: CMIP5
         fig939_season: ["DJF","JJA","ANN"]
         fig939_region_label: ["ALAs","CGIs","WNAs","CNAs","ENAs","CAMs","AMZs","NEBs","WSAs","SSAs","NEUs","CEUs","MEDs","SAHs","WAFs","EAFs","SAFs","NASs","WASs","CASs","TIBs","EASs","SASs","SEAs","NAUs","SAUs"]
-        fig939_project_MMM: ["CMIP5"]
-        fig939_experiment_MMM: ["historical"]
-        fig939_mip_MMM: ["Amon"]
-        fig939_colors_MMM: ["red"]
+        fig939_project_MMM: ["CMIP5","CMIP6"]
+        fig939_experiment_MMM: ["historical","historical"]
+        fig939_mip_MMM: ["Amon","Amon"]
+        fig939_colors_MMM: ["red","blue"]
         fig939_refModel: ERA-Interim
         fig939_MMM: True
   # ==========================================================================
@@ -246,16 +254,22 @@ diagnostics:
       #    start_year: 1986, end_year: 2005, tier: 3}
       - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2,
          start_year: 1986, end_year: 2005}
+      - {dataset: MIROC6, institute: MIROC, mip: Amon,
+         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
+         grid: gn, start_year: 1986, end_year: 2005}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL, mip: Amon,
+         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
+         grid: gr, start_year: 1986, end_year: 2005}
     scripts:
       clim: &Fig940_settings
         script: regional_downscaling/Figure9.40.ncl
         styleset: CMIP5
         fig940_season: ["DJF","JJA","ANN"]
         fig940_region_label: ["Arctic_land","Arctic_sea","Antarctic_land","Antarctic_sea","Caribbean","WesternIndianOcean","NorthernIndianOcean","NorthernTropicalPacific","EquatorialTropicalPacific","SouthernTropicalPacific","World_land","World_sea","World"]
-        fig940_project_MMM: ["CMIP5"]
-        fig940_experiment_MMM: ["historical"]
-        fig940_mip_MMM: ["Amon"]
-        fig940_colors_MMM: ["red"]
+        fig940_project_MMM: ["CMIP5","CMIP6"]
+        fig940_experiment_MMM: ["historical","historical"]
+        fig940_mip_MMM: ["Amon","Amon"]
+        fig940_colors_MMM: ["red","blue"]
         fig940_refModel: CRU
         fig940_MMM: True
 #      fig940_mode: "cumulative"
@@ -286,6 +300,6 @@ diagnostics:
     scripts:
       clim: &Fig941_settings
         script: regional_downscaling/Figure9.41.ncl
-        fig941_region_label: ["MEDs", "ALAs"]
+        fig941_region_label: ["MEDs"]
         styleset: CMIP5
 

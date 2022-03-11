@@ -15,8 +15,8 @@
 ; #       - plot the first selected project&experiment&mip as box-and-whisker
 ; #       - plot the others selected projects&experiment&mip as markers
 ; #       - compare the root-mean-square error of first project&experiment&mip
-; #         with the second if exist  ibelled with redthe regions where
-; #         the first error is larger than the second
+; #         with the second if exist labeled with red for the regions where
+; #         the first error is larger than the second.
 ; #
 ; # Required variable_info attributes (variable specific):
 ; #
@@ -54,7 +54,7 @@
 ; #        fig939_YMax        : maximum Y Axis
 ; # Caveats:
 ; #      This script requires NCL version 6.40
-; #      Regions border are poligons defined in function select_region_939
+; #      Regions borders are poligons defined in function select_region_939
 ; #      in ./diag_scripts/lib/ncl/latlon.ncl.
 ; #    his script read in dir_anc="./diag_scripts/lib/ncl/ancillary_regional/
 ; #      that contains contains 3 files :

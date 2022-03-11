@@ -7,8 +7,7 @@
 ; #
 ; # Description
 ; #    * Creates annual cycle regional plots for individual models and
-; #       mumltimodle
-; #      over the selected project&experiemnt&mip
+; #       multi model over the selected project&experiment&mip
 ; #       - Read regions
 ; #       - select the regions
 ; #       - calculate annual cycle for each model
