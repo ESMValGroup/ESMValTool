@@ -5,11 +5,12 @@ from pathlib import Path
 from pprint import pformat
 
 import iris
-import matplotlib.colors as colors
 import matplotlib.pyplot as plt
+from matplotlib import colors
 from matplotlib.ticker import FormatStrFormatter, NullFormatter
 
 from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
     get_plot_filename,
     group_metadata,
     run_diagnostic,
@@ -181,11 +182,22 @@ def main(cfg):
             continue
 
         # Plot
+        ancestors = [dataset['filename']]
         if ref_dataset is None:
             (fig, basename) = plot_dataset_without_ref(cfg, dataset)
+            caption = (f"Zonal mean {dataset['long_name']} of dataset "
+                       f"{dataset['dataset']} (project {dataset['project']}) "
+                       f"from {dataset['start_year']} to "
+                       f"{dataset['end_year']}.")
         else:
             (fig, basename) = plot_dataset_with_ref(cfg, dataset, ref_dataset,
                                                     ref_cube)
+            caption = (f"Zonal mean {dataset['long_name']} of dataset "
+                       f"{dataset['dataset']} (project {dataset['project']}) "
+                       f"including bias relative to {ref_dataset['dataset']} "
+                       f"(project {ref_dataset['project']}) from "
+                       f"{dataset['start_year']} to {dataset['end_year']}.")
+            ancestors.append(ref_dataset['filename'])
 
         # General plot appearance
         if 'suptitle' in cfg:
@@ -200,6 +212,16 @@ def main(cfg):
                     dpi=200)
         logger.info("Wrote %s", plot_path)
         plt.close()
+
+        # Provenance tracking
+        provenance_record = {
+            'ancestors': ancestors,
+            'authors': ['schlund_manuel'],
+            'caption': caption,
+            'plot_types': ['zonal'],
+        }
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
 
 
 if __name__ == '__main__':

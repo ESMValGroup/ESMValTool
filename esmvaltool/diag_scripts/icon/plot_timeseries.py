@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 from esmvaltool.diag_scripts.mlr.plot import unify_time_coord
 from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
     get_plot_filename,
     group_metadata,
     run_diagnostic,
@@ -76,7 +77,9 @@ def main(cfg):
     plt.figure(figsize=(8, 4), dpi=150)
 
     # Plot all datasets in single figure
+    ancestors = []
     for dataset in input_data:
+        ancestors.append(dataset['filename'])
         cube = load_and_preprocess(dataset)
 
         # Plot monthly means
@@ -103,6 +106,19 @@ def main(cfg):
     plt.savefig(plot_path, bbox_inches='tight', orientation='landscape')
     logger.info("Wrote %s", plot_path)
     plt.close()
+
+    # Provenance tracking
+    caption = (f"Monthly mean (solid lines) and annual mean (dashed lines) "
+               f"time series of {input_data[0]['long_name']} for various "
+               f"datasets.")
+    provenance_record = {
+        'ancestors': ancestors,
+        'authors': ['schlund_manuel'],
+        'caption': caption,
+        'plot_types': ['line'],
+    }
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_path, provenance_record)
 
 
 if __name__ == '__main__':
