@@ -21,8 +21,8 @@
 ; #                                                                           #
 ; # Caveats:                                                                  #
 ; #                                                                           #
-; # Modification history:                                                     #
-; #                                                                           #
+; # Modification history:   
+; # 20220314-weigel_katja: header updated                                                                           #
 ; #############################################################################
 ; #############################################################################
 load "$diag_scripts/../interface_scripts/interface.ncl"

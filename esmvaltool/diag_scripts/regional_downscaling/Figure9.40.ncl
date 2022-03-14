@@ -58,14 +58,11 @@
 ; #       fig940_YMax        : maximum Y Axis
 ; # Caveats:
 ; #      This script requires NCL version 6.40
-; #      Regions borders are poligons defined in function select_region_940
-; #      in ./diag_scripts/lib/ncl/latlon.ncl.
-; #    his script read in dir_anc="./diag_scripts/lib/ncl/ancillary_regional/
-; #      that contains contains 3 files :
-; #      1) box_plot.ncl box_plot function modified
-; #      2) landsea_t85.ncl  map t85 with land sea
-; #      3) t85 grid weights of  land sea map
-; #      Make sure you have it
+; #      Regions borders are polygons defined in function select_region_srex
+; #      in regional_function.ncl
+; #                                          
+; # Modification history:   
+; # 20220314-weigel_katja: header updated  
 ; #
 ; #                                                             #
 ; ###############################################################
@@ -120,7 +117,7 @@ begin
   set_default_att(diag_script_info, "fig940_project_MMM", "CMIP5")
   set_default_att(diag_script_info, "fig940_experiment_MMM", "historical")
   set_default_att(diag_script_info, "fig940_mip_MMM", "Amon")
-  set_default_att(diag_script_info, "fig940_names_MMM", "CMIP5")
+  set_default_att(diag_script_info, "fig940_names_MMM", fig940_project_MMM)
   set_default_att(diag_script_info, "fig940_colors_MMM", "red")
   set_default_att(diag_script_info, "fig940_season", "DJF")
   set_default_att(diag_script_info, "refModel", "CRU")
@@ -141,13 +138,6 @@ begin
   region_label = tostring(diag_script_info@fig940_region_label)
   dim_reg = dimsizes(region_label)
   dim_seas = dimsizes(season)
-;  latrange = new((/dimsizes(region_label), 2/), "double")
-;  lonrange = new((/dimsizes(region_label), 2/), "double")
-;  do ir = 0, dimsizes(region_label) - 1
-;    region = select_region1(region_label(ir))
-;    latrange(ir, :) = region(0:1)
-;    lonrange(ir, :) = region(2:3)
-;  end do
   flag_mod = where(projects.ne."OBS" .and.projects.ne."OBS6"\
                    .and. projects.ne."obs4mips", 1, 0)
   index_mod = ind(flag_mod.gt.0)
@@ -732,11 +722,6 @@ begin
   pan@gsnMaximize = True
   pan@gsnFrame = False
   pan@gsnPaperOrientation = "portrait"
-  ; n_p = dimsizes(map) / 3
-  ; if (mod(dimsizes(map), 3) .ne. 0) then
-  ;  n_p = n_p + 1
-  ; end if
-  ; gsn_panel(wks_r, map, (/n_p, 3/), pan)
   do ir = 0, dim_reg - 1
     draw(map(ir))
   end do

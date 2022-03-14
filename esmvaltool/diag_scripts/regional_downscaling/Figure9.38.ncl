@@ -39,9 +39,12 @@
 ; #         fig938_YMin        : minimum Y Axis
 ; #         fig938_YMax        : maximum Y Axis
 ; #
-; # Caveats:                                                    #
-; #                                                             #
-; # Modification history:                                       #
+; # Caveats:
+; #      Regions borders are polygons defined in function select_region_938
+; #      in regional_function.ncl
+; #                                          
+; # Modification history:   
+; # 20220314-weigel_katja: header updated                                                                       #
 ; # original file anncycplot.ncl
 ; #                                                             #
 ; ###############################################################
@@ -101,7 +104,7 @@ begin
   set_default_att(diag_script_info, "fig938_project_MMM", "CMIP5")
   set_default_att(diag_script_info, "fig938_experiment_MMM", "historical")
   set_default_att(diag_script_info, "fig938_mip_MMM", "Amon")
-  set_default_att(diag_script_info, "fig938_names_MMM", "CMIP5")
+  set_default_att(diag_script_info, "fig938_names_MMM", fig938_project_MMM)
   set_default_att(diag_script_info, "fig938_colors_MMM", "red")
   set_default_att(diag_script_info, "refModel", "ERA-Interim")
   colors = project_style(info0, diag_script_info, "colors")

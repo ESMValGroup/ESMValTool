@@ -42,7 +42,8 @@
 ; #
 ; # Optional diag_script_info attributes
 ; #
-; #      * fig939_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
+; #      * Names for legend
+; #          fig939_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/
 ; #      * Vertical lines divide groups of region
 ; #         fig939_vert_line_pos
 ; #          i.e. (/6,10,13,17,24,26/)
@@ -54,16 +55,11 @@
 ; #        fig939_YMax        : maximum Y Axis
 ; # Caveats:
 ; #      This script requires NCL version 6.40
-; #      Regions borders are poligons defined in function select_region_939
-; #      in ./diag_scripts/lib/ncl/latlon.ncl.
-; #    his script read in dir_anc="./diag_scripts/lib/ncl/ancillary_regional/
-; #      that contains contains 3 files :
-; #      1) box_plot.ncl box_plot function modified
-; #      2) landsea_t85.ncl  map t85 with land sea
-; #      3) t85 grid weights of  land sea map
-; #      Make sure you have it
-; #
-; #                                                             #
+; #      Regions borders are polygons defined in function select_region_srex
+; #      in regional_function.ncl
+; #                                          
+; # Modification history:   
+; # 20220314-weigel_katja: header updated                                                           #
 ; ###############################################################
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
@@ -116,7 +112,7 @@ begin
   set_default_att(diag_script_info, "fig939_project_MMM", "CMIP5")
   set_default_att(diag_script_info, "fig939_experiment_MMM", "historical")
   set_default_att(diag_script_info, "fig939_mip_MMM", "Amon")
-  set_default_att(diag_script_info, "fig939_names_MMM", "CMIP5")
+  set_default_att(diag_script_info, "fig939_names_MMM", fig939_project_MMM)
   set_default_att(diag_script_info, "fig939_colors_MMM", "red")
   set_default_att(diag_script_info, "fig939_season", "DJF")
   set_default_att(diag_script_info, "refModel", "CRU")
