@@ -104,7 +104,8 @@ begin
   set_default_att(diag_script_info, "fig938_project_MMM", "CMIP5")
   set_default_att(diag_script_info, "fig938_experiment_MMM", "historical")
   set_default_att(diag_script_info, "fig938_mip_MMM", "Amon")
-  set_default_att(diag_script_info, "fig938_names_MMM", fig938_project_MMM)
+  set_default_att(diag_script_info, "fig938_names_MMM", \
+                  diag_script_info@fig938_project_MMM)
   set_default_att(diag_script_info, "fig938_colors_MMM", "red")
   set_default_att(diag_script_info, "refModel", "ERA-Interim")
   colors = project_style(info0, diag_script_info, "colors")
