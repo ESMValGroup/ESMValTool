@@ -146,9 +146,6 @@ def make_mean_of_dict_list(dict_list, short_name):
 
 
 
-
-
-
 def make_mean_of_cube_list(cube_list):
     """
     Takes the mean of a list of cubes (not an iris.cube.CubeList).
@@ -684,11 +681,11 @@ def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
         print('iter 4:', cumul_cube.data.shape, hist_cumul.shape)
 
         cumul_cube.data = cumul_cube.data
-        print(hist_cumul, np.cumsum(np.ma.masked_invalid(cumul_cube.data)), times) 
+        print(hist_cumul, np.cumsum(np.ma.masked_invalid(cumul_cube.data)), times)
         print((dataset, short, exp, ensemble))
         print('iter 5:', cumul_cube.data.shape, hist_cumul.shape)
         cumul_cube.data = np.cumsum(np.ma.masked_invalid(cumul_cube.data)) + hist_cumul
-      
+
         if new_units:
             cumul_cube.units = cf_units.Unit(new_units)
         tmp_dict[(dataset, cumul_name, exp, ensemble)] = cumul_cube
@@ -1195,7 +1192,7 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
         baseline = baselines.get((dataset, 'tas', ensemble), False)
 
         if baseline is False and dataset in data_dict_linked_ens.keys():
-           new_ens = data_dict_linked_ens[dataset].get(ensemble, False) 
+           new_ens = data_dict_linked_ens[dataset].get(ensemble, False)
            baseline = baselines.get((dataset, 'tas', new_ens), False)
 
         if baseline is False:
@@ -2296,7 +2293,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                              lw=lw,
                              color=exp_colours[exp_1])
                 else:
-                    if len(x_data) != len(y_data): 
+                    if len(x_data) != len(y_data):
                         print('WARNING: x!=y:', len(x_data), '!=', len(y_data), 'x:', x, 'y:',y)
                         print(x, 'x_times:', x_times)
                         print(y, 'y_times:', y_times)
@@ -2427,6 +2424,9 @@ def calculate_percentages( cfg,
     land_carbon = 'tls',
     #ensemble_key = 'all',
     ):
+    print("I think the problem is somewhere in here.")
+    assert 0
+
 
     #print(thresholds_dict)
     #print(119, thresholds_dict.get(('CMIP6', 'tas', 'ssp119', 'ensemble_mean'), None))
@@ -2440,22 +2440,21 @@ def calculate_percentages( cfg,
     load_from_shelve=True
 
     if load_from_shelve and glob.glob(data_dict_shelve+'*'):
-        print('loading:', data_dict_shelve )
+        print('loading:', data_dict_shelve)
         sh = shelve.open(data_dict_shelve)
         remnants = sh['remnants']
         landcs = sh['landcs']
         fgco2gts = sh['fgco2gts']
         sh.close()
- 
+
         # (t_dataset, t_exp, t_ens, threshold)
         for k in sorted(remnants.keys()):
-          if 'CMIP6' in k and  'ensemble_mean' in k: print(k, remnants[k])
-        #rint(remnants)
+          if 'CMIP6' in k and  'ensemble_mean' in k:
+              print(k, remnants[k])
+
         if threshold == '2.0':
            print(585, remnants[('CMIP6', 'SSP585', 'ensemble_mean', '2.0')])
            print(126, remnants[('CMIP6', 'SSP126', 'ensemble_mean', '2.0')])
-           #print(119, remnants[('CMIP6', 'SSP119', 'ensemble_mean', '2.0')])
-           #assert 0
 
         return remnants, landcs, fgco2gts
 
@@ -2535,7 +2534,7 @@ def calculate_percentages( cfg,
             fgco2gts[unique_key] = fgco2gt
             landcs[unique_key] = landc
 
-    print('calculate_percentages: saving:', data_dict_shelve )
+    print('calculate_percentages: saving:', data_dict_shelve)
     sh = shelve.open(data_dict_shelve)
     sh['remnants'] = remnants
     sh['landcs'] = landcs
@@ -2664,7 +2663,7 @@ def make_ensemble_barchart_pane(
             line1 = ', '.join([str(i), t_dataset, t_exp, t_ens, t_threshold])
             line2 = ', '.join([str(v) for v in [remnant, landc, oceanc, total, '\n']])
             out_txt  += line1 +', '+line2
-       
+
         csv_file = open(csvpath,'w')
         csv_file.write(out_txt)
         csv_file.close()
@@ -2689,7 +2688,7 @@ def make_ensemble_barchart_pane(
             if counts.get(count_key, False):
                 counts[count_key]+=1
             else:
-                counts[count_key] = 1 
+                counts[count_key] = 1
         out_txt  = 'Model, ' + ', '.join(sorted(ssps.keys()))+'\n'
         for moded_csv in sorted(models.keys()):
            line1 = moded_csv+', '
@@ -2708,7 +2707,7 @@ def make_ensemble_barchart_pane(
         csv_file.write(out_txt)
         csv_file.close()
 
-        
+
 
     for i, unique_key in enumerate(unique_key_order):
     #for unique_key, remnant in sorted(remnants.items()):
@@ -2739,7 +2738,7 @@ def make_ensemble_barchart_pane(
 
         #  look if adding  blank lines:
 
-        adding_gaps = False 
+        adding_gaps = False
         dataset_blank = (i>0 and group_by == 'group_by_model' and t_dataset not in labels[-1])
         exp_blank =  (i>0 and group_by == 'group_by_ssp' and t_exp not in labels[-1])
 
@@ -2758,7 +2757,7 @@ def make_ensemble_barchart_pane(
         #    label_keys = [t_dataset, t_exp]
         #else:
         label_keys = [t_dataset, t_exp, t_ens]
- #       if 'CMIP6' in label_keys and 'SSP119' in t_exp and 
+ #       if 'CMIP6' in label_keys and 'SSP119' in t_exp and
 
         labels.append(label_keys)
 
@@ -2822,7 +2821,7 @@ def make_ensemble_barchart_pane(
         'SSP119': 'darkgreen',
         'SSP126': 'blue',
         'SSP245': 'saddlebrown',
-        'SSP370': 'indigo', 
+        'SSP370': 'indigo',
         'SSP585': 'darkred',
         }
     ssp_ocean = {
@@ -2835,7 +2834,7 @@ def make_ensemble_barchart_pane(
     ssp_air = {
         'SSP119': 'lightgreen',
         'SSP126': 'dodgerblue',
-        'SSP245': 'sandybrown', 
+        'SSP245': 'sandybrown',
         'SSP370': 'orchid',
         'SSP585': 'lightcoral',
     }
@@ -2843,7 +2842,7 @@ def make_ensemble_barchart_pane(
     for i, lablist in enumerate(labels):
 
         if lablist[0][0] == '.':
-            # empty bar   
+            # empty bar
             label_strs.append(' ')
             colours_land.append('white')
             colours_ocean.append('white')
@@ -3757,7 +3756,7 @@ def main(cfg):
                 for plot_style, ens, group_by in product(plot_styles, ens_styles, group_bys):
                     make_ensemble_barchart(cfg, data_dict, thresholds_dict, plot_style=plot_style, ensemble_key=ens, group_by=group_by)
 
-                #return   
+                #return
 
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
