@@ -117,9 +117,10 @@ following figures from Flato et al. (2013) can currently be reproduced:
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in esmvaltool/recipes/
+Recipes are stored in esmvaltool/recipes/recipe_flato13ipcc
 
-    * recipe_flato13ipcc.yml
+    * recipe_flato13ipcc.yml: Figures 9.2, 9.3, 9.4, 9.5, 9.6, 9.8, 9.14, 9.24, 9.26, 9.27, 9.42, 9.45a.
+    * recipe_flato13ipcc_figures_938_941.yml: Figures 9.38, 9.39, 9.40, and 9.41
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
