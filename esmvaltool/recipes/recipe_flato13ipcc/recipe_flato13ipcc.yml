@@ -48,9 +48,9 @@ preprocessors:
     weighting_landsea_fraction: &weighting_options
       area_type: land
       exclude: [
-        'bcc-csm1-1-m',
+        # 'bcc-csm1-1-m',
         'GCP2018',
-        'inmcm4',
+        # 'inmcm4',
         'JMA-TRANSCOM',
       ]
 
@@ -151,8 +151,8 @@ diagnostics:
          start_year: 1986, end_year: 2005}
       - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical,
-         ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+      # - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical,
+      #   ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
       - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
@@ -201,8 +201,8 @@ diagnostics:
       #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       # - {dataset: HadGEM2-ES, project: CMIP5, exp: historical,
       #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-      - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
-         start_year: 1986, end_year: 2005}
+      # - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      #    start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical,
@@ -266,7 +266,7 @@ diagnostics:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
+      # - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
       - {dataset: CanCM4}
       - {dataset: CanESM2}
@@ -293,7 +293,7 @@ diagnostics:
       - {dataset: HadGEM2-AO}
       - {dataset: HadGEM2-CC}
       - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
+      # - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
@@ -342,8 +342,8 @@ diagnostics:
          start_year: 1986, end_year: 2005}
       - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical,
-         ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+      # - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical,
+      #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
       - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
@@ -392,8 +392,8 @@ diagnostics:
       #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       # - {dataset: HadGEM2-ES, project: CMIP5, exp: historical,
       #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-      - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
-         start_year: 1986, end_year: 2005}
+      # - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      #    start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical,
@@ -457,8 +457,8 @@ diagnostics:
          start_year: 1986, end_year: 2005}
       - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical,
-         ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+      # - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical,
+      #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
       - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
@@ -507,8 +507,8 @@ diagnostics:
       #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       # - {dataset: HadGEM2-ES, project: CMIP5, exp: historical,
       #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-      - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
-         start_year: 1986, end_year: 2005}
+      # - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      #    start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical,
@@ -564,8 +564,8 @@ diagnostics:
          start_year: 1986, end_year: 2005}
       - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical,
-         ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+      # - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical,
+      #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
       - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
@@ -614,8 +614,8 @@ diagnostics:
       #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       # - {dataset: HadGEM2-ES, project: CMIP5, exp: historical,
       #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-      - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
-         start_year: 1986, end_year: 2005}
+      # - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      #    start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical,
@@ -668,8 +668,8 @@ diagnostics:
          start_year: 1986, end_year: 2005}
       - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical,
-         ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+      # - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical,
+      #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
       - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
@@ -718,8 +718,8 @@ diagnostics:
       #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       # - {dataset: HadGEM2-ES, project: CMIP5, exp: historical,
       #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-      - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
-         start_year: 1986, end_year: 2005}
+      # - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      #    start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical,
@@ -797,7 +797,7 @@ diagnostics:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
+      # - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
       - {dataset: CanCM4}
       - {dataset: CanESM2}
@@ -824,7 +824,7 @@ diagnostics:
       - {dataset: HadGEM2-AO}
       - {dataset: HadGEM2-CC}
       - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
+      # - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
@@ -881,8 +881,8 @@ diagnostics:
 
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
-      - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
+      # - {dataset: bcc-csm1-1}
+      # - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
       - {dataset: CanCM4}
       - {dataset: CanESM2}
@@ -909,7 +909,7 @@ diagnostics:
       - {dataset: HadGEM2-AO}
       - {dataset: HadGEM2-CC}
       - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
+      # - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
@@ -968,7 +968,7 @@ diagnostics:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
+      # - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
       - {dataset: CanCM4}
       - {dataset: CanESM2}
@@ -995,7 +995,7 @@ diagnostics:
       - {dataset: HadGEM2-AO}
       - {dataset: HadGEM2-CC}
       - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
+      # - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
@@ -1052,7 +1052,7 @@ diagnostics:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
+      # - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
       - {dataset: CanESM2}
       - {dataset: CCSM4}
@@ -1077,7 +1077,7 @@ diagnostics:
       - {dataset: HadGEM2-AO}
       - {dataset: HadGEM2-CC}
       - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
+      # - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
@@ -1182,7 +1182,7 @@ diagnostics:
       # - {dataset: HadGEM2-CC}
       # dataset ends November 2005
       # - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
+      # - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
@@ -1250,7 +1250,7 @@ diagnostics:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
+      # - {dataset: bcc-csm1-1-m}
       - {dataset: CanCM4}
       - {dataset: CanESM2}
       - {dataset: CCSM4}
@@ -1326,7 +1326,7 @@ diagnostics:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
+      # - {dataset: bcc-csm1-1-m}
       - {dataset: CanESM2}
       - {dataset: CCSM4}
       - {dataset: CESM1-CAM5}
@@ -1336,7 +1336,7 @@ diagnostics:
       - {dataset: GFDL-CM3}
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
-      - {dataset: inmcm4}
+      # - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
@@ -1423,7 +1423,7 @@ diagnostics:
           - {dataset: GFDL-ESM2M}
           - {dataset: HadGEM2-CC}
           - {dataset: HadGEM2-ES}
-          - {dataset: inmcm4}
+          # - {dataset: inmcm4}
           - {dataset: IPSL-CM5A-LR}
           - {dataset: IPSL-CM5A-MR}
           - {dataset: IPSL-CM5B-LR}
@@ -1472,7 +1472,7 @@ diagnostics:
           - {dataset: GFDL-ESM2M}
           - {dataset: HadGEM2-CC}
           - {dataset: HadGEM2-ES}
-          - {dataset: inmcm4}
+          # - {dataset: inmcm4}
           - {dataset: IPSL-CM5A-LR}
           - {dataset: IPSL-CM5A-MR}
           - {dataset: IPSL-CM5B-LR}
@@ -1551,8 +1551,8 @@ diagnostics:
           - {dataset: ACCESS1-0,     exp: abrupt4xCO2, start_year:  300, end_year:  449}
           - {dataset: bcc-csm1-1,    exp: piControl,   start_year:  160, end_year:  309}
           - {dataset: bcc-csm1-1,    exp: abrupt4xCO2, start_year:  160, end_year:  309}
-          - {dataset: bcc-csm1-1-m,  exp: piControl,   start_year:  240, end_year:  389}
-          - {dataset: bcc-csm1-1-m,  exp: abrupt4xCO2, start_year:  240, end_year:  389}
+          # - {dataset: bcc-csm1-1-m,  exp: piControl,   start_year:  240, end_year:  389}
+          # - {dataset: bcc-csm1-1-m,  exp: abrupt4xCO2, start_year:  240, end_year:  389}
           - {dataset: CanESM2,       exp: piControl,   start_year: 2321, end_year: 2470}
           - {dataset: CanESM2,       exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
           # Wrong start year for piControl? (branch_time = 2.)
@@ -1575,8 +1575,8 @@ diagnostics:
           # Experiments start at 1859-12-01
           - {dataset: HadGEM2-ES,    exp: piControl,   start_year: 1860, end_year: 2009}
           - {dataset: HadGEM2-ES,    exp: abrupt4xCO2, start_year: 1860, end_year: 2009}
-          - {dataset: inmcm4,        exp: piControl,   start_year: 2090, end_year: 2239}
-          - {dataset: inmcm4,        exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
+          # - {dataset: inmcm4,        exp: piControl,   start_year: 2090, end_year: 2239}
+          # - {dataset: inmcm4,        exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
           - {dataset: IPSL-CM5B-LR,  exp: piControl,   start_year: 1850, end_year: 1999}
           - {dataset: IPSL-CM5B-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
           - {dataset: MIROC5,        exp: piControl,   start_year: 2100, end_year: 2249}
@@ -1626,7 +1626,7 @@ diagnostics:
         additional_datasets:
           - {dataset: ACCESS1-0,     start_year:  300, end_year:  439}
           - {dataset: bcc-csm1-1,    start_year:  160, end_year:  299}
-          - {dataset: bcc-csm1-1-m,  start_year:  240, end_year:  379}
+          # - {dataset: bcc-csm1-1-m,  start_year:  240, end_year:  379}
           - {dataset: CanESM2,       start_year: 1850, end_year: 1989}
           - {dataset: CCSM4,         start_year: 1850, end_year: 1989}
           - {dataset: CNRM-CM5,      start_year: 1850, end_year: 1989}
@@ -1638,7 +1638,7 @@ diagnostics:
           - {dataset: GISS-E2-R,     start_year: 1850, end_year: 1989}
           # Experiments starts at 1859-12-01
           - {dataset: HadGEM2-ES,    start_year: 1860, end_year: 1999}
-          - {dataset: inmcm4,        start_year: 2090, end_year: 2229}
+          # - {dataset: inmcm4,        start_year: 2090, end_year: 2229}
           - {dataset: IPSL-CM5A-LR,  start_year: 1850, end_year: 1989}
           - {dataset: IPSL-CM5B-LR,  start_year: 1850, end_year: 1989}
           - {dataset: MIROC5,        start_year: 2200, end_year: 2339}
@@ -1653,7 +1653,7 @@ diagnostics:
         additional_datasets:
           - {dataset: ACCESS1-0,     start_year:  300, end_year:  439}
           - {dataset: bcc-csm1-1,    start_year:  160, end_year:  299}
-          - {dataset: bcc-csm1-1-m,  start_year:  240, end_year:  379}
+          # - {dataset: bcc-csm1-1-m,  start_year:  240, end_year:  379}
           - {dataset: CanESM2,       start_year: 2321, end_year: 2460}
           - {dataset: CCSM4,         start_year:  251, end_year:  390}
           - {dataset: CNRM-CM5,      start_year: 1850, end_year: 1989}
@@ -1665,7 +1665,7 @@ diagnostics:
           - {dataset: GISS-E2-R,     start_year: 3981, end_year: 4120}
           # Experiments starts at 1859-12-01
           - {dataset: HadGEM2-ES,    start_year: 1860, end_year: 1999}
-          - {dataset: inmcm4,        start_year: 2090, end_year: 2229}
+          # - {dataset: inmcm4,        start_year: 2090, end_year: 2229}
           - {dataset: IPSL-CM5A-LR,  start_year: 1850, end_year: 1989}
           - {dataset: IPSL-CM5B-LR,  start_year: 1850, end_year: 1989}
           - {dataset: MIROC5,        start_year: 2200, end_year: 2339}
@@ -1695,8 +1695,8 @@ diagnostics:
           - {dataset: bcc-csm1-1,    exp: piControl,  start_year:  160, end_year:  299}
           - {dataset: bcc-csm1-1,    exp: historical, start_year: 1961, end_year: 1990}
           # Wrong start year for piControl (must be 344)
-          - {dataset: bcc-csm1-1-m,  exp: piControl,  start_year:  240, end_year:  379}
-          - {dataset: bcc-csm1-1-m,  exp: historical, start_year: 1961, end_year: 1990}
+          # - {dataset: bcc-csm1-1-m,  exp: piControl,  start_year:  240, end_year:  379}
+          # - {dataset: bcc-csm1-1-m,  exp: historical, start_year: 1961, end_year: 1990}
           - {dataset: CanESM2,       exp: piControl,  start_year: 2321, end_year: 2470}
           - {dataset: CanESM2,       exp: historical, start_year: 1961, end_year: 1990}
           - {dataset: CCSM4,         exp: piControl,  start_year:  937, end_year: 1086}
@@ -1717,8 +1717,8 @@ diagnostics:
           - {dataset: GISS-E2-R,     exp: historical, start_year: 1961, end_year: 1990}
           - {dataset: HadGEM2-ES,    exp: piControl,  start_year: 1860, end_year: 2009}
           - {dataset: HadGEM2-ES,    exp: historical, start_year: 1961, end_year: 1990}
-          - {dataset: inmcm4,        exp: piControl,  start_year: 1850, end_year: 1999}
-          - {dataset: inmcm4,        exp: historical, start_year: 1961, end_year: 1990}
+          # - {dataset: inmcm4,        exp: piControl,  start_year: 1850, end_year: 1999}
+          # - {dataset: inmcm4,        exp: historical, start_year: 1961, end_year: 1990}
           - {dataset: IPSL-CM5A-LR,  exp: piControl,  start_year: 1850, end_year: 1999}
           - {dataset: IPSL-CM5A-LR,  exp: historical, start_year: 1961, end_year: 1990}
           - {dataset: IPSL-CM5B-LR,  exp: piControl,  start_year: 1850, end_year: 1999}
