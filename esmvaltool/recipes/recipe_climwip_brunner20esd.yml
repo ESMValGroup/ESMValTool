@@ -33,7 +33,9 @@ datasets: &model_data
     - {dataset: CanESM5, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:25)i1p1f1}
     - {dataset: CanESM5, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:25)i1p2f1}
     - {dataset: CESM2-WACCM, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r1i1p1f1}
-    - {dataset: CESM2, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:2)i1p1f1}
+    # ssp585 data missing on ESGF for the follwoing dataset
+    # see https://github.com/ESMValGroup/ESMValTool/pull/2581 for details
+    #- {dataset: CESM2, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:2)i1p1f1}
     - {dataset: CNRM-CM6-1-HR, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r1i1p1f2}
     - {dataset: CNRM-CM6-1, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r(1:6)i1p1f2}
     - {dataset: CNRM-ESM2-1, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r(1:5)i1p1f2}

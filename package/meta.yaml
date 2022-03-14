@@ -26,7 +26,7 @@ build:
 
 requirements:
   run:
-    - python>=3.7
+    - python>=3.8
     - iris>=3.0.2
     - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
     - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
@@ -66,7 +66,7 @@ outputs:
     requirements:
       build:
         - git
-        - python>=3.7
+        - python>=3.8
         - setuptools_scm
       run:
         - cartopy>=0.18
@@ -96,7 +96,7 @@ outputs:
         - pandas
         - progressbar2
         - pyproj>=2.1
-        - python>=3.7
+        - python>=3.8
         - python-cdo
         - pyyaml
         - ruamel.yaml

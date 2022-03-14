@@ -27,7 +27,7 @@ datasets:
   - {dataset: ACCESS1-0}
   - {dataset: ACCESS1-3}
   - {dataset: bcc-csm1-1}
-  - {dataset: bcc-csm1-1-m}
+  #- {dataset: bcc-csm1-1-m} # areacello data missing on ESGF
   - {dataset: CanESM2}
   - {dataset: CCSM4}
   - {dataset: CESM1-CAM5}
@@ -37,7 +37,7 @@ datasets:
   - {dataset: GFDL-CM3}
   - {dataset: GFDL-ESM2G}
   - {dataset: GFDL-ESM2M}
-  - {dataset: inmcm4}
+  #- {dataset: inmcm4} # areacello data missing on ESGF
   - {dataset: IPSL-CM5A-LR}
   - {dataset: IPSL-CM5A-MR}
   - {dataset: IPSL-CM5B-LR}
@@ -178,7 +178,7 @@ diagnostics:
       - {dataset: ACCESS1-0, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: ACCESS1-3, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: bcc-csm1-1, exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2006, end_year: 2100}
+      #- {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2006, end_year: 2100} # areacello data missing on ESGF
       - {dataset: CanESM2, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: CCSM4, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: CESM1-CAM5, exp: rcp85, start_year: 2006, end_year: 2100}
@@ -188,7 +188,7 @@ diagnostics:
       - {dataset: GFDL-CM3, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: GFDL-ESM2M, exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: inmcm4, exp: rcp85, start_year: 2006, end_year: 2100}
+      #- {dataset: inmcm4, exp: rcp85, start_year: 2006, end_year: 2100} # areacello data missing on ESGF
       - {dataset: IPSL-CM5A-LR, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: IPSL-CM5A-MR, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: IPSL-CM5B-LR, exp: rcp85, start_year: 2006, end_year: 2100}
