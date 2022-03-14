@@ -52,7 +52,8 @@
 ; #          i.e. (/6,10,13,17,24,26/)
 ; #      * labels of vertical lines
 ; #        fig940_vert_line_label
-; # e.g.(/"North America","South America","Europe","Africa","Asia","Australia"/)
+; #        e.g.(/"North America", "South America", "Europe", "Africa",
+; #              "Asia", "Australia"/)
 ; #       fig940_mode    : True= cumulative mode
 ; #       fig940_YMin        : minimum Y Axis
 ; #       fig940_YMax        : maximum Y Axis
@@ -60,9 +61,9 @@
 ; #      This script requires NCL version 6.40
 ; #      Regions borders are polygons defined in function select_region_srex
 ; #      in regional_function.ncl
-; #                                          
-; # Modification history:   
-; # 20220314-weigel_katja: header updated  
+; #
+; # Modification history:
+; # 20220314-weigel_katja: header updated
 ; #
 ; #                                                             #
 ; ###############################################################

@@ -42,9 +42,9 @@
 ; # Caveats:
 ; #      Regions borders are polygons defined in function select_region_938
 ; #      in regional_function.ncl
-; #                                          
-; # Modification history:   
-; # 20220314-weigel_katja: header updated                                                                       #
+; #
+; # Modification history:
+; # 20220314-weigel_katja: header updated
 ; # original file anncycplot.ncl
 ; #                                                             #
 ; ###############################################################
