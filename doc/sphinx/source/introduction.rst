@@ -19,7 +19,7 @@ available at ESGF nodes.
 
 The goal is to develop a benchmarking and evaluation tool that produces
 well-established analyses as soon as model output from CMIP simulations
-becomes available, e.g., at one of the central repositories of the ESGF.:
+becomes available, e.g., at one of the central repositories of the ESGF.
 This is realized through standard recipes that reproduce a certain set
 of diagnostics and performance metrics that have demonstrated its
 importance in benchmarking Earth System Models (ESMs) in a paper or
@@ -56,7 +56,7 @@ Support
 =======
 
 Support for ESMValTool can be found here `ESMValTool Discussions page <https://github.com/ESMValGroup/ESMValTool/discussions>`__
-where users can open an issue and a member of the [User Engangement Team] (mailto:esmvaltool_user_engagement_team@listserv.dfn.de) of ESMValTool will reply as soon as possible.
+where users can open an issue and a member of the `User Engangement Team <mailto:esmvaltool_user_engagement_team@listserv.dfn.de>`_ of ESMValTool will reply as soon as possible.
 
 .. _mailing-list:
 

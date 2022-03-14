@@ -29,7 +29,7 @@ diagnostics sections as the user deems useful.
 
 Once the user configuration files and the recipe are at hand, the user
 can start the tool. A schematic overview of the ESMValTool workflow is
-depited in the figure below.
+depicted in the figure below.
 
 .. container::
    :name: figarch
@@ -81,7 +81,7 @@ Variable derivation
    observational datasets) is performed automatically before running the
    preprocessor;
 -  if the variable definitions are already in the database then the user
-   will just have to specify the variableto be derived in the
+   will just have to specify the variable to be derived in the
    :ref:`diagnostics
    <esmvalcore:Diagnostics>` section (as any other standard variable,
    just setting ``derive: true``).
@@ -95,7 +95,7 @@ Run the preprocessor
    user and specified in the preprocessor section, using the specific
    preprocessing step parameters provided by the user as keys (for the
    parameter name) and values (for the parameter value); the
-   preprocessing order is very imprtant since a number of steps depend
+   preprocessing order is very important since a number of steps depend
    on prior execution of other steps (e.g. :ref:`multimodel
    statistics <esmvalcore:Multi-model statistics>` can not be computed
    unless all models are on a common grid, hence a prior

@@ -187,7 +187,7 @@ container is advised.
 
 The ``esmvaltool-python`` diagnostics can be installed as follows:
 
-First, ensure mamba is pre-installed (see `Mamba installation <https://docs.esmvaltool.org/en/latest/quickstart/installation.html#mamba-installation>_` for more details).
+First, ensure mamba is pre-installed (see `Mamba/Conda installation`_ for more details).
 
 Create a new environment with the ``esmvaltool-python`` package:
 
