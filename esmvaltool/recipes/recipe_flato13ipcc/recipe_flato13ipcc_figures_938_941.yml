@@ -1,19 +1,21 @@
 # ESMValTool
-# recipe_flato13ipcc_regional_downscaling.yml
+# recipe_flato13ipcc_figures_938-941.yml
 ---
 documentation:
-  title: "Only regional figures 9.38-9.41"
+  title: IPCC AR5, chap. 9 diagnostics regional figures 9.38-9.41
   description: |
-    Diagnostics for regional downscaling 
+    Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
+    9.38, 9.39, 9.40, 9.41
 
   authors:
     - cionni_irene
 
   maintainer:
-    - cionni_irene
+    - weigel_katja
 
   references:
     - flato13ipcc 
+    - seneviratne12ipcc
 
   projects:
     - crescendo 
@@ -234,6 +236,7 @@ diagnostics:
         fig939_colors_MMM: ["red","blue"]
         fig939_refModel: ERA-Interim
         fig939_MMM: True
+        fig939_names_MMM: ["CMIP5","CMIP6"]
   # ==========================================================================
   # Chapter 9  - Figure940 
   # ==========================================================================
@@ -272,6 +275,7 @@ diagnostics:
         fig940_colors_MMM: ["red","blue"]
         fig940_refModel: CRU
         fig940_MMM: True
+        fig940_names_MMM: ["CMIP5","CMIP6"]
 #      fig940_mode: "cumulative"
 #       fig940_vert_line_pos: [6,10,13,17,24,26]
 #       fig940_vert_line_label=["North America","South America","Europe","Africa","Asia","Australia"]
