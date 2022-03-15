@@ -248,8 +248,7 @@ class Monitor(MonitorBase):
         cube.remove_coord('month')
         cube.remove_coord('month_name')
 
-    @staticmethod
-    def _plot_monthly_cube(plot_map, months, columns, rows, map_options,
+    def _plot_monthly_cube(self, plot_map, months, columns, rows, map_options,
                            variable_options, cube_slice):
         month = cube_slice.coord('month_number').points[0]
         month_name = cube_slice.coord('month_name').points[0]
@@ -271,6 +270,7 @@ class Monitor(MonitorBase):
                 **variable_options
             },
         )
+        self.set_rasterized()
 
     def plot_seasonal_climatology(self, cube, var_info):
         """Plot the seasonal climatology as a multipanel plot.
@@ -343,6 +343,7 @@ class Monitor(MonitorBase):
                         **variable_options,
                     },
                 )
+                self.set_rasterized()
             plt.tight_layout()
             plt.suptitle(
                 'Seasonal climatology  '
@@ -424,6 +425,7 @@ class Monitor(MonitorBase):
                                    **map_options,
                                    **variable_options
                                })
+            self.set_rasterized()
             plt.suptitle(
                 f'Climatology ({var_info[n.START_YEAR]}'
                 f'-{var_info[n.END_YEAR]})',
