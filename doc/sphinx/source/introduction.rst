@@ -56,7 +56,7 @@ Support
 =======
 
 Support for ESMValTool can be found here `ESMValTool Discussions page <https://github.com/ESMValGroup/ESMValTool/discussions>`__
-where users can open an issue and a member of the `User Engangement Team <mailto:esmvaltool_user_engagement_team@listserv.dfn.de>`_ of ESMValTool will reply as soon as possible.
+where users can open an issue and a member of the `User Engagement Team <mailto:esmvaltool_user_engagement_team@listserv.dfn.de>`_ of ESMValTool will reply as soon as possible.
 
 .. _mailing-list:
 
