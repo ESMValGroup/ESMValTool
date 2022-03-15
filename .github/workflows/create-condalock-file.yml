@@ -37,7 +37,7 @@ jobs:
           python --version
       - name: Install conda-lock
         shell: bash -l {0}
-        run: conda install -y conda-lock mamba
+        run: conda install -y conda-lock
       - name: Create conda lock file for linux-64
         shell: bash -l {0}
         run: conda-lock lock --platform linux-64 -f environment.yml --mamba --kind explicit
@@ -50,7 +50,7 @@ jobs:
       - shell: bash -l {0}
         run: conda create --name esmvaltool-fromlock --file conda-linux-64.lock
       - shell: bash -l {0}
-        run: mamba install pip
+        run: conda install -y -c conda-forge pip
       - shell: bash -l {0}
         run: which python
       - shell: bash -l {0}
