@@ -4,10 +4,9 @@ on:
   # Trigger on push on main or other branch for testing
   # NOTE that push: main will create the file very often
   # and hence lots of automated PRs 
-  # push:
-  #   branches:
-  #     - force_condalock_creation_forCoreRC
-  #     - condalock
+  push:
+    branches:
+      - condalock-update
   schedule:
     - cron: '0 4 */10 * *'
 
@@ -41,7 +40,7 @@ jobs:
         run: conda install -y conda-lock
       - name: Create conda lock file for linux-64
         shell: bash -l {0}
-        run: conda-lock lock --platform linux-64 -f environment.yml --mamba
+        run: conda-lock lock --platform linux-64 -f environment.yml --mamba --kind explicit
       - shell: bash -l {0}
         run: conda --version
       - shell: bash -l {0}
