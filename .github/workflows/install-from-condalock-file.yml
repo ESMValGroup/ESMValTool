@@ -47,8 +47,6 @@ jobs:
       - shell: bash -l {0}
         run: conda create --name esmvaltool-fromlock --file conda-linux-64.lock
       - shell: bash -l {0}
-        run: conda install -y -c conda-forge pip
-      - shell: bash -l {0}
         run: which python
       - shell: bash -l {0}
         run: pip --version
