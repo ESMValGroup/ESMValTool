@@ -39,6 +39,8 @@ jobs:
       - shell: bash -l {0}
         run: mkdir -p source_install_linux_artifacts_python_${{ matrix.python-version }}
       - shell: bash -l {0}
+        run: conda install -y -c conda-forge mamba
+      - shell: bash -l {0}
         run: conda --version 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
       - shell: bash -l {0}
         run: which python
@@ -47,7 +49,7 @@ jobs:
       - shell: bash -l {0}
         run: conda create --name esmvaltool-fromlock --file conda-linux-64.lock
       - shell: bash -l {0}
-        run: conda install pip
+        run: mamba install pip
       - shell: bash -l {0}
         run: which python
       - shell: bash -l {0}
