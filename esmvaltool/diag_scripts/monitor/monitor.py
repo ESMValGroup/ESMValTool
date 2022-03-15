@@ -425,7 +425,10 @@ class Monitor(MonitorBase):
                                    **map_options,
                                    **variable_options
                                })
-            self.set_rasterized()
+
+            # Note: plt.gca() is the colorbar here, use plt.gcf().axes to
+            # access the correct axes
+            self.set_rasterized(plt.gcf().axes[0])
             plt.suptitle(
                 f'Climatology ({var_info[n.START_YEAR]}'
                 f'-{var_info[n.END_YEAR]})',

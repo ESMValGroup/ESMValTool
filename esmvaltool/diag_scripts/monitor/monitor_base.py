@@ -257,9 +257,9 @@ class MonitorBase():
             return
         if axes is None:
             axes = plt.gca()
-        for artist in plt.gca().artists:
+        for artist in axes.artists:
             artist.set_rasterized(True)
-        for collection in plt.gca().collections:
+        for collection in axes.collections:
             collection.set_rasterized(True)
 
     @staticmethod

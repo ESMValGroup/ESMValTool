@@ -57,7 +57,10 @@ class Eofs(MonitorBase):
                 eof.standard_name = None
                 # Plot EOF map using plot_cube from PlotMap
                 plot_map.plot_cube(eof, save=False, **variable_options)
-                self.set_rasterized()
+                # Use rasterization if desired
+                # Note: plt.gca() is the colorbar here, use plt.gcf().axes to
+                # access the correct axes
+                self.set_rasterized(plt.gcf().axes[0])
                 # Get filename for the EOF plot
                 filename = self.get_plot_path('eof', var_info)
                 # Save figure
