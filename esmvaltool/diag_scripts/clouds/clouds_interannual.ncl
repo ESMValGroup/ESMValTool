@@ -13,6 +13,7 @@
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
 ;   colormap:        e.g., WhiteBlueGreenYellowRed, rainbow
+;   epsilon:         "epsilon" value to be replaced with missing values
 ;   explicit_cn_levels: use these contour levels for plotting
 ;   filename_add:    optionally add this string to plot filesnames
 ;   projection:      map projection, e.g., Mollweide, Mercator
@@ -65,6 +66,7 @@ begin
   enter_msg(DIAG_SCRIPT, "")
 
   set_default_att(diag_script_info, "colormap", "WhiteBlueGreenYellowRed")
+  set_default_att(diag_script_info, "epsilon", 1.0e-4)
   set_default_att(diag_script_info, "filename_add", "")
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
   set_default_att(diag_script_info, "var", "")
@@ -247,7 +249,7 @@ begin
     end if
     mean = time_operations(A0, -1, -1, "average", "annualclim", True)
     ; replace "epsilon" values with missing value
-    mean = where(abs(mean).lt.1.0e-4, mean@_FillValue, mean)
+    mean = where(abs(mean).lt.diag_script_info@epsilon, mean@_FillValue, mean)
     data1 = 100.0 * data1 / abs(mean)
 
     ; create arrays for multi-obs and multi-model averages (if requested)
@@ -486,10 +488,41 @@ begin
     multimod = dim_avg_n(multimod_all, 0)
     delete(multimod_all)
     copy_VarMeta(data1, multimod)
-    gavg = area_operations(multimod, -90., 90., 0., 360., "average", True)
+
+    mask1 = multiobs
+    mask2 = multimod
+    mask1 = where(.not.ismissing(mask1), 0., mask1@_FillValue)
+    mask2 = where(.not.ismissing(mask2), 0., mask2@_FillValue)
+    amask = mask1 + mask2
+    delete(mask1)
+    delete(mask2)
+    refmasked = multiobs
+    refmasked = refmasked + amask
+    datmasked = multimod
+    datmasked = datmasked + amask
+    delete(amask)
+    corr = calculate_metric(refmasked, datmasked, "correlation")
+    gavg = area_operations(datmasked, -90., 90., 0., 360., \
+                           "average", True)
+    rmsd = calculate_metric(refmasked, datmasked, "RMSD")
+
+;    system("rm debug.nc")
+;    debugfile = addfile("debug.nc", "c")
+;    debugfile->refmasked = refmasked
+;    debugfile->datmasked = datmasked
+
+    delete(refmasked)
+    delete(datmasked)
+
     res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
+    res@gsnCenterString = "corr = " + sprintf("%6.3f", corr)
+    res@gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd)
+
+;    gavg = area_operations(multimod, -90., 90., 0., 360., "average", True)
+;    res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
     res@tiMainString = "Multi-model average"
     map_multimod = gsn_csm_contour_map(wks, multimod, res)
+
   end if
 
   log_info(" Wrote " + outfile)

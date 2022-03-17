@@ -12,7 +12,7 @@
 begin
 
   inpath = "/pf/b/b380103/workesm/esmvaltool_output/" \
-           + "recipe_clouds_pdf_20211105_185734/work"
+           + "recipe_clouds_pdf_ampm2_20220314_151025/work"
 
   diag = "clouds_pdf_postproc.ncl"
 

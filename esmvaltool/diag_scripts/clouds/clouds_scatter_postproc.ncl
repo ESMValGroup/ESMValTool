@@ -12,21 +12,21 @@
 begin
 
   inpath = "/pf/b/b380103/workesm/esmvaltool_output/" \
-           + "recipe_clouds_scatter_20211108_095716/work"
+           + "recipe_clouds_scatter_ampm2_20220315_114220/work"
 
   diag = "clouds_scatter_postproc.ncl"
 
   refname = "ESACCI-CLOUD"
   mmmname = "Multi-model average"
-;  reg_short = "so"
+  reg_short = "so"
 ;  reg_short = "sep"
   reg_short = "itcz"
 ;  reg_long = "southernocean"
 ;  reg_long = "sepacific"
   reg_long = "itcz"
 ;  var = "totalcwp"
-  var = "lwp"
-;  var = "swcre"
+;  var = "lwp"
+  var = "swcre"
 
   ; CMIP5
   fname5 = inpath + "/scatter_" + reg_long + "_cmip5/scatter_" + var + "/" \

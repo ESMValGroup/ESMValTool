@@ -162,7 +162,7 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
       ts:
         preprocessor: clim_ocean
         mip: Amon
@@ -173,7 +173,7 @@ diagnostics:
         reference_dataset: ERA-Interim
         additional_datasets:
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
       wap:
         preprocessor: clim500_ocean
         mip: Amon
@@ -184,7 +184,7 @@ diagnostics:
         reference_dataset: ERA-Interim
         additional_datasets:
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
       clivi:
         preprocessor: clim_ocean
         mip: Amon
@@ -195,7 +195,7 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
       lwp:
         preprocessor: clim_ocean
         mip: Amon
@@ -207,7 +207,7 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
     additional_datasets: *cmip5_models
     scripts:
       dynclt:
@@ -264,7 +264,7 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
       ts:
         preprocessor: clim_ocean
         mip: Amon
@@ -275,7 +275,7 @@ diagnostics:
         reference_dataset: ERA-Interim
         additional_datasets:
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
       wap:
         preprocessor: clim500_ocean
         mip: Amon
@@ -286,7 +286,7 @@ diagnostics:
         reference_dataset: ERA-Interim
         additional_datasets:
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
       clivi:
         preprocessor: clim_ocean
         mip: Amon
@@ -297,7 +297,7 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
       lwp:
         preprocessor: clim_ocean
         mip: Amon
@@ -309,7 +309,7 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
     additional_datasets: *cmip6_models
     scripts:
       dynclt:

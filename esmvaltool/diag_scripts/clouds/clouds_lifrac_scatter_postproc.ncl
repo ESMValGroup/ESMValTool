@@ -168,7 +168,6 @@ begin
     print(tostring(results&bin(n)) + ", " + tostring(delta) + " (" \
           + tostring(delta / mmmean(n, 0) * 100.0 + "%)"))
 
-
   end do
 
   ; ###########################################

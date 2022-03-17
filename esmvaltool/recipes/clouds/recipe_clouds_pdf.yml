@@ -143,7 +143,7 @@ diagnostics:
         end_year: 2014
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
     additional_datasets: *cmip6_models
     scripts:
       southernocean:
@@ -173,7 +173,7 @@ diagnostics:
         end_year: 2005
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
     additional_datasets: *cmip5_models
     scripts:
       southernocean:
@@ -203,7 +203,7 @@ diagnostics:
         end_year: 2014
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
     additional_datasets: *cmip6_models
     scripts:
       sep:
@@ -244,7 +244,7 @@ diagnostics:
         end_year: 2005
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1982, end_year: 2016}
+             start_year: 1992, end_year: 2016}
     additional_datasets: *cmip5_models
     scripts:
       sep:

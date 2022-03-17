@@ -775,6 +775,7 @@ begin
 
         dres@gsnLeftString  = ""
         dres@gsnRightString = ""
+        dres@gsnCenterString = ""
         dres@mpPerimOn      = perim    ; draw line around map
         dres@gsnStringFontHeightF = 0.02
 
@@ -811,6 +812,7 @@ begin
         end if
         dres@gsnLeftString  = ""
         dres@gsnRightString = ""
+        dres@gsnCenterString = ""
         dres@tiMainString =  refname + " uncertainty"
         rmsd(imod, :) = rmsd@_FillValue
         bias(imod, :) = bias@_FillValue
@@ -1034,6 +1036,11 @@ begin
           else
             dres@gsnLeftString = ""
           end if
+          if (.not.ismissing(corr(imod, is))) then
+            dres@gsnCenterString = "corr = " + sprintf("%6.3f", corr(imod, is))
+          else
+            dres@gsnCenterString = ""
+          end if
 
           if (is.eq.0) then
             maps_d(imod, is) = gsn_csm_contour_map(wks0d, diff(is, :, :), dres)
@@ -1059,6 +1066,12 @@ begin
         else
           dres@gsnLeftString = ""
         end if
+        if (.not.ismissing(corr(imod, 0))) then
+          dres@gsnCenterString = "corr = " + sprintf("%6.3f", corr(imod, 0))
+        else
+          dres@gsnCenterString = ""
+        end if
+
         maps_d(imod, 0) = gsn_csm_contour_map(wks0d, diff, dres)
 
         ; obs uncertainty
@@ -1092,6 +1105,7 @@ begin
           xres@lbLabelBarOn = False
           xres@gsnRightString   = ""
           xres@gsnLeftString    = ""
+          xres@gsnCenterString  = ""
           xres@gsnCenterString  = ""
           xres@tiYAxisOn = False
           xres@tmXBBorderOn = False
