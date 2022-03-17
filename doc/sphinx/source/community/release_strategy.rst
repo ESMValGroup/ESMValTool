@@ -52,19 +52,7 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.5.0 (Coordinating Release Manager: `Axel Lauer`_, team members: `Manuel Schlund`_, `Rémi Kazeroni`_)
-
-+------------+--------------------------+
-| 2022-02-07 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2022-02-14 |ESMValCore release        |
-+------------+--------------------------+
-| 2022-02-21 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2022-02-28 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.6.0 (Release Manager: TBD)
+- 2.6.0 (Release Manager: `Saskia Loosveldt Tomas`_)
 
 +------------+--------------------------+
 | 2022-06-06 |ESMValCore feature freeze |
@@ -76,8 +64,34 @@ Upcoming releases
 | 2022-06-27 |ESMValTool release        |
 +------------+--------------------------+
 
+- 2.7.0 (Release Manager: TBD)
+
++------------+--------------------------+
+| 2022-10-03 |ESMValCore feature freeze |
++------------+--------------------------+
+| 2022-10-10 |ESMValCore release        |
++------------+--------------------------+
+| 2022-10-17 |ESMValTool feature freeze |
++------------+--------------------------+
+| 2022-10-24 |ESMValTool release        |
++------------+--------------------------+
+
 Past releases
 ^^^^^^^^^^^^^
+
+- 2.5.0 (Coordinating Release Manager: `Axel Lauer`_, team members: `Manuel Schlund`_, `Rémi Kazeroni`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2022-02-07 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2022-02-14 | 2022-03-14 | `ESMValCore Release 2.5.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.5.0>`_ | :ref:`esmvalcore:changelog-v2-5-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2022-02-21 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2022-02-28 | 2022-03-15 | `ESMValTool Release 2.5.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.5.0>`_ |      :ref:`changelog-v2-5-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
 
 - 2.4.0 (Release Manager: `Klaus Zimmermann`_)
 
@@ -387,6 +401,7 @@ Changelog
 .. _Bouwe Andela: https://github.com/bouweandela
 .. _Rémi Kazeroni: https://github.com/remi-kazeroni
 .. _Axel Lauer: https://github.com/axel-lauer
+.. _Saskia Loosveldt Tomas: https://github.com/sloosvel
 .. _Valeriu Predoi: https://github.com/valeriupredoi
 .. _Manuel Schlund: https://github.com/schlunma
 .. _Javier Vegas-Regidor: https://github.com/jvegasbsc

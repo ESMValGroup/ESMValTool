@@ -1,15 +1,19 @@
 """Align the target model with the CMIP ensemble."""
 import logging
-from pathlib import Path
 from itertools import product
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import xarray as xr
 
-from esmvaltool.diag_scripts.shared import (get_diagnostic_filename,
-                                            get_plot_filename, run_diagnostic,
-                                            select_metadata, ProvenanceLogger)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    run_diagnostic,
+    select_metadata,
+)
 
 logger = logging.getLogger(Path(__file__).name)
 
@@ -35,7 +39,7 @@ def mean_of_target_models(metadata):
     target_model_data = select_metadata(metadata, variable_group='tas_target')
     files = [
         tmd['filename'] for tmd in target_model_data
-        if 'MultiModel' not in tmd['dataset']
+        if 'MultiModel' not in tmd['filename']
     ]
     datasets = xr.open_mfdataset(files, combine='nested', concat_dim='ens')
     provenance = create_provenance_record(files)
@@ -53,9 +57,9 @@ def get_cmip_dt(metadata, year, percentile):
 def get_resampling_period(target_dts, cmip_dt):
     """Return 30-year time bounds of the resampling period.
 
-    This is the period for which the target model delta T
-    matches the cmip delta T for a specific year.
-    Uses a 30-year rolling window to get the best match.
+    This is the period for which the target model delta T matches the
+    cmip delta T for a specific year. Uses a 30-year rolling window to
+    get the best match.
     """
     target_dts = target_dts.rolling(time=30, center=True,
                                     min_periods=30).mean()
@@ -85,8 +89,8 @@ def _timeline(axes, yloc, interval):
 def make_plot(metadata, scenarios, cfg, provenance):
     """Make figure 3, left graph.
 
-    Multimodel values as line, reference value in black square,
-    steering variables in dark dots.
+    Multimodel values as line, reference value in black square, steering
+    variables in dark dots.
     """
     fig, axes = plt.subplots()
     for member in select_metadata(metadata, variable_group='tas_cmip'):
@@ -106,7 +110,7 @@ def make_plot(metadata, scenarios, cfg, provenance):
                       dataset.tas.values,
                       color='k',
                       linewidth=2,
-                      label='CMIP ' + Path(filename).stem.split('_')[0][10:])
+                      label='CMIP ' + member['alias'][10:])
 
     for member in select_metadata(metadata, variable_group='tas_target'):
         filename = member['filename']

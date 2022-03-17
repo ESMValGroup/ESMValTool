@@ -39,6 +39,7 @@ REQUIREMENTS = {
         'jinja2',
         'joblib',
         'lime',
+        'mapgenerator>=1.0.5',
         'matplotlib',
         'natsort',
         'nc-time-axis',
@@ -48,6 +49,7 @@ REQUIREMENTS = {
         'pandas',
         'pyproj',
         'pyyaml',
+        'progressbar2',
         'rasterio',
         'ruamel.yaml',
         'scikit-image',
@@ -65,6 +67,7 @@ REQUIREMENTS = {
     # Test dependencies
     # Execute `pip install .[test]` once and the use `pytest` to run tests
     'test': [
+        'flake8<4',
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
         'pytest-cov>=2.10.1',
         'pytest-env',
@@ -201,9 +204,9 @@ setup(
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Atmospheric Science',
         'Topic :: Scientific/Engineering :: GIS',
@@ -224,7 +227,6 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'cmorize_obs = esmvaltool.cmorizers.obs.cmorize_obs:main',
             'mip_convert_setup = '
             'esmvaltool.cmorizers.mip_convert.esmvt_mipconv_setup:main',
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
@@ -237,6 +239,7 @@ setup(
             'colortables = '
             'esmvaltool.utils.color_tables.show_color_tables:ColorTables',
             'install = esmvaltool.install:Install',
+            'data = esmvaltool.cmorizers.data.cmorizer:DataCommand'
         ]
     },
     cmdclass={

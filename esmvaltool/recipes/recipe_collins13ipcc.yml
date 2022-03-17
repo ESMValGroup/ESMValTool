@@ -69,7 +69,7 @@ preprocessors:
                140., 155., 170., 190., 215., 245., 275., 315., 370., 430.,
                510., 610., 725., 870., 1040., 1240., 1450., 1725., 2010.,
                2315., 2640., 2985., 3340., 3705., 4075., 4460., 4845., 5200.]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
 
   preproc_zonal_ocean:
     regrid:
@@ -80,7 +80,7 @@ preprocessors:
                140., 155., 170., 190., 215., 245., 275., 315., 370., 430.,
                510., 610., 725., 870., 1040., 1240., 1450., 1725., 2010.,
                2315., 2640., 2985., 3340., 3705., 4075., 4460., 4845., 5200.]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     zonal_statistics:
       operator: mean
 
@@ -166,7 +166,7 @@ diagnostics:
       - {dataset: BNU-ESM,          start_year: 1850, end_year: 2005}
       - {dataset: CESM1-BGC,        start_year: 1850, end_year: 2005}
       - {dataset: CESM1-CAM5,       start_year: 1850, end_year: 2005}
-      - {dataset: CESM1-CAM5-1-FV2, start_year: 1850, end_year: 2005}
+      #- {dataset: CESM1-CAM5-1-FV2, start_year: 1850, end_year: 2005} # data is missing on ESGF
       - {dataset: CESM1-FASTCHEM,   start_year: 1850, end_year: 2005}
       - {dataset: CESM1-WACCM,      start_year: 1955, end_year: 2005,
          ensemble: r2i1p1}
@@ -627,7 +627,7 @@ diagnostics:
       - {dataset: CESM1-CAM5,    exp: rcp60, start_year: 2006, end_year: 2100}
       - {dataset: CSIRO-Mk3-6-0, exp: rcp60, start_year: 2006, end_year: 2100}
       - {dataset: IPSL-CM5A-LR,  exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-CM3,      exp: rcp60, start_year: 2006, end_year: 2100}
+      #- {dataset: GFDL-CM3,      exp: rcp60, start_year: 2006, end_year: 2100} # data is missing on ESGF
 
       - {dataset: CanESM2,       exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: CCSM4,         exp: rcp85, start_year: 2006, end_year: 2100}
@@ -3070,8 +3070,8 @@ diagnostics:
       - {dataset: ACCESS1-3, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: bcc-csm1-1, exp: historical, start_year: 1960, end_year: 2005}
       - {dataset: bcc-csm1-1, exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: bcc-csm1-1-m, exp: historical, start_year: 1960, end_year: 2005}
-      - {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2006, end_year: 2100}
+      #- {dataset: bcc-csm1-1-m, exp: historical, start_year: 1960, end_year: 2005} # areacello data missing on ESGF
+      #- {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2006, end_year: 2100} # areacello data missing on ESGF
       - {dataset: CanESM2, exp: historical, start_year: 1960, end_year: 2005}
       - {dataset: CanESM2, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: CCSM4, exp: historical, start_year: 1960, end_year: 2005}
@@ -3090,8 +3090,8 @@ diagnostics:
       - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: GFDL-ESM2M, exp: historical, start_year: 1960, end_year: 2005}
       - {dataset: GFDL-ESM2M, exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: inmcm4, exp: historical, start_year: 1960, end_year: 2005}
-      - {dataset: inmcm4, exp: rcp85, start_year: 2006, end_year: 2100}
+      #- {dataset: inmcm4, exp: historical, start_year: 1960, end_year: 2005} # areacello data missing on ESGF
+      #- {dataset: inmcm4, exp: rcp85, start_year: 2006, end_year: 2100} # areacello data missing on ESGF
       - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1960, end_year: 2005}
       - {dataset: IPSL-CM5A-LR, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: IPSL-CM5A-MR, exp: historical, start_year: 1960, end_year: 2005}
@@ -3161,7 +3161,7 @@ diagnostics:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
+      #- {dataset: bcc-csm1-1-m} # areacello data missing on ESGF
       - {dataset: CanESM2}
       - {dataset: CCSM4}
       - {dataset: CESM1-CAM5}
@@ -3171,7 +3171,7 @@ diagnostics:
       - {dataset: GFDL-CM3}
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
-      - {dataset: inmcm4}
+      #- {dataset: inmcm4} # areacello data missing on ESGF
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}

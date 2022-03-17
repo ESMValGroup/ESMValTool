@@ -5,8 +5,10 @@ import os
 import re
 import warnings
 from copy import deepcopy
+from functools import lru_cache
 from pprint import pformat
 
+import esmvalcore.preprocessor
 import iris
 import numpy as np
 import shapely.vectorized as shp_vect
@@ -14,7 +16,6 @@ from cartopy.io import shapereader
 from cf_units import Unit
 from iris.fileformats.netcdf import UnknownCellMethodWarning
 
-import esmvalcore.preprocessor
 from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
     io,
@@ -84,6 +85,7 @@ def _get_datasets(input_data, **kwargs):
     return datasets
 
 
+@lru_cache
 def _get_ne_land_mask_cube(n_lats=1000, n_lons=2000):
     """Get Natural Earth land mask."""
     ne_dir = os.path.join(
@@ -576,7 +578,7 @@ def get_landsea_fraction_weights(cube, area_type, normalize=False):
     # Calculate land fractions on coordinate grid of cube
     ne_land_mask_cube = _get_ne_land_mask_cube()
     land_fraction = np.empty((lat_coord.shape[0], lon_coord.shape[0]),
-                             dtype=np.float)
+                             dtype=np.float64)
     for lat_idx in range(lat_coord.shape[0]):
         for lon_idx in range(lon_coord.shape[0]):
             lat_bounds = lat_coord.bounds[lat_idx]

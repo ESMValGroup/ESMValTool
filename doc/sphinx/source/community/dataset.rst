@@ -15,12 +15,14 @@ Dataset documentation
 The documentation required for a CMORizer script is the following:
 
 - Make sure that the new dataset is added to the list of
-  :ref:`supported_datasets`
+  :ref:`supported_datasets` and to the file datasets.yml_.
 - The in code documentation should contain clear instructions on how to obtain
-  the data
+  the data.
 - A BibTeX file named ``<dataset>.bibtex`` defining the reference for the new
   dataset should be placed in the directory ``esmvaltool/references/``, see
   :ref:`adding_references` for detailed instructions.
+
+.. _datasets.yml: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/datasets.yml
 
 For more general information on writing documentation, see :ref:`documentation`.
 
@@ -37,7 +39,9 @@ To test a pull request for a new CMORizer script:
 
 #. Download the data following the instructions included in the script and place
    it in the ``RAWOBS`` path specified in your ``config-user.yml``
-#. Run the CMORizer script by running ``cmorize_obs -c <config-file> -o <dataset>``
+#. If available, use the downloading script by running
+   ``esmvaltool data download --config_file <config-file>  <dataset>``
+#. Run the cmorization by running ``esmvaltool data format <config-file> <dataset>``
 #. Copy the resulting data to the ``OBS`` (for CMIP5 compliant data) or ``OBS6``
    (for CMIP6 compliant data) path specified in your
    ``config-user.yml``
@@ -74,6 +78,8 @@ Dataset description
 Check that new dataset has been added to the table of observations defined in
 the ESMValTool guide user’s guide in section :ref:`inputdata`
 (generated from ``doc/sphinx/source/input.rst``).
+Check that the new dataset has also been added to the file `datasets.yml
+<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/datasets.yml>`__.
 
 BibTeX info file
 ----------------
@@ -87,11 +93,24 @@ recipe_check_obs.yml
 Check that new dataset has been added to the testing recipe
 ``esmvaltool/recipes/examples/recipe_check_obs.yml``
 
+Downloader script
+-----------------
+
+If present, check that the new downloader script
+``esmvaltool/cmorizers/data/downloaders/datasets/<dataset>.py``
+meets standards.
+This includes the following items:
+
+* Code quality checks
+
+  1. Code quality
+  2. No Codacy errors reported
+
 CMORizer script
 ---------------
 
 Check that the new CMORizer script
-``esmvaltool/cmorizers/obs/cmorize_obs_<dataset>.{py,ncl}``
+``esmvaltool/cmorizers/data/formatters/datasets/<dataset>.{py,ncl}``
 meets standards.
 This includes the following items:
 
@@ -110,13 +129,21 @@ Config file
 -----------
 
 If present, check config file ``<dataset>.yml`` in
-``esmvaltool/cmorizers/obs/cmor_config/`` for correctness.
+``esmvaltool/cmorizers/data/cmor_config/`` for correctness.
 Use ``yamllint`` to check for syntax errors and common mistakes.
+
+Run downloader script
+---------------------
+
+If available, make sure the downloader script is working by running
+``esmvaltool data download --config_file <config-file> <dataset>``
+
 
 Run CMORizer
 ------------
 
-Make sure CMORizer is working by running ``cmorize_obs -c <config-file> -o <dataset>``
+Make sure CMORizer is working by running
+``esmvaltool data format --config_file <config-file> <dataset>``
 
 Check output of CMORizer
 ------------------------
