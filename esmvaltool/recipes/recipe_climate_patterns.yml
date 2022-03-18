@@ -1,0 +1,124 @@
+# ESMValTool
+# recipe_jules_variable_extract.yml
+
+documentation:
+  description: Extracting mean variables over monthly timescales to feed IMOGEN
+  title: Generating Climate Patterns
+
+  authors:
+    - munday_gregory
+
+datasets:
+  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, ensemble: r1i1p1f2, grid: gn}
+
+preprocessors:
+  global_mean:
+    monthly_statistics:
+      operator: mean
+
+    regrid:
+      target_grid: {start_longitude: -180, end_longitude: 176.25, step_longitude: 3.75,
+                    start_latitude: -55, end_latitude: 82.5, step_latitude: 2.5}
+      scheme: linear
+
+historical_settings: &historical_settings
+  exp: historical
+  start_year: 1850
+  end_year: 2014
+  preprocessor: global_mean
+
+ssp370_settings: &ssp370_settings
+  exp: ssp370
+  start_year: 2015
+  end_year: 2100
+  preprocessor: global_mean
+
+diagnostics:
+  timeseries:
+    description: Mean monthly variables
+
+    variables:
+      tasmax_370:
+        short_name: tasmax
+        <<: *ssp370_settings
+
+      tasmin_370:
+        short_name: tasmin
+        <<: *ssp370_settings
+
+      tas_370:
+        short_name: tas
+        <<: *ssp370_settings
+
+      hurs_370:
+        short_name: hurs
+        <<: *ssp370_settings
+
+      huss_370:
+        short_name: huss
+        <<: *ssp370_settings
+
+      pr_370:
+        short_name: pr
+        <<: *ssp370_settings
+
+      sfcWind_370:
+        short_name: sfcWind
+        <<: *ssp370_settings
+
+      ps_370:
+        short_name: ps
+        <<: *ssp370_settings
+
+      rsds_370:
+        short_name: rsds
+        <<: *ssp370_settings
+
+      rlds_370:
+        short_name: rlds
+        <<: *ssp370_settings
+
+      hist_tasmax:
+        short_name: tasmax
+        <<: *historical_settings
+
+      hist_tasmin:
+        short_name: tasmin
+        <<: *historical_settings
+
+      hist_tas:
+        short_name: tas
+        <<: *historical_settings
+
+      hist_hurs:
+        short_name: hurs
+        <<: *historical_settings
+
+      hist_huss:
+        short_name: huss
+        <<: *historical_settings
+
+      hist_pr:
+        short_name: pr
+        <<: *historical_settings
+
+      hist_sfcWind:
+        short_name: sfcWind
+        <<: *historical_settings
+
+      hist_ps:
+        short_name: ps
+        <<: *historical_settings
+
+      hist_rsds:
+        short_name: rsds
+        <<: *historical_settings
+
+      hist_rlds:
+        short_name: rlds
+        <<: *historical_settings
+
+
+    scripts:
+      variable_extraction_script:
+        script: ~/Desktop/CSSPBrazil/ESMVal/scripts/variable_extraction.py
