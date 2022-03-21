@@ -12,6 +12,7 @@
 ;   filename_add:       optionally add this string to plot filesnames
 ;   min_mass:           minimum cloud condensate (same units as clw, cli)
 ;   mm_mean_median:     calculate multi-model mean and meadian
+;   nbins: number of equally spaced bins (ta (x-axis)), default = 20
 ;   panel_labels:       label individual panels (true, false)
 ;   PanelTop:           manual override for "@gnsPanelTop" used by panel
 ;                       plot(s)
@@ -20,7 +21,6 @@
 ;   none
 ;
 ; Optional variable_info attributes (variable specific)
-;   nbins: number of equally spaced bins (ta (x-axis)), default = 20
 ;   reference_dataset: reference dataset
 ;
 ; Caveats

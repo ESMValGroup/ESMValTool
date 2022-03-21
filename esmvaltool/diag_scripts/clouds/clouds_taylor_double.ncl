@@ -34,8 +34,8 @@
 ;   projectgroups:   calculated mmm per "projectgroup"
 ;                    (e.g. (/"cmip5", "cmip6")/)
 ;   styleset:        "CMIP5", "DEFAULT"
-;                    (if not set, CLOUDS_TAYLOR will create a color table and
-;                    symbols for plotting)
+;                    (if not set, CLOUDS_TAYLOR_DOUBLE will create a color
+                     table and symbols for plotting)
 ;   timemean:        time averaging
 ;                    - annualclim (default) = 1 plot annual mean
 ;                    - seasonalclim = 4 plots (DJF, MAM, JJA, SON)

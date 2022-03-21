@@ -6,28 +6,45 @@ Clouds
 Overview
 --------
 
-The recipe recipe_lauer13jclim.yml computes the climatology and interannual
-variability of climate relevant cloud variables such as cloud radiative forcing
-(CRE), liquid water path (lwp), cloud amount (clt), and total precipitation (pr)
-reproducing some of the evaluation results of Lauer and Hamilton (2013). The
-recipe includes a comparison of the geographical distribution of multi-year
-average cloud parameters from individual models and the multi-model mean with
-satellite observations. Taylor diagrams are generated that show the multi-year
-annual or seasonal average performance of individual models and the multi-model
-mean in reproducing satellite observations. The diagnostic also facilitates the
-assessment of the bias of the multi-model mean and zonal averages of individual
-models compared with satellite observations. Interannual variability is
-estimated as the relative temporal standard deviation from multi-year timeseries
-of data with the temporal standard deviations calculated from monthly anomalies
-after subtracting the climatological mean seasonal cycle.
+Two recipes are available to evaluate cloud climatologies from CMIP models.
+
+1) Recipe recipe_lauer13jclim.yml computes the climatology and interannual
+   variability of climate relevant cloud variables such as cloud radiative forcing
+   (CRE), liquid water path (lwp), cloud amount (clt), and total precipitation (pr)
+   reproducing some of the evaluation results of Lauer and Hamilton (2013). The
+   recipe includes a comparison of the geographical distribution of multi-year
+   average cloud parameters from individual models and the multi-model mean with
+   satellite observations. Taylor diagrams are generated that show the multi-year
+   annual or seasonal average performance of individual models and the multi-model
+   mean in reproducing satellite observations. The diagnostic also facilitates the
+   assessment of the bias of the multi-model mean and zonal averages of individual
+   models compared with satellite observations. Interannual variability is
+   estimated as the relative temporal standard deviation from multi-year timeseries
+   of data with the temporal standard deviations calculated from monthly anomalies
+   after subtracting the climatological mean seasonal cycle.
+2) Recipe family recipe_lauer22jclim_*.yml is an extension of
+   recipe_lauer13jclim.yml for evaluation of cloud radiative forcing
+   (CRE), liquid water path (lwp), ice water path (clivi), total cloud amount (clt),
+   cloud liquid water content (clw), cloud ice water content (cli), cloud fraction
+   (cl) and water vapor path (prw) from CMIP6 models in comparison to CMIP5 results
+   and satellite observations. Whereever possible, the diagnostics use
+   multi-observational products as reference datatsets. The recipe family
+   reproduces all figures from Lauer et al. (2022): maps of the geographical
+   distribution of multi-year averages, Taylor diagrams for multi-year annual
+   averages, temporal variability, seasonal cycle amplitude, cloud ice fraction
+   as a function of temperature, zonal means of 3-dim cloud liquid/ice content and
+   cloud fraction, matrices of cloud cover and total cloud water path as a function
+   of SST and 500 hPa vertical velocity, shortwave CRE and total cloud water path
+   binned by total cloud cover and pdfs of total cloud cover for selected regions.
 
 
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in recipes/
+Recipes are stored in recipes/clouds
 
     * recipe_lauer13jclim.yml
+    * recipe_lauer22jclim_*.yml
 
 Diagnostics are stored in diag_scripts/clouds/
 
@@ -35,10 +52,17 @@ Diagnostics are stored in diag_scripts/clouds/
       mean
     * clouds_bias.ncl: global maps of the multi-model mean and the multi-model
       mean bias
+    * clouds_dyn_matrix.ncl: cloud properties by dynamical regime (SST, omega500)
     * clouds_interannual: global maps of the interannual variability
     * clouds_isccp: global maps of multi-model mean minus observations + zonal
       averages of individual models, multi-model mean and observations
-    * clouds_taylor.ncl: taylor diagrams
+    * clouds_lifrac_scatter.ncl: cloud liquid water fraction as a function of
+      temperaure
+    * clouds_pdf.ynl: pdf of cloud parameters
+    * clouds_seasonal_cycle.ncl: seasonal cycle amplitude
+    * clouds_taylor.ncl: Taylor diagrams (as in Lauer and Hamilton, 2013)
+    * clouds_taylor_double.ncl: Taylor diagrams (as in Lauer et al., 2022)
+    * clouds_zonal.ncl: zonal means of 3-dim variables
 
 
 User settings in recipe
@@ -56,6 +80,13 @@ User settings in recipe
    * explicit_cn_levels: explicit contour levels (array)
    * extralegend: plot legend(s) to extra file(s)
    * filename_add: optionally add this string to plot filesnames
+   * multiobs_exclude: list of *observational* datasets to be excluded when
+     calculating uncertainty estimates from multiple observational datasets
+     (see also multiobs_uncertainty)
+   * multiobs_uncertainty: calculate uncertainty estimates from multiple
+     observational datasets (true, false); by default, all "obs", "obs6",
+     "obs4mips" and "native6" datasets are used; any of such datasets can be
+     explicitely excluded when also specifying "multiobs_exclude"
    * panel_labels: label individual panels (true, false)
    * PanelTop: manual override for "@gnsPanelTop" used by panel plot(s)
    * projection: map projection for plotting (default =
@@ -72,12 +103,14 @@ User settings in recipe
      "annual" = annual mean
    * treat_var_as_error: treat variable as error when averaging (true, false);
      true:  avg = sqrt(mean(var*var)), false: avg = mean(var)
+   * var: short_name of variable to process (default = "" - use first
+     variable in variable list)
 
    *Required settings (variables)*
 
    none
 
-   * Optional settings (variables)
+   *Optional settings (variables)*
 
    * long_name: variable description
    * reference_dataset: reference dataset; REQUIRED when calculating
@@ -117,6 +150,36 @@ User settings in recipe
    * variable "pr-mmday": diag_scripts/shared/plots/rgb/ipcc-precip.rgb,
      diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
 
+#. Script clouds_dyn_matrix.ncl
+
+   *Required settings (scripts)*
+
+   * var_x: short name of variable on x-axis
+   * var_y: short name of variable on y-axis
+   * var_z: short name of variable to be binned
+   * xmin: min x value for generating x bins
+   * xmax: max x value for generating x bins
+   * ymin: min y value for generating y bins
+   * ymax: max y value for generating y bins
+
+   *Optional settings (scripts)*
+
+   * clevels: explicit values for probability labelbar (array)
+   * filename_add: optionally add this string to plot filesnames
+   * nbins: number of equally spaced bins (var_x), default = 100
+   * xlabel: label overriding variable name for x-axis (e.g. SST)
+   * ylabel: label overriding variable name for y-axis (e.g. omega500)
+   * zdmin: min z value for labelbar (difference plots)
+   * zdmax: max z value for labelbar (difference plots)
+   * zmin: min z value for labelbar
+   * zmax: max z value for labelbar
+
+   *Required settings (variables)*
+
+   *Optional settings (variables)*
+
+   * reference_dataset: reference dataset
+
 #. Script clouds_interannual.ncl
 
    *Required settings (scripts)*
@@ -126,8 +189,12 @@ User settings in recipe
    *Optional settings (scripts)*
 
    * colormap: e.g., WhiteBlueGreenYellowRed, rainbow
+   * epsilon: "epsilon" value to be replaced with missing values
    * explicit_cn_levels: use these contour levels for plotting
+   * filename_add: optionally add this string to plot filesnames
    * projection: map projection, e.g., Mollweide, Mercator
+   * var: short_name of variable to process (default = "" - use first
+     variable in variable list)
 
    *Required settings (variables)*
 
@@ -137,10 +204,6 @@ User settings in recipe
 
    * long_name: description of variable
    * reference_dataset: name of reference datatset
-
-   *Color tables*
-
-   * variable "lwp": diag_scripts/shared/plots/rgb/qcm3.rgb
 
 .. _clouds_ipcc.ncl:
 
@@ -174,6 +237,62 @@ User settings in recipe
    *Color tables*
 
    * variables "pr", "pr-mmday": diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
+
+#. Script clouds_lifrac_scatter.ncl
+
+   *Required settings (scripts)*
+
+   none
+
+   *Optional settings (scripts)*
+
+   * filename_add: optionally add this string to plot filesnames
+   * min_mass: minimum cloud condensate (same units as clw, cli)
+   * mm_mean_median: calculate multi-model mean and meadian
+   * nbins: number of equally spaced bins (ta (x-axis)), default = 20
+   * panel_labels: label individual panels (true, false)
+   * PanelTop: manual override for "@gnsPanelTop" used by panel plot(s)s
+
+   *Required settings (variables)*
+
+   *Optional settings (variables)*
+
+   * reference_dataset: reference dataset
+
+#. Script clouds_lifrac_pdf.ncl
+
+   *Required settings (scripts)*
+
+   * xmin: min value for bins (x axis)
+   * xmax: max value for bins (y axis)
+
+   *Optional settings (scripts)*
+
+   * filename_add: optionally add this string to output filenames
+   * plot_average: show average frequency per bin
+   * region: show only selected geographic region given as latmin, latmax,
+     lonmin, lonmax
+   * styleset: "CMIP5", "DEFAULT"
+   * ymin: min value for frequencies (%) (y axis)
+   * ymax: max value for frequencies (%) (y axis)
+
+   *Required settings (variables)*
+
+   *Optional settings (variables)*
+
+   * reference_dataset: reference dataset
+
+#. Script clouds_seasonal.ncl
+
+   *Required settings (scripts)*
+
+   none
+
+   *Optional settings (scripts)*
+
+   *Required settings (variables)*
+
+   *Optional settings (variables)*
 
 #. Script clouds_taylor.ncl
 
@@ -211,35 +330,68 @@ User settings in recipe
 
    none
 
+#. Script clouds_taylor_double.ncl
+
+   *Required settings (scripts)*
+
+   none
+
+   *Optional settings (scripts)*
+
+   *Required settings (variables)*
+
+   *Optional settings (variables)*
+
+#. Script clouds_zonal.ncl
+
+   *Required settings (scripts)*
+
+   none
+
+   *Optional settings (scripts)*
+
+   *Required settings (variables)*
+
+   *Optional settings (variables)*
+
 
 Variables
 ---------
 
+* cl (atmos, monthly mean, longitude latitude time)
+* clcalipso (atmos, monthly mean, longitude latitude time)
+* cli (atmos, monthly mean, longitude latitude time)
+* clw (atmos, monthly mean, longitude latitude time)
 * clwvi (atmos, monthly mean, longitude latitude time)
 * clivi (atmos, monthly mean, longitude latitude time)
 * clt (atmos, monthly mean, longitude latitude time)
 * pr (atmos, monthly mean, longitude latitude time)
+* prw (atmos, monthly mean, longitude latitude time)
 * rlut, rlutcs (atmos, monthly mean, longitude latitude time)
 * rsut, rsutcs (atmos, monthly mean, longitude latitude time)
+* ta (atmos, monthly mean, longitude latitude time)
+* wap (atmos, monthly mean, longitude latitude time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations/realanyses
+-----------------------
 
-*Note: (1) obs4MIPs data can be used directly without any preprocessing;
-(2) use `esmvaltool data info DATASET` or see headers of reformat scripts for non-obs4MIPs data for download
-instructions.*
+* CALIPSO-GOCCP
+* CALIPSO-ICECLOUD
+* CERES-EBAF
+* CLARA-AVHRR
+* CLOUDSAT-L2
+* ERA5
+* ERA-Interim
+* ESACCI-CLOUD
+* ESACCI-WATERVAPOUR
+* GPCP-SG
+* ISCCP-FH
+* MAC-LWP
+* MODIS
+* PATMOS-x
+* UWisc
 
-* CERES-EBAF (obs4MIPs) - CERES TOA radiation fluxes (used for calculation of
-  cloud forcing)
-* GPCP-SG (obs4MIPs) - Global Precipitation Climatology Project total
-  precipitation
-* MODIS (obs4MIPs) - MODIS total cloud fraction
-* UWisc - University of Wisconsin-Madison liquid water path climatology, based
-  on satellite observbations from TMI, SSM/I, and AMSR-E, reference: O'Dell et
-  al. (2008), J. Clim.
-
-  *Reformat script:* esmvaltool/cmorizers/data/formatters/datasets/uwisc.ncl
 
 References
 ----------
@@ -258,14 +410,9 @@ References
   models: A comparison of CMIP5 results with CMIP3 and satellite data, J. Clim.,
   26, 3823-3845, doi: 10.1175/JCLI-D-12-00451.1.
 
-* O’Dell, C.W., F.J. Wentz, and R. Bennartz (2008), Cloud liquid water path
-  from satellite-based passive microwave observations: A new climatology over
-  the global oceans, J. Clim., 21, 1721-1739, doi:10.1175/2007JCLI1958.1.
-
-* Pincus, R., S. Platnick, S.A. Ackerman, R.S. Hemler, Robert J. Patrick
-  Hofmann (2012), Reconciling simulated and observed views of clouds: MODIS,
-  ISCCP, and the limits of instrument simulators. J. Climate, 25, 4699-4720,
-  doi: 10.1175/JCLI-D-11-00267.1.
+* Lauer, A., L. Bock, B. Hassler, M. Schröder, and M. Stengel, Cloud climatologies
+  from global climate models  a comparison of CMIP5 and CMIP6 models with satellite
+  data, submitted.
 
 
 Example plots
@@ -316,4 +463,35 @@ Example plots
    estimated as relative temporal standard deviation from 20 years (1986-2005)
    of data. The temporal standard devitions are calculated from monthly
    anomalies after subtracting the climatological mean seasonal cycle.
+
+.. _fig_cloud_5:
+.. figure::  /recipes/figures/clouds/clouds_zonal_clcalipso_annual_cmip6.png
+   :align:   center
+   :width:   14cm
+
+   Zonal mean of the multi-year annual mean cloud fraction as seen from
+   CALIPSO from CMIP6 models in comparison to CALIPSO-GOCCP data.
+
+.. _fig_cloud_6:
+.. figure::  /recipes/figures/clouds/clouds_scatter_clt_swcre_so_cmip6.png
+   :align:   center
+   :width:   10cm
+
+   Multi-year seasonal average (December-January-February) of cloud shortwave
+   radiative effect (W m-2) vs. total cloud fraction (clt, %) averaged over the
+   Southern Ocean defined as latitude belt 30°S-65°S (ocean grid cells only).
+   Shown are the CMIP6 multi-model mean (red filled circles and lines) and 
+   observational estimates from ESACCI-CLOUD (black circles and lines).
+   The red shaded areas represent the range between the 10th and 90th percentiles
+   of the results from all individual models.
+
+.. _fig_cloud_7:
+.. figure::  /recipes/figures/clouds/clouds_pdf_clt_so_cmip6_line.png
+   :align:   center
+   :width:   8cm
+
+   Frequency distribution of monthly mean total cloud cover from CMIP6 models
+   in comparison to ESACCI-CLOUD data. The red curve shows the multi-model average,
+   the blue curve the ESACCI-CLOUD data and the thin gray lines the individual
+   models. The red shading shows ±1 standard deviation of the inter-model spread.
 
