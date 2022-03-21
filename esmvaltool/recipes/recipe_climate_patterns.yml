@@ -1,6 +1,6 @@
 # ESMValTool
 # recipe_jules_variable_extract.yml
-
+---
 documentation:
   description: Extracting mean variables over monthly timescales to feed IMOGEN
   title: Generating Climate Patterns
@@ -121,4 +121,4 @@ diagnostics:
 
     scripts:
       variable_extraction_script:
-        script: ~/Desktop/CSSPBrazil/ESMVal/scripts/variable_extraction.py
+        script: climate_patterns/variable_extraction.py
