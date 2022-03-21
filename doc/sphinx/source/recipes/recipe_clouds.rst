@@ -206,6 +206,7 @@ User settings in recipe
    * reference_dataset: name of reference datatset
 
 .. _clouds_ipcc.ncl:
+
 #. Script clouds_ipcc.ncl
 
    *Required settings (scripts)*
