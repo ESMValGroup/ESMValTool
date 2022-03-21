@@ -206,7 +206,6 @@ User settings in recipe
    * reference_dataset: name of reference datatset
 
 .. _clouds_ipcc.ncl:
-
 #. Script clouds_ipcc.ncl
 
    *Required settings (scripts)*
@@ -282,7 +281,7 @@ User settings in recipe
 
    * reference_dataset: reference dataset
 
-#. Script clouds_seasonal.ncl
+#. Script clouds_seasonal_cycle.ncl
 
    *Required settings (scripts)*
 
@@ -290,9 +289,20 @@ User settings in recipe
 
    *Optional settings (scripts)*
 
+   * colormap: e.g., WhiteBlueGreenYellowRed, rainbow
+   * epsilon: "epsilon" value to be replaced with missing values
+   * explicit_cn_levels: use these contour levels for plotting
+   * filename_add: optionally add this string to plot filesnames
+   * projection: map projection, e.g., Mollweide, Mercator
+   * var: short_name of variable to process (default = "" i.e. use
+     first variable in variable list)
+
    *Required settings (variables)*
 
    *Optional settings (variables)*
+
+   * long_name: description of variable
+   * reference_dataset: name of reference datatset
 
 #. Script clouds_taylor.ncl
 
@@ -313,14 +323,25 @@ User settings in recipe
      false = do not estimate obs. uncertainties from mean values
    * filename_add: legacy feature: arbitrary string to be added to all
      filenames of plots and netcdf output produced (default = "")
+   * legend_filter: do not show individual datasets in legend that are of
+     project "legend_filter" (default = "")
    * mask_ts_sea_ice: true = mask T < 272 K as sea ice (only for variable "ts");
      false = no additional grid cells masked for variable "ts"
+   * multiobs_exclude: list of *observational* datasets to be excluded when
+     calculating uncertainty estimates from multiple observational datasets
+     (see also multiobs_uncertainty)
+   * multiobs_uncertainty: calculate uncertainty estimates from multiple
+     observational datasets (true, false); by default, all "obs", "obs6",
+     "obs4mips" and "native6" datasets are used; any of such datasets can be
+     explicitely excluded when also specifying "multiobs_exclude"
    * styleset: "CMIP5", "DEFAULT" (if not set, clouds_taylor.ncl will create a
      color table and symbols for plotting)
    * timemean: time averaging; annualclim (default) = 1 plot annual mean;
      seasonalclim = 4 plots (DJF, MAM, JJA, SON)
    * valid_fraction: used for creating sea ice mask (mask_ts_sea_ice = true):
      fraction of valid time steps required to mask grid cell as valid data
+   * var: short_name of variable to process (default = "" - use first variable
+     in variable list)
 
    *Required settings (variables)*
 
@@ -338,7 +359,29 @@ User settings in recipe
 
    *Optional settings (scripts)*
 
+   * filename_add: legacy feature: arbitrary string to be added to all
+     filenames of plots and netcdf output produced (default = "")
+   * multiobs_exclude: list of *observational* datasets to be excluded when
+     calculating uncertainty estimates from multiple observational datasets
+     (see also multiobs_uncertainty)
+   * multiobs_uncertainty: calculate uncertainty estimates from multiple
+     observational datasets (true, false); by default, all "obs", "obs6",
+     "obs4mips" and "native6" datasets are used; any of such datasets can be
+     explicitely excluded when also specifying "multiobs_exclude"
+   * projectcolors: colors for each projectgroups
+     (e.g. (/"(/0.0, 0.0, 1.0/)", "(/1.0, 0.0, 0.0/)"/)
+   * projectgroups: calculated mmm per "projectgroup"
+     (e.g. (/"cmip5", "cmip6")/)
+   * styleset: "CMIP5", "DEFAULT" (if not set, CLOUDS_TAYLOR_DOUBLE will
+     create a color table and symbols for plotting)
+   * timemean: time averaging; annualclim (default) = 1 plot annual mean,
+     seasonalclim = 4 plots (DJF, MAM, JJA, SON)
+   * var: short_name of variable to process (default = "" - use first variable
+     in variable list)
+
    *Required settings (variables)*
+
+   * reference_dataset: name of reference data set
 
    *Optional settings (variables)*
 
