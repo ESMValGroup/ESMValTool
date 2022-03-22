@@ -388,7 +388,8 @@ The ``esmvaltool`` package is published on the `conda-forge conda channel
 This is done via a pull request on the `esmvaltool-suite-feedstock repository
 <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__.
 
-For the final release, this pull request is automatically opened by a bot.
+After the upload of the PyPI package, this pull request is automatically opened
+by a bot.
 An example pull request can be found `here
 <https://github.com/conda-forge/esmvaltool-suite-feedstock/pull/5>`__.
 Follow the instructions by the bot to finalize the pull request.
