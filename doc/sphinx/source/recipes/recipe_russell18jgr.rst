@@ -249,7 +249,7 @@ Observations and reformat scripts
 Note: WOA data has not been tested with reciepe_russell18jgr.yml and
       corresponding diagnostic scripts.
 
-* WOA (thetao, so - esmvaltool/utils/cmorizers/obs/cmorize_obs_woa.py)
+* WOA (thetao, so - esmvaltool/cmorizers/data/formatters/datasets/woa.py)
 
 References
 ----------

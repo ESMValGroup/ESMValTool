@@ -45,7 +45,7 @@ Observations and reformat scripts
 ---------------------------------
 
 A reformatting script for observational data is available here:
-    * cmorize_obs_duveiller2018.py
+    * esmvaltool/cmorizers/data/formatters/datasets/duveiller2018.py
 
 
 References
