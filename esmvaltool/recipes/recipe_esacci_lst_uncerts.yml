@@ -6,6 +6,8 @@ documentation:
   authors:
     - king_robert
 
+  title: ESACCI LST difference to model historical ensemble average
+
   maintainer:
     - king_robert
 
@@ -40,9 +42,10 @@ diagnostics:
       - atmos
     variables:
       tsLocalSfcErrDay:
+        mip: Amon
         preprocessor: lst_preprocessor
         additional_datasets:
-          - {dataset: esacci_lst_uncerts, mip: CMIP6, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+          - {dataset: esacci_lst_uncerts, project: CMIP6, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
     scripts:
       script1:
         script: lst_uncert/lst_uncert.py
