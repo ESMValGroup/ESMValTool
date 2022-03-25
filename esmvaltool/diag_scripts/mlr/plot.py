@@ -34,7 +34,7 @@ apply_common_mask: bool, optional (default: False)
     Apply common mask to all datasets prior to plotting. Requires identical
     shapes for all datasets.
 group_attribute_as_default_alias: bool, optional (default: True)
-    If ``True``, sse value of attribute given by ``group_by_attribute`` as
+    If ``True``, use value of attribute given by ``group_by_attribute`` as
     default alias if possible. If ``False``, use full group name (including
     ``var_type``) as default alias.
 group_by_attribute: str, optional (default: 'mlr_model_name')
@@ -286,12 +286,12 @@ def _write_map_provenance(cfg, cube, plot_path, title, *attrs):
         'authors': ['schlund_manuel'],
         'caption': f"Geographical distribution of {cube.long_name} for "
                    f"{title}.",
-        'plot_file': plot_path,
         'plot_types': ['geo'],
         'references': ['schlund20jgr'],
     }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, record)
+        provenance_logger.log(plot_path, record)
 
 
 def _write_xy_error_provenance(cfg, cubes, plot_path, title, ancestors):
@@ -311,12 +311,12 @@ def _write_xy_error_provenance(cfg, cubes, plot_path, title, ancestors):
         'ancestors': ancestors,
         'authors': ['schlund_manuel'],
         'caption': caption,
-        'plot_file': plot_path,
         'plot_types': ['line', 'errorbar'],
         'references': ['schlund20jgr'],
     }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, record)
+        provenance_logger.log(plot_path, record)
 
 
 def _write_xy_provenance(cfg, cubes, plot_path, title, *attrs):
@@ -339,12 +339,12 @@ def _write_xy_provenance(cfg, cubes, plot_path, title, *attrs):
         'ancestors': ancestors,
         'authors': ['schlund_manuel'],
         'caption': caption,
-        'plot_file': plot_path,
         'plot_types': ['line'],
         'references': ['schlund20jgr'],
     }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, record)
+        provenance_logger.log(plot_path, record)
 
 
 def _xy_plot(cube, x_coord=None, reg_line=False, **plot_kwargs):
@@ -860,8 +860,8 @@ def main(cfg):
         ]
         corr = ALL_CUBES.corr()
         with pd.option_context(*pandas_print_options):
-            logger.info("Means:\n%s", ALL_CUBES.mean(axis=0))
-            logger.info("Correlations:\n%s", corr)
+            logger.info("Unweighted means:\n%s", ALL_CUBES.mean(axis=0))
+            logger.info("Unweighted correlations:\n%s", corr)
         corr_path = get_diagnostic_filename('corr', cfg).replace('.nc', '.csv')
         corr.to_csv(corr_path)
         logger.info("Wrote %s", corr_path)

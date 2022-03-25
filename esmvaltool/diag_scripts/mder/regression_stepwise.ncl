@@ -894,7 +894,7 @@ begin
       cfint2 = cdft_t(0.05 / 2.0, df) ^ 2 * ( \
         1.0 + hlp # inverse_matrix(transpose(D) # D) # transpose(hlp))
       cfint2 := cfint2(0, 0) * sigmae2
-      cfint2 := sqrt(cfint2 # xx(:, ppt))
+      cfint2 := sqrt(abs(cfint2 # xx(:, ppt)))
 
       yfit_std(ppt, 0, ti) = yfit_reg(ppt, ti) + cfint2
       yfit_std(ppt, 1, ti) = yfit_reg(ppt, ti) - cfint2
@@ -999,182 +999,176 @@ begin
   ; Write files
   ; ---------------------------------------------------------------------------
 
-  if (diag_script_info@write_netcdf) then
+  ; Ascii
+  table_path = work_dir + filename + ".txt"
+  ascii_path = work_dir + var0 + "_" + future_exp + "_" + \
+    (p_step + 1) + "ystep_diagnostics.txt"
+  write_table(table_path, "w", [/times_str, terms_str, mcorr_str/], \
+              "%s    %s    %s")
+  asciiwrite(ascii_path, names_used_diags)
+  log_info("Wrote " + ascii_path)
+  log_info("Wrote " + table_path)
+  delete([/table_path, ascii_path/])
 
-    ; Ascii
-    table_path = work_dir + filename + ".txt"
-    ascii_path = work_dir + var0 + "_" + future_exp + "_" + \
-      (p_step + 1) + "ystep_diagnostics.txt"
-    write_table(table_path, "w", [/times_str, terms_str, mcorr_str/], \
-                "%s    %s    %s")
-    asciiwrite(ascii_path, names_used_diags)
-    log_info("Wrote " + ascii_path)
-    log_info("Wrote " + table_path)
-    delete([/table_path, ascii_path/])
+  ; NetCDF
+  do pt = 0, dimsizes(p_time) - 1
+    weights_out = weights_t(0, :, pt)
+    weights_path = work_dir + filename + "_weights_" + \
+      p_time(pt) + "-" + (p_time(pt) + p_step) + ".nc"
+    weights_out!0 = "dataset"
+    weights_out&dataset = MODELS
+    weights_out@diag_script = DIAG_SCRIPT
+    weights_out@var = "weight"
+    weights_out@description = "Weights from MDER"
+    weights_file = ncdf_write(weights_out, weights_path)
 
-    ; NetCDF
-    do pt = 0, dimsizes(p_time) - 1
-      weights_out = weights_t(0, :, pt)
-      weights_path = work_dir + filename + "_weights_" + \
-        p_time(pt) + "-" + (p_time(pt) + p_step) + ".nc"
-      weights_out!0 = "dataset"
-      weights_out&dataset = MODELS
-      weights_out@diag_script = DIAG_SCRIPT
-      weights_out@var = "weight"
-      weights_out@description = "Weights from MDER"
-      weights_file = ncdf_write(weights_out, weights_path)
-
-      ; Provenance tracking
-      plot_path = "missing"
-      plot_type = ""
-      caption = "MDER model weights for target variable " + var0
-      log_provenance(weights_file, plot_path, caption, STATISTICS, \
-                     DOMAIN, plot_type, AUTHORS, REFERENCES, ANCESTORS)
-      delete([/weights_out, weights_path, weights_file/])
-    end do
-  end if
+    ; Provenance tracking
+    plot_path = "n/a"
+    plot_type = ""
+    caption = "MDER model weights for target variable " + var0
+    log_provenance(weights_file, plot_path, caption, STATISTICS, \
+                   DOMAIN, plot_type, AUTHORS, REFERENCES, ANCESTORS)
+    delete([/weights_out, weights_path, weights_file/])
+  end do
 
   ; ---------------------------------------------------------------------------
   ; Plots
   ; ---------------------------------------------------------------------------
 
-  if (diag_script_info@write_plots) then
+  ; Add uMMM and MDER to array
+  datasets := new(DIM_MOD + 3, string)
+  datasets(0) = "uMMM"
+  datasets(1) = "MDER time dependent"
+  datasets(2) = "MDER"
+  datasets(3:) = MODELS
+  YY!0 = "dataset"
+  YY&dataset := datasets
+  NEW_INFO = NewList("lifo")
+  do i = 0, 2
+    ListAppend(NEW_INFO, True)
+    NEW_INFO[i]@project = "CMIP5"
+    NEW_INFO[i]@dataset = datasets(i)
+  end do
+  do imod = 0, DIM_MOD - 1
+    ListAppend(NEW_INFO, FUT[imod])
+  end do
+  do iobs = 0, DIM_OBS - 1
+    ListAppend(NEW_INFO, OBS[iobs])
+  end do
+  delete(datasets)
 
-    ; Add uMMM and MDER to array
-    datasets := new(DIM_MOD + 3, string)
-    datasets(0) = "uMMM"
-    datasets(1) = "MDER time dependent"
-    datasets(2) = "MDER"
-    datasets(3:) = MODELS
-    YY!0 = "dataset"
-    YY&dataset := datasets
-    NEW_INFO = NewList("lifo")
-    do i = 0, 2
-      ListAppend(NEW_INFO, True)
-      NEW_INFO[i]@project = "CMIP5"
-      NEW_INFO[i]@dataset = datasets(i)
-    end do
-    do imod = 0, DIM_MOD - 1
-      ListAppend(NEW_INFO, FUT[imod])
-    end do
-    do iobs = 0, DIM_OBS - 1
-      ListAppend(NEW_INFO, OBS[iobs])
-    end do
-    delete(datasets)
+  ; Line plot showing the time series including MDER weights
+  plot_name_1 = filename + "_FIG1"
+  path_1 = plot_dir + plot_name_1 + "." + file_type
+  wks = gsn_open_wks(file_type, plot_dir + plot_name_1)
+  MainStg = future_exp
+  YStg = var0 + " [" + VAR0@units + "]"
+  plot = weight_lin_plot(YY, mder_errors, t_mder_errors, yy_obs, MainStg, \
+                         YStg, wks, "draw", NEW_INFO)
+  log_info("Wrote " + path_1)
 
-    ; Line plot showing the time series including MDER weights
-    plot_name_1 = filename + "_FIG1"
-    path_1 = plot_dir + plot_name_1 + "." + file_type
-    wks = gsn_open_wks(file_type, plot_dir + plot_name_1)
-    MainStg = future_exp
+  ; Write ncdf file
+  new_path = work_dir + plot_name_1 + ".nc"
+  YY@var = var0
+  YY@diag_script = DIAG_SCRIPT
+  YY@ncdf = new_path
+  outfile = ncdf_write(YY, new_path)
+
+  ; Provenance tracking
+  caption = "Time series of " + var0 + " for " + future_exp + "."
+  plot_type = (/"times"/)
+  log_provenance(outfile, path_1, caption, STATISTICS, DOMAIN, plot_type, \
+                 AUTHORS, REFERENCES, ANCESTORS)
+
+  ; MDER scatter plots for all time periods
+  y_mder_results!0 = "time"
+  y_mder_results!1 = "dataset"
+  y_mder_results&time = p_time
+  data_dim = (/"constant", "OBS"/)
+  data_dim := array_append_record(data_dim, MODELS, 0)
+  y_mder_results&dataset = data_dim
+  delete(data_dim)
+  do ppt = 0, dimsizes(p_time) - 1
+    plot_name_2 = filename + "_FIG2" + plot_num(ppt)
+    path_2 = plot_dir + plot_name_2 + "." + file_type
+    wks = gsn_open_wks(file_type, plot_dir + plot_name_2)
+    MainStg = plot_num(ppt) + ") " + p_time(ppt) + "-" + \
+      (p_time(ppt) + p_step) + " (" + future_exp + ")"
+    XStg = terms_str(ppt + 1) + " [" + VAR0@units + "]"
     YStg = var0 + " [" + VAR0@units + "]"
-    plot = weight_lin_plot(YY, mder_errors, t_mder_errors, yy_obs, MainStg, \
-                           YStg, wks, "draw", NEW_INFO)
-    log_info("Wrote " + path_1)
+    plot2 = mder_scatter_plot(y_mder_results(ppt, :), \
+                              y_mder_results_std(ppt, :), \
+                              wy(ppt, :), wy_std(ppt, :), \
+                              yfit_reg(ppt, :), \
+                              yfit_std(ppt, :, :), \
+                              MainStg, XStg, YStg, wks, "draw", INFO0)
+    log_info("Wrote " + path_2)
 
     ; Write ncdf file
-    new_path = work_dir + plot_name_1 + ".nc"
-    YY@var = var0
-    YY@diag_script = DIAG_SCRIPT
-    YY@ncdf = new_path
-    outfile = ncdf_write(YY, new_path)
+    new_path = work_dir + plot_name_2 + ".nc"
+    y_mder_results@var = var0
+    y_mder_results@diag_script = DIAG_SCRIPT
+    y_mder_results@ncdf = new_path
+    outfile = ncdf_write(y_mder_results, new_path)
 
     ; Provenance tracking
-    caption = "Time series of " + var0 + " for " + future_exp + "."
-    plot_type = (/"times"/)
-    log_provenance(outfile, path_1, caption, STATISTICS, DOMAIN, plot_type, \
+    caption = "Scatterplot showing the correlation between " + \
+              "future " + var0 + " and the quantity resulting from MDER " + \
+              "analysis on the X axis for " + future_exp + "."
+    plot_type = (/"scatter"/)
+    log_provenance(outfile, path_2, caption, STATISTICS, DOMAIN, plot_type, \
                    AUTHORS, REFERENCES, ANCESTORS)
+  end do
 
-    ; MDER scatter plots for all time periods
-    y_mder_results!0 = "time"
-    y_mder_results!1 = "dataset"
-    y_mder_results&time = p_time
-    data_dim = (/"constant", "OBS"/)
-    data_dim := array_append_record(data_dim, MODELS, 0)
-    y_mder_results&dataset = data_dim
-    delete(data_dim)
-    do ppt = 0, dimsizes(p_time) - 1
-      plot_name_2 = filename + "_FIG2" + plot_num(ppt)
-      path_2 = plot_dir + plot_name_2 + "." + file_type
-      wks = gsn_open_wks(file_type, plot_dir + plot_name_2)
-      MainStg = plot_num(ppt) + ") " + p_time(ppt) + "-" + \
-        (p_time(ppt) + p_step) + " (" + future_exp + ")"
-      XStg = terms_str(ppt + 1) + " [" + VAR0@units + "]"
-      YStg = var0 + " [" + VAR0@units + "]"
-      plot2 = mder_scatter_plot(y_mder_results(ppt, :), \
-                                y_mder_results_std(ppt, :), \
-                                wy(ppt, :), wy_std(ppt, :), \
-                                yfit_reg(ppt, :), \
-                                yfit_std(ppt, :, :), \
-                                MainStg, XStg, YStg, wks, "draw", INFO0)
-      log_info("Wrote " + path_2)
-
-      ; Write ncdf file
-      new_path = work_dir + plot_name_2 + ".nc"
-      y_mder_results@var = var0
-      y_mder_results@diag_script = DIAG_SCRIPT
-      y_mder_results@ncdf = new_path
-      outfile = ncdf_write(y_mder_results, new_path)
-
-      ; Provenance tracking
-      caption = "Scatterplot showing the correlation between " + \
-                "future " + var0 + " and the quantity resulting from MDER " + \
-                "analysis on the X axis for " + future_exp + "."
-      plot_type = (/"scatter"/)
-      log_provenance(outfile, path_2, caption, STATISTICS, DOMAIN, plot_type, \
-                     AUTHORS, REFERENCES, ANCESTORS)
-    end do
-
-    ; Boxplot of RMSE of different weigting methods incl pseudoreality check
-    plot_name_3 = filename + "_FIG3"
-    path_3 = plot_dir + plot_name_3 + "." + file_type
-    YStg = "RMSE projection error [" + VAR0@units + "]"
-    XBname = new((dimsizes(times_str) - 1) * 2, string)
-    if (dimsizes(XBname) .eq. 2) then
-      XBname = (/"uMMM", "MDER"/)
-    else if (dimsizes(XBname) .eq. 4) then
-      XBname(0::2) = (/"uMMM~C~" + times_str(1:)/)
-      XBname(1::2) = (/"MDER~C~" + times_str(1:)/)
-    else
-      XBname(0::2) = (/" "/)
-      XBname(1::2) = times_str(1:)
-    end if
-    end if
-
-    wks = gsn_open_wks(file_type, plot_dir + plot_name_3)
-    MainStg = future_exp
-    plot3 = squared_error_plot(preRDS, preAVG, prePRE, MainStg, XBname, YStg, \
-                               wks, "draw")
-    log_info("Wrote " + path_3)
-
-    ; Write ncdf file
-    new_path = work_dir + plot_name_3 + ".nc"
-    prePRE!0 = "type"
-    prePRE!1 = "pseudo_reality_obs"
-    do pt = 0, dimsizes(p_time) - 1
-      if (isvar("dim_type")) then
-        dim_type := array_append_record(dim_type, (/"uMMM " + p_time(pt), \
-                                                   "wMMM " + p_time(pt)/), 0)
-      else
-        dim_type := (/"uMMM " + p_time(pt), "wMMM " + p_time(pt)/)
-      end if
-    end do
-    prePRE&type = dim_type
-    dim_PRE = dimsizes(prePRE)
-    prePRE&pseudo_reality_obs = ispan(0, dim_PRE(1) - 1, 1)
-    prePRE@var = var0
-    prePRE@diag_script = DIAG_SCRIPT
-    prePRE@ncdf = new_path
-    outfile = ncdf_write(prePRE, new_path)
-
-    ; Provenance tracking
-    caption = "RMSE difference between the ensemble mean future " + \
-      "climatological mean " + var0 + " and its equivalent in " + \
-      "pseudo-reality under " + future_exp + "."
-    plot_type = (/"box"/)
-    log_provenance(outfile, path_3, caption, STATISTICS, DOMAIN, plot_type, \
-                   AUTHORS, REFERENCES, ANCESTORS)
+  ; Boxplot of RMSE of different weigting methods incl pseudoreality check
+  plot_name_3 = filename + "_FIG3"
+  path_3 = plot_dir + plot_name_3 + "." + file_type
+  YStg = "RMSE projection error [" + VAR0@units + "]"
+  XBname = new((dimsizes(times_str) - 1) * 2, string)
+  if (dimsizes(XBname) .eq. 2) then
+    XBname = (/"uMMM", "MDER"/)
+  else if (dimsizes(XBname) .eq. 4) then
+    XBname(0::2) = (/"uMMM~C~" + times_str(1:)/)
+    XBname(1::2) = (/"MDER~C~" + times_str(1:)/)
+  else
+    XBname(0::2) = (/" "/)
+    XBname(1::2) = times_str(1:)
   end if
+  end if
+
+  wks = gsn_open_wks(file_type, plot_dir + plot_name_3)
+  MainStg = future_exp
+  plot3 = squared_error_plot(preRDS, preAVG, prePRE, MainStg, XBname, YStg, \
+                             wks, "draw")
+  log_info("Wrote " + path_3)
+
+  ; Write ncdf file
+  new_path = work_dir + plot_name_3 + ".nc"
+  prePRE!0 = "type"
+  prePRE!1 = "pseudo_reality_obs"
+  do pt = 0, dimsizes(p_time) - 1
+    if (isvar("dim_type")) then
+      dim_type := array_append_record(dim_type, (/"uMMM " + p_time(pt), \
+                                                 "wMMM " + p_time(pt)/), 0)
+    else
+      dim_type := (/"uMMM " + p_time(pt), "wMMM " + p_time(pt)/)
+    end if
+  end do
+  prePRE&type = dim_type
+  dim_PRE = dimsizes(prePRE)
+  prePRE&pseudo_reality_obs = ispan(0, dim_PRE(1) - 1, 1)
+  prePRE@var = var0
+  prePRE@diag_script = DIAG_SCRIPT
+  prePRE@ncdf = new_path
+  outfile = ncdf_write(prePRE, new_path)
+
+  ; Provenance tracking
+  caption = "RMSE difference between the ensemble mean future " + \
+    "climatological mean " + var0 + " and its equivalent in " + \
+    "pseudo-reality under " + future_exp + "."
+  plot_type = (/"box"/)
+  log_provenance(outfile, path_3, caption, STATISTICS, DOMAIN, plot_type, \
+                 AUTHORS, REFERENCES, ANCESTORS)
 
   leave_msg(DIAG_SCRIPT, "")
 

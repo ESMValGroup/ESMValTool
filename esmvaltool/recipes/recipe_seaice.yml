@@ -2,6 +2,8 @@
 # recipe_seaice.yml
 ---
 documentation:
+  title: Sea ice diagnostics
+
   description: |
     Recipe for Arctic and Antarctic sea ice diagnostics.
 
@@ -25,7 +27,7 @@ datasets:
   - {dataset: ACCESS1-0}
   - {dataset: ACCESS1-3}
   - {dataset: bcc-csm1-1}
-  - {dataset: bcc-csm1-1-m}
+  #- {dataset: bcc-csm1-1-m} # areacello data missing on ESGF
   - {dataset: CanESM2}
   - {dataset: CCSM4}
   - {dataset: CESM1-CAM5}
@@ -35,7 +37,7 @@ datasets:
   - {dataset: GFDL-CM3}
   - {dataset: GFDL-ESM2G}
   - {dataset: GFDL-ESM2M}
-  - {dataset: inmcm4}
+  #- {dataset: inmcm4} # areacello data missing on ESGF
   - {dataset: IPSL-CM5A-LR}
   - {dataset: IPSL-CM5A-MR}
   - {dataset: IPSL-CM5B-LR}
@@ -52,6 +54,7 @@ datasets:
 
 diagnostics:
   seaice_tsline:
+    title: Sea ice area and extent
     description: Timeseries of September/February Arctic/Antartic sea ice area and extent
     themes:
       - seaIce
@@ -105,6 +108,7 @@ diagnostics:
         fill_pole_hole: false
 
   seaice_trends:
+    title: Trend sea ice extent
     description: Trend of September/February Arctic/Antarctic sea ice extent
     themes:
       - seaIce
@@ -145,6 +149,7 @@ diagnostics:
         month: "2"
 
   seaice_ecs:
+    title: Emergent constraint sea ice extent
     description: Emergent constraints for September Arctic sea ice extent
     themes:
       - seaIce
@@ -173,7 +178,7 @@ diagnostics:
       - {dataset: ACCESS1-0, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: ACCESS1-3, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: bcc-csm1-1, exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2006, end_year: 2100}
+      #- {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2006, end_year: 2100} # areacello data missing on ESGF
       - {dataset: CanESM2, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: CCSM4, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: CESM1-CAM5, exp: rcp85, start_year: 2006, end_year: 2100}
@@ -183,7 +188,7 @@ diagnostics:
       - {dataset: GFDL-CM3, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: GFDL-ESM2M, exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: inmcm4, exp: rcp85, start_year: 2006, end_year: 2100}
+      #- {dataset: inmcm4, exp: rcp85, start_year: 2006, end_year: 2100} # areacello data missing on ESGF
       - {dataset: IPSL-CM5A-LR, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: IPSL-CM5A-MR, exp: rcp85, start_year: 2006, end_year: 2100}
       - {dataset: IPSL-CM5B-LR, exp: rcp85, start_year: 2006, end_year: 2100}
@@ -210,6 +215,7 @@ diagnostics:
         styleset: "CMIP5"
 
   seaice_yod:
+    title: Sea ice year of near dissapearance
     description: year of near disappearance of September Arctic sea ice
     themes:
       - seaIce
@@ -239,4 +245,3 @@ diagnostics:
         month: "9"
         # Fill polar hole in data with sic = 1.
         fill_pole_hole: true
-

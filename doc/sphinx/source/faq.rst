@@ -108,3 +108,11 @@ a symbolic link to it so it gets picked up at every re-run iteration:
 .. way to have this mode run. The information provided will help you obtain any data
 .. that is missing and/or create fixes for the datasets and variables that failed the
 .. CMOR checks and could not be fixed on the fly.
+
+
+Can ESMValTool plot arbitrary model output?
+===========================================
+
+Recipe :ref:`recipe_monitor` allows for the plotting of any preprocessed model.
+The plotting parameters are set through a yaml configuration file, and the
+type of plots to be generated are determined in the recipe. 

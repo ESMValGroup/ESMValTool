@@ -2,6 +2,7 @@
 # recipe_miles_eof.yml
 ---
 documentation:
+  title: EOFs by MiLES
   description: |
     Recipe for computing and plotting EOFs using
     the MiLES (Mid-Latitude Evaluation System) package
@@ -53,6 +54,3 @@ diagnostics:
             script: miles/miles_eof.R
             seasons: DJF # Select season ('DJF','MAM','JJA','SON','ALL') or your period as e.g. 'Jan_Feb_Mar'
             teles: NAO   # Select EOFs ('NAO','AO','PNA') or specify custom area as "lon1_lon2_lat1_lat2"
-
-
-

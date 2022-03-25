@@ -253,10 +253,8 @@ def make_time_series_plots(
             )
 
         # Saving files:
-        if cfg['write_plots']:
-
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
 
         plt.close()
 
@@ -363,18 +361,17 @@ def multi_model_time_series(
         plt.ylabel(str(model_cubes[filename][layer].units))
 
         # Saving files:
-        if cfg['write_plots']:
-            path = diagtools.get_image_path(
-                cfg,
-                metadata[filename],
-                prefix='MultipleModels_',
-                suffix='_'.join(['timeseries',
-                                 str(layer) + image_extention]),
-                metadata_id_list=[
-                    'field', 'short_name', 'preprocessor', 'diagnostic',
-                    'start_year', 'end_year'
-                ],
-            )
+        path = diagtools.get_image_path(
+            cfg,
+            metadata[filename],
+            prefix='MultipleModels_',
+            suffix='_'.join(['timeseries',
+                             str(layer) + image_extention]),
+            metadata_id_list=[
+                'field', 'short_name', 'preprocessor', 'diagnostic',
+                'start_year', 'end_year'
+            ],
+        )
 
         # Resize and add legend outside thew axes.
         plt.gcf().set_size_inches(9., 6.)

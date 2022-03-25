@@ -21,20 +21,50 @@ different CMIP phases.
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in recipes/
+Recipes are stored in recipes/bock20jgr
 
-    * recipe_bock20jgr.yml
+    * recipe_bock20jgr_fig_1-4.yml
+    * recipe_bock20jgr_fig_6-7.yml
+    * recipe_bock20jgr_fig_8-10.yml
 
 Diagnostics are stored in diag_scripts/
 
+    Fig. 1:
+
     * bock20jgr/tsline.ncl: timeseries of global mean surface temperature
       anomalies
+
+    Fig. 2:
+
     * bock20jgr/tsline_collect.ncl: collect different timeseries from
       tsline.ncl to compare different models ensembles
+
+    Fig. 3 and 4:
+
     * bock20jgr/model_bias.ncl: global maps of the multi-model mean and the
       multi-model mean bias
+
+    Fig. 6:
+
+    * perfmetrics/main.ncl
+    * perfmetrics/collect.ncl
+
+    Fig. 7:
+
+    * bock20jgr/corr_pattern.ncl: calculate pattern correlation
+    * bock20jgr/corr_pattern_collect.ncl: create pattern correlation plot
+
+    Fig. 8:
+
     * climate_metrics/ecs.py
     * climate_metrics/create_barplot.py
+
+    Fig. 9:
+
+    * clouds/clouds_ipcc.ncl
+
+    Fig. 10:
+
     * climate_metrics/feedback_parameters.py
 
 
@@ -133,6 +163,46 @@ User settings in recipe
    * variable "pr-mmday": diag_scripts/shared/plots/rgb/ipcc-ar6_precipitation_seq.rgb
      diag_scripts/shared/plot/rgb/ipcc-ar6_precipitation_div.rgb
 
+#. Script perfmetrics_main.ncl
+
+   See :ref:`here<perf-main.ncl>`.
+
+#. Script perfmetrics_collect.ncl
+
+   See :ref:`here<perf-collect.ncl>`.
+
+#. Script corr_pattern.ncl
+
+   *Required settings (scripts)*
+
+   none
+
+   *Optional settings (scripts)*
+
+   * plot_median
+
+   *Required settings (variables)*
+
+   * reference_dataset
+
+   *Optional settings (variables)*
+
+   * alternative_dataset
+
+#. Script corr_pattern_collect.ncl
+
+   *Required settings (scripts)*
+
+   none
+
+   *Optional settings (scripts)*
+
+   * diag_order
+
+   *Color tables*
+
+   * diag_scripts/shared/plot/rgb/ipcc-ar6_line_03.rgb
+
 #. Script ecs.py
 
    See :ref:`here<ecs.py>`.
@@ -140,6 +210,10 @@ User settings in recipe
 #. Script create_barplot.py
 
    See :ref:`here<create_barplot.py>`.
+
+#. Script clouds_ipcc.ncl
+
+   See :ref:`here<clouds_ipcc.ncl>`.
 
 #. Script feedback_parameters.py
 
@@ -162,29 +236,73 @@ User settings in recipe
 Variables
 ---------
 
-* tas (atmos, monthly mean, longitude latitude time)
-* pr (atmos, monthly mean, longitude latitude time)
+* clt (atmos, monthly, longitude latitude time)
+* hus (atmos, monthly, longitude latitude lev time)
+* pr (atmos, monthly, longitude latitude time)
+* psl (atmos, monthly, longitude latitude time)
 * rlut (atmos, monthly, longitude latitude time)
 * rsdt (atmos, monthly, longitude latitude time)
 * rsut (atmos, monthly, longitude latitude time)
 * rtmt (atmos, monthly, longitude latitude time)
 * rlutcs (atmos, monthly, longitude latitude time)
 * rsutcs (atmos, monthly, longitude latitude time)
+* ta (atmos, monthly, longitude latitude lev time)
+* tas (atmos, monthly, longitude latitude time)
+* ts (atmos, monthly, longitude latitude time)
+* ua (atmos, monthly, longitude latitude lev time)
+* va (atmos, monthly, longitude latitude lev time)
+* zg (atmos, monthly, longitude latitude time)
 
 
 Observations and reformat scripts
 ---------------------------------
 
-* HadCRUT4 - surface temperature anomalies
+* AIRS (obs4MIPs) - specific humidity
 
-  *Reformat script:* cmorizers/obs/cmorize_obs_hadcrut4.ncl
+* CERES-EBAF (obs4MIPs) - CERES TOA radiation fluxes (used for calculation of
+  cloud forcing)
+
+* ERA-Interim - reanalysis of surface temperature, sea surface pressure
+
+  *Reformat script:* recipes/cmorizers/recipe_era5.yml
 
 * ERA5 - reanalysis of surface temperature
 
   *Reformat script:* recipes/cmorizers/recipe_era5.yml
 
-* GPCP-SG (obs4mips) - Global Precipitation Climatology Project total
+* ESACCI-CLOUD - total cloud cover
+
+  *Reformat script:* cmorizers/data/formatters/datasets/esacci_cloud.ncl
+
+* ESACCI-SST - sea surface temperature
+
+  *Reformat script:* cmorizers/data/formatters/datasets/esacci_sst.py
+
+* GHCN - Global Historical Climatology Network-Monthly gridded land precipitation
+
+  *Reformat script:* cmorizers/data/formatters/datasets/ghcn.ncl
+
+* GPCP-SG (obs4MIPs) - Global Precipitation Climatology Project total
   precipitation
+
+* HadCRUT4 - surface temperature anomalies
+
+  *Reformat script:* cmorizers/data/formatters/datasets/hadcrut4.ncl
+
+* HadISST - surface temperature
+
+  *Reformat script:* cmorizers/data/formatters/datasets/hadisst.ncl
+
+* JRA-55 (ana4mips) - reanalysis of sea surface pressure
+
+* NCEP - reanalysis of surface temperature
+
+  *Reformat script:* cmorizers/data/formatters/datasets/ncep.ncl
+
+* PATMOS-x - total cloud cover
+
+  *Reformat script:* cmorizers/data/formatters/datasets/patmos_x.ncl
+
 
 References
 ----------
@@ -224,7 +342,7 @@ Example plots
 
    Observed and simulated time series of the anomalies in annual and global mean
    surface temperature. All anomalies are differences from the 1850-1900 time
-   mean of each individual time series.
+   mean of each individual time series (Fig. 1).
 
 .. _fig_bock20jgr_2:
 .. figure::  /recipes/figures/bock20jgr/tas_Global_multimodel_anom_1850-2017.png
@@ -239,7 +357,7 @@ Example plots
    data set (HadCRUT4; Morice et al., 2012). Gray shading shows the 5% to
    95% confidence interval of the combined effects of all the uncertainties
    described in the HadCRUT4 error model (measurement and sampling, bias,
-   and coverage uncertainties) (Morice et al., 2012).
+   and coverage uncertainties) (Morice et al., 2012) (Fig. 2).
 
 .. _fig_bock20jgr_3:
 .. figure::  /recipes/figures/bock20jgr/model_bias_tas_annual_CMIP6.png
@@ -250,4 +368,27 @@ Example plots
    mean constructed with one realization of CMIP6 historical experiments for the
    period 1995-2014. Multimodel‐mean bias of (b) CMIP6 (1995-2014) compared to
    the corresponding time period of the climatology from ERA5
-   (Copernicus Climate Change Service (C3S), 2017).
+   (Copernicus Climate Change Service (C3S), 2017). (Fig. 3)
+
+.. _fig_bock20jgr_4:
+.. figure::  /recipes/figures/bock20jgr/ta850-global_to_swcre-global_RMSD.png
+   :align:   center
+   :width:   9cm
+
+   Relative space-time root-mean-square deviation (RMSD) calculated from the 
+   climatological seasonal cycle of the CMIP3, CMIP5, and CMIP6 simulations 
+   (1980-1999) compared to observational data sets (Table 5). A relative 
+   performance is displayed, with blue shading being better and red shading 
+   worse than the median RMSD of all model results of all ensembles. A diagonal 
+   split of a grid square shows the relative error with respect to the reference 
+   data set (lower right triangle) and the alternative data set (upper left 
+   triangle) which are marked in Table 5. White boxes are used when data are not 
+   available for a given model and variable (Fig. 6).
+
+.. _fig_bock20jgr_5:
+.. figure::  /recipes/figures/bock20jgr/patterncor.png
+   :align:   center
+   :width:   9cm
+
+   Centered pattern correlations between models and observations for the annual 
+   mean climatology over the period 1980–1999 (Fig. 7). 

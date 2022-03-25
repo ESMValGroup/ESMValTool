@@ -1,0 +1,90 @@
+name: Conda lock file creation
+
+on:
+  # Trigger on push on main or other branch for testing
+  # NOTE that push: main will create the file very often
+  # and hence lots of automated PRs 
+  # push:
+  #   branches:
+  #     - condalock-update
+  schedule:
+    - cron: '0 4 */10 * *'
+
+jobs:
+  create-lock-file:
+    name: Create conda lock file for latest Python
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          activate-environment: esmvaltool-fromlock
+          python-version: "3.10"
+          miniconda-version: "latest"
+          channels: conda-forge
+      - name: Show conda config
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+          conda config --show-sources
+          conda config --show
+      - name: Python info
+        shell: bash -l {0}
+        run: |
+          which python
+          python --version
+      - name: Install conda-lock
+        shell: bash -l {0}
+        run: conda install -y conda-lock
+      - name: Create conda lock file for linux-64
+        shell: bash -l {0}
+        run: conda-lock lock --platform linux-64 -f environment.yml --mamba --kind explicit
+      - shell: bash -l {0}
+        run: conda --version
+      - shell: bash -l {0}
+        run: which python
+      - shell: bash -l {0}
+        run: python -V
+      - shell: bash -l {0}
+        run: conda create --name esmvaltool-fromlock --file conda-linux-64.lock
+      - shell: bash -l {0}
+        run: conda install -y -c conda-forge pip
+      - shell: bash -l {0}
+        run: which python
+      - shell: bash -l {0}
+        run: pip --version
+      - shell: bash -l {0}
+        run: pip install -e .[develop]
+      - shell: bash -l {0}
+        run: esmvaltool --help
+      - shell: bash -l {0}
+        run: esmvaltool version
+      - shell: bash -l {0}
+        run: pytest -n 2 -m "not installation"
+      # Automated PR
+      # see https://github.com/marketplace/actions/create-pull-request
+      - name: Create Automated PR if conda lock file has changed
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Updating Linux condalock file
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: condalock-update
+          delete-branch: true
+          title: '[Condalock] Update Linux condalock file'
+          body: |
+            Update condalock file
+            Automatic Pull Request.
+          labels: |
+            testing
+            condalock
+            automatedPR
+          assignees: valeriupredoi
+          reviewers: valeriupredoi
+          team-reviewers: |
+            owners
+            maintainers
+          draft: false
