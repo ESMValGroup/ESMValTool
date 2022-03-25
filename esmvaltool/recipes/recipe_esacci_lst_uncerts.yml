@@ -40,9 +40,28 @@ diagnostics:
       - atmos
     variables:
       tsLocalSfcErrDay:
+        mip: Amon
+#        project: custom
         preprocessor: lst_preprocessor
-        additional_datasets:
-          - {dataset: esacci_lst_uncerts, mip: CMIP6, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+        dataset: ESACCI_LST_UNCERT
+#        additional_datasets:
+#          - {dataset: ESACCI_LST_UNCERT, project: custom, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
     scripts:
       script1:
         script: lst_uncert/lst_uncert.py
+
+    # variables:
+
+    #   fgco2_hist:
+
+    #     short_name: fgco2
+
+    #     exp: historical
+
+    #     mip: Omon
+
+    #     preprocessor: annual_sum_global
+
+    #     start_year: 1850
+
+    #     end_year: 2014
