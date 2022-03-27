@@ -28,7 +28,7 @@ from esmvaltool.diag_scripts.shared import (
 
 class HotspotDiag(object): # CODACY: can object be removed?
     """Hotspot diagnostics' class.
-    
+
     Class that reads, postprocesses and calls the plotting functions
     necessari to obtain the hotspot figures.
     """
@@ -167,7 +167,7 @@ class HotspotDiag(object): # CODACY: can object be removed?
 
     def get_hotspot_provenance_record(self, attributes, period,
                                       season, ancestor_files):
-        """Create a provenance record. 
+        """Create a provenance record.
         
         It describes the hotspot fields diagnostic data.
         """
@@ -180,7 +180,7 @@ class HotspotDiag(object): # CODACY: can object be removed?
 
         record = {
             'caption': caption,
-            'statistics': ['mean', 'anomaly', 'diff'], 
+            'statistics': ['mean', 'anomaly', 'diff'],
             'domains': ['global', 'reg'],
             'authors': [
                 'cos_josep',
@@ -193,7 +193,7 @@ class HotspotDiag(object): # CODACY: can object be removed?
         return record
 
     def get_rolling_mean_record(self, attributes, season,
-                                           region, ancestor_files):
+                                region, ancestor_files):
         """Create a provenance record describing the
         rolling mean diagnostic data."""
         baseline = self.cfg["baseline_period"]
@@ -204,7 +204,7 @@ class HotspotDiag(object): # CODACY: can object be removed?
                    f"according to the {region} mean")
 
         domain = "reg"
-        if region == "global"
+        if region == "global":
             domain = "global" 
 
         record = {
@@ -223,5 +223,5 @@ class HotspotDiag(object): # CODACY: can object be removed?
 
 
 if __name__ == "__main__":
-    with run_diagnostic() as config:
-        HotspotDiag(config).compute()
+    with run_diagnostic() as cfg:
+        HotspotDiag(cfg).compute()

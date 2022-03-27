@@ -27,7 +27,7 @@ class HotspotPlot(object):
 
     def __init__(self, config):
         """Variable definition.
-        
+
         Config is a dictionary containing metadata regarding input files and
         overall, as the name suggests, configuration options.
         """
@@ -50,7 +50,7 @@ class HotspotPlot(object):
         """Collect datasets and call the plotting functions."""
         hotspot_fields = io.get_all_ancestor_files(
             self.cfg, pattern='hotspot_*.nc')
-        metadata_files = [file for file in self.cfg["input_files"] 
+        metadata_files = [file for file in self.cfg["input_files"]
                           if "tas/metadata.yml" in file]
         # find number of models inside every multi-model mean
         self.cfg["N"] = {}
@@ -182,12 +182,12 @@ class HotspotPlot(object):
                 )
 
             for p_ind, project in enumerate(self.projects):
-                n = self.cfg["N"][f"{project}_{scenario}"]
+                n_models = self.cfg["N"][f"{project}_{scenario}"]
                 plt.figtext(
                     left + 0.18 + p_ind * (right - left) / 2,
                     0.85,
                     (f"{self.formatter(project.upper())} "
-                     f"{self.formatter(f'{project}-{scenario}')} (N={n})"),
+                     f"{self.formatter(f'{project}-{scenario}')} (N={n_models})"),
                     fontsize="large",
                 )
             for row, period in enumerate(self.cfg["future_periods"]):
@@ -202,7 +202,7 @@ class HotspotPlot(object):
 
             colorbar_axes = plt.gcf().add_axes([0.25, 0.125, 0.5, 0.04])
             cbar = plt.colorbar(fill, colorbar_axes,
-                              orientation="horizontal", extend="both")
+                                orientation="horizontal", extend="both")
             if variable == "pr":
                 cbar.set_label("%")
             else:
@@ -320,14 +320,14 @@ class HotspotPlot(object):
                 max_glob.append(max(large_scale_signal_ts))
                 min_glob.append(min(large_scale_signal_ts))
                 axes[pannel].plot(large_scale_signal_ts, y_values,
-                                color=base_colors[project])
+                                  color=base_colors[project])
                 if len(legend_elements[scen]) < 2:
-                    n = self.cfg["N"][f"{project}_{scen}"]
+                    n_models = self.cfg["N"][f"{project}_{scen}"]
                     legend_elements[scen].append(
                         Patch(
                             facecolor=base_colors[project],
                             edgecolor=base_colors[project],
-                            label=f"{self.formatter(project.upper())} (N={n})",
+                            label=f"{self.formatter(project.upper())} (N={n_models})",
                         )
                     )
 
@@ -346,7 +346,7 @@ class HotspotPlot(object):
             large_scale_units = self.formatter(
                 str(results_dict['large_scale'][large_scale_keys[-1]].units))
             regional_units = self.formatter(
-                str(results_dict['regional'][regional_key].units))
+                str(results_dict['regional'][regional_keys[-1]].units))
             xlabel = (f"{against_region} "
                       f"{var_combination.partition(':')[-1].upper()} "
                       f"[{large_scale_units}]")
@@ -412,7 +412,7 @@ class HotspotPlot(object):
                     [-1000, 1000], [1000, -1000], color="gray", alpha=0.6,
                 )
         basename = f"scenario_combination_{var_combination}_{season}"
-        provenance_record = self.get_rolling_mean_provenance_record(
+        provenance_record = self.get_rolling_mean_provenance(
             suptitle, ancestor_files)
         save_figure(basename, provenance_record, self.cfg)
 
@@ -487,7 +487,7 @@ class HotspotPlot(object):
         max_bound = np.max([abs_min, abs_max])
 
         # find the bound candidate suited for the bound range
-        index = np.argwhere(self.bound_candidates-max_bound > 0)[0, 0]
+        index = np.argwhere(self.bound_candidates - max_bound > 0)[0, 0]
         bound_limit = self.bound_candidates[index]
 
         return bound_limit
@@ -495,7 +495,7 @@ class HotspotPlot(object):
     def region_to_square(self, region, dimension):
         """Definition of the region polygon."""
         if dimension == "latitude":
-            return [
+            boundaries = [
                 region["start_latitude"],
                 region["start_latitude"],
                 region["end_latitude"],
@@ -503,14 +503,14 @@ class HotspotPlot(object):
                 region["start_latitude"],
             ]
         elif dimension == "longitude":
-            return [
+            boundaries = [
                 region["start_longitude"],
                 region["end_longitude"],
                 region["end_longitude"],
                 region["start_longitude"],
                 region["start_longitude"],
             ]
-        return "dimension unknown"
+        return boundaries
 
     def define_projection(self, region):
         """projection definition to get LambertConformal borders."""
@@ -587,7 +587,7 @@ class HotspotPlot(object):
         return sorted_cube
 
     def get_hotspot_provenance(self, suptitle,
-                                      scenario, ancestor_files):
+                               scenario, ancestor_files):
         """Create a provenance record describing the hotspot fields plots."""
         caption = (f"{suptitle}. Calculated for seasons "
                    f"{self.seasons[0].upper()}, "
@@ -612,7 +612,7 @@ class HotspotPlot(object):
         }
         return record
 
-    def get_rolling_mean_provenance_record(self, suptitle, ancestor_files):
+    def get_rolling_mean_provenance(self, suptitle, ancestor_files):
         """Create a provenance record with the rolling mean diagnostic data."""
         suptitle = suptitle.replace('\n', '')
         caption = (f"{suptitle}. For CMIP5 ("
@@ -641,6 +641,5 @@ class HotspotPlot(object):
 
 
 if __name__ == "__main__":
-    with run_diagnostic() as config:
-        HotspotPlot(config).compute()
-
+    with run_diagnostic() as cfg:
+        HotspotPlot(cfg).compute()
