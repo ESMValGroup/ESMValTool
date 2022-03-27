@@ -194,12 +194,9 @@ class HotspotDiag(object):
                    f"against the baseline period {baseline[0]}-{baseline[1]}, "
                    f"according to the {region} mean")
 
-        if region == self.cfg["region_name"]:
-            domain = "reg"
-        elif region == "global":
-            domain = "global"
-        else:
-            domain = "reg"
+        domain = "reg"
+        if region == "global"
+            domain = "global" 
 
         record = {
             'caption': caption,
