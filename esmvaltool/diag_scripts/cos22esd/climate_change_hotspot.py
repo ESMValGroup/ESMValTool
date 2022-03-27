@@ -1,10 +1,10 @@
-'''Main diagnostic script for the computation of climate change hotspots.
+"""Main diagnostic script for the computation of climate change hotspots.
 
 A comparison between the global and hotspot region tas and pr can be done
 Output:
- - scatter plots relating large vs regional scale changes
- - fields of the hotspot for DJF and JJA in CMIP5 and CMIP6
-'''
+ - scatter plots relating large vs regional scale changes.
+ - fields of the hotspot for DJF and JJA in CMIP5 and CMIP6.
+"""
 import iris
 
 from esmvalcore.preprocessor import (
@@ -98,7 +98,7 @@ class HotspotDiag(object):
 
     def extract_annual_or_season(self, cube, season):
         """Compute the statistics of the cube.
-        
+
         Either annual, or extract a season (djf, mam, jja or son).
         """
         if season == "annual":
@@ -194,7 +194,8 @@ class HotspotDiag(object):
                                 region, ancestor_files):
         """Create a provenance record.
 
-        It describes the rolling mean diagnostic data."""
+        It describes the rolling mean diagnostic data.
+        """
         baseline = self.cfg["baseline_period"]
         caption = (f"{attributes['project']} {season.upper()} 10 year "
                    f"{attributes['long_name']} rolling mean between "

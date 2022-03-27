@@ -1,4 +1,4 @@
-"""Collection of climate change hotspot plotting functions."""
+"""Plotting functions for the climate change hotspot."""
 import os
 import iris
 import iris.plot as iplt
@@ -44,7 +44,7 @@ class HotspotPlot(object):
         high = np.arange(20, 100, 10)
         v_high = np.arange(150, 400, 50)
         self.bound_candidates = np.concatenate(
-            (small, medium, high, v_high)) * 5/4
+                                (small, medium, high, v_high)) * 5/4
 
     def compute(self):
         """Collect datasets and call the plotting functions."""
@@ -152,7 +152,7 @@ class HotspotPlot(object):
                     bound_limit = self.find_abs_bound_range(
                         results_dict, keys, avg_over=25)
                 cmap = plt.cm.BrBG
-            bounds = np.linspace(-bound_limit, bound_limit, 11)
+            bounds = np.linspace(-1 * bound_limit, bound_limit, 11)
 
             # plot each pannel
             for i, key in enumerate(keys):
@@ -278,7 +278,7 @@ class HotspotPlot(object):
                 res = stats.linregress(
                     large_scale_signal_ts, regional_signal_ts)
                 y_values = res.intercept + res.slope * \
-                           np.array(large_scale_signal_ts)
+                    np.array(large_scale_signal_ts)
                 rvalue[project] = res.rvalue
                 slope[project] = res.slope
                 timesteps = np.linspace(0, 1, len(large_scale_signal_ts))
@@ -330,7 +330,7 @@ class HotspotPlot(object):
                             facecolor=base_colors[project],
                             edgecolor=base_colors[project],
                             label=(f"{self.formatter(project.upper())} "
-                                  f"(N={n_models})"),
+                                   f"(N={n_models})"),
                         )
                     )
 
@@ -420,7 +420,7 @@ class HotspotPlot(object):
         save_figure(basename, provenance_record, self.cfg)
 
     def formatter(self, text):
-        """basic text definitions to format  strings."""
+        """Basic text definitions to format strings."""
         repl_map = {
             "degC": "$^o$C",
             "K": "$^o$C",
@@ -647,4 +647,3 @@ class HotspotPlot(object):
 if __name__ == "__main__":
     with run_diagnostic() as cfg:
         HotspotPlot(cfg).compute()
-        
