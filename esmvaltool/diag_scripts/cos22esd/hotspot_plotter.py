@@ -1,4 +1,4 @@
-"""Collection of plotting functions."""
+"""Collection of climate change hotspot plotting functions."""
 import os
 import iris
 import iris.plot as iplt
@@ -164,7 +164,7 @@ class HotspotPlot(object):
 
                 if projection == "LambertConformal":
                     proj_to_data = (
-                        ccrs.PlateCarree()._as_mpl_transform(axes) - axes.transData # CODACY: _as_mpl_transform is protected
+                        ccrs.PlateCarree()._as_mpl_transform(axes) - axes.transData
                     )
                     rect_in_target = proj_to_data.transform_path(path_ext)
                     axes.set_boundary(rect_in_target, use_as_clip_path=True)
@@ -187,7 +187,8 @@ class HotspotPlot(object):
                     left + 0.18 + p_ind * (right - left) / 2,
                     0.85,
                     (f"{self.formatter(project.upper())} "
-                     f"{self.formatter(f'{project}-{scenario}')} (N={n_models})"),
+                     f"{self.formatter(f'{project}-{scenario}')} "
+                     f"(N={n_models})"),
                     fontsize="large",
                 )
             for row, period in enumerate(self.cfg["future_periods"]):
@@ -276,7 +277,8 @@ class HotspotPlot(object):
 
                 res = stats.linregress(
                     large_scale_signal_ts, regional_signal_ts)
-                y_values = res.intercept + res.slope * np.array(large_scale_signal_ts)
+                y_values = res.intercept + res.slope * \
+                           np.array(large_scale_signal_ts)
                 rvalue[project] = res.rvalue
                 slope[project] = res.slope
                 timesteps = np.linspace(0, 1, len(large_scale_signal_ts))
@@ -327,7 +329,8 @@ class HotspotPlot(object):
                         Patch(
                             facecolor=base_colors[project],
                             edgecolor=base_colors[project],
-                            label=f"{self.formatter(project.upper())} (N={n_models})",
+                            label=(f"{self.formatter(project.upper())} "
+                                  f"(N={n_models})"),
                         )
                     )
 
@@ -417,7 +420,7 @@ class HotspotPlot(object):
         save_figure(basename, provenance_record, self.cfg)
 
     def formatter(self, text):
-        """basic text definitions to format titles, labels, etc."""
+        """basic text definitions to format  strings."""
         repl_map = {
             "degC": "$^o$C",
             "K": "$^o$C",
@@ -467,7 +470,8 @@ class HotspotPlot(object):
         """Find suitable bounds for the colorbar.
 
         It takes into account the absoulute maximun value from
-        all the pannels"""
+        all the pannels.
+        """
         max_averages = []
         min_averages = []
         for key in keys:
@@ -513,7 +517,7 @@ class HotspotPlot(object):
         return boundaries
 
     def define_projection(self, region):
-        """projection definition to get LambertConformal borders."""
+        """Projection definition to get LambertConformal borders."""
         region = {
             "start_longitude": region[0],
             "end_longitude": region[1],
@@ -643,3 +647,4 @@ class HotspotPlot(object):
 if __name__ == "__main__":
     with run_diagnostic() as cfg:
         HotspotPlot(cfg).compute()
+        

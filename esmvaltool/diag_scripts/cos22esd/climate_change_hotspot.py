@@ -1,12 +1,10 @@
-''' Main diagnostic script for the computation of climate change hotspots.
+'''Main diagnostic script for the computation of climate change hotspots.
 
 A comparison between the global and hotspot region tas and pr can be done
 Output:
  - scatter plots relating large vs regional scale changes
  - fields of the hotspot for DJF and JJA in CMIP5 and CMIP6
 '''
-import os
-
 import iris
 
 from esmvalcore.preprocessor import (
@@ -26,7 +24,7 @@ from esmvaltool.diag_scripts.shared import (
 )
 
 
-class HotspotDiag(object): # CODACY: can object be removed?
+class HotspotDiag(object):
     """Hotspot diagnostics' class.
 
     Class that reads, postprocesses and calls the plotting functions
@@ -35,7 +33,7 @@ class HotspotDiag(object): # CODACY: can object be removed?
 
     def __init__(self, config):
         """Variables definition.
-        
+
         config is a dictionary containing metadata regarding input files and
         overall, as the name suggests, configuration options.
         """
@@ -56,7 +54,7 @@ class HotspotDiag(object): # CODACY: can object be removed?
         }
 
     def compute(self):
-        """"Compute Hotspot diagnostics."""
+        """Compute Hotspot diagnostics."""
         input_data_dict = list(self.cfg["input_data"].values())[0]
         filename = input_data_dict['filename']
         large_scale_cube = iris.load_cube(filename)
@@ -110,7 +108,7 @@ class HotspotDiag(object): # CODACY: can object be removed?
         return cube
 
     def compute_hotspot_fields(self, large_scale_cube, regional_cube,
-                               season, filename, input_data_dict): # CODACY: too many arguments? what could be the solution?
+                               season, filename, input_data_dict):
         """Compute the hotspot fields with self.retireve_data cubes.
 
         the resulting cubes are saved inside self.experiment_dict.
@@ -141,7 +139,7 @@ class HotspotDiag(object): # CODACY: can object be removed?
 
     def compute_rolling_means(self, cube):
         """Compute the 10yr rolling mean anomaly.
-        
+
         A timeseries with respect to the baseline
         period is obtained for the input cube.
         """
@@ -168,7 +166,7 @@ class HotspotDiag(object): # CODACY: can object be removed?
     def get_hotspot_provenance_record(self, attributes, period,
                                       season, ancestor_files):
         """Create a provenance record.
-        
+
         It describes the hotspot fields diagnostic data.
         """
         baseline = self.cfg["baseline_period"]
@@ -194,8 +192,9 @@ class HotspotDiag(object): # CODACY: can object be removed?
 
     def get_rolling_mean_record(self, attributes, season,
                                 region, ancestor_files):
-        """Create a provenance record describing the
-        rolling mean diagnostic data."""
+        """Create a provenance record.
+
+        It describes the rolling mean diagnostic data."""
         baseline = self.cfg["baseline_period"]
         caption = (f"{attributes['project']} {season.upper()} 10 year "
                    f"{attributes['long_name']} rolling mean between "
@@ -205,7 +204,7 @@ class HotspotDiag(object): # CODACY: can object be removed?
 
         domain = "reg"
         if region == "global":
-            domain = "global" 
+            domain = "global"
 
         record = {
             'caption': caption,
