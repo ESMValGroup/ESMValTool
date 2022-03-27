@@ -5,7 +5,6 @@ Output:
  - scatter plots relating large vs regional scale changes
  - fields of the hotspot for DJF and JJA in CMIP5 and CMIP6
 '''
-import logging
 import os
 
 import iris
@@ -25,9 +24,6 @@ from esmvaltool.diag_scripts.shared import (
     save_data,
     run_diagnostic,
 )
-
-
-logger = logging.getLogger(os.path.basename(__file__))
 
 
 class HotspotDiag(object): # CODACY: can object be removed?

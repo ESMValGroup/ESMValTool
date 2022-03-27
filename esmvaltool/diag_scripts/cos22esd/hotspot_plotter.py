@@ -1,12 +1,12 @@
+"""Collection of plotting functions."""
 import os
-import logging
 import iris
+import iris.plot as iplt
 import numpy as np
 from scipy import stats
-import iris.plot as iplt
 import cartopy.crs as ccrs
 import cartopy.feature as cf
-import matplotlib.colors as colors
+from matplotlib import colors
 import matplotlib.pyplot as plt
 import matplotlib.path as mpath
 from matplotlib.gridspec import GridSpec
@@ -21,16 +21,16 @@ from esmvaltool.diag_scripts.shared import (
     save_figure,
 )
 
-logger = logging.getLogger(os.path.basename(__file__))
-
 
 class HotspotPlot(object):
-    """class that collects the hotspot datasets
-    and plots the results."""
+    """class that plots the results."""
 
     def __init__(self, config):
-        """config is a dictionary containing metadata regarding input files and
-        overall, as the name suggests, configuration options."""
+        """Variable definition.
+        
+        Config is a dictionary containing metadata regarding input files and
+        overall, as the name suggests, configuration options.
+        """
         self.cfg = config
         self.var_combinations = ["tas:tas", "pr:pr", "pr:tas"]
         self.seasons = ["jja", "djf", "annual"]
@@ -44,18 +44,20 @@ class HotspotPlot(object):
         high = np.arange(20, 100, 10)
         v_high = np.arange(150, 400, 50)
         self.bound_candidates = np.concatenate(
-            (small, medium, high, v_high))*5/4
+            (small, medium, high, v_high)) * 5/4
 
     def compute(self):
+        """Collect datasets and call the plotting functions."""
         hotspot_fields = io.get_all_ancestor_files(
             self.cfg, pattern='hotspot_*.nc')
-        metadata_files = [file for file in self.cfg["input_files"] if "tas/metadata.yml" in file]
+        metadata_files = [file for file in self.cfg["input_files"] 
+                          if "tas/metadata.yml" in file]
         # find number of models inside every multi-model mean
         self.cfg["N"] = {}
         for meta_file in metadata_files:
-            N_identifyer = meta_file.split("/tas/")[0].split("/tas_")[-1]
+            n_identifyer = meta_file.split("/tas/")[0].split("/tas_")[-1]
             metadata = group_metadata(get_cfg(meta_file).values(), "dataset")
-            self.cfg["N"][N_identifyer] = len(metadata.keys())-1
+            self.cfg["N"][n_identifyer] = len(metadata.keys()) - 1
         # call hotspot field plots
         for scenario in self.scenarios:
             fields_dict = {}
@@ -90,8 +92,7 @@ class HotspotPlot(object):
 
     def hotspot_fields_plot(self, results_dict, scenario, ancestor_files_var,
                             tas_bound=None, pr_bound=None):
-        """
-        Regional climate change hotspot maps for TAS and PR
+        """Regional climate change hotspot maps for TAS and PR.
 
         Local temperature and precipitation change differences
         with respect to the mean global temperature change and the
@@ -102,7 +103,7 @@ class HotspotPlot(object):
         The differences are shown for the CMIP5 and CMIP6 winter,
         summer and annual mean projections.
 
-        N indicates the number of models included in the ensemble mean
+        N indicates the number of models included in the ensemble mean.
         """
         top, bottom, left, right = 0.75, 0.2, 0.02, 0.99
         wspace, hspace = 0.005, 0.005
@@ -111,8 +112,8 @@ class HotspotPlot(object):
                        for period in self.cfg["future_periods"]
                        for project in self.projects for season in self.seasons]
         sorted_keys = [
-            sorted_keys[:len(sorted_keys)//2],
-            sorted_keys[len(sorted_keys)//2:]]
+            sorted_keys[:len(sorted_keys) // 2],
+            sorted_keys[len(sorted_keys) // 2:]]
         ancestor_files_var = [
             [ancestor_file for ancestor_file in ancestor_files_var
              if f"/{var}_" in ancestor_file] for var in self.variables]
@@ -124,7 +125,7 @@ class HotspotPlot(object):
             plt.gcf().subplots_adjust()
             proj, projection, path_ext, plotextend = self.define_projection(
                 self.cfg["region"])
-            gs = GridSpec(
+            gspec = GridSpec(
                 len(self.cfg["future_periods"]),
                 len(self.seasons) * 2,
                 figure=fig,
@@ -156,21 +157,21 @@ class HotspotPlot(object):
             # plot each pannel
             for i, key in enumerate(keys):
                 if i < 6:
-                    ax = fig.add_subplot(gs[0, i], projection=proj)
+                    axes = fig.add_subplot(gspec[0, i], projection=proj)
                     plt.title(f"{key.split('_')[1].upper()}")
                 else:
-                    ax = fig.add_subplot(gs[1, i-6], projection=proj)
+                    axes = fig.add_subplot(gspec[1, i - 6], projection=proj)
 
                 if projection == "LambertConformal":
                     proj_to_data = (
-                        ccrs.PlateCarree()._as_mpl_transform(ax) - ax.transData
+                        ccrs.PlateCarree()._as_mpl_transform(axes) - axes.transData # CODACY: _as_mpl_transform is protected
                     )
                     rect_in_target = proj_to_data.transform_path(path_ext)
-                    ax.set_boundary(rect_in_target, use_as_clip_path=True)
-                    ax.set_facecolor("silver")
-                ax.set_extent(plotextend, crs=ccrs.PlateCarree())
-                ax.coastlines("50m", linewidth=0.8)
-                ax.add_feature(cf.BORDERS, alpha=0.4)
+                    axes.set_boundary(rect_in_target, use_as_clip_path=True)
+                    axes.set_facecolor("silver")
+                axes.set_extent(plotextend, crs=ccrs.PlateCarree())
+                axes.coastlines("50m", linewidth=0.8)
+                axes.add_feature(cf.BORDERS, alpha=0.4)
 
                 norm = colors.BoundaryNorm(
                     boundaries=bounds, ncolors=256, extend="both"
@@ -180,13 +181,13 @@ class HotspotPlot(object):
                     cube, norm=norm, coords=(names.LON, names.LAT), cmap=cmap,
                 )
 
-            for p, project in enumerate(self.projects):
-                N = self.cfg["N"][f"{project}_{scenario}"]
+            for p_ind, project in enumerate(self.projects):
+                n = self.cfg["N"][f"{project}_{scenario}"]
                 plt.figtext(
-                    left + 0.18 + p * (right - left) / 2,
+                    left + 0.18 + p_ind * (right - left) / 2,
                     0.85,
                     (f"{self.formatter(project.upper())} "
-                     f"{self.formatter(f'{project}-{scenario}')} (N={N})"),
+                     f"{self.formatter(f'{project}-{scenario}')} (N={n})"),
                     fontsize="large",
                 )
             for row, period in enumerate(self.cfg["future_periods"]):
@@ -200,14 +201,14 @@ class HotspotPlot(object):
             fig.add_artist(line)
 
             colorbar_axes = plt.gcf().add_axes([0.25, 0.125, 0.5, 0.04])
-            cb = plt.colorbar(fill, colorbar_axes,
+            cbar = plt.colorbar(fill, colorbar_axes,
                               orientation="horizontal", extend="both")
             if variable == "pr":
-                cb.set_label("%")
+                cbar.set_label("%")
             else:
-                cb.set_label(
+                cbar.set_label(
                     self.formatter(
-                        str(results_dict[key].units)
+                        str(results_dict[keys[-1]].units)
                     ))
             if variable == "tas":
                 against_region = "global"
@@ -225,22 +226,21 @@ class HotspotPlot(object):
             plt.suptitle(suptitle, fontsize=13)
 
             basename = f"{variable}_{scenario}"
-            provenance_record = self.get_hotspot_provenance_record(
+            provenance_record = self.get_hotspot_provenance(
                 suptitle, scenario, ancestor_files)
             save_figure(basename, provenance_record, self.cfg)
 
     def timeseries_scatter_plot(self, results_dict, season,
                                 var_combination, ancestors_dict):
-        """
-        Regional vs large scale changes for three scenarios.
+        """Regional vs large scale changes for three scenarios.
 
         Computed for different seasons for the CMIP5 and CMIP6 ensemble means.
         Each dot in the plot represents a 10 year mean change beginning from
         1960-1969 (light coloring) until 2091-2100 (opaque coloring).
         The changes are computed with 1986-2005 as baseline.
 
-        An ordinary least squares linear regression is computed and the 
-        slope and rvalue are shown. N indicates the number of models 
+        An ordinary least squares linear regression is computed and the
+        slope and rvalue are shown. N indicates the number of models
         included in the ensemble mean.
         """
         base_colors = {"cmip5": "#2161A6", "cmip6": "#BB3437"}
@@ -248,16 +248,16 @@ class HotspotPlot(object):
         fig = plt.figure(
             figsize=(12, 4), constrained_layout=True, dpi=300
         )
-        gs = fig.add_gridspec(1, 3)
+        gspec = fig.add_gridspec(1, 3)
         rvalue = {}
         slope = {}
         min_range, max_range = {}, {}
         min_glob, max_glob = [], []
-        ax = []
+        axes = []
         ancestor_files = []
         for pannel, scen in enumerate(self.scenarios):
             legend_elements = {scen: []}
-            ax.append(fig.add_subplot(gs[0, pannel]))
+            axes.append(fig.add_subplot(gspec[0, pannel]))
             regional_var = var_combination.split(":")[0]
             regional_keys = [
                 f"{regional_var}_{project}_{scen}"
@@ -276,22 +276,17 @@ class HotspotPlot(object):
 
                 res = stats.linregress(
                     large_scale_signal_ts, regional_signal_ts)
-                y = res.intercept + res.slope * np.array(large_scale_signal_ts)
+                y_values = res.intercept + res.slope * np.array(large_scale_signal_ts)
                 rvalue[project] = res.rvalue
                 slope[project] = res.slope
-                pz = np.linspace(0, 1, len(large_scale_signal_ts))
+                timesteps = np.linspace(0, 1, len(large_scale_signal_ts))
                 if project == "cmip6":
                     cb_colors = plt.cm.Reds(np.linspace(
                         0, 1, len(regional_signal_ts)))
                 if project == "cmip5":
                     cb_colors = plt.cm.Blues(
                         np.linspace(0, 1, len(regional_signal_ts)))
-                cb_colors[:, -1] = pz
-                logger.info(
-                    f"{season.upper()} {var_combination} {project} "
-                    f"{self.formatter(scen)} slope={slope[project]} "
-                    f"r={rvalue[project]}"
-                )
+                cb_colors[:, -1] = timesteps
 
                 if var_combination == "pr:tas":
                     max_range[project] = max(regional_signal_ts)
@@ -313,7 +308,7 @@ class HotspotPlot(object):
                     "85": "RCP8.5/SSP5-8.5",
                 }
 
-                ax[pannel].scatter(
+                axes[pannel].scatter(
                     large_scale_signal_ts,
                     regional_signal_ts,
                     facecolors="none",
@@ -324,15 +319,15 @@ class HotspotPlot(object):
                 )
                 max_glob.append(max(large_scale_signal_ts))
                 min_glob.append(min(large_scale_signal_ts))
-                ax[pannel].plot(large_scale_signal_ts, y,
+                axes[pannel].plot(large_scale_signal_ts, y_values,
                                 color=base_colors[project])
                 if len(legend_elements[scen]) < 2:
-                    N = self.cfg["N"][f"{project}_{scen}"]
+                    n = self.cfg["N"][f"{project}_{scen}"]
                     legend_elements[scen].append(
                         Patch(
                             facecolor=base_colors[project],
                             edgecolor=base_colors[project],
-                            label=f"{self.formatter(project.upper())} (N={N})",
+                            label=f"{self.formatter(project.upper())} (N={n})",
                         )
                     )
 
@@ -349,17 +344,17 @@ class HotspotPlot(object):
                     f"$^o$ N latitudinal belt"
                 )
             large_scale_units = self.formatter(
-                str(results_dict['large_scale'][large_scale_key].units))
+                str(results_dict['large_scale'][large_scale_keys[-1]].units))
             regional_units = self.formatter(
                 str(results_dict['regional'][regional_key].units))
             xlabel = (f"{against_region} "
                       f"{var_combination.partition(':')[-1].upper()} "
                       f"[{large_scale_units}]")
-            ax[pannel].set_xlabel(xlabel)
+            axes[pannel].set_xlabel(xlabel)
             ylabel = (f"{self.cfg['region_name']} "
                       f"{var_combination.partition(':')[0].upper()} "
                       f"[{regional_units}]")
-            ax[pannel].set_ylabel(ylabel)
+            axes[pannel].set_ylabel(ylabel)
 
             max_lim = max(max_range.values())
             min_lim = min(min_range.values())
@@ -368,21 +363,21 @@ class HotspotPlot(object):
             min_lim -= delta_range * 0.1
             max_lim += delta_range * 0.1
 
-            ax[pannel].axvline(
+            axes[pannel].axvline(
                 x=0, ymin=-1000, ymax=1000, color="grey",
                 linestyle="dotted", alpha=0.6,
             )
-            ax[pannel].axhline(
-                y=0, xmin=-1000, xmax=1000, color="grey",
+            axes[pannel].axhline(
+                y_values=0, xmin=-1000, xmax=1000, color="grey",
                 linestyle="dotted", alpha=0.6,
             )
-            ax[pannel].set_title(
+            axes[pannel].set_title(
                 f"Scenario: {title_format[scen]} \n CMIP5: rval="
                 f"{rvalue['cmip5']:.3f}; slope={slope['cmip5']:.3f} "
                 f"\n CMIP6: rval={rvalue['cmip6']:.3f}; "
                 f"slope={slope['cmip6']:.3f}"
             )
-            ax[pannel].legend(handles=legend_elements[scen])
+            axes[pannel].legend(handles=legend_elements[scen])
 
             long_name_dict = {"pr": "precipitation", "tas": "temperature"}
             if var_combination == "pr:tas":
@@ -399,21 +394,21 @@ class HotspotPlot(object):
                             f".\n 10yr rolling means 1960-2100, "
                             f"Baseline: 1986-2005")
                 plt.suptitle(suptitle)
-        for x in range(3):
-            ax[x].set_ylim(min_lim, max_lim)
+        for box in range(3):
+            axes[box].set_ylim(min_lim, max_lim)
             if var_combination == "pr:tas":
                 min_l = min(min_glob) - (max(max_glob) - min(min_glob)) * 0.1
                 max_l = max(max_glob) + (max(max_glob) - min(min_glob)) * 0.1
-                ax[x].set_xlim(min_l, max_l)
+                axes[box].set_xlim(min_l, max_l)
             else:
-                ax[x].set_xlim(min_lim, max_lim)
+                axes[box].set_xlim(min_lim, max_lim)
 
             if (slope["cmip5"] + slope["cmip6"]) >= 0:
-                ax[x].plot(
+                axes[box].plot(
                     [-1000, 1000], [-1000, 1000], color="gray", alpha=0.6,
                 )
             else:
-                ax[x].plot(
+                axes[box].plot(
                     [-1000, 1000], [1000, -1000], color="gray", alpha=0.6,
                 )
         basename = f"scenario_combination_{var_combination}_{season}"
@@ -422,7 +417,7 @@ class HotspotPlot(object):
         save_figure(basename, provenance_record, self.cfg)
 
     def formatter(self, text):
-        """basic text definitions to format titles, labels..."""
+        """basic text definitions to format titles, labels, etc."""
         repl_map = {
             "degC": "$^o$C",
             "K": "$^o$C",
@@ -462,14 +457,15 @@ class HotspotPlot(object):
             "HIGHRESMIP": "HighResMIP",
             " ": "",
         }
-        for k, v in repl_map.items():
-            if k in text:
-                text = text.replace(k, v)
+        for key, val in repl_map.items():
+            if key in text:
+                text = text.replace(key, val)
                 break
         return text
 
     def find_abs_bound_range(self, results_dict, keys, avg_over=5):
         """Find suitable bounds for the colorbar.
+
         It takes into account the absoulute maximun value from
         all the pannels"""
         max_averages = []
@@ -497,7 +493,7 @@ class HotspotPlot(object):
         return bound_limit
 
     def region_to_square(self, region, dimension):
-        """Definition of the region polygon"""
+        """Definition of the region polygon."""
         if dimension == "latitude":
             return [
                 region["start_latitude"],
@@ -514,13 +510,10 @@ class HotspotPlot(object):
                 region["start_longitude"],
                 region["start_longitude"],
             ]
-        else:
-            return "dimension unknown"
+        return "dimension unknown"
 
     def define_projection(self, region):
-        """
-        projection definition to get LambertConformal borders
-        """
+        """projection definition to get LambertConformal borders."""
         region = {
             "start_longitude": region[0],
             "end_longitude": region[1],
@@ -564,8 +557,7 @@ class HotspotPlot(object):
         return proj, projection, path_ext, plotextend
 
     def sorted_dim(self, cube, coord="longitude"):
-        """
-        Sorts the cube data according to the longitude coordinate values
+        """Sorts the cube data according to the longitude coordinate values.
 
         example: 180/-180 --> -180/180
         """
@@ -585,7 +577,7 @@ class HotspotPlot(object):
         return cube
 
     def regrid_longitude_coord(self, cube):
-        """Sorts the longitudes of the cubes from 0/360 degrees to -180/180"""
+        """Sorts the longitudes of the cubes from 0/360 degrees to -180/180."""
         # make a list with the 'longitude' coord in the form: 0/180/-180/0
         neg_lons = ((cube.coord("longitude").points + 180) % 360) - 180
         # interpolates the cube data to the new 'longitude' dimensions
@@ -594,7 +586,7 @@ class HotspotPlot(object):
         sorted_cube = self.sorted_dim(cube)
         return sorted_cube
 
-    def get_hotspot_provenance_record(self, suptitle,
+    def get_hotspot_provenance(self, suptitle,
                                       scenario, ancestor_files):
         """Create a provenance record describing the hotspot fields plots."""
         caption = (f"{suptitle}. Calculated for seasons "
@@ -621,8 +613,7 @@ class HotspotPlot(object):
         return record
 
     def get_rolling_mean_provenance_record(self, suptitle, ancestor_files):
-        """Create a provenance record describing 
-        the rolling mean diagnostic data."""
+        """Create a provenance record with the rolling mean diagnostic data."""
         suptitle = suptitle.replace('\n', '')
         caption = (f"{suptitle}. For CMIP5 ("
                    f"{self.formatter(f'cmip5-{self.scenarios[0]}')}, "
@@ -649,10 +640,7 @@ class HotspotPlot(object):
         return record
 
 
-def main():
+if __name__ == "__main__":
     with run_diagnostic() as config:
         HotspotPlot(config).compute()
 
-
-if __name__ == "__main__":
-    main()
