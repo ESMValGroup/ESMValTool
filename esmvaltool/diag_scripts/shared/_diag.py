@@ -25,6 +25,13 @@ logger = logging.getLogger(__name__)
 # Global variables
 DEFAULT_INFO = 'not_specified'
 
+DEPRECATION_MSG = ("The class {class_name} has been deprecated in version 2.2 "
+                   "and is not maintained anymore. Please consider using "
+                   "alternative functions such as 'select_metadata', "
+                   "'sorted_metadata', 'group_metadata' or "
+                   "sorted_group_metadata' that are provided by the module "
+                   "esmvaltool.diag_scripts.shared.")
+
 
 # Variable class containing all relevant information
 BaseVariable = collections.namedtuple('Variable', [n.SHORT_NAME,
@@ -46,15 +53,14 @@ class Variable(BaseVariable):
     def __new__(cls, short_name, standard_name, long_name, units):
         """Deprecate this class."""
         warnings.warn(
-            "'Variable' has been deprecated in version 2.2 and will be "
-            "removed two minor releases later in version 2.4",
+            DEPRECATION_MSG.format(class_name=str(cls)),
             ESMValToolDeprecationWarning)
         self = super().__new__(cls, short_name, standard_name, long_name,
                                units)
         return self
 
 
-class Variables(object):
+class Variables:
     """Class to easily access a recipe's variables in a diagnostic.
 
     Note
@@ -91,15 +97,14 @@ class Variables(object):
         Parameters
         ----------
         cfg : dict, optional
-            Configuation dictionary of the recipe.
+            Configuration dictionary of the recipe.
         **names : dict or Variable, optional
             Keyword arguments of the form `short_name=Variable_object` where
             `Variable_object` can be given as :obj:`dict` or :class:`Variable`.
 
         """
         warnings.warn(
-            "'Variables' has been deprecated in version 2.2 and will be "
-            "removed two minor releases later in version 2.4",
+            DEPRECATION_MSG.format(class_name=str(self.__class__)),
             ESMValToolDeprecationWarning)
         self._dict = {}
 
@@ -128,7 +133,7 @@ class Variables(object):
                            "import of variables does not work for chained "
                            "scripts (using 'ancestors' key)")
 
-        # Add costum variables
+        # Add custom variables
         self.add_vars(**names)
         if not self._dict:
             logger.warning("No variables found!")
@@ -156,7 +161,7 @@ class Variables(object):
         self._dict[name] = attr
 
     def add_vars(self, **names):
-        """Add costum variables to the class.
+        """Add custom variables to the class.
 
         Parameters
         ----------
@@ -350,7 +355,7 @@ class Variables(object):
         return True
 
 
-class Datasets(object):
+class Datasets:
     """Class to easily access a recipe's datasets in a diagnostic script.
 
     Note
@@ -388,7 +393,7 @@ class Datasets(object):
         Parameters
         ----------
         cfg : dict, optional
-            Configuation dictionary of the recipe.
+            Configuration dictionary of the recipe.
 
         Raises
         ------
@@ -397,8 +402,7 @@ class Datasets(object):
 
         """
         warnings.warn(
-            "'Datasets' has been deprecated in version 2.2 and will be "
-            "removed two minor releases later in version 2.4",
+            DEPRECATION_MSG.format(class_name=str(self.__class__)),
             ESMValToolDeprecationWarning)
         self._iter_counter = 0
         self._paths = []
@@ -731,6 +735,8 @@ class Datasets(object):
 
         Parameters
         ----------
+        key: str
+            Desired dictionary key.
         **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.

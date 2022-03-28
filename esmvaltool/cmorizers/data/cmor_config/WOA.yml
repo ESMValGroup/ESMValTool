@@ -1,0 +1,64 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+
+  dataset_id: WOA
+  tier: 2
+  modeling_realm: clim
+
+  # WOA13
+  # project_id: OBS
+  # short_name: woa13
+  # version: '2013v2'
+  # source: 'https://www.ncei.noaa.gov/data/oceans/woa/WOA13/DATAv2/'
+  # reference: 'woa2013v2'
+
+  # WOA18
+  project_id: OBS6
+  short_name: woa18
+  version: '2018'
+  source: 'https://www.ncei.noaa.gov/data/oceans/woa/WOA18/DATA/'
+  reference: 'woa2018'
+
+  comment: ''
+
+# Variables to cmorize (here use only filename prefix)
+# Temperature and salinity from 1981-2010 climatology (81B0)
+variables:
+  thetao:
+    mip: Omon
+    raw_var: t_an
+    name: temperature
+    file: decav81B0_t
+    srf_var: tos
+  so:
+    mip: Omon
+    raw_var: s_an
+    name: salinity
+    file: decav81B0_s
+    srf_var: sos
+  o2:
+    mip: Oyr
+    raw_var: o_an
+    name: oxygen
+    file: all_o
+  no3:
+    mip: Oyr
+    raw_var: n_an
+    name: nitrate
+    file: all_n
+  po4:
+    mip: Oyr
+    raw_var: p_an
+    name: phosphate
+    file: all_p
+  si:
+    mip: Oyr
+    raw_var: i_an
+    name: silicate
+    file: all_i
+
+# Custom dictionary for this cmorizer
+custom:
+  reference_year: 2000
+  resolution: '1.00'

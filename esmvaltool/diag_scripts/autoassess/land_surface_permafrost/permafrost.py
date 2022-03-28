@@ -16,7 +16,7 @@ from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 from . import permafrost_koven_sites
 
 
-def get_provenance_record(plot_file, caption, run):
+def get_provenance_record(caption, run):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption': caption,
@@ -32,7 +32,6 @@ def get_provenance_record(plot_file, caption, run):
             'legates90tac',
             'koven13jclim',
         ],
-        'plot_file': plot_file,
         'ancestors': run,
     }
 
@@ -194,9 +193,7 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     plot_file = 'pf_extent_asia_' + run['runid']
     caption = 'Permafrost extent & zero degree isotherm ({})'.format(
         run['runid'])
-    provenance_record = get_provenance_record(plot_file,
-                                              caption,
-                                              run)
+    provenance_record = get_provenance_record(caption, run)
     cfg = {}
     cfg['run_dir'] = run['out_dir']
     with ProvenanceLogger(cfg) as provenance_logger:

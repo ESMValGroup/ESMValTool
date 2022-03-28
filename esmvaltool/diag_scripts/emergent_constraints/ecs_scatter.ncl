@@ -1162,16 +1162,10 @@ begin
 
   delete(idx)
 
-  ; make sure path for (optional) netcdf output exists
-
-  if (diag_script_info@write_netcdf.eq."True") then
-    write_nc = True
-    work_dir = config_user_info@work_dir + "/"
-    ; Create work dir
-    system("mkdir -p " + work_dir)
-  else
-    write_nc = False
-  end if
+  ; make sure path for netcdf output exists
+  work_dir = config_user_info@work_dir + "/"
+  ; Create work dir
+  system("mkdir -p " + work_dir)
 
   flag_mean = False
   mmm_ind = -1
@@ -1549,8 +1543,7 @@ begin
       nc_outfile = ncdf_write(diagdata, nc_filename)
     end if
 
-    plotfile = new(1, string)
-    log_provenance(nc_outfile, plotfile, caption, "other", "reg", "", "", "", \
+    log_provenance(nc_outfile, "n/a", caption, "other", "reg", "", "", "", \
                    infiles)
 
     leave_msg(DIAG_SCRIPT, "")
@@ -1611,283 +1604,279 @@ begin
 
   ; ============================ plot results ==============================
 
-  if (diag_script_info@write_plots.eq."True") then
-    outfile = str_sub_str(diagdata@standard_name, " ", "_") + \
-      "-" + str_sub_str(ECS@standard_name, " ", "_") + "_ref"
-    n = dimsizes(ref_ind)
-    do i = 0, n - 1
-      outfile = outfile + "_" + names(ref_ind(i))
+  outfile = str_sub_str(diagdata@standard_name, " ", "_") + \
+    "-" + str_sub_str(ECS@standard_name, " ", "_") + "_ref"
+  n = dimsizes(ref_ind)
+  do i = 0, n - 1
+    outfile = outfile + "_" + names(ref_ind(i))
+  end do
+
+  if (isatt(diag_script_info, "suffix")) then
+    outfile = outfile + "_" + diag_script_info@suffix
+  end if
+
+  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, outfile)
+  wks@legendfile = outfile + "_legend"
+
+  if (isatt(diag_script_info, "styleset")) then
+    my_info = NewList("lifo")
+    do i = 0, dim_MOD - 1
+      ListAppend(my_info, new(1, logical))
+      my_info[i]@dataset = names(i)
     end do
+    colortab = project_style(my_info, diag_script_info, "colors")
+    markertab = project_style(my_info, diag_script_info, "markers")
+  else
+    colortab = (/"(/0.00, 0.00, 0.59/)", "(/0.00, 0.39, 1.00/)", \
+                 "(/0.20, 1.00, 1.00/)", "(/0.20, 0.88, 0.00/)", \
+                 "(/1.00, 0.88, 0.00/)", "(/1.00, 0.59, 0.00/)", \
+                 "(/1.00, 0.20, 0.00/)", "(/0.59, 0.00, 0.00/)", \
+                 "(/0.78, 0.00, 0.78/)", "(/0.59, 0.00, 0.59/)", \
+                 "(/0.90, 0.90, 0.90/)", "(/0.70, 0.70, 0.70/)", \
+                 "(/0.50, 0.50, 0.50/)", "(/0.30, 0.30, 0.30/)"/)
+    markertab = (/16, 4, 5, 0/)
+  end if
 
-    if (isatt(diag_script_info, "suffix")) then
-      outfile = outfile + "_" + diag_script_info@suffix
+  nmod = dimsizes(model_ind_woref)
+
+  colors  = new(nmod, string)
+  markers = new(nmod, integer)
+
+  ; create new marker: filled star
+
+  mstring = "z"
+  fontnum = 35
+  size    = 1.5
+  angle   = 0.0
+
+  new_index = NhlNewMarker(wks, mstring, fontnum, 0.0, 0.0, 1.0, size, angle)
+
+  if (isatt(diag_script_info, "styleset")) then
+    colors = colortab(model_ind_woref)
+    markers = markertab(model_ind_woref)
+    i = ind(model_ind_woref.eq.mmm_ind)
+    if (.not. all(ismissing(i))) then
+      colors(i)  = "(/0.00, 0.00, 0.00/)"  ; black
+      markers(i) = new_index
     end if
-
-    wks = get_wks("dummy_for_wks", DIAG_SCRIPT, outfile)
-    wks@legendfile = outfile + "_legend"
-
-    if (isatt(diag_script_info, "styleset")) then
-      my_info = NewList("lifo")
-      do i = 0, dim_MOD - 1
-        ListAppend(my_info, new(1, logical))
-        my_info[i]@dataset = names(i)
-      end do
-      colortab = project_style(my_info, diag_script_info, "colors")
-      markertab = project_style(my_info, diag_script_info, "markers")
-    else
-      colortab = (/"(/0.00, 0.00, 0.59/)", "(/0.00, 0.39, 1.00/)", \
-                   "(/0.20, 1.00, 1.00/)", "(/0.20, 0.88, 0.00/)", \
-                   "(/1.00, 0.88, 0.00/)", "(/1.00, 0.59, 0.00/)", \
-                   "(/1.00, 0.20, 0.00/)", "(/0.59, 0.00, 0.00/)", \
-                   "(/0.78, 0.00, 0.78/)", "(/0.59, 0.00, 0.59/)", \
-                   "(/0.90, 0.90, 0.90/)", "(/0.70, 0.70, 0.70/)", \
-                   "(/0.50, 0.50, 0.50/)", "(/0.30, 0.30, 0.30/)"/)
-      markertab = (/16, 4, 5, 0/)
-    end if
-
-    nmod = dimsizes(model_ind_woref)
-
-    colors  = new(nmod, string)
-    markers = new(nmod, integer)
-
-    ; create new marker: filled star
-
-    mstring = "z"
-    fontnum = 35
-    size    = 1.5
-    angle   = 0.0
-
-    new_index = NhlNewMarker(wks, mstring, fontnum, 0.0, 0.0, 1.0, size, angle)
-
-    if (isatt(diag_script_info, "styleset")) then
-      colors = colortab(model_ind_woref)
-      markers = markertab(model_ind_woref)
-      i = ind(model_ind_woref.eq.mmm_ind)
-      if (.not. all(ismissing(i))) then
+  else
+    i = 0
+    idx = 0
+    do while (i.lt.nmod)
+      imod = model_ind_woref(i)
+      if (imod.eq.mmm_ind) then
         colors(i)  = "(/0.00, 0.00, 0.00/)"  ; black
         markers(i) = new_index
-      end if
-    else
-      i = 0
-      idx = 0
-      do while (i.lt.nmod)
-        imod = model_ind_woref(i)
-        if (imod.eq.mmm_ind) then
-          colors(i)  = "(/0.00, 0.00, 0.00/)"  ; black
-          markers(i) = new_index
+        i = i + 1
+      else
+        do n = 0, (nmod - 1) / dimsizes(colortab)
+          colors(i)  = colortab(idx)
+          markers(i) = markertab(n)
           i = i + 1
-        else
-          do n = 0, (nmod - 1) / dimsizes(colortab)
-            colors(i)  = colortab(idx)
-            markers(i) = markertab(n)
-            i = i + 1
-            if (i.ge.nmod) then
-              break
-            end if
-          end do
-          idx = idx + 1
-          if (idx.ge.dimsizes(colortab)) then
-            idx = dimsizes(colortab) - 1
+          if (i.ge.nmod) then
+            break
           end if
+        end do
+        idx = idx + 1
+        if (idx.ge.dimsizes(colortab)) then
+          idx = dimsizes(colortab) - 1
         end if
-      end do
-    end if
-
-    ; Collect data
-
-    data_arr = new((/2, nmod/), float)
-    data_arr!0 = "statistic"
-    data_arr!1 = "model"
-    data_arr&statistic = (/diagdata@standard_name, ECS@standard_name/)
-    data_arr&model = names(model_ind_woref)
-    data_arr(0, :) = (/diagdata(model_ind_woref)/)
-    data_arr(1, :) = (/ECS(model_ind_woref)/)
-    data_arr@units = (/diagdata@units, ECS@units/)
-    data_arr@legend_outside = legend_outside
-    data_arr@colors = colors
-    data_arr@markers = markers
-    data_arr@annots = names(model_ind_woref)
-
-    yregmin = 999.9
-    yregmax = -999.9
-
-    xmin = min(data_arr(0, :))
-    xmax = max(data_arr(0, :))
-    xdelta = xmax - xmin
-
-    if (diagdata(ref0) .lt. xmin) then
-      data_arr@trXMinF = diagdata(ref0) - 0.02 * xdelta
-    end if
-
-    if (diagdata(ref0) .gt. xmax) then
-      data_arr@trXMaxF = diagdata(ref0) + 0.02 * xdelta
-    end if
-
-    nx = dimsizes(diagdata(model_ind_worefmmm))
-    ymin = min(ECS)
-    ymax = max(ECS)
-
-    xmin = min(diagdata)
-    xmax = max(diagdata)
-    xdelta = xmax - xmin
-    x0 = xmin - 0.5 * xdelta
-    x1 = xmax + 0.5 * xdelta
-
-    if (nx.ge.3) then
-      x = diagdata(model_ind_worefmmm)
-      y = ECS(model_ind_worefmmm)
-      ii = dim_pqsort_n(x, 1, 0)
-      xx = x(ii)                ; temporary 'work' arrays
-      yy = y(ii)
-
-      rc = regline_stats(xx, yy)  ; requires NCL 6.2.0 or higher
-
-      ; calculate confidence intervals (25%, 75%) of regression
-
-      xxx = fspan(x0, x1, 50)
-      yyy = rc@b(0) + xxx * rc@b(1)
-      ; t-value given the one-sided probability and the degrees of freedom
-      tval = cdft_t(0.25, nx - 2)
-
-      mean_se_fit = 1.0 / nx + (xxx - rc@xave) ^ 2 / sum((x - rc@xave) ^ 2)
-      mean_conf_upper = yyy + tval * sqrt(rc@MSE * mean_se_fit)
-      mean_conf_lower = yyy - tval * sqrt(rc@MSE * mean_se_fit)
-
-      ; calculate prediction intervals (25%, 75%)
-
-      prediction_upper = yyy + tval * sqrt(rc@MSE * (1.0 + mean_se_fit))
-      prediction_lower = yyy - tval * sqrt(rc@MSE * (1.0 + mean_se_fit))
-
-      yregmin = min(mean_conf_lower)
-      yregmax = max(mean_conf_upper)
-
-      data_arr@trYMinF = min((/ymin, yregmin/))
-      data_arr@trYMaxF = max((/ymax, yregmax/))
-
-      data_arr@res_gsnRightString = "R~S~2~N~ = " \
-        + tostring_with_format(rc@r2, "%3.2f")
-      data_arr@res_gsnRightStringFontHeightF = 0.025
-
-      delete(yyy)
-      delete(mean_se_fit)
-      delete(x)
-      delete(y)
-      delete(ii)
-    end if
-
-    ; If requested by user, use predefined min/max for x- and y-axis
-    ; depending on diagnostic
-
-    if (diag_script_info@predef_minmax) then
-      data_arr@trYMinF = 2.0     ; CMIP3/CMIP5
-      data_arr@trYMaxF = 5.0  ; 6.5     ; CMIP3/CMIP5: 5.0, CMIP6: 6.5
-      if (diag.eq."itczidx") then
-        data_arr@trXMinF = -1.0    ; southern ITCZ index
-        data_arr@trXMaxF = 3.0     ; southern ITCZ index
       end if
-      if (diag.eq."humidx") then
-        data_arr@trXMinF = -15.0   ; tropical mid-tropos. humidity asym. index
-        data_arr@trXMaxF = 40.0    ; tropical mid-tropos. humidity asym. index
-      end if
-      if (diag.eq."sherwood_d") then
-        data_arr@trXMinF = 0.0     ; Sherwood D index
-        data_arr@trXMaxF = 0.6     ; Sherwood D index
-      end if
-      if (diag.eq."sherwood_s") then
-        data_arr@trXMinF = 0.1     ; Sherwood S index
-        data_arr@trXMaxF = 0.8     ; Sherwood S index
-      end if
-      if (diag.eq."ltmi") then
-        data_arr@trXMinF = 0.4     ; lower tropospheric mixing index (LTMI)
-        data_arr@trXMaxF = 1.2     ; lower tropospheric mixing index (LTMI)
-      end if
-      if (diag.eq."shhc") then
-        data_arr@trXMinF = -40.0   ; SH HC extent
-        data_arr@trXMaxF = -30.0   ; SH HC extent
-      end if
-      if (diag.eq."covrefl") then
-        data_arr@trXMinF = -2.0    ; covariance of TLC sw reflection with SST
-        data_arr@trXMaxF = 1.0     ; covariance of TLC sw reflection with SST
-      end if
+    end do
+  end if
 
-      ymin = min((/ymin, data_arr@trYMinF/))
-      ymax = max((/ymax, data_arr@trYMaxF/))
-    end if
+  ; Collect data
 
-    ; draw scatter plot
-    data_arr@res_tiMainString = ""
-    plot = scatterplot_markers(wks, data_arr, var0, input_file_info)
+  data_arr = new((/2, nmod/), float)
+  data_arr!0 = "statistic"
+  data_arr!1 = "model"
+  data_arr&statistic = (/diagdata@standard_name, ECS@standard_name/)
+  data_arr&model = names(model_ind_woref)
+  data_arr(0, :) = (/diagdata(model_ind_woref)/)
+  data_arr(1, :) = (/ECS(model_ind_woref)/)
+  data_arr@units = (/diagdata@units, ECS@units/)
+  data_arr@legend_outside = legend_outside
+  data_arr@colors = colors
+  data_arr@markers = markers
+  data_arr@annots = names(model_ind_woref)
 
-    ydelta = ymax - ymin
-    y0 = min((/ymin - 0.5 * ydelta, yregmin/))
-    y1 = max((/yregmax, ymax + 0.5 * ydelta/))
+  yregmin = 999.9
+  yregmax = -999.9
 
-    ; plot observational uncertainty (if available)
+  xmin = min(data_arr(0, :))
+  xmax = max(data_arr(0, :))
+  xdelta = xmax - xmin
 
-    if (.not.all(ismissing(diagminmax))) then
-;    if (isdefined("diagminmax")) then
-      x = (/diagminmax(0), diagminmax(0), diagminmax(1), diagminmax(1), \
-           diagminmax(0)/)
-      y = (/y0, y1, y1, y0, y0/)
-      res = True
-      res@tfPolyDrawOrder = "Draw"
-      res@gsFillColor = (/0.9, 0.9, 0.9/)
-      referr = gsn_add_polygon(wks, plot, x, y, res)
-      delete(x)
-      delete(y)
-      delete(res)
-    end if
+  if (diagdata(ref0) .lt. xmin) then
+    data_arr@trXMinF = diagdata(ref0) - 0.02 * xdelta
+  end if
 
-    ; draw line for reference data
+  if (diagdata(ref0) .gt. xmax) then
+    data_arr@trXMaxF = diagdata(ref0) + 0.02 * xdelta
+  end if
 
-    x = (/diagdata(ref0), diagdata(ref0)/)
-    y = (/y0, y1/)
-    res = True
-    res@gsLineColor = (/0.75, 0.75, 0.75/)
-    res@gsLineThicknessF = 4.0
-    res@tfPolyDrawOrder = "Draw"
+  nx = dimsizes(diagdata(model_ind_worefmmm))
+  ymin = min(ECS)
+  ymax = max(ECS)
 
-    ref = gsn_add_polyline(wks, plot, x, y, res)
+  xmin = min(diagdata)
+  xmax = max(diagdata)
+  xdelta = xmax - xmin
+  x0 = xmin - 0.5 * xdelta
+  x1 = xmax + 0.5 * xdelta
 
+  if (nx.ge.3) then
+    x = diagdata(model_ind_worefmmm)
+    y = ECS(model_ind_worefmmm)
+    ii = dim_pqsort_n(x, 1, 0)
+    xx = x(ii)                ; temporary 'work' arrays
+    yy = y(ii)
+
+    rc = regline_stats(xx, yy)  ; requires NCL 6.2.0 or higher
+
+    ; calculate confidence intervals (25%, 75%) of regression
+
+    xxx = fspan(x0, x1, 50)
+    yyy = rc@b(0) + xxx * rc@b(1)
+    ; t-value given the one-sided probability and the degrees of freedom
+    tval = cdft_t(0.25, nx - 2)
+
+    mean_se_fit = 1.0 / nx + (xxx - rc@xave) ^ 2 / sum((x - rc@xave) ^ 2)
+    mean_conf_upper = yyy + tval * sqrt(rc@MSE * mean_se_fit)
+    mean_conf_lower = yyy - tval * sqrt(rc@MSE * mean_se_fit)
+
+    ; calculate prediction intervals (25%, 75%)
+
+    prediction_upper = yyy + tval * sqrt(rc@MSE * (1.0 + mean_se_fit))
+    prediction_lower = yyy - tval * sqrt(rc@MSE * (1.0 + mean_se_fit))
+
+    yregmin = min(mean_conf_lower)
+    yregmax = max(mean_conf_upper)
+
+    data_arr@trYMinF = min((/ymin, yregmin/))
+    data_arr@trYMaxF = max((/ymax, yregmax/))
+
+    data_arr@res_gsnRightString = "R~S~2~N~ = " \
+      + tostring_with_format(rc@r2, "%3.2f")
+    data_arr@res_gsnRightStringFontHeightF = 0.025
+
+    delete(yyy)
+    delete(mean_se_fit)
     delete(x)
     delete(y)
+    delete(ii)
+  end if
 
-    ; add regression line (drawn in the background)
-    ; (can only be calculated if there are at least 3 models)
+  ; If requested by user, use predefined min/max for x- and y-axis
+  ; depending on diagnostic
 
-    if (nx.ge.3) then
-      x = (/x0, x1/)
-      y = (/x0 * rc + rc@yintercept, x1 * rc + rc@yintercept/)
-      res = True
-      res@gsLineColor = (/1.00, 0.00, 0.00/)
-      res@gsLineThicknessF = 4.0
-      res@tfPolyDrawOrder = "Draw"
-      regl = gsn_add_polyline(wks, plot, x, y, res)
-
-      res@gsLineThicknessF = 2.0
-      res@gsLineDashPattern = 1
-      reglc1 = gsn_add_polyline(wks, plot, xxx, mean_conf_upper, res)
-      reglc2 = gsn_add_polyline(wks, plot, xxx, mean_conf_lower, res)
-      res@gsLineDashPattern = 2
-      reglp1 = gsn_add_polyline(wks, plot, xxx, prediction_upper, res)
-      reglp2 = gsn_add_polyline(wks, plot, xxx, prediction_lower, res)
-
-      delete(xxx)
-      delete(mean_conf_upper)
-      delete(mean_conf_lower)
-      delete(prediction_upper)
-      delete(prediction_lower)
+  if (diag_script_info@predef_minmax) then
+    data_arr@trYMinF = 2.0     ; CMIP3/CMIP5
+    data_arr@trYMaxF = 5.0  ; 6.5     ; CMIP3/CMIP5: 5.0, CMIP6: 6.5
+    if (diag.eq."itczidx") then
+      data_arr@trXMinF = -1.0    ; southern ITCZ index
+      data_arr@trXMaxF = 3.0     ; southern ITCZ index
+    end if
+    if (diag.eq."humidx") then
+      data_arr@trXMinF = -15.0   ; tropical mid-tropos. humidity asym. index
+      data_arr@trXMaxF = 40.0    ; tropical mid-tropos. humidity asym. index
+    end if
+    if (diag.eq."sherwood_d") then
+      data_arr@trXMinF = 0.0     ; Sherwood D index
+      data_arr@trXMaxF = 0.6     ; Sherwood D index
+    end if
+    if (diag.eq."sherwood_s") then
+      data_arr@trXMinF = 0.1     ; Sherwood S index
+      data_arr@trXMaxF = 0.8     ; Sherwood S index
+    end if
+    if (diag.eq."ltmi") then
+      data_arr@trXMinF = 0.4     ; lower tropospheric mixing index (LTMI)
+      data_arr@trXMaxF = 1.2     ; lower tropospheric mixing index (LTMI)
+    end if
+    if (diag.eq."shhc") then
+      data_arr@trXMinF = -40.0   ; SH HC extent
+      data_arr@trXMaxF = -30.0   ; SH HC extent
+    end if
+    if (diag.eq."covrefl") then
+      data_arr@trXMinF = -2.0    ; covariance of TLC sw reflection with SST
+      data_arr@trXMaxF = 1.0     ; covariance of TLC sw reflection with SST
     end if
 
-    draw(plot)
-    frame(wks)
+    ymin = min((/ymin, data_arr@trYMinF/))
+    ymax = max((/ymax, data_arr@trYMaxF/))
+  end if
 
-    plotfile = wks@fullname
+  ; draw scatter plot
+  data_arr@res_tiMainString = ""
+  plot = scatterplot_markers(wks, data_arr, var0, input_file_info)
 
-    log_info("Wrote " + plotfile)
-  else
-    plotfile = ""
-  end if  ; if diag_script_info@write_plots.eq."True"
+  ydelta = ymax - ymin
+  y0 = min((/ymin - 0.5 * ydelta, yregmin/))
+  y1 = max((/yregmax, ymax + 0.5 * ydelta/))
+
+  ; plot observational uncertainty (if available)
+
+  if (.not.all(ismissing(diagminmax))) then
+;    if (isdefined("diagminmax")) then
+    x = (/diagminmax(0), diagminmax(0), diagminmax(1), diagminmax(1), \
+         diagminmax(0)/)
+    y = (/y0, y1, y1, y0, y0/)
+    res = True
+    res@tfPolyDrawOrder = "Draw"
+    res@gsFillColor = (/0.9, 0.9, 0.9/)
+    referr = gsn_add_polygon(wks, plot, x, y, res)
+    delete(x)
+    delete(y)
+    delete(res)
+  end if
+
+  ; draw line for reference data
+
+  x = (/diagdata(ref0), diagdata(ref0)/)
+  y = (/y0, y1/)
+  res = True
+  res@gsLineColor = (/0.75, 0.75, 0.75/)
+  res@gsLineThicknessF = 4.0
+  res@tfPolyDrawOrder = "Draw"
+
+  ref = gsn_add_polyline(wks, plot, x, y, res)
+
+  delete(x)
+  delete(y)
+
+  ; add regression line (drawn in the background)
+  ; (can only be calculated if there are at least 3 models)
+
+  if (nx.ge.3) then
+    x = (/x0, x1/)
+    y = (/x0 * rc + rc@yintercept, x1 * rc + rc@yintercept/)
+    res = True
+    res@gsLineColor = (/1.00, 0.00, 0.00/)
+    res@gsLineThicknessF = 4.0
+    res@tfPolyDrawOrder = "Draw"
+    regl = gsn_add_polyline(wks, plot, x, y, res)
+
+    res@gsLineThicknessF = 2.0
+    res@gsLineDashPattern = 1
+    reglc1 = gsn_add_polyline(wks, plot, xxx, mean_conf_upper, res)
+    reglc2 = gsn_add_polyline(wks, plot, xxx, mean_conf_lower, res)
+    res@gsLineDashPattern = 2
+    reglp1 = gsn_add_polyline(wks, plot, xxx, prediction_upper, res)
+    reglp2 = gsn_add_polyline(wks, plot, xxx, prediction_lower, res)
+
+    delete(xxx)
+    delete(mean_conf_upper)
+    delete(mean_conf_lower)
+    delete(prediction_upper)
+    delete(prediction_lower)
+  end if
+
+  draw(plot)
+  frame(wks)
+
+  plotfile = wks@fullname
+
+  log_info("Wrote " + plotfile)
 
   ; ======================== netcdf output ===========================
 

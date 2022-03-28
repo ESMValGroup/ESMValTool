@@ -2,6 +2,8 @@
 # recipe_perfmetrics_land_CMIP5.yml
 ---
 documentation:
+  title: Performance metrics for land variables in CMIP5
+
   description: |
     Recipe for plotting the performance metrics for the CMIP5 datasets,
     including only land variables
@@ -306,7 +308,7 @@ diagnostics:
         start_year: 1980
         end_year: 1999
     additional_datasets:
-      - {dataset: BNU-ESM}
+      #- {dataset: BNU-ESM} # data is missing on ESGF
       - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
       - {dataset: CMCC-CESM}
@@ -459,7 +461,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
@@ -518,7 +520,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
@@ -576,7 +578,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
@@ -635,7 +637,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:

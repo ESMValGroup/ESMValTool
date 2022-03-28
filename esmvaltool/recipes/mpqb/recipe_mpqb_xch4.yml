@@ -1,0 +1,312 @@
+# ESMValTool
+# recipe_mpqb_xch4.yml
+---
+documentation:
+  title: Methane evaluation with ESA CMUG data
+  description: |
+    Recipe for the comparison of ESA XCH4 data with CMIP6 models
+
+  authors:
+    - hassler_birgit
+    - mueller_benjamin
+
+
+################################################
+# Define some default parameters using anchors #
+################################################
+
+nh_region: &nh_region
+  extract_region:
+    start_longitude: 0
+    end_longitude: 360
+    start_latitude: 30
+    end_latitude: 90
+
+sh_region: &sh_region
+  extract_region:
+    start_longitude: 0
+    end_longitude: 360
+    start_latitude: -90
+    end_latitude: -30
+
+mpqbregridder: &mpqbregridder
+  regrid:
+    target_grid: 5x5
+    scheme: area_weighted
+
+global_mon: &global_mon
+  custom_order: true
+  <<: *mpqbregridder
+  mask_multimodel:
+  area_statistics:
+    operator: mean
+    fx_variables:
+      areacella:
+  monthly_statistics:
+    operator: mean
+
+global_ann: &global_ann
+  custom_order: true
+  <<: *mpqbregridder
+  mask_multimodel:
+  area_statistics:
+    operator: mean
+    fx_variables:
+      areacella:
+  annual_statistics:
+    operator: mean
+
+sh_mon: &sh_mon
+  custom_order: true
+  <<: *mpqbregridder
+  <<: *sh_region
+  mask_multimodel:
+  area_statistics:
+    operator: mean
+    fx_variables:
+      areacella:
+  monthly_statistics:
+    operator: mean
+
+sh_ann: &sh_ann
+  custom_order: true
+  <<: *mpqbregridder
+  <<: *sh_region
+  mask_multimodel:
+  area_statistics:
+    operator: mean
+    fx_variables:
+      areacella:
+  annual_statistics:
+    operator: mean
+
+nh_mon: &nh_mon
+  custom_order: true
+  <<: *mpqbregridder
+  <<: *nh_region
+  mask_multimodel:
+  area_statistics:
+    operator: mean
+    fx_variables:
+      areacella:
+  monthly_statistics:
+    operator: mean
+
+nh_ann: &nh_ann
+  custom_order: true
+  <<: *mpqbregridder
+  <<: *nh_region
+  mask_multimodel:
+  area_statistics:
+    operator: mean
+    fx_variables:
+      areacella:
+  annual_statistics:
+    operator: mean
+
+
+# Datasets
+################################################
+
+datasets:
+### observations
+  - {dataset: CDS-XCH4, project: OBS, type: sat, version: L3, tier: 3,
+     derive: false, alias: CDS-XCH4}
+### CMIP6 (historical)
+  - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
+     exp: historical, derive: true, alias: BCC-CSM2-MR}
+  - {dataset: CNRM-ESM2-1, project: CMIP6, ensemble: r1i1p1f2, grid: gr,
+     exp: historical, derive: true, alias: CNRM-ESM2-1}
+  - {dataset: UKESM1-0-LL, project: CMIP6, ensemble: r1i1p1f2, grid: gn,
+     exp: historical, derive: true, alias: UKESM1-0-LL}
+  - {dataset: BCC-ESM1, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
+     exp: historical, derive: true, alias: BCC-ESM1}
+  - {dataset: CESM2-WACCM, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
+     exp: historical, derive: true, alias: CESM2-WACCM}
+  - {dataset: CESM2-WACCM-FV2, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
+     exp: historical, derive: true, alias: CESM2-WACCM-FV2}
+  - {dataset: GFDL-ESM4, project: CMIP6, ensemble: r1i1p1f1, grid: gr1,
+     exp: historical, derive: true, alias: GFDL-ESM4}
+### CMIP6 (ssp585)
+  # - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
+     # exp: ssp585, derive: true, alias: BCC-CSM2-MR}
+  # - {dataset: CNRM-ESM2-1, project: CMIP6, ensemble: r1i1p1f2, grid: gr,
+     # exp: ssp585, derive: true, alias: CNRM-ESM2-1}
+  # - {dataset: UKESM1-0-LL, project: CMIP6, ensemble: r1i1p1f2, grid: gn,
+     # exp: ssp585, derive: true, alias: UKESM1-0-LL}
+  # - {dataset: CESM2-WACCM, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
+     # exp: ssp585, derive: true, alias: CESM2-WACCM}
+  # - {dataset: GFDL-ESM4, project: CMIP6, ensemble: r1i1p1f1, grid: gr1,
+     # exp: ssp585, derive: true, alias: GFDL-ESM4}
+### CMIP6 (ssp245)
+  # - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
+     # exp: ssp245, derive: true, alias: BCC-CSM2-MR}
+  # - {dataset: CNRM-ESM2-1, project: CMIP6, ensemble: r1i1p1f2, grid: gr,
+     # exp: ssp245, derive: true, alias: CNRM-ESM2-1}
+  # - {dataset: UKESM1-0-LL, project: CMIP6, ensemble: r1i1p1f2, grid: gn,
+     # exp: ssp245, derive: true, alias: UKESM1-0-LL}
+  # - {dataset: CESM2-WACCM, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
+     # exp: ssp245, derive: true, alias: CESM2-WACCM}
+  # - {dataset: GFDL-ESM4, project: CMIP6, ensemble: r1i1p1f1, grid: gr1,
+     # exp: ssp245, derive: true, alias: GFDL-ESM4}
+
+preprocessors:
+  pp_lineplots_gl_mon: &pp_lineplots_gl_mon
+    custom_order: true
+    convert_units:
+      units: ppbv
+    <<: *global_mon
+
+  pp_lineplots_gl_ann:
+    custom_order: true
+    convert_units:
+      units: ppbv
+    <<: *global_ann
+
+  pp_lineplots_nh_mon: &pp_lineplots_nh_mon
+    custom_order: true
+    convert_units:
+      units: ppbv
+    <<: *nh_mon
+
+  pp_lineplots_nh_ann:
+    custom_order: true
+    convert_units:
+      units: ppbv
+    <<: *nh_ann
+
+  pp_lineplots_sh_mon: &pp_lineplots_sh_mon
+    custom_order: true
+    convert_units:
+      units: ppbv
+    <<: *sh_mon
+
+  pp_lineplots_sh_ann:
+    custom_order: true
+    convert_units:
+      units: ppbv
+    <<: *sh_ann
+
+  pp_lineplots_anncyc_gl:
+    custom_order: true
+    <<: *pp_lineplots_gl_mon
+    climate_statistics:
+      operator: mean
+      period: month
+
+  pp_lineplots_anncyc_nh:
+    custom_order: true
+    <<: *pp_lineplots_nh_mon
+    climate_statistics:
+      operator: mean
+      period: month
+
+  pp_lineplots_anncyc_sh:
+    custom_order: true
+    <<: *pp_lineplots_sh_mon
+    climate_statistics:
+      operator: mean
+      period: month
+
+
+xch4_def_cmip6: &xch4def_cmip6
+  mip: Amon
+  start_year: 2003
+  end_year: 2014
+
+xch4_def_future: &xch4def_fut
+  mip: Amon
+  start_year: 2016
+  end_year: 2099
+
+
+diagnostics:
+  ### global analyses
+  lineplots_gl_monmean:
+    description: lineplot monthly means
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_gl_mon
+        <<: *xch4def_cmip6
+    scripts:
+      lineplot_gl_monmean:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_gl_gr:
+    description: lineplot growth rate global
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_gl_ann
+        <<: *xch4def_cmip6
+    scripts:
+      lineplot_gl_growthrate:
+        script: mpqb/mpqb_lineplot_growthrate.py
+  lineplots_anncyc_gl:
+    description: lineplot annual cycle
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_anncyc_gl
+        derive: true
+        <<: *xch4def_cmip6
+    scripts:
+      lineplot_gl_anncyc:
+        script: mpqb/mpqb_lineplot_anncyc.py
+
+  ### NH analyses
+  lineplots_nh_monmean:
+    description: lineplot monthly means for the NH
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_nh_mon
+        <<: *xch4def_cmip6
+    scripts:
+      lineplot_nh_monmean:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_nh_gr:
+    description: lineplot growth rate for the NH
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_nh_ann
+        <<: *xch4def_cmip6
+    scripts:
+      lineplot_nh_growthrate:
+        script: mpqb/mpqb_lineplot_growthrate.py
+  lineplots_anncyc_nh:
+    description: lineplot annual cycle for the NH
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_anncyc_nh
+        derive: true
+        <<: *xch4def_cmip6
+    scripts:
+      lineplot_nh_anncyc:
+        script: mpqb/mpqb_lineplot_anncyc.py
+
+  ### SH analyses
+  lineplots_sh_monmean:
+    description: lineplot monthly means for the SH
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_sh_mon
+        <<: *xch4def_cmip6
+    scripts:
+      lineplot_sh_monmean:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_sh_gr:
+    description: lineplot growth rate for the SH
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_sh_ann
+        <<: *xch4def_cmip6
+    scripts:
+      lineplot_sh_growthrate:
+        script: mpqb/mpqb_lineplot_growthrate.py
+  lineplots_anncyc_sh:
+    description: lineplot annual cycle for the SH
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_anncyc_sh
+        derive: true
+        <<: *xch4def_cmip6
+    scripts:
+      lineplot_sh_anncyc:
+        script: mpqb/mpqb_lineplot_anncyc.py
