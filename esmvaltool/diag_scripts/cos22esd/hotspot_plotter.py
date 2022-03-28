@@ -419,7 +419,8 @@ class HotspotPlot:
             suptitle, ancestor_files)
         save_figure(basename, provenance_record, self.cfg)
 
-    def formatter(self, text):
+    @staticmethod
+    def formatter(text):
         """Basic text definitions to format strings."""
         repl_map = {
             "degC": "$^o$C",
