@@ -24,7 +24,7 @@ from esmvaltool.diag_scripts.shared import (
 )
 
 
-class HotspotDiag(object):
+class HotspotDiag:
     """Hotspot diagnostics' class.
 
     Class that reads, postprocesses and calls the plotting functions
