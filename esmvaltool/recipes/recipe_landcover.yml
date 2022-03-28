@@ -29,7 +29,7 @@ documentation:
 
 datasets:
   - {dataset: MPI-ESM-LR,       project: CMIP5, exp: rcp85,  ensemble: r1i1p1,  start_year: 2008,  end_year: 2012}
-  - {dataset: inmcm4,           project: CMIP5, exp: rcp85,  ensemble: r1i1p1,  start_year: 2008,  end_year: 2012}
+  # - {dataset: inmcm4,           project: CMIP5, exp: rcp85,  ensemble: r1i1p1,  start_year: 2008,  end_year: 2012}  # data is missing on ESGF
   - {dataset: ESACCI-LANDCOVER, project: OBS,   type: sat,   version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg, tier: 2, start_year: 2008,  end_year: 2012}
 
 preprocessors:

@@ -404,13 +404,13 @@ Observations and reformat scripts
 instructions.*
 
 * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4MIPs)
-* ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
-* GCP2018 (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_gcp2018.py)
+* ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/data/formatters/datasets/era-interim.py)
+* GCP2018 (fgco2, nbp - esmvaltool/cmorizers/data/formatters/datasets/gcp2018.py)
 * GPCP-SG (pr - obs4MIPs)
-* JMA-TRANSCOM (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_jma_transcom.py)
-* HadCRUT4 (tas - esmvaltool/cmorizers/obs/cmorize_obs_hadcrut4.ncl)
-* HadISST (sic, tos - esmvaltool/cmorizers/obs/cmorize_obs_hadisst.ncl)
-* ISCCP-FH (rsuscs, rsdscs, rsdt - esmvaltool/cmorizers/obs/cmorize_obs_isccp_fh.ncl)
+* JMA-TRANSCOM (fgco2, nbp - esmvaltool/cmorizers/data/formatters/datasets/jma_transcom.py)
+* HadCRUT4 (tas - esmvaltool/cmorizers/data/formatters/datasets/hadcrut4.ncl)
+* HadISST (sic, tos - esmvaltool/cmorizers/data/formatters/datasets/hadisst.ncl)
+* ISCCP-FH (rsuscs, rsdscs, rsdt - esmvaltool/cmorizers/data/formatters/datasets/isccp_fh.ncl)
 
 
 References
