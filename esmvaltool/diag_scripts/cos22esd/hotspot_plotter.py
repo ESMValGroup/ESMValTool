@@ -497,7 +497,8 @@ class HotspotPlot:
 
         return bound_limit
 
-    def region_to_square(self, region, dimension):
+    @staticmethod
+    def region_to_square(region, dimension):
         """Definition of the region polygon."""
         if dimension == "latitude":
             boundaries = [
