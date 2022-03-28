@@ -562,7 +562,8 @@ class HotspotPlot:
             )
         return proj, projection, path_ext, plotextend
 
-    def sorted_dim(self, cube, coord="longitude"):
+    @staticmethod
+    def sorted_dim(cube, coord="longitude"):
         """Sorts the cube data according to the longitude coordinate values.
 
         example: 180/-180 --> -180/180
