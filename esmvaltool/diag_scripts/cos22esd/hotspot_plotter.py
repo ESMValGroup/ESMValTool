@@ -575,12 +575,7 @@ class HotspotPlot:
         index[dim] = np.argsort(coord_to_sort.points)
         cube = cube[tuple(index)]
         coord = cube.coord(coord)
-        coord_dims = cube.coord_dims(coord)
-        # Create a new coordinate which is a DimCoord.
-        dim_coord = iris.coords.DimCoord.from_coord(coord)
-        # Remove the AuxCoord and add the DimCoord.
-        cube.remove_coord(coord_to_sort)
-        cube.add_dim_coord(dim_coord, coord_dims)
+        iris.util.promote_aux_coord_to_dim_coord(cube, "longitude")
         return cube
 
     def regrid_longitude_coord(self, cube):
