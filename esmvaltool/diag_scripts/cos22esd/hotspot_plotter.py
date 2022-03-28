@@ -22,7 +22,7 @@ from esmvaltool.diag_scripts.shared import (
 )
 
 
-class HotspotPlot(object):
+class HotspotPlot:
     """class that plots the results."""
 
     def __init__(self, config):
