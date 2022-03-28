@@ -27,8 +27,8 @@ historical_settings: &historical_settings
   end_year: 2014
   preprocessor: global_mean
 
-ssp370_settings: &ssp370_settings
-  exp: ssp370
+ssp585_settings: &ssp585_settings
+  exp: ssp585
   start_year: 2015
   end_year: 2100
   preprocessor: global_mean
@@ -38,45 +38,45 @@ diagnostics:
     description: Mean monthly variables
 
     variables:
-      tasmax_370:
+      tasmax_585:
         short_name: tasmax
-        <<: *ssp370_settings
+        <<: *ssp585_settings
 
-      tasmin_370:
+      tasmin_585:
         short_name: tasmin
-        <<: *ssp370_settings
+        <<: *ssp585_settings
 
-      tas_370:
+      tas_585:
         short_name: tas
-        <<: *ssp370_settings
+        <<: *ssp585_settings
 
-      hurs_370:
+      hurs_585:
         short_name: hurs
-        <<: *ssp370_settings
+        <<: *ssp585_settings
 
-      huss_370:
+      huss_585:
         short_name: huss
-        <<: *ssp370_settings
+        <<: *ssp585_settings
 
-      pr_370:
+      pr_585:
         short_name: pr
-        <<: *ssp370_settings
+        <<: *ssp585_settings
 
-      sfcWind_370:
+      sfcWind_585:
         short_name: sfcWind
-        <<: *ssp370_settings
+        <<: *ssp585_settings
 
-      ps_370:
+      ps_585:
         short_name: ps
-        <<: *ssp370_settings
+        <<: *ssp585_settings
 
-      rsds_370:
+      rsds_585:
         short_name: rsds
-        <<: *ssp370_settings
+        <<: *ssp585_settings
 
-      rlds_370:
+      rlds_585:
         short_name: rlds
-        <<: *ssp370_settings
+        <<: *ssp585_settings
 
       hist_tasmax:
         short_name: tasmax

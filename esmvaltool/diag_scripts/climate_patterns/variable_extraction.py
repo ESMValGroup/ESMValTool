@@ -122,34 +122,8 @@ def calculate_diurnal_range(hist_list, scenario_list):
     return derived_variable_hist, derived_variable_scenario
 
 
-def main(cfg):
-    # gets a description of the preprocessed data that we will use as input.
-    input_data = cfg["input_data"].values()
-    hist_list = iris.load([])
-    scenario_list = iris.load([])
-
-    for dataset in input_data:
-        input_file = dataset["filename"]
-
-        # manipulating single cube
-        cube_initial = compute_diagnostic(input_file)
-        cube_prepped = prepare_cube(cube_initial, dataset)
-
-        # renaming cubes
-        cube_renamed = rename_variables(cube_prepped)
-
-        # appending
-        if dataset["exp"] == "historical":
-            hist_list.append(cube_renamed)
-        elif dataset["exp"] == "ssp370":
-            scenario_list.append(cube_renamed)
-        else:
-            pass
-
-    # calculate diurnal temperature range cube
-    derived_variable_hist, derived_variable_scenario = calculate_diurnal_range(
-        hist_list, scenario_list)
-
+def append_diurnal_range(derived_variable_hist, derived_variable_scenario,
+                         hist_list, scenario_list):
     # creating cube list without tasmax or tasmin
     # (since we just wanted the diurnal range)
     hist_list_final = iris.load([])
@@ -166,7 +140,10 @@ def main(cfg):
     hist_list_final.append(derived_variable_hist)
     scen_list_final.append(derived_variable_scenario)
 
-    # calculate anomaly
+    return hist_list_final, scen_list_final
+
+
+def calculate_anomaly(hist_list_final, scen_list_final):
     anom_list_final = scen_list_final.copy()
 
     # calc the anom by subtracting the monthly climatology from
@@ -176,6 +153,45 @@ def main(cfg):
             'month_number').points - 1  # -1 because months are numbered 1..12
         anom_list_final[i].data -= hist_list_final[i][i_months].data
 
+    return anom_list_final
+
+
+def main(cfg):
+    # gets a description of the preprocessed data that we will use as input.
+    input_data = cfg["input_data"].values()
+    hist_list = iris.load([])
+    scenario_list = iris.load([])
+
+    for dataset in input_data:
+        input_file = dataset["filename"]
+
+        # preparing single cube
+        cube_initial = compute_diagnostic(input_file)
+        cube_prepped = prepare_cube(cube_initial, dataset)
+
+        # renaming cubes
+        cube_renamed = rename_variables(cube_prepped)
+
+        # appending to cube lists
+        if dataset["exp"] == "historical":
+            hist_list.append(cube_renamed)
+        elif dataset["exp"] == "ssp585":
+            scenario_list.append(cube_renamed)
+        else:
+            pass
+
+    # calculate diurnal temperature range cube
+    derived_diurnal_hist, derived_diurnal_scenario = calculate_diurnal_range(
+        hist_list, scenario_list)
+
+    # append diurnal range to lists
+    hist_list_final, scen_list_final = append_diurnal_range(
+        derived_diurnal_hist, derived_diurnal_scenario, hist_list,
+        scenario_list)
+
+    # calculate anomaly
+    anom_list_final = calculate_anomaly(hist_list_final, scen_list_final)
+
     # list of variable cube lists
     list_of_cubelists = [hist_list_final, scen_list_final, anom_list_final]
     name_list = [
@@ -184,7 +200,7 @@ def main(cfg):
     ]
 
     # saving data
-    work_path = cfg["work_dir"]
+    work_path = cfg["work_dir"] + "/"
     for i in range(len(list_of_cubelists)):
         iris.save(list_of_cubelists[i], work_path + name_list[i])
 
