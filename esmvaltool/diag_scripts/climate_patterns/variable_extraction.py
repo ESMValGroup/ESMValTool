@@ -6,6 +6,12 @@ import iris
 import iris.coord_categorisation
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
+from iris.util import equalise_attributes
+from rename_variables import (
+    rename_anom_variables,
+    rename_clim_variables,
+    rename_variables,
+)
 from variable_derivations import diurnal_temp_range
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -31,9 +37,9 @@ def plot_timeseries(list_cubelists, plot_path):
             avg_cube = gm.area_avg(cube, return_cube=True)
             fig = qplt.plot(avg_cube)
             if i == 0:
-                plt.savefig(plot_path + cube.var_name + "_hist")
+                plt.savefig(plot_path + cube.var_name + "_clim")
             if i == 1:
-                plt.savefig(plot_path + cube.var_name + "_scen")
+                plt.savefig(plot_path + cube.var_name + "_full_ts")
             if i == 2:
                 plt.savefig(plot_path + cube.var_name + "_anom")
             plt.close()
@@ -41,22 +47,22 @@ def plot_timeseries(list_cubelists, plot_path):
     return fig
 
 
-def prepare_cube(cube, dataset):
-    """Handles time extraction, aggregation and latitude extraction."""
+def climatology(cube):
+    """Handles aggregation to make climatology."""
 
     # time extraction
-    if dataset["exp"] == "historical":
-        cube_30yr = cube.extract(
-            iris.Constraint(time=lambda t: 1980 <= t.point.year <= 2010,
-                            month_number=lambda t: 1 <= t.point <= 12))
-        cube_aggregated = make_monthly_climatology(cube_30yr)
-        cube_clipped = cube_aggregated.extract(
-            iris.Constraint(latitude=lambda cell: 82.5 >= cell >= -55))
-    else:
-        # constrain latitudes to fit IMOGEN framework grid size
-        cube_clipped = cube.extract(
-            iris.Constraint(latitude=lambda cell: 82.5 >= cell >= -55))
 
+    cube_30yr = cube.extract(
+        iris.Constraint(time=lambda t: 1980 <= t.point.year <= 2010,
+                        month_number=lambda t: 1 <= t.point <= 12))
+    cube_aggregated = make_monthly_climatology(cube_30yr)
+
+    return cube_aggregated
+
+
+def constrain_latitude(cube):
+    cube_clipped = cube.extract(
+        iris.Constraint(latitude=lambda cell: 82.5 >= cell >= -55))
     return cube_clipped
 
 
@@ -70,133 +76,139 @@ def make_monthly_climatology(cube):
     return cube_month_climatol
 
 
-def rename_variables(cube):
-    # rename variables to fit in JULES framework
-    if cube.var_name == "tas":
-        cube.rename("t1p5m_clim")
-        cube.var_name = "t1p5m_clim"
-    if cube.var_name == "hurs":
-        cube.rename("rh1p5m_clim")
-        cube.var_name = "rh1p5m_clim"
-    if cube.var_name == "huss":
-        cube.rename("q1p5m_clim")
-        cube.var_name = "q1p5m_clim"
-    if cube.var_name == "pr":
-        cube.rename("precip_clim")
-        cube.var_name = "precip_clim"
-    if cube.var_name == "sfcWind":
-        cube.rename("wind_clim")
-        cube.var_name = "wind_clim"
-    if cube.var_name == "ps":
-        cube.rename("pstar_clim")
-        cube.var_name = "pstar_clim"
-    if cube.var_name == "rsds":
-        cube.rename("swdown_clim")
-        cube.var_name = "swdown_clim"
-    if cube.var_name == "rlds":
-        cube.rename("lwdown_clim")
-        cube.var_name = "lwdown_clim"
-
-    return cube
-
-
-def calculate_diurnal_range(hist_list, scenario_list):
+def calculate_diurnal_range(clim_list, hist_list, ssp_list):
+    temp_range_list_clim = iris.load([])
     temp_range_list_hist = iris.load([])
-    temp_range_list_scen = iris.load([])
-    comb_list = [hist_list, scenario_list]
+    temp_range_list_ssp = iris.load([])
+    comb_list = [clim_list, hist_list, ssp_list]
 
     for i in range(len(comb_list)):
         for cube in comb_list[i]:
             if (cube.var_name == "tasmax"
-                    or cube.var_name == "tasmin") and cube in hist_list:
+                    or cube.var_name == "tasmin") and cube in clim_list:
+                temp_range_list_clim.append(cube)
+            elif (cube.var_name == "tasmax"
+                  or cube.var_name == "tasmin") and cube in hist_list:
                 temp_range_list_hist.append(cube)
             elif (cube.var_name == "tasmax"
-                  or cube.var_name == "tasmin") and cube in scenario_list:
-                temp_range_list_scen.append(cube)
+                  or cube.var_name == "tasmin") and cube in ssp_list:
+                temp_range_list_ssp.append(cube)
             else:
                 pass
 
+    derived_variable_clim = diurnal_temp_range(temp_range_list_clim)
     derived_variable_hist = diurnal_temp_range(temp_range_list_hist)
-    derived_variable_scenario = diurnal_temp_range(temp_range_list_scen)
+    derived_variable_ssp = diurnal_temp_range(temp_range_list_ssp)
 
-    return derived_variable_hist, derived_variable_scenario
+    return derived_variable_clim, derived_variable_hist, derived_variable_ssp
 
 
-def append_diurnal_range(derived_variable_hist, derived_variable_scenario,
-                         hist_list, scenario_list):
+def append_diurnal_range(derived_variable_clim, derived_variable_hist,
+                         derived_variable_ssp, clim_list, hist_list, ssp_list):
     # creating cube list without tasmax or tasmin
     # (since we just wanted the diurnal range)
+    clim_list_final = iris.load([])
+    ssp_list_final = iris.load([])
     hist_list_final = iris.load([])
-    scen_list_final = iris.load([])
+
+    for cube in clim_list:
+        if not (cube.var_name == "tasmax" or cube.var_name == "tasmin"):
+            clim_list_final.append(cube)
 
     for cube in hist_list:
         if not (cube.var_name == "tasmax" or cube.var_name == "tasmin"):
             hist_list_final.append(cube)
 
-    for cube in scenario_list:
+    for cube in ssp_list:
         if not (cube.var_name == "tasmax" or cube.var_name == "tasmin"):
-            scen_list_final.append(cube)
+            ssp_list_final.append(cube)
 
+    clim_list_final.append(derived_variable_clim)
     hist_list_final.append(derived_variable_hist)
-    scen_list_final.append(derived_variable_scenario)
+    ssp_list_final.append(derived_variable_ssp)
 
-    return hist_list_final, scen_list_final
+    return clim_list_final, hist_list_final, ssp_list_final
 
 
-def calculate_anomaly(hist_list_final, scen_list_final):
-    anom_list_final = scen_list_final.copy()
+def calculate_anomaly(clim_list_final, ssp_list_final):
+    anom_list_final = ssp_list_final.copy()
 
     # calc the anom by subtracting the monthly climatology from
     # the time series
-    for i in range(len(scen_list_final)):
+    for i in range(len(ssp_list_final)):
         i_months = anom_list_final[i].coord(
             'month_number').points - 1  # -1 because months are numbered 1..12
-        anom_list_final[i].data -= hist_list_final[i][i_months].data
+        anom_list_final[i].data -= clim_list_final[i][i_months].data
 
-    return anom_list_final
+    anom_list_renamed = iris.load([])
+    for cube in anom_list_final:
+        anom_list_renamed.append(rename_anom_variables(cube))
+
+    return anom_list_renamed
+
+
+def concatenate_variables(hist_list_final, ssp_list_final):
+    comb_list_final = iris.load([])
+
+    for i in range(len(hist_list_final)):
+        if hist_list_final[i].var_name == ssp_list_final[i].var_name:
+            comb_list_initial = iris.load([])
+            comb_list_initial.append(hist_list_final[i])
+            comb_list_initial.append(ssp_list_final[i])
+            _ = equalise_attributes(comb_list_initial)
+            comb_list_final.append(comb_list_initial.concatenate_cube())
+
+    return comb_list_final
 
 
 def main(cfg):
     # gets a description of the preprocessed data that we will use as input.
     input_data = cfg["input_data"].values()
+
+    clim_list = iris.load([])
     hist_list = iris.load([])
-    scenario_list = iris.load([])
+    ssp_list = iris.load([])
 
     for dataset in input_data:
         input_file = dataset["filename"]
 
         # preparing single cube
         cube_initial = compute_diagnostic(input_file)
-        cube_prepped = prepare_cube(cube_initial, dataset)
+        cube_constrained = constrain_latitude(cube_initial)
 
-        # renaming cubes
-        cube_renamed = rename_variables(cube_prepped)
-
-        # appending to cube lists
         if dataset["exp"] == "historical":
-            hist_list.append(cube_renamed)
-        elif dataset["exp"] == "ssp585":
-            scenario_list.append(cube_renamed)
+            hist_renamed = rename_variables(cube_constrained)
+            hist_list.append(hist_renamed)
+            clim_cube = climatology(cube_constrained)
+            clim_renamed = rename_clim_variables(clim_cube)
+            clim_list.append(clim_renamed)
+
+        if dataset["exp"] == "ssp585":
+            ssp_renamed = rename_variables(cube_constrained)
+            ssp_list.append(ssp_renamed)
         else:
             pass
 
     # calculate diurnal temperature range cube
-    derived_diurnal_hist, derived_diurnal_scenario = calculate_diurnal_range(
-        hist_list, scenario_list)
+    (derived_diurnal_clim, derived_diurnal_hist,
+     derived_diurnal_ssp) = calculate_diurnal_range(clim_list, hist_list,
+                                                    ssp_list)
 
     # append diurnal range to lists
-    hist_list_final, scen_list_final = append_diurnal_range(
-        derived_diurnal_hist, derived_diurnal_scenario, hist_list,
-        scenario_list)
+    clim_list_final, hist_list_final, ssp_list_final = append_diurnal_range(
+        derived_diurnal_clim, derived_diurnal_hist, derived_diurnal_ssp,
+        clim_list, hist_list, ssp_list)
 
-    # calculate anomaly
-    anom_list_final = calculate_anomaly(hist_list_final, scen_list_final)
+    # concatenating historical and scenario variables
+    comb_list_final = concatenate_variables(hist_list_final, ssp_list_final)
+
+    # calculate anomaly over historical + ssp timeseries
+    anom_list_final = calculate_anomaly(clim_list_final, comb_list_final)
 
     # list of variable cube lists
-    list_of_cubelists = [hist_list_final, scen_list_final, anom_list_final]
+    list_of_cubelists = [clim_list_final, comb_list_final, anom_list_final]
     name_list = [
-        "_historical_variables.nc", "_scenario_variables.nc",
-        "_anomaly_variables.nc"
+        "climatology_variables.nc", "variables.nc", "anomaly_variables.nc"
     ]
 
     # saving data
