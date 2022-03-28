@@ -96,7 +96,8 @@ class HotspotDiag:
 
         return regional_cube
 
-    def extract_annual_or_season(self, cube, season):
+    @staticmethod
+    def extract_annual_or_season(cube, season):
         """Compute the statistics of the cube.
 
         Either annual, or extract a season (djf, mam, jja or son).
