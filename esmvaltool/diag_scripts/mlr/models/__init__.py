@@ -3284,12 +3284,12 @@ class MLRModel():
         io.iris_save(cube, netcdf_path)
         record = {
             'authors': ['schlund_manuel'],
-            'plot_file': plot_path,
             'references': ['schlund20jgr'],
             **additional_info,
         }
         with ProvenanceLogger(self._cfg) as provenance_logger:
             provenance_logger.log(netcdf_path, record)
+            provenance_logger.log(plot_path, record)
 
     @staticmethod
     def _convert_units_in_cube(cube, new_units, power=None, text=None):

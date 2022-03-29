@@ -1,0 +1,129 @@
+# ESMValTool
+# recipe_radiation_budget.yml
+---
+documentation:
+  title: Radiation Budget
+  description:
+    This diagnostic analyses the radiation budget by separating top-of-atmosphere
+    fluxes into clear-sky and cloud forcing components, and surface fluxes into
+    downwelling and upwelling components. Model predictions are compared against
+    three observational estimates, one of which (Stephens et al. 2012) includes
+    uncertainty estimates. When the black error bars overlap the zero line, the
+    model is consistent with observations according to Stephens et al. (2012).
+  authors:
+    - lillis_jon
+    - hogan_emma
+
+datasets:
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f3, grid: gn, start_year: 1993, end_year: 2002}
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical,
+     ensemble: r5i1p1f3, grid: gn, start_year: 1993, end_year: 2002}
+
+preprocessors:
+  single_value:
+    climate_statistics:
+      operator: mean
+      period: full
+    area_statistics:
+      operator: mean
+  seasonal:
+    climate_statistics:
+      operator: mean
+      period: seasonal
+      seasons: ['DJF', 'MAM', 'JJA', 'SON']
+    area_statistics:
+      operator: mean
+
+diagnostics:
+  single_value_radiation_budget:
+    description: Radiation budget for HadGEM3 vs UKESM1.
+    variables:
+      rss:
+        mip: Emon
+        preprocessor: single_value
+      rsdt:
+        mip: Amon
+        preprocessor: single_value
+      rsut:
+        mip: Amon
+        preprocessor: single_value
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+             start_year: 2000, end_year: 2010, tier: 1}
+      rsutcs:
+        mip: Amon
+        preprocessor: single_value
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+             start_year: 2000, end_year: 2010, tier: 1}
+      rsds:
+        mip: Amon
+        preprocessor: single_value
+      rls:
+        mip: Emon
+        preprocessor: single_value
+      rlut:
+        mip: Amon
+        preprocessor: single_value
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+             start_year: 2000, end_year: 2010, tier: 1}
+      rlutcs:
+        mip: Amon
+        preprocessor: single_value
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+             start_year: 2000, end_year: 2010, tier: 1}
+      rlds:
+        mip: Amon
+        preprocessor: single_value
+      hfss:
+        mip: Amon
+        preprocessor: single_value
+      hfls:
+        mip: Amon
+        preprocessor: single_value
+    scripts:
+      radiation_budget:
+        script: radiation_budget/radiation_budget.py
+
+  seasonal_radiation_budget:
+    description: Seasonal radiation budget for HadGEM3 vs UKESM1.
+    variables:
+      rss:
+        mip: Emon
+        preprocessor: seasonal
+      rsdt:
+        mip: Amon
+        preprocessor: seasonal
+      rsut:
+        mip: Amon
+        preprocessor: seasonal
+      rsutcs:
+        mip: Amon
+        preprocessor: seasonal
+      rsds:
+        mip: Amon
+        preprocessor: seasonal
+      rls:
+        mip: Emon
+        preprocessor: seasonal
+      rlut:
+        mip: Amon
+        preprocessor: seasonal
+      rlutcs:
+        mip: Amon
+        preprocessor: seasonal
+      rlds:
+        mip: Amon
+        preprocessor: seasonal
+      hfss:
+        mip: Amon
+        preprocessor: seasonal
+      hfls:
+        mip: Amon
+        preprocessor: seasonal
+    scripts:
+      radiation_budget:
+        script: radiation_budget/seasonal_radiation_budget.py

@@ -1,0 +1,225 @@
+# recipe_
+---
+documentation:
+  title: Diagnositcs for ESACCI data, which
+         Evaluate water vapor short wave radiance absorption schemes,
+         water vapour profiles,
+         and climatologies at the tropopause
+  description: |
+    Recipe for ESACCI water vapour data
+
+  authors:
+    - weigel_katja
+
+  references:
+    - acknow_author
+    - deangelis15nat
+
+  projects:
+    - cmug
+
+preprocessors:
+  pptrop:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+  spatial_mean:
+    area_statistics:
+      operator: mean
+  tropical_ocean:
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: linear
+    extract_region:
+      start_latitude: -30
+      end_latitude: 30
+      start_longitude: 0
+      end_longitude: 360
+
+
+diagnostics:
+  deangelisf3f4:
+    description: Diagnostic for reproducing figure 3 and 4 from
+                 DeAngelis et al., 2015 Nature.
+                 In this version HOABS data are used as a replacement for
+                 expected ESACCI water vapour data for ESA-CMUG, CDR-2.
+                 Gridded monthly time series of TCWV in units of kg/m2
+                 (corresponds to prw)
+                 that cover the global land and ocean areas with
+                 a spatial resolution of 0.05° / 0.5° for
+                 the period July 2002 to December 2017.
+    variables:
+      rsnstcs: &spatial_mean3_cmip5_r1i1p1_amon_t2ms
+        preprocessor: spatial_mean
+        project: CMIP5
+        ensemble: r1i1p1
+        mip: Amon
+        derive: true
+        force_derivation: false
+      rsnstcsnorm: &tropical_cmip5_r1i1p1_amon_t2ms
+        preprocessor: tropical_ocean
+        project: CMIP5
+        ensemble: r1i1p1
+        mip: Amon
+        derive: true
+        force_derivation: false
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, type: satellite,
+             level: L3B, version: Ed2-8, start_year: 2003,
+             end_year: 2014, tier: 1}
+      tas:
+        <<: *spatial_mean3_cmip5_r1i1p1_amon_t2ms
+        derive: false
+      prw:
+        <<: *tropical_cmip5_r1i1p1_amon_t2ms
+        derive: false
+        additional_datasets:
+          # - {dataset: ESACCI-WV, project: OBS, type: sat,
+          #    version: HOAPS-v4.0, start_year: 2001, end_year: 2012, tier: 2}
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
+             version: CDR2-L3S-05deg_fv3.1, start_year: 2003, end_year: 2014, tier: 3}
+    additional_datasets:
+      - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
+      - {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+      - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 449}
+      - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 449}
+      - {dataset: ACCESS1-3, exp: piControl, start_year: 250, end_year: 399}
+      - {dataset: ACCESS1-3, exp: abrupt4xCO2, start_year: 250, end_year: 399}
+      - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
+      - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM5, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      - {dataset: GFDL-ESM2G, exp: piControl, start_year: 1, end_year: 150}
+      - {dataset: GFDL-ESM2G, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+      - {dataset: GFDL-ESM2M, exp: piControl, start_year: 1, end_year: 150}
+      - {dataset: GFDL-ESM2M, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+      - {dataset: GISS-E2-R, exp: piControl, start_year: 3331, end_year: 3480}
+      - {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1850,
+         end_year: 1999}
+      - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
+      - {dataset: inmcm4, exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
+      # IPSL-CM5A-MR only 140 years available
+      - {dataset: IPSL-CM5A-MR, exp: piControl, start_year: 1850,
+         end_year: 1989}
+      - {dataset: IPSL-CM5A-MR, exp: abrupt4xCO2, start_year: 1850,
+         end_year: 1989}
+      - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850,
+         end_year: 1999}
+      - {dataset: IPSL-CM5B-LR, exp: abrupt4xCO2, start_year: 1850,
+         end_year: 1999}
+      - {dataset: MIROC-ESM, exp: piControl, start_year: 1800, end_year: 1949}
+      - {dataset: MIROC-ESM, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+      - {dataset: MIROC5, exp: piControl, start_year: 2100, end_year: 2249}
+      - {dataset: MIROC5, exp: abrupt4xCO2, start_year: 2100, end_year: 2249}
+      - {dataset: MPI-ESM-LR, exp: piControl, start_year: 2015, end_year: 2164}
+      - {dataset: MPI-ESM-LR, exp: abrupt4xCO2, start_year: 1850,
+         end_year: 1999}
+      - {dataset: MPI-ESM-MR, exp: piControl, start_year: 2015, end_year: 2164}
+      - {dataset: MPI-ESM-MR, exp: abrupt4xCO2, start_year: 1850,
+         end_year: 1999}
+      - {dataset: MRI-CGCM3, exp: piControl, start_year: 1851, end_year: 2000}
+      - {dataset: MRI-CGCM3, exp: abrupt4xCO2, start_year: 1851,
+         end_year: 2000}
+      - {dataset: NorESM1-M, exp: piControl, start_year: 700, end_year: 849}
+      - {dataset: NorESM1-M, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+
+    scripts:
+      deangelisf3f4:
+        script: deangelis15nat/deangelisf3f4.py
+
+  tropo:
+    description: Plot given variable at tropopause height,
+                 here Specific Humidity (hus) is used.
+                 This will be calculated from the
+                 ESACCI water vapour data CDR-4, which are planed to consist of
+                 three-dimensional vertically resolved
+                 monthly mean water vapour data (in ppmv) with
+                 spatial resolution of 100 km,
+                 covering the troposphere and lower stratosphere.
+                 The envisaged coverage is 2010-2014. The calculation of hus
+                 from water vapour in ppmv will be part of the cmorizer.
+                 Here, ERA-Interim data are used.
+    variables:
+      hus:
+        preprocessor: pptrop
+        reference_dataset: MIROC6
+        mip: Amon
+        field: T3M
+        start_year: 2010
+        end_year: 2014
+      ta:
+        preprocessor: pptrop
+        reference_dataset: MIROC6
+        mip: Amon
+        field: T3M
+        start_year: 2010
+        end_year: 2014
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
+         tier: 3}
+      - {dataset: MIROC6, institute: MIROC,
+         project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL,
+         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
+         grid: gr}
+      - {dataset: BCC-CSM2-MR, institute: BCC, project: CMIP6,
+         exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MRI-ESM2-0, institute: MRI, project: CMIP6,
+         exp: historical, ensemble: r1i1p1f1, grid: gn}
+
+
+    scripts:
+      hus_cmug:
+        script: cmug_h2o/diag_tropopause.py
+
+
+  tropozonal:
+    description: Plot zonal mean for given variable at for
+                 all pressure levels between 250 and 1hPa and
+                 at tropopause height.
+                 Here Specific Humidity (hus) is used.
+                 This will be calculated from the
+                 ESACCI water vapour data CDR-3, which are planed to contain
+                 the vertically resolved water vapour ECV
+                 in units of ppmv (volume mixing ratio) and will be provided as
+                 zonal monthly means on the SPARC Data Initiative
+                 latitude/pressure level grid
+                 (SPARC, 2017; Hegglin et al., 2013).
+                 It covers the vertical range between 250 hPa and 1 hPa,
+                 and the time period 1985 to the end of 2019.
+                 The calculation of hus from water vapour in ppmv will be
+                 part of the cmorizer. Here, ERA-Interim  data are used.
+    variables:
+      hus:
+        preprocessor: pptrop
+        reference_dataset: MIROC6
+        mip: Amon
+        field: T3M
+        start_year: 1985
+        end_year: 2014
+      ta:
+        preprocessor: pptrop
+        reference_dataset: MIROC6
+        mip: Amon
+        field: T3M
+        start_year: 1985
+        end_year: 2014
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
+         tier: 3}
+      - {dataset: MIROC6, institute: MIROC,
+         project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL,
+         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
+         grid: gr}
+      - {dataset: BCC-CSM2-MR, institute: BCC, project: CMIP6,
+         exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MRI-ESM2-0, institute: MRI, project: CMIP6,
+         exp: historical, ensemble: r1i1p1f1, grid: gn}
+
+
+    scripts:
+      hus_cmug:
+        script: cmug_h2o/diag_tropopause_zonalmean.py

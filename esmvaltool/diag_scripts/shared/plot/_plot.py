@@ -126,20 +126,18 @@ def get_dataset_style(dataset, style_file=None):
 
 
 def _check_cube(cube):
-    """Check if cube can be used for global plotting."""
+    """Check if cube is 2D and contains latitude and longitude."""
+    if cube.ndim != 2:
+        raise ValueError(
+            f"Expected 2D cube, got {cube.ndim:d}D cube: "
+            f"{cube.summary(shorten=True)}")
     required_coords = ['latitude', 'longitude']
-    coords = [coord.name() for coord in cube.coords(dim_coords=True)]
     for coord_name in required_coords:
-        if coord_name not in coords:
+        if not cube.coords(coord_name, dim_coords=True):
             raise iris.exceptions.CoordinateNotFoundError(
                 f"Cube {cube.summary(shorten=True)} does not contain "
-                f"necessary coordinate '{coord_name}' for plotting global "
-                f"filled contour plot")
-        coords.remove(coord_name)
-    if coords:
-        logger.debug("Collapsing coordinates %s by calculating mean", coords)
-        cube = cube.collapsed(coords, iris.analysis.MEAN)
-    return cube
+                f"necessary dimensional coordinate '{coord_name}' for "
+                f"plotting global map plot")
 
 
 def _truncate_colormap(cmap_name, minval=0.0, maxval=1.0, n_colors=100):
@@ -176,8 +174,8 @@ def global_contourf(cube,
 
     Note
     ----
-    This is only possible if the cube has the coordinates `latitude` and
-    `longitude`. A mean is performed over excessive coordinates.
+    This is only possible if the cube is 2D with dimensional coordinates
+    `latitude` and `longitude`.
 
     Parameters
     ----------
@@ -204,14 +202,16 @@ def global_contourf(cube,
     Raises
     ------
     iris.exceptions.CoordinateNotFoundError
-        :class:`iris.cube.Cube` does not contain necessary coordinates
-        ``'latitude'`` and ``'longitude'``.
+        Input :class:`iris.cube.Cube` does not contain the necessary
+        dimensional coordinates ``'latitude'`` and ``'longitude'``.
+    ValueError
+        Input :class:`iris.cube.Cube` is not 2D.
 
     """
     kwargs = deepcopy(kwargs)
     logger.debug("Plotting global filled contour plot for cube %s",
                  cube.summary(shorten=True))
-    cube = _check_cube(cube)
+    _check_cube(cube)
 
     # Adapt colormap if necessary
     if cbar_center is not None:
@@ -261,8 +261,8 @@ def global_pcolormesh(cube,
 
     Note
     ----
-    This is only possible if the cube has the coordinates `latitude` and
-    `longitude`. A mean is performed over excessive coordinates.
+    This is only possible if the cube is 2D with dimensional coordinates
+    `latitude` and `longitude`.
 
     Parameters
     ----------
@@ -286,14 +286,16 @@ def global_pcolormesh(cube,
     Raises
     ------
     iris.exceptions.CoordinateNotFoundError
-        :class:`iris.cube.Cube` does not contain necessary coordinates
-        ``'latitude'`` and ``'longitude'``.
+        Input :class:`iris.cube.Cube` does not contain the necessary
+        dimensional coordinates ``'latitude'`` and ``'longitude'``.
+    ValueError
+        Input :class:`iris.cube.Cube` is not 2D.
 
     """
     kwargs = deepcopy(kwargs)
     logger.debug("Plotting global filled contour plot for cube %s",
                  cube.summary(shorten=True))
-    cube = _check_cube(cube)
+    _check_cube(cube)
 
     # Adapt colormap if necessary
     if cbar_center is not None:

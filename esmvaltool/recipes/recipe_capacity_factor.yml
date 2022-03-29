@@ -2,6 +2,9 @@
 # recipe_capacity_factor.yml
 ---
 documentation:
+  title: |
+     Diurnal Temperature Variation (DTR) Indicator and Wind Capacity Factor
+
   description: |
      Diurnal Temperature Variation (DTR) Indicator and Wind Capacity Factor
 
@@ -25,7 +28,7 @@ preprocessors:
   preproc:
     regrid:
       target_grid: IPSL-CM5A-MR
-      scheme: linear 
+      scheme: linear
     extract_region:
       start_longitude: -20
       end_longitude: 60

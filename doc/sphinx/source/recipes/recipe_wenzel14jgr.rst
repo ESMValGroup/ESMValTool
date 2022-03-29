@@ -26,7 +26,7 @@ User settings
 
 User setting files (cfg files) are stored in nml/cfg_carbon/
 
-#. carbon_tsline 
+#. carbon_tsline
 
    *Required Settings (scripts)*
 
@@ -56,14 +56,14 @@ User setting files (cfg files) are stored in nml/cfg_carbon/
 
    * reference_dataset: name of reference data set
 
-#. carbon_gammaHist.ncl 
+#. carbon_gammaHist.ncl
 
    *Required Settings (scripts)*
- 
+
    * start_year: first year (time range)
    * end_year: last year (time range)
    * plot_units: units to appear on Figure
-   * ec_anom: calculates anomalies with respect to the first 10-year average (anom) 
+   * ec_anom: calculates anomalies with respect to the first 10-year average (anom)
    * scatter_log: set logarithmic axes in scatterplot.ncl
    * styleset: Plot style
 
@@ -99,7 +99,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* GCP: Global Carbon Budget including land (nbp) and ocean (fgco2) carbon fluxes
+* GCP2018: Global Carbon Budget including land (nbp) and ocean (fgco2) carbon fluxes
 * NCEP: National Centers for Environmental Prediction reanalysis data for near surface temperature
 
 
@@ -114,16 +114,16 @@ Example plots
 -------------
 
 .. figure:: /recipes/figures/wenzel14jgr/tas_Global_CMIP5_1pctCO2_anom__1-1999.png
-   :width: 10 cm 
+   :width: 10 cm
    :align: center
-   
+
    Time series of tropical (30S to 30N) mean near surface temperature (tas) change between year 30 and year 110 for the CMIP5 models simulated with prescribed CO2 (1%/yr CO2 increase) coupled simulation (1pctCO2).
-   
-   
+
+
 .. figure:: /recipes/figures/wenzel14jgr/corr_tas-nbp_anom_1960-2005.png
-   :width: 10 cm 
+   :width: 10 cm
    :align: center
-   
+
    Correlations between the interannual variability of global co2flux (nbp+fgco2) and tropical temperature for the individual CMIP5 models using esmHistorical simulations, and for observations.
 
 
@@ -132,10 +132,10 @@ Example plots
    :align: center
 
    Carbon cycle-climate feedback of tropical land carbon vs. the sensitivity of co2flux to interannual temperature variability in the tropics (30S to 30N). The red line shows the linear best fit of the regression together with the prediction error (orange shading) and the gray shading shows the observed range.
-      
-   
+
+
 .. figure:: /recipes/figures/wenzel14jgr/constr_tas-nbp_30-1960.000002.png
    :scale: 30 %
    :align: center
-   
+
    Probability Density Functions for the pure CMIP5 ensemble (black dashed) and after applying the observed constraint to the models (red solid)

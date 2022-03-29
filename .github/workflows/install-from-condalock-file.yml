@@ -1,0 +1,101 @@
+# Install esmvaltool from a conda lock file
+# To build a conda lock file install conda-lock first then
+# run conda-lock lock --platform linux-64 -f environment.yml --mamba
+# (mamba activated for speed). Change platform for osx-64 or win-64.
+# Env creation then happens as per normal use with
+# conda create --name esmvaltool-fromlock --file conda-linux-64.lock
+# note that pip and conda are NOT installed.
+
+name: Conda-lock Install
+on:
+  push:
+    branches:
+      - main
+  #     - condalock-update
+  # run the test only if the PR is to main
+  # turn it on if required
+  #pull_request:
+  #  branches:
+  #  - main
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  linux:
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+      fail-fast: false
+    name: Linux Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: esmvaltool-fromlock
+          python-version: ${{ matrix.python-version }}
+          miniconda-version: "latest"
+          channels: conda-forge
+      - shell: bash -l {0}
+        run: mkdir -p source_install_linux_artifacts_python_${{ matrix.python-version }}
+      - shell: bash -l {0}
+        run: conda --version 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+      - shell: bash -l {0}
+        run: which python
+      - shell: bash -l {0}
+        run: python -V 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - shell: bash -l {0}
+        run: conda create --name esmvaltool-fromlock --file conda-linux-64.lock
+      - shell: bash -l {0}
+        run: which python
+      - shell: bash -l {0}
+        run: pip --version
+      - shell: bash -l {0}
+        run: pip install -e .[develop]
+      - shell: bash -l {0}
+        run: esmvaltool --help
+      - shell: bash -l {0}
+        run: esmvaltool version 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
+      - shell: bash -l {0}
+        run: pytest -n 2 -m "not installation"
+      - name: Upload artifacts
+        if: ${{ always() }}  # upload artifacts even if fail
+        uses: actions/upload-artifact@v2
+        with:
+          name: Source_Install_Linux_python_${{ matrix.python-version }}
+          path: source_install_linux_artifacts_python_${{ matrix.python-version }}
+
+#  osx:
+#    runs-on: "macos-latest"
+#    strategy:
+#      matrix:
+#        python-version: ["3.8", "3.9", "3.10"]
+#      fail-fast: false
+#    name: OSX Python ${{ matrix.python-version }}
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: conda-incubator/setup-miniconda@v2
+#        with:
+#          activate-environment: esmvaltool
+#          environment-file: environment.yml
+#          python-version: ${{ matrix.python-version }}
+#          miniconda-version: "latest"
+#          channels: conda-forge
+#      - shell: bash -l {0}
+#        run: mkdir -p source_install_osx_artifacts_python_${{ matrix.python-version }}
+#      - shell: bash -l {0}
+#        run: conda --version 2>&1 | tee source_install_osx_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+#      - shell: bash -l {0}
+#        run: python -V 2>&1 | tee source_install_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
+#      - shell: bash -l {0}
+#        run: pip install -e .[develop] 2>&1 | tee source_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
+#      - shell: bash -l {0}
+#        run: esmvaltool --help
+#      - shell: bash -l {0}
+#        run: esmvaltool version 2>&1 | tee source_install_osx_artifacts_python_${{ matrix.python-version }}/version.txt
+#      - name: Upload artifacts
+#        if: ${{ always() }}  # upload artifacts even if fail
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: Source_Install_OSX_python_${{ matrix.python-version }}
+#          path: source_install_osx_artifacts_python_${{ matrix.python-version }}

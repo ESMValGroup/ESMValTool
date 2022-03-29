@@ -1,0 +1,358 @@
+# ESMValTool
+---
+documentation:
+  title: Model Monitoring
+  description: |
+    This a recipe to monitor experiments by automatizing the creation of plots
+    from raw preprocessor output.
+  authors:
+    - vegas-regidor_javier
+
+
+datasets:
+  - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
+
+preprocessors:
+  timeseries_regular:
+    area_statistics:
+      operator: mean
+      fx_variables:
+        areacella:
+
+  climatology:
+    climate_statistics:
+      period: month
+
+  climatology_pr:
+    climate_statistics:
+      period: month
+    convert_units:
+      units: kg m-2 day-1
+
+  climatology_500hPa:
+    extract_levels:
+      levels: 50000
+      scheme: linear
+      coordinate: air_pressure
+    climate_statistics:
+      period: month
+
+  climatology_200hPa:
+    extract_levels:
+      levels: 20000
+      scheme: linear
+      coordinate: air_pressure
+    climate_statistics:
+      period: month
+
+  nao_djf:
+    extract_region:
+      start_longitude: -90.
+      end_longitude: 60.
+      start_latitude: 20.
+      end_latitude: 87.5
+    extract_season:
+      season: djf
+    seasonal_statistics:
+      operator: mean
+
+  sam_jja:
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -90.
+      end_latitude: -50
+    extract_season:
+      season: djf
+    seasonal_statistics:
+      operator: mean
+
+  nino34: &index
+    extract_region:
+      start_longitude: -170.
+      end_longitude: -120
+      start_latitude: -5.
+      end_latitude: 5.
+    mask_landsea:
+      mask_out: land
+    area_statistics:
+      operator: mean
+      fx_variables:
+        areacello:
+
+  nino3:
+    <<: *index
+    extract_region:
+      start_longitude: -150.
+      end_longitude: -90
+      start_latitude: -5.
+      end_latitude: 5.
+
+  mlotstnorth:
+    <<: *index
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360
+      start_latitude: 50.
+      end_latitude: 90.
+
+  mlotstsouth:
+    <<: *index
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360
+      start_latitude: -90.
+      end_latitude: -40.
+
+  clim_aso:
+    extract_season:
+      season: son
+    climate_statistics:
+      period: month
+
+  clim_fma:
+    extract_season:
+      season: mam
+    climate_statistics:
+      period: month
+
+diagnostics:
+  plot_timeseries_annual_cycle:
+    description: "Plot time series and annualcycles"
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: timeseries_regular
+        grid: gr
+    scripts:
+      plot: &plot_default
+        script: monitor/monitor.py
+        # plot_folder: ~/plots/{expid}/{modeling_realm}/{real_name}
+        # cartopy_data_dir: /esarchive/scratch/Earth/jvegas/cartopy
+        plots:
+          timeseries: {}
+          annual_cycle: {}
+
+  plot_timeseries:
+    description: "Plot time series"
+    variables:
+      nino3:
+        plot_name: 'Niño 3 index'
+        short_name: tos
+        mip: Omon
+        preprocessor: nino3
+        grid: gn
+      nino34:
+        plot_name: 'Niño 3.4 index'
+        short_name: tos
+        mip: Omon
+        preprocessor: nino34
+        grid: gn
+    scripts:
+      plot:
+        <<: *plot_default
+        plots:
+          timeseries: {}
+
+  plot_annual_cycle:
+    description: "Plot annual cycles"
+    variables:
+      mlotst-north:
+        short_name: mlotst
+        mip: Omon
+        preprocessor: mlotstnorth
+        grid: gn
+        plot_name: Mixed layer depth average above 50ºN
+      mlotst-south:
+        short_name: mlotst
+        mip: Omon
+        preprocessor: mlotstsouth
+        grid: gn
+        plot_name: Mixed layer depth average below 40ºS
+    scripts:
+      plot:
+        <<: *plot_default
+        plots:
+          annual_cycle: {}
+
+  global_climatologies:
+    description: "Plot map data"
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: climatology
+        grid: gr
+      ps:
+        mip: Amon
+        preprocessor: climatology
+        grid: gr
+      rsns:
+        derive: true
+        mip: Amon
+        preprocessor: climatology
+        grid: gr
+      rlns:
+        derive: true
+        mip: Amon
+        preprocessor: climatology
+        grid: gr
+      hfss:
+        mip: Amon
+        preprocessor: climatology
+        grid: gr
+      hfls:
+        mip: Amon
+        preprocessor: climatology
+        grid: gr
+      vas:
+        mip: Amon
+        preprocessor: climatology
+        grid: gr
+      pr:
+        mip: Amon
+        preprocessor: climatology_pr
+        grid: gr
+      evspsbl:
+        mip: Amon
+        preprocessor: climatology
+        grid: gr
+      ua200:
+        short_name: ua
+        mip: Amon
+        preprocessor: climatology_200hPa
+        grid: gr
+        plot_name: Eastward Wind at 200 hPa
+      ua500:
+        short_name: ua
+        mip: Amon
+        preprocessor: climatology_500hPa
+        grid: gr
+        plot_name: Eastward Wind at 500 hPa
+      zg200:
+        short_name: zg
+        mip: Amon
+        preprocessor: climatology_200hPa
+        grid: gr
+        plot_name: Geopotential height at 200 hPa
+      zg500:
+        short_name: zg
+        mip: Amon
+        preprocessor: climatology_500hPa
+        grid: gr
+        plot_name: Geopotential height at 500 hPa
+      tos:
+        mip: Omon
+        preprocessor: climatology
+        grid: gn
+      zos:
+        mip: Omon
+        preprocessor: climatology
+        grid: gn
+      sos:
+        mip: Omon
+        preprocessor: climatology
+        grid: gn
+    scripts:
+      plot:
+        <<: *plot_default
+        plots:
+          clim: {}
+          seasonclim: {}
+          monclim: {}
+
+  polar_climatology:
+    description: "Plot climatologies on both poles"
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: climatology
+        grid: gr
+      pr:
+        mip: Amon
+        preprocessor: climatology_pr
+        grid: gr
+      tos:
+        mip: Omon
+        preprocessor: climatology
+        grid: gn
+      sos:
+        mip: Omon
+        grid: gn
+        preprocessor: climatology
+    scripts:
+      plot:
+        <<: *plot_default
+        plots:
+          clim:
+            maps: [arctic, antarctic]
+
+  eofs:
+    description: Compute eofs
+    variables:
+      nao:
+        short_name: psl
+        mip: Amon
+        grid: gr
+        preprocessor: nao_djf
+        eof_name: NAO as first EOF in DJF
+        pc_name: NAO index as first PC in DJF
+      sam:
+        short_name: psl
+        mip: Amon
+        grid: gr
+        preprocessor: sam_jja
+        eof_name: SAM as first EOF in JJA
+        pc_name: SAM index as first PC in JJA
+    scripts:
+      eof:
+        <<: *plot_default
+        script: monitor/compute_eofs.py
+
+  polar_monthly_climatology:
+    description: "Plot monthly climatologies on both poles"
+    variables:
+      siconc:
+        mip: SImon
+        preprocessor: climatology
+        grid: gn
+
+    scripts:
+      plot:
+        <<: *plot_default
+        plots:
+          monclim:
+            maps: [arctic, antarctic]
+            months: [3, 9]
+            rows: 1
+            columns: 2
+            plot_size: [5., 4.]
+
+  nh_clims:
+    description: "Plot climatologies"
+    variables:
+      mltost-fma:
+        short_name: mlotst
+        mip: Omon
+        preprocessor: clim_fma
+        grid: gn
+    scripts:
+      plot:
+        <<: *plot_default
+        plots:
+          clim:
+            maps: [north,]
+
+  sh_clims:
+    description: "Plot climatologies"
+    variables:
+      mltost-aso:
+        short_name: mlotst
+        mip: Omon
+        preprocessor: clim_aso
+        grid: gn
+    scripts:
+      plot:
+        <<: *plot_default
+        plots:
+          clim:
+            maps: [south,]

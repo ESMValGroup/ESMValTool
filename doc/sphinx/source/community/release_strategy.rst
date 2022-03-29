@@ -19,7 +19,7 @@ released in a timely manner even if a specific target release is missed.
 Because of limited resources, only the latest released versions of ESMValTool and ESMValCore is maintained.
 If your project requires longer maintenance or you have other concerns about
 the release strategy, please contact the ESMValTool core development team, see
-:ref:`contact`.
+:ref:`Support-and-Contact`.
 
 
 Overall Procedure
@@ -52,31 +52,7 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.4.0 (Release Manager: `Klaus Zimmermann`_)
-
-+------------+--------------------------+
-| 2021-10-04 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2021-10-11 |ESMValCore release        |
-+------------+--------------------------+
-| 2021-10-18 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2021-10-25 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.5.0 (Release Manager: `Manuel Schlund`_)
-
-+------------+--------------------------+
-| 2022-02-07 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2022-02-14 |ESMValCore release        |
-+------------+--------------------------+
-| 2022-02-21 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2022-02-28 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.6.0 (Release Manager: TBD)
+- 2.6.0 (Release Manager: `Saskia Loosveldt Tomas`_)
 
 +------------+--------------------------+
 | 2022-06-06 |ESMValCore feature freeze |
@@ -88,8 +64,48 @@ Upcoming releases
 | 2022-06-27 |ESMValTool release        |
 +------------+--------------------------+
 
+- 2.7.0 (Release Manager: TBD)
+
++------------+--------------------------+
+| 2022-10-03 |ESMValCore feature freeze |
++------------+--------------------------+
+| 2022-10-10 |ESMValCore release        |
++------------+--------------------------+
+| 2022-10-17 |ESMValTool feature freeze |
++------------+--------------------------+
+| 2022-10-24 |ESMValTool release        |
++------------+--------------------------+
+
 Past releases
 ^^^^^^^^^^^^^
+
+- 2.5.0 (Coordinating Release Manager: `Axel Lauer`_, team members: `Manuel Schlund`_, `Rémi Kazeroni`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2022-02-07 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2022-02-14 | 2022-03-14 | `ESMValCore Release 2.5.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.5.0>`_ | :ref:`esmvalcore:changelog-v2-5-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2022-02-21 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2022-02-28 | 2022-03-15 | `ESMValTool Release 2.5.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.5.0>`_ |      :ref:`changelog-v2-5-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+
+- 2.4.0 (Release Manager: `Klaus Zimmermann`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2021-10-04 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-10-11 | 2021-11-08 | `ESMValCore Release 2.4.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.4.0>`_ | :ref:`esmvalcore:changelog-v2-4-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-10-18 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-10-25 | 2021-11-09 | `ESMValTool Release 2.4.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.4.0>`_ |      :ref:`changelog-v2-4-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
 
 - 2.3.1 (Bugfix, Release Manager: `Klaus Zimmermann`_)
 
@@ -282,8 +298,8 @@ All tests should pass before making a release (branch).
 2. Increase the version number
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The version number is stored in ``esmvaltool/__init__.py``,
-``package/meta.yaml``, ``CITATION.cff``. Make sure to update all files.
+The version number is stored in ``esmvaltool/__init__.py``, ``CITATION.cff``.
+Make sure to update both files.
 Also update the release date in ``CITATION.cff``.
 See https://semver.org for more information on choosing a version number.
 Make a pull request and get it merged into ``main``.
@@ -333,35 +349,7 @@ and create the new release from the release branch (i.e. not from ``main``).
 The release tag always starts with the letter ``v`` followed by the version
 number, e.g. ``v2.1.0``.
 
-7. Create and upload the Conda package
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The package is automatically uploaded to the
-`ESMValGroup conda channel <https://anaconda.org/esmvalgroup/esmvaltool>`__
-by a GitHub action.
-If this has failed for some reason, build and upload the package manually by
-following the instructions below.
-
-Follow these steps to create a new conda package:
-
--  Check out the tag corresponding to the release,
-   e.g. ``git checkout tags/v2.1.0``
--  Make sure your current working directory is clean by checking the output
-   of ``git status`` and by running ``git clean -xdf`` to remove any files
-   ignored by git.
--  Edit ``package/meta.yaml`` and uncomment the lines starting with ``git_rev`` and
-   ``git_url``, remove the line starting with ``path`` in the ``source``
-   section.
--  Activate the base environment ``conda activate base``
--  Install the required packages:
-   ``conda install -y conda-build conda-verify ripgrep anaconda-client``
--  Run ``conda build package -c conda-forge -c esmvalgroup`` to build the
-   conda package
--  If the build was successful, upload the package to the esmvalgroup
-   conda channel, e.g.
-   ``anaconda upload --user esmvalgroup /path/to/conda/conda-bld/noarch/esmvaltool-2.1.0-py_0.tar.bz2``.
-
-8. Create and upload the PyPI package
+7. Create and upload the PyPI package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The package is automatically uploaded to the
@@ -392,6 +380,26 @@ Follow these steps to create a new Python package:
 You can read more about this in
 `Packaging Python Projects <https://packaging.python.org/tutorials/packaging-projects/>`__.
 
+8. Create the Conda package
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``esmvaltool`` package is published on the `conda-forge conda channel
+<https://anaconda.org/conda-forge>`__.
+This is done via a pull request on the `esmvaltool-suite-feedstock repository
+<https://github.com/conda-forge/esmvaltool-suite-feedstock>`__.
+
+After the upload of the PyPI package, this pull request is automatically opened
+by a bot.
+An example pull request can be found `here
+<https://github.com/conda-forge/esmvaltool-suite-feedstock/pull/5>`__.
+Follow the instructions by the bot to finalize the pull request.
+This step mostly contains updating dependencies that have been changed during
+the last release cycle.
+Once approved by the `feedstock maintainers
+<https://github.com/conda-forge/esmvaltool-suite-feedstock#feedstock-maintainers>`__
+they will merge the pull request, which will in turn publish the package on
+conda-forge some time later.
+Contact the feedstock maintainers if you want to become a maintainer yourself.
 
 Changelog
 ---------
@@ -403,6 +411,9 @@ Changelog
 - 2020-06-08 First draft by Klaus Zimmermann and Bouwe Andela
 
 .. _Bouwe Andela: https://github.com/bouweandela
+.. _Rémi Kazeroni: https://github.com/remi-kazeroni
+.. _Axel Lauer: https://github.com/axel-lauer
+.. _Saskia Loosveldt Tomas: https://github.com/sloosvel
 .. _Valeriu Predoi: https://github.com/valeriupredoi
 .. _Manuel Schlund: https://github.com/schlunma
 .. _Javier Vegas-Regidor: https://github.com/jvegasbsc
