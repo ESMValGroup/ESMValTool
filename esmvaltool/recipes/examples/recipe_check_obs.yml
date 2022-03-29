@@ -712,6 +712,17 @@ diagnostics:
     scripts: null
 
 
+  BS:
+    description: BS check
+    variables:
+      toz:
+      tozStderr:
+    additional_datasets:
+      - {dataset: BS, project: OBS, mip: Amon, tier: 3,
+         type: sat, version: v3.4, start_year: 1979, end_year: 2016}
+    scripts: null
+
+
   CDS-SATELLITE-ALBEDO:
     description: CDS-SATELLITE-ALBEDO check
     variables:

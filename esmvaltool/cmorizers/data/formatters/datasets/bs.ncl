@@ -1,5 +1,5 @@
 ; #############################################################################
-; ESMValTool CMORizer for NIWA-BS data
+; ESMValTool CMORizer for BS (former NIWA-BS) data
 ; #############################################################################
 ;
 ; Tier
@@ -9,18 +9,16 @@
 ;    http://www.bodekerscientific.com/data/total-column-ozone
 ;
 ; Last access
-;    20190207
+;    20210817
 ;
 ; Download and processing instructions
-;    To get the access data send an email to datasets@bodekerscientific.com
 ;    Download all files from
-;      ftp://ftp.bodekerscientific.com/CombinedTCOV3.3/Monthly/Patched/NetCDF/
-;    Newer versions may become available over time, but make sure to download
-;    the patched one. Only complete years should be downloaded.
-;    !!! NOTE: the latest version of this ozone dataset is now called "BS"
-;    and more information about it can be found in the BS-cmorizer!!!
+;      https://zenodo.org/record/4535247
+;    Newer versions may become available over time.
+;    Only complete years should be downloaded.
 ;
 ; Modification history
+;    20210819-hassler_birgit: renamed to BS and updated for version 3.4
 ;    20190207-righi_mattia: renamed to NIWA-BS and adapted to v2.
 ;    20140528-gottschaldt_klaus-dirk: written.
 ;
@@ -31,10 +29,10 @@ loadscript(getenv("esmvaltool_root") + \
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "niwa_bs.ncl"
+  DIAG_SCRIPT = "bs.ncl"
 
   ; Source name
-  OBSNAME = "NIWA-BS"
+  OBSNAME = "BS"
 
   ; Tier
   TIER = 3
@@ -62,11 +60,15 @@ begin
   TYPE = "sat"
 
   ; Version
-  VERSION = "V3.3"
+  VERSION = "V3.4"
 
   ; Global attributes
-  SOURCE = "http://www.bodekerscientific.com/data/total-column-ozone"
-  REF = "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005"
+  SOURCE = "https://doi.org/10.5281/zenodo.3908787"
+  REF = "Bodeker et al. (2020), BS Filled Total Column Ozone Database " + \
+        "V3.4 (3.4) [Data set], Zenodo, " + \
+        "https://doi.org/10.5281/zenodo.3908787; " + \
+        "Bodeker et al., Earth Sys. Sci. Data., " + \
+        "doi:10.5194/essd-13-3885-2021, 2021"
   COMMENT = ""
 
 end
@@ -74,8 +76,8 @@ end
 begin
 
   files = systemfunc("ls " + input_dir_path + \
-                     "NIWA-BS_CombinedTCO_" + VERSION + \
-                     "_????_Monthly_Patched.nc")
+                     "BSFilledTCO_" + VERSION + \
+                     "_????_Monthly.nc")
 
   do vv = 0, dimsizes(VAR) - 1
 
