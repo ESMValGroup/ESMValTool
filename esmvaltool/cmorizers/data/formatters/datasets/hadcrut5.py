@@ -62,7 +62,7 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
 
         cube.data = cube.data + clim_data
 
-    else:
+    if short_name == 'tasa':
         # fix units
         cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
         if cube.units != cmor_info.units:
