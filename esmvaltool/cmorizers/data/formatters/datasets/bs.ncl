@@ -24,12 +24,12 @@
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/obs/interface.ncl")
+           "/data/formatters/interface.ncl")
 
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_bs.ncl"
+  DIAG_SCRIPT = "bs.ncl"
 
   ; Source name
   OBSNAME = "BS"
@@ -38,8 +38,8 @@ begin
   TIER = 3
 
   ; Period
-  YEAR1 = 1979
-  YEAR2 = 2016
+  YEAR1 = get_year(start_year, 1979)
+  YEAR2 = get_year(end_year, 2016)
 
   ; Selected variable (standard name)
   VAR = (/"toz", "tozStderr"/)
