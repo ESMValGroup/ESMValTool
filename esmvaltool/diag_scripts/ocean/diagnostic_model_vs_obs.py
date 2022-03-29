@@ -489,7 +489,7 @@ def _prepare_provenance_record(cfg, **provenance_record):
         if val:
             provenance_record[key] = val
     for key in ['realms', 'themes']:
-        val = cfg[key]
+        val = cfg.get(key)
         if val:
             provenance_record[key] = val
     return provenance_record

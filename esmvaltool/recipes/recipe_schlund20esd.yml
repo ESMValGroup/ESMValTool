@@ -170,8 +170,6 @@ diagnostics:
         mip: Amon
         ensemble: r1i1p1
         additional_datasets: &rtnt_datasets_cmip5
-          # Models with missing data (on all ESGF nodes)
-          # EC-EARTH (no rsut)
           - {dataset: ACCESS1-0,     exp: piControl,   start_year:  300, end_year:  449}
           - {dataset: ACCESS1-0,     exp: abrupt4xCO2, start_year:  300, end_year:  449}
           - {dataset: ACCESS1-3,     exp: piControl,   start_year:  250, end_year:  399}
@@ -284,6 +282,8 @@ diagnostics:
           - {dataset: CAMS-CSM1-0,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 3030, end_year: 3179}
           - {dataset: CanESM5,         exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 5201, end_year: 5350}
           - {dataset: CanESM5,         exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+          - {dataset: CAS-ESM2-0,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150, institute: CAS}
+          - {dataset: CAS-ESM2-0,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150, institute: CAS}
           - {dataset: CESM2,           exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
           - {dataset: CESM2,           exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
           - {dataset: CESM2-FV2,       exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  321, end_year:  470, institute: NCAR}
@@ -323,7 +323,7 @@ diagnostics:
           - {dataset: INM-CM4-8,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 1999}
           - {dataset: IPSL-CM6A-LR,    exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 1870, end_year: 2019}
           - {dataset: IPSL-CM6A-LR,    exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
-          - {dataset: KACE-1-0-G,      exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 2300, end_year: 2449}
+          - {dataset: KACE-1-0-G,      exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 2150, end_year: 2299}
           - {dataset: KACE-1-0-G,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
           - {dataset: MIROC6,          exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3349}
           - {dataset: MIROC6,          exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3349}
@@ -342,6 +342,8 @@ diagnostics:
           - {dataset: NESM3,           exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
           - {dataset: NorCPM1,         exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  251, end_year:  400, institute: NCC}
           - {dataset: NorCPM1,         exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150, institute: NCC}
+          - {dataset: NorESM2-LM,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1600, end_year: 1749}
+          - {dataset: NorESM2-LM,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
           - {dataset: NorESM2-MM,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1201, end_year: 1350}
           - {dataset: NorESM2-MM,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
           # Issue #286 (manual copying was necessary)
@@ -504,6 +506,7 @@ diagnostics:
       - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn}
       - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAS-ESM2-0,      ensemble: r1i1p1f1, grid: gn, institute: CAS}
       - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-FV2,       ensemble: r1i1p1f1, grid: gn, institute: NCAR}
       - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn, institute: NCAR}
@@ -528,6 +531,7 @@ diagnostics:
       - {dataset: MPI-ESM1-2-LR,   ensemble: r1i1p1f1, grid: gn}
       - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NESM3,           ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NorESM2-MM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: SAM0-UNICON,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: TaiESM1,         ensemble: r1i1p1f1, grid: gn}
@@ -633,6 +637,7 @@ diagnostics:
       - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn}
       - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAS-ESM2-0,      ensemble: r1i1p1f1, grid: gn, institute: CAS}
       - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-FV2,       ensemble: r1i1p1f1, grid: gn, institute: NCAR}
       - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn, institute: NCAR}
@@ -657,6 +662,8 @@ diagnostics:
       - {dataset: MPI-ESM1-2-LR,   ensemble: r1i1p1f1, grid: gn}
       - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NESM3,           ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorCPM1,         ensemble: r1i1p1f1, grid: gn, institute: NCC}
+      - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NorESM2-MM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: SAM0-UNICON,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: TaiESM1,         ensemble: r1i1p1f1, grid: gn}
@@ -798,6 +805,7 @@ diagnostics:
       - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn}
       - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAS-ESM2-0,      ensemble: r1i1p1f1, grid: gn, institute: CAS}
       - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-FV2,       ensemble: r1i1p1f1, grid: gn, institute: NCAR}
       - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn, institute: NCAR}
@@ -822,6 +830,7 @@ diagnostics:
       - {dataset: MPI-ESM1-2-LR,   ensemble: r1i1p1f1, grid: gn}
       - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NESM3,           ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NorESM2-MM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: SAM0-UNICON,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: TaiESM1,         ensemble: r1i1p1f1, grid: gn}
@@ -927,6 +936,7 @@ diagnostics:
       - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn}
       - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAS-ESM2-0,      ensemble: r1i1p1f1, grid: gn, institute: CAS}
       - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-FV2,       ensemble: r1i1p1f1, grid: gn, institute: NCAR}
       - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn, institute: NCAR}
@@ -955,6 +965,8 @@ diagnostics:
       - {dataset: MPI-ESM1-2-LR,   ensemble: r1i1p1f1, grid: gn}
       - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NESM3,           ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorCPM1,         ensemble: r1i1p1f1, grid: gn, institute: NCC}
+      - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NorESM2-MM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: SAM0-UNICON,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: TaiESM1,         ensemble: r1i1p1f1, grid: gn}
@@ -1060,6 +1072,7 @@ diagnostics:
       - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn}
       - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAS-ESM2-0,      ensemble: r1i1p1f1, grid: gn, institute: CAS}
       - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-FV2,       ensemble: r1i1p1f1, grid: gn, institute: NCAR}
       - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn, institute: NCAR}
@@ -1078,6 +1091,7 @@ diagnostics:
       - {dataset: INM-CM5-0,       ensemble: r1i1p1f1, grid: gr1}
       - {dataset: INM-CM4-8,       ensemble: r1i1p1f1, grid: gr1}
       - {dataset: IPSL-CM6A-LR,    ensemble: r1i1p1f1, grid: gr}
+      - {dataset: KACE-1-0-G,      ensemble: r1i1p1f1, grid: gr}
       - {dataset: MCM-UA-1-0,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: MIROC6,          ensemble: r1i1p1f1, grid: gn}
       - {dataset: MIROC-ES2L,      ensemble: r1i1p1f2, grid: gn}
@@ -1086,6 +1100,8 @@ diagnostics:
       - {dataset: MPI-ESM1-2-LR,   ensemble: r1i1p1f1, grid: gn}
       - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NESM3,           ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorCPM1,         ensemble: r1i1p1f1, grid: gn, institute: NCC}
+      - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NorESM2-MM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: SAM0-UNICON,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: TaiESM1,         ensemble: r1i1p1f1, grid: gn}
@@ -1191,6 +1207,7 @@ diagnostics:
       - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn}
       - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAS-ESM2-0,      ensemble: r1i1p1f1, grid: gn, institute: CAS}
       - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-FV2,       ensemble: r1i1p1f1, grid: gn, institute: NCAR}
       - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn, institute: NCAR}
@@ -1218,6 +1235,7 @@ diagnostics:
       - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NESM3,           ensemble: r1i1p1f1, grid: gn}
       - {dataset: NorCPM1,         ensemble: r1i1p1f1, grid: gn, institute: NCC}
+      - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NorESM2-MM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: SAM0-UNICON,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: TaiESM1,         ensemble: r1i1p1f1, grid: gn}
@@ -1394,6 +1412,7 @@ diagnostics:
       - {dataset: BCC-CSM2-MR,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAS-ESM2-0,      ensemble: r1i1p1f1, grid: gn, institute: CAS}
       - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-FV2,       ensemble: r1i1p1f1, grid: gn, institute: NCAR}
       - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn, institute: NCAR}
@@ -1419,6 +1438,7 @@ diagnostics:
       - {dataset: MPI-ESM1-2-LR,   ensemble: r1i1p1f1, grid: gn}
       - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NESM3,           ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NorESM2-MM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: SAM0-UNICON,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: TaiESM1,         ensemble: r1i1p1f1, grid: gn}
@@ -1527,6 +1547,7 @@ diagnostics:
           - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn}
           - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CAS-ESM2-0,      ensemble: r1i1p1f1, grid: gn, institute: CAS}
           - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn}
           - {dataset: CESM2-FV2,       ensemble: r1i1p1f1, grid: gn, institute: NCAR}
           - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn, institute: NCAR}
@@ -1556,6 +1577,7 @@ diagnostics:
           - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gn}
           - {dataset: NESM3,           ensemble: r1i1p1f1, grid: gn}
           - {dataset: NorCPM1,         ensemble: r1i1p1f1, grid: gn, institute: NCC}
+          - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn}
           - {dataset: NorESM2-MM,      ensemble: r1i1p1f1, grid: gn}
           - {dataset: SAM0-UNICON,     ensemble: r1i1p1f1, grid: gn}
           - {dataset: TaiESM1,         ensemble: r1i1p1f1, grid: gn}
@@ -1679,6 +1701,7 @@ diagnostics:
       - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn}
       - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAS-ESM2-0,      ensemble: r1i1p1f1, grid: gn, institute: CAS}
       - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-FV2,       ensemble: r1i1p1f1, grid: gn, institute: NCAR}
       - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn, institute: NCAR}
@@ -1705,6 +1728,8 @@ diagnostics:
       - {dataset: MPI-ESM1-2-LR,   ensemble: r1i1p1f1, grid: gn}
       - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NESM3,           ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorCPM1,         ensemble: r1i1p1f1, grid: gn, institute: NCC}
+      - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NorESM2-MM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: SAM0-UNICON,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: TaiESM1,         ensemble: r1i1p1f1, grid: gn}
@@ -1815,6 +1840,9 @@ diagnostics:
       - {dataset: BCC-CSM2-MR,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn}
       - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn}
+      # Dataset issue: lev: has values > valid_max = 1.0
+      # see https://github.com/ESMValGroup/ESMValCore/issues/1527 for details
+      # - {dataset: CAS-ESM2-0,      ensemble: r1i1p1f1, grid: gn, institute: CAS}
       - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-FV2,       ensemble: r1i1p1f1, grid: gn, institute: NCAR}
       - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn, institute: NCAR}
@@ -1831,6 +1859,7 @@ diagnostics:
       - {dataset: MPI-ESM1-2-LR,   ensemble: r1i1p1f1, grid: gn}
       - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NESM3,           ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NorESM2-MM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: SAM0-UNICON,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: TaiESM1,         ensemble: r1i1p1f1, grid: gn}
@@ -1927,6 +1956,7 @@ diagnostics:
       - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn}
       - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAS-ESM2-0,      ensemble: r1i1p1f1, grid: gn, institute: CAS}
       - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-FV2,       ensemble: r1i1p1f1, grid: gn, institute: NCAR}
       - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn, institute: NCAR}
@@ -1953,6 +1983,7 @@ diagnostics:
       - {dataset: MPI-ESM1-2-LR,   ensemble: r1i1p1f1, grid: gn}
       - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NESM3,           ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: NorESM2-MM,      ensemble: r1i1p1f1, grid: gn}
       - {dataset: SAM0-UNICON,     ensemble: r1i1p1f1, grid: gn}
       - {dataset: TaiESM1,         ensemble: r1i1p1f1, grid: gn}
