@@ -56,7 +56,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/cos22esd/
       `Cos et al. (2022) <https://doi.org/10.5194/esd-13-321-2022>`].
 
 User settings in the recipe
------------------------
+---------------------------
 
 #. Script ``climate_change_hotspot.py``
 
@@ -91,7 +91,7 @@ User settings in the recipe
 
 
 Modifying the datasets and scenarios used
-----------------------------------------
+-----------------------------------------
 
 ``recipe_climate_change_hotspot.yml`` can be modifyed to use different scenario combinations.
 The standard recipe uses data from scenarios with the radiative forcings 2.6, 4.5 and 8.5 Wm<sup>-2</sup> (referred to as 26, 45 and 85),
