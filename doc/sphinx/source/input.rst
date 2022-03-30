@@ -67,6 +67,9 @@ Alternatively, you can use an external tool called
 `Synda <http://prodiguer.github.io/synda/index.html>`__
 to maintain your own collection of ESGF data.
 
+
+.. _inputdata_observations:
+
 Observations
 ============
 
@@ -304,7 +307,7 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | HadCRUT4                     | tas, tasa (Amon), tasConf5, tasConf95                                                                |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| HadCRUT5                     | tas (Amon)                                                                                           |   2  | Python          |
+| HadCRUT5                     | tas, tasa (Amon)                                                                                     |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | HadISST                      | sic (OImon), tos (Omon), ts (Amon)                                                                   |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
