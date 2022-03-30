@@ -6,29 +6,29 @@ Climate Change Hotspot
 Overview
 --------
 
-In the context of a changing climate, it is found that 
-not all regions change at the same pace and in the same 
-way. The regions that change at a faster rate than the rest 
+In the context of a changing climate, it is found that
+not all regions change at the same pace and in the same
+way. The regions that change at a faster rate than the rest
 of the globe are labelled as climate change hotspots. Projecting
-the location and magnitude of the hotspots is important 
+the location and magnitude of the hotspots is important
 for climate change adaptation, and it is uasually computed using
-the projected climate variables' differences between the regional 
-and larger scales. 
+the projected climate variables' differences between the regional
+and larger scales.
 
-One issue when trying to evaluate projections of climate change 
-is the vast amount of information available from the Coupled 
-Model Intercomparison Project (CMIP) exercises. Additionally, 
-results from the CMIP phases 5 and 6 can be quite different, 
-therefore a comparison between the two multi-model ensembles 
-can be made to evaluate their differences and similarities. To 
-account for the projections scenario uncertainty, data from 
-three different end-of-the-century radiative forcings is given 
+One issue when trying to evaluate projections of climate change
+is the vast amount of information available from the Coupled
+Model Intercomparison Project (CMIP) exercises. Additionally,
+results from the CMIP phases 5 and 6 can be quite different,
+therefore a comparison between the two multi-model ensembles
+can be made to evaluate their differences and similarities. To
+account for the projections scenario uncertainty, data from
+three different end-of-the-century radiative forcings is given
 in the recipe.
 
-This recipe compares regional surface temperature and precipitation 
+This recipe compares regional surface temperature and precipitation
 against larger scale means to obtain the hotspot magnitudes for both
-CMIP5 and CMIP6 in the 2.6, 4.5 and 8.5 $Wm^-2$ radiative forcings 
-by the year 2100 against the preindustrial Era 
+CMIP5 and CMIP6 in the 2.6, 4.5 and 8.5 $Wm^-2$ radiative forcings
+by the year 2100 against the preindustrial Era
 (RCP2.6, RCP4.5, RCP8.5 for CMIP5 and SSP1-2.6, SSP2-4.5, SSP5-8.5 for CMIP6).
 Recipe based on the work by `Cos et al. (2022) <https://doi.org/10.5194/esd-13-321-2022>`
 
@@ -40,19 +40,20 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * ``recipe_climate_change_hotspot.yml``: Loads the data, ensembles the data, 
-    computes the necessary climate change hotspot diagnostics and plots the results figures.
+    * ``recipe_climate_change_hotspot.yml``: Loads the data, ensembles
+      the data, computes the necessary climate change hotspot diagnostics
+      and plots the results figures.
 
 Diagnostics are stored in esmvaltool/diag_scripts/cos22esd/
 
-    * ``climate_change_hotspot.py``: Calculates the regional field hotspot 
-    for temperature and precipitation and the 10-year rolling mean 
-    timeseries for regional and large scale temperature and precipitation.
+    * ``climate_change_hotspot.py``: Calculates the regional field hotspot
+      for temperature and precipitation and the 10-year rolling mean
+      timeseries for regional and large scale temperature and precipitation.
 
-    * ``hotspot_plotter.py``: Gathers the data output from the 
-    ``climate_change_hotspot.py`` script and plots the hotspot fields and 
-    the rolling mean timeseries [Figures 2, 3, S2 and S4 by 
-    `Cos et al. (2022) <https://doi.org/10.5194/esd-13-321-2022>`]. 
+    * ``hotspot_plotter.py``: Gathers the data output from the
+      ``climate_change_hotspot.py`` script and plots the hotspot fields and
+      the rolling mean timeseries [Figures 2, 3, S2 and S4 by
+      `Cos et al. (2022) <https://doi.org/10.5194/esd-13-321-2022>`].
 
 User settings in the recipe
 -----------------------
@@ -63,11 +64,11 @@ User settings in the recipe
 
    * ``baseline_period``: historical period that serves as a reference to compute the time anomalies.
 
-   * ``future_periods``: list of the two future periods ("yyyy-yyyy") where the hotspot will be computed. 
-   Following the format [future period #1, future period #2].
+   * ``future_periods``: list of the two future periods ("yyyy-yyyy") where the hotspot will be computed.
+      Following the format [future period #1, future period #2].
 
-   * ``region``: list of longitudes and latitudes that enclose a rectangular region. 
-   In the form of [start_longitude, end_longitude, start_latitude, end_latitude].
+   * ``region``: list of longitudes and latitudes that enclose a rectangular region.
+      In the form of [start_longitude, end_longitude, start_latitude, end_latitude].
 
    * ``region_name``: Name of the region to be included in the provenance record.
 
@@ -78,12 +79,13 @@ User settings in the recipe
 
    * ``baseline_period``: historical period displayed in the figures' titles.
 
-   * ``future_periods``: list of the two future periods ("yyyy-yyyy"), following 
-   the format [future period #1, future period #2], used to identify the ancestor files and in the figure titles
+   * ``future_periods``: list of the two future periods ("yyyy-yyyy"), following
+      the format [future period #1, future period #2], used to identify the
+      ancestor files and in the figure titles.
 
-   * ``region``: list of longitudes and latitudes that enclose a region. 
-   In the form of [start_longitude, end_longitude, start_latitude, end_latitude]. 
-   Used in the title to identify the precipitation large scale region
+   * ``region``: list of longitudes and latitudes that enclose a region.
+      In the form of [start_longitude, end_longitude, start_latitude, end_latitude].
+      Used in the title to identify the precipitation large scale region.
 
    * ``region_name``: Name of the region used in the plot titles.
 
@@ -91,8 +93,8 @@ User settings in the recipe
 Modifying the datasets and scenarios used
 ----------------------------------------
 
-``recipe_climate_change_hotspot.yml`` can be modifyed to use different scenario combinations. 
-The standard recipe uses data from scenarios with the radiative forcings 2.6, 4.5 and 8.5 Wm<sup>-2</sup> (referred to as 26, 45 and 85), 
+``recipe_climate_change_hotspot.yml`` can be modifyed to use different scenario combinations.
+The standard recipe uses data from scenarios with the radiative forcings 2.6, 4.5 and 8.5 Wm<sup>-2</sup> (referred to as 26, 45 and 85),
 but any combination of three scenarios from the following list can be used:
 
 .. code-block:: yaml
@@ -101,8 +103,8 @@ but any combination of three scenarios from the following list can be used:
    60: "RCP6.0/SSP4-6.0"
    85: "RCP8.5/SSP5-8.5"
 
-To specify which datasets are available for each scenario, lists of datasets can be attributed to a 
-specific CMIP project and scenario between the ``documentation`` 
+To specify which datasets are available for each scenario, lists of datasets can be attributed to a
+specific CMIP project and scenario between the ``documentation``
 and ``preprocessor`` sections of the recipe as follows:
 
 .. code-block:: yaml
@@ -119,12 +121,12 @@ and ``preprocessor`` sections of the recipe as follows:
       - {...dataset keys...}
       - {...dataset keys...}
 
-This different dataset sections will be called at each diagnostic as ``additional_datasets`` using the 
+This different dataset sections will be called at each diagnostic as ``additional_datasets`` using the
 anchors *cmip6_85, *cmip5_85...etc. as in the example:
 
 .. code-block:: yaml
 
-   pr_cmip6_85:      
+   pr_cmip6_85:
     variables:
       pr:
         mip: Amon
@@ -135,14 +137,14 @@ anchors *cmip6_85, *cmip5_85...etc. as in the example:
       pr_cmip6_85:
         <<: *script_input
 
-If different scenarios want to be used, the datasets and diagnostics must be 
-changed maintaining the format ``cmip{phase}_{scenario}`` and ``{variable}_cmip{phase}_{scenario}``. 
-For example, if we want scenario 60 instead of scenario 85, we would need to include the 
-files available for ``cmip6_60`` and ``cmip5_60``, and the previous diagnostic would change to:  
+If different scenarios want to be used, the datasets and diagnostics must be
+changed maintaining the format ``cmip{phase}_{scenario}`` and ``{variable}_cmip{phase}_{scenario}``.
+For example, if we want scenario 60 instead of scenario 85, we would need to include the
+files available for ``cmip6_60`` and ``cmip5_60``, and the previous diagnostic would change to:
 
 .. code-block:: yaml
 
-   pr_cmip6_60:      
+   pr_cmip6_60:
     variables:
       pr:
         mip: Amon
@@ -152,7 +154,7 @@ files available for ``cmip6_60`` and ``cmip5_60``, and the previous diagnostic w
     scripts:
       pr_cmip6_60:
         <<: *script_input
-        
+
 Finally, if the datasets that need to be included in the multi-model means are common for all scenarios,
 the datasets could be simplified to :
 
@@ -199,10 +201,9 @@ Example plots
    :align:   center
 
    Mediterranean region warming against global warming for the summer
-   2.6, 4.5 and 8.5 $Wm^{-2}$ RCP and SSP scenarios 
-   for the CMIP5 and CMIP6 ensemble means. 
-   Each dot represents a 10 year mean change beginning from 1960-1969 (light coloring) 
-   until 2091-2100 (opaque coloring). The changes are computed with 1986-2005 as the baseline. 
-   An ordinary least squares linear regression is computed and the slope and $r$ values are shown. 
+   2.6, 4.5 and 8.5 $Wm^{-2}$ RCP and SSP scenarios
+   for the CMIP5 and CMIP6 ensemble means.
+   Each dot represents a 10 year mean change beginning from 1960-1969 (light coloring)
+   until 2091-2100 (opaque coloring). The changes are computed with 1986-2005 as the baseline.
+   An ordinary least squares linear regression is computed and the slope and $r$ values are shown.
    N indicates the number of models included in the ensemble mean.
-

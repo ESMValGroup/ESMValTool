@@ -11,8 +11,7 @@ documentation:
     - loosveldt-tomas_saskia
     - cos_josep
   references:
-    - cos2022
-
+    - cos22esd
 
 cmip5_85: &cmip5_85
   - &cmip5_h-rcp85 {
@@ -581,7 +580,7 @@ diagnostics:
         region: &region [-10, 40, 30, 45]
         region_name: &reg_name "Mediterranean"
 
-  pr_cmip6_85:      
+  pr_cmip6_85:
     variables:
       pr:
         mip: Amon
@@ -592,7 +591,7 @@ diagnostics:
       pr_cmip6_85:
         <<: *script_input
 
-  tas_cmip5_85:      
+  tas_cmip5_85:
     variables:
       tas:
         mip: Amon
@@ -603,7 +602,7 @@ diagnostics:
       tas_cmip5_85:
         <<: *script_input
 
-  pr_cmip5_85:      
+  pr_cmip5_85:
     variables:
       pr:
         mip: Amon
@@ -614,7 +613,7 @@ diagnostics:
       pr_cmip5_85:
         <<: *script_input
 
-  tas_cmip6_45:      
+  tas_cmip6_45:
     variables:
       tas:
         mip: Amon
@@ -625,7 +624,7 @@ diagnostics:
       tas_cmip6_45:
         <<: *script_input
 
-  pr_cmip6_45:      
+  pr_cmip6_45:
     variables:
       pr:
         mip: Amon
@@ -636,7 +635,7 @@ diagnostics:
       pr_cmip6_45:
         <<: *script_input
 
-  tas_cmip5_45:      
+  tas_cmip5_45:
     variables:
       tas:
         mip: Amon
@@ -647,7 +646,7 @@ diagnostics:
       tas_cmip5_45:
         <<: *script_input
 
-  pr_cmip5_45:      
+  pr_cmip5_45:
     variables:
       pr:
         mip: Amon
@@ -658,7 +657,7 @@ diagnostics:
       pr_cmip5_45:
         <<: *script_input
 
-  tas_cmip6_26:      
+  tas_cmip6_26:
     variables:
       tas:
         mip: Amon
@@ -669,7 +668,7 @@ diagnostics:
       tas_cmip6_26:
         <<: *script_input
 
-  pr_cmip6_26:      
+  pr_cmip6_26:
     variables:
       pr:
         mip: Amon
@@ -680,7 +679,7 @@ diagnostics:
       pr_cmip6_26:
         <<: *script_input
 
-  tas_cmip5_26:      
+  tas_cmip5_26:
     variables:
       tas:
         mip: Amon
@@ -691,7 +690,7 @@ diagnostics:
       tas_cmip5_26:
         <<: *script_input
 
-  pr_cmip5_26:      
+  pr_cmip5_26:
     variables:
       pr:
         mip: Amon
@@ -725,5 +724,3 @@ diagnostics:
         future_periods: *future
         region: *region
         region_name: *reg_name
-
-
