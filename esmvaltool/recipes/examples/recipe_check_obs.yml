@@ -432,11 +432,12 @@ diagnostics:
     description: HadCRUT5 check
     variables:
       tas:
+      tasa:
     additional_datasets:
       - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
-         type: ground, version: analysis, start_year: 1850, end_year: 2018}
+         type: ground, version: 5.0.1.0-analysis, start_year: 1850, end_year: 2021}
       - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
-         type: ground, version: noninfilled, start_year: 1850, end_year: 2018}
+         type: ground, version: 5.0.1.0-noninfilled, start_year: 1850, end_year: 2021}
     scripts: null
 
 
