@@ -903,7 +903,7 @@ def multi_model_time_series(
     #x_lims = ax.get_xlim()
     y_lims = ax.get_ylim()
 
-    make_csvs_data = True 
+    make_csvs_data = True
     if make_csvs_data :
         write_csv_ts(cfg,metadatas, mm_data, single_model, short_name)
         write_csv_ts(cfg,metadatas, data_values, single_model, short_name)
@@ -1223,6 +1223,25 @@ def multi_model_time_series(
 #     else:
 #         return fig, ax
 
+def save_clim_csv(keys, times, data):
+    """
+    Save clim data as a csv.
+    """
+    out_shelve_dir = diagtools.folder([cfg['work_dir'], 'clim_csv', ])
+    out_csv = out_shelve_dir + '_'.join([keys])+'.csv'
+    if os.path.exists(out_csv):return
+
+    txt = '# '+ ' '.join(keys) + '\n'
+    txt += 'time, value\n'
+
+    for t,v in zip(times, data):
+        txt = ''.join([txt, str(t),', ', str(v),'\n'])
+
+    print('save_clim_csv: save:', out_csv)
+    fn = open(out_csv, 'w')
+    fn.write(txt)
+    fn.close()
+
 
 def multi_model_clim_figure(
         cfg,
@@ -1384,8 +1403,9 @@ def multi_model_clim_figure(
                 times = sorted(dat.keys())
                 mean = [np.mean(dat[t]) for t in times]
                 color = ipcc_colours[scenario]
-
                 plt.plot(times, mean, ls='-', c=color, lw=1.)
+                save_clim_csv(['clim', variable_group_master, model, scenario, 'OMOC_modelmeans'], times, mean)
+
             if 'OMOC_modelranges' in plotting:
                 dat = omoc_means[(variable_group, model, scenario)]
                 times = sorted(dat.keys())
@@ -1393,9 +1413,12 @@ def multi_model_clim_figure(
                 maxs = [np.max(dat[t]) for t in times]
                 if mins == maxs:
                     plt.plot(times, mean, ls='-', c=color, lw=1.5)
+                    save_clim_csv(['clim', variable_group_master, model, scenario, 'OMOC_modelranges'], times, mean)
+
                 else:
                     plt.fill_between(times, mins, maxs, color=color, alpha=0.15)
-
+                    save_clim_csv(['clim', variable_group_master, model, scenario, 'OMOC_modelmin'], times, mins)
+                    save_clim_csv(['clim', variable_group_master, model, scenario, 'OMOC_modelmax'], times, maxs)
 
         for variable_group_master in variable_groups.keys():
             omoc_mean = {}
@@ -1411,7 +1434,7 @@ def multi_model_clim_figure(
             color = ipcc_colours[scen]
             if 'OneModelOneVote' in plotting:
                 plt.plot(times, mean, ls='-', c=color, lw=2.)
-
+                save_clim_csv(['clim', variable_group_master, 'multimodel', scen, 'OneModelOneVote'], times, mean)
 
     #assert 0
 
