@@ -314,14 +314,14 @@ def write_csv_ts(cfg, metadatas, data_values, single_model, short_name):
             txt = ''.join([txt, str(t),', ', str(v),'\n'])
 
         print('write_csv_ts: save:', out_csv)
-        fn = open(out_csv)
+        fn = open(out_csv, 'w')
         fn.write(txt)
         fn.close()
 
 
         # plt.plot(times, values, ls='-', c=color, lw=0.4) #, label=dataset)
 
-    assert 0
+    #assert 0
 
 def multi_model_time_series(
         cfg,
@@ -559,9 +559,9 @@ def multi_model_time_series(
        sh['model_cubes_paths'] = model_cubes_paths
        sh.close()
 
-    make_csvs_data = True
+    make_csvs_data = False
     if make_csvs_data :
-        write_csv_ts(cfg,metadata, data_values)
+        write_csv_ts(cfg,metadatas, data_values, single_model, short_name)
 
 
     if make_csvs and single_model=='all':
@@ -706,7 +706,7 @@ def multi_model_time_series(
 #                lw=0.4,
 #            )
     datas_ds = {}
-
+    mm_data = {}
 
     # single model lines:
     for dataset_x,scenario_x in itertools.product(sorted(datasets.keys()), sorted(scenarios.keys())):
@@ -742,6 +742,7 @@ def multi_model_time_series(
             times = [t for t in sorted(model_mean.keys())]
             model_mean = [model_mean[t] for t in times]
             plt.plot(times, model_mean, ls=':', c=color, lw=2.) #, label=dataset)
+            mm_data[(variable_group, short_name, dataset, scenario, ensemble)] = {t:d for t,d in zip(times, model_mean)}
 
         if 'model_medians' in plotting:
             times = [t for t in sorted(dat_scen_data.keys())]
@@ -765,8 +766,12 @@ def multi_model_time_series(
 
             if model_mins == model_maxs:
                 plt.plot(times, model_mins, ls='-', c=color, lw=2., alpha=alpha)
+                mm_data[(variable_group, short_name, dataset_x, scenario_x, 'ensemble_min_max')] = {t:d for t,d in zip(times, model_mins)}
             else:
                 plt.fill_between(times, model_mins, model_maxs, color= color, ec=None, alpha=alpha)
+                mm_data[(variable_group, short_name, dataset_x, scenario_x, 'ensemble_min')] = {t:d for t,d in zip(times, model_mins)}
+                mm_data[(variable_group, short_name, dataset_x, scenario_x, 'ensemble_max')] = {t:d for t,d in zip(times, model_maxs)}
+
 
         if 'model_5_95' in plotting:
             assert 0
@@ -806,7 +811,7 @@ def multi_model_time_series(
 
             plt.plot(times, global_mean, ls='-', c='black', lw=2.5) #, label=dataset)
             plt.plot(times, global_mean, ls='-', c=color, lw=2.) #, label=dataset)
-
+            mm_data[(variable_group, short_name, 'Multimodel', scenario_x, 'mean')] = {t:d for t,d in zip(times, global_mean)}
 
         if 'Global_range' in plotting:
             #print(plotting)
@@ -823,8 +828,13 @@ def multi_model_time_series(
                 #print('model_mins == model_maxs,', model_mins,model_maxs)
                 #assert 0
                 plt.plot(times, model_mins, ls='-', c=color, lw=3.,alpha=0.3,)
+                mm_data[(variable_group, short_name, 'Multimodel', scenario_x, 'minmax')] = {t:d for t,d in zip(times, model_mins)}
+
             else:
                 plt.fill_between(times, model_mins, model_maxs, color= color, ec=None, alpha=0.3)
+                mm_data[(variable_group, short_name, 'Multimodel', scenario_x, 'min')] = {t:d for t,d in zip(times, model_mins)}
+                mm_data[(variable_group, short_name, 'Multimodel', scenario_x, 'max')] = {t:d for t,d in zip(times, model_maxs)}
+
             #assert 0
         # means = {}
         # if 'model_means' in plotting or 'global_model_means' in plotting:
@@ -892,6 +902,12 @@ def multi_model_time_series(
 
     #x_lims = ax.get_xlim()
     y_lims = ax.get_ylim()
+
+    make_csvs_data = True 
+    if make_csvs_data :
+        write_csv_ts(cfg,metadatas, mm_data, single_model, short_name)
+        write_csv_ts(cfg,metadatas, data_values, single_model, short_name)
+        #assert 0
 
     if hist_time_range:
         plt.fill_betweenx(y_lims, hist_time_range[0], hist_time_range[1], color= 'k', alpha=0.4, label = 'Historical period')
