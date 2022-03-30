@@ -69,7 +69,7 @@ class HotspotDiag:
                 large_scale_cube, season)
             time_subset_regional_cube = self.extract_annual_or_season(
                 regional_cube, season)
-            time_subset_cubes = [time_subset_large_scale_cube, 
+            time_subset_cubes = [time_subset_large_scale_cube,
                                  time_subset_regional_cube]
             self.compute_hotspot_fields(
                 time_subset_cubes, season, filename, input_data_dict)
@@ -109,22 +109,21 @@ class HotspotDiag:
             cube = extract_season(cube, season)
         return cube
 
-    def compute_hotspot_fields(self, cubes, season, 
+    def compute_hotspot_fields(self, cubes, season,
                                filename, input_data_dict):
         """Compute the hotspot fields with self.retireve_data cubes.
 
         the resulting cubes are saved inside self.experiment_dict.
         """
-        large_scale_cube, regional_cube = cubes
         regional_anomaly = anomalies(
-            regional_cube, "full", reference=self.anomaly_reference)
+            cubes[1], "full", reference=self.anomaly_reference)
         large_scale_anomaly = anomalies(
-            large_scale_cube, "full", reference=self.anomaly_reference)
-        if regional_cube.var_name == "pr":
+            cubes[0], "full", reference=self.anomaly_reference)
+        if cubes[1].var_name == "pr":
             regional_anomaly = self.relative_change(
-                regional_anomaly, regional_cube)
+                regional_anomaly, cubes[1])
             large_scale_anomaly = self.relative_change(
-                large_scale_anomaly, large_scale_cube)
+                large_scale_anomaly, cubes[0])
         hotspot = regional_anomaly - \
             area_statistics(large_scale_anomaly, "mean")
         hotspot.var_name = f"{regional_anomaly.var_name}_hotspot"
