@@ -554,13 +554,17 @@ def su(grouped_data, cfg):
             plt.close()
 
             # Provenance
-            netcdf_path = get_diagnostic_filename(filename, cfg)
-            io.iris_save(cube, netcdf_path)
             ancestors = cube.attributes['ancestors'].split('|')
             provenance_record = ec.get_provenance_record(
                 {'su': attrs}, ['su'],
                 caption=f'{cube.long_name} for {dataset_name}.',
-                plot_type='zonal', plot_file=plot_path, ancestors=ancestors)
+                plot_type='zonal', ancestors=ancestors)
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+
+            # Write netCDF file
+            netcdf_path = get_diagnostic_filename(filename, cfg)
+            io.iris_save(cube, netcdf_path)
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(netcdf_path, provenance_record)
 
@@ -701,6 +705,15 @@ def zhai(grouped_data, cfg):
             plt.close()
 
             # Provenance
+            provenance_record = ec.get_provenance_record(
+                {'zhai': attrs}, ['zhai'],
+                caption=f"Regression plot of 'mblc_fraction' vs 'tos' ({hem})",
+                plot_type='scatter',
+                ancestors=[d['filename'] for d in datasets])
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+
+            # Write netCDF file
             netcdf_path = get_diagnostic_filename(filename, cfg)
             cubes = iris.cube.CubeList([
                 ec.pandas_object_to_cube(
@@ -713,11 +726,6 @@ def zhai(grouped_data, cfg):
                     units='%', attributes={'region': hem}),
             ])
             io.iris_save(cubes, netcdf_path)
-            provenance_record = ec.get_provenance_record(
-                {'zhai': attrs}, ['zhai'],
-                caption=f"Regression plot of 'mblc_fraction' vs 'tos' ({hem})",
-                plot_type='scatter', plot_file=plot_path,
-                ancestors=[d['filename'] for d in datasets])
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(netcdf_path, provenance_record)
 

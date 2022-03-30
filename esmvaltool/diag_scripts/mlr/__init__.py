@@ -5,6 +5,7 @@ import os
 import re
 import warnings
 from copy import deepcopy
+from functools import lru_cache
 from pprint import pformat
 
 import esmvalcore.preprocessor
@@ -84,6 +85,7 @@ def _get_datasets(input_data, **kwargs):
     return datasets
 
 
+@lru_cache
 def _get_ne_land_mask_cube(n_lats=1000, n_lons=2000):
     """Get Natural Earth land mask."""
     ne_dir = os.path.join(
