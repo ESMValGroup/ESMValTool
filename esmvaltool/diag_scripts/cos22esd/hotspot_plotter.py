@@ -165,7 +165,7 @@ class HotspotPlot:
                 cmap = plt.cm.BrBG
             bounds = np.linspace(-1 * bound_limit, bound_limit, 11)
 
-            # plot each pannel
+            # plot each panel
             for i, key in enumerate(keys):
                 if i < 6:
                     axes = fig.add_subplot(gspec[0, i], projection=proj)
@@ -272,9 +272,9 @@ class HotspotPlot:
         min_glob, max_glob = [], []
         axes = []
         ancestor_files = []
-        for pannel, scen in enumerate(self.scenarios):
+        for panel, scen in enumerate(self.scenarios):
             legend_elements = {scen: []}
-            axes.append(fig.add_subplot(gspec[0, pannel]))
+            axes.append(fig.add_subplot(gspec[0, panel]))
             regional_var = var_combination.split(":")[0]
             regional_keys = [
                 f"{regional_var}_{project}_{scen}" for project in self.projects
@@ -327,7 +327,7 @@ class HotspotPlot:
                     "85": "RCP8.5/SSP5-8.5",
                 }
 
-                axes[pannel].scatter(
+                axes[panel].scatter(
                     large_scale_signal_ts,
                     regional_signal_ts,
                     facecolors="none",
@@ -338,7 +338,7 @@ class HotspotPlot:
                 )
                 max_glob.append(max(large_scale_signal_ts))
                 min_glob.append(min(large_scale_signal_ts))
-                axes[pannel].plot(large_scale_signal_ts,
+                axes[panel].plot(large_scale_signal_ts,
                                   y_values,
                                   color=base_colors[project])
                 if len(legend_elements[scen]) < 2:
@@ -369,11 +369,11 @@ class HotspotPlot:
             xlabel = (f"{against_region} "
                       f"{var_combination.partition(':')[-1].upper()} "
                       f"[{large_scale_units}]")
-            axes[pannel].set_xlabel(xlabel)
+            axes[panel].set_xlabel(xlabel)
             ylabel = (f"{self.cfg['region_name']} "
                       f"{var_combination.partition(':')[0].upper()} "
                       f"[{regional_units}]")
-            axes[pannel].set_ylabel(ylabel)
+            axes[panel].set_ylabel(ylabel)
 
             max_lim = max(max_range.values())
             min_lim = min(min_range.values())
@@ -382,7 +382,7 @@ class HotspotPlot:
             min_lim -= delta_range * 0.1
             max_lim += delta_range * 0.1
 
-            axes[pannel].axvline(
+            axes[panel].axvline(
                 x=0,
                 ymin=-1000,
                 ymax=1000,
@@ -390,7 +390,7 @@ class HotspotPlot:
                 linestyle="dotted",
                 alpha=0.6,
             )
-            axes[pannel].axhline(
+            axes[panel].axhline(
                 y_values=0,
                 xmin=-1000,
                 xmax=1000,
@@ -398,12 +398,12 @@ class HotspotPlot:
                 linestyle="dotted",
                 alpha=0.6,
             )
-            axes[pannel].set_title(
+            axes[panel].set_title(
                 f"Scenario: {title_format[scen]} \n CMIP5: rval="
                 f"{rvalue['cmip5']:.3f}; slope={slope['cmip5']:.3f} "
                 f"\n CMIP6: rval={rvalue['cmip6']:.3f}; "
                 f"slope={slope['cmip6']:.3f}")
-            axes[pannel].legend(handles=legend_elements[scen])
+            axes[panel].legend(handles=legend_elements[scen])
 
             long_name_dict = {"pr": "precipitation", "tas": "temperature"}
             if var_combination == "pr:tas":
@@ -499,8 +499,8 @@ class HotspotPlot:
     def find_abs_bound_range(self, results_dict, keys, avg_over=5):
         """Find suitable bounds for the colorbar.
 
-        It takes into account the absoulute maximun value from all the
-        pannels.
+        It takes into account the absolute maximum value from all the
+        panels.
         """
         max_averages = []
         min_averages = []
