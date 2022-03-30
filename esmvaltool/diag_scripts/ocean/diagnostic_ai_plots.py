@@ -294,6 +294,35 @@ def moving_average(cube, window):
 
 
 
+def write_csv_ts(cfg, metadatas, data_values, single_model, short_name):
+    """
+    Write a CSV file for the
+    """
+    out_shelve_dir = diagtools.folder([cfg['work_dir'], 'timeseries_csv', ])
+
+
+    for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
+        # if 'all' not in plotting: continue
+        out_csv = out_shelve_dir+ '_'.join(['time_series',single_model, variable_group, short_name, dataset, scenario, ensemble])+'.csv'
+        if os.path.exists(out_csv):continue
+
+        txt = ' '.join([ '#', short_name, dataset, scenario, ensemble, '\n'])
+        txt += 'time, value\n'
+        times = [t for t in sorted(data.keys())]
+        values = [data[t] for t in times]
+        for t,v in zip(times,values):
+            txt = ''.join([txt, str(t),', ', str(v),'\n'])
+
+        print('write_csv_ts: save:', out_csv)
+        fn = open(out_csv)
+        fn.write(txt)
+        fn.close()
+
+
+        # plt.plot(times, values, ls='-', c=color, lw=0.4) #, label=dataset)
+
+    assert 0
+
 def multi_model_time_series(
         cfg,
         metadatas,
@@ -357,12 +386,12 @@ def multi_model_time_series(
 
     if len(short_names.keys()) == 0:
         # no data in time series (ie, tos doesn't exist, but thetao does?)
-        if save: 
+        if save:
             return
         else:
             return fig, ax
 
-    if len(short_names.keys()) != 1: 
+    if len(short_names.keys()) != 1:
         print(short_names.keys())
         assert 0
     short_name = list(short_names.keys())[0]
@@ -530,6 +559,10 @@ def multi_model_time_series(
        sh['model_cubes_paths'] = model_cubes_paths
        sh.close()
 
+    make_csvs_data = True
+    if make_csvs_data :
+        write_csv_ts(cfg,metadata, data_values)
+
 
     if make_csvs and single_model=='all':
         # want a table that includes:
@@ -673,6 +706,7 @@ def multi_model_time_series(
 #                lw=0.4,
 #            )
     datas_ds = {}
+
 
     # single model lines:
     for dataset_x,scenario_x in itertools.product(sorted(datasets.keys()), sorted(scenarios.keys())):
@@ -1572,7 +1606,7 @@ def make_multi_model_profiles_plots(
                  if metadatas[fn]['dataset'] == 'CESM2':
                      # Note that this model behaves strangely in the chl profile here.
                      # it's got some weird masking below 100m.
-                     continue 
+                     continue
             scenario = metadatas[fn]['exp']
             if scenario == 'historical':
                 cube = extract_time(cube, hist_time_range[0], 1, 1, hist_time_range[1], 12, 31)
@@ -1775,7 +1809,7 @@ def make_multi_model_profiles_plotpair(
             if short_name == 'chl':
                 cube = fix_chl(cube)
                 if metadatas[fn]['dataset'] == 'CESM2' and single_model != 'CESM2':
-                     continue  
+                     continue
             scenario = metadatas[fn]['exp']
             if scenario == 'historical':
                 cube = extract_time(cube, hist_time_range[0], 1, 1, hist_time_range[1], 12, 31)
@@ -2186,19 +2220,19 @@ def multi_model_map_figure(
             scenario= metadatas[filenames[0]]['exp']
             short_name =  metadatas[filenames[0]]['short_name']
             exps[scenario] = variable_group
-            print('loaded:', variablegroup_model_cubes.keys(), variable_group) 
+            print('loaded:', variablegroup_model_cubes.keys(), variable_group)
             continue
-  
+
         for model_itr in models:
             print('variable_group:', variable_group, model_itr, 'looking for ', single_model)
 
             if model_itr in models_to_skip:
                  continue
-            if single_model == 'all': 
+            if single_model == 'all':
                  pass
-            elif model_itr != single_model: 
+            elif model_itr != single_model:
                  continue
-   
+
             work_dir = diagtools.folder([cfg['work_dir'], 'model_group_means','single_model_'+single_model, model_itr])
             model_path = work_dir+'_'.join([variable_group, model_itr, region])+'.nc'
             scenario = metadatas[filenames[0]]['exp']
@@ -2272,7 +2306,7 @@ def multi_model_map_figure(
         print('making make_mean_of_cube_list_notime:', variable_group)
         print('variablegroup_model_cubes:',variablegroup_model_cubes)
         cube_list_group = variablegroup_model_cubes.get(variable_group, False)
-        if not cube_list_group: 
+        if not cube_list_group:
             print('didnt find variable_group in variablegroup_model_cubes')
             print('variable_group:', variable_group)
             print('variablegroup_model_cubes', variablegroup_model_cubes)
@@ -2303,10 +2337,10 @@ def multi_model_map_figure(
     print(variablegroup_model_cubes.keys())
     try:
         hist_variable_group = exps['historical']
- 
+
         hist_cube = variablegroup_model_cubes[hist_variable_group]
         hist_cube_exists = True
-    except: 
+    except:
         hist_cube_exists = False
         hist_variable_group = ''
 
@@ -2333,7 +2367,7 @@ def multi_model_map_figure(
                 ranges = [obs_cube.data.min(), obs_cube.data.max()]
         if hist_cube_exists:
             cube_range_list = [ hist_cube.data, obs_cube.data]
-        else: 
+        else:
             cube_range_list = [obs_cube.data, ]
 
         if method == '5pc-95pc':
@@ -2727,7 +2761,7 @@ def main(cfg):
 
 
     # Individual plots - standalone
-    do_standalone = True 
+    do_standalone = True
     if do_standalone:
 
         # plottings:
@@ -2775,7 +2809,7 @@ def main(cfg):
         # maps:
         for single_model in sorted(models.keys()): # ['all', 'only']:
 #            continue
-            for reg in ['tightmidatlantic', 'midatlantic', 'verytightMPA']: 
+            for reg in ['tightmidatlantic', 'midatlantic', 'verytightMPA']:
                 multi_model_map_figure(
                     cfg,
                     metadatas,
