@@ -339,8 +339,8 @@ class HotspotPlot:
                 max_glob.append(max(large_scale_signal_ts))
                 min_glob.append(min(large_scale_signal_ts))
                 axes[panel].plot(large_scale_signal_ts,
-                                  y_values,
-                                  color=base_colors[project])
+                                 y_values,
+                                 color=base_colors[project])
                 if len(legend_elements[scen]) < 2:
                     n_models = self.cfg["N"][f"{project}_{scen}"]
                     legend_elements[scen].append(
