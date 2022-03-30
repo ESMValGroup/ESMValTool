@@ -1,4 +1,7 @@
-"""Plotting functions for the climate change hotspot."""
+"""Functions to plot output from ancestor cos22esd/climate_change_hotspot.py
+
+The plots produced reproduce Figs. 2, 3, S1, S2, S4 from Cos et al. 2022.
+"""
 import os
 import iris
 import iris.plot as iplt
@@ -44,17 +47,16 @@ class HotspotPlot:
         high = np.arange(20, 100, 10)
         v_high = np.arange(150, 400, 50)
         self.bound_candidates = np.concatenate(
-                                (small, medium, high, v_high)) * 5/4
+                                (small, medium, high, v_high)) * 5 / 4
+        self.metadata_files = [file for file in self.cfg["input_files"]
+                                if "tas/metadata.yml" in file]
+        
 
     def compute(self):
         """Collect datasets and call the plotting functions."""
-        hotspot_fields = io.get_all_ancestor_files(
-            self.cfg, pattern='hotspot_*.nc')
-        metadata_files = [file for file in self.cfg["input_files"]
-                          if "tas/metadata.yml" in file]
         # find number of models inside every multi-model mean
         self.cfg["N"] = {}
-        for meta_file in metadata_files:
+        for meta_file in self.metadata_files:
             n_identifyer = meta_file.split("/tas/")[0].split("/tas_")[-1]
             metadata = group_metadata(get_cfg(meta_file).values(), "dataset")
             self.cfg["N"][n_identifyer] = len(metadata.keys()) - 1
@@ -62,27 +64,26 @@ class HotspotPlot:
         for scenario in self.scenarios:
             fields_dict = {}
             ancestor_files = []
-            for filename in hotspot_fields:
-                key = os.path.basename(os.path.dirname(filename))
-                splitname = os.path.basename(filename).split("_")
-                season = splitname[1]
-                period = splitname[-1].split(".nc")[0]
+            for filename in io.get_all_ancestor_files(
+                                self.cfg, pattern='hotspot_*.nc'):
                 if key.split("_")[-1] == scenario:
-                    fields_dict[f"{period}_{season}_{key}"] = iris.load_cube(
+                    label = (f"{os.path.basename(filename).split('_')[-1].split('.nc')[0]}"
+                             f"_{os.path.basename(filename).split('_')[1]}"
+                             f"_{os.path.basename(os.path.dirname(filename))}")
+                    fields_dict[label] = iris.load_cube(
                         filename)
                     ancestor_files.append(filename)
             self.hotspot_fields_plot(
-                fields_dict, scenario, ancestor_files,
-                tas_bound=None, pr_bound=None)
+                fields_dict, scenario, ancestor_files)
 
         # call scatter plots
         for season in self.seasons:
             timeseries_dict = {"large_scale": {}, "regional": {}}
             ancestors_dict = {"large_scale": {}, "regional": {}}
             for region in timeseries_dict:
-                rolling_mean = io.get_all_ancestor_files(
-                    self.cfg, pattern=f'rolling_mean_{region}_{season}.nc')
-                for filename in rolling_mean:
+                for filename in io.get_all_ancestor_files(
+                                self.cfg, 
+                                pattern=f'rolling_mean_{region}_{season}.nc'):
                     key = os.path.basename(os.path.dirname(filename))
                     timeseries_dict[region][key] = iris.load_cube(filename)
                     ancestors_dict[region][key] = filename
@@ -91,7 +92,7 @@ class HotspotPlot:
                     timeseries_dict, season, var_combination, ancestors_dict)
 
     def hotspot_fields_plot(self, results_dict, scenario, ancestor_files_var,
-                            tas_bound=None, pr_bound=None):
+                            fixed_bounds={"tas": None, "pr": None}):
         """Regional climate change hotspot maps for TAS and PR.
 
         Local temperature and precipitation change differences
@@ -140,14 +141,14 @@ class HotspotPlot:
             # bound colorbar to abs(max) value on the map
             # or use input bounds
             if variable == "tas":
-                if tas_bound:
-                    bound_limit = tas_bound
+                if fixed_bounds["tas"]:
+                    bound_limit = fixed_bounds["tas"]
                 else:
                     bound_limit = self.find_abs_bound_range(results_dict, keys)
                 cmap = plt.cm.RdBu_r
             else:
-                if pr_bound:
-                    bound_limit = pr_bound
+                if fixed_bounds["pr"]:
+                    bound_limit = fixed_bounds["pr"]
                 else:
                     bound_limit = self.find_abs_bound_range(
                         results_dict, keys, avg_over=25)
@@ -164,7 +165,8 @@ class HotspotPlot:
 
                 if projection == "LambertConformal":
                     proj_to_data = (
-                        ccrs.PlateCarree()._as_mpl_transform(axes) - axes.transData
+                        ccrs.PlateCarree()._as_mpl_transform(axes) - \
+                        axes.transData
                     )
                     rect_in_target = proj_to_data.transform_path(path_ext)
                     axes.set_boundary(rect_in_target, use_as_clip_path=True)
@@ -421,7 +423,7 @@ class HotspotPlot:
 
     @staticmethod
     def formatter(text):
-        """Basic text definitions to format strings."""
+        """Text definitions to format strings."""
         repl_map = {
             "degC": "$^o$C",
             "K": "$^o$C",
@@ -493,9 +495,8 @@ class HotspotPlot:
 
         # find the bound candidate suited for the bound range
         index = np.argwhere(self.bound_candidates - max_bound > 0)[0, 0]
-        bound_limit = self.bound_candidates[index]
 
-        return bound_limit
+        return self.bound_candidates[index]
 
     @staticmethod
     def region_to_square(region, dimension):
@@ -605,7 +606,8 @@ class HotspotPlot:
             'domains': ['reg'],
             'plot_types': ['map'],
             'authors': [
-                'cos_josep',
+                'loosveldt-tomas_saskia',
+                # 'cos_josep',
             ],
             'references': [
                 'cos22esd',
@@ -632,7 +634,8 @@ class HotspotPlot:
             'domains': ['reg', 'global'],
             'plot_types': ['scatter', 'line', 'times'],
             'authors': [
-                'cos_josep',
+                'loosveldt-tomas_saskia',
+                # 'cos_josep',
             ],
             'references': [
                 'cos22esd',

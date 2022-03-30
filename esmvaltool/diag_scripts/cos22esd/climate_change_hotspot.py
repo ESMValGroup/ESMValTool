@@ -69,9 +69,10 @@ class HotspotDiag:
                 large_scale_cube, season)
             time_subset_regional_cube = self.extract_annual_or_season(
                 regional_cube, season)
+            time_subset_cubes = [time_subset_large_scale_cube, 
+                                 time_subset_regional_cube]
             self.compute_hotspot_fields(
-                time_subset_large_scale_cube, time_subset_regional_cube,
-                season, filename, input_data_dict)
+                time_subset_cubes, season, filename, input_data_dict)
             for key, cube in zip(["large_scale", "regional"],
                                  [time_subset_large_scale_cube,
                                  time_subset_regional_cube]):
@@ -108,12 +109,13 @@ class HotspotDiag:
             cube = extract_season(cube, season)
         return cube
 
-    def compute_hotspot_fields(self, large_scale_cube, regional_cube,
-                               season, filename, input_data_dict):
+    def compute_hotspot_fields(self, cubes, season, 
+                               filename, input_data_dict):
         """Compute the hotspot fields with self.retireve_data cubes.
 
         the resulting cubes are saved inside self.experiment_dict.
         """
+        large_scale_cube, regional_cube = cubes
         regional_anomaly = anomalies(
             regional_cube, "full", reference=self.anomaly_reference)
         large_scale_anomaly = anomalies(
@@ -182,7 +184,9 @@ class HotspotDiag:
             'statistics': ['mean', 'anomaly', 'diff'],
             'domains': ['global', 'reg'],
             'authors': [
-                'cos_josep',
+                # 'cos_josep',
+                'loosveldt-tomas_saskia',
+
             ],
             'references': [
                 'cos22esd',
@@ -213,7 +217,8 @@ class HotspotDiag:
             'statistics': ['anomaly', "other"],
             'domains': [domain],
             'authors': [
-                'cos_josep',
+                'loosveldt-tomas_saskia',
+                # 'cos_josep',
             ],
             'references': [
                 'cos22esd',
