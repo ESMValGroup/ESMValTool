@@ -1,4 +1,4 @@
-"""Functions to plot output from ancestor cos22esd/climate_change_hotspot.py
+"""Functions to plot output from ancestor cos22esd/climate_change_hotspot.py.
 
 The plots produced reproduce Figs. 2, 3, S1, S2, S4 from Cos et al. 2022.
 """
@@ -46,17 +46,18 @@ class HotspotPlot:
         medium = np.arange(1, 11)
         high = np.arange(20, 100, 10)
         v_high = np.arange(150, 400, 50)
-        self.bound_candidates = np.concatenate(
-                                (small, medium, high, v_high)) * 5 / 4
-        self.metadata_files = [file for file in self.cfg["input_files"]
-                                if "tas/metadata.yml" in file]
-        
+        self.bound_candidates = np.concatenate((small, 
+                                                medium, 
+                                                high, 
+                                                v_high)) * 5 / 4
 
     def compute(self):
         """Collect datasets and call the plotting functions."""
         # find number of models inside every multi-model mean
+        metadata_files = [file for file in self.cfg["input_files"]
+                          if "tas/metadata.yml" in file]
         self.cfg["N"] = {}
-        for meta_file in self.metadata_files:
+        for meta_file in metadata_files:
             n_identifyer = meta_file.split("/tas/")[0].split("/tas_")[-1]
             metadata = group_metadata(get_cfg(meta_file).values(), "dataset")
             self.cfg["N"][n_identifyer] = len(metadata.keys()) - 1
@@ -65,13 +66,13 @@ class HotspotPlot:
             fields_dict = {}
             ancestor_files = []
             for filename in io.get_all_ancestor_files(
-                                self.cfg, pattern='hotspot_*.nc'):
+                            self.cfg, pattern='hotspot_*.nc'):
+                key = os.path.basename(os.path.dirname(filename))
+                splitname = os.path.basename(filename).split("_")
                 if key.split("_")[-1] == scenario:
-                    label = (f"{os.path.basename(filename).split('_')[-1].split('.nc')[0]}"
-                             f"_{os.path.basename(filename).split('_')[1]}"
-                             f"_{os.path.basename(os.path.dirname(filename))}")
-                    fields_dict[label] = iris.load_cube(
-                        filename)
+                    fields_dict[(f"{splitname[-1].split('.nc')[0]}_"
+                                f"{splitname[1]}_{key}")] = iris.load_cube(
+                                                                    filename)
                     ancestor_files.append(filename)
             self.hotspot_fields_plot(
                 fields_dict, scenario, ancestor_files)
@@ -82,8 +83,8 @@ class HotspotPlot:
             ancestors_dict = {"large_scale": {}, "regional": {}}
             for region in timeseries_dict:
                 for filename in io.get_all_ancestor_files(
-                                self.cfg, 
-                                pattern=f'rolling_mean_{region}_{season}.nc'):
+                            self.cfg, 
+                            pattern=f'rolling_mean_{region}_{season}.nc'):
                     key = os.path.basename(os.path.dirname(filename))
                     timeseries_dict[region][key] = iris.load_cube(filename)
                     ancestors_dict[region][key] = filename
@@ -92,7 +93,7 @@ class HotspotPlot:
                     timeseries_dict, season, var_combination, ancestors_dict)
 
     def hotspot_fields_plot(self, results_dict, scenario, ancestor_files_var,
-                            fixed_bounds={"tas": None, "pr": None}):
+                            tas_bound=None, pr_bound=None):
         """Regional climate change hotspot maps for TAS and PR.
 
         Local temperature and precipitation change differences
@@ -139,16 +140,16 @@ class HotspotPlot:
             )
 
             # bound colorbar to abs(max) value on the map
-            # or use input bounds
+            # or use input bounds {"tas": [bounds], "pr": [bounds]}
             if variable == "tas":
-                if fixed_bounds["tas"]:
-                    bound_limit = fixed_bounds["tas"]
+                if tas_bound:
+                    bound_limit = tas_bound
                 else:
                     bound_limit = self.find_abs_bound_range(results_dict, keys)
                 cmap = plt.cm.RdBu_r
             else:
-                if fixed_bounds["pr"]:
-                    bound_limit = fixed_bounds["pr"]
+                if pr_bound:
+                    bound_limit = pr_bound
                 else:
                     bound_limit = self.find_abs_bound_range(
                         results_dict, keys, avg_over=25)
