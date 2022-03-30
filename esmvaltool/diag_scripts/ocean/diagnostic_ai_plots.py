@@ -1232,7 +1232,10 @@ def save_clim_csv(cfg, keys, times, data):
     if os.path.exists(out_csv):return
 
     txt = '# '+ ' '.join(keys) + '\n'
-    txt = '# historical: 2000-2010, future: 2040-2050\n'
+    if 'historical' in keys:
+        txt += '# time range: 2000-2010\n'
+    else:
+        txt += '# time range: 2040-2050\n'
     txt += 'month, value\n'
 
     for t,v in zip(times, data):
@@ -1761,6 +1764,29 @@ def make_multi_model_profiles_plots(
     plt.close()
 """
 
+def save_profile_csv(cfg, keys, depths, data):
+    """
+    Save profile data as a csv.
+    """
+    out_shelve_dir = diagtools.folder([cfg['work_dir'], 'profile_csv', ])
+    out_csv = out_shelve_dir + '_'.join(keys)+'.csv'
+    if os.path.exists(out_csv):return
+
+    txt = '# '+ ' '.join(keys) + '\n'
+    if 'historical' in keys:
+        txt += '# time range: 2000-2010\n'
+    else:
+        txt += '# time range: 2040-2050\n'
+    txt += 'depth, value\n'
+
+    for z, v in zip(depths, data):
+        txt = ''.join([txt, str(z),', ', str(v),'\n'])
+
+    print('save_profile_csv: save:', out_csv)
+    fn = open(out_csv, 'w')
+    fn.write(txt)
+    fn.close()
+
 
 
 
@@ -1902,6 +1928,7 @@ def make_multi_model_profiles_plotpair(
 
         if 'means' in plotting:
             ax0, ax1 = plot_z_line(depths, mean, ax0, ax1, ls='-', c=color, lw=2., label = scenario)
+            save_profile_csv(cfg, ['profile', variable_group,single_model, model, scenario, 'means'], depths, mean)
 
         if scenario in ['historical', 'hist']:
             zorder = 5
@@ -1909,11 +1936,15 @@ def make_multi_model_profiles_plotpair(
 
         if 'means_split' in plotting:
             ax0, ax1 = plot_z_line(depths, mean, ax0, ax1, ls='-', c=color, lw=2., label = scenario, zorder=zorder)
+            save_profile_csv(cfg, ['profile', variable_group, single_model, scenario, 'means_split'], depths, mean)
+
 
         if 'medians' in plotting:
             medians = [np.median(data_values[z]) for z in depths]
             data_dict[scenario]['medians'] = medians
             ax0, ax1 = plot_z_line(depths, medians, ax0, ax1, ls='-', c=color, lw=2., label = scenario)
+            save_profile_csv(cfg, ['profile', variable_group, single_model, scenario, 'medians'], depths, mean)
+
 
         if 'range' in plotting:
             mins = [np.min(data_values[z]) for z in depths]
@@ -1921,6 +1952,9 @@ def make_multi_model_profiles_plotpair(
             data_dict[scenario]['mins'] = mins
             data_dict[scenario]['maxs'] = maxs
             ax0, ax1 =  plot_z_area(depths, mins, maxs,ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
+            save_profile_csv(cfg, ['profile', variable_group, single_model, scenario, 'mins'], depths, mins)
+            save_profile_csv(cfg, ['profile', variable_group, single_model, scenario, 'maxs'], depths, maxs)
+
 
         if '5-95' in plotting:
             mins = [np.percentile(data_values[z], 5.) for z in depths]
@@ -1936,6 +1970,7 @@ def make_multi_model_profiles_plotpair(
             data_dict[scenario]['95pc'] = maxs
             if scenario in ['historical', 'hist']:
                 ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
+                # save_profile_csv(cfg, ['profile', variable_group, single_model, scenario, 'maxs'], depths, maxs)
 
     # plot rhs
     try:
