@@ -28,7 +28,7 @@ from esmvaltool.diag_scripts.shared import (
 
 
 class HotspotPlot:
-    """class that plots the results."""
+    """Class that plots the results."""
     def __init__(self, config):
         """Variable definition.
 
@@ -51,8 +51,7 @@ class HotspotPlot:
             (small, medium, high, v_high)) * 5 / 4
 
     def compute(self):
-        """Collect datasets and call the plotting functions."""
-        # find number of models inside every multi-model mean
+        """Collects datasets and calls the plotting functions."""
         metadata_files = [
             file for file in self.cfg["input_files"]
             if "tas/metadata.yml" in file
@@ -284,41 +283,26 @@ class HotspotPlot:
                 f"{large_scale_var}_{project}_{scen}"
                 for project in self.projects
             ]
-            for regional_key, large_scale_key in zip(regional_keys,
-                                                     large_scale_keys):
-                project = regional_key.split("_")[1]
-                ls_cube = results_dict["large_scale"][large_scale_key]
-                large_scale_signal_ts = ls_cube.data
-                r_cube = results_dict["regional"][regional_key]
-                regional_signal_ts = r_cube.data
+            for reg_k, ls_k in zip(regional_keys, large_scale_keys):
+                project = reg_k.split("_")[1]
+                large_scale_signal_ts = results_dict["large_scale"][ls_k].data
+                regional_signal_ts = results_dict["regional"][reg_k].data
 
-                res = stats.linregress(large_scale_signal_ts,
-                                       regional_signal_ts)
-                y_values = res.intercept + res.slope * \
-                    np.array(large_scale_signal_ts)
-                rvalue[project] = res.rvalue
-                slope[project] = res.slope
-                timesteps = np.linspace(0, 1, len(large_scale_signal_ts))
-                if project == "cmip6":
-                    cb_colors = plt.cm.Reds(
-                        np.linspace(0, 1, len(regional_signal_ts)))
-                if project == "cmip5":
-                    cb_colors = plt.cm.Blues(
-                        np.linspace(0, 1, len(regional_signal_ts)))
-                cb_colors[:, -1] = timesteps
+                y_values, rvalue, cb_colors = self.linear_regression(
+                    large_scale_signal_ts, regional_signal_ts, project, rvalue,
+                    slope)
 
                 if var_combination == "pr:tas":
-                    max_range[project] = max(regional_signal_ts)
-                    min_range[project] = min(regional_signal_ts)
+                    min_range[project], max_range[project], suptitle = (
+                        self.ranges_and_suptitle_prtas(
+                            regional_signal_ts, season,
+                            [min_range[project], max_range[project]]))
                 else:
-                    if max(regional_signal_ts) > max(large_scale_signal_ts):
-                        max_range[project] = max(regional_signal_ts)
-                    else:
-                        max_range[project] = max(large_scale_signal_ts)
-                    if min(regional_signal_ts) < min(large_scale_signal_ts):
-                        min_range[project] = min(regional_signal_ts)
-                    else:
-                        min_range[project] = min(large_scale_signal_ts)
+                    min_range[project], max_range[project], suptitle = (
+                        self.ranges_and_suptitle(
+                            regional_signal_ts, season,
+                            [min_range[project], max_range[project]],
+                            var_combination))
 
                 title_format = {
                     "26": "RCP2.6/SSP1-2.6",
@@ -352,13 +336,11 @@ class HotspotPlot:
                         ))
 
                 # collect used ancestor files
-                ancestor_files.append(
-                    ancestors_dict["large_scale"][regional_key])
-                ancestor_files.append(ancestors_dict["regional"][regional_key])
+                ancestor_files.append(ancestors_dict["large_scale"][reg_k])
+                ancestor_files.append(ancestors_dict["regional"][reg_k])
 
-            if var_combination.partition(":")[-1] == "tas":
-                against_region = "Global"
-            else:
+            against_region = "Global"
+            if var_combination.partition(":")[-1] != "tas":
                 against_region = (
                     f"{self.cfg['region'][2]}$^o$ N-{self.cfg['region'][3]}"
                     f"$^o$ N latitudinal belt")
@@ -405,44 +387,9 @@ class HotspotPlot:
                 f"slope={slope['cmip6']:.3f}")
             axes[panel].legend(handles=legend_elements[scen])
 
-            long_name_dict = {"pr": "precipitation", "tas": "temperature"}
-            if var_combination == "pr:tas":
-                suptitle = (f"{self.cfg['region_name']} {season.upper()} "
-                            f"precipitation vs global {season.upper()} "
-                            f"temperature.\n 10yr rolling means 1960-2100, "
-                            f"Baseline: 1986-2005")
-                plt.suptitle(suptitle)
-            else:
-                y_combination = var_combination.partition(':')[0]
-                suptitle = (f"{self.cfg['region_name']} vs {against_region} "
-                            f"{season.upper()} "
-                            f"{long_name_dict[y_combination]}"
-                            f".\n 10yr rolling means 1960-2100, "
-                            f"Baseline: 1986-2005")
-                plt.suptitle(suptitle)
-        for box in range(3):
-            axes[box].set_ylim(min_lim, max_lim)
-            if var_combination == "pr:tas":
-                min_l = min(min_glob) - (max(max_glob) - min(min_glob)) * 0.1
-                max_l = max(max_glob) + (max(max_glob) - min(min_glob)) * 0.1
-                axes[box].set_xlim(min_l, max_l)
-            else:
-                axes[box].set_xlim(min_lim, max_lim)
+        self.create_panel([min_lim, max_lim], [min_glob, max_glob], axes,
+                          slope, var_combination)
 
-            if (slope["cmip5"] + slope["cmip6"]) >= 0:
-                axes[box].plot(
-                    [-1000, 1000],
-                    [-1000, 1000],
-                    color="gray",
-                    alpha=0.6,
-                )
-            else:
-                axes[box].plot(
-                    [-1000, 1000],
-                    [1000, -1000],
-                    color="gray",
-                    alpha=0.6,
-                )
         basename = f"scenario_combination_{var_combination}_{season}"
         provenance_record = self.get_rolling_mean_provenance(
             suptitle, ancestor_files)
@@ -525,6 +472,66 @@ class HotspotPlot:
 
         return self.bound_candidates[index]
 
+    def linear_regression(large_scale_signal_ts, regional_signal_ts, project,
+                          rvalue, slope):
+        """Create linear_regression and color fade."""
+        res = stats.linregress(large_scale_signal_ts, regional_signal_ts)
+        y_values = res.intercept + res.slope * \
+            np.array(large_scale_signal_ts)
+        rvalue[project] = res.rvalue
+        slope[project] = res.slope
+        timesteps = np.linspace(0, 1, len(large_scale_signal_ts))
+
+        if project == "cmip6":
+            cb_colors = plt.cm.Reds(np.linspace(0, 1, len(regional_signal_ts)))
+        if project == "cmip5":
+            cb_colors = plt.cm.Blues(np.linspace(0, 1,
+                                                 len(regional_signal_ts)))
+        cb_colors[:, -1] = timesteps
+
+        return y_values, rvalue, cb_colors
+
+    def ranges_and_suptitle(self, signals, season, ranges, var_combination,
+                            against_region):
+        """Obtain ranges and suptitle for tas:tas and pr:pr."""
+        min_range, max_range = ranges
+        regional_signal_ts, large_scale_signal_ts = signals
+        long_name_dict = {"pr": "precipitation", "tas": "temperature"}
+        y_combination = var_combination.partition(':')[0]
+        suptitle = (f"{self.cfg['region_name']} vs "
+                    f"{against_region} "
+                    f"{season.upper()} "
+                    f"{long_name_dict[y_combination]}"
+                    f".\n 10yr rolling means 1960-2100, "
+                    f"Baseline: 1986-2005")
+
+        max_range = max(large_scale_signal_ts)
+        if max(regional_signal_ts) > max(large_scale_signal_ts):
+            max_range = max(regional_signal_ts)
+
+        min_range = min(large_scale_signal_ts)
+        if min(regional_signal_ts) < min(large_scale_signal_ts):
+            min_range = min(regional_signal_ts)
+        plt.suptitle(suptitle)
+
+        return min_range, max_range, suptitle
+
+    def ranges_and_suptitle_prtas(self, regional_signal_ts, season, ranges):
+        """Obtain ranges and suptitle for pr:tas."""
+        min_range, max_range = ranges
+        max_range = max(regional_signal_ts)
+        min_range = min(regional_signal_ts)
+        suptitle = (f"{self.cfg['region_name']} "
+                    f"{season.upper()} "
+                    f"precipitation vs global "
+                    f"{season.upper()} "
+                    f"temperature.\n 10yr "
+                    f"rolling means 1960-2100, "
+                    f"Baseline: 1986-2005")
+        plt.suptitle(suptitle)
+
+        return min_range, max_range, suptitle
+
     @staticmethod
     def region_to_square(region, dimension):
         """Definition of the region polygon."""
@@ -545,6 +552,33 @@ class HotspotPlot:
                 region["start_longitude"],
             ]
         return boundaries
+
+    @staticmethod
+    def create_panels(lims, globs, axes, slope, var_combination):
+        """"Create panels and reference lines."""
+        for box in range(3):
+            axes[box].set_ylim(lims[0], lims[1])
+            if var_combination == "pr:tas":
+                min_l = min(globs[0]) - (max(globs[1]) - min(globs[0])) * 0.1
+                max_l = max(globs[1]) + (max(globs[1]) - min(globs[0])) * 0.1
+                axes[box].set_xlim(min_l, max_l)
+            else:
+                axes[box].set_xlim(lims[0], lims[1])
+
+            if (slope["cmip5"] + slope["cmip6"]) >= 0:
+                axes[box].plot(
+                    [-1000, 1000],
+                    [-1000, 1000],
+                    color="gray",
+                    alpha=0.6,
+                )
+            else:
+                axes[box].plot(
+                    [-1000, 1000],
+                    [1000, -1000],
+                    color="gray",
+                    alpha=0.6,
+                )
 
     def define_projection(self, region):
         """Projection definition to get LambertConformal borders."""
