@@ -9,10 +9,10 @@ documentation:
     - munday_gregory
 
 datasets:
-  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585], mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
 preprocessors:
-  global_mean:
+  global_mean_monthly:
     monthly_statistics:
       operator: mean
 
@@ -21,104 +21,167 @@ preprocessors:
                     start_latitude: -55, end_latitude: 82.5, step_latitude: 2.5}
       scheme: linear
 
-historical_settings: &historical_settings
-  exp: historical
-  start_year: 1850
-  end_year: 2014
-  preprocessor: global_mean
+  global_mean_annual:
+    annual_statistics:
+      operator: mean
 
-ssp585_settings: &ssp585_settings
-  exp: ssp585
-  start_year: 2015
+  land_mean_annual:
+    annual_statistics:
+      operator: mean
+
+    # weighting_landsea_fraction:
+    #   area_type: land
+    #   fx_variables:
+    #     sftlf:
+    #       dataset: UKESM1-0-LL
+    #       project: CMIP6
+    #       mip: fx
+    #       exp: piControl
+    #       ensemble: r1i1p1f2
+    #       grid: gn
+
+    mask_landsea:
+      mask_out: sea
+
+  ocean_mean_annual:
+    annual_statistics:
+      operator: mean
+
+    # weighting_landsea_fraction:
+    #   area_type: sea
+    #   fx_variables:
+    #     sftlf:
+    #       dataset: UKESM1-0-LL
+    #       project: CMIP6
+    #       mip: fx
+    #       exp: piControl
+    #       ensemble: r1i1p1f2
+    #       grid: gn
+
+    mask_landsea:
+      mask_out: land
+
+monthly_global_settings: &monthly_global_settings
+  start_year: 1850
   end_year: 2100
-  preprocessor: global_mean
+  preprocessor: global_mean_monthly
+
+annual_global_settings: &annual_global_settings
+  start_year: 1850
+  end_year: 2100
+  preprocessor: global_mean_annual
+
+annual_land_settings: &annual_land_settings
+  start_year: 1850
+  end_year: 2100
+  preprocessor: land_mean_annual
+
+annual_ocean_settings: &annual_ocean_settings
+  start_year: 1850
+  end_year: 2100
+  preprocessor: ocean_mean_annual
 
 diagnostics:
-  timeseries:
+  monthly_timeseries:
     description: Mean monthly variables
 
     variables:
       tasmax_585:
         short_name: tasmax
-        <<: *ssp585_settings
+        <<: *monthly_global_settings
 
       tasmin_585:
         short_name: tasmin
-        <<: *ssp585_settings
+        <<: *monthly_global_settings
 
       tas_585:
         short_name: tas
-        <<: *ssp585_settings
+        <<: *monthly_global_settings
 
       hurs_585:
         short_name: hurs
-        <<: *ssp585_settings
+        <<: *monthly_global_settings
 
       huss_585:
         short_name: huss
-        <<: *ssp585_settings
+        <<: *monthly_global_settings
 
       pr_585:
         short_name: pr
-        <<: *ssp585_settings
+        <<: *monthly_global_settings
 
       sfcWind_585:
         short_name: sfcWind
-        <<: *ssp585_settings
+        <<: *monthly_global_settings
 
       ps_585:
         short_name: ps
-        <<: *ssp585_settings
+        <<: *monthly_global_settings
 
       rsds_585:
         short_name: rsds
-        <<: *ssp585_settings
+        <<: *monthly_global_settings
 
       rlds_585:
         short_name: rlds
-        <<: *ssp585_settings
-
-      hist_tasmax:
-        short_name: tasmax
-        <<: *historical_settings
-
-      hist_tasmin:
-        short_name: tasmin
-        <<: *historical_settings
-
-      hist_tas:
-        short_name: tas
-        <<: *historical_settings
-
-      hist_hurs:
-        short_name: hurs
-        <<: *historical_settings
-
-      hist_huss:
-        short_name: huss
-        <<: *historical_settings
-
-      hist_pr:
-        short_name: pr
-        <<: *historical_settings
-
-      hist_sfcWind:
-        short_name: sfcWind
-        <<: *historical_settings
-
-      hist_ps:
-        short_name: ps
-        <<: *historical_settings
-
-      hist_rsds:
-        short_name: rsds
-        <<: *historical_settings
-
-      hist_rlds:
-        short_name: rlds
-        <<: *historical_settings
-
+        <<: *monthly_global_settings
 
     scripts:
       variable_extraction_script:
         script: climate_patterns/variable_extraction.py
+
+  annual_timeseries:
+    description: Mean annual TOA fluxes and tas
+
+    variables:
+      tas_global:
+        short_name: tas
+        <<: *annual_global_settings
+
+      rlut_global:
+        short_name: rlut
+        <<: *annual_global_settings
+
+      rsut_global:
+        short_name: rsut
+        <<: *annual_global_settings
+
+      rsdt_global:
+        short_name: rsdt
+        <<: *annual_global_settings
+
+      tas_land:
+        short_name: tas
+        <<: *annual_land_settings
+
+      rlut_land:
+        short_name: rlut
+        <<: *annual_land_settings
+
+      rsut_land:
+        short_name: rsut
+        <<: *annual_land_settings
+
+      rsdt_land:
+        short_name: rsdt
+        <<: *annual_land_settings
+
+      tas_ocean:
+        short_name: tas
+        <<: *annual_ocean_settings
+
+      rlut_ocean:
+        short_name: rlut
+        <<: *annual_ocean_settings
+
+      rsut_ocean:
+        short_name: rsut
+        <<: *annual_ocean_settings
+
+      rsdt_ocean:
+        short_name: rsdt
+        <<: *annual_ocean_settings
+
+    scripts:
+      energy_balance_script:
+        script: climate_patterns/ebm_parameters.py
