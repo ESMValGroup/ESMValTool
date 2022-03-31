@@ -183,8 +183,7 @@ class HotspotDiag:
             'statistics': ['mean', 'anomaly', 'diff'],
             'domains': ['global', 'reg'],
             'authors': [
-                # 'cos_josep',
-                'loosveldt-tomas_saskia',
+                'cos_josep',
 
             ],
             'references': [
@@ -216,8 +215,7 @@ class HotspotDiag:
             'statistics': ['anomaly', "other"],
             'domains': [domain],
             'authors': [
-                'loosveldt-tomas_saskia',
-                # 'cos_josep',
+                'cos_josep',
             ],
             'references': [
                 'cos22esd',
