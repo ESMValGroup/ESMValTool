@@ -98,6 +98,7 @@ The standard recipe uses data from scenarios with the radiative forcings 2.6, 4.
 but any combination of three scenarios from the following list can be used:
 
 .. code-block:: yaml
+
    26: "RCP2.6/SSP1-2.6"
    45: "RCP4.5/SSP2-4.5"
    60: "RCP6.0/SSP4-6.0"
@@ -108,6 +109,7 @@ specific CMIP project and scenario between the ``documentation``
 and ``preprocessor`` sections of the recipe as follows:
 
 .. code-block:: yaml
+
    cmip6_85: &cmip6_85
       - {...dataset keys...}
       - {...dataset keys...}
@@ -159,6 +161,7 @@ Finally, if the datasets that need to be included in the multi-model means are c
 the datasets could be simplified to :
 
 .. code-block:: yaml
+
    cmip6: &cmip6
       - {...dataset keys...}
       - {...dataset keys...}
