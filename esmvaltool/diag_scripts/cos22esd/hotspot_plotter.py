@@ -81,13 +81,13 @@ class HotspotPlot:
         for season in self.seasons:
             timeseries_dict = {"large_scale": {}, "regional": {}}
             ancestors_dict = {"large_scale": {}, "regional": {}}
-            for region in timeseries_dict:
+            for region, value in timeseries_dict.items():
                 for filename in io.get_all_ancestor_files(
                         self.cfg,
                         pattern=f'rolling_mean_{region}_{season}.nc'):
                     key = os.path.basename(os.path.dirname(filename))
-                    timeseries_dict[region][key] = iris.load_cube(filename)
-                    ancestors_dict[region][key] = filename
+                    value[key] = iris.load_cube(filename)
+                    value[key] = filename
             for var_combination in self.var_combinations:
                 self.timeseries_scatter_plot(timeseries_dict, season,
                                              var_combination, ancestors_dict)
