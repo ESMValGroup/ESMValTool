@@ -21,9 +21,9 @@ documentation:
 preprocessors:
 
   lst_preprocessor:
-    regrid:
-      target_grid: 1x1 #UKESM1-0-LL
-      scheme: linear
+    # regrid:
+    #   target_grid: 1x1 #UKESM1-0-LL
+    #   scheme: linear
 
     extract_region: 
       start_longitude: 35
@@ -31,8 +31,8 @@ preprocessors:
       start_latitude: 60
       end_latitude: 70
 
-    mask_landsea:
-      mask_out: sea
+    # mask_landsea:
+    #   mask_out: sea
 
 diagnostics:
   timeseries:
@@ -49,9 +49,19 @@ diagnostics:
         additional_datasets:
           - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 2010, end_year: 2010, grid: gn}#, frequency: monthly}
 
-#          - {dataset: esacci_lst_uncerts, project: OBS, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
-# caps! 
-  
+      # tsDay:
+      #   mip: Amon
+      #   preprocessor: lst_preprocessor
+      #   additional_datasets:
+      #     - {dataset: ESACCI_LST_UNCERTS, project: OBS, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+ 
+
+      tsNight:
+        mip: Amon
+        preprocessor: lst_preprocessor
+        additional_datasets:
+          - {dataset: ESACCI_LST_UNCERTS, project: OBS, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+ 
 
       tsLocalSfcErrDay:
         mip: Amon
@@ -59,6 +69,66 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI_LST_UNCERTS, project: OBS, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
  
+
+      tsLocalSfcErrNight:
+        mip: Amon
+        preprocessor: lst_preprocessor
+        additional_datasets:
+          - {dataset: ESACCI_LST_UNCERTS, project: OBS, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+ 
+
+
+      tsLocalAtmErrDay:
+        mip: Amon
+        preprocessor: lst_preprocessor
+        additional_datasets:
+          - {dataset: ESACCI_LST_UNCERTS, project: OBS, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+ 
+
+      tsLocalAtmErrNight:
+        mip: Amon
+        preprocessor: lst_preprocessor
+        additional_datasets:
+          - {dataset: ESACCI_LST_UNCERTS, project: OBS, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+ 
+
+      tsLSSysErrDay:
+        mip: Amon
+        #preprocessor: lst_preprocessor
+        additional_datasets:
+          - {dataset: ESACCI_LST_UNCERTS, project: OBS, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+ 
+
+      tsLSSysErrNight:
+        mip: Amon
+        #preprocessor: lst_preprocessor
+        additional_datasets:
+          - {dataset: ESACCI_LST_UNCERTS, project: OBS, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+ 
+
+      tsUnCorErrDay:
+        mip: Amon
+        preprocessor: lst_preprocessor
+        additional_datasets:
+          - {dataset: ESACCI_LST_UNCERTS, project: OBS, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+ 
+
+      tsUnCorErrNight:
+        mip: Amon
+        preprocessor: lst_preprocessor
+        additional_datasets:
+          - {dataset: ESACCI_LST_UNCERTS, project: OBS, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+ 
+
+
+      # tsStderr:
+      #   mip: Amon
+      #   preprocessor: lst_preprocessor
+      #   additional_datasets:
+      #     - {dataset: ESACCI_LST_UNCERTS, project: OBS, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+ 
+
+
     scripts:
       script1:
         script: lst_uncert/lst_uncert.py
