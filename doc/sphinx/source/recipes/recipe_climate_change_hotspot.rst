@@ -188,10 +188,12 @@ Example plots
 
 .. _fig_climate_change_hotspot_1:
 .. figure:: /recipes/figures/cos22esd/tas_45.png
-   :align:   center
+   :align:  center
+   :width:  9cm
 
 .. figure:: /recipes/figures/cos22esd/pr_45.png
-   :align:   center
+   :align:  center
+   :width:  9cm
 
   Mediterranean region temperature (upper rows) and precipitation (lower rows) change differences against the mean global temperature
   change and the mean 30–45º  N latitudinal belt precipitation change respectively. The changes for the periods 2041–2060 (first and third
