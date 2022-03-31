@@ -551,7 +551,7 @@ preprocessors:
       statistics: [mean]
     multi_model_statistics:
       span: full
-      operator: [mean]
+      statistics: [mean]
       groupby: [ensemble_statistics]
     seasonal_statistics:
       operator: mean
