@@ -28,7 +28,7 @@ class HotspotDiag:
     """Hotspot diagnostics' class.
 
     Class that reads, postprocesses and calls the plotting functions
-    necessari to obtain the hotspot figures.
+    necessary to obtain the hotspot figures.
     """
 
     def __init__(self, config):
