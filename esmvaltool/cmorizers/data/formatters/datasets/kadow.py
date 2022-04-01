@@ -43,21 +43,14 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
 
     # Fix coordinates
     utils.fix_dim_coordnames(cube)
-    #cube_coord = cube.coord('longitude')
-    #if cube_coord.points[0] < 0. and \
-    #        cube_coord.points[-1] < 181.:
-    #    cube_coord.points = \
-    #        cube_coord.points + 180.
-    #    utils.fix_bounds(cube, cube_coord)
-    #    cube.attributes['geospatial_lon_min'] = 0.
-    #    cube.attributes['geospatial_lon_max'] = 360.
-    #    nlon = len(cube_coord.points)
-    #    utils.roll_cube_data(cube, nlon // 2, -1)
     # fix flipped latitude
     utils.flip_dim_coord(cube, 'latitude')
     utils.fix_dim_coordnames(cube)
     cube_coord = cube.coord('latitude')
     utils.fix_bounds(cube, cube_coord)
+    cube_coord = cube.coord('longitude')
+    utils.fix_bounds(cube, cube_coord)
+
     # add heigt2m coordinate
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)

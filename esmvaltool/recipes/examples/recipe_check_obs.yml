@@ -481,7 +481,7 @@ diagnostics:
       tasa:
     additional_datasets:
       - {dataset: Kadow, project: OBS, mip: Amon, tier: 2,
-         type: mean, version: 5.0.1.0, start_year: 1850, end_year: 2020}
+         type: ground, version: 5.0.1.0, start_year: 1850, end_year: 2020}
     scripts: null
 
 

@@ -13,7 +13,7 @@ attributes:
     ensemble mean, infilled by AI'
 
 filenames:
-  analysis:
+  5.0.1.0:
     'HadCRUT.5.0.1.0.anomalies.Kadow_et_al_2020_20crAI-infilled.ensemble_mean_185001-202012.nc'
 
 # Variables to cmorize
