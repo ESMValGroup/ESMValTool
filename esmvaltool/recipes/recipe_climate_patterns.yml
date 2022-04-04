@@ -8,9 +8,6 @@ documentation:
   authors:
     - munday_gregory
 
-datasets:
-  - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585], mip: Amon, ensemble: r1i1p1f2, grid: gn}
-
 preprocessors:
   global_mean_monthly:
     monthly_statistics:
@@ -29,16 +26,16 @@ preprocessors:
     annual_statistics:
       operator: mean
 
-    # weighting_landsea_fraction:
-    #   area_type: land
-    #   fx_variables:
-    #     sftlf:
-    #       dataset: UKESM1-0-LL
-    #       project: CMIP6
-    #       mip: fx
-    #       exp: piControl
-    #       ensemble: r1i1p1f2
-    #       grid: gn
+    weighting_landsea_fraction:
+      area_type: land
+      fx_variables:
+        sftlf:
+          dataset: UKESM1-0-LL
+          project: CMIP6
+          mip: fx
+          exp: piControl
+          ensemble: r1i1p1f2
+          grid: gn
 
     mask_landsea:
       mask_out: sea
@@ -47,16 +44,16 @@ preprocessors:
     annual_statistics:
       operator: mean
 
-    # weighting_landsea_fraction:
-    #   area_type: sea
-    #   fx_variables:
-    #     sftlf:
-    #       dataset: UKESM1-0-LL
-    #       project: CMIP6
-    #       mip: fx
-    #       exp: piControl
-    #       ensemble: r1i1p1f2
-    #       grid: gn
+    weighting_landsea_fraction:
+      area_type: sea
+      fx_variables:
+        sftlf:
+          dataset: UKESM1-0-LL
+          project: CMIP6
+          mip: fx
+          exp: piControl
+          ensemble: r1i1p1f2
+          grid: gn
 
     mask_landsea:
       mask_out: land
@@ -89,42 +86,72 @@ diagnostics:
       tasmax_585:
         short_name: tasmax
         <<: *monthly_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       tasmin_585:
         short_name: tasmin
         <<: *monthly_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       tas_585:
         short_name: tas
         <<: *monthly_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       hurs_585:
         short_name: hurs
         <<: *monthly_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       huss_585:
         short_name: huss
         <<: *monthly_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       pr_585:
         short_name: pr
         <<: *monthly_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       sfcWind_585:
         short_name: sfcWind
         <<: *monthly_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       ps_585:
         short_name: ps
         <<: *monthly_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       rsds_585:
         short_name: rsds
         <<: *monthly_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       rlds_585:
         short_name: rlds
         <<: *monthly_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
     scripts:
       variable_extraction_script:
@@ -134,53 +161,96 @@ diagnostics:
     description: Mean annual TOA fluxes and tas
 
     variables:
+      land_frac:
+        short_name: sftlf
+        timerange: '1850/2100'
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, mip: fx,
+             exp: piControl, ensemble: r1i1p1f2, grid: gn}
+
       tas_global:
         short_name: tas
         <<: *annual_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       rlut_global:
         short_name: rlut
         <<: *annual_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       rsut_global:
         short_name: rsut
         <<: *annual_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       rsdt_global:
         short_name: rsdt
         <<: *annual_global_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       tas_land:
         short_name: tas
         <<: *annual_land_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       rlut_land:
         short_name: rlut
         <<: *annual_land_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       rsut_land:
         short_name: rsut
         <<: *annual_land_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       rsdt_land:
         short_name: rsdt
         <<: *annual_land_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       tas_ocean:
         short_name: tas
         <<: *annual_ocean_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       rlut_ocean:
         short_name: rlut
         <<: *annual_ocean_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       rsut_ocean:
         short_name: rsut
         <<: *annual_ocean_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       rsdt_ocean:
         short_name: rsdt
         <<: *annual_ocean_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
     scripts:
       energy_balance_script:
