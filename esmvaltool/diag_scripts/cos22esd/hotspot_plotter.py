@@ -30,7 +30,7 @@ from esmvaltool.diag_scripts.shared import (
 
 class HotspotPlot:
     """class that plots the results.
-    
+
     The btained plots correspond to figures
     2, 3, S1, S2 and S4 from Cos et al. 2022 ESD.
     """
@@ -59,7 +59,7 @@ class HotspotPlot:
     def compute(self):
         """Collect datasets and call the plotting functions."""
         self.find_n()
-        
+
         # call hotspot field plots
         for scenario in self.scenarios:
             fields_dict = {}
@@ -73,7 +73,8 @@ class HotspotPlot:
                         f"{splitname[-1].split('.nc')[0]}_"
                         f"{splitname[1]}_{key}")] = iris.load_cube(filename)
                     ancestor_files.append(filename)
-            self.hotspot_fields_plot(fields_dict, scenario, ancestor_files)
+                    metadata = [scenario, ancestor_files]
+            self.hotspot_fields_plot(fields_dict, metadata)
 
         # call scatter plots
         for season in self.seasons:
@@ -87,13 +88,12 @@ class HotspotPlot:
                     value[os.path.basename(os.path.dirname(filename))] = (
                         filename)
             for var_combination in self.var_combinations:
-                self.timeseries_scatter_plot(timeseries_dict, 
+                self.timeseries_scatter_plot(timeseries_dict,
                                              season, var_combination)
 
     def hotspot_fields_plot(self,
                             results_dict,
-                            scenario,
-                            ancestor_files_var,
+                            metadata,
                             tas_bound=None,
                             pr_bound=None):
         """Regional climate change hotspot maps for TAS and PR.
@@ -109,6 +109,7 @@ class HotspotPlot:
 
         N indicates the number of models included in the ensemble mean.
         """
+        scenario, ancestor_files_var = metadata
         top, bottom, left, right = 0.75, 0.2, 0.02, 0.99
         wspace, hspace = 0.005, 0.005
         sorted_keys = [
