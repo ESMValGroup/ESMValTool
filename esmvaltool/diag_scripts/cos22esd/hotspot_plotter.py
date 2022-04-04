@@ -16,6 +16,7 @@ from matplotlib import colors
 from matplotlib.gridspec import GridSpec
 from matplotlib.patches import Patch
 from scipy import stats
+from copy import deepcopy
 
 from esmvaltool.diag_scripts.shared import (
     get_cfg,
@@ -28,7 +29,12 @@ from esmvaltool.diag_scripts.shared import (
 
 
 class HotspotPlot:
-    """class that plots the results."""
+    """class that plots the results.
+    
+    The btained plots correspond to figures
+    2, 3, S1, S2 and S4 from Cos et al. 2022 ESD.
+    """
+
     def __init__(self, config):
         """Variable definition.
 
@@ -52,16 +58,8 @@ class HotspotPlot:
 
     def compute(self):
         """Collect datasets and call the plotting functions."""
-        # find number of models inside every multi-model mean
-        metadata_files = [
-            file for file in self.cfg["input_files"]
-            if "tas/metadata.yml" in file
-        ]
-        self.cfg["N"] = {}
-        for meta_file in metadata_files:
-            n_identifyer = meta_file.split("/tas/")[0].split("/tas_")[-1]
-            metadata = group_metadata(get_cfg(meta_file).values(), "dataset")
-            self.cfg["N"][n_identifyer] = len(metadata.keys()) - 1
+        self.find_n()
+        
         # call hotspot field plots
         for scenario in self.scenarios:
             fields_dict = {}
@@ -80,17 +78,17 @@ class HotspotPlot:
         # call scatter plots
         for season in self.seasons:
             timeseries_dict = {"large_scale": {}, "regional": {}}
-            ancestors_dict = {"large_scale": {}, "regional": {}}
             for region, value in timeseries_dict.items():
                 for filename in io.get_all_ancestor_files(
                         self.cfg,
                         pattern=f'rolling_mean_{region}_{season}.nc'):
-                    key = os.path.basename(os.path.dirname(filename))
-                    value[key] = iris.load_cube(filename)
-                    value[key] = filename
+                    value[os.path.basename(os.path.dirname(filename))] = (
+                        iris.load_cube(filename))
+                    value[os.path.basename(os.path.dirname(filename))] = (
+                        filename)
             for var_combination in self.var_combinations:
-                self.timeseries_scatter_plot(timeseries_dict, season,
-                                             var_combination, ancestors_dict)
+                self.timeseries_scatter_plot(timeseries_dict, 
+                                             season, var_combination)
 
     def hotspot_fields_plot(self,
                             results_dict,
@@ -249,8 +247,7 @@ class HotspotPlot:
                 suptitle, scenario, ancestor_files)
             save_figure(basename, provenance_record, self.cfg)
 
-    def timeseries_scatter_plot(self, results_dict, season, var_combination,
-                                ancestors_dict):
+    def timeseries_scatter_plot(self, results_dict, season, var_combination):
         """Regional vs large scale changes for three scenarios.
 
         Computed for different seasons for the CMIP5 and CMIP6 ensemble means.
@@ -262,6 +259,7 @@ class HotspotPlot:
         slope and rvalue are shown. N indicates the number of models
         included in the ensemble mean.
         """
+        ancestors_dict = deepcopy(ancestors_dict)
         base_colors = {"cmip5": "#2161A6", "cmip6": "#BB3437"}
         legend_elements = {}
         fig = plt.figure(figsize=(12, 4), constrained_layout=True, dpi=300)
@@ -615,6 +613,18 @@ class HotspotPlot:
                                 iris.analysis.Linear())
         sorted_cube = self.sorted_dim(cube)
         return sorted_cube
+
+    def find_n(self, metadata_files):
+        """Finds how many models are inside each multi-model mean."""
+        metadata_files = [
+            file for file in self.cfg["input_files"]
+            if "tas/metadata.yml" in file
+        ]
+        self.cfg["N"] = {}
+        for meta_file in metadata_files:
+            n_identifyer = meta_file.split("/tas/")[0].split("/tas_")[-1]
+            metadata = group_metadata(get_cfg(meta_file).values(), "dataset")
+            self.cfg["N"][n_identifyer] = len(metadata.keys()) - 1
 
     def get_hotspot_provenance(self, suptitle, scenario, ancestor_files):
         """Create a provenance record describing the hotspot fields plots."""
