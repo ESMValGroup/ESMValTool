@@ -4,6 +4,7 @@ The plots produced reproduce Figs. 2, 3, S1, S2, S4 from Cos et al.
 2022.
 """
 import os
+from copy import deepcopy
 
 import cartopy.crs as ccrs
 import cartopy.feature as cf
@@ -16,7 +17,6 @@ from matplotlib import colors
 from matplotlib.gridspec import GridSpec
 from matplotlib.patches import Patch
 from scipy import stats
-from copy import deepcopy
 
 from esmvaltool.diag_scripts.shared import (
     get_cfg,
@@ -110,8 +110,8 @@ class HotspotPlot:
         N indicates the number of models included in the ensemble mean.
         """
         scenario, ancestor_files_var = metadata
-        top, bottom, left, right = 0.75, 0.2, 0.02, 0.99
-        wspace, hspace = 0.005, 0.005
+        top, bottom, left, right, wspace, hspace = (
+            0.75, 0.2, 0.02, 0.99, 0.005, 0.005)
         sorted_keys = [
             f"{period}_{season}_{variable}_{project}_{scenario}"
             for variable in self.variables
@@ -147,22 +147,7 @@ class HotspotPlot:
             )
 
             # bound colorbar to abs(max) value on the map
-            # or use input bounds {"tas": [bounds], "pr": [bounds]}
-            if variable == "tas":
-                if tas_bound:
-                    bound_limit = tas_bound
-                else:
-                    bound_limit = self.find_abs_bound_range(results_dict, keys)
-                cmap = plt.cm.RdBu_r
-            else:
-                if pr_bound:
-                    bound_limit = pr_bound
-                else:
-                    bound_limit = self.find_abs_bound_range(results_dict,
-                                                            keys,
-                                                            avg_over=25)
-                cmap = plt.cm.BrBG
-            bounds = np.linspace(-1 * bound_limit, bound_limit, 11)
+            bounds, cmap = self.cb_bounds(variable, results_dict, keys, [tas_bound, pr_bound])
 
             # plot each panel
             for i, key in enumerate(keys):
@@ -226,15 +211,13 @@ class HotspotPlot:
                                 extend="both")
             if variable == "pr":
                 cbar.set_label("%")
-            else:
-                cbar.set_label(
-                    self.formatter(str(results_dict[keys[-1]].units)))
-            if variable == "tas":
-                against_region = "global"
-            elif variable == "pr":
                 against_region = (
                     f"{self.cfg['region'][2]}$^o$ N-"
                     f"{self.cfg['region'][3]}$^o$ N latitudinal belt")
+            else:
+                cbar.set_label(
+                    self.formatter(str(results_dict[keys[-1]].units)))
+                against_region = "global"
 
             suptitle = (f"{self.cfg['region_name']} {variable.upper()} "
                         f"change against mean {against_region} future "
@@ -260,7 +243,7 @@ class HotspotPlot:
         slope and rvalue are shown. N indicates the number of models
         included in the ensemble mean.
         """
-        ancestors_dict = deepcopy(ancestors_dict)
+        ancestors_dict = deepcopy(results_dict)
         base_colors = {"cmip5": "#2161A6", "cmip6": "#BB3437"}
         legend_elements = {}
         fig = plt.figure(figsize=(12, 4), constrained_layout=True, dpi=300)
@@ -495,6 +478,26 @@ class HotspotPlot:
                 break
         return text
 
+    def cb_bounds(self, variable, results_dict, keys, fixed_bounds):
+        """Fix colorbar bounds and cmap."""
+        tas_bound, pr_bound = fixed_bounds
+        if variable == "tas":
+            if tas_bound:
+                bound_limit = tas_bound
+            else:
+                bound_limit = self.find_abs_bound_range(results_dict, keys)
+            cmap = plt.cm.RdBu_r
+        else:
+            if pr_bound:
+                bound_limit = pr_bound
+            else:
+                bound_limit = self.find_abs_bound_range(results_dict,
+                                                        keys,
+                                                        avg_over=25)
+            cmap = plt.cm.BrBG
+        bounds = np.linspace(-1 * bound_limit, bound_limit, 11)
+        return bounds, cmap
+
     def find_abs_bound_range(self, results_dict, keys, avg_over=5):
         """Find suitable bounds for the colorbar.
 
@@ -615,8 +618,8 @@ class HotspotPlot:
         sorted_cube = self.sorted_dim(cube)
         return sorted_cube
 
-    def find_n(self, metadata_files):
-        """Finds how many models are inside each multi-model mean."""
+    def find_n(self):
+        """Find how many models are inside each multi-model mean."""
         metadata_files = [
             file for file in self.cfg["input_files"]
             if "tas/metadata.yml" in file
