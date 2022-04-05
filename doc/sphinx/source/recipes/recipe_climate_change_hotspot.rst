@@ -139,7 +139,7 @@ anchors ``*cmip6_85``, ``*cmip5_85``, etc. as in the example:
       pr_cmip6_85:
         <<: *script_input
 
-If different scenarios want to be used, the datasets and diagnostics must be
+In case of wanting to use other scenarios, the datasets and diagnostics must be
 changed maintaining the format ``cmip{phase}_{scenario}`` and ``{variable}_cmip{phase}_{scenario}``.
 For example, if we want scenario 60 instead of scenario 85, we would need to include the
 files available for ``cmip6_60`` and ``cmip5_60``, and the previous diagnostic would change to:
