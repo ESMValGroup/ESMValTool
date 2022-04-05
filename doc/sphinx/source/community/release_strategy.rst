@@ -218,7 +218,15 @@ These are the detailed steps to take to make a release.
 
 6. Some additional testing of ESMValTool
 
-   - Run all the recipes to check that they still work and ask authors to review the plots
+   - :ref:`Run all the recipes to check that they still work and generate the overview HTML pages.<running_multiple_recipes>`
+   - Upload the results to the webpage at https://esmvaltool.dkrz.de/shared/esmvaltool/.
+   - :ref:`Compare the results to those obtained with the previous release.<compare_recipe_runs>`
+   - Create a `GitHub discussion <https://github.com/ESMValGroup/ESMValTool/discussions>`__ to communicate about the results.
+   - If there are differences with the previous release, ask recipe maintainers
+     or authors to review the plots and NetCDF files of their diagnostics, for
+     example by
+     `mentioning <https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#mentioning-people-and-teams>`__
+     them in the discussion.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
 
 
