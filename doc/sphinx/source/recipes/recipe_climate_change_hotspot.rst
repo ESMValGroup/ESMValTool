@@ -123,7 +123,7 @@ and ``preprocessor`` sections of the recipe as follows:
       - {...dataset keys...}
       - {...dataset keys...}
 
-This different dataset sections will be called at each diagnostic as ``additional_datasets`` using the
+These different dataset sections will be called at each diagnostic as ``additional_datasets`` using the
 anchors ``*cmip6_85``, ``*cmip5_85``, etc. as in the example:
 
 .. code-block:: yaml
