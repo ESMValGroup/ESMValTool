@@ -62,13 +62,13 @@ User settings in the recipe
 
    *Required settings for script*
 
-   * ``baseline_period``: historical period that serves as a reference to compute the time anomalies.
+   * ``baseline_period``: Historical period that serves as a reference to compute the time anomalies.
 
-   * ``future_periods``: list of the two future periods given in years  ("YYYY-YYYY") where the hotspot will be computed.
-      Following the format [future period #1, future period #2].
+   * ``future_periods``: List of the two future periods given in years ("YYYY-YYYY") where the hotspot will be computed.
+     Following the format [future period #1, future period #2].
 
    * ``region``: list of longitudes and latitudes that enclose a rectangular region.
-      In the form of [start_longitude, end_longitude, start_latitude, end_latitude].
+     In the form of [start_longitude, end_longitude, start_latitude, end_latitude].
 
    * ``region_name``: Name of the region to be included in the provenance record.
 
@@ -77,15 +77,15 @@ User settings in the recipe
 
    *Required settings for script*
 
-   * ``baseline_period``: historical period displayed in the figures' titles.
+   * ``baseline_period``: Historical period displayed in the figures' titles.
 
-   * ``future_periods``: list of the two future periods given in years ("YYYY-YYYY"), following
-      the format [future period #1, future period #2], used to identify the
-      ancestor files and in the figure titles.
+   * ``future_periods``: List of the two future periods given in years ("YYYY-YYYY"), following
+     the format [future period #1, future period #2], used to identify the
+     ancestor files and in the figure titles.
 
-   * ``region``: list of longitudes and latitudes that enclose a region.
-      In the form of [start_longitude, end_longitude, start_latitude, end_latitude].
-      Used in the title to identify the precipitation large scale region.
+   * ``region``: List of longitudes and latitudes that enclose a region.
+     In the form of [start_longitude, end_longitude, start_latitude, end_latitude].
+     Used in the title to identify the precipitation large scale region.
 
    * ``region_name``: Name of the region used in the plot titles.
 
@@ -94,7 +94,7 @@ Modifying the datasets and scenarios used
 -----------------------------------------
 
 ``recipe_climate_change_hotspot.yml`` can be modifyed to use different scenario combinations.
-The standard recipe uses data from scenarios with the radiative forcings 2.6, 4.5 and 8.5 Wm<sup>-2</sup> (referred to as 26, 45 and 85),
+The standard recipe uses data from scenarios with the radiative forcings 2.6, 4.5 and 8.5 `Wm^{-2}` (referred to as 26, 45 and 85),
 but any combination of three scenarios from the following list can be used:
 
 .. code-block:: yaml
@@ -192,7 +192,6 @@ Example plots
 
 .. figure:: /recipes/figures/cos22esd/pr_45.png
    :align:  center
-   :width:  9cm
 
    Mediterranean region temperature (upper rows) and precipitation (lower rows) change differences against the mean global temperature
    change and the mean 30–45º  N latitudinal belt precipitation change respectively. The changes for the periods 2041–2060 (first and third
@@ -205,7 +204,7 @@ Example plots
    :align:   center
 
    Mediterranean region warming against global warming for the summer
-   2.6, 4.5 and 8.5 $Wm^{-2}$ RCP and SSP scenarios
+   2.6, 4.5 and 8.5 `Wm^{-2}` RCP and SSP scenarios
    for the CMIP5 and CMIP6 ensemble means.
    Each dot represents a 10 year mean change beginning from 1960-1969 (light coloring)
    until 2091-2100 (opaque coloring). The changes are computed with 1986-2005 as the baseline.
