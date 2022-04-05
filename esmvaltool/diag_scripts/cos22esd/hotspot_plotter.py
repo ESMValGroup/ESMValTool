@@ -147,7 +147,8 @@ class HotspotPlot:
             )
 
             # bound colorbar to abs(max) value on the map
-            bounds, cmap = self.cb_bounds(variable, results_dict, keys, [tas_bound, pr_bound])
+            bounds, cmap = self.cb_bounds(variable, results_dict,
+                keys, [tas_bound, pr_bound])
 
             # plot each panel
             for i, key in enumerate(keys):
