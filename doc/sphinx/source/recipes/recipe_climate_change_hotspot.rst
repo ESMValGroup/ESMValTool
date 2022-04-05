@@ -64,7 +64,7 @@ User settings in the recipe
 
    * ``baseline_period``: historical period that serves as a reference to compute the time anomalies.
 
-   * ``future_periods``: list of the two future periods ("yyyy-yyyy") where the hotspot will be computed.
+   * ``future_periods``: list of the two future periods given in years  ("YYYY-YYYY") where the hotspot will be computed.
       Following the format [future period #1, future period #2].
 
    * ``region``: list of longitudes and latitudes that enclose a rectangular region.
