@@ -189,7 +189,6 @@ Example plots
 .. _fig_climate_change_hotspot_1:
 .. figure:: /recipes/figures/cos22esd/tas_45.png
    :align:  center
-   :width:  9cm
 
 .. figure:: /recipes/figures/cos22esd/pr_45.png
    :align:  center
