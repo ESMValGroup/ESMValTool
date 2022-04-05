@@ -11,7 +11,7 @@ not all regions change at the same pace and in the same
 way. The regions that change at a faster rate than the rest
 of the globe are labelled as climate change hotspots. Projecting
 the location and magnitude of the hotspots is important
-for climate change adaptation, and it is uasually computed using
+for climate change adaptation, and it is usually computed using
 the projected climate variables' differences between the regional
 and larger scales.
 
