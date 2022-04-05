@@ -79,7 +79,7 @@ User settings in the recipe
 
    * ``baseline_period``: historical period displayed in the figures' titles.
 
-   * ``future_periods``: list of the two future periods ("yyyy-yyyy"), following
+   * ``future_periods``: list of the two future periods given in years ("YYYY-YYYY"), following
       the format [future period #1, future period #2], used to identify the
       ancestor files and in the figure titles.
 
