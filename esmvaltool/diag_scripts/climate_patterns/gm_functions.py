@@ -59,3 +59,44 @@ def area_avg(x, return_cube=None):
         return x2
     else:
         return x2.data
+
+
+def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
+    # If the cube does not have bounds, add bounds
+    if not x.coord('latitude').has_bounds():
+        x.coord('latitude').guess_bounds()
+    if not x.coord('longitude').has_bounds():
+        x.coord('longitude').guess_bounds()
+    # Get the area weights using the same cube
+    global_weights = iris.analysis.cartography.area_weights(x, normalize=False)
+
+    if land is False:
+        ocean_frac.data = np.ma.masked_less(ocean_frac.data, 0.01)
+        weights = iris.analysis.cartography.area_weights(ocean_frac,
+                                                         normalize=False)
+        ocean_area = ocean_frac.collapsed(["latitude", "longitude"],
+                                          iris.analysis.SUM,
+                                          weights=weights) / 1e12
+        print("Ocean area: ", ocean_area.data)
+        x2 = x.copy()
+        x2.data = x2.data * global_weights * ocean_frac.data
+        # Now collapse the lat and lon to find a global mean over time
+        x2 = x2.collapsed(['latitude', 'longitude'],
+                          iris.analysis.SUM) / 1e12 / ocean_area.data
+    if land:
+        land_frac.data = np.ma.masked_less(land_frac.data, 0.01)
+        weights = iris.analysis.cartography.area_weights(land_frac,
+                                                         normalize=False)
+        land_area = land_frac.collapsed(["latitude", "longitude"],
+                                        iris.analysis.SUM,
+                                        weights=weights) / 1e12
+        print("Land area: ", land_area.data)
+        x2 = x.copy()
+        x2.data = x2.data * global_weights * land_frac.data
+        x2 = x2.collapsed(['latitude', 'longitude'],
+                          iris.analysis.SUM) / 1e12 / land_area.data
+
+    if return_cube:
+        return x2
+    else:
+        return x2.data

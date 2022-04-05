@@ -18,65 +18,19 @@ preprocessors:
                     start_latitude: -55, end_latitude: 82.5, step_latitude: 2.5}
       scheme: linear
 
-  global_mean_annual:
+  mean_annual:
     annual_statistics:
       operator: mean
-
-  land_mean_annual:
-    annual_statistics:
-      operator: mean
-
-    weighting_landsea_fraction:
-      area_type: land
-      fx_variables:
-        sftlf:
-          dataset: UKESM1-0-LL
-          project: CMIP6
-          mip: fx
-          exp: piControl
-          ensemble: r1i1p1f2
-          grid: gn
-
-    mask_landsea:
-      mask_out: sea
-
-  ocean_mean_annual:
-    annual_statistics:
-      operator: mean
-
-    weighting_landsea_fraction:
-      area_type: sea
-      fx_variables:
-        sftlf:
-          dataset: UKESM1-0-LL
-          project: CMIP6
-          mip: fx
-          exp: piControl
-          ensemble: r1i1p1f2
-          grid: gn
-
-    mask_landsea:
-      mask_out: land
 
 monthly_global_settings: &monthly_global_settings
   start_year: 1850
   end_year: 2100
   preprocessor: global_mean_monthly
 
-annual_global_settings: &annual_global_settings
+annual_mean_settings: &annual_mean_settings
   start_year: 1850
   end_year: 2100
-  preprocessor: global_mean_annual
-
-annual_land_settings: &annual_land_settings
-  start_year: 1850
-  end_year: 2100
-  preprocessor: land_mean_annual
-
-annual_ocean_settings: &annual_ocean_settings
-  start_year: 1850
-  end_year: 2100
-  preprocessor: ocean_mean_annual
+  preprocessor: mean_annual
 
 diagnostics:
   monthly_timeseries:
@@ -168,86 +122,37 @@ diagnostics:
           - {dataset: UKESM1-0-LL, project: CMIP6, mip: fx,
              exp: piControl, ensemble: r1i1p1f2, grid: gn}
 
-      tas_global:
+      rtmt_585:
+        short_name: rtmt
+        <<: *annual_mean_settings
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+
+      tas_585:
         short_name: tas
-        <<: *annual_global_settings
+        <<: *annual_mean_settings
         additional_datasets:
           - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
              mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
-      rlut_global:
+      rlut_585:
         short_name: rlut
-        <<: *annual_global_settings
+        <<: *annual_mean_settings
         additional_datasets:
           - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
              mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
-      rsut_global:
+      rsut_585:
         short_name: rsut
-        <<: *annual_global_settings
+        <<: *annual_mean_settings
         additional_datasets:
           - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
              mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
-      rsdt_global:
+      rsdt_585:
         short_name: rsdt
-        <<: *annual_global_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
-
-      tas_land:
-        short_name: tas
-        <<: *annual_land_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
-
-      rlut_land:
-        short_name: rlut
-        <<: *annual_land_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
-
-      rsut_land:
-        short_name: rsut
-        <<: *annual_land_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
-
-      rsdt_land:
-        short_name: rsdt
-        <<: *annual_land_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
-
-      tas_ocean:
-        short_name: tas
-        <<: *annual_ocean_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
-
-      rlut_ocean:
-        short_name: rlut
-        <<: *annual_ocean_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
-
-      rsut_ocean:
-        short_name: rsut
-        <<: *annual_ocean_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
-
-      rsdt_ocean:
-        short_name: rsdt
-        <<: *annual_ocean_settings
+        <<: *annual_mean_settings
         additional_datasets:
           - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
              mip: Amon, ensemble: r1i1p1f2, grid: gn}

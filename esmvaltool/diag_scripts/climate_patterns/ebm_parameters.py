@@ -1,3 +1,5 @@
+# Kappa calculation mathematics kindly provided by Dr. Chris Huntingford, CEH
+
 import logging
 from pathlib import Path
 
@@ -40,39 +42,66 @@ def net_flux_calculation(toa_list):
     return toa_net
 
 
-def plot_timeseries(list_cubes, plot_path):
+def plot_timeseries(list_cubes, plot_path, ocean_frac, land_frac):
     """Plots timeseries of aggregated cubes, across all scenarios."""
     for i, cube in enumerate(list_cubes):
-        avg_cube = gm.area_avg(cube, return_cube=True)
-        fig = qplt.plot(avg_cube)
         if i == 0:
+            avg_cube = gm.area_avg(cube, return_cube=True)
+            fig = qplt.plot(avg_cube)
             plt.savefig(plot_path + cube.var_name + "_ts_global")
+            plt.close()
+
+            avg_cube = gm.area_avg_landsea(cube,
+                                           ocean_frac,
+                                           land_frac,
+                                           land=True,
+                                           return_cube=True)
+            fig = qplt.plot(avg_cube)
+            plt.savefig(plot_path + cube.var_name + "_ts_land")
+            plt.close()
+
+            avg_cube = gm.area_avg_landsea(cube,
+                                           ocean_frac,
+                                           land_frac,
+                                           land=False,
+                                           return_cube=True)
+            fig = qplt.plot(avg_cube)
+            plt.savefig(plot_path + cube.var_name + "_ts_ocean")
+            plt.close()
 
         if i == 1:
+            avg_cube = gm.area_avg(cube, return_cube=True)
+            fig = qplt.plot(avg_cube)
             plt.savefig(plot_path + cube.var_name + "_ts_global")
-        if i == 2:
+            plt.close()
+
+            avg_cube = gm.area_avg_landsea(cube,
+                                           ocean_frac,
+                                           land_frac,
+                                           land=True,
+                                           return_cube=True)
+            fig = qplt.plot(avg_cube)
             plt.savefig(plot_path + cube.var_name + "_ts_land")
-        if i == 3:
-            plt.savefig(plot_path + cube.var_name + "_ts_land")
-        if i == 4:
+            plt.close()
+
+            avg_cube = gm.area_avg_landsea(cube,
+                                           ocean_frac,
+                                           land_frac,
+                                           land=False,
+                                           return_cube=True)
+            fig = qplt.plot(avg_cube)
             plt.savefig(plot_path + cube.var_name + "_ts_ocean")
-        if i == 5:
-            plt.savefig(plot_path + cube.var_name + "_ts_ocean")
-        plt.close()
+            plt.close()
 
     for i, cube in enumerate(list_cubes):
         fig = qplt.pcolormesh(cube[0])
         if i == 0:
             plt.savefig(plot_path + cube.var_name + "_mesh_global")
+            plt.savefig(plot_path + cube.var_name + "_mesh_land")
+            plt.savefig(plot_path + cube.var_name + "_mesh_ocean")
         if i == 1:
             plt.savefig(plot_path + cube.var_name + "_mesh_global")
-        if i == 2:
             plt.savefig(plot_path + cube.var_name + "_mesh_land")
-        if i == 3:
-            plt.savefig(plot_path + cube.var_name + "_mesh_land")
-        if i == 4:
-            plt.savefig(plot_path + cube.var_name + "_mesh_ocean")
-        if i == 5:
             plt.savefig(plot_path + cube.var_name + "_mesh_ocean")
         plt.close()
 
@@ -83,25 +112,30 @@ def ocean_fraction_calc(sftlf):
     sftlf.coord("latitude").coord_system = iris.coord_systems.GeogCS(6371229.0)
     sftlf.coord("longitude").coord_system = iris.coord_systems.GeogCS(
         6371229.0)
+    sftof = sftlf.copy()
+    sftof.data = 100.0 - sftlf.data
+
+    ocean_frac = sftof / 100
+    land_frac = sftlf / 100
+
+    # ocean fraction calculation
     weights = iris.analysis.cartography.area_weights(sftlf)
     lf_area = sftlf.collapsed(
         ['latitude', 'longitude'], iris.analysis.SUM, weights=weights) / 1e12
-    sftof = sftlf.copy()
-    sftof.data = 100.0 - sftlf.data
     of_area = sftof.collapsed(
         ['latitude', 'longitude'], iris.analysis.SUM, weights=weights) / 1e12
 
-    ocean_frac = of_area.data / (of_area.data + lf_area.data)
+    of = of_area.data / (of_area.data + lf_area.data)
 
-    logger.info("Ocean fraction = ", ocean_frac)
+    logger.info("Ocean fraction = ", of)
 
-    return ocean_frac
+    return ocean_frac, land_frac, of
 
 
 def kappa_parameter(f, toa_delta, tas_delta_ocean):
     rms = 10000.0
     kappa = -9999.9
-    for i_kappa in range(0, 150):
+    for i_kappa in range(0, 3):
         kappa_test = 20.0 + 20.0 * float(i_kappa)
 
         temp_ocean_top = kappa_calc(f, toa_delta, kappa_test)
@@ -173,8 +207,7 @@ def kappa_calc(f, toa_delta, kappa):
                 D[m, m + 1] = s / 2.0
                 D[m, m] = 1.0 - s
 
-            E[0] = -(kappa / cp) * (dt / dz) * (factor1 + factor1
-                                                )  # Assume slow variation in Q
+            E[0] = -(kappa / cp) * (dt / dz) * (factor1 + factor1)
 
             # Now solve for U_{j+1}.
             # First put bits in to tri-diagonal things for "sparse.spdiags".
@@ -217,13 +250,77 @@ def kappa_calc(f, toa_delta, kappa):
     return temp_ocean_top
 
 
+def anomalies_calc(toa_cube, tas_cube, ocean_frac, land_frac):
+    # TOA area weighting
+    toa_delta_init = gm.area_avg(toa_cube, return_cube=False)
+    toa_delta_land_init = gm.area_avg_landsea(toa_cube,
+                                              ocean_frac,
+                                              land_frac,
+                                              land=True,
+                                              return_cube=False)
+    toa_delta_ocean_init = gm.area_avg_landsea(toa_cube,
+                                               ocean_frac,
+                                               land_frac,
+                                               land=True,
+                                               return_cube=False)
+
+    # tas area weighting
+    tas_delta_land_init = gm.area_avg_landsea(tas_cube,
+                                              ocean_frac,
+                                              land_frac,
+                                              land=True,
+                                              return_cube=False)
+    tas_delta_ocean_init = gm.area_avg_landsea(tas_cube,
+                                               ocean_frac,
+                                               land_frac,
+                                               land=False,
+                                               return_cube=False)
+
+    toa_delta = toa_delta_init - np.mean(toa_delta_init[0:40])
+    toa_delta_land = toa_delta_land_init - np.mean(toa_delta_land_init[0:40])
+    toa_delta_ocean = toa_delta_ocean_init - np.mean(
+        toa_delta_ocean_init[0:40])
+
+    tas_delta_land = tas_delta_land_init - np.mean(tas_delta_land_init[0:40])
+    tas_delta_ocean = tas_delta_ocean_init - np.mean(
+        tas_delta_ocean_init[0:40])
+
+    return (toa_delta, toa_delta_land, toa_delta_ocean, tas_delta_land,
+            tas_delta_ocean)
+
+
+def atmos_params_calc(rf, toa_delta_land, toa_delta_ocean, tas_delta_land,
+                      tas_delta_ocean):
+    lambda_o_init = (rf - toa_delta_ocean) / tas_delta_ocean
+    lambda_o = np.mean(lambda_o_init[-90:])
+
+    lambda_l_init = (rf - toa_delta_land) / tas_delta_land
+    lambda_l = np.mean(lambda_l_init[-90:])
+
+    nu_ratio_init = tas_delta_land / tas_delta_ocean
+    nu_ratio = np.mean(nu_ratio_init[-90:])
+
+    return lambda_o, lambda_l, nu_ratio
+
+
+def save_params(cfg, kappa, lambda_o, lambda_l, nu_ratio):
+    work_path = cfg["work_dir"] + "/"
+
+    filename_list = ['kappa.dat', 'lambda_o.dat', 'lambda_l.dat', 'nu_ratio']
+    param_list = [kappa, lambda_o, lambda_l, nu_ratio]
+
+    for i in range(len(param_list)):
+        file = open(work_path + filename_list[i], 'w')
+        data = '{0:10.3f}'.format(param_list[i])
+        file.write(data + '\n')
+        file.close()
+
+
 def main(cfg):
     # gets a description of the preprocessed data that we will use as input.
     input_data = cfg["input_data"].values()
 
-    toa_global_list = iris.load([])
-    toa_land_list = iris.load([])
-    toa_ocean_list = iris.load([])
+    toa_list = iris.load([])
 
     for dataset in input_data:
         input_file = dataset["filename"]
@@ -233,69 +330,47 @@ def main(cfg):
 
         if cube_initial.var_name == "sftlf":
             sftlf_cube = cube_initial
-        if dataset["preprocessor"] == "global_mean_annual":
-            if not cube_initial.var_name == "tas":
-                toa_global_list.append(cube_initial)
-            else:
-                tas_global_cube = cube_initial
-        elif dataset["preprocessor"] == "land_mean_annual":
-            if not cube_initial.var_name == "tas":
-                toa_land_list.append(cube_initial)
-            else:
-                tas_land_cube = cube_initial
-        elif dataset["preprocessor"] == "ocean_mean_annual":
-            if not cube_initial.var_name == "tas":
-                toa_ocean_list.append(cube_initial)
-            else:
-                tas_ocean_cube = cube_initial
+        if cube_initial.var_name == "rtmt":
+            rtmt_cube = cube_initial
+        if cube_initial.var_name == "tas":
+            tas_cube = cube_initial
+        if (not cube_initial.var_name == "tas"
+                or cube_initial.var_name == "rtmt"
+                or cube_initial.var_name == "sftlf"):
+            toa_list.append(cube_initial)
 
     # calculating global, land and ocean TOA fluxes
-    toa_global_cube = net_flux_calculation(toa_global_list)
-    toa_land_cube = net_flux_calculation(toa_land_list)
-    toa_ocean_cube = net_flux_calculation(toa_ocean_list)
+    toa_cube = net_flux_calculation(toa_list)
 
     # calculating ocean fraction
-    ocean_frac = ocean_fraction_calc(sftlf_cube)
+    ocean_frac, land_frac, of = ocean_fraction_calc(sftlf_cube)
 
-    # calculating global averages, subtracting mean of first 4 decades
-    toa_delta_init = gm.area_avg(toa_global_cube, return_cube=False)
-    tas_ocean_init = gm.area_avg(tas_ocean_cube, return_cube=False)
-    toa_delta = toa_delta_init - np.mean(toa_delta_init[0:40])
-    tas_ocean = tas_ocean_init - np.mean(tas_ocean_init[0:40])
+    # calculating TOA averages, subtracting mean of first 4 decades
+    (toa_delta, toa_delta_land, toa_delta_ocean, tas_delta_land,
+     tas_delta_ocean) = anomalies_calc(toa_cube, tas_cube, ocean_frac,
+                                       land_frac)
 
     # calculating EBM parameter, Kappa
-    kappa = kappa_parameter(ocean_frac, toa_delta, tas_ocean)
+    kappa = kappa_parameter(of, toa_delta, tas_delta_ocean)
     logger.info("Kappa = ", kappa)
 
+    # calculating other atmospheric parameters
+    rad_forcing = gm.area_avg(rtmt_cube, return_cube=False)
+    lambda_o, lambda_l, nu_ratio = atmos_params_calc(rad_forcing,
+                                                     toa_delta_land,
+                                                     toa_delta_ocean,
+                                                     tas_delta_land,
+                                                     tas_delta_ocean)
+
     # list of variable cube lists
-    list_of_cubes = [
-        toa_global_cube, tas_global_cube, toa_land_cube, tas_land_cube,
-        toa_ocean_cube, tas_ocean_cube
-    ]
-
-    name_list = [
-        "TOA_global_timeseries.nc",
-        "tas_global_timeseries.nc",
-        "TOA_land_timeseries.nc",
-        "tas_land_timeseries.nc",
-        "TOA_ocean_timeseries.nc",
-        "tas_ocean_timeseries.nc",
-    ]
-
-    # saving cubes
-    work_path = cfg["work_dir"] + "/"
-    for i in range(len(list_of_cubes)):
-        iris.save(list_of_cubes[i], work_path + name_list[i])
+    list_of_cubes = [toa_cube, tas_cube]
 
     # saving EBM parameters
-    file_frac = open(work_path + 'kappa.dat', 'w')
-    data_frac = '{0:10.3f}'.format(kappa)
-    file_frac.write(data_frac + '\n')
-    file_frac.close()
+    save_params(cfg, kappa, lambda_o, lambda_l, nu_ratio)
 
     # saving figures
     plot_path = cfg["plot_dir"] + "/"
-    plot_timeseries(list_of_cubes, plot_path)
+    plot_timeseries(list_of_cubes, plot_path, ocean_frac, land_frac)
 
 
 if __name__ == "__main__":
