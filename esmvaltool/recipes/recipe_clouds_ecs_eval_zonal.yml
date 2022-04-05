@@ -30,16 +30,23 @@ DATASETS_ECS_HIGH: &datasets_ecs_high
     #- {dataset: CESM2-FV2, grid: gn, institute: NCAR} # no clt (ssp585)
   - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
     # - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR} # no clt (ssp585)
+    # - {dataset: CIESM} # no rsutcs scenario data
   - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
   - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
-  - {dataset: E3SM-1-1}
+    # - {dataset: EC-Earth3-CC} # no cl, cli, clw
+    # - {dataset: FIO-ESM-2-0, grid: gn} # no rsutcs
   - {dataset: HadGEM3-GC31-LL, grid: gn, ensemble: r1i1p1f3}
   - {dataset: HadGEM3-GC31-MM, grid: gn, ensemble: r1i1p1f3}
   - {dataset: IPSL-CM6A-LR}
+  - {dataset: KACE-1-0-G}
   - {dataset: NESM3, grid: gn}
+  - {dataset: TaiESM1, grid: gn}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn} 
 
+  - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1, project: CMIP5}
   - {dataset: HadGEM2-ES, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1, project: CMIP5}
   - {dataset: MIROC-ESM, ensemble: r1i1p1, project: CMIP5}
 
 DATASETS_ECS_HIGH: &datasets_ecs_high_scenario
@@ -49,16 +56,23 @@ DATASETS_ECS_HIGH: &datasets_ecs_high_scenario
     #- {dataset: CESM2-FV2, grid: gn, institute: NCAR} # no clt (ssp585)
   - {dataset: CESM2-WACCM, grid: gn, institute: NCAR, exp: ssp585}
     # - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR} # no clt (ssp585)
+    # - {dataset: CIESM, exp: ssp585} # no rsutcs scenario data
   - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, exp: ssp585}
   - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, exp: ssp585}
-  - {dataset: E3SM-1-1, exp: ssp585}
+    # - {dataset: EC-Earth3-CC, exp: ssp585} # no cl, cli, clw
+    # - {dataset: FIO-ESM-2-0, grid: gn, exp: ssp585} # no rsutcs
   - {dataset: HadGEM3-GC31-LL, grid: gn, ensemble: r1i1p1f3, exp: ssp585}
   - {dataset: HadGEM3-GC31-MM, grid: gn, ensemble: r1i1p1f3, exp: ssp585} # no clwvi, clivi
   - {dataset: IPSL-CM6A-LR, exp: ssp585}
+  - {dataset: KACE-1-0-G, exp: ssp585}
   - {dataset: NESM3, grid: gn, exp: ssp585}
+  - {dataset: TaiESM1, grid: gn, exp: ssp585}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, exp: ssp585} 
 
+  - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
   - {dataset: HadGEM2-ES, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
+  - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
+  - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
   - {dataset: MIROC-ESM, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
 
 DATASETS_ECS_MED: &datasets_ecs_med
@@ -69,25 +83,27 @@ DATASETS_ECS_MED: &datasets_ecs_med
     # - {dataset: CAS-ESM2-0, grid: gn} # download failed
     # - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2} # no cl, cli, clw scenario data
   - {dataset: CMCC-CM2-SR5, grid: gn}
+  - {dataset: CMCC-ESM2, grid: gn}
     # - {dataset: EC-Earth3-Veg} # no cl, cli, clw
+  - {dataset: FGOALS-f3-L}
+  - {dataset: FGOALS-g3, grid: gn}
   - {dataset: GISS-E2-1-H, grid: gn}
-  - {dataset: KACE-1-0-G}
+    # - {dataset: KIOST-ESM, grid: gr1} # no cl
     # - {dataset: MCM-UA-1-0, grid: gn} # no clt
+  - {dataset: MPI-ESM1-2-HR, grid: gn}
+  - {dataset: MPI-ESM1-2-LR, grid: gn}
   - {dataset: MRI-ESM2-0, grid: gn}
     # - {dataset: SAM0-UNICON, grid: gn} # no scenario data
-  - {dataset: TaiESM1, grid: gn}
 
   - {dataset: ACCESS1-0, ensemble: r1i1p1, project: CMIP5}
   - {dataset: ACCESS1-3, ensemble: r1i1p1, project: CMIP5}
   - {dataset: BNU-ESM, ensemble: r1i1p1, project: CMIP5}
   - {dataset: CanESM2, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: CCSM4, ensemble: r1i1p1, project: CMIP5}
     # - {dataset: CNRM-CM5-2, ensemble: r1i1p1, project: CMIP5} # no scenario data
     # - {dataset: CNRM-CM5, ensemble: r1i1p1, project: CMIP5} # no cl, cli, clw
-  - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1, project: CMIP5}
   - {dataset: FGOALS-g2, ensemble: r1i1p1, project: CMIP5}
   - {dataset: GFDL-CM3, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1, project: CMIP5}
   - {dataset: MPI-ESM-LR, ensemble: r1i1p1, project: CMIP5}
   - {dataset: MPI-ESM-MR, ensemble: r1i1p1, project: CMIP5}
     # - {dataset: MPI-ESM-P, ensemble: r1i1p1, project: CMIP5} # no scenario data
@@ -101,25 +117,27 @@ DATASETS_ECS_MED_scenario: &datasets_ecs_med_scenario
     # - {dataset: CAS-ESM2-0, grid: gn, exp: ssp585} # download failed
     # - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, exp: ssp585} # no cl, cli, clw scenario data
   - {dataset: CMCC-CM2-SR5, grid: gn, exp: ssp585}
+  - {dataset: CMCC-ESM2, grid: gn, exp: ssp585}
     # - {dataset: EC-Earth3-Veg, exp: ssp585} # no cl, cli, clw
+  - {dataset: FGOALS-f3-L, exp: ssp585}
+  - {dataset: FGOALS-g3, grid: gn, exp: ssp585}
   - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f2, exp: ssp585}
-  - {dataset: KACE-1-0-G, exp: ssp585}
+    # - {dataset: KIOST-ESM, grid: gr1, exp: ssp585} # no cl
     # - {dataset: MCM-UA-1-0, grid: gn, exp: ssp585} # no scenario data
+  - {dataset: MPI-ESM1-2-HR, grid: gn, exp: ssp585}
+  - {dataset: MPI-ESM1-2-LR, grid: gn, exp: ssp585}
   - {dataset: MRI-ESM2-0, grid: gn, exp: ssp585}
     # - {dataset: SAM0-UNICON, grid: gn, exp: ssp585} # no scenario data
-  - {dataset: TaiESM1, grid: gn, exp: ssp585}
 
   - {dataset: ACCESS1-0, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
   - {dataset: ACCESS1-3, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
   - {dataset: BNU-ESM, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
   - {dataset: CanESM2, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
+  - {dataset: CCSM4, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
     # - {dataset: CNRM-CM5-2, ensemble: r1i1p1, project: CMIP5, exp: rcp85} # no scenario data
     # - {dataset: CNRM-CM5, ensemble: r1i1p1, project: CMIP5, exp: rcp85} # no cl, cli, clw
-  - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
   - {dataset: FGOALS-g2, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
   - {dataset: GFDL-CM3, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
-  - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
-  - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
   - {dataset: MPI-ESM-LR, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
   - {dataset: MPI-ESM-MR, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
     # - {dataset: MPI-ESM-P, ensemble: r1i1p1, project: CMIP5, exp: rcp85} # no scenario data
@@ -127,23 +145,19 @@ DATASETS_ECS_MED_scenario: &datasets_ecs_med_scenario
 
 DATASETS_ECS_LOW: &datasets_ecs_low
   - {dataset: CAMS-CSM1-0, grid: gn}
-  - {dataset: FGOALS-f3-L}
-  - {dataset: FGOALS-g3, grid: gn}
   - {dataset: GISS-E2-1-G, grid: gn}
+    # - {dataset: IITM-ESM, grid: gn} # no cli, clw
     # - {dataset: INM-CM4-8, grid: gr1} # no cl, cli, clw
     # - {dataset: INM-CM5-0, grid: gr1} # no cl, cli, clw
   - {dataset: MIROC6, grid: gn}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
     # - {dataset: MPI-ESM-1-2-HAM, grid: gn} # no scenario data
-  - {dataset: MPI-ESM1-2-HR, grid: gn}
-  - {dataset: MPI-ESM1-2-LR, grid: gn}
     # - {dataset: NorCPM1, grid: gn} # no clwvi, clivi
   - {dataset: NorESM2-LM, grid: gn, institute: NCC}
   - {dataset: NorESM2-MM, grid: gn, institute: NCC}
 
   - {dataset: bcc-csm1-1, ensemble: r1i1p1, project: CMIP5}
   - {dataset: bcc-csm1-1-m, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: CCSM4, ensemble: r1i1p1, project: CMIP5}
   - {dataset: GFDL-ESM2G, ensemble: r1i1p1, project: CMIP5}
   - {dataset: GFDL-ESM2M, ensemble: r1i1p1, project: CMIP5}
   - {dataset: GISS-E2-H, ensemble: r1i1p1, project: CMIP5}
@@ -157,23 +171,19 @@ DATASETS_ECS_LOW: &datasets_ecs_low
 
 DATASETS_ECS_LOW_scenario: &datasets_ecs_low_scenario
   - {dataset: CAMS-CSM1-0, grid: gn, exp: ssp585, end_year: 2099}
-  - {dataset: FGOALS-f3-L, exp: ssp585}
-  - {dataset: FGOALS-g3, grid: gn, exp: ssp585}
   - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f2, exp: ssp585}
+    # - {dataset: IITM-ESM, grid: gn, exp: ssp585, end_year: 2099} # no cli, clw
     # - {dataset: INM-CM4-8, grid: gr1, exp: ssp585} # no cl, cli, clw
     # - {dataset: INM-CM5-0, grid: gr1, exp: ssp585} # no cl, cli, clw
   - {dataset: MIROC6, grid: gn, exp: ssp585}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, exp: ssp585}
     # - {dataset: MPI-ESM-1-2-HAM, grid: gn, exp: ssp585} #no scenario data
-  - {dataset: MPI-ESM1-2-HR, grid: gn, exp: ssp585}
-  - {dataset: MPI-ESM1-2-LR, grid: gn, exp: ssp585}
     # - {dataset: NorCPM1, grid: gn, exp: ssp585} # no scenario data
   - {dataset: NorESM2-LM, grid: gn, institute: NCC, exp: ssp585}
   - {dataset: NorESM2-MM, grid: gn, institute: NCC, exp: ssp585}
 
   - {dataset: bcc-csm1-1, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
   - {dataset: bcc-csm1-1-m, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
-  - {dataset: CCSM4, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
   - {dataset: GFDL-ESM2G, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
   - {dataset: GFDL-ESM2M, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
   - {dataset: GISS-E2-H, ensemble: r1i1p1, project: CMIP5, exp: rcp85}
