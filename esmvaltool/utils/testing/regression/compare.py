@@ -11,10 +11,14 @@ from pathlib import Path
 from textwrap import indent
 from typing import Iterator, Optional
 
-import imagehash
 import numpy as np
 from PIL import Image
 import xarray as xr
+
+try:
+    import imagehash
+except ImportError:
+    print("Please `pip install imagehash`")
 
 IGNORE_FILES: tuple[str, ...] = (
     '*_citation.bibtex',
@@ -166,7 +170,9 @@ def compare_nc(reference_file: Path, current_file: Path) -> bool:
 
 def compare_png(reference_file: Path, current_file: Path) -> bool:
     """Compare two PNG files."""
-    # Based on https://scitools-iris.readthedocs.io/en/latest/developers_guide/contributing_graphics_tests.html
+    # Based on:
+    # https://scitools-iris.readthedocs.io/en/latest/developers_guide/contributing_graphics_tests.html
+
     # Perceptual hash size.
     hash_size = 16
     # Maximum perceptual hash hamming distance.
