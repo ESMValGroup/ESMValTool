@@ -275,7 +275,7 @@ weighted_samples: dict
     If specified, use weighted samples whenever possible. The given keyword
     arguments are directly passed to
     :func:`esmvaltool.diag_scripts.mlr.get_all_weights` to calculate the sample
-    weights. By default, area weights and time weights are used.
+    weights. By default, no weights are used.
 work_dir: str (default: ~/work)
     Root directory to save all other files (mainly ``*.nc`` files).
 
@@ -3183,8 +3183,7 @@ class MLRModel():
 
     def _set_default_settings(self):
         """Set default (non-``False``) keyword arguments."""
-        self._cfg.setdefault('weighted_samples',
-                             {'area_weighted': True, 'time_weighted': True})
+        self._cfg.setdefault('weighted_samples', {})
         self._cfg.setdefault('cache_intermediate_results', True)
         self._cfg.setdefault('dtype', 'float64')
         self._cfg.setdefault('fit_kwargs', {})
