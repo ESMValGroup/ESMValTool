@@ -338,7 +338,7 @@ def get_all_weights(cube, area_weighted=True, time_weighted=True,
         Input cube.
     area_weighted : bool, optional (default: True)
         Use area weights calculated from grid cell areas using
-        :func:`iris.analysis.cartography.area_weights'. Only works for regular
+        :func:`iris.analysis.cartography.area_weights`. Only works for regular
         grids.
     time_weighted : bool, optional (default: True)
         Use time weights calculated from time bounds.
@@ -433,7 +433,7 @@ def get_horizontal_weights(cube, area_weighted=True,
         Input cube.
     area_weighted : bool, optional (default: True)
         Use area weights calculated from grid cell areas using
-        :func:`iris.analysis.cartography.area_weights'. Only works for regular
+        :func:`iris.analysis.cartography.area_weights`. Only works for regular
         grids.
     landsea_fraction_weighted : str, optional
         If given, use land/sea fraction weights calculated from Natural Earth
