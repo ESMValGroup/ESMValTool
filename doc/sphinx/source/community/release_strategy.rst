@@ -19,7 +19,7 @@ released in a timely manner even if a specific target release is missed.
 Because of limited resources, only the latest released versions of ESMValTool and ESMValCore is maintained.
 If your project requires longer maintenance or you have other concerns about
 the release strategy, please contact the ESMValTool core development team, see
-:ref:`contact`.
+:ref:`Support-and-Contact`.
 
 
 Overall Procedure
@@ -298,8 +298,8 @@ All tests should pass before making a release (branch).
 2. Increase the version number
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The version number is stored in ``esmvaltool/__init__.py``,
-``package/meta.yaml``, ``CITATION.cff``. Make sure to update all files.
+The version number is stored in ``esmvaltool/__init__.py``, ``CITATION.cff``.
+Make sure to update both files.
 Also update the release date in ``CITATION.cff``.
 See https://semver.org for more information on choosing a version number.
 Make a pull request and get it merged into ``main``.
@@ -380,14 +380,26 @@ Follow these steps to create a new Python package:
 You can read more about this in
 `Packaging Python Projects <https://packaging.python.org/tutorials/packaging-projects/>`__.
 
-8. Update the conda-forge packages
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+8. Create the Conda package
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The upload to PyPI will automatically trigger an update PR on the
-esmvaltool-suite-feedstock_. Check that it builds correctly and merge
-the PR to update the conda-forge packages.
+The ``esmvaltool`` package is published on the `conda-forge conda channel
+<https://anaconda.org/conda-forge>`__.
+This is done via a pull request on the `esmvaltool-suite-feedstock repository
+<https://github.com/conda-forge/esmvaltool-suite-feedstock>`__.
 
-.. _esmvaltool-suite-feedstock: https://github.com/conda-forge/esmvaltool-suite-feedstock
+After the upload of the PyPI package, this pull request is automatically opened
+by a bot.
+An example pull request can be found `here
+<https://github.com/conda-forge/esmvaltool-suite-feedstock/pull/5>`__.
+Follow the instructions by the bot to finalize the pull request.
+This step mostly contains updating dependencies that have been changed during
+the last release cycle.
+Once approved by the `feedstock maintainers
+<https://github.com/conda-forge/esmvaltool-suite-feedstock#feedstock-maintainers>`__
+they will merge the pull request, which will in turn publish the package on
+conda-forge some time later.
+Contact the feedstock maintainers if you want to become a maintainer yourself.
 
 Changelog
 ---------
