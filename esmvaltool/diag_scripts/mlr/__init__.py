@@ -728,7 +728,7 @@ def get_squared_error_cube(ref_cube, error_datasets):
 
 
 def get_time_weights(cube, normalize=False):
-    """Get time weights of cube using time bounds.
+    """Get time weights of cube calculated from time bounds.
 
     Parameters
     ----------
