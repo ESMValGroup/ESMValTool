@@ -3794,6 +3794,8 @@ def main(cfg):
 #
 #
 
+
+        return
         for x in short_names_x:
             for y in short_names_y:
                 make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
