@@ -3695,10 +3695,14 @@ def main(cfg):
 
     pairs = []
 
+
+
     for do_ma in [True, ]:#False]:
         data_dict = load_timeseries(cfg, short_names)
         thresholds_dict = load_thresholds(cfg, data_dict)
         #plot_data_dict(cfg, data_dict)
+        make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '4.0', land_carbon = 'tls')
+        assert 0
 
         if jobtype in ['cumulative_plot', 'debug']:
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls')
