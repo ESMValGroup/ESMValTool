@@ -2099,7 +2099,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     # set path:
     image_extention = diagtools.get_image_format(cfg)
 
-    path = diagtools.folder([cfg['plot_dir'], 'ts_figure'])
+    path = diagtools.folder([cfg['plot_dir'], 'ts_figure',plot_dataset])
 
     if ensemble_mean:
         ensemble_mean_txt = 'ensemble_mean'
@@ -3836,10 +3836,18 @@ def main(cfg):
 #                            fill = 'all_ensembles')
 #
 #
+       
+        for x in short_names_x:
+            for y in short_names_y:
+                make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
+                           markers='thresholds', do_moving_average=False,
+                           plot_dataset='all_models',
+                           ensemble_mean=True )
+                
         for x in short_names_x:
             for y in short_names_y:
                 for plot_dataset in datasets:
-                    if plot_dataset.find('UKESM')==-1: continue
+                    #if plot_dataset.find('UKESM')==-1: continue
                     if x == y:
                         continue
 #                   for fill in ['ensemble_means', 'all_ensembles']:
