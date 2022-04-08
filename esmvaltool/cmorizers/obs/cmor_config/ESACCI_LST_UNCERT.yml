@@ -23,7 +23,7 @@ attributes:
 variables:
   tsDay: 
     mip: Amon
-    raw: land surface temperature
+    raw: surface temperature
     raw_units: kelvin
     file: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
     start_year: 2010
@@ -31,7 +31,7 @@ variables:
 
   tsNight: 
     mip: Amon
-    raw: land surface temperature
+    raw: surface temperature
     raw_units: kelvin
     file: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
     start_year: 2010

@@ -136,7 +136,8 @@ def _get_provenance_record(attributes, ancestor_files):
 
 
 def _diagnostic(config):
-    """Perform the control for the ESA CCI LST diagnostic.
+    """Perform the control for the ESA CCI LST diagnostic
+       with uncertainities included
     Parameters
     ----------
     config: dict
@@ -146,10 +147,7 @@ def _diagnostic(config):
     -------
     figures made by make_plots.
     """
-    print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-    print(config)
-
-# this loading function is based on the hydrology diagnostic
+    # this loading function is based on the hydrology diagnostic
     input_metadata = config['input_data'].values()
 
     loaded_data = {}
@@ -157,13 +155,15 @@ def _diagnostic(config):
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         cubes, ancestors = _get_input_cubes(metadata)
         loaded_data[dataset] = cubes
-        
+        print('CUBES in LOOP')
         print(cubes)
-        #ancestor_list.append(ancestors['ts'][0])
 
     # loaded data is a nested dictionary
     # KEY1 model ESACCI-LST or something else
     # KEY2 is ts, the surface temperature
+    
+    # need to work out how multiple ensembles are passed in
+
     # ie loaded_data['ESACCI-LST']['ts'] is the CCI cube
     #    loaded_data['MultiModelMean']['ts'] is CMIP6 data, emsemble means
     #    similarly dor Std, see preprocessor
@@ -172,34 +172,52 @@ def _diagnostic(config):
 
     # CMIP data had 360 day calendar, CCI data has 365 day calendar
     # Assume the loaded data is all the same shape
+    print('LOADED DATA:')
     print(loaded_data)
 
-    print(0/0)
+    # print(0/0)
     ### There will be some cube manipulation todo
-    loaded_data['MultiModelMean']['ts'].remove_coord('time')
-    loaded_data['MultiModelMean']['ts'].add_dim_coord(
-        loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
-    loaded_data['MultiModelStd']['ts'].remove_coord('time')
-    loaded_data['MultiModelStd']['ts'].add_dim_coord(
-        loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
+    ###### leave this here incase need to template form it
+    # loaded_data['MultiModelMean']['ts'].remove_coord('time')
+    # loaded_data['MultiModelMean']['ts'].add_dim_coord(
+    #     loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
+    # loaded_data['MultiModelStd']['ts'].remove_coord('time')
+    # loaded_data['MultiModelStd']['ts'].add_dim_coord(
+    #     loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
 
 
     #### Calc CCI LST uncertainty
+    #### REMEMBER TO APPLY FACTORS TO DATA, DO THIS IN CMORIZER?????
+    uncerts = {'Day' : iris.cube.CubeList(),
+               'Night': iris.cube.CubeList()
+               }
+
+    for KEY in loaded_data['ESACCI_LST_UNCERTS'].keys():
+        if KEY == 'tsDay' or KEY == 'tsNight':
+            continue # no need to do this to the raw LSTs
+
+        new_cube = (loaded_data['ESACCI_LST_UNCERTS'][KEY]**2).collapsed(['latitude','longitude'],
+                                                                        iris.analysis.SUM)
+
+        print(KEY)
+        print(new_cube.data)
+
+    print(0/0)
 
     #### MAke sure we have a mean/std of model LST
 
 
     
     ###### MAKE DIFF CCI - MODEL
-    # Make a cube of the LST difference, and with +/- std of model variation
-    lst_diff_cube = loaded_data['ESACCI-LST']['ts'] - loaded_data[
-        'MultiModelMean']['ts']
-    lst_diff_cube_low = loaded_data['ESACCI-LST']['ts'] - (
-        loaded_data['MultiModelMean']['ts'] +
-        loaded_data['MultiModelStd']['ts'])
-    lst_diff_cube_high = loaded_data['ESACCI-LST']['ts'] - (
-        loaded_data['MultiModelMean']['ts'] -
-        loaded_data['MultiModelStd']['ts'])
+    # # Make a cube of the LST difference, and with +/- std of model variation
+    # lst_diff_cube = loaded_data['ESACCI-LST']['ts'] - loaded_data[
+    #     'MultiModelMean']['ts']
+    # lst_diff_cube_low = loaded_data['ESACCI-LST']['ts'] - (
+    #     loaded_data['MultiModelMean']['ts'] +
+    #     loaded_data['MultiModelStd']['ts'])
+    # lst_diff_cube_high = loaded_data['ESACCI-LST']['ts'] - (
+    #     loaded_data['MultiModelMean']['ts'] -
+    #     loaded_data['MultiModelStd']['ts'])
 
 
     # MAKE LST +/- uncert CCI
@@ -238,8 +256,5 @@ def _diagnostic(config):
 if __name__ == '__main__':
     # always use run_diagnostic() to get the config (the preprocessor
     # nested dictionary holding all the needed information)
-
-    print("HELLO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     with run_diagnostic() as config:
-        #print(0/0) # THis will let me know is esmvaltool actually gets through to here or not
         _diagnostic(config)
