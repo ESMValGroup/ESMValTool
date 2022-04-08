@@ -332,7 +332,9 @@ CircleCI_ will build the documentation with the command
 to catch mistakes that can be detected automatically.
 
 The configuration file for Sphinx_ is
-`doc/shinx/source/conf.py <https://github.com/ESMValGroup/ESMValTool/blob/main/doc/sphinx/source/conf.py>`_.
+`doc/sphinx/source/conf.py <https://github.com/ESMValGroup/ESMValTool/blob/main/doc/sphinx/source/conf.py>`_
+and the configuration file for ReadTheDocs is
+`.readthedocs.yaml <https://github.com/ESMValGroup/ESMValTool/blob/main/.readthedocs.yaml>`_.
 
 When reviewing a pull request, always check that the documentation checks
 shown below the pull request were successful.
