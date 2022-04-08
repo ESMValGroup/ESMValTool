@@ -2425,7 +2425,7 @@ def calculate_percentages( cfg,
     #ensemble_key = 'all',
     ):
     print("I think the problem is somewhere in here.")
-    assert 0
+    #assert 0
 
 
     #print(thresholds_dict)
@@ -2714,7 +2714,7 @@ def make_ensemble_barchart_pane(
 
         if ensemble_key == 'ensemble_mean' and t_ens != 'ensemble_mean': continue
 
-        if 'CMIP6' in unique_key: continue
+        #if 'CMIP6' in unique_key: continue
 
         if t_threshold != threshold: continue
         #if unique_key not in remnants: continue
