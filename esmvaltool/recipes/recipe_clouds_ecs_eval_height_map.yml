@@ -202,21 +202,14 @@ preprocessors:
       levels: {cmor_table: CMIP6, coordinate: plev27}
       coordinate: air_pressure
       scheme: linear
-    #extract_region:
-    #  start_latitude: -85
-    #  end_latitude: -40
-    #  start_longitude: 0
-    #  end_longitude: 360
     regrid:
       target_grid: 2x2
       scheme: linear
-    #area_statistics:
     zonal_statistics:
       operator: mean
     multi_model_statistics:
       span: full
       statistics: [mean]
-      #statistics: [mean, p5, p95]
     climate_statistics:
       operator: mean
 
@@ -225,15 +218,9 @@ preprocessors:
       levels: {cmor_table: CMIP6, coordinate: plev27}
       coordinate: air_pressure
       scheme: linear
-    #extract_region:
-    #  start_latitude: -85
-    #  end_latitude: -40
-    #  start_longitude: 0
-    #  end_longitude: 360
     regrid:
       target_grid: 2x2
       scheme: linear
-    #area_statistics:
     zonal_statistics:
       operator: mean
     climate_statistics:
@@ -315,14 +302,6 @@ diagnostics:
         <<: *years_ssp585
         short_name: cli
         additional_datasets: *datasets_ecs_low_scenario
-      #OBS:
-      #  <<: *var_cl
-      #  short_name: cli
-      #  preprocessor: height
-      #  start_year: 2007
-      #  end_year: 2015
-      #  additional_datasets:
-      #    - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, mip: Amon, tier: 2} 
 
 
   clw_height:
@@ -356,11 +335,3 @@ diagnostics:
         <<: *years_ssp585
         short_name: clw
         additional_datasets: *datasets_ecs_low_scenario
-      #OBS:
-      #  <<: *var_cl
-      #  short_name: clw
-      #  preprocessor: height
-      #  start_year: 2006
-      #  end_year: 2017
-      #  additional_datasets:
-      #    - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip, mip: Amon, tier: 2}
