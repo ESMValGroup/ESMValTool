@@ -491,13 +491,14 @@ def _dict_to_array(dict_):
 def _get_anomaly_data(input_data, year_idx=None):
     """Calculate anomaly data for all variables."""
     logger.info("Calculating anomaly data")
-    project = input_data[0]['project']
+    #project = input_data[0]['project']
     new_input_data = []
     for (var, var_data) in group_metadata(input_data, 'short_name').items():
         grouped_data = group_metadata(var_data, 'dataset')
         for (dataset_name, datasets) in grouped_data.items():
             logger.debug("Calculating '%s' anomaly for dataset '%s'", var,
                          dataset_name)
+            project = datasets[0]['project']
             data_4x = select_metadata(datasets, exp=EXP_4XCO2[project])
             data_pic = select_metadata(datasets, exp='piControl')
 
@@ -829,19 +830,22 @@ def check_input_data(cfg):
     input_data = cfg['input_data'].values()
     project_group = group_metadata(input_data, 'project')
     projects = list(project_group.keys())
-    if len(projects) > 1:
-        raise ValueError(
-            f"This diagnostic supports only unique 'project' attributes, got "
-            f"{projects}")
-    project = projects[0]
-    if project not in EXP_4XCO2:
-        raise ValueError(f"Project '{project}' not supported yet")
-    exp_group = group_metadata(input_data, 'exp')
-    exps = set(exp_group.keys())
-    if exps != {'piControl', EXP_4XCO2[project]}:
-        raise ValueError(
-            f"This diagnostic needs 'piControl' and '{EXP_4XCO2[project]}' "
-            f"experiments, got {exps}")
+    #if len(projects) > 1:
+    #    raise ValueError(
+    #        f"This diagnostic supports only unique 'project' attributes, got "
+    #        f"{projects}")
+    for iproject in range(0, len(projects)):
+        #project = projects[0]
+        project = projects[iproject]
+        if project not in EXP_4XCO2:
+            raise ValueError(f"Project '{project}' not supported yet")
+        #exp_group = group_metadata(input_data, 'exp')
+        exp_group = group_metadata(project_group[project], 'exp')
+        exps = set(exp_group.keys())
+        if exps != {'piControl', EXP_4XCO2[project]}:
+            raise ValueError(
+                f"This diagnostic needs 'piControl' and '{EXP_4XCO2[project]}' "
+                f"experiments, got {exps}")
 
 
 def plot_feedback_parameters(input_data, cfg, description=None):

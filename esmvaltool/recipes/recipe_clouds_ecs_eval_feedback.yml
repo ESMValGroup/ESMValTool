@@ -1,0 +1,320 @@
+# ESMValTool
+# recipe_clouds_ecs_feedback.yml
+---
+documentation:
+
+  title: Calculating cloud feedback
+
+  description: |
+      xxx
+
+  authors:
+    - bock_lisa
+
+  maintainer:
+    - bock_lisa
+
+
+preprocessors:
+
+  regrid: &regrid
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+
+  global_mean:
+    area_statistics:
+      operator: mean
+
+
+High_ECS_RTNT: &high_ecs_rtnt
+  - {dataset: CanESM5,          exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 5201, end_year: 5350}
+  - {dataset: CanESM5,          exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: CESM2,            exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
+  - {dataset: CESM2,            exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
+  - {dataset: CESM2-WACCM,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150, institute: NCAR}
+  - {dataset: CESM2-WACCM,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150, institute: NCAR}
+  - {dataset: CNRM-CM6-1,       exp: piControl,    ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: CNRM-CM6-1,       exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: CNRM-ESM2-1,      exp: piControl,    ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: CNRM-ESM2-1,      exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: HadGEM3-GC31-LL,  exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: HadGEM3-GC31-LL,  exp: abrupt-4xCO2, ensemble: r1i1p1f3, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: HadGEM3-GC31-MM,  exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: HadGEM3-GC31-MM,  exp: abrupt-4xCO2, ensemble: r1i1p1f3, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: IPSL-CM6A-LR,     exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 1870, end_year: 2019}
+  - {dataset: IPSL-CM6A-LR,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: KACE-1-0-G,       exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 2150, end_year: 2299}
+  - {dataset: KACE-1-0-G,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: NESM3,            exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  550, end_year:  699}
+  - {dataset: NESM3,            exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: TaiESM1,          exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  201, end_year:  350}
+  - {dataset: TaiESM1,          exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
+  - {dataset: UKESM1-0-LL,      exp: piControl,    ensemble: r1i1p1f2, grid: gn,  start_year: 1960, end_year: 2109}
+  - {dataset: UKESM1-0-LL,      exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
+
+  - {dataset: CSIRO-Mk3-6-0, exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year:  104, end_year:  253}
+  - {dataset: CSIRO-Mk3-6-0, exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year:    1, end_year:  150}
+  - {dataset: HadGEM2-ES,    exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 1860, end_year: 2009}
+  - {dataset: HadGEM2-ES,    exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1860, end_year: 2009}
+    #- {dataset: IPSL-CM5A-LR,  exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+    #- {dataset: IPSL-CM5A-LR,  exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+  - {dataset: IPSL-CM5A-MR,  exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1989}
+  - {dataset: IPSL-CM5A-MR,  exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1989}
+  - {dataset: MIROC-ESM,     exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 1880, end_year: 2029}
+  - {dataset: MIROC-ESM,     exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year:    1, end_year:  150}
+
+Med_ECS_RTNT: &med_ecs_rtnt
+  - {dataset: BCC-CSM2-MR,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: BCC-CSM2-MR,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: CMCC-CM2-SR5,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: CMCC-CM2-SR5,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: CMCC-ESM2,        exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: CMCC-ESM2,        exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: FGOALS-f3-L,      exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year:  600, end_year:  749}
+  - {dataset: FGOALS-f3-L,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: FGOALS-g3,        exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  463, end_year:  612}
+  - {dataset: FGOALS-g3,        exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:  463, end_year:  612}
+  - {dataset: GISS-E2-1-H,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 3180, end_year: 3329}
+  - {dataset: GISS-E2-1-H,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MPI-ESM1-2-HR,    exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MPI-ESM1-2-HR,    exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MPI-ESM1-2-LR,    exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MPI-ESM1-2-LR,    exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MRI-ESM2-0,       exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MRI-ESM2-0,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+
+  - {dataset: ACCESS1-0,     exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year:  300, end_year:  449}
+  - {dataset: ACCESS1-0,     exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year:  300, end_year:  449}
+  - {dataset: ACCESS1-3,     exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year:  250, end_year:  399}
+  - {dataset: ACCESS1-3,     exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year:  250, end_year:  399}
+  - {dataset: BNU-ESM,       exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+  - {dataset: BNU-ESM,       exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+  - {dataset: CanESM2,       exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 2321, end_year: 2470}
+  - {dataset: CanESM2,       exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+  - {dataset: CCSM4,         exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year:  250, end_year:  399}
+  - {dataset: CCSM4,         exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+  - {dataset: FGOALS-g2,     exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year:  490, end_year:  639}
+  - {dataset: FGOALS-g2,     exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year:  490, end_year:  639}
+  - {dataset: GFDL-CM3,      exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year:    1, end_year:  150}
+  - {dataset: GFDL-CM3,      exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year:    1, end_year:  150}
+  - {dataset: MPI-ESM-LR,    exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 1880, end_year: 2029}
+  - {dataset: MPI-ESM-LR,    exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+  - {dataset: MPI-ESM-MR,    exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+  - {dataset: MPI-ESM-MR,    exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+
+Low_ECS_RTNT: &low_ecs_rtnt
+  - {dataset: CAMS-CSM1-0,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 3030, end_year: 3179}
+  - {dataset: CAMS-CSM1-0,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 3030, end_year: 3179}
+  - {dataset: GISS-E2-1-G,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 4150, end_year: 4299}
+  - {dataset: GISS-E2-1-G,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MIROC6,           exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3349}
+  - {dataset: MIROC6,           exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3349}
+  - {dataset: MIROC-ES2L,       exp: piControl,    ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MIROC-ES2L,       exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: NorESM2-LM,       exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1600, end_year: 1749}
+  - {dataset: NorESM2-LM,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
+  - {dataset: NorESM2-MM,       exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1201, end_year: 1350}
+  - {dataset: NorESM2-MM,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
+
+  - {dataset: bcc-csm1-1,    exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year:  160, end_year:  309}
+  - {dataset: bcc-csm1-1,    exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year:  160, end_year:  309}
+  - {dataset: bcc-csm1-1-m,  exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year:  240, end_year:  389}
+  - {dataset: bcc-csm1-1-m,  exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year:  240, end_year:  389}
+  - {dataset: GFDL-ESM2G,    exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year:    1, end_year:  150}
+  - {dataset: GFDL-ESM2G,    exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year:    1, end_year:  150}
+  - {dataset: GFDL-ESM2M,    exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year:    1, end_year:  150}
+  - {dataset: GFDL-ESM2M,    exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year:    1, end_year:  150}
+  - {dataset: GISS-E2-H,     exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 2660, end_year: 2809}
+  - {dataset: GISS-E2-H,     exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+  - {dataset: GISS-E2-R,     exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 4200, end_year: 4349}
+  - {dataset: GISS-E2-R,     exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+  - {dataset: inmcm4,        exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 2090, end_year: 2239}
+  - {dataset: inmcm4,        exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 2090, end_year: 2239}
+  - {dataset: IPSL-CM5B-LR,  exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+  - {dataset: IPSL-CM5B-LR,  exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+  - {dataset: MIROC5,        exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 2100, end_year: 2249}
+  - {dataset: MIROC5,        exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 2100, end_year: 2249}
+  - {dataset: MRI-CGCM3,     exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 1891, end_year: 2040}
+  - {dataset: MRI-CGCM3,     exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1851, end_year: 2000}
+  - {dataset: NorESM1-M,     exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year:  700, end_year:  849}
+  - {dataset: NorESM1-M,     exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year:    1, end_year:  150}
+
+
+diagnostics:
+
+  feedback_high_ESC:
+    title: CMIP5 cloud feedback
+    description: Calculate grid-level CRE feedback parameters for CMIP5 models.
+    variables:
+      tas_global_rtnt: &fig_settings_high
+        short_name: tas
+        preprocessor: global_mean
+        project: CMIP6
+        ensemble: r1i1p1f1
+        mip: Amon
+        additional_datasets: *high_ecs_rtnt
+      netcre_grid_level:
+        <<: *fig_settings_high
+        short_name: netcre
+        preprocessor: regrid
+        derive: true
+      lwcre_grid_level:
+        <<: *fig_settings_high
+        short_name: lwcre
+        preprocessor: regrid
+        derive: true
+      swcre_grid_level:
+        <<: *fig_settings_high
+        short_name: swcre
+        preprocessor: regrid
+        derive: true
+    scripts:
+      feedback_parameters: &script_feedback_parameters
+        script: climate_metrics/feedback_parameters.py
+        calculate_mmm: false #true
+        only_consider_mmm: false #true
+        output_attributes:  # Dummy attributes necessary for mlr/plot.py
+          tag: cre_feedback_parameter
+          var_type: prediction_output
+          #project: [CMIP6, CMIP5]
+          project: high_ECS
+          start_year: 1
+          end_year: 150
+
+  feedback_med_ESC:
+    title: CMIP5 cloud feedback
+    description: Calculate grid-level CRE feedback parameters for CMIP5 models.
+    variables:
+      tas_global_rtnt: &fig_settings_med
+        short_name: tas
+        preprocessor: global_mean
+        project: CMIP6
+        ensemble: r1i1p1f1
+        mip: Amon
+        additional_datasets: *med_ecs_rtnt
+      netcre_grid_level:
+        <<: *fig_settings_med
+        short_name: netcre
+        preprocessor: regrid
+        derive: true
+      lwcre_grid_level:
+        <<: *fig_settings_med
+        short_name: lwcre
+        preprocessor: regrid
+        derive: true
+      swcre_grid_level:
+        <<: *fig_settings_med
+        short_name: swcre
+        preprocessor: regrid
+        derive: true
+    scripts:
+      feedback_parameters:
+        <<: *script_feedback_parameters
+        output_attributes:  # Dummy attributes necessary for mlr/plot.py
+          tag: cre_feedback_parameter
+          var_type: prediction_output
+          #project: [CMIP6, CMIP5]
+          project: med_ECS
+          start_year: 1
+          end_year: 150
+
+  feedback_low_ESC:
+    title: CMIP5 cloud feedback
+    description: Calculate grid-level CRE feedback parameters for CMIP5 models.
+    variables:
+      tas_global_rtnt: &fig_settings_low
+        short_name: tas
+        preprocessor: global_mean
+        project: CMIP6
+        ensemble: r1i1p1f1
+        mip: Amon
+        additional_datasets: *low_ecs_rtnt
+      netcre_grid_level:
+        <<: *fig_settings_low
+        short_name: netcre
+        preprocessor: regrid
+        derive: true
+      lwcre_grid_level:
+        <<: *fig_settings_low
+        short_name: lwcre
+        preprocessor: regrid
+        derive: true
+      swcre_grid_level:
+        <<: *fig_settings_low
+        short_name: swcre
+        preprocessor: regrid
+        derive: true
+    scripts:
+      feedback_parameters:
+        <<: *script_feedback_parameters
+        output_attributes:  # Dummy attributes necessary for mlr/plot.py
+          tag: cre_feedback_parameter
+          var_type: prediction_output
+          #project: [CMIP6, CMIP5]
+          project: low_ECS
+          start_year: 1
+          end_year: 150
+
+          #  fig_netcre:
+          #    title: Net cloud radiative effect
+          #    description: Plot figure 10 (netcre).
+          #    scripts:
+          #      plot: &script_plot_fig_10
+          #        script: mlr/plot.py
+          #        ancestors: ['feedback_*/feedback_parameters']
+          #        group_by_attribute: tag
+          #        pattern: lambda_netcre_vs_latitude-longitude_MultiModelMean_all_150_years.nc
+          #        plot_map:
+          #          plot_kwargs:
+          #            cbar_label: '$\lambda_{netcre}$ [W m$^{-2}$ K$^{-1}$]'
+          #            cmap: bwr
+          #            vmin: -7.5
+          #            vmax: 7.5
+          #        plot_map_abs_biases:
+          #          plot_kwargs:
+          #            cbar_label: '$\Delta\lambda_{netcre}$ [W m$^{-2}$ K$^{-1}$]'
+          #            cmap: bwr
+          #            vmin: -2.5
+          #            vmax: 2.5
+          #        years_in_title: false
+          #
+          #  fig_lwcre:
+          #    title: Longwave cloud radiative effect
+          #    description: Plot figure 10 (lwcre).
+          #    scripts:
+          #      plot:
+          #        <<: *script_plot_fig_10
+          #        pattern: lambda_lwcre_vs_latitude-longitude_MultiModelMean_all_150_years.nc
+          #        plot_map:
+          #          plot_kwargs:
+          #            cbar_label: '$\lambda_{lwcre}$ [W m$^{-2}$ K$^{-1}$]'
+          #            cmap: bwr
+          #            vmin: -7.5
+          #            vmax: 7.5
+          #        plot_map_abs_biases:
+          #          plot_kwargs:
+          #            cbar_label: '$\Delta\lambda_{lwcre}$ [W m$^{-2}$ K$^{-1}$]'
+          #            cmap: bwr
+          #            vmin: -2.5
+          #            vmax: 2.5
+          #
+          #  fig_swcre:
+          #    title: Shortwave cloud radiative effect
+          #    description: Plot figure 10 (swcre).
+          #    scripts:
+          #      plot:
+          #        <<: *script_plot_fig_10
+          #        pattern: lambda_swcre_vs_latitude-longitude_MultiModelMean_all_150_years.nc
+          #        plot_map:
+          #          plot_kwargs:
+          #            cbar_label: '$\lambda_{swcre}$ [W m$^{-2}$ K$^{-1}$]'
+          #            cmap: bwr
+          #            vmin: -7.5
+          #            vmax: 7.5
+          #        plot_map_abs_biases:
+          #          plot_kwargs:
+          #            cbar_label: '$\Delta\lambda_{swcre}$ [W m$^{-2}$ K$^{-1}$]'
+          #            cmap: bwr
+          #            vmin: -2.5
+          #            vmax: 2.5
