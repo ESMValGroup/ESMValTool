@@ -3599,7 +3599,7 @@ def make_cumulative_vs_threshold(cfg, data_dict,
         ax.set_xlim([np.min(ranges), np.max(ranges)])
 
     image_extention = diagtools.get_image_format(cfg)
-    path = diagtools.folder([cfg['plot_dir'], 'emissions_figures'])
+    path = diagtools.folder([cfg['plot_dir'], 'emissions_figures_new'])
     path += '_'.join(['emssions_figure', land_carbon, str(len(LHS_panes)), '_'.join(thresholds)]) + image_extention
     plt.savefig(path)
     plt.close()
@@ -3713,10 +3713,8 @@ def main(cfg):
                 for plot_style, ens, group_by in product(plot_styles, ens_styles, group_bys):
                     make_ensemble_barchart(cfg, data_dict, thresholds_dict, plot_style=plot_style, ensemble_key=ens, group_by=group_by)
 
-                #return
-
-                make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
-                make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
+                # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
+                # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
 
                 plot_types = ['pair', 'area_over_zero'] #'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
                 ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
@@ -3731,17 +3729,17 @@ def main(cfg):
                     make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
                 #continue
 
-                make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
+                # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
 
-                LHS_panes = [
-                    {'x':'time', 'y':'cumul_emissions'},
-                    {'x':'time', 'y':'tls'},
-                    {'x':'time', 'y':'fgco2gt_cumul'},
-                    #{'x':'time', 'y':'tas_norm'},
-                    #{'x':'time', 'y':'cumul_emissions'},
-                    #{'x':'cumul_emissions', 'y':'tas_norm'},
-                ]
-                make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
+                # LHS_panes = [
+                #     {'x':'time', 'y':'cumul_emissions'},
+                #     {'x':'time', 'y':'tls'},
+                #     {'x':'time', 'y':'fgco2gt_cumul'},
+                #     #{'x':'time', 'y':'tas_norm'},
+                #     #{'x':'time', 'y':'cumul_emissions'},
+                #     #{'x':'cumul_emissions', 'y':'tas_norm'},
+                # ]
+                # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
 
             make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
             make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
@@ -3758,16 +3756,16 @@ def main(cfg):
                    continue
                 make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
 
-            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
-            LHS_panes = [
-                {'x':'time', 'y':'cumul_emissions'},
-                {'x':'time', 'y':'tls'},
-                {'x':'time', 'y':'fgco2gt_cumul'},
-                #{'x':'time', 'y':'tas_norm'},
-                #{'x':'time', 'y':'cumul_emissions'},
-                #{'x':'cumul_emissions', 'y':'tas_norm'},
-            ]
-            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
+            # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
+            # LHS_panes = [
+            #     {'x':'time', 'y':'cumul_emissions'},
+            #     {'x':'time', 'y':'tls'},
+            #     {'x':'time', 'y':'fgco2gt_cumul'},
+            #     #{'x':'time', 'y':'tas_norm'},
+            #     #{'x':'time', 'y':'cumul_emissions'},
+            #     #{'x':'cumul_emissions', 'y':'tas_norm'},
+            # ]
+            # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
 
         datasets = {'all_models':True}
         for (dataset, short_name, exp, ensemble),cube  in data_dict.items():
