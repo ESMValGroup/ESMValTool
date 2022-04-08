@@ -2708,12 +2708,13 @@ def make_ensemble_barchart_pane(
         csv_file.close()
 
 
-
     for i, unique_key in enumerate(unique_key_order):
     #for unique_key, remnant in sorted(remnants.items()):
         (t_dataset, t_exp, t_ens, t_threshold) = unique_key
 
         if ensemble_key == 'ensemble_mean' and t_ens != 'ensemble_mean': continue
+
+        if 'CMIP6' in unique_key: continue
 
         if t_threshold != threshold: continue
         #if unique_key not in remnants: continue
@@ -2722,21 +2723,6 @@ def make_ensemble_barchart_pane(
         landc = landcs[unique_key]
         oceanc = fgco2gts[unique_key]
         total = remnant + landc + oceanc
-
-#        if t_dataset not in previous_datasets:
-#            land.append(0.)
-#            ocean.append(0.)
-#            air.append(0.)
-#            emissions_bottoms.append(0.)
-#            experiments.append(' ')
-
-        # if t_dataset not in previous_datasets:
-        #     label_keys.append(t_dataset)
-        # previous_datasets[t_dataset] = True
-        # label_keys.append(t_exp)
-        # labels.append(label_keys)
-
-        #  look if adding  blank lines:
 
         adding_gaps = False
         dataset_blank = (i>0 and group_by == 'group_by_model' and t_dataset not in labels[-1])
@@ -2760,7 +2746,6 @@ def make_ensemble_barchart_pane(
  #       if 'CMIP6' in label_keys and 'SSP119' in t_exp and
 
         labels.append(label_keys)
-
 
         if i == 0:
             xvalues.append(0.)
@@ -3665,19 +3650,6 @@ def main(cfg):
 
         short_names_y = short_names.copy()
 
-    if jobtype == 'marine':
-        short_names = ['tas', 'tas_norm', 'co2',
-                       'npp', 'nppgt', 'rh', 'rhgt', 'exchange',
-                       #'inverse_exchange',
-                       #'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
-                       'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'frc',
-                       'intppgt','fgco2gt', 'epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt','frcgt',
-                       ]
-        short_names_x = ['time', 'co2', 'tas_norm', 'fgco2gt', 'intdicgt']
-        #'intpp', 'epc100', 'intdic', 'intpoc', 'fric', 'froc'] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
-        #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
-        short_names_y = ['tas_norm', 'co2', 'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc','frc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt', 'frcgt',]
-
     if jobtype == 'bulk':
         short_names = ['tas', 'tas_norm', 'co2', 'emissions', 'cumul_emissions'
                        'nbp', 'nbpgt', 'gpp', 'gppgt',
@@ -3708,19 +3680,6 @@ def main(cfg):
         short_names_y = ['tls', ]#s #['fgco2gt_cumul', 'nbpgt_cumul']
 
 
-    if jobtype == 'land':
-        short_names = ['tas', 'tas_norm', 'co2',
-                       'npp', 'nppgt',
-                       'rhgt', 'exchange',
-                       'nppgt_norm','rhgt_norm','exchange_norm',
-                       ]
-        short_names_x = ['time', 'co2', 'tas', 'tas_norm',
-                         'rhgt', 'exchange', 'rhgt','nppgt',]
-        short_names_y = ['tas', 'tas_norm', 'co2',
-                         'npp', 'nppgt',
-                         'rh', 'rhgt',
-                         'exchange',
-                         'nppgt_norm','rhgt_norm','exchange_norm',]
 
     if jobtype == 'full':
         short_names = ['tas', 'tas_norm', 'co2',
@@ -3733,8 +3692,6 @@ def main(cfg):
                          'intpp', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
         short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',
                          'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',]
-
-     # ]'npp', 'nppgt', 'intpp', 'intppgt_norm', 'fgco2gt', 'rhgt', 'exchange', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
 
     pairs = []
 
@@ -3800,6 +3757,7 @@ def main(cfg):
                        ensemble = 'ensemble_mean')
                    continue
                 make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
+
             make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
             LHS_panes = [
                 {'x':'time', 'y':'cumul_emissions'},
@@ -3835,14 +3793,14 @@ def main(cfg):
 #                            fill = 'all_ensembles')
 #
 #
-       
+
         for x in short_names_x:
             for y in short_names_y:
                 make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
                            markers='thresholds', do_moving_average=False,
                            plot_dataset='all_models',
                            ensemble_mean=True )
-                
+
         for x in short_names_x:
             for y in short_names_y:
                 for plot_dataset in datasets:
