@@ -312,13 +312,13 @@ repository was cloned and run
 
 ::
 
-   python setup.py build_sphinx
+   sphinx-build doc/sphinx/source/ doc/sphinx/build/
 
 or
 
 ::
 
-   python setup.py build_sphinx -Ea
+   sphinx-build -Ea doc/sphinx/source/ doc/sphinx/build/
 
 to build it from scratch.
 Make sure that your newly added documentation builds without warnings or
@@ -327,7 +327,7 @@ CircleCI_ will build the documentation with the command
 
 .. code-block:: bash
 
-   python setup.py build_sphinx --warning-is-error
+   sphinx-build -W doc/sphinx/source/ doc/sphinx/build/
 
 to catch mistakes that can be detected automatically.
 
