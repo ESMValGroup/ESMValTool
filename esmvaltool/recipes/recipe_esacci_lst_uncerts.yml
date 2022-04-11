@@ -43,7 +43,9 @@ diagnostics:
         mip: Amon
         preprocessor: lst_preprocessor
         additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r(1:4)i1p1f2, start_year: 2010, end_year: 2010, grid: gn}#, frequency: monthly}
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 2010, end_year: 2010, grid: gn}#, frequency: monthly}
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r2i1p1f2, start_year: 2010, end_year: 2010, grid: gn}#, frequency: monthly}
+
         #  - {dataset: CESM2,      project: CMIP6, exp: historical, ensemble: r(1:11)ip1f2, start_year: 2010, end_year: 2010, grid: gn}#, frequency: monthly}
 
       # tsDay:
