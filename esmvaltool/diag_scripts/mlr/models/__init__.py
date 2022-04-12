@@ -272,10 +272,13 @@ test_size: float (default: 0.25)
     If given, randomly exclude the desired fraction of input data from training
     and use it as test data.
 weighted_samples: dict
-    If specified, use weighted samples whenever possible. The given keyword
-    arguments are directly passed to
-    :func:`esmvaltool.diag_scripts.mlr.get_all_weights` to calculate the sample
-    weights. By default, no weights are used.
+    If specified, use weighted samples in the loss function used for the
+    training of the MLR model. The given keyword arguments are directly passed
+    to :func:`esmvaltool.diag_scripts.mlr.get_all_weights` to calculate the
+    sample weights. By default, no weights are used. Raises errors if the
+    desired weights cannot be calculated for the data, e.g., when
+    ``time_weighted=True`` is used but the data does not contain a dimension
+    ``time``.
 work_dir: str (default: ~/work)
     Root directory to save all other files (mainly ``*.nc`` files).
 
