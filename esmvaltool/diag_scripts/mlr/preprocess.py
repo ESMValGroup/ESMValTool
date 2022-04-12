@@ -28,7 +28,7 @@ apply_common_mask: bool, optional (default: False)
     datasets.
 area_weighted: bool, optional (default: True)
     Use weighted aggregation when collapsing over latitude and/or longitude
-    using ``collapse``. Weights are estimated using grid cell boundaries. Only
+    using ``collapse``. Weights are estimated using grid cell bounds. Only
     possible for datasets on regular grids that contain ``latitude`` and
     ``longitude`` coordinates.
 argsort: dict, optional
@@ -107,7 +107,7 @@ scalar_operations: dict, optional
     :obj:`int`) are scalars that are used with the operations.
 time_weighted: bool, optional (default: True)
     Use weighted aggregation when collapsing over time dimension using
-    ``collapse``. Weights are estimated using time boundaries.
+    ``collapse``. Weights are estimated using time bounds.
 unify_coords_to: dict, optional
     If given, replace coordinates of all datasets with that of a reference cube
     (if necessary and possible, broadcast beforehand). The reference dataset

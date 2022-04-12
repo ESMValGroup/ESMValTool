@@ -62,7 +62,7 @@ add_var_from_cov: bool, optional (default: True)
 area_weighted: bool, optional (default: True)
     Calculate weighted averages/sums when collapsing over latitude and/or
     longitude coordinates using grid cell areas (calculated using grid cell
-    boundaries). Only possible for datasets on regular grids that contain
+    bounds). Only possible for datasets on regular grids that contain
     ``latitude`` and ``longitude`` coordinates.
 convert_units_to: str, optional
     Convert units of the input data.
@@ -85,7 +85,7 @@ pattern: str, optional
 sum: list of str, optional
     Perform sum over the given coordinates.
 time_weighted: bool, optional (default: True)
-    Calculate weighted averages/sums for time (using time boundaries).
+    Calculate weighted averages/sums for time (using time bounds).
 
 """
 

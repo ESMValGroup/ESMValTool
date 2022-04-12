@@ -596,9 +596,10 @@ def get_landsea_fraction_weights(cube, area_type, normalize=False):
     if cube.coord_dims(lat_coord) != ():
         if cube.coord_dims(lat_coord) == cube.coord_dims(lon_coord):
             raise ValueError(
-                f"Calculating {area_type} fraction weights for coordinates "
-                f"latitude and longitude that share their dimensions (this is "
-                f"usually the case for unstructured grids) is not possible")
+                f"1D latitude and longitude coordinates share dimensions "
+                f"(this usually happens with unstructured grids) - "
+                f"calculating {area_type} fraction weights for latitude and "
+                "longitude that share dimensions is not possible")
 
     # Calculate land fractions on coordinate grid of cube
     ne_land_mask_cube = _get_ne_land_mask_cube()
