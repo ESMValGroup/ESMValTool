@@ -45,6 +45,9 @@ diagnostics:
       rsdt:
         mip: Amon
         preprocessor: single_value
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+             start_year: 2000, end_year: 2010, tier: 1}
       rsut:
         mip: Amon
         preprocessor: single_value
@@ -60,6 +63,9 @@ diagnostics:
       rsds:
         mip: Amon
         preprocessor: single_value
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+             start_year: 2000, end_year: 2010, tier: 1}
       rls:
         mip: Emon
         preprocessor: single_value
@@ -78,6 +84,9 @@ diagnostics:
       rlds:
         mip: Amon
         preprocessor: single_value
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+             start_year: 2000, end_year: 2010, tier: 1}
       hfss:
         mip: Amon
         preprocessor: single_value
