@@ -9,11 +9,103 @@ import iris.coord_categorisation
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import stats
 from scipy.sparse.linalg import spsolve
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 logger = logging.getLogger(Path(__file__).stem)
+
+
+def kappa_calc_predict(q, f, kappa, lambda_o, lambda_l, nu):
+    cp = 4.04E6  # (J/K/m3)
+    nyr = q.shape[0]
+
+    n_pde = 20
+    dt = (1.0 / float(n_pde)
+          ) * 60.0 * 60.0 * 24.0 * 365.0  # Model timestep (seconds)
+    temp_ocean_top = np.zeros(nyr)  # Array holds oceanic warming (K)
+
+    # Set number of vertical layers and ocean depth
+    n_vert = 254
+    depth = 5000.0  # (metres)
+    dz = depth / float(n_vert)  # (metres)
+
+    s = (kappa / cp) * (dt / (dz * dz))
+
+    # Now do the pde solving. First set up the arrays (and zero'd)
+    t_ocean_old = np.zeros(n_vert + 1)
+    t_ocean_new = np.zeros(n_vert + 1)
+
+    C = np.zeros([n_vert + 1, n_vert + 1])
+    D = np.zeros([n_vert + 1, n_vert + 1])
+    E = np.zeros(n_vert + 1)
+
+    # Conservation check for end of run - add up energy in.
+    q_energy = 0.0
+
+    # Now start loop over the different years.
+    for j in range(0, nyr):
+        factor1 = -q[j] / (kappa * f)
+        factor2 = (
+            (1.0 - f) * lambda_l * nu) / (f * kappa) + (lambda_o / kappa)
+
+        for k in range(0, n_pde):
+            _ = j * n_pde + k
+            # First set t_old as t_new ready for next iteration
+            t_ocean_old = t_ocean_new
+            # Sort out the top points, bottom points and then all for C
+            C[0, 0] = s * (1.0 + dz * factor2) + 1
+            C[0, 1] = -s
+            C[n_vert, n_vert - 1] = -s
+            C[n_vert, n_vert] = (1.0 + s)
+            for m in range(1, n_vert):
+                C[m, m - 1] = -s / 2.0
+                C[m, m + 1] = -s / 2.0
+                C[m, m] = 1.0 + s
+
+            D[0, 0] = -s * (1.0 + dz * factor2) + 1
+            D[0, 1] = s
+            D[n_vert, n_vert] = (1.0 - s)
+            D[n_vert, n_vert - 1] = s
+            for m in range(1, n_vert):
+                D[m, m - 1] = s / 2.0
+                D[m, m + 1] = s / 2.0
+                D[m, m] = 1.0 - s
+
+            E[0] = -(kappa / cp) * (dt / dz) * (factor1 + factor1)
+
+            C_sub = np.zeros(n_vert + 1)
+            C_main = np.zeros(n_vert + 1)
+            C_super = np.zeros(n_vert + 1)
+            for m in range(0, n_vert + 1):
+                C_main[m] = C[m, m]
+            for m in range(0, n_vert):
+                C_sub[m] = C[m + 1, m]
+                C_super[m] = C[m, m + 1]
+
+            _ = np.mat(D)
+            e_mat = np.mat(E).transpose()
+            t_ocean_old_mat = np.mat(t_ocean_old).transpose()
+            b_rhs = np.dot(D, t_ocean_old_mat) + e_mat
+            b_rhs = np.ravel(b_rhs)
+
+            t_ocean_new = spsolve(C, b_rhs)
+
+            q_energy = q_energy + dt * kappa * (-factor1 -
+                                                (t_ocean_new[0] * factor2))
+
+        temp_ocean_top[j] = t_ocean_new[0]
+
+    q_energy_derived = 0.0
+    for i in range(1, n_vert + 1):
+        q_energy_derived = q_energy_derived + cp * 0.5 * (
+            t_ocean_new[i] + t_ocean_new[i - 1]) * dz
+
+    conserved = 100.0 * (q_energy_derived / q_energy)
+    logger.info("Heat conservation check (%) = ", round(conserved, 2))
+
+    return temp_ocean_top
 
 
 def compute_diagnostic(filename):
@@ -47,6 +139,7 @@ def plot_timeseries(list_cubes, plot_path, ocean_frac, land_frac):
     for i, cube in enumerate(list_cubes):
         if i == 0:
             avg_cube = gm.area_avg(cube, return_cube=True)
+            avg_cube.data -= np.mean(avg_cube.data[0:40])
             fig = qplt.plot(avg_cube)
             plt.savefig(plot_path + cube.var_name + "_ts_global")
             plt.close()
@@ -56,6 +149,7 @@ def plot_timeseries(list_cubes, plot_path, ocean_frac, land_frac):
                                            land_frac,
                                            land=True,
                                            return_cube=True)
+            avg_cube.data -= np.mean(avg_cube.data[0:40])
             fig = qplt.plot(avg_cube)
             plt.savefig(plot_path + cube.var_name + "_ts_land")
             plt.close()
@@ -65,12 +159,14 @@ def plot_timeseries(list_cubes, plot_path, ocean_frac, land_frac):
                                            land_frac,
                                            land=False,
                                            return_cube=True)
+            avg_cube.data -= np.mean(avg_cube.data[0:40])
             fig = qplt.plot(avg_cube)
             plt.savefig(plot_path + cube.var_name + "_ts_ocean")
             plt.close()
 
         if i == 1:
             avg_cube = gm.area_avg(cube, return_cube=True)
+            avg_cube.data -= np.mean(avg_cube.data[0:40])
             fig = qplt.plot(avg_cube)
             plt.savefig(plot_path + cube.var_name + "_ts_global")
             plt.close()
@@ -80,6 +176,7 @@ def plot_timeseries(list_cubes, plot_path, ocean_frac, land_frac):
                                            land_frac,
                                            land=True,
                                            return_cube=True)
+            avg_cube.data -= np.mean(avg_cube.data[0:40])
             fig = qplt.plot(avg_cube)
             plt.savefig(plot_path + cube.var_name + "_ts_land")
             plt.close()
@@ -89,20 +186,23 @@ def plot_timeseries(list_cubes, plot_path, ocean_frac, land_frac):
                                            land_frac,
                                            land=False,
                                            return_cube=True)
+            avg_cube.data -= np.mean(avg_cube.data[0:40])
             fig = qplt.plot(avg_cube)
             plt.savefig(plot_path + cube.var_name + "_ts_ocean")
+            plt.close()
+
+        if i == 2:
+            avg_cube = gm.area_avg(cube, return_cube=True)
+            fig = qplt.plot(avg_cube)
+            plt.savefig(plot_path + cube.var_name + "_global_forcing")
             plt.close()
 
     for i, cube in enumerate(list_cubes):
         fig = qplt.pcolormesh(cube[0])
         if i == 0:
             plt.savefig(plot_path + cube.var_name + "_mesh_global")
-            plt.savefig(plot_path + cube.var_name + "_mesh_land")
-            plt.savefig(plot_path + cube.var_name + "_mesh_ocean")
         if i == 1:
             plt.savefig(plot_path + cube.var_name + "_mesh_global")
-            plt.savefig(plot_path + cube.var_name + "_mesh_land")
-            plt.savefig(plot_path + cube.var_name + "_mesh_ocean")
         plt.close()
 
     return fig
@@ -135,7 +235,7 @@ def ocean_fraction_calc(sftlf):
 def kappa_parameter(f, toa_delta, tas_delta_ocean):
     rms = 10000.0
     kappa = -9999.9
-    for i_kappa in range(0, 3):
+    for i_kappa in range(0, 150):
         kappa_test = 20.0 + 20.0 * float(i_kappa)
 
         temp_ocean_top = kappa_calc(f, toa_delta, kappa_test)
@@ -261,10 +361,11 @@ def anomalies_calc(toa_cube, tas_cube, ocean_frac, land_frac):
     toa_delta_ocean_init = gm.area_avg_landsea(toa_cube,
                                                ocean_frac,
                                                land_frac,
-                                               land=True,
+                                               land=False,
                                                return_cube=False)
 
     # tas area weighting
+    tas_delta_init = gm.area_avg(tas_cube, return_cube=False)
     tas_delta_land_init = gm.area_avg_landsea(tas_cube,
                                               ocean_frac,
                                               land_frac,
@@ -281,12 +382,13 @@ def anomalies_calc(toa_cube, tas_cube, ocean_frac, land_frac):
     toa_delta_ocean = toa_delta_ocean_init - np.mean(
         toa_delta_ocean_init[0:40])
 
+    tas_delta = tas_delta_init - np.mean(tas_delta_init[0:40])
     tas_delta_land = tas_delta_land_init - np.mean(tas_delta_land_init[0:40])
     tas_delta_ocean = tas_delta_ocean_init - np.mean(
         tas_delta_ocean_init[0:40])
 
-    return (toa_delta, toa_delta_land, toa_delta_ocean, tas_delta_land,
-            tas_delta_ocean)
+    return (toa_delta, toa_delta_land, toa_delta_ocean, tas_delta,
+            tas_delta_land, tas_delta_ocean)
 
 
 def atmos_params_calc(rf, toa_delta_land, toa_delta_ocean, tas_delta_land,
@@ -316,6 +418,64 @@ def save_params(cfg, kappa, lambda_o, lambda_l, nu_ratio):
         file.close()
 
 
+def create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube,
+                           plot_path):
+    # global average and anomalies of tas + rtmt timeseries
+    tas_avg = gm.area_avg(tas_cube, return_cube=True)
+    tas_avg.data = tas_avg.data - np.mean(tas_avg.data[0:40])
+    rtmt_avg = gm.area_avg(rtmt_cube, return_cube=True)
+    rtmt_avg.data = rtmt_avg.data - np.mean(rtmt_avg.data[0:40])
+
+    # global average and anomalies of tas_4x and rtmt_4x
+    tas_4x_avg = gm.area_avg(tas_4x_cube, return_cube=True)
+    tas_4x_avg.data = tas_4x_avg.data - np.mean(tas_4x_avg.data[0:40])
+    rtmt_4x_avg = gm.area_avg(rtmt_4x_cube, return_cube=True)
+    rtmt_4x_avg.data = rtmt_4x_avg.data - np.mean(tas_4x_avg.data[0:40])
+
+    # linear regression
+    reg = stats.linregress(tas_4x_avg.data, rtmt_4x_avg.data)
+
+    # regression line
+    x_reg = np.linspace(-1.0, 4.0, 2)
+    y_reg = reg.slope * x_reg + reg.intercept
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.scatter(tas_4x_avg.data, rtmt_4x_avg.data, c='b', label='tas, rtmt')
+    ax.plot(x_reg, y_reg, c='r', label='regression')
+    plt.legend(loc='upper left')
+    plt.savefig(plot_path + '_regression')
+    plt.close()
+
+    lambda_c = reg.slope
+    logger.info("Lambda: ", lambda_c)
+
+    forcing = rtmt_avg.data + (-lambda_c * tas_avg.data)
+    yrs = (1850 + np.arange(forcing.shape[0])).astype('float')
+
+    fig = plt.plot(yrs, forcing)
+    plt.xlabel("Time")
+    plt.ylabel("Radiative forcing (Wm-2)")
+    plt.savefig(plot_path + '_forcing')
+    plt.close()
+
+    return forcing
+
+
+def ebm_check(plot_path, rad_forcing, of, kappa, lambda_o, lambda_l, nu_ratio,
+              tas_delta):
+    temp_ocean_top = kappa_calc_predict(rad_forcing, of, kappa, lambda_o,
+                                        lambda_l, nu_ratio)
+    temp_global = (of + (1 - of) * nu_ratio) * temp_ocean_top
+    yrs = (1850 + np.arange(temp_global.shape[0])).astype('float')
+    plt.plot(yrs, temp_global, color='black', zorder=10, linewidth=1.5)
+    plt.plot(yrs, tas_delta, color='red')
+    plt.xlabel("Time")
+    plt.ylabel("Air Surface Temperature (K)")
+    plt.savefig(plot_path + "_tas_check")
+    plt.close()
+
+
 def main(cfg):
     # gets a description of the preprocessed data that we will use as input.
     input_data = cfg["input_data"].values()
@@ -338,6 +498,11 @@ def main(cfg):
                 or cube_initial.var_name == "rtmt"
                 or cube_initial.var_name == "sftlf"):
             toa_list.append(cube_initial)
+        if dataset["exp"] == "abrupt-4xCO2":
+            if cube_initial.var_name == "tas":
+                tas_4x_cube = cube_initial
+            if cube_initial.var_name == "rtmt":
+                rtmt_4x_cube = cube_initial
 
     # calculating global, land and ocean TOA fluxes
     toa_cube = net_flux_calculation(toa_list)
@@ -346,30 +511,54 @@ def main(cfg):
     ocean_frac, land_frac, of = ocean_fraction_calc(sftlf_cube)
 
     # calculating TOA averages, subtracting mean of first 4 decades
-    (toa_delta, toa_delta_land, toa_delta_ocean, tas_delta_land,
+    (toa_delta, toa_delta_land, toa_delta_ocean, tas_delta, tas_delta_land,
      tas_delta_ocean) = anomalies_calc(toa_cube, tas_cube, ocean_frac,
                                        land_frac)
 
     # calculating EBM parameter, Kappa
-    kappa = kappa_parameter(of, toa_delta, tas_delta_ocean)
+    # kappa = kappa_parameter(of, toa_delta, tas_delta_ocean)
+    kappa = 360
     logger.info("Kappa = ", kappa)
 
+    plot_path = cfg["plot_dir"] + "/"
+    rad_forcing = create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube,
+                                         rtmt_4x_cube, plot_path)
+
+    # rcp85_yr_rf_all=np.zeros(2500-1765+1, dtype=int)
+    # rcp85_rf_all=np.zeros(2500-1765+1)
+    # file_rcp85 = open('/net/home/h04/gmunday/Desktop \
+    #                   /CSSPBrazil/ESMValRepo/ESMValTool/esmvaltool \
+    #                   /diag_scripts/climate_patterns \
+    #                   /RCP85_MIDYEAR_RADFORCING_mpeg.txt')
+    # for i in range(0,59):
+    #     header=file_rcp85.readline()
+    # for i in range(59,795):
+    #     vals=file_rcp85.readline()
+    #     all_vals = vals.split()
+    #     rcp85_yr_rf_all[i-59]=np.int(all_vals[0])
+    #     rcp85_rf_all[i-59]=np.float(all_vals[1])
+
+    # yr_start = 1850
+    # yr_offset = yr_start-rcp85_yr_rf_all[0]
+    # rcp85_rf=rcp85_rf_all[yr_offset:yr_offset+toa_delta.shape[0]]
+
     # calculating other atmospheric parameters
-    rad_forcing = gm.area_avg(rtmt_cube, return_cube=False)
     lambda_o, lambda_l, nu_ratio = atmos_params_calc(rad_forcing,
                                                      toa_delta_land,
                                                      toa_delta_ocean,
                                                      tas_delta_land,
                                                      tas_delta_ocean)
 
+    ebm_check(plot_path, rad_forcing, of, kappa, lambda_o, lambda_l, nu_ratio,
+              tas_delta)
+
     # list of variable cube lists
-    list_of_cubes = [toa_cube, tas_cube]
+    list_of_cubes = [toa_cube, tas_cube, rtmt_cube]
 
     # saving EBM parameters
     save_params(cfg, kappa, lambda_o, lambda_l, nu_ratio)
 
     # saving figures
-    plot_path = cfg["plot_dir"] + "/"
     plot_timeseries(list_of_cubes, plot_path, ocean_frac, land_frac)
 
 

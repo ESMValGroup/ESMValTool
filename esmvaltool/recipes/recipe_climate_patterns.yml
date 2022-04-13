@@ -32,6 +32,11 @@ annual_mean_settings: &annual_mean_settings
   end_year: 2100
   preprocessor: mean_annual
 
+annual_mean_settings_abrupt: &annual_mean_settings_abrupt
+  start_year: 1850
+  end_year: 1999
+  preprocessor: mean_annual
+
 diagnostics:
   monthly_timeseries:
     description: Mean monthly variables
@@ -122,6 +127,20 @@ diagnostics:
           - {dataset: UKESM1-0-LL, project: CMIP6, mip: fx,
              exp: piControl, ensemble: r1i1p1f2, grid: gn}
 
+      tas_abrupt4x:
+        short_name: tas
+        <<: *annual_mean_settings_abrupt
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon,
+             exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn}
+
+      rtmt_abrupt4x:
+        short_name: rtmt
+        <<: *annual_mean_settings_abrupt
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon,
+             exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn}
+
       rtmt_585:
         short_name: rtmt
         <<: *annual_mean_settings
@@ -157,6 +176,47 @@ diagnostics:
           - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
              mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
+        # land_frac:
+        #   short_name: sftlf
+        #   timerange: '1850/2100'
+        #   additional_datasets:
+        #     - {dataset: MIROC-ESM-CHEM, project: CMIP5, mip: fx,
+        #       exp: piControl, ensemble: r1i1p1}
+
+        # rtmt_585:
+        #   short_name: rtmt
+        #   <<: *annual_mean_settings
+        #   additional_datasets:
+        #     - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: [historical, rcp85],
+        #       mip: Amon, ensemble: r1i1p1}
+
+        # tas_585:
+        #   short_name: tas
+        #   <<: *annual_mean_settings
+        #   additional_datasets:
+        #     - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: [historical, rcp85],
+        #       mip: Amon, ensemble: r1i1p1}
+
+        # rlut_585:
+        #   short_name: rlut
+        #   <<: *annual_mean_settings
+        #   additional_datasets:
+        #     - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: [historical, rcp85],
+        #       mip: Amon, ensemble: r1i1p1}
+
+        # rsut_585:
+        #   short_name: rsut
+        #   <<: *annual_mean_settings
+        #   additional_datasets:
+        #     - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: [historical, rcp85],
+        #       mip: Amon, ensemble: r1i1p1}
+
+        # rsdt_585:
+        #   short_name: rsdt
+        #   <<: *annual_mean_settings
+        #   additional_datasets:
+        #     - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: [historical, rcp85],
+        #       mip: Amon, ensemble: r1i1p1}
     scripts:
       energy_balance_script:
         script: climate_patterns/ebm_parameters.py
