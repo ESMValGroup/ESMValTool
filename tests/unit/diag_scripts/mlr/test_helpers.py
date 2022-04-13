@@ -4,6 +4,8 @@ import os
 from unittest import mock
 
 import iris
+import iris.coords
+import iris.cube
 import numpy as np
 import pandas as pd
 import pytest
@@ -248,53 +250,6 @@ def test_square_root_metadata(cube_in, cube_out):
     assert cube_in == cube_out
 
 
-LONG_NAME_1 = 'long_name_1'
-LONG_NAME_2 = 'long_name_2'
-AUX_NAME = 'aux_name'
-COORD_1 = iris.coords.DimCoord([-2.0, -1.0, 20.0], long_name=LONG_NAME_1)
-COORD_2 = iris.coords.DimCoord([-2.0, -1.0, 20.0], long_name=LONG_NAME_2)
-COORD_3 = iris.coords.DimCoord([-42.0], long_name=LONG_NAME_2)
-COORD_AUX = iris.coords.AuxCoord(['a', 'b', 'c'], long_name=AUX_NAME)
-CUBE_1 = iris.cube.Cube(np.arange(3.0), dim_coords_and_dims=[(COORD_1, 0)])
-CUBE_2 = iris.cube.Cube(np.arange(3.0), dim_coords_and_dims=[(COORD_2, 0)])
-CUBE_3 = iris.cube.Cube(np.arange(1.0), dim_coords_and_dims=[(COORD_3, 0)])
-CUBE_4 = iris.cube.Cube(np.arange(3.0),
-                        dim_coords_and_dims=[(COORD_1, 0)],
-                        aux_coords_and_dims=[(COORD_AUX, 0)])
-CUBE_5 = iris.cube.Cube(np.arange(3.0 * 3.0).reshape(3, 3),
-                        dim_coords_and_dims=[(COORD_1, 0), (COORD_2, 1)],
-                        aux_coords_and_dims=[(COORD_AUX, 0)])
-CUBE_6 = iris.cube.Cube(np.arange(3.0).reshape(1, 3),
-                        dim_coords_and_dims=[(COORD_3, 0), (COORD_1, 1)])
-TEST_CHECK_COORDS = [
-    (CUBE_1, [LONG_NAME_1], True),
-    (CUBE_2, [LONG_NAME_1], False),
-    (CUBE_3, [LONG_NAME_1], False),
-    (CUBE_4, [LONG_NAME_1], True),
-    (CUBE_5, [LONG_NAME_1], True),
-    (CUBE_6, [LONG_NAME_1], True),
-    (CUBE_1, [LONG_NAME_1, LONG_NAME_2], False),
-    (CUBE_2, [LONG_NAME_1, LONG_NAME_2], False),
-    (CUBE_3, [LONG_NAME_1, LONG_NAME_2], False),
-    (CUBE_4, [LONG_NAME_1, LONG_NAME_2], False),
-    (CUBE_5, [LONG_NAME_1, LONG_NAME_2], True),
-    (CUBE_6, [LONG_NAME_1, LONG_NAME_2], True),
-    (CUBE_1, [LONG_NAME_1, LONG_NAME_2, AUX_NAME], False),
-    (CUBE_2, [LONG_NAME_1, LONG_NAME_2, AUX_NAME], False),
-    (CUBE_3, [LONG_NAME_1, LONG_NAME_2, AUX_NAME], False),
-    (CUBE_4, [LONG_NAME_1, LONG_NAME_2, AUX_NAME], False),
-    (CUBE_5, [LONG_NAME_1, LONG_NAME_2, AUX_NAME], True),
-    (CUBE_6, [LONG_NAME_1, LONG_NAME_2, AUX_NAME], False),
-]
-
-
-@pytest.mark.parametrize('cube,coords,output', TEST_CHECK_COORDS)
-def test_has_valid_coords(cube, coords, output):
-    """Test check for valid coords."""
-    out = mlr._has_valid_coords(cube, coords)
-    assert out == output
-
-
 D_1 = {
     'dataset': 'c',
     'filename': 'b',
@@ -484,6 +439,10 @@ LAT_COORD_1D = iris.coords.DimCoord([-10, 50, 60],
                                     bounds=[[-20, 0], [45, 55], [55, 65]],
                                     standard_name='latitude',
                                     units='degrees')
+LAT_COORD_1D_2 = iris.coords.DimCoord([70, 220],
+                                      bounds=[[60, 70], [215, 225]],
+                                      standard_name='latitude',
+                                      units='degrees')
 LON_COORD_1D = iris.coords.DimCoord([70, 220],
                                     bounds=[[60, 70], [215, 225]],
                                     standard_name='longitude',
@@ -495,6 +454,8 @@ TIME_COORD = iris.coords.DimCoord([1, 3], bounds=[[0, 2], [2, 4]],
                                   standard_name='time',
                                   units='days since 1850-01-01 00:00:00')
 CUBE_0 = iris.cube.Cube(0.0)
+CUBE_1 = iris.cube.Cube(
+    [0.0, 1.0], aux_coords_and_dims=[(LAT_COORD_1D_2, 0), (LON_COORD_1D, 0)])
 CUBE_0_0 = iris.cube.Cube(
     0.0, aux_coords_and_dims=[(LAT_COORD_0D, ()), (LON_COORD_0D, ())])
 CUBE_0_1 = iris.cube.Cube(
@@ -517,6 +478,7 @@ CUBE_2_1 = iris.cube.Cube(
 
 TEST_LANDSEA_FRACTION_WEIGHTING = [
     (CUBE_0, 'land', False, iris.exceptions.CoordinateNotFoundError),
+    (CUBE_1, 'land', False, ValueError),
     (CUBE_2_1, 'land', False, iris.exceptions.CoordinateMultiDimError),
     (CUBE_1_1, 'wrong_type', False, ValueError),
     (CUBE_0_0, 'land', False, 0.25350765306122447),
