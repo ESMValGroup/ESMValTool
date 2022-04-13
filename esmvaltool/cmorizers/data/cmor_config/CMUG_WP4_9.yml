@@ -1,0 +1,37 @@
+# CMORIZE ESA CCI LST
+# Follwing CRU and ESACCI-OC as examples
+# Only looking at AQUA MONTHLY data but python has placeholders for different platforms
+---
+
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: CMUG WP 4_9
+  version: '1.00'
+  tier: 3
+  project_id: OBS
+  source: 'ERA5 Land'
+  modeling_realm: sat
+  reference: ''
+  comment: ''
+  start_year: 2003
+  end_year: 2014
+
+# Variables to cmorize
+# These go into the vals dictionary in the python script
+variables:
+  ts: 
+    mip: Amon
+    raw: Skin temperature
+    raw_units: kelvin
+    file: 'era5_land'
+    start_year: 2010
+    end_year: 2010
+
+  ta: 
+    mip: Amon
+    raw: 2 metre temperature
+    raw_units: kelvin
+    file: 'era5_land'
+    start_year: 2010
+    end_year: 2010

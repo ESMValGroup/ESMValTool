@@ -1,0 +1,48 @@
+# Recipe to make CMUG WP4.9 plots around LST-Tair difference
+---
+documentation:
+  description: |
+    Please add description here
+  authors:
+    - king_robert
+
+  title: CMUG WP4.9
+
+  maintainer:
+    - king_robert
+
+  references:
+    - esacci-lst
+
+preprocessors:
+
+  lst_preprocessor:
+
+    extract_region: 
+      start_longitude: 35
+      end_longitude: 45
+      start_latitude: 60
+      end_latitude: 70
+
+
+diagnostics:
+  timeseries:
+    description: ESACCI LST difference to model historical ensemble average
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+
+      ts:
+        mip: Amon
+        preprocessor: lst_preprocessor
+        additional_datasets:
+          - {dataset: CMUG_WP4_9, project: OBS, type: sat, tier: 3, start_year: 2003, end_year: 2003, version: '1.00'}
+
+
+
+    scripts:
+      script1:
+#        script: /home/users/robking/ESMValTool/esmvaltool/diag_scripts/lst_uncert/lst_uncert.py
+        script: lst_uncert/lst_uncert.py
