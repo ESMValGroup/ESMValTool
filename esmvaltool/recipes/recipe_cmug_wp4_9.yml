@@ -16,18 +16,19 @@ documentation:
 
 preprocessors:
 
-  lst_preprocessor:
+  land_sea:
+    mask_landsea:
+      mask_out: sea
 
-    extract_region: 
-      start_longitude: 35
-      end_longitude: 45
-      start_latitude: 60
-      end_latitude: 70
-
+#    extract_region: 
+#      start_longitude: 35
+#      end_longitude: 45
+#      start_latitude: 60
+#      end_latitude: 70
 
 diagnostics:
   timeseries:
-    description: ESACCI LST difference to model historical ensemble average
+    description: CMUG WP4.9
     themes:
       - phys
     realms:
@@ -36,13 +37,19 @@ diagnostics:
 
       ts:
         mip: Amon
-        preprocessor: lst_preprocessor
+        preprocessor: land_sea
         additional_datasets:
-          - {dataset: CMUG_WP4_9, project: OBS, type: sat, tier: 3, start_year: 2003, end_year: 2003, version: '1.00'}
+          #- {dataset: CMUG_WP4_9, project: OBS, type: sat, tier: 3, start_year: 2003, end_year: 2003, version: '1.00'}
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r(1:2)i1p1f2, start_year: 2010, end_year: 2010, grid: gn}
 
+      tas:
+        mip: Amon
+        preprocessor: land_sea
+        additional_datasets:
+          #- {dataset: CMUG_WP4_9, project: OBS, type: sat, tier: 3, start_year: 2003, end_year: 2003, version: '1.00'}
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r(1:2)i1p1f2, start_year: 2010, end_year: 2010, grid: gn}
 
 
     scripts:
       script1:
-#        script: /home/users/robking/ESMValTool/esmvaltool/diag_scripts/lst_uncert/lst_uncert.py
-        script: lst_uncert/lst_uncert.py
+        script: cmug_wp4_9/global.py

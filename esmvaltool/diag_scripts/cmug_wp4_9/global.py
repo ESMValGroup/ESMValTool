@@ -1,16 +1,16 @@
 """
-ESMValTool diagnostic for ESA CCI LST data.
-The code uses the all time average monthly data.
-The ouptput is a timeseries plot of the mean differnce of
-CCI LST to model ensemble average, with the ensemble spread
-represented by a standard deviation either side of the mean.
+CMUG WP4.9
+Use this to make plots from GLOBAL data
 """
 
 import logging
 
 import iris
+import iris.plot as iplt
 import matplotlib.pyplot as plt
 import numpy as np
+import cf_units as Unit
+
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -111,84 +111,26 @@ def _diagnostic(config):
     print('LOADED DATA:')
     print(loaded_data)
 
-    # print(0/0)
-    ### There will be some cube manipulation todo
-    ###### leave this here incase need to template form it
-    # loaded_data['MultiModelMean']['ts'].remove_coord('time')
-    # loaded_data['MultiModelMean']['ts'].add_dim_coord(
-    #     loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
-    # loaded_data['MultiModelStd']['ts'].remove_coord('time')
-    # loaded_data['MultiModelStd']['ts'].add_dim_coord(
-    #     loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
-
-
-    #### Calc CCI LST uncertainty
-    #### REMEMBER TO APPLY FACTORS TO DATA, DO THIS IN CMORIZER?????
-    uncerts = {'Day' : iris.cube.CubeList(),
-               'Night': iris.cube.CubeList()
-               }
-
-    for KEY in loaded_data['ESACCI_LST_UNCERTS'].keys():
-        if KEY == 'tsDay' or KEY == 'tsNight':
-            continue # no need to do this to the raw LSTs
-
-        if KEY == 'tsLSSysErrDay' or KEY == 'tsLSSysErrNight':
-            new_cube = (loaded_data['ESACCI_LST_UNCERTS'][KEY]*scale_factor)**2
-            iris.analysis.maths.exponentiate(new_cube, 0.5, in_place=True)
-
-        else:
-            new_cube = ((loaded_data['ESACCI_LST_UNCERTS'][KEY]*scale_factor)**2).collapsed(['latitude','longitude'],
-                                                                                            iris.analysis.SUM)
-            iris.analysis.maths.exponentiate(new_cube, 0.5, in_place=True)
-
-        new_cube.long_name = f'{KEY}_quadrature_region'
-        
-        if 'Day' in KEY:
-            uncerts['Day'].append(new_cube)
-        else:
-            uncerts['Night'].append(new_cube)
-            
-    day_sum = uncerts['Day'][0]**2
-    for i in range(1,len(uncerts['Day'])):
-        iris.analysis.maths.add(day_sum, uncerts['Day'][i]**2,
-                                dim='time', in_place=False)
-
-    night_sum = uncerts['Night'][0]**2
-    for i in range(1,len(uncerts['Night'])):
-        iris.analysis.maths.add(night_sum, uncerts['Night'][i]**2,
-                                dim='time', in_place=False)
-
-    day_sum_sqrt = iris.analysis.maths.exponentiate(day_sum, 0.5, in_place=False)
-    night_sum_sqrt = iris.analysis.maths.exponentiate(night_sum, 0.5, in_place=False)
- 
-    total_uncert = iris.analysis.maths.exponentiate(
-        day_sum_sqrt**2 + night_sum_sqrt**2, 0.5
-        )
-    print('total uncert on cci lst')
-    print(total_uncert.data)
-
-    #### MAke sure we have a mean/std of model LST
     
-    for KEY in loaded_data.keys():
-        if KEY == 'ESACCI_LST_UNCERTS':
-            continue # dont need to do this for CCI
+    ### There will be some cube manipulation todo
 
-        print(KEY)    
-        this_cube_mean = loaded_data[KEY]['ts'].collapsed(['latitude','longitude'], iris.analysis.MEAN)
-        this_cube_std  = loaded_data[KEY]['ts'].collapsed(['latitude','longitude'], iris.analysis.STD_DEV)
+    
 
-        print(this_cube_mean.data)
-        print(this_cube_std.data)
-        
-#    print(0/0)
         
     ### PLOT is CCI LST with bars of uncertainty
     ####     with shaded MODEL MEAN +/- std
     # Plotting
-    cci_lst = []
-    model_lst = this_cube_mean
-    model_std = this_cube_std
-    _make_plots(cci_lst, total_uncert, model_lst, model_std, config)
+    print(list(loaded_data.keys()))
+    model = list(loaded_data.keys())[0]
+    print(model)
+
+    model_lst = loaded_data[model]['ts']
+    model_ta  = loaded_data[model]['tas']
+
+    _make_plot_global_map(model_lst, model_ta, config)
+
+    # more plotting functions go here
+
    #  print(0/0)
 #     # Provenance
 #     # Get this information form the data cubes
@@ -216,64 +158,48 @@ def _diagnostic(config):
 
 
 
-def _make_plots(cci_lst, total_uncert, model_lst, model_std, config):
+def _make_plot_global_map(model_lst, model_ta, config):
     """Create and save the output figure.
-    The plot is CMIP model LST  with +/- one standard deviation
-    of the model spread, and the mean CCI LST with +/- one total
-    error
+    Plot maps of LST-Ta from model
     Inputs:
    
     config = The config dictionary from the preprocessor
     Outputs:
     Saved figure
     """
-    fig, ax = plt.subplots(figsize=(20, 15))
 
-    ax.plot(model_lst.data, color='black', linewidth=4)
-    ax.plot((model_lst-model_std).data, '--', color='blue', linewidth=3)
-    ax.plot((model_lst+model_std).data, '--', color='blue', linewidth=3)
-    ax.fill_between(range(len(model_lst.data)),
-                    (model_lst-model_std).data,
-                     (model_lst+model_std).data,
-                    color='blue',
-                    alpha=0.25)
 
-    # make X ticks
-    x_tick_list = []
-    time_list = model_lst.coord('time').units.num2date(
-        model_lst.coord('time').points)
-    for item in time_list:
-        if item.month == 1:
-            x_tick_list.append(item.strftime('%Y %b'))
-        elif item.month == 7:
-            x_tick_list.append(item.strftime('%b'))
-        else:
-            x_tick_list.append('')
+    num_of_plots = len(model_lst.coord('time').points)
 
-    ax.set_xticks(range(len(model_lst.data)))
-    ax.set_xticklabels(x_tick_list, fontsize=18, rotation=45)
+    diffs = model_lst - model_ta
+    datetime_points = Unit.num2date(diffs.coord('time').points,
+                                   str(diffs.coord('time').units),
+                                   diffs.coord('time').units.calendar
+                               )
+    
+    print(diffs)
+    
+    outpath = config['plot_dir']
 
-    # # make Y ticks
-    # y_lower = np.floor(lst_diff_data_low.data.min())
-    # y_upper = np.ceil(lst_diff_data_high.data.max())
-    # ax.set_yticks(np.arange(y_lower, y_upper + 0.1, 2))
-    # ax.set_yticklabels(np.arange(y_lower, y_upper + 0.1, 2), fontsize=18)
-    # ax.set_ylim((y_lower - 0.1, y_upper + 0.1))
+    for i in range(num_of_plots):
+        print(i)
+        year = datetime_points[i].year
+        month = datetime_points[i].month
+        print(year,month)
 
-    ax.set_xlabel('Date', fontsize=20)
-    ax.set_ylabel('Difference / K', fontsize=20)
+        fig, ax = plt.subplots(figsize=(20, 15))
 
-    ax.grid()
+        iplt.pcolormesh(diffs[i],
+                        vmin=-10, vmax=10,
+                        cmap='seismic')
+        
+        plt.gca().coastlines()
 
-    lons = model_lst.coord('longitude').bounds
-    lats = model_lst.coord('latitude').bounds
-
-    ax.set_title('Area: lon %s lat %s' % (lons[0], lats[0]), fontsize=22)
-
-    fig.suptitle('ESACCI LST and CMIP6 LST', fontsize=24)
-
-    plt.savefig('%s/timeseries.png' % config['plot_dir'])
-    plt.close('all')  # Is this needed?
+        plt.title(f'LST-Ta Model {year} {month}')
+        plt.colorbar()
+    
+        plt.savefig(f'{outpath}/global_map_{year}_{month}.png')
+        plt.close('all')  # Is this needed?
 
 
 if __name__ == '__main__':
