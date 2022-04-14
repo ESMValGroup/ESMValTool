@@ -190,9 +190,9 @@ Further details on this (file names, configuration in the
 :ref:`config-developer file <esmvalcore:config-developer>`, etc.) are
 :ref:`given here <esmvalcore:configure_native_models>`.
 
-To use this functionality, users need to provide a path for the ``native6``
-project data in the :ref:`user configuration file<config-user>` and/or the
-dedicated project used for the native dataset, e.g., ``ICON``.
+To use this functionality, users need to provide a path in the
+:ref:`esmvalcore:user configuration file` for the ``native6`` project data
+and/or the dedicated project used for the native dataset, e.g., ``ICON``.
 Then, in the recipe, they can refer to those projects.
 For example:
 
