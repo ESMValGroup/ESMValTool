@@ -181,23 +181,30 @@ preprocessor steps, see :ref:`fixing data <esmvalcore:fixing_data>`.
 Compared to the workflow described above, this has the advantage that the user
 does not need to store a duplicate (CMORized) copy of the data.
 Instead, the CMORization is performed 'on the fly' when running a recipe.
-The native6 project supports files named according to the format defined in
-the :ref:`config-developer file <esmvalcore:config-developer>`.
-Some of ERA5, ERA5-Land and MSWEP data are currently supported, see
-:ref:`supported datasets <supported_datasets>`.
+Native datasets can be hosted either under a dedicated project (usually done
+for native model output) or under project ``native6`` (usually done for native
+observational products).
+A list of supported datasets is :ref:`provided here
+<esmvalcore:fixing_native_datasets>`.
+Further details on this (file names, configuration in the
+:ref:`config-developer file <esmvalcore:config-developer>`, etc.) are
+:ref:`given here <esmvalcore:configure_native_models>`.
 
 To use this functionality, users need to provide a path for the ``native6``
-project data in the :ref:`user configuration file<config-user>`.
-Then, in the recipe, they can refer to the native6 project.
+project data in the :ref:`user configuration file<config-user>` and/or the
+dedicated project used for the native dataset, e.g., ``ICON``.
+Then, in the recipe, they can refer to those projects.
 For example:
 
 .. code-block:: yaml
 
     datasets:
-    - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1990}
+    - {project: native6, dataset: ERA5, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1990}
+    - {project: ICON, dataset: ICON, version: 42-0, component: atm, exp: amip, grid: R2B5, ensemble: r1i1, var_type: 2d}
 
-More examples can be found in the diagnostics ``ERA5_native6`` in the recipe
-`examples/recipe_check_obs.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_check_obs.yml>`_.
+For project ``native6``, more examples can be found in the diagnostics
+``ERA5_native6`` in the recipe `examples/recipe_check_obs.yml
+<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_check_obs.yml>`_.
 
 .. _supported_datasets:
 
