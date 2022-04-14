@@ -112,7 +112,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
 # #                 for cube in output:
                 try:
-                    cube = utils.fix_coords(cube)
+                    cubes = fix_coords(cubes)
                     print('FIXED')
                 except:
                     print('NOT NOT NOT FIXED')
