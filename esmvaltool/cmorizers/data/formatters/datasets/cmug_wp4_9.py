@@ -68,7 +68,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 ) 
         print(cubes)
 
-        for i in range(len(cubes.coord('time').points))[0:13]:
+        for i in range(len(cubes.coord('time').points)):
             print(i)
 
             date = cubes.coord('time')[i]
