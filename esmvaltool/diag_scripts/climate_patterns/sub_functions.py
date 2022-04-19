@@ -1,7 +1,13 @@
+import logging
+from pathlib import Path
+
 import iris
 import iris.analysis.cartography
 import iris.coord_categorisation
 import numpy as np
+from scipy.sparse.linalg import spsolve
+
+logger = logging.getLogger(Path(__file__).stem)
 
 
 def stats(x):
@@ -100,3 +106,86 @@ def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
         return x2
     else:
         return x2.data
+
+
+def kappa_calc_predict(q, f, kappa, lambda_o, lambda_l, nu):
+    cp = 4.04E6
+    nyr = q.shape[0]
+    n_pde = 20
+    dt = (1.0 / float(n_pde)) * 60.0 * 60.0 * 24.0 * 365.0
+    temp_ocean_top = np.zeros(nyr)
+    n_vert = 254
+    depth = 5000.0
+    dz = depth / float(n_vert)
+
+    s = (kappa / cp) * (dt / (dz * dz))
+
+    t_ocean_old = np.zeros(n_vert + 1)
+    t_ocean_new = np.zeros(n_vert + 1)
+
+    C = np.zeros([n_vert + 1, n_vert + 1])
+    D = np.zeros([n_vert + 1, n_vert + 1])
+    E = np.zeros(n_vert + 1)
+
+    q_energy = 0.0
+
+    for j in range(0, nyr):
+        factor1 = -q[j] / (kappa * f)
+        factor2 = (
+            (1.0 - f) * lambda_l * nu) / (f * kappa) + (lambda_o / kappa)
+
+        for k in range(0, n_pde):
+            _ = j * n_pde + k
+            t_ocean_old = t_ocean_new
+
+            C[0, 0] = s * (1.0 + dz * factor2) + 1
+            C[0, 1] = -s
+            C[n_vert, n_vert - 1] = -s
+            C[n_vert, n_vert] = (1.0 + s)
+            for m in range(1, n_vert):
+                C[m, m - 1] = -s / 2.0
+                C[m, m + 1] = -s / 2.0
+                C[m, m] = 1.0 + s
+
+            D[0, 0] = -s * (1.0 + dz * factor2) + 1
+            D[0, 1] = s
+            D[n_vert, n_vert] = (1.0 - s)
+            D[n_vert, n_vert - 1] = s
+            for m in range(1, n_vert):
+                D[m, m - 1] = s / 2.0
+                D[m, m + 1] = s / 2.0
+                D[m, m] = 1.0 - s
+
+            E[0] = -(kappa / cp) * (dt / dz) * (factor1 + factor1)
+
+            C_sub = np.zeros(n_vert + 1)
+            C_main = np.zeros(n_vert + 1)
+            C_super = np.zeros(n_vert + 1)
+            for m in range(0, n_vert + 1):
+                C_main[m] = C[m, m]
+            for m in range(0, n_vert):
+                C_sub[m] = C[m + 1, m]
+                C_super[m] = C[m, m + 1]
+
+            _ = np.mat(D)
+            e_mat = np.mat(E).transpose()
+            t_ocean_old_mat = np.mat(t_ocean_old).transpose()
+            b_rhs = np.dot(D, t_ocean_old_mat) + e_mat
+            b_rhs = np.ravel(b_rhs)
+
+            t_ocean_new = spsolve(C, b_rhs)
+
+            q_energy = q_energy + dt * kappa * (-factor1 -
+                                                (t_ocean_new[0] * factor2))
+
+        temp_ocean_top[j] = t_ocean_new[0]
+
+    q_energy_derived = 0.0
+    for i in range(1, n_vert + 1):
+        q_energy_derived = q_energy_derived + cp * 0.5 * (
+            t_ocean_new[i] + t_ocean_new[i - 1]) * dz
+
+    conserved = 100.0 * (q_energy_derived / q_energy)
+    logger.info("Heat conservation check (%) = ", round(conserved, 2))
+
+    return temp_ocean_top

@@ -1,11 +1,14 @@
 import logging
 from pathlib import Path
 
-import gm_functions as gm
 import iris
 import iris.coord_categorisation
+import iris.cube
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
+import numpy as np
+import sklearn.linear_model
+import sub_functions as sf
 from rename_variables import (
     rename_anom_variables,
     rename_clim_variables,
@@ -33,14 +36,21 @@ def plot_timeseries(list_cubelists, plot_path):
     for i in range(len(list_cubelists)):
         cube_list = list_cubelists[i]
         for cube in cube_list:
-            avg_cube = gm.area_avg(cube, return_cube=True)
-            fig = qplt.plot(avg_cube)
             if i == 0:
+                avg_cube = sf.area_avg(cube, return_cube=True)
+                fig = qplt.plot(avg_cube)
                 plt.savefig(plot_path + cube.var_name + "_clim")
             if i == 1:
+                avg_cube = sf.area_avg(cube, return_cube=True)
+                fig = qplt.plot(avg_cube)
                 plt.savefig(plot_path + cube.var_name + "_full_ts")
             if i == 2:
+                avg_cube = sf.area_avg(cube, return_cube=True)
+                fig = qplt.plot(avg_cube)
                 plt.savefig(plot_path + cube.var_name + "_anom")
+            if i == 3:
+                fig = qplt.pcolormesh(cube)
+                plt.savefig(plot_path + cube.var_name + "_reg")
             plt.close()
 
     return fig
@@ -51,10 +61,19 @@ def climatology(cube):
 
     # time extraction
 
-    cube_30yr = cube.extract(
-        iris.Constraint(time=lambda t: 1851 <= t.point.year <= 1880,
+    cube_40yr = cube.extract(
+        iris.Constraint(time=lambda t: 1850 <= t.point.year <= 1889,
                         month_number=lambda t: 1 <= t.point <= 12))
-    cube_aggregated = make_monthly_climatology(cube_30yr)
+    cube_aggregated = make_monthly_climatology(cube_40yr)
+
+    return cube_aggregated
+
+
+def aggregate_all_time(cube):
+    cube_all = cube.extract(
+        iris.Constraint(time=lambda t: 2015 <= t.point.year <= 2100,
+                        month_number=lambda t: 1 <= t.point <= 12))
+    cube_aggregated = make_monthly_climatology(cube_all)
 
     return cube_aggregated
 
@@ -135,6 +154,61 @@ def calculate_anomaly(clim_list_final, ts_list_final):
     return anom_list_renamed
 
 
+def regression(tas, cube):
+    slope_array = np.full(tas.shape[1:], np.nan)
+
+    for i in range(tas.shape[1]):
+        for j in range(tas.shape[2]):
+            if tas[0, i, j] is not np.ma.masked:
+                model = sklearn.linear_model.LinearRegression(
+                    fit_intercept=True, copy_X=True)
+
+                x = tas[:, i, j].reshape(-1, 1)
+                y = cube[:, i, j]
+
+                model.fit(x, y)
+                slope_array[i, j] = model.coef_
+
+    return slope_array
+
+
+def regression_units(tas, cube):
+    units = cube.units / tas.units
+
+    return units
+
+
+def calculate_regressions(anom_list):
+    regr_list = iris.load([])
+
+    for cube in anom_list:
+        if cube.var_name == 't1p5m_anom':
+            tas = cube[-1020:]  # getting last 85 years from full timeseries
+
+    for cube in anom_list:
+        if not cube.var_name == 't1p5m_anom':
+            cube_ssp = cube[-1020:]
+            regr_array = regression(tas.data, cube_ssp.data)
+
+            # re-creating cube
+            units = regression_units(tas, cube_ssp)
+
+            coord1 = tas.coord(contains_dimension=1)
+            coord2 = tas.coord(contains_dimension=2)
+
+            dim_coords_and_dims = [(coord1, 0), (coord2, 1)]
+            var_name = cube.var_name + '_linreg_coeff'
+
+            cube = iris.cube.Cube(regr_array,
+                                  units=units,
+                                  dim_coords_and_dims=dim_coords_and_dims,
+                                  var_name=var_name)
+
+            regr_list.append(cube)
+
+    return regr_list
+
+
 def main(cfg):
     # gets a description of the preprocessed data that we will use as input.
     input_data = cfg["input_data"].values()
@@ -169,10 +243,15 @@ def main(cfg):
     # calculate anomaly over historical + ssp timeseries
     anom_list_final = calculate_anomaly(clim_list_final, ts_list_final)
 
+    regressions = calculate_regressions(anom_list_final)
+
     # list of variable cube lists
-    list_of_cubelists = [clim_list_final, ts_list_final, anom_list_final]
+    list_of_cubelists = [
+        clim_list_final, ts_list_final, anom_list_final, regressions
+    ]
     name_list = [
-        "climatology_variables.nc", "ts_variables.nc", "anomaly_variables.nc"
+        "climatology_variables.nc", "ts_variables.nc", "anomaly_variables.nc",
+        "regressions.nc"
     ]
 
     # saving data
