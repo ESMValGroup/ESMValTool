@@ -84,7 +84,7 @@ Their use is strongly recommended, when possible.
 
 Other datasets not available in these archives can be obtained by the user from
 the respective sources and reformatted to the CF/CMOR standard.
-ESMValTool currently support two ways to perform this reformatting (aka
+ESMValTool currently supports two ways to perform this reformatting (aka
 'CMORization'):
 
 #. Using a CMORizer script
