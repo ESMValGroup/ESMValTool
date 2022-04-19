@@ -87,21 +87,16 @@ the respective sources and reformatted to the CF/CMOR standard.
 ESMValTool currently supports two ways to perform this reformatting (aka
 'CMORization'):
 
-#. Using a CMORizer script
+#. Using a CMORizer script: The first is to use a CMORizer script to generate a
+   local pool of reformatted data that can readily be used by ESMValTool.  This
+   method is described in detail below.
 
-   The first is to use a CMORizer script to generate a local pool of
-   reformatted data that can readily be used by ESMValTool.
-   This method is described in detail below.
-
-#. Using fixes for on-the-fly CMORization
-
-   The second way is to implement specific :ref:`'fixes'
-   <esmvalcore:fixing_data>` for your dataset.
-   In that case, the reformatting is performed 'on the fly' during the
-   execution of an ESMValTool recipe (note that one of the first preprocessor
-   tasks is 'CMOR checks and fixes').
-   Details on this second method are given at the :ref:`end of this chapter
-   <inputdata_native_datasets>`.
+#. Using fixes for on-the-fly CMORization: The second way is to implement
+   specific :ref:`'fixes' <esmvalcore:fixing_data>` for your dataset.  In that
+   case, the reformatting is performed 'on the fly' during the execution of an
+   ESMValTool recipe (note that one of the first preprocessor tasks is 'CMOR
+   checks and fixes').  Details on this second method are given at the
+   :ref:`end of this chapter <inputdata_native_datasets>`.
 
 Using a CMORizer script
 -----------------------
@@ -370,7 +365,7 @@ Datasets in native format
 =========================
 
 ESMValCore also provides support for some datasets in their native format.
-In this case, the steps needed to reformat the data are executed as datasets
+In this case, the steps needed to reformat the data are executed as dataset
 fixes during the execution of an ESMValTool recipe, as one of the first
 preprocessor steps, see :ref:`fixing data <esmvalcore:fixing_data>`.
 Compared to the workflow described above, this has the advantage that the user
@@ -380,7 +375,7 @@ Native datasets can be hosted either under a dedicated project (usually done
 for native model output) or under project ``native6`` (usually done for native
 reanalysis/observational products).
 These projects are configured in the :ref:`config-developer file
-<esmvalcore:config-developer>`.
+<esmvalcore:configure_native_models>`.
 
 A list of all currently supported native datasets is :ref:`provided here
 <esmvalcore:read_native_datasets>`.
