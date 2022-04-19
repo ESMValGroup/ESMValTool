@@ -25,13 +25,13 @@ variables:
     raw: Skin temperature
     raw_units: kelvin
     file: 'era5_land'
-    start_year: 2010
-    end_year: 2010
+    start_year: 2003
+    end_year: 2014
 
   ta: 
     mip: Amon
     raw: 2 metre temperature
     raw_units: kelvin
     file: 'era5_land'
-    start_year: 2010
-    end_year: 2010
+    start_year: 2003
+    end_year: 2014
