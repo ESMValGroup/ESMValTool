@@ -190,12 +190,15 @@ def _diagnostic(config):
 
         print(KEY) 
         # loop over ensembles
-        
+        ensemble_ts = {}
         for e_number,ENSEMBLE in enumerate(loaded_data[KEY].keys()):
             print(ENSEMBLE)
+            
             if ENSEMBLE[0:3] != 'ts_':
                 continue
-                
+            
+
+            
             this_cube_mean = loaded_data[KEY][ENSEMBLE].collapsed(['latitude','longitude'], iris.analysis.MEAN)
 
             ensemble_coord = iris.coords.AuxCoord(e_number, standard_name=None, 
@@ -206,15 +209,11 @@ def _diagnostic(config):
             this_cube_mean.add_aux_coord(ensemble_coord)
             model_means.append(this_cube_mean)
                 
-    print(model_means)
-    #print(this_cube_mean.data)
-    #print(this_cube_std.data)
-     
+            ensemble_ts[f'{KEY}_{ENSEMBLE}_ts'] = this_cube_mean
+
     model_means = model_means.merge_cube()
     print(model_means)
    
-    
-        
     ### PLOT is CCI LST with bars of uncertainty
     ####     with shaded MODEL MEAN +/- std
     # Plotting
@@ -223,8 +222,8 @@ def _diagnostic(config):
     model_std = model_means.collapsed('ensemble_number', iris.analysis.STD_DEV)
     print(model_lst)
     print(model_std)
-    _make_plots(cci_lst, total_uncert, model_lst, model_std, config)
-   #  print(0/0)
+    _make_plots(cci_lst, total_uncert, model_lst, model_std, ensemble_ts, config)
+
 #     # Provenance
 #     # Get this information form the data cubes
 #     # data_attributes = {}
@@ -251,10 +250,16 @@ def _diagnostic(config):
 
 
 
-def _make_plots(cci_lst, total_uncert, model_lst, model_std, config):
+def _make_plots(cci_lst, total_uncert, model_lst, model_std, ensemble_ts, config):
     """Create and save the output figure.
+    PLOT 1
     The plot is CMIP model LST  with +/- one standard deviation
     of the model spread, and the mean CCI LST with +/- one total
+    error
+
+    PLOT 2
+    The plot is all CMIP model LST  ensembles
+    and the mean CCI LST with +/- one total
     error
     Inputs:
    
@@ -262,53 +267,74 @@ def _make_plots(cci_lst, total_uncert, model_lst, model_std, config):
     Outputs:
     Saved figure
     """
-    fig, ax = plt.subplots(figsize=(20, 15))
 
-    ax.plot(model_lst.data, color='black', linewidth=4)
-    ax.plot((model_lst-model_std).data, '--', color='blue', linewidth=3)
-    ax.plot((model_lst+model_std).data, '--', color='blue', linewidth=3)
-    ax.fill_between(range(len(model_lst.data)),
-                    (model_lst-model_std).data,
-                     (model_lst+model_std).data,
-                    color='blue',
-                    alpha=0.25)
+    for i in [0,1]:
 
-    # make X ticks
-    x_tick_list = []
-    time_list = model_lst.coord('time').units.num2date(
-        model_lst.coord('time').points)
-    #for item in time_list:
-    #     if item.month == 1:
-    #         x_tick_list.append(item.strftime('%Y %b'))
-    #     elif item.month == 7:
-    #         x_tick_list.append(item.strftime('%b'))
-    #     else:
-    #         x_tick_list.append('')
+        fig, ax = plt.subplots(figsize=(20, 15))
 
-    # ax.set_xticks(range(len(model_lst.data)))
-    # ax.set_xticklabels(x_tick_list, fontsize=18, rotation=45)
+        if i == 0:
+            model_low = (model_lst-model_std).data
+            model_high = (model_lst+model_std).data
 
-    # # make Y ticks
-    # y_lower = np.floor(lst_diff_data_low.data.min())
-    # y_upper = np.ceil(lst_diff_data_high.data.max())
-    # ax.set_yticks(np.arange(y_lower, y_upper + 0.1, 2))
-    # ax.set_yticklabels(np.arange(y_lower, y_upper + 0.1, 2), fontsize=18)
-    # ax.set_ylim((y_lower - 0.1, y_upper + 0.1))
+            ax.plot(model_lst.data, color='black', linewidth=4)
+            ax.plot(model_low, '--', color='blue', linewidth=3)
+            ax.plot(model_high, '--', color='blue', linewidth=3)
+            ax.fill_between(range(len(model_lst.data)),
+                            model_low,
+                            model_high,
+                            color='blue',
+                            alpha=0.25)
 
-    ax.set_xlabel('Date', fontsize=20)
-    ax.set_ylabel('Difference / K', fontsize=20)
+        elif i==1:
+            maxes = []
+            mins = []
+            for item in ensemble_ts.keys():
+                ax.plot(ensemble_ts[item].data, color='black', linewidth=1)
+                
+                mins.append(np.min(ensemble_ts[item].data))
+                maxes.append(np.max(ensemble_ts[item].data))
 
-    ax.grid()
+            model_low = np.min(mins)
+            model_high = np.max(maxes)
 
-    lons = model_lst.coord('longitude').bounds
-    lats = model_lst.coord('latitude').bounds
+        # make X ticks
+        x_tick_list = []
+        time_list = model_lst.coord('time').units.num2date(
+            model_lst.coord('time').points)
+        for item in time_list:
+            if item.month == 1:
+                x_tick_list.append(item.strftime('%Y %b'))
+            elif item.month == 7:
+                x_tick_list.append(item.strftime('%b'))
+            else:
+                x_tick_list.append('')
 
-    ax.set_title('Area: lon %s lat %s' % (lons[0], lats[0]), fontsize=22)
+        ax.set_xticks(range(len(model_lst.data)))
+        ax.set_xticklabels(x_tick_list, fontsize=18, rotation=45)
 
-    fig.suptitle('ESACCI LST and CMIP6 LST', fontsize=24)
+        # make Y ticks
+        y_lower = np.floor(model_low.min())
+        y_upper = np.ceil(model_high.max())
+        ax.set_yticks(np.arange(y_lower, y_upper + 0.1, 2))
+        ax.set_yticklabels(np.arange(y_lower, y_upper + 0.1, 2), fontsize=18)
+        ax.set_ylim((y_lower - 0.1, y_upper + 0.1))
 
-    plt.savefig('%s/timeseries.png' % config['plot_dir'])
-    plt.close('all')  # Is this needed?
+        ax.set_xlabel('Date', fontsize=20)
+        ax.set_ylabel('LST / K', fontsize=20)
+
+        ax.grid()
+
+        lons = model_lst.coord('longitude').bounds
+        lats = model_lst.coord('latitude').bounds
+
+        ax.set_title('Area: lon %s lat %s' % (lons[0], lats[0]), fontsize=22)
+
+        fig.suptitle('ESACCI LST and CMIP6 LST', fontsize=24)
+    
+        outpath =  config['plot_dir']
+
+        plt.savefig(f'{outpath}/timeseries_{i}.png')
+        plt.close('all')  # Is this needed?
 
 
 if __name__ == '__main__':
