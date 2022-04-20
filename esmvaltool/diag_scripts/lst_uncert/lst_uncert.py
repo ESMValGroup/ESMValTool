@@ -32,16 +32,28 @@ def _get_input_cubes(metadata):
     inputs = Dictionary of cubes
     ancestors = Dictionary of filename information
     """
+    print('################################################')
     inputs = {}
     ancestors = {}
+    print(metadata)
     for attributes in metadata:
+        print(attributes)
         short_name = attributes['short_name']
         filename = attributes['filename']
         logger.info("Loading variable %s", short_name)
         cube = iris.load_cube(filename)
         cube.attributes.clear()
-        inputs[short_name] = cube
-        ancestors[short_name] = [filename]
+        
+        try:
+            key_name = f"{short_name}_{attributes['ensemble']}"
+        except:
+            key_name = short_name
+
+        inputs[key_name] = cube
+        ancestors[key_name] = [filename]
+        
+        print(inputs)
+        print(ancestors)
 
     return inputs, ancestors
 
@@ -108,6 +120,7 @@ def _diagnostic(config):
 
     # CMIP data had 360 day calendar, CCI data has 365 day calendar
     # Assume the loaded data is all the same shape
+    print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
     print('LOADED DATA:')
     print(loaded_data)
 
@@ -169,25 +182,47 @@ def _diagnostic(config):
 
     #### MAke sure we have a mean/std of model LST
     
+    model_means = iris.cube.CubeList()
+
     for KEY in loaded_data.keys():
         if KEY == 'ESACCI_LST_UNCERTS':
             continue # dont need to do this for CCI
 
-        print(KEY)    
-        this_cube_mean = loaded_data[KEY]['ts'].collapsed(['latitude','longitude'], iris.analysis.MEAN)
-        this_cube_std  = loaded_data[KEY]['ts'].collapsed(['latitude','longitude'], iris.analysis.STD_DEV)
-
-        print(this_cube_mean.data)
-        print(this_cube_std.data)
+        print(KEY) 
+        # loop over ensembles
         
-#    print(0/0)
+        for e_number,ENSEMBLE in enumerate(loaded_data[KEY].keys()):
+            print(ENSEMBLE)
+            if ENSEMBLE[0:3] != 'ts_':
+                continue
+                
+            this_cube_mean = loaded_data[KEY][ENSEMBLE].collapsed(['latitude','longitude'], iris.analysis.MEAN)
+
+            ensemble_coord = iris.coords.AuxCoord(e_number, standard_name=None, 
+                                                  long_name='ensemble_number', 
+                                                  var_name=None,
+                                                  units='1', bounds=None, 
+                                                  attributes=None, coord_system=None)
+            this_cube_mean.add_aux_coord(ensemble_coord)
+            model_means.append(this_cube_mean)
+                
+    print(model_means)
+    #print(this_cube_mean.data)
+    #print(this_cube_std.data)
+     
+    model_means = model_means.merge_cube()
+    print(model_means)
+   
+    
         
     ### PLOT is CCI LST with bars of uncertainty
     ####     with shaded MODEL MEAN +/- std
     # Plotting
     cci_lst = []
-    model_lst = this_cube_mean
-    model_std = this_cube_std
+    model_lst = model_means.collapsed('ensemble_number', iris.analysis.MEAN)
+    model_std = model_means.collapsed('ensemble_number', iris.analysis.STD_DEV)
+    print(model_lst)
+    print(model_std)
     _make_plots(cci_lst, total_uncert, model_lst, model_std, config)
    #  print(0/0)
 #     # Provenance
@@ -242,16 +277,16 @@ def _make_plots(cci_lst, total_uncert, model_lst, model_std, config):
     x_tick_list = []
     time_list = model_lst.coord('time').units.num2date(
         model_lst.coord('time').points)
-    for item in time_list:
-        if item.month == 1:
-            x_tick_list.append(item.strftime('%Y %b'))
-        elif item.month == 7:
-            x_tick_list.append(item.strftime('%b'))
-        else:
-            x_tick_list.append('')
+    #for item in time_list:
+    #     if item.month == 1:
+    #         x_tick_list.append(item.strftime('%Y %b'))
+    #     elif item.month == 7:
+    #         x_tick_list.append(item.strftime('%b'))
+    #     else:
+    #         x_tick_list.append('')
 
-    ax.set_xticks(range(len(model_lst.data)))
-    ax.set_xticklabels(x_tick_list, fontsize=18, rotation=45)
+    # ax.set_xticks(range(len(model_lst.data)))
+    # ax.set_xticklabels(x_tick_list, fontsize=18, rotation=45)
 
     # # make Y ticks
     # y_lower = np.floor(lst_diff_data_low.data.min())
