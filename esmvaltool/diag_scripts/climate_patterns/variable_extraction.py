@@ -154,17 +154,17 @@ def calculate_anomaly(clim_list_final, ts_list_final):
     return anom_list_renamed
 
 
-def regression(tas, cube):
-    slope_array = np.full(tas.shape[1:], np.nan)
+def regression(tas_data, cube_data):
+    slope_array = np.full(tas_data.shape[1:], np.nan)
 
-    for i in range(tas.shape[1]):
-        for j in range(tas.shape[2]):
-            if tas[0, i, j] is not np.ma.masked:
+    for i in range(tas_data.shape[1]):
+        for j in range(tas_data.shape[2]):
+            if tas_data[0, i, j] is not np.ma.masked:
                 model = sklearn.linear_model.LinearRegression(
                     fit_intercept=True, copy_X=True)
 
-                x = tas[:, i, j].reshape(-1, 1)
-                y = cube[:, i, j]
+                x = tas_data[:, i, j].reshape(-1, 1)
+                y = cube_data[:, i, j]
 
                 model.fit(x, y)
                 slope_array[i, j] = model.coef_
@@ -179,7 +179,7 @@ def regression_units(tas, cube):
 
 
 def calculate_regressions(anom_list):
-    regr_list = iris.load([])
+    regr_var_list = iris.cube.CubeList([])
 
     for cube in anom_list:
         if cube.var_name == 't1p5m_anom':
@@ -188,25 +188,42 @@ def calculate_regressions(anom_list):
     for cube in anom_list:
         if not cube.var_name == 't1p5m_anom':
             cube_ssp = cube[-1020:]
-            regr_array = regression(tas.data, cube_ssp.data)
+            month_list = iris.cube.CubeList([])
 
-            # re-creating cube
-            units = regression_units(tas, cube_ssp)
+            # exctracting months, regressing, and merging
+            for i in range(1, 13):
+                month_constraint = iris.Constraint(month_number=i)
+                month_cube_ssp = cube_ssp.extract(month_constraint)
+                month_tas = tas.extract(month_constraint)
 
-            coord1 = tas.coord(contains_dimension=1)
-            coord2 = tas.coord(contains_dimension=2)
+                regr_array = regression(month_tas.data, month_cube_ssp.data)
 
-            dim_coords_and_dims = [(coord1, 0), (coord2, 1)]
-            var_name = cube.var_name + '_linreg_coeff'
+                # re-creating cube
+                units = regression_units(tas, cube_ssp)
 
-            cube = iris.cube.Cube(regr_array,
-                                  units=units,
-                                  dim_coords_and_dims=dim_coords_and_dims,
-                                  var_name=var_name)
+                # assigning dim_coords
+                coord1 = tas.coord(contains_dimension=1)
+                coord2 = tas.coord(contains_dimension=2)
+                dim_coords_and_dims = [(coord1, 0), (coord2, 1)]
 
-            regr_list.append(cube)
+                # assigning aux_coord
+                coord_month = iris.coords.AuxCoord(i, var_name='month_number')
+                aux_coords_and_dims = [(coord_month, ())]
 
-    return regr_list
+                var_name = cube.var_name + '_coeff'
+
+                new_cube = iris.cube.Cube(
+                    regr_array,
+                    units=units,
+                    dim_coords_and_dims=dim_coords_and_dims,
+                    aux_coords_and_dims=aux_coords_and_dims,
+                    var_name=var_name)
+                month_list.append(new_cube)
+
+            conc_cube = month_list.merge_cube()
+            regr_var_list.append(conc_cube)
+
+    return regr_var_list
 
 
 def main(cfg):

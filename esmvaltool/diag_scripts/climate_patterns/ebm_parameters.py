@@ -45,66 +45,61 @@ def net_flux_calculation(toa_list):
 
 def plot_timeseries(list_cubes, plot_path, ocean_frac, land_frac):
     """Plots timeseries of aggregated cubes, across all scenarios."""
+    fig, ax = plt.subplots(2, 3, figsize=(9, 8), sharey=True, sharex=True)
     for i, cube in enumerate(list_cubes):
+        yrs = (1850 + np.arange(cube.shape[0])).astype('float')
         if i == 0:
             avg_cube = sf.area_avg(cube, return_cube=True)
             avg_cube.data -= np.mean(avg_cube.data[0:40])
-            fig = qplt.plot(avg_cube)
-            plt.savefig(plot_path + cube.var_name + "_ts_global")
-            plt.close()
+            ax[0, 0].plot(yrs, avg_cube.data)
+            ax[0, 0].set_title('Global')
+            ax[0, 0].set_ylabel('Net TOA Radiation (Wm-2)')
 
-            avg_cube = sf.area_avg_landsea(cube,
-                                           ocean_frac,
-                                           land_frac,
-                                           land=True,
-                                           return_cube=True)
-            avg_cube.data -= np.mean(avg_cube.data[0:40])
-            fig = qplt.plot(avg_cube)
-            plt.savefig(plot_path + cube.var_name + "_ts_land")
-            plt.close()
+            avg_cube2 = sf.area_avg_landsea(cube,
+                                            ocean_frac,
+                                            land_frac,
+                                            land=True,
+                                            return_cube=True)
+            avg_cube2.data -= np.mean(avg_cube2.data[0:40])
+            ax[0, 1].plot(yrs, avg_cube2.data)
+            ax[0, 1].set_title('Land-Weighted')
 
-            avg_cube = sf.area_avg_landsea(cube,
-                                           ocean_frac,
-                                           land_frac,
-                                           land=False,
-                                           return_cube=True)
-            avg_cube.data -= np.mean(avg_cube.data[0:40])
-            fig = qplt.plot(avg_cube)
-            plt.savefig(plot_path + cube.var_name + "_ts_ocean")
-            plt.close()
+            avg_cube3 = sf.area_avg_landsea(cube,
+                                            ocean_frac,
+                                            land_frac,
+                                            land=False,
+                                            return_cube=True)
+            avg_cube3.data -= np.mean(avg_cube3.data[0:40])
+            ax[0, 2].plot(yrs, avg_cube3.data)
+            ax[0, 2].set_title('Ocean-Weighted')
 
         if i == 1:
             avg_cube = sf.area_avg(cube, return_cube=True)
             avg_cube.data -= np.mean(avg_cube.data[0:40])
-            fig = qplt.plot(avg_cube)
-            plt.savefig(plot_path + cube.var_name + "_ts_global")
-            plt.close()
+            ax[1, 0].plot(yrs, avg_cube.data)
+            ax[1, 0].set_ylabel('Air Temperature (K)')
+            ax[1, 0].set_xlabel('Time')
 
-            avg_cube = sf.area_avg_landsea(cube,
-                                           ocean_frac,
-                                           land_frac,
-                                           land=True,
-                                           return_cube=True)
-            avg_cube.data -= np.mean(avg_cube.data[0:40])
-            fig = qplt.plot(avg_cube)
-            plt.savefig(plot_path + cube.var_name + "_ts_land")
-            plt.close()
+            avg_cube2 = sf.area_avg_landsea(cube,
+                                            ocean_frac,
+                                            land_frac,
+                                            land=True,
+                                            return_cube=True)
+            avg_cube2.data -= np.mean(avg_cube2.data[0:40])
+            ax[1, 1].plot(yrs, avg_cube2.data)
+            ax[1, 1].set_xlabel('Time')
 
-            avg_cube = sf.area_avg_landsea(cube,
-                                           ocean_frac,
-                                           land_frac,
-                                           land=False,
-                                           return_cube=True)
-            avg_cube.data -= np.mean(avg_cube.data[0:40])
-            fig = qplt.plot(avg_cube)
-            plt.savefig(plot_path + cube.var_name + "_ts_ocean")
-            plt.close()
+            avg_cube3 = sf.area_avg_landsea(cube,
+                                            ocean_frac,
+                                            land_frac,
+                                            land=False,
+                                            return_cube=True)
+            avg_cube3.data -= np.mean(avg_cube3.data[0:40])
+            ax[1, 2].plot(yrs, avg_cube3.data)
+            ax[1, 2].set_xlabel('Time')
 
-        if i == 2:
-            avg_cube = sf.area_avg(cube, return_cube=True)
-            fig = qplt.plot(avg_cube)
-            plt.savefig(plot_path + cube.var_name + "_global_forcing")
-            plt.close()
+            fig.savefig(plot_path + "anomaly_plots")
+            plt.close(fig)
 
     for i, cube in enumerate(list_cubes):
         fig = qplt.pcolormesh(cube[0])
@@ -230,7 +225,6 @@ def kappa_calc(f, toa_delta, kappa):
                 C_super[m] = C[m, m + 1]
 
             # Now calculate the right-hand side (called b_rhs)
-            _ = np.mat(D)
             e_mat = np.mat(E).transpose()
             t_ocean_old_mat = np.mat(t_ocean_old).transpose()
             b_rhs = np.dot(D, t_ocean_old_mat) + e_mat
@@ -286,15 +280,15 @@ def anomalies_calc(toa_cube, tas_cube, ocean_frac, land_frac):
                                                land=False,
                                                return_cube=False)
 
-    toa_delta = toa_delta_init - np.mean(toa_delta_init[0:40])
-    toa_delta_land = toa_delta_land_init - np.mean(toa_delta_land_init[0:40])
-    toa_delta_ocean = toa_delta_ocean_init - np.mean(
-        toa_delta_ocean_init[0:40])
+    init_list = [
+        toa_delta_init, toa_delta_land_init, toa_delta_ocean_init,
+        tas_delta_init, tas_delta_land_init, tas_delta_ocean_init
+    ]
 
-    tas_delta = tas_delta_init - np.mean(tas_delta_init[0:40])
-    tas_delta_land = tas_delta_land_init - np.mean(tas_delta_land_init[0:40])
-    tas_delta_ocean = tas_delta_ocean_init - np.mean(
-        tas_delta_ocean_init[0:40])
+    # calculating anomalies
+    delta_list = [x - np.mean(x[0:40]) for x in init_list]
+    (toa_delta, toa_delta_land, toa_delta_ocean, tas_delta, tas_delta_land,
+     tas_delta_ocean) = delta_list
 
     return (toa_delta, toa_delta_land, toa_delta_ocean, tas_delta,
             tas_delta_land, tas_delta_ocean)
@@ -302,12 +296,16 @@ def anomalies_calc(toa_cube, tas_cube, ocean_frac, land_frac):
 
 def atmos_params_calc(rf, toa_delta_land, toa_delta_ocean, tas_delta_land,
                       tas_delta_ocean):
+
+    # calculating lambda_ocean
     lambda_o_init = (rf - toa_delta_ocean) / tas_delta_ocean
     lambda_o = np.mean(lambda_o_init[-90:])
 
+    # calculating lambda_land
     lambda_l_init = (rf - toa_delta_land) / tas_delta_land
     lambda_l = np.mean(lambda_l_init[-90:])
 
+    # calculating nu-ratio
     nu_ratio_init = tas_delta_land / tas_delta_ocean
     nu_ratio = np.mean(nu_ratio_init[-90:])
 
@@ -315,6 +313,8 @@ def atmos_params_calc(rf, toa_delta_land, toa_delta_ocean, tas_delta_land,
 
 
 def save_params(cfg, kappa, lambda_o, lambda_l, nu_ratio):
+
+    # saving atmospheric parameters
     work_path = cfg["work_dir"] + "/"
 
     filename_list = ['kappa.dat', 'lambda_o.dat', 'lambda_l.dat', 'nu_ratio']
@@ -329,47 +329,37 @@ def save_params(cfg, kappa, lambda_o, lambda_l, nu_ratio):
 
 def create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube,
                            plot_path):
-    # global average and anomalies of tas + rtmt timeseries
-    tas_avg = sf.area_avg(tas_cube, return_cube=True)
-    tas_avg.data = tas_avg.data - np.mean(tas_avg.data[0:40])
-    rtmt_avg = sf.area_avg(rtmt_cube, return_cube=True)
-    rtmt_avg.data = rtmt_avg.data - np.mean(rtmt_avg.data[0:40])
 
-    # global average and anomalies of tas_4x and rtmt_4x
-    tas_4x_avg = sf.area_avg(tas_4x_cube, return_cube=True)
-    tas_4x_avg.data = tas_4x_avg.data - np.mean(tas_4x_avg.data[0:40])
-    rtmt_4x_avg = sf.area_avg(rtmt_4x_cube, return_cube=True)
-    rtmt_4x_avg.data = rtmt_4x_avg.data - np.mean(tas_4x_avg.data[0:40])
+    # global average and anomalies of all cubes
+    var_list = [tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube]
+    avg_list = [sf.area_avg(x, return_cube=True) for x in var_list]
+    avg_list = [x.data - np.mean(x.data[0:40]) for x in avg_list]
 
     # linear regression
-    reg = stats.linregress(tas_4x_avg.data, rtmt_4x_avg.data)
+    reg = stats.linregress(avg_list[2].data, avg_list[3].data)
 
     # regression line
     x_reg = np.linspace(-1.0, 4.0, 2)
     y_reg = reg.slope * x_reg + reg.intercept
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.scatter(tas_4x_avg.data, rtmt_4x_avg.data, c='b', label='tas, rtmt')
-    ax.plot(x_reg, y_reg, c='r', label='regression')
-    plt.legend(loc='upper left')
-    plt.savefig(plot_path + '_regression')
-    plt.close()
 
     # calculate climate sensitivity 'Lambda'
     lambda_c = reg.slope
     logger.info("Lambda: ", lambda_c)
 
     # calculate forcing, using (2) from Sellar, A. et al. (2020)
-    forcing = rtmt_avg.data + (-lambda_c * tas_avg.data)
+    forcing = avg_list[1].data + (-lambda_c * avg_list[0].data)
     yrs = (1850 + np.arange(forcing.shape[0])).astype('float')
 
-    # plot forcing
-    fig = plt.plot(yrs, forcing)
-    plt.xlabel("Time")
-    plt.ylabel("Radiative forcing (Wm-2)")
-    plt.savefig(plot_path + '_forcing')
-    plt.close()
+    # plotting
+    fig, ax = plt.subplots(1, 2, figsize=(12, 4))
+    ax[0].scatter(avg_list[2].data, avg_list[3].data, c='b', label='tas, rtmt')
+    ax[0].plot(x_reg, y_reg, c='r', label='regression')
+    ax[0].legend(loc='upper left')
+    ax[1].plot(yrs, forcing)
+    ax[1].set_xlabel("Time")
+    ax[1].set_ylabel("Radiative forcing (Wm-2)")
+    fig.savefig(plot_path + '_regression+forcing')
+    plt.close(fig)
 
     return forcing
 
@@ -451,7 +441,7 @@ def main(cfg):
               tas_delta)
 
     # list of variable cube lists
-    list_of_cubes = [toa_cube, tas_cube, rtmt_cube]
+    list_of_cubes = [toa_cube, tas_cube]
 
     # saving EBM parameters
     save_params(cfg, kappa, lambda_o, lambda_l, nu_ratio)
