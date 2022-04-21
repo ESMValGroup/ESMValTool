@@ -1,0 +1,32 @@
+
+# CMORIZE ESA CCI LST
+# Follwing CRU and ESACCI-OC as examples
+# Only looking at AQUA MONTHLY data but python has placeholders for different platforms
+---
+
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: CMUG_WP4_10
+  version: '1.00'
+  tier: 2
+  project_id: OBS
+  source: 'ESA'
+  modeling_realm: sat
+  reference: ''
+  comment: ''
+  start_year: 2003
+  end_year: 2004
+
+# Variables to cmorize
+# These go into the vals dictionary in the python script
+variables:
+  lai_proba: 
+    mip: Lmon
+    raw: leaf_area_index
+    raw_units: 
+    file: 'c_gls_LAI'
+    start_year: 2003
+    end_year: 2004
+
+ 
