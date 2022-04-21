@@ -61,13 +61,19 @@ begin
   fin = addfile(infile, "r")
 
   ; Check that variable is in the file
-  if (.not. isfilevar(fin, info_item@short_name)) then
-    error_msg("f", scriptname, funcname, "variable " + info_item@short_name + \
-              " not found in file " + infile)
+  short_name = info_item@short_name
+  if (.not. isfilevar(fin, short_name)) then
+    ; try alternative short_name
+    if (isfilevar(fin, info_item@alt_short_name)) then
+       short_name = info_item@alt_short_name
+    else
+       error_msg("f", scriptname, funcname, "variable " + short_name + \
+                 " not found in file " + infile)
+    end if
   end if
 
   ; Read data
-  data = fin->$info_item@short_name$
+  data = fin->$short_name$
 
   ; Copy attributes from fin (do not overwrite existing ones)
   fin_atts = getvaratts(fin)

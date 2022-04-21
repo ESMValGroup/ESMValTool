@@ -341,117 +341,117 @@ diagnostics:
 #      grading:
 #        <<: *grading_settings
 
-  lst:
-    title: Calculation of performance metrics (land surface (skin) temperature)
-    description: Land surface (skin) temperature
-    themes:
-      - phys
-    realms:
-      - atmos
-      - ocean
-    variables:
-      ts:
-        preprocessor: ppNOLEV1x1
-        reference_dataset: ESACCI-LST
-        mip: Amon
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 1986
-        end_year: 2005
-    additional_datasets:
-      - {dataset: ACCESS1-0}
-      - {dataset: ACCESS1-3}
-      - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanCM4}
-      - {dataset: CanESM2}
-      - {dataset: CCSM4}
-      - {dataset: CESM1-BGC}
-      - {dataset: CESM1-CAM5}
-      - {dataset: CMCC-CM}
-      - {dataset: CMCC-CMS}
-      - {dataset: CNRM-CM5}
-      - {dataset: CSIRO-Mk3-6-0}
-#no data      - {dataset: EC-EARTH, ensemble: r6i1p1}
-      - {dataset: FGOALS-g2}
-      - {dataset: FIO-ESM}
-      - {dataset: GFDL-CM2p1}
-      - {dataset: GFDL-CM3}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-H, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H-CC}
-      - {dataset: GISS-E2-R, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R-CC}
-      - {dataset: HadCM3}
-      - {dataset: HadGEM2-AO}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC4h}
-      - {dataset: MIROC5}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: MRI-CGCM3}
-      - {dataset: NorESM1-M}
-      - {dataset: NorESM1-ME}
-      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
-      - {dataset: ACCESS-ESM1-5, institute: CSIRO, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
-      - {dataset: AWI-ESM-1-1-LR, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
-      - {dataset: AWI-CM-1-1-MR, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
-      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn, project: CMIP6}
-      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CESM2-WACCM-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CIESM, grid: gr, ensemble: r1i1p1f1, project: CMIP6}
-      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
-      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
-      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
-      - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
-      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6}
-      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6}
-      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
-      - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
-      - {dataset: INM-CM4-8, grid: gr1, ensemble: r1i1p1f1, project: CMIP6}
-      - {dataset: INM-CM5-0, grid: gr1, ensemble: r1i1p1f1, project: CMIP6}
-      - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
-      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
-      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: NorCPM1, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
-      - {dataset: NorESM2-LM, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
-      - {dataset: NorESM2-MM, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
-      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}#      - {dataset: CMCC-CM}
-      - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003,
-         end_year: 2018, version: '1.00'}
-    scripts:
-      grading:
-        <<: *grading_settings
-        alt_short_name: 'lst'
+#  lst:
+#    title: Calculation of performance metrics (land surface (skin) temperature)
+#    description: Land surface (skin) temperature
+#    themes:
+#      - phys
+#    realms:
+#      - atmos
+#      - ocean
+#    variables:
+#      ts:
+#        preprocessor: ppNOLEV1x1
+#        reference_dataset: ESACCI-LST
+#        mip: Amon
+#        project: CMIP5
+#        exp: historical
+#        ensemble: r1i1p1
+#        start_year: 1986
+#        end_year: 2005
+#        alt_short_name: lst
+#    additional_datasets:
+#      - {dataset: ACCESS1-0}
+#      - {dataset: ACCESS1-3}
+#      - {dataset: bcc-csm1-1}
+#      - {dataset: bcc-csm1-1-m}
+#      - {dataset: BNU-ESM}
+#      - {dataset: CanCM4}
+#      - {dataset: CanESM2}
+#      - {dataset: CCSM4}
+#      - {dataset: CESM1-BGC}
+#      - {dataset: CESM1-CAM5}
+#      - {dataset: CMCC-CM}
+#      - {dataset: CMCC-CMS}
+#      - {dataset: CNRM-CM5}
+#      - {dataset: CSIRO-Mk3-6-0}
+##no data      - {dataset: EC-EARTH, ensemble: r6i1p1}
+#      - {dataset: FGOALS-g2}
+#      - {dataset: FIO-ESM}
+#      - {dataset: GFDL-CM2p1}
+#      - {dataset: GFDL-CM3}
+#      - {dataset: GFDL-ESM2G}
+#      - {dataset: GFDL-ESM2M}
+#      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+#      - {dataset: GISS-E2-H-CC}
+#      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+#      - {dataset: GISS-E2-R-CC}
+#      - {dataset: HadCM3}
+#      - {dataset: HadGEM2-AO}
+#      - {dataset: HadGEM2-CC}
+#      - {dataset: HadGEM2-ES}
+#      - {dataset: inmcm4}
+#      - {dataset: IPSL-CM5A-LR}
+#      - {dataset: IPSL-CM5A-MR}
+#      - {dataset: IPSL-CM5B-LR}
+#      - {dataset: MIROC4h}
+#      - {dataset: MIROC5}
+#      - {dataset: MIROC-ESM}
+#      - {dataset: MIROC-ESM-CHEM}
+#      - {dataset: MPI-ESM-LR}
+#      - {dataset: MPI-ESM-MR}
+#      - {dataset: MRI-CGCM3}
+#      - {dataset: NorESM1-M}
+#      - {dataset: NorESM1-ME}
+#      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: ACCESS-ESM1-5, institute: CSIRO, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: AWI-ESM-1-1-LR, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: AWI-CM-1-1-MR, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn, project: CMIP6}
+#      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: CESM2-WACCM-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: CIESM, grid: gr, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
+#      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
+#      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
+#      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+#      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+#      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+#      - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+#      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6}
+#      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6}
+#      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
+#      - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
+#      - {dataset: INM-CM4-8, grid: gr1, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: INM-CM5-0, grid: gr1, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+#      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
+#      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: NorCPM1, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: NorESM2-LM, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: NorESM2-MM, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}#      - {dataset: CMCC-CM}
+#      - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003,
+#         end_year: 2018, version: '1.00'}
+#    scripts:
+#      grading:
+#        <<: *grading_settings
 
 #  lwcre:
 #    title: Calculation of performance metrics (longwave cloud radiative effect)
@@ -474,57 +474,200 @@ diagnostics:
 #        start_year: 1986
 #        end_year: 2005
 #    additional_datasets:
+#      - {dataset: ACCESS1-0}
+#      - {dataset: ACCESS1-3}
+#      - {dataset: bcc-csm1-1}
+#      - {dataset: bcc-csm1-1-m}
+#      - {dataset: BNU-ESM}
+#      - {dataset: CanESM2}
+#      - {dataset: CCSM4}
+#      - {dataset: CESM1-BGC}
+#      - {dataset: CESM1-CAM5}
 #      - {dataset: CMCC-CM}
 #      - {dataset: CMCC-CMS}
+#      - {dataset: CNRM-CM5}
+#      - {dataset: CSIRO-Mk3-6-0}
+##no data      - {dataset: EC-EARTH, ensemble: r6i1p1}
 #      - {dataset: FGOALS-g2}
+#      - {dataset: FIO-ESM}
+#      - {dataset: GFDL-CM3}
+#      - {dataset: GFDL-ESM2G}
+#      - {dataset: GFDL-ESM2M}
 #      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+#      - {dataset: GISS-E2-H-CC}
+#      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+#      - {dataset: GISS-E2-R-CC}
 #      - {dataset: HadCM3}
+#      - {dataset: HadGEM2-AO}
+#      - {dataset: HadGEM2-CC}
+#      - {dataset: HadGEM2-ES}
+#      - {dataset: inmcm4}
+#      - {dataset: IPSL-CM5A-LR}
+#      - {dataset: IPSL-CM5A-MR}
+#      - {dataset: IPSL-CM5B-LR}
+#      - {dataset: MIROC4h}
+#      - {dataset: MIROC5}
+#      - {dataset: MIROC-ESM}
+#      - {dataset: MIROC-ESM-CHEM}
+#      - {dataset: MPI-ESM-LR}
+#      - {dataset: MPI-ESM-MR}
 #      - {dataset: MRI-CGCM3}
+#      - {dataset: NorESM1-M}
+#      - {dataset: NorESM1-ME}
+#      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: ACCESS-ESM1-5, institute: CSIRO, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: AWI-ESM-1-1-LR, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
 #      - {dataset: AWI-CM-1-1-MR, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
-#      - {dataset: CanESM5-CanOE, ensemble: r2i1p2f1, grid: gn, project: CMIP6}
+#      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn, project: CMIP6}
+#      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: CESM2-WACCM-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
 #      - {dataset: CIESM, grid: gr, ensemble: r1i1p1f1, project: CMIP6}
-#      - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+#      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
+#      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
+#      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
+#      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+#      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+#      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+#      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6}
+#      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6}
+#      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
+#      - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
+#      - {dataset: INM-CM4-8, grid: gr1, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: INM-CM5-0, grid: gr1, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+#      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
+#      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: NorCPM1, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: NorESM2-LM, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: NorESM2-MM, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
+#      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
 #      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
 #         start_year: 1996, end_year: 2016}
 #    scripts:
 #      grading:
 #        <<: *grading_settings
 
-#  lwp:
-#    title: Calculation of performance metrics (cloud liquid water path)
-#    description: Cloud liquid water path
-#    themes:
-#      - phys
-#    realms:
-#      - atmos
-#    variables:
-#      lwp:
-#        preprocessor: ppNOLEV1x1
-#        reference_dataset: ESACCI-CLOUD
-#        mip: Amon
-#        project: CMIP5
-#        exp: historical
-#        ensemble: r1i1p1
-#        derive: true
-#        start_year: 1986
-#        end_year: 2005
-#    additional_datasets:
-#      - {dataset: CMCC-CM}
-#      - {dataset: CMCC-CMS}
-##      - {dataset: GFDL-CM2p1}
-##      - {dataset: GISS-E2-H, ensemble: r1i1p2}
-##      - {dataset: HadCM3}
-#      - {dataset: MRI-CGCM3}
-#      - {dataset: AWI-CM-1-1-MR, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
-#      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-#      - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn, project: CMIP6}
-#      - {dataset: CIESM, grid: gr, ensemble: r1i1p1f1, project: CMIP6}
-#      - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
-#      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-#         start_year: 1996, end_year: 2016}
-#    scripts:
-#      grading:
-#        <<: *grading_settings
+  lwp:
+    title: Calculation of performance metrics (cloud liquid water path)
+    description: Cloud liquid water path
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      lwp:
+        preprocessor: ppNOLEV1x1
+        reference_dataset: ESACCI-CLOUD
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        derive: true
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
+      - {dataset: CNRM-CM5}
+      - {dataset: CSIRO-Mk3-6-0}
+#no data      - {dataset: EC-EARTH, ensemble: r6i1p1}
+#no data      - {dataset: FGOALS-g2}
+#no data      - {dataset: FIO-ESM}
+#no data      - {dataset: GFDL-CM3}
+#no data      - {dataset: GFDL-ESM2G}
+#no data      - {dataset: GFDL-ESM2M}
+#no data      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+#no data      - {dataset: GISS-E2-H-CC}
+#no data      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+#no data      - {dataset: GISS-E2-R-CC}
+#no data      - {dataset: HadCM3}
+#no data      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC4h}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+#no data      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+#no data      - {dataset: ACCESS-ESM1-5, institute: CSIRO, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+      - {dataset: AWI-ESM-1-1-LR, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+      - {dataset: AWI-CM-1-1-MR, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn, project: CMIP6}
+      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: CIESM, grid: gr, ensemble: r1i1p1f1, project: CMIP6}
+      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
+      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
+      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
+      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6}
+      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6}
+      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
+      - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
+      - {dataset: INM-CM4-8, grid: gr1, ensemble: r1i1p1f1, project: CMIP6}
+      - {dataset: INM-CM5-0, grid: gr1, ensemble: r1i1p1f1, project: CMIP6}
+      - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
+      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+#no data      - {dataset: NorCPM1, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
+      - {dataset: NorESM2-LM, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
+      - {dataset: NorESM2-MM, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
+      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+         start_year: 1996, end_year: 2016}
+    scripts:
+      grading:
+        <<: *grading_settings
 
 # fatal:Coordinate variables must be the same dimension as their dimension
 #  oc:
