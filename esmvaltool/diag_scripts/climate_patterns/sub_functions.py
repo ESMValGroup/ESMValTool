@@ -73,6 +73,7 @@ def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
         x.coord('latitude').guess_bounds()
     if not x.coord('longitude').has_bounds():
         x.coord('longitude').guess_bounds()
+
     # Get the area weights using the same cube
     global_weights = iris.analysis.cartography.area_weights(x, normalize=False)
 
@@ -86,6 +87,7 @@ def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
         print("Ocean area: ", ocean_area.data)
         x2 = x.copy()
         x2.data = x2.data * global_weights * ocean_frac.data
+
         # Now collapse the lat and lon to find a global mean over time
         x2 = x2.collapsed(['latitude', 'longitude'],
                           iris.analysis.SUM) / 1e12 / ocean_area.data

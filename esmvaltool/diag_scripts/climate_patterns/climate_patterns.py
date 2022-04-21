@@ -4,17 +4,16 @@ from pathlib import Path
 import iris
 import iris.coord_categorisation
 import iris.cube
-import iris.quickplot as qplt
-import matplotlib.pyplot as plt
 import numpy as np
 import sklearn.linear_model
 import sub_functions as sf
+from plotting import plot_cp_timeseries
 from rename_variables import (
     rename_anom_variables,
     rename_clim_variables,
+    rename_regression_variables,
     rename_variables,
 )
-from variable_derivations import diurnal_temp_range
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
@@ -29,31 +28,6 @@ def compute_diagnostic(filename):
     logger.debug("Running example computation")
     cube = iris.util.squeeze(cube)
     return cube
-
-
-def plot_timeseries(list_cubelists, plot_path):
-    """Plots timeseries of aggregated cubes, across all scenarios."""
-    for i in range(len(list_cubelists)):
-        cube_list = list_cubelists[i]
-        for cube in cube_list:
-            if i == 0:
-                avg_cube = sf.area_avg(cube, return_cube=True)
-                fig = qplt.plot(avg_cube)
-                plt.savefig(plot_path + cube.var_name + "_clim")
-            if i == 1:
-                avg_cube = sf.area_avg(cube, return_cube=True)
-                fig = qplt.plot(avg_cube)
-                plt.savefig(plot_path + cube.var_name + "_full_ts")
-            if i == 2:
-                avg_cube = sf.area_avg(cube, return_cube=True)
-                fig = qplt.plot(avg_cube)
-                plt.savefig(plot_path + cube.var_name + "_anom")
-            if i == 3:
-                fig = qplt.pcolormesh(cube)
-                plt.savefig(plot_path + cube.var_name + "_reg")
-            plt.close()
-
-    return fig
 
 
 def climatology(cube):
@@ -94,6 +68,14 @@ def make_monthly_climatology(cube):
     return cube_month_climatol
 
 
+def diurnal_temp_range(cubelist):
+    range_cube = cubelist[0] - cubelist[1]
+    range_cube.rename("range_t1p5m_clim")
+    range_cube.var_name = "range_t1p5m_clim"
+
+    return range_cube
+
+
 def calculate_diurnal_range(clim_list, ts_list):
     temp_range_list_clim = iris.load([])
     temp_range_list_ts = iris.load([])
@@ -110,13 +92,17 @@ def calculate_diurnal_range(clim_list, ts_list):
             else:
                 pass
 
-    derived_variable_clim = diurnal_temp_range(temp_range_list_clim)
-    derived_variable_ts = diurnal_temp_range(temp_range_list_ts)
+    derived_diurnal_clim = diurnal_temp_range(temp_range_list_clim)
+    derived_diurnal_ts = diurnal_temp_range(temp_range_list_ts)
 
-    return derived_variable_clim, derived_variable_ts
+    # append diurnal range to lists
+    clim_list_final, ts_list_final = append_diurnal_range(
+        derived_diurnal_clim, derived_diurnal_ts, clim_list, ts_list)
+
+    return clim_list_final, ts_list_final
 
 
-def append_diurnal_range(derived_variable_clim, derived_variable_ts, clim_list,
+def append_diurnal_range(derived_diurnal_clim, derived_diurnal_ts, clim_list,
                          ts_list):
     # creating cube list without tasmax or tasmin
     # (since we just wanted the diurnal range)
@@ -131,13 +117,17 @@ def append_diurnal_range(derived_variable_clim, derived_variable_ts, clim_list,
         if not (cube.var_name == "tasmax" or cube.var_name == "tasmin"):
             ts_list_final.append(cube)
 
-    clim_list_final.append(derived_variable_clim)
-    ts_list_final.append(derived_variable_ts)
+    clim_list_final.append(derived_diurnal_clim)
+    ts_list_final.append(derived_diurnal_ts)
 
     return clim_list_final, ts_list_final
 
 
-def calculate_anomaly(clim_list_final, ts_list_final):
+def calculate_anomaly(clim_list, ts_list):
+    # calculate diurnal temperature range cube
+    clim_list_final, ts_list_final = calculate_diurnal_range(
+        clim_list, ts_list)
+
     anom_list_final = ts_list_final.copy()
 
     # calc the anom by subtracting the monthly climatology from
@@ -151,19 +141,22 @@ def calculate_anomaly(clim_list_final, ts_list_final):
     for cube in anom_list_final:
         anom_list_renamed.append(rename_anom_variables(cube))
 
-    return anom_list_renamed
+    return clim_list_final, ts_list_final, anom_list_renamed
 
 
-def regression(tas_data, cube_data):
-    slope_array = np.full(tas_data.shape[1:], np.nan)
+def regression(tas, cube_data):
+    slope_array = np.full(tas.data.shape[1:], np.nan)
 
-    for i in range(tas_data.shape[1]):
-        for j in range(tas_data.shape[2]):
-            if tas_data[0, i, j] is not np.ma.masked:
+    # calculate global average
+    tas_data = sf.area_avg(tas, return_cube=False)
+
+    for i in range(tas.data.shape[1]):
+        for j in range(tas.data.shape[2]):
+            if tas.data[0, i, j] is not np.ma.masked:
                 model = sklearn.linear_model.LinearRegression(
                     fit_intercept=True, copy_X=True)
 
-                x = tas_data[:, i, j].reshape(-1, 1)
+                x = tas_data.reshape(-1, 1)
                 y = cube_data[:, i, j]
 
                 model.fit(x, y)
@@ -173,7 +166,9 @@ def regression(tas_data, cube_data):
 
 
 def regression_units(tas, cube):
+    print('Cube Units: ', cube.units)
     units = cube.units / tas.units
+    print('Regression Units: ', units)
 
     return units
 
@@ -183,45 +178,49 @@ def calculate_regressions(anom_list):
 
     for cube in anom_list:
         if cube.var_name == 't1p5m_anom':
-            tas = cube[-1020:]  # getting last 85 years from full timeseries
+
+            # getting last 85 years from full timeseries
+            tas = cube[-1020:]
 
     for cube in anom_list:
-        if not cube.var_name == 't1p5m_anom':
-            cube_ssp = cube[-1020:]
-            month_list = iris.cube.CubeList([])
+        cube_ssp = cube[-1020:]
+        month_list = iris.cube.CubeList([])
 
-            # exctracting months, regressing, and merging
-            for i in range(1, 13):
-                month_constraint = iris.Constraint(month_number=i)
-                month_cube_ssp = cube_ssp.extract(month_constraint)
-                month_tas = tas.extract(month_constraint)
+        # exctracting months, regressing, and merging
+        for i in range(1, 13):
+            month_constraint = iris.Constraint(month_number=i)
+            month_cube_ssp = cube_ssp.extract(month_constraint)
+            month_tas = tas.extract(month_constraint)
 
-                regr_array = regression(month_tas.data, month_cube_ssp.data)
+            regr_array = regression(month_tas, month_cube_ssp.data)
 
-                # re-creating cube
+            # re-creating cube
+            if (cube.var_name == 'swdown_anom'
+                    or cube.var_name == 'lwdown_anom'):
+                units = 'W m-2 K-1'
+            else:
                 units = regression_units(tas, cube_ssp)
 
-                # assigning dim_coords
-                coord1 = tas.coord(contains_dimension=1)
-                coord2 = tas.coord(contains_dimension=2)
-                dim_coords_and_dims = [(coord1, 0), (coord2, 1)]
+            # assigning dim_coords
+            coord1 = tas.coord(contains_dimension=1)
+            coord2 = tas.coord(contains_dimension=2)
+            dim_coords_and_dims = [(coord1, 0), (coord2, 1)]
 
-                # assigning aux_coord
-                coord_month = iris.coords.AuxCoord(i, var_name='month_number')
-                aux_coords_and_dims = [(coord_month, ())]
+            # assigning aux_coord
+            coord_month = iris.coords.AuxCoord(i, var_name='imogen_drive')
+            aux_coords_and_dims = [(coord_month, ())]
 
-                var_name = cube.var_name + '_coeff'
+            cube = rename_regression_variables(cube)
 
-                new_cube = iris.cube.Cube(
-                    regr_array,
-                    units=units,
-                    dim_coords_and_dims=dim_coords_and_dims,
-                    aux_coords_and_dims=aux_coords_and_dims,
-                    var_name=var_name)
-                month_list.append(new_cube)
+            new_cube = iris.cube.Cube(regr_array,
+                                      units=units,
+                                      dim_coords_and_dims=dim_coords_and_dims,
+                                      aux_coords_and_dims=aux_coords_and_dims,
+                                      var_name=cube.var_name)
+            month_list.append(new_cube)
 
-            conc_cube = month_list.merge_cube()
-            regr_var_list.append(conc_cube)
+        conc_cube = month_list.merge_cube()
+        regr_var_list.append(conc_cube)
 
     return regr_var_list
 
@@ -249,16 +248,9 @@ def main(cfg):
         clim_renamed = rename_clim_variables(clim_cube)
         clim_list.append(clim_renamed)
 
-    # calculate diurnal temperature range cube
-    (derived_diurnal_clim,
-     derived_diurnal_ts) = calculate_diurnal_range(clim_list, ts_list)
-
-    # append diurnal range to lists
-    clim_list_final, ts_list_final = append_diurnal_range(
-        derived_diurnal_clim, derived_diurnal_ts, clim_list, ts_list)
-
     # calculate anomaly over historical + ssp timeseries
-    anom_list_final = calculate_anomaly(clim_list_final, ts_list_final)
+    clim_list_final, ts_list_final, anom_list_final = calculate_anomaly(
+        clim_list, ts_list)
 
     regressions = calculate_regressions(anom_list_final)
 
@@ -278,7 +270,7 @@ def main(cfg):
 
     # saving figures
     plot_path = cfg["plot_dir"] + "/"
-    plot_timeseries(list_of_cubelists, plot_path)
+    plot_cp_timeseries(list_of_cubelists, plot_path)
 
 
 if __name__ == "__main__":

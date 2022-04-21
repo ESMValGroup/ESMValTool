@@ -25,6 +25,8 @@ def rename_clim_variables(cube):
         cube.rename("lwdown_clim")
         cube.var_name = "lwdown_clim"
 
+    cube.coord('month_number').rename('imogen_drive')
+
     return cube
 
 
@@ -84,5 +86,38 @@ def rename_variables(cube):
     if cube.var_name == "rlds":
         cube.rename("lwdown")
         cube.var_name = "lwdown"
+
+    return cube
+
+
+def rename_regression_variables(cube):
+    # rename variables to fit in JULES framework
+    if cube.var_name == "t1p5m_anom":
+        cube.rename("t1p5m_patt")
+        cube.var_name = "t1p5m_patt"
+    if cube.var_name == "range_t1p5m_clim":
+        cube.rename("range_t1p5m_patt")
+        cube.var_name = "range_t1p5m_patt"
+    if cube.var_name == "rh1p5m_anom":
+        cube.rename("rh1p5m_patt")
+        cube.var_name = "rh1p5m_patt"
+    if cube.var_name == "q1p5m_anom":
+        cube.rename("q1p5m_patt")
+        cube.var_name = "q1p5m_patt"
+    if cube.var_name == "precip_anom":
+        cube.rename("precip_patt")
+        cube.var_name = "precip_patt"
+    if cube.var_name == "wind_anom":
+        cube.rename("wind_patt")
+        cube.var_name = "wind_patt"
+    if cube.var_name == "pstar_anom":
+        cube.rename("pstar_patt")
+        cube.var_name = "pstar_patt"
+    if cube.var_name == "swdown_anom":
+        cube.rename("swdown_patt")
+        cube.var_name = "swdown_patt"
+    if cube.var_name == "lwdown_anom":
+        cube.rename("lwdown_patt")
+        cube.var_name = "lwdown_patt"
 
     return cube

@@ -5,10 +5,9 @@ from pathlib import Path
 
 import iris
 import iris.coord_categorisation
-import iris.quickplot as qplt
-import matplotlib.pyplot as plt
 import numpy as np
 import sub_functions as sf
+from plotting import forcing_plot, plot_ebm_prediction, plot_ebm_timeseries
 from scipy import stats
 from scipy.sparse.linalg import spsolve
 
@@ -19,6 +18,7 @@ logger = logging.getLogger(Path(__file__).stem)
 
 def compute_diagnostic(filename):
     """Compute an example diagnostic."""
+
     logger.debug("Loading %s", filename)
     cube = iris.load_cube(filename)
 
@@ -28,6 +28,7 @@ def compute_diagnostic(filename):
 
 
 def net_flux_calculation(toa_list):
+
     for cube in toa_list:
         if cube.var_name == "rsdt":
             rsdt = cube
@@ -43,76 +44,8 @@ def net_flux_calculation(toa_list):
     return toa_net
 
 
-def plot_timeseries(list_cubes, plot_path, ocean_frac, land_frac):
-    """Plots timeseries of aggregated cubes, across all scenarios."""
-    fig, ax = plt.subplots(2, 3, figsize=(9, 8), sharey=True, sharex=True)
-    for i, cube in enumerate(list_cubes):
-        yrs = (1850 + np.arange(cube.shape[0])).astype('float')
-        if i == 0:
-            avg_cube = sf.area_avg(cube, return_cube=True)
-            avg_cube.data -= np.mean(avg_cube.data[0:40])
-            ax[0, 0].plot(yrs, avg_cube.data)
-            ax[0, 0].set_title('Global')
-            ax[0, 0].set_ylabel('Net TOA Radiation (Wm-2)')
-
-            avg_cube2 = sf.area_avg_landsea(cube,
-                                            ocean_frac,
-                                            land_frac,
-                                            land=True,
-                                            return_cube=True)
-            avg_cube2.data -= np.mean(avg_cube2.data[0:40])
-            ax[0, 1].plot(yrs, avg_cube2.data)
-            ax[0, 1].set_title('Land-Weighted')
-
-            avg_cube3 = sf.area_avg_landsea(cube,
-                                            ocean_frac,
-                                            land_frac,
-                                            land=False,
-                                            return_cube=True)
-            avg_cube3.data -= np.mean(avg_cube3.data[0:40])
-            ax[0, 2].plot(yrs, avg_cube3.data)
-            ax[0, 2].set_title('Ocean-Weighted')
-
-        if i == 1:
-            avg_cube = sf.area_avg(cube, return_cube=True)
-            avg_cube.data -= np.mean(avg_cube.data[0:40])
-            ax[1, 0].plot(yrs, avg_cube.data)
-            ax[1, 0].set_ylabel('Air Temperature (K)')
-            ax[1, 0].set_xlabel('Time')
-
-            avg_cube2 = sf.area_avg_landsea(cube,
-                                            ocean_frac,
-                                            land_frac,
-                                            land=True,
-                                            return_cube=True)
-            avg_cube2.data -= np.mean(avg_cube2.data[0:40])
-            ax[1, 1].plot(yrs, avg_cube2.data)
-            ax[1, 1].set_xlabel('Time')
-
-            avg_cube3 = sf.area_avg_landsea(cube,
-                                            ocean_frac,
-                                            land_frac,
-                                            land=False,
-                                            return_cube=True)
-            avg_cube3.data -= np.mean(avg_cube3.data[0:40])
-            ax[1, 2].plot(yrs, avg_cube3.data)
-            ax[1, 2].set_xlabel('Time')
-
-            fig.savefig(plot_path + "anomaly_plots")
-            plt.close(fig)
-
-    for i, cube in enumerate(list_cubes):
-        fig = qplt.pcolormesh(cube[0])
-        if i == 0:
-            plt.savefig(plot_path + cube.var_name + "_mesh_global")
-        if i == 1:
-            plt.savefig(plot_path + cube.var_name + "_mesh_global")
-        plt.close()
-
-    return fig
-
-
 def ocean_fraction_calc(sftlf):
+
     sftlf.coord("latitude").coord_system = iris.coord_systems.GeogCS(6371229.0)
     sftlf.coord("longitude").coord_system = iris.coord_systems.GeogCS(
         6371229.0)
@@ -137,6 +70,7 @@ def ocean_fraction_calc(sftlf):
 
 
 def kappa_parameter(f, toa_delta, tas_delta_ocean):
+
     rms = 10000.0
     kappa = -9999.9
     for i_kappa in range(0, 150):
@@ -154,6 +88,7 @@ def kappa_parameter(f, toa_delta, tas_delta_ocean):
 
 
 def kappa_calc(f, toa_delta, kappa):
+
     # Set volumetric heat capacity for salt water
     cp = 4.04E6  # (J/K/m3)
     nyr = toa_delta.shape[0]
@@ -254,6 +189,7 @@ def kappa_calc(f, toa_delta, kappa):
 
 
 def anomalies_calc(toa_cube, tas_cube, ocean_frac, land_frac):
+
     # TOA area weighting
     toa_delta_init = sf.area_avg(toa_cube, return_cube=False)
     toa_delta_land_init = sf.area_avg_landsea(toa_cube,
@@ -338,10 +274,6 @@ def create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube,
     # linear regression
     reg = stats.linregress(avg_list[2].data, avg_list[3].data)
 
-    # regression line
-    x_reg = np.linspace(-1.0, 4.0, 2)
-    y_reg = reg.slope * x_reg + reg.intercept
-
     # calculate climate sensitivity 'Lambda'
     lambda_c = reg.slope
     logger.info("Lambda: ", lambda_c)
@@ -351,39 +283,24 @@ def create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube,
     yrs = (1850 + np.arange(forcing.shape[0])).astype('float')
 
     # plotting
-    fig, ax = plt.subplots(1, 2, figsize=(12, 4))
-    ax[0].scatter(avg_list[2].data, avg_list[3].data, c='b', label='tas, rtmt')
-    ax[0].plot(x_reg, y_reg, c='r', label='regression')
-    ax[0].legend(loc='upper left')
-    ax[1].plot(yrs, forcing)
-    ax[1].set_xlabel("Time")
-    ax[1].set_ylabel("Radiative forcing (Wm-2)")
-    fig.savefig(plot_path + '_regression+forcing')
-    plt.close(fig)
+    forcing_plot(reg, avg_list, yrs, forcing, plot_path)
 
     return forcing
 
 
 def ebm_check(plot_path, rad_forcing, of, kappa, lambda_o, lambda_l, nu_ratio,
               tas_delta):
+
+    # runs the EBM tas prediction, with derived forcing
     temp_ocean_top = sf.kappa_calc_predict(rad_forcing, of, kappa, lambda_o,
                                            lambda_l, nu_ratio)
     temp_global = (of + (1 - of) * nu_ratio) * temp_ocean_top
-    yrs = (1850 + np.arange(temp_global.shape[0])).astype('float')
-    plt.plot(yrs,
-             temp_global,
-             color='black',
-             zorder=10,
-             linewidth=1.5,
-             label='EBM Prediction')
-    plt.plot(yrs, tas_delta, color='red', label='Model')
-    plt.xlabel("Time")
-    plt.ylabel("Air Surface Temperature (K)")
-    plt.savefig(plot_path + "_tas_check")
-    plt.close()
+
+    plot_ebm_prediction(temp_global, tas_delta, plot_path)
 
 
 def main(cfg):
+
     # gets a description of the preprocessed data that we will use as input.
     input_data = cfg["input_data"].values()
 
@@ -447,7 +364,7 @@ def main(cfg):
     save_params(cfg, kappa, lambda_o, lambda_l, nu_ratio)
 
     # saving figures
-    plot_timeseries(list_of_cubes, plot_path, ocean_frac, land_frac)
+    plot_ebm_timeseries(list_of_cubes, plot_path, ocean_frac, land_frac)
 
 
 if __name__ == "__main__":

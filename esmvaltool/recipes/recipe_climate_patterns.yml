@@ -113,8 +113,8 @@ diagnostics:
              mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
     scripts:
-      variable_extraction_script:
-        script: climate_patterns/variable_extraction.py
+      climate_patterns_script:
+        script: climate_patterns/climate_patterns.py
 
   annual_timeseries:
     description: Mean annual TOA fluxes and tas
