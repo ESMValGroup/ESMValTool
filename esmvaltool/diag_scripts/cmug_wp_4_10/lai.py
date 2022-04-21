@@ -10,6 +10,7 @@ import logging
 
 import iris
 import matplotlib.pyplot as plt
+import iris.plot as iplt
 import numpy as np
 
 from esmvaltool.diag_scripts.shared import (
@@ -122,44 +123,61 @@ def _diagnostic(config):
 
     #### REMEMBER TO APPLY FACTORS TO OBS DATA, DO THIS IN CMORIZER?????
 
-    model_means = iris.cube.CubeList()
+    # model_means = iris.cube.CubeList()
 
-    for KEY in loaded_data.keys():
-        if KEY == 'ESACCI_LST_UNCERTS': # add in LAI and Veg KEYS here as they become available
-            continue # dont need to do this for CCI
+    # for KEY in loaded_data.keys():
+    #     if KEY == 'CMUG_WP4_10': # add in LAI and Veg KEYS here as they become available
+    #         continue # dont need to do this for CCI
 
-        print(KEY) 
-        # loop over ensembles
-        ensemble_ts = {}
-        for e_number,ENSEMBLE in enumerate(loaded_data[KEY].keys()):
-            print(ENSEMBLE)
+    #     print(KEY) 
+    #     # loop over ensembles
+    #     ensemble_ts = {}
+    #     for e_number,ENSEMBLE in enumerate(loaded_data[KEY].keys()):
+    #         print(ENSEMBLE)
             
-            if ENSEMBLE[0:4] != 'lai_':
-                continue
-                       
-            this_cube_mean = loaded_data[KEY][ENSEMBLE].collapsed(['latitude','longitude'], iris.analysis.MEAN)
+    #         if ENSEMBLE[0:4] != 'lai_':
+    #             continue
+               
+    #         print( loaded_data[KEY][ENSEMBLE].units)
+    #         this_cube_mean = loaded_data[KEY][ENSEMBLE].collapsed(['latitude','longitude'], iris.analysis.MEAN)
 
-            ensemble_coord = iris.coords.AuxCoord(e_number, standard_name=None, 
-                                                  long_name='ensemble_number', 
-                                                  var_name=None,
-                                                  units='1', bounds=None, 
-                                                  attributes=None, coord_system=None)
-            this_cube_mean.add_aux_coord(ensemble_coord)
-            model_means.append(this_cube_mean)
+    #         ensemble_coord = iris.coords.AuxCoord(e_number, standard_name=None, 
+    #                                               long_name='ensemble_number', 
+    #                                               var_name=None,
+    #                                               units='1', bounds=None, 
+    #                                               attributes=None, coord_system=None)
+    #         this_cube_mean.add_aux_coord(ensemble_coord)
+    #         model_means.append(this_cube_mean)
                 
-            ensemble_ts[f'{KEY}_{ENSEMBLE}_ts'] = this_cube_mean
+    #         ensemble_ts[f'{KEY}_{ENSEMBLE}_ts'] = this_cube_mean
 
-    model_means = model_means.merge_cube()
-    print(model_means)
+    # model_means = model_means.merge_cube()
+    # print(model_means)
    
     ### PLOT is CCI LST with bars of uncertainty
     ####     with shaded MODEL MEAN +/- std
     # Plotting
-    cci_lst = []
-    model_lst = model_means.collapsed('ensemble_number', iris.analysis.MEAN)
-    model_std = model_means.collapsed('ensemble_number', iris.analysis.STD_DEV)
-    print(model_lst.data)
-    print(model_std.data)
+    # cci_lst = []
+    # model_lst = model_means.collapsed('ensemble_number', iris.analysis.MEAN)
+    # model_std = model_means.collapsed('ensemble_number', iris.analysis.STD_DEV)
+    # print(model_lst.data)
+    # print(model_std.data)
+
+    colours = ['red','blue','black']
+    fig = plt.figure()
+    for i,KEY in enumerate(loaded_data.keys()):
+        for e_number,ENSEMBLE in enumerate(loaded_data[KEY].keys()):
+            this_cube_mean = loaded_data[KEY][ENSEMBLE].collapsed(['latitude','longitude'], iris.analysis.MEAN)
+        
+            plt.plot(this_cube_mean.data, label = f"{KEY} {ENSEMBLE}",
+                      color=colours[i])
+
+    outpath =  config['plot_dir']
+    plt.legend()
+    plt.savefig(f'{outpath}/lai.png')
+    plt.close('all')  # Is this needed?
+
+
     # _make_plots(cci_lst, total_uncert, model_lst, model_std, ensemble_ts, config)
 
 #     # Provenance

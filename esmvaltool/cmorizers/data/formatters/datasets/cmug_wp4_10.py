@@ -61,6 +61,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 cube_mean = cubes.collapsed('time', iris.analysis.MEAN)
                 cube_mean.attributes['num_files'] = len(cubes.coord('time').points)
 
+                cube_mean.units = 1
+
                 print(cube_mean)
                 print(cubes.coord('time'))
                 
@@ -88,7 +90,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     logger.info('Coord fix issue %s' % cube_mean.long_name)
 
                 cube_mean.add_aux_coord(time_coord)
-#                iris.util.promote_aux_coord_to_dim_coord(cube_mean, 'time')
+                cube_mean = iris.util.new_axis(cube_mean, 'time')
                 print(cube_mean)
 
                 # use CMORizer utils

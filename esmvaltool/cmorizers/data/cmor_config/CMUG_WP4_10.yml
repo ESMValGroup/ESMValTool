@@ -21,10 +21,10 @@ attributes:
 # Variables to cmorize
 # These go into the vals dictionary in the python script
 variables:
-  lai_proba: 
+  lai: 
     mip: Lmon
     raw: leaf_area_index
-    raw_units: 
+    raw_units:
     file: 'c_gls_LAI'
     start_year: 2003
     end_year: 2004
