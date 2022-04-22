@@ -9,9 +9,12 @@ represented by a standard deviation either side of the mean.
 import logging
 
 import iris
+import iris.coord_categorisation as icc
+
 import matplotlib.pyplot as plt
 import iris.plot as iplt
 import numpy as np
+
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -68,11 +71,7 @@ def _get_provenance_record(attributes, ancestor_files):
     record = dictionary of provenance records.
     """
     ### THIS ALL NEEDS CHANGING!!!
-    caption = "Timeseries of ESA CCI LST difference to mean of "\
-        + "model ensembles calculated over region bounded by latitude "\
-        + "{lat_south} to {lat_north}, longitude {lon_west} to {lon_east} "\
-        + "and for model/ensembles {ensembles}. "\
-        + "Shown for years {start_year} to {end_year}.".format(**attributes)
+    caption = "CMUG WP4.10"
 
     record = {
         'caption': caption,
@@ -112,7 +111,7 @@ def _diagnostic(config):
     # KEY1 model ESACCI-LST or something else
     # KEY2 is variable or variable_ensemble
     
-    # The Diagnostic
+    # The Diagnostics
 
     # CMIP data had 360 day calendar, CCI data has 365 day calendar
     # Assume the loaded data is all the same shape
@@ -122,37 +121,43 @@ def _diagnostic(config):
 
 
     #### REMEMBER TO APPLY FACTORS TO OBS DATA, DO THIS IN CMORIZER?????
+    #### Iris seems to do this automatically for LAI
 
-    # model_means = iris.cube.CubeList()
+    # make ensemble mean of area average
+    model_means = {}
 
-    # for KEY in loaded_data.keys():
-    #     if KEY == 'CMUG_WP4_10': # add in LAI and Veg KEYS here as they become available
-    #         continue # dont need to do this for CCI
+    for KEY in loaded_data.keys():
+        if KEY == 'CMUG_WP4_10': # add in LAI and Veg KEYS here as they become available
+            continue # dont need to do this for CCI
 
-    #     print(KEY) 
-    #     # loop over ensembles
-    #     ensemble_ts = {}
-    #     for e_number,ENSEMBLE in enumerate(loaded_data[KEY].keys()):
-    #         print(ENSEMBLE)
+        print(KEY) 
+        # loop over ensembles
+        ensemble_ts = iris.cube.CubeList()
+        for e_number,ENSEMBLE in enumerate(loaded_data[KEY].keys()):
+
+            print(ENSEMBLE)
             
-    #         if ENSEMBLE[0:4] != 'lai_':
-    #             continue
+            if ENSEMBLE[0:4] != 'lai_':
+                continue
                
-    #         print( loaded_data[KEY][ENSEMBLE].units)
-    #         this_cube_mean = loaded_data[KEY][ENSEMBLE].collapsed(['latitude','longitude'], iris.analysis.MEAN)
+            this_cube_mean = loaded_data[KEY][ENSEMBLE].collapsed(['latitude','longitude'], iris.analysis.MEAN)
 
-    #         ensemble_coord = iris.coords.AuxCoord(e_number, standard_name=None, 
-    #                                               long_name='ensemble_number', 
-    #                                               var_name=None,
-    #                                               units='1', bounds=None, 
-    #                                               attributes=None, coord_system=None)
-    #         this_cube_mean.add_aux_coord(ensemble_coord)
-    #         model_means.append(this_cube_mean)
+            ensemble_coord = iris.coords.AuxCoord(e_number, standard_name=None, 
+                                                  long_name='ensemble_number', 
+                                                  var_name=None,
+                                                  units='1', bounds=None, 
+                                                  attributes=None, coord_system=None)
+            this_cube_mean.add_aux_coord(ensemble_coord)
+            ensemble_ts.append(this_cube_mean)
+
+        model_means[KEY] = ensemble_ts.merge_cube()
+        model_means[KEY] = model_means[KEY].collapsed('ensemble_number', iris.analysis.MEAN)
+        icc.add_year(model_means[KEY], 'time')
+        icc.add_month_number(model_means[KEY], 'time')
                 
-    #         ensemble_ts[f'{KEY}_{ENSEMBLE}_ts'] = this_cube_mean
+    print(model_means)
 
-    # model_means = model_means.merge_cube()
-    # print(model_means)
+
    
     ### PLOT is CCI LST with bars of uncertainty
     ####     with shaded MODEL MEAN +/- std

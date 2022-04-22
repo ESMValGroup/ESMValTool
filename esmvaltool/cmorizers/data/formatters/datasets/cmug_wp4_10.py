@@ -9,6 +9,7 @@ Download and processing instructions
 import datetime
 import logging
 from calendar import monthrange
+import glob
 
 import iris
 import iris.coord_categorisation as icc
@@ -125,12 +126,22 @@ def load_cubes(in_dir, file, variable_list, year,month):
     """
     Descrip
     """
-#    logger.info('Loading %s/%s*.nc', in_dir, file)
-    cubes = iris.load('%s/%s*%s%02d*.nc' % (in_dir, file, year,month),
-                     variable_list)
+    filelist = glob.glob('%s/%s*%s%02d*.nc' % (in_dir, file, year,month))
+    
+    loaded_cubes = iris.cube.CubeList()
+    print(filelist)
+
+    for file in filelist:
+        try:
+            cubes = iris.load(file,
+                              variable_list)
+            for cube in cubes:
+                cube.attributes = None
+                loaded_cubes.append(cube)
+        except:
+            pass
 
 
-    for cube in cubes:
-        cube.attributes = None
 
-    return cubes
+
+    return loaded_cubes
