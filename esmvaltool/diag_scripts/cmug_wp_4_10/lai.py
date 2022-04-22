@@ -24,8 +24,11 @@ from esmvaltool.diag_scripts.shared import (
 
 logger = logging.getLogger(__name__)
 
+tab_cols = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd',
+            '#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
-scale_factor = 0.001 # cant find this in the files, * this by all CCI values to get actual value
+month_list = ['Jan','Feb','Mar','Apr','May','Jun',
+              'Jul','Aug','Sep','Oct','Nov','Dec']
 
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
@@ -115,10 +118,8 @@ def _diagnostic(config):
 
     # CMIP data had 360 day calendar, CCI data has 365 day calendar
     # Assume the loaded data is all the same shape
-    print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
     print('LOADED DATA:')
     print(loaded_data)
-
 
     #### REMEMBER TO APPLY FACTORS TO OBS DATA, DO THIS IN CMORIZER?????
     #### Iris seems to do this automatically for LAI
@@ -126,18 +127,18 @@ def _diagnostic(config):
     # make ensemble mean of area average
     model_means = {}
 
+    icc.add_year(loaded_data['CMUG_WP4_10']['lai'],'time')
+    icc.add_month_number(loaded_data['CMUG_WP4_10']['lai'],'time')
+
     for KEY in loaded_data.keys():
         if KEY == 'CMUG_WP4_10': # add in LAI and Veg KEYS here as they become available
             continue # dont need to do this for CCI
 
-        print(KEY) 
         # loop over ensembles
         ensemble_ts = iris.cube.CubeList()
         for e_number,ENSEMBLE in enumerate(loaded_data[KEY].keys()):
 
-            print(ENSEMBLE)
-            
-            if ENSEMBLE[0:4] != 'lai_':
+            if ENSEMBLE[0:3] != 'lai':
                 continue
                
             this_cube_mean = loaded_data[KEY][ENSEMBLE].collapsed(['latitude','longitude'], iris.analysis.MEAN)
@@ -155,30 +156,107 @@ def _diagnostic(config):
         icc.add_year(model_means[KEY], 'time')
         icc.add_month_number(model_means[KEY], 'time')
                 
-    print(model_means)
+    plot_all_members(loaded_data, config)
+    plot_season_peaks(loaded_data, model_means, config)
 
+
+def plot_season_peaks(loaded_data, model_means, config):
+
+    peaks = {}
+    for i, MODEL in enumerate(model_means.keys()):
+        peaks[MODEL]= []
+        for YEAR in np.unique(model_means[MODEL].coord('year').points):
+            cube = model_means[MODEL].extract(iris.Constraint(year=YEAR))
+            cube_values= cube.data
+            peaks[MODEL].append(np.argmax(cube_values))
+
+    obs_peak = []
+    obs_mean = loaded_data['CMUG_WP4_10']['lai'].collapsed(['latitude','longitude'], iris.analysis.MEAN)
+    for YEAR in np.unique(obs_mean.coord('year').points):
+        cube = obs_mean.extract(iris.Constraint(year=YEAR))
+        cube_values= cube.data
+        obs_peak.append(np.argmax(cube_values))
+
+    fig, ax = plt.subplots(figsize=(20, 15))
+
+    for i,KEY in enumerate(peaks.keys()):
+        ax.plot(peaks[KEY],'o-',
+                label=KEY,
+                color=tab_cols[i])
+
+    ax.plot(obs_peak,'o-', label = 'OBS',
+             color='black')
+
+    year_list = np.unique(obs_mean.coord('year').points)
+    ax.set_xticks(np.arange(0,len(year_list)))
+    ax.set_xticklabels(year_list, fontsize=18)
+    ax.set_xlim((-1,len(year_list)+1))
+
+    ax.set_yticks(np.arange(0,12))
+    ax.set_yticklabels(month_list, fontsize=18)
+    ax.set_ylim((-1,12))
+
+    ax.grid()
+
+    ax.legend(loc='upper right')
+
+    outpath =  config['plot_dir']
+    plt.savefig(f'{outpath}/lai_peak.png')
+    plt.close('all')  # Is this needed?
 
    
-    ### PLOT is CCI LST with bars of uncertainty
-    ####     with shaded MODEL MEAN +/- std
-    # Plotting
-    # cci_lst = []
-    # model_lst = model_means.collapsed('ensemble_number', iris.analysis.MEAN)
-    # model_std = model_means.collapsed('ensemble_number', iris.analysis.STD_DEV)
-    # print(model_lst.data)
-    # print(model_std.data)
+def plot_all_members(loaded_data, config):
+    
+    fig, ax = plt.subplots(figsize=(20, 15))
 
-    colours = ['red','blue','black']
-    fig = plt.figure()
     for i,KEY in enumerate(loaded_data.keys()):
+
+        if KEY == 'CMUG_WP4_10':
+            COL = 'black'
+            LW=1
+        else:
+            COL = tab_cols[i]
+            LW=3
+
         for e_number,ENSEMBLE in enumerate(loaded_data[KEY].keys()):
             this_cube_mean = loaded_data[KEY][ENSEMBLE].collapsed(['latitude','longitude'], iris.analysis.MEAN)
         
-            plt.plot(this_cube_mean.data, label = f"{KEY} {ENSEMBLE}",
-                      color=colours[i])
+            ax.plot(this_cube_mean.data, label = f"{KEY} {ENSEMBLE}",
+                      color=COL)
+
+    x_tick_list = []
+    time_list = this_cube_mean.coord('time').units.num2date(this_cube_mean.coord('time').points)
+    for item in time_list:
+        if item.month == 1:
+            x_tick_list.append(item.strftime('%Y %b'))
+        elif item.month == 7:
+            x_tick_list.append(item.strftime('%b'))
+        else:
+            x_tick_list.append('')
+
+    ax.set_xticks(range(len(this_cube_mean.data)))
+    ax.set_xticklabels(x_tick_list, fontsize=18, rotation=45)
+
+    ax.set_yticks(np.arange(0,6))
+    ax.set_yticklabels(np.arange(0,6), fontsize=18)
+    ax.set_ylim((0,6))
+
+    ax.set_xlabel('Date', fontsize=20)
+    ax.set_ylabel('LAI', fontsize=20)
+
+
+    lons = loaded_data['CMUG_WP4_10']['lai'].coord('longitude').bounds
+    lats = loaded_data['CMUG_WP4_10']['lai'].coord('latitude').bounds
+
+    ax.set_title('Area: lon %s lat %s' % (lons[0], lats[0]), fontsize=22)
+
+    fig.suptitle('ESA LAI and CMIP6 LAI', fontsize=24)
+    
+
+    ax.grid()
 
     outpath =  config['plot_dir']
-    plt.legend()
+    plt.legend(loc='upper right')
     plt.savefig(f'{outpath}/lai.png')
     plt.close('all')  # Is this needed?
 
@@ -208,93 +286,6 @@ def _diagnostic(config):
 #     # for file in ['%s/timeseries.png' % config['plot_dir']]:
 #     #     with ProvenanceLogger(config) as provenance_logger:
 #     #         provenance_logger.log(file, record)
-
-
-
-def _make_plots(cci_lst, total_uncert, model_lst, model_std, ensemble_ts, config):
-    """Create and save the output figure.
-    PLOT 1
-    The plot is CMIP model LST  with +/- one standard deviation
-    of the model spread, and the mean CCI LST with +/- one total
-    error
-    PLOT 2
-    The plot is all CMIP model LST  ensembles
-    and the mean CCI LST with +/- one total
-    error
-    Inputs:
-   
-    config = The config dictionary from the preprocessor
-    Outputs:
-    Saved figure
-    """
-
-    for i in [0,1]:
-
-        fig, ax = plt.subplots(figsize=(20, 15))
-
-        if i == 0:
-            model_low = (model_lst-model_std).data
-            model_high = (model_lst+model_std).data
-
-            ax.plot(model_lst.data, color='black', linewidth=4)
-            ax.plot(model_low, '--', color='blue', linewidth=3)
-            ax.plot(model_high, '--', color='blue', linewidth=3)
-            ax.fill_between(range(len(model_lst.data)),
-                            model_low,
-                            model_high,
-                            color='blue',
-                            alpha=0.25)
-
-        elif i==1:
-            maxes = []
-            mins = []
-            for item in ensemble_ts.keys():
-                ax.plot(ensemble_ts[item].data, color='black', linewidth=1)
-                
-                mins.append(np.min(ensemble_ts[item].data))
-                maxes.append(np.max(ensemble_ts[item].data))
-
-            model_low = np.min(mins)
-            model_high = np.max(maxes)
-
-        # make X ticks
-        x_tick_list = []
-        time_list = model_lst.coord('time').units.num2date(
-            model_lst.coord('time').points)
-        for item in time_list:
-            if item.month == 1:
-                x_tick_list.append(item.strftime('%Y %b'))
-            elif item.month == 7:
-                x_tick_list.append(item.strftime('%b'))
-            else:
-                x_tick_list.append('')
-
-        ax.set_xticks(range(len(model_lst.data)))
-        ax.set_xticklabels(x_tick_list, fontsize=18, rotation=45)
-
-        # make Y ticks
-        y_lower = np.floor(model_low.min())
-        y_upper = np.ceil(model_high.max())
-        ax.set_yticks(np.arange(y_lower, y_upper + 0.1, 2))
-        ax.set_yticklabels(np.arange(y_lower, y_upper + 0.1, 2), fontsize=18)
-        ax.set_ylim((y_lower - 0.1, y_upper + 0.1))
-
-        ax.set_xlabel('Date', fontsize=20)
-        ax.set_ylabel('LST / K', fontsize=20)
-
-        ax.grid()
-
-        lons = model_lst.coord('longitude').bounds
-        lats = model_lst.coord('latitude').bounds
-
-        ax.set_title('Area: lon %s lat %s' % (lons[0], lats[0]), fontsize=22)
-
-        fig.suptitle('ESACCI LST and CMIP6 LST', fontsize=24)
-    
-        outpath =  config['plot_dir']
-
-        plt.savefig(f'{outpath}/timeseries_{i}.png')
-        plt.close('all')  # Is this needed?
 
 
 if __name__ == '__main__':
