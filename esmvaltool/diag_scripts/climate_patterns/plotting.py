@@ -4,29 +4,76 @@ import numpy as np
 import sub_functions as sf
 
 
+def subplot_positions(j):
+    if j <= 2:
+        y = j
+        x = 0
+    elif 2 < j <= 5:
+        y = j - 3
+        x = 1
+    else:
+        y = j - 6
+        x = 2
+
+    return x, y
+
+
 def plot_cp_timeseries(list_cubelists, plot_path):
     """Plots timeseries of aggregated cubes, across all scenarios."""
+    fig1, ax1 = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
+    fig1.suptitle("40 Year Climatologies, 1850-1889", fontsize=18, y=0.98)
+    fig2, ax2 = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
+    fig2.suptitle("Anomaly Timeseries, 1850-2100", fontsize=18, y=0.98)
+    fig3, ax3 = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
+    fig3.suptitle("Variable Timeseries, 1850-2100", fontsize=18, y=0.98)
+
+    plt.figure(figsize=(14, 12))
+    plt.subplots_adjust(hspace=0.5)
+    plt.suptitle("Aggregated Global Patterns, January", fontsize=18, y=0.95)
+
     for i in range(len(list_cubelists)):
         cube_list = list_cubelists[i]
-        for cube in cube_list:
+        for j, cube in enumerate(cube_list):
+            # determining plot positions
+            x, y = subplot_positions(j)
+            yrs = (1850 + np.arange(cube.shape[0])).astype('float')
             if i == 0:
-                avg_cube = sf.area_avg(cube, return_cube=True)
-                fig = qplt.plot(avg_cube)
-                plt.savefig(plot_path + cube.var_name + "_clim")
+                # climatology
+                avg_cube = sf.area_avg(cube, return_cube=False)
+                ax1[x, y].plot(yrs, avg_cube)
+                ax1[x, y].set_ylabel(cube.long_name + " / " + str(cube.units))
+                if j > 5:
+                    ax1[x, y].set_xlabel('Time')
             if i == 1:
-                avg_cube = sf.area_avg(cube, return_cube=True)
-                fig = qplt.plot(avg_cube)
-                plt.savefig(plot_path + cube.var_name + "_full_ts")
+                # full timeseries
+                avg_cube = sf.area_avg(cube, return_cube=False)
+                ax2[x, y].plot(yrs, avg_cube)
+                ax2[x, y].set_ylabel(cube.long_name + " / " + str(cube.units))
+                if j > 5:
+                    ax2[x, y].set_xlabel('Time')
             if i == 2:
-                avg_cube = sf.area_avg(cube, return_cube=True)
-                fig = qplt.plot(avg_cube)
-                plt.savefig(plot_path + cube.var_name + "_anom")
+                # anomalies
+                avg_cube = sf.area_avg(cube, return_cube=False)
+                ax3[x, y].plot(yrs, avg_cube)
+                ax3[x, y].set_ylabel(cube.long_name + " / " + str(cube.units))
+                if j > 5:
+                    ax3[x, y].set_xlabel('Time')
             if i == 3:
-                fig = qplt.pcolormesh(cube[0])
-                plt.savefig(plot_path + cube.var_name + "_reg")
-            plt.close()
+                # January patterns
+                plt.subplot(3, 3, j + 1)
+                qplt.pcolormesh(cube[0])
 
-    return fig
+    plt.tight_layout()
+    plt.savefig(plot_path + 'Patterns')
+    plt.close()
+
+    fig1.tight_layout()
+    fig2.tight_layout()
+    fig3.tight_layout()
+
+    fig1.savefig(plot_path + 'Climatologies')
+    fig2.savefig(plot_path + 'Anomalies')
+    fig3.savefig(plot_path + 'Standard Timeseries')
 
 
 def plot_ebm_timeseries(list_cubes, plot_path, ocean_frac, land_frac):

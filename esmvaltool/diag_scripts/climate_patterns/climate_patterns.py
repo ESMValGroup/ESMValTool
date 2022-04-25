@@ -43,22 +43,15 @@ def climatology(cube):
     return cube_aggregated
 
 
-def aggregate_all_time(cube):
-    cube_all = cube.extract(
-        iris.Constraint(time=lambda t: 2015 <= t.point.year <= 2100,
-                        month_number=lambda t: 1 <= t.point <= 12))
-    cube_aggregated = make_monthly_climatology(cube_all)
-
-    return cube_aggregated
-
-
 def constrain_latitude(cube):
+    """Constraining latitude to meet IMOGEN grid cell specifications."""
     cube_clipped = cube.extract(
         iris.Constraint(latitude=lambda cell: 82.5 >= cell >= -55))
     return cube_clipped
 
 
 def make_monthly_climatology(cube):
+    """Generates a climatology by month_number."""
     if not cube.coords("month_number"):
         iris.coord_categorisation.add_month_number(cube, "time",
                                                    "month_number")
@@ -69,14 +62,17 @@ def make_monthly_climatology(cube):
 
 
 def diurnal_temp_range(cubelist):
+    """Calculates diurnal range from daily max and min temperatures."""
     range_cube = cubelist[0] - cubelist[1]
-    range_cube.rename("range_t1p5m_clim")
-    range_cube.var_name = "range_t1p5m_clim"
+    range_cube.rename("Diurnal Range")
+    range_cube.var_name = ("range_t1p5m")
+    range
 
     return range_cube
 
 
 def calculate_diurnal_range(clim_list, ts_list):
+    """Facilitates diurnal range calculation and appending."""
     temp_range_list_clim = iris.load([])
     temp_range_list_ts = iris.load([])
     comb_list = [clim_list, ts_list]
@@ -104,6 +100,7 @@ def calculate_diurnal_range(clim_list, ts_list):
 
 def append_diurnal_range(derived_diurnal_clim, derived_diurnal_ts, clim_list,
                          ts_list):
+    """Appends diurnal range to cubelists."""
     # creating cube list without tasmax or tasmin
     # (since we just wanted the diurnal range)
     clim_list_final = iris.load([])
@@ -124,6 +121,7 @@ def append_diurnal_range(derived_diurnal_clim, derived_diurnal_ts, clim_list,
 
 
 def calculate_anomaly(clim_list, ts_list):
+    """Calculates a climatology."""
     # calculate diurnal temperature range cube
     clim_list_final, ts_list_final = calculate_diurnal_range(
         clim_list, ts_list)
@@ -137,14 +135,11 @@ def calculate_anomaly(clim_list, ts_list):
             'month_number').points - 1  # -1 because months are numbered 1..12
         anom_list_final[i].data -= clim_list_final[i][i_months].data
 
-    anom_list_renamed = iris.load([])
-    for cube in anom_list_final:
-        anom_list_renamed.append(rename_anom_variables(cube))
-
-    return clim_list_final, ts_list_final, anom_list_renamed
+    return clim_list_final, ts_list_final, anom_list_final
 
 
 def regression(tas, cube_data):
+    """Calculates the regression between global surface temp and a variable."""
     slope_array = np.full(tas.data.shape[1:], np.nan)
 
     # calculate global average
@@ -154,7 +149,7 @@ def regression(tas, cube_data):
         for j in range(tas.data.shape[2]):
             if tas.data[0, i, j] is not np.ma.masked:
                 model = sklearn.linear_model.LinearRegression(
-                    fit_intercept=True, copy_X=True)
+                    fit_intercept=False, copy_X=True)
 
                 x = tas_data.reshape(-1, 1)
                 y = cube_data[:, i, j]
@@ -166,6 +161,7 @@ def regression(tas, cube_data):
 
 
 def regression_units(tas, cube):
+    """Calculates regression coefficient units."""
     print('Cube Units: ', cube.units)
     units = cube.units / tas.units
     print('Regression Units: ', units)
@@ -174,6 +170,8 @@ def regression_units(tas, cube):
 
 
 def calculate_regressions(anom_list):
+    """Facilitates the calculation of regression coefficients (climate
+    patterns) and the creation of a new cube of patterns per variable."""
     regr_var_list = iris.cube.CubeList([])
 
     for cube in anom_list:
@@ -188,7 +186,7 @@ def calculate_regressions(anom_list):
 
         # exctracting months, regressing, and merging
         for i in range(1, 13):
-            month_constraint = iris.Constraint(month_number=i)
+            month_constraint = iris.Constraint(imogen_drive=i)
             month_cube_ssp = cube_ssp.extract(month_constraint)
             month_tas = tas.extract(month_constraint)
 
@@ -216,7 +214,8 @@ def calculate_regressions(anom_list):
                                       units=units,
                                       dim_coords_and_dims=dim_coords_and_dims,
                                       aux_coords_and_dims=aux_coords_and_dims,
-                                      var_name=cube.var_name)
+                                      var_name=cube.var_name,
+                                      standard_name=cube.standard_name)
             month_list.append(new_cube)
 
         conc_cube = month_list.merge_cube()
@@ -239,20 +238,23 @@ def main(cfg):
         cube_initial = compute_diagnostic(input_file)
         cube_constrained = constrain_latitude(cube_initial)
 
-        # renaming variables, appending to cube list
-        ts_renamed = rename_variables(cube_constrained)
-        ts_list.append(ts_renamed)
+        # appending to timeseries list
+        ts_list.append(cube_constrained)
 
         # making climatology
         clim_cube = climatology(cube_constrained)
-        clim_renamed = rename_clim_variables(clim_cube)
-        clim_list.append(clim_renamed)
+        clim_list.append(clim_cube)
 
     # calculate anomaly over historical + ssp timeseries
     clim_list_final, ts_list_final, anom_list_final = calculate_anomaly(
         clim_list, ts_list)
 
-    regressions = calculate_regressions(anom_list_final)
+    for i in range(len(clim_list_final)):
+        clim_list_final[i] = rename_clim_variables(clim_list_final[i])
+        ts_list_final[i] = rename_variables(ts_list_final[i])
+        anom_list_final[i] = rename_anom_variables(anom_list_final[i])
+
+    regressions = calculate_regressions(anom_list_final.copy())
 
     # list of variable cube lists
     list_of_cubelists = [
