@@ -356,7 +356,7 @@ def _make_plots(cci_lst, total_uncert, model_lst, model_std, ensemble_ts, config
     #ax.set_yticklabels(np.arange(y_lower, y_upper + 0.1, 2), fontsize=18)
     #ax.set_ylim((y_lower - 0.1, y_upper + 0.1))
 
-    ax[0].set_xticks(range(260,300))
+    ax[0].set_yticks(range(260,301,5))
     ax[0].set_yticklabels(range(260,301,5), fontsize=18)
 
     ax[1].set_yticks([0,1])
