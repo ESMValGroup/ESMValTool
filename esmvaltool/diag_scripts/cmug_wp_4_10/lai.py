@@ -27,8 +27,8 @@ logger = logging.getLogger(__name__)
 tab_cols = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd',
             '#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
-month_list = ['Jan','Feb','Mar','Apr','May','Jun',
-              'Jul','Aug','Sep','Oct','Nov','Dec']
+month_list = np.array(['Jan','Feb','Mar','Apr','May','Jun',
+                       'Jul','Aug','Sep','Oct','Nov','Dec'])
 
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
@@ -162,6 +162,34 @@ def _diagnostic(config):
 
 def plot_season_peaks(loaded_data, model_means, config):
 
+    peaks_all = {}
+    print('PEAKS ALL')
+    for KEY in loaded_data.keys():
+        if KEY == 'CMUG_WP4_10': continue
+        peaks_all[KEY] = []
+        print(KEY)
+        for e_number,ENSEMBLE in enumerate(loaded_data[KEY].keys()):
+            if ENSEMBLE[0:3] != 'lai': continue
+            print(ENSEMBLE)
+            this_result = []
+            try:
+                icc.add_year(loaded_data[KEY][ENSEMBLE],'time')
+            except:
+                pass
+
+            for YEAR in np.unique(loaded_data[KEY][ENSEMBLE].coord('year').points):
+                print(YEAR)
+                cube = loaded_data[KEY][ENSEMBLE].extract(iris.Constraint(year=YEAR))
+                cube_values= (cube.collapsed(['latitude','longitude'],iris.analysis.MEAN)).data                
+                print(cube_values)
+                this_result.append(np.argmax(cube_values))
+            print(this_result)
+            peaks_all[KEY].append(this_result)
+
+            print('$$$$$$')
+    print(peaks_all)
+            
+        
     peaks = {}
     for i, MODEL in enumerate(model_means.keys()):
         peaks[MODEL]= []
@@ -177,6 +205,7 @@ def plot_season_peaks(loaded_data, model_means, config):
         cube_values= cube.data
         obs_peak.append(np.argmax(cube_values))
 
+    # basic plot with just model mean peak
     fig, ax = plt.subplots(figsize=(20, 15))
 
     for i,KEY in enumerate(peaks.keys()):
@@ -203,6 +232,59 @@ def plot_season_peaks(loaded_data, model_means, config):
     outpath =  config['plot_dir']
     plt.savefig(f'{outpath}/lai_peak.png')
     plt.close('all')  # Is this needed?
+
+    
+    # plot with model range of peaks
+    # years on y axis, x axis is models
+    # plot shaded range for each model like a violin plot, dot for obs
+    # aspect will need changing
+    fig, ax = plt.subplots(figsize=(20, 15))
+
+    x_labels = []
+    x_ticks  = np.array([])
+    year_list = np.unique(obs_mean.coord('year').points)
+    for i,KEY in enumerate(peaks_all.keys()):
+        X = i*20
+        x_labels.append(KEY)
+        
+        this_array = np.array(peaks_all[KEY])
+
+        ax.fill_betweenx(year_list,
+                         X+np.min(peaks_all[KEY],axis=0),
+                         X+np.max(peaks_all[KEY],axis=0),
+                         color=tab_cols[i], alpha=0.5
+                         )
+        ax.plot(X+np.mean(peaks_all[KEY],axis=0), year_list,
+                color=tab_cols[i],
+                linewidth=3
+                )
+
+        ax.plot(X+np.array(obs_peak), year_list,
+                'o',
+                color='black')
+
+        ax.text(X,2016,KEY,
+                fontsize=20
+                )
+
+    for j in range(i+1):
+        x_ticks = np.append(x_ticks, np.arange(j*20,j*20 + 12))
+    
+    x_labels = np.tile(month_list,i+1)
+
+
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_labels, fontsize=18, rotation=45)
+    
+    ax.set_yticks(year_list)
+    ax.set_yticklabels(year_list, fontsize=18)
+
+    ax.grid()
+
+
+    plt.savefig(f'{outpath}/lai_yearly_peak.png')
+    plt.close('all')  # Is this needed?
+
 
    
 def plot_all_members(loaded_data, config):
