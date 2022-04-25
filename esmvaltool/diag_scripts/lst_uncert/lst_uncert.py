@@ -141,6 +141,9 @@ def _diagnostic(config):
                'Night': iris.cube.CubeList()
                }
 
+    cci_lst = (loaded_data['ESACCI_LST_UNCERTS']['tsDay'] + loaded_data['ESACCI_LST_UNCERTS']['tsNight'])/2
+    cci_lst_area_ave = cci_lst.collapsed(['latitude','longitude'], iris.analysis.MEAN)
+
     for KEY in loaded_data['ESACCI_LST_UNCERTS'].keys():
         if KEY == 'tsDay' or KEY == 'tsNight':
             continue # no need to do this to the raw LSTs
@@ -217,12 +220,11 @@ def _diagnostic(config):
     ### PLOT is CCI LST with bars of uncertainty
     ####     with shaded MODEL MEAN +/- std
     # Plotting
-    cci_lst = []
     model_lst = model_means.collapsed('ensemble_number', iris.analysis.MEAN)
     model_std = model_means.collapsed('ensemble_number', iris.analysis.STD_DEV)
     print(model_lst)
     print(model_std)
-    _make_plots(cci_lst, total_uncert, model_lst, model_std, ensemble_ts, config)
+    _make_plots(cci_lst_area_ave, total_uncert, model_lst, model_std, ensemble_ts, config)
 
 #     # Provenance
 #     # Get this information form the data cubes
@@ -268,73 +270,123 @@ def _make_plots(cci_lst, total_uncert, model_lst, model_std, ensemble_ts, config
     Saved figure
     """
 
-    for i in [0,1]:
+    # for i in [0,1,2]:
 
-        fig, ax = plt.subplots(figsize=(20, 15))
+    fig, ax = plt.subplots(nrows=2, ncols=1, sharex=True,
+                           figsize=(20, 15))
 
-        if i == 0:
-            model_low = (model_lst-model_std).data
-            model_high = (model_lst+model_std).data
+    #if i == 0:
+    model_low = (model_lst-model_std).data
+    model_high = (model_lst+model_std).data
 
-            ax.plot(model_lst.data, color='black', linewidth=4)
-            ax.plot(model_low, '--', color='blue', linewidth=3)
-            ax.plot(model_high, '--', color='blue', linewidth=3)
-            ax.fill_between(range(len(model_lst.data)),
-                            model_low,
-                            model_high,
-                            color='blue',
-                            alpha=0.25)
+    ax[0].plot(model_lst.data, color='blue', linewidth=4)
+    #ax[0].plot(model_low, '--', color='blue', linewidth=2)
+    #ax[0].plot(model_high, '--', color='blue', linewidth=2)
+    ax[0].fill_between(range(len(model_lst.data)),
+                    model_low,
+                    model_high,
+                    color='blue',
+                    alpha=0.25)
 
-        elif i==1:
-            maxes = []
-            mins = []
-            for item in ensemble_ts.keys():
-                ax.plot(ensemble_ts[item].data, color='black', linewidth=1)
-                
-                mins.append(np.min(ensemble_ts[item].data))
-                maxes.append(np.max(ensemble_ts[item].data))
+    ax[0].plot(cci_lst.data, color='green', linewidth=4)
 
-            model_low = np.min(mins)
-            model_high = np.max(maxes)
+    cci_low = (cci_lst - 0.5*total_uncert).data
+    cci_high = (cci_lst + 0.5*total_uncert).data
+    ax[0].fill_between(range(len(model_lst.data)),
+                    cci_low,
+                    cci_high,
+                    color='green',
+                    alpha=0.25)
 
-        # make X ticks
-        x_tick_list = []
-        time_list = model_lst.coord('time').units.num2date(
-            model_lst.coord('time').points)
-        for item in time_list:
-            if item.month == 1:
-                x_tick_list.append(item.strftime('%Y %b'))
-            elif item.month == 7:
-                x_tick_list.append(item.strftime('%b'))
-            else:
-                x_tick_list.append('')
 
-        ax.set_xticks(range(len(model_lst.data)))
-        ax.set_xticklabels(x_tick_list, fontsize=18, rotation=45)
+    overlaps = []
+    for a,b,c,d in zip(model_low,model_high,cci_low,cci_high):
+        overlaps.append(testOverlap(a,b,c,d))
 
-        # make Y ticks
-        y_lower = np.floor(model_low.min())
-        y_upper = np.ceil(model_high.max())
-        ax.set_yticks(np.arange(y_lower, y_upper + 0.1, 2))
-        ax.set_yticklabels(np.arange(y_lower, y_upper + 0.1, 2), fontsize=18)
-        ax.set_ylim((y_lower - 0.1, y_upper + 0.1))
 
-        ax.set_xlabel('Date', fontsize=20)
-        ax.set_ylabel('LST / K', fontsize=20)
-
-        ax.grid()
-
-        lons = model_lst.coord('longitude').bounds
-        lats = model_lst.coord('latitude').bounds
-
-        ax.set_title('Area: lon %s lat %s' % (lons[0], lats[0]), fontsize=22)
-
-        fig.suptitle('ESACCI LST and CMIP6 LST', fontsize=24)
+    COLS = []
+    for item in overlaps:
+        if item:
+            COLS.append('green')
+        else:
+            COLS.append('black')
+    ax[1].scatter(range(len(overlaps)), overlaps*1,
+                  c=COLS, s=80
+                  )
     
-        outpath =  config['plot_dir']
 
-        plt.savefig(f'{outpath}/timeseries_{i}.png')
-        plt.close('all')  # Is this needed?
+
+    # elif i==1:
+    #     maxes = []
+    #     mins = []
+    #     for item in ensemble_ts.keys():
+    #         ax.plot(ensemble_ts[item].data, color='black', linewidth=1)
+
+    #         mins.append(np.min(ensemble_ts[item].data))
+    #         maxes.append(np.max(ensemble_ts[item].data))
+
+    #     model_low = np.min(mins)
+    #     model_high = np.max(maxes)
+
+    # make X ticks
+    x_tick_list = []
+    time_list = model_lst.coord('time').units.num2date(
+        model_lst.coord('time').points)
+    for item in time_list:
+        if item.month == 1:
+            x_tick_list.append(item.strftime('%Y %b'))
+        elif item.month == 7:
+            x_tick_list.append(item.strftime('%b'))
+        else:
+            x_tick_list.append('')
+
+
+
+
+    for k in [0,1]:
+        ax[k].set_xticks(range(len(model_lst.data)))
+
+
+    ax[1].set_xticklabels(x_tick_list, fontsize=18, rotation=45)
+
+    # make Y ticks
+    #y_lower = np.floor(model_low.min())
+    #y_upper = np.ceil(model_high.max())
+    #ax.set_yticks(np.arange(y_lower, y_upper + 0.1, 2))
+    #ax.set_yticklabels(np.arange(y_lower, y_upper + 0.1, 2), fontsize=18)
+    #ax.set_ylim((y_lower - 0.1, y_upper + 0.1))
+
+    ax[0].set_xticks(range(260,300))
+    ax[0].set_yticklabels(range(260,301,5), fontsize=18)
+
+    ax[1].set_yticks([0,1])
+    ax[1].set_yticklabels(['False','True'], fontsize=18)
+
+    ax[1].set_xlabel('Date', fontsize=20)
+    ax[0].set_ylabel('LST / K', fontsize=20)
+    ax[1].set_ylabel('Overlap', fontsize=20)
+
+    ax[0].grid()
+    ax[1].grid()
+
+    lons = model_lst.coord('longitude').bounds
+    lats = model_lst.coord('latitude').bounds
+
+    ax[0].set_title('Area: lon %s lat %s' % (lons[0], lats[0]), fontsize=22)
+
+    fig.suptitle('ESACCI LST and CMIP6 LST', fontsize=24)
+
+    outpath =  config['plot_dir']
+
+    plt.savefig(f'{outpath}/timeseries_overlaps.png')
+    plt.close('all')  # Is this needed?
+
+
+def testOverlap(x1, x2, y1,y2):
+    return (x1 >= y1 and x1 <= y2) or \
+    (x2 >= y1 and x2 <= y2) or \
+    (y1 >= x1 and y1 <= x2) or \
+    (y2 >= x1 and y2 <= x2)
 
 
 if __name__ == '__main__':
