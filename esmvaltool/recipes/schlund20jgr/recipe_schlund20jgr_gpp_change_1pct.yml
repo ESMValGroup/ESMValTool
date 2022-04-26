@@ -94,7 +94,7 @@ SEABORN_SETTINGS: &seaborn_settings
 
 WEIGHTED_SAMPLES: &weighted_samples
   area_weighted: true
-  time_weighted: true
+  time_weighted: false
 
 VARIABLE_SETTINGS_FEATURE_CO2: &variable_settings_feature_co2
   project: CMIP5
