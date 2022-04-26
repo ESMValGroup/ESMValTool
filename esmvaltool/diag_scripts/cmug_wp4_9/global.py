@@ -6,6 +6,7 @@ Use this to make plots from GLOBAL data
 import logging
 
 import iris
+import iris.coord_categorisation as icc
 import iris.plot as iplt
 import matplotlib.pyplot as plt
 import numpy as np
@@ -135,7 +136,11 @@ def _diagnostic(config):
 
     
     ### There will be some cube manipulation todo
-
+    # add year and month coords
+    for KEY in loaded_data.keys():
+        for ITEM in loaded_data[KEY].keys():
+            icc.add_year(loaded_data[KEY][ITEM], 'time')
+            icc.add_month_number(loaded_data[KEY][ITEM], 'time')
     
 
         
@@ -143,13 +148,31 @@ def _diagnostic(config):
     ####     with shaded MODEL MEAN +/- std
     # Plotting
     print(list(loaded_data.keys()))
-    model = list(loaded_data.keys())[0]
+    for KEY in loaded_data.keys():
+        if KEY != 'CMUG_WP4_9' and KEY != 'ESACCI_LST_UNCERTS':
+            model = KEY
     print(model)
 
-    model_lst = loaded_data[model]['ts']
-    model_ta  = loaded_data[model]['tas']
+    ensemble = 'r1i1p1f2'
+    model_lst = loaded_data[model][f'ts_{ensemble}']
+    model_ta  = loaded_data[model][f'tas_{ensemble}']
 
-    _make_plot_global_map(model_lst, model_ta, config)
+    # make mean lst from day and night
+    cci_lst = loaded_data['ESACCI_LST_UNCERTS']['tsDay'] + loaded_data['ESACCI_LST_UNCERTS']['tsNight']
+    cci_lst = cci_lst/2
+
+    era5l_tair = loaded_data['CMUG_WP4_9']['tas']
+
+    # make climatologies
+    model_lst_clim  = model_lst.aggregated_by('month_number', iris.analysis.MEAN)
+    model_tair_clim = model_lst.aggregated_by('month_number', iris.analysis.MEAN)
+    cci_lst_clim    = model_lst.aggregated_by('month_number', iris.analysis.MEAN)
+    era5l_tair_clim = model_lst.aggregated_by('month_number', iris.analysis.MEAN)
+
+    print(model_lst_clim)
+
+    # plots
+    make_plot_global_clim_maps(model_lst, model_ta, cci_lst, era5l_tair, config)
 
     # more plotting functions go here
 
@@ -180,48 +203,54 @@ def _diagnostic(config):
 
 
 
-def _make_plot_global_map(model_lst, model_ta, config):
+def make_plot_global_clim_maps(model_lst_clim, model_tair_clim, 
+                               cci_lst_clim, era_tair_clim,
+                               config):
     """Create and save the output figure.
-    Plot maps of LST-Ta from model
+    Figure of airT from ERA5 and differences from airT in CMIP6 models (historic climatology – 2003-13 obs and model years)
+    Figure of LST from CCI LST and differences from LST in CMIP6 models (historic climatology – 2003-2013 obs and model years)
+    These could be for individual months or whole year TBC
+
     Inputs:
    
     config = The config dictionary from the preprocessor
     Outputs:
     Saved figure
     """
+    outpath = config['plot_dir']
 
 
-    num_of_plots = len(model_lst.coord('time').points)
-
-    diffs = model_lst - model_ta
+        
     datetime_points = Unit.num2date(diffs.coord('time').points,
                                    str(diffs.coord('time').units),
                                    diffs.coord('time').units.calendar
                                )
     
-    print(diffs)
-    
-    outpath = config['plot_dir']
+    # import cartopy.crs as ccrs
+    # air = xr.tutorial.open_dataset('air_temperature').air
+    # ax = plt.axes(projection=ccrs.Orthographic(-80, 35))
+    # seasonal.plot.contourf(ax=ax, transform=ccrs.PlateCarree())
+    # ax.add_feature(cartopy.feature.BORDERS)
+    # ax.coastlines()
+    # for i in range(num_of_plots):
+    #     print(i)
+    #     year = datetime_points[i].year
+    #     month = datetime_points[i].month
+    #     print(year,month)
 
-    for i in range(num_of_plots):
-        print(i)
-        year = datetime_points[i].year
-        month = datetime_points[i].month
-        print(year,month)
+    #     fig, ax = plt.subplots(figsize=(20, 15))
 
-        fig, ax = plt.subplots(figsize=(20, 15))
-
-        iplt.pcolormesh(diffs[i],
-                        vmin=-10, vmax=10,
-                        cmap='seismic')
+    #     iplt.pcolormesh(diffs[i],
+    #                     vmin=-10, vmax=10,
+    #                     cmap='seismic')
         
-        plt.gca().coastlines()
+    #     plt.gca().coastlines()
 
-        plt.title(f'LST-Ta Model {year} {month}')
-        plt.colorbar()
+    #     plt.title(f'LST-Ta Model {year} {month}')
+    #     plt.colorbar()
     
-        plt.savefig(f'{outpath}/global_map_{year}_{month}.png')
-        plt.close('all')  # Is this needed?
+    #     plt.savefig(f'{outpath}/global_map_{year}_{month}.png')
+    #     plt.close('all')  # Is this needed?
 
 
 if __name__ == '__main__':
