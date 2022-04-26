@@ -39,15 +39,15 @@ diagnostics:
         mip: Amon
         preprocessor: land_sea
         additional_datasets:
-          #- {dataset: CMUG_WP4_9, project: OBS, type: sat, tier: 3, start_year: 2003, end_year: 2003, version: '1.00'}
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r(1:2)i1p1f2, start_year: 2010, end_year: 2010, grid: gn}
+         - {dataset: CMUG_WP4_9, project: OBS, type: sat, tier: 3, start_year: 2003, end_year: 2014, version: '1.00'}
+         - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r(1:2)i1p1f2, start_year: 2003, end_year: 2014, grid: gn}
 
       tas:
         mip: Amon
         preprocessor: land_sea
         additional_datasets:
-          #- {dataset: CMUG_WP4_9, project: OBS, type: sat, tier: 3, start_year: 2003, end_year: 2003, version: '1.00'}
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r(1:2)i1p1f2, start_year: 2010, end_year: 2010, grid: gn}
+        - {dataset: CMUG_WP4_9, project: OBS, type: sat, tier: 3, start_year: 2003, end_year: 2014, version: '1.00'}
+        - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 2003, end_year: 2014 grid: gn}
 
 
     scripts:

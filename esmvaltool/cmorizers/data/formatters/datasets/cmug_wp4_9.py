@@ -24,6 +24,8 @@ from ...utilities import fix_coords, save_variable
 
 logger = logging.getLogger(__name__)
 
+height_coord = iris.coords.AuxCoord(2, var_name='height', units='metres')
+
 #def cmorization(in_dir, out_dir, cfg, _):
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
@@ -109,29 +111,20 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 logger.info(this_cube.long_name)
 
             
-                
+            # BOunds seemto cause problems later!!
             this_cube.coord('latitude').bounds = None
             this_cube.coord('longitude').bounds = None
             
+            if var == 'ta':
+                this_cube.add_aux_coord(height_coord)
+                save_var='tas'
+            else:
+                save_var = var
+
             
-
-#                 # Using  utils save :This seems to save files all with the same name!
-#                 # so need to write this
-
-#                 try:
-#                     cubes.coords()[2].standard_name = 'longitude'
-#                     print('YES LST LON CHNAGE')
-#                 except:
-#                     print('NO LAT LON CHANGE')
-
-#                 var_name = cubes.attributes['var']
-
-#                 if cubes.var_name == 'lst':
-#                     cubes.var_name = 'ts'
-
             iris.save(this_cube,
                       '%s/OBS_CMUG_WP4_9_sat_1.00_Amon_%s_%s.nc' % 
-                      (out_dir, var, '%s%02d'%(year,month))
+                      (out_dir, save_var, '%s%02d'%(year,month))
             )
             print('############### SAVED %s' % var)
 
