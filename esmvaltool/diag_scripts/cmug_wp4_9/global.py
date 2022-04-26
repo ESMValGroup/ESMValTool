@@ -32,16 +32,38 @@ def _get_input_cubes(metadata):
     inputs = Dictionary of cubes
     ancestors = Dictionary of filename information
     """
+    # inputs = {}
+    # ancestors = {}
+    # for attributes in metadata:
+    #     short_name = attributes['short_name']
+    #     filename = attributes['filename']
+    #     logger.info("Loading variable %s", short_name)
+    #     cube = iris.load_cube(filename)
+    #     cube.attributes.clear()
+    #     inputs[short_name] = cube
+    #     ancestors[short_name] = [filename]
+
     inputs = {}
     ancestors = {}
+    print(metadata)
     for attributes in metadata:
+        print(attributes)
         short_name = attributes['short_name']
         filename = attributes['filename']
         logger.info("Loading variable %s", short_name)
         cube = iris.load_cube(filename)
         cube.attributes.clear()
-        inputs[short_name] = cube
-        ancestors[short_name] = [filename]
+        
+        try:
+            key_name = f"{short_name}_{attributes['ensemble']}"
+        except:
+            key_name = short_name
+
+        inputs[key_name] = cube
+        ancestors[key_name] = [filename]
+        
+        print(inputs)
+        print(ancestors)
 
     return inputs, ancestors
 
