@@ -9,7 +9,7 @@ import iris
 import iris.quickplot as qplot
 import matplotlib.pyplot as plt
 import numpy as np
-from esmvalcore.preprocessor._time import regrid_time
+from esmvalcore.preprocessor import regrid_time, climate_statistics
 from iris.analysis.stats import pearsonr
 from iris.coord_categorisation import add_month_number, add_year
 from iris.util import unify_time_units
@@ -92,22 +92,23 @@ class CompareSalinity(object):
 
         add_month_number(data, 'time')
         add_year(data, 'time')
-        data.remove_coord('time')
 
         add_month_number(reference, 'time')
         add_year(reference, 'time')
-        reference.remove_coord('time')
 
         data_alias = data_info[names.ALIAS]
-        corr = pearsonr(data, reference, ('month_number', 'year'))
-        angles = np.linspace(0, 2 * np.pi, corr.shape[0] + 1)
+        climat_ref = climate_statistics(reference, 'mean')
+        climat_data = climate_statistics(data, 'mean')
+        bias_data = np.absolute(climat_ref.data) - climat_data.data
+        bias = climat_ref.copy(bias_data)
+        angles = np.linspace(0, 2 * np.pi, bias.shape[0] + 1)
         # Initialise the spider plot
         ax = plt.subplot(111, polar=True)
         for spine in ax.spines.values():
             spine.set_color('grey')
 
         # Draw one axe per variable + add labels labels yet
-        letters = [string.ascii_uppercase[i] for i in range(0, corr.shape[0])]
+        letters = [string.ascii_uppercase[i] for i in range(0, bias.shape[0])]
         plt.xticks(angles[:-1],
                    letters,
                    color='grey',
@@ -116,28 +117,27 @@ class CompareSalinity(object):
 
         # Draw ylabels
         ax.set_rlabel_position(0)
-        plt.yticks([0.25, 0.5, 0.75], ["0.25", "0.5", "0.75"],
+        plt.yticks([3, 6, 9], ["3", "6", "9"],
                    color="grey",
                    size=7)
         plt.ylim(0, 1)
 
-        data = np.append(corr.data, corr.data[0])
-
-        more_angles = np.linspace(0, 2 * np.pi, corr.shape[0] * 20 + 1)
+        data = np.append(bias.data, bias.data[0])
+        more_angles = np.linspace(0, 2 * np.pi, bias.shape[0] * 20 + 1)
         interp_data = np.interp(more_angles, angles, data)
 
         # Plot data
         ax.plot(more_angles, interp_data, linewidth=1, linestyle='solid')
         ax.fill(more_angles, interp_data, 'b', alpha=0.1)
         ax.legend(letters,
-                  corr.coord('shape_id').points,
+                  bias.coord('shape_id').points,
                   loc='upper center',
                   ncol=2,
                   frameon=False,
                   bbox_to_anchor=(0.5, -0.1),
                   borderaxespad=0.)
         plt.title(
-            f'{data_info[names.SHORT_NAME]} correlation\n'
+            f'{data_info[names.SHORT_NAME]} bias\n'
             f'{data_alias} vs {reference_alias}',
             pad=20)
         plt.tight_layout()
@@ -147,7 +147,7 @@ class CompareSalinity(object):
             f"{reference_alias}.{self.cfg[names.OUTPUT_FILE_TYPE]}")
         plt.savefig(plot_path)
         plt.close()
-        caption = (f"Correlation comparison in diferent regions for "
+        caption = (f"Absolute bias comparison in diferent regions for "
                    f"{data_alias} and {reference_alias}")
         self._create_prov_record(plot_path, caption, ancestors)
 
