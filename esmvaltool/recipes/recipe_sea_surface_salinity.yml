@@ -32,8 +32,6 @@ preprocessors:
       ids:
         - Arctic Ocean
         - Southern Ocean
-        - Mediterranean Sea - Eastern Basin
-        - Mediterranean Sea - Western Basin
         - North Atlantic Ocean
         - South Atlantic Ocean
         - North Pacific Ocean
@@ -66,4 +64,4 @@ diagnostics:
           alias: ESACCI-SEA-SURFACE-SALINITY_V2}
     scripts:
       compare_salinity:
-        script: sea_surface_salinity/compare_salinity.py
+        script: /home/users/sloosvel/ESMValTool/esmvaltool/diag_scripts/sea_surface_salinity/compare_salinity.py
