@@ -119,7 +119,7 @@ class CompareSalinity(object):
         plt.yticks([3, 6, 9], ["3", "6", "9"],
                    color="grey",
                    size=7)
-        plt.ylim(0, 1)
+        plt.ylim(0, 10)
 
         data = np.append(bias.data, bias.data[0])
         more_angles = np.linspace(0, 2 * np.pi, bias.shape[0] * 20 + 1)
