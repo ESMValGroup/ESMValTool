@@ -10,7 +10,6 @@ import iris.quickplot as qplot
 import matplotlib.pyplot as plt
 import numpy as np
 from esmvalcore.preprocessor import regrid_time, climate_statistics
-from iris.analysis.stats import pearsonr
 from iris.coord_categorisation import add_month_number, add_year
 from iris.util import unify_time_units
 from matplotlib.legend import Legend
