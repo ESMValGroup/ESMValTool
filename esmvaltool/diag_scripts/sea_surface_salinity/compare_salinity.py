@@ -98,7 +98,7 @@ class CompareSalinity(object):
         data_alias = data_info[names.ALIAS]
         climat_ref = climate_statistics(reference, 'mean')
         climat_data = climate_statistics(data, 'mean')
-        bias_data = np.absolute(climat_ref.data) - climat_data.data
+        bias_data = climat_ref.data - climat_data.data
         bias = climat_ref.copy(bias_data)
         angles = np.linspace(0, 2 * np.pi, bias.shape[0] + 1)
         # Initialise the spider plot
@@ -116,10 +116,10 @@ class CompareSalinity(object):
 
         # Draw ylabels
         ax.set_rlabel_position(0)
-        plt.yticks([3, 6, 9], ["3", "6", "9"],
+        plt.yticks([-0.5, 0.0, 0.5], ["-0.5", "0", "0.5"],
                    color="grey",
                    size=7)
-        plt.ylim(0, 10)
+        plt.ylim(-1, 1)
 
         data = np.append(bias.data, bias.data[0])
         more_angles = np.linspace(0, 2 * np.pi, bias.shape[0] * 20 + 1)
