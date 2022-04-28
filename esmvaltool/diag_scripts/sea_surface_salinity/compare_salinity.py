@@ -146,7 +146,7 @@ class CompareSalinity(object):
             f"{reference_alias}.{self.cfg[names.OUTPUT_FILE_TYPE]}")
         plt.savefig(plot_path)
         plt.close()
-        caption = (f"Absolute bias comparison in diferent regions for "
+        caption = (f"Absolute bias comparison in different regions for "
                    f"{data_alias} and {reference_alias}")
         self._create_prov_record(plot_path, caption, ancestors)
 
