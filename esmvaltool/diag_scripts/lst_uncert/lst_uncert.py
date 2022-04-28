@@ -173,108 +173,55 @@ def _diagnostic(config):
     # make random uncert for gridbox from tsUnCorErr, tsLocalAtmErr and tsLocalSfcErr
     # then use tsLSSysErr with the random uncert to give a gridbox total uncer
     # sum in quadrature all region's total uncer to give regional day/night uncer
-    # sum in quadrature teh day and night regional total uncerts to give the value to use
+    # sum in quadrature the day and night regional total uncerts to give the value to use
 
 
-    print(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'].data.mask)
+    print(np.shape(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'].data.mask))
     print(np.sum(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'][0].data.mask))
     print(np.shape(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'][0].data.mask))
 
     # this is gridbox total RANDOM uncert
-    random_uncerts = {}
+    uncerts = {}
     for time in ['Day','Night']:
+        num_times = len(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'].coord('time').points)
+        print(num_times)
+        shape_2d = np.product(np.shape(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'][0].data))
+        N = np.array([shape_2d - \
+                      np.sum(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'][i].data.mask) \
+                      for i in range(num_times)]
+                     )
 
-        this_cube = loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsUnCorErr{time}']**2 + \
-                    loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsLocalAtmErr{time}']**2 + \
-                    loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsLocalSfcErr{time}']**2
+        print(N)
+        this_cube = (scale_factor * loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsUnCorErr{time}'])**2 + \
+                    (scale_factor *loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsLocalAtmErr{time}'])**2 + \
+                    (scale_factor *loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsLocalSfcErr{time}'])**2
+
+        iris.analysis.maths.exponentiate(this_cube, 0.5, in_place=True)
+        # this_cube is now the random uncert for each grid box
+
+        # now get area random uncert
+        this_cube = (this_cube**2).collapsed(['latitude','longitude'], iris.analysis.SUM)
+        for i in range(num_times):
+            this_cube[i].data = N[i]*this_cube[i].data
+        #iris.analysis.maths.multiply(this_cube, N, dim=0, in_place=True)
         iris.analysis.maths.exponentiate(this_cube, 0.5, in_place=True)
 
-        random_uncerts[time] = this_cube
+        # this_cube is now the area random uncert
 
-    print(random_uncerts)
+        # sum in quadrature to get area total uncert using the 'constant' tsLSSysErr
+        this_cube = this_cube**2 + loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsLSSysErr{time}']**2
+        this_cube = iris.analysis.maths.exponentiate(this_cube, 0.5, in_place=True)
 
-
-    # for KEY in loaded_data['ESACCI_LST_UNCERTS'].keys():
-    #     if KEY == 'tsDay' or KEY == 'tsNight':
-    #         continue # no need to do this to the raw LSTs
-
-    #     if KEY == 'tsLSSysErrDay' or KEY == 'tsLSSysErrNight':
-    #         new_cube = (loaded_data['ESACCI_LST_UNCERTS'][KEY]*scale_factor)**2
-    #         iris.analysis.maths.exponentiate(new_cube, 0.5, in_place=True)
-
-    #     else:
-    #         new_cube = ((loaded_data['ESACCI_LST_UNCERTS'][KEY]*scale_factor)**2).collapsed(['latitude','longitude'],
-    #                                                                                         iris.analysis.SUM)
-    #         iris.analysis.maths.exponentiate(new_cube, 0.5, in_place=True)
-
-    #     new_cube.long_name = f'{KEY}_quadrature_region'
+        uncerts[time] = this_cube
         
-    #     if 'Day' in KEY:
-    #         uncerts['Day'].append(new_cube)
-    #     else:
-    #         uncerts['Night'].append(new_cube)
-            
-    # day_sum = uncerts['Day'][0]**2
-    # for i in range(1,len(uncerts['Day'])):
-    #     iris.analysis.maths.add(day_sum, uncerts['Day'][i]**2,
-    #                             dim='time', in_place=False)
+    print(uncerts)
+    # now sum in quadrature day and night values to give total all time uncert
+    total_uncert = uncerts['Day']**2 + uncerts['Night']**2
+    iris.analysis.maths.exponentiate(total_uncert, 0.5, in_place=True)
 
-    # night_sum = uncerts['Night'][0]**2
-    # for i in range(1,len(uncerts['Night'])):
-    #     iris.analysis.maths.add(night_sum, uncerts['Night'][i]**2,
-    #                             dim='time', in_place=False)
+    print(total_uncert.data)
 
-    # day_sum_sqrt = iris.analysis.maths.exponentiate(day_sum, 0.5, in_place=False)
-    # night_sum_sqrt = iris.analysis.maths.exponentiate(night_sum, 0.5, in_place=False)
- 
-    # total_uncert = iris.analysis.maths.exponentiate(
-    #     day_sum_sqrt**2 + night_sum_sqrt**2, 0.5
-    #     )
-    # print('total uncert on cci lst')
-    # print(total_uncert.data)
-
-    # #### MAke sure we have a mean/std of model LST
-    
-    # model_means = iris.cube.CubeList()
-
-    # for KEY in loaded_data.keys():
-    #     if KEY == 'ESACCI_LST_UNCERTS':
-    #         continue # dont need to do this for CCI
-
-    #     print(KEY) 
-    #     # loop over ensembles
-    #     ensemble_ts = {}
-    #     for e_number,ENSEMBLE in enumerate(loaded_data[KEY].keys()):
-    #         print(ENSEMBLE)
-            
-    #         if ENSEMBLE[0:3] != 'ts_':
-    #             continue
-            
-
-            
-    #         this_cube_mean = loaded_data[KEY][ENSEMBLE].collapsed(['latitude','longitude'], iris.analysis.MEAN)
-
-    #         ensemble_coord = iris.coords.AuxCoord(e_number, standard_name=None, 
-    #                                               long_name='ensemble_number', 
-    #                                               var_name=None,
-    #                                               units='1', bounds=None, 
-    #                                               attributes=None, coord_system=None)
-    #         this_cube_mean.add_aux_coord(ensemble_coord)
-    #         model_means.append(this_cube_mean)
-                
-    #         ensemble_ts[f'{KEY}_{ENSEMBLE}_ts'] = this_cube_mean
-
-    # model_means = model_means.merge_cube()
-    # print(model_means)
-   
-    # ### PLOT is CCI LST with bars of uncertainty
-    # ####     with shaded MODEL MEAN +/- std
-    # # Plotting
-    # model_lst = model_means.collapsed('ensemble_number', iris.analysis.MEAN)
-    # model_std = model_means.collapsed('ensemble_number', iris.analysis.STD_DEV)
-    # print(model_lst)
-    # print(model_std)
-    make_plots(cci_lst_area_ave, data_means, config)#total_uncert, model_lst, model_std, ensemble_ts, config)
+    make_plots(cci_lst_area_ave, data_means, total_uncert, config)#total_uncert, model_lst, model_std, ensemble_ts, config)
 
 #     # Provenance
 #     # Get this information form the data cubes
@@ -302,7 +249,7 @@ def _diagnostic(config):
 
 
 
-def make_plots(cci_lst, data_means, config):#total_uncert, model_lst, model_std, ensemble_ts, config):
+def make_plots(cci_lst, data_means, total_uncert, config):#total_uncert, model_lst, model_std, ensemble_ts, config):
     """Create and save the output figure.
     PLOT 1
     The plot is CMIP model LST  with +/- one standard deviation
