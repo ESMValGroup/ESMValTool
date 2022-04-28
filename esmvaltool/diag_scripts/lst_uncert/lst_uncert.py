@@ -1,16 +1,20 @@
 """
 ESMValTool diagnostic for ESA CCI LST data.
-The code uses the all time average monthly data.
-XXXXXXX Change this 
-The ouptput is a timeseries plot of the mean differnce of
-CCI LST to model ensemble average, with the ensemble spread
-represented by a standard deviation either side of the mean.
+The code uses the seperate Day and Night overpass monthly data.
+The diagnostic calculates the average CCI LST togive an 'all time' value,
+as well as propagating the gridbox uncertainity values to regional values.
+The ouptput is a set of timeseries plots showing the CMIP5 and CMIP6 LST
+and the CCI LST with its error plotted, as well as plot of if the model(s)
+are warmer or cooler than CCI, or within the uncertainity bound.
 """
 
 import logging
 
 import iris
 import matplotlib.pyplot as plt
+from matplotlib.collections import PatchCollection
+from matplotlib.patches import Rectangle
+
 import numpy as np
 
 from esmvaltool.diag_scripts.shared import (
@@ -33,7 +37,6 @@ def _get_input_cubes(metadata):
     inputs = Dictionary of cubes
     ancestors = Dictionary of filename information
     """
-    print('################################################')
     inputs = {}
     ancestors = {}
     print(metadata)
@@ -59,9 +62,6 @@ def _get_input_cubes(metadata):
             data_type = 'OBS'
         else:
             data_type = 'CMIP6' # this way meand CMIP5 doesnt get counted twice
-
-        print(inputs)
-        print(ancestors)
 
     return inputs, ancestors, data_type
 
@@ -202,7 +202,7 @@ def _diagnostic(config):
         # now get area random uncert
         this_cube = (this_cube**2).collapsed(['latitude','longitude'], iris.analysis.SUM)
         for i in range(num_times):
-            this_cube[i].data = N[i]*this_cube[i].data
+            this_cube[i].data = (1/N[i]**2)*this_cube[i].data
         #iris.analysis.maths.multiply(this_cube, N, dim=0, in_place=True)
         iris.analysis.maths.exponentiate(this_cube, 0.5, in_place=True)
 
@@ -214,7 +214,6 @@ def _diagnostic(config):
 
         uncerts[time] = this_cube
         
-    print(uncerts)
     # now sum in quadrature day and night values to give total all time uncert
     total_uncert = uncerts['Day']**2 + uncerts['Night']**2
     iris.analysis.maths.exponentiate(total_uncert, 0.5, in_place=True)
@@ -266,132 +265,205 @@ def make_plots(cci_lst, data_means, total_uncert, config):#total_uncert, model_l
     Outputs:
     Saved figure
     """
+    num_times = len(cci_lst.coord('time').points)
 
-    fig, ax = plt.subplots(nrows=1, ncols=1, sharex=True,
-                           figsize=(20, 15))
-    ax.plot(cci_lst.data, label='OBS')
-    ax.plot(data_means['CMIP5'].data, label='CMIP5')
-    ax.plot(data_means['CMIP6'].data, label='CMIP6')
-    ax.legend()
+    tab_cols = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd',
+                '#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
+    colours = {'OBS'  : tab_cols[0],
+               'CMIP5': tab_cols[1],
+               'CMIP6': tab_cols[2],
+               'high': 'red',
+               'inside': 'grey',
+               'low':'blue',
+               }
 
-    # # for i in [0,1,2]:
+    cci_high = (cci_lst + total_uncert).data
+    cci_low  = (cci_lst - total_uncert).data
 
-    # fig, ax = plt.subplots(nrows=2, ncols=1, sharex=True,
-    #                        figsize=(20, 15))
-
-    # #if i == 0:
-    # model_low = (model_lst-model_std).data
-    # model_high = (model_lst+model_std).data
-
-    # ax[0].plot(model_lst.data, color='blue', linewidth=4)
-    # #ax[0].plot(model_low, '--', color='blue', linewidth=2)
-    # #ax[0].plot(model_high, '--', color='blue', linewidth=2)
-    # ax[0].fill_between(range(len(model_lst.data)),
-    #                 model_low,
-    #                 model_high,
-    #                 color='blue',
-    #                 alpha=0.25)
-
-    # ax[0].plot(cci_lst.data, color='green', linewidth=4)
-
-    # cci_low = (cci_lst - 0.5*total_uncert).data
-    # cci_high = (cci_lst + 0.5*total_uncert).data
-    # ax[0].fill_between(range(len(model_lst.data)),
-    #                 cci_low,
-    #                 cci_high,
-    #                 color='green',
-    #                 alpha=0.25)
-
-
-    # overlaps = []
-    # for a,b,c,d in zip(model_low,model_high,cci_low,cci_high):
-    #     overlaps.append(testOverlap(a,b,c,d))
-
-
-    # COLS = []
-    # for item in overlaps:
-    #     if item:
-    #         COLS.append('green')
-    #     else:
-    #         COLS.append('black')
-    # ax[1].scatter(range(len(overlaps)), overlaps*1,
-    #               c=COLS, s=80
-    #               )
+    # calc overlaps
+    overlaps5 = []
+    overlaps6 = []
+    for i in range(num_times):
+        if data_means['CMIP5'][i].data < cci_low[i]:
+            overlaps5.append(-1)
+        elif data_means['CMIP5'][i].data > cci_high[i]:
+            overlaps5.append(1)
+        else:
+            overlaps5.append(0)
     
+    for i in range(num_times):
+        if data_means['CMIP6'][i].data < cci_low[i]:
+            overlaps6.append(-1)
+        elif data_means['CMIP6'][i].data > cci_high[i]:
+            overlaps6.append(1)
+        else:
+            overlaps6.append(0)
+
+ 
+
+    # fig 1 = just timeseries
+    # fig 2 = just overlaps
+    # fig 3 = both on a shared x axis
+    FIGS = []
+    AXS = []
+    fig1, ax1 = plt.subplots(nrows=1, ncols=1, sharex=True,
+                             figsize=(20, 15))
+    fig2, ax2 = plt.subplots(nrows=1, ncols=1, sharex=True,
+                             figsize=(20, 15))
+    fig3, ax3 = plt.subplots(nrows=2, ncols=1, sharex=True,
+                             figsize=(20, 15))
+ 
+    ax1.plot(range(num_times), cci_lst.data, label='OBS',
+            color=colours['OBS'],
+            linewidth=2
+    )
+    ax1.fill_between(range(num_times), cci_low, cci_high,
+                    color=colours['OBS'], alpha=0.5)
+
+    ax1.plot(range(num_times),data_means['CMIP5'].data,
+            label='CMIP5',
+            color=colours['CMIP5']
+    )
+    ax1.plot(range(num_times),data_means['CMIP6'].data,
+            label='CMIP6',
+            color=colours['CMIP6']
+    )
+    ax1.legend(fontsize=18)
+
+    # for figure 3
+    ax3[0].plot(range(num_times), cci_lst.data, label='OBS',
+            color=colours['OBS'],
+            linewidth=2
+    )
+    ax3[0].fill_between(range(num_times), cci_low, cci_high,
+                    color=colours['OBS'], alpha=0.5)
+
+    ax3[0].plot(range(num_times),data_means['CMIP5'].data,
+            label='CMIP5',
+            color=colours['CMIP5']
+    )
+    ax3[0].plot(range(num_times),data_means['CMIP6'].data,
+            label='CMIP6',
+            color=colours['CMIP6']
+    )
+    ax3[0].legend(fontsize=18)
+
+    
+    MIN = np.min([cci_low, cci_high, data_means['CMIP5'].data,data_means['CMIP6'].data])
+    MAX = np.max([cci_low, cci_high, data_means['CMIP5'].data,data_means['CMIP6'].data])
+
+    ax1.set_yticks(np.arange(5*((MIN-5)//5), 5*((MAX+5)//5),5))
+    ax1.set_yticklabels(np.arange(5*((MIN-5)//5), 5*((MAX+5+1)//5),5), fontsize=18)
+    ax1.set_ylim((MIN-6,MAX+7))
+
+    ax3[0].set_yticks(np.arange(5*((MIN-5)//5), 5*((MAX+5)//5),5))
+    ax3[0].set_yticklabels(np.arange(5*((MIN-5)//5), 5*((MAX+5+1)//5),5), fontsize=18)
+    ax3[0].set_ylim((MIN-6,MAX+7))
 
 
-    # # elif i==1:
-    # #     maxes = []
-    # #     mins = []
-    # #     for item in ensemble_ts.keys():
-    # #         ax.plot(ensemble_ts[item].data, color='black', linewidth=1)
+    facecolor5 = []
+    for i in range(num_times):
+        if overlaps5[i] == -1:
+            facecolor5.append(colours['low'])
+        elif overlaps5[i] == 1:
+            facecolor5.append(colours['high'])
+        else:
+            facecolor5.append(colours['inside'])
 
-    # #         mins.append(np.min(ensemble_ts[item].data))
-    # #         maxes.append(np.max(ensemble_ts[item].data))
+    facecolor6 = []
+    for i in range(num_times):
+        if overlaps6[i] == -1:
+            facecolor6.append(colours['low'])
+        elif overlaps6[i] == 1:
+            facecolor6.append(colours['high'])
+        else:
+            facecolor6.append(colours['inside'])
+      
+    S=150
+    M = 'o'
+      
+    ax2.scatter(range(num_times), [0 for i in range(num_times)],
+                c=facecolor5,
+                s=S, edgecolor='black', marker=M)
+    ax2.scatter(range(num_times), [1 for i in range(num_times)],
+                c=facecolor6,
+                s=S, edgecolor='black', marker=M)
 
-    # #     model_low = np.min(mins)
-    # #     model_high = np.max(maxes)
-
-    # # make X ticks
-    # x_tick_list = []
-    # time_list = model_lst.coord('time').units.num2date(
-    #     model_lst.coord('time').points)
-    # for item in time_list:
-    #     if item.month == 1:
-    #         x_tick_list.append(item.strftime('%Y %b'))
-    #     elif item.month == 7:
-    #         x_tick_list.append(item.strftime('%b'))
-    #     else:
-    #         x_tick_list.append('')
+    ax3[1].scatter(range(num_times), [0 for i in range(num_times)],
+                c=facecolor5,
+                s=S, edgecolor='black', marker=M)
+    ax3[1].scatter(range(num_times), [1 for i in range(num_times)],
+                c=facecolor6,
+                s=S, edgecolor='black', marker=M)
 
 
 
+    ax2.set_yticks([0,1])
+    ax2.set_yticklabels(['CMIP5','CMIP6'], fontsize=18)
+    ax3[1].set_yticks([0,1])
+    ax3[1].set_yticklabels(['CMIP5','CMIP6'], fontsize=18)
 
-    # for k in [0,1]:
-    #     ax[k].set_xticks(range(len(model_lst.data)))
+    # make X ticks
+    x_tick_list = []
+    time_list = cci_lst.coord('time').units.num2date(
+        cci_lst.coord('time').points)
+    for item in time_list:
+        if item.month == 1:
+            x_tick_list.append(item.strftime('%Y %b'))
+        elif item.month == 7:
+            x_tick_list.append(item.strftime('%b'))
+        else:
+            x_tick_list.append('')
 
 
-    # ax[1].set_xticklabels(x_tick_list, fontsize=18, rotation=45)
+    # common stuff for all three plots
 
-    # # make Y ticks
-    # #y_lower = np.floor(model_low.min())
-    # #y_upper = np.ceil(model_high.max())
-    # #ax.set_yticks(np.arange(y_lower, y_upper + 0.1, 2))
-    # #ax.set_yticklabels(np.arange(y_lower, y_upper + 0.1, 2), fontsize=18)
-    # #ax.set_ylim((y_lower - 0.1, y_upper + 0.1))
+    ax1.set_xlim((-1,num_times+1))
+    ax2.set_xlim((-1,num_times+1))
+    ax2.set_ylim((-0.5,1.5))
+    ax3[1].set_xlim((-1, num_times+1))
+    ax3[1].set_ylim((-0.5,1.5))
 
-    # ax[0].set_yticks(range(260,301,5))
-    # ax[0].set_yticklabels(range(260,301,5), fontsize=18)
+    ax1.set_xticks(range(num_times))
+    ax1.set_xticklabels(x_tick_list, fontsize=18)
+    ax2.set_xticks(range(num_times))
+    ax2.set_xticklabels(x_tick_list, fontsize=18)
+    ax3[0].set_xticks(range(num_times))
+    ax3[1].set_xticks(range(num_times))
+    ax3[0].set_xticklabels(['' for X in x_tick_list])
+    ax3[1].set_xticklabels(x_tick_list, fontsize=18)
+   
+    ax1.set_xlabel('Date', fontsize=22)
+    ax2.set_xlabel('Date', fontsize=22)
+    ax3[1].set_xlabel('Date', fontsize=22)
 
-    # ax[1].set_yticks([0,1])
-    # ax[1].set_yticklabels(['False','True'], fontsize=18)
+    ax2.set_ylabel('Model', fontsize=18)
+    ax3[1].set_ylabel('Model', fontsize=18)
 
-    # ax[1].set_xlabel('Date', fontsize=20)
-    # ax[0].set_ylabel('LST / K', fontsize=20)
-    # ax[1].set_ylabel('Overlap', fontsize=20)
+    ax1.grid()
+    ax2.grid()
+    ax3[0].grid()
+    ax3[1].grid()
 
-    # ax[0].grid()
-    # ax[1].grid()
+    lons = cci_lst.coord('longitude').bounds
+    lats = cci_lst.coord('latitude').bounds
 
-    # lons = model_lst.coord('longitude').bounds
-    # lats = model_lst.coord('latitude').bounds
+    #ax1.set_title('Area: lon %s lat %s' % (lons[0], lats[0]), fontsize=22)
 
-    # ax[0].set_title('Area: lon %s lat %s' % (lons[0], lats[0]), fontsize=22)
-
-    # fig.suptitle('ESACCI LST and CMIP6 LST', fontsize=24)
+    fig1.suptitle('ESACCI LST, CMIP5 and CMIP6 LST', fontsize=24)
+    fig2.suptitle('ESACCI LST, CMIP5 and CMIP6 LST', fontsize=24)
+    fig3.suptitle('ESACCI LST, CMIP5 and CMIP6 LST', fontsize=24)
 
     outpath =  config['plot_dir']
-
-    plt.savefig(f'{outpath}/timeseries_test.png')
-    plt.close('all')  # Is this needed?
-
-
-def testOverlap(x1, x2, y1,y2):
-    return (x1 >= y1 and x1 <= y2) or \
-    (x2 >= y1 and x2 <= y2) or \
-    (y1 >= x1 and y1 <= x2) or \
-    (y2 >= x1 and y2 <= x2)
-
+    plt.figure(1)
+    plt.savefig(f'{outpath}/timeseries_test1.png')
+    plt.close()
+    plt.figure(2)
+    plt.savefig(f'{outpath}/timeseries_test2.png')
+    plt.close()
+    plt.figure(3)
+    plt.savefig(f'{outpath}/timeseries_test3.png')
+    plt.close()
 
 if __name__ == '__main__':
     # always use run_diagnostic() to get the config (the preprocessor
