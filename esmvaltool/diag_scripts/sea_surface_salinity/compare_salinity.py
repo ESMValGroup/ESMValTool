@@ -26,6 +26,15 @@ logger = logging.getLogger(__name__)
 class CompareSalinity(object):
     def __init__(self, config):
         self.cfg = config
+        self.ticks = {
+            'mean': [-0.5, 0.0, 0.5],
+            'std_dev': [0.25, 0.5, 1, 2, 4]}
+        self.lim = {
+            'mean': [-1, 1],
+            'std_dev': [0, 5]}
+        self.operation = {
+            'mean': 'bias',
+            'std_dev': 'std_ratio'}
 
     def compute(self):
         data = group_metadata(self.cfg[names.INPUT_DATA].values(),
@@ -96,59 +105,65 @@ class CompareSalinity(object):
         add_year(reference, 'time')
 
         data_alias = data_info[names.ALIAS]
-        climat_ref = climate_statistics(reference, 'mean')
-        climat_data = climate_statistics(data, 'mean')
-        bias_data = climat_ref.data - climat_data.data
-        bias = climat_ref.copy(bias_data)
-        angles = np.linspace(0, 2 * np.pi, bias.shape[0] + 1)
-        # Initialise the spider plot
-        ax = plt.subplot(111, polar=True)
-        for spine in ax.spines.values():
-            spine.set_color('grey')
+        for operator in ['mean', 'std_dev']:
+            climat_ref = climate_statistics(reference, operator)
+            climat_data = climate_statistics(data, operator)
+            if operator == 'mean':
+                result_data = climat_ref.data - climat_data.data
+            else:
+                result_data = climat_ref.data / climat_data.data
+            
+            result = climat_ref.copy(result_data)
+            angles = np.linspace(0, 2 * np.pi, result.shape[0] + 1)
+            # Initialise the spider plot
+            ax = plt.subplot(111, polar=True)
+            for spine in ax.spines.values():
+                spine.set_color('grey')
 
-        # Draw one axe per variable + add labels labels yet
-        letters = [string.ascii_uppercase[i] for i in range(0, bias.shape[0])]
-        plt.xticks(angles[:-1],
-                   letters,
-                   color='grey',
-                   size=8,
-                   rotation=angles[:-1])
+            # Draw one axe per variable + add labels labels yet
+            letters = [string.ascii_uppercase[i] for i in range(0, result.shape[0])]
+            plt.xticks(angles[:-1],
+                       letters,
+                       color='grey',
+                       size=8,
+                       rotation=angles[:-1])
 
-        # Draw ylabels
-        ax.set_rlabel_position(0)
-        plt.yticks([-0.5, 0.0, 0.5], ["-0.5", "0", "0.5"],
-                   color="grey",
-                   size=7)
-        plt.ylim(-1, 1)
+            # Draw ylabels
+            ax.set_rlabel_position(0)
+            plt.yticks(self.ticks[operator], list(map(str, self.ticks[operator])),
+                       color="grey",
+                       size=7)
+            plt.ylim(min(self.lim[operator]), max(self.lim[operator]))
 
-        data = np.append(bias.data, bias.data[0])
-        more_angles = np.linspace(0, 2 * np.pi, bias.shape[0] * 20 + 1)
-        interp_data = np.interp(more_angles, angles, data)
+            radar_data = np.append(result.data, result.data[0])
+            more_angles = np.linspace(0, 2 * np.pi, result.shape[0] * 20 + 1)
+            interp_data = np.interp(more_angles, angles, radar_data)
 
-        # Plot data
-        ax.plot(more_angles, interp_data, linewidth=1, linestyle='solid')
-        ax.fill(more_angles, interp_data, 'b', alpha=0.1)
-        ax.legend(letters,
-                  bias.coord('shape_id').points,
-                  loc='upper center',
-                  ncol=2,
-                  frameon=False,
-                  bbox_to_anchor=(0.5, -0.1),
-                  borderaxespad=0.)
-        plt.title(
-            f'{data_info[names.SHORT_NAME]} bias\n'
-            f'{data_alias} vs {reference_alias}',
-            pad=20)
-        plt.tight_layout()
-        plot_path = os.path.join(
-            self.cfg[names.PLOT_DIR],
-            f"{data_info[names.SHORT_NAME]}_comparison_{data_alias}_"
-            f"{reference_alias}.{self.cfg[names.OUTPUT_FILE_TYPE]}")
-        plt.savefig(plot_path)
-        plt.close()
-        caption = (f"Absolute bias comparison in different regions for "
-                   f"{data_alias} and {reference_alias}")
-        self._create_prov_record(plot_path, caption, ancestors)
+            # Plot data
+            ax.plot(more_angles, interp_data, linewidth=1, linestyle='solid')
+            ax.fill(more_angles, interp_data, 'b', alpha=0.1)
+            ax.legend(letters,
+                      result.coord('shape_id').points,
+                      loc='upper center',
+                      ncol=2,
+                      frameon=False,
+                      bbox_to_anchor=(0.5, -0.1),
+                      borderaxespad=0.)
+            operation = self.operation[operator]
+            plt.title(
+                f'{data_info[names.SHORT_NAME]} {operation}\n'
+                f'{data_alias} vs {reference_alias}',
+                pad=20)
+            plt.tight_layout()
+            plot_path = os.path.join(
+                self.cfg[names.PLOT_DIR],
+                f"{data_info[names.SHORT_NAME]}_{operation}_comparison_{data_alias}_"
+                f"{reference_alias}.{self.cfg[names.OUTPUT_FILE_TYPE]}")
+            plt.savefig(plot_path)
+            plt.close()
+            caption = (f"Absolute {operation} comparison in different regions for "
+                       f"{data_alias} and {reference_alias}")
+            self._create_prov_record(plot_path, caption, ancestors)
 
     def _create_prov_record(self, filepath, caption, ancestors):
         record = {
