@@ -188,8 +188,7 @@ class CompareSalinity(object):
         return time_offset
 
     def _align_yearly_axes(self, cube):
-        """Perform a time-regridding operation to align time axes for yr
-        data."""
+        """Perform a time-regridding operation to align axes for yr data."""
         years = [cell.point.year for cell in cube.coord('time').cells()]
         # be extra sure that the first point is not in the previous year
         if 0 not in np.diff(years):
