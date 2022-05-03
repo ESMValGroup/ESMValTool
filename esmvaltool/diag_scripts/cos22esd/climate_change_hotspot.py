@@ -26,6 +26,7 @@ class HotspotDiag:
     Class that reads, postprocesses and calls the plotting functions
     necessary to obtain the hotspot figures.
     """
+    
     def __init__(self, config):
         """Variables definition.
 
@@ -74,8 +75,8 @@ class HotspotDiag:
             self.compute_hotspot_fields(time_subset_cubes, season, filename,
                                         input_data_dict)
             for key, cube in zip(
-                        ["large_scale", "regional"],
-                        [time_extr_large_scale_cube, time_extr_regional_cube]):
+                    ["large_scale", "regional"],
+                    [time_extr_large_scale_cube, time_extr_regional_cube]):
                 rolling_mean_cube = self.compute_rolling_means(cube)
                 basename = f"rolling_mean_{key}_{season}"
                 region = self.regions[regional_cube.var_name][key]

@@ -34,6 +34,7 @@ class HotspotPlot:
     The obtained plots correspond to figures 2, 3, S1, S2 and S4 from
     Cos et al. 2022 ESD.
     """
+    
     def __init__(self, config):
         """Variable definition.
 
@@ -157,10 +158,10 @@ class HotspotPlot:
     def _hotspot_fields_plot_panels(self, results_dict, fig, keys, style):
         """Plot field panels."""
         # define projection
-        proj, projection, path_ext, plotextend = self.define_projection(
+        proj, path_ext, plotextend = self.define_projection(
             self.cfg["region"])
         # define axes and panels [top, bottom, left, right]
-        frame = (0.75, 0.2, 0.02, 0.99)
+        frame = [0.75, 0.2, 0.02, 0.99]
         gspec = GridSpec(
             len(self.cfg["future_periods"]),
             len(self.seasons) * 2,
@@ -172,21 +173,14 @@ class HotspotPlot:
             left=frame[2],
             right=frame[3],
         )
+
         for i, key in enumerate(keys):
             if i < 6:
                 axes = fig.add_subplot(gspec[0, i], projection=proj)
                 plt.title(f"{key.split('_')[1].upper()}")
             else:
                 axes = fig.add_subplot(gspec[1, i - 6], projection=proj)
-
-            if projection == "LambertConformal":
-                rect_in_target = (ccrs.PlateCarree()._as_mpl_transform(axes) -
-                                  axes.transData).transform_path(path_ext)
-                axes.set_boundary(rect_in_target, use_as_clip_path=True)
-                axes.set_facecolor("silver")
-            axes.set_extent(plotextend, crs=ccrs.PlateCarree())
-            axes.coastlines("50m", linewidth=0.8)
-            axes.add_feature(cf.BORDERS, alpha=0.4)
+            self._add_axes_attributes(axes, path_ext, plotextend)
 
             norm = colors.BoundaryNorm(boundaries=style[0],
                                        ncolors=256,
@@ -198,6 +192,16 @@ class HotspotPlot:
                 cmap=style[1],
             )
         return fill, frame
+
+    @staticmethod
+    def _add_axes_attributes(axes, path_ext, plotextend):
+        rect_in_target = (ccrs.PlateCarree()._as_mpl_transform(axes) -
+                            axes.transData).transform_path(path_ext)
+        axes.set_boundary(rect_in_target, use_as_clip_path=True)
+        axes.set_facecolor("silver")
+        axes.set_extent(plotextend, crs=ccrs.PlateCarree())
+        axes.coastlines("50m", linewidth=0.8)
+        axes.add_feature(cf.BORDERS, alpha=0.4)
 
     def _hotspot_fields_plot_figtexts(self, scenario, frame):
         """Plot period and scenario labels."""
@@ -673,7 +677,7 @@ class HotspotPlot:
                 central_longitude=np.sum(plotextend[:2]) / 2.0,
                 central_latitude=np.sum(plotextend[2:]) / 2.0,
             )
-        return proj, projection, path_ext, plotextend
+        return proj, path_ext, plotextend
 
     @staticmethod
     def sorted_dim(cube, coord="longitude"):
