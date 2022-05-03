@@ -46,7 +46,6 @@ class HotspotPlot:
         self.projects = ["cmip5", "cmip6"]
         self.variables = ["tas", "pr"]
         self.scenarios = ["26", "45", "85"]
-        self.base_colors = {"cmip5": "#2161A6", "cmip6": "#BB3437"}
 
         # generate list of candidate bound limits
         small = np.arange(0.1, 1, 0.1)
@@ -73,8 +72,9 @@ class HotspotPlot:
                         f"{splitname[-1].split('.nc')[0]}_"
                         f"{splitname[1]}_{key}")] = iris.load_cube(filename)
                     ancestor_files.append(filename)
-                    metadata = [scenario, ancestor_files]
-            self.hotspot_fields_plot(fields_dict, metadata)
+                    fields_dict["scenario"] = scenario
+                    fields_dict["ancestors"] = ancestor_files
+            self.hotspot_fields_plot(fields_dict)
 
         # call scatter plots
         for season in self.seasons:
@@ -91,11 +91,7 @@ class HotspotPlot:
                 self.timeseries_scatter_plot(timeseries_dict, season,
                                              var_combination)
 
-    def hotspot_fields_plot(self,
-                            results_dict,
-                            metadata,
-                            tas_bound=None,
-                            pr_bound=None):
+    def hotspot_fields_plot(self, results_dict, tas_bound=None, pr_bound=None):
         """Regional climate change hotspot maps for TAS and PR.
 
         Local temperature and precipitation change differences
@@ -109,7 +105,7 @@ class HotspotPlot:
 
         N indicates the number of models included in the ensemble mean.
         """
-        scenario, ancestor_files_var = metadata
+        scenario = results_dict["scenario"]
         sorted_keys = [
             f"{period}_{season}_{variable}_{project}_{scenario}"
             for variable in self.variables
@@ -121,7 +117,7 @@ class HotspotPlot:
             sorted_keys[len(sorted_keys) // 2:]
         ]
         ancestor_files_var = [[
-            ancestor_file for ancestor_file in ancestor_files_var
+            ancestor_file for ancestor_file in results_dict["ancestors"]
             if f"/{var}_" in ancestor_file
         ] for var in self.variables]
         for ancestor_files, keys, variable in zip(ancestor_files_var,
@@ -167,7 +163,6 @@ class HotspotPlot:
             self.cfg["region"])
         # define axes and panels
         top, bottom, left, right = (0.75, 0.2, 0.02, 0.99)
-        bounds, cmap = style
         gspec = GridSpec(
             len(self.cfg["future_periods"]),
             len(self.seasons) * 2,
@@ -195,7 +190,7 @@ class HotspotPlot:
             axes.coastlines("50m", linewidth=0.8)
             axes.add_feature(cf.BORDERS, alpha=0.4)
 
-            norm = colors.BoundaryNorm(boundaries=bounds,
+            norm = colors.BoundaryNorm(boundaries=style[0],
                                        ncolors=256,
                                        extend="both")
             cube = self.regrid_longitude_coord(results_dict[key])
@@ -203,7 +198,7 @@ class HotspotPlot:
                 cube,
                 norm=norm,
                 coords=(names.LON, names.LAT),
-                cmap=cmap,
+                cmap=style[1],
             )
         return fill, [top, bottom, left, right]
 
@@ -312,7 +307,7 @@ class HotspotPlot:
                 }
 
                 # colors n scatter plot
-                self._timeseries_scatter_plot_panel(
+                color = self._timeseries_scatter_plot_panel(
                     [large_scale_signal_ts, regional_signal_ts], axes[panel],
                     project, y_values)
 
@@ -320,8 +315,8 @@ class HotspotPlot:
                     n_models = self.cfg["N"][f"{project}_{scen}"]
                     legend_elements[scen].append(
                         Patch(
-                            facecolor=self.base_colors[project],
-                            edgecolor=self.base_colors[project],
+                            facecolor=color,
+                            edgecolor=color,
                             label=(f"{self.formatter(project.upper())} "
                                    f"(N={n_models})"),
                         ))
@@ -404,6 +399,7 @@ class HotspotPlot:
 
     def _timeseries_scatter_plot_panel(self, data, axes, project, y_values):
         """Plot the scatter and the adjusted slopes."""
+
         timesteps = np.linspace(0, 1, len(data[0]))
         if project == "cmip6":
             cb_colors = plt.cm.Reds(np.linspace(0, 1, len(data[1])))
@@ -420,8 +416,10 @@ class HotspotPlot:
             color=cb_colors,
             label=self.formatter(project.upper()),
         )
+        base_colors = {"cmip5": "#2161A6", "cmip6": "#BB3437"}
         # plot regression
-        axes.plot(data[0], y_values, color=self.base_colors[project])
+        axes.plot(data[0], y_values, color=base_colors[project])
+        return base_colors[project]
 
     def _timeseries_scatter_plot_lbls(self, results_dict, keys, axes, meta):
         """Plot the titles, suptitles and legends."""
