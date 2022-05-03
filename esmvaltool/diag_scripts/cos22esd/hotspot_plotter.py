@@ -31,8 +31,8 @@ from esmvaltool.diag_scripts.shared import (
 class HotspotPlot:
     """Class that plots the results.
 
-    The obtained plots correspond to figures 2, 3, S1, S2 and S4 from
-    Cos et al. 2022 ESD.
+    The obtained plots correspond to the hotspot figures
+    in Cos et al. 2022, ESD.
     """
 
     def __init__(self, config):
@@ -272,13 +272,13 @@ class HotspotPlot:
         for panel, scen in enumerate(self.scenarios):
             legend_elements = {scen: []}
             axes.append(fig.add_subplot(gspec[0, panel]))
-            regional_var = var_combination.split(":")[0]
             regional_keys = [
-                f"{regional_var}_{proj}_{scen}" for proj in self.projects
+                (f"{var_combination.split(':')[0]}_{proj}"
+                f"_{scen}") for proj in self.projects
             ]
-            large_scale_var = var_combination.split(":")[1]
             large_scale_keys = [
-                f"{large_scale_var}_{project}_{scen}"
+                (f"{var_combination.split(':')[1]}_"
+                f"{project}_{scen}")
                 for project in self.projects
             ]
             for regional_key, large_scale_key in zip(regional_keys,
@@ -311,13 +311,12 @@ class HotspotPlot:
                     project, y_values)
 
                 if len(legend_elements[scen]) < 2:
-                    n_models = self.cfg["N"][f"{project}_{scen}"]
                     legend_elements[scen].append(
                         Patch(
                             facecolor=color,
                             edgecolor=color,
-                            label=(f"{self.formatter(project.upper())} "
-                                   f"(N={n_models})"),
+                            label=(f"{self.formatter(project.upper())} (N="
+                                   f"{self.cfg['N'][f'{project}_{scen}']})"),
                         ))
 
                 max_glob.append(max(large_scale_signal_ts))
@@ -339,22 +338,18 @@ class HotspotPlot:
                 results_dict, [large_scale_keys, regional_keys], axes[panel],
                 meta)
 
-            max_lim = max(max_range.values())
-            min_lim = min(min_range.values())
-            delta_range = max_lim - min_lim
-            min_lim -= delta_range * 0.1
-            max_lim += delta_range * 0.1
+            lims = self._timeseries_scatter_plot_lims(min_range, max_range)
 
             self._timeseries_scatter_plot_lines(axes[panel])
 
-        mins_maxs = min_lim, max_lim, min_glob, max_glob
+        mins_maxs = lims[0], lims[1], min_glob, max_glob
         self._timeseries_scatter_plot_axlim(axes, var_combination, slope,
                                             mins_maxs)
 
-        basename = f"scenario_combination_{var_combination}_{season}"
         provenance_record = self.get_rolling_mean_provenance(
             suptitle, ancestor_files)
-        save_figure(basename, provenance_record, self.cfg)
+        save_figure(f"scenario_combination_{var_combination}_{season}", 
+                    provenance_record, self.cfg)
 
     @staticmethod
     def _timeseries_scatter_plot_data(results_dict, large_scale_key,
@@ -465,6 +460,15 @@ class HotspotPlot:
                         f"Baseline: 1986-2005")
             plt.suptitle(suptitle)
         return suptitle
+
+    @staticmethod
+    def _timeseries_scatter_plot_lims(min_range, max_range):
+        max_lim = max(max_range.values())
+        min_lim = min(min_range.values())
+        delta_range = max_lim - min_lim
+        min_lim -= delta_range * 0.1
+        max_lim += delta_range * 0.1
+        return [min_lim, max_lim]
 
     @staticmethod
     def _timeseries_scatter_plot_lines(axes):
