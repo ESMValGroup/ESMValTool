@@ -31,10 +31,9 @@ from esmvaltool.diag_scripts.shared import (
 class HotspotPlot:
     """class that plots the results.
 
-    The btained plots correspond to figures
-    2, 3, S1, S2 and S4 from Cos et al. 2022 ESD.
+    The btained plots correspond to figures 2, 3, S1, S2 and S4 from Cos
+    et al. 2022 ESD.
     """
-
     def __init__(self, config):
         """Variable definition.
 
@@ -47,6 +46,7 @@ class HotspotPlot:
         self.projects = ["cmip5", "cmip6"]
         self.variables = ["tas", "pr"]
         self.scenarios = ["26", "45", "85"]
+        self.base_colors = {"cmip5": "#2161A6", "cmip6": "#BB3437"}
 
         # generate list of candidate bound limits
         small = np.arange(0.1, 1, 0.1)
@@ -85,11 +85,11 @@ class HotspotPlot:
                         pattern=f'rolling_mean_{region}_{season}.nc'):
                     value[os.path.basename(os.path.dirname(filename))] = (
                         iris.load_cube(filename))
-                    value[os.path.basename(os.path.dirname(filename))] = (
-                        filename)
+                    value[os.path.basename(
+                        os.path.dirname(filename))] = (filename)
             for var_combination in self.var_combinations:
-                self.timeseries_scatter_plot(timeseries_dict,
-                                             season, var_combination)
+                self.timeseries_scatter_plot(timeseries_dict, season,
+                                             var_combination)
 
     def hotspot_fields_plot(self,
                             results_dict,
@@ -131,10 +131,11 @@ class HotspotPlot:
                              dpi=300)
             plt.gcf().subplots_adjust()
             # bound colorbar to abs(max) value on the map
-            style = self.cb_bounds(variable, results_dict,
-                keys, [tas_bound, pr_bound])
+            style = self.cb_bounds(variable, results_dict, keys,
+                                   [tas_bound, pr_bound])
             # plot each panel
-            fill, frame = self.hotspot_fields_plot_pannels(results_dict, fig, keys, style)
+            fill, frame = self.hotspot_fields_plot_panels(
+                results_dict, fig, keys, style)
             # plot figtexts
             self.hotspot_fields_plot_figtexts(scenario, frame)
             # plot line
@@ -156,26 +157,23 @@ class HotspotPlot:
                 against_region = "global"
 
             # plot title and save
-            self.hotspot_fields_plot_save(against_region, variable, scenario, ancestor_files)
+            self.hotspot_fields_plot_save(against_region, variable, scenario,
+                                          ancestor_files)
 
-
-
-    def hotspot_fields_plot_pannels(self, results_dict, fig, keys, style):
+    def hotspot_fields_plot_panels(self, results_dict, fig, keys, style):
+        """Plot field panels."""
         # define projection
         proj, projection, path_ext, plotextend = self.define_projection(
-                self.cfg["region"])
-        # define axes and pannels
-        top, bottom, left, right, wspace, hspace = (
-            0.75, 0.2, 0.02, 0.99, 0.005, 0.005)
-
+            self.cfg["region"])
+        # define axes and panels
+        top, bottom, left, right = (0.75, 0.2, 0.02, 0.99)
         bounds, cmap = style
-
         gspec = GridSpec(
             len(self.cfg["future_periods"]),
             len(self.seasons) * 2,
             figure=fig,
-            hspace=hspace,
-            wspace=wspace,
+            hspace=0.005,
+            wspace=0.005,
             top=top,
             bottom=bottom,
             left=left,
@@ -189,9 +187,8 @@ class HotspotPlot:
                 axes = fig.add_subplot(gspec[1, i - 6], projection=proj)
 
             if projection == "LambertConformal":
-                proj_to_data = (
-                    ccrs.PlateCarree()._as_mpl_transform(axes) -
-                    axes.transData)
+                proj_to_data = (ccrs.PlateCarree()._as_mpl_transform(axes) -
+                                axes.transData)
                 rect_in_target = proj_to_data.transform_path(path_ext)
                 axes.set_boundary(rect_in_target, use_as_clip_path=True)
                 axes.set_facecolor("silver")
@@ -200,8 +197,8 @@ class HotspotPlot:
             axes.add_feature(cf.BORDERS, alpha=0.4)
 
             norm = colors.BoundaryNorm(boundaries=bounds,
-                                    ncolors=256,
-                                    extend="both")
+                                       ncolors=256,
+                                       extend="both")
             cube = self.regrid_longitude_coord(results_dict[key])
             fill = iplt.pcolormesh(
                 cube,
@@ -209,9 +206,10 @@ class HotspotPlot:
                 coords=(names.LON, names.LAT),
                 cmap=cmap,
             )
-        return  fill, [top, bottom, left, right]        
+        return fill, [top, bottom, left, right]
 
     def hotspot_fields_plot_figtexts(self, scenario, frame):
+        """Plot period and scenario labels."""
         top, bottom, left, right = frame
         for p_ind, project in enumerate(self.projects):
             n_models = self.cfg["N"][f"{project}_{scenario}"]
@@ -219,8 +217,8 @@ class HotspotPlot:
                 left + 0.18 + p_ind * (right - left) / 2,
                 0.85,
                 (f"{self.formatter(project.upper())} "
-                    f"{self.formatter(f'{project}-{scenario}')} "
-                    f"(N={n_models})"),
+                 f"{self.formatter(f'{project}-{scenario}')} "
+                 f"(N={n_models})"),
                 fontsize="large",
             )
         for row, period in enumerate(self.cfg["future_periods"]):
@@ -231,17 +229,18 @@ class HotspotPlot:
                 period,
                 rotation="vertical",
                 fontsize="11",
-            )                
+            )
 
     def hotspot_fields_plot_line(self, fig, frame):
+        """Plot separator line."""
         _, bottom, left, right = frame
         mid = left + (right - left) / 2
-        line = plt.Line2D((mid, mid), (bottom, 0.9),
-                            color="k",
-                            linewidth=1)
+        line = plt.Line2D((mid, mid), (bottom, 0.9), color="k", linewidth=1)
         fig.add_artist(line)
 
-    def hotspot_fields_plot_save(self, against_region, variable, scenario, ancestor_files):
+    def hotspot_fields_plot_save(self, against_region, variable, scenario,
+                                 ancestor_files):
+        """Plot title and save figure."""
         suptitle = (f"{self.cfg['region_name']} {variable.upper()} "
                     f"change against mean {against_region} future "
                     f"climatology. Baseline period: "
@@ -252,7 +251,7 @@ class HotspotPlot:
         basename = f"{variable}_{scenario}"
         provenance_record = self.get_hotspot_provenance(
             suptitle, scenario, ancestor_files)
-        save_figure(basename, provenance_record, self.cfg) 
+        save_figure(basename, provenance_record, self.cfg)
 
     def timeseries_scatter_plot(self, results_dict, season, var_combination):
         """Regional vs large scale changes for three scenarios.
@@ -267,7 +266,6 @@ class HotspotPlot:
         included in the ensemble mean.
         """
         ancestors_dict = deepcopy(results_dict)
-        base_colors = {"cmip5": "#2161A6", "cmip6": "#BB3437"}
         legend_elements = {}
         fig = plt.figure(figsize=(12, 4), constrained_layout=True, dpi=300)
         gspec = fig.add_gridspec(1, 3)
@@ -282,7 +280,7 @@ class HotspotPlot:
             axes.append(fig.add_subplot(gspec[0, panel]))
             regional_var = var_combination.split(":")[0]
             regional_keys = [
-                f"{regional_var}_{project}_{scen}" for project in self.projects
+                f"{regional_var}_{proj}_{scen}" for proj in self.projects
             ]
             large_scale_var = var_combination.split(":")[1]
             large_scale_keys = [
@@ -291,39 +289,20 @@ class HotspotPlot:
             ]
             for regional_key, large_scale_key in zip(regional_keys,
                                                      large_scale_keys):
-                project = regional_key.split("_")[1]
-                ls_cube = results_dict["large_scale"][large_scale_key]
-                large_scale_signal_ts = iris.load_cube(ls_cube).data
-                r_cube = results_dict["regional"][regional_key]
-                regional_signal_ts = iris.load_cube(r_cube).data
-
-                res = stats.linregress(large_scale_signal_ts,
-                                       regional_signal_ts)
-                y_values = res.intercept + res.slope * \
-                    np.array(large_scale_signal_ts)
-                rvalue[project] = res.rvalue
-                slope[project] = res.slope
-                timesteps = np.linspace(0, 1, len(large_scale_signal_ts))
-                if project == "cmip6":
-                    cb_colors = plt.cm.Reds(
-                        np.linspace(0, 1, len(regional_signal_ts)))
-                if project == "cmip5":
-                    cb_colors = plt.cm.Blues(
-                        np.linspace(0, 1, len(regional_signal_ts)))
-                cb_colors[:, -1] = timesteps
-
-                if var_combination == "pr:tas":
-                    max_range[project] = max(regional_signal_ts)
-                    min_range[project] = min(regional_signal_ts)
-                else:
-                    if max(regional_signal_ts) > max(large_scale_signal_ts):
-                        max_range[project] = max(regional_signal_ts)
-                    else:
-                        max_range[project] = max(large_scale_signal_ts)
-                    if min(regional_signal_ts) < min(large_scale_signal_ts):
-                        min_range[project] = min(regional_signal_ts)
-                    else:
-                        min_range[project] = min(large_scale_signal_ts)
+                project, large_scale_signal_ts, regional_signal_ts = (
+                    self.timeseries_scatter_plot_data(results_dict,
+                                                      large_scale_key,
+                                                      regional_key))
+                # find linear regression
+                rvalue[project], slope[project], y_values = (
+                    self.timeseries_scatter_plot_linregress(
+                        large_scale_signal_ts, regional_signal_ts, rvalue,
+                        slope))
+                # find max and min axis limits for project
+                min_range[project], max_range[
+                    project] = self.timeseries_scatter_plot_ranges(
+                        large_scale_signal_ts, regional_signal_ts,
+                        var_combination)
 
                 title_format = {
                     "26": "RCP2.6/SSP1-2.6",
@@ -332,99 +311,182 @@ class HotspotPlot:
                     "85": "RCP8.5/SSP5-8.5",
                 }
 
-                axes[panel].scatter(
-                    large_scale_signal_ts,
-                    regional_signal_ts,
-                    facecolors="none",
-                    linewidths=0.8,
-                    s=70,
-                    color=cb_colors,
-                    label=self.formatter(project.upper()),
-                )
-                max_glob.append(max(large_scale_signal_ts))
-                min_glob.append(min(large_scale_signal_ts))
-                axes[panel].plot(large_scale_signal_ts,
-                                 y_values,
-                                 color=base_colors[project])
+                # colors n scatter plot
+                self.timeseries_scatter_plot_panels(
+                    [large_scale_signal_ts, regional_signal_ts], axes[panel],
+                    project, y_values)
+
                 if len(legend_elements[scen]) < 2:
                     n_models = self.cfg["N"][f"{project}_{scen}"]
                     legend_elements[scen].append(
                         Patch(
-                            facecolor=base_colors[project],
-                            edgecolor=base_colors[project],
+                            facecolor=self.base_colors[project],
+                            edgecolor=self.base_colors[project],
                             label=(f"{self.formatter(project.upper())} "
                                    f"(N={n_models})"),
                         ))
 
+                max_glob.append(max(large_scale_signal_ts))
+                min_glob.append(min(large_scale_signal_ts))
                 # collect used ancestor files
                 ancestor_files.append(
                     ancestors_dict["large_scale"][regional_key])
                 ancestor_files.append(ancestors_dict["regional"][regional_key])
 
-            if var_combination.partition(":")[-1] == "tas":
-                against_region = "Global"
-            else:
-                against_region = (
-                    f"{self.cfg['region'][2]}$^o$ N-{self.cfg['region'][3]}"
-                    f"$^o$ N latitudinal belt")
-            large_scale_units = self.formatter(
-                str(iris.load_cube(results_dict['large_scale'][large_scale_keys[-1]]).units))
-            regional_units = self.formatter(
-                str(iris.load_cube(results_dict['regional'][regional_keys[-1]]).units))
-            xlabel = (f"{against_region} "
-                      f"{var_combination.partition(':')[-1].upper()} "
-                      f"[{large_scale_units}]")
-            axes[panel].set_xlabel(xlabel)
-            ylabel = (f"{self.cfg['region_name']} "
-                      f"{var_combination.partition(':')[0].upper()} "
-                      f"[{regional_units}]")
-            axes[panel].set_ylabel(ylabel)
+            meta = {
+                "var_combination": var_combination,
+                "title_format": title_format[scen],
+                "legend_elements": legend_elements[scen],
+                "slope": slope,
+                "rvalue": rvalue,
+                "season": season,
+            }
+            suptitle = self.timeseries_scatter_plot_labels(
+                results_dict, [large_scale_keys, regional_keys], axes[panel],
+                meta)
 
             max_lim = max(max_range.values())
             min_lim = min(min_range.values())
-
             delta_range = max_lim - min_lim
             min_lim -= delta_range * 0.1
             max_lim += delta_range * 0.1
 
-            axes[panel].axvline(
-                x=0,
-                ymin=-1000,
-                ymax=1000,
-                color="grey",
-                linestyle="dotted",
-                alpha=0.6,
-            )
-            axes[panel].axhline(
-                y=0,
-                xmin=-1000,
-                xmax=1000,
-                color="grey",
-                linestyle="dotted",
-                alpha=0.6,
-            )
-            axes[panel].set_title(
-                f"Scenario: {title_format[scen]} \n CMIP5: rval="
-                f"{rvalue['cmip5']:.3f}; slope={slope['cmip5']:.3f} "
-                f"\n CMIP6: rval={rvalue['cmip6']:.3f}; "
-                f"slope={slope['cmip6']:.3f}")
-            axes[panel].legend(handles=legend_elements[scen])
+            self.timeseries_scatter_plot_lines(axes[panel])
 
-            long_name_dict = {"pr": "precipitation", "tas": "temperature"}
-            if var_combination == "pr:tas":
-                suptitle = (f"{self.cfg['region_name']} {season.upper()} "
-                            f"precipitation vs global {season.upper()} "
-                            f"temperature.\n 10yr rolling means 1960-2100, "
-                            f"Baseline: 1986-2005")
-                plt.suptitle(suptitle)
+        mins_maxs = min_lim, max_lim, min_glob, max_glob
+        self.timeseries_scatter_plot_axlim(axes, var_combination, slope,
+                                           mins_maxs)
+
+        basename = f"scenario_combination_{var_combination}_{season}"
+        provenance_record = self.get_rolling_mean_provenance(
+            suptitle, ancestor_files)
+        save_figure(basename, provenance_record, self.cfg)
+
+    @staticmethod
+    def timeseries_scatter_plot_data(results_dict, large_scale_key,
+                                     regional_key):
+        project = regional_key.split("_")[1]
+        ls_cube = results_dict["large_scale"][large_scale_key]
+        large_scale_signal_ts = iris.load_cube(ls_cube).data
+        r_cube = results_dict["regional"][regional_key]
+        regional_signal_ts = iris.load_cube(r_cube).data
+        return project, large_scale_signal_ts, regional_signal_ts
+
+    @staticmethod
+    def timeseries_scatter_plot_linregress(large_scale_signal_ts,
+                                           regional_signal_ts, rvalue, slope):
+        res = stats.linregress(large_scale_signal_ts, regional_signal_ts)
+        y_values = res.intercept + res.slope * \
+            np.array(large_scale_signal_ts)
+        rvalue = res.rvalue
+        slope = res.slope
+        return rvalue, slope, y_values
+
+    @staticmethod
+    def timeseries_scatter_plot_ranges(large_scale_signal_ts,
+                                       regional_signal_ts, var_combination):
+        if var_combination == "pr:tas":
+            max_range = max(regional_signal_ts)
+            min_range = min(regional_signal_ts)
+        else:
+            if max(regional_signal_ts) > max(large_scale_signal_ts):
+                max_range = max(regional_signal_ts)
             else:
-                y_combination = var_combination.partition(':')[0]
-                suptitle = (f"{self.cfg['region_name']} vs {against_region} "
-                            f"{season.upper()} "
-                            f"{long_name_dict[y_combination]}"
-                            f".\n 10yr rolling means 1960-2100, "
-                            f"Baseline: 1986-2005")
-                plt.suptitle(suptitle)
+                max_range = max(large_scale_signal_ts)
+            if min(regional_signal_ts) < min(large_scale_signal_ts):
+                min_range = min(regional_signal_ts)
+            else:
+                min_range = min(large_scale_signal_ts)
+        return min_range, max_range
+
+    def timeseries_scatter_plot_panels(self, data, axes, project, y_values):
+        timesteps = np.linspace(0, 1, len(data[0]))
+        if project == "cmip6":
+            cb_colors = plt.cm.Reds(np.linspace(0, 1, len(data[1])))
+        if project == "cmip5":
+            cb_colors = plt.cm.Blues(np.linspace(0, 1, len(data[1])))
+        cb_colors[:, -1] = timesteps
+
+        axes.scatter(
+            data[0],
+            data[1],
+            facecolors="none",
+            linewidths=0.8,
+            s=70,
+            color=cb_colors,
+            label=self.formatter(project.upper()),
+        )
+        # plot regression
+        axes.plot(data[0], y_values, color=self.base_colors[project])
+
+    def timeseries_scatter_plot_labels(self, results_dict, keys, axes, meta):
+        if meta["var_combination"].partition(":")[-1] == "tas":
+            against_region = "Global"
+        else:
+            against_region = (
+                f"{self.cfg['region'][2]}$^o$ N-{self.cfg['region'][3]}"
+                f"$^o$ N latitudinal belt")
+        large_scale_units = self.formatter(
+            str(
+                iris.load_cube(
+                    results_dict['large_scale'][keys[0][-1]]).units))
+        regional_units = self.formatter(
+            str(iris.load_cube(results_dict['regional'][keys[1][-1]]).units))
+        xlabel = (f"{against_region} "
+                  f"{meta['var_combination'].partition(':')[-1].upper()} "
+                  f"[{large_scale_units}]")
+        axes.set_xlabel(xlabel)
+        ylabel = (f"{self.cfg['region_name']} "
+                  f"{meta['var_combination'].partition(':')[0].upper()} "
+                  f"[{regional_units}]")
+        axes.set_ylabel(ylabel)
+
+        axes.set_title(f"Scenario: {meta['title_format']} \n CMIP5: rval="
+                       f"{meta['rvalue']['cmip5']:.3f}; "
+                       f"slope={meta['slope']['cmip5']:.3f} "
+                       f"\n CMIP6: rval={meta['rvalue']['cmip6']:.3f}; "
+                       f"slope={meta['slope']['cmip6']:.3f}")
+        axes.legend(handles=meta["legend_elements"])
+
+        long_name_dict = {"pr": "precipitation", "tas": "temperature"}
+        if meta["var_combination"] == "pr:tas":
+            suptitle = (f"{self.cfg['region_name']} {meta['season'].upper()} "
+                        f"precipitation vs global {meta['season'].upper()} "
+                        f"temperature.\n 10yr rolling means 1960-2100, "
+                        f"Baseline: 1986-2005")
+            plt.suptitle(suptitle)
+        else:
+            y_combination = meta["var_combination"].partition(':')[0]
+            suptitle = (f"{self.cfg['region_name']} vs {against_region} "
+                        f"{meta['season'].upper()} "
+                        f"{long_name_dict[y_combination]}"
+                        f".\n 10yr rolling means 1960-2100, "
+                        f"Baseline: 1986-2005")
+            plt.suptitle(suptitle)
+        return suptitle
+
+    @staticmethod
+    def timeseries_scatter_plot_lines(axes):
+        axes.axvline(
+            x=0,
+            ymin=-1000,
+            ymax=1000,
+            color="grey",
+            linestyle="dotted",
+            alpha=0.6,
+        )
+        axes.axhline(
+            y=0,
+            xmin=-1000,
+            xmax=1000,
+            color="grey",
+            linestyle="dotted",
+            alpha=0.6,
+        )
+
+    @staticmethod
+    def timeseries_scatter_plot_axlim(axes, var_combination, slope, mins_maxs):
+        min_lim, max_lim, min_glob, max_glob = mins_maxs
         for box in range(3):
             axes[box].set_ylim(min_lim, max_lim)
             if var_combination == "pr:tas":
@@ -448,10 +510,6 @@ class HotspotPlot:
                     color="gray",
                     alpha=0.6,
                 )
-        basename = f"scenario_combination_{var_combination}_{season}"
-        provenance_record = self.get_rolling_mean_provenance(
-            suptitle, ancestor_files)
-        save_figure(basename, provenance_record, self.cfg)
 
     @staticmethod
     def formatter(text):
@@ -669,7 +727,8 @@ class HotspotPlot:
             'domains': ['reg'],
             'plot_types': ['map'],
             'authors': [
-                'cos_josep',
+                'loosveldt-tomas_saskia',
+                # 'cos_josep',
             ],
             'references': [
                 'cos22esd',
@@ -696,7 +755,8 @@ class HotspotPlot:
             'domains': ['reg', 'global'],
             'plot_types': ['scatter', 'line', 'times'],
             'authors': [
-                'cos_josep',
+                'loosveldt-tomas_saskia',
+                # 'cos_josep',
             ],
             'references': [
                 'cos22esd',
