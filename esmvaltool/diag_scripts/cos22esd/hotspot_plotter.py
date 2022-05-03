@@ -110,8 +110,6 @@ class HotspotPlot:
         N indicates the number of models included in the ensemble mean.
         """
         scenario, ancestor_files_var = metadata
-        top, bottom, left, right, wspace, hspace = (
-            0.75, 0.2, 0.02, 0.99, 0.005, 0.005)
         sorted_keys = [
             f"{period}_{season}_{variable}_{project}_{scenario}"
             for variable in self.variables
@@ -132,79 +130,16 @@ class HotspotPlot:
                              constrained_layout=True,
                              dpi=300)
             plt.gcf().subplots_adjust()
-            proj, projection, path_ext, plotextend = self.define_projection(
-                self.cfg["region"])
-            gspec = GridSpec(
-                len(self.cfg["future_periods"]),
-                len(self.seasons) * 2,
-                figure=fig,
-                hspace=hspace,
-                wspace=wspace,
-                top=top,
-                bottom=bottom,
-                left=left,
-                right=right,
-            )
-
             # bound colorbar to abs(max) value on the map
-            bounds, cmap = self.cb_bounds(variable, results_dict,
+            style = self.cb_bounds(variable, results_dict,
                 keys, [tas_bound, pr_bound])
-
             # plot each panel
-            for i, key in enumerate(keys):
-                if i < 6:
-                    axes = fig.add_subplot(gspec[0, i], projection=proj)
-                    plt.title(f"{key.split('_')[1].upper()}")
-                else:
-                    axes = fig.add_subplot(gspec[1, i - 6], projection=proj)
-
-                if projection == "LambertConformal":
-                    proj_to_data = (
-                        ccrs.PlateCarree()._as_mpl_transform(axes) -
-                        axes.transData)
-                    rect_in_target = proj_to_data.transform_path(path_ext)
-                    axes.set_boundary(rect_in_target, use_as_clip_path=True)
-                    axes.set_facecolor("silver")
-                axes.set_extent(plotextend, crs=ccrs.PlateCarree())
-                axes.coastlines("50m", linewidth=0.8)
-                axes.add_feature(cf.BORDERS, alpha=0.4)
-
-                norm = colors.BoundaryNorm(boundaries=bounds,
-                                           ncolors=256,
-                                           extend="both")
-                cube = self.regrid_longitude_coord(results_dict[key])
-                fill = iplt.pcolormesh(
-                    cube,
-                    norm=norm,
-                    coords=(names.LON, names.LAT),
-                    cmap=cmap,
-                )
-
-            for p_ind, project in enumerate(self.projects):
-                n_models = self.cfg["N"][f"{project}_{scenario}"]
-                plt.figtext(
-                    left + 0.18 + p_ind * (right - left) / 2,
-                    0.85,
-                    (f"{self.formatter(project.upper())} "
-                     f"{self.formatter(f'{project}-{scenario}')} "
-                     f"(N={n_models})"),
-                    fontsize="large",
-                )
-            for row, period in enumerate(self.cfg["future_periods"]):
-                ypos = top - (top - bottom) / 2 * (1 + row * 1.1) + 0.05
-                plt.figtext(
-                    0.005,
-                    ypos,
-                    period,
-                    rotation="vertical",
-                    fontsize="11",
-                )
-            mid = left + (right - left) / 2
-            line = plt.Line2D((mid, mid), (bottom, 0.9),
-                              color="k",
-                              linewidth=1)
-            fig.add_artist(line)
-
+            fill, frame = self.hotspot_fields_plot_pannels(results_dict, fig, keys, style)
+            # plot figtexts
+            self.hotspot_fields_plot_figtexts(scenario, frame)
+            # plot line
+            self.hotspot_fields_plot_line(fig, frame)
+            # plot colorbar
             colorbar_axes = plt.gcf().add_axes([0.25, 0.125, 0.5, 0.04])
             cbar = plt.colorbar(fill,
                                 colorbar_axes,
@@ -220,17 +155,104 @@ class HotspotPlot:
                     self.formatter(str(results_dict[keys[-1]].units)))
                 against_region = "global"
 
-            suptitle = (f"{self.cfg['region_name']} {variable.upper()} "
-                        f"change against mean {against_region} future "
-                        f"climatology. Baseline period: "
-                        f"{self.cfg['baseline_period'][0]}-"
-                        f"{self.cfg['baseline_period'][1]}")
-            plt.suptitle(suptitle, fontsize=13)
+            # plot title and save
+            self.hotspot_fields_plot_save(against_region, variable, scenario, ancestor_files)
 
-            basename = f"{variable}_{scenario}"
-            provenance_record = self.get_hotspot_provenance(
-                suptitle, scenario, ancestor_files)
-            save_figure(basename, provenance_record, self.cfg)
+
+
+    def hotspot_fields_plot_pannels(self, results_dict, fig, keys, style):
+        # define projection
+        proj, projection, path_ext, plotextend = self.define_projection(
+                self.cfg["region"])
+        # define axes and pannels
+        top, bottom, left, right, wspace, hspace = (
+            0.75, 0.2, 0.02, 0.99, 0.005, 0.005)
+
+        bounds, cmap = style
+
+        gspec = GridSpec(
+            len(self.cfg["future_periods"]),
+            len(self.seasons) * 2,
+            figure=fig,
+            hspace=hspace,
+            wspace=wspace,
+            top=top,
+            bottom=bottom,
+            left=left,
+            right=right,
+        )
+        for i, key in enumerate(keys):
+            if i < 6:
+                axes = fig.add_subplot(gspec[0, i], projection=proj)
+                plt.title(f"{key.split('_')[1].upper()}")
+            else:
+                axes = fig.add_subplot(gspec[1, i - 6], projection=proj)
+
+            if projection == "LambertConformal":
+                proj_to_data = (
+                    ccrs.PlateCarree()._as_mpl_transform(axes) -
+                    axes.transData)
+                rect_in_target = proj_to_data.transform_path(path_ext)
+                axes.set_boundary(rect_in_target, use_as_clip_path=True)
+                axes.set_facecolor("silver")
+            axes.set_extent(plotextend, crs=ccrs.PlateCarree())
+            axes.coastlines("50m", linewidth=0.8)
+            axes.add_feature(cf.BORDERS, alpha=0.4)
+
+            norm = colors.BoundaryNorm(boundaries=bounds,
+                                    ncolors=256,
+                                    extend="both")
+            cube = self.regrid_longitude_coord(results_dict[key])
+            fill = iplt.pcolormesh(
+                cube,
+                norm=norm,
+                coords=(names.LON, names.LAT),
+                cmap=cmap,
+            )
+        return  fill, [top, bottom, left, right]        
+
+    def hotspot_fields_plot_figtexts(self, scenario, frame):
+        top, bottom, left, right = frame
+        for p_ind, project in enumerate(self.projects):
+            n_models = self.cfg["N"][f"{project}_{scenario}"]
+            plt.figtext(
+                left + 0.18 + p_ind * (right - left) / 2,
+                0.85,
+                (f"{self.formatter(project.upper())} "
+                    f"{self.formatter(f'{project}-{scenario}')} "
+                    f"(N={n_models})"),
+                fontsize="large",
+            )
+        for row, period in enumerate(self.cfg["future_periods"]):
+            ypos = top - (top - bottom) / 2 * (1 + row * 1.1) + 0.05
+            plt.figtext(
+                0.005,
+                ypos,
+                period,
+                rotation="vertical",
+                fontsize="11",
+            )                
+
+    def hotspot_fields_plot_line(self, fig, frame):
+        _, bottom, left, right = frame
+        mid = left + (right - left) / 2
+        line = plt.Line2D((mid, mid), (bottom, 0.9),
+                            color="k",
+                            linewidth=1)
+        fig.add_artist(line)
+
+    def hotspot_fields_plot_save(self, against_region, variable, scenario, ancestor_files):
+        suptitle = (f"{self.cfg['region_name']} {variable.upper()} "
+                    f"change against mean {against_region} future "
+                    f"climatology. Baseline period: "
+                    f"{self.cfg['baseline_period'][0]}-"
+                    f"{self.cfg['baseline_period'][1]}")
+        plt.suptitle(suptitle, fontsize=13)
+
+        basename = f"{variable}_{scenario}"
+        provenance_record = self.get_hotspot_provenance(
+            suptitle, scenario, ancestor_files)
+        save_figure(basename, provenance_record, self.cfg) 
 
     def timeseries_scatter_plot(self, results_dict, season, var_combination):
         """Regional vs large scale changes for three scenarios.
@@ -271,9 +293,9 @@ class HotspotPlot:
                                                      large_scale_keys):
                 project = regional_key.split("_")[1]
                 ls_cube = results_dict["large_scale"][large_scale_key]
-                large_scale_signal_ts = ls_cube.data
+                large_scale_signal_ts = iris.load_cube(ls_cube).data
                 r_cube = results_dict["regional"][regional_key]
-                regional_signal_ts = r_cube.data
+                regional_signal_ts = iris.load_cube(r_cube).data
 
                 res = stats.linregress(large_scale_signal_ts,
                                        regional_signal_ts)
@@ -346,9 +368,9 @@ class HotspotPlot:
                     f"{self.cfg['region'][2]}$^o$ N-{self.cfg['region'][3]}"
                     f"$^o$ N latitudinal belt")
             large_scale_units = self.formatter(
-                str(results_dict['large_scale'][large_scale_keys[-1]].units))
+                str(iris.load_cube(results_dict['large_scale'][large_scale_keys[-1]]).units))
             regional_units = self.formatter(
-                str(results_dict['regional'][regional_keys[-1]].units))
+                str(iris.load_cube(results_dict['regional'][regional_keys[-1]]).units))
             xlabel = (f"{against_region} "
                       f"{var_combination.partition(':')[-1].upper()} "
                       f"[{large_scale_units}]")
@@ -374,7 +396,7 @@ class HotspotPlot:
                 alpha=0.6,
             )
             axes[panel].axhline(
-                y_values=0,
+                y=0,
                 xmin=-1000,
                 xmax=1000,
                 color="grey",
@@ -497,7 +519,7 @@ class HotspotPlot:
                                                         avg_over=25)
             cmap = plt.cm.BrBG
         bounds = np.linspace(-1 * bound_limit, bound_limit, 11)
-        return bounds, cmap
+        return [bounds, cmap]
 
     def find_abs_bound_range(self, results_dict, keys, avg_over=5):
         """Find suitable bounds for the colorbar.
@@ -647,8 +669,7 @@ class HotspotPlot:
             'domains': ['reg'],
             'plot_types': ['map'],
             'authors': [
-                'loosveldt-tomas_saskia',
-                # 'cos_josep',
+                'cos_josep',
             ],
             'references': [
                 'cos22esd',
@@ -675,8 +696,7 @@ class HotspotPlot:
             'domains': ['reg', 'global'],
             'plot_types': ['scatter', 'line', 'times'],
             'authors': [
-                'loosveldt-tomas_saskia',
-                # 'cos_josep',
+                'cos_josep',
             ],
             'references': [
                 'cos22esd',
