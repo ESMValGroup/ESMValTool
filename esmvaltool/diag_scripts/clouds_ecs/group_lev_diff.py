@@ -76,7 +76,7 @@ FIGURE_NUMBER_DIFF = {
 def get_provenance_record(attributes, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     #print(attributes)
-    caption = ("Average {long_name} between {start_year} and {end_year} "
+    caption = ("Average {short_name} between {start_year} and {end_year} "
                "according to {dataset}.".format(**attributes))
 
     record = {
@@ -282,8 +282,7 @@ def main(cfg):
         #plt.ylabel('Air pressure (hPa)', ncol=1)
         #plt.legend(ncol=1)
 
-    plt.suptitle(attributes['long_name'])
-
+    plt.suptitle(attributes['short_name'])
 
     provenance_record = get_provenance_record(
         attributes, ancestor_files=cfg['input_files'])

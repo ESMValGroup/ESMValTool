@@ -151,8 +151,6 @@ def main(cfg):
     # Provenance
     provenance_record = _get_provenance_record(caption)
     provenance_record['ancestors'] = cfg['input_files']
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(path, provenance_record)
 
     basename = 'ice_fraction_all'
 
