@@ -34,7 +34,7 @@ class HotspotPlot:
     The obtained plots correspond to figures 2, 3, S1, S2 and S4 from
     Cos et al. 2022 ESD.
     """
-    
+
     def __init__(self, config):
         """Variable definition.
 
@@ -89,7 +89,7 @@ class HotspotPlot:
                     value[os.path.basename(
                         os.path.dirname(filename))] = (filename)
             for var_combination in self.var_combinations:
-                self.timeseries_scatter_plot(timeseries_dict, season,
+                self.timeseries_scatter_plot(deepcopy(timeseries_dict), season,
                                              var_combination)
 
     def hotspot_fields_plot(self, results_dict, tas_bound=None, pr_bound=None):
@@ -181,7 +181,6 @@ class HotspotPlot:
             else:
                 axes = fig.add_subplot(gspec[1, i - 6], projection=proj)
             self._add_axes_attributes(axes, path_ext, plotextend)
-
             norm = colors.BoundaryNorm(boundaries=style[0],
                                        ncolors=256,
                                        extend="both")
@@ -196,7 +195,7 @@ class HotspotPlot:
     @staticmethod
     def _add_axes_attributes(axes, path_ext, plotextend):
         rect_in_target = (ccrs.PlateCarree()._as_mpl_transform(axes) -
-                            axes.transData).transform_path(path_ext)
+                          axes.transData).transform_path(path_ext)
         axes.set_boundary(rect_in_target, use_as_clip_path=True)
         axes.set_facecolor("silver")
         axes.set_extent(plotextend, crs=ccrs.PlateCarree())
@@ -261,7 +260,6 @@ class HotspotPlot:
         slope and rvalue are shown. N indicates the number of models
         included in the ensemble mean.
         """
-        ancestors_dict = deepcopy(results_dict)
         legend_elements = {}
         fig = plt.figure(figsize=(12, 4), constrained_layout=True, dpi=300)
         gspec = fig.add_gridspec(1, 3)

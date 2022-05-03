@@ -26,7 +26,7 @@ class HotspotDiag:
     Class that reads, postprocesses and calls the plotting functions
     necessary to obtain the hotspot figures.
     """
-    
+
     def __init__(self, config):
         """Variables definition.
 
