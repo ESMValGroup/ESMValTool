@@ -105,13 +105,11 @@ class HotspotPlot:
 
         N indicates the number of models included in the ensemble mean.
         """
-        scenario = results_dict["scenario"]
-        sorted_keys = [
-            f"{period}_{season}_{variable}_{project}_{scenario}"
-            for variable in self.variables
-            for period in self.cfg["future_periods"]
-            for project in self.projects for season in self.seasons
-        ]
+        sorted_keys = [(f"{period}_{season}_{variable}"
+                        f"_{project}_{results_dict['scenario']}")
+                       for variable in self.variables
+                       for period in self.cfg["future_periods"]
+                       for project in self.projects for season in self.seasons]
         sorted_keys = [
             sorted_keys[:len(sorted_keys) // 2],
             sorted_keys[len(sorted_keys) // 2:]
@@ -133,13 +131,12 @@ class HotspotPlot:
             fill, frame = self._hotspot_fields_plot_panels(
                 results_dict, fig, keys, style)
             # plot figtexts
-            self._hotspot_fields_plot_figtexts(scenario, frame)
+            self._hotspot_fields_plot_figtexts(results_dict['scenario'], frame)
             # plot line
             self._hotspot_fields_plot_line(fig, frame)
             # plot colorbar
-            colorbar_axes = plt.gcf().add_axes([0.25, 0.125, 0.5, 0.04])
             cbar = plt.colorbar(fill,
-                                colorbar_axes,
+                                plt.gcf().add_axes([0.25, 0.125, 0.5, 0.04]),
                                 orientation="horizontal",
                                 extend="both")
             if variable == "pr":
@@ -153,7 +150,8 @@ class HotspotPlot:
                 against_region = "global"
 
             # plot title and save
-            self._hotspot_fields_plot_save(against_region, variable, scenario,
+            self._hotspot_fields_plot_save(against_region, variable,
+                                           results_dict['scenario'],
                                            ancestor_files)
 
     def _hotspot_fields_plot_panels(self, results_dict, fig, keys, style):
@@ -161,18 +159,18 @@ class HotspotPlot:
         # define projection
         proj, projection, path_ext, plotextend = self.define_projection(
             self.cfg["region"])
-        # define axes and panels
-        top, bottom, left, right = (0.75, 0.2, 0.02, 0.99)
+        # define axes and panels [top, bottom, left, right]
+        frame = (0.75, 0.2, 0.02, 0.99)
         gspec = GridSpec(
             len(self.cfg["future_periods"]),
             len(self.seasons) * 2,
             figure=fig,
             hspace=0.005,
             wspace=0.005,
-            top=top,
-            bottom=bottom,
-            left=left,
-            right=right,
+            top=frame[0],
+            bottom=frame[1],
+            left=frame[2],
+            right=frame[3],
         )
         for i, key in enumerate(keys):
             if i < 6:
@@ -193,14 +191,13 @@ class HotspotPlot:
             norm = colors.BoundaryNorm(boundaries=style[0],
                                        ncolors=256,
                                        extend="both")
-            cube = self.regrid_longitude_coord(results_dict[key])
             fill = iplt.pcolormesh(
-                cube,
+                self.regrid_longitude_coord(results_dict[key]),
                 norm=norm,
                 coords=(names.LON, names.LAT),
                 cmap=style[1],
             )
-        return fill, [top, bottom, left, right]
+        return fill, frame
 
     def _hotspot_fields_plot_figtexts(self, scenario, frame):
         """Plot period and scenario labels."""
@@ -399,7 +396,6 @@ class HotspotPlot:
 
     def _timeseries_scatter_plot_panel(self, data, axes, project, y_values):
         """Plot the scatter and the adjusted slopes."""
-
         timesteps = np.linspace(0, 1, len(data[0]))
         if project == "cmip6":
             cb_colors = plt.cm.Reds(np.linspace(0, 1, len(data[1])))
