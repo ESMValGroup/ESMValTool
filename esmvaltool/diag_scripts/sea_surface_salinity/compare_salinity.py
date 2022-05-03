@@ -190,8 +190,11 @@ class CompareSalinity(object):
         return time_offset
 
     def _align_yearly_axes(self, cube):
-        """Perform a time-regridding operation to align time axes for yr
-        data."""
+        """Align years.
+
+        Perform a time-regridding operation to align time axes for yr
+        data.
+        """
         years = [cell.point.year for cell in cube.coord('time').cells()]
         # be extra sure that the first point is not in the previous year
         if 0 not in np.diff(years):
@@ -253,8 +256,11 @@ class CompareSalinity(object):
 
     @staticmethod
     def _get_consistent_time_unit(cubes):
-        """Return cubes' time unit if consistent, standard calendar
-        otherwise."""
+        """Fix time units.
+
+        Return cubes' time unit if consistent, standard calendar
+        otherwise.
+        """
         t_units = [cube.coord('time').units for cube in cubes]
         if len(set(t_units)) == 1:
             return t_units[0]
