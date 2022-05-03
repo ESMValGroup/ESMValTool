@@ -29,7 +29,7 @@ from esmvaltool.diag_scripts.shared import (
 
 
 class HotspotPlot:
-    """class that plots the results.
+    """Class that plots the results.
 
     The btained plots correspond to figures 2, 3, S1, S2 and S4 from Cos
     et al. 2022 ESD.
@@ -134,12 +134,12 @@ class HotspotPlot:
             style = self.cb_bounds(variable, results_dict, keys,
                                    [tas_bound, pr_bound])
             # plot each panel
-            fill, frame = self.hotspot_fields_plot_panels(
+            fill, frame = self._hotspot_fields_plot_panels(
                 results_dict, fig, keys, style)
             # plot figtexts
-            self.hotspot_fields_plot_figtexts(scenario, frame)
+            self._hotspot_fields_plot_figtexts(scenario, frame)
             # plot line
-            self.hotspot_fields_plot_line(fig, frame)
+            self._hotspot_fields_plot_line(fig, frame)
             # plot colorbar
             colorbar_axes = plt.gcf().add_axes([0.25, 0.125, 0.5, 0.04])
             cbar = plt.colorbar(fill,
@@ -157,10 +157,10 @@ class HotspotPlot:
                 against_region = "global"
 
             # plot title and save
-            self.hotspot_fields_plot_save(against_region, variable, scenario,
-                                          ancestor_files)
+            self._hotspot_fields_plot_save(against_region, variable, scenario,
+                                           ancestor_files)
 
-    def hotspot_fields_plot_panels(self, results_dict, fig, keys, style):
+    def _hotspot_fields_plot_panels(self, results_dict, fig, keys, style):
         """Plot field panels."""
         # define projection
         proj, projection, path_ext, plotextend = self.define_projection(
@@ -187,9 +187,8 @@ class HotspotPlot:
                 axes = fig.add_subplot(gspec[1, i - 6], projection=proj)
 
             if projection == "LambertConformal":
-                proj_to_data = (ccrs.PlateCarree()._as_mpl_transform(axes) -
-                                axes.transData)
-                rect_in_target = proj_to_data.transform_path(path_ext)
+                rect_in_target = (ccrs.PlateCarree()._as_mpl_transform(axes) -
+                                  axes.transData).transform_path(path_ext)
                 axes.set_boundary(rect_in_target, use_as_clip_path=True)
                 axes.set_facecolor("silver")
             axes.set_extent(plotextend, crs=ccrs.PlateCarree())
@@ -208,7 +207,7 @@ class HotspotPlot:
             )
         return fill, [top, bottom, left, right]
 
-    def hotspot_fields_plot_figtexts(self, scenario, frame):
+    def _hotspot_fields_plot_figtexts(self, scenario, frame):
         """Plot period and scenario labels."""
         top, bottom, left, right = frame
         for p_ind, project in enumerate(self.projects):
@@ -231,15 +230,16 @@ class HotspotPlot:
                 fontsize="11",
             )
 
-    def hotspot_fields_plot_line(self, fig, frame):
+    @staticmethod
+    def _hotspot_fields_plot_line(fig, frame):
         """Plot separator line."""
         _, bottom, left, right = frame
         mid = left + (right - left) / 2
         line = plt.Line2D((mid, mid), (bottom, 0.9), color="k", linewidth=1)
         fig.add_artist(line)
 
-    def hotspot_fields_plot_save(self, against_region, variable, scenario,
-                                 ancestor_files):
+    def _hotspot_fields_plot_save(self, against_region, variable, scenario,
+                                  ancestor_files):
         """Plot title and save figure."""
         suptitle = (f"{self.cfg['region_name']} {variable.upper()} "
                     f"change against mean {against_region} future "
@@ -290,17 +290,17 @@ class HotspotPlot:
             for regional_key, large_scale_key in zip(regional_keys,
                                                      large_scale_keys):
                 project, large_scale_signal_ts, regional_signal_ts = (
-                    self.timeseries_scatter_plot_data(results_dict,
-                                                      large_scale_key,
-                                                      regional_key))
+                    self._timeseries_scatter_plot_data(results_dict,
+                                                       large_scale_key,
+                                                       regional_key))
                 # find linear regression
                 rvalue[project], slope[project], y_values = (
-                    self.timeseries_scatter_plot_linregress(
-                        large_scale_signal_ts, regional_signal_ts, rvalue,
-                        slope))
+                    self._timeseries_scatter_plot_reg(large_scale_signal_ts,
+                                                      regional_signal_ts,
+                                                      rvalue, slope))
                 # find max and min axis limits for project
                 min_range[project], max_range[
-                    project] = self.timeseries_scatter_plot_ranges(
+                    project] = self._timeseries_scatter_plot_rges(
                         large_scale_signal_ts, regional_signal_ts,
                         var_combination)
 
@@ -312,7 +312,7 @@ class HotspotPlot:
                 }
 
                 # colors n scatter plot
-                self.timeseries_scatter_plot_panels(
+                self._timeseries_scatter_plot_panel(
                     [large_scale_signal_ts, regional_signal_ts], axes[panel],
                     project, y_values)
 
@@ -341,7 +341,7 @@ class HotspotPlot:
                 "rvalue": rvalue,
                 "season": season,
             }
-            suptitle = self.timeseries_scatter_plot_labels(
+            suptitle = self._timeseries_scatter_plot_lbls(
                 results_dict, [large_scale_keys, regional_keys], axes[panel],
                 meta)
 
@@ -351,11 +351,11 @@ class HotspotPlot:
             min_lim -= delta_range * 0.1
             max_lim += delta_range * 0.1
 
-            self.timeseries_scatter_plot_lines(axes[panel])
+            self._timeseries_scatter_plot_lines(axes[panel])
 
         mins_maxs = min_lim, max_lim, min_glob, max_glob
-        self.timeseries_scatter_plot_axlim(axes, var_combination, slope,
-                                           mins_maxs)
+        self._timeseries_scatter_plot_axlim(axes, var_combination, slope,
+                                            mins_maxs)
 
         basename = f"scenario_combination_{var_combination}_{season}"
         provenance_record = self.get_rolling_mean_provenance(
@@ -363,8 +363,9 @@ class HotspotPlot:
         save_figure(basename, provenance_record, self.cfg)
 
     @staticmethod
-    def timeseries_scatter_plot_data(results_dict, large_scale_key,
-                                     regional_key):
+    def _timeseries_scatter_plot_data(results_dict, large_scale_key,
+                                      regional_key):
+        """Read regional and large scale data."""
         project = regional_key.split("_")[1]
         ls_cube = results_dict["large_scale"][large_scale_key]
         large_scale_signal_ts = iris.load_cube(ls_cube).data
@@ -373,8 +374,9 @@ class HotspotPlot:
         return project, large_scale_signal_ts, regional_signal_ts
 
     @staticmethod
-    def timeseries_scatter_plot_linregress(large_scale_signal_ts,
-                                           regional_signal_ts, rvalue, slope):
+    def _timeseries_scatter_plot_reg(large_scale_signal_ts, regional_signal_ts,
+                                     rvalue, slope):
+        """Compute the linear regression."""
         res = stats.linregress(large_scale_signal_ts, regional_signal_ts)
         y_values = res.intercept + res.slope * \
             np.array(large_scale_signal_ts)
@@ -383,8 +385,9 @@ class HotspotPlot:
         return rvalue, slope, y_values
 
     @staticmethod
-    def timeseries_scatter_plot_ranges(large_scale_signal_ts,
-                                       regional_signal_ts, var_combination):
+    def _timeseries_scatter_plot_rges(large_scale_signal_ts,
+                                      regional_signal_ts, var_combination):
+        """Find the ranges for the x and y-axis."""
         if var_combination == "pr:tas":
             max_range = max(regional_signal_ts)
             min_range = min(regional_signal_ts)
@@ -399,7 +402,8 @@ class HotspotPlot:
                 min_range = min(large_scale_signal_ts)
         return min_range, max_range
 
-    def timeseries_scatter_plot_panels(self, data, axes, project, y_values):
+    def _timeseries_scatter_plot_panel(self, data, axes, project, y_values):
+        """Plot the scatter and the adjusted slopes."""
         timesteps = np.linspace(0, 1, len(data[0]))
         if project == "cmip6":
             cb_colors = plt.cm.Reds(np.linspace(0, 1, len(data[1])))
@@ -419,7 +423,8 @@ class HotspotPlot:
         # plot regression
         axes.plot(data[0], y_values, color=self.base_colors[project])
 
-    def timeseries_scatter_plot_labels(self, results_dict, keys, axes, meta):
+    def _timeseries_scatter_plot_lbls(self, results_dict, keys, axes, meta):
+        """Plot the titles, suptitles and legends."""
         if meta["var_combination"].partition(":")[-1] == "tas":
             against_region = "Global"
         else:
@@ -466,7 +471,8 @@ class HotspotPlot:
         return suptitle
 
     @staticmethod
-    def timeseries_scatter_plot_lines(axes):
+    def _timeseries_scatter_plot_lines(axes):
+        """Draw the reference vertical and horizontal lines."""
         axes.axvline(
             x=0,
             ymin=-1000,
@@ -485,7 +491,9 @@ class HotspotPlot:
         )
 
     @staticmethod
-    def timeseries_scatter_plot_axlim(axes, var_combination, slope, mins_maxs):
+    def _timeseries_scatter_plot_axlim(axes, var_combination, slope,
+                                       mins_maxs):
+        """Fix the x and y-axis limits."""
         min_lim, max_lim, min_glob, max_glob = mins_maxs
         for box in range(3):
             axes[box].set_ylim(min_lim, max_lim)
