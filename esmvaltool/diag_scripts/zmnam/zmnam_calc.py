@@ -148,12 +148,19 @@ def zmnam_calc(da_fname, outdir, src_props):
         lead_pc = (pc[:, max_eigenval] - lead_pc_mean) / lead_pc_std
         lead_eof = eigenvec[:, max_eigenval]
 
+        # Constrain meridional EOF structure
         max_lat = max(range(len(lat)), key=lambda x: lat[x])
         min_lat = min(range(len(lat)), key=lambda x: lat[x])
 
-        if lead_eof[max_lat] > lead_eof[min_lat]:
+        if np.min(lat) > 0. and (lead_eof[max_lat] > lead_eof[min_lat]):
             lead_pc *= -1
             lead_eof *= -1
+            index_name = 'NAM'
+
+        if np.min(lat) < 0. and (lead_eof[min_lat] > lead_eof[max_lat]):
+            lead_pc *= -1
+            lead_eof *= -1
+            index_name = 'SAM'
 
         lead_pc_mo = np.zeros(len(date[mid_mon]), dtype='d')
         time_mo = np.zeros(len(date[mid_mon]), dtype='d')
@@ -174,7 +181,7 @@ def zmnam_calc(da_fname, outdir, src_props):
     # Save output files
 
     # (1) daily PCs
-    fname = outdir + '_'.join(src_props) + '_pc_da.nc'
+    fname = outdir + '_'.join(src_props) + '_pc_da_' + index_name + '.nc'
     outfiles.append(fname)
     with netCDF4.Dataset(fname, mode='w') as file_out:
         file_out.title = 'Zonal mean annular mode (1)'
@@ -210,13 +217,14 @@ def zmnam_calc(da_fname, outdir, src_props):
             'plev',
         ))
         pcs_da_var.setncattr('long_name', 'Daily zonal mean annular mode PC')
+        pcs_da_var.setncattr('index_type', index_name)
         pcs_da_var.setncattr(
             'comment',
             'Reference: Baldwin and Thompson (2009), doi:10.1002/qj.479')
         pcs_da_var[:] = pcs_da[:, :]
 
     # (2) monthly PCs
-    fname = outdir + '_'.join(src_props) + '_pc_mo.nc'
+    fname = outdir + '_'.join(src_props) + '_pc_mo_' + index_name + '.nc'
     outfiles.append(fname)
     with netCDF4.Dataset(fname, mode='w') as file_out:
         file_out.title = 'Zonal mean annular mode (2)'
@@ -250,13 +258,14 @@ def zmnam_calc(da_fname, outdir, src_props):
             'plev',
         ))
         pcs_mo_var.setncattr('long_name', 'Monthly zonal mean annular mode PC')
+        pcs_mo_var.setncattr('index_type', index_name)
         pcs_mo_var.setncattr(
             'comment',
             'Reference: Baldwin and Thompson (2009), doi:10.1002/qj.479')
         pcs_mo_var[:] = pcs_mo[:, :]
 
-    # (3) EOFs and explained varianceo
-    fname = outdir + '_'.join(src_props) + '_eofs.nc'
+    # (3) EOFs and explained variances
+    fname = outdir + '_'.join(src_props) + '_eofs_' + index_name + '.nc'
     outfiles.append(fname)
     with netCDF4.Dataset(fname, mode='w') as file_out:
         file_out.title = 'Zonal mean annular mode (3)'
@@ -299,6 +308,7 @@ def zmnam_calc(da_fname, outdir, src_props):
         #
         eofs_var = file_out.createVariable('EOF', 'd', ('plev', 'lat'))
         eofs_var.setncattr('long_name', 'Zonal mean annular mode EOF')
+        eofs_var.setncattr('index_type', index_name)
         eofs_var.setncattr(
             'comment',
             'Reference: Baldwin and Thompson (2009), doi:10.1002/qj.479')
@@ -307,6 +317,7 @@ def zmnam_calc(da_fname, outdir, src_props):
         eigs_var = file_out.createVariable('eigenvalues', 'd', ('plev'))
         eigs_var.setncattr('long_name',
                            'Zonal mean annular mode EOF explained variance')
+        eigs_var.setncattr('index_type', index_name)
         eigs_var.setncattr(
             'comment',
             'Reference: Baldwin and Thompson (2009), doi:10.1002/qj.479')

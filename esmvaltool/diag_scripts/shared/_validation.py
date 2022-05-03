@@ -4,8 +4,8 @@ import os
 import sys
 
 import iris
-
 from esmvalcore.preprocessor import climate_statistics
+
 from esmvaltool.diag_scripts.shared import select_metadata
 
 logger = logging.getLogger(os.path.basename(__file__))

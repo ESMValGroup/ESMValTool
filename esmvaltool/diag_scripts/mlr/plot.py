@@ -34,7 +34,7 @@ apply_common_mask: bool, optional (default: False)
     Apply common mask to all datasets prior to plotting. Requires identical
     shapes for all datasets.
 group_attribute_as_default_alias: bool, optional (default: True)
-    If ``True``, sse value of attribute given by ``group_by_attribute`` as
+    If ``True``, use value of attribute given by ``group_by_attribute`` as
     default alias if possible. If ``False``, use full group name (including
     ``var_type``) as default alias.
 group_by_attribute: str, optional (default: 'mlr_model_name')
@@ -860,8 +860,8 @@ def main(cfg):
         ]
         corr = ALL_CUBES.corr()
         with pd.option_context(*pandas_print_options):
-            logger.info("Means:\n%s", ALL_CUBES.mean(axis=0))
-            logger.info("Correlations:\n%s", corr)
+            logger.info("Unweighted means:\n%s", ALL_CUBES.mean(axis=0))
+            logger.info("Unweighted correlations:\n%s", corr)
         corr_path = get_diagnostic_filename('corr', cfg).replace('.nc', '.csv')
         corr.to_csv(corr_path)
         logger.info("Wrote %s", corr_path)

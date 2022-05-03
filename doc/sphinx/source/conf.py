@@ -420,7 +420,7 @@ numfig = True
 
 # Configuration for intersphinx
 intersphinx_mapping = {
-    'cf_units': ('https://scitools.org.uk/cf-units/docs/latest/', None),
+    'cf_units': ('https://cf-units.readthedocs.io/en/latest/', None),
     'esmvalcore':
     (f'https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/',
      None),
@@ -431,7 +431,7 @@ intersphinx_mapping = {
     'numpy': ('https://numpy.org/doc/stable/', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
     'python': ('https://docs.python.org/3/', None),
-    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/', None),
     'seaborn': ('https://seaborn.pydata.org/', None),
     'sklearn': ('https://scikit-learn.org/stable', None),
 }

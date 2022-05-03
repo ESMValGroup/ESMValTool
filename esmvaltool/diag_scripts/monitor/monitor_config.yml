@@ -1,0 +1,114 @@
+---
+maps:
+  global:  # Map name
+    projection: PlateCarree
+    projection_kwargs:
+      central_longitude: 285
+    smooth: true
+    lon: [-120, -60, 0, 60, 120, 180]
+    lat: [-90, -60, -30, 0, 30, 60, 90]
+    colorbar_location: bottom
+    extent: null
+    suptitle_pos: 0.87
+  arctic:
+    projection: NorthPolarStereo
+    projection_kwargs:
+      central_longitude: 270
+    lon: [-180, -150, -120, -90, -60, 0, 30, 60, 90, 120, 150, 180]
+    lat: [50, 60, 70, 80, 90]
+    smooth: true
+    draw_labels: true
+    suptitle_pos: 1.
+  antarctic:
+    projection: SouthPolarStereo
+    projection_kwargs:
+      central_longitude: 270
+    lon: [-180, -150, -120, -90, -60, 0, 30, 60, 90, 120, 150, 180]
+    lat: [-50, -60, -70, -80, -90]
+    draw_labels: true
+    smooth: true
+    suptitle_pos: 1.
+  north:
+    projection: NorthPolarStereo
+    projection_kwargs:
+      central_longitude: 270
+    lon: [-180, -150, -120, -90, -60, 0, 30, 60, 90, 120, 150, 180]
+    lat: [40, 50, 60, 70, 80, 90]
+    smooth: true
+    suptitle_pos: 1.
+  south:
+    projection: SouthPolarStereo
+    projection_kwargs:
+      central_longitude: 270
+    lon: [-180, -150, -120, -90, -60, 0, 30, 60, 90, 120, 150, 180]
+    lat: [-40, -50, -60, -70, -80, -90]
+    smooth: true
+    suptitle_pos: 1.
+
+
+variables:
+  default: &default
+    colors: RdYlBu_r
+    N: 20
+    bad: [0.9, 0.9, 0.9]
+  pr:
+    <<: *default
+    colors: gist_earth_r
+    bounds: 0-10.5,0.5
+    extend: max
+  heatc0-300m:
+    <<: *default
+    extend: both
+    bounds: 3.e11-3.75e11,0.05e11
+  sos:
+    default:
+      <<: *default
+      bounds: 25-41,1
+      extend: both
+    arctic:
+      bounds: 25-40,1
+    antarctic:
+      bounds: 30-40,0.5
+  siconc:
+    <<: *default
+    colors: Blues_r
+    bounds: 0-100,10
+  sivol:
+    <<: *default
+    bounds: 0-5,0.25
+    extend: max
+  msftbarot:
+    <<: *default
+    bounds: [-2.5e11, -2.25e11, -2.0e11, -1.75e11, -1.5e11, -1.25e11, -1.0e11,
+             -0.75e11, -0.5e11, -0.25e11, 0.0, 0.25e11, 0.5e11, 0.75e11,
+             1.0e11, 1.25e11, 1.5e11, 1.75e11, 2.0e11, 2.25e11, 2.5e11]
+    extend: both
+  od550aer: &opticaldepth
+    <<: *default
+    colors: Blues
+    bounds: 0-2,0.20
+    extend: max
+  od550dust: *opticaldepth
+  od550so4: *opticaldepth
+  od550bc: *opticaldepth
+  od550oa: *opticaldepth
+  od550no3: *opticaldepth
+  od550ss: *opticaldepth
+  nao: &nao
+    <<: *default
+    extend: both
+    bounds: [-0.03, -0.025, -0.02, -0.015, -0.01, -0.005, 0., 0.005, 0.01, 0.015, 0.02, 0.025, 0.03]
+    projection: PlateCarree
+    smooth: true
+    lon: [-90, -60, -30, 0, 30]
+    lat: [20, 40, 60, 80]
+    colorbar_location: bottom
+    suptitle_pos: 0.87
+  sam:
+    <<: *nao
+    lat: [-90, -80, -70, -60, -50]
+    projection: SouthPolarStereo
+    projection_kwargs:
+      central_longitude: 270
+    smooth: true
+    lon: [-120, -60, 0, 60, 120, 180]

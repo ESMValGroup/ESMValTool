@@ -37,8 +37,8 @@ preprocessors:
   highlat_co2:
     custom_order: true
     extract_point: &extract_point
-      latitude: 71.322998046875
-      longitude: 203.3885955810546875
+      latitude: 71.323
+      longitude: 203.389
       scheme: nearest
     annual_statistics:
       operator: mean
@@ -87,7 +87,7 @@ diagnostics:
       - {dataset: CESM1-BGC, start_year: 11, end_year: 140}
       - {dataset: GFDL-ESM2M, start_year: 11, end_year: 140}
       # - {dataset: HadGEM2-ES}
-      - {dataset: MIROC-ESM, start_year: 11, end_year: 140}
+### data not found on ESGF     - {dataset: MIROC-ESM, start_year: 11, end_year: 140}
       - {dataset: MPI-ESM-LR}
       - {dataset: NorESM1-ME, start_year: 11, end_year: 140}
     scripts:
@@ -124,7 +124,7 @@ diagnostics:
           - {dataset: CESM1-BGC}
           - {dataset: GFDL-ESM2M, start_year: 1861, end_year: 2005}
           # - {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
-          - {dataset: MIROC-ESM}
+###          - {dataset: MIROC-ESM}
           - {dataset: MPI-ESM-LR}
           - {dataset: NorESM1-ME}
       co2s_obs:
@@ -155,7 +155,7 @@ diagnostics:
           - {dataset: CESM1-BGC}
           - {dataset: GFDL-ESM2M, start_year: 1861, end_year: 2005}
           # - {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
-          - {dataset: MIROC-ESM}
+###          - {dataset: MIROC-ESM}
           - {dataset: MPI-ESM-LR}
           - {dataset: NorESM1-ME}
       co2s_amp_obs:

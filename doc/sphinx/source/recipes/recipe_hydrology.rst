@@ -106,6 +106,8 @@ All hydrological recipes require a shapefile as an input to produce forcing data
 	    * basin: name of the catchment
 	    * dem_file: netcdf file containing a digital elevation model with
 	      elevation in meters and coordinates latitude and longitude.
+              A wflow example dataset is available at: https://github.com/openstreams/wflow/tree/master/examples/wflow_rhine_sbm
+              The example dem_file can be obtained from https://github.com/openstreams/wflow/blob/master/examples/wflow_rhine_sbm/staticmaps/wflow_dem.map 
 	    * regrid: the regridding scheme for regridding to the digital elevation model. Choose ``area_weighted`` (slow) or ``linear``.
 
 #. recipe_lisflood.yml
@@ -226,10 +228,10 @@ Variables
 
 Observations and reformat scripts
 ---------------------------------
-*Note: see headers of cmorization scripts (in esmvaltool/cmorizers/obs) for download instructions.*
+*Note: download instructions can be obtained with `esmvaltool data info DATASET` or in headers of cmorization scripts.*
 
-*  ERA-Interim (esmvaltool/cmorizers/obs/cmorize_obs_era_interim.py)
-*  ERA5 (esmvaltool/cmorizers/obs/cmorize_obs_era5.py)
+*  ERA-Interim (esmvaltool/cmorizers/data/formatters/datasets/era_interim.py)
+*  ERA5 (esmvaltool/diag_scripts/cmorizers/era5.py)
 
 Output
 ---------

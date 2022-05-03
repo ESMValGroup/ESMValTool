@@ -1,0 +1,32 @@
+# CMORIZE ESA CCI LST
+# Follwing CRU and ESACCI-OC as examples
+# Only looking at AQUA MONTHLY data but python has placeholders for different platforms
+---
+
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: ESACCI-LST
+  version: '1.00'
+  tier: 2
+  project_id: OBS
+  source: 'ESA CCI'
+  modeling_realm: sat
+  reference: 'esacci_lst'
+  comment: ''
+  start_year: 2003
+  end_year: 2018
+
+# Variables to cmorize
+# These go into the vals dictionary in the python script
+variables:
+  ts:
+    mip: Amon
+    raw: land surface temperature
+    raw_units: kelvin
+    file_day: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
+    file_night: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
+    # plan to make it possible to change MODISA here but only placeholders in the python there for now
+    start_year: 2003
+    # 2003 Only has data from July onwards for Aqua MODIS
+    end_year: 2018

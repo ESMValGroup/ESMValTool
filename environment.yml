@@ -10,18 +10,21 @@ channels:
 
 dependencies:
   - pip!=21.3
+  - python>=3.8
   # Python packages that cannot be installed from PyPI:
   - cartopy
   - compilers
-  - gdal
   - esmpy
   - esmvalcore
+  - gdal
   - matplotlib-base
   # Non-Python dependencies
   - cdo
   - imagemagick
   - julia
   - nco
+  - python-cdo
+  - rasterio
   - ruamel.yaml
   - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
   - xgboost
