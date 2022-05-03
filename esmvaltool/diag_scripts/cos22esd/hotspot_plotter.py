@@ -274,11 +274,11 @@ class HotspotPlot:
             axes.append(fig.add_subplot(gspec[0, panel]))
             regional_keys = [
                 (f"{var_combination.split(':')[0]}_{proj}"
-                f"_{scen}") for proj in self.projects
+                 f"_{scen}") for proj in self.projects
             ]
             large_scale_keys = [
                 (f"{var_combination.split(':')[1]}_"
-                f"{project}_{scen}")
+                 f"{project}_{scen}")
                 for project in self.projects
             ]
             for regional_key, large_scale_key in zip(regional_keys,
@@ -348,7 +348,7 @@ class HotspotPlot:
 
         provenance_record = self.get_rolling_mean_provenance(
             suptitle, ancestor_files)
-        save_figure(f"scenario_combination_{var_combination}_{season}", 
+        save_figure(f"scenario_combination_{var_combination}_{season}",
                     provenance_record, self.cfg)
 
     @staticmethod
