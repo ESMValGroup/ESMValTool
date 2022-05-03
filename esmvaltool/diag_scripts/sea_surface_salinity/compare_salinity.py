@@ -49,8 +49,6 @@ class CompareSalinity(object):
             logger.debug("Info reference dataset:")
             logger.debug(reference)
             for alias, dataset_info in variables.items():
-                if alias not in ['CMCC-CM2-HR4', 'CanESM5', 'GISS-E2-2-H', 'NorESM2-MM']:
-                    continue
                 logger.info("Plotting dataset %s", alias)
                 dataset_info = dataset_info[0]
                 dataset = iris.load_cube(dataset_info[names.FILENAME])
