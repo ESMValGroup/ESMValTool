@@ -324,8 +324,8 @@ class HotspotPlot:
                 min_glob.append(min(large_scale_signal_ts))
                 # collect used ancestor files
                 ancestor_files.append(
-                    ancestors_dict["large_scale"][regional_key])
-                ancestor_files.append(ancestors_dict["regional"][regional_key])
+                    results_dict["large_scale"][regional_key])
+                ancestor_files.append(results_dict["regional"][regional_key])
 
             meta = {
                 "var_combination": var_combination,
