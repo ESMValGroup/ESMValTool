@@ -31,8 +31,8 @@ from esmvaltool.diag_scripts.shared import (
 class HotspotPlot:
     """Class that plots the results.
 
-    The btained plots correspond to figures 2, 3, S1, S2 and S4 from Cos
-    et al. 2022 ESD.
+    The obtained plots correspond to figures 2, 3, S1, S2 and S4 from
+    Cos et al. 2022 ESD.
     """
     def __init__(self, config):
         """Variable definition.

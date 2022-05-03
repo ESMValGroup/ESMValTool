@@ -6,7 +6,6 @@ Output:
  - fields of the hotspot for DJF and JJA in CMIP5 and CMIP6.
 """
 import iris
-
 from esmvalcore.preprocessor import (
     annual_statistics,
     anomalies,
@@ -18,10 +17,7 @@ from esmvalcore.preprocessor import (
     mask_landsea,
 )
 
-from esmvaltool.diag_scripts.shared import (
-    save_data,
-    run_diagnostic,
-)
+from esmvaltool.diag_scripts.shared import run_diagnostic, save_data
 
 
 class HotspotDiag:
@@ -30,12 +26,11 @@ class HotspotDiag:
     Class that reads, postprocesses and calls the plotting functions
     necessary to obtain the hotspot figures.
     """
-
     def __init__(self, config):
         """Variables definition.
 
-        config is a dictionary containing metadata regarding input files and
-        overall, as the name suggests, configuration options.
+        config is a dictionary containing metadata regarding input files
+        and overall, as the name suggests, configuration options.
         """
         self.cfg = config
         self.anomaly_reference = {
@@ -47,10 +42,14 @@ class HotspotDiag:
             "end_day": 31,
         }
         self.regions = {
-            "tas": {"large_scale": "global",
-                    "regional": self.cfg["region_name"]},
-            "pr": {"large_scale": "latitudinal belt",
-                   "regional": self.cfg["region_name"]},
+            "tas": {
+                "large_scale": "global",
+                "regional": self.cfg["region_name"]
+            },
+            "pr": {
+                "large_scale": "latitudinal belt",
+                "regional": self.cfg["region_name"]
+            },
         }
 
     def compute(self):
@@ -65,24 +64,25 @@ class HotspotDiag:
                                               self.cfg["region"][3])
 
         for season in ["jja", "djf", "annual"]:
-            time_subset_large_scale_cube = self.extract_annual_or_season(
+            time_extr_large_scale_cube = self.extract_annual_or_season(
                 large_scale_cube, season)
-            time_subset_regional_cube = self.extract_annual_or_season(
+            time_extr_regional_cube = self.extract_annual_or_season(
                 regional_cube, season)
-            time_subset_cubes = [time_subset_large_scale_cube,
-                                 time_subset_regional_cube]
-            self.compute_hotspot_fields(
-                time_subset_cubes, season, filename, input_data_dict)
-            for key, cube in zip(["large_scale", "regional"],
-                                 [time_subset_large_scale_cube,
-                                 time_subset_regional_cube]):
+            time_subset_cubes = [
+                time_extr_large_scale_cube, time_extr_regional_cube
+            ]
+            self.compute_hotspot_fields(time_subset_cubes, season, filename,
+                                        input_data_dict)
+            for key, cube in zip(
+                        ["large_scale", "regional"],
+                        [time_extr_large_scale_cube, time_extr_regional_cube]):
                 rolling_mean_cube = self.compute_rolling_means(cube)
                 basename = f"rolling_mean_{key}_{season}"
                 region = self.regions[regional_cube.var_name][key]
                 provenance_record = self.get_rolling_mean_record(
                     input_data_dict, season, region, filename)
-                save_data(basename, provenance_record,
-                          self.cfg, rolling_mean_cube)
+                save_data(basename, provenance_record, self.cfg,
+                          rolling_mean_cube)
 
     def extract_regional(self, cube):
         """Extract the hotspot region and mask its sea."""
@@ -109,29 +109,29 @@ class HotspotDiag:
             cube = extract_season(cube, season)
         return cube
 
-    def compute_hotspot_fields(self, cubes, season,
-                               filename, input_data_dict):
+    def compute_hotspot_fields(self, cubes, season, filename, input_data_dict):
         """Compute the hotspot fields with self.retireve_data cubes.
 
         the resulting cubes are saved inside self.experiment_dict.
         """
-        regional_anomaly = anomalies(
-            cubes[1], "full", reference=self.anomaly_reference)
-        large_scale_anomaly = anomalies(
-            cubes[0], "full", reference=self.anomaly_reference)
+        regional_anomaly = anomalies(cubes[1],
+                                     "full",
+                                     reference=self.anomaly_reference)
+        large_scale_anomaly = anomalies(cubes[0],
+                                        "full",
+                                        reference=self.anomaly_reference)
         if cubes[1].var_name == "pr":
-            regional_anomaly = self.relative_change(
-                regional_anomaly, cubes[1])
-            large_scale_anomaly = self.relative_change(
-                large_scale_anomaly, cubes[0])
+            regional_anomaly = self.relative_change(regional_anomaly, cubes[1])
+            large_scale_anomaly = self.relative_change(large_scale_anomaly,
+                                                       cubes[0])
         hotspot = regional_anomaly - \
             area_statistics(large_scale_anomaly, "mean")
         hotspot.var_name = f"{regional_anomaly.var_name}_hotspot"
         for period in self.cfg["future_periods"]:
             start_year = int(period.split("-")[0])
             end_year = int(period.split("-")[-1])
-            period_anomaly = extract_time(hotspot, start_year, 1, 1,
-                                          end_year, 12, 31)
+            period_anomaly = extract_time(hotspot, start_year, 1, 1, end_year,
+                                          12, 31)
             period_anomaly = climate_statistics(period_anomaly)
 
             basename = f"hotspot_{season}_{period}"
@@ -142,31 +142,31 @@ class HotspotDiag:
     def compute_rolling_means(self, cube):
         """Compute the 10yr rolling mean anomaly.
 
-        A timeseries with respect to the baseline
-        period is obtained for the input cube.
+        A timeseries with respect to the baseline period is obtained for
+        the input cube.
         """
         area_mean = area_statistics(cube, 'mean')
-        anomaly = anomalies(area_mean, "full",
+        anomaly = anomalies(area_mean,
+                            "full",
                             reference=self.anomaly_reference)
         if cube.var_name == "pr":
             anomaly = self.relative_change(anomaly, area_mean)
-        timeseries_cube = anomaly.rolling_window(
-            "time", iris.analysis.MEAN, 2)  # 10 10 10 10 10 10 10 10 10
+        timeseries_cube = anomaly.rolling_window("time", iris.analysis.MEAN,
+                                                 10)
         return timeseries_cube
 
     def relative_change(self, anomaly, cube):
         """Compute relative anomaly."""
         baseline_cube = extract_time(cube,
-                                     int(self.cfg["baseline_period"][0]),
-                                     1, 1,
-                                     int(self.cfg["baseline_period"][1]),
-                                     12, 31)
+                                     int(self.cfg["baseline_period"][0]), 1, 1,
+                                     int(self.cfg["baseline_period"][1]), 12,
+                                     31)
         baseline_cube = climate_statistics(baseline_cube)
         anomaly /= baseline_cube
         return anomaly * 100
 
-    def get_hotspot_provenance_record(self, attributes, period,
-                                      season, ancestor_files):
+    def get_hotspot_provenance_record(self, attributes, period, season,
+                                      ancestor_files):
         """Create a provenance record.
 
         It describes the hotspot fields diagnostic data.
@@ -184,7 +184,6 @@ class HotspotDiag:
             'domains': ['global', 'reg'],
             'authors': [
                 'cos_josep',
-
             ],
             'references': [
                 'cos22esd',
@@ -193,8 +192,8 @@ class HotspotDiag:
         }
         return record
 
-    def get_rolling_mean_record(self, attributes, season,
-                                region, ancestor_files):
+    def get_rolling_mean_record(self, attributes, season, region,
+                                ancestor_files):
         """Create a provenance record.
 
         It describes the rolling mean diagnostic data.
