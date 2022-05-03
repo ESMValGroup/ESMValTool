@@ -352,12 +352,12 @@ def make_plots(cci_lst, data_means, total_uncert, config):#total_uncert, model_l
     MIN = np.min([cci_low, cci_high, data_means['CMIP5'].data,data_means['CMIP6'].data])
     MAX = np.max([cci_low, cci_high, data_means['CMIP5'].data,data_means['CMIP6'].data])
 
-    ax1.set_yticks(np.arange(5*((MIN-5)//5), 5*((MAX+5)//5),5))
-    ax1.set_yticklabels(np.arange(5*((MIN-5)//5), 5*((MAX+5+1)//5),5), fontsize=18)
+    ax1.set_yticks(np.arange(5*((MIN-5)//5), 5*((MAX+5)//5)+7,5))
+    ax1.set_yticklabels(np.arange(5*((MIN-5)//5), 5*((MAX+5+1)//5)+7,5), fontsize=18)
     ax1.set_ylim((MIN-6,MAX+7))
 
-    ax3[0].set_yticks(np.arange(5*((MIN-5)//5), 5*((MAX+5)//5),5))
-    ax3[0].set_yticklabels(np.arange(5*((MIN-5)//5), 5*((MAX+5+1)//5),5), fontsize=18)
+    ax3[0].set_yticks(np.arange(5*((MIN-5)//5), 5*((MAX+5)//5)+7,5))
+    ax3[0].set_yticklabels(np.arange(5*((MIN-5)//5), 5*((MAX+5+1)//5)+7,5), fontsize=18)
     ax3[0].set_ylim((MIN-6,MAX+7))
 
 
@@ -437,13 +437,25 @@ def make_plots(cci_lst, data_means, total_uncert, config):#total_uncert, model_l
     ax2.set_xlabel('Date', fontsize=22)
     ax3[1].set_xlabel('Date', fontsize=22)
 
-    ax2.set_ylabel('Model', fontsize=18)
-    ax3[1].set_ylabel('Model', fontsize=18)
+    ax2.set_ylabel('Model', fontsize=22)
+    ax3[1].set_ylabel('Model', fontsize=22)
+
+    ax1.set_ylabel('LST (K)', fontsize=22)
+    ax3[0].set_ylabel('LST (K)', fontsize=22)
 
     ax1.grid()
     ax2.grid()
     ax3[0].grid()
     ax3[1].grid()
+
+
+    ax2.text(17,0.60,'Model cooler than Obs', fontsize=20, color=colours['low'])
+    ax2.text(17,0.50,'Model inside Obs uncertainty', fontsize=20, color=colours['inside'])
+    ax2.text(17,0.40,'Model warmer than Obs', fontsize=20, color=colours['high'])
+
+    ax3[1].text(17,0.60,'Model cooler than Obs', fontsize=20, color=colours['low'])
+    ax3[1].text(17,0.50,'Model inside Obs uncertainty', fontsize=20, color=colours['inside'])
+    ax3[1].text(17,0.40,'Model warmer than Obs', fontsize=20, color=colours['high'])    
 
     lons = cci_lst.coord('longitude').bounds
     lats = cci_lst.coord('latitude').bounds
