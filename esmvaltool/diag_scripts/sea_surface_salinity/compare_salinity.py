@@ -274,11 +274,11 @@ class CompareSalinity(object):
                 for year, month in zip(years, months)
                 ]
 
-        # Update the cubes' time coordinate (both point values and the units!)
-        cube.coord('time').points = date2num(dates, t_unit, coord.dtype)
-        cube.coord('time').units = t_unit
-        cube.coord('time').bounds = None
-        cube.coord('time').guess_bounds()
+            # Update the cubes' time coordinate (both point values and the units!)
+            cube.coord('time').points = date2num(dates, t_unit, coord.dtype)
+            cube.coord('time').units = t_unit
+            cube.coord('time').bounds = None
+            cube.coord('time').guess_bounds()
 
 class TextHandler(HandlerBase):
     def create_artists(self, legend, text, xdescent, ydescent, width, height,
