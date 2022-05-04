@@ -220,6 +220,7 @@ begin
     ; function in aux_plotting.ncl
 
     if (ii.eq.0) then
+      nframe = 0
       wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_pdf_" + var0 \
                     + filename_add)
       wks_line = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_pdf_" + var0 \
@@ -236,6 +237,7 @@ begin
     res@tiMainString             = names(imod)
 
     plot(ii) = gsn_histogram(wks, ndtooned(data1), res)
+    nframe = nframe + 1
 
     ; mandatory netcdf output
 
@@ -364,6 +366,12 @@ begin
 
   gsn_panel(wks, plot(plotind), plotsperline, pres)
   outfile = wks@fullname
+  nframe = nframe + 1
+
+  suffix = get_file_suffix(outfile, 0)
+  if (suffix .eq. ".png") then
+    outfile = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
+  end if
 
   ; ========================================================================
 
