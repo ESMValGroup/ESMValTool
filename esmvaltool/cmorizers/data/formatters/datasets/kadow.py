@@ -19,7 +19,6 @@ import logging
 import os
 
 import iris
-import numpy as np
 from cf_units import Unit
 
 from esmvaltool.cmorizers.data import utilities as utils
