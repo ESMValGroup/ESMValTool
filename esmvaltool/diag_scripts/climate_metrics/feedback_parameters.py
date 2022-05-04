@@ -43,6 +43,7 @@ import iris.plot as iplt
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import cartopy.crs as ccrs
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
@@ -280,6 +281,7 @@ def _create_feedback_plot(tas_cube, cube, dataset_name, cfg, description=None):
                    f"{NICE_UNITS.get(feedback_cube.units.origin, 'unknown')}")
         colorbar = None
     elif feedback_cube.ndim == 2:
+        plt.axes(projection=ccrs.Robinson())
         iplt.contourf(feedback_cube, cmap='bwr', levels=_get_levels())
         colorbar = plt.colorbar(orientation='horizontal')
         colorbar.set_label(

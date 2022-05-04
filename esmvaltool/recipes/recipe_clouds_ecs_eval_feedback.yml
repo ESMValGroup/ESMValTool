@@ -59,8 +59,8 @@ High_ECS_RTNT: &high_ecs_rtnt
   - {dataset: HadGEM2-ES,    exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1860, end_year: 2009}
     #- {dataset: IPSL-CM5A-LR,  exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
     #- {dataset: IPSL-CM5A-LR,  exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
-  - {dataset: IPSL-CM5A-MR,  exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1989}
-  - {dataset: IPSL-CM5A-MR,  exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1989}
+    #- {dataset: IPSL-CM5A-MR,  exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1989}
+    #- {dataset: IPSL-CM5A-MR,  exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year: 1850, end_year: 1989}
   - {dataset: MIROC-ESM,     exp: piControl,   project: CMIP5, ensemble: r1i1p1, start_year: 1880, end_year: 2029}
   - {dataset: MIROC-ESM,     exp: abrupt4xCO2, project: CMIP5, ensemble: r1i1p1, start_year:    1, end_year:  150}
 
@@ -172,7 +172,7 @@ diagnostics:
     scripts:
       feedback_parameters: &script_feedback_parameters
         script: climate_metrics/feedback_parameters.py
-        calculate_mmm: false #true
+        calculate_mmm: true
         only_consider_mmm: false #true
         output_attributes:  # Dummy attributes necessary for mlr/plot.py
           tag: cre_feedback_parameter
