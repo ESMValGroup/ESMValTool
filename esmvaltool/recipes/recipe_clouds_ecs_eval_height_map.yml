@@ -269,6 +269,7 @@ diagnostics:
                    ['ECS_med_hist', 'ECS_med_scen'],
                    ['ECS_high_hist', 'ECS_high_scen']]
         filename_attach: ssp585
+        plot_each_model: true
 
 
   cli_height:

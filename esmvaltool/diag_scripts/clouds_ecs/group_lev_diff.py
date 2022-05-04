@@ -15,6 +15,7 @@ import numpy as np
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
+    get_plot_filename,
     save_data,
     save_figure,
     select_metadata,
@@ -25,12 +26,16 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(Path(__file__).stem)
 
+VAR_NAMES = {
+    'cl': 'cloud_fraction',
+    'cli': 'ice_water_content',
+    'clw': 'liquid_water_content',
+}
 LINE_LEGEND = {
     'ECS_high_hist': 'ECS_high',
     'ECS_med_hist': 'ECS_med',
     'ECS_low_hist': 'ECS_low',
 }
-
 LINE_COLOR = {
     'ECS_high_hist': 'royalblue',
     'ECS_high_scen': 'royalblue',
@@ -43,7 +48,6 @@ LINE_COLOR = {
     'CMIP3': 'darkcyan',
     'OBS': 'black'
 }
-
 LINE_DASH = {
     'ECS_high_hist': 'solid',
     'ECS_high_scen': 'dashed',
@@ -56,7 +60,6 @@ LINE_DASH = {
     'CMIP3': 'solid',
     'OBS': 'solid'
 }
-
 FIGURE_NUMBER = {
     'ECS_high_hist': 231,
     'ECS_med_hist': 232,
@@ -66,7 +69,6 @@ FIGURE_NUMBER = {
     'ECS_low_scen': 427,
     'OBS': 424
 }
-
 FIGURE_NUMBER_DIFF = {
     'ECS_high_hist': 234,
     'ECS_med_hist': 235,
@@ -120,9 +122,7 @@ def compute_diagnostic(filename):
     logger.debug("Loading %s", filename)
     cube = iris.load_cube(filename)
 
-    print(cube)
-
-    logger.debug("Running example computation")
+    logger.debug("Reading data")
     cube = iris.util.squeeze(cube)
     return cube
 
@@ -138,6 +138,38 @@ def compute_diff(filename1, filename2):
     return cube
 
 
+def plot_model(cube, attributes, plot_type, cfg):
+    """Plot each single model."""
+
+    plt.ylim(1000.,100.)
+    plt.yscale('log')
+    plt.yticks([1000., 800., 600., 400., 300., 200., 100.], [1000, 800, 600, 400, 300, 200, 100])
+    cube.coord('air_pressure').convert_units('hPa')
+    if cube.var_name == 'cl':
+        levels = np.linspace(0., 50., 11)
+    elif cube.var_name == 'cli':
+        levels = np.linspace(0., 0.02, 11)
+        cube.convert_units('g/kg')
+    elif cube.var_name == 'clw':
+        levels = np.linspace(0., 0.05, 11)
+        cube.convert_units('g/kg')
+    qplt.contourf(cube, levels=levels, extend='max')
+
+    # Appearance
+    dataset_name = attributes['dataset']
+    title = f'{VAR_NAMES.get(cube.var_name, cube.var_name)} for {dataset_name}'
+    filename = ('{}_{}_{}'.format(VAR_NAMES.get(cube.var_name, cube.var_name),
+                                  attributes['exp'], dataset_name))
+
+    plt.title(title)
+    plot_path = get_plot_filename(filename, cfg)
+    plt.savefig(plot_path,
+                bbox_inches='tight',
+                orientation='landscape')
+    logger.info("Wrote %s", plot_path)
+    plt.close()
+
+
 def plot_diagnostic(cube, legend, plot_type, cfg):
     """Create diagnostic data and plot it."""
 
@@ -145,10 +177,6 @@ def plot_diagnostic(cube, legend, plot_type, cfg):
         # Create the plot
         quickplot(cube, **cfg['quickplot'])
     else:
-        cube_label = legend
-        line_color = LINE_COLOR.get(legend, legend)
-        line_dash = LINE_DASH.get(legend, legend)
-
         nplot = FIGURE_NUMBER.get(legend, legend)
 
         plt.subplot(nplot)
@@ -165,7 +193,7 @@ def plot_diagnostic(cube, legend, plot_type, cfg):
         elif cube.var_name == 'clw':
             levels = np.linspace(0., 0.05, 11)
             cube.convert_units('g/kg')
-        qplt.contourf(cube, levels=levels, extend='max') #, label=cube_label) 
+        qplt.contourf(cube, levels=levels, extend='max')
 
         logger.info("Plotting %s", legend)
 
@@ -177,10 +205,6 @@ def plot_diagnostic_diff(cube, legend, plot_type, cfg):
         # Create the plot
         quickplot(cube, **cfg['quickplot'])
     else:
-        cube_label = LINE_LEGEND.get(legend, legend)
-        line_color = LINE_COLOR.get(legend, legend)
-        line_dash = LINE_DASH.get(legend, legend)
-
         nplot = FIGURE_NUMBER_DIFF.get(legend, legend)
 
         plt.subplot(nplot)
@@ -207,6 +231,7 @@ def main(cfg):
     cfg = deepcopy(cfg)
     cfg.setdefault('title_key', 'dataset')
     cfg.setdefault('filename_attach', 'base')
+    cfg.setdefault('plot_each_model', False)
     logger.info("Using key '%s' to create titles for datasets",
                 cfg['title_key'])
 
@@ -231,10 +256,15 @@ def main(cfg):
 
             for attributes in groups[group_name]:
                 logger.info("Loop dataset %s", attributes['dataset'])
+
+                input_file = attributes['filename']
+                cube = compute_diagnostic(input_file)
+
+                if cfg['plot_each_model']:
+                    plot_model(cube, attributes, plot_type, cfg)
+
                 if attributes['dataset'] == 'MultiModelMean' or group_name == 'OBS':
                   logger.info("Processing dataset %s", attributes['dataset'])
-                  input_file = attributes['filename']
-                  cube = compute_diagnostic(input_file)
                   cubes.append(cube)
 
                   plot_diagnostic(cube, group_name, plot_type, cfg)
@@ -245,9 +275,6 @@ def main(cfg):
                     title = attributes['long_name']
 
                   plt.title(title, fontsize=10)
-                  #axes = plt.axes()
-                  #axes.set_yticks([1000.,800.,600.,400.,300.,200.,100.])
-                  #plt.ylabel('Air pressure (hPa)', ncol=1)
 
 
     for group_name in cfg['group_by']:
