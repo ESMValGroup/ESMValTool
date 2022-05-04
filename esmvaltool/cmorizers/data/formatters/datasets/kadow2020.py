@@ -11,7 +11,8 @@ Last access
 
 Download and processing instructions
     Download the following file:
-        [SOURCE]/HadCRUT.5.0.1.0.anomalies.Kadow_et_al_2020_20crAI-infilled.ensemble_mean_185001-202012.nc
+        [SOURCE]/HadCRUT.5.0.1.0.anomalies.Kadow_et_al_2020_20crAI-infilled
+                        .ensemble_mean_185001-202012.nc
 """
 
 import copy
@@ -69,7 +70,7 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
                         unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
+def cmorization(in_dir, out_dir, cfg, start_date, end_date):
     """Cmorization func call."""
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
