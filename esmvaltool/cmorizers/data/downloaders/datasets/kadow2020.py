@@ -1,4 +1,4 @@
-"""Script to download Kadow from its webpage."""
+"""Script to download Kadow2020 from its webpage."""
 import logging
 import os
 

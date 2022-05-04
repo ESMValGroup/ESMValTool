@@ -1,7 +1,7 @@
 ---
 # Common global attributes for Cmorizer output
 attributes:
-  dataset_id: Kadow
+  dataset_id: Kadow2020
   version: '5.0.1.0'
   tier: 2
   modeling_realm: ground

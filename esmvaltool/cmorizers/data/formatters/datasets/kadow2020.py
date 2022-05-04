@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for Kadow data.
+"""ESMValTool CMORizer for Kadow2020 data.
 
 Tier
     Tier 2: other freely-available dataset.

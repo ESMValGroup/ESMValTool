@@ -698,7 +698,7 @@ datasets:
       Meteorological Research Institute, Tsukuba City, Japan). See link above
       for more information.
 
-  KADOW:
+  Kadow2020:
     tier: 2
     source: http://users.met.fu-berlin.de/~ChristopherKadow/
     last_access: 2022-03-29
