@@ -1,6 +1,6 @@
 # ESMValTool
 # recipe_mpqb_xch4.yml
----
+
 documentation:
   title: Methane evaluation with ESA CMUG data
   description: |
@@ -40,8 +40,6 @@ global_mon: &global_mon
   mask_multimodel:
   area_statistics:
     operator: mean
-    fx_variables:
-      areacella:
   monthly_statistics:
     operator: mean
 
@@ -51,8 +49,6 @@ global_ann: &global_ann
   mask_multimodel:
   area_statistics:
     operator: mean
-    fx_variables:
-      areacella:
   annual_statistics:
     operator: mean
 
@@ -63,8 +59,6 @@ sh_mon: &sh_mon
   mask_multimodel:
   area_statistics:
     operator: mean
-    fx_variables:
-      areacella:
   monthly_statistics:
     operator: mean
 
@@ -75,8 +69,6 @@ sh_ann: &sh_ann
   mask_multimodel:
   area_statistics:
     operator: mean
-    fx_variables:
-      areacella:
   annual_statistics:
     operator: mean
 
@@ -87,8 +79,6 @@ nh_mon: &nh_mon
   mask_multimodel:
   area_statistics:
     operator: mean
-    fx_variables:
-      areacella:
   monthly_statistics:
     operator: mean
 
@@ -99,8 +89,6 @@ nh_ann: &nh_ann
   mask_multimodel:
   area_statistics:
     operator: mean
-    fx_variables:
-      areacella:
   annual_statistics:
     operator: mean
 
@@ -127,6 +115,19 @@ datasets:
      exp: historical, derive: true, alias: CESM2-WACCM-FV2}
   - {dataset: GFDL-ESM4, project: CMIP6, ensemble: r1i1p1f1, grid: gr1,
      exp: historical, derive: true, alias: GFDL-ESM4}
+### CMIP5 (historical)
+  # - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1,
+     # exp: historical, derive: true, alias: BNU-ESM}
+  # - {dataset: CESM1-FASTCHEM, project: CMIP5, ensemble: r1i1p1,
+     # exp: historical, derive: true, alias: CESM1-FASTCHEM}
+  # - {dataset: CESM1-WACCM, project: CMIP5, ensemble: r1i1p1,
+     # exp: historical, derive: true, alias: CESM1-WACCM}
+  # - {dataset: FIO-ESM, project: CMIP5, ensemble: r1i1p1,
+     # exp: historical, derive: true, alias: FIO-ESM}
+  # - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1,
+     # exp: historical, derive: true, alias: MIROC-ESM-CHEM}
+  # - {dataset: MRI-ESM1, project: CMIP5, ensemble: r1i1p1,
+     # exp: historical, derive: true, alias: MRI-ESM1}
 ### CMIP6 (ssp585)
   # - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn,
      # exp: ssp585, derive: true, alias: BCC-CSM2-MR}
@@ -208,6 +209,10 @@ preprocessors:
       operator: mean
       period: month
 
+xch4_def_cmip5: &xch4def_cmip5
+  mip: Amon
+  start_year: 2003
+  end_year: 2005
 
 xch4_def_cmip6: &xch4def_cmip6
   mip: Amon
@@ -221,35 +226,38 @@ xch4_def_future: &xch4def_fut
 
 
 diagnostics:
-  ### global analyses
-  lineplots_gl_monmean:
-    description: lineplot monthly means
-    variables:
-      xch4:
-        preprocessor: pp_lineplots_gl_mon
-        <<: *xch4def_cmip6
-    scripts:
-      lineplot_gl_monmean:
-        script: mpqb/mpqb_lineplot.py
-  lineplots_gl_gr:
-    description: lineplot growth rate global
-    variables:
-      xch4:
-        preprocessor: pp_lineplots_gl_ann
-        <<: *xch4def_cmip6
-    scripts:
-      lineplot_gl_growthrate:
-        script: mpqb/mpqb_lineplot_growthrate.py
-  lineplots_anncyc_gl:
-    description: lineplot annual cycle
-    variables:
-      xch4:
-        preprocessor: pp_lineplots_anncyc_gl
-        derive: true
-        <<: *xch4def_cmip6
-    scripts:
-      lineplot_gl_anncyc:
-        script: mpqb/mpqb_lineplot_anncyc.py
+  # ### global analyses
+  # lineplots_gl_monmean:
+    # description: lineplot monthly means
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_gl_mon
+        # <<: *xch4def_cmip6
+        # #<<: *xch4def_cmip5
+    # scripts:
+      # lineplot_gl_monmean:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_gl_gr:
+    # description: lineplot growth rate global
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_gl_ann
+        # <<: *xch4def_cmip6
+        # #<<: *xch4def_cmip5
+    # scripts:
+      # lineplot_gl_growthrate:
+        # script: mpqb/mpqb_lineplot_growthrate.py
+  # lineplots_anncyc_gl:
+    # description: lineplot annual cycle
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_anncyc_gl
+        # derive: true
+        # <<: *xch4def_cmip6
+        # #<<: *xch4def_cmip5
+    # scripts:
+      # lineplot_gl_anncyc:
+        # script: mpqb/mpqb_lineplot_anncyc.py
 
   ### NH analyses
   lineplots_nh_monmean:
@@ -257,7 +265,8 @@ diagnostics:
     variables:
       xch4:
         preprocessor: pp_lineplots_nh_mon
-        <<: *xch4def_cmip6
+        #<<: *xch4def_cmip6
+        <<: *xch4def_cmip5
     scripts:
       lineplot_nh_monmean:
         script: mpqb/mpqb_lineplot.py
@@ -266,7 +275,8 @@ diagnostics:
     variables:
       xch4:
         preprocessor: pp_lineplots_nh_ann
-        <<: *xch4def_cmip6
+        #<<: *xch4def_cmip6
+        <<: *xch4def_cmip5
     scripts:
       lineplot_nh_growthrate:
         script: mpqb/mpqb_lineplot_growthrate.py
@@ -276,37 +286,41 @@ diagnostics:
       xch4:
         preprocessor: pp_lineplots_anncyc_nh
         derive: true
-        <<: *xch4def_cmip6
+        #<<: *xch4def_cmip6
+        <<: *xch4def_cmip5
     scripts:
       lineplot_nh_anncyc:
         script: mpqb/mpqb_lineplot_anncyc.py
 
   ### SH analyses
-  lineplots_sh_monmean:
-    description: lineplot monthly means for the SH
-    variables:
-      xch4:
-        preprocessor: pp_lineplots_sh_mon
-        <<: *xch4def_cmip6
-    scripts:
-      lineplot_sh_monmean:
-        script: mpqb/mpqb_lineplot.py
-  lineplots_sh_gr:
-    description: lineplot growth rate for the SH
-    variables:
-      xch4:
-        preprocessor: pp_lineplots_sh_ann
-        <<: *xch4def_cmip6
-    scripts:
-      lineplot_sh_growthrate:
-        script: mpqb/mpqb_lineplot_growthrate.py
-  lineplots_anncyc_sh:
-    description: lineplot annual cycle for the SH
-    variables:
-      xch4:
-        preprocessor: pp_lineplots_anncyc_sh
-        derive: true
-        <<: *xch4def_cmip6
-    scripts:
-      lineplot_sh_anncyc:
-        script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_sh_monmean:
+    # description: lineplot monthly means for the SH
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_sh_mon
+        # <<: *xch4def_cmip6
+        # #<<: *xch4def_cmip5
+    # scripts:
+      # lineplot_sh_monmean:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_sh_gr:
+    # description: lineplot growth rate for the SH
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_sh_ann
+        # <<: *xch4def_cmip6
+        # #<<: *xch4def_cmip5
+    # scripts:
+      # lineplot_sh_growthrate:
+        # script: mpqb/mpqb_lineplot_growthrate.py
+  # lineplots_anncyc_sh:
+    # description: lineplot annual cycle for the SH
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_anncyc_sh
+        # derive: true
+        # <<: *xch4def_cmip6
+        # #<<: *xch4def_cmip5
+    # scripts:
+      # lineplot_sh_anncyc:
+        # script: mpqb/mpqb_lineplot_anncyc.py
