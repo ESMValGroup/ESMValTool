@@ -9,8 +9,8 @@ Overview
 This recipe compares the regional means of sea surface salinity with a
 reference dataset (ESACCI-SEA-SURFACE-SALINITY v1 or v2 by default).
 To do this, the recipe generates plots for the timeseries of each region and
-a radar plot showing the correlation between dataset and reference timeseries for
-each region during the time they both exist.
+a radar plot showing the bias and standard deviation ratio between dataset 
+and reference timeseries for each region during the time they both exist.
 
 Preprocessor requirements:
 --------------------------
@@ -202,8 +202,14 @@ References
 Example plots
 -------------
 
-.. figure:: /recipes/figures/sea_surface_salinity/radar.png
+.. figure:: /recipes/figures/sea_surface_salinity/radar_bias.png
    :align: center
 
-   Radar plot showing correlation of average sea surface salinity for multiple
+   Radar plot showing bias of average sea surface salinity for multiple
+   regions with the observations
+
+.. figure:: /recipes/figures/sea_surface_salinity/radar_std.png
+   :align: center
+
+   Radar plot showing standard deviation ratio of average sea surface salinity for multiple
    regions with the observations
