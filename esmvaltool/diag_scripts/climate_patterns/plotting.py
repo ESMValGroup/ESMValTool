@@ -22,8 +22,10 @@ def plot_cp_timeseries(list_cubelists, plot_path):
     """Plots timeseries of aggregated cubes, across all scenarios."""
     fig1, ax1 = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
     fig1.suptitle("40 Year Climatologies, 1850-1889", fontsize=18, y=0.98)
+
     fig2, ax2 = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
     fig2.suptitle("Anomaly Timeseries, 1850-2100", fontsize=18, y=0.98)
+
     fig3, ax3 = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
     fig3.suptitle("Variable Timeseries, 1850-2100", fontsize=18, y=0.98)
 
@@ -68,12 +70,32 @@ def plot_cp_timeseries(list_cubelists, plot_path):
     plt.close()
 
     fig1.tight_layout()
-    fig2.tight_layout()
-    fig3.tight_layout()
-
     fig1.savefig(plot_path + 'Climatologies')
+
+    fig2.tight_layout()
     fig2.savefig(plot_path + 'Anomalies')
+
+    fig3.tight_layout()
     fig3.savefig(plot_path + 'Standard Timeseries')
+
+
+def plot_scores(list_cubelists, plot_path):
+    for i in range(len(list_cubelists)):
+        cube_list = list_cubelists[i]
+        for cube in cube_list:
+            if i == 4:
+                plt.figure(figsize=(14, 12))
+                plt.subplots_adjust(hspace=0.5)
+                plt.suptitle("Scores " + cube.var_name, fontsize=18, y=0.98)
+                for j in range(0, 12):
+                    plt.subplot(4, 3, j + 1)
+                    qplt.pcolormesh(cube[j])
+
+                plt.tight_layout()
+                plt.savefig(plot_path + 'R2_Scores_' + str(cube.var_name))
+                plt.close()
+
+    return
 
 
 def plot_ebm_timeseries(list_cubes, plot_path, ocean_frac, land_frac):
@@ -176,7 +198,7 @@ def forcing_plot(reg, avg_list, yrs, forcing, plot_path):
     """Plots the regression between tas and rtmt, as well as the resultant
     forcing timeseries."""
     # regression line
-    x_reg = np.linspace(-1.0, 4.0, 2)
+    x_reg = np.linspace(-3.0, 4.0, 2)
     y_reg = reg.slope * x_reg + reg.intercept
 
     fig, ax = plt.subplots(1, 2, figsize=(12, 4))

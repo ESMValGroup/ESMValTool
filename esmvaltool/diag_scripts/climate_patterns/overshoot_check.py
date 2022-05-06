@@ -5,8 +5,10 @@ from pathlib import Path
 
 import iris
 import iris.coord_categorisation
+import iris.cube
 import numpy as np
 import sub_functions as sf
+from iris.util import equalise_attributes
 from plotting import forcing_plot, plot_ebm_prediction, plot_ebm_timeseries
 from scipy import stats
 from scipy.sparse.linalg import spsolve
@@ -306,6 +308,7 @@ def main(cfg):
     input_data = cfg["input_data"].values()
 
     toa_list = iris.load([])
+    toa_list_over = iris.load([])
 
     for dataset in input_data:
         input_file = dataset["filename"]
@@ -313,24 +316,52 @@ def main(cfg):
         # preparing single cube
         cube_initial = compute_diagnostic(input_file)
 
-        if cube_initial.var_name == "sftlf":
-            sftlf_cube = cube_initial
-        if cube_initial.var_name == "rtmt":
-            rtmt_cube = cube_initial
-        if cube_initial.var_name == "tas":
-            tas_cube = cube_initial
-        if (not cube_initial.var_name == "tas"
-                or cube_initial.var_name == "rtmt"
-                or cube_initial.var_name == "sftlf"):
-            toa_list.append(cube_initial)
+        if dataset["exp"] == "piControl":
+            if cube_initial.var_name == "sftlf":
+                sftlf_cube = cube_initial
+
         if dataset["exp"] == "abrupt-4xCO2":
             if cube_initial.var_name == "tas":
                 tas_4x_cube = cube_initial
             if cube_initial.var_name == "rtmt":
                 rtmt_4x_cube = cube_initial
 
+        if dataset["exp"] == "historical-ssp585":
+            if cube_initial.var_name == "rtmt":
+                rtmt_cube_585 = cube_initial
+            if cube_initial.var_name == "tas":
+                tas_cube_585 = cube_initial
+            if (not cube_initial.var_name == "tas"
+                    or cube_initial.var_name == "rtmt"
+                    or cube_initial.var_name == "sftlf"):
+                toa_list.append(cube_initial)
+
+        if dataset["exp"] == "ssp534-over":
+            if cube_initial.var_name == "rtmt":
+                rtmt_cube_over = cube_initial
+            if cube_initial.var_name == "tas":
+                tas_cube_over = cube_initial
+            if (not cube_initial.var_name == "tas"
+                    or cube_initial.var_name == "rtmt"
+                    or cube_initial.var_name == "sftlf"):
+                toa_list_over.append(cube_initial)
+
     # calculating global, land and ocean TOA fluxes
-    toa_cube = net_flux_calculation(toa_list)
+    toa_cube_585 = net_flux_calculation(toa_list)
+    toa_cube_over = net_flux_calculation(toa_list_over)
+
+    # concatenating experiments
+    toa_list_2 = iris.cube.CubeList([toa_cube_585, toa_cube_over])
+    _ = equalise_attributes(toa_list_2)
+    toa_cube = toa_list_2.concatenate_cube()
+
+    rtmt_list = iris.cube.CubeList([rtmt_cube_585, rtmt_cube_over])
+    _ = equalise_attributes(rtmt_list)
+    rtmt_cube = rtmt_list.concatenate_cube()
+
+    tas_list = iris.cube.CubeList([tas_cube_585, tas_cube_over])
+    _ = equalise_attributes(tas_list)
+    tas_cube = tas_list.concatenate_cube()
 
     # calculating ocean fraction
     ocean_frac, land_frac, of = ocean_fraction_calc(sftlf_cube)
