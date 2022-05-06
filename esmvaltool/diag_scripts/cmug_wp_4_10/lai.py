@@ -10,9 +10,13 @@ import logging
 
 import iris
 import iris.coord_categorisation as icc
+import cartopy.crs as ccrs
 
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
 import iris.plot as iplt
+import iris.quickplot as qplt
 import numpy as np
 
 
@@ -30,6 +34,7 @@ tab_cols = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd',
 month_list = np.array(['Jan','Feb','Mar','Apr','May','Jun',
                        'Jul','Aug','Sep','Oct','Nov','Dec'])
 
+
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
     Based on the hydrology diagnostic.
@@ -39,7 +44,6 @@ def _get_input_cubes(metadata):
     inputs = Dictionary of cubes
     ancestors = Dictionary of filename information
     """
-    print('################################################')
     inputs = {}
     ancestors = {}
     print(metadata)
@@ -59,10 +63,48 @@ def _get_input_cubes(metadata):
         inputs[key_name] = cube
         ancestors[key_name] = [filename]
         
-        print(inputs)
-        print(ancestors)
+        if 'CMIP5' in attributes['alias']:
+            data_type = 'CMIP5'
+        elif 'OBS' in attributes['alias']:
+            data_type = 'OBS'
+        else:
+            data_type = 'CMIP6' # this way meand CMIP5 doesnt get counted twice
 
-    return inputs, ancestors
+    return inputs, ancestors, data_type
+
+# def _get_input_cubes(metadata):
+#     """Load the data files into cubes.
+#     Based on the hydrology diagnostic.
+#     Inputs:
+#     metadata = List of dictionaries made from the preprocessor config
+#     Outputs:
+#     inputs = Dictionary of cubes
+#     ancestors = Dictionary of filename information
+#     """
+#     print('################################################')
+#     inputs = {}
+#     ancestors = {}
+#     print(metadata)
+#     for attributes in metadata:
+#         print(attributes)
+#         short_name = attributes['short_name']
+#         filename = attributes['filename']
+#         logger.info("Loading variable %s", short_name)
+#         cube = iris.load_cube(filename)
+#         cube.attributes.clear()
+        
+#         try:
+#             key_name = f"{short_name}_{attributes['ensemble']}"
+#         except:
+#             key_name = short_name
+
+#         inputs[key_name] = cube
+#         ancestors[key_name] = [filename]
+        
+#         print(inputs)
+#         print(ancestors)
+
+#     return inputs, ancestors
 
 def _get_provenance_record(attributes, ancestor_files):
     """Create the provenance record dictionary.
@@ -107,31 +149,34 @@ def _diagnostic(config):
     loaded_data = {}
     ancestor_list = []
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
-        cubes, ancestors = _get_input_cubes(metadata)
-        loaded_data[dataset] = cubes
+        cubes, ancestors, data_type = _get_input_cubes(metadata)
+        for KEY in cubes.keys():
+            cubes[KEY].coord('longitude').circular = True
 
-    # loaded data is a nested dictionary
-    # KEY1 model ESACCI-LST or something else
-    # KEY2 is variable or variable_ensemble
-    
+        loaded_data[f'{data_type}_{dataset}'] = cubes
+
     # The Diagnostics
-
-    # CMIP data had 360 day calendar, CCI data has 365 day calendar
-    # Assume the loaded data is all the same shape
-    print('LOADED DATA:')
-    print(loaded_data)
-
+    
     #### REMEMBER TO APPLY FACTORS TO OBS DATA, DO THIS IN CMORIZER?????
     #### Iris seems to do this automatically for LAI
 
-    # make ensemble mean of area average
+    print(loaded_data)
+    loaded_data['OBS_CMUG_WP4_10']['lai'].coord('latitude').coord_system = None
+    loaded_data['OBS_CMUG_WP4_10']['lai'].coord('longitude').circular = True
+
+    loaded_data['OBS_CMUG_WP4_10']['lai'].coord('longitude').coord_system = None
+
+    print( loaded_data['OBS_CMUG_WP4_10']['lai'].coord('longitude'))
+
+
+    icc.add_year(loaded_data['OBS_CMUG_WP4_10']['lai'],'time')
+    icc.add_month_number(loaded_data['OBS_CMUG_WP4_10']['lai'],'time')
+
+
+    # make ensemble average of models
     model_means = {}
-
-    icc.add_year(loaded_data['CMUG_WP4_10']['lai'],'time')
-    icc.add_month_number(loaded_data['CMUG_WP4_10']['lai'],'time')
-
     for KEY in loaded_data.keys():
-        if KEY == 'CMUG_WP4_10': # add in LAI and Veg KEYS here as they become available
+        if KEY == 'OBS_CMUG_WP4_10': # add in LAI and Veg KEYS here as they become available
             continue # dont need to do this for CCI
 
         # loop over ensembles
@@ -141,23 +186,137 @@ def _diagnostic(config):
             if ENSEMBLE[0:3] != 'lai':
                 continue
                
-            this_cube_mean = loaded_data[KEY][ENSEMBLE].collapsed(['latitude','longitude'], iris.analysis.MEAN)
+            this_cube = loaded_data[KEY][ENSEMBLE]#.collapsed(['latitude','longitude'], iris.analysis.MEAN)
 
             ensemble_coord = iris.coords.AuxCoord(e_number, standard_name=None, 
                                                   long_name='ensemble_number', 
                                                   var_name=None,
                                                   units='1', bounds=None, 
                                                   attributes=None, coord_system=None)
-            this_cube_mean.add_aux_coord(ensemble_coord)
-            ensemble_ts.append(this_cube_mean)
+            this_cube.add_aux_coord(ensemble_coord)
+            ensemble_ts.append(this_cube)
 
         model_means[KEY] = ensemble_ts.merge_cube()
         model_means[KEY] = model_means[KEY].collapsed('ensemble_number', iris.analysis.MEAN)
         icc.add_year(model_means[KEY], 'time')
         icc.add_month_number(model_means[KEY], 'time')
-                
-    plot_all_members(loaded_data, config)
-    plot_season_peaks(loaded_data, model_means, config)
+            
+
+
+    # regrid obs to each model grid - they seem to be differnt
+    lai_obs_regridded = {}
+    for KEY in loaded_data.keys():
+        if KEY == 'OBS_CMUG_WP4_10': continue
+
+        for item in loaded_data[KEY].keys():
+            print(item)
+            ensemble = item
+            break
+        
+        lai_regrid = loaded_data['OBS_CMUG_WP4_10']['lai'].regrid(
+            loaded_data[KEY][ensemble], iris.analysis.Linear())
+
+        lai_obs_regridded[KEY] = lai_regrid
+
+   
+
+    print("££££££££££££££££££££££££££££££")
+    print(lai_obs_regridded)
+
+    # calculate gridbox peaks for maps
+    # OBS peak
+    ARGMAX = iris.analysis.Aggregator("argmax", np.argmax, units_func=lambda units: 1)
+    obs_peak_regridded = {}
+    for KEY in lai_obs_regridded.keys():
+        this_cubelist = iris.cube.CubeList()
+        for YEAR in np.unique(lai_obs_regridded[KEY].coord('year').points):
+            cube = lai_obs_regridded[KEY].extract(iris.Constraint(year=YEAR))
+            cube = cube.collapsed('time',ARGMAX)
+            
+            cube.coord('year').bounds=None
+            
+            cube.remove_coord('time')
+            cube.remove_coord('month_number')
+            cube = iris.util.new_axis(cube, scalar_coord='year')
+            this_cubelist.append(cube)
+
+        obs_peak_regridded[KEY] = this_cubelist.concatenate_cube()
+        obs_peak_regridded[KEY] = obs_peak_regridded[KEY].collapsed('year', iris.analysis.MEAN)
+
+    # MODEL peak
+    model_peak = {}
+    for KEY in model_means.keys():
+        print(KEY)
+        this_cubelist = iris.cube.CubeList()
+        for YEAR in np.unique(model_means[KEY].coord('year').points):
+            print(YEAR)
+            cube = model_means[KEY].extract(iris.Constraint(year=YEAR))
+            cube = cube.collapsed('time',ARGMAX)
+            
+            cube.coord('year').bounds=None
+            
+            cube.remove_coord('time')
+            cube.remove_coord('month_number')
+            cube = iris.util.new_axis(cube, scalar_coord='year')
+            print(cube.coord('year'))
+            this_cubelist.append(cube)
+
+        model_peak[KEY] = this_cubelist.concatenate_cube()
+        model_peak[KEY] = model_peak[KEY].collapsed('year', iris.analysis.MEAN)
+
+
+    plot_peak_diff_map(loaded_data, model_peak, obs_peak_regridded, config)
+    #print(0/0)
+
+    
+    #plot_all_members(loaded_data, config)
+    #plot_season_peaks(loaded_data, model_means, config)
+
+
+def plot_peak_diff_map(loaded_data, model_peak, obs_peak_regridded, config):
+
+    num_plot = len(model_peak.keys())+1
+
+#    fig, ax = plt.subplots(nrows=num_plot, ncols=1, figsize=(20, 15))
+    #fig = plt.figure(figsize=(20, 15))
+    #plt.axes(projection=ccrs.NorthPolarStereo())
+    # first plot is the OBS LAI
+    #plt.subplot(num_plot,1,1)
+   #
+    
+    im0 = iplt.pcolormesh(obs_peak_regridded['CMIP6_UKESM1-0-LL'],
+                          cmap='Paired',
+                          vmin=1,
+                          vmax=12)
+    plt.gca().coastlines()
+    plt.xlim((-13,38))
+    #plt.ylim((34,73))
+
+    plt.colorbar(orientation='vertical')
+
+
+    # for i,KEY in enumerate(model_peak.keys()):
+    #     this_diff =  obs_peak_regridded[KEY] - model_peak[KEY]
+
+    #     plt.subplot(num_plot,1,i+2)
+    #     iplt.pcolormesh(this_diff,
+    #                     cmap='PiYG',
+    #                     vmin=-6,
+    #                     vmax=6)
+        
+    #     plt.xlim((-13,38))
+    #     plt.ylim((34,73))
+    #     plt.gca().coastlines()
+    #     plt.colorbar(orientation='vertical')
+    #     plt.title(f'{KEY}',fontsize=18)
+
+
+    # fig.suptitle('LAI from OBS and OBS-MODEL', fontsize=24)
+    #qplt.pcolormesh(obs_peak_regridded['CMIP6_UKESM1-0-LL'])
+    outpath =  config['plot_dir']
+    plt.savefig(f'{outpath}/lai_peak_map.png')
+    print(f'{outpath}/lai_peak_map.png')
+    plt.close('all')  # Is this needed?
 
 
 def plot_season_peaks(loaded_data, model_means, config):
