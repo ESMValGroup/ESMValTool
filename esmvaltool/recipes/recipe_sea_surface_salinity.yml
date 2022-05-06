@@ -32,8 +32,6 @@ preprocessors:
       ids:
         - Arctic Ocean
         - Southern Ocean
-        - Mediterranean Sea - Eastern Basin
-        - Mediterranean Sea - Western Basin
         - North Atlantic Ocean
         - South Atlantic Ocean
         - North Pacific Ocean
@@ -45,8 +43,16 @@ preprocessors:
         areacello:
 
 datasets:
-  - {project: CMIP6, exp: historical, dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1,
-      start_year: 1950, end_year: 2014, alias: MPI-ESM1-2-HR}
+  - &cmip6 {project: CMIP6, exp: historical, dataset: ACCESS-CM2, ensemble: r1i1p1f1,
+           start_year: 1950, end_year: 2014, alias: ACCESS-CM2}
+  - {<<: *cmip6, dataset: CMCC-CM2-HR4, alias: CMCC-CM2-HR4}
+  - {<<: *cmip6, dataset: CanESM5, alias: CanESM5}
+  - {<<: *cmip6, dataset: IPSL-CM6A-LR, alias: IPSL-CM6A-LR}
+  - {<<: *cmip6, dataset: MIROC6, alias: MIROC6}
+  - {<<: *cmip6, dataset: MPI-ESM1-2-HR, alias: MPI-ESM1-2-HR}
+  - {<<: *cmip6, dataset: NorESM2-MM, alias: NorESM2-MM}
+  - {<<: *cmip6, dataset: GISS-E2-2-H, alias: GISS-E2-2-H, institute: NASA-GISS}
+          
 
 diagnostics:
   compare_salinity:
