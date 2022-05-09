@@ -3,7 +3,7 @@
 ---
 documentation:
 
-  title: Perfmetrics plots with CMIP5/CMIP6 and ESACCI data
+  title: Perfmetrics plot and pattern correlation for CMIP5/CMIP6 using ESACCI data
 
   description: |
     ESACCI CMUG CMIP6 analysis.
@@ -26,6 +26,27 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.95
 
+  ppNOLEV1x1thr50:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.5
+
+  ppNOLEV1x1thr10:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.1
+
+  ppNOLEV4x5thr10:
+    regrid:
+      target_grid: 4x5
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.1
+
   prep_chl:
     custom_order: true
     extract_levels:
@@ -38,8 +59,6 @@ preprocessors:
       units: mg m-3
     mask_above_threshold:
       threshold: 1.5
-#    mask_fillvalues:
-#      threshold_fraction: 0.95
 
 
 diagnostics:
@@ -55,7 +74,6 @@ diagnostics:
       clt:
         preprocessor: ppNOLEV1x1
         reference_dataset: ESACCI-CLOUD
-#        alternative_dataset: PATMOS-x
         mip: Amon
         project: CMIP5
         exp: historical
@@ -147,29 +165,20 @@ diagnostics:
       - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
       - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
          version: AVHRR-fv3.0, tier: 2, start_year: 1996, end_year: 2016}
-#      - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2,
-#         start_year: 1996, end_year: 2016}
     scripts:
       grading: &grading_settings
         script: perfmetrics/main.ncl
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
         plot_type: cycle_latlon
-        # Time average ('opt' argument of time_operations.ncl)
         time_avg: monthlyclim
-        # Region ('global', 'trop', 'nhext', 'shext')
         region: global
-        # Plot standard deviation ('all', 'none', 'ref_model' or dataset name)
         plot_stddev: ref_model
-        # Plot legend in a separate file
         legend_outside: true
-        # Plot style
         styleset: CMIP5
-        # Calculate grading
         calc_grading: true
-        # Metric ('RMSD', 'BIAS', taylor')
         metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
         normalization: [centered_median]
+      pattern_cor: &pattern_settings
+        script: bock20jgr/corr_pattern.ncl
 
   abs550aer:
     title: Calculation of performance metrics (absorption optical depth at 550 nm)
@@ -180,7 +189,7 @@ diagnostics:
       - atmos
     variables:
       abs550aer:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV1x1thr10
         reference_dataset: ESACCI-AEROSOL
         mip: aero
         project: CMIP5
@@ -232,6 +241,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   iwp:
     title: Calculation of performance metrics (cloud ice water path)
@@ -242,7 +253,7 @@ diagnostics:
       - atmos
     variables:
       clivi:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV1x1thr50
         reference_dataset: ESACCI-CLOUD
         mip: Amon
         project: CMIP5
@@ -340,6 +351,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   lst:
     title: Calculation of performance metrics (land surface (skin) temperature)
@@ -452,6 +465,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   lwcre:
     title: Calculation of performance metrics (longwave cloud radiative effect)
@@ -462,9 +477,8 @@ diagnostics:
       - atmos
     variables:
       lwcre:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV1x1thr50
         reference_dataset: ESACCI-CLOUD
-#        alternative_dataset: CERES-EBAF
         mip: Amon
         derive: true
         force_derivation: false
@@ -561,6 +575,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   lwp:
     title: Calculation of performance metrics (cloud liquid water path)
@@ -571,7 +587,7 @@ diagnostics:
       - atmos
     variables:
       lwp:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV1x1thr50
         reference_dataset: ESACCI-CLOUD
         mip: Amon
         project: CMIP5
@@ -668,6 +684,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
 # fatal:Coordinate variables must be the same dimension as their dimension
 #  oc:
@@ -713,6 +731,8 @@ diagnostics:
 #    scripts:
 #      grading:
 #        <<: *grading_settings
+#      pattern_cor:
+#        <<: *pattern_settings
 
   od550aer:
     title: Calculation of performance metrics (aerosol optical depth at 550 nm)
@@ -723,9 +743,8 @@ diagnostics:
       - atmos
     variables:
       od550aer:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV1x1thr10
         reference_dataset: ESACCI-AEROSOL
-#        alternative_dataset: MODIS
         mip: aero
         project: CMIP5
         exp: historical
@@ -782,10 +801,11 @@ diagnostics:
       - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6, mip: AERmon}
       - {dataset: ESACCI-AEROSOL, project: OBS, type: sat,
          version: SU-v4.21, tier: 2, start_year: 1997, end_year: 2011}
-#      - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3}
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   od550lt1aer:
     title: Calculation of performance metrics (fine mode optical depth at 550 nm)
@@ -796,7 +816,7 @@ diagnostics:
       - atmos
     variables:
       od550lt1aer:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV1x1thr10
         reference_dataset: ESACCI-AEROSOL
         mip: aero
         project: CMIP5
@@ -837,6 +857,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   od870aer:
     title: Calculation of performance metrics (aerosol optical depth at 870 nm)
@@ -847,7 +869,7 @@ diagnostics:
       - atmos
     variables:
       od870aer:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV1x1thr10
         reference_dataset: ESACCI-AEROSOL
         mip: aero
         project: CMIP5
@@ -882,6 +904,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   wvp:
     title: Calculation of performance metrics (water vapor path)
@@ -892,7 +916,7 @@ diagnostics:
       - atmos
     variables:
       prw:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV1x1thr50
         reference_dataset: ESACCI-WATERVAPOUR
         mip: Amon
         project: CMIP5
@@ -988,6 +1012,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   rlut:
     title: Calculation of performance metrics (longwave radiation)
@@ -1000,7 +1026,6 @@ diagnostics:
       rlut:
         preprocessor: ppNOLEV1x1
         reference_dataset: ESACCI-CLOUD
-#        alternative_dataset: CERES-EBAF
         mip: Amon
         project: CMIP5
         exp: historical
@@ -1092,11 +1117,11 @@ diagnostics:
       - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
       - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
          start_year: 1996, end_year: 2016}
-#      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
-#         version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   rsut:
     title: Calculation of performance metrics (shortwave radiation)
@@ -1107,9 +1132,8 @@ diagnostics:
       - atmos
     variables:
       rsut:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV1x1thr50
         reference_dataset: ESACCI-CLOUD
-#        alternative_dataset: CERES-EBAF
         mip: Amon
         project: CMIP5
         exp: historical
@@ -1201,11 +1225,11 @@ diagnostics:
       - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
       - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
          start_year: 1996, end_year: 2016}
-#      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
-#         version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   sm:
     title: Calculation of performance metrics (soil moisture)
@@ -1216,7 +1240,7 @@ diagnostics:
       - land
     variables:
       sm:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV1x1thr10
         reference_dataset: ESACCI-SOILMOISTURE
         mip: Lmon
         derive: true
@@ -1314,6 +1338,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   sss:
     title: Calculation of performance metrics (sea-surface salinity)
@@ -1421,6 +1447,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   sst:
     title: Calculation of performance metrics (sea-surface (skin) temperature)
@@ -1434,7 +1462,6 @@ diagnostics:
       ts:
         preprocessor: ppNOLEV1x1
         reference_dataset: ESACCI-SST
-#        alternative_dataset: HadISST
         mip: Amon
         project: CMIP5
         exp: historical
@@ -1530,10 +1557,11 @@ diagnostics:
       - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}#      - {dataset: CMCC-CM}
       - {dataset: ESACCI-SST, project: OBS, type: sat,
          version: L4-GHRSST-SSTdepth-OSTIA-GLOB, tier: 2, start_year: 1992}
-#      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   swcre:
     title: Calculation of performance metrics (shortwave cloud radiative effect)
@@ -1544,9 +1572,8 @@ diagnostics:
       - atmos
     variables:
       swcre:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV1x1thr50
         reference_dataset: ESACCI-CLOUD
-#        alternative_dataset: CERES-EBAF
         mip: Amon
         derive: true
         force_derivation: false
@@ -1640,11 +1667,11 @@ diagnostics:
       - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
       - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
          start_year: 1996, end_year: 2016}
-#      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
-#         version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   toz:
     title: Calculation of performance metrics (total column ozone)
@@ -1656,9 +1683,8 @@ diagnostics:
       - atmosChem
     variables:
       toz:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV1x1thr10
         reference_dataset: ESACCI-OZONE
-#        alternative_dataset: NIWA-BS
         mip: Amon
         derive: true
         force_derivation: false
@@ -1682,10 +1708,11 @@ diagnostics:
       - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6, mip: AERmon}
       - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6, mip: AERmon}
       - {dataset: ESACCI-OZONE, project: OBS, type: sat, version: L3, tier: 2, start_year: 1997, end_year: 2010}
-#      - {dataset: NIWA-BS, project: OBS, type: sat, version: v3.3, tier: 3}
     scripts:
       grading:
         <<: *grading_settings
+      pattern_cor:
+        <<: *pattern_settings
 
   xch4:
     title: Calculation of performance metrics (column average CH4)
@@ -1698,7 +1725,7 @@ diagnostics:
       - atmos
     variables:
       xch4:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV4x5thr10
         reference_dataset: CDS-XCH4
         mip: Amon
         derive: true
@@ -1728,6 +1755,8 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+#      pattern_cor:
+#        <<: *pattern_settings
 
   xco2:
     title: Calculation of performance metrics (column average CO2)
@@ -1740,7 +1769,7 @@ diagnostics:
       - atmos
     variables:
       xco2:
-        preprocessor: ppNOLEV1x1
+        preprocessor: ppNOLEV4x5thr10
         reference_dataset: CDS-XCO2
         mip: Amon
         derive: true
@@ -1768,8 +1797,10 @@ diagnostics:
     scripts:
       grading:
         <<: *grading_settings
+#      pattern_cor:
+#        <<: *pattern_settings
 
-  collect:
+  perfmetrics:
     title: Collection of performance metrics
     description: Wrapper to collect and plot previously calculated metrics
     scripts:
@@ -1781,9 +1812,7 @@ diagnostics:
         label_scale: 0.1
         disp_values: false
         cm_interval: [2, 241]
-        # Sort dataset in alphabetic order (excluding MMM)
         project_order: ['CMIP5', 'CMIP6']
-        # Sort diagnostics in a specific order (name = 'diagnositic'-'region')
         # 'oc-global'
         diag_order: ['sst-global',
                      'sss-global',
@@ -1795,3 +1824,14 @@ diagnostics:
                      'xco2-global', 'xch4-global',
                      'toz-global',
                      'od550aer-global', 'od550lt1aer-global', 'abs550aer-global', 'od870aer-global']
+
+  correlation:
+    title: Collection of pattern correlations
+    description: Wrapper to collect and plot previously calculated correlations
+    scripts:
+      cor_collect:
+        script: bock20jgr/corr_pattern_collect.ncl
+        ancestors: ['*/pattern_cor']
+        diag_order: ['sst', 'sss', 'lst', 'wvp', 'clt', 'lwp', 'iwp', 'rlut', 'rsut', 'lwcre',
+                     'swcre', 'sm', 'toz', 'od550aer', 'od550lt1aer',
+                     'abs550aer', 'od870aer']
