@@ -123,6 +123,7 @@ cmap_ssp_air = {
 
 def sspify(ssp):
     sspdict = {
+        'historical': 'Historical',
         'SSP119': 'SSP1-1.9',
         'SSP126': 'SSP1-2.6',
         'SSP245': 'SSP2-4.5',
@@ -1305,14 +1306,12 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
     """
     # If the threshold shelve exists already, just use that.
     thresholds_shelve = diagtools.folder([cfg['work_dir'], 'thresholds_dict'])+'thresholds.shelve'
-    """
     if glob.glob(thresholds_shelve+'*'):
         print('opening:', thresholds_shelve)
         sh = shelve.open(thresholds_shelve)
         thresholds_dict = sh['thresholds_dict']
         sh.close()
         return thresholds_dict
-    """
 
     # Calculate baseline tas for 1850-1900.
     thresholds_dict = {}
@@ -2303,7 +2302,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                    'historical-ssp585': 'red',
                    'historical-ssp585-ssp534-over':'orange'}
 
-    marker_styles = {1.5: 'o', 2.:'*', 3.:'D', 4.:'s', 5.:'X'}
+    marker_styles = {1.5: '*', 2.:'*', 3.:'D', 4.:'s', 5.:'X'}
 
     if ensemble_mean: ensembles = ['ensemble_mean', ]
     exps = sorted(exps.keys())
@@ -2435,10 +2434,10 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
 
                 # print('historical', histx_t, histy_t, histx_d, histy_d)
 
-                #plt.plot(np.ma.masked_where(x_times > 2005., x_data),
-                #         np.ma.masked_where(y_times > 2005., y_data),
-                #         lw=lw,
-                #         color=exp_colours[exp_1])
+                plt.plot(np.ma.masked_where(x_times > 2005., x_data),
+                         np.ma.masked_where(y_times > 2005., y_data),
+                         lw=lw,
+                         color=exp_colours[exp_1])
 
                 plt.plot(histx_d, #np.ma.masked_where(x_times > 2005., x_data),
                          histy_d, #np.ma.masked_where(y_times > 2005., y_data),
@@ -2492,13 +2491,14 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             try: threshold_times = thresholds_dict[(dataset_1, 'tas', exp_1, ensemble_1)]
             except:
                threshold_times = {}
-            ms = 8
+            ms = 4
             if ensemble_mean:
-                ms = 8
+                ms = 4 
             for threshold, time in threshold_times.items():
                 if not time:
                     continue
-                if threshold not in plot_thresholds: continue
+                if threshold not in plot_thresholds: 
+                    continue
                 x_point = get_threshold_point({'time':x_times}, time.year)
                 #_point = get_threshold_point(cube, time.year)
                 y_point = get_threshold_point({'time':y_times}, time.year)
@@ -2511,12 +2511,12 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                          markersize = ms,
                          fillstyle='none',
                          color=exp_colours[exp_1])
-                plt.plot(x_data[x_point],
-                         y_data[y_point],
-                         'o',
-                         markersize = 2,
-                         #fillstyle='none',
-                         color=exp_colours[exp_1])
+                #plt.plot(x_data[x_point],
+                #         y_data[y_point],
+                #         'o',
+                #         markersize = 2,
+                #         #fillstyle='none',
+                #         color=exp_colours[exp_1])
 
     if not number_of_lines:
         print('No lines plotted')
@@ -3911,9 +3911,11 @@ def make_cumulative_vs_threshold(cfg, data_dict,
     # nbp and
 
 
-def timeseries_megapane(fig, ax, data_dict, thresholds_dict, key,
+def timeseries_megapane(cfg, data_dict, thresholds_dict, key,
     plot_styles = ['CMIP6_range', 'CMIP6_mean'],
-    ,):
+    fig = None,
+    ax = None,
+    ):
     """
     Single time series pane for the megaplot.
     """
@@ -3930,11 +3932,11 @@ def timeseries_megapane(fig, ax, data_dict, thresholds_dict, key,
 
         #short_time_range = False,
         )
-    return fix, ax
+    return fig, ax
 
 
 def timeseries_megaplot(cfg, data_dict, thresholds_dict,
-        panes = ['tas', 'atmos_carbon', 'fgco2gt_cumul', 'nbpgt_cumul', ],
+        panes = ['tas_norm', 'atmos_carbon', 'fgco2gt_cumul', 'nbpgt_cumul', ],
         plot_styles = ['CMIP6_range', 'CMIP6_mean'],
 
         ):
@@ -3946,47 +3948,75 @@ def timeseries_megaplot(cfg, data_dict, thresholds_dict,
     or something like that.
     """
     fig = plt.figure()
-    fig.set_size_inches(12, 6)
+    fig.set_size_inches(12, 8)
 
     axes = {}
     if len(panes) == 4:
-        gs = gridspec.GridSpec(2, 3,figure=fig, width_ratios=[1,1, 0.3], wspace=0.5, hspace=0.5)
-        axes[pane[0]] =  fig.add_subplot(gs[0, 0]) # row, column
-        axes[pane[1]] =  fig.add_subplot(gs[0, 1])
-        axes[pane[2]] =  fig.add_subplot(gs[1, 0])
-        axes[pane[3]] =  fig.add_subplot(gs[1, 1])
+        gs = gridspec.GridSpec(2, 3,figure=fig, width_ratios=[1,1, 0.1], wspace=0.1, hspace=0.1)
+        axes[panes[0]] = fig.add_subplot(gs[0, 0]) # row, column
+        axes[panes[1]] = fig.add_subplot(gs[0, 1])
+        axes[panes[2]] = fig.add_subplot(gs[1, 0])
+        axes[panes[3]] = fig.add_subplot(gs[1, 1])
 
     if len(panes) in [5, 6]:
         gs = gridspec.GridSpec(2, 4,figure=fig, width_ratios=[1,1, 0.3], wspace=0.5, hspace=0.5)
-        axes[pane[0]] =  fig.add_subplot(gs[0, 0]) # row, column
-        axes[pane[1]] =  fig.add_subplot(gs[0, 1])
-        axes[pane[2]] =  fig.add_subplot(gs[0, 2])
-        axes[pane[3]] =  fig.add_subplot(gs[1, 0])
-        axes[pane[4]] =  fig.add_subplot(gs[1, 1])
-        len(panes) in [6, ]:
-            axes[pane[5]] =  fig.add_subplot(gs[1, 2])
+        axes[panes[0]] = fig.add_subplot(gs[0, 0]) # row, column
+        axes[panes[1]] = fig.add_subplot(gs[0, 1])
+        axes[panes[2]] = fig.add_subplot(gs[0, 2])
+        axes[panes[3]] = fig.add_subplot(gs[1, 0])
+        axes[panes[4]] = fig.add_subplot(gs[1, 1])
+        if len(panes) in [6, ]:
+            axes[pane[5]] = fig.add_subplot(gs[1, 2])
 
     # add legend column ion RHS:
     axes['legend'] = fig.add_subplot(gs[:, -1])
 
     for key, ax in axes.items():
-        if key == 'legend': contiunue
-        fig, ax = timeseries_megapane(fig, ax, data_dict, thresholds_dict, key,
-            plot_styles=plot_styles,)
+        if key == 'legend': continue
+        fig, ax = timeseries_megapane(cfg, data_dict, thresholds_dict, key,
+            plot_styles=plot_styles,
+            fig= fig, ax = ax)
 
     # l;egend pane:
     plt.sca(axes['legend'])
     keys, labels = [], []
+    exp_colours = {'historical':'black',
+                   'ssp119':'green',
+                   'ssp126':'dodgerblue',
+                   'ssp245':'blue',
+                   'ssp370':'purple',
+                   'ssp434':'magenta',
+                   'ssp585': 'red',
+                   'ssp534-over':'orange',
+                   'historical-ssp119':'green',
+                   'historical-ssp126':'dodgerblue',
+                   'historical-ssp245':'blue',
+                   'historical-ssp370':'purple',
+                   'historical-ssp434':'magenta',
+                   'historical-ssp585': 'red',
+                   'historical-ssp585-ssp534-over':'orange'}
 
-    legd = ax_leg.legend(keys, labels,
-        bbox_to_anchor=(1.5, 0.5),
-        numpoints=1, labelspacing=1.2,
+    for exp in ['historical', 'ssp119',  'ssp126', 'ssp245', 'ssp370','ssp585']:
+        plt.plot([],[], ls='-', c=exp_colours[exp], lw=4., label = sspify(exp))
+        #keys.append(plt.plot([],[], ls='-', c=exp_colours[exp], lw=4.), label = )
+        #labels.append(sspify(exp))
+
+    marker_styles = {1.5: '*', 2.:'o', 3.:'D', 4.:'s', 5.:'X'}
+    for gwt in [2., 3., 4.]:
+        lab = ''.join([str(int(gwt)), r'$\degree$', 'C'])
+        plt.scatter([], [], marker=marker_styles[gwt], c='k', label=lab)
+        #keys.append(plt.scatter([], [], marker=marker_styles[gwt], c='k',))
+        #labels.append(''.join([str(int(gwt)), r'$\degree$', 'C']))
+
+    legd = axes['legend'].legend(#keys, labels,
+        bbox_to_anchor=(2.5, 0.5),
+        #numpoints=1, labelspacing=1.2,
         loc='center right', ) #tsize=16)
 
     legd.draw_frame(False)
     legd.get_frame().set_alpha(0.)
-    ax_leg.get_xaxis().set_visible(False)
-    ax_leg.get_yaxis().set_visible(False)
+    axes['legend'].get_xaxis().set_visible(False)
+    axes['legend'].get_yaxis().set_visible(False)
     plt.axis('off')
 
     image_extention = diagtools.get_image_format(cfg)
@@ -4091,9 +4121,9 @@ def main(cfg):
         #data_dict = calc_model_mean(cfg, short_names, data_dict)
         thresholds_dict = load_thresholds(cfg, data_dict)
         #plot_data_dict(cfg, data_dict)
-        make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '4.0', land_carbon = 'tls')
-        make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '3.0', land_carbon = 'tls')
-        make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', land_carbon = 'tls')
+        #ake_bar_chart(cfg, data_dict, thresholds_dict, threshold = '4.0', land_carbon = 'tls')
+        #ake_bar_chart(cfg, data_dict, thresholds_dict, threshold = '3.0', land_carbon = 'tls')
+        #ake_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', land_carbon = 'tls')
 
 
 
@@ -4107,7 +4137,7 @@ def main(cfg):
             do_timeseries_megaplot = True
             if do_timeseries_megaplot:
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,)
-
+            return 
             do_cumulative_plot = True
             if do_cumulative_plot:
 
@@ -4249,3 +4279,4 @@ def main(cfg):
 if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
+
