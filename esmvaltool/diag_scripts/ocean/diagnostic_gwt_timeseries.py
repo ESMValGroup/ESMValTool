@@ -2347,8 +2347,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         #print('tas:', data_dict.get(('tas', exp_1, ensemble_1), 'Not Found'))
 
     label_dicts = {
-        'tas': ' '.join(['Temperature, K',]), # ''.join([r'$\degree$', 'C'])]),
-        'tas_norm': ' '.join(['Normalised Temperature,', ''.join([r'$\degree$', 'C'])]),
+#        'tas': ' '.join(['Temperature, K',]), # ''.join([r'$\degree$', 'C'])]),
+#        'tas_norm': ' '.join(['Normalised Temperature,', ''.join([r'$\degree$', 'C'])]),
         'co2': ' '.join(['Atmospheric co2, ppm']),
         'emissions': ' '.join(['Anthropogenic emissions, Pg/yr']),
         'cumul_emissions': ' '.join(['Cumulative Anthropogenic emissions, Pg']),
@@ -2360,11 +2360,6 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     for exp_1, ensemble_1,dataset_1, plot_style in product(exps, ensembles, datasets, plot_styles):
         x_data, y_data = [], []
         x_times, y_times = [], []
-        for (dataset, short_name, exp, ensemble), cube in data_dict.items():
-            if short_name not in [x,y]: continue
-            if exp != exp_1: continue
-            if ensemble != ensemble_1: continue
-            if dataset != dataset_1: continue
 
             #plot_styles: ambition:
             #    ['ensemble_mean', ] default behaviour before
@@ -2375,17 +2370,24 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             #    all_models_range: Each individual models range is plotted
             #    all_ensembles: Every single ensemble member is shown.
 
-            if plot_style == 'all_ensembles':
-                if ensemble == 'ensemble_mean': continue
-                if dataset == 'CMIP6': continue
 
-            if plot_style == 'all_models_means':
-                if ensemble != 'ensemble_mean': continue
-                if dataset == 'CMIP6': continue
+        if plot_style == 'all_ensembles':
+            if ensemble_1 == 'ensemble_mean': continue
+            if dataset_1 == 'CMIP6': continue
 
-            if plot_style == 'CMIP6_mean':
-                if ensemble != 'ensemble_mean': continue
-                if dataset != 'CMIP6': continue
+        if plot_style == 'all_models_means':
+            if ensemble_1 != 'ensemble_mean': continue
+            if dataset_1 == 'CMIP6': continue
+
+        if plot_style == 'CMIP6_mean':
+            if ensemble_1 != 'ensemble_mean': continue
+            if dataset_1 != 'CMIP6': continue
+
+        for (dataset, short_name, exp, ensemble), cube in data_dict.items():
+            if short_name not in [x,y]: continue
+            if exp != exp_1: continue
+            if ensemble != ensemble_1: continue
+            if dataset != dataset_1: continue
 
 
             print('Everything matches', plot_style, (dataset, short_name, exp, ensemble),'vs', [x,y], (exp_1, ensemble_1))
@@ -4181,7 +4183,7 @@ def main(cfg):
             #    all_ensembles: Every single ensemble member is shown.
 
 
-                timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=[plot_styles, ])
+                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=[plot_styles, ])
             return
             do_cumulative_plot = True
             if do_cumulative_plot:
