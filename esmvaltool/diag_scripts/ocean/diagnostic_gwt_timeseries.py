@@ -120,7 +120,7 @@ cmap_ssp_air = {
         'SSP370': 'orchid',
         'SSP585': 'lightcoral',
     }
- 
+
 def sspify(ssp):
     sspdict = {
         'SSP119': 'SSP1-1.9',
@@ -135,7 +135,7 @@ def sspify(ssp):
         'ssp585': 'SSP5-8.5',
     }
     return sspdict[ssp]
- 
+
 
 def make_mean_of_dict_list(dict_list, short_name):
     """
@@ -208,7 +208,7 @@ def make_mean_of_cube_list_iris(cube_list):
         print('cube_list[',c,']:', cube_list[c])
         #print(cu.coords())
         print(cu) #beMetadata())
-        continue 
+        continue
         for co,coo in enumerate(cu.coords()):
             if c > 0:
                 print(coo.standard_name)
@@ -281,7 +281,7 @@ def make_mean_of_cube_list(cube_list):
     for yr in sorted(output_datas.keys()):
         print('calculating average', yr, np.sum(output_datas[yr])/float(len(output_datas[yr])),':',output_datas[yr])
         #datas.append(np.sum(output_datas[yr])/float(len(output_datas[yr])))
-        datas.append(np.mean(output_datas[yr]))  
+        datas.append(np.mean(output_datas[yr]))
 
     cube_mean.data = np.array(datas)
     # need to align the time range...
@@ -289,7 +289,7 @@ def make_mean_of_cube_list(cube_list):
     #   cube_mean.data+=cube.data
     #ube_mean.data = cube_mean.data/ float(len(cube_list))
     if np.array_equal(cube_mean.data, cube_list[0].data):
-        
+
         assert 0
     if cube_mean.data.max()> np.max([c.data.max() for c in cube_list]):
         print('something is not working here:',  cube_mean.data.max(), '>', [c.data.max() for c in cube_list])
@@ -1019,11 +1019,11 @@ def norm_co2_fgco2gt(data_dict): return norm_co2(data_dict, short='fgco2gt')
 def print_data_dict(data_dict):
     for i, index in enumerate( sorted(data_dict.keys())):
         (dataset, short_name, exp, ensemble) = index
-         
+
         try: print('d_d:',i, index, data_dict[index].data.mean() )
         except: print('d_d:',i, index)
         if 'CMIP6' in index and 'ensemble_mean' in index:
-            print('d_d', index, 'data:', data_dict[index])  
+            print('d_d', index, 'data:', data_dict[index])
 
 
 def load_timeseries(cfg, short_names):
@@ -1154,7 +1154,7 @@ def load_timeseries(cfg, short_names):
 
 
 def calc_model_mean(cfg, short_names_in, data_dict):
-    
+
     debug = False
     calculate_model_mean = True
     if calculate_model_mean:
@@ -1210,13 +1210,13 @@ def calc_model_mean(cfg, short_names_in, data_dict):
             else:
                 data_dict[(dataset, short_name, exp, 'ensemble_mean')] = make_mean_of_cube_list(cubes)
             if debug:
-                print('debug:, mean cube data:', data_dict[(dataset, short_name, exp, 'ensemble_mean')].data) 
+                print('debug:, mean cube data:', data_dict[(dataset, short_name, exp, 'ensemble_mean')].data)
                 for c,cu  in enumerate(cubes):
                     print('debug:',c, cu.data)
-            
+
             # test:
             if len(cubes) > 1:
-                for c,cu in enumerate(cubes): 
+                for c,cu in enumerate(cubes):
                     if np.array_equal(data_dict[(dataset, short_name, exp, 'ensemble_mean')].data, cu.data):
                         print('ERROR: ensemble mean cube is identical to one of the input cubes.')
                         print('mean cube:', data_dict[(dataset, short_name, exp, 'ensemble_mean')].data[:3], '...')
@@ -1225,7 +1225,7 @@ def calc_model_mean(cfg, short_names_in, data_dict):
                         assert 0
 
 
-    #print_data_dict(data_dict)  
+    #print_data_dict(data_dict)
     #save_data_dict(data_dict, data_dict_shelve)
     #assert 0
 
@@ -1327,7 +1327,7 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
 
         if exp != 'historical': continue
         if debug:
-            if dataset == 'ACCESS-ESM1-5': pass  
+            if dataset == 'ACCESS-ESM1-5': pass
             else: continue
 
         baseline_cubes[(dataset, short_name, ensemble)] = cube
@@ -1336,7 +1336,7 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
         if debug: print('baseline: ', baselines[(dataset, short_name, ensemble)])
 
 
-    # Do the work here. 
+    # Do the work here.
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name not in short_names:
              continue
@@ -1363,7 +1363,7 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
                  if bs_index[0] != dataset: continue
                  print(bs_index, ':', baselines.get(bs_index, 0.))
              assert 0
-        
+
         for ens in ensemble:
             if baseline: continue
             baseline =  baselines.get((dataset, 'tas', ens), False)
@@ -1374,7 +1374,7 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
         if debug:
             print('cube2.data', cube2.data)
 
-        # ERROR: So the exceedence year is always set to the first cube in the series. 
+        # ERROR: So the exceedence year is always set to the first cube in the series.
         # is that because the mean of multiple cubes is failing, or because the calculation is only done with the first cube?
         # looks like the ensemble mean cube is identical to the first cube.
 
@@ -2241,6 +2241,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     ensemble_mean = False,
     fig=None,
     ax=None,
+    do_legend=True,
+    plot_thresholds = [1.5, 2., 3., 4., 5.,],
     #short_time_range = False,
     ):
     """
@@ -2496,6 +2498,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             for threshold, time in threshold_times.items():
                 if not time:
                     continue
+                if threshold not in plot_thresholds: continue
                 x_point = get_threshold_point({'time':x_times}, time.year)
                 #_point = get_threshold_point(cube, time.year)
                 y_point = get_threshold_point({'time':y_times}, time.year)
@@ -2515,49 +2518,37 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                          #fillstyle='none',
                          color=exp_colours[exp_1])
 
-#        if x == short_name == 'tas_norm':
-#            for line in [0, 1.5, 2, 3, 4, 5]:
-#                print(line, x,y,'x:',x_data)
-#                plt.axvline(line, 'k', ':')
-
-#        if y == short_name == 'tas_norm':
-#            for line in [0, 1.5, 2, 3, 4, 5]:
-#                print(line, x, y, 'y:',y_data)
-#                plt.axhline(line, 'k', ':')
-
     if not number_of_lines:
         print('No lines plotted')
         plt.close()
-        return
+        return fig, ax
         #assert 0
 
-    exp_colours_leg = {'historical':'black',
-                   'ssp119':'green',
-                   'ssp126':'dodgerblue',
-                   'ssp245':'blue',
-                   'ssp370':'purple',
-                   'ssp434':'magenta',
-                   'ssp585': 'red',
-                   'ssp534-over':'orange'}
-
-
-    plot_details = {}
-    for exp,color in sorted(exp_colours_leg.items()):
-        plot_details[exp] = {
-                    'c': color,
-                    'ls': '-',
-                    'lw': 2.,
-                    'label': exp
-                }
-    for thres,ms in sorted(marker_styles.items()):
-        plot_details[str(thres)] = {
-                    'c': 'black',
-                    'marker': ms,
-                    'fillstyle':'none',
-                    'label': '>' + str(thres)+u'\u00B0C'
-                }
-
-    diagtools.add_legend_outside_right(
+    if do_legend:
+        exp_colours_leg = {'historical':'black',
+                       'ssp119':'green',
+                       'ssp126':'dodgerblue',
+                       'ssp245':'blue',
+                       'ssp370':'purple',
+                       'ssp434':'magenta',
+                       'ssp585': 'red',
+                       'ssp534-over':'orange'}
+        plot_details = {}
+        for exp,color in sorted(exp_colours_leg.items()):
+            plot_details[exp] = {
+                        'c': color,
+                        'ls': '-',
+                        'lw': 2.,
+                        'label': exp
+                    }
+        for thres,ms in sorted(marker_styles.items()):
+            plot_details[str(thres)] = {
+                        'c': 'black',
+                        'marker': ms,
+                        'fillstyle':'none',
+                        'label': '>' + str(thres)+u'\u00B0C'
+                    }
+        diagtools.add_legend_outside_right(
                 plot_details, plt.gca(), column_width=0.175)
 
     # set labels:
@@ -2575,19 +2566,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
 
     plt.title(title)
 
-    # set path:
-    #image_extention = diagtools.get_image_format(cfg)
-    #path = diagtools.folder([cfg['plot_dir'], 'ts_figure'])
-    #if ensemble_mean:
-    #    ensemble_mean_txt = 'ensemble_mean'
-    #else:
-    #    ensemble_mean_txt = 'all'
-    #path += '_'.join([x, y, markers, ensemble_mean_txt, plot_dataset]) + image_extention
-    #if do_moving_average:
-    #    path = path.replace(image_extention, '_21ma'+image_extention)
-
-    print('saving figure:', path)
     if make_figure_here:
+        print('saving figure:', path)
         plt.savefig(path)
         plt.close()
     else:
@@ -3007,7 +2987,7 @@ def make_ensemble_barchart_pane(
         if lablist[0][0] == '.':
             # empty bar
             label_strs.append(' ')
-            linewidths.append(0.) 
+            linewidths.append(0.)
             edge_colours.append(full_alpha)
             colours_land.append('white')
             colours_ocean.append('white')
@@ -3020,10 +3000,10 @@ def make_ensemble_barchart_pane(
         colours_ocean.append(ssp_ocean[t_exp])
         colours_air.append(ssp_air[t_exp])
 
-        if t_dataset == 'CMIP6': 
+        if t_dataset == 'CMIP6':
             edge_colours.append('k')
             linewidths.append(0.)
-        else: 
+        else:
             edge_colours.append(full_alpha)
             linewidths.append(0.)
 
@@ -3167,12 +3147,12 @@ def make_ensemble_barchart(
         ax.tick_params(axis = 'x', labelsize = 'small')
 
         if ax in [ax_3, ax_4]:
-            ax.set_yticks([]) 
+            ax.set_yticks([])
             ax.set_yticklabels([])
             ax.set_ylabel('')
             ax.spines['left'].set_visible(False)
 
-    xranges = [] 
+    xranges = []
     ranges = []
     for ax in [ax_2, ax_3, ax_4]:
         plt.sca(ax)
@@ -3185,15 +3165,15 @@ def make_ensemble_barchart(
         ax.spines['right'].set_visible(False)
 #        if ax in [ax_3, ax_2]:
 #            ax.spines['left'].set_visible(False)
-            
+
         ax.set_ylim([np.min(ranges), np.max(ranges)])
 
 
     # Set x axis size to make all panes the same aspect ratio (maybe)
     #gs.update(width_ratios=(xr[1] for xr in xranges))
-    
+
     print('New width ratios:', xranges)
-    xranges.append(np.sum(xranges)/10.) # for legend. 
+    xranges.append(np.sum(xranges)/10.) # for legend.
     gs.set_width_ratios(xranges)
     fig.subplots_adjust(wspace=0.05)
 
@@ -3240,8 +3220,8 @@ def make_ensemble_barchart(
         #      fillstyle='cent', linestyle='none', markeredgecolor="black")
         dummies[(ssp, 'air')], = ax.plot([], [], c=cmap_ssp_air[ssp], marker='s', markersize=ms,
               fillstyle='top', linestyle='none', markeredgecolor=cmap_ssp_ocean[ssp])
-   
-    keys, labels = [], [] 
+
+    keys, labels = [], []
     for k, label in zip([mair , mocean, mland],['Atmosphere', 'Ocean', 'Land']):
         keys.append(k)
         labels.append(label)
@@ -3251,9 +3231,9 @@ def make_ensemble_barchart(
         keys.append((dummies[(ssp, 'land')], dummies[(ssp, 'air')]))
 
         labels.append(sspify(ssp))
-    
+
     legd = ax_leg.legend(keys, labels,
-        bbox_to_anchor=(1.5, 0.5), 
+        bbox_to_anchor=(1.5, 0.5),
         numpoints=1, labelspacing=1.2,
         loc='center right', ) #tsize=16)
 
@@ -3292,7 +3272,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
         if t_ens != 'ensemble_mean': continue
         if t_short != 'tas': continue
         if t_exp != 'ssp245': continue
- 
+
         print((t_dataset, t_short, t_exp, t_ens), threshold_times[4.0])
     #assert 0
 
@@ -3875,8 +3855,8 @@ def make_cumulative_vs_threshold(cfg, data_dict,
                 ax = ax_ts,)
             if LHS_pane['x'] == 'time':
                 ax_ts.set_xlim([2000., 2100.])
-            
- 
+
+
     if len(LHS_panes) ==0:
         ax_4 =  fig.add_subplot(gs[0, 0])
         ax_3 =  fig.add_subplot(gs[1, 0])
@@ -3890,7 +3870,7 @@ def make_cumulative_vs_threshold(cfg, data_dict,
     # make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '1.5', fig=None, ax=None)
     legends= {ax_4:False, ax_3:False, ax_2:True}
     for ax, threshold in zip(axes, thresholds):
-        make_bar_chart(cfg, data_dict, thresholds_dict, 
+        make_bar_chart(cfg, data_dict, thresholds_dict,
                        threshold = threshold, land_carbon = land_carbon,fig=fig, ax=ax, do_legend=legends[ax])
 
     ranges = []
@@ -3908,7 +3888,7 @@ def make_cumulative_vs_threshold(cfg, data_dict,
         ax.spines['right'].set_visible(False)
         if ax in [ax_3, ax_2]:
             ax.set_xlabel('')
-            ax.spines['left'].set_visible(False) 
+            ax.spines['left'].set_visible(False)
         if ax == ax_2:
             ax.legend(loc='upper right')
 
@@ -3929,6 +3909,94 @@ def make_cumulative_vs_threshold(cfg, data_dict,
     # for each scenario at 4 degrees, we want:
     # total emissions at time_4
     # nbp and
+
+
+def timeseries_megapane(fig, ax, data_dict, thresholds_dict, key,
+    plot_styles = ['CMIP6_range', 'CMIP6_mean'],
+    ,):
+    """
+    Single time series pane for the megaplot.
+    """
+    make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y=key,
+        markers='thresholds',
+        draw_line=True,
+        do_moving_average=False,
+        plot_dataset='all_models',
+        ensemble_mean = True,
+        fig=fig,
+        ax=ax,
+        do_legend = False,
+        plot_thresholds = [2., 3., 4.,],
+
+        #short_time_range = False,
+        )
+    return fix, ax
+
+
+def timeseries_megaplot(cfg, data_dict, thresholds_dict,
+        panes = ['tas', 'atmos_carbon', 'fgco2gt_cumul', 'nbpgt_cumul', ],
+        plot_styles = ['CMIP6_range', 'CMIP6_mean'],
+
+        ):
+    """
+    4 pane time series plot which shows the:
+    temperature                      -  Anthropogenic emissions
+    Global total air sea flux of co2 -  Net biome production?
+
+    or something like that.
+    """
+    fig = plt.figure()
+    fig.set_size_inches(12, 6)
+
+    axes = {}
+    if len(panes) == 4:
+        gs = gridspec.GridSpec(2, 3,figure=fig, width_ratios=[1,1, 0.3], wspace=0.5, hspace=0.5)
+        axes[pane[0]] =  fig.add_subplot(gs[0, 0]) # row, column
+        axes[pane[1]] =  fig.add_subplot(gs[0, 1])
+        axes[pane[2]] =  fig.add_subplot(gs[1, 0])
+        axes[pane[3]] =  fig.add_subplot(gs[1, 1])
+
+    if len(panes) in [5, 6]:
+        gs = gridspec.GridSpec(2, 4,figure=fig, width_ratios=[1,1, 0.3], wspace=0.5, hspace=0.5)
+        axes[pane[0]] =  fig.add_subplot(gs[0, 0]) # row, column
+        axes[pane[1]] =  fig.add_subplot(gs[0, 1])
+        axes[pane[2]] =  fig.add_subplot(gs[0, 2])
+        axes[pane[3]] =  fig.add_subplot(gs[1, 0])
+        axes[pane[4]] =  fig.add_subplot(gs[1, 1])
+        len(panes) in [6, ]:
+            axes[pane[5]] =  fig.add_subplot(gs[1, 2])
+
+    # add legend column ion RHS:
+    axes['legend'] = fig.add_subplot(gs[:, -1])
+
+    for key, ax in axes.items():
+        if key == 'legend': contiunue
+        fig, ax = timeseries_megapane(fig, ax, data_dict, thresholds_dict, key,
+            plot_styles=plot_styles,)
+
+    # l;egend pane:
+    plt.sca(axes['legend'])
+    keys, labels = [], []
+
+    legd = ax_leg.legend(keys, labels,
+        bbox_to_anchor=(1.5, 0.5),
+        numpoints=1, labelspacing=1.2,
+        loc='center right', ) #tsize=16)
+
+    legd.draw_frame(False)
+    legd.get_frame().set_alpha(0.)
+    ax_leg.get_xaxis().set_visible(False)
+    ax_leg.get_yaxis().set_visible(False)
+    plt.axis('off')
+
+    image_extention = diagtools.get_image_format(cfg)
+    path = diagtools.folder([cfg['plot_dir'], 'timeseries_megaplots'])
+    path = '_'.join([path, 'timeseries_megaplot', '_'.join(panes), '_'.join(plot_styles), ])
+    path = ''.join([path, image_extention])
+    print('Save image:', path)
+    plt.savefig(path)
+    plt.close()
+
 
 
 def main(cfg):
@@ -4036,6 +4104,10 @@ def main(cfg):
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
+            do_timeseries_megaplot = True
+            if do_timeseries_megaplot:
+                timeseries_megaplot(cfg, data_dict, thresholds_dict,)
+
             do_cumulative_plot = True
             if do_cumulative_plot:
 
@@ -4126,7 +4198,7 @@ def main(cfg):
 #
 #
 
-        
+
 
         return
         for x in short_names_x:
