@@ -189,7 +189,7 @@ class HotspotDiag:
             'references': [
                 'cos22esd',
             ],
-            'ancestors': ancestor_files,
+            'ancestors': [ancestor_files],
         }
         return record
 
@@ -220,7 +220,7 @@ class HotspotDiag:
             'references': [
                 'cos22esd',
             ],
-            'ancestors': ancestor_files,
+            'ancestors': [ancestor_files],
         }
         return record
 
