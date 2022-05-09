@@ -9,10 +9,9 @@ import iris
 import iris.quickplot as qplot
 import matplotlib.pyplot as plt
 import numpy as np
-from esmvalcore.preprocessor._time import regrid_time
-from iris.analysis.stats import pearsonr
+from esmvalcore.iris_helpers import date2num
+from esmvalcore.preprocessor import climate_statistics, regrid_time
 from iris.coord_categorisation import add_month_number, add_year
-from iris.util import unify_time_units
 from matplotlib.legend import Legend
 from matplotlib.legend_handler import HandlerBase
 from matplotlib.text import Text
@@ -27,6 +26,12 @@ logger = logging.getLogger(__name__)
 class CompareSalinity(object):
     def __init__(self, config):
         self.cfg = config
+        self.ticks = {
+            'mean': [-0.5, 0.0, 0.5],
+            'std_dev': [0.25, 0.5, 1, 2, 4]
+        }
+        self.lim = {'mean': [-1, 1], 'std_dev': [0.01, 10]}
+        self.operation = {'mean': 'bias', 'std_dev': 'std_ratio'}
 
     def compute(self):
         data = group_metadata(self.cfg[names.INPUT_DATA].values(),
@@ -50,7 +55,7 @@ class CompareSalinity(object):
                         time_coord.units.name,
                         calendar='gregorian',
                     )
-                unify_time_units((reference, dataset))
+                self._unify_time_coordinates([reference, dataset])
                 logger.debug("Info dataset %s:", alias)
                 logger.debug(dataset)
                 ancestors = (dataset_info[names.FILENAME], reference_ancestor)
@@ -92,64 +97,77 @@ class CompareSalinity(object):
 
         add_month_number(data, 'time')
         add_year(data, 'time')
-        data.remove_coord('time')
 
         add_month_number(reference, 'time')
         add_year(reference, 'time')
-        reference.remove_coord('time')
 
         data_alias = data_info[names.ALIAS]
-        corr = pearsonr(data, reference, ('month_number', 'year'))
-        angles = np.linspace(0, 2 * np.pi, corr.shape[0] + 1)
-        # Initialise the spider plot
-        ax = plt.subplot(111, polar=True)
-        for spine in ax.spines.values():
-            spine.set_color('grey')
+        for operator in ['mean', 'std_dev']:
+            climat_ref = climate_statistics(reference, operator)
+            climat_data = climate_statistics(data, operator)
+            if operator == 'mean':
+                result_data = climat_ref.data - climat_data.data
+            else:
+                result_data = climat_ref.data / climat_data.data
 
-        # Draw one axe per variable + add labels labels yet
-        letters = [string.ascii_uppercase[i] for i in range(0, corr.shape[0])]
-        plt.xticks(angles[:-1],
-                   letters,
-                   color='grey',
-                   size=8,
-                   rotation=angles[:-1])
+            result = climat_ref.copy(result_data)
+            angles = np.linspace(0, 2 * np.pi, result.shape[0] + 1)
+            # Initialise the spider plot
+            ax = plt.subplot(111, polar=True)
+            for spine in ax.spines.values():
+                spine.set_color('grey')
 
-        # Draw ylabels
-        ax.set_rlabel_position(0)
-        plt.yticks([0.25, 0.5, 0.75], ["0.25", "0.5", "0.75"],
-                   color="grey",
-                   size=7)
-        plt.ylim(0, 1)
+            # Draw one axe per variable + add labels labels yet
+            letters = [
+                string.ascii_uppercase[i] for i in range(0, result.shape[0])
+            ]
+            plt.xticks(angles[:-1],
+                       letters,
+                       color='grey',
+                       size=8,
+                       rotation=angles[:-1])
 
-        data = np.append(corr.data, corr.data[0])
+            # Draw ylabels
+            ax.set_rlabel_position(0)
+            plt.yticks(self.ticks[operator],
+                       list(map(str, self.ticks[operator])),
+                       color="grey",
+                       size=7)
+            plt.ylim(min(self.lim[operator]), max(self.lim[operator]))
 
-        more_angles = np.linspace(0, 2 * np.pi, corr.shape[0] * 20 + 1)
-        interp_data = np.interp(more_angles, angles, data)
+            radar_data = np.append(result.data, result.data[0])
+            more_angles = np.linspace(0, 2 * np.pi, result.shape[0] * 20 + 1)
+            interp_data = np.interp(more_angles, angles, radar_data)
 
-        # Plot data
-        ax.plot(more_angles, interp_data, linewidth=1, linestyle='solid')
-        ax.fill(more_angles, interp_data, 'b', alpha=0.1)
-        ax.legend(letters,
-                  corr.coord('shape_id').points,
-                  loc='upper center',
-                  ncol=2,
-                  frameon=False,
-                  bbox_to_anchor=(0.5, -0.1),
-                  borderaxespad=0.)
-        plt.title(
-            f'{data_info[names.SHORT_NAME]} correlation\n'
-            f'{data_alias} vs {reference_alias}',
-            pad=20)
-        plt.tight_layout()
-        plot_path = os.path.join(
-            self.cfg[names.PLOT_DIR],
-            f"{data_info[names.SHORT_NAME]}_comparison_{data_alias}_"
-            f"{reference_alias}.{self.cfg[names.OUTPUT_FILE_TYPE]}")
-        plt.savefig(plot_path)
-        plt.close()
-        caption = (f"Correlation comparison in diferent regions for "
-                   f"{data_alias} and {reference_alias}")
-        self._create_prov_record(plot_path, caption, ancestors)
+            # Plot data
+            ax.plot(more_angles, interp_data, linewidth=1, linestyle='solid')
+            ax.fill(more_angles, interp_data, 'b', alpha=0.1)
+            ax.legend(letters,
+                      result.coord('shape_id').points,
+                      loc='upper center',
+                      ncol=2,
+                      frameon=False,
+                      bbox_to_anchor=(0.5, -0.1),
+                      borderaxespad=0.)
+            if operator == 'std_dev':
+                ax.set_yscale('symlog', linthresh=0.1)
+            operation = self.operation[operator]
+            plt.title(
+                f'{data_info[names.SHORT_NAME]} {operation}\n'
+                f'{data_alias} vs {reference_alias}',
+                pad=20)
+            plt.tight_layout()
+            plot_path = os.path.join(
+                self.cfg[names.PLOT_DIR],
+                f"{data_info[names.SHORT_NAME]}_{operation}"
+                f"_comparison_{data_alias}_"
+                f"{reference_alias}.{self.cfg[names.OUTPUT_FILE_TYPE]}")
+            plt.savefig(plot_path)
+            plt.close()
+            caption = (
+                f"Absolute {operation} comparison in different regions for "
+                f"{data_alias} and {reference_alias}")
+            self._create_prov_record(plot_path, caption, ancestors)
 
     def _create_prov_record(self, filepath, caption, ancestors):
         record = {
@@ -172,8 +190,10 @@ class CompareSalinity(object):
         return time_offset
 
     def _align_yearly_axes(self, cube):
-        """
-        Perform a time-regridding operation to align time axes for yr data.
+        """Align years.
+
+        Perform a time-regridding operation to align time axes for yr
+        data.
         """
         years = [cell.point.year for cell in cube.coord('time').cells()]
         # be extra sure that the first point is not in the previous year
@@ -203,14 +223,12 @@ class CompareSalinity(object):
         return days
 
     def _get_overlap(self, cubes):
-        """
-        Get discrete time overlaps.
-        This method gets the bounds of coord time
-        from the cube and assembles a continuous time
-        axis with smallest unit 1; then it finds the
-        overlaps by doing a 1-dim intersect;
-        takes the floor of first date and
-        ceil of last date.
+        """Get discrete time overlaps.
+
+        This method gets the bounds of coord time from the cube and
+        assembles a continuous time axis with smallest unit 1; then it
+        finds the overlaps by doing a 1-dim intersect; takes the floor
+        of first date and ceil of last date.
         """
         all_times = []
         for cube in cubes:
@@ -224,10 +242,9 @@ class CompareSalinity(object):
             return time_bounds_list
 
     def _slice_cube(self, cube, t_1, t_2):
-        """
-        Efficient slicer.
-        Simple cube data slicer on indices
-        of common time-data elements.
+        """Efficient slicer.
+
+        Simple cube data slicer on indices of common time-data elements.
         """
         time_pts = [t for t in cube.coord('time').points]
         converted_t = self._datetime_to_int_days(cube)
@@ -236,6 +253,37 @@ class CompareSalinity(object):
             if t_1 <= jj <= t_2
         ])
         return [idxs[0], idxs[-1]]
+
+    @staticmethod
+    def _get_consistent_time_unit(cubes):
+        """Fix time units.
+
+        Return cubes' time unit if consistent, standard calendar
+        otherwise.
+        """
+        t_units = [cube.coord('time').units for cube in cubes]
+        if len(set(t_units)) == 1:
+            return t_units[0]
+        return cf_units.Unit("days since 1850-01-01", calendar="standard")
+
+    def _unify_time_coordinates(self, cubes):
+        """Make sure all cubes' share the same time coordinate."""
+        t_unit = self._get_consistent_time_unit(cubes)
+        for cube in cubes:
+            # Extract date info from cube
+            coord = cube.coord('time')
+            years = [p.year for p in coord.units.num2date(coord.points)]
+            months = [p.month for p in coord.units.num2date(coord.points)]
+            dates = [
+                datetime(year, month, 15, 0, 0, 0)
+                for year, month in zip(years, months)
+            ]
+
+            # Update the cubes' time coordinate
+            cube.coord('time').points = date2num(dates, t_unit, coord.dtype)
+            cube.coord('time').units = t_unit
+            cube.coord('time').bounds = None
+            cube.coord('time').guess_bounds()
 
 
 class TextHandler(HandlerBase):
