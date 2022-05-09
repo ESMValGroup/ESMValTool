@@ -107,15 +107,15 @@ class Monitor(MonitorBase):
             self.plot_timeseries(cube.extract(
                 iris.Constraint(
                     year=lambda cell: cell <= (var_info[n.START_YEAR] + 50))),
-                                var_info,
-                                period='start',
-                                suptitle='First 50 years')
+                var_info,
+                period='start',
+                suptitle='First 50 years')
             self.plot_timeseries(cube.extract(
                 iris.Constraint(
                     year=lambda cell: cell >= (var_info[n.END_YEAR] - 50))),
-                                 var_info,
-                                 period='end',
-                                 suptitle='Last 50 years')
+                var_info,
+                period='end',
+                suptitle='Last 50 years')
 
     def plot_annual_cycle(self, cube, var_info):
         """Plot the annual cycle according to configuration.
@@ -144,9 +144,9 @@ class Monitor(MonitorBase):
 
         plotter = PlotSeries()
         plotter.outdir = self.get_plot_folder(var_info)
-        plotter.img_template = self.get_plot_name('annualcycle', var_info,
-                                                  None)
-        plotter.filefmt = 'svg'
+        plotter.img_template = self.get_plot_path('annualcycle', var_info,
+                                                  add_ext=False)
+        plotter.filefmt = self.cfg['output_file_type']
         region_coords = ('shape_id', 'region')
         options = {
             'xlabel': '',
@@ -158,10 +158,15 @@ class Monitor(MonitorBase):
                 plotter.multiplot_cube(cube, 'month', region_coord, **options)
                 return
         plotter.plot_cube(cube, 'month', **options)
+        caption = (f"Annual cycle of {var_info[n.LONG_NAME]} of "
+                   f"dataset {var_info[n.DATASET]} (project "
+                   f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} to "
+                   f"{var_info[n.END_YEAR]}.")
         self.record_plot_provenance(
-            self.get_plot_path('annualcycle', var_info, 'svg'),
+            self.get_plot_path('annualcycle', var_info),
             var_info,
             'Annual cycle',
+            caption=caption,
         )
 
     def plot_monthly_climatology(self, cube, var_info):
@@ -212,7 +217,7 @@ class Monitor(MonitorBase):
                 f'({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})'
                 f'\n{cube.long_name} ({cube.units})',
                 fontsize=plot_map.fontsize + 4.,
-                y=1.025 - rows * 0.025,
+                y=1.2 - rows * 0.07,
             )
             plt.subplots_adjust(
                 top=0.85,
@@ -222,26 +227,28 @@ class Monitor(MonitorBase):
                 hspace=.20,
                 wspace=.15,
             )
-            filename = self.get_plot_path(f'monclim{map_name}',
-                                          var_info,
-                                          file_type='png')
+            filename = self.get_plot_path(f'monclim{map_name}', var_info)
             plt.savefig(
                 filename,
                 bbox_inches='tight',
                 pad_inches=.2,
             )
             plt.close(plt.gcf())
+            caption = (f"Monthly climatology of {var_info[n.LONG_NAME]} of "
+                       f"dataset {var_info[n.DATASET]} (project "
+                       f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} "
+                       f"to {var_info[n.END_YEAR]}.")
             self.record_plot_provenance(
                 filename,
                 var_info,
                 'Monthly climatology',
                 region=map_name,
+                caption=caption,
             )
         cube.remove_coord('month')
         cube.remove_coord('month_name')
 
-    @staticmethod
-    def _plot_monthly_cube(plot_map, months, columns, rows, map_options,
+    def _plot_monthly_cube(self, plot_map, months, columns, rows, map_options,
                            variable_options, cube_slice):
         month = cube_slice.coord('month_number').points[0]
         month_name = cube_slice.coord('month_name').points[0]
@@ -263,6 +270,7 @@ class Monitor(MonitorBase):
                 **variable_options
             },
         )
+        self.set_rasterized()
 
     def plot_seasonal_climatology(self, cube, var_info):
         """Plot the seasonal climatology as a multipanel plot.
@@ -335,6 +343,7 @@ class Monitor(MonitorBase):
                         **variable_options,
                     },
                 )
+                self.set_rasterized()
             plt.tight_layout()
             plt.suptitle(
                 'Seasonal climatology  '
@@ -350,19 +359,23 @@ class Monitor(MonitorBase):
                 hspace=.20,
                 wspace=.15,
             )
-            filename = self.get_plot_path(f'seasonclim{map_name}', var_info,
-                                          'png')
+            filename = self.get_plot_path(f'seasonclim{map_name}', var_info)
             plt.savefig(
                 filename,
                 bbox_inches='tight',
                 pad_inches=.2,
             )
             plt.close(plt.gcf())
+            caption = (f"Seasonal climatology of {var_info[n.LONG_NAME]} of "
+                       f"dataset {var_info[n.DATASET]} (project "
+                       f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} "
+                       f"to {var_info[n.END_YEAR]}.")
             self.record_plot_provenance(
                 filename,
                 var_info,
                 'Seasonal climatology',
                 region=map_name,
+                caption=caption,
             )
         cube.remove_coord('season')
 
@@ -412,22 +425,31 @@ class Monitor(MonitorBase):
                                    **map_options,
                                    **variable_options
                                })
+
+            # Note: plt.gca() is the colorbar here, use plt.gcf().axes to
+            # access the correct axes
+            self.set_rasterized(plt.gcf().axes[0])
             plt.suptitle(
                 f'Climatology ({var_info[n.START_YEAR]}'
                 f'-{var_info[n.END_YEAR]})',
                 y=map_options.get('suptitle_pos', 0.95),
                 fontsize=plot_map.fontsize + 4)
-            filename = self.get_plot_path(f'clim{map_name}', var_info, 'png')
+            filename = self.get_plot_path(f'clim{map_name}', var_info)
             plt.savefig(filename,
                         bbox_inches='tight',
                         pad_inches=.2,
                         dpi=plot_map.dpi)
             plt.close(plt.gcf())
+            caption = (f"Climatology of {var_info[n.LONG_NAME]} of dataset "
+                       f"{var_info[n.DATASET]} (project "
+                       f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} "
+                       f"to {var_info[n.END_YEAR]}.")
             self.record_plot_provenance(
                 filename,
                 var_info,
                 'Climatology',
                 region=map_name,
+                caption=caption,
             )
 
 

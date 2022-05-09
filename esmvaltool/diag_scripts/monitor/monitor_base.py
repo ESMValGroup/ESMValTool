@@ -24,11 +24,13 @@ class MonitorBase():
 
     def __init__(self, config):
         self.cfg = config
-        self.plot_folder = os.path.abspath(
-            config.get(
-                'plot_folder',
-                os.path.join(self.cfg[names.PLOT_DIR], "../..",
-                             '{dataset}/{exp}/{modeling_realm}/{real_name}')))
+        plot_folder = config.get(
+            'plot_folder',
+            '{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}',
+        )
+        plot_folder = plot_folder.replace('{plot_dir}',
+                                          self.cfg[names.PLOT_DIR])
+        self.plot_folder = os.path.abspath(plot_folder)
         self.plot_filename = config.get(
             'plot_filename',
             '{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}')
@@ -40,6 +42,10 @@ class MonitorBase():
             cartopy.config['data_dir'] = cartopy_data_dir
         with open(config.get('config_file', default_config)) as config_file:
             self.config = yaml.safe_load(config_file)
+
+    def _add_file_extension(self, filename):
+        """Add extension to plot filename."""
+        return f"{filename}.{self.cfg['output_file_type']}"
 
     def _get_proj_options(self, map_name):
         return self.config['maps'][map_name]
@@ -75,33 +81,72 @@ class MonitorBase():
             kwargs['xlimits'] = 'auto'
         length = cube.coord("year").points.max() - cube.coord(
             "year").points.min()
-        filename = self.get_plot_path(f'timeseries{period}', var_info, None)
+        filename = self.get_plot_path(f'timeseries{period}', var_info,
+                                      add_ext=False)
+        caption = ("{} of "
+                   f"{var_info[names.LONG_NAME]} of dataset "
+                   f"{var_info[names.DATASET]} (project "
+                   f"{var_info[names.PROJECT]}) from "
+                   f"{var_info[names.START_YEAR]} to "
+                   f"{var_info[names.END_YEAR]}.")
         if length < 10 or length * 11 > cube.coord("year").shape[0]:
             self.plot_cube(cube, filename, **kwargs)
+            self.record_plot_provenance(
+                self._add_file_extension(filename),
+                var_info,
+                'timeseries',
+                period=period,
+                caption=caption.format("Time series"),
+            )
         elif length < 70:
-            self.plot_cube(cube,
-                           filename,
-                           linestyle=':',
-                           labels=False,
-                           **kwargs)
+            self.plot_cube(cube, filename, **kwargs)
+            self.record_plot_provenance(
+                self._add_file_extension(filename),
+                var_info,
+                'timeseries',
+                period=period,
+                caption=caption.format("Time series"),
+            )
+
+            # Smoothed time series (12-month running mean)
             plt.gca().set_prop_cycle(None)
-            self.plot_cube(cube.rolling_window('time', MEAN, 12), filename,
-                           **kwargs)
-        else:
             self.plot_cube(cube.rolling_window('time', MEAN, 12),
-                           filename,
-                           linestyle=':',
-                           labels=False,
+                           f"{filename}_smoothed_12_months",
                            **kwargs)
-            plt.gca().set_prop_cycle(None)
-            self.plot_cube(cube.rolling_window('time', MEAN, 120), filename,
+            self.record_plot_provenance(
+                self._add_file_extension(f"{filename}_smoothed_12_months"),
+                var_info,
+                'timeseries',
+                period=period,
+                caption=caption.format(
+                    "Smoothed (12-months running mean) time series"),
+            )
+        else:
+            # Smoothed time series (12-month running mean)
+            self.plot_cube(cube.rolling_window('time', MEAN, 12),
+                           f"{filename}_smoothed_12_months",
                            **kwargs)
-        self.record_plot_provenance(
-            self.get_plot_path(f'timeseries{period}', var_info, 'svg'),
-            var_info,
-            'timeseries',
-            period='period',
-        )
+            self.record_plot_provenance(
+                self._add_file_extension(f"{filename}_smoothed_12_months"),
+                var_info,
+                'timeseries',
+                period=period,
+                caption=caption.format(
+                    "Smoothed (12-months running mean) time series"),
+            )
+
+            # Smoothed time series (10-year running mean)
+            self.plot_cube(cube.rolling_window('time', MEAN, 120),
+                           f"{filename}_smoothed_10_years",
+                           **kwargs)
+            self.record_plot_provenance(
+                self._add_file_extension(f"{filename}_smoothed_10_years"),
+                var_info,
+                'timeseries',
+                period=period,
+                caption=caption.format(
+                    "Smoothed (10-years running mean) time series"),
+            )
 
     def record_plot_provenance(self, filename, var_info, plot_type, **kwargs):
         """Write provenance info for a given file."""
@@ -113,15 +158,14 @@ class MonitorBase():
             )
             provenance_logger.log(filename, prov)
 
-    @staticmethod
-    def plot_cube(cube, filename, linestyle='-', **kwargs):
+    def plot_cube(self, cube, filename, linestyle='-', **kwargs):
         """Plot a timeseries from a cube.
 
         Supports multiplot layouts for cubes with extra dimensions
         `shape_id` or `region`
         """
         plotter = PlotSeries()
-        plotter.filefmt = 'svg'
+        plotter.filefmt = self.cfg['output_file_type']
         plotter.img_template = filename
         region_coords = ('shape_id', 'region')
 
@@ -148,25 +192,27 @@ class MonitorBase():
         }
         return record
 
-    def get_plot_path(self, plot_type, var_info, file_type='svg'):
+    def get_plot_path(self, plot_type, var_info, add_ext=True):
         """Get plot full path from variable info.
 
-        Parameters:
+        Parameters
         ----------
         plot_type: str
             Name of the plot
         var_info: dict
             Variable information from ESMValTool
-        file_type: str, optional
-            File extension to use
+        add_ext: bool, optional (default: True)
+            Add filename extension from configuration file.
         """
-        return os.path.join(self.get_plot_folder(var_info),
-                            self.get_plot_name(plot_type, var_info, file_type))
+        return os.path.join(
+            self.get_plot_folder(var_info),
+            self.get_plot_name(plot_type, var_info, add_ext=add_ext),
+        )
 
     def get_plot_folder(self, var_info):
         """Get plot storage folder from variable info.
 
-        Parameters:
+        Parameters
         ----------
         var_info: dict
             Variable information from ESMValTool
@@ -183,17 +229,17 @@ class MonitorBase():
             os.makedirs(folder, exist_ok=True)
         return folder
 
-    def get_plot_name(self, plot_type, var_info, file_type='svg'):
+    def get_plot_name(self, plot_type, var_info, add_ext=True):
         """Get plot filename from variable info.
 
-        Parameters:
+        Parameters
         ----------
         plot_type: str
             Name of the plot
         var_info: dict
             Variable information from ESMValTool
-        file_type: str, optional
-            File extension to use
+        add_ext: bool, optional (default: True)
+            Add filename extension from configuration file.
         """
         info = {
             "plot_type": plot_type,
@@ -201,9 +247,20 @@ class MonitorBase():
             **var_info
         }
         file_name = _replace_tags(self.plot_filename, info)[0]
-        if file_type:
-            file_name += '.' + file_type
+        if add_ext:
+            file_name = self._add_file_extension(file_name)
         return file_name
+
+    def set_rasterized(self, axes=None):
+        """Rasterize all artists and collection of an axes if desired."""
+        if not self.cfg.get('rasterize_maps', True):
+            return
+        if axes is None:
+            axes = plt.gca()
+        for artist in axes.artists:
+            artist.set_rasterized(True)
+        for collection in axes.collections:
+            collection.set_rasterized(True)
 
     @staticmethod
     def _real_name(variable_group):
