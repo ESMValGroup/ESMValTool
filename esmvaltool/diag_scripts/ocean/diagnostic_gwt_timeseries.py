@@ -1225,7 +1225,6 @@ def calc_model_mean(cfg, short_names_in, data_dict):
                         print('source:', short_name, exp, dataset, len(cubes))
                         assert 0
 
-
     #print_data_dict(data_dict)
     #save_data_dict(data_dict, data_dict_shelve)
     #assert 0
@@ -2267,7 +2266,6 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         CMIP6_full_range: full range between individual model ensemble menmbers
         all_models_means: Each individual models mean is plotted.
         all_models_range: Each individual models range is plotted
-
     """
     exps = {}
     ensembles = {}
@@ -2337,14 +2335,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         'draw_line:', draw_line,
         'do_moving_average:', do_moving_average,
         'plot_styles:', plot_styles)
-    #print(data_dict.keys())
 
     number_of_lines=0
-    #for exp_1, ensemble_1 in product(exps, ensembles):
-        #print('\nproduct loop', exp_1, ensemble_1)
-        #txt =
-        ##print('co2:', data_dict.get(('co2', exp_1, ensemble_1), 'Not Found'))
-        #print('tas:', data_dict.get(('tas', exp_1, ensemble_1), 'Not Found'))
 
     label_dicts = {
 #        'tas': ' '.join(['Temperature, K',]), # ''.join([r'$\degree$', 'C'])]),
@@ -2370,10 +2362,11 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             #    all_models_range: Each individual models range is plotted
             #    all_ensembles: Every single ensemble member is shown.
 
-
         if plot_style == 'all_ensembles':
             if ensemble_1 == 'ensemble_mean': continue
             if dataset_1 == 'CMIP6': continue
+            print(plot_style, exp_1, ensemble_1,dataset_1, plot_style)
+            assert 0
 
         if plot_style == 'all_models_means':
             if ensemble_1 != 'ensemble_mean': continue
@@ -2524,7 +2517,6 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                          np.ma.masked_where(y_times < 2015., y_data).compressed(),
                          lw=lw,
                          color=exp_colours[exp_1])
-
 
         if markers == 'thresholds':
             try: threshold_times = thresholds_dict[(dataset_1, 'tas', exp_1, ensemble_1)]
@@ -4023,14 +4015,14 @@ def timeseries_megaplot(cfg, data_dict, thresholds_dict,
                    'ssp370':'purple',
                    'ssp434':'magenta',
                    'ssp585': 'red',
-                   'ssp534-over':'orange',
-                   'historical-ssp119':'green',
-                   'historical-ssp126':'dodgerblue',
-                   'historical-ssp245':'blue',
-                   'historical-ssp370':'purple',
-                   'historical-ssp434':'magenta',
-                   'historical-ssp585': 'red',
-                   'historical-ssp585-ssp534-over':'orange'}
+                   'ssp534-over':'orange',}
+                   # 'historical-ssp119':'green',
+                   # 'historical-ssp126':'dodgerblue',
+                   # 'historical-ssp245':'blue',
+                   # 'historical-ssp370':'purple',
+                   # 'historical-ssp434':'magenta',
+                   # 'historical-ssp585': 'red',
+                   # 'historical-ssp585-ssp534-over':'orange'}
 
     for exp in ['historical', 'ssp119',  'ssp126', 'ssp245', 'ssp370','ssp585']:
         plt.plot([],[], ls='-', c=exp_colours[exp], lw=4., label = sspify(exp))
@@ -4057,7 +4049,7 @@ def timeseries_megaplot(cfg, data_dict, thresholds_dict,
 
     image_extention = diagtools.get_image_format(cfg)
     path = diagtools.folder([cfg['plot_dir'], 'timeseries_megaplots'])
-    path = '_'.join([path, 'timeseries_megaplot', '_'.join(panes), '_'.join(plot_styles), ])
+    path += '_'.join(['timeseries_megaplot', '_'.join(panes), '_'.join(plot_styles), ])
     path = ''.join([path, image_extention])
     print('Save image:', path)
     plt.savefig(path)
