@@ -1926,307 +1926,309 @@ def load_ensemble(data_dict, short_name, exp, ensemble):
     return dat
 
 
-def make_ts_envellope_figure(
-        cfg, data_dict, thresholds_dict,
-        x='time',
-        y='npp',
-        plot_dataset='CMIP6',
-        fill = 'ensemble_means',
-        markers='thresholds',
-        fig=None,
-        ax=None,
-    ):
-    """
-    make a time series envellope figure.
-    x axis and y axis are determined by the short_names provuided in x and y
-    vars.
-    Markers are placed at certain points when the tas goes above thresholds.
-
-    fill = 'ensemble_means': plots only ensemble means
-    fill = 'all_ensembles:' plots all ensembles, nut not ensemble means.
-
-    plot_dataset = 'CMIP6': All datasets
-    plot_dataset = 'model': Only an ensemble of that model.
-
-    Parameters
-    ----------
-    cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
-    """
-    if x !='time':return
-    draw_line=True
-    exps = {}
-    ensembles = {}
-    datasets = {}
-    for (dataset, short_name, exp, ensemble)  in data_dict.keys():
-         exps[exp] = True
-         ensembles[ensemble] = True
-         datasets[dataset] = True
-
-    if plot_dataset != 'CMIP6':
-        if isinstance(plot_dataset, str):
-            datasets = {plot_dataset:True}
-        else:
-            datasets = {pd:True for pd in plot_dataset}
-            plot_dataset = '_'.join(plot_dataset)
-
-    # set path:
-    image_extention = diagtools.get_image_format(cfg)
-    path = diagtools.folder([cfg['plot_dir'], 'envellope_ts_figure'])
-    path += '_'.join([x, y, markers, fill, plot_dataset]) + image_extention
-    #if os.path.exists(path): return
-
-    exp_colours = {'historical':'black',
-                   'ssp119':'green',
-                   'ssp126':'dodgerblue',
-                   'ssp245':'blue',
-                   'ssp370':'purple',
-                   'ssp434':'magenta',
-                   'ssp585': 'red',
-                   'ssp534-over':'orange',
-                   'historical-ssp119':'green',
-                   'historical-ssp126':'dodgerblue',
-                   'historical-ssp245':'blue',
-                   'historical-ssp370':'purple',
-                   'historical-ssp434':'magenta',
-                   'historical-ssp585': 'red',
-                   'historical-ssp585-ssp534-over':'orange'}
-
-    marker_styles = {1.5: 'o', 2.:'*', 3.:'D', 4.:'s', 5.:'X'}
-
-    #if ensemble_mean: ensembles = ['ensemble_mean', ]
-    exps = sorted(exps.keys())
-    exps.reverse()
-    print(exps, ensembles)
-    print(data_dict.keys())
-
-    if fig == None:
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        make_figure_here = True
-    else:
-        make_figure_here = False
-        plt.sca(ax)
-
-    x_label,y_label = [], []
-    #number_of_lines=0
-
-    label_dicts = {
-        'co2': ' '.join(['Atmospheric co2, ppm']),
-        'emissions': ' '.join(['Anthropogenic emissions, Pg/yr']),
-        'cumul_emissions': ' '.join(['Cumulative Anthropogenic emissions, Pg']),
-        'luegt': ' '.join(['Land use emissions, Pg']),
-        'tls': ' '.join(['True Land Sink, Pg']),
-        'atmos_carbon': 'Remnant Anthropogenic CO2, Pg',
-    }
-
-    # Only drawy line and markers for CMIP6 ensemble_mean.
-    #dataset_1 = plot_dataset
-    #ensemble_1 = 'ensemble_mean'
-
-    envellopes = {exp: {} for exp in exps}
-    for exp_1, ensemble_1,dataset_1 in product(exps, ensembles,datasets):
-        x_data, y_data = [], []
-        x_times, y_times = [], []
-        for (dataset, short_name, exp, ensemble), cube in data_dict.items():
-            if short_name not in [x,y]: continue
-            if exp != exp_1: continue
-            if ensemble != ensemble_1: continue
-            if dataset != dataset_1: continue
-
-            if fill == 'ensemble_means' and ensemble_1 != 'ensemble_mean':
-                #  plots only ensemble means.
-                continue
-            #if fill == 'all_ensembles' and ensemble_1 == 'ensemble_mean':
-            #    #  plots all ensembles, nut not ensemble means.
-            #    continue
-
-            print('found:', (dataset, short_name, exp, ensemble))
-            if x == 'time' and short_name == y:
-                x_label = 'Year'
-                if isinstance(cube, iris.cube.Cube):
-                    x_data = diagtools.cube_time_to_float(cube)
-                    x_times = x_data.copy()
-                    #print('setting x time to ',short_name, exp, ensemble)
-                else:
-                    x_data = cube['time']
-                    x_times = x_data.copy()
-                    #print('setting x time to ',short_name, exp, ensemble)
-            elif x == short_name and x in label_dicts.keys():
-                x_data = cube[x].copy()
-                x_times = cube['time'].copy()
-                #print('setting x time to ',short_name, exp, ensemble)
-                x_label = label_dicts[x]
-
-            elif short_name == x:
-                x_data = np.array(cube.data.copy())
-                x_times = diagtools.cube_time_to_float(cube)
-                #print('setting x axis to ',short_name, exp, ensemble, np.min(x_data), np.max(x_data))
-                x_label = ' '.join([get_long_name(x), str(cube.units)])
-
-            if y == 'time':
-               #print('what kind of crazy person plots time on y axis?')
-                assert 0
-            elif y == short_name and y in label_dicts.keys():
-                #['co2', 'emissions', 'cumul_emissions', 'luegt']:
-                y_data = cube[y].copy()
-                y_times = cube['time'].copy()
-                y_label = label_dicts[y]
-                #print('setting y time to ',short_name, exp, ensemble)
-            elif short_name == y:
-                #print(short_name, 'is a cube for y ts plot..')
-                y_data = cube.data.copy()
-                y_times = diagtools.cube_time_to_float(cube)
-                #print('setting y time to ',short_name, exp, ensemble, y_data)
-                y_label = ' '.join([get_long_name(y), str(cube.units)])
-
-        if 0 in [len(x_data), len(y_data), len(x_times), len(y_times)]:
-            #print('no data found',(exp_1, ensemble_1,dataset_1),  x,'vs',y, 'x:', len(x_data), 'y:',len(y_data))
-            continue
-
-        if len(x_data) != len(x_times) or len(y_data) != len(y_times):
-            print('x:', len(x_data), len(x_times), 'y:', len(y_data), len(y_times))
-            assert 0
-
-        # calculate the datasety for the fills
-        for xd, yd in zip(x_data, y_data):
-            if 'x' == 'time': xd = int(xd)
-            if xd < 1851.:
-                print(plot_dataset, fill, (exp_1, ensemble_1, dataset_1, short_name), xd, yd)
-            if plot_dataset=='CMIP6':
-                if dataset_1 == 'CMIP6':
-                    # include everything except 'CMIP6 ensemble means.'
-                    continue
-            else:
-                if dataset_1 != plot_dataset:
-                    continue
-            if fill == 'ensemble_means' and ensemble_1 != 'ensemble_mean':
-                #  plots only ensemble means.
-                continue
-            if fill == 'all_ensembles' and ensemble_1 == 'ensemble_mean':
-                #  plots all ensembles, nut not ensemble means.
-                continue
-
-            if envellopes[exp_1].get(xd, False):
-                envellopes[exp_1][xd].append(yd)
-            else:
-                envellopes[exp_1][xd] = [yd, ]
-            print('made it!',exp_1, ensemble_1, fill, xd,yd)
-
-        # Only draw line for plot_dataset
-        if draw_line and dataset_1 == plot_dataset:
-            x_times = np.ma.array(x_times)
-            y_times = np.ma.array(y_times)
-            #number_of_lines+=1
-            if plot_dataset=='CMIP6':
-                lw=1.3
-            else:
-                lw=0.5
-            plt.plot(x_data,
-                 y_data,
-                 lw=lw,
-                 color=exp_colours[exp_1])
-
-        # Only plot markers for plot_dataset ensemble_mean
-        if markers == 'thresholds' and dataset_1 == plot_dataset and ensemble_1 == 'ensemble_mean':
-            try: threshold_times = thresholds_dict[(dataset_1, 'tas', exp_1, ensemble_1)]
-            except:
-               threshold_times = {}
-            ms = 8
-            for threshold, time in threshold_times.items():
-                if not time:
-                    continue
-                x_point = get_threshold_point({'time':x_times}, time.year)
-                y_point = get_threshold_point({'time':y_times}, time.year)
-
-                plt.plot(x_data[x_point],
-                         y_data[y_point],
-                         marker_styles[threshold],
-                         markersize = ms,
-                         fillstyle='none',
-                         color=exp_colours[exp_1])
-                plt.plot(x_data[x_point],
-                         y_data[y_point],
-                         'o',
-                         markersize = 2,
-                         #fillstyle='none',
-                         color=exp_colours[exp_1])
-
-    #add_env = True
-    for exp, ranges in envellopes.items():
-         times, mins, maxs = [], [], []
-         # This won't work if the ranges aren't the same!
-         for t in sorted(ranges.keys()):
-             times.append(t)
-             mins.append(np.min(ranges[t]))
-             maxs.append(np.max(ranges[t]))
-         print('enveloppe', exp, times, mins, maxs)
-         if not len(times):
-             continue
-         ax.fill_between(
-             times,
-             mins,
-             maxs,
-             lw=0,
-             alpha=0.5,
-             color=exp_colours[exp])
-
-    #print(x,y,fill, plot_dataset, envellopes)
-
-    if not envellopes:
-        print('No lines plotted')
-        plt.close()
-        return
-
-    exp_colours_leg = {'historical':'black',
-                   'ssp119':'green',
-                   'ssp126':'dodgerblue',
-                   'ssp245':'blue',
-                   'ssp370':'purple',
-                   #'ssp434':'magenta',
-                   'ssp585': 'red',}
-                   #'ssp534-over':'orange'}
-
-    plot_details = {}
-    for exp,color in sorted(exp_colours_leg.items()):
-        plot_details[exp] = {
-                    'c': color,
-                    'ls': '-',
-                    'lw': 2.,
-                    'label': exp
-                }
-    for thres,ms in sorted(marker_styles.items()):
-        plot_details[str(thres)] = {
-                    'c': 'black',
-                    'marker': ms,
-                    'fillstyle':'none',
-                    'label': '>' + str(thres)+u'\u00B0C'
-                }
-
-    diagtools.add_legend_outside_right(
-                plot_details, plt.gca(), column_width=0.175)
-
-    # set labels:
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-
-    # set title:
-    if x == 'time':
-        title = get_long_name(y)
-    else:
-        title = ' '.join([get_long_name(x), 'by', get_long_name(y)])
-
-    if plot_dataset != 'all_models':
-        title += ' '+plot_dataset
-
-    plt.title(title)
-
-    print('saving figure:', path)
-    if make_figure_here:
-        plt.savefig(path)
-        plt.close()
-    else:
-        return fig, ax
+# def make_ts_envellope_figure(
+#         cfg, data_dict, thresholds_dict,
+#         x='time',
+#         y='npp',
+#         plot_dataset='CMIP6',
+#         fill = 'ensemble_means',
+#         markers='thresholds',
+#         fig=None,
+#         ax=None,
+#     ):
+#     """
+#     make a time series envellope figure.
+#     x axis and y axis are determined by the short_names provuided in x and y
+#     vars.
+#     Markers are placed at certain points when the tas goes above thresholds.
+#
+#     fill = 'ensemble_means': plots only ensemble means
+#     fill = 'all_ensembles:' plots all ensembles, nut not ensemble means.
+#
+#     plot_dataset = 'CMIP6': All datasets
+#     plot_dataset = 'model': Only an ensemble of that model.
+#
+#     Parameters
+#     ----------
+#     cfg: dict
+#         the opened global config dictionairy, passed by ESMValTool.
+#     """
+#     if x !='time':return
+#     draw_line=True
+#     exps = {}
+#     ensembles = {}
+#     datasets = {}
+#     for (dataset, short_name, exp, ensemble)  in data_dict.keys():
+#          exps[exp] = True
+#          ensembles[ensemble] = True
+#          datasets[dataset] = True
+#
+#     if plot_dataset != 'CMIP6':
+#         if isinstance(plot_dataset, str):
+#             datasets = {plot_dataset:True}
+#         else:
+#             datasets = {pd:True for pd in plot_dataset}
+#             plot_dataset = '_'.join(plot_dataset)
+#
+#     # set path:
+#     image_extention = diagtools.get_image_format(cfg)
+#     path = diagtools.folder([cfg['plot_dir'], 'envellope_ts_figure'])
+#     path += '_'.join([x, y, markers, fill, plot_dataset]) + image_extention
+#     #if os.path.exists(path): return
+#
+#     exp_colours = {'historical':'black',
+#                    'ssp119':'green',
+#                    'ssp126':'dodgerblue',
+#                    'ssp245':'blue',
+#                    'ssp370':'purple',
+#                    'ssp434':'magenta',
+#                    'ssp585': 'red',
+#                    'ssp534-over':'orange',
+#                    'historical-ssp119':'green',
+#                    'historical-ssp126':'dodgerblue',
+#                    'historical-ssp245':'blue',
+#                    'historical-ssp370':'purple',
+#                    'historical-ssp434':'magenta',
+#                    'historical-ssp585': 'red',
+#                    'historical-ssp585-ssp534-over':'orange'}
+#
+#     marker_styles = {1.5: '*', 2.:'o', 3.:'D', 4.:'s', 5.:'X'}
+#
+#     #if ensemble_mean: ensembles = ['ensemble_mean', ]
+#     exps = sorted(exps.keys())
+#     exps.reverse()
+#     print(exps, ensembles)
+#     print(data_dict.keys())
+#
+#     if fig == None:
+#         fig = plt.figure()
+#         ax = fig.add_subplot(111)
+#         make_figure_here = True
+#     else:
+#         make_figure_here = False
+#         plt.sca(ax)
+#
+#     x_label,y_label = [], []
+#     #number_of_lines=0
+#
+#     label_dicts = {
+#         'tas': ' '.join(['Temperature, K',]), # ''.join([r'$\degree$', 'C'])]),
+#         'tas_norm': ' '.join(['Normalised Temperature,', ''.join([r'$\degree$', 'C'])]),
+#         'co2': ' '.join(['Atmospheric co2, ppm']),
+#         'emissions': ' '.join(['Anthropogenic emissions, Pg/yr']),
+#         'cumul_emissions': ' '.join(['Cumulative Anthropogenic emissions, Pg']),
+#         'luegt': ' '.join(['Land use emissions, Pg']),
+#         'tls': ' '.join(['True Land Sink, Pg']),
+#         'atmos_carbon': 'Remnant Anthropogenic CO2, Pg',
+#     }
+#
+#     # Only drawy line and markers for CMIP6 ensemble_mean.
+#     #dataset_1 = plot_dataset
+#     #ensemble_1 = 'ensemble_mean'
+#
+#     envellopes = {exp: {} for exp in exps}
+#     for exp_1, ensemble_1,dataset_1 in product(exps, ensembles,datasets):
+#         x_data, y_data = [], []
+#         x_times, y_times = [], []
+#         for (dataset, short_name, exp, ensemble), cube in data_dict.items():
+#             if short_name not in [x,y]: continue
+#             if exp != exp_1: continue
+#             if ensemble != ensemble_1: continue
+#             if dataset != dataset_1: continue
+#
+#             if fill == 'ensemble_means' and ensemble_1 != 'ensemble_mean':
+#                 #  plots only ensemble means.
+#                 continue
+#             #if fill == 'all_ensembles' and ensemble_1 == 'ensemble_mean':
+#             #    #  plots all ensembles, nut not ensemble means.
+#             #    continue
+#
+#             print('found:', (dataset, short_name, exp, ensemble))
+#             if x == 'time' and short_name == y:
+#                 x_label = 'Year'
+#                 if isinstance(cube, iris.cube.Cube):
+#                     x_data = diagtools.cube_time_to_float(cube)
+#                     x_times = x_data.copy()
+#                     #print('setting x time to ',short_name, exp, ensemble)
+#                 else:
+#                     x_data = cube['time']
+#                     x_times = x_data.copy()
+#                     #print('setting x time to ',short_name, exp, ensemble)
+#             elif x == short_name and x in label_dicts.keys():
+#                 x_data = cube[x].copy()
+#                 x_times = cube['time'].copy()
+#                 #print('setting x time to ',short_name, exp, ensemble)
+#                 x_label = label_dicts[x]
+#
+#             elif short_name == x:
+#                 x_data = np.array(cube.data.copy())
+#                 x_times = diagtools.cube_time_to_float(cube)
+#                 #print('setting x axis to ',short_name, exp, ensemble, np.min(x_data), np.max(x_data))
+#                 x_label = ' '.join([get_long_name(x), str(cube.units)])
+#
+#             if y == 'time':
+#                #print('what kind of crazy person plots time on y axis?')
+#                 assert 0
+#             elif y == short_name and y in label_dicts.keys():
+#                 #['co2', 'emissions', 'cumul_emissions', 'luegt']:
+#                 y_data = cube[y].copy()
+#                 y_times = cube['time'].copy()
+#                 y_label = label_dicts[y]
+#                 #print('setting y time to ',short_name, exp, ensemble)
+#             elif short_name == y:
+#                 #print(short_name, 'is a cube for y ts plot..')
+#                 y_data = cube.data.copy()
+#                 y_times = diagtools.cube_time_to_float(cube)
+#                 #print('setting y time to ',short_name, exp, ensemble, y_data)
+#                 y_label = ' '.join([get_long_name(y), str(cube.units)])
+#
+#         if 0 in [len(x_data), len(y_data), len(x_times), len(y_times)]:
+#             #print('no data found',(exp_1, ensemble_1,dataset_1),  x,'vs',y, 'x:', len(x_data), 'y:',len(y_data))
+#             continue
+#
+#         if len(x_data) != len(x_times) or len(y_data) != len(y_times):
+#             print('x:', len(x_data), len(x_times), 'y:', len(y_data), len(y_times))
+#             assert 0
+#
+#         # calculate the datasety for the fills
+#         for xd, yd in zip(x_data, y_data):
+#             if 'x' == 'time': xd = int(xd)
+#             if xd < 1851.:
+#                 print(plot_dataset, fill, (exp_1, ensemble_1, dataset_1, short_name), xd, yd)
+#             if plot_dataset=='CMIP6':
+#                 if dataset_1 == 'CMIP6':
+#                     # include everything except 'CMIP6 ensemble means.'
+#                     continue
+#             else:
+#                 if dataset_1 != plot_dataset:
+#                     continue
+#             if fill == 'ensemble_means' and ensemble_1 != 'ensemble_mean':
+#                 #  plots only ensemble means.
+#                 continue
+#             if fill == 'all_ensembles' and ensemble_1 == 'ensemble_mean':
+#                 #  plots all ensembles, nut not ensemble means.
+#                 continue
+#
+#             if envellopes[exp_1].get(xd, False):
+#                 envellopes[exp_1][xd].append(yd)
+#             else:
+#                 envellopes[exp_1][xd] = [yd, ]
+#             print('made it!',exp_1, ensemble_1, fill, xd,yd)
+#
+#         # Only draw line for plot_dataset
+#         if draw_line and dataset_1 == plot_dataset:
+#             x_times = np.ma.array(x_times)
+#             y_times = np.ma.array(y_times)
+#             #number_of_lines+=1
+#             if plot_dataset=='CMIP6':
+#                 lw=1.3
+#             else:
+#                 lw=0.5
+#             plt.plot(x_data,
+#                  y_data,
+#                  lw=lw,
+#                  color=exp_colours[exp_1])
+#
+#         # Only plot markers for plot_dataset ensemble_mean
+#         if markers == 'thresholds' and dataset_1 == plot_dataset and ensemble_1 == 'ensemble_mean':
+#             try: threshold_times = thresholds_dict[(dataset_1, 'tas', exp_1, ensemble_1)]
+#             except:
+#                threshold_times = {}
+#             ms = 8
+#             for threshold, time in threshold_times.items():
+#                 if not time:
+#                     continue
+#                 x_point = get_threshold_point({'time':x_times}, time.year)
+#                 y_point = get_threshold_point({'time':y_times}, time.year)
+#
+#                 plt.plot(x_data[x_point],
+#                          y_data[y_point],
+#                          marker_styles[threshold],
+#                          markersize = ms,
+#                          fillstyle='none',
+#                          color=exp_colours[exp_1])
+#                 plt.plot(x_data[x_point],
+#                          y_data[y_point],
+#                          'o',
+#                          markersize = 2,
+#                          #fillstyle='none',
+#                          color=exp_colours[exp_1])
+#
+#     #add_env = True
+#     for exp, ranges in envellopes.items():
+#          times, mins, maxs = [], [], []
+#          # This won't work if the ranges aren't the same!
+#          for t in sorted(ranges.keys()):
+#              times.append(t)
+#              mins.append(np.min(ranges[t]))
+#              maxs.append(np.max(ranges[t]))
+#          print('enveloppe', exp, times, mins, maxs)
+#          if not len(times):
+#              continue
+#          ax.fill_between(
+#              times,
+#              mins,
+#              maxs,
+#              lw=0,
+#              alpha=0.5,
+#              color=exp_colours[exp])
+#
+#     #print(x,y,fill, plot_dataset, envellopes)
+#
+#     if not envellopes:
+#         print('No lines plotted')
+#         plt.close()
+#         return
+#
+#     exp_colours_leg = {'historical':'black',
+#                    'ssp119':'green',
+#                    'ssp126':'dodgerblue',
+#                    'ssp245':'blue',
+#                    'ssp370':'purple',
+#                    #'ssp434':'magenta',
+#                    'ssp585': 'red',}
+#                    #'ssp534-over':'orange'}
+#
+#     plot_details = {}
+#     for exp,color in sorted(exp_colours_leg.items()):
+#         plot_details[exp] = {
+#                     'c': color,
+#                     'ls': '-',
+#                     'lw': 2.,
+#                     'label': exp
+#                 }
+#     for thres,ms in sorted(marker_styles.items()):
+#         plot_details[str(thres)] = {
+#                     'c': 'black',
+#                     'marker': ms,
+#                     'fillstyle':'none',
+#                     'label': '>' + str(thres)+u'\u00B0C'
+#                 }
+#
+#     diagtools.add_legend_outside_right(
+#                 plot_details, plt.gca(), column_width=0.175)
+#
+#     # set labels:
+#     plt.xlabel(x_label)
+#     plt.ylabel(y_label)
+#
+#     # set title:
+#     if x == 'time':
+#         title = get_long_name(y)
+#     else:
+#         title = ' '.join([get_long_name(x), 'by', get_long_name(y)])
+#
+#     if plot_dataset != 'all_models':
+#         title += ' '+plot_dataset
+#
+#     plt.title(title)
+#
+#     print('saving figure:', path)
+#     if make_figure_here:
+#         plt.savefig(path)
+#         plt.close()
+#     else:
+#         return fig, ax
 
 
 
@@ -2237,7 +2239,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     draw_line=True,
     do_moving_average=False,
     plot_dataset='all_models',
-    ensemble_mean = False,
+    ensemble_mean = False, # does nothing now.
+    plot_styles = ['ensemble_mean', ], #['CMIP6_range', 'CMIP6_mean'],
     fig=None,
     ax=None,
     do_legend=True,
@@ -2254,6 +2257,15 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     ----------
     cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
+
+    plot_styles: ambition:
+        ['ensemble_mean', ] default behaviour before
+        CMIP6_mean: Only CMIP6 multi model mean
+        CMIP6_range: range bewteen each model mean shown
+        CMIP6_full_range: full range between individual model ensemble menmbers
+        all_models_means: Each individual models mean is plotted.
+        all_models_range: Each individual models range is plotted
+
     """
     exps = {}
     ensembles = {}
@@ -2276,10 +2288,11 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
 
     path = diagtools.folder([cfg['plot_dir'], 'ts_figure',plot_dataset])
 
-    if ensemble_mean:
-        ensemble_mean_txt = 'ensemble_mean'
-    else:
-        ensemble_mean_txt = 'all'
+    ensemble_mean_txt = '_'.join(plot_styles)
+    # if ensemble_mean:
+    #     ensemble_mean_txt = 'ensemble_mean'
+    # else:
+    #     ensemble_mean_txt = 'all'
 
     path += '_'.join([x, y, markers, ensemble_mean_txt, plot_dataset]) + image_extention
     if do_moving_average:
@@ -2302,9 +2315,11 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                    'historical-ssp585': 'red',
                    'historical-ssp585-ssp534-over':'orange'}
 
-    marker_styles = {1.5: '*', 2.:'*', 3.:'D', 4.:'s', 5.:'X'}
+    marker_styles = {1.5: '*', 2.:'o', 3.:'D', 4.:'s', 5.:'X'}
 
-    if ensemble_mean: ensembles = ['ensemble_mean', ]
+    if plot_styles == ['ensemble_mean', ]:
+        ensembles = ['ensemble_mean', ]
+
     exps = sorted(exps.keys())
     exps.reverse()
     print(exps, ensembles)
@@ -2325,7 +2340,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         'markers:', markers,
         'draw_line:', draw_line,
         'do_moving_average:', do_moving_average,
-        'ensemble_mean:', ensemble_mean)
+        'plot_styles:', plot_styles)
     #print(data_dict.keys())
     number_of_lines=0
     #for exp_1, ensemble_1 in product(exps, ensembles):
@@ -2335,6 +2350,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         #print('tas:', data_dict.get(('tas', exp_1, ensemble_1), 'Not Found'))
 
     label_dicts = {
+        'tas': ' '.join(['Temperature, K',]), # ''.join([r'$\degree$', 'C'])]),
+        'tas_norm': ' '.join(['Normalised Temperature,', ''.join([r'$\degree$', 'C'])]),
         'co2': ' '.join(['Atmospheric co2, ppm']),
         'emissions': ' '.join(['Anthropogenic emissions, Pg/yr']),
         'cumul_emissions': ' '.join(['Cumulative Anthropogenic emissions, Pg']),
@@ -2342,6 +2359,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         'tls': ' '.join(['True Land Sink, Pg']),
         'atmos_carbon': 'Remnant Anthropogenic CO2, Pg',
     }
+
     for exp_1, ensemble_1,dataset_1 in product(exps, ensembles,datasets):
 
         x_data, y_data = [], []
@@ -2416,7 +2434,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             x_times = np.ma.array(x_times)
             y_times = np.ma.array(y_times)
             number_of_lines+=1
-            if ensemble_mean:
+            if plot_styles == ['ensemble_mean', ]:
                 lw=1.3
             else:
                 lw=0.5
@@ -2492,12 +2510,10 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             except:
                threshold_times = {}
             ms = 4
-            if ensemble_mean:
-                ms = 4 
             for threshold, time in threshold_times.items():
                 if not time:
                     continue
-                if threshold not in plot_thresholds: 
+                if threshold not in plot_thresholds:
                     continue
                 x_point = get_threshold_point({'time':x_times}, time.year)
                 #_point = get_threshold_point(cube, time.year)
@@ -4137,7 +4153,7 @@ def main(cfg):
             do_timeseries_megaplot = True
             if do_timeseries_megaplot:
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,)
-            return 
+            return
             do_cumulative_plot = True
             if do_cumulative_plot:
 
@@ -4279,4 +4295,3 @@ def main(cfg):
 if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
-
