@@ -2257,7 +2257,9 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     ----------
     cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
-
+    plot_dataset:
+        either 'all_models'
+        or an individual model name.
     plot_styles: ambition:
         ['ensemble_mean', ] default behaviour before
         CMIP6_mean: Only CMIP6 multi model mean
@@ -2285,16 +2287,10 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
 
     # set path:
     image_extention = diagtools.get_image_format(cfg)
-
     path = diagtools.folder([cfg['plot_dir'], 'ts_figure',plot_dataset])
-
     ensemble_mean_txt = '_'.join(plot_styles)
-    # if ensemble_mean:
-    #     ensemble_mean_txt = 'ensemble_mean'
-    # else:
-    #     ensemble_mean_txt = 'all'
-
     path += '_'.join([x, y, markers, ensemble_mean_txt, plot_dataset]) + image_extention
+
     if do_moving_average:
         path = path.replace(image_extention, '_21ma'+image_extention)
     #if os.path.exists(path): return
@@ -2342,6 +2338,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         'do_moving_average:', do_moving_average,
         'plot_styles:', plot_styles)
     #print(data_dict.keys())
+
     number_of_lines=0
     #for exp_1, ensemble_1 in product(exps, ensembles):
         #print('\nproduct loop', exp_1, ensemble_1)
@@ -2360,8 +2357,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         'atmos_carbon': 'Remnant Anthropogenic CO2, Pg',
     }
 
-    for exp_1, ensemble_1,dataset_1 in product(exps, ensembles,datasets):
-
+    for exp_1, ensemble_1,dataset_1, plot_style in product(exps, ensembles, datasets, plot_styles):
         x_data, y_data = [], []
         x_times, y_times = [], []
         for (dataset, short_name, exp, ensemble), cube in data_dict.items():
@@ -2369,12 +2365,35 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             if exp != exp_1: continue
             if ensemble != ensemble_1: continue
             if dataset != dataset_1: continue
-            print('Everything matches', (dataset, short_name, exp, ensemble),'vs', [x,y], (exp_1, ensemble_1))
+
+            #plot_styles: ambition:
+            #    ['ensemble_mean', ] default behaviour before
+            #    CMIP6_mean: Only CMIP6 multi model mean
+            #    CMIP6_range: range bewteen each model mean shown
+            #    CMIP6_full_range: full range between individual model ensemble menmbers
+            #    all_models_means: Each individual models mean is plotted.
+            #    all_models_range: Each individual models range is plotted
+            #    all_ensembles: Every single ensemble member is shown.
+
+            if plot_style == 'all_ensembles':
+                if ensemble == 'ensemble_mean': continue
+                if dataset == 'CMIP6': continue
+
+            if plot_style == 'all_models_means':
+                if ensemble != 'ensemble_mean': continue
+                if dataset == 'CMIP6': continue
+
+            if plot_style == 'CMIP6_mean':
+                if ensemble != 'ensemble_mean': continue
+                if dataset != 'CMIP6': continue
+
+
+            print('Everything matches', plot_style, (dataset, short_name, exp, ensemble),'vs', [x,y], (exp_1, ensemble_1))
 #           print(exp_1, ensemble_1, short_name, exp, ensemble, ensemble_mean)
 #            if ensemble_mean and ensemble!= 'ensemble_mean': continue
 #            if not ensemble_mean and ensemble == 'ensemble_mean': continue
 
-            print('make_ts_figure: found', dataset, short_name, exp, ensemble, x,y)
+            print('make_ts_figure: found', plot_style, dataset, short_name, exp, ensemble, x,y)
             if x == 'time' and short_name == y:
                 x_label = 'Year'
                 if isinstance(cube, iris.cube.Cube):
@@ -2499,10 +2518,10 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                          lw=lw,
                          color=exp_colours[exp_1])
 
-#                plt.plot(np.ma.masked_where(x_times < 2015., x_data).compressed(),
-#                         np.ma.masked_where(y_times < 2015., y_data).compressed(),
-#                         lw=lw,
-#                         color=exp_colours[exp_1])
+                plt.plot(np.ma.masked_where(x_times < 2015., x_data).compressed(),
+                         np.ma.masked_where(y_times < 2015., y_data).compressed(),
+                         lw=lw,
+                         color=exp_colours[exp_1])
 
 
         if markers == 'thresholds':
@@ -3954,7 +3973,6 @@ def timeseries_megapane(cfg, data_dict, thresholds_dict, key,
 def timeseries_megaplot(cfg, data_dict, thresholds_dict,
         panes = ['tas_norm', 'atmos_carbon', 'fgco2gt_cumul', 'nbpgt_cumul', ],
         plot_styles = ['CMIP6_range', 'CMIP6_mean'],
-
         ):
     """
     4 pane time series plot which shows the:
@@ -4152,7 +4170,18 @@ def main(cfg):
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
             do_timeseries_megaplot = True
             if do_timeseries_megaplot:
-                timeseries_megaplot(cfg, data_dict, thresholds_dict,)
+                for plot_styles in ['all_ensembles', 'all_models_means', 'CMIP6_mean']:
+            #plot_styles: ambition:
+            #    ['ensemble_mean', ] default behaviour before
+            #    CMIP6_mean: Only CMIP6 multi model mean
+            #    CMIP6_range: range bewteen each model mean shown
+            #    CMIP6_full_range: full range between individual model ensemble menmbers
+            #    all_models_means: Each individual models mean is plotted.
+            #    all_models_range: Each individual models range is plotted
+            #    all_ensembles: Every single ensemble member is shown.
+
+
+                timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=[plot_styles, ])
             return
             do_cumulative_plot = True
             if do_cumulative_plot:
