@@ -138,7 +138,7 @@ def sspify(ssp):
     return sspdict[ssp]
 
 
-def make_mean_of_dict_list(dict_list, short_name):
+def make_mean_of_dict_list(dict_list, short_name, metric='mean'):
     """
     Takes the mean of a list of cubes (not an iris.cube.CubeList).
     Assumes all the cubes are the same shape.
@@ -167,7 +167,7 @@ def make_mean_of_dict_list(dict_list, short_name):
         print('make_mean_of_dict_list: ERROR: list of years:', full_times)
         assert 0
 
-    print('make_mean_of_dict_list: INFO:, everything is right size:', year_counts)
+    print('make_mean_of_dict_list: INFO:,', metric,' everything is right size:', year_counts)
     output_datas = {}
     dict_mean=dict_list[0]
     for i, ddict in enumerate(dict_list):
@@ -182,8 +182,17 @@ def make_mean_of_dict_list(dict_list, short_name):
     datas = []
     years = []
     for yr in sorted(output_datas.keys()):
-        print('calculating average', yr, np.sum(output_datas[yr])/float(len(output_datas[yr])),':',output_datas[yr])
-        datas.append(np.sum(output_datas[yr])/float(len(output_datas[yr])))
+        if metric=='mean':
+            print('calculating average', yr, np.sum(output_datas[yr])/float(len(output_datas[yr])),':',output_datas[yr])
+            datas.append(np.sum(output_datas[yr])/float(len(output_datas[yr])))
+        elif metric=='min':
+            print('calculating minimum:', yr, np.min(output_datas[yr]))
+            datas.append(np.min(output_datas[yr]))
+        elif metric=='max':
+            print('calculating maximum:', yr, np.max(output_datas[yr]))
+            datas.append(np.max(output_datas[yr]))
+        else:
+            assert 0
         years.append(yr)
 
     dict_mean[short_name] =  np.array(datas)
@@ -192,10 +201,11 @@ def make_mean_of_dict_list(dict_list, short_name):
 
 
 
-def make_mean_of_cube_list_iris(cube_list):
+def make_mean_of_cube_list_iris(cube_list, metric='mean'):
+    assert 0
     #return multi_model_statistics(cube_list, span='full', statistics=['mean',], keep_input_datasets=False)
 #   return _multicube_statistics
-    print('\n\nmake_mean_of_cube_list', cube_list)
+    print('\n\nmake_mean_of_cube_list', cube_list, metric)
     operation = iris.analysis.MEAN # or MAX or MIN or STD etc
     #eaned_cubes_list = [cube.collapsed(DIM, operation) for cube in orig_cubes]
 
@@ -228,7 +238,7 @@ def make_mean_of_cube_list_iris(cube_list):
 
 
 
-def make_mean_of_cube_list(cube_list):
+def make_mean_of_cube_list(cube_list, metric='mean'):
     """
     Takes the mean of a list of cubes (not an iris.cube.CubeList).
     Assumes all the cubes are the same shape.
@@ -270,9 +280,8 @@ def make_mean_of_cube_list(cube_list):
     output_datas = {}
     cube_mean=cube_list[0].copy()
     for i, cube in enumerate(cube_list):
-        print('make_mean_of_cube_list:', i, 'of', len(cube_list))
+        print('make_mean_of_cube_list:', metric, i, 'of', len(cube_list))
         years = cube.coord('year')
-
         for yr, year in enumerate(years.points):
             if output_datas.get(year, False):
                 output_datas[year].append(cube.data[yr])
@@ -280,9 +289,16 @@ def make_mean_of_cube_list(cube_list):
                 output_datas[year] = [cube.data[yr], ]
     datas = []
     for yr in sorted(output_datas.keys()):
-        print('calculating average', yr, np.sum(output_datas[yr])/float(len(output_datas[yr])),':',output_datas[yr])
-        #datas.append(np.sum(output_datas[yr])/float(len(output_datas[yr])))
-        datas.append(np.mean(output_datas[yr]))
+        if metric=='mean':
+            print('calculating', metric, yr, np.sum(output_datas[yr])/float(len(output_datas[yr])),':',output_datas[yr])
+            #datas.append(np.sum(output_datas[yr])/float(len(output_datas[yr])))
+            datas.append(np.mean(output_datas[yr]))
+        if metric=='min':
+            print('calculating', metric, yr, np.min(output_datas[yr]))
+            datas.append(np.min(output_datas[yr]))
+        if metric=='max':
+            print('calculating', metric, yr, np.max(output_datas[yr]))
+            datas.append(np.max(output_datas[yr]))
 
     cube_mean.data = np.array(datas)
     # need to align the time range...
@@ -290,10 +306,9 @@ def make_mean_of_cube_list(cube_list):
     #   cube_mean.data+=cube.data
     #ube_mean.data = cube_mean.data/ float(len(cube_list))
     if np.array_equal(cube_mean.data, cube_list[0].data):
-
         assert 0
     if cube_mean.data.max()> np.max([c.data.max() for c in cube_list]):
-        print('something is not working here:',  cube_mean.data.max(), '>', [c.data.max() for c in cube_list])
+        print('something is not working here:', metric, cube_mean.data.max(), '>', [c.data.max() for c in cube_list])
         assert 0
 
     return cube_mean
@@ -1205,11 +1220,20 @@ def calc_model_mean(cfg, short_names_in, data_dict):
 
             if len(cubes) == 1:
                 data_dict[(dataset, short_name, exp, 'ensemble_mean')] = cubes[0]
+                data_dict[(dataset, short_name, exp, 'ensemble_min')] = cubes[0]
+                data_dict[(dataset, short_name, exp, 'ensemble_max')] = cubes[0]
+
+
                 continue
             if isinstance(cubes[0], dict):
                 data_dict[(dataset, short_name, exp, 'ensemble_mean')] = make_mean_of_dict_list(cubes, short_name)
+                data_dict[(dataset, short_name, exp, 'ensemble_min')] = make_mean_of_dict_list(cubes, short_name, metric='min')
+                data_dict[(dataset, short_name, exp, 'ensemble_max')] = make_mean_of_dict_list(cubes, short_name, metric='max')
             else:
                 data_dict[(dataset, short_name, exp, 'ensemble_mean')] = make_mean_of_cube_list(cubes)
+                data_dict[(dataset, short_name, exp, 'ensemble_min')] = make_mean_of_cube_list(cubes, metric='min')
+                data_dict[(dataset, short_name, exp, 'ensemble_max')] = make_mean_of_cube_list(cubes, metric='max')
+
             if debug:
                 print('debug:, mean cube data:', data_dict[(dataset, short_name, exp, 'ensemble_mean')].data)
                 for c,cu  in enumerate(cubes):
@@ -1272,9 +1296,12 @@ def calc_model_mean(cfg, short_names_in, data_dict):
             print('calculating:make_mean_of_cube_list', ('CMIP6', short_name, exp, 'ensemble_mean'))
             if isinstance(cubes[0], dict):
                 data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = make_mean_of_dict_list(cubes, short_name)
+                data_dict[('CMIP6', short_name, exp, 'ensemble_min')] = make_mean_of_dict_list(cubes, short_name, metric='min')
+                data_dict[('CMIP6', short_name, exp, 'ensemble_max')] = make_mean_of_dict_list(cubes, short_name, metric='max')
             else:
                 data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = make_mean_of_cube_list(cubes)
-
+                data_dict[('CMIP6', short_name, exp, 'ensemble_min')] = make_mean_of_cube_list(cubes, metric='min')
+                data_dict[('CMIP6', short_name, exp, 'ensemble_max')] = make_mean_of_cube_list(cubes, metric='max')
 
     if 'tls' in short_names_in:
         data_dict = calc_tls(cfg, data_dict)
@@ -2364,7 +2391,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             #    all_ensembles: Every single ensemble member is shown.
 
         if plot_style == 'all_ensembles':
-            if ensemble_1 == 'ensemble_mean': continue
+            if ensemble_1 in ['ensemble_mean', 'ensemble_min', 'ensemble_max']: continue
             if dataset_1 == 'CMIP6': continue
             #print(plot_style, exp_1, ensemble_1,dataset_1, plot_style)
             #assert 0
@@ -2380,6 +2407,35 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         if skip_historical_ssp:
             if exp_1.find('historical-')>-1: continue
             if exp_1.find('historical_')>-1: continue
+
+        if plot_stlye in ['CMIP6_range', 'all_models_range', ]:
+            if plot_stlye in ['CMIP6_range', ] and dataset_1 != 'CMIP6': continue
+            if plot_stlye in ['all_models_range', ] and dataset_1 == 'CMIP6': continue
+
+            if x != 'time':
+               print('plotting a range with time on the x axes is not possible.')
+               assert 0
+
+            mins_data = data_dict[(dataset_1, y, exp_1, 'ensemble_min')]
+            maxs_data = data_dict[(dataset_1, y, exp_1, 'ensemble_max')]
+            x_label = 'Year'
+            if isinstance(mins_data, iris.cube.Cube):
+                x_times = diagtools.cube_time_to_float(mins_data)
+                y_data_mins = np.array(mins_data.data.copy())
+                y_data_maxs = np.array(maxs_data.data.copy())
+            else:
+                x_times = mins_data['time']
+                y_data_mins = mins_data[y].copy()
+                y_data_maxs = maxs_data[y].copy()
+
+            if y in label_dicts.keys():
+                y_label = label_dicts[y]
+            else:
+                y_label = ' '.join([get_long_name(y), str(cube.units)])
+
+            plt.fill_between(x_times, y_data_mins, y_data_maxs, fc = exp_colours[exp_1], alpha=0.3 )
+            continue
+
 
         for (dataset, short_name, exp, ensemble), cube in data_dict.items():
             if short_name not in [x,y]: continue
@@ -2462,7 +2518,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                 lw = 1.7
             elif plot_style=='all_models_means':
                 lw = 1.0
-            else: 
+            else:
                 lw = 0.5
 
             if exp_1 == 'historical':
@@ -2477,7 +2533,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                         color=exp_colours[exp_1])
 
                 else:
-                    plt.plot(x_data, y_data, 
+                    plt.plot(x_data, y_data,
                         lw=lw,
                         color=exp_colours[exp_1])
 
@@ -4146,8 +4202,6 @@ def main(cfg):
 
     pairs = []
 
-
-
     for do_ma in [True, ]:#False]:
         data_dict = load_timeseries(cfg, short_names)
         #data_dict = calc_model_mean(cfg, short_names, data_dict)
@@ -4168,7 +4222,7 @@ def main(cfg):
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
             do_timeseries_megaplot = True
             if do_timeseries_megaplot:
-                for plot_styles in ['all_ensembles', 'all_models_means', 'CMIP6_mean']:
+                for plot_styles in ['CMIP6_range', 'all_models_range', 'all_ensembles', 'all_models_means', 'CMIP6_mean']:
             #plot_styles: ambition:
             #    ['ensemble_mean', ] default behaviour before
             #    CMIP6_mean: Only CMIP6 multi model mean
