@@ -1,3 +1,4 @@
+import iris.plot as iplt
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 import numpy as np
@@ -28,6 +29,9 @@ def plot_cp_timeseries(list_cubelists, plot_path):
 
     fig3, ax3 = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
     fig3.suptitle("Variable Timeseries, 1850-2100", fontsize=18, y=0.98)
+
+    fig4, ax4 = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
+    fig4.suptitle("Aggregated Global Patterns", fontsize=18, y=0.98)
 
     plt.figure(figsize=(14, 12))
     plt.subplots_adjust(hspace=0.5)
@@ -61,6 +65,14 @@ def plot_cp_timeseries(list_cubelists, plot_path):
                 if j > 5:
                     ax3[x, y].set_xlabel('Time')
             if i == 3:
+                months = np.arange(1, 13)
+                # avg_cube = sf.area_avg(cube, return_cube=False)
+                ax4[x, y].plot(months, cube[:, 50, 50].data)
+                ax4[x, y].set_ylabel(
+                    str(cube.var_name) + " / " + str(cube.units))
+                if j > 5:
+                    ax3[x, y].set_xlabel('Time')
+            if i == 3:
                 # January patterns
                 plt.subplot(3, 3, j + 1)
                 qplt.pcolormesh(cube[0])
@@ -78,24 +90,36 @@ def plot_cp_timeseries(list_cubelists, plot_path):
     fig3.tight_layout()
     fig3.savefig(plot_path + 'Standard Timeseries')
 
+    fig4.tight_layout()
+    fig4.savefig(plot_path + 'Patterns Timeseries')
+
 
 def plot_scores(list_cubelists, plot_path):
-    for i in range(len(list_cubelists)):
-        cube_list = list_cubelists[i]
-        for cube in cube_list:
-            if i == 4:
-                plt.figure(figsize=(14, 12))
-                plt.subplots_adjust(hspace=0.5)
-                plt.suptitle("Scores " + cube.var_name, fontsize=18, y=0.98)
-                for j in range(0, 12):
-                    plt.subplot(4, 3, j + 1)
-                    qplt.pcolormesh(cube[j])
+    # plot color mesh of individual months
+    cube_list = list_cubelists[4]
+    for cube in cube_list:
+        plt.figure(figsize=(14, 12))
+        plt.subplots_adjust(hspace=0.5)
+        plt.suptitle("Scores " + cube.var_name, fontsize=18, y=0.98)
+        for j in range(0, 12):
+            plt.subplot(4, 3, j + 1)
+            qplt.pcolormesh(cube[j])
 
-                plt.tight_layout()
-                plt.savefig(plot_path + 'R2_Scores_' + str(cube.var_name))
-                plt.close()
+        plt.tight_layout()
+        plt.savefig(plot_path + 'R2_Scores_' + str(cube.var_name))
+        plt.close()
 
-    return
+    # plot global scores timeseries per variable
+    plt.figure(figsize=(5, 8))
+    for cube in cube_list:
+        score = sf.area_avg(cube, return_cube=True)
+        iplt.plot(score, label=cube.var_name)
+        plt.xlabel('Time')
+        plt.ylabel('R2 Score')
+        plt.legend(loc='center left')
+
+    plt.savefig(plot_path + 'score_timeseries')
+    plt.close()
 
 
 def plot_ebm_timeseries(list_cubes, plot_path, ocean_frac, land_frac):

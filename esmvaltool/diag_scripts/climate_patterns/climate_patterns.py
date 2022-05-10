@@ -149,7 +149,7 @@ def regression(tas, cube_data):
         for j in range(tas.data.shape[2]):
             if tas.data[0, i, j] is not np.ma.masked:
                 model = sklearn.linear_model.LinearRegression(
-                    fit_intercept=True, copy_X=True)
+                    fit_intercept=False, copy_X=True)
 
                 x = tas_data.reshape(-1, 1)
                 y = cube_data[:, i, j]
@@ -243,6 +243,19 @@ def calculate_regressions(anom_list):
     return regr_var_list, score_list
 
 
+def write_scores(scores, work_path):
+    for cube in scores:
+        score = sf.area_avg(cube, return_cube=False)
+        mean_score = np.mean(score)
+
+        # saving scores
+        file = open(work_path + 'scores', 'a')
+        data = '{0:10.3f}'.format(mean_score)
+        name = cube.var_name
+        file.write(name + ': ' + data + '\n')
+        file.close()
+
+
 def main(cfg):
     # gets a description of the preprocessed data that we will use as input.
     input_data = cfg["input_data"].values()
@@ -255,7 +268,8 @@ def main(cfg):
 
         # preparing single cube
         cube_initial = compute_diagnostic(input_file)
-        cube_constrained = constrain_latitude(cube_initial)
+        # cube_constrained = constrain_latitude(cube_initial)
+        cube_constrained = cube_initial
 
         # appending to timeseries list
         ts_list.append(cube_constrained)
@@ -293,6 +307,7 @@ def main(cfg):
     plot_path = cfg["plot_dir"] + "/"
     plot_cp_timeseries(list_of_cubelists, plot_path)
     plot_scores(list_of_cubelists, plot_path)
+    write_scores(scores, work_path)
 
 
 if __name__ == "__main__":

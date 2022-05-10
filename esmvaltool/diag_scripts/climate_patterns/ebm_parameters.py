@@ -5,6 +5,7 @@ from pathlib import Path
 
 import iris
 import iris.coord_categorisation
+import iris.cube
 import numpy as np
 import sub_functions as sf
 from plotting import forcing_plot, plot_ebm_prediction, plot_ebm_timeseries
@@ -286,7 +287,20 @@ def create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube,
     # plotting
     forcing_plot(reg, avg_list, yrs, forcing, plot_path)
 
-    return forcing
+    return forcing, yrs
+
+
+def return_forcing_cube(forcing, yrs, cfg):
+    work_path = cfg["work_dir"] + "/"
+
+    f_array = np.array([forcing, yrs])
+
+    f_cube = iris.cube.Cube(f_array,
+                            standard_name='toa_adjusted_radiative_forcing',
+                            units='W m-2',
+                            var_name='erf')
+
+    iris.save(f_cube, work_path + "effective_forcing.nc")
 
 
 def ebm_check(plot_path, rad_forcing, of, kappa, lambda_o, lambda_l, nu_ratio,
@@ -346,8 +360,8 @@ def main(cfg):
     logger.info("Kappa = ", kappa)
 
     plot_path = cfg["plot_dir"] + "/"
-    rad_forcing = create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube,
-                                         rtmt_4x_cube, plot_path)
+    rad_forcing, yrs = create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube,
+                                              rtmt_4x_cube, plot_path)
 
     lambda_o, lambda_l, nu_ratio = 0.498, 0.977, 1.473
 
@@ -365,6 +379,9 @@ def main(cfg):
 
     # saving EBM parameters
     save_params(cfg, kappa, lambda_o, lambda_l, nu_ratio)
+
+    # saving forcing cube
+    return_forcing_cube(rad_forcing, yrs, cfg)
 
     # saving figures
     plot_ebm_timeseries(list_of_cubes, plot_path, ocean_frac, land_frac)

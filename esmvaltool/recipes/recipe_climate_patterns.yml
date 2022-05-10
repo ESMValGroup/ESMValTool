@@ -13,10 +13,10 @@ preprocessors:
     monthly_statistics:
       operator: mean
 
-    regrid:
-      target_grid: {start_longitude: -180, end_longitude: 176.25, step_longitude: 3.75,
-                    start_latitude: -55, end_latitude: 82.5, step_latitude: 2.5}
-      scheme: linear
+    # regrid:
+    #   target_grid: {start_longitude: -180, end_longitude: 176.25, step_longitude: 3.75,
+    #                 start_latitude: -55, end_latitude: 82.5, step_latitude: 2.5}
+    #   scheme: linear
 
   mean_annual:
     annual_statistics:
