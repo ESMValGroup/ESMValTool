@@ -2244,6 +2244,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     ax=None,
     do_legend=True,
     plot_thresholds = [1.5, 2., 3., 4., 5.,],
+    skip_historical_ssp=False,
     #short_time_range = False,
     ):
     """
@@ -2365,8 +2366,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         if plot_style == 'all_ensembles':
             if ensemble_1 == 'ensemble_mean': continue
             if dataset_1 == 'CMIP6': continue
-            print(plot_style, exp_1, ensemble_1,dataset_1, plot_style)
-            assert 0
+            #print(plot_style, exp_1, ensemble_1,dataset_1, plot_style)
+            #assert 0
 
         if plot_style == 'all_models_means':
             if ensemble_1 != 'ensemble_mean': continue
@@ -2376,18 +2377,17 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             if ensemble_1 != 'ensemble_mean': continue
             if dataset_1 != 'CMIP6': continue
 
+        if skip_historical_ssp:
+            if exp_1.find('historical-')>-1: continue
+            if exp_1.find('historical_')>-1: continue
+
         for (dataset, short_name, exp, ensemble), cube in data_dict.items():
             if short_name not in [x,y]: continue
             if exp != exp_1: continue
             if ensemble != ensemble_1: continue
             if dataset != dataset_1: continue
 
-
             print('Everything matches', plot_style, (dataset, short_name, exp, ensemble),'vs', [x,y], (exp_1, ensemble_1))
-#           print(exp_1, ensemble_1, short_name, exp, ensemble, ensemble_mean)
-#            if ensemble_mean and ensemble!= 'ensemble_mean': continue
-#            if not ensemble_mean and ensemble == 'ensemble_mean': continue
-
             print('make_ts_figure: found', plot_style, dataset, short_name, exp, ensemble, x,y)
             if x == 'time' and short_name == y:
                 x_label = 'Year'
@@ -2429,11 +2429,9 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
 
             print('make_ts_figure: loaded x data', short_name, exp, ensemble, x, np.mean(x_data))
             print('make_ts_figure: loaded y data', short_name, exp, ensemble, y, np.mean(y_data))
-            #break
 
         if 0 in [len(x_data), len(y_data), len(x_times), len(y_times)]:
             print('no data found',(exp_1, ensemble_1,dataset_1),  x,'vs',y, 'x:', len(x_data), 'y:',len(y_data))
-            #assert 0
             continue
 
         if len(x_data) != len(x_times) or len(y_data) != len(y_times):
@@ -2443,47 +2441,52 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         label = ' '.join([exp_1, ]) #ensemble_1])
         # masks fromn the year 2005 of hist data, so that they can line up properly.
 
-        hist_ssp_sync = True #
+        hist_ssp_sync = False #
         if draw_line:
             x_times = np.ma.array(x_times)
             y_times = np.ma.array(y_times)
             number_of_lines+=1
+
+            #plot_styles: ambition:
+            #    ['ensemble_mean', ] default behaviour before
+            #    CMIP6_mean: Only CMIP6 multi model mean
+            #    CMIP6_range: range bewteen each model mean shown
+            #    CMIP6_full_range: full range between individual model ensemble menmbers
+            #    all_models_means: Each individual models mean is plotted.
+            #    all_models_range: Each individual models range is plotted
+            #    all_ensembles: Every single ensemble member is shown.
+
             if plot_styles == ['ensemble_mean', ]:
-                lw=1.3
-            else:
-                lw=0.5
+                lw = 1.3
+            elif plot_style=='CMIP6_mean':
+                lw = 1.7
+            elif plot_style=='all_models_means':
+                lw = 1.0
+            else: 
+                lw = 0.5
+
             if exp_1 == 'historical':
                 if hist_ssp_sync:
                     histx_t = np.ma.masked_where(x_times > 2005., x_times)
                     histy_t = np.ma.masked_where(y_times > 2005., y_times)
                     histx_d = np.ma.masked_where(histx_t.mask, x_data).compressed()
                     histy_d = np.ma.masked_where(histy_t.mask, y_data).compressed()
+
+                    plt.plot(histx_d, histy_d,
+                        lw=lw,
+                        color=exp_colours[exp_1])
+
                 else:
-                    histx_t = x_times
-                    histy_t = y_times
-                    histx_d = x_data
-                    histy_d = y_data
-
-                # print('historical', histx_t, histy_t, histx_d, histy_d)
-
-                plt.plot(np.ma.masked_where(x_times > 2005., x_data),
-                         np.ma.masked_where(y_times > 2005., y_data),
-                         lw=lw,
-                         color=exp_colours[exp_1])
-
-                plt.plot(histx_d, #np.ma.masked_where(x_times > 2005., x_data),
-                         histy_d, #np.ma.masked_where(y_times > 2005., y_data),
-                         lw=lw,
-                         color=exp_colours[exp_1])
+                    plt.plot(x_data, y_data, 
+                        lw=lw,
+                        color=exp_colours[exp_1])
 
             else:
                 if hist_ssp_sync:
-                    #print(exp_1, np.ma.masked_where((2005 > x_times) + (x_times > 2015), x_times))
                     tdatcx = np.ma.masked_where((2004. > x_times) + (x_times > 2015.), x_times).compressed()
                     tdatcy = np.ma.masked_where((2004. > y_times) + (y_times > 2015.), y_times).compressed()
                     datcx = np.ma.masked_where((2004. > x_times) + (x_times > 2015.), x_data).compressed()
                     datcy = np.ma.masked_where((2004. > y_times) + (y_times > 2015.), y_data).compressed()
-                    #print('2004-2015:', (x,y),exp_1, tdatcx, tdatcy, datcx, datcy)
                     if len(tdatcx) == len(tdatcy):
                         plt.plot(
                             datcx, # np.ma.masked_where((2004 > x_times) + (x_times > 2015), x_data).compressed(),
@@ -2496,7 +2499,6 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                     xtdatc = np.ma.masked_where((x_times < 2015.) + (x_times > 2100.), x_times).compressed()
                     ytdatc = np.ma.masked_where((y_times < 2015.) + (y_times > 2100. ), y_times).compressed()
 
-                    # print('< 2015', exp_1, xdatc, ydatc, xtdatc, ytdatc)
                     if len(xtdatc) == len(ytdatc):
                         plt.plot(xdatc, # np.ma.masked_where(x_times < 2015., x_data).compressed(),
                              ydatc, # np.ma.masked_where(y_times < 2015., y_data).compressed(),
@@ -2513,10 +2515,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                          lw=lw,
                          color=exp_colours[exp_1])
 
-                plt.plot(np.ma.masked_where(x_times < 2015., x_data).compressed(),
-                         np.ma.masked_where(y_times < 2015., y_data).compressed(),
-                         lw=lw,
-                         color=exp_colours[exp_1])
+        # plot_style == ''
 
         if markers == 'thresholds':
             try: threshold_times = thresholds_dict[(dataset_1, 'tas', exp_1, ensemble_1)]
@@ -2546,6 +2545,10 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                 #         markersize = 2,
                 #         #fillstyle='none',
                 #         color=exp_colours[exp_1])
+
+#      if plot_style == '' ## fills:
+
+
 
     if not number_of_lines:
         print('No lines plotted')
@@ -3958,7 +3961,8 @@ def timeseries_megapane(cfg, data_dict, thresholds_dict, key,
         ax=ax,
         do_legend = False,
         plot_thresholds = [2., 3., 4.,],
-
+        plot_styles=plot_styles,
+        skip_historical_ssp = True,
         #short_time_range = False,
         )
     return fig, ax
@@ -3980,7 +3984,7 @@ def timeseries_megaplot(cfg, data_dict, thresholds_dict,
 
     axes = {}
     if len(panes) == 4:
-        gs = gridspec.GridSpec(2, 3,figure=fig, width_ratios=[1,1, 0.1], wspace=0.1, hspace=0.1)
+        gs = gridspec.GridSpec(2, 3,figure=fig, width_ratios=[1,1, 0.1], wspace=0.2, hspace=0.2)
         axes[panes[0]] = fig.add_subplot(gs[0, 0]) # row, column
         axes[panes[1]] = fig.add_subplot(gs[0, 1])
         axes[panes[2]] = fig.add_subplot(gs[1, 0])
