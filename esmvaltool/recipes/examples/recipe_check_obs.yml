@@ -475,6 +475,16 @@ diagnostics:
          type: sat, version: v0, start_year: 1984, end_year: 2016}
     scripts: null
 
+  Kadow2020:
+    description: Kadow2020 check
+    variables:
+      tasa:
+    additional_datasets:
+      - {dataset: Kadow2020, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: 5.0.1.0, start_year: 1850, end_year: 2020}
+    scripts: null
+
+
   Landschuetzer2016:
     description: Landschuetzer2016 check
     variables:

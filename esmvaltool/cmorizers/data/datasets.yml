@@ -698,6 +698,14 @@ datasets:
       Meteorological Research Institute, Tsukuba City, Japan). See link above
       for more information.
 
+  Kadow2020:
+    tier: 2
+    source: http://users.met.fu-berlin.de/~ChristopherKadow/
+    last_access: 2022-03-29
+    info: |
+      Download the following file:
+      [SOURCE]/HadCRUT.5.0.1.0.anomalies.Kadow_et_al_2020_20crAI-infilled.ensemble_mean_185001-202012.nc
+
   LAI3g:
     tier: 3
     source: http://cliveg.bu.edu/modismisr/lai3g-fpar3g.html
