@@ -261,6 +261,30 @@ diagnostics:
         <<: *var_cl
         <<: *years_ssp585
         additional_datasets: *datasets_ecs_low_scenario
+      ta_ECS_high_hist: &var_ta
+        <<: *var_cl
+        short_name: ta
+      ta_ECS_med_hist:
+        <<: *var_ta
+        additional_datasets: *datasets_ecs_med
+      ta_ECS_low_hist:
+        <<: *var_ta
+        additional_datasets: *datasets_ecs_low
+      ta_ECS_high_scen:
+        <<: *var_ta
+        <<: *years_ssp585
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      ta_ECS_med_scen:
+        <<: *var_ta
+        <<: *years_ssp585
+        exp: ssp585
+        additional_datasets: *datasets_ecs_med_scenario
+      ta_ECS_low_scen:
+        <<: *var_ta
+        <<: *years_ssp585
+        exp: ssp585
+        additional_datasets: *datasets_ecs_low_scenario
     scripts:
       height:
         script: clouds_ecs/group_lev_diff.py
@@ -269,7 +293,7 @@ diagnostics:
                    ['ECS_med_hist', 'ECS_med_scen'],
                    ['ECS_high_hist', 'ECS_high_scen']]
         filename_attach: ssp585
-        plot_each_model: true
+        plot_each_model: false #true
 
 
   cli_height:
@@ -303,6 +327,29 @@ diagnostics:
         <<: *years_ssp585
         short_name: cli
         additional_datasets: *datasets_ecs_low_scenario
+      ta_ECS_high_hist:
+        <<: *var_ta
+      ta_ECS_med_hist:
+        <<: *var_ta
+        additional_datasets: *datasets_ecs_med
+      ta_ECS_low_hist:
+        <<: *var_ta
+        additional_datasets: *datasets_ecs_low
+      ta_ECS_high_scen:
+        <<: *var_ta
+        <<: *years_ssp585
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      ta_ECS_med_scen:
+        <<: *var_ta
+        <<: *years_ssp585
+        exp: ssp585
+        additional_datasets: *datasets_ecs_med_scenario
+      ta_ECS_low_scen:
+        <<: *var_ta
+        <<: *years_ssp585
+        exp: ssp585
+        additional_datasets: *datasets_ecs_low_scenario
 
 
   clw_height:
@@ -335,4 +382,27 @@ diagnostics:
         <<: *var_cl
         <<: *years_ssp585
         short_name: clw
+        additional_datasets: *datasets_ecs_low_scenario
+      ta_ECS_high_hist:
+        <<: *var_ta
+      ta_ECS_med_hist:
+        <<: *var_ta
+        additional_datasets: *datasets_ecs_med
+      ta_ECS_low_hist:
+        <<: *var_ta
+        additional_datasets: *datasets_ecs_low
+      ta_ECS_high_scen:
+        <<: *var_ta
+        <<: *years_ssp585
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      ta_ECS_med_scen:
+        <<: *var_ta
+        <<: *years_ssp585
+        exp: ssp585
+        additional_datasets: *datasets_ecs_med_scenario
+      ta_ECS_low_scen:
+        <<: *var_ta
+        <<: *years_ssp585
+        exp: ssp585
         additional_datasets: *datasets_ecs_low_scenario
