@@ -31,7 +31,8 @@ import matplotlib.pyplot as plt
 import iris
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            select_metadata, sorted_metadata)
+                                            select_metadata, sorted_metadata,
+                                            plot)
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
 
@@ -122,6 +123,7 @@ def get_provenance_record(ancestor_files, caption, statistics,
 def get_prof_and_plt_data(cfg, data, available_vars):
     """Plot data for singe data sets and get profile for each."""
     profiles = {}
+    projects = {}
     for svar in available_vars:
         profiles[svar] = {}
 
@@ -130,6 +132,7 @@ def get_prof_and_plt_data(cfg, data, available_vars):
         for attributes in data[svar]:
             logger.info("Processing dataset %s", attributes['dataset'])
             dataset = attributes['dataset']
+            projects[dataset] = attributes['project']
 
             svarcube = read_data_trop_zonal(attributes)
 
@@ -147,7 +150,7 @@ def get_prof_and_plt_data(cfg, data, available_vars):
                                dataset, "Tape recorder ",
                                svarcube.long_name)
 
-    return profiles
+    return profiles,projects
 
 
 def plot_zonal_mean(cfg, mean_cube, dataname, titlestr, variable):
@@ -321,7 +324,7 @@ def plot_profiles(cfg, profiles, available_vars):
             provenance_logger.log(diagnostic_file, provenance_record)
 
 
-def plot_logprofiles(cfg, profiles, available_vars):
+def plot_logprofiles(cfg, profiles, projects, available_vars):
     """Plot zonal mean contour."""
     # Plot data
     # create figure and axes instances
@@ -329,9 +332,33 @@ def plot_logprofiles(cfg, profiles, available_vars):
         fig, axx = plt.subplots(figsize=(7, 5))
 
         for iii, dataset in enumerate(list(profiles[svar].keys())):
+
+            if projects[dataset] == 'CMIP6':
+                style = plot.get_dataset_style(dataset, style_file='cmip6')
+                lwd = 1
+            elif projects[dataset] == 'CMIP5':
+                style = plot.get_dataset_style(dataset, style_file='cmip5')
+                lwd = 1
+            elif dataset == 'ERA5':
+                style = {'color': (0, 0, 1, 1.0)}
+                lwd = 3
+            elif dataset == 'SWOOSH':
+                style = {'color': (0, 1, 0, 1.0)}
+                lwd = 3
+            else:
+                style = {'color': (0, 0, 0, 1.0)}
+                lwd = 1
+
+            if dataset == 'MultiModelMean':
+                style = {'color': (1, 0, 0, 1.0)}
+                lwd = 3
+
             plt.plot((profiles[svar][dataset]).data,
                      (profiles[svar][dataset]).coord('air_pressure').points /
-                     100.0, label=dataset)
+                     100.0, 
+                     color=style['color'],
+                     linewidth=lwd,
+                     label=dataset)
             if iii == 0:
                 profiles_save = iris.cube.CubeList([profiles[svar][dataset]])
             else:
@@ -393,10 +420,13 @@ def main(cfg):
                                         short_name=varname)
         data[varname] = sorted_metadata(data[varname], sort='dataset')
 
-    profiles = get_prof_and_plt_data(cfg, data, available_vars)
+    profiles, projects = get_prof_and_plt_data(cfg, data, available_vars)
+
+    print("projects kw")
+    print(projects)
 
     plot_profiles(cfg, profiles, available_vars)
-    plot_logprofiles(cfg, profiles, available_vars)
+    plot_logprofiles(cfg, profiles, projects, available_vars)
 
 
 if __name__ == '__main__':
