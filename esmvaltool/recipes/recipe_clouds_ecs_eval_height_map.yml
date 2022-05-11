@@ -234,7 +234,7 @@ diagnostics:
     variables:
       ECS_high_hist: &var_cl
         short_name: cl
-        preprocessor: height_mmm
+        preprocessor: height
         mip: Amon
         project: CMIP6
         exp: historical
@@ -293,7 +293,7 @@ diagnostics:
                    ['ECS_med_hist', 'ECS_med_scen'],
                    ['ECS_high_hist', 'ECS_high_scen']]
         filename_attach: ssp585
-        plot_each_model: false #true
+        plot_each_model: true
 
 
   cli_height:

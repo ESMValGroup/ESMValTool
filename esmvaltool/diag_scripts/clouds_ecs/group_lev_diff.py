@@ -222,6 +222,8 @@ def compute_diff_temp(input_data, group, dataset):
 def plot_model(cube, attributes, plot_type, cfg):
     """Plot each single model."""
 
+    #plt.figure(constrained_layout=True, figsize=(12, 8))
+    plt.figure(figsize=(12, 8))
     plt.ylim(1000.,100.)
     plt.yscale('log')
     plt.yticks([1000., 800., 600., 400., 300., 200., 100.], [1000, 800, 600, 400, 300, 200, 100])
@@ -230,10 +232,8 @@ def plot_model(cube, attributes, plot_type, cfg):
         levels = np.linspace(0., 50., 11)
     elif cube.var_name == 'cli':
         levels = np.linspace(0., 0.02, 11)
-        #cube.convert_units('g/kg')
     elif cube.var_name == 'clw':
         levels = np.linspace(0., 0.05, 11)
-        #cube.convert_units('g/kg')
     qplt.contourf(cube, levels=levels, extend='max')
 
     # Appearance
@@ -329,40 +329,42 @@ def main(cfg):
 
     groups = group_metadata(input_data, 'variable_group', sort='dataset')
 
-    cubes = iris.cube.CubeList()
-
     plt.figure(constrained_layout=True, figsize=(12, 8))
 
     ngroups = len(groups)
-
-    print("Number of variable  groups: ", ngroups)
+    print("Number of variable groups: ", ngroups)
 
     for group_name in groups:
         if 'hist' in group_name:
             if 'ta_' not in group_name:
                 logger.info("Processing variable %s", group_name)
 
-                for attributes in groups[group_name]:
-                    logger.info("Loop dataset %s", attributes['dataset'])
+                dataset_names = []
+                cubes = {}
 
-                    input_file = attributes['filename']
-                    cube = compute_diagnostic(input_file)
+                for dataset in groups[group_name]:
 
-                    if cfg['plot_each_model']:
-                        plot_model(cube, attributes, plot_type, cfg)
+                    dataset_name = dataset['dataset']
+                    var = dataset['short_name']
 
-                    if attributes['dataset'] == 'MultiModelMean' or group_name == 'OBS':
-                      logger.info("Processing dataset %s", attributes['dataset'])
-                      cubes.append(cube)
+                    if dataset_name != 'MultiModelMean':
 
-                      plot_diagnostic(cube, group_name, plot_type, cfg)
+                        logger.info("Loop dataset %s", dataset_name)
 
-                      if plot_type == 'height':
-                        title = group_name
-                      else:
-                        title = attributes['long_name']
+                        input_file = dataset['filename']
+                        cube = compute_diagnostic(input_file)
 
-                      plt.title(title, fontsize=10)
+                        if cfg['plot_each_model']:
+                            plot_model(cube, dataset, plot_type, cfg)
+
+                        cubes[dataset_name] = cube
+
+                cube_mmm = _get_multi_model_mean(cubes, var)
+
+                plot_diagnostic(cube, group_name, plot_type, cfg)
+
+                title = group_name
+                plt.title(title, fontsize=10)
 
 
     for group_name in cfg['group_by']:
@@ -388,24 +390,17 @@ def main(cfg):
 
         plot_diagnostic_diff(cube_mmm, group_name[0], plot_type, cfg)
 
-
-        if plot_type == 'height':
-          title = group_name[1] + " - " + group_name[0]
-        else:
-          title = cube_mmm['short_name']
-
+        title = group_name[1] + " - " + group_name[0]
         plt.title(title, fontsize=9)
-        #plt.ylabel('Air pressure (hPa)', ncol=1)
-        #plt.legend(ncol=1)
 
     plt.suptitle(var)
 
     provenance_record = get_provenance_record(
-        attributes, ancestor_files=cfg['input_files'])
+        dataset, ancestor_files=cfg['input_files'])
 
     basename = 'diff_' + var + '_' + cfg['filename_attach']
     # Save the data used for the plot
-    save_data(basename, provenance_record, cfg, cubes)
+    save_data(basename, provenance_record, cfg, cube_mmm)
 
     # And save the plot
     save_figure(basename, provenance_record, cfg)
