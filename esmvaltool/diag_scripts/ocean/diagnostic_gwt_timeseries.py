@@ -55,6 +55,7 @@ import iris
 import matplotlib.pyplot as plt
 logging.getLogger('matplotlib.font_manager').disabled = True
 from matplotlib import gridspec
+from matplotlib.colors import to_rgba
 import numpy as np
 from itertools import product
 import cf_units
@@ -96,6 +97,40 @@ data_dict_linked_ens = {# model: {ssp:hist'
     'UKESM1-0-LL': {'r5i1p1f2':'r5i1p1f3','r6i1p1f2':'r6i1p1f3','r7i1p1f2':'r7i1p1f3',},
     'CanESM5': {'r11i1p2f1': 'r11i1p1f1', 'r12i1p2f1': 'r12i1p1f1'},
     }
+
+exp_colours = {'historical':'black',
+               'ssp119':'green',
+               'ssp126':'dodgerblue',
+               'ssp245':'darkorange',
+               'ssp370':'purple',
+               'ssp585': 'red',
+               'ssp434':'magenta',
+               'ssp534-over':'orange',}
+
+exp_colours_fill = {'historical':'black',
+               'ssp119':'green',
+               'ssp126':'blue',
+               'ssp245':'orange',
+               'ssp370':'purple',
+               'ssp585': 'darkred',}
+
+exp_colours_alpha = {'historical': 0.5,
+               'ssp119': 0.6,   
+               'ssp126': 0.3,  
+               'ssp245': 0.3,    
+               'ssp370': 0.3,    
+               'ssp585': 0.6, }
+
+
+exp_colours_dark = {'historical':'black',
+               'ssp119':'darkgreen',
+               'ssp126':'royalblue',
+               'ssp245':'saddlebrown',
+               'ssp370':'indigo',
+               'ssp585': 'darkred',
+               'ssp434':'magenta',
+               'ssp534-over':'orange',}
+
 
 
 cmap_ssp_land = {
@@ -305,7 +340,7 @@ def make_mean_of_cube_list(cube_list, metric='mean'):
     #or i, cube in enumerate(cube_list[1:]):
     #   cube_mean.data+=cube.data
     #ube_mean.data = cube_mean.data/ float(len(cube_list))
-    if np.array_equal(cube_mean.data, cube_list[0].data):
+    if metric=='mean' and np.array_equal(cube_mean.data, cube_list[0].data):
         assert 0
     if cube_mean.data.max()> np.max([c.data.max() for c in cube_list]):
         print('something is not working here:', metric, cube_mean.data.max(), '>', [c.data.max() for c in cube_list])
@@ -692,13 +727,13 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
 
         if cube.units == cf_units.Unit('kg m-2 s-1'):
             cubegt.data = cube.data * area.data * 1.E-12 * sec_peryear
-            cubegt.units = cf_units.Unit('Pg yr^-1')
+            cubegt.units = cf_units.Unit('Pg yr'+r'$^{-1}$')
         elif cube.units == cf_units.Unit('kg m-2'):
             cubegt.data = cube.data * area.data * 1.E-12
             cubegt.units = cf_units.Unit('Pg')
         elif cube.units == cf_units.Unit('mol m-2 s-1'):
             cubegt.data = cube.data * area.data * 12.0107* 1.E-15 * sec_peryear
-            cubegt.units = cf_units.Unit('Pg yr^-1')
+            cubegt.units = cf_units.Unit('Pg yr'+r'$^{-1}$')
         else:
             print('Units not Recognised:', cube.units)
             assert 0
@@ -788,7 +823,7 @@ def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
         print('iter 5:', cumul_cube.data.shape, hist_cumul.shape)
         cumul_cube.data = np.cumsum(np.ma.masked_invalid(cumul_cube.data)) + hist_cumul
 
-        if new_units:
+        if len(new_units) >0:
             cumul_cube.units = cf_units.Unit(new_units)
         tmp_dict[(dataset, cumul_name, exp, ensemble)] = cumul_cube
     data_dict.update(tmp_dict)
@@ -1574,14 +1609,14 @@ def load_co2_forcing(cfg, data_dict):
     image_extention = diagtools.get_image_format(cfg)
     path += 'co2_forcing' + image_extention
     if not os.path.exists(path):
-        exp_colours = {'historical':'black',
-                       'ssp119':'green',
-                       'ssp126':'dodgerblue',
-                       'ssp245':'blue',
-                       'ssp370':'purple',
-                       'ssp434':'magenta',
-                       'ssp585': 'red',
-                       'ssp534-over':'orange'}
+#       exp_colours = {'historical':'black',
+#                      'ssp119':'green',
+#                      'ssp126':'dodgerblue',
+#                      'ssp245':'blue',
+#                      'ssp370':'purple',
+#                      'ssp434':'magenta',
+#                      'ssp585': 'red',
+#                      'ssp534-over':'orange'}
         for key in exp_colours.keys():
             for (z,a,b,c), dat in data_dict.items():
                 if a != 'co2': continue
@@ -1598,14 +1633,14 @@ def load_co2_forcing(cfg, data_dict):
     image_extention = diagtools.get_image_format(cfg)
     path += 'co2_forcing_hists' + image_extention
     if not os.path.exists(path):
-        exp_colours = {'historical':'black',
-                       'historical-ssp119':'green',
-                       'historical-ssp126':'dodgerblue',
-                       'historical-ssp245':'blue',
-                       'historical-ssp370':'purple',
-                       'historical-ssp434':'magenta',
-                       'historical-ssp585': 'red',
-                       'historical-ssp585-ssp534-over':'orange'}
+#        exp_colours = {'historical':'black',
+#                       'historical-ssp119':'green',
+#                       'historical-ssp126':'dodgerblue',
+#                       'historical-ssp245':'blue',
+#                       'historical-ssp370':'purple',
+#                       'historical-ssp434':'magenta',
+#                       'historical-ssp585': 'red',
+#                       'historical-ssp585-ssp534-over':'orange'}
         for key in exp_colours.keys():
             for (z,a,b,c), dat in data_dict.items():
                 if a != 'co2': continue
@@ -1764,6 +1799,7 @@ def calc_atmos_carbon(cfg, data_dict):
             assert 0
 
         # subtrack nbp & ocean carbon flux.
+        found = 0
         for cube_key in  ['fgco2gt_cumul', 'nbpgt_cumul']:
             tmp_cube_data = data_dict.get((dataset, cube_key, exp, ensemble), False)
             if not tmp_cube_data:
@@ -1781,6 +1817,7 @@ def calc_atmos_carbon(cfg, data_dict):
             tmp_cube_data = {'time': [int(t) for t in diagtools.cube_time_to_float(tmp_cube_data)],
                              cube_key: tmp_cube_data.data}
             tmp_cube_data = zip_time(tmp_cube_data, cube_key)
+            found+=1
             for t,d in tmp_cube_data.items():
                 #t = int(t)
                 if t not in tmp_data: #t(t,False):
@@ -1790,7 +1827,7 @@ def calc_atmos_carbon(cfg, data_dict):
                     assert 0
 
                 tmp_data[t] = tmp_data[t] - d
-
+        if found !=2: assert 0
         tmp_times, tmp_dat = unzip_time(tmp_data)
         tmp_times = tmp_times+0.5
 
@@ -1911,9 +1948,9 @@ def get_long_name(name):
     Get a title friendly longname.
     """
     longnames = {
-        'tas' : 'Temperature',
-        'tas_norm' : 'Temperature',
-        'co2' : 'Atmospheric CO2',
+        'tas' : 'Temperature, K',
+        'tas_norm' : 'Normalised Temperature, '+r'$\degree$' + 'C',
+        'co2' : 'Atmospheric CO'+r'$_{2}$',
         'emissions' : 'Anthropogenic emissions',
         'cumul_emissions': 'Cumulative Anthropogenic emissions',
         'luegt': 'Land Use Emissions',
@@ -1924,14 +1961,17 @@ def get_long_name(name):
         'intpoc' : 'Particulate Organic Carbon',
         'epc100' : 'POC flux at 100m',
         'npp'   : 'Net Primary Production on Land',
-        'fgco2' : 'Air sea Flux of CO2',
+        'fgco2' : 'Air sea Flux of CO'+r'$_{2}$',
         'frc':  'Carbon Flux at sea floor',
         'fric':  'Inorganic Carbon Flux at sea floor',
         'froc':  'Organic Carbon Flux at sea floor',
         'nbp': 'Net Biome Production',
-        'nbpgt_cumul': 'Cumulative Global Total Net Biome Production',
-        'fgco2gt_cumul': 'Cumulative Global Total Air sea Flux of CO2',
-        'atmos_carbon': 'Remnat Atmospheric Anthropogenic CO2',
+        'nbpgt_cumul': 'Cumulative Global Total Net Biome Production, Pg',
+        'fgco2gt_cumul': 'Cumulative Global Total Air sea Flux of CO'+r'$_{2}$'+', Pg',
+        'atmos_carbon': 'Remnant Atmospheric Anthropogenic CO'+r'$_{2}$'+', Pg',
+        # units:
+        'Pg yr^-1': 'Pg yr'+r'$^{-1}$',
+
     }
     long_name = ''
     if name.find('gt_norm') > -1:
@@ -2314,6 +2354,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     # set path:
     image_extention = diagtools.get_image_format(cfg)
     path = diagtools.folder([cfg['plot_dir'], 'ts_figure',plot_dataset])
+    print(path, plot_styles)
     ensemble_mean_txt = '_'.join(plot_styles)
     path += '_'.join([x, y, markers, ensemble_mean_txt, plot_dataset]) + image_extention
 
@@ -2321,21 +2362,21 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         path = path.replace(image_extention, '_21ma'+image_extention)
     #if os.path.exists(path): return
 
-    exp_colours = {'historical':'black',
-                   'ssp119':'green',
-                   'ssp126':'dodgerblue',
-                   'ssp245':'blue',
-                   'ssp370':'purple',
-                   'ssp434':'magenta',
-                   'ssp585': 'red',
-                   'ssp534-over':'orange',
-                   'historical-ssp119':'green',
-                   'historical-ssp126':'dodgerblue',
-                   'historical-ssp245':'blue',
-                   'historical-ssp370':'purple',
-                   'historical-ssp434':'magenta',
-                   'historical-ssp585': 'red',
-                   'historical-ssp585-ssp534-over':'orange'}
+#    exp_colours = {'historical':'black',
+#                   'ssp119':'green',
+#                   'ssp126':'dodgerblue',
+#                   'ssp245':'blue',
+#                   'ssp370':'purple',
+#                   'ssp434':'magenta',
+#                   'ssp585': 'red',
+#                   'ssp534-over':'orange',
+#                   'historical-ssp119':'green',
+#                   'historical-ssp126':'dodgerblue',
+#                   'historical-ssp245':'blue',
+#                   'historical-ssp370':'purple',
+#                   'historical-ssp434':'magenta',
+#                   'historical-ssp585': 'red',
+#                   'historical-ssp585-ssp534-over':'orange'}
 
     marker_styles = {1.5: '*', 2.:'o', 3.:'D', 4.:'s', 5.:'X'}
 
@@ -2408,14 +2449,17 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             if exp_1.find('historical-')>-1: continue
             if exp_1.find('historical_')>-1: continue
 
-        if plot_stlye in ['CMIP6_range', 'all_models_range', ]:
-            if plot_stlye in ['CMIP6_range', ] and dataset_1 != 'CMIP6': continue
-            if plot_stlye in ['all_models_range', ] and dataset_1 == 'CMIP6': continue
+        if plot_style in ['CMIP6_range', 'all_models_range', ]:
+            if plot_style in ['CMIP6_range', ] and dataset_1 != 'CMIP6': continue
+            if plot_style in ['all_models_range', ] and dataset_1 == 'CMIP6': continue
+            # just so it only gets plotted once.
+            if ensemble_1 != 'ensemble_min': continue
 
             if x != 'time':
                print('plotting a range with time on the x axes is not possible.')
                assert 0
 
+            if (dataset_1, y, exp_1, 'ensemble_min') not in data_dict.keys(): continue
             mins_data = data_dict[(dataset_1, y, exp_1, 'ensemble_min')]
             maxs_data = data_dict[(dataset_1, y, exp_1, 'ensemble_max')]
             x_label = 'Year'
@@ -2431,11 +2475,15 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             if y in label_dicts.keys():
                 y_label = label_dicts[y]
             else:
-                y_label = ' '.join([get_long_name(y), str(cube.units)])
+                y_label = ' '.join([get_long_name(y) ])#, get_long_name(str(mins_data.units))])
 
-            plt.fill_between(x_times, y_data_mins, y_data_maxs, fc = exp_colours[exp_1], alpha=0.3 )
+            if np.array_equal(y_data_mins, y_data_maxs) or np.abs(np.mean(y_data_mins - y_data_maxs)/np.mean(y_data_maxs)) < 1e-6:
+                plt.plot(x_times, y_data_mins, c=exp_colours[exp_1], alpha=0.4, lw=2.5)
+            else:  
+                plt.fill_between(x_times, y_data_mins, y_data_maxs, fc = exp_colours_fill[exp_1], alpha=exp_colours_alpha[exp_1])
+                plt.plot(x_times, y_data_mins, c=exp_colours[exp_1], lw=0.4)
+                plt.plot(x_times, y_data_maxs, c=exp_colours[exp_1], lw=0.4)
             continue
-
 
         for (dataset, short_name, exp, ensemble), cube in data_dict.items():
             if short_name not in [x,y]: continue
@@ -2465,7 +2513,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                 x_data = np.array(cube.data.copy())
                 x_times = diagtools.cube_time_to_float(cube)
                 print('setting x axis to ',short_name, exp, ensemble, np.min(x_data), np.max(x_data))
-                x_label = ' '.join([get_long_name(x), str(cube.units)])
+                x_label = ' '.join([get_long_name(x), ] ) # get_long_name(str(cube.units))])
 
             if y == 'time':
                 print('what kind of crazy person plots time on y axis?')
@@ -2481,7 +2529,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                 y_data = cube.data.copy()
                 y_times = diagtools.cube_time_to_float(cube)
                 print('setting y time to ',short_name, exp, ensemble, y_data)
-                y_label = ' '.join([get_long_name(y), str(cube.units)])
+                y_label = ' '.join([get_long_name(y), ] ) # get_long_name(str(cube.units))])
 
             print('make_ts_figure: loaded x data', short_name, exp, ensemble, x, np.mean(x_data))
             print('make_ts_figure: loaded y data', short_name, exp, ensemble, y, np.mean(y_data))
@@ -2577,7 +2625,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             try: threshold_times = thresholds_dict[(dataset_1, 'tas', exp_1, ensemble_1)]
             except:
                threshold_times = {}
-            ms = 4
+            ms = 6
             for threshold, time in threshold_times.items():
                 if not time:
                     continue
@@ -2593,8 +2641,11 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                          y_data[y_point],
                          marker_styles[threshold],
                          markersize = ms,
-                         fillstyle='none',
-                         color=exp_colours[exp_1])
+                         fillstyle='full',
+                         zorder=10,
+                         color=to_rgba(exp_colours[exp_1], alpha=0.5),
+                         markeredgecolor=exp_colours_dark[exp_1] 
+                          )
                 #plt.plot(x_data[x_point],
                 #         y_data[y_point],
                 #         'o',
@@ -2645,11 +2696,11 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
 
     # set title:
     if x == 'time':
-        title = get_long_name(y)
+        title = '' #get_long_name(y)
     else:
         title = ' '.join([get_long_name(x), 'by', get_long_name(y)])
 
-    if plot_dataset != 'all_models':
+    if make_figure_here and plot_dataset != 'all_models':
         title += ' '+plot_dataset
 
     plt.title(title)
@@ -4021,6 +4072,7 @@ def timeseries_megapane(cfg, data_dict, thresholds_dict, key,
         skip_historical_ssp = True,
         #short_time_range = False,
         )
+    ax.set_xlim([1850., 2100.])
     return fig, ax
 
 
@@ -4038,23 +4090,26 @@ def timeseries_megaplot(cfg, data_dict, thresholds_dict,
     fig = plt.figure()
     fig.set_size_inches(12, 8)
 
+    if isinstance(plot_styles, str):
+        plot_styles = [plot_styles, ]
+
     axes = {}
     if len(panes) == 4:
-        gs = gridspec.GridSpec(2, 3,figure=fig, width_ratios=[1,1, 0.1], wspace=0.2, hspace=0.2)
+        gs = gridspec.GridSpec(2, 3,figure=fig, width_ratios=[1,1, 0.1], wspace=0.352, hspace=0.352)
         axes[panes[0]] = fig.add_subplot(gs[0, 0]) # row, column
         axes[panes[1]] = fig.add_subplot(gs[0, 1])
         axes[panes[2]] = fig.add_subplot(gs[1, 0])
         axes[panes[3]] = fig.add_subplot(gs[1, 1])
 
     if len(panes) in [5, 6]:
-        gs = gridspec.GridSpec(2, 4,figure=fig, width_ratios=[1,1, 0.3], wspace=0.5, hspace=0.5)
+        gs = gridspec.GridSpec(2, 4,figure=fig, width_ratios=[1, 1, 1, 0.21], wspace=0.2, hspace=0.6)
         axes[panes[0]] = fig.add_subplot(gs[0, 0]) # row, column
         axes[panes[1]] = fig.add_subplot(gs[0, 1])
         axes[panes[2]] = fig.add_subplot(gs[0, 2])
         axes[panes[3]] = fig.add_subplot(gs[1, 0])
         axes[panes[4]] = fig.add_subplot(gs[1, 1])
         if len(panes) in [6, ]:
-            axes[pane[5]] = fig.add_subplot(gs[1, 2])
+            axes[panes[5]] = fig.add_subplot(gs[1, 2])
 
     # add legend column ion RHS:
     axes['legend'] = fig.add_subplot(gs[:, -1])
@@ -4068,14 +4123,14 @@ def timeseries_megaplot(cfg, data_dict, thresholds_dict,
     # l;egend pane:
     plt.sca(axes['legend'])
     keys, labels = [], []
-    exp_colours = {'historical':'black',
-                   'ssp119':'green',
-                   'ssp126':'dodgerblue',
-                   'ssp245':'blue',
-                   'ssp370':'purple',
-                   'ssp434':'magenta',
-                   'ssp585': 'red',
-                   'ssp534-over':'orange',}
+#    exp_colours = {'historical':'black',
+#                   'ssp119':'green',
+#                   'ssp126':'dodgerblue',
+#                   'ssp245':'blue',
+#                   'ssp370':'purple',
+#                   'ssp434':'magenta',
+#                   'ssp585': 'red',
+#                   'ssp534-over':'orange',}
                    # 'historical-ssp119':'green',
                    # 'historical-ssp126':'dodgerblue',
                    # 'historical-ssp245':'blue',
@@ -4083,6 +4138,21 @@ def timeseries_megaplot(cfg, data_dict, thresholds_dict,
                    # 'historical-ssp434':'magenta',
                    # 'historical-ssp585': 'red',
                    # 'historical-ssp585-ssp534-over':'orange'}
+
+    if 'CMIP6_mean' in plot_styles:
+        plt.plot([],[], ls='-', c='k', lw=1.9, label = 'CMIP6 mean')
+
+    if 'CMIP6_range' in plot_styles:
+        plt.plot([],[], ls='-', c='k', alpha =0.5, lw=8., label = 'CMIP6 range')
+
+    if 'all_models_means' in plot_styles:
+        plt.plot([],[], ls='-', c='k', lw=1.0, label = 'Model mean')
+
+    if 'all_models_range' in plot_styles:
+        plt.plot([],[], marker='s', ms=6, markeredgecolor='black', color=(1,1,1,0.5), label = 'Model range')
+
+    if 'all_ensembles' in plot_styles:
+        plt.plot([],[], ls='-', c='k', lw=0.5, label = 'Ensemble member')
 
     for exp in ['historical', 'ssp119',  'ssp126', 'ssp245', 'ssp370','ssp585']:
         plt.plot([],[], ls='-', c=exp_colours[exp], lw=4., label = sspify(exp))
@@ -4095,6 +4165,8 @@ def timeseries_megaplot(cfg, data_dict, thresholds_dict,
         plt.scatter([], [], marker=marker_styles[gwt], c='k', label=lab)
         #keys.append(plt.scatter([], [], marker=marker_styles[gwt], c='k',))
         #labels.append(''.join([str(int(gwt)), r'$\degree$', 'C']))
+
+
 
     legd = axes['legend'].legend(#keys, labels,
         bbox_to_anchor=(2.5, 0.5),
@@ -4222,7 +4294,14 @@ def main(cfg):
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
             do_timeseries_megaplot = True
             if do_timeseries_megaplot:
-                for plot_styles in ['CMIP6_range', 'all_models_range', 'all_ensembles', 'all_models_means', 'CMIP6_mean']:
+          
+                timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean'],
+                        panes = ['tas_norm', 'atmos_carbon', 'fgco2gt_cumul', 'nbpgt_cumul', ],) # defaults
+                continue
+                for plot_styles in [['CMIP6_range', 'CMIP6_mean'],
+                       'CMIP6_range', ['all_models_range', 'all_models_means'],
+                       'all_ensembles',  'CMIP6_mean'
+                       ]:
             #plot_styles: ambition:
             #    ['ensemble_mean', ] default behaviour before
             #    CMIP6_mean: Only CMIP6 multi model mean
@@ -4232,8 +4311,14 @@ def main(cfg):
             #    all_models_range: Each individual models range is plotted
             #    all_ensembles: Every single ensemble member is shown.
 
+                    # panes = ['tas_norm', 'atmos_carbon', 'fgco2gt_cumul', 'nbpgt_cumul', ],
+                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles, 
+                        panes = ['tas_norm', 'atmos_carbon', 'fgco2gt_cumul', 'nbpgt_cumul', ],) # defaults
+                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles, 
+                        panes = ['tas', 'emissions','tls', 'fgco2gt', 'luegt', 'nbpgt'])
+                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
+                        panes = ['tas', 'emissions','tls', 'fgco2', 'lue', 'nbp'])
 
-                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=[plot_styles, ])
             return
             do_cumulative_plot = True
             if do_cumulative_plot:
