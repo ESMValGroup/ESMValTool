@@ -115,10 +115,10 @@ exp_colours_fill = {'historical':'black',
                'ssp585': 'darkred',}
 
 exp_colours_alpha = {'historical': 0.5,
-               'ssp119': 0.6,   
-               'ssp126': 0.3,  
-               'ssp245': 0.3,    
-               'ssp370': 0.3,    
+               'ssp119': 0.6,
+               'ssp126': 0.3,
+               'ssp245': 0.3,
+               'ssp370': 0.3,
                'ssp585': 0.6, }
 
 
@@ -2479,7 +2479,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
 
             if np.array_equal(y_data_mins, y_data_maxs) or np.abs(np.mean(y_data_mins - y_data_maxs)/np.mean(y_data_maxs)) < 1e-6:
                 plt.plot(x_times, y_data_mins, c=exp_colours[exp_1], alpha=0.4, lw=2.5)
-            else:  
+            else:
                 plt.fill_between(x_times, y_data_mins, y_data_maxs, fc = exp_colours_fill[exp_1], alpha=exp_colours_alpha[exp_1])
                 plt.plot(x_times, y_data_mins, c=exp_colours[exp_1], lw=0.4)
                 plt.plot(x_times, y_data_maxs, c=exp_colours[exp_1], lw=0.4)
@@ -2644,7 +2644,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                          fillstyle='full',
                          zorder=10,
                          color=to_rgba(exp_colours[exp_1], alpha=0.5),
-                         markeredgecolor=exp_colours_dark[exp_1] 
+                         markeredgecolor=exp_colours_dark[exp_1]
                           )
                 #plt.plot(x_data[x_point],
                 #         y_data[y_point],
@@ -3622,6 +3622,7 @@ def make_cumulative_timeseries(cfg, data_dict,
       dataset = 'CMIP6',
       ensemble = 'ensemble_mean',
       plot_type = 'simple_ts',
+      plot_thresholds = [1.5, 2.,3.,4.,5.],
       do_leg= True,
       fig = None, gs = None, ax= None,
 ):
@@ -3873,6 +3874,7 @@ def make_cumulative_timeseries(cfg, data_dict,
     for thres, dt in thresholds.items():
         if dt is None: continue
         print('adding threshold lineL', thres, dt)
+        if thres not in plot_thresholds: continue
 
         plt.axvline(x=float(dt.year)+0.5, c='k', ls=':' )
         x = float(dt.year) +0.02 *(np.max(ax.get_xlim()) - np.min(ax.get_xlim()))
@@ -3891,6 +3893,106 @@ def make_cumulative_timeseries(cfg, data_dict,
         plt.savefig(path)
         plt.close()
     else: return fig, ax
+
+
+
+def make_cumulative_timeseries_megaplot(cfg, data_dict,
+       thresholds_dict,
+       ssps= ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
+       plot_types = ['pair', 'area_over_zero'],
+       ensemble = 'ensemble_mean'):
+       """
+       Single plot massive thing.
+       """
+    fig = plt.figure()
+    fig.set_size_inches(12, 8)
+    gs = gridspec.GridSpec(4, 4, figure=fig )# width_ratios=[1,1], wspace=0.5, hspace=0.5)
+
+    ssp_points = {
+        'historical':[0, 0], # row, column
+        'ssp119':[0, 1],
+        'ssp126':[0, 2],
+        'ssp245':[2, 0],
+        'ssp370':[2, 0],
+        'ssp585':[2, 0],
+    }
+    ax_leg = fig.add_subplot(:, -1)
+
+    for ssp in ssps:
+        ax1 =  fig.add_subplot(gs[ssp_points[ssp][0], ssp_points[ssp][0]])
+        ax2 =  fig.add_subplot(gs[ssp_points[ssp][0]+1,ssp_points[ssp][0]])
+
+        fig, ax1 = make_cumulative_timeseries(cfg, data_dict,
+            thresholds_dict,
+            ssp=ssp,
+            ensemble = ensemble,
+            dataset = 'CMIP6',
+            plot_type = 'area_over_zero',
+            plot_thresholds = [2., 3., 4.],
+            fig = fig,
+            ax= ax1,
+            do_leg=False,
+        )
+        fig, ax2 = make_cumulative_timeseries(cfg, data_dict,
+            thresholds_dict,
+            ssp=ssp,
+            ensemble = ensemble,
+            dataset = 'CMIP6',
+            plot_type = 'pc',
+            plot_thresholds = [2., 3., 4.],
+            fig = fig,
+            ax= ax2,
+            do_leg=False,
+        )
+        if ssp == 'historical':
+            ax1.set_xlim([1850., 2015.])
+            ax2.set_xlim([1850., 2015.])
+    #        ax1.tick_params(labeltop=False, labelright=True)
+    #        ax2.tick_params(labeltop=False, labelright=True)
+
+        else:
+            ax1.set_xlim([2015., 2100.])
+            ax2.set_xlim([2015., 2100.])
+    #        ax1.tick_params(labeltop=False, labelright=True)
+    #        ax2.tick_params(labeltop=False, labelright=True)
+        ax1.grid(axis='y')
+        ax2.grid(axis='y')
+
+    plt.sca(ax_leg)
+    colours = {'cumul_emissions': 'silver',
+        'atmos_carbon': 'silver',
+        'fgco2gt_cumul':'dodgerblue',
+        'nbpgt_cumul':'orange',
+        'tls':'mediumseagreen',
+        'luegt': 'purple'}
+
+    plt.plot([],[], c='silver', lw=8, ls='-', label = 'Atmosphere')
+    plt.plot([],[], c='mediumseagreen', lw=8, ls='-', label = 'Land')
+    plt.plot([],[], c='dodgerblue', lw=8, ls='-', label = 'Ocean')
+    plt.plot([],[], 'k-', lw=1.3,label='Emissions+LUE')
+    plt.plot([],[], 'k--', lw=1.3, label='LUE')
+    plt.plot([], [], c='k', ls=':', label = 'Raupach 2014' )
+    plt.plot([], [], c='navy', ls='-.', label = 'Watson 2020'  )
+
+    legd = ax_leg.legend(keys, labels,
+        bbox_to_anchor=(1.5, 0.5),
+        numpoints=1, labelspacing=1.2,
+        loc='center right', ) #tsize=16)
+
+    legd.draw_frame(False)
+    legd.get_frame().set_alpha(0.)
+    ax_leg.get_xaxis().set_visible(False)
+    ax_leg.get_yaxis().set_visible(False)
+    plt.axis('off')
+
+    image_extention = diagtools.get_image_format(cfg)
+    path = diagtools.folder([cfg['plot_dir'], 'allocation_timeseries_megaplot'])
+    path += '_'.join(['allocation_timeseries', 'megaplot']) + image_extention
+    print('saving figure:', path)
+    plt.savefig(path)
+    plt.close()
+
+
 
 
 def make_cumulative_timeseries_pair(cfg, data_dict,
@@ -4292,9 +4394,9 @@ def main(cfg):
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
-            do_timeseries_megaplot = True
+            do_timeseries_megaplot = False
             if do_timeseries_megaplot:
-          
+
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean'],
                         panes = ['tas_norm', 'atmos_carbon', 'fgco2gt_cumul', 'nbpgt_cumul', ],) # defaults
                 continue
@@ -4312,15 +4414,15 @@ def main(cfg):
             #    all_ensembles: Every single ensemble member is shown.
 
                     # panes = ['tas_norm', 'atmos_carbon', 'fgco2gt_cumul', 'nbpgt_cumul', ],
-                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles, 
+                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
                         panes = ['tas_norm', 'atmos_carbon', 'fgco2gt_cumul', 'nbpgt_cumul', ],) # defaults
-                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles, 
+                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
                         panes = ['tas', 'emissions','tls', 'fgco2gt', 'luegt', 'nbpgt'])
                     timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
                         panes = ['tas', 'emissions','tls', 'fgco2', 'lue', 'nbp'])
+                return
 
-            return
-            do_cumulative_plot = True
+            do_cumulative_plot = False
             if do_cumulative_plot:
 
                 plot_styles = ['percentages', 'values']
@@ -4333,10 +4435,24 @@ def main(cfg):
                 # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
 
 
+            do_horizontal_plot = False
+            if do_horizontal_plot:
                 # Horizontal bar charts with allocartions:
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
 
+
+            do_cumulative_ts_megaplot = True
+            # Massive plot that has like 12 panes.
+            if do_cumulative_ts_megaplot:
+                make_cumulative_timeseries_megaplot(cfg, data_dict,
+                                       thresholds_dict,
+                                       ssps= ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
+                                       plot_types = ['pair', 'area_over_zero'],
+                                       ensemble = 'ensemble_mean')
+
+            do_make_cumulative_timeseries_pair = False
+            if do_make_cumulative_timeseries_pair:
                 plot_types = ['pair', 'area_over_zero'] #'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
                 ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
                 for pt, exp in product(plot_types, ssps):
