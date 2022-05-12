@@ -105,6 +105,7 @@ begin
                                   "average", "yearly", True)
 
     ; Mean over the years
+    
     mean_years = dim_avg_n_Wrap(data_yearly, 0)
     delete(data_yearly)
 
@@ -112,6 +113,16 @@ begin
     if datasetnames(imod).eq.ref_model then
       data_ref = mean_years
     else
+
+  system("/bin/rm -f test.nc")    ; remove if exists
+	fout  = addfile ("test.nc", "c")  ; open output file
+  fout->ref = data_ref
+  fout->mean = mean_years
+
+      test = pattern_cor(data_ref, mean_years, 1.0, 0)
+      printVarSummary(test)
+      printVarSummary(all_cor)
+      
       ; Since ref model processed first, move all models up one spot
       all_cor(iloop-1) = pattern_cor(data_ref, mean_years, 1.0, 0)
     end if
