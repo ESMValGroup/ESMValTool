@@ -43,7 +43,7 @@ from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def get_provenance_record(plot_file, attributes, obsname, ancestor_files):
+def get_provenance_record(cfg, attributes, obsname, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     if obsname != '':
         caption = (
@@ -54,21 +54,16 @@ def get_provenance_record(plot_file, attributes, obsname, ancestor_files):
             "Average {long_name} between {start_year} and {end_year} ".format(
                 **attributes))
 
-    record = {
-        'caption': caption,
-        'statistics': ['mean'],
-        'domains': ['global'],
-        'plot_type': 'map',
-        'authors': [
-            'lovato_tomas',
-        ],
-        'references': [
-            'acknow_project',
-        ],
-        'plot_file': plot_file,
-        'ancestors': ancestor_files,
-    }
-    return record
+    provenance_record = diagtools.prepare_provenance_record(
+        cfg,
+        caption=caption,
+        statistics=['mean'],
+        domain=['global'],
+        plot_type=['map'],
+        ancestors=ancestor_files,
+    )
+
+    return provenance_record
 
 
 def add_map_plot(fig, axs, plot_cube, cols):
@@ -209,8 +204,6 @@ def load_cubes(filenames, obs_filename, metadata):
     for thename in filenames:
         logger.debug('loading: \t%s', thename)
         cube = iris.load_cube(thename)
-        #diagtools.fix_bounds(cube, cube.coord('latitude'))
-        #diagtools.fix_bounds(cube, cube.coord('longitude'))
         cube.coord('latitude').long_name = "Latitude"
         cube.coord('longitude').long_name = "Longitude"
         cube = diagtools.bgc_units(cube, metadata[thename]['short_name'])
@@ -252,10 +245,6 @@ def select_cubes(cubes, layer, obsname, metadata):
             'hascbar': False
         }
         if (obsname != '') & (thename != obsname):
-            print(thename)
-            #if (thename not in ['GFDL-CM4','GFDL-ESM4']):
-            #    print(thename)
-
             plot_cubes[thename] = {
                 'cube': cubes[thename][layer] - cubes[obsname][layer],
                 'title': thename,
@@ -322,7 +311,7 @@ def make_plots(cfg, metadata, obsname):
         the preprocessed observations file.
     """
     logger.debug('make_plots')
-    # ####
+
     filenames = list(metadata.keys())
 
     # plot setting
@@ -374,7 +363,7 @@ def make_plots(cfg, metadata, obsname):
         plt.savefig(plot_file, dpi=200)
 
         # Provenance
-        provenance_record = get_provenance_record(plot_file,
+        provenance_record = get_provenance_record(cfg,
                                                   metadata[filenames[-1]],
                                                   obsname, filenames)
         logger.info("Recording provenance of %s:\n%s", plot_file,
