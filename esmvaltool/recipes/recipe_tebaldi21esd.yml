@@ -1533,13 +1533,13 @@ diagnostics:
     description: Fig3, Normalized patterns of percent precipitation computed from
       CMIP5 models and scenarios
     realms: [atmos]
-    scripts:
     themes: [phys]
     variables:
       pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
         start_year: 2081}
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5,
         short_name: tas, start_year: 2081}
+    scripts:
       calc_map_diff_scaleT_pr:
         label: &id422 [2081-2100 relative to 1986-2005]
         percent: 1
