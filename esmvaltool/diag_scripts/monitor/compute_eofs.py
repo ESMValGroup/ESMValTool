@@ -12,6 +12,7 @@ from eofs.iris import Eof
 from mapgenerator.plotting.plotmap import PlotMap
 
 import esmvaltool.diag_scripts.shared
+import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 from esmvaltool.diag_scripts.shared import group_metadata
 
@@ -56,8 +57,12 @@ class Eofs(MonitorBase):
                 eof.standard_name = None
                 # Plot EOF map using plot_cube from PlotMap
                 plot_map.plot_cube(eof, save=False, **variable_options)
+                # Use rasterization if desired
+                # Note: plt.gca() is the colorbar here, use plt.gcf().axes to
+                # access the correct axes
+                self.set_rasterized(plt.gcf().axes[0])
                 # Get filename for the EOF plot
-                filename = self.get_plot_path('eof', var_info, 'png')
+                filename = self.get_plot_path('eof', var_info)
                 # Save figure
                 plt.savefig(filename,
                             bbox_inches='tight',
@@ -65,7 +70,10 @@ class Eofs(MonitorBase):
                             dpi=plot_map.dpi)
                 plt.close(plt.gcf())
                 # Record provenance for EOF plot
-                self.record_plot_provenance(filename, var_info, 'eof')
+                caption = (f"{eof.long_name} of dataset {var_info[n.DATASET]} "
+                           f"(project {var_info[n.PROJECT]}).")
+                self.record_plot_provenance(filename, var_info, 'eof',
+                                            caption=caption)
 
                 # Compute PC
                 pcomp = solver.pcs(npcs=1, pcscaling=1)[:, 0]
@@ -73,11 +81,19 @@ class Eofs(MonitorBase):
                 pcomp.long_name = var_info.get('pc_name', pcomp.long_name)
                 pcomp.standard_name = None
                 # Get filename for the PC plot
-                filename = self.get_plot_path('pc', var_info)
+                filename = self.get_plot_path('pc', var_info, add_ext=False)
                 # Plot PC timeseries using plot_cube from MonitorBase
                 self.plot_cube(pcomp, filename)
                 # Record provenance for the PC plot
-                self.record_plot_provenance(filename, var_info, 'pc')
+                caption = (f"{pcomp.long_name} of dataset "
+                           f"{var_info[n.DATASET]} "
+                           f"(project {var_info[n.PROJECT]}).")
+                self.record_plot_provenance(
+                    self._add_file_extension(filename),
+                    var_info,
+                    'pc',
+                    caption=caption,
+                )
 
 
 def main():

@@ -1,4 +1,4 @@
-"""Script to download HadCRUT5 version 5.0.1.0 from its webpage."""
+"""Script to download Kadow2020 from its webpage."""
 import logging
 import os
 
@@ -35,17 +35,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     os.makedirs(downloader.local_folder, exist_ok=True)
     downloader.download_file(
-        "https://crudata.uea.ac.uk/cru/data/temperature/"
-        "HadCRUT.5.0.1.0.analysis.anomalies.ensemble_mean.nc",
-        wget_options=[])
-    downloader.download_file(
-        "https://crudata.uea.ac.uk/cru/data/temperature/"
-        "absolute_v5.nc",
-        wget_options=[])
-    downloader.download_file(
-        "https://crudata.uea.ac.uk/cru/data/temperature/"
-        "HadCRUT.5.0.1.0.anomalies.ensemble_mean.nc",
-        wget_options=[])
-    downloader.download_file(
-        "https://crudata.uea.ac.uk/cru/data/temperature/absolute.nc",
+        "http://users.met.fu-berlin.de/~ChristopherKadow/"
+        "HadCRUT.5.0.1.0.anomalies.Kadow_et_al_2020_20crAI-"
+        "infilled.ensemble_mean_185001-202012.nc",
         wget_options=[])

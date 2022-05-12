@@ -41,8 +41,8 @@ See `common installation issues`_ if you run into trouble.
 
 .. _install_with_mamba:
 
-Mamba installation
-==================
+Mamba/Conda installation
+========================
 
 In order to install the `conda <https://docs.conda.io>`_ package, you will need
 mamba pre-installed.
@@ -80,7 +80,7 @@ this should show the path to your mamba executable, e.g.
 ``~/mambaforge/bin/mamba``.
 
 ESMValTool installation
------------------------
+=======================
 
 Once you have installed the above prerequisites, you can install the entire
 ESMValTool package by running:
@@ -187,7 +187,7 @@ container is advised.
 
 The ``esmvaltool-python`` diagnostics can be installed as follows:
 
-First, ensure mamba is pre-installed (see `Mamba installation`_ for more details).
+First, ensure mamba is pre-installed (see `Mamba/Conda installation`_ for more details).
 
 Create a new environment with the ``esmvaltool-python`` package:
 
@@ -418,9 +418,8 @@ file.
 If you choose to use this option, download the compressed file and extract its
 contents at the desired location.
 
-
-Prerequisites
--------------
+Installation Using Mamba from Source
+------------------------------------
 
 It is recommended to use mamba to manage ESMValTool dependencies.
 For a minimal mamba installation go to https://mamba.readthedocs.io/en/latest/installation.html.
@@ -668,7 +667,6 @@ to install it yourself if you are just running diagnostics:
    nodes (`mistralpp.dkrz.de`) after login and module loading via `module load esmvaltool`; the command
    `module help esmvaltool` provides some information about the module.
 
-
 Installation from the conda lock file
 =====================================
 
@@ -696,7 +694,6 @@ repository, a direct download link can be found `here <https://raw.githubusercon
 .. note::
    For instructions on how to manually create the lock file, see
    :ref:`these instructions <esmvalcore:condalock-installation-creation>`.
-
 
 .. _common installation issues:
 

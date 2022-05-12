@@ -80,6 +80,9 @@ Documentation
 -  Updated CREM docu (recipe_williams09climdyn.yml) (`#2567 <https://github.com/ESMValGroup/ESMValTool/pull/2567>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  First draft for v2.5.0 changelog (`#2554 <https://github.com/ESMValGroup/ESMValTool/pull/2554>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Replace nonfunctional Github Actions badge with cool one in README (`#2582 <https://github.com/ESMValGroup/ESMValTool/pull/2582>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Updated changelog (`#2589 <https://github.com/ESMValGroup/ESMValTool/pull/2589>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Updated release strategy with current release and upcoming release (`#2597 <https://github.com/ESMValGroup/ESMValTool/pull/2597>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Increased ESMValTool version to 2.5.0 (`#2600 <https://github.com/ESMValGroup/ESMValTool/pull/2600>`__) `Manuel Schlund <https://github.com/schlunma>`__
 
 Diagnostics
 ~~~~~~~~~~~
@@ -123,6 +126,7 @@ Installation
 -  Comment out rc channel in osx environment file (`#2421 <https://github.com/ESMValGroup/ESMValTool/pull/2421>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Add `python-cdo` as conda-forge dependency in environment files to ensure `cdo` gets used from conda-forge and not pip (`#2469 <https://github.com/ESMValGroup/ESMValTool/pull/2469>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Install rasterio from conda-forge and avoid issues from python=3.10 (`#2479 <https://github.com/ESMValGroup/ESMValTool/pull/2479>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Updated dependencies with new ESMValCore version (`#2599 <https://github.com/ESMValGroup/ESMValTool/pull/2599>`__) `Manuel Schlund <https://github.com/schlunma>`__
 
 Improvements
 ~~~~~~~~~~~~

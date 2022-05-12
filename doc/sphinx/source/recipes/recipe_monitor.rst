@@ -59,6 +59,14 @@ the variable name that will be used for the plot's title. If it is not set,
 mapgenerator will try to choose a sensible one from the standard name
 attributes (`long_name`, `standard_name` and `var_name`).
 
+It is recommended to use a vector graphic file type (e.g., SVG) for the output
+files when running this recipe, i.e., run the recipe with the command line
+option ``--output_file_type=svg`` or use ``output_file_type: svg`` in your
+:ref:`esmvalcore:user configuration file`.
+Note that map plots are rasterized by default.
+Use ``rasterize_maps: false`` (see options below) in the recipe to disable
+this.
+
 monitor.py
 ----------
 
@@ -72,15 +80,30 @@ monitor.py
     Path to the folder to store the figures. It is defined as the
     input paths in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to ``~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}``.
+    for more details.
+    Defaults to ``{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}``.
+    All tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replace with the corresponding tags).
+    ``{plot_dir}`` is replaced with the default ESMValTool plot directory
+    (i.e., ``output_dir/plots/diagnostic_name/script_name/``, see
+    :ref:`esmvalcore:user configuration file`).
   * plot_filename:
     Filename pattern for the plots. It is defined as the input
     files in in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
     for more details. Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
+    All tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replace with the corresponding tags).
   * config_file:
     Path to the monitor config file. Defaults to
     ``monitor_config.yml`` in the same folder as the diagnostic script.
+  * rasterize_maps:
+    If ``True``, use `rasterization
+    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
+    map plots to produce smaller files.
+    This is only relevant for vector graphics (e.g.,
+    ``output_file_type=pdf,svg,ps``).
+    Defaults to ``True``.
 
 Plot specific options:
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -115,15 +138,29 @@ compute_eofs.py
     Path to the folder to store the figures. It is defined as the
     input paths in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to ``~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}``.
+    for more details.
+    All tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replace with the corresponding tags).
+    ``{plot_dir}`` is replaced with the default ESMValTool plot directory
+    (i.e., ``output_dir/plots/diagnostic_name/script_name/``, see
+    :ref:`esmvalcore:user configuration file`).
   * plot_filename:
     Filename pattern for the plots. It is defined as the input
     files in in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
     for more details. Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
+    All tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replace with the corresponding tags).
   * config_file:
     Path to the monitor config file. Defaults to
     ``monitor_config.yml`` in the same folder as the diagnostic script.
+  * rasterize_maps:
+    If ``True``, use `rasterization
+    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
+    map plots to produce smaller files.
+    This is only relevant for vector graphics (e.g.,
+    ``output_file_type=pdf,svg,ps``).
+    Defaults to ``True``.
 
 .. hint::
 
