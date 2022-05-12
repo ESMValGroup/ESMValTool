@@ -1,8 +1,8 @@
 documentation:
   authors: [debeire_kevin]
   title: 'Tebaldi et al.,ESD, 2021'
-  description: Reproduces plots and tables of tebaldi21esd : TAS and PR climate model
-    projections from the Scenario Model Intercomparison Project (ScenarioMIP) of CMIP6
+  description: 'Reproduces plots and tables of tebaldi21esd : TAS and PR climate model
+    projections from the Scenario Model Intercomparison Project (ScenarioMIP) of CMIP6'
   maintainer: [debeire_kevin]
   projects: [esmval]
   references: [tebaldi21esd]
