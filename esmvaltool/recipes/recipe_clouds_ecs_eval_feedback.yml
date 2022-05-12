@@ -173,7 +173,7 @@ diagnostics:
       feedback_parameters: &script_feedback_parameters
         script: climate_metrics/feedback_parameters.py
         calculate_mmm: true
-        only_consider_mmm: false #true
+        only_consider_mmm: true
         output_attributes:  # Dummy attributes necessary for mlr/plot.py
           tag: cre_feedback_parameter
           var_type: prediction_output
@@ -255,66 +255,3 @@ diagnostics:
           project: low_ECS
           start_year: 1
           end_year: 150
-
-          #  fig_netcre:
-          #    title: Net cloud radiative effect
-          #    description: Plot figure 10 (netcre).
-          #    scripts:
-          #      plot: &script_plot_fig_10
-          #        script: mlr/plot.py
-          #        ancestors: ['feedback_*/feedback_parameters']
-          #        group_by_attribute: tag
-          #        pattern: lambda_netcre_vs_latitude-longitude_MultiModelMean_all_150_years.nc
-          #        plot_map:
-          #          plot_kwargs:
-          #            cbar_label: '$\lambda_{netcre}$ [W m$^{-2}$ K$^{-1}$]'
-          #            cmap: bwr
-          #            vmin: -7.5
-          #            vmax: 7.5
-          #        plot_map_abs_biases:
-          #          plot_kwargs:
-          #            cbar_label: '$\Delta\lambda_{netcre}$ [W m$^{-2}$ K$^{-1}$]'
-          #            cmap: bwr
-          #            vmin: -2.5
-          #            vmax: 2.5
-          #        years_in_title: false
-          #
-          #  fig_lwcre:
-          #    title: Longwave cloud radiative effect
-          #    description: Plot figure 10 (lwcre).
-          #    scripts:
-          #      plot:
-          #        <<: *script_plot_fig_10
-          #        pattern: lambda_lwcre_vs_latitude-longitude_MultiModelMean_all_150_years.nc
-          #        plot_map:
-          #          plot_kwargs:
-          #            cbar_label: '$\lambda_{lwcre}$ [W m$^{-2}$ K$^{-1}$]'
-          #            cmap: bwr
-          #            vmin: -7.5
-          #            vmax: 7.5
-          #        plot_map_abs_biases:
-          #          plot_kwargs:
-          #            cbar_label: '$\Delta\lambda_{lwcre}$ [W m$^{-2}$ K$^{-1}$]'
-          #            cmap: bwr
-          #            vmin: -2.5
-          #            vmax: 2.5
-          #
-          #  fig_swcre:
-          #    title: Shortwave cloud radiative effect
-          #    description: Plot figure 10 (swcre).
-          #    scripts:
-          #      plot:
-          #        <<: *script_plot_fig_10
-          #        pattern: lambda_swcre_vs_latitude-longitude_MultiModelMean_all_150_years.nc
-          #        plot_map:
-          #          plot_kwargs:
-          #            cbar_label: '$\lambda_{swcre}$ [W m$^{-2}$ K$^{-1}$]'
-          #            cmap: bwr
-          #            vmin: -7.5
-          #            vmax: 7.5
-          #        plot_map_abs_biases:
-          #          plot_kwargs:
-          #            cbar_label: '$\Delta\lambda_{swcre}$ [W m$^{-2}$ K$^{-1}$]'
-          #            cmap: bwr
-          #            vmin: -2.5
-          #            vmax: 2.5
