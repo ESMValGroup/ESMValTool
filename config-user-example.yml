@@ -161,7 +161,35 @@ drs:
 #  obs4MIPs: default
 #  ana4mips: default
 
-# Site-specific entries: DKRZ
+# Site-specific entries: DKRZ-Levante
+# For bd0854 members a shared download directory is available
+#offline: false
+#download_dir: /work/bd0854/DATA/ESMValTool2/download
+# Uncomment the lines below to locate data on Levante at DKRZ.
+#auxiliary_data_dir: /work/bd0854/DATA/ESMValTool2/AUX
+#rootpath:
+#  CMIP6: /work/bd0854/DATA/ESMValTool2/CMIP6_DKRZ
+#  CMIP5: /work/bd0854/DATA/ESMValTool2/CMIP5_DKRZ
+#  CMIP3: /work/bd0854/DATA/ESMValTool2/CMIP3
+#  CORDEX: /work/ik1017/C3SCORDEX/data/c3s-cordex/output
+#  OBS: /work/bd0854/DATA/ESMValTool2/OBS
+#  OBS6: /work/bd0854/DATA/ESMValTool2/OBS
+#  obs4MIPs: /work/bd0854/DATA/ESMValTool2/OBS
+#  ana4mips: /work/bd0854/DATA/ESMValTool2/OBS
+#  native6: /work/bd0854/DATA/ESMValTool2/RAWOBS
+#  RAWOBS: /work/bd0854/DATA/ESMValTool2/RAWOBS
+#drs:
+#  CMIP6: DKRZ
+#  CMIP5: DKRZ
+#  CMIP3: DKRZ
+#  CORDEX: BADC
+#  obs4MIPs: default
+#  ana4mips: default
+#  OBS: default
+#  OBS6: default
+#  native6: default
+
+# Site-specific entries: DKRZ-Mistral
 # Uncomment the lines below to locate data on Mistral at DKRZ.
 # Note: Use ``offline: false`` only on login and prepost nodes.
 #auxiliary_data_dir: /mnt/lustre02/work/bd0854/DATA/ESMValTool2/AUX
