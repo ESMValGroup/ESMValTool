@@ -734,8 +734,7 @@ class HotspotPlot:
             'domains': ['reg'],
             'plot_types': ['map'],
             'authors': [
-                'loosveldt-tomas_saskia',
-                # 'cos_josep',
+                'cos_josep',
             ],
             'references': [
                 'cos22esd',
@@ -762,8 +761,7 @@ class HotspotPlot:
             'domains': ['reg', 'global'],
             'plot_types': ['scatter', 'line', 'times'],
             'authors': [
-                'loosveldt-tomas_saskia',
-                # 'cos_josep',
+                'cos_josep',
             ],
             'references': [
                 'cos22esd',
