@@ -308,6 +308,7 @@ User settings in recipe
    * label: label to add in the legend
 
 #. Script plot_table_changes.ncl
+
     *Required settings for script*
 
     * ancestors: variable and diagnostics that calculated field to be plotted
