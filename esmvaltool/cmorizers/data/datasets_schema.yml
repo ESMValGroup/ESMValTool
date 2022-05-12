@@ -1,0 +1,16 @@
+# Generic datasets file Yamale schema definition.
+# See https://github.com/23andMe/Yamale for help.
+
+---
+# Dataset file schema
+datasets: map(include('dataset'), required=True)
+
+---
+# Dataset item definition
+
+dataset:
+  tier: int(min=2, max=3, required=False)
+  source: str()
+  latest: int(required=False, min=20150000, max=20210000)
+  info: str()
+  last_access: day()

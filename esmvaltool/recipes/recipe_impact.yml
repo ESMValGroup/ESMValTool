@@ -42,7 +42,9 @@ datasets:
   - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: CNRM-CM5, ensemble: r10i1p1, tag: model}
   - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: CSIRO-Mk3-6-0, ensemble: r(1:10)i1p1, tag: model}
   - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: EC-EARTH, ensemble: r(1:2)i1p1, tag: model}
-  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: EC-EARTH, ensemble: r6i1p1, tag: model}
+  # The following dataset has an issue in the time coordinate in an old version of the dataset (which is still present on mistral)
+  # See https://github.com/ESMValGroup/ESMValTool/pull/2563 for details
+  # - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: EC-EARTH, ensemble: r6i1p1, tag: model}
   - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: EC-EARTH, ensemble: r9i1p1, tag: model}
   - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: FGOALS-g2, ensemble: r1i1p1, tag: model}
   - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: FGOALS-s2, ensemble: r(1:3)i1p1, tag: model}

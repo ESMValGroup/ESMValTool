@@ -1,0 +1,31 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: GLODAP
+  version: 'v2.2016b'
+  tier: 2
+  modeling_realm: clim
+  project_id: OBS6
+  source: 'https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0162565/mapped/GLODAPv2.2016b_MappedClimatologies.tar.gz'
+  reference: 'glodap'
+  comment: ''
+
+# Variables to cmorize (here use only filename prefix)
+# pHtsinsitutp: seawater ph reported on total scale at in situ temperature and pressure
+variables:
+  dissic:
+    mip: Oyr
+    raw_var: TCO2
+    file: GLODAPv2.2016b
+  talk:
+    mip: Oyr
+    raw_var: TAlk
+    file: GLODAPv2.2016b
+  ph:
+    mip: Oyr
+    raw_var: pHtsinsitutp
+    file: GLODAPv2.2016b
+
+# Custom dictionary for this cmorizer
+custom:
+  reference_year: 2000
