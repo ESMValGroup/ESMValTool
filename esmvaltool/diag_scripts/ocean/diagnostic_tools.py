@@ -13,13 +13,13 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
+from pathlib import Path
 import iris
 
 import numpy as np
 import cftime
 import matplotlib.pyplot as plt
 import yaml
-from pathlib import Path
 
 from esmvaltool.diag_scripts.shared._base import _get_input_data_files
 
@@ -363,8 +363,8 @@ def get_colour_from_cmap(number, total, cmap='jet'):
         cmap = plt.get_cmap(cmap)
 
     if number > total:
-        raise ValueError('The cannot be larger than the total length '
-                         'of the list ie: {} > {}'.format(number, total))
+        raise ValueError(f'The cannot be larger than the total length '
+                         f' of the list ie: {number} > {total}')
 
     if total > 1:
         colour = cmap(float(number) / float(total - 1.))
@@ -589,7 +589,7 @@ def make_cube_layer_dict(cube):
             layers.append(coord)
 
     cubes = {}
-    if layers == []:
+    if not layers:
         cubes[''] = cube
         return cubes
 
