@@ -542,10 +542,9 @@ diagnostics:
     decription: NOAAGlobalTemp check
     variables:
       tasa:
-      tasaga:
     additional_datasets:
       - {dataset: NOAAGlobalTemp, project: OBS, mip: Amon, tier: 2,
-         type: ground, version: v5, start_year: 1880, end_year: 2021}
+         type: ground, version: v5.0.0, start_year: 1880, end_year: 2021}
     scripts: null
 
 
