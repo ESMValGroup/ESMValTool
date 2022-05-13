@@ -29,7 +29,6 @@ logger = logging.getLogger(__name__)
 
 def _extract_variable(short_name, var, version, filename, cfg, in_dir,
                       out_dir):
-
     """Extract variable."""
     # load data
     filepath = os.path.join(in_dir, filename)
