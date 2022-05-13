@@ -12,14 +12,15 @@ Manuel Schlund (DLR, Germany)
 
 Notes
 -----
-For each input dataset, an individual plot is created.
+For each input dataset, an individual plot is created. This diagnostic supports
+arbitrary variables of arbitrary datasets.
 
 Configuration options in recipe
 -------------------------------
 psyplot_func: str
     Function used to plot the data. Must be a function of
     :mod:`psyplot.project.plot`. Run ``python -c "from psyplot.project import
-    plot; print( plot.show_plot_methods())"`` to get a list of all currently
+    plot; print(plot.show_plot_methods())"`` to get a list of all currently
     supported plotting functions (make sure to run this command in your
     ESMValTool environment).
 psyplot_kwargs: dict, optional
