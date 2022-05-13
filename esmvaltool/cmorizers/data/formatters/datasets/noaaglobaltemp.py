@@ -59,7 +59,7 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
     # Fix metadata and  update version information
     attrs = copy.deepcopy(cfg['attributes'])
     attrs['mip'] = var['mip']
-    attrs['version'] = version
+    #attrs['version'] = var['version']
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
 
