@@ -2349,7 +2349,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     do_legend=True,
     plot_thresholds = [1.5, 2., 3., 4., 5.,],
     skip_historical_ssp=False,
-    experiments = [' historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
+    experiments = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
     #short_time_range = False,
     ):
     """
@@ -3435,7 +3435,9 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     do_legend=True,
     land_carbon = 'nbpgt',
     atmos='atmos_carbon',
-    fig=None, ax=None):
+    exp_order = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
+    fig=None,
+     ax=None):
     """
     Make a bar chart (of my favourite pies)
     """
@@ -3445,20 +3447,14 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     landcs = []
     fgco2gts = []
     experiments = []
-    for (t_dataset, t_short, t_exp, t_ens), threshold_times in sorted(thresholds_dict.items()):
-        #if t_dataset != 'CMIP6': continue
-        if t_ens != 'ensemble_mean': continue
-        if t_short != 'tas': continue
-        if t_exp != 'ssp245': continue
 
-        print((t_dataset, t_short, t_exp, t_ens), threshold_times[4.0])
-    #assert 0
-
-    for (t_dataset, t_short, t_exp, t_ens), threshold_times in thresholds_dict.items():
-        print((t_dataset, t_short, t_exp, t_ens), threshold_times)
+    for exp1 in exp_order:
+      for (t_dataset, t_short, t_exp, t_ens), threshold_times in thresholds_dict.items():
+        # print((t_dataset, t_short, t_exp, t_ens), threshold_times)
         if t_dataset != 'CMIP6': continue
         if t_short != 'tas': continue
         if t_ens != 'ensemble_mean': continue
+        if t_exp != exp1: continue
 
         print("make_bar_chart", t_short, t_exp, t_ens)
         cumul_emissions = data_dict.get((t_dataset, 'cumul_emissions', t_exp, t_ens), None) #dict
@@ -4259,7 +4255,7 @@ def make_cumulative_vs_threshold(cfg, data_dict,
 
 def timeseries_megapane(cfg, data_dict, thresholds_dict, key,
     plot_styles = ['CMIP6_range', 'CMIP6_mean'],
-    experiments = [' historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
+    experiments = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
     fig = None,
     ax = None,
     ):
@@ -4288,7 +4284,7 @@ def timeseries_megapane(cfg, data_dict, thresholds_dict, key,
 def timeseries_megaplot(cfg, data_dict, thresholds_dict,
         panes = ['tas_norm', 'atmos_carbon', 'fgco2gt_cumul', 'nbpgt_cumul', ],
         plot_styles = ['CMIP6_range', 'CMIP6_mean'],
-        experiments = [' historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
+        experiments = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
         ):
     """
     4 pane time series plot which shows the:
@@ -4367,7 +4363,7 @@ def timeseries_megaplot(cfg, data_dict, thresholds_dict,
         plt.plot([],[], marker='s', ms=6, markeredgecolor='black', color=(1,1,1,0.5), label = 'Model range')
 
     if 'all_ensembles' in plot_styles:
-        plt.plot([],[], ls='-', c='k', lw=0.5, label = 'Ensemble member')
+        plt.plot([],[], ls='-', c='k', lw=0.5, label = 'Ensemble')
 
     for exp in experiments:
         plt.plot([],[], ls='-', c=exp_colours[exp], lw=4., label = sspify(exp))
@@ -4510,7 +4506,7 @@ def main(cfg):
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
-            do_timeseries_megaplot = True
+            do_timeseries_megaplot = False
             if do_timeseries_megaplot:
                 for plot_styles in [
                        'CMIP6_range', 'all_models_range', 'all_models_means',
@@ -4520,7 +4516,6 @@ def main(cfg):
                         timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
                             experiments=['historical', 'ssp370'],
                             panes = [pane, ])
-                return
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean', 'all_models_means', 'all_ensembles'],
                         panes = ['atmos_carbon', ],) # defaults
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean', 'all_models_means', 'all_ensembles'],
@@ -4553,7 +4548,6 @@ def main(cfg):
                         panes = ['tas', 'emissions','tls', 'fgco2gt', 'luegt', 'nbpgt'])
                     timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
                         panes = ['tas', 'emissions','tls', 'fgco2', 'lue', 'nbp'])
-                return
 
             do_cumulative_plot = False
             if do_cumulative_plot:
@@ -4568,14 +4562,14 @@ def main(cfg):
                 # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
 
 
-            do_horizontal_plot = False
+            do_horizontal_plot = True 
             if do_horizontal_plot:
                 # Horizontal bar charts with allocartions:
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
 
 
-            do_cumulative_ts_megaplot = True
+            do_cumulative_ts_megaplot = False
             # Massive plot that has like 12 panes.
             if do_cumulative_ts_megaplot:
                 make_cumulative_timeseries_megaplot(cfg, data_dict,
@@ -4594,8 +4588,8 @@ def main(cfg):
                              ensemble = 'ensemble_mean',
                              dataset=dataset)
 
-                return
             do_make_cumulative_timeseries_pair = False
+            # This is all done in a single plot with make_cumulative_timeseries_megaplot
             if do_make_cumulative_timeseries_pair:
                 plot_types = ['pair', 'area_over_zero'] #'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
                 ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
@@ -4610,66 +4604,9 @@ def main(cfg):
                     make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
                 #continue
 
-                # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
-
-                # LHS_panes = [
-                #     {'x':'time', 'y':'cumul_emissions'},
-                #     {'x':'time', 'y':'tls'},
-                #     {'x':'time', 'y':'fgco2gt_cumul'},
-                #     #{'x':'time', 'y':'tas_norm'},
-                #     #{'x':'time', 'y':'cumul_emissions'},
-                #     #{'x':'cumul_emissions', 'y':'tas_norm'},
-                # ]
-                # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
-
-#            plot_types = ['pair', ] #'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
-#            ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
-#            for pt, exp in product(plot_types, ssps):
-#
-#                if pt == 'pair':
-#                   make_cumulative_timeseries_pair(cfg, data_dict,
-#                       thresholds_dict,
-#                       ssp=exp,
-#                       ensemble = 'ensemble_mean')
-#                   continue
-#                make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
-
-            # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
-            # LHS_panes = [
-            #     {'x':'time', 'y':'cumul_emissions'},
-            #     {'x':'time', 'y':'tls'},
-            #     {'x':'time', 'y':'fgco2gt_cumul'},
-            #     #{'x':'time', 'y':'tas_norm'},
-            #     #{'x':'time', 'y':'cumul_emissions'},
-            #     #{'x':'cumul_emissions', 'y':'tas_norm'},
-            # ]
-            # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
-
         datasets = {'all_models':True}
         for (dataset, short_name, exp, ensemble),cube  in data_dict.items():
             datasets[dataset] = True
-        #    if do_ma and short_name not in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls', 'atmos_carbon']:
-        #        data_dict[(dataset, short_name, exp, ensemble)] = moving_average(cube, '21 years')
-
-
-
-#        for y, plot_dataset in product(short_names_y, datasets):
-#            if plot_dataset == 'all_models':
-#                plot_dataset = 'CMIP6'
-#                make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
-#                            x='time',
-#                            y=y,
-#                            plot_dataset=plot_dataset,
-#                            fill = 'ensemble_means')
-#
-#            make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
-#                            x='time',
-#                            y=y,
-#                            plot_dataset=plot_dataset,
-#                            fill = 'all_ensembles')
-#
-#
-
 
 
         return
