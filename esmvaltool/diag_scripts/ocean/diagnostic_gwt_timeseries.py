@@ -2878,6 +2878,84 @@ def calculate_percentages( cfg,
 
     return remnants, landcs, fgco2gts
 
+latexendline = lambda a: ''.join([a, '\\', '\n'])
+latexhline = lambda a: ''.join([a, '\hline', '\n'])])
+
+def make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict ):
+    """
+    Need two tables:
+        One for the
+            Model, historical, ssp.... ERT
+
+        One showing the models that hit Each threshold:
+            Model, ssp1, ssp
+            2, 3, 4
+            ukesm, 2,3,4 ; 2,3, , x
+    This is in latex format.
+    """
+    short_name1='tas'
+    experiments = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
+    table_data = {}
+    datasets = {}
+
+    for (dataset, short_name, exp, ensemble),cube  in data_dict.items():
+        if exp not in experiments: continue
+        if short_name!= short_name1: continue
+        if ensemble in ['ensemble_mean','ensemble_min', 'ensemble_max' ]: continue
+        if not cube.data.mean(): continue
+
+        try: table_data[(dataset, exp)] +=1
+        except: table_data[(dataset, exp)] =1
+
+    # Load zelinka data.
+    ECS_data = {}
+    ERF_data = {}
+    with open('zelinka_ecs.csv', 'r') as file:
+        reader = csv.reader(file):
+        # MODEL, ECS, ERF
+        for each_row in reader:
+            print(each_row)
+            ECS_data[each_row[0]] = each_row[1]
+            ERF_data[each_row[0]] = each_row[2]
+
+    header_list = ['Model', ]
+    header_list.extend(experiments)
+    header_list.extend(['ECS', 'ERF'])
+
+    header = ' & '.join(header_list)
+    header = latexendline(header)
+
+    txt = '\hline\n   \begin{tabular}{|l|cccccc|cc|}\n'
+    txt = latexhline(txt)
+    txt = ''.join([txt, '\hline \n'])
+    for dataset in datasets.keys():
+        row = [dataset, ]
+        for exp in experiments:
+            row.append(str(int(table_data.get((dataset, exp), ' '))))
+            row.append(str(ECS_data.get(dataset, '--')))
+            row.append(str(ERF_data.get(dataset, '--')))
+            row_str = ' & '.join(row)
+            print(row_str)
+            row_str= latexendline(row_str)
+            txt = ''.join([txt, row_str])
+
+    # Now calculated the weighted ECS, ERF:
+
+    for exp in experiments:
+        weighted_ecs = []
+        weight_erf = []
+        for dataset in datasets.keys():
+            a = table_data.get((dataset, exp), 0.)
+            if not a: continue
+
+            weighted_ecs.append(ECS_data.get(dataset, '--'))
+            weight_erf.append(ERF_data.get(dataset, '--'))
+        print(exp, 'weighted_ecs', weighted_ecs, np.mean(weighted_ecs))
+        print(exp, 'weight_erf', weight_erf, np.mean(weight_erf))
+
+    assert 0
+
+
 
 def make_ensemble_barchart_pane(
     cfg,
@@ -4506,6 +4584,11 @@ def main(cfg):
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
+
+            make_count_and_sensitivity_table = True
+            if make_count_and_sensitivity_table:
+                make_count_and_sensitivity_table()
+
             do_timeseries_megaplot = False
             if do_timeseries_megaplot:
                 for plot_styles in [
@@ -4562,7 +4645,7 @@ def main(cfg):
                 # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
 
 
-            do_horizontal_plot = True 
+            do_horizontal_plot = True
             if do_horizontal_plot:
                 # Horizontal bar charts with allocartions:
                 make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
