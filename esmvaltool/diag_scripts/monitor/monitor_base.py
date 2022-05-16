@@ -222,7 +222,10 @@ class MonitorBase():
             **var_info
         }
         folder = os.path.expandvars(
-            os.path.expanduser(_replace_tags(self.plot_folder, info)[0]))
+            os.path.expanduser(
+                list(_replace_tags(self.plot_folder, info))[0]
+            )
+        )
         if self.plot_folder.startswith('/'):
             folder = '/' + folder
         if not os.path.isdir(folder):
@@ -246,7 +249,7 @@ class MonitorBase():
             'real_name': self._real_name(var_info['variable_group']),
             **var_info
         }
-        file_name = _replace_tags(self.plot_filename, info)[0]
+        file_name = list(_replace_tags(self.plot_filename, info))[0]
         if add_ext:
             file_name = self._add_file_extension(file_name)
         return file_name

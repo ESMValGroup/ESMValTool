@@ -19,6 +19,13 @@ preprocessors:
       fx_variables:
         areacella:
 
+  full_climatology_regrid: &full_climatology_regrid
+    climate_statistics:
+      period: full
+    regrid:
+      scheme: linear
+      target_grid: 2x2
+
   climatology:
     climate_statistics:
       period: month
@@ -357,8 +364,8 @@ diagnostics:
   #         clim:
   #           maps: [south,]
 
-  plot_timeseries_annual_cycle:
-    description: "Plot time series inlcuding reference datasets"
+  plot_multiple_timeseries:
+    description: Plot time series including reference datasets
     variables:
       tas:
         mip: Amon
@@ -375,7 +382,33 @@ diagnostics:
     scripts:
       plot: &plot_multi_dataset_default
         script: monitor/multi_datasets.py
-        # plot_folder: ~/plots/{expid}/{modeling_realm}/{real_name}
-        # cartopy_data_dir: /esarchive/scratch/Earth/jvegas/cartopy
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
         plots:
           timeseries: {}
+
+  plot_maps_with_references:
+    description: Plot climatology maps including reference datasets
+    variables:
+      tas_ref:
+        short_name: tas
+        mip: Amon
+        preprocessor: full_climatology_regrid
+        grid: gr
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 1979, end_year: 2014, reference_for_monitor_diags: true}
+      tas_no_ref:
+        short_name: tas
+        mip: Amon
+        preprocessor: full_climatology_regrid
+        grid: gr
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 1979, end_year: 2014}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          map:
+            pyplot_kwargs:
+              suptitle: '{long_name} Climatology'
