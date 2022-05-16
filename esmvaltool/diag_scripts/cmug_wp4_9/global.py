@@ -8,6 +8,8 @@ import logging
 import iris
 import iris.coord_categorisation as icc
 import iris.plot as iplt
+import matplotlib as mpl
+
 import matplotlib.pyplot as plt
 import numpy as np
 import cf_units as Unit
@@ -132,7 +134,7 @@ def _diagnostic(config):
     # CMIP data had 360 day calendar, CCI data has 365 day calendar
     # Assume the loaded data is all the same shape
     print('LOADED DATA:')
-    print(loaded_data)
+    print(f'{loaded_data=}')
 
     
     ### There will be some cube manipulation todo
@@ -141,42 +143,69 @@ def _diagnostic(config):
         for ITEM in loaded_data[KEY].keys():
             icc.add_year(loaded_data[KEY][ITEM], 'time')
             icc.add_month_number(loaded_data[KEY][ITEM], 'time')
-    
 
-        
-    ### PLOT is CCI LST with bars of uncertainty
-    ####     with shaded MODEL MEAN +/- std
-    # Plotting
-    print(list(loaded_data.keys()))
+    # make model ensemble means
+    models = []
     for KEY in loaded_data.keys():
-        if KEY != 'CMUG_WP4_9' and KEY != 'ESACCI_LST_UNCERTS':
-            model = KEY
-    print(model)
+        if KEY == 'CMUG_WP4_9' or KEY == 'ESACCI_LST_UNCERTS':
+            continue
+        models.append(KEY)
 
-    ensemble = 'r1i1p1f2'
-    model_lst = loaded_data[model][f'ts_{ensemble}']
-    model_ta  = loaded_data[model][f'tas_{ensemble}']
+    print(f'{models=}')
+
+    model_mean_tair = {}
+    model_mean_lst  = {}
+    for MODEL in models:
+        tair_cubelist = iris.cube.CubeList()
+        lst_cubelist  = iris.cube.CubeList()
+        for KEY in loaded_data[MODEL].keys():
+            if 'ts' in KEY:
+                enumber = len(lst_cubelist)
+                e_coord = iris.coords.AuxCoord(enumber, var_name='ensemble_number')
+                this_cube = loaded_data[MODEL][KEY]
+                this_cube.add_aux_coord(e_coord)
+                lst_cubelist.append(this_cube)
+
+            if 'tas' in KEY:
+                enumber = len(tair_cubelist)
+                e_coord = iris.coords.AuxCoord(enumber, var_name='ensemble_number')
+                this_cube = loaded_data[MODEL][KEY]
+                this_cube.add_aux_coord(e_coord)
+                tair_cubelist.append(this_cube)
+
+        model_mean_tair[MODEL] = tair_cubelist.merge_cube()
+        model_mean_tair[MODEL] = model_mean_tair[MODEL].collapsed('ensemble_number', iris.analysis.MEAN) 
+ 
+        model_mean_lst[MODEL]  = lst_cubelist.merge_cube()
+        model_mean_lst[MODEL]  = model_mean_lst[MODEL].collapsed('ensemble_number', iris.analysis.MEAN) 
+
 
     # make mean lst from day and night
     cci_lst = loaded_data['ESACCI_LST_UNCERTS']['tsDay'] + loaded_data['ESACCI_LST_UNCERTS']['tsNight']
     cci_lst = cci_lst/2
 
+    ### regrid obs to each model
+
+    
     era5l_tair = loaded_data['CMUG_WP4_9']['tas']
 
-    # make climatologies
-    model_lst_clim  = model_lst.aggregated_by('month_number', iris.analysis.MEAN)
-    model_tair_clim = model_lst.aggregated_by('month_number', iris.analysis.MEAN)
-    cci_lst_clim    = model_lst.aggregated_by('month_number', iris.analysis.MEAN)
-    era5l_tair_clim = model_lst.aggregated_by('month_number', iris.analysis.MEAN)
+    #### regrid tair to model grid
 
-    print(model_lst_clim)
+    # make climatologies
+    #model_lst_clim  = model_lst.aggregated_by('month_number', iris.analysis.MEAN)
+    #model_tair_clim = model_lst.aggregated_by('month_number', iris.analysis.MEAN)
+    cci_lst_clim    = cci_lst.aggregated_by('month_number', iris.analysis.MEAN)
+    era5l_tair_clim = era5l_tair.aggregated_by('month_number', iris.analysis.MEAN)
 
     # plots
-    make_plot_global_clim_maps(model_lst, model_ta, cci_lst, era5l_tair, config)
+    #make_plot_global_clim_maps(model_lst, model_ta, cci_lst, era5l_tair, config)
+    # make this so either lst or tair passed in, will need vmin vmax as parameters #####
+    make_plot_global_clim_maps(None, None, cci_lst, era5l_tair, config)
+
+    # NEXT doFrance LC plots
 
     # more plotting functions go here
 
-   #  print(0/0)
 #     # Provenance
 #     # Get this information form the data cubes
 #     # data_attributes = {}
@@ -220,12 +249,138 @@ def make_plot_global_clim_maps(model_lst_clim, model_tair_clim,
     outpath = config['plot_dir']
 
 
-        
-    datetime_points = Unit.num2date(diffs.coord('time').points,
-                                   str(diffs.coord('time').units),
-                                   diffs.coord('time').units.calendar
-                               )
+    # First figure
+    # Tair from ERA5-land and ERA(OBS) minus MODEL
+    # Lay out 2*num models + 1
+    # columns = Jan and July
+    # top row = absolute values from ERA5-L
+    # next rows = OBS - MODEL for each model
+
+    nmodels = 2
+    nrows = nmodels + 1 # make this dynamic!!!
+
+    fig = plt.figure(figsize=(12, 15))
+    fig.suptitle('ERA5-Land Tair Climatology and Model Difference', 
+                 y=0.95, # so not tight to top, adjust this ######
+                 fontsize=24)
     
+    # Add the first row of ERA5-L Tair
+    VMIN = 260
+    VMAX = 320
+    cmap = plt.cm.viridis  # define the colormap
+    # extract all colors from the .jet map
+    cmaplist = [cmap(i) for i in range(cmap.N)]
+    ## force the first color entry to be grey
+    #cmaplist[0] = (.5, .5, .5, 1.0)
+    # create the new map
+    cmap = mpl.colors.LinearSegmentedColormap.from_list(
+        'Custom cmap', cmaplist, cmap.N)
+    # define the bins and normalize
+    bounds = np.linspace(VMIN, VMAX,13)
+    norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+    plt.subplot(nrows,2,1)
+    plt.title('Jan',  fontsize=24)
+    iplt.pcolormesh(era_tair_clim[0], #vmin=VMIN, vmax=VMAX,
+                  cmap=cmap, norm=norm)
+    #extend='both')
+    plt.gca().coastlines()
+    # get the current axes' subplot for use later on
+    plt1_ax = plt.gca()
+
+    plt.subplot(nrows,2,2)
+    plt.title('Jul',  fontsize=24)
+    cbar_source = iplt.pcolormesh(era_tair_clim[6], #vmin=VMIN, vmax=VMAX,
+                  cmap=cmap, norm=norm)
+
+    plt.gca().coastlines()
+    # get the current axes' subplot for use later on
+    plt2_ax = plt.gca()
+
+    left, bottom, width, height = plt2_ax.get_position().bounds
+    first_plot_left = plt1_ax.get_position().bounds[0]
+
+    # the width of the colorbar should now be simple
+    width = left - first_plot_left + width
+
+    # Add axes to the figure, to place the colour bar
+    colorbar_axes = fig.add_axes([first_plot_left, bottom  - 0.07,
+                                  width, 0.03])
+
+    # Add the colour bar
+    cbar = plt.colorbar(cbar_source, colorbar_axes,
+                        orientation='horizontal',
+                        extend='both')
+    
+    # Label the colour bar and add ticks
+    cbar.set_label('Air Temperature (K)', fontsize=18)
+    cbar.ax.tick_params(labelsize=16,length=0)
+
+
+    #### plots of obs - model
+
+    VMIN = -15
+    VMAX = 15
+    cmap = plt.cm.RdYlBu_r  # define the colormap
+    # extract all colors from the .jet map
+    cmaplist = [cmap(i) for i in range(cmap.N)]
+    ## force the first color entry to be grey
+    #cmaplist[0] = (.5, .5, .5, 1.0)
+    # create the new map
+    cmap = mpl.colors.LinearSegmentedColormap.from_list(
+        'Custom cmap', cmaplist, cmap.N)
+    # define the bins and normalize
+    bounds = np.linspace(VMIN, VMAX,11)
+    norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+    model_name = ['Model 1', 'Model 2','Model 3']
+    ##### this will end up as loop
+    for i in range(nmodels):
+        plt.subplot(nrows,2,3+(2*i))
+        plt.title(model_name[i], fontsize=24)
+        # arbitary difference while jasmin wont find cmip data
+        iplt.pcolormesh(era_tair_clim[0]-era_tair_clim[4],
+                        cmap=cmap, norm=norm)
+
+        plt1_ax = plt.gca() # this will default to the last row
+
+        plt.subplot(nrows,2,3+(2*i)+1)
+
+        cbar_source = iplt.pcolormesh(era_tair_clim[6]-era_tair_clim[10],
+                                    cmap=cmap, norm=norm)
+        plt2_ax = plt.gca()
+
+    left, bottom, width, height = plt2_ax.get_position().bounds
+    first_plot_left = plt1_ax.get_position().bounds[0]
+
+    # the width of the colorbar should now be simple
+    width = left - first_plot_left + width
+
+    # Add axes to the figure, to place the colour bar
+    colorbar_axes = fig.add_axes([first_plot_left, bottom  - 0.07,
+                                  width, 0.03])
+
+    # Add the colour bar
+    cbar = plt.colorbar(cbar_source, colorbar_axes,
+                        orientation='horizontal',
+                        extend='both')
+    
+    # Label the colour bar and add ticks
+    cbar.set_label('ERA5-Land - Model Air Temperature (K)', fontsize=18)
+    cbar.ax.tick_params(labelsize=16,length=0)
+        
+
+    plt.subplots_adjust(left=None, bottom=None, right=None, top=None, 
+                        wspace=0.02, hspace=0.01)
+
+    # datetime_points = Unit.num2date(diffs.coord('time').points,
+    #                                str(diffs.coord('time').units),
+    #                                diffs.coord('time').units.calendar
+    #                            )
+    
+
+    
+
     # import cartopy.crs as ccrs
     # air = xr.tutorial.open_dataset('air_temperature').air
     # ax = plt.axes(projection=ccrs.Orthographic(-80, 35))
@@ -249,8 +404,8 @@ def make_plot_global_clim_maps(model_lst_clim, model_tair_clim,
     #     plt.title(f'LST-Ta Model {year} {month}')
     #     plt.colorbar()
     
-    #     plt.savefig(f'{outpath}/global_map_{year}_{month}.png')
-    #     plt.close('all')  # Is this needed?
+    plt.savefig(f'{outpath}/global_map_tair_clim.png')
+    plt.close('all')  # Is this needed?
 
 
 if __name__ == '__main__':
