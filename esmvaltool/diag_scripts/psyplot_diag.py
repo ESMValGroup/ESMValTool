@@ -26,8 +26,9 @@ psyplot_func: str
 psyplot_kwargs: dict, optional
     Optional keyword arguments for the plotting function given by
     ``psyplot_func``. String arguments can include facets in curly brackets
-    which will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``.
+    which will be derived from the corresponding dataset, e.g., ``clabel:
+    '{long_name} [{units}]'``, ``title: '{long_name} Climatology of {dataset}
+    ({start_year}-{end_year})'``.
 savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict, optional

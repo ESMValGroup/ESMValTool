@@ -16,6 +16,15 @@ documentation:
   maintainer:
     - schlund_manuel
 
+  references:
+    - sommer17joss
+
+  projects:
+    - 4c
+    - esm2025
+    - isenes3
+    - usmile
+
 
 datasets:
   - {project: CMIP6, dataset: CanESM5,     exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1995, end_year: 2014}
@@ -42,9 +51,9 @@ diagnostics:
         psyplot_kwargs:
           bounds:
             method: rounded
-            vmin: 260
-            vmax: 310
-          clabel: 'Near surface air-temperature [K]'
+            vmin: 240
+            vmax: 300
+          clabel: '{long_name} [{units}]'
           cmap: viridis
           datagrid:
             color: black

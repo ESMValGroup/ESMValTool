@@ -38,15 +38,27 @@ Arbitrary datasets are supported.
 References
 ----------
 
-* https://psyplot.github.io/
+* Sommer, (2017), The psyplot interactive visualization framework, Journal of
+  Open Source Software, 2(16), 363, doi:10.21105/joss.00363
 
 
 Example plots
 -------------
 
 .. _fig_psyplot_1:
-.. figure:: /recipes/figures/schlund20jgr/map_prediction_output___GBRT_change.png
+.. figure:: /recipes/figures/psyplot/psyplot_CanESM5.jpg
    :align: center
    :width: 50%
 
-   Hihi.
+   Historical near-surface air temperature climatology over Europe simulated by
+   CanESM5 between 1995 and 2014. The plot visualizes the invidividual
+   rectangular grid cells of the model's regular grid.
+
+.. _fig_psyplot_2:
+.. figure:: /recipes/figures/psyplot/psyplot_ICON-ESM-LR.jpg
+   :align: center
+   :width: 50%
+
+   Historical near-surface air temperature climatology over Europe simulated by
+   ICON-ESM-LR between 1995 and 2014. The plot visualizes the invidividual
+   triangular grid cells of the model's unstructured grid.
