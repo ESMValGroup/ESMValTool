@@ -258,7 +258,6 @@ def _diagnostic(config):
             cube.remove_coord('time')
             cube.remove_coord('month_number')
             cube = iris.util.new_axis(cube, scalar_coord='year')
-            print(cube.coord('year'))
             this_cubelist.append(cube)
 
         model_peak[KEY] = this_cubelist.concatenate_cube()
@@ -282,15 +281,31 @@ def plot_peak_diff_map(loaded_data, model_peak, obs_peak_regridded, config):
     #plt.axes(projection=ccrs.NorthPolarStereo())
     # first plot is the OBS LAI
     #plt.subplot(num_plot,1,1)
-   #
+
+    #obs_peak_regridded['CMIP6_UKESM1-0-LL'].intersection(longitude=(-180,180))
+    CUBE = obs_peak_regridded['CMIP6_UKESM1-0-LL']
     
-    im0 = iplt.pcolormesh(obs_peak_regridded['CMIP6_UKESM1-0-LL'],
+    
+    # CUBE.coord('longitude').circular = False
+    # print('******************************')
+    # print(CUBE.coord('longitude'))
+    # print(CUBE.data)
+    # POINTS = CUBE.coord('longitude').points
+
+    # long1=np.mod((POINTS+180),360)-180
+
+    # CUBE.coord('longitude').bounds = None
+    # CUBE.coord('longitude').points = long1
+    print(CUBE.coord('longitude'))
+    print('abcdefghijklmnop')
+    plt.subplot(1, 1, 1, projection=ccrs.PlateCarree(central_longitude=0))
+    im0 = iplt.pcolormesh(CUBE,#obs_peak_regridded['CMIP6_UKESM1-0-LL'],
                           cmap='Paired',
                           vmin=1,
                           vmax=12)
     plt.gca().coastlines()
-    plt.xlim((-13,38))
-    #plt.ylim((34,73))
+    plt.xlim((-20,30))
+    plt.ylim((34,73))
 
     plt.colorbar(orientation='vertical')
 
