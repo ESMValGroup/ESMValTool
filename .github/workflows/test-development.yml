@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - main
+      - psyplot_diag
   schedule:
     - cron: '0 0 * * *'
 

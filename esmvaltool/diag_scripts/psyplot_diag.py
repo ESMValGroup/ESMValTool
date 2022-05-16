@@ -56,7 +56,7 @@ from esmvaltool.diag_scripts.shared import (
 logger = logging.getLogger(Path(__file__).stem)
 
 
-def get_default_cfg(cfg):
+def _get_default_cfg(cfg):
     """Get default options for configuration dictionary."""
     cfg = deepcopy(cfg)
     cfg.setdefault('psyplot_kwargs', {})
@@ -69,7 +69,7 @@ def get_default_cfg(cfg):
     return cfg
 
 
-def get_plot_func(cfg):
+def _get_plot_func(cfg):
     """Get psyplot plot function."""
     if 'psyplot_func' not in cfg:
         raise ValueError("Necessary option 'psyplot_func' missing")
@@ -86,7 +86,7 @@ def get_plot_func(cfg):
     return getattr(psy.plot, cfg['psyplot_func'])
 
 
-def get_psyplot_kwargs(cfg, dataset):
+def _get_psyplot_kwargs(cfg, dataset):
     """Get keyword arguments for psyplot plotting function."""
     psyplot_kwargs = deepcopy(cfg['psyplot_kwargs'])
     for (key, val) in psyplot_kwargs.items():
@@ -103,9 +103,9 @@ def get_psyplot_kwargs(cfg, dataset):
 
 def main(cfg):
     """Run diagnostic."""
-    cfg = get_default_cfg(cfg)
+    cfg = _get_default_cfg(cfg)
     sns.set(**cfg['seaborn_settings'])
-    plot_func = get_plot_func(cfg)
+    plot_func = _get_plot_func(cfg)
 
     # Create individual plots for each dataset
     input_data = list(cfg['input_data'].values())
@@ -114,7 +114,7 @@ def main(cfg):
         logger.info("Creating plot '%s' for %s", cfg['psyplot_func'], filename)
 
         # Create plot
-        psyplot_kwargs = get_psyplot_kwargs(cfg, dataset)
+        psyplot_kwargs = _get_psyplot_kwargs(cfg, dataset)
         plot_func(filename, **psyplot_kwargs)
 
         # Save plot
