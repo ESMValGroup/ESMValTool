@@ -115,4 +115,186 @@ Can ESMValTool plot arbitrary model output?
 
 Recipe :ref:`recipe_monitor` allows for the plotting of any preprocessed model.
 The plotting parameters are set through a yaml configuration file, and the
-type of plots to be generated are determined in the recipe. 
+type of plots to be generated are determined in the recipe.
+
+Debugging FAQ
+=============
+
+Something's going wrong in preprocessing, how can I find out where?
+-------------------------------------------------------------------
+
+Sometimes there is a problem in the preprocessing, often because of faulty data.
+
+To locate the problem, the first step is to edit your `config-user.yml` to set
+
+.. code-block:: yaml
+
+   log_level: debug
+
+Then run `esmvaltool` again and try to understand the error message. Don't
+forget that you can open the error log in the run directory instead of working
+only with the terminal output.  Usually, the error log ends in a python
+traceback.  See for example `here <https://realpython.com/python-traceback/>`_
+for an introduction to understanding tracebacks.
+
+It can also be helpful to look in the error log directly above the traceback for
+more information on what caused the problem.
+
+If the error message is not enough to diagnose the problem, you can "spread out"
+the effects of the different preprocessors. For that, edit again
+`config-user.yml` to set
+
+.. code-block:: yaml
+
+   save_intermediary_cubes: true
+   remove_preproc_dir: false
+
+This way, you can inspect the output of every preprocessing step individually by
+looking at the individual outputs in the `preproc` directory. Usually, the last
+existing file can give you a clue on what went wrong.
+
+.. warning::
+
+   This can be costly both in storage space and computing time, so be careful to
+   use as small a dataset as possible to diagnose your problem and to deactivate
+   the setting when you are done debugging!
+
+I get a `iris.exceptions.ConcatenateError`. What's the problem?
+---------------------------------------------------------------
+
+Broadly speaking, the problem is that data that was spread over different files
+was supposed to be part of one dataset, but doesn't follow the same conventions.
+This can be due to different coordinates, different attributes, or a number of
+other differences. Unfortunately, it can be difficult to understand what exactly
+is the difference between the data.
+
+To diagnose the problem, first, figure out which netcdf files cause the
+issue. If it happens in the preprocessing, refer to `this FAQ
+<somethings-going-wrong-in-preprocessing-how-can-I-find-out-where>`_ for some
+pointers.
+
+Next, try to understand the differences between the two files. Perhaps the error
+message already pointed to the area of difference, for example some attributes
+or particular coordinates. In that case you can focus on those first.
+
+How can I compare two (or more) netcdf files?
+---------------------------------------------
+
+There are three popular tools/methods to understand the differences between
+netcdf files. The first two, `looking at the metadata of the individual files
+<inspecting-the-netcdf-file-headers>`_ and `visualizing their data
+<visualizing-the-data>`_, are almost always possible and can give you a quick
+idea of what's going on. They are, however, often not suited to detailed
+comparisons, for example when the actual data contains subtle problems or when
+the problem is in the values of coordinates. In those cases, turn to `a more
+in-depth look <comparing-data-with-iris>`_ at the data. This last method also
+works better when you have a larger collection of files and are not sure where
+exactly the problem lies.
+
+Inspecting the netcdf file headers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can use the `ncdump` utility to look at the metadata of netcdf files. More
+specifically, `ncdump -h my_file.nc` will output the so-called header of the
+file that contains information about all the variables present in the file,
+along with their units, etc. This includes the coordinate variables. It also
+will give you all the global, ie file level, and local, ie variable level
+attributes.  It will, however, not give you the coordinate values or the data
+values itself.  It will also not help you with comparison, so you can only
+compare the output for two files manually.
+
+Nevertheless, when you want to get a quick overview, or when you have some idea
+what to look for, or when the other methods don't work, this is a good starting
+point.
+
+Visualizing the data
+~~~~~~~~~~~~~~~~~~~~
+
+Often a quick look at the data can reveal the most glaring problems, like
+missing or wrong masks, or wrong units.  There are a number of tools that can be
+used for this, but one of the most basic and almost universally available ones
+is `ncview`. This can also be installed with conda from conda-forge.
+
+Just do a quick `ncview my_file.nc` to open the gui. Then select the variable
+and use the navigation buttons to flip through the timesteps and, in the case of
+3d data, the levels.
+
+Again, this tool doesn't help you with comparison, but you can open two
+instances to compare two files in side-by-side.
+
+Comparing data with iris
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+`Iris <https://scitools.org.uk/iris/docs/latest/>`_ is a powerful python
+framework for working with `CF <http://cfconventions.org/>`_ compliant netcdf
+files. It also includes some support for other formats like grib, and pp files.
+Iris is the foundation for esmvaltool, but it can also be used on its own. Two
+convenient ways to do that are `ipython <https://ipython.org/>`_ and `jupyter
+notebooks <https://jupyter.org/>`_. This FAQ cannot cover any of these tools in
+great detail, so please refer to their respective documentation for an overview
+and in-depth questions. Instead, here we will give just a quick way to
+understand differences in a set of netcdf files with iris.
+
+Iris loads data with one of several functions whose names start with
+`load`. These functions take a single string or a list of strings that are
+interpreted as filenames. They may also contain directories and globs, like
+`./my_data/tas_*.nc` to load all surface temperature data from the `my_data`
+subdirectory of the current working directory. The iris function will return
+either a single `Cube
+<https://scitools.org.uk/iris/docs/latest/iris/iris/cube.html#iris.cube.Cube>`_,
+or a list of cubes in the form of a `CubeList
+<https://scitools.org.uk/iris/docs/latest/iris/iris/cube.html#iris.cube.CubeList>`_.
+
+Often, we want to combine different parts of dataset to form the whole dataset
+again. This is accomplished in iris using either a `merge` or a
+`concatenate`. Refer to `the iris user guide
+<https://scitools.org.uk/iris/docs/latest/userguide/merge_and_concat.html>`_ to
+understand the difference.
+
+In fact, it is this `concatenate` that has failed you when you are reading this
+FAQ entry.
+
+To find out what went wrong, let's assume we have boiled down the problem to the
+two files `tas_1969.nc` and `tas_1970.nc`. Then one way to learn more about the
+issue is the following.
+
+.. code-block:: python
+
+   import iris
+   cube_list = iris.load('tas_19*.nc')
+   cube_list.concatenate_cube()
+
+This will likely produce the exact same error that we started with. While we do
+want to do a concatenation, since both files contain several timesteps each, the
+output of the corresponding merge function is often more illuminating. So let's
+give that a try.
+
+.. code-block:: python
+
+   cube_list.merge_cube()
+
+Hopefully, that gives you a better idea of the problem.
+
+If you are dealing with more than two files it can be difficult to figure out
+which files are actually the culprits. In that case try
+
+.. code-block:: python
+
+   import iris
+   cube_list = iris.load('tas_*.nc')
+   concatenated_cube_list = cube_list.concatenate()
+   print(concatenated_cube_list)
+
+This will concatenate all the consecutive bits it can manage and keep only those
+parts separate, that cannot be merged. This way, you can often boil down the
+problem to only two or a few cubes. Then you can diagnose those in the same way
+as discussed above, eg
+
+.. code-block:: python
+
+   concatenated_cube_list.concatenate_cube()  # or
+   concatenated_cube_list.merge_cube()
+
+You can also inspect the attributes and coordinates of the resulting cubes with
+a particular focus on the areas of problems pointed to by the output of
+`merge_cube`.
