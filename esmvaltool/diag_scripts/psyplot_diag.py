@@ -30,7 +30,8 @@ psyplot_kwargs: dict, optional
     '{long_name} [{units}]'``, ``title: '{long_name} Climatology of {dataset}
     ({start_year}-{end_year})'``.
 savefig_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.savefig`.
+    Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
+    default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
 seaborn_settings: dict, optional
     Options for :func:`seaborn.set` (affects all plots).
 
