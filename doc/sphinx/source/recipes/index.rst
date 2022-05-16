@@ -109,17 +109,18 @@ Other
 .. toctree::
    :maxdepth: 1
 
-   recipe_examples
    recipe_capacity_factor
    recipe_cmorizers
    recipe_ensclus
    recipe_esacci_lst
+   recipe_examples
    recipe_monitor
    recipe_multimodel_products
-   recipe_rainfarm
+   recipe_psyplot
    recipe_pv_capacity_factor
-   recipe_seaice_feedback
+   recipe_rainfarm
    recipe_seaice
    recipe_seaice_drift
+   recipe_seaice_feedback
    recipe_shapeselect
    recipe_toymodel

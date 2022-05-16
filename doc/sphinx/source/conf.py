@@ -72,13 +72,14 @@ autodoc_default_options = {
 
 autodoc_mock_imports = [
     'cartopy',
-    'cftime',
     'cf_units',
+    'cftime',
     'ESMPy',
     'esmvalcore',
     'GDAL',
     'iris',
     'psutil',
+    'psyplot',
     'rasterio',
     'scipy',
     'sklearn',
