@@ -65,7 +65,6 @@ begin
   item_hist = select_metadata_by_atts(info_items, attsh)
   dim_MOD_hist = ListCount(item_hist)
 
-
   ; get data from first dataset for historical period
   imod = 0  ; NCL array indices start from zero
   idx_hist = item_hist[0]@recipe_dataset_index
