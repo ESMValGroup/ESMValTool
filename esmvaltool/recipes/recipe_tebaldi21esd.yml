@@ -682,10 +682,10 @@ diagnostics:
     realms: [atmos]
     themes: [phys]
     variables:
-      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr,
-        start_year: 2081}
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6,
         short_name: tas, start_year: 2081}
+      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr,
+        start_year: 2081}
     scripts:
       calc_map_diff_scaleT_pr:
         label: &id199 [2081-2100 relative to 1995-2014]
@@ -1338,10 +1338,10 @@ diagnostics:
     realms: [atmos]
     themes: [phys]
     variables:
-      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr,
-        start_year: 2081}
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6,
         short_name: tas, start_year: 2081}
+      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr,
+        start_year: 2081}
     scripts:
       calc_map_stddev_scaleT_pr:
         label: &id400 [2081-2100 relative to 1995-2014]
@@ -1403,10 +1403,10 @@ diagnostics:
     realms: [atmos]
     themes: [phys]
     variables:
-      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr,
-        start_year: 2081}
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6,
         short_name: tas, start_year: 2081}
+      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr,
+        start_year: 2081}        
     scripts:
       calc_map_stddev_scaleT_pr:
         label: &id410 [2081-2100]
@@ -1469,10 +1469,10 @@ diagnostics:
     realms: [atmos]
     themes: [phys]
     variables:
-      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr,
-        start_year: 2081}
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6,
         short_name: tas, start_year: 2081}
+      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr,
+        start_year: 2081}        
     scripts:
       calc_map_stddev_scaleT_pr:
         label: &id416 [2081-2100 relative to 1995-2014]
@@ -1535,10 +1535,10 @@ diagnostics:
     realms: [atmos]
     themes: [phys]
     variables:
-      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
-        start_year: 2081}
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5,
         short_name: tas, start_year: 2081}
+      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
+        start_year: 2081}        
     scripts:
       calc_map_diff_scaleT_pr:
         label: &id422 [2081-2100 relative to 1986-2005]
@@ -1829,10 +1829,10 @@ diagnostics:
     realms: [atmos]
     themes: [phys]
     variables:
-      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr,
-        start_year: 2081}
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6,
         short_name: tas, start_year: 2081}
+      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr,
+        start_year: 2081}
     scripts:
       plot_map_diff_scaleT_pr:
         ancestors: [pr, pr_cmip6_cmip5_normalized_pattern_diff]
@@ -3669,8 +3669,8 @@ diagnostics:
     realms: [atmos]
     themes: [phys]
     variables:
-      pr: {mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr}
       tas: {mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: tas}
+      pr: {mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr}
     scripts:
       ch12_calc_map_diff_mmm_stipp_pattern_comparison:
         label: &id1095 [2081-2100]
@@ -3989,8 +3989,8 @@ diagnostics:
     realms: [atmos]
     themes: [phys]
     variables:
-      pr: {mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr}
       tas: {mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: tas}
+      pr: {mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr}
     scripts:
       ch12_calc_map_diff_mmm_stipp_pattern_comparison:
         label: &id1139 [2081-2100]
@@ -5622,10 +5622,10 @@ diagnostics:
         title: Standard deviation of PR change ~C~        scaled by global T, CMIP5
     themes: [phys]
     variables:
-      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
-        start_year: 2081}
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5,
         short_name: tas, start_year: 2081}
+      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
+        start_year: 2081}
     additional_datasets: &figA5_pr_datasets
     - *id425
     - *id426
@@ -6031,10 +6031,10 @@ diagnostics:
           T, CMIP5
     themes: [phys]
     variables:
-      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
-        start_year: 2081}
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5,
         short_name: tas, start_year: 2081}
+      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
+        start_year: 2081}
     additional_datasets: *figA5_pr_datasets        
   figA5_row2_tas_change_scaleT_interscenario_stddev:
     description: Fig A5 row2, Pattern of TAS standard deviation across models scale
@@ -6096,10 +6096,10 @@ diagnostics:
         title: Intermodel std. dev. of PR change ~C~     scaled by global T, CMIP5
     themes: [phys]
     variables:
-      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
-        start_year: 2081}
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5,
         short_name: tas, start_year: 2081}
+      pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
+        start_year: 2081}
     additional_datasets: *figA5_pr_datasets        
   figA5_row3_tas_scaleT_intermodel_stddev:
     description: FigA5 row3, Intermodel standard deviation of TAS pattern scaled by
@@ -7334,7 +7334,7 @@ diagnostics:
     - *id037
     - *id038
     - *id039
-    - *id874
+      #- *id874
     - *id040
     - *id041
     - *id042
@@ -7372,7 +7372,7 @@ diagnostics:
     - *id073
     - *id074
     - *id075
-    - *id875
+      #- *id875
     - *id076
     - *id077
     - *id078
@@ -7409,7 +7409,7 @@ diagnostics:
     - *id109
     - *id110
     - *id111
-    - *id876
+      #- *id876
     - *id112
   tableA8_warming_level_crossing_cmip5:
     description: TableA8, Table of CMIP5 warming level crossing for given ssp scenarios
@@ -7745,7 +7745,7 @@ diagnostics:
     - *id037
     - *id038
     - *id039
-    - *id874
+      #- *id874
     - *id041
     - *id042
     - *id043
@@ -7781,7 +7781,7 @@ diagnostics:
     - *id073
     - *id074
     - *id075
-    - *id875
+      #- *id875
     - *id076
     - *id077
     - *id078
@@ -7816,6 +7816,6 @@ diagnostics:
     - *id109
     - *id110
     - *id111
-    - *id876
+      #- *id876
     - {dataset: CIESM, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585, grid: gr,
       institute: THU, start_year: 2015}

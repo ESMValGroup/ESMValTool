@@ -85,8 +85,10 @@ begin
       all_models_smoothed_ts = new((/n_MOD, t_len/), float)
       do imod = 0, n_MOD - 1
         ; LOAD HISTORICAL EXP and GET historical baseline
+        print(dataset_names(idx_scen(imod)))
         idx_histo = ind((dataset_exps .eq. reference_run_name) .and. \
                         (dataset_names .eq. dataset_names(idx_scen(imod))))
+        print(idx_histo)
         Ahisto = read_data(info_items[idx_histo(0)])
         datahisto = time_operations(Ahisto, -1, -1, "average", "yearly", True)
         delete(Ahisto)
