@@ -42,6 +42,7 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
 
     # Fix coordinates
+    cube = iris.util.squeeze(cube)
     utils.fix_dim_coordnames(cube)
     # fix flipped latitude
     utils.flip_dim_coord(cube, 'latitude')
