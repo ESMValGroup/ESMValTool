@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - check_platform
   schedule:
     - cron: '0 0 * * *'
 
