@@ -27,7 +27,7 @@ from esmvaltool.cmorizers.data import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def _extract_variable(short_name, var, version, filename, cfg, in_dir,
+def _extract_variable(short_name, var, filename, cfg, in_dir,
                       out_dir):
     """Extract variable."""
     # load data
@@ -75,5 +75,5 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     for (short_name, var) in cfg['variables'].items():
         for (version, filename) in cfg['filenames'].items():
             logger.info("CMORizing variable '%s' '%s'", short_name, version)
-            _extract_variable(short_name, var, version, filename, cfg, in_dir,
+            _extract_variable(short_name, var, filename, cfg, in_dir,
                               out_dir)
