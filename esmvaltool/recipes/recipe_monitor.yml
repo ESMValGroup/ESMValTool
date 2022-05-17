@@ -390,15 +390,13 @@ diagnostics:
   plot_maps_with_references:
     description: Plot climatology maps including reference datasets
     variables:
-      tas_ref:
-        short_name: tas
+      tas:
         mip: Amon
         preprocessor: full_climatology_regrid
         grid: gr
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 1979, end_year: 2014, reference_for_monitor_diags: true}
-      tas_no_ref:
-        short_name: tas
+      uas:
         mip: Amon
         preprocessor: full_climatology_regrid
         grid: gr
@@ -410,5 +408,5 @@ diagnostics:
         script: monitor/multi_datasets.py
         plots:
           map:
-            pyplot_kwargs:
-              suptitle: '{long_name} Climatology'
+            common_cbar: true
+            cbar_fontsize: 8

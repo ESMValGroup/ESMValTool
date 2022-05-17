@@ -42,7 +42,8 @@ facet_used_for_labels: str, optional (default: 'dataset')
     select the correct ``plot_kwargs`` for the different datasets (see
     configuration options for the different plot types below).
 figure_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.figure`.
+    Optional keyword arguments for :func:`matplotlib.pyplot.figure`. By
+    default, uses ``constrained_layout: true``.
 plots: dict, optional
     Plot types plotted by this diagnostic. Dictionary keys must be
     ``timeseries``, ``map``, or ``profile``. Dictionary values are dictionaries
@@ -91,9 +92,28 @@ cbar_label: str, optional (default: '{short_name} [{units}]')
     Colorbar label. Can include facets in curly brackets which will be derived
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
     ``{exp}``.
+cbar_label_bias: str, optional (default: 'Δ{short_name} [{units}]')
+    Colorbar label for plotting biases. Can include facets in curly brackets
+    which will be derived from the corresponding dataset, e.g., ``{project}``,
+    ``{short_name}``, ``{exp}``. This option has no effect if no reference
+    dataset is given.
 cbar_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
-    default, uses ``orientation: horizontal, aspect: 40``.
+    default, uses ``orientation: horizontal, aspect: 30``.
+cbar_kwargs_bias: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar` for
+    plotting biases. These keyword arguments update (and potentially overwrite)
+    the ``cbar_kwargs`` for the bias plot. This option has no effect if no
+    reference dataset is given.
+common_cbar: bool, optional (default: False)
+    Use a common colorbar for the top panels (i.e., plots of the dataset and
+    the corresponding reference dataset) when using a reference dataset. If
+    neither ``vmin`` and ``vmix`` nor ``levels`` is given in ``plot_kwargs``,
+    the colorbar bounds are inferred from the dataset (top left panel), which
+    might lead to an inappropriate colorbar for the reference dataset (top
+    right panel). Thus, the use of the ``plot_kwargs`` ``vmin`` and ``vmax`` or
+    ``levels`` is highly recommend when using this ``common_cbar: true``. This
+    option has no effect if no reference dataset is given.
 gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
@@ -111,6 +131,12 @@ plot_kwargs: dict, optional
     the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
     ``{exp}``. Examples: ``default: {linestyle: '-', label: '{project}'},
     CMIP6: {color: red, linestyle: '--'}, OBS: {color: black}``.
+plot_kwargs_bias: dict, optional
+    Optional keyword arguments for the plot function defined by ``plot_func``
+    for plotting biases. These keyword arguments update (and potentially
+    overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
+    if no reference dataset is given. See option ``plot_kwargs`` for more
+    details. By default, uses ``cmap: bwr``.
 projection: str, optional (default: 'Robinson')
     Projection used for the map plot. Needs to be a valid projection class of
     :mod:`cartopy.crs`. Keyword arguments can be specified using the option
@@ -161,7 +187,7 @@ class MultiDatasets(MonitorBase):
         # Get default settings
         self.cfg = deepcopy(self.cfg)
         self.cfg.setdefault('facet_used_for_labels', 'dataset')
-        self.cfg.setdefault('figure_kwargs', {})
+        self.cfg.setdefault('figure_kwargs', {'constrained_layout': True})
         self.cfg.setdefault('savefig_kwargs', {
             'bbox_inches': 'tight',
             'dpi': 300,
@@ -184,6 +210,14 @@ class MultiDatasets(MonitorBase):
                     f"'plots', expected one of {self.supported_plot_types}")
             if plot_options is None:
                 self.plots[plot_type] = {}
+            if plot_type == 'map':
+                self.plots[plot_type].setdefault('cbar_fontsize', 10)
+                self.plots[plot_type].setdefault(
+                    'cbar_label', '{short_name} [{units}]')
+                self.plots[plot_type].setdefault(
+                    'cbar_label_bias', 'Δ{short_name} [{units}]')
+                self.plots[plot_type].setdefault('common_cbar', False)
+                self.plots[plot_type].setdefault('plot_func', 'contourf')
 
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
@@ -196,35 +230,65 @@ class MultiDatasets(MonitorBase):
         # Load seaborn settings
         sns.set(**self.cfg['seaborn_settings'])
 
+    def _add_colorbar(self, plot_type, plot_left, plot_right, axes_left,
+                      axes_right, dataset_left, dataset_right):
+        """Add colorbar(s) for plots."""
+        cbar_fontsize = self.plots[plot_type]['cbar_fontsize']
+        cbar_kwargs = self._get_cbar_kwargs(plot_type)
+        cbar_label_left = self._get_cbar_label(plot_type, dataset_left)
+        cbar_label_right = self._get_cbar_label(plot_type, dataset_right)
+
+        # Create one common colorbar for the top panels
+        # Note: Increase aspect ratio for nicer looks
+        if self.plots[plot_type]['common_cbar']:
+            aspect = cbar_kwargs.pop('aspect') + 20.0
+            cbar = plt.colorbar(plot_left, ax=[axes_left, axes_right],
+                                aspect=aspect, **cbar_kwargs)
+            cbar.set_label(cbar_label_left, labelpad=0.0,
+                           fontsize=cbar_fontsize)
+            cbar.ax.tick_params(labelsize=cbar_fontsize)
+
+        # Create two separate colorbars for the top panels
+        else:
+            cbar_left = plt.colorbar(plot_left, ax=axes_left, **cbar_kwargs)
+            cbar_left.set_label(cbar_label_left, labelpad=0.0,
+                                fontsize=cbar_fontsize)
+            cbar_left.ax.tick_params(labelsize=cbar_fontsize)
+            cbar_right = plt.colorbar(plot_right, ax=axes_right, **cbar_kwargs)
+            cbar_right.set_label(cbar_label_right, labelpad=0.0,
+                                 fontsize=cbar_fontsize)
+            cbar_right.ax.tick_params(labelsize=cbar_fontsize)
+
     def _get_label(self, dataset):
         """Get label of dataset."""
         return dataset[self.cfg['facet_used_for_labels']]
 
-    def _get_cbar_kwargs(self, plot_type):
+    def _get_cbar_kwargs(self, plot_type, bias=False):
         """Get colorbar kwargs."""
-        cbar_kwargs = {'orientation': 'horizontal', 'aspect': 40}
+        cbar_kwargs = {'orientation': 'horizontal', 'aspect': 30}
         cbar_kwargs.update(
             self.plots[plot_type].get('cbar_kwargs', {}))
-        return cbar_kwargs
+        if bias:
+            cbar_kwargs.update(
+                self.plots[plot_type].get('cbar_kwargs_bias', {}))
+        return deepcopy(cbar_kwargs)
 
-    def _get_cbar_label(self, plot_type, dataset):
+    def _get_cbar_label(self, plot_type, dataset, bias=False):
         """Get colorbar label."""
-        cbar_label = self.plots[plot_type].get(
-            'cbar_label',
-            '{short_name} [{units}]',
-        )
-        cbar_label = self._fill_facet_placeholders(
-            cbar_label,
-            dataset,
-            f"cbar_label of {plot_type} '{cbar_label}'",
-        )
+        if bias:
+            cbar_label = self.plots[plot_type]['cbar_label_bias']
+            descr = f"cbar_label_bias of {plot_type} '{cbar_label}'"
+        else:
+            cbar_label = self.plots[plot_type]['cbar_label']
+            descr = f"cbar_label of {plot_type} '{cbar_label}'"
+        cbar_label = self._fill_facet_placeholders(cbar_label, dataset, descr)
         return cbar_label
 
     def _get_gridline_kwargs(self):
         """Get gridline kwargs."""
         plot_type = 'map'
         gridline_kwargs = self.plots[plot_type].get('gridline_kwargs', {})
-        return gridline_kwargs
+        return deepcopy(gridline_kwargs)
 
     def _get_map_projection(self):
         """Get projection used for map plots."""
@@ -250,15 +314,22 @@ class MultiDatasets(MonitorBase):
 
         return getattr(ccrs, projection)(**projection_kwargs)
 
-    def _get_plot_kwargs(self, plot_type, dataset):
+    def _get_plot_kwargs(self, plot_type, dataset, bias=False):
         """Get keyword arguments for plot functions."""
         all_plot_kwargs = self.plots[plot_type].get('plot_kwargs', {})
+        all_plot_kwargs = deepcopy(all_plot_kwargs)
 
         # First get default kwargs, then overwrite them with dataset-specific
         # ones
         plot_kwargs = all_plot_kwargs.get('default', {})
         label = self._get_label(dataset)
         plot_kwargs.update(all_plot_kwargs.get(label, {}))
+
+        # For bias plots, overwrite the kwargs with bias-specific option
+        if bias:
+            bias_kwargs = self.plots[plot_type].get('plot_kwargs_bias', {})
+            bias_kwargs.setdefault('cmap', 'bwr')
+            plot_kwargs.update(bias_kwargs)
 
         # Replace facets with dataset entries for string arguments
         for (key, val) in plot_kwargs.items():
@@ -274,7 +345,7 @@ class MultiDatasets(MonitorBase):
         if plot_type == 'timeseries':
             plot_kwargs.setdefault('label', label)
 
-        return plot_kwargs
+        return deepcopy(plot_kwargs)
 
     def _load_and_preprocess_data(self):
         """Load and preprocess data."""
@@ -309,9 +380,7 @@ class MultiDatasets(MonitorBase):
         projection = self._get_map_projection()
         plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
         gridline_kwargs = self._get_gridline_kwargs()
-        cbar_fontsize = self.plots[plot_type].get('cbar_fontsize', 10)
-        cbar_kwargs = self._get_cbar_kwargs(plot_type)
-        cbar_label = self._get_cbar_label(plot_type, dataset)
+        cbar_fontsize = self.plots[plot_type]['cbar_fontsize']
 
         # Plot dataset (top left)
         axes_data = fig.add_subplot(gridspec[0:2, 0:2], projection=projection)
@@ -321,57 +390,53 @@ class MultiDatasets(MonitorBase):
         if gridline_kwargs is not False:
             axes_data.gridlines(**gridline_kwargs)
         axes_data.set_title(
-            self._get_label(dataset), fontsize=cbar_fontsize + 2)
-        cbar_data = plt.colorbar(plot_data, ax=axes_data, **cbar_kwargs)
-        cbar_data.set_label(cbar_label, labelpad=0.0, fontsize=cbar_fontsize)
-        cbar_data.ax.tick_params(labelsize=cbar_fontsize)
+            self._get_label(dataset), fontsize=cbar_fontsize + 2, pad=3.0)
 
         # Plot reference dataset (top right)
-        axes_ref = fig.add_subplot(gridspec[2:4, 0:2], projection=projection)
+        # Note: make sure to use the same vmin and vmax than the top left plot
+        # if a common colorbar is desired
+        axes_ref = fig.add_subplot(gridspec[0:2, 2:4], projection=projection)
         plot_kwargs['axes'] = axes_ref
+        if self.plots[plot_type]['common_cbar']:
+            plot_kwargs.setdefault('vmin', plot_data.get_clim()[0])
+            plot_kwargs.setdefault('vmax', plot_data.get_clim()[1])
         plot_ref = plot_func(ref_cube, **plot_kwargs)
         axes_ref.coastlines()
         if gridline_kwargs is not False:
             axes_ref.gridlines(**gridline_kwargs)
         axes_ref.set_title(
-            self._get_label(ref_dataset), fontsize=cbar_fontsize + 2)
-        cbar_ref = plt.colorbar(plot_ref, ax=axes_ref, **cbar_kwargs)
-        cbar_ref.set_label(cbar_label, labelpad=0.0, fontsize=cbar_fontsize)
-        cbar_ref.ax.tick_params(labelsize=cbar_fontsize)
+            self._get_label(ref_dataset), fontsize=cbar_fontsize + 2, pad=3.0)
 
-        # Plot bias
-        # bias_cube = cube - ref_cube
-        # plot_kwargs = dict(norm=colors.CenteredNorm(), cmap='bwr')
-        # plot_kwargs.update(cfg.get('plot_kwargs_bias', {}))
-        # map_plot = iris.plot.contourf(bias_cube, axes=axes_list[1][0],
-        #                               **plot_kwargs)
-        # colorbar = plt.colorbar(map_plot, ax=axes_list[1][0],
-        #                         orientation='horizontal', aspect=30)
-        # colorbar.set_label(rf"$\Delta${cube.var_name} [{cube.units}]",
-        #                    labelpad=0.0, fontsize=fontsize)
-        # colorbar.ax.tick_params(labelsize=fontsize)
+        # Add colorbar(s)
+        self._add_colorbar(plot_type, plot_data, plot_ref, axes_data, axes_ref,
+                           dataset, ref_dataset)
 
-        # Plot appearance
-        # title_kwargs = dict(pad=3.0, fontdict=dict(fontsize=10))
-        # title_key = cfg['title_key']
-        # axes_list[0][0].set_title(dataset[title_key], **title_kwargs)
-        # axes_list[0][1].set_title(ref_dataset[title_key], **title_kwargs)
-        # axes_list[1][0].set_title(
-        #     f"{dataset[cfg['title_key']]} - {ref_dataset[cfg['title_key']]}",
-        #     **title_kwargs)
-        # for axes in list(axes_list.ravel()):
-        #     axes.gridlines(color='lightgrey', alpha=0.5)
-        #     axes.coastlines()
-        #     axes.set_global()
-        # axes_list[1][1].set_visible(False)
-
-        # # Return figure and basename for plot
-        # tag = dataset[cfg['title_key']].replace(' ', '_')
-        # tag_ref = ref_dataset[cfg['title_key']].replace(' ', '_')
-        # return (fig, f"{tag}_vs_{tag_ref}")
+        # Plot bias (bottom center)
+        bias_cube = cube - ref_cube
+        axes_bias = fig.add_subplot(gridspec[2:4, 1:3], projection=projection)
+        plot_kwargs_bias = self._get_plot_kwargs(plot_type, dataset,
+                                                 bias=True)
+        plot_kwargs_bias['axes'] = axes_bias
+        plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
+        axes_bias.coastlines()
+        if gridline_kwargs is not False:
+            axes_bias.gridlines(**gridline_kwargs)
+        axes_bias.set_title(
+            f"{self._get_label(dataset)} - {self._get_label(ref_dataset)}",
+            fontsize=cbar_fontsize + 2, pad=3.0,
+        )
+        cbar_kwargs_bias = self._get_cbar_kwargs(plot_type, bias=True)
+        cbar_bias = plt.colorbar(plot_bias, ax=axes_bias, **cbar_kwargs_bias)
+        cbar_bias.set_label(
+            self._get_cbar_label(plot_type, dataset, bias=True),
+            labelpad=0.0,
+            fontsize=cbar_fontsize,
+        )
+        cbar_bias.ax.tick_params(labelsize=cbar_fontsize)
 
         # Customize plot
-        plt.suptitle(dataset['long_name'])
+        plt.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
+                     f"{dataset['end_year']})")
         self._process_pyplot_kwargs(plot_type, dataset)
 
         return self.get_plot_path(plot_type, dataset)
@@ -391,21 +456,24 @@ class MultiDatasets(MonitorBase):
         axes = fig.add_subplot(projection=self._get_map_projection())
         plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
         plot_kwargs['axes'] = axes
-        plot_func(cube, **plot_kwargs)
+        plot_map = plot_func(cube, **plot_kwargs)
         axes.coastlines()
         gridline_kwargs = self._get_gridline_kwargs()
         if gridline_kwargs is not False:
             axes.gridlines(**gridline_kwargs)
 
         # Setup colorbar
-        cbar_fontsize = self.plots[plot_type].get('cbar_fontsize', 10)
-        colorbar = plt.colorbar(**self._get_cbar_kwargs(plot_type))
+        cbar_fontsize = self.plots[plot_type]['cbar_fontsize']
+        colorbar = plt.colorbar(plot_map, ax=axes,
+                                **self._get_cbar_kwargs(plot_type))
         colorbar.set_label(self._get_cbar_label(plot_type, dataset),
                            fontsize=cbar_fontsize)
         colorbar.ax.tick_params(labelsize=cbar_fontsize)
 
         # Customize plot
         plt.title(self._get_label(dataset))
+        plt.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
+                     f"{dataset['end_year']})")
         self._process_pyplot_kwargs(plot_type, dataset)
 
         return self.get_plot_path(plot_type, dataset)
@@ -557,7 +625,7 @@ class MultiDatasets(MonitorBase):
                         self._get_label(ref_dataset))
 
         # Get plot function
-        plot_func = self.plots.get('plot_func', 'contourf')
+        plot_func = self.plots[plot_type]['plot_func']
         if not hasattr(iris.plot, plot_func):
             raise AttributeError(
                 f"Got invalid plot function '{plot_func}' for plotting "
@@ -569,7 +637,7 @@ class MultiDatasets(MonitorBase):
         # Create a single plot for each dataset (incl. reference dataset if
         # given)
         for dataset in datasets:
-            if ref_dataset == dataset:
+            if dataset == ref_dataset:
                 continue
             ancestors = [dataset['filename']]
             if ref_dataset is None:
