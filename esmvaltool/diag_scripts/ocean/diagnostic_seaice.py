@@ -491,7 +491,7 @@ def make_map_plots(
 
             provenance_record = diagtools.prepare_provenance_record(
                 cfg,
-                caption=f'Time serie of {title}',
+                caption=f'Map of {title}',
                 statistics=['mean'],
                 domain=['polar'],
                 plot_type=['map'],
