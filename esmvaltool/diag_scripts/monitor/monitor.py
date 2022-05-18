@@ -1,4 +1,110 @@
-"""Diagnostic to plot preprocessor output."""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""Diagnostic to plot preprocessor output.
+
+Description
+-----------
+This diagnostic can be used to visualize arbitrary preprocessor output.
+
+Currently supported plot types (use the option ``plots`` to specify them):
+    - Climatology (plot type ``clim``): Plots climatology. Supported
+      coordinates: (`latitude`, `longitude`, `month_number`).
+    - Seasonal climatologies (plot type ``seasonclim``): It produces a multi
+      panel (2x2) plot with the seasonal climatologies. Supported coordinates:
+      (`latitude`, `longitude`, `month_number`).
+    - Monthly climatologies (plot type ``monclim``): It produces a multi panel
+      (3x4) plot with the monthly climatologies. Can be customized to show only
+      certain months and to rearrange the number of columns and rows. Supported
+      coordinates: (`latitude`, `longitude`, `month_number`).
+    - Time series (plot type ``timeseries``): Generate time series plots. It
+      will always generate the full period time series, but if the period is
+      longer than 75 years, it will also generate two extra time series for the
+      first and last 50 years. It will produce multi panel plots for data with
+      `shape_id` or `region` coordinates of length > 1. Supported coordinates:
+      `time`, `shape_id` (optional) and `region` (optional).
+    - Annual cycle (plot type ``annual_cycle``): Generate an annual cycle plot
+      (timeseries like climatological from January to December). It will
+      produce multi panel plots for data with `shape_id` or `region`
+      coordinates of length > 1. Supported coordinates: `time`, `shape_id`
+      (optional) and `region` (optional).
+
+Configuration options in recipe
+-------------------------------
+cartopy_data_dir: str, optional (default: None)
+    Path to cartopy data dir. Defaults to None. See
+    https://scitools.org.uk/cartopy/docs/latest/.
+config_file: str, optional
+    Path to the monitor configuration file. Defaults to ``monitor_config.yml``
+    in the same folder as the diagnostic script. More information on the
+    monitor configuration file can be found :ref:`here <monitor_config_file>`.
+plots: dict, optional
+    Plot types plotted by this diagnostic (see list above). Dictionary keys
+    must be ``clim``, ``seasonclim``, ``monclim``, ``timeseries`` or
+    ``annual_cycle``. Dictionary values are dictionaries used as options for
+    the corresponding plot. The allowed options for the different plot types
+    are given below.
+plot_filename: str, optional
+    Filename pattern for the plots.
+    Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
+    All tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replaced with the corresponding tags).
+plot_folder: str, optional
+    Path to the folder to store figures. Defaults to
+    ``{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}``.  All
+    tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replaced with the corresponding tags).  ``{plot_dir}`` is replaced with the
+    default ESMValTool plot directory (i.e.,
+    ``output_dir/plots/diagnostic_name/script_name/``, see
+    :ref:`esmvalcore:user configuration file`).
+rasterize_maps: bool, optional (default: True)
+    If ``True``, use `rasterization
+    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
+    map plots to produce smaller files. This is only relevant for vector
+    graphics (e.g., ``output_file_type=pdf,svg,ps``).
+
+In the variable definitions, users can set the attribute ``plot_name`` to fix
+the variable name that will be used for the plot's title. If it is not set,
+``mapgenerator`` will try to choose a sensible one from the name attributes
+(``long_name``, ``standard_name`` and ``var_name``).
+
+Configuration options for plot type ``clim``
+--------------------------------------------
+maps: list of str, optional (default: ['global'])
+    List of maps to plot, as defined in the monitor configuration file.
+
+Configuration options for plot type ``seasonclim``
+--------------------------------------------------
+maps: list of str, optional (default: ['global'])
+    List of maps to plot, as defined in the monitor configuration file.
+
+Configuration options for plot type ``monclim``
+-----------------------------------------------
+maps: list of str, optional (default: ['global'])
+    List of maps to plot, as defined in the monitor configuration file.
+months: list of int, optional
+    Select only specific months. Defaults to ``None`` (i.e. show all months).
+plot_size: tuple of int, optional (default: (5, 4))
+    Size of each individual figure.
+columns: int, optional (default: 3)
+    Number of columns in the plot.
+rows: int, optional (default: 4)
+    Number of rows in the plot.
+
+Configuration options for plot type ``timeseries``
+--------------------------------------------------
+None
+
+Configuration options for plot type ``annual_cycle``
+----------------------------------------------------
+None
+
+.. hint::
+
+   Extra arguments given to the recipe are ignored, so it is safe to use yaml
+   anchors to share the configuration of common arguments with other monitor
+   diagnostic script.
+
+"""
 
 import calendar
 import logging

@@ -10,7 +10,7 @@ documentation:
 
 
 datasets:
-  - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
+  - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, start_year: 1979, end_year: 2014}
 
 preprocessors:
   timeseries_regular:
@@ -19,12 +19,26 @@ preprocessors:
       fx_variables:
         areacella:
 
-  full_climatology_regrid: &full_climatology_regrid
+  full_climatology:
     climate_statistics:
       period: full
     regrid:
       scheme: linear
       target_grid: 2x2
+
+  zonal_mean:
+    custom_order: true
+    climate_statistics:
+      period: full
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev39}
+      scheme: linear
+      coordinate: air_pressure
+    regrid:
+      scheme: linear
+      target_grid: 2x2
+    zonal_statistics:
+      operator: mean
 
   climatology:
     climate_statistics:
@@ -392,13 +406,13 @@ diagnostics:
     variables:
       tas:
         mip: Amon
-        preprocessor: full_climatology_regrid
+        preprocessor: full_climatology
         grid: gr
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 1979, end_year: 2014, reference_for_monitor_diags: true}
       uas:
         mip: Amon
-        preprocessor: full_climatology_regrid
+        preprocessor: full_climatology
         grid: gr
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 1979, end_year: 2014}
@@ -408,5 +422,29 @@ diagnostics:
         script: monitor/multi_datasets.py
         plots:
           map:
+            common_cbar: true
+            cbar_fontsize: 8
+
+  plot_profiles_with_references:
+    description: Plot profiles including reference datasets
+    variables:
+      ta:
+        mip: Amon
+        preprocessor: zonal_mean
+        grid: gr
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 2013, end_year: 2014, reference_for_monitor_diags: true}
+      hus:
+        mip: Amon
+        preprocessor: zonal_mean
+        grid: gr
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 2013, end_year: 2014}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          profile:
             common_cbar: true
             cbar_fontsize: 8

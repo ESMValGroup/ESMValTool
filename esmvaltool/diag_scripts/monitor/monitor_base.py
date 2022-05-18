@@ -20,6 +20,7 @@ class MonitorBase():
 
     It contains the common methods for path creation, provenance
     recording, option parsing and to create some common plots.
+
     """
 
     def __init__(self, config):
@@ -72,10 +73,11 @@ class MonitorBase():
         """Plot timeseries from a cube.
 
         It also automatically smoothes it for long timeseries of monthly data:
-        - Between 10 and 70 years long, it also plots the 12-month rolling
-          average along the raw series
-        - For more than ten years, it plots the 12-month and 10-years rolling
-          averages and not the raw series
+            - Between 10 and 70 years long, it also plots the 12-month rolling
+              average along the raw series
+            - For more than ten years, it plots the 12-month and 10-years
+              rolling averages and not the raw series
+
         """
         if 'xlimits' not in kwargs:
             kwargs['xlimits'] = 'auto'
@@ -162,7 +164,8 @@ class MonitorBase():
         """Plot a timeseries from a cube.
 
         Supports multiplot layouts for cubes with extra dimensions
-        `shape_id` or `region`
+        `shape_id` or `region`.
+
         """
         plotter = PlotSeries()
         plotter.filefmt = self.cfg['output_file_type']
@@ -203,6 +206,7 @@ class MonitorBase():
             Variable information from ESMValTool
         add_ext: bool, optional (default: True)
             Add filename extension from configuration file.
+
         """
         return os.path.join(
             self.get_plot_folder(var_info),
@@ -216,6 +220,7 @@ class MonitorBase():
         ----------
         var_info: dict
             Variable information from ESMValTool
+
         """
         info = {
             'real_name': self._real_name(var_info['variable_group']),
@@ -243,6 +248,7 @@ class MonitorBase():
             Variable information from ESMValTool
         add_ext: bool, optional (default: True)
             Add filename extension from configuration file.
+
         """
         info = {
             "plot_type": plot_type,
