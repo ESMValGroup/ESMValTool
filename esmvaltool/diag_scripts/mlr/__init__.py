@@ -5,8 +5,10 @@ import os
 import re
 import warnings
 from copy import deepcopy
+from functools import lru_cache
 from pprint import pformat
 
+import esmvalcore.preprocessor
 import iris
 import numpy as np
 import shapely.vectorized as shp_vect
@@ -14,7 +16,6 @@ from cartopy.io import shapereader
 from cf_units import Unit
 from iris.fileformats.netcdf import UnknownCellMethodWarning
 
-import esmvalcore.preprocessor
 from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
     io,
@@ -84,6 +85,7 @@ def _get_datasets(input_data, **kwargs):
     return datasets
 
 
+@lru_cache
 def _get_ne_land_mask_cube(n_lats=1000, n_lons=2000):
     """Get Natural Earth land mask."""
     ne_dir = os.path.join(
@@ -116,16 +118,6 @@ def _get_ne_land_mask_cube(n_lats=1000, n_lons=2000):
                           units='no_unit',
                           dim_coords_and_dims=[(lat_coord, 0), (lon_coord, 1)])
     return cube
-
-
-def _has_valid_coords(cube, coords):
-    """Check if cube has valid coords for calculating weights."""
-    for coord_name in coords:
-        try:
-            cube.coord(coord_name)
-        except iris.exceptions.CoordinateNotFoundError:
-            return False
-    return True
 
 
 def check_predict_kwargs(predict_kwargs):
@@ -338,19 +330,22 @@ def get_alias(dataset):
 
 def get_all_weights(cube, area_weighted=True, time_weighted=True,
                     landsea_fraction_weighted=None, normalize=False):
-    """Get all possible weights of cube.
+    """Get all desired weights for a cube.
 
     Parameters
     ----------
     cube : iris.cube.Cube
         Input cube.
     area_weighted : bool, optional (default: True)
-        Use area weights.
+        Use area weights calculated from grid cell areas using
+        :func:`iris.analysis.cartography.area_weights`. Only works for regular
+        grids.
     time_weighted : bool, optional (default: True)
-        Use time weights.
+        Use time weights calculated from time bounds.
     landsea_fraction_weighted : str, optional
-        If given, use land/sea fraction weights. Must be one of ``'land'``,
-        ``'sea'``.
+        If given, use land/sea fraction weights calculated from Natural Earth
+        files. Must be one of ``'land'``, ``'sea'``. Only works for regular
+        grids.
     normalize : bool, optional (default: False)
         Normalize weights with total area and total time range.
 
@@ -359,22 +354,35 @@ def get_all_weights(cube, area_weighted=True, time_weighted=True,
     numpy.ndarray
         Area weights.
 
+    Raises
+    ------
+    iris.exceptions.CoordinateMultiDimError
+        Dimension of ``latitude`` or ``longitude`` coordinate is greater than
+        1.
+    iris.exceptions.CoordinateNotFoundError
+        Cube does not contain the coordinates ``latitude`` and ``longitude``
+        (if used with ``area_weighted`` or ``landsea_fraction_weighted``) or
+        cube does not contain the coordinate ``time`` (if used with
+        ``time_weighted``).
+    ValueError
+        ``landsea_fraction_weighted`` is not one of ``None``, ``'land'``,
+        ``'sea'`` or coordinates ``latitude`` and ``longitude`` share
+        dimensions.
+
     """
     logger.debug("Calculating all weights of cube %s",
                  cube.summary(shorten=True))
     weights = np.ones(cube.shape)
 
     # Horizontal weights
-    if _has_valid_coords(cube, ['latitude', 'longitude']):
-        horizontal_weights = get_horizontal_weights(
-            cube, area_weighted=area_weighted,
-            landsea_fraction_weighted=landsea_fraction_weighted,
-            normalize=normalize)
-        if horizontal_weights is not None:
-            weights *= horizontal_weights
+    horizontal_weights = get_horizontal_weights(
+        cube, area_weighted=area_weighted,
+        landsea_fraction_weighted=landsea_fraction_weighted,
+        normalize=normalize)
+    weights *= horizontal_weights
 
     # Time weights
-    if _has_valid_coords(cube, ['time']) and time_weighted:
+    if time_weighted:
         time_weights = get_time_weights(cube, normalize=normalize)
         weights *= time_weights
 
@@ -382,7 +390,13 @@ def get_all_weights(cube, area_weighted=True, time_weighted=True,
 
 
 def get_area_weights(cube, normalize=False):
-    """Get area weights of cube.
+    """Get area weights calculated from grid cell areas.
+
+    Note
+    ----
+    Only works for regular grids. Uses
+    :func:`iris.analysis.cartography.area_weights` for an approximate
+    calculation of the grid cell areas.
 
     Parameters
     ----------
@@ -411,17 +425,20 @@ def get_area_weights(cube, normalize=False):
 
 def get_horizontal_weights(cube, area_weighted=True,
                            landsea_fraction_weighted=None, normalize=False):
-    """Get horizontal weights of cube.
+    """Get horizontal (latitude/longitude) weights of cube.
 
     Parameters
     ----------
     cube : iris.cube.Cube
         Input cube.
     area_weighted : bool, optional (default: True)
-        Use area weights.
+        Use area weights calculated from grid cell areas using
+        :func:`iris.analysis.cartography.area_weights`. Only works for regular
+        grids.
     landsea_fraction_weighted : str, optional
-        If given, use land/sea fraction weights. Must be one of ``'land'``,
-        ``'sea'``.
+        If given, use land/sea fraction weights calculated from Natural Earth
+        files. Must be one of ``'land'``, ``'sea'``. Only works for regular
+        grids.
     normalize : bool, optional (default: False)
         Normalize weights with sum of weights over latitude and longitude (i.e.
         if only ``area_weighted`` is given, this is equal to the total area).
@@ -429,12 +446,13 @@ def get_horizontal_weights(cube, area_weighted=True,
     Returns
     -------
     numpy.ndarray
-        Area weights.
+        Horizontal (latitude/longitude) weights.
 
     Raises
     ------
     iris.exceptions.CoordinateMultiDimError
-        Dimension of latitude or longitude coordinate is greater than 1.
+        Dimension of ``latitude`` or ``longitude`` coordinate is greater than
+        1.
     iris.exceptions.CoordinateNotFoundError
         Cube does not contain the coordinates ``latitude`` and ``longitude``.
     ValueError
@@ -442,11 +460,11 @@ def get_horizontal_weights(cube, area_weighted=True,
 
     """
     logger.debug("Calculating horizontal weights")
+    weights = np.ones(cube.shape)
     if not (area_weighted or landsea_fraction_weighted):
-        return None
+        return weights
 
     # Get weights
-    weights = np.ones(cube.shape)
     if area_weighted:
         weights *= get_area_weights(cube, normalize=False)
     if landsea_fraction_weighted is not None:
@@ -530,12 +548,13 @@ def get_input_data(cfg, pattern=None, check_mlr_attributes=True, ignore=None):
 
 
 def get_landsea_fraction_weights(cube, area_type, normalize=False):
-    """Get land/sea fraction weights of cube using Natural Earth files.
+    """Get land/sea fraction weights calculated from Natural Earth files.
 
     Note
     ----
     The implementation of this feature is not optimal. For large cubes,
-    calculating the land/sea fraction weights might be very slow.
+    calculating the land/sea fraction weights might be very slow. Only works
+    for regular grids.
 
     Parameters
     ----------
@@ -550,11 +569,13 @@ def get_landsea_fraction_weights(cube, area_type, normalize=False):
     Raises
     ------
     iris.exceptions.CoordinateMultiDimError
-        Dimension of latitude or longitude coordinate is greater than 1.
+        Dimension of ``latitude`` or ``longitude`` coordinate is greater than
+        1.
     iris.exceptions.CoordinateNotFoundError
         Cube does not contain the coordinates ``latitude`` and ``longitude``.
     ValueError
-        ``area_type`` is not one of ``'land'``, ``'sea'``.
+        ``area_type`` is not one of ``'land'``, ``'sea'`` or coordinates
+        ``latitude`` and ``longitude`` share dimensions.
 
     """
     allowed_types = ('land', 'sea')
@@ -572,11 +593,18 @@ def get_landsea_fraction_weights(cube, area_type, normalize=False):
             raise iris.exceptions.CoordinateMultiDimError(
                 f"Calculating {area_type} fraction weights for "
                 f"multidimensional coordinate '{coord.name}' is not supported")
+    if cube.coord_dims(lat_coord) != ():
+        if cube.coord_dims(lat_coord) == cube.coord_dims(lon_coord):
+            raise ValueError(
+                f"1D latitude and longitude coordinates share dimensions "
+                f"(this usually happens with unstructured grids) - "
+                f"calculating {area_type} fraction weights for latitude and "
+                "longitude that share dimensions is not possible")
 
     # Calculate land fractions on coordinate grid of cube
     ne_land_mask_cube = _get_ne_land_mask_cube()
     land_fraction = np.empty((lat_coord.shape[0], lon_coord.shape[0]),
-                             dtype=np.float)
+                             dtype=np.float64)
     for lat_idx in range(lat_coord.shape[0]):
         for lon_idx in range(lon_coord.shape[0]):
             lat_bounds = lat_coord.bounds[lat_idx]
@@ -701,7 +729,7 @@ def get_squared_error_cube(ref_cube, error_datasets):
 
 
 def get_time_weights(cube, normalize=False):
-    """Get time weights of cube.
+    """Get time weights of cube calculated from time bounds.
 
     Parameters
     ----------

@@ -62,8 +62,8 @@ add_var_from_cov: bool, optional (default: True)
 area_weighted: bool, optional (default: True)
     Calculate weighted averages/sums when collapsing over latitude and/or
     longitude coordinates using grid cell areas (calculated using grid cell
-    boundaries). Only possible if the datasets contains ``latitude`` and
-    ``longitude`` coordinates.
+    bounds). Only possible for datasets on regular grids that contain
+    ``latitude`` and ``longitude`` coordinates.
 convert_units_to: str, optional
     Convert units of the input data.
 cov_estimate_dim_map: list of int, optional
@@ -85,7 +85,7 @@ pattern: str, optional
 sum: list of str, optional
     Perform sum over the given coordinates.
 time_weighted: bool, optional (default: True)
-    Calculate weighted averages/sums for time (using grid cell boundaries).
+    Calculate weighted averages/sums for time (using time bounds).
 
 """
 
@@ -403,10 +403,9 @@ def _get_all_weights(cfg, cube, power=1):
         if horizontal_coords:
             (horizontal_weights, area_units) = _get_horizontal_weights(
                 cfg, cube, power=power)
+            weights *= horizontal_weights
             if operation == 'sum':
                 units *= area_units
-            if horizontal_weights is not None:
-                weights *= horizontal_weights
             weights /= _get_normalization_factor(
                 horizontal_weights, horizontal_coords, cube,
                 normalize=normalize)**power
@@ -485,8 +484,7 @@ def _get_horizontal_weights(cfg, cube, power=1):
         area_weighted=cfg['area_weighted'],
         landsea_fraction_weighted=cfg.get('landsea_fraction_weighted'),
     )
-    if weights is not None:
-        weights = weights**power
+    weights = weights**power
     if cfg['area_weighted']:
         units = Unit('m2')**power
     else:

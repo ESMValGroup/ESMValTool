@@ -312,13 +312,13 @@ repository was cloned and run
 
 ::
 
-   python setup.py build_sphinx
+   sphinx-build doc/sphinx/source/ doc/sphinx/build/
 
 or
 
 ::
 
-   python setup.py build_sphinx -Ea
+   sphinx-build -Ea doc/sphinx/source/ doc/sphinx/build/
 
 to build it from scratch.
 Make sure that your newly added documentation builds without warnings or
@@ -327,12 +327,14 @@ CircleCI_ will build the documentation with the command
 
 .. code-block:: bash
 
-   python setup.py build_sphinx --warning-is-error
+   sphinx-build -W doc/sphinx/source/ doc/sphinx/build/
 
 to catch mistakes that can be detected automatically.
 
 The configuration file for Sphinx_ is
-`doc/shinx/source/conf.py <https://github.com/ESMValGroup/ESMValTool/blob/main/doc/sphinx/source/conf.py>`_.
+`doc/sphinx/source/conf.py <https://github.com/ESMValGroup/ESMValTool/blob/main/doc/sphinx/source/conf.py>`_
+and the configuration file for ReadTheDocs is
+`.readthedocs.yaml <https://github.com/ESMValGroup/ESMValTool/blob/main/.readthedocs.yaml>`_.
 
 When reviewing a pull request, always check that the documentation checks
 shown below the pull request were successful.
@@ -466,10 +468,6 @@ the following files:
   package registry
 - ``setup.py``
   contains all Python dependencies, regardless of their installation source
-- ``package/meta.yaml``
-  contains dependencies for the conda package; all Python and compiled
-  dependencies that can be installed from conda should be listed here, but no Julia
-  dependencies because doing that would make it impossible to solve the conda environment
 
 Note that packages may have a different name on
 `conda-forge <https://conda-forge.org/>`__ than on PyPI or CRAN.

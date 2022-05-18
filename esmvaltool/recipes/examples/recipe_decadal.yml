@@ -1,0 +1,60 @@
+# ESMValTool
+---
+documentation:
+  title: Example recipe that loads DCPP data.
+  description: |
+    This is an example recipe to deal with DCPP data. Computes the global
+    mean of tas and compares it against ERA-Interim for a set of timeranges.
+    Reproduces the examples given in deliverable D9.4 of ISENES-3.
+  authors:
+    - loosveldt-tomas_saskia
+  maintainers:
+    - loosveldt-tomas_saskia
+  projects:
+    - isenes3
+
+
+preprocessors:
+  pptas:
+    area_statistics:
+      operator: 'mean'
+diagnostics:
+  first_example:
+    additional_datasets:
+      - &dcpp {dataset: EC-Earth3, project: CMIP6, exp: dcppA-hindcast, ensemble: r1i1p1f1,
+               sub_experiment: 's(1980:2018)', timerange: '*'}
+      - &obs {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3,
+              timerange: '198011/201812'}
+    variables:
+      tas:
+        grid: gr
+        mip: Amon
+        preprocessor: pptas
+    scripts:
+      first_example:
+        script: examples/decadal_example.py
+  second_example:
+    additional_datasets:
+      - {<<: *dcpp, sub_experiment: 's(1980:2007)'}
+      - {<<: *dcpp, sub_experiment: 's(2008:2018)', timerange: '*/201812'}
+      - {<<: *obs}
+    variables:
+      tas:
+        grid: gr
+        mip: Amon
+        preprocessor: pptas
+    scripts:
+      second_example:
+        script: examples/decadal_example.py
+  third_example:
+    additional_datasets:
+      - {<<: *dcpp, timerange: '*/P1Y'}
+      - {<<: *obs, timerange: '1980/2018'}
+    variables:
+      tas:
+        grid: gr
+        mip: Amon
+        preprocessor: pptas
+    scripts:
+      third_example:
+        script: examples/decadal_example.py

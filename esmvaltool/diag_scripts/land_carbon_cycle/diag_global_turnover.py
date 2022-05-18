@@ -1,31 +1,31 @@
 """Function to compare global distributions of turnover time."""
 
 import os.path
-import iris
+
 import cartopy.crs as ccrs
-import matplotlib.pyplot as plt
+import iris
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
 
-from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger,
-    get_diagnostic_filename,
-    get_plot_filename,
-    group_metadata,
-    run_diagnostic,
-)
-
 import esmvaltool.diag_scripts.land_carbon_cycle.plot_utils as plut
+from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
+    _get_ancestor_files,
+    _get_provenance_record,
+)
 from esmvaltool.diag_scripts.land_carbon_cycle.shared import (
     _apply_common_mask,
     _load_variable,
     _remove_invalid,
     _var_name_constraint,
 )
-from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
-    _get_ancestor_files,
-    _get_provenance_record,
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    run_diagnostic,
 )
 
 # set the properties of the lines used for hatching
@@ -427,8 +427,6 @@ def _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs,
                                len(cb_info_diagonal['tickBounds'])),
                            cmap=cb_info_diagonal['colMap'],
                            origin='upper',
-                           vmin=cb_info_diagonal['tickBounds'][0],
-                           vmax=cb_info_diagonal['tickBounds'][-1],
                            transform=ccrs.PlateCarree())
                 _fix_map(_ax)
 
@@ -467,8 +465,6 @@ def _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs,
                                cb_info_ratio['tickBounds'],
                                len(cb_info_ratio['tickBounds'])),
                            interpolation='none',
-                           vmin=cb_info_ratio['tickBounds'][0],
-                           vmax=cb_info_ratio['tickBounds'][-1],
                            cmap=cb_info_ratio['colMap'],
                            origin='upper',
                            transform=ccrs.PlateCarree())
@@ -578,8 +574,6 @@ def _plot_multimodel_agreement(plot_path_multimodel, global_tau_mod,
                norm=mpl.colors.BoundaryNorm(cb_info['tickBounds'],
                                             len(cb_info['tickBounds'])),
                interpolation='none',
-               vmin=cb_info['tickBounds'][0],
-               vmax=cb_info['tickBounds'][-1],
                cmap=cb_info['colMap'],
                origin='upper',
                transform=ccrs.PlateCarree())
@@ -662,8 +656,6 @@ def _plot_single_map(plot_path, _dat, _datglobal, _name, provenance_record,
                                             len(cb_info['tickBounds'])),
                cmap=cb_info['colMap'],
                origin='upper',
-               vmin=cb_info['tickBounds'][0],
-               vmax=cb_info['tickBounds'][-1],
                transform=ccrs.PlateCarree())
     _fix_map(_ax)
 
@@ -745,8 +737,7 @@ def main(diag_config):
         tau_global = ctotal_global / gpp_global
         tau_global.convert_units('yr')
 
-        global_tau_mod['global'][model_name] = np.float(tau_global
-                                                        .core_data())
+        global_tau_mod['global'][model_name] = float(tau_global.core_data())
 
         base_name_mod = (
             'global_{title}_{source_label}_'
