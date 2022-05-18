@@ -166,41 +166,44 @@ def _diagnostic(config):
             icc.add_year(loaded_data[KEY][ITEM], 'time')
             icc.add_month_number(loaded_data[KEY][ITEM], 'time')
 
-    # # make model ensemble means
-    # models = []
-    # for KEY in loaded_data.keys():
-    #     if KEY == 'CMUG_WP4_9' or KEY == 'ESACCI_LST_UNCERTS':
-    #         continue
-    #     models.append(KEY)
+    # make model ensemble means
+    models = []
+    for KEY in loaded_data.keys():
+        if KEY == 'CMUG_WP4_9' or KEY == 'ESACCI_LST_UNCERTS':
+            continue
+        models.append(KEY)
 
-    # print(f'{models=}')
+    print(f'{models=}')
 
-    # model_mean_tair = {}
-    # model_mean_lst  = {}
-    # for MODEL in models:
-    #     tair_cubelist = iris.cube.CubeList()
-    #     lst_cubelist  = iris.cube.CubeList()
-    #     for KEY in loaded_data[MODEL].keys():
-    #         if 'ts' in KEY:
-    #             enumber = len(lst_cubelist)
-    #             e_coord = iris.coords.AuxCoord(enumber, var_name='ensemble_number')
-    #             this_cube = loaded_data[MODEL][KEY]
-    #             this_cube.add_aux_coord(e_coord)
-    #             lst_cubelist.append(this_cube)
+    model_mean_tair = {}
+    model_mean_lst  = {}
+    for MODEL in models:
+        tair_cubelist = iris.cube.CubeList()
+        lst_cubelist  = iris.cube.CubeList()
+        for KEY in loaded_data[MODEL].keys():
+            if 'ts' in KEY:
+                enumber = len(lst_cubelist)
+                e_coord = iris.coords.AuxCoord(enumber, var_name='ensemble_number')
+                this_cube = loaded_data[MODEL][KEY]
+                this_cube.add_aux_coord(e_coord)
+                lst_cubelist.append(this_cube)
 
-    #         if 'tas' in KEY:
-    #             enumber = len(tair_cubelist)
-    #             e_coord = iris.coords.AuxCoord(enumber, var_name='ensemble_number')
-    #             this_cube = loaded_data[MODEL][KEY]
-    #             this_cube.add_aux_coord(e_coord)
-    #             tair_cubelist.append(this_cube)
+            if 'tas' in KEY:
+                enumber = len(tair_cubelist)
+                e_coord = iris.coords.AuxCoord(enumber, var_name='ensemble_number')
+                this_cube = loaded_data[MODEL][KEY]
+                this_cube.add_aux_coord(e_coord)
+                tair_cubelist.append(this_cube)
 
-    #     model_mean_tair[MODEL] = tair_cubelist.merge_cube()
-    #     model_mean_tair[MODEL] = model_mean_tair[MODEL].collapsed('ensemble_number', iris.analysis.MEAN) 
- 
-    #     model_mean_lst[MODEL]  = lst_cubelist.merge_cube()
-    #     model_mean_lst[MODEL]  = model_mean_lst[MODEL].collapsed('ensemble_number', iris.analysis.MEAN) 
+        model_mean_tair[MODEL] = tair_cubelist.merge_cube()
+        model_mean_lst[MODEL]  = lst_cubelist.merge_cube()
 
+        if enumber > 0:
+            model_mean_tair[MODEL] = model_mean_tair[MODEL].collapsed('ensemble_number', iris.analysis.MEAN) 
+            model_mean_lst[MODEL]  = model_mean_lst[MODEL].collapsed('ensemble_number', iris.analysis.MEAN) 
+
+    print(f'{model_mean_tair=}')
+    print(f'{model_mean_lst=}')
 
     # make mean lst from day and night
   
@@ -216,35 +219,78 @@ def _diagnostic(config):
 
     cci_lst = loaded_data['ESACCI_LST_UNCERTS']['tsDay'] + loaded_data['ESACCI_LST_UNCERTS']['tsNight']
     cci_lst = cci_lst/2
+    cci_lst.standard_name = 'surface_temperature'
     print(f'{cci_lst=}')
     print(cci_lst)
 
     era5l_tair = loaded_data['CMUG_WP4_9']['tas']
 
-    ### regrid obs to each model
-    # do this when CMIP data back available via Jasmin
-    
-    lst_regrid = []
-    tair_regrid = []
 
     # make climatologies
-    #model_lst_clim  = model_lst.aggregated_by('month_number', iris.analysis.MEAN)
-    #model_tair_clim = model_lst.aggregated_by('month_number', iris.analysis.MEAN)
+    model_lst_clim = {}
+    model_tair_clim = {}
+    for MODEL in models:
+        model_lst_clim[MODEL]  = model_mean_lst[MODEL].aggregated_by('month_number', iris.analysis.MEAN)
+        model_tair_clim[MODEL]  = model_mean_tair[MODEL].aggregated_by('month_number', iris.analysis.MEAN)
+
     cci_lst_clim    = cci_lst.aggregated_by('month_number', iris.analysis.MEAN)
     era5l_tair_clim = era5l_tair.aggregated_by('month_number', iris.analysis.MEAN)
 
     #### regrid tair to model grid
-#    cci_lst_clim_regrided =  cci_lst_clim.regrid(model1, iris.analysis.Linear())
+    
+    # Need to do this for each model :(
+    cci_lst_clim_regrided = {}
+    era5l_tair_clim_regrided = {}
+    cci_lst_clim.coord(axis='x').attributes = None
+    era5l_tair_clim.coord(axis='x').attributes = None
+    cci_lst_clim.coord(axis='y').attributes = None
+    era5l_tair_clim.coord(axis='y').attributes = None
+    cci_lst_clim.coord(axis='x').bounds = None
+    era5l_tair_clim.coord(axis='x').bounds = None
+    cci_lst_clim.coord(axis='y').bounds = None
+    era5l_tair_clim.coord(axis='y').bounds = None
 
+    for i,MODEL in enumerate(models):
+    # There seems to be a coord issue when regridding that is model dependant. 
+    # This gets rid of all the gotcha and seems to make everything work
+        cci_lst_clim.coord(axis='x').coord_system = model_mean_lst[MODEL].coord(axis='x').coord_system
+        cci_lst_clim.coord(axis='y').coord_system = model_mean_lst[MODEL].coord(axis='y').coord_system
+        era5l_tair_clim.coord(axis='x').coord_system = model_mean_lst[MODEL].coord(axis='x').coord_system
+        era5l_tair_clim.coord(axis='y').coord_system = model_mean_lst[MODEL].coord(axis='y').coord_system
 
+        model_mean_lst[MODEL].coord(axis='x').attributes = None
+        model_mean_tair[MODEL].coord(axis='x').attributes = None
+
+        model_mean_lst[MODEL].coord(axis='y').attributes = None
+        model_mean_tair[MODEL].coord(axis='y').attributes = None
+
+        model_mean_lst[MODEL].coord(axis='x').bounds = None
+        model_mean_tair[MODEL].coord(axis='x').bounds = None
+ 
+        model_mean_lst[MODEL].coord(axis='y').bounds = None
+        model_mean_tair[MODEL].coord(axis='y').bounds = None
+
+        cci_lst_clim_regrided[MODEL] =  cci_lst_clim.regrid(model_mean_lst[MODEL], iris.analysis.Linear())
+        print('THIS IS OK')
+        era5l_tair_clim_regrided[MODEL] = era5l_tair_clim.regrid(model_mean_tair[MODEL], iris.analysis.Linear())
+
+    print(f'{cci_lst_clim_regrided=}')
+    print(f'{era5l_tair_clim_regrided=}')
+
+    # LST-Tair Cube work
+    # this will need a model frid dependant thing doing!
+    #diffs_clim_obs = cci_lst_clim_regrided - era5l_tair_clim_regrided
+    #print(f'{diffs_clim_obs=}')
+    
     # plots
     #make_plot_global_clim_maps(model_lst, model_ta, cci_lst, era5l_tair, config)
     # make this so either lst or tair passed in, will need vmin vmax as parameters #####
-    
+    print('Start making plots')
     # Maps of climatology
     # make_plot_global_clim_maps(obs_data, model_data, 'LST or Tair', vmin_obs, vmax_obs, vnum_obs, vmin_diff, vmax_diff, vnum_obs,config)
-    make_plot_global_clim_maps(cci_lst_clim, None, 'LST',270,330,15 ,-15,15, 11, config)
-    make_plot_global_clim_maps(era5l_tair_clim, None, 'Tair',270,320,15 ,-15,15, 11, config)
+    make_plot_global_clim_maps(cci_lst_clim_regrided, model_lst_clim, 'LST',270,330,15 ,-15,15, 11, config)
+    make_plot_global_clim_maps(era5l_tair_clim_regrided, model_tair_clim, 'Tair',270,320,15 ,-15,15, 11, config)
+    print('plot made')
 
     # make LST-Tair for OBS and Model
     #
@@ -284,16 +330,12 @@ def _diagnostic(config):
 #     #         provenance_logger.log(file, record)
 
 
-
+# sort this to work with diffs too!
 def make_plot_global_clim_maps(obs_data, model_data, 
                                TYPE, # LST or Tair
                                vmin_obs, vmax_obs, vnum_obs, 
                                vmin_diff, vmax_diff, vnum_diff,
                                config):
-
-#    model_lst_clim, model_tair_clim, 
-#                               cci_lst_clim, era_tair_clim,
-#                               config):
     """Create and save the output figure.
     Figure of airT from ERA5 and differences from airT in CMIP6 models (historic climatology – 2003-13 obs and model years)
     Figure of LST from CCI LST and differences from LST in CMIP6 models (historic climatology – 2003-2013 obs and model years)
@@ -318,9 +360,9 @@ def make_plot_global_clim_maps(obs_data, model_data,
     # columns = Jan and July
     # top row = absolute values from ERA5-L
     # next rows = OBS - MODEL for each model
-
-    nmodels = 3
-    nrows = nmodels + 1 # make this dynamic!!!
+    print(f'In the plotting bit {TYPE}')
+    nmodels = len(list(model_data.keys()))
+    nrows = nmodels + 1 
 
     fig = plt.figure(figsize=(12, 20))
     fig.suptitle(f'ERA5-Land {TYPE} Climatology and Model Difference', 
@@ -343,7 +385,7 @@ def make_plot_global_clim_maps(obs_data, model_data,
 
     plt.subplot(nrows,2,1)
     plt.title('Jan',  fontsize=24)
-    iplt.pcolormesh(obs_data[0],
+    iplt.pcolormesh(obs_data['CESM2'][0],
                   cmap=cmap, norm=norm)
     plt.gca().coastlines()
     # get the current axes' subplot for use later on
@@ -351,7 +393,7 @@ def make_plot_global_clim_maps(obs_data, model_data,
 
     plt.subplot(nrows,2,2)
     plt.title('Jul',  fontsize=24)
-    cbar_source = iplt.pcolormesh(obs_data[6],
+    cbar_source = iplt.pcolormesh(obs_data['CESM2'][6],
                   cmap=cmap, norm=norm)
     plt.gca().coastlines()
     # get the current axes' subplot for use later on
@@ -387,20 +429,23 @@ def make_plot_global_clim_maps(obs_data, model_data,
     bounds = np.linspace(vmin_diff, vmax_diff, vnum_diff)
     norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
-    model_name = ['Model 1', 'Model 2','Model 3']
+    model_names= list(model_data.keys())
     ##### this will end up as loop
-    for i in range(nmodels):
+    for i,MODEL in enumerate(model_names):
+        print(MODEL)
+        print(obs_data[0])
+        print(model_data[MODEL][0])
         plt.subplot(nrows,2,3+(2*i))
-        plt.title(model_name[i], fontsize=24)
+        plt.title(model_names[i], fontsize=24)
         # arbitary difference while jasmin wont find cmip data
-        iplt.pcolormesh(obs_data[0]-obs_data[4],
+        iplt.pcolormesh(obs_data[MODEL][0]-model_data[MODEL][0],
                         cmap=cmap, norm=norm)
         plt.gca().coastlines()
         plt1_ax = plt.gca() # this will default to the last row
 
         plt.subplot(nrows,2,3+(2*i)+1)
 
-        cbar_source = iplt.pcolormesh(obs_data[6]-obs_data[10],
+        cbar_source = iplt.pcolormesh(obs_data[MODEL][6]-model_data[MODEL][6],
                                     cmap=cmap, norm=norm)
         plt.gca().coastlines()
 
