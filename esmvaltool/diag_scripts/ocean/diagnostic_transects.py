@@ -38,6 +38,7 @@ import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -173,7 +174,7 @@ def make_cube_region_dict(cube):
             layers.append(coord)
 
     cubes = {}
-    if layers == []:
+    if not layers:
         cubes[''] = cube
         return cubes
 
@@ -290,8 +291,19 @@ def make_transects_plots(
         # Saving files:
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
-
         plt.close()
+
+        provenance_record = diagtools.prepare_provenance_record(
+            cfg,
+            caption=f'Transect of {title}',
+            statistics=['mean'],
+            domain=['reg'],
+            plot_type=['sect', 'zonal', ],
+            ancestors=[filename],
+        )
+
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
 
 def add_sea_floor(cube):
@@ -404,8 +416,19 @@ def make_transect_contours(
         # Saving files:
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
-
         plt.close()
+
+        provenance_record = diagtools.prepare_provenance_record(
+            cfg,
+            caption=f'Transect of {title}',
+            statistics=['mean'],
+            domain=['reg'],
+            plot_type=['sect', 'zonal', ],
+            ancestors=[filename],
+        )
+
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
 
 def multi_model_contours(
@@ -533,6 +556,18 @@ def multi_model_contours(
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
         plt.close()
+
+        provenance_record = diagtools.prepare_provenance_record(
+            cfg,
+            caption=f'Transect of {title}',
+            statistics=['mean'],
+            domain=['reg'],
+            plot_type=['sect', 'zonal', ],
+            ancestors=list(metadatas.keys()),
+        )
+
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
 
 def main(cfg):
