@@ -1,9 +1,13 @@
 """Convenience functions for :mod:`iris` objects."""
 import logging
+import warnings
 from pprint import pformat
 
 import iris
 import numpy as np
+from iris import NameConstraint
+
+from esmvaltool import ESMValToolDeprecationWarning
 
 from ._base import group_metadata
 
@@ -322,17 +326,32 @@ def unify_1d_cubes(cubes, coord_name):
 
 
 def var_name_constraint(var_name):
-    """:class:`iris.Constraint` using ``var_name`` of an :mod:`iris.cube.Cube`.
+    """:class:`iris.Constraint` using ``var_name``.
+
+    Warning
+    -------
+    .. deprecated:: 2.6.0
+        This function has been deprecated in ESMValTool version 2.6.0 and is
+        scheduled for removal in version 2.8.0. Please use the function
+        :class:`iris.NameConstraint` with the argument ``var_name`` instead:
+        this is an exact replacement.
 
     Parameters
     ----------
-    var_name : str
-        Short name (``var_name`` in :mod:`iris`) for the constraint.
+    var_name: str
+        ``var_name`` used for the constraint.
 
     Returns
     -------
     iris.Constraint
-        Constraint to select only cubes with correct ``var_name``.
+        Constraint.
 
     """
-    return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
+    deprecation_msg = (
+        "The function ``var_name_constraint`` has been deprecated in "
+        "ESMValTool version 2.6.0 and is scheduled for removal in version "
+        "2.8.0. Please use the function ``iris.NameConstraint`` with the "
+        "argument ``var_name`` instead: this is an exact replacement."
+    )
+    warnings.warn(deprecation_msg, ESMValToolDeprecationWarning)
+    return NameConstraint(var_name=var_name)

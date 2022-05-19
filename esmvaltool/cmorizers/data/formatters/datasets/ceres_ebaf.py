@@ -19,6 +19,7 @@ import os
 import warnings
 
 import iris
+from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -41,7 +42,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     raw_var = var.get('raw', short_name)
     with warnings.catch_warnings():
         filter_warnings()
-        cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
+        cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
     # Fix units
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)

@@ -21,6 +21,7 @@ import iris
 import numpy as np
 from cf_units import Unit
 from esmvalcore.preprocessor import monthly_statistics
+from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -83,7 +84,7 @@ def fix_coords_non_symetric_lon(cube):
 def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
     """Extract variable."""
     raw_var = var.get('raw', short_name)
-    cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
+    cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
     # Fix units
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
