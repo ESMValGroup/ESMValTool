@@ -220,11 +220,8 @@ def _diagnostic(config):
     cci_lst = loaded_data['ESACCI_LST_UNCERTS']['tsDay'] + loaded_data['ESACCI_LST_UNCERTS']['tsNight']
     cci_lst = cci_lst/2
     cci_lst.standard_name = 'surface_temperature'
-    print(f'{cci_lst=}')
-    print(cci_lst)
 
     era5l_tair = loaded_data['CMUG_WP4_9']['tas']
-
 
     # make climatologies
     model_lst_clim = {}
@@ -271,7 +268,6 @@ def _diagnostic(config):
         model_mean_tair[MODEL].coord(axis='y').bounds = None
 
         cci_lst_clim_regrided[MODEL] =  cci_lst_clim.regrid(model_mean_lst[MODEL], iris.analysis.Linear())
-        print('THIS IS OK')
         era5l_tair_clim_regrided[MODEL] = era5l_tair_clim.regrid(model_mean_tair[MODEL], iris.analysis.Linear())
 
     print(f'{cci_lst_clim_regrided=}')
@@ -295,8 +291,13 @@ def _diagnostic(config):
     # make LST-Tair for OBS and Model
     #
     # cube work here
-    #
-    #make_plot_global_clim_maps(era5l_tair_clim, None, 'Diff',270,320,15 ,-15,15, 11, config)
+    obs_diff_clim = {}
+    model_diff_clim = {}
+    for MODEL in models:
+        obs_diff_clim[MODEL] =  cci_lst_clim_regrided[MODEL] - era5l_tair_clim_regrided[MODEL]
+        model_diff_clim[MODEL] = model_mean_lst[MODEL] - model_mean_tair[MODEL] 
+    
+    make_plot_global_clim_maps(obs_diff_clim, model_diff_clim, 'Diff',-15,15,21 ,-15,15, 11, config)
 
 
 
@@ -340,7 +341,7 @@ def make_plot_global_clim_maps(obs_data, model_data,
     Figure of airT from ERA5 and differences from airT in CMIP6 models (historic climatology – 2003-13 obs and model years)
     Figure of LST from CCI LST and differences from LST in CMIP6 models (historic climatology – 2003-2013 obs and model years)
     These could be for individual months or whole year TBC
-
+    ###### UPDATE THIS ######
     Inputs:
    
     config = The config dictionary from the preprocessor
@@ -364,7 +365,7 @@ def make_plot_global_clim_maps(obs_data, model_data,
     nmodels = len(list(model_data.keys()))
     nrows = nmodels + 1 
 
-    fig = plt.figure(figsize=(12, 20))
+    fig = plt.figure(figsize=(12, 30))
     fig.suptitle(f'ERA5-Land {TYPE} Climatology and Model Difference', 
                  y=0.95, # so not tight to top, adjust this ######
                  fontsize=24)
@@ -433,8 +434,6 @@ def make_plot_global_clim_maps(obs_data, model_data,
     ##### this will end up as loop
     for i,MODEL in enumerate(model_names):
         print(MODEL)
-        print(obs_data[0])
-        print(model_data[MODEL][0])
         plt.subplot(nrows,2,3+(2*i))
         plt.title(model_names[i], fontsize=24)
         # arbitary difference while jasmin wont find cmip data
