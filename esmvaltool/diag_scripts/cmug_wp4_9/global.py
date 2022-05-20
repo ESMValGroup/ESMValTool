@@ -299,13 +299,107 @@ def _diagnostic(config):
     
     make_plot_global_clim_maps(obs_diff_clim, model_diff_clim, 'Diff',-15,15,21 ,-15,15, 11, config)
 
-
-
     # NEXT do France LC plots
     # look in WP4.8 plots_for_reports.py to get code to mask lst,tair,diff as needed on lc types
-#
-    # more plotting functions go here
 
+    # Do this just for LST-Tair diffrence
+    # make climatologies per biome
+    # regrid to LC grid
+    # mask on pfts
+    # plot result for all models and obs
+    obs_on_lc_clim = {}
+    model_on_lc_clim = {}
+    outpath = config['plot_dir']
+
+    for MODEL in models:
+        obs_on_lc_clim[MODEL] = obs_diff_clim[MODEL].regrid(lc_data, iris.analysis.Linear())
+        model_on_lc_clim[MODEL] = obs_diff_clim[MODEL].regrid(lc_data, iris.analysis.Linear())
+    #     qplt.pcolormesh(obs_on_lc_clim[MODEL][0])
+    #     plt.gca().coastlines()
+    #     plt.savefig(f'{outpath}/test_{MODEL}_clim.png')
+    print(f'{obs_on_lc_clim=}')
+    print(f'{model_on_lc_clim=}')
+    print(f'{lc_data=}')
+
+    obs_clim_lc = {}
+    model_clim_lc = {}
+    
+    for BIOME in ['NT', 'BT']:#lc_to_pft.keys():
+        print(BIOME)
+        obs_clim_lc[BIOME] = {}
+        model_clim_lc[BIOME] = {}
+        biome_mask = np.ma.masked_outside(lc_data[0].data,
+                                          np.min(lc_to_pft[BIOME]),
+                                          np.max(lc_to_pft[BIOME])
+                                          )
+        print(biome_mask.shape)
+        new_mask = np.ones((12,biome_mask.shape[0], biome_mask.shape[1]))
+        for i in range(11):
+            new_mask[i] = biome_mask.mask
+        
+        plt.pcolormesh(biome_mask)
+        #plt.gca().coastlines()
+        plt.savefig(f'{outpath}/mask_{BIOME}.png')
+        plt.close()
+        for MODEL in models:
+            X = obs_on_lc_clim[MODEL]
+            X.data = np.ma.masked_array(obs_on_lc_clim[MODEL].data, mask=new_mask)
+            obs_clim_lc[BIOME][MODEL] = X
+            
+            Y = obs_on_lc_clim[MODEL]
+            Y.data = np.ma.masked_array(model_on_lc_clim[MODEL].data, mask=new_mask)
+            model_clim_lc[BIOME][MODEL] = Y
+
+    plt.close()
+
+    for BIOME in ['NT','BT']:
+        for MODEL in models:
+            qplt.pcolormesh(obs_clim_lc[BIOME][MODEL][0])
+            plt.gca().coastlines()
+            plt.savefig(f'{outpath}/mask_{MODEL}_obs_clim_{BIOME}.png')
+            plt.close()
+
+            qplt.pcolormesh(model_clim_lc[BIOME][MODEL][0])
+            plt.gca().coastlines()
+            plt.savefig(f'{outpath}/mask_{MODEL}_model_clim_{BIOME}.png')
+            plt.close()
+
+    plot_biome_timeseries(obs_clim_lc, model_clim_lc, True, config)
+
+
+def plot_biome_timeseries(obs, model, clim, config):
+    # clim = True for 12 month, False for a whole length plot
+
+    for BIOME in obs.keys():
+        
+        plt.figure(figsize=(10,15))
+
+        obs_count = 0
+        for MODEL in obs[BIOME].keys():
+            
+            if obs_count == 0:
+                obs_ave = obs[BIOME][MODEL].collapsed(['latitude','longitude'],
+                                                      iris.analysis.MEAN)
+
+                iplt.plot(obs_ave, color='black', label='OBS')
+                obs_count = 1
+
+            this_model_ave = model[BIOME][MODEL].collapsed(['latitude','longitude'],
+                                                           iris.analysis.MEAN)
+            
+            iplt.plot(this_model_ave, label=MODEL)
+
+        plt.legend()
+        outpath = config['plot_dir']
+        plt.savefig(f'{outpath}/timeseries_{BIOME}_clim.png')
+        plt.close('all')  # Is this needed?
+
+
+            
+            
+
+    # more plotting functions go here
+    
 #     # Provenance
 #     # Get this information form the data cubes
 #     # data_attributes = {}
@@ -354,6 +448,10 @@ def make_plot_global_clim_maps(obs_data, model_data,
                      'Tair': 'Air Temperature (K)',
                      'Diff': 'LST-Tair (K)'
                      }
+    cmaps = {'LST':  plt.cm.viridis,
+             'Tair': plt.cm.viridis,
+             'Diff': plt.cm.bwr
+             }
 
     # First figure
     # Tair from ERA5-land and ERA(OBS) minus MODEL
@@ -372,7 +470,7 @@ def make_plot_global_clim_maps(obs_data, model_data,
     
     # Add the first row of ERA5-L Tair
 
-    cmap = plt.cm.viridis  # define the colormap
+    cmap = cmaps[TYPE]
     # extract all colors from the .jet map
     cmaplist = [cmap(i) for i in range(cmap.N)]
     ## force the first color entry to be grey
