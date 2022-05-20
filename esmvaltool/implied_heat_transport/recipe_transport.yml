@@ -1,0 +1,175 @@
+# ESMValTool
+# recipe_transport.yml
+---
+documentation:
+  title: Implied heat transport
+
+  description: |
+    This recipe solves the spherical Poisson equation for a number of
+    top-of-the-atmosphere (TOA) radiative fluxes:
+      - net toa
+      - net sw
+      - net lw
+      - outgoing sw
+      - incoming sw
+    From the scalar p-field output of the Poisson solver the implied heat
+    transport of the full atmosphere-ocean column can be estimates, with the
+    contribution from each flux quantified.
+
+    The implied heat transport due to clouds is also estimated using both the clear
+    and all-sky versions of the radiative fluxes.
+
+    A caveat of this recipe is that the pattern of ocean heat content (OHC) is
+    not considered. Instead the OHC term is assumed to have no spatial variability
+    and the storage term is taken to be the global-mean of the given flux.
+
+    The 'single_model' script focuses on a single simulation and produces a number
+    of plots comparing the results of the Poisson solver output of different radiative
+    fluxes. If multiple datasets are chosen, the plots will be produced for each
+    dataset.
+
+    The 'multi-model' script directly compares the chosen models to the
+    CERES-EBAF results for the same time period. Only one set of plots are produced
+    regardless of the number of datasets. Requires the 'additional_datasets' field
+    to be included and filled in with the CERES-EBAF details from obs4MIPS.
+
+
+  authors:
+    - andela_bouwe
+    - righi_mattia
+
+  maintainer:
+    - schlund_manuel
+
+  references:
+    - acknow_project
+
+  projects:
+    - esmval
+    - c3s-magic
+
+datasets:
+  - {dataset: BCC-ESM1, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+  #- {dataset: FGOALS-g3, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+  #- {dataset: IITM-ESM, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+#  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: amip, ensemble: r1i1p1f2, grid: gn, mip: Amon}
+#  - {dataset: CNRM-CM6-1, project: CMIP6, exp: amip, ensemble: r1i1p1f2, grid: gn, mip: Amon}
+  #- {dataset: ACCESS-ESM1-5, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+  #- {dataset: ACCESS-CM2, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+#  - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+#  - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+  #- {dataset: MIROC6, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+  #- {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f3, grid: gn, mip: Amon}
+#  - {dataset: UKESM1-0-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f4, grid: gn, mip: Amon}
+#  - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+  #- {dataset: GISS-E2-1-G, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+  #- {dataset: CESM2-FV2,project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+  #- {dataset: NorCPM1, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+  #- {dataset: NorESM2-LM, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+  #- {dataset: NESM3, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+
+preprocessors:
+
+  climate_mean_global:
+    regrid:
+      # Use the lowest resolution grid of your chosen data for the target
+      target_grid: 1.875x1.25
+      scheme: area_weighted
+    climate_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  implied_heat_transport:
+    description: Solves the Poisson solver and produces a number of comparison plots.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      rtnt:
+        derive: true
+        short_name: rtnt
+        mip: Amon
+        preprocessor: climate_mean_global
+        start_year: 2001
+        end_year: 2014
+      rsnt:
+        derive: true
+        short_name: rsnt
+        mip: Amon
+        preprocessor: climate_mean_global
+        start_year: 2001
+        end_year: 2014
+      rlut:
+        short_name: rlut
+        mip: Amon
+        preprocessor: climate_mean_global
+        start_year: 2001
+        end_year: 2014
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
+             start_year: 2001, end_year: 2014}
+      rlutcs:
+        short_name: rlutcs
+        mip: Amon
+        preprocessor: climate_mean_global
+        start_year: 2001
+        end_year: 2014
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
+             start_year: 2001, end_year: 2014}
+      rsutcs:
+        short_name: rsutcs
+        mip: Amon
+        preprocessor: climate_mean_global
+        start_year: 2001
+        end_year: 2014
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
+             start_year: 2001, end_year: 2014}
+      rsut:
+        short_name: rsut
+        mip: Amon
+        preprocessor: climate_mean_global
+        start_year: 2001
+        end_year: 2014
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
+             start_year: 2001, end_year: 2014}
+      rsdt:
+        short_name: rsdt
+        mip: Amon
+        preprocessor: climate_mean_global
+        start_year: 2001
+        end_year: 2014
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
+             start_year: 2001, end_year: 2014}
+      netcre:
+        derive: true
+        short_name: netcre
+        mip: Amon
+        preprocessor: climate_mean_global
+        start_year: 2001
+        end_year: 2014
+      swcre:
+        derive: true
+        short_name: swcre
+        mip: Amon
+        preprocessor: climate_mean_global
+        start_year: 2001
+        end_year: 2014
+      lwcre:
+        derive: true
+        short_name: lwcre
+        mip: Amon
+        preprocessor: climate_mean_global
+        start_year: 2001
+        end_year: 2014
+    scripts:
+      #single_model:
+      #  script: /data/users/fpearce/git_work/ESMValTool/esmvaltool/implied_heat_transport/single_model_diagnostics.py
+      multi_model:
+        script: /data/users/fpearce/git_work/ESMValTool/esmvaltool/implied_heat_transport/multi_model_diagnostics.py
