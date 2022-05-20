@@ -255,23 +255,20 @@ def _diagnostic(config):
         era5l_tair_clim.coord(axis='x').coord_system = model_mean_lst[MODEL].coord(axis='x').coord_system
         era5l_tair_clim.coord(axis='y').coord_system = model_mean_lst[MODEL].coord(axis='y').coord_system
 
-        model_mean_lst[MODEL].coord(axis='x').attributes = None
-        model_mean_tair[MODEL].coord(axis='x').attributes = None
+        model_lst_clim[MODEL].coord(axis='x').attributes = None
+        model_tair_clim[MODEL].coord(axis='x').attributes = None
 
-        model_mean_lst[MODEL].coord(axis='y').attributes = None
-        model_mean_tair[MODEL].coord(axis='y').attributes = None
+        model_lst_clim[MODEL].coord(axis='y').attributes = None
+        model_tair_clim[MODEL].coord(axis='y').attributes = None
 
-        model_mean_lst[MODEL].coord(axis='x').bounds = None
-        model_mean_tair[MODEL].coord(axis='x').bounds = None
+        model_lst_clim[MODEL].coord(axis='x').bounds = None
+        model_tair_clim[MODEL].coord(axis='x').bounds = None
  
-        model_mean_lst[MODEL].coord(axis='y').bounds = None
-        model_mean_tair[MODEL].coord(axis='y').bounds = None
+        model_lst_clim[MODEL].coord(axis='y').bounds = None
+        model_tair_clim[MODEL].coord(axis='y').bounds = None
 
-        cci_lst_clim_regrided[MODEL] =  cci_lst_clim.regrid(model_mean_lst[MODEL], iris.analysis.Linear())
-        era5l_tair_clim_regrided[MODEL] = era5l_tair_clim.regrid(model_mean_tair[MODEL], iris.analysis.Linear())
-
-    print(f'{cci_lst_clim_regrided=}')
-    print(f'{era5l_tair_clim_regrided=}')
+        cci_lst_clim_regrided[MODEL] =  cci_lst_clim.regrid(model_lst_clim[MODEL], iris.analysis.Linear())
+        era5l_tair_clim_regrided[MODEL] = era5l_tair_clim.regrid(model_tair_clim[MODEL], iris.analysis.Linear())
 
     # LST-Tair Cube work
     # this will need a model frid dependant thing doing!
@@ -295,7 +292,7 @@ def _diagnostic(config):
     model_diff_clim = {}
     for MODEL in models:
         obs_diff_clim[MODEL] =  cci_lst_clim_regrided[MODEL] - era5l_tair_clim_regrided[MODEL]
-        model_diff_clim[MODEL] = model_mean_lst[MODEL] - model_mean_tair[MODEL] 
+        model_diff_clim[MODEL] = model_lst_clim[MODEL] - model_tair_clim[MODEL] ################################################################
     
     make_plot_global_clim_maps(obs_diff_clim, model_diff_clim, 'Diff',-15,15,21 ,-15,15, 11, config)
 
@@ -313,7 +310,7 @@ def _diagnostic(config):
 
     for MODEL in models:
         obs_on_lc_clim[MODEL] = obs_diff_clim[MODEL].regrid(lc_data, iris.analysis.Linear())
-        model_on_lc_clim[MODEL] = obs_diff_clim[MODEL].regrid(lc_data, iris.analysis.Linear())
+        model_on_lc_clim[MODEL] = model_diff_clim[MODEL].regrid(lc_data, iris.analysis.Linear())
     #     qplt.pcolormesh(obs_on_lc_clim[MODEL][0])
     #     plt.gca().coastlines()
     #     plt.savefig(f'{outpath}/test_{MODEL}_clim.png')
@@ -342,11 +339,15 @@ def _diagnostic(config):
         plt.savefig(f'{outpath}/mask_{BIOME}.png')
         plt.close()
         for MODEL in models:
+            print(lc_data[0].data.shape)
+            print(obs_on_lc_clim[MODEL].data.shape)
+            print(model_on_lc_clim[MODEL].data.shape)
+            print(new_mask.shape)
             X = obs_on_lc_clim[MODEL]
             X.data = np.ma.masked_array(obs_on_lc_clim[MODEL].data, mask=new_mask)
             obs_clim_lc[BIOME][MODEL] = X
             
-            Y = obs_on_lc_clim[MODEL]
+            Y = model_on_lc_clim[MODEL]
             Y.data = np.ma.masked_array(model_on_lc_clim[MODEL].data, mask=new_mask)
             model_clim_lc[BIOME][MODEL] = Y
 
@@ -381,13 +382,15 @@ def plot_biome_timeseries(obs, model, clim, config):
                 obs_ave = obs[BIOME][MODEL].collapsed(['latitude','longitude'],
                                                       iris.analysis.MEAN)
 
-                iplt.plot(obs_ave, color='black', label='OBS')
+                print(obs_ave)
+
+                plt.plot(obs_ave.data, color='black', label='OBS')
                 obs_count = 1
 
             this_model_ave = model[BIOME][MODEL].collapsed(['latitude','longitude'],
                                                            iris.analysis.MEAN)
-            
-            iplt.plot(this_model_ave, label=MODEL)
+            print(this_model_ave)
+            plt.plot(this_model_ave.data, label=MODEL)
 
         plt.legend()
         outpath = config['plot_dir']
