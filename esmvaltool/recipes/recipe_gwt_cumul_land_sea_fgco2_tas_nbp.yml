@@ -1,0 +1,140 @@
+annual_mean# ESMValTool
+# recipe_gwt_cumul_land_sea_fgco2_tas_nbp.yml
+---
+documentation:
+  description: |
+    Recipe to calclate GWT sptial distribution at specific GWT.
+
+  authors:
+    - demora_lee
+
+  maintainer:
+    - demora_lee
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+preprocessors:
+  # annual_mean:
+  #   climate_statistics:
+  #     operator: mean
+  #     period: full
+  annual_mean:
+    annual_statistics:
+      operator: mean
+      period: full
+
+diagnostics:
+  # --------------------------------------------------
+  # Time series diagnostics
+  # --------------------------------------------------
+
+
+
+     # Atmosphere
+      tas_fx:
+        mip: fx
+        short_name: areacella
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, mip: fx, exp: piControl, ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 1850,}
+
+      # nbp
+      tas:
+        short_name: tas
+        preprocessor: annual_mean
+        additional_datasets:
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2015, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp126], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp245], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp370], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp585], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+
+
+     # Land
+      tls_fx:
+        mip: fx
+        short_name: areacella
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, mip: fx, exp: piControl, ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 1850,}
+
+      # nbp
+      tls:
+        short_name: tls
+        preprocessor: annual_mean
+        additional_datasets:
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2015, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+
+
+      nbp_fx:
+        mip: fx
+        short_name: areacella
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, mip: fx, exp: piControl, ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 1850,}
+
+      # nbp
+      nbp:
+        short_name: nbp
+        preprocessor: annual_mean
+        additional_datasets:
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2015, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+
+      # Ocean:
+      fgco2_fx:
+        mip: Ofx
+        short_name: areacello
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: piControl, ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 1850,}
+
+
+      fgco2_historical:
+        short_name: fgco2
+        preprocessor: annual_mean
+        additional_datasets:
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2015, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+
+      tos_fx:
+        mip: Ofx
+        short_name: areacello
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: piControl, ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 1850,}
+
+      tos_historical:
+        short_name: tos
+        preprocessor: annual_mean
+        additional_datasets:
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2015, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585], ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+
+
+
+    scripts:
+      intpp_maps_diagnostic:
+        script: ocean/diagnostic_maps_cumul_land_and_sea.py
