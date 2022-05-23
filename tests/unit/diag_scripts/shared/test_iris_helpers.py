@@ -9,6 +9,7 @@ import numpy as np
 import pytest
 from cf_units import Unit
 
+from esmvaltool import ESMValToolDeprecationWarning
 from esmvaltool.diag_scripts.shared import iris_helpers as ih
 
 LONG_NAME = 'x'
@@ -511,7 +512,8 @@ def test_var_name_constraint():
         iris.cube.Cube(3, var_name='c', long_name='aaa'),
     ])
     cubes_out = cubes_in[:2].copy()
-    constraint = ih.var_name_constraint('a')
+    with pytest.warns(ESMValToolDeprecationWarning):
+        constraint = ih.var_name_constraint('a')
     assert cubes_in is not cubes_out
     result = cubes_in.extract(constraint)
     assert cubes_in is not result

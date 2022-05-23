@@ -46,13 +46,11 @@ import logging
 import math
 import os
 import sys
-from pathlib import Path
 
 import iris
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 import numpy as np
-import yaml
 from matplotlib.colors import LogNorm
 from scipy.stats import linregress
 
@@ -247,7 +245,7 @@ def make_model_vs_obs_plots(cfg, metadata, model_filename, obs_filename):
 
         plt.close()
 
-        provenance_record = _prepare_provenance_record(
+        provenance_record = diagtools.prepare_provenance_record(
             cfg,
             caption=caption,
             statistics=['mean', 'clim', 'diff'],
@@ -459,7 +457,7 @@ def make_scatter(cfg, metadata, model_filename, obs_filename):
 
         plt.close()
 
-        provenance_record = _prepare_provenance_record(
+        provenance_record = diagtools.prepare_provenance_record(
             cfg,
             caption=long_name,
             statistics=['mean', 'clim', 'diff'],
@@ -470,29 +468,6 @@ def make_scatter(cfg, metadata, model_filename, obs_filename):
 
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(path, provenance_record)
-
-
-def _prepare_provenance_record(cfg, **provenance_record):
-    recipe_path = Path(cfg['run_dir']).parents[1] / cfg['recipe']
-    with recipe_path.open() as recipe_file:
-        recipe = yaml.safe_load(recipe_file)
-
-    doc = recipe['documentation']
-    authors = doc.get('authors', [])
-    authors += [
-        maintainer for maintainer in doc.get('maintainer', [])
-        if maintainer not in authors
-    ]
-    provenance_record['authors'] = authors
-    for key in ['title', 'description', 'projects']:
-        val = doc[key]
-        if val:
-            provenance_record[key] = val
-    for key in ['realms', 'themes']:
-        val = cfg.get(key)
-        if val:
-            provenance_record[key] = val
-    return provenance_record
 
 
 def main(cfg):
