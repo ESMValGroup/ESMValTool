@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cf_units as Unit
 
+import copy
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -24,8 +25,26 @@ from esmvaltool.diag_scripts.shared import (
 
 logger = logging.getLogger(__name__)
 
+# DOesnt look like this is needed with Iris?
+#scale_factor = 0.001 # cant find this in the files, * this by all CCI values to get actual value
 
-scale_factor = 0.001 # cant find this in the files, * this by all CCI values to get actual value
+
+# Colours for lines on plots are from
+# http://tableaufriction.blogspot.com/2012/11/finally-you-can-use-tableau-data-colors.html
+# color blind 10
+# with a change in the order.
+LINECOLOURS = [
+    (200 / 255, 82 / 255, 0),
+    (255 / 255, 128 / 255, 14 / 255),
+    (0, 107 / 255, 164 / 255),
+    (171 / 255, 171 / 255, 171 / 255),
+    (95 / 255, 158 / 255, 209 / 255),
+    (89 / 255, 89 / 255, 89 / 255),
+    (137 / 255, 137 / 255, 137 / 255),
+    (162 / 255, 200 / 255, 236 / 255),
+    (255 / 255, 188 / 255, 121 / 255),
+    (207 / 255, 207 / 255, 207 / 255),
+]
 
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
@@ -271,7 +290,7 @@ def _diagnostic(config):
         era5l_tair_clim_regrided[MODEL] = era5l_tair_clim.regrid(model_tair_clim[MODEL], iris.analysis.Linear())
 
     # LST-Tair Cube work
-    # this will need a model frid dependant thing doing!
+    # this will need a model grid dependant thing doing!
     #diffs_clim_obs = cci_lst_clim_regrided - era5l_tair_clim_regrided
     #print(f'{diffs_clim_obs=}')
     
@@ -311,9 +330,11 @@ def _diagnostic(config):
     for MODEL in models:
         obs_on_lc_clim[MODEL] = obs_diff_clim[MODEL].regrid(lc_data, iris.analysis.Linear())
         model_on_lc_clim[MODEL] = model_diff_clim[MODEL].regrid(lc_data, iris.analysis.Linear())
-    #     qplt.pcolormesh(obs_on_lc_clim[MODEL][0])
-    #     plt.gca().coastlines()
-    #     plt.savefig(f'{outpath}/test_{MODEL}_clim.png')
+        qplt.pcolormesh(obs_on_lc_clim[MODEL][0])
+        plt.gca().coastlines()
+        plt.savefig(f'{outpath}/test_{MODEL}_clim.png')
+        plt.close()
+
     print(f'{obs_on_lc_clim=}')
     print(f'{model_on_lc_clim=}')
     print(f'{lc_data=}')
@@ -331,39 +352,36 @@ def _diagnostic(config):
                                           )
         print(biome_mask.shape)
         new_mask = np.ones((12,biome_mask.shape[0], biome_mask.shape[1]))
-        for i in range(11):
+        for i in range(12):
             new_mask[i] = biome_mask.mask
         
-        plt.pcolormesh(biome_mask)
-        #plt.gca().coastlines()
+        plt.pcolormesh(new_mask[0])
+        # a check on mask
         plt.savefig(f'{outpath}/mask_{BIOME}.png')
         plt.close()
         for MODEL in models:
-            print(lc_data[0].data.shape)
-            print(obs_on_lc_clim[MODEL].data.shape)
-            print(model_on_lc_clim[MODEL].data.shape)
-            print(new_mask.shape)
-            X = obs_on_lc_clim[MODEL]
+            # appears deep copy is needed, not sure why, guess cubes considered nested objects?
+            X = copy.deepcopy(obs_on_lc_clim[MODEL])
             X.data = np.ma.masked_array(obs_on_lc_clim[MODEL].data, mask=new_mask)
             obs_clim_lc[BIOME][MODEL] = X
             
-            Y = model_on_lc_clim[MODEL]
+            Y = copy.deepcopy(model_on_lc_clim[MODEL])
             Y.data = np.ma.masked_array(model_on_lc_clim[MODEL].data, mask=new_mask)
             model_clim_lc[BIOME][MODEL] = Y
 
     plt.close()
 
-    for BIOME in ['NT','BT']:
-        for MODEL in models:
-            qplt.pcolormesh(obs_clim_lc[BIOME][MODEL][0])
-            plt.gca().coastlines()
-            plt.savefig(f'{outpath}/mask_{MODEL}_obs_clim_{BIOME}.png')
-            plt.close()
+    # for BIOME in ['NT','BT']:
+    #     for MODEL in models:
+    #         qplt.pcolormesh(obs_clim_lc[BIOME][MODEL][0])
+    #         plt.gca().coastlines()
+    #         plt.savefig(f'{outpath}/mask_{MODEL}_obs_clim_{BIOME}.png')
+    #         plt.close()
 
-            qplt.pcolormesh(model_clim_lc[BIOME][MODEL][0])
-            plt.gca().coastlines()
-            plt.savefig(f'{outpath}/mask_{MODEL}_model_clim_{BIOME}.png')
-            plt.close()
+    #         qplt.pcolormesh(model_clim_lc[BIOME][MODEL][0])
+    #         plt.gca().coastlines()
+    #         plt.savefig(f'{outpath}/mask_{MODEL}_model_clim_{BIOME}.png')
+    #         plt.close()
 
     plot_biome_timeseries(obs_clim_lc, model_clim_lc, True, config)
 
@@ -377,12 +395,13 @@ def plot_biome_timeseries(obs, model, clim, config):
 
         obs_count = 0
         for MODEL in obs[BIOME].keys():
-            
+            print(MODEL)
             if obs_count == 0:
                 obs_ave = obs[BIOME][MODEL].collapsed(['latitude','longitude'],
                                                       iris.analysis.MEAN)
 
-                print(obs_ave)
+                print(obs[BIOME][MODEL].data)
+                print(obs_ave.data)
 
                 plt.plot(obs_ave.data, color='black', label='OBS')
                 obs_count = 1
@@ -390,6 +409,8 @@ def plot_biome_timeseries(obs, model, clim, config):
             this_model_ave = model[BIOME][MODEL].collapsed(['latitude','longitude'],
                                                            iris.analysis.MEAN)
             print(this_model_ave)
+            print(this_model_ave.data)
+            
             plt.plot(this_model_ave.data, label=MODEL)
 
         plt.legend()
