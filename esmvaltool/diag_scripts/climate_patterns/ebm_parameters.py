@@ -1,6 +1,8 @@
 # Kappa calculation mathematics kindly provided by Dr. Chris Huntingford, CEH
 
+import json
 import logging
+import os
 from pathlib import Path
 
 import iris
@@ -8,13 +10,14 @@ import iris.coord_categorisation
 import iris.cube
 import numpy as np
 import sub_functions as sf
-from plotting import forcing_plot, plot_ebm_prediction, plot_ebm_timeseries
+from plotting import ebm_plots
 from scipy import stats
 from scipy.sparse.linalg import spsolve
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 logger = logging.getLogger(Path(__file__).stem)
+params_file = os.path.join(os.path.dirname(__file__), 'params.json')
 
 
 def compute_diagnostic(filename):
@@ -39,8 +42,8 @@ def net_flux_calculation(toa_list):
             rsut = cube
 
     toa_net = rsdt - rlut - rsut
-    toa_net.rename("toa")
-    toa_net.var_name = "toa"
+    toa_net.rename("Net Downward Radiative Flux At Top of Atmosphere Model")
+    toa_net.var_name = "rtmt"
 
     return toa_net
 
@@ -250,23 +253,24 @@ def atmos_params_calc(rf, toa_delta_land, toa_delta_ocean, tas_delta_land,
     return lambda_o, lambda_l, nu_ratio
 
 
-def save_params(cfg, kappa, lambda_o, lambda_l, nu_ratio):
+def save_params(model, f_ocean, kappa, lambda_o, lambda_l, nu_ratio):
 
     # saving atmospheric parameters
-    work_path = cfg["work_dir"] + "/"
+    dict = {
+        str(model): {
+            "model": str(model),
+            "kappa_o": kappa,
+            "lambda_l": lambda_l,
+            "lambda_o": lambda_o,
+            "mu": nu_ratio,
+            "f_ocean": f_ocean,
+        }
+    }
 
-    filename_list = ['kappa.dat', 'lambda_o.dat', 'lambda_l.dat', 'nu_ratio']
-    param_list = [kappa, lambda_o, lambda_l, nu_ratio]
-
-    for i in range(len(param_list)):
-        file = open(work_path + filename_list[i], 'w')
-        data = '{0:10.3f}'.format(param_list[i])
-        file.write(data + '\n')
-        file.close()
+    return dict
 
 
-def create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube,
-                           plot_path):
+def create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube):
 
     # global average and anomalies of all cubes
     var_list = [tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube]
@@ -284,14 +288,10 @@ def create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube,
     forcing = avg_list[1].data + (-lambda_c * avg_list[0].data)
     yrs = (1850 + np.arange(forcing.shape[0])).astype('float')
 
-    # plotting
-    forcing_plot(reg, avg_list, yrs, forcing, plot_path)
-
-    return forcing, yrs
+    return reg, avg_list, yrs, forcing, lambda_c
 
 
-def return_forcing_cube(forcing, yrs, cfg):
-    work_path = cfg["work_dir"] + "/"
+def return_forcing_cube(forcing, yrs, work_path):
 
     f_array = np.array([forcing, yrs])
 
@@ -303,91 +303,124 @@ def return_forcing_cube(forcing, yrs, cfg):
     iris.save(f_cube, work_path + "effective_forcing.nc")
 
 
-def ebm_check(plot_path, rad_forcing, of, kappa, lambda_o, lambda_l, nu_ratio,
-              tas_delta):
+def ebm_check(rad_forcing, of, kappa, lambda_o, lambda_l, nu_ratio, tas_delta):
 
     # runs the EBM tas prediction, with derived forcing
     temp_ocean_top = sf.kappa_calc_predict(rad_forcing, of, kappa, lambda_o,
                                            lambda_l, nu_ratio)
     temp_global = (of + (1 - of) * nu_ratio) * temp_ocean_top
 
-    plot_ebm_prediction(temp_global, tas_delta, plot_path)
+    return temp_global, tas_delta
 
 
-def main(cfg):
+def main(cfg, params_file):
 
     # gets a description of the preprocessed data that we will use as input.
     input_data = cfg["input_data"].values()
-
-    toa_list = iris.load([])
-
-    for dataset in input_data:
-        input_file = dataset["filename"]
-
-        # preparing single cube
-        cube_initial = compute_diagnostic(input_file)
-
-        if cube_initial.var_name == "sftlf":
-            sftlf_cube = cube_initial
-        if cube_initial.var_name == "rtmt":
-            rtmt_cube = cube_initial
-        if cube_initial.var_name == "tas":
-            tas_cube = cube_initial
-        if (not cube_initial.var_name == "tas"
-                or cube_initial.var_name == "rtmt"
-                or cube_initial.var_name == "sftlf"):
-            toa_list.append(cube_initial)
-        if dataset["exp"] == "abrupt-4xCO2":
-            if cube_initial.var_name == "tas":
-                tas_4x_cube = cube_initial
-            if cube_initial.var_name == "rtmt":
-                rtmt_4x_cube = cube_initial
-
-    # calculating global, land and ocean TOA fluxes
-    toa_cube = net_flux_calculation(toa_list)
-
-    # calculating ocean fraction
-    ocean_frac, land_frac, of = ocean_fraction_calc(sftlf_cube)
-
-    # calculating TOA averages, subtracting mean of first 4 decades
-    (toa_delta, toa_delta_land, toa_delta_ocean, tas_delta, tas_delta_land,
-     tas_delta_ocean) = anomalies_calc(toa_cube, tas_cube, ocean_frac,
-                                       land_frac)
-
-    # calculating EBM parameter, Kappa
-    # kappa = kappa_parameter(of, toa_delta, tas_delta_ocean)
-    kappa = 360
-    logger.info("Kappa = ", kappa)
-
+    params = cfg["include_params"]
+    work_path = cfg["work_dir"] + "/"
     plot_path = cfg["plot_dir"] + "/"
-    rad_forcing, yrs = create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube,
-                                              rtmt_4x_cube, plot_path)
 
-    lambda_o, lambda_l, nu_ratio = 0.498, 0.977, 1.473
+    models = []
+    model_data = []
+    for x in input_data:
+        model = x['dataset']
+        if model not in models:
+            models.append(model)
 
-    # lambda_o, lambda_l, nu_ratio = atmos_params_calc(rad_forcing,
-    #                                                  toa_delta_land,
-    #                                                  toa_delta_ocean,
-    #                                                  tas_delta_land,
-    #                                                  tas_delta_ocean)
+    for model in models:
+        toa_list = iris.load([])
+        toa_4x_list = iris.load([])
+        for dataset in input_data:
+            if dataset['dataset'] == model:
+                input_file = dataset["filename"]
 
-    ebm_check(plot_path, rad_forcing, of, kappa, lambda_o, lambda_l, nu_ratio,
-              tas_delta)
+                # preparing single cube
+                cube_initial = compute_diagnostic(input_file)
 
-    # list of variable cube lists
-    list_of_cubes = [toa_cube, tas_cube]
+                if dataset["exp"] != "abrupt-4xCO2":
+                    if cube_initial.var_name == "sftlf":
+                        sftlf_cube = cube_initial
+                    if cube_initial.var_name == "tas":
+                        tas_cube = cube_initial
+                    if (not cube_initial.var_name == "tas"
+                            or cube_initial.var_name == "sftlf"):
+                        toa_list.append(cube_initial)
+                if dataset["exp"] == "abrupt-4xCO2":
+                    if cube_initial.var_name == "tas":
+                        tas_4x_cube = cube_initial
+                    if not cube_initial.var_name == "tas":
+                        toa_4x_list.append(cube_initial)
 
-    # saving EBM parameters
-    save_params(cfg, kappa, lambda_o, lambda_l, nu_ratio)
+        # calculating global, land and ocean TOA fluxes
+        rtmt_cube = net_flux_calculation(toa_list)
+        rtmt_4x_cube = net_flux_calculation(toa_4x_list)
 
-    # saving forcing cube
-    return_forcing_cube(rad_forcing, yrs, cfg)
+        # calculating ocean fraction
+        ocean_frac, land_frac, of = ocean_fraction_calc(sftlf_cube)
 
-    # saving figures
-    plot_ebm_timeseries(list_of_cubes, plot_path, ocean_frac, land_frac)
+        # calculating TOA averages, subtracting mean of first 4 decades
+        (toa_delta, toa_delta_land, toa_delta_ocean, tas_delta, tas_delta_land,
+         tas_delta_ocean) = anomalies_calc(rtmt_cube, tas_cube, ocean_frac,
+                                           land_frac)
+
+        # calculating EBM parameter, Kappa
+        if params is True:
+            param_list = []
+            for line in open(params_file, "r"):
+                param_list.append(json.loads(line))
+
+            for i in range(len(param_list[0])):
+                sub_list = list(param_list[0][i].values())
+                if sub_list[0]['model'] == model:
+                    kappa = sub_list[0]['kappa_o']
+
+        elif params is False:
+            kappa = kappa_parameter(of, toa_delta, tas_delta_ocean)
+
+        reg, avg_list, yrs, rad_forcing, lambda_c = create_regression_plot(
+            tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube)
+
+        if params is True:
+            param_list = []
+            for line in open(params_file, "r"):
+                param_list.append(json.loads(line))
+
+            for i in range(len(param_list[0])):
+                sub_list = list(param_list[0][i].values())
+                if sub_list[0]['model'] == model:
+                    lambda_o = sub_list[0]['lambda_o']
+                    lambda_l = sub_list[0]['lambda_l']
+                    nu_ratio = sub_list[0]['mu']
+
+        elif params is False:
+            lambda_o, lambda_l, nu_ratio = atmos_params_calc(
+                rad_forcing, toa_delta_land, toa_delta_ocean, tas_delta_land,
+                tas_delta_ocean)
+
+        temp_global, t_delta = ebm_check(rad_forcing, of, kappa, lambda_o,
+                                         lambda_l, nu_ratio, tas_delta)
+
+        model_work_dir, model_plot_dir = sf.make_model_dirs(
+            cube_initial, work_path, plot_path)
+
+        # saving EBM parameters
+        model_data.append(
+            save_params(model, of, kappa, lambda_o, lambda_l, nu_ratio))
+
+        # saving forcing cube
+        return_forcing_cube(rad_forcing, yrs, model_work_dir)
+
+        # plotting
+        ebm_plots(reg, avg_list, yrs, rad_forcing, lambda_c, temp_global,
+                  t_delta, model_plot_dir)
+
+    file = open(work_path + "params.dat", 'a')
+    file.write(json.dumps(model_data))
+    file.close()
 
 
 if __name__ == "__main__":
 
     with run_diagnostic() as config:
-        main(config)
+        main(config, params_file)

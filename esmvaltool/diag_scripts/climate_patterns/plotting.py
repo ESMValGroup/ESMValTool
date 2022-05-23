@@ -19,6 +19,37 @@ def subplot_positions(j):
     return x, y
 
 
+def plot_patterns(cube_list, plot_path):
+    """Plots climate patterns for imogen_mode: off."""
+    fig, ax = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
+    fig.suptitle("Patterns from a random grid-cell", fontsize=18, y=0.98)
+
+    plt.figure(figsize=(14, 12))
+    plt.subplots_adjust(hspace=0.5)
+    plt.suptitle("Global Patterns, January", fontsize=18, y=0.95)
+
+    for j, cube in enumerate(cube_list):
+        # determining plot positions
+        x, y = subplot_positions(j)
+        months = np.arange(1, 13)
+        # plots patterns for a random grid cell
+        ax[x, y].plot(months, cube[:, 50, 50].data)
+        ax[x, y].set_ylabel(str(cube.var_name) + " / " + str(cube.units))
+        if j > 5:
+            ax[x, y].set_xlabel('Time')
+
+        # January patterns
+        plt.subplot(3, 3, j + 1)
+        qplt.pcolormesh(cube[0])
+
+    plt.tight_layout()
+    plt.savefig(plot_path + 'Patterns')
+    plt.close()
+
+    fig.tight_layout()
+    fig.savefig(plot_path + 'Patterns Timeseries')
+
+
 def plot_cp_timeseries(list_cubelists, plot_path):
     """Plots timeseries of aggregated cubes, across all scenarios."""
     fig1, ax1 = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
@@ -28,14 +59,11 @@ def plot_cp_timeseries(list_cubelists, plot_path):
     fig2.suptitle("Anomaly Timeseries, 1850-2100", fontsize=18, y=0.98)
 
     fig3, ax3 = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
-    fig3.suptitle("Variable Timeseries, 1850-2100", fontsize=18, y=0.98)
-
-    fig4, ax4 = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
-    fig4.suptitle("Aggregated Global Patterns", fontsize=18, y=0.98)
+    fig3.suptitle("Patterns from a random grid-cell", fontsize=18, y=0.98)
 
     plt.figure(figsize=(14, 12))
     plt.subplots_adjust(hspace=0.5)
-    plt.suptitle("Aggregated Global Patterns, January", fontsize=18, y=0.95)
+    plt.suptitle("Global Patterns, January", fontsize=18, y=0.95)
 
     for i in range(len(list_cubelists)):
         cube_list = list_cubelists[i]
@@ -51,28 +79,21 @@ def plot_cp_timeseries(list_cubelists, plot_path):
                 if j > 5:
                     ax1[x, y].set_xlabel('Time')
             if i == 1:
-                # full timeseries
+                # anomaly timeseries
                 avg_cube = sf.area_avg(cube, return_cube=False)
                 ax2[x, y].plot(yrs, avg_cube)
                 ax2[x, y].set_ylabel(cube.long_name + " / " + str(cube.units))
                 if j > 5:
                     ax2[x, y].set_xlabel('Time')
             if i == 2:
-                # anomalies
-                avg_cube = sf.area_avg(cube, return_cube=False)
-                ax3[x, y].plot(yrs, avg_cube)
-                ax3[x, y].set_ylabel(cube.long_name + " / " + str(cube.units))
-                if j > 5:
-                    ax3[x, y].set_xlabel('Time')
-            if i == 3:
                 months = np.arange(1, 13)
                 # avg_cube = sf.area_avg(cube, return_cube=False)
-                ax4[x, y].plot(months, cube[:, 50, 50].data)
-                ax4[x, y].set_ylabel(
+                ax3[x, y].plot(months, cube[:, 50, 50].data)
+                ax3[x, y].set_ylabel(
                     str(cube.var_name) + " / " + str(cube.units))
                 if j > 5:
                     ax3[x, y].set_xlabel('Time')
-            if i == 3:
+            if i == 2:
                 # January patterns
                 plt.subplot(3, 3, j + 1)
                 qplt.pcolormesh(cube[0])
@@ -88,15 +109,11 @@ def plot_cp_timeseries(list_cubelists, plot_path):
     fig2.savefig(plot_path + 'Anomalies')
 
     fig3.tight_layout()
-    fig3.savefig(plot_path + 'Standard Timeseries')
-
-    fig4.tight_layout()
-    fig4.savefig(plot_path + 'Patterns Timeseries')
+    fig3.savefig(plot_path + 'Patterns Timeseries')
 
 
-def plot_scores(list_cubelists, plot_path):
+def plot_scores(cube_list, plot_path):
     # plot color mesh of individual months
-    cube_list = list_cubelists[4]
     for cube in cube_list:
         plt.figure(figsize=(14, 12))
         plt.subplots_adjust(hspace=0.5)
@@ -122,110 +139,17 @@ def plot_scores(list_cubelists, plot_path):
     plt.close()
 
 
-def plot_ebm_timeseries(list_cubes, plot_path, ocean_frac, land_frac):
-    """Plots timeseries of aggregated cubes, across all scenarios."""
-    fig, ax = plt.subplots(2, 3, figsize=(9, 8), sharey=True, sharex=True)
-    for i, cube in enumerate(list_cubes):
-        yrs = (1850 + np.arange(cube.shape[0])).astype('float')
-        if i == 0:
-            avg_cube = sf.area_avg(cube, return_cube=True)
-            avg_cube.data -= np.mean(avg_cube.data[0:40])
-            ax[0, 0].plot(yrs, avg_cube.data)
-            ax[0, 0].set_title('Global')
-            ax[0, 0].set_ylabel('Net TOA Radiation (Wm-2)')
-
-            avg_cube2 = sf.area_avg_landsea(cube,
-                                            ocean_frac,
-                                            land_frac,
-                                            land=True,
-                                            return_cube=True)
-            avg_cube2.data -= np.mean(avg_cube2.data[0:40])
-            ax[0, 1].plot(yrs, avg_cube2.data)
-            ax[0, 1].set_title('Land-Weighted')
-
-            avg_cube3 = sf.area_avg_landsea(cube,
-                                            ocean_frac,
-                                            land_frac,
-                                            land=False,
-                                            return_cube=True)
-            avg_cube3.data -= np.mean(avg_cube3.data[0:40])
-            ax[0, 2].plot(yrs, avg_cube3.data)
-            ax[0, 2].set_title('Ocean-Weighted')
-
-        if i == 1:
-            avg_cube = sf.area_avg(cube, return_cube=True)
-            avg_cube.data -= np.mean(avg_cube.data[0:40])
-            ax[1, 0].plot(yrs, avg_cube.data)
-            ax[1, 0].set_ylabel('Air Temperature $(K)$')
-            ax[1, 0].set_xlabel('Time')
-
-            avg_cube2 = sf.area_avg_landsea(cube,
-                                            ocean_frac,
-                                            land_frac,
-                                            land=True,
-                                            return_cube=True)
-            avg_cube2.data -= np.mean(avg_cube2.data[0:40])
-            ax[1, 1].plot(yrs, avg_cube2.data)
-            ax[1, 1].set_xlabel('Time')
-
-            avg_cube3 = sf.area_avg_landsea(cube,
-                                            ocean_frac,
-                                            land_frac,
-                                            land=False,
-                                            return_cube=True)
-            avg_cube3.data -= np.mean(avg_cube3.data[0:40])
-            ax[1, 2].plot(yrs, avg_cube3.data)
-            ax[1, 2].set_xlabel('Time')
-
-            fig.savefig(plot_path + "anomaly_plots")
-            plt.close(fig)
-
-    plt.figure(figsize=(8, 4))
-    for i, cube in enumerate(list_cubes):
-        if i == 0:
-            plt.subplot(121)
-            qplt.pcolormesh(cube[0])
-            plt.gca().coastlines()
-
-        if i == 1:
-            plt.subplot(122)
-            qplt.pcolormesh(cube[0])
-            plt.gca().coastlines()
-
-    plt.tight_layout()
-    plt.savefig(plot_path + cube.var_name + "_mesh_global_jan")
-    plt.close()
-
-    return fig
-
-
-def plot_ebm_prediction(temp_global, tas_delta, plot_path):
-    """Plots the EBM's tas prediction vs actual model output."""
-    yrs = (1850 + np.arange(temp_global.shape[0])).astype('float')
-
-    plt.plot(yrs,
-             temp_global,
-             color='black',
-             zorder=10,
-             linewidth=1.5,
-             label='EBM Prediction')
-    plt.plot(yrs, tas_delta, color='red', label='Model')
-    plt.legend(loc='upper left')
-    plt.xlabel("Time")
-    plt.ylabel("Air Surface Temperature (K)")
-
-    plt.savefig(plot_path + "_tas_check")
-    plt.close()
-
-
-def forcing_plot(reg, avg_list, yrs, forcing, plot_path):
+def ebm_plots(reg, avg_list, yrs, forcing, lambda_c, temp_global, tas_delta,
+              plot_path):
     """Plots the regression between tas and rtmt, as well as the resultant
     forcing timeseries."""
+    yrs = (1850 + np.arange(temp_global.shape[0])).astype('float')
+
     # regression line
     x_reg = np.linspace(-3.0, 4.0, 2)
     y_reg = reg.slope * x_reg + reg.intercept
 
-    fig, ax = plt.subplots(1, 2, figsize=(12, 4))
+    fig, ax = plt.subplots(3, 1, figsize=(6, 12))
 
     # plotting regression line
     ax[0].scatter(avg_list[2].data, avg_list[3].data, c='b', label='tas, rtmt')
@@ -236,6 +160,28 @@ def forcing_plot(reg, avg_list, yrs, forcing, plot_path):
     ax[1].plot(yrs, forcing)
     ax[1].set_xlabel("Time")
     ax[1].set_ylabel("Radiative forcing (Wm-2)")
+    bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
+    ld = r"$\lambda$"
+    ax[1].text(0.2,
+               0.9,
+               f"{ld} = {lambda_c:.2f}",
+               transform=ax[1].transAxes,
+               ha="center",
+               va="center",
+               size=11,
+               bbox=bbox_props)
 
-    fig.savefig(plot_path + '_regression+forcing')
+    # plotting ebm prediction
+    ax[2].plot(yrs,
+               temp_global,
+               color='black',
+               zorder=10,
+               linewidth=1.5,
+               label='EBM Prediction')
+    ax[2].plot(yrs, tas_delta, color='red', label='Model')
+    ax[2].legend(loc='upper left')
+    ax[2].set_xlabel("Time")
+    ax[2].set_ylabel("Air Surface Temperature (K)")
+
+    fig.savefig(plot_path + 'ebm_plots')
     plt.close(fig)

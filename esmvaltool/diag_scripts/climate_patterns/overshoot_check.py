@@ -9,7 +9,7 @@ import iris.cube
 import numpy as np
 import sub_functions as sf
 from iris.util import equalise_attributes
-from plotting import forcing_plot, plot_ebm_prediction, plot_ebm_timeseries
+from plotting import ebm_plots
 from scipy import stats
 from scipy.sparse.linalg import spsolve
 
@@ -266,8 +266,7 @@ def save_params(cfg, kappa, lambda_o, lambda_l, nu_ratio):
         file.close()
 
 
-def create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube,
-                           plot_path):
+def create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube):
 
     # global average and anomalies of all cubes
     var_list = [tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube]
@@ -285,21 +284,17 @@ def create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube,
     forcing = avg_list[1].data + (-lambda_c * avg_list[0].data)
     yrs = (1850 + np.arange(forcing.shape[0])).astype('float')
 
-    # plotting
-    forcing_plot(reg, avg_list, yrs, forcing, plot_path)
-
-    return forcing
+    return reg, avg_list, yrs, forcing, lambda_c
 
 
-def ebm_check(plot_path, rad_forcing, of, kappa, lambda_o, lambda_l, nu_ratio,
-              tas_delta):
+def ebm_check(rad_forcing, of, kappa, lambda_o, lambda_l, nu_ratio, tas_delta):
 
     # runs the EBM tas prediction, with derived forcing
     temp_ocean_top = sf.kappa_calc_predict(rad_forcing, of, kappa, lambda_o,
                                            lambda_l, nu_ratio)
     temp_global = (of + (1 - of) * nu_ratio) * temp_ocean_top
 
-    plot_ebm_prediction(temp_global, tas_delta, plot_path)
+    return temp_global, tas_delta
 
 
 def main(cfg):
@@ -377,8 +372,8 @@ def main(cfg):
     logger.info("Kappa = ", kappa)
 
     plot_path = cfg["plot_dir"] + "/"
-    rad_forcing = create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube,
-                                         rtmt_4x_cube, plot_path)
+    reg, avg_list, yrs, rad_forcing, lambda_c = create_regression_plot(
+        tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube)
 
     lambda_o, lambda_l, nu_ratio = 0.498, 0.977, 1.473
 
@@ -388,17 +383,15 @@ def main(cfg):
     #                                                  tas_delta_land,
     #                                                  tas_delta_ocean)
 
-    ebm_check(plot_path, rad_forcing, of, kappa, lambda_o, lambda_l, nu_ratio,
-              tas_delta)
-
-    # list of variable cube lists
-    list_of_cubes = [toa_cube, tas_cube]
+    temp_global, t_delta = ebm_check(rad_forcing, of, kappa, lambda_o,
+                                     lambda_l, nu_ratio, tas_delta)
 
     # saving EBM parameters
     save_params(cfg, kappa, lambda_o, lambda_l, nu_ratio)
 
-    # saving figures
-    plot_ebm_timeseries(list_of_cubes, plot_path, ocean_frac, land_frac)
+    # plotting
+    ebm_plots(reg, avg_list, yrs, rad_forcing, lambda_c, temp_global, t_delta,
+              plot_path)
 
 
 if __name__ == "__main__":

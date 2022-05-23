@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 
 import iris
@@ -191,3 +192,15 @@ def kappa_calc_predict(q, f, kappa, lambda_o, lambda_l, nu):
     logger.info("Heat conservation check (%) = ", round(conserved, 2))
 
     return temp_ocean_top
+
+
+def make_model_dirs(cube_initial, work_path, plot_path):
+    w_path = os.path.join(work_path, cube_initial.attributes['source_id'])
+    p_path = os.path.join(plot_path, cube_initial.attributes['source_id'])
+    os.mkdir(w_path)
+    os.mkdir(p_path)
+
+    model_work_dir = w_path + "/"
+    model_plot_dir = p_path + "/"
+
+    return model_work_dir, model_plot_dir

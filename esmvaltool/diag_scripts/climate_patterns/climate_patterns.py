@@ -7,12 +7,12 @@ import iris.cube
 import numpy as np
 import sklearn.linear_model
 import sub_functions as sf
-from plotting import plot_cp_timeseries, plot_scores
+from plotting import plot_cp_timeseries, plot_patterns, plot_scores
 from rename_variables import (
     rename_anom_variables,
     rename_clim_variables,
     rename_regression_variables,
-    rename_variables,
+    rename_variables_base,
 )
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -32,9 +32,6 @@ def compute_diagnostic(filename):
 
 def climatology(cube):
     """Handles aggregation to make climatology."""
-
-    # time extraction
-
     cube_40yr = cube.extract(
         iris.Constraint(time=lambda t: 1850 <= t.point.year <= 1889,
                         month_number=lambda t: 1 <= t.point <= 12))
@@ -44,7 +41,7 @@ def climatology(cube):
 
 
 def constrain_latitude(cube):
-    """Constraining latitude to meet IMOGEN grid cell specifications."""
+    """Constrains latitude to decrease run-time in IMOGEN."""
     cube_clipped = cube.extract(
         iris.Constraint(latitude=lambda cell: 82.5 >= cell >= -55))
     return cube_clipped
@@ -65,7 +62,7 @@ def diurnal_temp_range(cubelist):
     """Calculates diurnal range from daily max and min temperatures."""
     range_cube = cubelist[0] - cubelist[1]
     range_cube.rename("Diurnal Range")
-    range_cube.var_name = ("range_t1p5m")
+    range_cube.var_name = ("range_tl1")
 
     return range_cube
 
@@ -134,7 +131,7 @@ def calculate_anomaly(clim_list, ts_list):
             'month_number').points - 1  # -1 because months are numbered 1..12
         anom_list_final[i].data -= clim_list_final[i][i_months].data
 
-    return clim_list_final, ts_list_final, anom_list_final
+    return clim_list_final, anom_list_final
 
 
 def regression(tas, cube_data):
@@ -177,7 +174,7 @@ def calculate_regressions(anom_list):
     score_list = iris.cube.CubeList([])
 
     for cube in anom_list:
-        if cube.var_name == 't1p5m_anom':
+        if cube.var_name == 'tl1_anom':
 
             # getting last 85 years from full timeseries
             tas = cube[-1020:]
@@ -256,58 +253,116 @@ def write_scores(scores, work_path):
         file.close()
 
 
+def cube_saver(list_of_cubelists, work_path, name_list, mode):
+
+    if mode == 'imogen_scores':
+        for i in range(0, 4):
+            iris.save(list_of_cubelists[i], work_path + name_list[i])
+
+    if mode == 'imogen':
+        for i in range(0, 3):
+            iris.save(list_of_cubelists[i], work_path + name_list[i])
+
+    if mode == 'scores':
+        for i in range(2, 4):
+            for cube in list_of_cubelists[i]:
+                rename_variables_base(cube)
+            iris.save(list_of_cubelists[i], work_path + name_list[i])
+
+    if mode == 'base':
+        for cube in list_of_cubelists[2]:
+            rename_variables_base(cube)
+        iris.save(list_of_cubelists[2], work_path + name_list[2])
+
+
+def saving_outputs(clim_list_final, anom_list_final, regressions, scores,
+                   imogen_mode, r2_scores, plot_path, work_path):
+    """Saves data and plots to relevant directories."""
+    list_of_cubelists = [clim_list_final, anom_list_final, regressions, scores]
+    name_list = [
+        "climatology_variables.nc", "anomaly_variables.nc", "patterns.nc",
+        "scores.nc"
+    ]
+
+    # saving data + plotting
+    if imogen_mode is True:
+        if r2_scores is True:
+            plot_scores(list_of_cubelists[3], plot_path)
+            write_scores(scores, work_path)
+            plot_cp_timeseries(list_of_cubelists, plot_path)
+            cube_saver(list_of_cubelists,
+                       work_path,
+                       name_list,
+                       mode='imogen_scores')
+
+        elif r2_scores is False:
+            plot_cp_timeseries(list_of_cubelists, plot_path)
+            cube_saver(list_of_cubelists, work_path, name_list, mode='imogen')
+
+    elif imogen_mode is False:
+        if r2_scores is True:
+            plot_scores(list_of_cubelists[3], plot_path)
+            write_scores(scores, work_path)
+            plot_patterns(list_of_cubelists[2], plot_path)
+            cube_saver(list_of_cubelists, work_path, name_list, mode='scores')
+
+        elif r2_scores is False:
+            plot_patterns(list_of_cubelists[2], plot_path)
+            cube_saver(list_of_cubelists, work_path, name_list, mode='base')
+
+
 def main(cfg):
     # gets a description of the preprocessed data that we will use as input.
     input_data = cfg["input_data"].values()
-
-    clim_list = iris.load([])
-    ts_list = iris.load([])
-
-    for dataset in input_data:
-        input_file = dataset["filename"]
-
-        # preparing single cube
-        cube_initial = compute_diagnostic(input_file)
-        # cube_constrained = constrain_latitude(cube_initial)
-        cube_constrained = cube_initial
-
-        # appending to timeseries list
-        ts_list.append(cube_constrained)
-
-        # making climatology
-        clim_cube = climatology(cube_constrained)
-        clim_list.append(clim_cube)
-
-    # calculate anomaly over historical + ssp timeseries
-    clim_list_final, ts_list_final, anom_list_final = calculate_anomaly(
-        clim_list, ts_list)
-
-    for i in range(len(clim_list_final)):
-        rename_clim_variables(clim_list_final[i])
-        rename_variables(ts_list_final[i])
-        rename_anom_variables(anom_list_final[i])
-
-    regressions, scores = calculate_regressions(anom_list_final.copy())
-
-    # list of variable cube lists
-    list_of_cubelists = [
-        clim_list_final, ts_list_final, anom_list_final, regressions, scores
-    ]
-    name_list = [
-        "climatology_variables.nc", "ts_variables.nc", "anomaly_variables.nc",
-        "regressions.nc", "scores.nc"
-    ]
-
-    # saving data
+    grid_spec = cfg["grid"]
+    imogen_mode = cfg["imogen_mode"]
+    r2_scores = cfg["output_r2_scores"]
     work_path = cfg["work_dir"] + "/"
-    for i in range(len(list_of_cubelists)):
-        iris.save(list_of_cubelists[i], work_path + name_list[i])
-
-    # saving figures
     plot_path = cfg["plot_dir"] + "/"
-    plot_cp_timeseries(list_of_cubelists, plot_path)
-    plot_scores(list_of_cubelists, plot_path)
-    write_scores(scores, work_path)
+
+    models = []
+    for x in input_data:
+        model = x['dataset']
+        if model not in models:
+            models.append(model)
+
+    for model in models:
+        clim_list = iris.load([])
+        ts_list = iris.load([])
+        for dataset in input_data:
+            if dataset['dataset'] == model:
+                input_file = dataset["filename"]
+
+                # preparing single cube
+                cube_initial = compute_diagnostic(input_file)
+
+                if grid_spec == "constrained":
+                    cube = constrain_latitude(cube_initial)
+                elif grid_spec == "full":
+                    cube = cube_initial
+
+                # appending to timeseries list
+                ts_list.append(cube)
+
+                # making climatology
+                clim_cube = climatology(cube)
+                clim_list.append(clim_cube)
+
+        # calculate anomaly over historical + ssp timeseries
+        clim_list_final, anom_list_final = calculate_anomaly(
+            clim_list, ts_list)
+
+        for i in range(len(clim_list_final)):
+            rename_clim_variables(clim_list_final[i])
+            rename_anom_variables(anom_list_final[i])
+
+        regressions, scores = calculate_regressions(anom_list_final.copy())
+
+        model_work_dir, model_plot_dir = sf.make_model_dirs(
+            cube_initial, work_path, plot_path)
+
+        saving_outputs(clim_list_final, anom_list_final, regressions, scores,
+                       imogen_mode, r2_scores, model_plot_dir, model_work_dir)
 
 
 if __name__ == "__main__":

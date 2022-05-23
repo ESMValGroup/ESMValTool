@@ -13,23 +13,23 @@ preprocessors:
     monthly_statistics:
       operator: mean
 
-    # regrid:
-    #   target_grid: {start_longitude: -180, end_longitude: 176.25, step_longitude: 3.75,
-    #                 start_latitude: -55, end_latitude: 82.5, step_latitude: 2.5}
-    #   scheme: linear
+    regrid:
+      target_grid: {start_longitude: -180, end_longitude: 176.25, step_longitude: 3.75,
+                    start_latitude: -55, end_latitude: 82.5, step_latitude: 2.5}
+      scheme: linear
 
   mean_annual:
     annual_statistics:
       operator: mean
 
 monthly_global_settings: &monthly_global_settings
-  start_year: 1850
-  end_year: 2100
+  mip: Amon
+  project: CMIP6
   preprocessor: global_mean_monthly
 
 annual_mean_settings: &annual_mean_settings
-  start_year: 1850
-  end_year: 2100
+  mip: Amon
+  project: CMIP6
   preprocessor: mean_annual
 
 annual_mean_settings_over_1: &annual_mean_settings_over_1
@@ -42,89 +42,127 @@ annual_mean_settings_over_2: &annual_mean_settings_over_2
   end_year: 2100
   preprocessor: mean_annual
 
-annual_mean_settings_abrupt: &annual_mean_settings_abrupt
-  start_year: 1850
-  end_year: 1999
-  preprocessor: mean_annual
+CMIP6_PICONTROL: &cmip6_picontrol
+  - {dataset: ACCESS-CM2,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-ESM1-5,   exp: piControl,    ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM5,         exp: piControl,    ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CNRM-CM6-1,      exp: piControl,    ensemble: r1i1p1f2, grid: gr}
+  - {dataset: CNRM-CM6-1-HR,   exp: piControl,    ensemble: r1i1p1f2, grid: gr}
+  - {dataset: CNRM-ESM2-1,     exp: piControl,    ensemble: r1i1p1f2, grid: gr}
+  - {dataset: EC-Earth3-Veg,   exp: piControl,    ensemble: r1i1p1f1, grid: gr}
+  - {dataset: FGOALS-g3,       exp: piControl,    ensemble: r1i1p1f1, grid: gn}
+  - {dataset: HadGEM3-GC31-LL, exp: piControl,    ensemble: r1i1p1f1, grid: gn}
+  - {dataset: HadGEM3-GC31-MM, exp: piControl,    ensemble: r1i1p1f1, grid: gn}
+  - {dataset: INM-CM4-8,       exp: piControl,    ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: IPSL-CM6A-LR,    exp: piControl,    ensemble: r1i1p1f1, grid: gr}
+  - {dataset: MIROC6,          exp: piControl,    ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MIROC-ES2L,      exp: piControl,    ensemble: r1i1p1f2, grid: gn}
+  - {dataset: MPI-ESM1-2-HR,   exp: piControl,    ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MPI-ESM1-2-LR,   exp: piControl,    ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MRI-ESM2-0,      exp: piControl,    ensemble: r1i1p1f1, grid: gn}
+  - {dataset: UKESM1-0-LL,     exp: piControl,    ensemble: r1i1p1f2, grid: gn}
+
+CMIP6_ABRUPT: &cmip6_abrupt
+  - {dataset: ACCESS-CM2,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:  950, end_year: 1099, institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-ESM1-5,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:  101, end_year:  250}
+  - {dataset: CanESM5,         exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: CNRM-CM6-1,      exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: CNRM-CM6-1-HR,   exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: CNRM-ESM2-1,     exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: EC-Earth3-Veg,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: FGOALS-g3,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:  463, end_year:  612}
+  - {dataset: HadGEM3-GC31-LL, exp: abrupt-4xCO2, ensemble: r1i1p1f3, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: HadGEM3-GC31-MM, exp: abrupt-4xCO2, ensemble: r1i1p1f3, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: INM-CM4-8,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 1999}
+  - {dataset: IPSL-CM6A-LR,    exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: MIROC6,          exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3349}
+  - {dataset: MIROC-ES2L,      exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MPI-ESM1-2-HR,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MPI-ESM1-2-LR,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MRI-ESM2-0,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: UKESM1-0-LL,     exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
+
+CMIP6_FULL: &cmip6_full
+  - {dataset: ACCESS-CM2,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100, institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-ESM1-5,   exp: [historical, ssp585], ensemble: r3i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: CanESM5,         exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: CNRM-CM6-1,      exp: [historical, ssp585], ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 2100}
+  - {dataset: CNRM-CM6-1-HR,   exp: [historical, ssp585], ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 2100}
+  - {dataset: CNRM-ESM2-1,     exp: [historical, ssp585], ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 2100}
+  - {dataset: EC-Earth3-Veg,   exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2100}
+  - {dataset: FGOALS-g3,       exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: HadGEM3-GC31-LL, exp: [historical, ssp585], ensemble: r1i1p1f3, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: HadGEM3-GC31-MM, exp: [historical, ssp585], ensemble: r1i1p1f3, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: INM-CM4-8,       exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 2100}
+  - {dataset: IPSL-CM6A-LR,    exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2100}
+  - {dataset: MIROC6,          exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: MIROC-ES2L,      exp: [historical, ssp585], ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: MPI-ESM1-2-HR,   exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: MPI-ESM1-2-LR,   exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: MRI-ESM2-0,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: UKESM1-0-LL,     exp: [historical, ssp585], ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 2100}
 
 diagnostics:
-  monthly_timeseries:
-    description: Mean monthly variables
+  # monthly_timeseries:
+  #   description: Mean monthly variables
 
-    variables:
-      tasmax_585:
-        short_name: tasmax
-        <<: *monthly_global_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #   variables:
+  #     tasmax_585:
+  #       short_name: tasmax
+  #       <<: *monthly_global_settings
+  #       additional_datasets: *cmip6_full
 
-      tasmin_585:
-        short_name: tasmin
-        <<: *monthly_global_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     tasmin_585:
+  #       short_name: tasmin
+  #       <<: *monthly_global_settings
+  #       additional_datasets: *cmip6_full
 
-      tas_585:
-        short_name: tas
-        <<: *monthly_global_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     tas_585:
+  #       short_name: tas
+  #       <<: *monthly_global_settings
+  #       additional_datasets: *cmip6_full
 
-      hurs_585:
-        short_name: hurs
-        <<: *monthly_global_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     hurs_585:
+  #       short_name: hurs
+  #       <<: *monthly_global_settings
+  #       additional_datasets: *cmip6_full
 
-      huss_585:
-        short_name: huss
-        <<: *monthly_global_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     huss_585:
+  #       short_name: huss
+  #       <<: *monthly_global_settings
+  #       additional_datasets: *cmip6_full
 
-      pr_585:
-        short_name: pr
-        <<: *monthly_global_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     pr_585:
+  #       short_name: pr
+  #       <<: *monthly_global_settings
+  #       additional_datasets: *cmip6_full
 
-      sfcWind_585:
-        short_name: sfcWind
-        <<: *monthly_global_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     sfcWind_585:
+  #       short_name: sfcWind
+  #       <<: *monthly_global_settings
+  #       additional_datasets: *cmip6_full
 
-      ps_585:
-        short_name: ps
-        <<: *monthly_global_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     ps_585:
+  #       short_name: ps
+  #       <<: *monthly_global_settings
+  #       additional_datasets: *cmip6_full
 
-      rsds_585:
-        short_name: rsds
-        <<: *monthly_global_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     rsds_585:
+  #       short_name: rsds
+  #       <<: *monthly_global_settings
+  #       additional_datasets: *cmip6_full
 
-      rlds_585:
-        short_name: rlds
-        <<: *monthly_global_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     rlds_585:
+  #       short_name: rlds
+  #       <<: *monthly_global_settings
+  #       additional_datasets: *cmip6_full
 
-    scripts:
-      climate_patterns_script:
-        script: climate_patterns/climate_patterns.py
+  #   scripts:
+  #     climate_patterns_script:
+  #       script: climate_patterns/climate_patterns.py
+  #       grid: constrained # options: constrained, full
+  #       imogen_mode: on # options: on, off
+  #       output_r2_scores: off # options: on, off
 
   annual_timeseries:
     description: Mean annual TOA fluxes and tas
@@ -132,159 +170,153 @@ diagnostics:
     variables:
       land_frac:
         short_name: sftlf
-        timerange: '1850/2100'
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, mip: fx,
-             exp: piControl, ensemble: r1i1p1f2, grid: gn}
+        mip: fx
+        project: CMIP6
+        additional_datasets: *cmip6_picontrol
 
-      tas_abrupt4x:
-        short_name: tas
-        <<: *annual_mean_settings_abrupt
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon,
-             exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn}
-
-      rtmt_abrupt4x:
-        short_name: rtmt
-        <<: *annual_mean_settings_abrupt
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon,
-             exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn}
-
-      rtmt_585:
-        short_name: rtmt
-        <<: *annual_mean_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
       tas_585:
         short_name: tas
         <<: *annual_mean_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+        additional_datasets: *cmip6_full
 
       rlut_585:
         short_name: rlut
         <<: *annual_mean_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+        additional_datasets: *cmip6_full
 
       rsut_585:
         short_name: rsut
         <<: *annual_mean_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+        additional_datasets: *cmip6_full
 
       rsdt_585:
         short_name: rsdt
         <<: *annual_mean_settings
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+        additional_datasets: *cmip6_full
+
+      tas_abrupt4x:
+        short_name: tas
+        <<: *annual_mean_settings
+        additional_datasets: *cmip6_abrupt
+
+      rlut_abrupt4x:
+        short_name: rlut
+        <<: *annual_mean_settings
+        additional_datasets: *cmip6_abrupt
+
+      rsut_abrupt4x:
+        short_name: rsut
+        <<: *annual_mean_settings
+        additional_datasets: *cmip6_abrupt
+
+      rsdt_abrupt4x:
+        short_name: rsdt
+        <<: *annual_mean_settings
+        additional_datasets: *cmip6_abrupt
 
     scripts:
       energy_balance_script:
         script: climate_patterns/ebm_parameters.py
+        include_params: yes # options: yes, no
 
-  overshoots:
-    description: overshoot scenario checks
+  # optional look at EBM prediction of overshoot scenarios
 
-    variables:
-      land_frac:
-        short_name: sftlf
-        timerange: '1850/2100'
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, mip: fx,
-             exp: piControl, ensemble: r1i1p1f2, grid: gn}
+  # overshoots:
+  #   description: overshoot scenario checks
 
-      tas_abrupt4x:
-        short_name: tas
-        <<: *annual_mean_settings_abrupt
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon,
-             exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn}
+  #   variables:
+  #     land_frac:
+  #       short_name: sftlf
+  #       timerange: '1850/2100'
+  #       additional_datasets:
+  #         - {dataset: UKESM1-0-LL, project: CMIP6, mip: fx,
+  #            exp: piControl, ensemble: r1i1p1f2, grid: gn}
 
-      rtmt_abrupt4x:
-        short_name: rtmt
-        <<: *annual_mean_settings_abrupt
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon,
-             exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn}
+  #     tas_abrupt4x:
+  #       short_name: tas
+  #       <<: *annual_mean_settings_abrupt
+  #       additional_datasets:
+  #         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon,
+  #            exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn}
 
-      rtmt_585:
-        short_name: rtmt
-        <<: *annual_mean_settings_over_1
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     rtmt_abrupt4x:
+  #       short_name: rtmt
+  #       <<: *annual_mean_settings_abrupt
+  #       additional_datasets:
+  #         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon,
+  #            exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn}
 
-      tas_585:
-        short_name: tas
-        <<: *annual_mean_settings_over_1
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     rtmt_585:
+  #       short_name: rtmt
+  #       <<: *annual_mean_settings_over_1
+  #       additional_datasets:
+  #         - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+  #            mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
-      rlut_585:
-        short_name: rlut
-        <<: *annual_mean_settings_over_1
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     tas_585:
+  #       short_name: tas
+  #       <<: *annual_mean_settings_over_1
+  #       additional_datasets:
+  #         - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+  #            mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
-      rsut_585:
-        short_name: rsut
-        <<: *annual_mean_settings_over_1
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     rlut_585:
+  #       short_name: rlut
+  #       <<: *annual_mean_settings_over_1
+  #       additional_datasets:
+  #         - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+  #            mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
-      rsdt_585:
-        short_name: rsdt
-        <<: *annual_mean_settings_over_1
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     rsut_585:
+  #       short_name: rsut
+  #       <<: *annual_mean_settings_over_1
+  #       additional_datasets:
+  #         - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+  #            mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
-      rtmt_534:
-        short_name: rtmt
-        <<: *annual_mean_settings_over_2
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [ssp534-over],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     rsdt_585:
+  #       short_name: rsdt
+  #       <<: *annual_mean_settings_over_1
+  #       additional_datasets:
+  #         - {dataset: UKESM1-0-LL, project: CMIP6, exp: [historical, ssp585],
+  #            mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
-      tas_534:
-        short_name: tas
-        <<: *annual_mean_settings_over_2
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [ssp534-over],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     rtmt_534:
+  #       short_name: rtmt
+  #       <<: *annual_mean_settings_over_2
+  #       additional_datasets:
+  #         - {dataset: UKESM1-0-LL, project: CMIP6, exp: [ssp534-over],
+  #            mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
-      rlut_534:
-        short_name: rlut
-        <<: *annual_mean_settings_over_2
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [ssp534-over],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     tas_534:
+  #       short_name: tas
+  #       <<: *annual_mean_settings_over_2
+  #       additional_datasets:
+  #         - {dataset: UKESM1-0-LL, project: CMIP6, exp: [ssp534-over],
+  #            mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
-      rsut_534:
-        short_name: rsut
-        <<: *annual_mean_settings_over_2
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [ssp534-over],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     rlut_534:
+  #       short_name: rlut
+  #       <<: *annual_mean_settings_over_2
+  #       additional_datasets:
+  #         - {dataset: UKESM1-0-LL, project: CMIP6, exp: [ssp534-over],
+  #            mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
-      rsdt_534:
-        short_name: rsdt
-        <<: *annual_mean_settings_over_2
-        additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: [ssp534-over],
-             mip: Amon, ensemble: r1i1p1f2, grid: gn}
+  #     rsut_534:
+  #       short_name: rsut
+  #       <<: *annual_mean_settings_over_2
+  #       additional_datasets:
+  #         - {dataset: UKESM1-0-LL, project: CMIP6, exp: [ssp534-over],
+  #            mip: Amon, ensemble: r1i1p1f2, grid: gn}
 
-    scripts:
-      overshoot_script:
-        script: climate_patterns/overshoot_check.py
+  #     rsdt_534:
+  #       short_name: rsdt
+  #       <<: *annual_mean_settings_over_2
+  #       additional_datasets:
+  #         - {dataset: UKESM1-0-LL, project: CMIP6, exp: [ssp534-over],
+  #            mip: Amon, ensemble: r1i1p1f2, grid: gn}
+
+  #   scripts:
+  #     overshoot_script:
+  #       script: climate_patterns/overshoot_check.py
