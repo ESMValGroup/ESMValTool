@@ -15,6 +15,7 @@ import numpy as np
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
+    get_plot_filename,
     save_data,
     save_figure,
     select_metadata,
@@ -25,12 +26,19 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(Path(__file__).stem)
 
+VAR_NAMES = {
+    'clt': 'total_cloud_fraction',
+    'clivi': 'ice_water_path',
+    'lwp': 'liquid_water_path',
+    'swcre': 'shortwave_cloud_radiative_effect',
+    'lwcre': 'longwave_cloud_radiative_effect',
+    'netcre': 'net_cloud_radiative_effect',
+}
 LINE_LEGEND = {
     'ECS_high_hist': 'ECS_high',
     'ECS_med_hist': 'ECS_med',
     'ECS_low_hist': 'ECS_low',
 }
-
 LINE_COLOR = {
     'ECS_high_hist': 'royalblue',
     'ECS_high_scen': 'royalblue',
@@ -43,7 +51,6 @@ LINE_COLOR = {
     'CMIP3': 'darkcyan',
     'OBS': 'black'
 }
-
 LINE_DASH = {
     'ECS_high_hist': 'solid',
     'ECS_high_scen': 'dashed',
@@ -98,14 +105,67 @@ def _get_cube_list(input_files):
     return cubes
 
 
+def _get_multi_model_mean(cubes, var):
+    """Compute multi-model mean."""
+
+    logger.debug("Calculating multi-model mean")
+    datasets = []
+    mmm = []
+    for (dataset_name, cube) in cubes.items():
+        datasets.append(dataset_name)
+        mmm.append(cube.data)
+    mmm = np.ma.array(mmm)
+    dataset_0 = list(cubes.keys())[0]
+    mmm_cube = cubes[dataset_0].copy(data=np.ma.mean(mmm, axis=0))
+    attributes = {
+        'dataset': 'MultiModelMean',
+        'short_name': var,
+        'datasets': '|'.join(datasets),
+    }
+    mmm_cube.attributes = attributes
+    #print(mmm_cube)
+    return  mmm_cube
+
+
+def _get_multi_model_quantile(cubes, var, quantile):
+    """Compute multi-model quantile."""
+
+    logger.debug("Calculating multi-model %s quantile", quantile)
+    datasets = []
+    mmq = []
+    for (dataset_name, cube) in cubes.items():
+        datasets.append(dataset_name)
+        mmq.append(cube.data)
+    mmq = np.ma.array(mmq)
+    dataset_0 = list(cubes.keys())[0]
+    mmq_cube = cubes[dataset_0].copy(data=np.quantile(mmq, quantile, axis=0))
+    attributes = {
+        'dataset': 'MultiModel' + str(quantile),
+        'short_name': var,
+        'datasets': '|'.join(datasets),
+    }
+    mmq_cube.attributes = attributes
+    #print(mmq_cube)
+    return  mmq_cube
+
 
 def compute_diagnostic(filename):
     """Compute an example diagnostic."""
     logger.debug("Loading %s", filename)
     cube = iris.load_cube(filename)
 
-    logger.debug("Running example computation")
+    if cube.var_name == 'pr':
+      cube.units = cube.units / 'kg m-3'
+      cube.data = cube.core_data() / 1000.
+      cube.convert_units('mm day-1')
+    elif cube.var_name == 'clivi':
+        cube.convert_units('g/kg')
+    elif cube.var_name == 'lwp':
+        cube.convert_units('g/kg')
+
+    logger.debug("Reading data")
     cube = iris.util.squeeze(cube)
+    #print(cube)
     return cube
 
 
@@ -115,9 +175,108 @@ def compute_diff(filename1, filename2):
     cube1 = iris.load_cube(filename1)
     cube2 = iris.load_cube(filename2)
 
+    if cube1.var_name == 'pr':
+      cube1.units = cube.units / 'kg m-3'
+      cube1.data = cube.core_data() / 1000.
+      cube1.convert_units('mm day-1')
+      cube2.units = cube.units / 'kg m-3'
+      cube2.data = cube.core_data() / 1000.
+      cube2.convert_units('mm day-1')
+    elif cube1.var_name == 'clivi':
+        cube1.convert_units('g/kg')
+        cube2.convert_units('g/kg')
+    elif cube1.var_name == 'lwp':
+        cube1.convert_units('g/kg')
+        cube2.convert_units('g/kg')
+
     cube = cube2 - cube1
     cube.metadata = cube1.metadata
+    cube = iris.util.squeeze(cube)
+    #print(cube)
     return cube
+
+
+def compute_diff_temp(input_data, group, dataset):
+    """Compute relative change per temperture change."""
+
+    dataset_name = dataset['dataset']
+    var = dataset['short_name']
+
+    input_file_1 = dataset['filename']
+
+    var_data_2 = select_metadata(input_data,
+                                 short_name=var,
+                                 dataset=dataset_name,
+                                 variable_group=group[1]) 
+    if not var_data_2:
+        raise ValueError(
+            f"No '{var}' data for '{dataset_name}' in '{group[1]}' available")
+
+    input_file_2 = var_data_2[0]['filename']
+
+    tas_data_1 = select_metadata(input_data,
+                              short_name='tas',
+                              dataset=dataset_name,
+                              variable_group='tas_'+group[0]) 
+    tas_data_2 = select_metadata(input_data,
+                              short_name='tas',
+                              dataset=dataset_name,
+                              variable_group='tas_'+group[1]) 
+    if not tas_data_1:
+        raise ValueError(
+            f"No 'tas' data for '{dataset_name}' in '{group[0]}' available")
+    if not tas_data_2:
+        raise ValueError(
+            f"No 'tas' data for '{dataset_name}' in '{group[1]}' available")
+    input_file_tas_1 = tas_data_1[0]['filename']
+    input_file_tas_2 = tas_data_2[0]['filename']
+
+    cube = compute_diagnostic(input_file_1)
+    if var in ['lwp', 'clivi']:
+        cube.data[cube.data < 0.001] = 0.0
+
+    cube_diff = compute_diff(input_file_1, input_file_2)
+    cube_tas_diff = compute_diff(input_file_tas_1, input_file_tas_2)
+
+    cube_tas_diff.data[cube_tas_diff.data < 0.1] = 0.0
+
+    #cube_diff = cube
+    #cube_diff = cube_tas_diff
+    #cube_diff = 100. * (cube_diff / cube)
+    cube_diff = 100. * (cube_diff / cube) / cube_tas_diff
+
+    cube_diff.metadata = cube.metadata
+
+    #cube_diff.units = 'K'
+    #cube_diff.units = 'g/kg/K'
+    cube_diff.units = '%/K'
+    
+    return cube_diff
+
+
+def plot_model(cube, attributes, plot_type, cfg):
+    """Plot each single model."""
+
+    plt.figure(figsize=(12, 8))
+
+    lat = cube.coord('latitude')
+    qplt.plot(lat, cube)
+
+    # Appearance
+    dataset_name = attributes['dataset']
+    title = f'{VAR_NAMES.get(cube.var_name, cube.var_name)} for {dataset_name}'
+    filename = ('{}_{}'.format(VAR_NAMES.get(cube.var_name, cube.var_name),
+                                  dataset_name))
+    #filename = ('{}_{}_{}'.format(VAR_NAMES.get(cube.var_name, cube.var_name),
+    #                              attributes['exp'], dataset_name))
+
+    plt.title(title)
+    plot_path = get_plot_filename(filename, cfg)
+    plt.savefig(plot_path,
+                bbox_inches='tight',
+                orientation='landscape')
+    logger.info("Wrote %s", plot_path)
+    plt.close()
 
 
 def plot_diagnostic(cube, legend, plot_type, cfg):
@@ -132,15 +291,6 @@ def plot_diagnostic(cube, legend, plot_type, cfg):
         line_dash = LINE_DASH.get(legend, legend)
 
         plt.subplot(211)
-
-        if cube.var_name == 'pr':
-          cube.units = cube.units / 'kg m-3'
-          cube.data = cube.core_data() / 1000.
-          cube.convert_units('mm day-1')
-        elif cube.var_name == 'cli':
-            cube.convert_units('g/kg')
-        elif cube.var_name == 'clw':
-            cube.convert_units('g/kg')
 
         if plot_type == 'height':
           cube.coord('air_pressure').convert_units('hPa')
@@ -172,9 +322,9 @@ def plot_diagnostic_diff(cube, legend, plot_type, cfg):
           cube.units = cube.units / 'kg m-3'
           cube.data = cube.core_data() / 1000.
           cube.convert_units('mm day-1')
-        elif cube.var_name == 'cli':
+        elif cube.var_name == 'clivi':
             cube.convert_units('g/kg')
-        elif cube.var_name == 'clw':
+        elif cube.var_name == 'lwp':
             cube.convert_units('g/kg')
 
         if plot_type == 'height':
@@ -205,10 +355,10 @@ def plot_errorband(cube1, cube2, legend, plot_type, cfg):
       cube2.units = cube2.units / 'kg m-3'
       cube2.data = cube2.core_data() / 1000.
       cube2.convert_units('mm day-1')
-    elif cube1.var_name == 'cli':
+    elif cube1.var_name == 'clivi':
         cube1.convert_units('g/kg')
         cube2.convert_units('g/kg')
-    elif cube1.var_name == 'clw':
+    elif cube1.var_name == 'lwp':
         cube1.convert_units('g/kg')
         cube2.convert_units('g/kg')
 
@@ -240,48 +390,53 @@ def main(cfg):
 
     groups = group_metadata(input_data, 'variable_group', sort='dataset')
 
-    cubes = iris.cube.CubeList()
+    #cubes = iris.cube.CubeList()
 
     plt.figure(figsize=(8, 12))
 
     for group_name in groups:
-        logger.info("Processing variable %s", group_name)
+        if 'tas_' not in group_name:
+            logger.info("Processing variable %s", group_name)
 
-        for attributes in groups[group_name]:
-            logger.info("Loop dataset %s", attributes['dataset'])
-            if attributes['dataset'] == 'MultiModelMean' or group_name == 'OBS':
-              logger.info("Processing dataset %s", attributes['dataset'])
-              input_file = attributes['filename']
-              cube = compute_diagnostic(input_file)
-              cubes.append(cube)
+            dataset_names = []
+            cubes = {}
 
-              plot_diagnostic(cube, group_name, plot_type, cfg)
+            for dataset in groups[group_name]:
 
-            elif attributes['dataset'] == 'MultiModelP5':
-              logger.info("Processing dataset %s", attributes['dataset'])
-              input_file = attributes['filename']
-              cube_p5 = compute_diagnostic(input_file)
-              cubes.append(cube_p5)
+                dataset_name = dataset['dataset']
+                var = dataset['short_name']
 
-            elif attributes['dataset'] == 'MultiModelP95':
-              logger.info("Processing dataset %s", attributes['dataset'])
-              input_file = attributes['filename']
-              cube_p95 = compute_diagnostic(input_file)
-              cubes.append(cube_p95)
+                if dataset_name not in ['MultiModelMean', 'MultiModelP5', 'MultiModelP95']:
 
-        #if cube_p5 and cube_p95:
-        if group_name != 'OBS':
-          plot_errorband(cube_p5, cube_p95, group_name, plot_type, cfg)
+                    logger.info("Loop dataset %s", dataset_name)
+
+                    input_file = dataset['filename']
+                    cube = compute_diagnostic(input_file)
+
+                    cubes[dataset_name] = cube
+
+                    #if cfg['plot_each_model']:
+                    #    plot_model(cube, dataset, plot_type, cfg)
+
+
+            cube_mmm = _get_multi_model_mean(cubes, var)
+
+            plot_diagnostic(cube_mmm, group_name, plot_type, cfg)
+
+            cube_p5  = _get_multi_model_quantile(cubes, var, 0.05)
+            cube_p95 = _get_multi_model_quantile(cubes, var, 0.95)
+
+            plot_errorband(cube_p5, cube_p95, group_name, plot_type, cfg)
 
     if plot_type == 'height':
       plt.ylim(1000.,100.)
       plt.yscale('log')
       plt.yticks([1000., 800., 600., 400., 300., 200., 100.], [1000, 800, 600, 400, 300, 200, 100])
-      title = 'Vertical mean of ' + attributes['long_name']
+      title = 'Vertical mean of ' + dataset['long_name']
     elif plot_type == 'zonal':
-      title = 'Zonal mean of ' + attributes['long_name']
+      title = 'Zonal mean of ' + dataset['long_name']
     else:
-      title = attributes['long_name']
+      title = dataset['long_name']
 
     plt.title(title)
     plt.legend(ncol=1)
@@ -289,53 +444,56 @@ def main(cfg):
 
     for group_name in cfg['group_by']:
 
-        logger.info("Processing variable %s", group_name)
+        logger.info("Processing group %s", group_name[0])
 
-        for attributes_1 in groups[group_name[0]]:
-            logger.info("Loop dataset %s", attributes_1['dataset'])
-            if attributes_1['dataset'] == 'MultiModelMean':
-              logger.info("Processing dataset %s", attributes_1['dataset'])
-              input_file_1 = attributes_1['filename']
+        dataset_names = []
+        cubes_diff = {}
 
-        for attributes_2 in groups[group_name[1]]:
-            logger.info("Loop dataset %s", attributes_2['dataset'])
-            if attributes_2['dataset'] == 'MultiModelMean':
-              logger.info("Processing dataset %s", attributes_2['dataset'])
-              input_file_2 = attributes_2['filename']
+        for dataset in groups[group_name[0]]:
+            dataset_name = dataset['dataset']
+            var = dataset['short_name']
 
-        cube = compute_diff(input_file_1, input_file_2)
+            if dataset_name not in ['MultiModelMean', 'MultiModelP5', 'MultiModelP95']:
+                logger.info("Loop dataset %s", dataset_name)
+                dataset_names.append(dataset_name)
 
-        cubes.append(cube)
+                cube_diff = compute_diff_temp(input_data, group_name, dataset)
 
-        plot_diagnostic_diff(cube, group_name[0], plot_type, cfg)
+                cubes_diff[dataset_name] = cube_diff
 
+                if cfg['plot_each_model']:
+                    plot_model(cube_diff, dataset, plot_type, cfg)
+
+        cube_mmm = _get_multi_model_mean(cubes_diff, var)
+
+        plot_diagnostic_diff(cube_mmm, group_name[0], plot_type, cfg)
 
     if plot_type == 'height':
       plt.ylim(1000.,100.)
       plt.yscale('log')
       plt.yticks([1000., 800., 600., 400., 300., 200., 100.], [1000, 800, 600, 400, 300, 200, 100])
       plt.axvline(x=0, ymin=0., ymax=1., color='black', linewidth=3)
-      title = 'Difference of vertical mean of ' + attributes['long_name']
+      title = 'Difference of vertical mean of ' + dataset['long_name']
     elif plot_type == 'zonal':
       plt.axhline(y=0, xmin=-90., xmax=90., color='black', linewidth=3)
-      title = 'Difference of zonal mean of ' + attributes['long_name']
+      title = 'Difference of zonal mean of ' + dataset['long_name']
     else:
-      title = attributes['long_name']
+      title = dataset['long_name']
 
     plt.title(title)
     plt.legend(ncol=1)
     plt.grid(True)
 
     provenance_record = get_provenance_record(
-        attributes, ancestor_files=cfg['input_files'])
+        dataset, ancestor_files=cfg['input_files'])
 
     if plot_type == 'height':
-      basename = 'level_diff_' + attributes['short_name'] + '_' + cfg['filename_attach']
+      basename = 'level_diff_' + dataset['short_name'] + '_' + cfg['filename_attach']
     else:
-      basename = 'zonal_diff_' + attributes['short_name'] + '_' + cfg['filename_attach']
+      basename = 'zonal_diff_' + dataset['short_name'] + '_' + cfg['filename_attach']
 
     # Save the data used for the plot
-    save_data(basename, provenance_record, cfg, cubes)
+    save_data(basename, provenance_record, cfg, cube_mmm)
 
     # And save the plot
     save_figure(basename, provenance_record, cfg)
