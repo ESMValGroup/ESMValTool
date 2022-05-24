@@ -4747,16 +4747,17 @@ def main(cfg):
             if do_count_and_sensitivity_table:
                 make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict)
 
-            do_timeseries_megaplot = 0# se
+            do_timeseries_megaplot = True 
             if do_timeseries_megaplot:
                 for plot_styles in [
                        'CMIP6_range', 'all_models_range', 'all_models_means',
                        'all_ensembles',  'CMIP6_mean'
                        ]:
-                    for pane in ['atmos_carbon','emissions', 'emissions_cumul', 'tls', 'luegt',]:
+                    for pane in ['tas_norm', ]: #'atmos_carbon','emissions', 'emissions_cumul', 'tls', 'luegt',]:
                         timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
-                            experiments=['historical', 'ssp370'],
+                            #experiments=['historical', 'ssp370'],
                             panes = [pane, ])
+                return
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean', 'all_models_means', 'all_ensembles'],
                         panes = ['atmos_carbon', ],) # defaults
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean', 'all_models_means', 'all_ensembles'],
@@ -4790,7 +4791,7 @@ def main(cfg):
                     timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
                         panes = ['tas', 'emissions','tls', 'fgco2', 'lue', 'nbp'])
 
-            do_cumulative_plot = 1# se
+            do_cumulative_plot = 0# se
             if do_cumulative_plot:
 
                 plot_styles = ['percentages', 'values']
