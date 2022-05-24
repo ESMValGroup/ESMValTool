@@ -620,7 +620,7 @@ def get_threshold_exceedance_date(cube, threshold):
             return None
         return time
 
-    threshold_os_dict = { '1.5os': 1.5,'2.os': 2.,'3.os': 3.}
+    threshold_os_dict = { '1.5os': 1.5,'1.6os': 1.6,'1.7os': 1.7,'1.8os': 1.8,'1.9os': 1.9,'2.os': 2.,'3.os': 3.}
     if threshold not in threshold_os_dict.keys():
         assert 0
     loc = np.where(cube.data > threshold_os_dict(threshold))[0]

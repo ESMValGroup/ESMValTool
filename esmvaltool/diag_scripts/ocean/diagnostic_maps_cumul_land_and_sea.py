@@ -1674,7 +1674,7 @@ def calculate_custom_netcdf(custom_var_name, custom_inputs_files, path):
     assert 0
 
 
-def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3., 4.,]):
+def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3., 4., '1.5os', '1.6os','1.7os','1.8os','1.9os','2.os', '3.os']):
     """
     Generate a dictionary of GWTs.
     """
