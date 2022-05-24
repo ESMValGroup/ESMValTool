@@ -1670,30 +1670,77 @@ def calculate_custom_netcdf(custom_var_name, custom_inputs_files, path):
     assert 0
 
 
-def extract_window(cube, threshold=None, dataset=None, exp=None, ensemble=None, window=21):
-    if dataset != 'UKESM1-0-LL': assert 0
-    gwts={}
-    #gwts[(threshold, exp, ensemble)]
-    gwts[('UKESM1-0-LL', 2., 'ssp119', 'r1i1p1f2')] = 2040
-    gwts[('UKESM1-0-LL', 2., 'ssp126', 'r1i1p1f2')] = 2037
-    gwts[('UKESM1-0-LL', 2., 'ssp245', 'r1i1p1f2')] = 2035
-    gwts[('UKESM1-0-LL', 2., 'ssp370', 'r1i1p1f2')] = 2032
-    gwts[('UKESM1-0-LL', 2., 'ssp585', 'r1i1p1f2')] = 2032
+def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3., 4.,]):
+    """
+    Generate a dictionary of GWTs.
+    """
+    gwts = {}
+    datasets = {}
+    exps = {}
+    ensembles = {}
+    area = iris.load_cube(areacella_fn)
+    ts_cubes = {}
+    hist_1850_1900_means = {}
+    for (dataset, mip, exp, ensemble, short_name)], cube in tas_dicts.items():
+        if short_name != 'tas': assert 0
+        datasets[dataset] = True
+        exps[exp] = True
+        ensembles[ensemble] = True
+        ts_cubes[(dataset, mip, exp, ensemble, short_name)] = cube.copy().collapsed(['longitude', 'latitude'], iris.analysis.MEAN)
+        if exp == 'historical':
+            hist_cube = extract_time(cube.copy(),  1850., 1, 1, 1900, 12, 31)
+            hist_cube = climate_statistics(hist_cube, operator='mean', period='full')
+            hist_1850_1900_means[(dataset, mip, exp, ensemble, short_name)] = hist_cube.data
+            print('calculate hist mean:',(dataset, mip, exp, ensemble, short_name), hist_cube.data)
 
-    tmp_gwts = {}
-    for index in gwts.keys():
-        index2 = list(index[:])
-        index2[2] = ''.join(['historical-',index[2]])
-        tmp_gwts[tuple(index2)] = gwts[index]
-    gwts.update(tmp_gwts)   
- 
+    if not exps.get('historical', False): assert 0 # no dedicated histroical one.
+    if not len(hist_1850_1900_means): assert 0
+
+    for (dataset, mip, exp, ensemble, short_name)], cube in ts_cubes.items():
+        if short_name != 'tas': assert 0
+        if exp == 'historical': continue
+        cube2 = moving_average(cube.copy(), '21 years')
+
+        cube2.data = cube2.data - hist_1850_1900_means[(dataset, mip, 'historical', ensemble, short_name)]
+
+        for threshold in thresholds:
+            time = get_threshold_exceedance_date(cube2, threshold)
+            gwts[(dataset, threshold, exp, ensemble)][threshold] = time
+            if exp[:3] == 'ssp':
+                gwts[(dataset, threshold, 'historical-'+exp, ensemble)] = time
+            else:
+                gwts[(dataset, threshold, exp.replace('historical-', ''), ensemble)] = time
+            print('calculated:', (dataset, mip, exp, ensemble, short_name), threshold, 'gwt:', time)
+     return gwts
+
+
+
+
+def extract_window(gwts, cube, threshold=None, dataset=None, exp=None, ensemble=None, window=21):
+    if dataset != 'UKESM1-0-LL': assert 0
+    if gwts is None:
+        gwts = {}
+        #gwts[(threshold, exp, ensemble)]
+        gwts[('UKESM1-0-LL', 2., 'ssp119', 'r1i1p1f2')] = 2040
+        gwts[('UKESM1-0-LL', 2., 'ssp126', 'r1i1p1f2')] = 2037
+        gwts[('UKESM1-0-LL', 2., 'ssp245', 'r1i1p1f2')] = 2035
+        gwts[('UKESM1-0-LL', 2., 'ssp370', 'r1i1p1f2')] = 2032
+        gwts[('UKESM1-0-LL', 2., 'ssp585', 'r1i1p1f2')] = 2032
+
+        tmp_gwts = {}
+        for index in gwts.keys():
+            index2 = list(index[:])
+            index2[2] = ''.join(['historical-',index[2]])
+            tmp_gwts[tuple(index2)] = gwts[index]
+        gwts.update(tmp_gwts)
+
     year = gwts.get((dataset, threshold, exp, ensemble), False)
     if not year:
         print('extract_window: gwt', (dataset, threshold, exp, ensemble) , 'does not exist')
         return None
 
-    if window == 21: 
-        cube = extract_time(cube,  year -10., 1, 1, year+10, 12, 31)  
+    if window == 21:
+        cube = extract_time(cube,  year -10., 1, 1, year+10, 12, 31)
     else: assert 0
 
     cube = climate_statistics(cube, operator='mean', period='full')
@@ -1714,7 +1761,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
 
     """
     metadatas = diagtools.get_input_files(cfg)
-    do_single_plots=True 
+    do_single_plots=True
     #do_variable_group_plots=True
     #do_threshold_plots=True
 
@@ -1735,8 +1782,10 @@ def make_gwt_map_land_sea_plots(cfg, ):
     all_paths = {}
     key_index = ['dataset', 'mip', 'exp', 'ensemble', 'short_name', ] #'variable_group']
     regions = ['SouthernIndian', 'Global', 'NorthAtlantic', 'Global', 'midatlantic', 'WestEq', 'EastEq']
-    
+
     calculate_cusum = {'nbp': True, 'fgco2':True}
+    tas_dicts = {}
+
 
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
@@ -1762,7 +1811,8 @@ def make_gwt_map_land_sea_plots(cfg, ):
             files_dict[unique_key].append(fn)
         except:
             files_dict[unique_key] = [fn, ]
-       
+
+
         index = tuple([details[key] for key in key_index])
         all_paths[index] = fn
         #continue
@@ -1779,7 +1829,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
             #cube = cube[0]
 
         cube = diagtools.bgc_units(cube, short_name)
-        
+
         if calculate_cusum.get(details['short_name'], False):
             print(index, 'pre cumulative sum', cube.copy().collapsed(['longitude', 'latitude'], iris.analysis.MEAN).data)
             time_units = cube.coord('time').units
@@ -1799,16 +1849,18 @@ def make_gwt_map_land_sea_plots(cfg, ):
                 cube.units = cf_units.Unit('kg m-2')#
             elif cube.units == cf_units.Unit('g m-2 d-1'):
                 cube.data = cube.data * sec_peryear * 1.E-3
-                cube.units = cf_units.Unit('kg m-2') 
-            else: 
+                cube.units = cf_units.Unit('kg m-2')
+            else:
                 print('Units error:', cube.units)
-                assert 0 
+                assert 0
             cube.data = np.ma.cumsum(cube.data, axis=0)
             print(index, 'post cumulative sum', cube.copy().collapsed(['longitude', 'latitude'], iris.analysis.MEAN).data)
         else:
             cube = diagtools.bgc_units(cube, short_name)
 
-        
+       if short_name == 'tas':
+           tas_dicts[index] = cube
+
         all_cubes[index] = cube
 
     # add custom cubes to all_cubes here:
@@ -1844,6 +1896,8 @@ def make_gwt_map_land_sea_plots(cfg, ):
         print('unable to find fx files:', fx_fns)
         assert 0
     print(files_dict.keys())
+
+    gwts = generate_gwts_dict(cfg, tas_dicts, fx_fns['areacella'])
 
     # Make a plot for a single land-sea pair.
     #cube_pairs = {}
@@ -1884,10 +1938,10 @@ def make_gwt_map_land_sea_plots(cfg, ):
 
             for threshold in [2., ]:# 4.]:
                 print(land_cube,sea_cube)
-                lc_threshold = extract_window(land_cube.copy(), threshold=threshold, dataset=dataset, exp=exp, ensemble=ensemble)
-                oc_threshold = extract_window(sea_cube.copy(), threshold=threshold, dataset=dataset, exp=exp, ensemble=ensemble)
+                lc_threshold = extract_window(gwts, land_cube.copy(), threshold=threshold, dataset=dataset, exp=exp, ensemble=ensemble)
+                oc_threshold = extract_window(gwts, sea_cube.copy(), threshold=threshold, dataset=dataset, exp=exp, ensemble=ensemble)
 
-                if lc_threshold == None or oc_threshold == None: continue 
+                if lc_threshold == None or oc_threshold == None: continue
                 single_pane_land_sea_plot(
                     cfg,
                     metadatas,
