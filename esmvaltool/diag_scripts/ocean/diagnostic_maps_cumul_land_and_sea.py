@@ -62,6 +62,8 @@ from esmvalcore.preprocessor._time import extract_time, climate_statistics
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from diagnostic_gwt_timeseries import moving_average,  get_threshold_exceedance_date
+
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -1681,14 +1683,15 @@ def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3.,
     area = iris.load_cube(areacella_fn)
     ts_cubes = {}
     hist_1850_1900_means = {}
-    for (dataset, mip, exp, ensemble, short_name)], cube in tas_dicts.items():
+    for (dataset, mip, exp, ensemble, short_name), cube in tas_dicts.items():
         if short_name != 'tas': assert 0
         datasets[dataset] = True
         exps[exp] = True
         ensembles[ensemble] = True
         ts_cubes[(dataset, mip, exp, ensemble, short_name)] = cube.copy().collapsed(['longitude', 'latitude'], iris.analysis.MEAN)
         if exp == 'historical':
-            hist_cube = extract_time(cube.copy(),  1850., 1, 1, 1900, 12, 31)
+            hist_cube = extract_time(ts_cubes[(dataset, mip, exp, ensemble, short_name)], 
+                                     1850., 1, 1, 1900, 12, 31)
             hist_cube = climate_statistics(hist_cube, operator='mean', period='full')
             hist_1850_1900_means[(dataset, mip, exp, ensemble, short_name)] = hist_cube.data
             print('calculate hist mean:',(dataset, mip, exp, ensemble, short_name), hist_cube.data)
@@ -1696,7 +1699,7 @@ def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3.,
     if not exps.get('historical', False): assert 0 # no dedicated histroical one.
     if not len(hist_1850_1900_means): assert 0
 
-    for (dataset, mip, exp, ensemble, short_name)], cube in ts_cubes.items():
+    for (dataset, mip, exp, ensemble, short_name), cube in ts_cubes.items():
         if short_name != 'tas': assert 0
         if exp == 'historical': continue
         cube2 = moving_average(cube.copy(), '21 years')
@@ -1705,13 +1708,14 @@ def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3.,
 
         for threshold in thresholds:
             time = get_threshold_exceedance_date(cube2, threshold)
-            gwts[(dataset, threshold, exp, ensemble)][threshold] = time
+            if time: time=time.year
+            gwts[(dataset, threshold, exp, ensemble)] = time
             if exp[:3] == 'ssp':
                 gwts[(dataset, threshold, 'historical-'+exp, ensemble)] = time
             else:
                 gwts[(dataset, threshold, exp.replace('historical-', ''), ensemble)] = time
             print('calculated:', (dataset, mip, exp, ensemble, short_name), threshold, 'gwt:', time)
-     return gwts
+    return gwts
 
 
 
@@ -1858,8 +1862,8 @@ def make_gwt_map_land_sea_plots(cfg, ):
         else:
             cube = diagtools.bgc_units(cube, short_name)
 
-       if short_name == 'tas':
-           tas_dicts[index] = cube
+        if short_name == 'tas':
+            tas_dicts[index] = cube
 
         all_cubes[index] = cube
 
@@ -1936,7 +1940,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
             #if land_cube is None: continue
 #            cube_pairs[(dataset, mip, exp, ensemble)] = {'sea': sea_cube, 'land': land_cube}
 
-            for threshold in [2., ]:# 4.]:
+            for threshold in [2., 3, 4, 1.5 ]:# 4.]:
                 print(land_cube,sea_cube)
                 lc_threshold = extract_window(gwts, land_cube.copy(), threshold=threshold, dataset=dataset, exp=exp, ensemble=ensemble)
                 oc_threshold = extract_window(gwts, sea_cube.copy(), threshold=threshold, dataset=dataset, exp=exp, ensemble=ensemble)
