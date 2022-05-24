@@ -78,10 +78,10 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 plot_pairs= {
              'temp':{'land': 'tsl', 'sea': 'tos'},
              'cflux':{'land': 'nbp', 'sea': 'fgco2'},
-             'pp':{'land': 'gpp', 'sea': 'intpp'},
+             ##'pp':{'land': 'gpp', 'sea': 'intpp'},
 #             'spco2_npp':{'land': 'npp', 'sea': 'spco2'},
 #             'rh_talk':{'land': 'rh', 'sea': 'talk'},
-              'ra_mld':{'land': 'ra', 'sea': 'mlotst'},
+              #'ra_mld':{'land': 'ra', 'sea': 'mlotst'},
 #              'ra_mld':{'land': 'ra', 'sea': 'mlotst'}, # this should be precipitation on land
 
 #             'resp_talk': {'land': 'resp', 'sea': 'talk'},
