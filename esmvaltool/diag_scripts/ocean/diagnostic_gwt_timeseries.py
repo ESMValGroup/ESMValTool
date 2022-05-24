@@ -91,6 +91,17 @@ logger = logging.getLogger(os.path.basename(__file__))
 #     }
 
 mod_exp_ens_skips = {
+    ('CanESM5', 'ssp119', 'r11i1p2f1'): True, # no hist run
+    ('CanESM5', 'ssp119', 'r12i1p2f1'): True, # no hist run
+    ('CanESM5', 'ssp126', 'r11i1p2f1'): True, # no hist run
+    ('CanESM5', 'ssp126', 'r12i1p2f1'): True, # no hist run
+    ('CanESM5', 'ssp245', 'r11i1p2f1'): True, # no hist run
+    ('CanESM5', 'ssp245', 'r12i1p2f1'): True, # no hist run
+    ('CanESM5', 'ssp370', 'r11i1p2f1'): True, # no hist run
+    ('CanESM5', 'ssp370', 'r12i1p2f1'): True, # no hist run
+    ('CanESM5', 'ssp585', 'r11i1p2f1'): True, # no hist run
+    ('CanESM5', 'ssp585', 'r12i1p2f1'): True, # no hist run
+
     ('CESM2-WACCM-FV2', 'historical', 'r1i1p1f1',): True, # no SSP runs.
     ('CESM2-FV2', 'historical', 'r1i1p1f1',): True, # no SSP runs.
 
@@ -2878,8 +2889,29 @@ def calculate_percentages( cfg,
 
     return remnants, landcs, fgco2gts
 
-latexendline = lambda a: ''.join([a, '\\', '\n'])
-latexhline = lambda a: ''.join([a, '\hline', '\n'])])
+def load_ecs_data():
+    """
+     Load zelinka data.
+    """
+    ECS_data = {}
+    #ERF_data = {}
+    with open('zelinka_ecs.csv', 'r') as file:
+        reader = csv.reader(file)
+        # MODEL, ECS, ERF
+        for each_row in reader:
+            print(each_row)
+            if not len(each_row): continue
+            if each_row[0] == '#': continue
+            if each_row[0][0] == '#': continue
+
+            if each_row[0] == 'MODEL': continue
+            ECS_data[each_row[0]] = float(each_row[1])
+            #ERF_data[each_row[0]] = float(each_row[2])
+    return ECS_data
+
+latexendline = lambda a: ''.join([a, '\\\\', '\n'])
+latexhline = lambda a: ''.join([a, '\hline', '\n'])
+latexrow = lambda a: ' & '.join(a)
 
 def make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict ):
     """
@@ -2894,7 +2926,7 @@ def make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict ):
     This is in latex format.
     """
     short_name1='tas'
-    experiments = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
+    experiments = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
     table_data = {}
     datasets = {}
 
@@ -2903,57 +2935,101 @@ def make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict ):
         if short_name!= short_name1: continue
         if ensemble in ['ensemble_mean','ensemble_min', 'ensemble_max' ]: continue
         if not cube.data.mean(): continue
+        if mod_exp_ens_skips.get((dataset, exp, ensemble), False):
+            continue
 
         try: table_data[(dataset, exp)] +=1
         except: table_data[(dataset, exp)] =1
+        datasets[dataset] = True
 
     # Load zelinka data.
-    ECS_data = {}
-    ERF_data = {}
-    with open('zelinka_ecs.csv', 'r') as file:
-        reader = csv.reader(file):
-        # MODEL, ECS, ERF
-        for each_row in reader:
-            print(each_row)
-            ECS_data[each_row[0]] = each_row[1]
-            ERF_data[each_row[0]] = each_row[2]
+    ECS_data = load_ecs_data()
+#    #ERF_data = {}
+#    with open('zelinka_ecs.csv', 'r') as file:
+#        reader = csv.reader(file)
+#        # MODEL, ECS, ERF
+#        for each_row in reader:
+#            print(each_row)
+#            if not len(each_row): continue
+#            if each_row[0] == '#': continue
+#            if each_row[0][0] == '#': continue
+#
+#            if each_row[0] == 'MODEL': continue
+#            ECS_data[each_row[0]] = float(each_row[1])
+#            #ERF_data[each_row[0]] = float(each_row[2])
 
     header_list = ['Model', ]
-    header_list.extend(experiments)
-    header_list.extend(['ECS', 'ERF'])
 
-    header = ' & '.join(header_list)
+    header_list += [sspify(exp) for exp in experiments]
+    header_list += ['ECS', ]#'ERF']
+    print(header_list)
+    header = latexrow(header_list)
     header = latexendline(header)
 
-    txt = '\hline\n   \begin{tabular}{|l|cccccc|cc|}\n'
+    txt = '    \\begin{tabular}{|l|cccccc|c|}\n'
     txt = latexhline(txt)
-    txt = ''.join([txt, '\hline \n'])
-    for dataset in datasets.keys():
+    txt = ''.join([txt, header, '\hline \n'])
+    for dataset in sorted(datasets.keys()):
         row = [dataset, ]
         for exp in experiments:
-            row.append(str(int(table_data.get((dataset, exp), ' '))))
-            row.append(str(ECS_data.get(dataset, '--')))
-            row.append(str(ERF_data.get(dataset, '--')))
-            row_str = ' & '.join(row)
-            print(row_str)
-            row_str= latexendline(row_str)
-            txt = ''.join([txt, row_str])
+            row.append(str(table_data.get((dataset, exp), ' ')))
+        row.append(str(ECS_data.get(dataset, '--')))
+        #row.append(str(ERF_data.get(dataset, '--')))
+        row_str = latexrow(row)
+        row_str= latexendline(row_str)
+        txt = ''.join([txt, row_str])
+        print(row_str)
+    txt = latexhline(txt)
+
+    # now Calculating totals:
+    ens_total_row = ['Total number of Ensembles', ]
+    total_row = ['Total number of Models', ]
+    for exp in experiments:
+        model_count = 0
+        ens_count = 0
+        for dataset in sorted(datasets.keys()):
+            ens = table_data.get((dataset, exp), 0)
+            if ens:
+                model_count += 1
+                ens_count += ens
+        ens_total_row.append(str(ens_count))
+        total_row.append(str(model_count))
+    ens_total_row.append(' \\\\ \n')
+    total_row.append(' \\\\ \n')
+    ens_total_row = latexrow(ens_total_row)
+    total_row = latexrow(total_row)
+    txt = ''.join([txt, ens_total_row, total_row,])
+ 
+    txt = latexhline(txt)
 
     # Now calculated the weighted ECS, ERF:
-
+    ecs_mean_row = ['Weighted ECS',]
     for exp in experiments:
         weighted_ecs = []
-        weight_erf = []
-        for dataset in datasets.keys():
+        for dataset in sorted(datasets.keys()):
             a = table_data.get((dataset, exp), 0.)
             if not a: continue
-
+            print('dataset:', dataset, 'in', ECS_data.keys(), (dataset in ECS_data))
             weighted_ecs.append(ECS_data.get(dataset, '--'))
-            weight_erf.append(ERF_data.get(dataset, '--'))
+            #weight_erf.append(ERF_data.get(dataset, '--'))
         print(exp, 'weighted_ecs', weighted_ecs, np.mean(weighted_ecs))
-        print(exp, 'weight_erf', weight_erf, np.mean(weight_erf))
+        ecs_mean_row.append(str(round(np.mean(weighted_ecs),2)))
+    ecs_mean_row.append(' \\\\ \n')
+    ecs_mean_row = latexrow( ecs_mean_row)
+    txt = ''.join([txt, ecs_mean_row])
+    txt = latexhline(txt)
+    txt = ''.join([txt, '% Table generated by make_count_and_sensitivity_table function'])
 
-    assert 0
+        #print(exp, 'weight_erf', weight_erf, np.mean(weight_erf))
+
+
+    print(txt)
+    csvpath = diagtools.folder([cfg['plot_dir'], 'Table_1' ])
+    csvpath += '_'.join(['latex_table1']) + '.txt'
+
+    csv_file = open(csvpath,'w')
+    csv_file.write(txt)
+    csv_file.close()
 
 
 
@@ -2969,6 +3045,7 @@ def make_ensemble_barchart_pane(
     ensemble_key = 'ensemble_mean',
     plot_style = 'percentages',
     group_by = 'group_by_model',
+    sorting='alphabetical',
     fig=None,
     ax=None):
     """
@@ -2992,12 +3069,14 @@ def make_ensemble_barchart_pane(
 
     datasets, exps, ensembles, thresholds = {}, {}, {}, {}
     # only_one_ensemble = {}
+    ecs_keys = {}
     for unique_key, remnant in sorted(remnants.items()):
         (t_dataset, t_exp, t_ens, t_threshold) = unique_key
         datasets[t_dataset] = True
         exps[t_exp] = True
         ensembles[t_ens] = True
         thresholds[t_threshold] = True
+        ecs_keys[(t_dataset, t_exp)] = True
 
     exps = sorted(list(exps.keys()))
     thresholds = sorted(list(thresholds.keys()))
@@ -3012,6 +3091,47 @@ def make_ensemble_barchart_pane(
     unique_key_order = []
     # order is dataset [CMIP then others], ssps, ensemble means, then ensemble members
     # Order by model:
+    if group_by == 'ecs':
+
+        ECS_data = load_ecs_data()
+        ECS_data_ssp = {}
+        for exp in exps:
+            ECS_data_ssp[exp] = {'CMIP6': []}
+            for dat in datasets:
+                if dat=='CMIP6': continue
+                ecs = ECS_data.get(dat, False)
+                if not ecs: continue
+                ECS_data_ssp[exp]['CMIP6'].append(ecs)
+                ECS_data_ssp[exp][dat] = ecs
+            ECS_data_ssp[exp]['CMIP6'] = np.mean(ECS_data_ssp[exp]['CMIP6'])
+
+        print('ECS_data_ssp:', ECS_data_ssp)
+        for thr in thresholds:
+            for exp in exps:
+                new_dataset_order = sorted((value, key) for (key,value) in ECS_data_ssp[exp].items())
+                new_dataset_order=[k for v, k in new_dataset_order]
+ 
+#               new_dataset_order = {d:ecs for (d, e), ecs in ECS_data_ssp.items() if e == exp}
+                print(thr, exp, 'new_dataset_order:', new_dataset_order)
+ #              new_dataset_order = sorted(new_dataset_order.items(), key=lambda x:x[1])
+                #print(ECS_data_ssp)
+                #assert 0
+                #dataset_order = sortedECS_data_ssp.items()
+                #or dset,ecs in new_dataset_order.items():
+
+                for dset in new_dataset_order:
+                    print(dset,ecs)
+                    for ens in ensembles:
+                        if ensemble_key == 'ensemble_mean' and ens != 'ensemble_mean':
+                            continue
+                        if ensemble_key != 'ensemble_mean' and ens == 'ensemble_mean' and dset!= 'CMIP6': continue
+                        if dset.find('UKESM')>-1: print(dset, exp, ens, thr)
+                        unique_key = (dset, exp, ens, thr)
+                        if unique_key in unique_key_order: continue
+                        if unique_key not in remnants: continue
+                        print('Key added', unique_key)
+                        unique_key_order.append(unique_key)
+
     if group_by == 'group_by_model':
         for thr in thresholds:
             for dset in datasets:
@@ -3273,6 +3393,13 @@ def make_ensemble_barchart_pane(
                      label_strs.append('Multi-model mean')
                  else:
                      label_strs.append(' '.join([t_dataset, ]))
+            if group_by == 'ecs':
+                 ecs= str(round(ECS_data_ssp[t_exp][t_dataset],2))
+                 if t_dataset == 'CMIP6':
+                     label_strs.append(' '.join(['Multi-model mean', ecs]))
+                 else:
+                     label_strs.append(' '.join([t_dataset, ecs ]))
+
         else:
             if group_by == 'group_by_model':
                if t_dataset  not in labels[i-1]:
@@ -3282,6 +3409,12 @@ def make_ensemble_barchart_pane(
                if t_exp not in labels[i-1]:
                    label_strs.append(t_exp)
                else: label_strs.append(' ')
+
+            if group_by == 'ecs':
+               if t_exp not in labels[i-1]:
+                   label_strs.append(t_exp)
+               else: label_strs.append(' ')
+
 
 
     #labels = [' '.join(label) for label in labels]
@@ -3363,7 +3496,7 @@ def make_ensemble_barchart_pane(
     if make_figure_here:
         image_extention = diagtools.get_image_format(cfg)
         path = diagtools.folder([cfg['plot_dir'], 'single_barcharts' ])
-        path += '_'.join(['ensemble_barchart'+str(threshold), land_carbon, atmos]) + image_extention
+        path += '_'.join(['ensemble_barchart'+str(threshold), land_carbon, atmos, group_by]) + image_extention
         plt.savefig(path)
         plt.close()
     else:
@@ -3378,6 +3511,7 @@ def make_ensemble_barchart(
         ensemble_key = 'ensemble_mean',
         group_by = 'group_by_model',
         thresholds = ['4.0', '3.0', '2.0'],
+#        sorting='alphabetical', 
     ):
     """
     Make a barchat for the whole ensemble
@@ -3398,6 +3532,7 @@ def make_ensemble_barchart(
             plot_style= plot_style,
             ensemble_key = ensemble_key,
             group_by = group_by,
+#            sorting=sorting,
             )
         plt.xticks(rotation=90)
         ax.tick_params(axis = 'x', labelsize = 'small')
@@ -3465,7 +3600,7 @@ def make_ensemble_barchart(
               linestyle='none', markeredgecolor="black")
     mocean, = ax.plot([], [], c='grey', marker='s', markersize=ms,
               linestyle='none', markeredgecolor="black")
-    mair, = ax.plot([], [], c='white', marker='s', markersize=ms,
+    mair, = ax.plot([], [], c='silver', marker='s', markersize=ms,
               linestyle='none', markeredgecolor="black")
 
     dummies = {}
@@ -3514,6 +3649,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     land_carbon = 'nbpgt',
     atmos='atmos_carbon',
     exp_order = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
+    plot_dataset='CMIP6',
     fig=None,
      ax=None):
     """
@@ -3529,7 +3665,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     for exp1 in exp_order:
       for (t_dataset, t_short, t_exp, t_ens), threshold_times in thresholds_dict.items():
         # print((t_dataset, t_short, t_exp, t_ens), threshold_times)
-        if t_dataset != 'CMIP6': continue
+        if t_dataset != plot_dataset: continue
         if t_short != 'tas': continue
         if t_ens != 'ensemble_mean': continue
         if t_exp != exp1: continue
@@ -3620,17 +3756,18 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
             t_exp = t_exp.replace('historical-', '').upper()
             experiments.append(t_exp)
 
-    if not len(experiments):
-        print("make_bar_chart",emissions, landcs, fgco2gts, remnant,  experiments)
-        print("make_bar_chart",thresholds_dict.keys())
-        print("make_bar_chart",'looking for:', threshold)
-        assert 0
-
     if fig == None:
         fig, ax = plt.subplots()
         make_figure_here = True
     else:
         make_figure_here = False
+
+    if not len(experiments):
+        print("make_bar_chart",emissions, landcs, fgco2gts, remnant,  experiments)
+        print("make_bar_chart",thresholds_dict.keys())
+        print("make_bar_chart",'looking for:', threshold)
+        return fig, ax
+
 
     #experiments = [exp.replace('historical-', '').upper() for exp in experiments]
     if atmos=='atmos_carbon':
@@ -4231,6 +4368,7 @@ def make_cumulative_vs_threshold(cfg, data_dict,
     land_carbon = 'nbpgt',
     LHS_panes = [{'x':'cumul_emissions', 'y':'tas_norm'}, ],
     thresholds = ['4.0', '3.0', '2.0'],
+    plot_dataset='CMIP6', 
 ):
     """
     Make a specific kind of figure.
@@ -4291,7 +4429,8 @@ def make_cumulative_vs_threshold(cfg, data_dict,
     legends= {ax_4:False, ax_3:False, ax_2:True}
     for ax, threshold in zip(axes, thresholds):
         make_bar_chart(cfg, data_dict, thresholds_dict,
-                       threshold = threshold, land_carbon = land_carbon,fig=fig, ax=ax, do_legend=legends[ax])
+                       threshold = threshold, land_carbon = land_carbon,fig=fig, ax=ax, do_legend=legends[ax], 
+                       plot_dataset = plot_dataset)
 
     ranges = []
     height_ratios = []
@@ -4319,9 +4458,11 @@ def make_cumulative_vs_threshold(cfg, data_dict,
         fig.subplots_adjust(wspace=0.05)
     # plt.suptitle('Carbon Allocation')
 
+    if plot_dataset != 'all_models':
+        plt.suptitle(' '.join([plot_dataset, 'Carbon Allocation', ]))
     image_extention = diagtools.get_image_format(cfg)
-    path = diagtools.folder([cfg['plot_dir'], 'emissions_figures_new'])
-    path += '_'.join(['emssions_figure', land_carbon, str(len(LHS_panes)), '_'.join(thresholds)]) + image_extention
+    path = diagtools.folder([cfg['plot_dir'], 'emissions_figures_new', plot_dataset])
+    path += '_'.join(['emssions_figure', land_carbon, str(len(LHS_panes)), '_'.join(thresholds), plot_dataset]) + image_extention
     plt.savefig(path)
     plt.close()
     #assert 0
@@ -4570,6 +4711,10 @@ def main(cfg):
         data_dict = load_timeseries(cfg, short_names)
         #data_dict = calc_model_mean(cfg, short_names, data_dict)
         thresholds_dict = load_thresholds(cfg, data_dict)
+        datasets = {}
+        for (dataset, short_name, exp, ensemble),cube  in data_dict.items():
+            datasets[dataset] = True
+
         #plot_data_dict(cfg, data_dict)
         #ake_bar_chart(cfg, data_dict, thresholds_dict, threshold = '4.0', land_carbon = 'tls')
         #ake_bar_chart(cfg, data_dict, thresholds_dict, threshold = '3.0', land_carbon = 'tls')
@@ -4585,11 +4730,11 @@ def main(cfg):
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
 
-            make_count_and_sensitivity_table = True
-            if make_count_and_sensitivity_table:
-                make_count_and_sensitivity_table()
+            do_count_and_sensitivity_table = 0#ue
+            if do_count_and_sensitivity_table:
+                make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict)
 
-            do_timeseries_megaplot = False
+            do_timeseries_megaplot = 0# se
             if do_timeseries_megaplot:
                 for plot_styles in [
                        'CMIP6_range', 'all_models_range', 'all_models_means',
@@ -4632,12 +4777,12 @@ def main(cfg):
                     timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
                         panes = ['tas', 'emissions','tls', 'fgco2', 'lue', 'nbp'])
 
-            do_cumulative_plot = False
+            do_cumulative_plot = 1# se
             if do_cumulative_plot:
 
                 plot_styles = ['percentages', 'values']
                 ens_styles = ['ensemble_mean', 'all_ens']
-                group_bys = ['group_by_ssp', 'group_by_model']
+                group_bys = ['ecs', ] #'group_by_ssp', 'ecs'] # 'group_by_model'
                 for plot_style, ens, group_by in product(plot_styles, ens_styles, group_bys):
                     make_ensemble_barchart(cfg, data_dict, thresholds_dict, plot_style=plot_style, ensemble_key=ens, group_by=group_by)
 
@@ -4645,14 +4790,15 @@ def main(cfg):
                 # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
 
 
-            do_horizontal_plot = True
+            do_horizontal_plot = 0#ue
             if do_horizontal_plot:
                 # Horizontal bar charts with allocartions:
-                make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
-                make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
+                for plotdataset in sorted(datasets.keys()):
+                    make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, plot_dataset=plotdataset)
+                    make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'], plot_dataset=plotdataset)
 
 
-            do_cumulative_ts_megaplot = False
+            do_cumulative_ts_megaplot = 0# se
             # Massive plot that has like 12 panes.
             if do_cumulative_ts_megaplot:
                 make_cumulative_timeseries_megaplot(cfg, data_dict,
@@ -4671,21 +4817,21 @@ def main(cfg):
                              ensemble = 'ensemble_mean',
                              dataset=dataset)
 
-            do_make_cumulative_timeseries_pair = False
-            # This is all done in a single plot with make_cumulative_timeseries_megaplot
-            if do_make_cumulative_timeseries_pair:
-                plot_types = ['pair', 'area_over_zero'] #'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
-                ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
-                for pt, exp in product(plot_types, ssps):
-
-                    if pt == 'pair':
-                       make_cumulative_timeseries_pair(cfg, data_dict,
-                           thresholds_dict,
-                           ssp=exp,
-                           ensemble = 'ensemble_mean')
-                       continue
-                    make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
-                #continue
+#           do_make_cumulative_timeseries_pair = False
+#           # This is all done in a single plot with make_cumulative_timeseries_megaplot
+#           if do_make_cumulative_timeseries_pair:
+#               plot_types = ['pair', 'area_over_zero'] #'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
+#               ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
+#               for pt, exp in product(plot_types, ssps):
+#
+#                   if pt == 'pair':
+#                      make_cumulative_timeseries_pair(cfg, data_dict,
+#                          thresholds_dict,
+#                          ssp=exp,
+#                          ensemble = 'ensemble_mean')
+#                      continue
+#                   make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
+#               #continue
 
         datasets = {'all_models':True}
         for (dataset, short_name, exp, ensemble),cube  in data_dict.items():
@@ -4706,34 +4852,11 @@ def main(cfg):
                     #if plot_dataset.find('UKESM')==-1: continue
                     if x == y:
                         continue
-#                   for fill in ['ensemble_means', 'all_ensembles']:
-#                       if plot_dataset == 'all_models':
-#                            pltsd = 'CMIP6'
-#                       else: pltsd = plot_dataset
-#                       make_ts_envellope_figure(cfg, data_dict, thresholds_dict,
-#                           x=x,
-#                           y=y,
-#                           plot_dataset=pltsd,
-#                           fill = fill)
-#                   continue
                     print('main:', do_ma, x, y)
                     make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
                                markers='thresholds', do_moving_average=False,
                                plot_dataset=plot_dataset,
                                ensemble_mean=False)
-
-#                    make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
-#                               markers='thresholds', do_moving_average=False,
-#                               plot_dataset=plot_dataset,
-#                               ensemble_mean=True)
-
-                    #if jobtype == 'debug': continue
-                    #make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
-                    #           markers='thresholds', do_moving_average=True,
-                    #           plot_dataset=plot_dataset,
-                    #           ensemble_mean=False)
-                    #pairs.append((x, y))
-                    #pairs.append((y, x))
 
     logger.info('Success')
 

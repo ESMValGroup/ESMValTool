@@ -42,6 +42,7 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
+import dask
 from itertools import product
 import matplotlib
 import matplotlib.pyplot as plt
@@ -55,7 +56,9 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import math
 import numpy as np
+import cf_units
 from esmvalcore.preprocessor._regrid import regrid
+from esmvalcore.preprocessor._time import extract_time, climate_statistics
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -295,13 +298,15 @@ def single_pane_land_sea_pane(cfg,
 
 
 def load_bgc_cube(cube, short_name):
-    if istype(cube, str):
+    if isinstance(cube, str):
         print("cube_interesction: loading cube:", cube)
         cube = iris.load_cube(cube)
+        cube = diagtools.bgc_units(cube, short_name)
         # just getting the surface?
     if cube.data.ndim==3:
+        assert 0
         cube = cube[0]
-    cube = diagtools.bgc_units(cube, short_name)
+    #cube = diagtools.bgc_units(cube, short_name)
     return cube
 
 
@@ -322,10 +327,11 @@ def single_pane_land_sea_plot(
     image_extention = diagtools.get_image_format(cfg)
 
     # Determine image filename:
+    unique_keys = [str(a) for a in unique_keys]
     suffix = '_'.join(unique_keys)+image_extention
     path = diagtools.folder([cfg['plot_dir'], plot_dir, region])+ suffix
 
-    if os.path.exists(path): return
+    #if os.path.exists(path): return
 
     land_cube = load_bgc_cube(land_cube, plot_pair['land'])
     sea_cube = load_bgc_cube(sea_cube, plot_pair['sea'])
@@ -373,9 +379,9 @@ def single_pane_land_sea_plot(
     plt.margins(0,0)
 
     # Saving files:
-    if cfg['write_plots']:
-        logger.info('Saving plots to %s', path)
-        plt.savefig(path) #, bbox_inches = 'tight',)
+    #if cfg['write_plots']:
+    logger.info('Saving plots to %s', path)
+    plt.savefig(path) #, bbox_inches = 'tight',)
     plt.close()
 
 
@@ -1664,6 +1670,36 @@ def calculate_custom_netcdf(custom_var_name, custom_inputs_files, path):
     assert 0
 
 
+def extract_window(cube, threshold=None, dataset=None, exp=None, ensemble=None, window=21):
+    if dataset != 'UKESM1-0-LL': assert 0
+    gwts={}
+    #gwts[(threshold, exp, ensemble)]
+    gwts[('UKESM1-0-LL', 2., 'ssp119', 'r1i1p1f2')] = 2040
+    gwts[('UKESM1-0-LL', 2., 'ssp126', 'r1i1p1f2')] = 2037
+    gwts[('UKESM1-0-LL', 2., 'ssp245', 'r1i1p1f2')] = 2035
+    gwts[('UKESM1-0-LL', 2., 'ssp370', 'r1i1p1f2')] = 2032
+    gwts[('UKESM1-0-LL', 2., 'ssp585', 'r1i1p1f2')] = 2032
+
+    tmp_gwts = {}
+    for index in gwts.keys():
+        index2 = list(index[:])
+        index2[2] = ''.join(['historical-',index[2]])
+        tmp_gwts[tuple(index2)] = gwts[index]
+    gwts.update(tmp_gwts)   
+ 
+    year = gwts.get((dataset, threshold, exp, ensemble), False)
+    if not year:
+        print('extract_window: gwt', (dataset, threshold, exp, ensemble) , 'does not exist')
+        return None
+
+    if window == 21: 
+        cube = extract_time(cube,  year -10., 1, 1, year+10, 12, 31)  
+    else: assert 0
+
+    cube = climate_statistics(cube, operator='mean', period='full')
+    return cube
+
+
 def make_gwt_map_land_sea_plots(cfg, ):
     """
     Make plots
@@ -1678,7 +1714,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
 
     """
     metadatas = diagtools.get_input_files(cfg)
-    do_single_plots=False
+    do_single_plots=True 
     #do_variable_group_plots=True
     #do_threshold_plots=True
 
@@ -1696,8 +1732,11 @@ def make_gwt_map_land_sea_plots(cfg, ):
     #fx_fn = ''
     fx_fns = {}
     all_cubes = {}
-    key_index = ['dataset', 'mip', 'exp', 'ensemble', 'short_name', 'variable_group']
+    all_paths = {}
+    key_index = ['dataset', 'mip', 'exp', 'ensemble', 'short_name', ] #'variable_group']
     regions = ['SouthernIndian', 'Global', 'NorthAtlantic', 'Global', 'midatlantic', 'WestEq', 'EastEq']
+    
+    calculate_cusum = {'nbp': True, 'fgco2':True}
 
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
@@ -1709,8 +1748,8 @@ def make_gwt_map_land_sea_plots(cfg, ):
         datasets.add(details['dataset'])
         exps.add(details['exp'])
         variable_groups.add(details['variable_group'])
-        variable1, exp1, threshold = split_variable_groups(details['variable_group'])
-        thresholds.add(threshold)
+        #variable1, exp1, threshold = split_variable_groups(details['variable_group'])
+        #thresholds.add(threshold)
 
         unique_key = (details['variable_group'], details['ensemble'])
         mips.add(details['mip'])
@@ -1723,45 +1762,83 @@ def make_gwt_map_land_sea_plots(cfg, ):
             files_dict[unique_key].append(fn)
         except:
             files_dict[unique_key] = [fn, ]
-
-        all_cubes[tuple([details[key] for key in key_index])] = fn
-        continue
+       
+        index = tuple([details[key] for key in key_index])
+        all_paths[index] = fn
+        #continue
         cube = iris.load_cube(fn)
-        # just getting the surface?
-        if cube.data.ndim==3:
-            cube = cube[0]
 
-        cube = diagtools.bgc_units(cube, details['short_name'])
-        all_cubes[tuple([details[key] for key in key_index])]=  cube
+        # just getting the surface?
+        if cube.data.ndim==4:
+            print('ERROR:', index, 'cube has 4dims!')
+            if short_name == 'tsl':
+                cube = cube.collapsed(['depth',], iris.analysis.MEAN)
+            else:
+                print(cube.coords())
+                assert 0
+            #cube = cube[0]
+
+        cube = diagtools.bgc_units(cube, short_name)
+        
+        if calculate_cusum.get(details['short_name'], False):
+            print(index, 'pre cumulative sum', cube.copy().collapsed(['longitude', 'latitude'], iris.analysis.MEAN).data)
+            time_units = cube.coord('time').units
+            if time_units.calendar == '360_day':
+                sec_peryear = 360*24*60*60.
+            else:
+                sec_peryear = 365*24*60*60.
+
+            if cube.units == cf_units.Unit('kg m-2 s-1'):
+                cube.data = cube.data * sec_peryear
+                cube.units = cf_units.Unit('kg m-2') #-1}$')
+            #lif cube.units == cf_units.Unit('kg m-2'):
+            #   cubegt.data = cube.data * area.data * 1.E-12
+            #   cubegt.units = cf_units.Unit('Pg')
+            elif cube.units == cf_units.Unit('mol m-2 s-1'):
+                cube.data = cube.data * 12.0107* 1.E-3 * sec_peryear
+                cube.units = cf_units.Unit('kg m-2')#
+            elif cube.units == cf_units.Unit('g m-2 d-1'):
+                cube.data = cube.data * sec_peryear * 1.E-3
+                cube.units = cf_units.Unit('kg m-2') 
+            else: 
+                print('Units error:', cube.units)
+                assert 0 
+            cube.data = np.ma.cumsum(cube.data, axis=0)
+            print(index, 'post cumulative sum', cube.copy().collapsed(['longitude', 'latitude'], iris.analysis.MEAN).data)
+        else:
+            cube = diagtools.bgc_units(cube, short_name)
+
+        
+        all_cubes[index] = cube
 
     # add custom cubes to all_cubes here:
     # iterate over the list of pairs.
     # determine the path name for the custom netcdf.
     # if a pair netcdf exists, put the filename in all_cubes
     # if the pair is a custom dataset, then load the relevant datasets and create it.
-    custom_vars = {'resp': ['ra', 'rh']}
-    work_path = diagtools.folder([cfg['work_dir'], 'custom_vars'])
+    #custom_vars = {'resp': ['ra', 'rh']}
+    #work_path = diagtools.folder([cfg['work_dir'], 'custom_vars'])
 
-    for (dataset, mip, exp, ensemble, short_name, variable_group), cube in all_cubes.items():
-        continue
-        for custom_var_name, custom_var_keys in custom_vars.items():
-            if short_name not in custom_var_keys:
-                continue
-            custom_var_group = variable_group.replace(short_name, custom_var_name)
-            custom_index = (dataset, mip, exp, ensemble, custom_var_name, custom_var_group)
-            path = work_dir+'_'.join(list(custom_index))+'.nc'
-
-            if os.path.exists(path):
-                all_cubes[custom_index] = path
-                continue
-
-            custom_inputs_files = {}
-            for custom_var_key in custom_var_keys:
-                custom_var_group = variable_group.replace(short_name, custom_var_name)
-                custom_inputs_files[custom_var_key] = all_cubes[(dataset, mip, exp, ensemble, custom_var_key, custom_var_group)]
-
-            calculate_custom_netcdf(custom_var_name, custom_inputs_files, path)
-            all_cubes[custom_index] = path
+    #for (dataset, mip, exp, ensemble, short_name, variable_group), cube in all_cubes.items():
+    #    continue
+    #    for custom_var_name, custom_var_keys in custom_vars.items():
+    #        if short_name not in custom_var_keys:
+    #            continue
+    #        custom_var_group = variable_group.replace(short_name, custom_var_name)
+    #        custom_index = (dataset, mip, exp, ensemble, custom_var_name, custom_var_group)
+    #        path = work_dir+'_'.join(list(custom_index))+'.nc'
+#
+#            if os.path.exists(path):
+#                all_cubes[custom_index] = path
+#                continue
+#
+#            custom_inputs_files = {}
+#            for custom_var_key in custom_var_keys:
+#                custom_var_group = variable_group.replace(short_name, custom_var_name)
+#                custom_inputs_files[custom_var_key] = all_cubes[(dataset, mip, exp, ensemble, custom_var_key, custom_var_group)]
+#
+#            calculate_custom_netcdf(custom_var_name, custom_inputs_files, path)
+#            all_cubes[custom_index] = path
 
     if len(fx_fns)=='':
         print('unable to find fx files:', fx_fns)
@@ -1769,8 +1846,8 @@ def make_gwt_map_land_sea_plots(cfg, ):
     print(files_dict.keys())
 
     # Make a plot for a single land-sea pair.
-    cube_pairs = {}
-    for (dataset, mip, exp, ensemble, short_name, variable_group), cube in all_cubes.items():
+    #cube_pairs = {}
+    for (dataset, mip, exp, ensemble, short_name), cube in all_cubes.items():
         for var_name, plot_pair in plot_pairs.items():
             if not do_single_plots:
                 continue
@@ -1779,105 +1856,112 @@ def make_gwt_map_land_sea_plots(cfg, ):
             # avoid double plotting.
             if short_name != plot_pair['sea']:
                 continue
-            variable1, exp1, threshold = split_variable_groups(variable_group)
-            print('index:', (dataset, mip, exp, ensemble, short_name, variable_group))
-            print('split_variable_groups', variable1, exp1, threshold)
+            #variable1, exp1, threshold = split_variable_groups(variable_group)
+            print('index:', (dataset, mip, exp, ensemble, short_name, ))
+            #print('split_variable_groups', variable1, exp1, threshold)
 
             sea_cube = cube
-            if len(threshold):
-                land_variable_group = '_'.join([plot_pair['land'], exp1, threshold])
-            else:
-                land_variable_group = '_'.join([plot_pair['land'], exp1])
+            #if len(threshold):
+            #    land_variable_group = '_'.join([plot_pair['land'], exp, threshold])
+            #else:
+            #    land_variable_group = '_'.join([plot_pair['land'], exp])
 
             landmip = mip.replace('O', 'L')
-            print('land stuff:', landmip, land_variable_group, plot_pair['land'])
-            land_index = (dataset, landmip, exp, ensemble, plot_pair['land'], land_variable_group)
+            #print('land stuff:', landmip, land_variable_group, plot_pair['land'])
+            land_index = (dataset, landmip, exp, ensemble, plot_pair['land'], ) #land_variable_group)
             print('land index', land_index)
 
             try: land_cube = all_cubes[land_index]
             except:
-                continue
+                assert 0
 #               for index in all_cubes.keys():
 #                  if plot_pair['land'] not in index: continue
 #                  print(index)
 #               assert 0
 #            land_cube = all_cubes.get(land_index, None)
             #if land_cube is None: continue
-            cube_pairs[(dataset, mip, exp, ensemble, threshold)] = {'sea': sea_cube, 'land': land_cube}
+#            cube_pairs[(dataset, mip, exp, ensemble)] = {'sea': sea_cube, 'land': land_cube}
 
-            single_pane_land_sea_plot(
-                cfg,
-                metadatas,
-                land_cube=land_cube,
-                sea_cube=sea_cube,
-                plot_pair=plot_pair,
-                unique_keys = [var_name, dataset, exp, ensemble, threshold]
-            )
+            for threshold in [2., ]:# 4.]:
+                print(land_cube,sea_cube)
+                lc_threshold = extract_window(land_cube.copy(), threshold=threshold, dataset=dataset, exp=exp, ensemble=ensemble)
+                oc_threshold = extract_window(sea_cube.copy(), threshold=threshold, dataset=dataset, exp=exp, ensemble=ensemble)
+
+                if lc_threshold == None or oc_threshold == None: continue 
+                single_pane_land_sea_plot(
+                    cfg,
+                    metadatas,
+                    land_cube=lc_threshold,
+                    sea_cube=oc_threshold,
+                    plot_pair=plot_pair,
+                    unique_keys = [var_name, dataset, exp, ensemble, threshold]
+                )
+    assert 0
     ####
     # Create variable_group_means.
     #    This is a mean of all ensemble memnbers of a given model in a scenario at a given threshold.
-    variable_group_means = {}
-    for variable_group_i, dataset_i, exp_i, short_name_i in product(variable_groups, datasets, exps, short_names):
-        var_index = (variable_group_i, dataset_i, exp_i, short_name_i)
-        work_dir = diagtools.folder([cfg['work_dir'], 'variable_group_means'])
-        path = work_dir+'_'.join(list(var_index))+'.nc'
+    #variable_group_means = {}
+#    for variable_group_i, dataset_i, exp_i, short_name_i in product(variable_groups, datasets, exps, short_names):
+#        var_index = (variable_group_i, dataset_i, exp_i, short_name_i)
+#        work_dir = diagtools.folder([cfg['work_dir'], 'variable_group_means'])
+#        path = work_dir+'_'.join(list(var_index))+'.nc'
+#
+#        if os.path.exists(path):
+#            variable_group_means[var_index] = iris.load_cube(path)
+#            continue
+#
+#        cube_list = []
+#        if variable_group.split('_')[-1] == 'fx':
+#            continue
+#        for (dataset, mip, exp, ensemble, short_name, variable_group), cube in all_cubes.items():
+#            if variable_group_i != variable_group: continue
+#            if dataset_i != dataset: continue
+#            if exp_i != exp: continue
+#            if short_name_i != short_name:continue
+#
+#            cube = load_bgc_cube(cube, short_name)
+#            all_cubes[(dataset, mip, exp, ensemble, short_name, variable_group)] = cube
+#            cube_list.append(cube)
+#
+#        if not len(cube_list):
+#            continue
 
-        if os.path.exists(path):
-            variable_group_means[var_index] = iris.load_cube(path)
-            continue
-
-        cube_list = []
-        if variable_group.split('_')[-1] == 'fx':
-            continue
-        for (dataset, mip, exp, ensemble, short_name, variable_group), cube in all_cubes.items():
-            if variable_group_i != variable_group: continue
-            if dataset_i != dataset: continue
-            if exp_i != exp: continue
-            if short_name_i != short_name:continue
-
-            cube = load_bgc_cube(cube, short_name)
-            all_cubes[(dataset, mip, exp, ensemble, short_name, variable_group)] = cube
-            cube_list.append(cube)
-
-        if not len(cube_list):
-            continue
-
-        variable_group_mean = calc_ensemble_mean(cube_list)
-        variable_group_means[var_index] = variable_group_mean
-
-        # Save NetCDF
-        iris.save(variable_group_mean, path)
-
-    ####
-    # Create variable_group_means.
-    #    This is a mean of all ensemble memnbers of a given model in a scenario at a given threshold.
-    for var_name, plot_pair in plot_pairs.items():
-        for (variable_group_i, dataset_i, exp_i, short_name_i), cube in variable_group_means.items():
-            if short_name_i != plot_pair['sea']:
-                continue
-            print('single_pane_model_means', var_name, variable_group_i, dataset_i, exp_i, short_name_i)
-            sea_cube = cube
-            variable1, exp1, threshold = split_variable_groups(variable_group_i)
-
-            if len(threshold):
-                land_variable_group = '_'.join([plot_pair['land'], exp1, threshold])
-            else:
-                land_variable_group = '_'.join([plot_pair['land'], exp1])
-
-            land_index = (land_variable_group, dataset_i, exp_i, plot_pair['land'])
-            land_cube = variable_group_means.get(land_index, None)
-            print(land_index)
-            if land_cube is None: continue
-
-            single_pane_land_sea_plot(
-                cfg,
-                metadatas,
-                land_cube=land_cube,
-                sea_cube=sea_cube,
-                plot_pair=plot_pair,
-                unique_keys = [dataset_i, exp_i, threshold, var_name,],
-                plot_dir ='single_pane_model_means',
-            )
+#        variable_group_mean = calc_ensemble_mean(cube_list)
+#        variable_group_means[var_index] = variable_group_mean
+#
+#        # Save NetCDF
+#        iris.save(variable_group_mean, path)
+#
+#    ####
+#    # Create variable_group_means.
+#    #    This is a mean of all ensemble memnbers of a given model in a scenario at a given threshold.
+#    for var_name, plot_pair in plot_pairs.items():
+#        for (variable_group_i, dataset_i, exp_i, short_name_i), cube in variable_group_means.items():
+#            if short_name_i != plot_pair['sea']:
+#                continue
+#            print('single_pane_model_means', var_name, variable_group_i, dataset_i, exp_i, short_name_i)
+#            sea_cube = cube
+#            variable1, exp1, threshold = split_variable_groups(variable_group_i)
+#
+#            if len(threshold):
+#                land_variable_group = '_'.join([plot_pair['land'], exp1, threshold])
+#            else:
+#                land_variable_group = '_'.join([plot_pair['land'], exp1])
+#
+#            land_index = (land_variable_group, dataset_i, exp_i, plot_pair['land'])
+#            land_cube = variable_group_means.get(land_index, None)
+#            print(land_index)
+#            if land_cube is None: continue
+#
+#            single_pane_land_sea_plot(
+#                cfg,
+#                metadatas,
+#                land_cube=land_cube,
+#                sea_cube=sea_cube,
+#                plot_pair=plot_pair,
+#                unique_keys = [dataset_i, exp_i, threshold, var_name,],
+#                plot_dir ='single_pane_model_means',
+#            )
 
     for dataset, threshold in product(datasets, thresholds):
         if not threshold: continue
