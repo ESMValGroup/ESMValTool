@@ -627,7 +627,7 @@ def get_threshold_exceedance_date(cube, threshold):
     if not len(loc): return None # never reaches threshold
     times = cube.coord('time').units.num2date(
         cube.coord('time').points)
-    time = times[loc[-1]]
+    time = times[loc[-1]+1] # one time step after last time tas is above threshold.
     if time.year > 2090.:
         return None
     return time
