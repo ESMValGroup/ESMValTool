@@ -42,7 +42,7 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import dask
+# import dask
 from itertools import product
 import matplotlib
 import matplotlib.pyplot as plt
@@ -57,13 +57,14 @@ import cartopy.feature as cfeature
 import math
 import numpy as np
 import cf_units
+from shelve import open as shopen
+from glob import glob
 from esmvalcore.preprocessor._regrid import regrid
 from esmvalcore.preprocessor._time import extract_time, climate_statistics
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from diagnostic_gwt_timeseries import moving_average,  get_threshold_exceedance_date
-
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -1676,6 +1677,15 @@ def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3.,
     """
     Generate a dictionary of GWTs.
     """
+    shelve_fn = cfg
+    shelve_fn = diagtools.folder([cfg['work_dir'], 'threshold_dates_shelves'])
+    shelve_fn = shelve_fn+'_'.join(list(var_index))+'.shelve'
+    if len(glob(shelve_fn+'*')):
+        sh = shopen(shelve_fn)
+        gwts = sh['gwts']
+        sh.close()
+        return gwts
+
     gwts = {}
     datasets = {}
     exps = {}
@@ -1690,7 +1700,7 @@ def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3.,
         ensembles[ensemble] = True
         ts_cubes[(dataset, mip, exp, ensemble, short_name)] = cube.copy().collapsed(['longitude', 'latitude'], iris.analysis.MEAN)
         if exp == 'historical':
-            hist_cube = extract_time(ts_cubes[(dataset, mip, exp, ensemble, short_name)], 
+            hist_cube = extract_time(ts_cubes[(dataset, mip, exp, ensemble, short_name)],
                                      1850., 1, 1, 1900, 12, 31)
             hist_cube = climate_statistics(hist_cube, operator='mean', period='full')
             hist_1850_1900_means[(dataset, mip, exp, ensemble, short_name)] = hist_cube.data
@@ -1715,6 +1725,10 @@ def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3.,
             else:
                 gwts[(dataset, threshold, exp.replace('historical-', ''), ensemble)] = time
             print('calculated:', (dataset, mip, exp, ensemble, short_name), threshold, 'gwt:', time)
+    sh = shopen(shelve_fn)
+    sh['gwts'] = gwts
+    sh.close()
+
     return gwts
 
 
