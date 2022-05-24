@@ -610,11 +610,24 @@ def get_threshold_exceedance_date(cube, threshold):
 
     Assumes that model run ends 2100, and uses 20 year window.
     """
-    loc = np.where(cube.data > threshold)[0]
-    if not len(loc): return None
+    if isinstance(threshold, float) or isinstance(threshold, int):
+        loc = np.where(cube.data > threshold)[0]
+        if not len(loc): return None
+        times = cube.coord('time').units.num2date(
+            cube.coord('time').points)
+        time = times[loc[0]]
+        if time.year > 2090.:
+            return None
+        return time
+
+    threshold_os_dict = { '1.5os': 1.5,'2.os': 2.,'3.os': 3.}
+    if threshold not in threshold_os_dict.keys():
+        assert 0
+    loc = np.where(cube.data > threshold_os_dict(threshold))[0]
+    if not len(loc): return None # never reaches threshold
     times = cube.coord('time').units.num2date(
         cube.coord('time').points)
-    time = times[loc[0]]
+    time = times[loc[-1]]
     if time.year > 2090.:
         return None
     return time
@@ -2999,7 +3012,7 @@ def make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict ):
     ens_total_row = latexrow(ens_total_row)
     total_row = latexrow(total_row)
     txt = ''.join([txt, ens_total_row, total_row,])
- 
+
     txt = latexhline(txt)
 
     # Now calculated the weighted ECS, ERF:
@@ -3110,7 +3123,7 @@ def make_ensemble_barchart_pane(
             for exp in exps:
                 new_dataset_order = sorted((value, key) for (key,value) in ECS_data_ssp[exp].items())
                 new_dataset_order=[k for v, k in new_dataset_order]
- 
+
 #               new_dataset_order = {d:ecs for (d, e), ecs in ECS_data_ssp.items() if e == exp}
                 print(thr, exp, 'new_dataset_order:', new_dataset_order)
  #              new_dataset_order = sorted(new_dataset_order.items(), key=lambda x:x[1])
@@ -3511,7 +3524,7 @@ def make_ensemble_barchart(
         ensemble_key = 'ensemble_mean',
         group_by = 'group_by_model',
         thresholds = ['4.0', '3.0', '2.0'],
-#        sorting='alphabetical', 
+#        sorting='alphabetical',
     ):
     """
     Make a barchat for the whole ensemble
@@ -4368,7 +4381,7 @@ def make_cumulative_vs_threshold(cfg, data_dict,
     land_carbon = 'nbpgt',
     LHS_panes = [{'x':'cumul_emissions', 'y':'tas_norm'}, ],
     thresholds = ['4.0', '3.0', '2.0'],
-    plot_dataset='CMIP6', 
+    plot_dataset='CMIP6',
 ):
     """
     Make a specific kind of figure.
@@ -4429,7 +4442,7 @@ def make_cumulative_vs_threshold(cfg, data_dict,
     legends= {ax_4:False, ax_3:False, ax_2:True}
     for ax, threshold in zip(axes, thresholds):
         make_bar_chart(cfg, data_dict, thresholds_dict,
-                       threshold = threshold, land_carbon = land_carbon,fig=fig, ax=ax, do_legend=legends[ax], 
+                       threshold = threshold, land_carbon = land_carbon,fig=fig, ax=ax, do_legend=legends[ax],
                        plot_dataset = plot_dataset)
 
     ranges = []
