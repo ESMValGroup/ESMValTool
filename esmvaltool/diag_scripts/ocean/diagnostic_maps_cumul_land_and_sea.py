@@ -320,6 +320,7 @@ def single_pane_land_sea_plot(
         sea_cube=None,
         plot_pair={},
         unique_keys=[],
+        gwt_year=None,
         plot_dir='single_land_sea_plots',
         region = 'Global',
         ):
@@ -1679,7 +1680,7 @@ def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3.,
     """
     shelve_fn = cfg
     shelve_fn = diagtools.folder([cfg['work_dir'], 'threshold_dates_shelves'])
-    shelve_fn = shelve_fn+'_'.join(list(var_index))+'.shelve'
+    shelve_fn = shelve_fn+'_'.join(['threshold_dates_shelves', ])+'.shelve'
     if len(glob(shelve_fn+'*')):
         sh = shopen(shelve_fn)
         gwts = sh['gwts']
@@ -1960,13 +1961,15 @@ def make_gwt_map_land_sea_plots(cfg, ):
                 oc_threshold = extract_window(gwts, sea_cube.copy(), threshold=threshold, dataset=dataset, exp=exp, ensemble=ensemble)
 
                 if lc_threshold == None or oc_threshold == None: continue
+                gwt_year = gwts[(dataset, threshold, exp, ensemble)]#year
                 single_pane_land_sea_plot(
                     cfg,
                     metadatas,
                     land_cube=lc_threshold,
                     sea_cube=oc_threshold,
                     plot_pair=plot_pair,
-                    unique_keys = [var_name, dataset, exp, ensemble, threshold]
+                    gwt_year = gwt_year, 
+                    unique_keys = [var_name, dataset, exp, ensemble, threshold, str(gwt_year)]
                 )
     assert 0
     ####
