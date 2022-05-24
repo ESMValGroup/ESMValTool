@@ -108,6 +108,7 @@ None
 
 import calendar
 import logging
+from copy import deepcopy
 
 import iris
 import iris.coord_categorisation
@@ -133,6 +134,10 @@ class Monitor(MonitorBase):
         super().__init__(config)
         self.plots = config.get('plots', {})
         self.has_errors = False
+
+        # Get default settings
+        self.cfg = deepcopy(self.cfg)
+        self.cfg.setdefault('rasterize_maps', True)
 
     def compute(self):
         """Plot preprocessed data."""
@@ -376,7 +381,8 @@ class Monitor(MonitorBase):
                 **variable_options
             },
         )
-        self.set_rasterized()
+        if self.cfg['rasterize_maps']:
+            self._set_rasterized()
 
     def plot_seasonal_climatology(self, cube, var_info):
         """Plot the seasonal climatology as a multipanel plot.
@@ -449,7 +455,8 @@ class Monitor(MonitorBase):
                         **variable_options,
                     },
                 )
-                self.set_rasterized()
+                if self.cfg['rasterize_maps']:
+                    self._set_rasterized()
             plt.tight_layout()
             plt.suptitle(
                 'Seasonal climatology  '
@@ -534,7 +541,8 @@ class Monitor(MonitorBase):
 
             # Note: plt.gca() is the colorbar here, use plt.gcf().axes to
             # access the correct axes
-            self.set_rasterized(plt.gcf().axes[0])
+            if self.cfg['rasterize_maps']:
+                self._set_rasterized(plt.gcf().axes[0])
             plt.suptitle(
                 f'Climatology ({var_info[n.START_YEAR]}'
                 f'-{var_info[n.END_YEAR]})',

@@ -39,9 +39,9 @@ It is recommended to use a vector graphic file type (e.g., SVG) for the output
 files when running this recipe, i.e., run the recipe with the command line
 option ``--output_file_type=svg`` or use ``output_file_type: svg`` in your
 :ref:`esmvalcore:user configuration file`.
-Note that map plots are rasterized by default.
-Use ``rasterize_maps: false`` (see `Recipe settings`_) in the recipe to disable
-this.
+Note that map and profile plots are rasterized by default.
+Use ``rasterize_maps: false`` or ``rasterize: false`` (see `Recipe settings`_)
+in the recipe to disable this.
 
 Recipe settings
 ~~~~~~~~~~~~~~~
@@ -174,3 +174,24 @@ Timeseries of Niño 3.4 index, computed directly with the preprocessor.
    :width:   14cm
 
 Annual cycle of tas.
+
+.. _fig_timeseries_with_ref:
+.. figure::  /recipes/figures/monitor/timeseries_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Timeseries of tas including a reference dataset.
+
+.. _fig_map_with_ref:
+.. figure::  /recipes/figures/monitor/map_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Global climatology of tas including a reference dataset.
+
+.. _fig_profile_with_ref:
+.. figure::  /recipes/figures/monitor/profile_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Vertical profile of ta including a reference dataset.

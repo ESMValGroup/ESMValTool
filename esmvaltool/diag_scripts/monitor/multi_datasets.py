@@ -170,6 +170,11 @@ pyplot_kwargs: dict, optional
     curly brackets which will be derived from the corresponding dataset, e.g.,
     ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
     Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+rasterize: bool, optional (default: True)
+    If ``True``, use `rasterization
+    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
+    map plots to produce smaller files. This is only relevant for vector
+    graphics (e.g., ``output_file_type=pdf,svg,ps``).
 
 Configuration options for plot type ``profile``
 -----------------------------------------------
@@ -231,6 +236,11 @@ pyplot_kwargs: dict, optional
     curly brackets which will be derived from the corresponding dataset, e.g.,
     ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
     Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+rasterize: bool, optional (default: True)
+    If ``True``, use `rasterization
+    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
+    profile plots to produce smaller files. This is only relevant for vector
+    graphics (e.g., ``output_file_type=pdf,svg,ps``).
 show_y_minor_ticklabels: bool, optional (default: False)
     Show tick labels for the minor ticks on the Y axis.
 
@@ -309,6 +319,7 @@ class MultiDatasets(MonitorBase):
                     'cbar_label_bias', 'Δ{short_name} [{units}]')
                 self.plots[plot_type].setdefault('common_cbar', False)
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
+                self.plots[plot_type].setdefault('rasterize', True)
 
             # Defaults profile plots
             if plot_type == 'profile':
@@ -462,7 +473,7 @@ class MultiDatasets(MonitorBase):
                 )
                 plot_kwargs[key] = val
 
-        # Set default label
+        # Default settings for different plot types
         if plot_type == 'timeseries':
             plot_kwargs.setdefault('label', label)
 
@@ -576,6 +587,10 @@ class MultiDatasets(MonitorBase):
                          f"{dataset['end_year']})")
             self._process_pyplot_kwargs(plot_type, dataset)
 
+            # Rasterization
+            if self.plots[plot_type]['rasterize']:
+                self._set_rasterized([axes_data, axes_ref, axes_bias])
+
         return self.get_plot_path(plot_type, dataset)
 
     def _plot_map_without_ref(self, plot_func, dataset):
@@ -613,6 +628,10 @@ class MultiDatasets(MonitorBase):
             fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
                          f"{dataset['end_year']})")
             self._process_pyplot_kwargs(plot_type, dataset)
+
+            # Rasterization
+            if self.plots[plot_type]['rasterize']:
+                self._set_rasterized([axes])
 
         return self.get_plot_path(plot_type, dataset)
 
@@ -700,6 +719,10 @@ class MultiDatasets(MonitorBase):
                          f"{dataset['end_year']})")
             self._process_pyplot_kwargs(plot_type, dataset)
 
+            # Rasterization
+            if self.plots[plot_type]['rasterize']:
+                self._set_rasterized([axes_data, axes_ref, axes_bias])
+
         return self.get_plot_path(plot_type, dataset)
 
     def _plot_profile_without_ref(self, plot_func, dataset):
@@ -745,6 +768,10 @@ class MultiDatasets(MonitorBase):
             else:
                 axes.get_yaxis().set_minor_formatter(NullFormatter())
             self._process_pyplot_kwargs(plot_type, dataset)
+
+            # Rasterization
+            if self.plots[plot_type]['rasterize']:
+                self._set_rasterized([axes])
 
         return self.get_plot_path(plot_type, dataset)
 

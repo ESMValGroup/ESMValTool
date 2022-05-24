@@ -260,16 +260,18 @@ class MonitorBase():
             file_name = self._add_file_extension(file_name)
         return file_name
 
-    def set_rasterized(self, axes=None):
-        """Rasterize all artists and collection of an axes if desired."""
-        if not self.cfg.get('rasterize_maps', True):
-            return
+    @staticmethod
+    def _set_rasterized(axes=None):
+        """Rasterize all artists and collection of axes if desired."""
         if axes is None:
             axes = plt.gca()
-        for artist in axes.artists:
-            artist.set_rasterized(True)
-        for collection in axes.collections:
-            collection.set_rasterized(True)
+        if not isinstance(axes, list):
+            axes = [axes]
+        for single_axes in axes:
+            for artist in single_axes.artists:
+                artist.set_rasterized(True)
+            for collection in single_axes.collections:
+                collection.set_rasterized(True)
 
     @staticmethod
     def _real_name(variable_group):

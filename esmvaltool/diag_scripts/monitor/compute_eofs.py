@@ -42,6 +42,7 @@ rasterize_maps: bool, optional (default: True)
 
 """
 import logging
+from copy import deepcopy
 
 import iris
 import matplotlib.pyplot as plt
@@ -63,6 +64,14 @@ class Eofs(MonitorBase):
     plotting capabilities in diagnostics that can not be done using only
     the preprocessor.
     """
+
+    def __init__(self, config):
+        """Initialize class member."""
+        super().__init__(config)
+
+        # Get default settings
+        self.cfg = deepcopy(self.cfg)
+        self.cfg.setdefault('rasterize_maps', True)
 
     def compute(self):
         """Compute the diagnostic."""
@@ -97,7 +106,8 @@ class Eofs(MonitorBase):
                 # Use rasterization if desired
                 # Note: plt.gca() is the colorbar here, use plt.gcf().axes to
                 # access the correct axes
-                self.set_rasterized(plt.gcf().axes[0])
+                if self.cfg['rasterize_maps']:
+                    self._set_rasterized(plt.gcf().axes[0])
                 # Get filename for the EOF plot
                 filename = self.get_plot_path('eof', var_info)
                 # Save figure
