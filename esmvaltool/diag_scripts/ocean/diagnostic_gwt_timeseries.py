@@ -604,7 +604,7 @@ def calculate_anomaly(cube, anomaly, calc_average=False):
     return cube
 
 
-def get_threshold_exceedance_date(cube, threshold):
+def get_threshold_exceedance_date(cube, threshold, last_year=2090.):
     """
     Calculate the threshold exceedance date.
 
@@ -616,19 +616,23 @@ def get_threshold_exceedance_date(cube, threshold):
         times = cube.coord('time').units.num2date(
             cube.coord('time').points)
         time = times[loc[0]]
-        if time.year > 2090.:
+        if time.year > last_year:
             return None
         return time
 
     threshold_os_dict = { '1.5os': 1.5,'1.6os': 1.6,'1.7os': 1.7,'1.8os': 1.8,'1.9os': 1.9,'2.os': 2.,'3.os': 3.}
     if threshold not in threshold_os_dict.keys():
         assert 0
-    loc = np.where(cube.data > threshold_os_dict(threshold))[0]
+    loc = np.where(cube.data > threshold_os_dict[threshold])[0]
     if not len(loc): return None # never reaches threshold
     times = cube.coord('time').units.num2date(
         cube.coord('time').points)
-    time = times[loc[-1]+1] # one time step after last time tas is above threshold.
-    if time.year > 2090.:
+    index = loc[-1]
+    if index >  len(times)-10: 
+       # last time step
+       return None
+    time = times[index+1] # one time step after last time tas is above threshold.
+    if time.year > last_year:
         return None
     return time
 

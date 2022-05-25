@@ -1685,6 +1685,8 @@ def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3.,
         sh = shopen(shelve_fn)
         gwts = sh['gwts']
         sh.close()
+        for index, time in gwts.items(): print('gwt', index, time)
+        assert 0
         return gwts
 
     gwts = {}
@@ -1955,7 +1957,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
             #if land_cube is None: continue
 #            cube_pairs[(dataset, mip, exp, ensemble)] = {'sea': sea_cube, 'land': land_cube}
 
-            for threshold in ['1.5os','2.os','3.os', 2., 3, 4, 1.5 ]:# 4.]:
+            for threshold in ['1.5os','1.6os', '1.7os', '1.8os', '1.9os', '2.os','3.os', 2., 3, 4, 1.5 ]:# 4.]:
                 print(land_cube,sea_cube)
                 lc_threshold = extract_window(gwts, land_cube.copy(), threshold=threshold, dataset=dataset, exp=exp, ensemble=ensemble)
                 oc_threshold = extract_window(gwts, sea_cube.copy(), threshold=threshold, dataset=dataset, exp=exp, ensemble=ensemble)
