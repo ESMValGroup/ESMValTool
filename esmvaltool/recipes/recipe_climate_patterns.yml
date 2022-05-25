@@ -218,7 +218,7 @@ diagnostics:
     scripts:
       energy_balance_script:
         script: climate_patterns/ebm_parameters.py
-        include_params: yes # options: yes, no
+        include_params: no # options: yes, no
 
   # optional look at EBM prediction of overshoot scenarios
 
