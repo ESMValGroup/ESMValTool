@@ -94,6 +94,7 @@ import iris
 import numpy as np
 from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import daily_statistics, monthly_statistics
+from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -299,7 +300,7 @@ def _load_cube(in_files, var):
         if len(in_files) == 1:
             cube = iris.load_cube(
                 in_files[0],
-                constraint=utils.var_name_constraint(var['raw']),
+                constraint=NameConstraint(var_name=var['raw']),
             )
         elif var.get('operator', '') == 'sum':
             # Multiple variables case using sum operation
@@ -307,7 +308,7 @@ def _load_cube(in_files, var):
             for raw_name, filename in zip(var['raw'], in_files):
                 in_cube = iris.load_cube(
                     filename,
-                    constraint=utils.var_name_constraint(raw_name),
+                    constraint=NameConstraint(var_name=raw_name),
                 )
                 if cube is None:
                     cube = in_cube

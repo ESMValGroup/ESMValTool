@@ -50,12 +50,12 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from esmvalcore.cmor.fixes import add_plev_from_altitude
+from iris import NameConstraint
 from joblib import Parallel, delayed
 from scipy.interpolate import interp1d
 from scipy.stats import linregress
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
-import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     get_diagnostic_filename,
@@ -106,7 +106,7 @@ def _get_cube(datasets, short_name):
             f"Expected exactly one dataset with short_name '{short_name}', "
             f"got {len(datasets):d}:\n{datasets}")
     return iris.load_cube(datasets[0]['filename'],
-                          ih.var_name_constraint(short_name))
+                          NameConstraint(var_name=short_name))
 
 
 def _get_level_width(air_pressure_bounds, ref_lev, ref_zg):

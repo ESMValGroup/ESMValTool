@@ -7,11 +7,23 @@ ESMValTool is mostly used as a command line tool. However, it is also possible
 to use (parts of) ESMValTool as a library. This section documents the public
 API of ESMValTool.
 
+
+Shared Diagnostic Code
+----------------------
+
 .. toctree::
    :maxdepth: 1
 
    esmvaltool.diag_scripts.shared
-   esmvaltool.diag_scripts
-   esmvaltool.diag_scripts.ocean
+
+
+Diagnostic Scripts
+------------------
+
+.. toctree::
+   :maxdepth: 1
+
    esmvaltool.diag_scripts.emergent_constraints
    esmvaltool.diag_scripts.mlr
+   esmvaltool.diag_scripts.ocean
+   esmvaltool.diag_scripts.psyplot_diag

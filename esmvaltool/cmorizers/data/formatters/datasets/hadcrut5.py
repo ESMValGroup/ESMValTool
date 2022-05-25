@@ -26,6 +26,7 @@ import os
 import iris
 import numpy as np
 from cf_units import Unit
+from iris import NameConstraint
 
 from ... import utilities as utils
 
@@ -38,14 +39,14 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
     # load data
     filepath = os.path.join(in_dir, filename)
     raw_var = var.get('raw', short_name)
-    cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
+    cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
     if short_name == 'tas':
         # load climatology
         filepath_clim = os.path.join(in_dir, cfg['climatology']['filename'])
         raw_var = var.get('raw_clim', short_name)
         clim_cube = iris.load_cube(filepath_clim,
-                                   utils.var_name_constraint(raw_var))
+                                   NameConstraint(var_name=raw_var))
 
         # fix units
         cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
