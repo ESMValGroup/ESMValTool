@@ -143,7 +143,7 @@ Low_ECS_RTNT: &low_ecs_rtnt
 
 diagnostics:
 
-  feedback_high_ESC:
+  feedback_high_ECS:
     title: CMIP5 cloud feedback
     description: Calculate grid-level CRE feedback parameters for CMIP5 models.
     variables:
@@ -182,7 +182,7 @@ diagnostics:
           start_year: 1
           end_year: 150
 
-  feedback_med_ESC:
+  feedback_med_ECS:
     title: CMIP5 cloud feedback
     description: Calculate grid-level CRE feedback parameters for CMIP5 models.
     variables:
@@ -219,7 +219,7 @@ diagnostics:
           start_year: 1
           end_year: 150
 
-  feedback_low_ESC:
+  feedback_low_ECS:
     title: CMIP5 cloud feedback
     description: Calculate grid-level CRE feedback parameters for CMIP5 models.
     variables:
@@ -255,3 +255,51 @@ diagnostics:
           project: low_ECS
           start_year: 1
           end_year: 150
+
+
+  fig_feedback_netcre:
+    title: Net cloud radiative effect
+    description: Plot figure.
+    scripts:
+      plot: &script_plot
+        script: mlr/plot.py
+        ancestors: ['feedback_*_ECS/feedback_parameters']
+        group_by_attribute: project
+        pattern: lambda_netcre_vs_latitude-longitude_MultiModelMean_all_150_years.nc
+        output_file_name: netcre
+        plot_map:
+          plot_kwargs:
+            cbar_label: '$\lambda_{netcre}$ [W m$^{-2}$ K$^{-1}$]'
+            cmap: bwr
+            extend: both
+            levels: [-8., -7., -6., -5., -4., -3., -2., -1., 0., 1., 2., 3., 4., 5., 6., 7., 8.]
+        plot_map_abs_biases:
+          plot_kwargs:
+            cbar_label: '$\Delta\lambda_{netcre}$ [W m$^{-2}$ K$^{-1}$]'
+            cmap: bwr
+            extend: both
+            levels: [-2.5, -2.25, -2., -1.75, -1.5, -1.25, -1., -0.75, -0.5, -0.25, 0., 0.25, 0.5, 0.75, 1., 1.25, 1.5, 1.75, 2., 2.25, 2.5]
+        years_in_title: false
+        map_plot_type: contourf
+
+
+  fig_feedback_swcre:
+    title: SW cloud radiative effect
+    description: Plot figure.
+    scripts:
+      plot:
+        <<: *script_plot
+        ancestors: ['feedback_*_ECS/feedback_parameters']
+        pattern: lambda_swcre_vs_latitude-longitude_MultiModelMean_all_150_years.nc
+        output_file_name: swcre
+
+
+  fig_feedback_lwcre:
+    title: LW cloud radiative effect
+    description: Plot figure.
+    scripts:
+      plot:
+        <<: *script_plot
+        ancestors: ['feedback_*_ECS/feedback_parameters']
+        pattern: lambda_lwcre_vs_latitude-longitude_MultiModelMean_all_150_years.nc
+        output_file_name: lwcre
