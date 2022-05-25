@@ -103,66 +103,68 @@ CMIP6_FULL: &cmip6_full
   - {dataset: UKESM1-0-LL,     exp: [historical, ssp585], ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 2100}
 
 diagnostics:
-  # monthly_timeseries:
-  #   description: Mean monthly variables
+  monthly_timeseries:
+    description: Mean monthly variables
 
-  #   variables:
-  #     tasmax_585:
-  #       short_name: tasmax
-  #       <<: *monthly_global_settings
-  #       additional_datasets: *cmip6_full
+    variables:
+      tasmax_585:
+        short_name: tasmax
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
 
-  #     tasmin_585:
-  #       short_name: tasmin
-  #       <<: *monthly_global_settings
-  #       additional_datasets: *cmip6_full
+      tasmin_585:
+        short_name: tasmin
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
 
-  #     tas_585:
-  #       short_name: tas
-  #       <<: *monthly_global_settings
-  #       additional_datasets: *cmip6_full
+      tas_585:
+        short_name: tas
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
 
-  #     hurs_585:
-  #       short_name: hurs
-  #       <<: *monthly_global_settings
-  #       additional_datasets: *cmip6_full
+      hurs_585:
+        short_name: hurs
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
 
-  #     huss_585:
-  #       short_name: huss
-  #       <<: *monthly_global_settings
-  #       additional_datasets: *cmip6_full
+      huss_585:
+        short_name: huss
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
 
-  #     pr_585:
-  #       short_name: pr
-  #       <<: *monthly_global_settings
-  #       additional_datasets: *cmip6_full
+      pr_585:
+        short_name: pr
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
 
-  #     sfcWind_585:
-  #       short_name: sfcWind
-  #       <<: *monthly_global_settings
-  #       additional_datasets: *cmip6_full
+      sfcWind_585:
+        short_name: sfcWind
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
 
-  #     ps_585:
-  #       short_name: ps
-  #       <<: *monthly_global_settings
-  #       additional_datasets: *cmip6_full
+      ps_585:
+        short_name: ps
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
 
-  #     rsds_585:
-  #       short_name: rsds
-  #       <<: *monthly_global_settings
-  #       additional_datasets: *cmip6_full
+      rsds_585:
+        short_name: rsds
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
 
-  #     rlds_585:
-  #       short_name: rlds
-  #       <<: *monthly_global_settings
-  #       additional_datasets: *cmip6_full
+      rlds_585:
+        short_name: rlds
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
 
-  #   scripts:
-  #     climate_patterns_script:
-  #       script: climate_patterns/climate_patterns.py
-  #       grid: constrained # options: constrained, full
-  #       imogen_mode: on # options: on, off
-  #       output_r2_scores: off # options: on, off
+    scripts:
+      climate_patterns_script:
+        script: climate_patterns/climate_patterns.py
+        grid: constrained # options: constrained, full
+        imogen_mode: on # options: on, off
+        output_r2_scores: on # options: on, off
+        parallelise: on # options: on, off
+        parallel_threads: 20 # int, optional
 
   annual_timeseries:
     description: Mean annual TOA fluxes and tas
@@ -218,7 +220,9 @@ diagnostics:
     scripts:
       energy_balance_script:
         script: climate_patterns/ebm_parameters.py
-        include_params: no # options: yes, no
+        include_params: on # options: on, off
+        parallelise: on # options: on, off
+        parallel_threads: 20 # int, optional
 
   # optional look at EBM prediction of overshoot scenarios
 

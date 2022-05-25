@@ -1,4 +1,36 @@
-# Kappa calculation mathematics kindly provided by Dr. Chris Huntingford, CEH
+"""Diagnostic script to generate ocean and atmospheric parameters.
+
+Description
+-----------
+Generates and saves energy-balance-model specific ocean and
+atmospheric parameters from CMIP6 models. This diagnostic needs
+preprocessed mean annual cubes, with no gridding requirements.
+Default re-grid specification exists to decrease CPU-load and run-time.
+
+Kappa and atmospheric parameter calculation mathematics kindly provided by
+Dr. Chris Huntingford, CEH. (Huntingford & Cox, 2000)
+
+Author
+------
+Gregory Munday (Met Office, UK)
+
+
+Configuration options in recipe
+-------------------------------
+include_params: bool, optional (default: off)
+    options: on, off
+    def: if 'on', uses parameters supplied in 'params.json' to significantly
+         reduce CPU load and run-time. Must be copied from output params.dat
+         file, in same format.
+parallelise: bool, optional (default: off)
+    options: on, off
+    def: parallelises code to run N models at once
+parallel_threads: int, optional (default: null)
+    options: any int, up to the amount of CPU cores accessible by user
+    def: number of threads/cores to parallelise over. If 'parallelise: on' and
+         'parallel_threads': null, diagnostic will automatically parallelise
+         over N-1 accessible threads
+"""
 
 import json
 import logging
@@ -15,9 +47,6 @@ from scipy import stats
 from scipy.sparse.linalg import spsolve
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
-
-import sys; sys.path.append('/home/h04/gford/Python/tools')
-import toolbox as tb
 
 logger = logging.getLogger(Path(__file__).stem)
 params_file = os.path.join(os.path.dirname(__file__), 'params.json')
@@ -317,16 +346,16 @@ def ebm_check(rad_forcing, of, kappa, lambda_o, lambda_l, nu_ratio, tas_delta):
 
 
 def parallel_models(model):
-    
-    with run_diagnostic() as cfg: 
+
+    with run_diagnostic() as cfg:
         input_data = cfg["input_data"].values()
         params = cfg["include_params"]
         work_path = cfg["work_dir"] + "/"
         plot_path = cfg["plot_dir"] + "/"
-    
+
     toa_list = iris.load([])
     toa_4x_list = iris.load([])
-    
+
     for dataset in input_data:
         if dataset['dataset'] == model:
             input_file = dataset["filename"]
@@ -357,8 +386,8 @@ def parallel_models(model):
 
     # calculating TOA averages, subtracting mean of first 4 decades
     (toa_delta, toa_delta_land, toa_delta_ocean, tas_delta, tas_delta_land,
-        tas_delta_ocean) = anomalies_calc(rtmt_cube, tas_cube, ocean_frac,
-                                        land_frac)
+     tas_delta_ocean) = anomalies_calc(rtmt_cube, tas_cube, ocean_frac,
+                                       land_frac)
 
     # calculating EBM parameter, Kappa
     if params is True:
@@ -370,8 +399,7 @@ def parallel_models(model):
             sub_list = list(param_list[0][i].values())
             if sub_list[0]['model'] == model:
                 kappa = sub_list[0]['kappa_o']
-
-    elif params is False:
+    else:
         kappa = kappa_parameter(of, toa_delta, tas_delta_ocean)
 
     reg, avg_list, yrs, rad_forcing, lambda_c = create_regression_plot(
@@ -388,14 +416,13 @@ def parallel_models(model):
                 lambda_o = sub_list[0]['lambda_o']
                 lambda_l = sub_list[0]['lambda_l']
                 nu_ratio = sub_list[0]['mu']
-
-    elif params is False:
+    else:
         lambda_o, lambda_l, nu_ratio = atmos_params_calc(
             rad_forcing, toa_delta_land, toa_delta_ocean, tas_delta_land,
             tas_delta_ocean)
 
     temp_global, t_delta = ebm_check(rad_forcing, of, kappa, lambda_o,
-                                        lambda_l, nu_ratio, tas_delta)
+                                     lambda_l, nu_ratio, tas_delta)
 
     model_work_dir, model_plot_dir = sf.make_model_dirs(
         cube_initial, work_path, plot_path)
@@ -404,9 +431,9 @@ def parallel_models(model):
     return_forcing_cube(rad_forcing, yrs, model_work_dir)
 
     # plotting
-    ebm_plots(reg, avg_list, yrs, rad_forcing, lambda_c, temp_global,
-                t_delta, model_plot_dir)
-    
+    ebm_plots(reg, avg_list, yrs, rad_forcing, lambda_c, temp_global, t_delta,
+              model_plot_dir)
+
     return save_params(model, of, kappa, lambda_o, lambda_l, nu_ratio)
 
 
@@ -414,21 +441,23 @@ def main(cfg):
 
     # gets a description of the preprocessed data that we will use as input.
     input_data = cfg["input_data"].values()
+    parallelise = cfg["parallelise"]
+    threads = cfg["parallel_threads"]
     work_path = cfg["work_dir"] + "/"
 
     models = []
-    
+
     for x in input_data:
         print(x)
         model = x['dataset']
         if model not in models:
             models.append(model)
 
-    # series run
-    # for model in models[:1]:
-    #     model_data.append(parallel_models(model))
-    
-    model_data = tb.parallelise(parallel_models, 20)(models)
+    if parallelise is True:
+        model_data = sf.parallelise(parallel_models, threads)(models)
+    else:
+        for model in models:
+            model_data.append(parallel_models(model))
 
     file = open(work_path + "params.dat", 'a')
     file.write(json.dumps(model_data))

@@ -1,3 +1,39 @@
+"""Diagnostic script to build climate patterns from CMIP6 models.
+
+Description
+-----------
+Builds patterns, anomaly and climatology cubes from CMIP6 models.
+This diagnostic needs preprocessed mean monthly cubes, with no
+gridding requirements. Default re-grid specification exists to
+decrease CPU-load and run-time.
+
+Author
+------
+Gregory Munday (Met Office, UK)
+
+
+Configuration options in recipe
+-------------------------------
+grid: str, optional (default: constrained)
+    options: constrained, full
+    def: removes Antarctica from grid
+imogen_mode: bool, optional (default: off)
+    options: on, off
+    def: outputs extra data (anomaly, climatology) per variable
+         to drive JULES-IMOGEN configuration
+output_r2_scores: bool, optional (default: off)
+    options: on, off
+    def: outputs determinant values per variable to measure pattern robustness
+parallelise: bool, optional (default: off)
+    options: on, off
+    def: parallelises code to run N models at once
+parallel_threads: int, optional (default: null)
+    options: any int, up to the amount of CPU cores accessible by user
+    def: number of threads/cores to parallelise over. If 'parallelise: on' and
+         'parallel_threads': null, diagnostic will automatically parallelise
+         over N-1 accessible threads
+"""
+
 import logging
 from pathlib import Path
 
@@ -311,14 +347,59 @@ def saving_outputs(clim_list_final, anom_list_final, regressions, scores,
             cube_saver(list_of_cubelists, work_path, name_list, mode='base')
 
 
+def patterns(model):
+
+    with run_diagnostic() as cfg:
+        input_data = cfg["input_data"].values()
+        grid_spec = cfg["grid"]
+        imogen_mode = cfg["imogen_mode"]
+        r2_scores = cfg["output_r2_scores"]
+        work_path = cfg["work_dir"] + "/"
+        plot_path = cfg["plot_dir"] + "/"
+
+    clim_list = iris.load([])
+    ts_list = iris.load([])
+
+    for dataset in input_data:
+        if dataset['dataset'] == model:
+            input_file = dataset["filename"]
+
+            # preparing single cube
+            cube_initial = compute_diagnostic(input_file)
+
+            if grid_spec == "constrained":
+                cube = constrain_latitude(cube_initial)
+            elif grid_spec == "full":
+                cube = cube_initial
+
+            # appending to timeseries list
+            ts_list.append(cube)
+
+            # making climatology
+            clim_cube = climatology(cube)
+            clim_list.append(clim_cube)
+
+    # calculate anomaly over historical + ssp timeseries
+    clim_list_final, anom_list_final = calculate_anomaly(clim_list, ts_list)
+
+    for i in range(len(clim_list_final)):
+        rename_clim_variables(clim_list_final[i])
+        rename_anom_variables(anom_list_final[i])
+
+    regressions, scores = calculate_regressions(anom_list_final.copy())
+
+    model_work_dir, model_plot_dir = sf.make_model_dirs(
+        cube_initial, work_path, plot_path)
+
+    saving_outputs(clim_list_final, anom_list_final, regressions, scores,
+                   imogen_mode, r2_scores, model_plot_dir, model_work_dir)
+
+
 def main(cfg):
     # gets a description of the preprocessed data that we will use as input.
     input_data = cfg["input_data"].values()
-    grid_spec = cfg["grid"]
-    imogen_mode = cfg["imogen_mode"]
-    r2_scores = cfg["output_r2_scores"]
-    work_path = cfg["work_dir"] + "/"
-    plot_path = cfg["plot_dir"] + "/"
+    parallelise = cfg["parallelise"]
+    threads = cfg["parallel_threads"]
 
     models = []
     for x in input_data:
@@ -326,43 +407,11 @@ def main(cfg):
         if model not in models:
             models.append(model)
 
-    for model in models:
-        clim_list = iris.load([])
-        ts_list = iris.load([])
-        for dataset in input_data:
-            if dataset['dataset'] == model:
-                input_file = dataset["filename"]
-
-                # preparing single cube
-                cube_initial = compute_diagnostic(input_file)
-
-                if grid_spec == "constrained":
-                    cube = constrain_latitude(cube_initial)
-                elif grid_spec == "full":
-                    cube = cube_initial
-
-                # appending to timeseries list
-                ts_list.append(cube)
-
-                # making climatology
-                clim_cube = climatology(cube)
-                clim_list.append(clim_cube)
-
-        # calculate anomaly over historical + ssp timeseries
-        clim_list_final, anom_list_final = calculate_anomaly(
-            clim_list, ts_list)
-
-        for i in range(len(clim_list_final)):
-            rename_clim_variables(clim_list_final[i])
-            rename_anom_variables(anom_list_final[i])
-
-        regressions, scores = calculate_regressions(anom_list_final.copy())
-
-        model_work_dir, model_plot_dir = sf.make_model_dirs(
-            cube_initial, work_path, plot_path)
-
-        saving_outputs(clim_list_final, anom_list_final, regressions, scores,
-                       imogen_mode, r2_scores, model_plot_dir, model_work_dir)
+    if parallelise is True:
+        sf.parallelise(patterns, threads)(models)
+    else:
+        for model in models:
+            patterns(model)
 
 
 if __name__ == "__main__":

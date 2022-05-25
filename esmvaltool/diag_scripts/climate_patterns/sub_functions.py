@@ -204,3 +204,27 @@ def make_model_dirs(cube_initial, work_path, plot_path):
     model_plot_dir = p_path + "/"
 
     return model_work_dir, model_plot_dir
+
+
+def parallelise(f, processes=None):
+    """ Wrapper to parallelise any function
+        Example:
+        somefunc_star_parallel = parallelise(somefunc_star_linear)
+        inargs = itertools.izip(np.arange(N), itertools.repeat(2))
+        parallel_result = somefunc_star_parallel(inargs)
+    """
+    import multiprocessing as mp
+    if processes is None:
+        processes = max(1, mp.cpu_count() - 1)
+    if processes <= 0:
+        processes = 1
+
+    def easy_parallise(f, sequence):
+        pool = mp.Pool(processes=processes)
+        result = pool.map_async(f, sequence).get()
+        pool.close()
+        pool.join()
+        return result
+
+    from functools import partial
+    return partial(easy_parallise, f)
