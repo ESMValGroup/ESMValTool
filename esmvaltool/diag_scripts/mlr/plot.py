@@ -190,6 +190,21 @@ def _get_key(var_type, attr):
     return f'{var_type}{SEP}{attr}'
 
 
+def _get_levels(val_min, val_max):
+    """Get symmetric levels for contour plot.
+
+    This function might be changed to consider cube in the future.
+
+    """
+    n_levels_per_sign = 50
+    #val_max = 8.0
+    #val_min = -8.0
+    max_range = max([val_max, -val_min])
+    range_ = np.linspace(0.0, max_range, n_levels_per_sign + 1)[1:]
+    levels = list(-range_[::-1]) + [0.0] + list(range_)
+    return levels
+
+
 def _get_map_plot_func(cfg):
     """Get function used for plotting maps."""
     allowed_funcs = {
@@ -437,6 +452,7 @@ def get_cube_dict(cfg, group_by_attribute):
     cube_dict = {}
     masks = []
     for (var_type, datasets) in group_metadata(input_data, 'var_type').items():
+        print(datasets)
         grouped_datasets = group_metadata(datasets, group_by_attribute)
         for (attr, attr_datasets) in grouped_datasets.items():
             key = _get_key(var_type, attr)
@@ -473,6 +489,11 @@ def get_input_datasets(cfg):
 def get_plot_kwargs(cfg, option, key=None):
     """Get keyword arguments for desired plot function and key."""
     plot_kwargs = cfg.get(option, {}).get('plot_kwargs', {})
+    print(plot_kwargs)
+    #if 'plot_map' in option:
+    #    if 'vmin' in plot_kwargs and 'vmax' in plot_kwargs:
+    #        plot_kwargs['levels'] = _get_levels(plot_kwargs['vmin'], plot_kwargs['vmax'])
+    #print(plot_kwargs)
     if key is None:
         return plot_kwargs
     if '_xy' in option:
@@ -529,6 +550,8 @@ def plot_map(cfg, cube_dict):
         logger.debug("Maximum of '%s': %.2f", title, cube.data.max())
 
         # Save plot
+        if cfg['output_file_name']:
+            key = key + '_' + cfg['output_file_name']
         plot_path = get_plot_filename(f'map_{key}', cfg)
         plt.savefig(plot_path, **get_savefig_kwargs(cfg))
         logger.info("Wrote %s", plot_path)
@@ -575,6 +598,8 @@ def plot_map_abs_biases(cfg, cube_dict):
         logger.debug("Maximum of '%s': %.2f", title, bias_cube.data.max())
 
         # Save plot
+        if cfg['output_file_name']:
+            key_2 = key_2 + '_' + cfg['output_file_name']
         plot_path = get_plot_filename(f'map_abs_bias_{key_1}-{key_2}', cfg)
         plt.savefig(plot_path, **get_savefig_kwargs(cfg))
         logger.info("Wrote %s", plot_path)
@@ -837,6 +862,7 @@ def main(cfg):
     cfg.setdefault('map_plot_type', 'pcolormesh')
     cfg.setdefault('print_corr', False)
     cfg.setdefault('years_in_title', False)
+    cfg.setdefault('output_file_name', None)
     cube_dict = get_cube_dict(cfg, cfg['group_by_attribute'])
 
     # Plots
