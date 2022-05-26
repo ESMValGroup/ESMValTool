@@ -102,6 +102,26 @@ CMIP6_FULL: &cmip6_full
   - {dataset: MRI-ESM2-0,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
   - {dataset: UKESM1-0-LL,     exp: [historical, ssp585], ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 2100}
 
+CMIP6_126: &cmip6_126
+  - {dataset: ACCESS-CM2,      exp: [historical, ssp126], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100, institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-ESM1-5,   exp: [historical, ssp126], ensemble: r4i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: CanESM5,         exp: [historical, ssp126], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: CNRM-CM6-1,      exp: [historical, ssp126], ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 2100}
+  - {dataset: CNRM-CM6-1-HR,   exp: [historical, ssp126], ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 2100}
+  - {dataset: CNRM-ESM2-1,     exp: [historical, ssp126], ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 2100}
+  - {dataset: EC-Earth3-Veg,   exp: [historical, ssp126], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2100}
+  - {dataset: FGOALS-g3,       exp: [historical, ssp126], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: HadGEM3-GC31-LL, exp: [historical, ssp126], ensemble: r1i1p1f3, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: HadGEM3-GC31-MM, exp: [historical, ssp126], ensemble: r1i1p1f3, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: INM-CM4-8,       exp: [historical, ssp126], ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 2100}
+  - {dataset: IPSL-CM6A-LR,    exp: [historical, ssp126], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2100}
+  - {dataset: MIROC6,          exp: [historical, ssp126], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: MIROC-ES2L,      exp: [historical, ssp126], ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: MPI-ESM1-2-HR,   exp: [historical, ssp126], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: MPI-ESM1-2-LR,   exp: [historical, ssp126], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: MRI-ESM2-0,      exp: [historical, ssp126], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: UKESM1-0-LL,     exp: [historical, ssp126], ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 2100}
+
 diagnostics:
   monthly_timeseries:
     description: Mean monthly variables
@@ -196,6 +216,26 @@ diagnostics:
         short_name: rsdt
         <<: *annual_mean_settings
         additional_datasets: *cmip6_full
+
+      tas_126:
+        short_name: tas
+        <<: *annual_mean_settings
+        additional_datasets: *cmip6_126
+
+      rlut_126:
+        short_name: rlut
+        <<: *annual_mean_settings
+        additional_datasets: *cmip6_126
+
+      rsut_126:
+        short_name: rsut
+        <<: *annual_mean_settings
+        additional_datasets: *cmip6_126
+
+      rsdt_126:
+        short_name: rsdt
+        <<: *annual_mean_settings
+        additional_datasets: *cmip6_126
 
       tas_abrupt4x:
         short_name: tas

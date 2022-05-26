@@ -139,8 +139,8 @@ def plot_scores(cube_list, plot_path):
     plt.close()
 
 
-def ebm_plots(reg, avg_list, yrs, forcing, lambda_c, temp_global, tas_delta,
-              plot_path):
+def ebm_plots(reg, avg_list, yrs, forcing, forcing_126, lambda_c, temp_global,
+              tas_delta, temp_global_126, tas_126_delta, plot_path):
     """Plots the regression between tas and rtmt, as well as the resultant
     forcing timeseries."""
     yrs = (1850 + np.arange(temp_global.shape[0])).astype('float')
@@ -157,7 +157,8 @@ def ebm_plots(reg, avg_list, yrs, forcing, lambda_c, temp_global, tas_delta,
     ax[0].legend(loc='upper left')
 
     # plotting forcing timeseries
-    ax[1].plot(yrs, forcing)
+    ax[1].plot(yrs, forcing, color='red', label='SSP585')
+    ax[1].plot(yrs, forcing_126, color='blue', label='SSP126')
     ax[1].set_xlabel("Time")
     ax[1].set_ylabel("Radiative forcing (Wm-2)")
     bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
@@ -177,8 +178,15 @@ def ebm_plots(reg, avg_list, yrs, forcing, lambda_c, temp_global, tas_delta,
                color='black',
                zorder=10,
                linewidth=1.5,
-               label='EBM Prediction')
-    ax[2].plot(yrs, tas_delta, color='red', label='Model')
+               label='EBM Prediction SSP585')
+    ax[2].plot(yrs,
+               temp_global_126,
+               color='purple',
+               zorder=10,
+               linewidth=1.5,
+               label='EBM Prediction SSP126')
+    ax[2].plot(yrs, tas_delta, color='red', label='Model SSP585')
+    ax[2].plot(yrs, tas_126_delta, color='blue', label='Model SSP585')
     ax[2].legend(loc='upper left')
     ax[2].set_xlabel("Time")
     ax[2].set_ylabel("Air Surface Temperature (K)")
