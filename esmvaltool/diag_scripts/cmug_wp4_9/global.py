@@ -14,6 +14,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import cf_units as Unit
+import datetime
 
 import copy
 
@@ -328,8 +329,8 @@ def _diagnostic(config):
 
     # Maps of climatology
     # make_plot_global_clim_maps(obs_data, model_data, 'LST or Tair', vmin_obs, vmax_obs, vnum_obs, vmin_diff, vmax_diff, vnum_obs,config)
-    make_plot_global_clim_maps(cci_lst_clim_regrided, model_lst_clim, 'LST',270,330,15 ,-15,15, 11, config)
-    make_plot_global_clim_maps(era5l_tair_clim_regrided, model_tair_clim, 'Tair',270,320,15 ,-15,15, 11, config)
+    make_plot_global_clim_maps(cci_lst_clim_regrided, model_lst_clim, 'LST',270,330,13 ,-15,15, 11, config)
+    make_plot_global_clim_maps(era5l_tair_clim_regrided, model_tair_clim, 'Tair',270,320,11 ,-15,15, 11, config)
 
     # make LST-Tair for OBS and Model
     #
@@ -380,17 +381,42 @@ def _diagnostic(config):
     obs_ts_lc = {}
     model_ts_lc = {}
 
-    for BIOME in ['NT', 'BT']:#lc_to_pft.keys():
+    for BIOME in ['NT', 'BT', 'G']:#lc_to_pft.keys():
         print(BIOME)
         obs_clim_lc[BIOME] = {}
         model_clim_lc[BIOME] = {}
         obs_ts_lc[BIOME] = {}
         model_ts_lc[BIOME] = {}
 
-        biome_mask = np.ma.masked_outside(lc_data[0].data,
-                                          np.min(lc_to_pft[BIOME]),
-                                          np.max(lc_to_pft[BIOME])
+        if BIOME=='G':
+            biome_mask1 = np.ma.masked_outside(lc_data[0].data,
+                                               lc_to_pft[BIOME][0]-0.5,
+                                               lc_to_pft[BIOME][0]+0.5
+                                           )
+
+            biome_mask2 = np.ma.masked_outside(lc_data[0].data,
+                                               lc_to_pft[BIOME][1]-0.5,
+                                               lc_to_pft[BIOME][1]+0.5
+                                           )
+            biome_mask3 = np.ma.mask_or(biome_mask1, biome_mask2)#
+
+                                        #shrink = False)
+
+            print(np.sum(biome_mask1),np.sum(biome_mask2),np.sum(biome_mask3))
+
+            #biome_mask = np.ma.masked_array(lc_data[0].data, mask=biome_mask3)
+
+
+            biome_mask = np.ma.masked_outside(lc_data[0].data,
+                                              129,
+                                              132)
+        else:
+            biome_mask = np.ma.masked_outside(lc_data[0].data,
+                                              np.min(lc_to_pft[BIOME]),
+                                              np.max(lc_to_pft[BIOME])
                                           )
+            print(np.sum(biome_mask))
+
         #print(biome_mask.shape)
         new_mask = np.ones((12,biome_mask.shape[0], biome_mask.shape[1]))
         for i in range(12):
@@ -401,10 +427,15 @@ def _diagnostic(config):
         for i in range(nt):
             new_ts_mask[i] = biome_mask.mask
 
-        # plt.pcolormesh(new_mask[0])
-        # # a check on mask
-        # plt.savefig(f'{outpath}/mask_{BIOME}.png')
-        # plt.close()
+        plt.pcolormesh(new_mask[0])
+        # a check on mask
+        plt.savefig(f'{outpath}/mask_{BIOME}.png')
+        plt.close()
+
+        plt.pcolormesh(lc_data[0].data)
+        plt.savefig(f'{outpath}/lc_check_{BIOME}.png')
+        plt.colorbar()
+        plt.close()
 
         for MODEL in models:
             # appears deep copy is needed, not sure why, guess cubes considered nested objects?
@@ -447,15 +478,26 @@ def plot_biome_timeseries(obs, model, clim, config):
 
     # plot is LST-Tair for either the 12 month climatology
     # or the whole monthly timeseries
-    # Doing a sone function as just width more or less the difference
+    # Doing a some function as just width more or less the difference
 
     for BIOME in obs.keys():
         
         # one plot for each biome
-        plt.figure(figsize=(15,15))
-
+        plt.figure(figsize=(40,16))
+        
         obs_count = 0
         for i,MODEL in enumerate(obs[BIOME].keys()):
+
+            nt = len(obs[BIOME][MODEL].coord('time').points)
+
+            if clim:
+                Xpoints = range(12)
+            else:
+                Xpoints = range(nt)
+ 
+    
+
+
             print(MODEL)
             if obs_count == 0:
                 obs_ave = obs[BIOME][MODEL].collapsed(['latitude','longitude'],
@@ -470,7 +512,8 @@ def plot_biome_timeseries(obs, model, clim, config):
             this_model_ave = model[BIOME][MODEL].collapsed(['latitude','longitude'],
                                                            iris.analysis.MEAN)
 
-            plt.plot(this_model_ave.data, label=MODEL,
+            plt.plot(Xpoints, this_model_ave.data,
+                     label=MODEL,
                      linewidth=1,
                      color = LINECOLOURS[i%10],
                      linestyle=LINE_STYLES[i//10])
@@ -479,22 +522,46 @@ def plot_biome_timeseries(obs, model, clim, config):
         if clim:
             plt.xticks(range(12), MONTH_LIST,
                        fontsize=20)
+        else:
+            print(obs[BIOME][MODEL].coord('time').points)
+            print(str(obs[BIOME][MODEL].coord('time').units))
+            print(obs[BIOME][MODEL].coord('time').units.calendar)
+            
+            point_list = []
+            all_points = Unit.num2date(obs[BIOME][MODEL].coord('time').points,
+                                       str(obs[BIOME][MODEL].coord('time').units),
+                                       obs[BIOME][MODEL].coord('time').units.calendar)
+            
+            for item in all_points:
+                print(item.year, item.month)
+                if item.month==1:
+                    point_list.append(str(item.year))
+                else:
+                    point_list.append('')
+
+            plt.xticks(range(nt), point_list, fontsize=20)#, point_list)
+ 
 
 
-
-        plt.ylim((-2,7))
+        plt.yticks(range(-7,15,1), fontsize=20)
+        plt.ylim((-5,10))
 
         plt.xlabel('Date', fontsize=22)
         plt.ylabel('Difference (K)', fontsize=22)
 
         plt.grid()
 
-        plt.legend()
         outpath = config['plot_dir']
         if clim:
-            plt.savefig(f'{outpath}/timeseries_{BIOME}_clim.png')
+            plt.savefig(f'{outpath}/timeseries_{BIOME}_clim_clean.png',bbox_inches='tight')
+            plt.legend(loc=(1.02,1), fontsize=20)
+            plt.savefig(f'{outpath}/timeseries_{BIOME}_clim_legend.png')
+
+
         else:
-            plt.savefig(f'{outpath}/timeseries_{BIOME}_ts.png')
+            plt.savefig(f'{outpath}/timeseries_{BIOME}_ts_clean.png',bbox_inches='tight')
+            plt.legend(loc=(1.02,1), fontsize=20)            
+            plt.savefig(f'{outpath}/timeseries_{BIOME}_ts_legend.png')
 
         plt.close('all')  # Is this needed?
 
@@ -670,7 +737,7 @@ def make_plot_global_clim_maps(obs_data, model_data,
                             extend='both')
     
         # Label the colour bar and add ticks
-        cbar.set_label('OBS - Model Difference (K)', fontsize=18)
+        cbar.set_label('Difference (K)', fontsize=18)
         cbar.ax.tick_params(labelsize=16,length=0)
         
 
