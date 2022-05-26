@@ -119,6 +119,14 @@ mod_exp_ens_skips = {
     ('NorESM2-LM', 'ssp370', 'r2i1p1f1',): True, # SSP run ends at 2054.
     }
 
+def extend_mod_exp_ens_skips(mod_exp_ens_skips):
+    new_dict = {}
+    for (mod, exp, ens), boole in mod_exp_ens_skips.items():
+        new_exp = 'historical-'+exp
+        new_dict[(mod, new_exp, ens)] = True
+    mod_exp_ens_skips.update(new_dict)
+    return mod_exp_ens_skips
+mod_exp_ens_skips = extend_mod_exp_ens_skips(mod_exp_ens_skips)
 
 # For models (like UKESM), where the hist and ssp have different ensemble ids:
 data_dict_linked_ens = {# model: {ssp:hist'
@@ -628,7 +636,7 @@ def get_threshold_exceedance_date(cube, threshold, last_year=2090.):
     times = cube.coord('time').units.num2date(
         cube.coord('time').points)
     index = loc[-1]
-    if index >  len(times)-10: 
+    if index >  len(times)-10:
        # last time step
        return None
     time = times[index+1] # one time step after last time tas is above threshold.
@@ -1844,11 +1852,45 @@ def calc_tls(cfg, data_dict):
     return data_dict
 
 
+
 def calc_atmos_carbon(cfg, data_dict):
+    """
+    Load remaining atmospheric carbon.
+    The old way is wrong:
+    cumul_emissions - nbpgt_cumul - fgco2gt_cumul
+
+    This way uses the 1ppm = 2.13 Pg C, from
+    https://cdiac.ess-dive.lbl.gov/pns/convert.html
+    """
+    tmp_data_dict = {}
+    new_short = 'atmos_carbon'
+    for (dataset, short, exp, ensemble), tmp_data in data_dict.items():
+        print('calc_atmos_carbon:',(dataset, short, exp, ensemble))
+        if short not in ['co2', ]:
+            continue
+        tmp_times, tmp_dat = unzip_time(tmp_data)
+        if not len(tmp_data):
+            print('calc_atmos_carbon: ERROR:',(dataset, short, exp, ensemble), 'no data:', tmp_data)
+            assert 0
+
+        tmp_times = tmp_times+0.5
+        tmp_data = tmp_data * 2.13 # Convert ppm into Pg C.
+
+        tmp_data_dict[(dataset, new_short, exp, ensemble)] = {'time': tmp_times, new_short: tmp_dat}
+
+    data_dict.update(tmp_data_dict)
+    print(tmp_data_dict)
+    return data_dict
+
+
+def calc_atmos_carbon_old(cfg, data_dict):
     """
     Load remaining atmospheric carbon.
     cumul_emissions - nbpgt_cumul - fgco2gt_cumul
     """
+    print('This method is wrong because the cumulative emission data is UKESM only')
+    assert 0
+
     tmp_data_dict = {}
     new_short = 'atmos_carbon'
     for (dataset, short, exp, ensemble), tmp_data in data_dict.items():
@@ -4751,7 +4793,7 @@ def main(cfg):
             if do_count_and_sensitivity_table:
                 make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict)
 
-            do_timeseries_megaplot = True 
+            do_timeseries_megaplot = True
             if do_timeseries_megaplot:
                 for plot_styles in [
                        'CMIP6_range', 'all_models_range', 'all_models_means',
