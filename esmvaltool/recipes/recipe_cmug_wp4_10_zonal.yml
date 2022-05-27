@@ -1,0 +1,79 @@
+# Recipe to call work on CMUG WP4.10 using LAI
+---
+documentation:
+  description: |
+    Please add description here
+  authors:
+    - king_robert
+
+  title: CMUG WP4.10
+
+  maintainer:
+    - king_robert
+
+  references:
+    - esacci-lst
+ 
+preprocessors:
+
+  region_preprocessor:
+    extract_region: 
+      start_longitude: -12
+      end_longitude: 25
+      start_latitude: 40
+      end_latitude: 60
+
+diagnostics:
+  timeseries:
+    description: ESACCI LST difference to model historical ensemble average
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+
+      lai:
+        mip: Lmon
+        #preprocessor: region_preprocessor
+        additional_datasets:
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 2003, end_year: 2014, grid: gn}
+         - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         - {dataset: TaiESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         - {dataset: AWI-ESM-1-1-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         #- {dataset: IITM-ESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         #- {dataset: CMCC-ESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         ###- {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 2003, end_year: 2014, grid: gn}
+         ###- {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         ###- {dataset: ACCESS-CM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         ###- {dataset: E3SM-1-1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         ###- {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         ###- {dataset: FIO-ESM-2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         ###- {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}    
+         ###- {dataset: INM-CSM-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         ###- {dataset: KIOST-ESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         ###- {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         ###- {dataset: NorCPM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         ###- {dataset: KACE-1-0-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         - {dataset: GFDL-ESM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid:  gr1}
+         ###- {dataset: NESM3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         #- {dataset: SAM0-UNICON, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         #- {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2014, grid: gr}
+
+
+
+
+         #- {dataset: ACCESS-CM2, project: CMIP6, exp: historical, ensemble: r(1:3)i1p1f1, start_year: 2003, end_year: 2006, grid: gn}
+         #- {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 2003, end_year: 2006, grid: gn}
+         #- {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r(8:19)i1p1f2, start_year: 2003, end_year: 2006, grid: gn}
+         #- {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2003, end_year: 2006, grid: gn}
+         #- {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r(1:3)i1p1f1, start_year: 2003, end_year: 2014, grid: gn}
+         #- {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: historical, ensemble: r(1:2)i1p1f1, start_year: 2003, end_year: 2006, grid: gn}#, institute: MOHC}
+
+         #- {dataset: CMUG_WP4_10, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2006, version: '1.00'}
+
+    scripts:
+      script1:
+        script: cmug_wp_4_10/lai_zonal.py

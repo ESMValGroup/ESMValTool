@@ -196,8 +196,13 @@ def _diagnostic(config):
             this_cube.add_aux_coord(ensemble_coord)
             ensemble_ts.append(this_cube)
 
-        model_means[KEY] = ensemble_ts.merge_cube()
-        model_means[KEY] = model_means[KEY].collapsed('ensemble_number', iris.analysis.MEAN)
+            
+        if e_number > 0:
+            model_means[KEY] = ensemble_ts.merge_cube()
+            model_means[KEY] = model_means[KEY].collapsed('ensemble_number', iris.analysis.MEAN)
+        else:
+            model_means[KEY] = this_cube
+
         icc.add_year(model_means[KEY], 'time')
         icc.add_month_number(model_means[KEY], 'time')
             
