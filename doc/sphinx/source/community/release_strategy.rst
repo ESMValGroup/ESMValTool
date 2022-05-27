@@ -412,7 +412,7 @@ Contact the feedstock maintainers if you want to become a maintainer yourself.
 9. Check the Docker images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are three main docker container images available for ESMValTool on
+There are three main Docker container images available for ESMValTool on
 `Dockerhub <https://hub.docker.com/r/esmvalgroup/esmvaltool/tags>`_:
 
 - ``esmvalgroup/esmvaltool:stable``, built from `docker/Dockerfile <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile>`_,
@@ -426,7 +426,7 @@ There are three main docker container images available for ESMValTool on
 - ``esmvalgroup/esmvaltool:experimental``, built from `docker/Dockerfile.exp <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile.exp>`_,
   this is a tag that always points to the latest development version of
   ESMValTool with the lastest development version of ESMValCore.
-  Note that some recipes may not work as expected with this container because
+  Note that some recipes may not work as expected with this image because
   the ESMValTool development version has been designed to work with the latest
   release of ESMValCore (i.e. not with the development version).
   This image is built by Dockerhub every time there is a new commit to the
@@ -442,16 +442,16 @@ built correctly by
 
 1. checking that the version tag is available on `Dockerhub`_ and the ``stable``
    tag has been updated,
-2. running some recipes with the ``stable`` tag Docker image, for example one
+2. running some recipes with the ``stable`` tag Docker container, for example one
    recipe for Python, NCL, R, and Julia,
 3. running a recipe with a Singularity container built from the ``stable`` tag.
 
-If there is a problem with the automatically built container, you can fix the
-problem and build a new container locally.
+If there is a problem with the automatically built container image, you can fix
+the problem and build a new image locally.
 For example, to
 `build <https://docs.docker.com/engine/reference/commandline/build/>`__ and
 `upload <https://docs.docker.com/engine/reference/commandline/push/>`__
-the container for v2.5.0 of the tool run:
+the container image for v2.5.0 of the tool run:
 
 .. code-block:: bash
 
@@ -470,8 +470,8 @@ and if it is the latest release that you are updating, also run
 Note that the ``docker push`` command will overwrite the existing tags on
 Dockerhub.
 
-If you would like to make a small change to an existing Docker container, it is
-also possible to do just that using the
+If you would like to make a small change to an existing Docker container image,
+it is also possible to do just that using the
 `docker commit <https://docs.docker.com/engine/reference/commandline/commit/>`__
 command.
 Note that this is only recommended for very small changes, as it is not
