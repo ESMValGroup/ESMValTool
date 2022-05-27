@@ -504,7 +504,7 @@ def plot_biome_timeseries(obs, model, clim, config):
                                                       iris.analysis.MEAN)
 
                 plt.plot(obs_ave.data, color='black', label='OBS',
-                         linewidth=2)
+                         linewidth=3)
                 obs_count = 1
 
 
@@ -514,7 +514,7 @@ def plot_biome_timeseries(obs, model, clim, config):
 
             plt.plot(Xpoints, this_model_ave.data,
                      label=MODEL,
-                     linewidth=1,
+                     linewidth=2,
                      color = LINECOLOURS[i%10],
                      linestyle=LINE_STYLES[i//10])
 
@@ -544,7 +544,10 @@ def plot_biome_timeseries(obs, model, clim, config):
 
 
         plt.yticks(range(-7,15,1), fontsize=20)
-        plt.ylim((-5,10))
+        if clim:
+            plt.ylim((-4,6))
+        else:
+            plt.ylim((-4,11))
 
         plt.xlabel('Date', fontsize=22)
         plt.ylabel('Difference (K)', fontsize=22)
@@ -554,13 +557,13 @@ def plot_biome_timeseries(obs, model, clim, config):
         outpath = config['plot_dir']
         if clim:
             plt.savefig(f'{outpath}/timeseries_{BIOME}_clim_clean.png',bbox_inches='tight')
-            plt.legend(loc=(1.02,1), fontsize=20)
+            plt.legend(bbox_to_anchor=(1.01,0.0), loc='lower left', fontsize=20)
             plt.savefig(f'{outpath}/timeseries_{BIOME}_clim_legend.png')
 
 
         else:
             plt.savefig(f'{outpath}/timeseries_{BIOME}_ts_clean.png',bbox_inches='tight')
-            plt.legend(loc=(1.02,1), fontsize=20)            
+            plt.legend(bbox_to_anchor=(1.01,0.0), loc='lower left', fontsize=20)            
             plt.savefig(f'{outpath}/timeseries_{BIOME}_ts_legend.png')
 
         plt.close('all')  # Is this needed?
@@ -653,6 +656,7 @@ def make_plot_global_clim_maps(obs_data, model_data,
     #plt.title('Jan',  fontsize=24)
     iplt.pcolormesh(obs_data['CESM2'][0],
                   cmap=cmap, norm=norm)
+    plt.ylim((-60,90))
     plt.gca().coastlines()
     # get the current axes' subplot for use later on
     plt1_ax = plt.gca()
@@ -661,6 +665,7 @@ def make_plot_global_clim_maps(obs_data, model_data,
     #plt.title('Jul',  fontsize=24)
     cbar_source = iplt.pcolormesh(obs_data['CESM2'][6],
                   cmap=cmap, norm=norm)
+    plt.ylim((-60,90))
     plt.gca().coastlines()
     # get the current axes' subplot for use later on
     plt2_ax = plt.gca()
@@ -708,6 +713,7 @@ def make_plot_global_clim_maps(obs_data, model_data,
         # arbitary difference while jasmin wont find cmip data
         iplt.pcolormesh(obs_data[MODEL][0]-model_data[MODEL][0],
                         cmap=cmap, norm=norm)
+        plt.ylim((-60,90))
         plt.gca().coastlines()
         plt1_ax = plt.gca() # this will default to the last row
 
@@ -715,10 +721,11 @@ def make_plot_global_clim_maps(obs_data, model_data,
 
         cbar_source = iplt.pcolormesh(obs_data[MODEL][6]-model_data[MODEL][6],
                                     cmap=cmap, norm=norm)
+        plt.ylim((-60,90))
         plt.gca().coastlines()
 
         plt2_ax = plt.gca()
-
+        
         plt.savefig(f'{outpath}/global_map_{TYPE}_MODEL_{MODEL}_clim_clean.png',bbox_inches='tight')
 
         left, bottom, width, height = plt2_ax.get_position().bounds
