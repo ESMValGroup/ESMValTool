@@ -36,6 +36,7 @@ dependencies:
   - nc-time-axis
   - netCDF4
   - numpy
+  - numba  # undeclared dependency of xesmf: https://github.com/pangeo-data/xESMF/issues/158
   - openpyxl
   - pandas
   - progressbar2
