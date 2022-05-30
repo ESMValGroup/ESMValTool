@@ -70,23 +70,6 @@ autodoc_default_options = {
     'autosummary': True,
 }
 
-autodoc_mock_imports = [
-    'cartopy',
-    'cf_units',
-    'cftime',
-    'ESMPy',
-    'esmvalcore',
-    'GDAL',
-    'iris',
-    'psutil',
-    'psyplot',
-    'rasterio',
-    'scipy',
-    'sklearn',
-    'xesmf',
-    'xgboost',
-]
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
