@@ -16,7 +16,7 @@ dependencies:
   - compilers
   - esmpy
   - esmvalcore
-  - gdal
+  - gdal>=3.5
   - matplotlib-base
   # Non-Python dependencies
   - cdo
