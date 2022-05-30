@@ -23,7 +23,8 @@ REQUIREMENTS = {
         'cartopy',
         'cdo',
         'cdsapi',
-        'cf-units',
+        # see https://github.com/SciTools/cf-units/issues/218
+        'cf-units>=3.0.0,!=3.0.1.post0',
         'cftime',
         'cmocean',
         'dask',
