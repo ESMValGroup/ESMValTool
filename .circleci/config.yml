@@ -77,7 +77,6 @@ commands:
             conda activate esmvaltool
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
-            pytest -n 4 -m flake8
       - run:
           name: Log versions
           command: |
@@ -86,6 +85,9 @@ commands:
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
+      - run:
+          name: Lint source code
+          command: pytest -n 4 -m flake8
       - test_and_report
       - save_cache:
           key: install-<< parameters.extra >>-{{ .Branch }}-{{ checksum "cache_key.txt" }}
