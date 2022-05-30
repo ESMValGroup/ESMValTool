@@ -38,11 +38,13 @@ commands:
       - run:
           name: Compress pytest artifacts
           command: tar -cvzf pytest.tar.gz -C /tmp/pytest-of-root/pytest-0/ .
+          when: always
       - store_artifacts:
           path: pytest.tar.gz
       - run:
           name: Compress test-report artifacts
           command: tar -cvzf test-reports.tar.gz test-reports/
+          when: always          
       - store_artifacts:
           path: test-reports.tar.gz
   test_installation_from_source:
