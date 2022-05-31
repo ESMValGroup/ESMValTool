@@ -87,7 +87,10 @@ commands:
             pip freeze > /logs/requirements.txt
       - run:
           name: Lint source code
-          command: pytest -n 4 -m flake8
+          command: |
+            . /opt/conda/etc/profile.d/conda.sh
+            conda activate esmvaltool
+            pytest -n 4 -m flake8
       - test_and_report
       - save_cache:
           key: install-<< parameters.extra >>-{{ .Branch }}-{{ checksum "cache_key.txt" }}
