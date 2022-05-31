@@ -50,6 +50,8 @@ MONTH_LIST = ['Jan','Feb','Mar','Apr','May','Jun',
 
 ARGMAX = iris.analysis.Aggregator("argmax", np.argmax, units_func=lambda units: 1)
 
+band_width = 2
+
 
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
@@ -88,39 +90,6 @@ def _get_input_cubes(metadata):
 
     return inputs, ancestors, data_type
 
-# def _get_input_cubes(metadata):
-#     """Load the data files into cubes.
-#     Based on the hydrology diagnostic.
-#     Inputs:
-#     metadata = List of dictionaries made from the preprocessor config
-#     Outputs:
-#     inputs = Dictionary of cubes
-#     ancestors = Dictionary of filename information
-#     """
-#     print('################################################')
-#     inputs = {}
-#     ancestors = {}
-#     print(metadata)
-#     for attributes in metadata:
-#         print(attributes)
-#         short_name = attributes['short_name']
-#         filename = attributes['filename']
-#         logger.info("Loading variable %s", short_name)
-#         cube = iris.load_cube(filename)
-#         cube.attributes.clear()
-        
-#         try:
-#             key_name = f"{short_name}_{attributes['ensemble']}"
-#         except:
-#             key_name = short_name
-
-#         inputs[key_name] = cube
-#         ancestors[key_name] = [filename]
-        
-#         print(inputs)
-#         print(ancestors)
-
-#     return inputs, ancestors
 
 def _get_provenance_record(attributes, ancestor_files):
     """Create the provenance record dictionary.
@@ -177,96 +146,114 @@ def _diagnostic(config):
     #### Iris seems to do this automatically for LAI
 
     # load preporcessed bands of lai obs
-    obs_data = iris.load(f'/work/scratch-nopw/morobking/lai_bands_2degree.nc')
+    obs_data = iris.load(f'/work/scratch-nopw/morobking/lai_bands_{band_width}degree.nc')
     for cube in obs_data:
         cube.attributes = None
 
-    obs_data = obs_data.concatenate_cube()
+    lai_obs_data = obs_data.concatenate_cube()
 
-    print(f'{obs_data=}')
+    print(f'{lai_obs_data=}')
 
-    # make ensemble average of models
-    model_means = {}
-    for KEY in loaded_data.keys():
-        if KEY == 'OBS_CMUG_WP4_10': # add in LAI and Veg KEYS here as they become available
-            continue # dont need to do this for CCI
+    # assume single ensemble member for each MODEL!!!
+    lai_model = {}
+    sm_model = {}
+    ts_model = {}
+    tas_model = {}
 
-        # loop over ensembles
-        ensemble_ts = iris.cube.CubeList()
-        for e_number,ENSEMBLE in enumerate(loaded_data[KEY].keys()):
+    for KEY in loaded_data.keys(): # this is the model
+        print(KEY)
 
-            if ENSEMBLE[0:3] != 'lai':
-                continue
-               
-            this_cube = loaded_data[KEY][ENSEMBLE]#.collapsed(['latitude','longitude'], iris.analysis.MEAN)
+        for ITEM in loaded_data[KEY].keys():
+            print(ITEM) # this is the variable
 
-            ensemble_coord = iris.coords.AuxCoord(e_number, standard_name=None, 
-                                                  long_name='ensemble_number', 
-                                                  var_name=None,
-                                                  units='1', bounds=None, 
-                                                  attributes=None, coord_system=None)
-            this_cube.add_aux_coord(ensemble_coord)
-            ensemble_ts.append(this_cube)
-
+            icc.add_year(loaded_data[KEY][ITEM], 'time')
+            icc.add_month_number(loaded_data[KEY][ITEM], 'time')
             
-        if e_number > 0:
-            model_means[KEY] = ensemble_ts.merge_cube()
-            model_means[KEY] = model_means[KEY].collapsed('ensemble_number', iris.analysis.MEAN)
-        else:
-            model_means[KEY] = this_cube
+            loaded_data[KEY][ITEM].coord('latitude').bounds = None
+            loaded_data[KEY][ITEM].coord('longitude').bounds = None
 
-        icc.add_year(model_means[KEY], 'time')
-        icc.add_month_number(model_means[KEY], 'time')
-            
+            if 'ts' in ITEM:
+                ts_model[KEY] = loaded_data[KEY][ITEM]
+
+            if 'tas' in ITEM:
+                tas_model[KEY] = loaded_data[KEY][ITEM]
+
+            if 'lai' in ITEM:
+                lai_model[KEY] = loaded_data[KEY][ITEM]
+                
+            if 'mrso' in ITEM:
+                sm_model[KEY] = loaded_data[KEY][ITEM]          
 
 
     # for each model, average monthly LAI in 2 degree bands
     # note already done this and loading a seperate netcdf file for OBS
     lai_band_ave_model = {}
-    for MODEL in model_means.keys():
+    sm_band_ave_model  = {}
+    for MODEL in lai_model.keys():
         print(MODEL)
-        band_width = 2
-        lats = np.arange(-60,80,band_width)
-        output = iris.cube.CubeList()
-        for item in lats:
-            lat_con = iris.Constraint(latitude=lambda cell: item<=cell<item+band_width)
+        this_banding = lat_band_ave(lai_model[MODEL])
+        lai_band_ave_model[MODEL] = this_banding
 
-            this_cube = model_means[MODEL].extract(lat_con)
-            try:
-                this_ave = this_cube.collapsed(['latitude','longitude'], iris.analysis.MEAN)
-            except:
-                continue
-            output.append(this_ave)
-        
-        output = output.merge_cube()
-
-        lai_band_ave_model[MODEL] = output
-
+        this_banding = lat_band_ave(sm_model[MODEL])
+        sm_band_ave_model[MODEL] = this_banding
 
     print(f'{lai_band_ave_model=}')
 
-    obs_peak = find_peak_month(obs_data)
+
+    #### load CCI SM data and make zonal band
+    sm_raw = iris.load_cube('/home/users/robking/cci_sm/cci_sm_*.nc')
+
+    # sdepth1", taken out of CMIP6 CMOR table in Lmon in ESMValCore
+    sm_band_obs = lat_band_ave(sm_raw)
+
+    lai_obs_peak = find_peak_month(lai_obs_data)
+    sm_obs_peak  = find_peak_month(sm_band_obs)
+
+    print(f'{sm_obs_peak=}')
 
     lai_peak_month_model = {}
+    sm_peak_month_model  = {}
     for MODEL in lai_band_ave_model.keys():
         this_peak = find_peak_month(lai_band_ave_model[MODEL])
         lai_peak_month_model[MODEL] = this_peak
 
-    print(f'{lai_peak_month_model}')
+        this_peak = find_peak_month(sm_band_ave_model[MODEL])
 
-    print(f'{obs_peak=}')
-    plot_mean_peak(lai_peak_month_model, obs_peak, config)
+        sm_peak_month_model[MODEL] = this_peak
+
+    print(f'{sm_peak_month_model=}')
+
+    print(f'{lai_obs_peak=}')
+    plot_mean_peak(lai_peak_month_model, lai_obs_peak, 'LAI',config)
+    plot_mean_peak(sm_peak_month_model, sm_obs_peak, 'SM',config)
 
 #    print(0/0)
+def lat_band_ave(data):
 
-def plot_mean_peak(model_peaks, obs_peaks, config):
+    lats = np.arange(-60,80,band_width)
+    output = iris.cube.CubeList()
+    for item in lats:
+        lat_con = iris.Constraint(latitude=lambda cell: item<=cell<item+band_width)
+        
+        this_cube = data.extract(lat_con)
+        try:
+            this_ave = this_cube.collapsed(['latitude','longitude'], iris.analysis.MEAN)
+        except:
+            continue
+        output.append(this_ave)
+        
+    output = output.merge_cube()
 
-    plt.figure(figsize=(40,15))
+    return output
+
+def plot_mean_peak(model_peaks, obs_peaks, variable, config):
+
+    plt.figure(figsize=(40,40))
 
     for i,MODEL in enumerate(model_peaks.keys()):
         
         plot_data = model_peaks[MODEL].collapsed('time', iris.analysis.MEAN)
-        plot_data.data = np.round(plot_data.data)
+        #plot_data.data = np.round(plot_data.data)
         iplt.plot(plot_data,
                   color = LINECOLOURS[i%10],
                   linestyle=LINE_STYLES[i//10],
@@ -274,23 +261,23 @@ def plot_mean_peak(model_peaks, obs_peaks, config):
                   label = MODEL[6:])
 
     plot_data = obs_peaks.collapsed('time', iris.analysis.MEAN)
-    plot_data.data = np.round(plot_data.data)
+    #plot_data.data = np.round(plot_data.data)
     iplt.plot(plot_data,
               color = 'black',
               linewidth=3,
               label = 'OBS')
 
-    plt.xticks(range(1,13), MONTH_LIST, fontsize=18)
-    plt.yticks(np.arange(-60,81,10), fontsize=18)
+    plt.xticks(range(1,13), MONTH_LIST, fontsize=20)
+    plt.yticks(np.arange(-60,81,10), fontsize=20)
     plt.grid()
 
-    plt.xlabel('Date', fontsize=20)
-    plt.ylabel('Latitude', fontsize=20)
+    plt.xlabel('Date', fontsize=24)
+    plt.ylabel('Latitude', fontsize=24)
 
     outpath = config['plot_dir']
-    plt.savefig(f'{outpath}/lai_peak_month_mean_clean.png',bbox_inches='tight')
+    plt.savefig(f'{outpath}/{variable}_peak_month_mean_clean.png',bbox_inches='tight')
     plt.legend(bbox_to_anchor=(1.01,0.0), loc='lower left', fontsize=20)            
-    plt.savefig(f'{outpath}/lai_peak_month_mean_legend.png')
+    plt.savefig(f'{outpath}/{variable}_peak_month_mean_legend.png')
     plt.close()
 
 def find_peak_month(data):
