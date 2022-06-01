@@ -32,13 +32,13 @@ preprocessors:
     custom_order: true
     climate_statistics:
       period: full
+    regrid:
+      scheme: linear
+      target_grid: 2x2
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev39}
       scheme: linear
       coordinate: air_pressure
-    regrid:
-      scheme: linear
-      target_grid: 2x2
     zonal_statistics:
       operator: mean
 
