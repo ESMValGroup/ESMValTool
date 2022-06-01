@@ -16,9 +16,10 @@ convenient interface for all monitoring diagnostics.
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in `recipes/`
+Recipes are stored in `recipes/monitor`
 
    * recipe_monitor.yml
+   * recipe_monitor_with_refs.yml
 
 Diagnostics are stored in `diag_scripts/monitor/`
 
