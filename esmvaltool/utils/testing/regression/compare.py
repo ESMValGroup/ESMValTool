@@ -362,7 +362,7 @@ def main() -> int:
 
     args = parser.parse_args()
 
-    print("Comparing run(s) in:\n{}".format('\n'.join(
+    print("Comparing recipe run(s) in:\n{}".format('\n'.join(
         str(f) for f in args.current)))
     print(f"to reference in {args.reference}")
     fail = []
@@ -380,8 +380,7 @@ def main() -> int:
     summary = ["", "Summary", "======="]
     if success:
         summary.extend([
-            "",
-            "The following recipe runs were identical to previous results:",
+            "", "The following recipe runs were identical to previous runs:",
             *success
         ])
     if fail:
@@ -394,9 +393,9 @@ def main() -> int:
 
     if fail:
         print(f"Action required: {len(fail)} out of {len(success) + len(fail)}"
-              " results need to be inspected by a human.")
+              " recipe runs need to be inspected by a human.")
     else:
-        print(f"All {len(success)} results were identical.")
+        print(f"All {len(success)} recipe runs were identical.")
 
     return int(bool(fail))
 
