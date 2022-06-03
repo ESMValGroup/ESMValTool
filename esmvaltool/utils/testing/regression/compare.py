@@ -12,8 +12,8 @@ from textwrap import indent
 from typing import Iterator, Optional
 
 import numpy as np
-from PIL import Image
 import xarray as xr
+from PIL import Image
 
 try:
     import imagehash
@@ -35,6 +35,13 @@ IGNORE_GLOBAL_ATTRIBUTES: tuple[str, ...] = (
     'software',
 )
 """Global NetCDF attributes to ignore when comparing."""
+
+COMPARE_SUBDIRS: tuple[str, ...] = (
+    'plots',
+    'preproc',
+    'work',
+)
+"""Directories of subdirectories to compare."""
 
 
 def as_txt(msg: list[str]) -> str:
@@ -281,7 +288,7 @@ def get_recipe_name(recipe_dir: Path) -> str:
 def find_files(recipe_dir: Path) -> set[Path]:
     """Find all NetCDF files in a recipe run directory."""
     result: set[Path] = set()
-    for subdir in ['work', 'plots', 'preproc']:
+    for subdir in COMPARE_SUBDIRS:
         for root, _, found in os.walk(recipe_dir / subdir):
             files = set(found)
             for ignore_pattern in IGNORE_FILES:
