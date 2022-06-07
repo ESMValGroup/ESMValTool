@@ -1261,7 +1261,7 @@ def print_data_dict(data_dict):
 def load_scenario_carbon(cfg, data_dict):
     data_dict = load_co2_forcing(cfg, data_dict) # co2
     data_dict = calc_atmos_carbon(cfg, data_dict)
-    data_dict = calc_emissions(cfg, data_dict)
+    #data_dict = calc_emissions(cfg, data_dict)
 
 
 
@@ -3019,7 +3019,7 @@ def calculate_percentages( cfg,
 
         return remnants, landcs, fgco2gts
 
-    emissions = {}
+    #emissions = {}
     #threshold_years = {}
     remnants = {}
     landcs = {}
@@ -3890,7 +3890,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     """
     Make a bar chart (of my favourite pies)
     """
-    emissions = []
+    #emissions = []
     threshold_years = []
     remnant = []
     landcs = []
@@ -4906,7 +4906,7 @@ def main(cfg):
                        'tls', #true land sink = nbp + land-use emissions
                        'atmos_carbon', # remant antrho carbon in atmosphere
                        ]
-        short_names_x = ['time', 'co2', 'tas_norm', 'cumul_emissions', 'fgco2gt_cumul','nbpgt_cumul', ]
+        short_names_x = ['time', 'co2', 'tas_norm', 'fgco2gt_cumul','nbpgt_cumul', ]
         short_names_y = short_names.copy()
 
     if jobtype == 'debug':
@@ -5012,9 +5012,9 @@ def main(cfg):
                     timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
                         panes = ['tas_norm', 'atmos_carbon', 'fgco2gt_cumul', 'nbpgt_cumul', ],) # defaults
                     timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
-                        panes = ['tas', 'emissions','tls', 'fgco2gt', 'luegt', 'nbpgt'])
+                        panes = ['tas', 'co2', 'tls', 'fgco2gt', 'luegt', 'nbpgt'])
                     timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
-                        panes = ['tas', 'emissions','tls', 'fgco2', 'lue', 'nbp'])
+                        panes = ['tas', 'atmos_carbon','tls', 'fgco2', 'lue', 'nbp'])
 
             do_cumulative_plot = True
             if do_cumulative_plot:
