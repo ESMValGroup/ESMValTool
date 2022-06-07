@@ -92,7 +92,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 """
  mod_exp_ens_skips = {
     # Access existed but wasn't included in the original run:
-    ('ACCESS-ESM1-5', 'ssp126', 'r1i1p1f1'): True, # hist missing in early run/   
+    ('ACCESS-ESM1-5', 'ssp126', 'r1i1p1f1'): True, # hist missing in early run/
     ('ACCESS-ESM1-5', 'ssp126', 'r2i1p1f1'): True, # hist missing in early run/
     ('ACCESS-ESM1-5', 'ssp126', 'r3i1p1f1'): True, # hist missing in early run/
 
@@ -104,12 +104,12 @@ logger = logging.getLogger(os.path.basename(__file__))
     ('ACCESS-ESM1-5', 'ssp370', 'r2i1p1f1'): True, # hist missing in early run/
     ('ACCESS-ESM1-5', 'ssp370', 'r3i1p1f1'): True, # hist missing in early run/
 
-    ('CESM2-WACCM', 'ssp245', 'r2i1p1f1'): True, # Delete later. 
+    ('CESM2-WACCM', 'ssp245', 'r2i1p1f1'): True, # Delete later.
     ('CESM2-WACCM', 'ssp245', 'r3i1p1f1'): True, # Delete later.
     ('CESM2-WACCM', 'ssp370', 'r1i1p1f1'): True, # Delete later.
     ('CESM2-WACCM', 'ssp370', 'r2i1p1f1'): True, # Delete later.
     ('CESM2-WACCM', 'ssp370', 'r3i1p1f1'): True, # Delete later.
-    ('CNRM-ESM2-1', 'ssp370', '*'): True, # 
+    ('CNRM-ESM2-1', 'ssp370', '*'): True, #
     ('CNRM-ESM2-1', 'ssp245', '*'): True, #
     ('CNRM-ESM2-1', 'ssp126', '*'): True, #
     ('CanESM5-CanOE', 'ssp126', '*'): True, # Delete later.
@@ -134,7 +134,7 @@ logger = logging.getLogger(os.path.basename(__file__))
     ('MPI-ESM1-2-LR', 'ssp126', 'r3i1p1f1'): True,
     ('MPI-ESM1-2-LR', 'ssp245', 'r3i1p1f1'): True,
     ('MPI-ESM1-2-LR', 'ssp370', 'r3i1p1f1'): True,
-    
+
 
 
 
@@ -944,7 +944,7 @@ def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
              hist_datas[(mod, ens_ssp)] = hist_datas[(mod, ens_hist)]
 
     #calculate the cumulative value, and add the historical point to it.
-    # Fails are ensembles thaqt need to be ignored to 
+    # Fails are ensembles thaqt need to be ignored to
     fails = {}
     for (dataset, short, exp, ensemble), cube in data_dict.items():
         if short_name != short:
@@ -1005,7 +1005,7 @@ def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
         print ('Add this to the list at the start of this code:')
         for ind, bol in fails.items():
             print('     ', ind, ': True, # No historical run on jasmin')
-        assert 0 
+        assert 0
     data_dict.update(tmp_dict)
     return data_dict
 
@@ -1274,7 +1274,7 @@ def load_timeseries(cfg, short_names):
     assume only one model
     """
     data_dict_shelve = diagtools.folder([cfg['work_dir'], 'gwt_timeseries'])+'data_dict.shelve'
-    load_from_shelve=False 
+    load_from_shelve=False
 
     data_dict = {}
 
@@ -1445,7 +1445,7 @@ def calc_model_mean(cfg, short_names_in, data_dict):
                 if short_name != short_name_i: continue
                 if exp_i != exp: continue
                 if ensemble_i == 'ensemble_mean': continue
-                if short_name in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls', 'atmos_carbon']:
+                if short_name in ['co2', 'luegt', 'tls', 'atmos_carbon']: # 'emissions', 'cumul_emissions',
                      pass
                      #continue
                 #rint("calculate_model_mean: including:", dataset_i,short_name_i, exp_i, ensemble_i)
@@ -1522,7 +1522,7 @@ def calc_model_mean(cfg, short_names_in, data_dict):
                 if short_name != short_name_i: continue
                 if exp_i != exp: continue
                 if ensemble_i != 'ensemble_mean': continue
-                if short_name in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls', 'atmos_carbon']:
+                if short_name in ['co2', 'luegt', 'tls', 'atmos_carbon']: #  'emissions', 'cumul_emissions',
                      pass #ue
                 else:
                     cube = regrid_time(cube, 'yr')
@@ -1624,7 +1624,7 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
            new_ens = data_dict_linked_ens[dataset].get(ensemble, False)
            baseline = baselines.get((dataset, 'tas', new_ens), False)
 
- 
+
 #        if baseline is False:
 #            baseline = baselines.get((dataset, 'tas', ensemble.replace('f2', 'f3')), False)
 
@@ -1867,87 +1867,88 @@ def load_co2_forcing(cfg, data_dict):
     return data_dict
 
 
-def load_emissions_forcing(cfg, data_dict):
+def load_emissions_forcing_wrong(cfg, data_dict):
     """
     Load annual CO2 data from the auxiliary datasets.
 
     Unlike the rest of data_dcit, it's isn't loaded as a cube, but rather as a
     dict.
     """
-    fold = cfg['auxiliary_data_dir']+'/emissions/'
-    files = glob.glob(fold+'*.txt')
-    #print(files)
-    #hist_datas = []
-    #hist_times = []
-    #ssp585_datas = []
-    #ssp585_times = []
-    exps = {}
-    ensembles = {'ensemble_mean': True, 'ensemble_min':True, 'ensemble_max':True}
-    datasets = {'CMIP6':True}
-
-    for (dataset, short_name, exp, ensemble)  in data_dict.keys():
-        if mod_exp_ens_skips.get((dataset, exp, ensemble), False):
-            continue
-        # if dataset in data_dict_skips.keys():
-        #     if ensemble in data_dict_skips[dataset]:
-        #         continue
-        exps[exp] = True
-        ensembles[ensemble] = True
-        datasets[dataset] = True
-
-    # load the co2 from the file.
-    for fn in files:
-        times = []
-        data = []
-
-        open_fn = open(fn, 'r')
-        scenario = os.path.basename(fn)
-        scenario = scenario.replace('UKESM1_', '')
-        scenario = scenario.replace('.txt', '')
-        scenario = scenario.replace('historical_', 'historical-')
-
-        for line in open_fn.readlines()[2:]:
-            line = [x.replace('\n', '') for x in line.split(' ')]
-            t = float(line[0]) + 0.5
-            #if t > 2100.: continue
-            times.append(t)
-            data.append(float(line[3]))
-            # print (fn, line)
-        # for t,d in zip(times,data): print(scenario, t,d)
-        if scenario.find('historical')==-1:
-            # no need to double up.
-            continue
-
-        # historical-ssp:
-        times=np.array(times)
-        cumsumdata = np.cumsum(data)
-        for dataset, ensemble in product(datasets,ensembles):
-            data_dict[(dataset, 'emissions', scenario, ensemble)] = {'time': times, 'emissions':data}
-            #if scenario.find('ssp119')> -1:
-            #    print('load_emissions_forcing:', scenario, len(times), len(data))
-            data_dict[(dataset, 'cumul_emissions', scenario, ensemble)] = {'time': times, 'cumul_emissions':cumsumdata}
-            if dataset == 'CMIP6': print('load_emissions_forcing', dataset, 'cumul_emissions', scenario, ensemble)
-
-        # historical only:
-        histdata = np.ma.masked_where(times > 2015., data).compressed()
-        histcumsumdata = np.ma.masked_where(times > 2015., cumsumdata).compressed()
-        histtimes = np.ma.masked_where(times > 2015., times).compressed()
-        for dataset, ensemble in product(datasets,ensembles):
-            data_dict[(dataset, 'emissions', 'historical', ensemble)] = {'time': histtimes, 'emissions':histdata}
-            data_dict[(dataset, 'cumul_emissions', 'historical', ensemble)] = {'time': histtimes, 'cumul_emissions':histcumsumdata}
-
-        # SSP only:
-        scenario = scenario.replace('historical-', '')
-        times=np.array(times)
-        data = np.ma.masked_where(times <2015., data).compressed()
-        cumsumdata = np.ma.masked_where(times <2015., cumsumdata).compressed()
-        times = np.ma.masked_where(times <2015., times).compressed()
-        for dataset, ensemble in product(datasets,ensembles):
-            data_dict[(dataset, 'emissions', scenario, ensemble)] = {'time': times, 'emissions':data}
-            data_dict[(dataset, 'cumul_emissions', scenario, ensemble)] = {'time': times, 'cumul_emissions':cumsumdata}
-            if dataset == 'CMIP6': print('load_emissions_forcing', dataset, 'cumul_emissions', scenario, ensemble)
-
-    return data_dict
+    assert 0
+    # fold = cfg['auxiliary_data_dir']+'/emissions/'
+    # files = glob.glob(fold+'*.txt')
+    # #print(files)
+    # #hist_datas = []
+    # #hist_times = []
+    # #ssp585_datas = []
+    # #ssp585_times = []
+    # exps = {}
+    # ensembles = {'ensemble_mean': True, 'ensemble_min':True, 'ensemble_max':True}
+    # datasets = {'CMIP6':True}
+    #
+    # for (dataset, short_name, exp, ensemble)  in data_dict.keys():
+    #     if mod_exp_ens_skips.get((dataset, exp, ensemble), False):
+    #         continue
+    #     # if dataset in data_dict_skips.keys():
+    #     #     if ensemble in data_dict_skips[dataset]:
+    #     #         continue
+    #     exps[exp] = True
+    #     ensembles[ensemble] = True
+    #     datasets[dataset] = True
+    #
+    # # load the co2 from the file.
+    # for fn in files:
+    #     times = []
+    #     data = []
+    #
+    #     open_fn = open(fn, 'r')
+    #     scenario = os.path.basename(fn)
+    #     scenario = scenario.replace('UKESM1_', '')
+    #     scenario = scenario.replace('.txt', '')
+    #     scenario = scenario.replace('historical_', 'historical-')
+    #
+    #     for line in open_fn.readlines()[2:]:
+    #         line = [x.replace('\n', '') for x in line.split(' ')]
+    #         t = float(line[0]) + 0.5
+    #         #if t > 2100.: continue
+    #         times.append(t)
+    #         data.append(float(line[3]))
+    #         # print (fn, line)
+    #     # for t,d in zip(times,data): print(scenario, t,d)
+    #     if scenario.find('historical')==-1:
+    #         # no need to double up.
+    #         continue
+    #
+    #     # historical-ssp:
+    #     times=np.array(times)
+    #     cumsumdata = np.cumsum(data)
+    #     for dataset, ensemble in product(datasets,ensembles):
+    #         data_dict[(dataset, 'emissions', scenario, ensemble)] = {'time': times, 'emissions':data}
+    #         #if scenario.find('ssp119')> -1:
+    #         #    print('load_emissions_forcing:', scenario, len(times), len(data))
+    #         data_dict[(dataset, 'cumul_emissions', scenario, ensemble)] = {'time': times, 'cumul_emissions':cumsumdata}
+    #         if dataset == 'CMIP6': print('load_emissions_forcing', dataset, 'cumul_emissions', scenario, ensemble)
+    #
+    #     # historical only:
+    #     histdata = np.ma.masked_where(times > 2015., data).compressed()
+    #     histcumsumdata = np.ma.masked_where(times > 2015., cumsumdata).compressed()
+    #     histtimes = np.ma.masked_where(times > 2015., times).compressed()
+    #     for dataset, ensemble in product(datasets,ensembles):
+    #         data_dict[(dataset, 'emissions', 'historical', ensemble)] = {'time': histtimes, 'emissions':histdata}
+    #         data_dict[(dataset, 'cumul_emissions', 'historical', ensemble)] = {'time': histtimes, 'cumul_emissions':histcumsumdata}
+    #
+    #     # SSP only:
+    #     scenario = scenario.replace('historical-', '')
+    #     times=np.array(times)
+    #     data = np.ma.masked_where(times <2015., data).compressed()
+    #     cumsumdata = np.ma.masked_where(times <2015., cumsumdata).compressed()
+    #     times = np.ma.masked_where(times <2015., times).compressed()
+    #     for dataset, ensemble in product(datasets,ensembles):
+    #         data_dict[(dataset, 'emissions', scenario, ensemble)] = {'time': times, 'emissions':data}
+    #         data_dict[(dataset, 'cumul_emissions', scenario, ensemble)] = {'time': times, 'cumul_emissions':cumsumdata}
+    #         if dataset == 'CMIP6': print('load_emissions_forcing', dataset, 'cumul_emissions', scenario, ensemble)
+    #
+    # return data_dict
 
 
 def calc_tls(cfg, data_dict):
@@ -2009,7 +2010,7 @@ def calc_atmos_carbon(cfg, data_dict):
         if short not in ['co2', ]:
             continue
         print('calc_atmos_carbon:',(dataset, short, exp, ensemble), tmp_data)
-       
+
         tmp_data = zip_time(tmp_data, short)
         tmp_times, tmp_dat = unzip_time(tmp_data)
         if not len(tmp_dat):
@@ -2032,8 +2033,9 @@ def calc_atmos_carbon(cfg, data_dict):
 def calc_emissions(cfg, data_dict):
     """
     Using the other values, we calculate emissions.
-    # emmissions  
+    # emmissions
     """
+    return data_dict
 
 
 
@@ -2045,59 +2047,58 @@ def calc_atmos_carbon_old(cfg, data_dict):
     """
     print('This method is wrong because the cumulative emission data is UKESM only')
     assert 0
-
-    tmp_data_dict = {}
-    new_short = 'atmos_carbon'
-    for (dataset, short, exp, ensemble), tmp_data in data_dict.items():
-        print('calc_atmos_carbon:',(dataset, short, exp, ensemble))
-        if short not in ['cumul_emissions', ]:
-            continue
-
-        # tmp_data = {time:times, 'cumul_emissions': dat}
-        tmp_data = zip_time(tmp_data, short)
-        tmp_data = {int(t):d for t, d in tmp_data.items()}
-        if not len(tmp_data):
-            print('calc_atmos_carbon: ERROR:',(dataset, short, exp, ensemble), 'no data:', tmp_data)
-            assert 0
-
-        # subtrack nbp & ocean carbon flux.
-        found = 0
-        for cube_key in  ['fgco2gt_cumul', 'nbpgt_cumul']:
-            tmp_cube_data = data_dict.get((dataset, cube_key, exp, ensemble), False)
-            if not tmp_cube_data:
-                for ens in ensemble:
-                    if tmp_cube_data: continue
-                    tmp_cube_data = data_dict.get((dataset, cube_key, exp, ens), False)
-                if not tmp_cube_data:
-                     print('Fail to find:', (dataset, cube_key, exp, ensemble))
-                     # print(data_dict.keys())
-                     continue
-                if not len(tmp_cube_data):
-                     print('Fail to find:', (dataset, cube_key, exp, ensemble))
-                     continue
-
-            tmp_cube_data = {'time': [int(t) for t in diagtools.cube_time_to_float(tmp_cube_data)],
-                             cube_key: tmp_cube_data.data}
-            tmp_cube_data = zip_time(tmp_cube_data, cube_key)
-            found+=1
-            for t,d in tmp_cube_data.items():
-                #t = int(t)
-                if t not in tmp_data: #t(t,False):
-                    print('calc_atmos_carbon: ERROR: unable to find year', t, 'in',(dataset, cube_key, exp, ensemble))
-                    print('output:',tmp_data)
-                    print('input:', cube_key, tmp_cube_data)
-                    assert 0
-
-                tmp_data[t] = tmp_data[t] - d
-        if found !=2: continue #assert 0
-        tmp_times, tmp_dat = unzip_time(tmp_data)
-        tmp_times = tmp_times+0.5
-
-        tmp_data_dict[(dataset, new_short, exp, ensemble)] = {'time': tmp_times, new_short: tmp_dat}
-
-    data_dict.update(tmp_data_dict)
-    print(tmp_data_dict)
-    return data_dict
+    # tmp_data_dict = {}
+    # new_short = 'atmos_carbon'
+    # for (dataset, short, exp, ensemble), tmp_data in data_dict.items():
+    #     print('calc_atmos_carbon:',(dataset, short, exp, ensemble))
+    #     if short not in ['cumul_emissions', ]:
+    #         continue
+    #
+    #     # tmp_data = {time:times, 'cumul_emissions': dat}
+    #     tmp_data = zip_time(tmp_data, short)
+    #     tmp_data = {int(t):d for t, d in tmp_data.items()}
+    #     if not len(tmp_data):
+    #         print('calc_atmos_carbon: ERROR:',(dataset, short, exp, ensemble), 'no data:', tmp_data)
+    #         assert 0
+    #
+    #     # subtrack nbp & ocean carbon flux.
+    #     found = 0
+    #     for cube_key in  ['fgco2gt_cumul', 'nbpgt_cumul']:
+    #         tmp_cube_data = data_dict.get((dataset, cube_key, exp, ensemble), False)
+    #         if not tmp_cube_data:
+    #             for ens in ensemble:
+    #                 if tmp_cube_data: continue
+    #                 tmp_cube_data = data_dict.get((dataset, cube_key, exp, ens), False)
+    #             if not tmp_cube_data:
+    #                  print('Fail to find:', (dataset, cube_key, exp, ensemble))
+    #                  # print(data_dict.keys())
+    #                  continue
+    #             if not len(tmp_cube_data):
+    #                  print('Fail to find:', (dataset, cube_key, exp, ensemble))
+    #                  continue
+    #
+    #         tmp_cube_data = {'time': [int(t) for t in diagtools.cube_time_to_float(tmp_cube_data)],
+    #                          cube_key: tmp_cube_data.data}
+    #         tmp_cube_data = zip_time(tmp_cube_data, cube_key)
+    #         found+=1
+    #         for t,d in tmp_cube_data.items():
+    #             #t = int(t)
+    #             if t not in tmp_data: #t(t,False):
+    #                 print('calc_atmos_carbon: ERROR: unable to find year', t, 'in',(dataset, cube_key, exp, ensemble))
+    #                 print('output:',tmp_data)
+    #                 print('input:', cube_key, tmp_cube_data)
+    #                 assert 0
+    #
+    #             tmp_data[t] = tmp_data[t] - d
+    #     if found !=2: continue #assert 0
+    #     tmp_times, tmp_dat = unzip_time(tmp_data)
+    #     tmp_times = tmp_times+0.5
+    #
+    #     tmp_data_dict[(dataset, new_short, exp, ensemble)] = {'time': tmp_times, new_short: tmp_dat}
+    #
+    # data_dict.update(tmp_data_dict)
+    # print(tmp_data_dict)
+    # return data_dict
 
 
 def load_luegt(cfg, data_dict):
@@ -2213,8 +2214,8 @@ def get_long_name(name):
         'tas' : 'Temperature, K',
         'tas_norm' : 'Normalised Temperature, '+r'$\degree$' + 'C',
         'co2' : 'Atmospheric CO'+r'$_{2}$',
-        'emissions' : 'Anthropogenic emissions',
-        'cumul_emissions': 'Cumulative Anthropogenic emissions',
+        # 'emissions' : 'Anthropogenic emissions',
+        # 'cumul_emissions': 'Cumulative Anthropogenic emissions',
         'luegt': 'Land Use Emissions',
         'tls': 'True Land Sink',
         'rh': 'Heterotrophic respiration',
@@ -2675,8 +2676,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
 #        'tas': ' '.join(['Temperature, K',]), # ''.join([r'$\degree$', 'C'])]),
 #        'tas_norm': ' '.join(['Normalised Temperature,', ''.join([r'$\degree$', 'C'])]),
         'co2': ' '.join(['Atmospheric co2, ppm']),
-        'emissions': ' '.join(['Anthropogenic emissions, Pg/yr']),
-        'cumul_emissions': ' '.join(['Cumulative Anthropogenic emissions, Pg']),
+        # 'emissions': ' '.join(['Anthropogenic emissions, Pg/yr']),
+        # 'cumul_emissions': ' '.join(['Cumulative Anthropogenic emissions, Pg']),
         'luegt': ' '.join(['Land use emissions, Pg']),
         'tls': ' '.join(['True Land Sink, Pg']),
         'atmos_carbon': 'Remnant Anthropogenic CO2, Pg',
@@ -3033,19 +3034,19 @@ def calculate_percentages( cfg,
         #if ensemble_key = 'ensemble_mean' and t_ens != 'ensemble_mean': continue
 
         print("calculate_percentages", t_short, t_exp, t_ens)
-        cumul_emissions = data_dict.get((t_dataset, 'cumul_emissions', t_exp, t_ens), None) #dict
-        if cumul_emissions is None:  # Because not all sceanrios have emissions data.
-           print('couldnt find cumul_emissions:', (t_dataset, 'cumul_emissions', t_exp, t_ens)) 
-           for (t_dataset1, t_short1, t_exp1, t_ens1), datad in data_dict.items():
-                if t_dataset1 != t_dataset: continue
-                if t_short1 != 'cumul_emissions': continue
-                print('candidate:', (t_dataset1, t_short1, t_exp1, t_ens1))
-#           for (t_dataset1, t_short1, t_exp1, t_ens1), datad in data_dict.items():
-#                if t_dataset1 != t_dataset: continue
-#                #if t_short1 != 'cumul_emissions': continue
-#                print('candidate 1:', (t_dataset1, t_short1, t_exp1, t_ens1))
-
-           assert 0
+#         cumul_emissions = data_dict.get((t_dataset, 'cumul_emissions', t_exp, t_ens), None) #dict
+#         if cumul_emissions is None:  # Because not all sceanrios have emissions data.
+#            print('couldnt find cumul_emissions:', (t_dataset, 'cumul_emissions', t_exp, t_ens))
+#            for (t_dataset1, t_short1, t_exp1, t_ens1), datad in data_dict.items():
+#                 if t_dataset1 != t_dataset: continue
+#                 if t_short1 != 'cumul_emissions': continue
+#                 print('candidate:', (t_dataset1, t_short1, t_exp1, t_ens1))
+# #           for (t_dataset1, t_short1, t_exp1, t_ens1), datad in data_dict.items():
+# #                if t_dataset1 != t_dataset: continue
+# #                #if t_short1 != 'cumul_emissions': continue
+# #                print('candidate 1:', (t_dataset1, t_short1, t_exp1, t_ens1))
+#
+#            assert 0
 
         atmos_carbon = data_dict.get((t_dataset, 'atmos_carbon',  t_exp, t_ens), None) #dict
         if atmos_carbon is None:  # Because not all sceanrios have emissions data.
@@ -3075,19 +3076,19 @@ def calculate_percentages( cfg,
 
             fl_threshold = float(threshold)
             if fl_threshold > 1850.: # Threshold is a specific point in time.
-                e_xpoint = get_threshold_point(cumul_emissions, fl_threshold)
+                # e_xpoint = get_threshold_point(cumul_emissions, fl_threshold)
                 a_xpoint = get_threshold_point(atmos_carbon, fl_threshold)
                 n_xpoint = get_threshold_point(landc_cumul, fl_threshold)
                 f_xpoint = get_threshold_point(fgco2gt_cumul, fl_threshold)
                 if None in [a_xpoint, n_xpoint, f_xpoint]: continue
 
             print("calculate_percentages",threshold, time)
-            e_xpoint = get_threshold_point(cumul_emissions, time.year)
+            # e_xpoint = get_threshold_point(cumul_emissions, time.year)
             a_xpoint = get_threshold_point(atmos_carbon, time.year)
             n_xpoint = get_threshold_point(landc_cumul, time.year)
             f_xpoint = get_threshold_point(fgco2gt_cumul, time.year)
 
-            emission = cumul_emissions['cumul_emissions'][e_xpoint]
+            # emission = cumul_emissions['cumul_emissions'][e_xpoint]
             remnant = atmos_carbon['atmos_carbon'][a_xpoint]
             fgco2gt = fgco2gt_cumul.data[f_xpoint]
 
@@ -3103,7 +3104,7 @@ def calculate_percentages( cfg,
 #                    assert 0
 
             unique_key = (t_dataset, t_exp, t_ens, threshold)
-            emissions[unique_key] = emission
+            # emissions[unique_key] = emission
             remnants[unique_key] = remnant
             fgco2gts[unique_key] = fgco2gt
             landcs[unique_key] = landc
@@ -3202,7 +3203,7 @@ def make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict ):
         for exp in experiments:
             row.append(str(table_data.get((dataset, exp), ' ')))
         ecs_val = str(ECS_data.get(dataset, False))
-        if not ecs_val: 
+        if not ecs_val:
             print('Cant find ECS:', dataset, ecs_val)
             assert 0
         row.append(str(ECS_data.get(dataset, '--')))
@@ -3244,7 +3245,7 @@ def make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict ):
             print('dataset:', dataset, 'in', ECS_data.keys(), (dataset in ECS_data))
             weighted_ecs.append(ECS_data.get(dataset, '--'))
             #weight_erf.append(ERF_data.get(dataset, '--'))
-        
+
         print(exp, 'weighted_ecs', weighted_ecs)
         print(np.mean(weighted_ecs))
         ecs_mean_row.append(str(round(np.mean(weighted_ecs),2)))
@@ -3905,11 +3906,11 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
         if t_exp != exp1: continue
 
         print("make_bar_chart", t_short, t_exp, t_ens)
-        cumul_emissions = data_dict.get((t_dataset, 'cumul_emissions', t_exp, t_ens), None) #dict
+        # cumul_emissions = data_dict.get((t_dataset, 'cumul_emissions', t_exp, t_ens), None) #dict
         atmos_carbon = data_dict.get((t_dataset, atmos,  t_exp, t_ens), None) #dict
-        if cumul_emissions is None:  # Because not all sceanrios have emissions data.
-           print('Did not find cumul_emissions', (t_dataset, 'cumul_emissions',  t_exp, t_ens))
-           assert 0
+        # if cumul_emissions is None:  # Because not all sceanrios have emissions data.
+        #    print('Did not find cumul_emissions', (t_dataset, 'cumul_emissions',  t_exp, t_ens))
+        #    assert 0
 
         if atmos_carbon is None:  # Because not all sceanrios have emissions data.
            print('Did not find atmoshs_carbon:', (t_dataset, atmos,  t_exp, t_ens))
@@ -3924,13 +3925,13 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
         fl_threshold = float(threshold)
         if fl_threshold > 1850.:
 
-            e_xpoint = get_threshold_point(cumul_emissions, fl_threshold)
+            # e_xpoint = get_threshold_point(cumul_emissions, fl_threshold)
             a_xpoint = get_threshold_point(atmos_carbon, fl_threshold)
             n_xpoint = get_threshold_point(landc_cumul, fl_threshold)
             f_xpoint = get_threshold_point(fgco2gt_cumul, fl_threshold)
             if None in [a_xpoint, n_xpoint, f_xpoint]: continue
 
-            emissions.append(cumul_emissions['cumul_emissions'][e_xpoint])
+            # emissions.append(cumul_emissions['cumul_emissions'][e_xpoint])
             remnant.append(atmos_carbon['atmos_carbon'][a_xpoint])
             if isinstance(landc_cumul, dict):
                 landcs.append(landc_cumul[land_carbon][n_xpoint])
@@ -3953,13 +3954,13 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
             #if threshold != thresh: continue
             print("make_bar_chart",threshold, time)
 
-            e_xpoint = get_threshold_point(cumul_emissions, time.year)
+            # e_xpoint = get_threshold_point(cumul_emissions, time.year)
             a_xpoint = get_threshold_point(atmos_carbon, time.year)
 
             n_xpoint = get_threshold_point(landc_cumul, time.year)
             f_xpoint = get_threshold_point(fgco2gt_cumul, time.year)
 
-            print("make_bar_chart",thresh, time, 'atmos_carbon', e_xpoint, 'land:', n_xpoint, 'ocean', f_xpoint)
+            print("make_bar_chart",thresh, time, 'atmos_carbon', a_xpoint, 'land:', n_xpoint, 'ocean', f_xpoint)
             if year0:
                 assert 0
                 #e_baseline = get_threshold_point(cumul_emissions, year0)
@@ -3974,11 +3975,11 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
                #     landcs.append(landc_cumul.data[n_xpoint] - landc_cumul.data[n_baseline])
                #     fgco2gts.append(fgco2gt_cumul.data[f_xpoint] - landc_cumul.data[f_baseline])
             else:
-                print("make_bar_chart",thresh, time,'cumul_emissions', cumul_emissions['cumul_emissions'][e_xpoint], cumul_emissions['time'][e_xpoint])
+                # print("make_bar_chart",thresh, time,'cumul_emissions', cumul_emissions['cumul_emissions'][e_xpoint], cumul_emissions['time'][e_xpoint])
                 print("make_bar_chart",thresh, time,'land:          ', landc_cumul[land_carbon][n_xpoint], landc_cumul['time'][n_xpoint])
                 print("make_bar_chart",thresh, time,'ocean:         ', fgco2gt_cumul.data[f_xpoint], fgco2gt_cumul.coord('time').points[f_xpoint])
 
-                emissions.append(cumul_emissions['cumul_emissions'][e_xpoint])
+                # emissions.append(cumul_emissions['cumul_emissions'][e_xpoint])
                 remnant.append(atmos_carbon['atmos_carbon'][a_xpoint])
                 threshold_years.append(time.year)
                 if isinstance(landc_cumul, dict):
@@ -3997,7 +3998,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
         make_figure_here = False
 
     if not len(experiments):
-        print("make_bar_chart",emissions, landcs, fgco2gts, remnant,  experiments)
+        print("make_bar_chart", landcs, fgco2gts, remnant,  experiments)
         print("make_bar_chart",thresholds_dict.keys())
         print("make_bar_chart",'looking for:', threshold)
         return fig, ax
@@ -4007,7 +4008,8 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     if atmos=='atmos_carbon':
         emissions_diff = remnant
     else:
-        emissions_diff = [e - f - b for e,f,b in zip(emissions, fgco2gts, landcs )]
+        assert 0
+        # emissions_diff = [e - f - b for e,f,b in zip(emissions, fgco2gts, landcs )]
     emissions_bottoms = [f + b for f,b in zip(fgco2gts, landcs )]
 
     totals = [a + f + b for a,f,b in zip(remnant, fgco2gts, landcs)]
@@ -4125,7 +4127,7 @@ def make_cumulative_timeseries(cfg, data_dict,
 
    # load data.
     cube_keys = ['fgco2gt_cumul', 'nbpgt_cumul']
-    colours = {'cumul_emissions': 'silver',
+    colours = {#'cumul_emissions': 'silver',
         'atmos_carbon': 'silver',
         'fgco2gt_cumul':'dodgerblue',
         'nbpgt_cumul':'orange',
@@ -4162,7 +4164,9 @@ def make_cumulative_timeseries(cfg, data_dict,
 
     print(dataset, ssp, 'loaded data:',data.keys())
     # add atmos_stock:
-    tmp_times, tmp_dat = unzip_time(data['cumul_emissions'])
+    tmp_times, tmp_dat = unzip_time(data['atmos_carbon'])
+    data['atmos_carbon'] = zip_time({'time':tmp_times, 'atmos_carbon':tmp_dat}, 'atmos_carbon')
+
     found=0
     for key in ['nbpgt_cumul', 'fgco2gt_cumul']:
         print('adding atmospheric stock', key)
@@ -4174,7 +4178,7 @@ def make_cumulative_timeseries(cfg, data_dict,
         found+=1
     if found==0:return fig, ax
 
-    data['atmos_carbon'] = zip_time({'time':tmp_times, 'atmos_carbon':tmp_dat}, 'atmos_carbon')
+    #data['atmos_carbon'] = zip_time({'time':tmp_times, 'atmos_carbon':tmp_dat}, 'atmos_carbon')
     #colours['atmos_carbon'] = 'purple'
 
     thresholds = {}
@@ -4215,7 +4219,7 @@ def make_cumulative_timeseries(cfg, data_dict,
     if plot_type in ['area', 'area_over_zero']:
         #colours = {'cumul_emissions': 'grey', 'fgco2gt_cumul':'blue', 'nbpgt_cumul':'orange', 'tls':'green'}
         print(data.keys())
-        emt, emd = unzip_time(data['cumul_emissions'])
+        # emt, emd = unzip_time(data['cumul_emissions'])
         lat, lad = unzip_time(data['tls'])
         ont, ond = unzip_time(data['fgco2gt_cumul'])
         lut, lud = unzip_time(data['luegt'])
@@ -4229,12 +4233,12 @@ def make_cumulative_timeseries(cfg, data_dict,
             lad = lad+ond
             atd = atd + lad # air land sea.
 
-            print('emissions times:', emt[:5], emt[-5:])
+            # print('emissions times:', emt[:5], emt[-5:])
             print('LUE times:', lut[:5], lut[-5:])
             print('emissions data:', emd[:5], emd[-5:])
             print('LUE data :', lud[:5], lud[-5:])
-            print('sizes:', len(emt), len(emd), len(lut), len(lud))
-            if np.max(lut) > np.max(emt):
+            # print('sizes:', len(emt), len(emd), len(lut), len(lud))
+            if np.max(lut) > np.max(att):
                 lut = lut[:-1] # Remove 2015.5 (not in histor period)
                 lud = lud[:-1]
 
@@ -4282,7 +4286,7 @@ def make_cumulative_timeseries(cfg, data_dict,
             lad, # land + ocean
             atd, #
             #lw=2,
-            color=colours['cumul_emissions'],
+            color=colours['atmos_carbon'],
             label = 'Atmosphere')
         #ax.set_xlim([2010., 2100])
         ax.set_ylabel('Cumulative carbon, Pg')
@@ -4291,8 +4295,8 @@ def make_cumulative_timeseries(cfg, data_dict,
 
     # plot simple time series:
     if plot_type in ['pc', 'triple'] :
-        colours = {'cumul_emissions': 'silver', 'fgco2gt_cumul':'dodgerblue', 'nbpgt_cumul':'orange', 'tls':'mediumseagreen'}
-        emt, emd = unzip_time(data['cumul_emissions'])
+        colours = {'atmos_carbon': 'silver', 'fgco2gt_cumul':'dodgerblue', 'nbpgt_cumul':'orange', 'tls':'mediumseagreen'}
+        # emt, emd = unzip_time(data['cumul_emissions'])
         lat, lad = unzip_time(data['tls'])
         ont, ond = unzip_time(data['fgco2gt_cumul'])
         #lut, lud = unzip_time(data['luegt'])
@@ -4332,14 +4336,14 @@ def make_cumulative_timeseries(cfg, data_dict,
         # atmos
         plt.plot([], [],
             lw=6,
-            color=colours['cumul_emissions'],
+            color=colours['atmos_carbon'],
             label = 'Atmosphere')
         ax.fill_between( # atmos anthro stock
             att,
             land_air_line,
             land_air_line*0. +100.,
             lw=2,
-            color=colours['cumul_emissions'])
+            color=colours['atmos_carbon'])
 
         #plt.axhline(y=0., c='k', ls='--')
         ax.set_ylabel('Percentage')
@@ -4380,7 +4384,7 @@ def make_cumulative_timeseries(cfg, data_dict,
             if dt is None: continue
             if thres not in plot_thresholds: continue
             print('adding new threshold lineL', thres, dt)
-            index = np.argmin(np.abs(dt.year- emt))
+            index = np.argmin(np.abs(dt.year- att))
             #print(dt.year, emt, index, emt[index], atd[index], emd[index],lud[index])
             x=float(dt.year)+0.5
             if plot_type == 'pc':
@@ -4497,7 +4501,7 @@ def make_cumulative_timeseries_megaplot(cfg, data_dict,
             ax2.set_xlim([2015., 2100.])
 
     plt.sca(ax_leg)
-    colours = {'cumul_emissions': 'silver',
+    colours = { #'cumul_emissions': 'silver',
         'atmos_carbon': 'silver',
         'fgco2gt_cumul':'dodgerblue',
         'nbpgt_cumul':'orange',
@@ -4600,7 +4604,7 @@ def make_cumulative_timeseries_pair(cfg, data_dict,
 def make_cumulative_vs_threshold(cfg, data_dict,
     thresholds_dict,
     land_carbon = 'nbpgt',
-    LHS_panes = [{'x':'cumul_emissions', 'y':'tas_norm'}, ],
+    LHS_panes = [{'x':'atmos_carbon', 'y':'tas_norm'}, ],
     thresholds = ['4.0', '3.0', '2.0'],
     plot_dataset='CMIP6',
 ):
@@ -4879,7 +4883,7 @@ def main(cfg):
 
     if jobtype == 'cumulative_plot':
         short_names = ['tas', 'tas_norm',
-                       'co2', 'emissions', 'cumul_emissions',
+                       'co2', #'emissions', #'cumul_emissions',
                        'nbp', 'nbpgt', 'nbpgt_cumul',
                        #'gpp', 'gppgt',
                        #'intpp',  'intppgt',
@@ -4893,7 +4897,7 @@ def main(cfg):
         short_names_y = short_names.copy()
 
     if jobtype == 'bulk':
-        short_names = ['tas', 'tas_norm', 'co2', 'emissions', 'cumul_emissions'
+        short_names = ['tas', 'tas_norm', 'co2', 'emissions', #'cumul_emissions'
                        'nbp', 'nbpgt', 'gpp', 'gppgt',
                        'intpp', 'fgco2', 'intppgt','fgco2gt',
                        'fgco2gt_cumul',
@@ -4907,7 +4911,8 @@ def main(cfg):
 
     if jobtype == 'debug':
         short_names = [
-                       'emissions', 'cumul_emissions', 'co2', 'atmos_carbon',
+                       #'emissions', 'cumul_emissions',
+                       'co2', 'atmos_carbon',
                        'tas',
 #                      'nbp', #'nbpgt', 'nbpgt_cumul',
 #                      #'gpp', 'gppgt',
@@ -5011,7 +5016,7 @@ def main(cfg):
                     timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
                         panes = ['tas', 'emissions','tls', 'fgco2', 'lue', 'nbp'])
 
-            do_cumulative_plot = True 
+            do_cumulative_plot = True
             if do_cumulative_plot:
 
                 plot_styles = ['percentages', 'values']
@@ -5032,7 +5037,7 @@ def main(cfg):
                     make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'], plot_dataset=plotdataset)
 
 
-            do_cumulative_ts_megaplot = True 
+            do_cumulative_ts_megaplot = True
             # Massive plot that has like 12 panes.
             if do_cumulative_ts_megaplot:
                 make_cumulative_timeseries_megaplot(cfg, data_dict,
