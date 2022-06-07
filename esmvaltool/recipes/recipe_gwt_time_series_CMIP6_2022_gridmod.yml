@@ -107,7 +107,7 @@ diagnostics:
 #           - {project: CMIP6, mip: fx, grid: gn, institute: NCAR, dataset: CESM2-WACCM-FV2, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}# Excluded from run
 #           - {project: CMIP6, mip: fx, grid: gn, institute: NCC, dataset: NorCPM1, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}# Excluded from run
             - {project: CMIP6, mip: fx, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
-            - {project: CMIP6, mip: fx, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
+#            - {project: CMIP6, mip: fx, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: fx, grid: gr, institute: CNRM-CERFACS, dataset: CNRM-ESM2-1, exp: ssp370, ensemble: r1i1p1f2, start_year: 0, end_year: 1}
 
 
@@ -138,7 +138,7 @@ diagnostics:
 #           - {project: CMIP6, mip: fx, grid: gn, institute: NCAR, dataset: CESM2-WACCM-FV2, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}# Excluded from run
 #           - {project: CMIP6, mip: fx, grid: gn, institute: NCC, dataset: NorCPM1, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}# Excluded from run
             - {project: CMIP6, mip: fx, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
-            - {project: CMIP6, mip: fx, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
+#            - {project: CMIP6, mip: fx, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: fx, grid: gr, institute: CNRM-CERFACS, dataset: CNRM-ESM2-1, exp: ssp370, ensemble: r1i1p1f2, start_year: 0, end_year: 1}
 
 
@@ -160,7 +160,7 @@ diagnostics:
             - {project: CMIP6, mip: Ofx, grid: gn, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
 #           - {project: CMIP6, mip: Ofx, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}# Excluded from run
 #           - {project: CMIP6, mip: Ofx, grid: gn, institute: IPSL, dataset: IPSL-CM5A2-INCA, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}# Excluded from run
-            - {project: CMIP6, mip: Ofx, grid: gn, institute: IPSL, dataset: IPSL-CM5A2-INCA, exp: piControl, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
+#            - {project: CMIP6, mip: Ofx, grid: gn, institute: IPSL, dataset: IPSL-CM5A2-INCA, exp: piControl, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: Ofx, grid: gn, institute: IPSL, dataset: IPSL-CM6A-LR, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: Ofx, grid: gn, institute: IPSL, dataset: IPSL-CM6A-LR, exp: piControl, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: Ofx, grid: gn, institute: MIROC, dataset: MIROC-ES2L, exp: piControl, ensemble: r1i1p1f2, start_year: 0, end_year: 1}
@@ -175,8 +175,8 @@ diagnostics:
 #           - {project: CMIP6, mip: Ofx, grid: gn, institute: NCC, dataset: NorCPM1, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}# Excluded from run
             - {project: CMIP6, mip: Ofx, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: Ofx, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: piControl, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
-            - {project: CMIP6, mip: Ofx, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
-            - {project: CMIP6, mip: Ofx, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: piControl, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
+#            - {project: CMIP6, mip: Ofx, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
+#            - {project: CMIP6, mip: Ofx, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: piControl, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
 
       ########################
       # Atmosphere
@@ -258,7 +258,7 @@ diagnostics:
 #           - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorCPM1, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}# Excluded from run
             - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: historical, ensemble: r2i1p1f1, start_year: 1850, end_year: 2014}
-            - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
+#            - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Amon, grid: gn, institute: CCCma, dataset: CanESM5, exp: [historical, ssp119], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: CCCma, dataset: CanESM5, exp: [historical, ssp119], ensemble: r1i1p2f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: CCCma, dataset: CanESM5, exp: [historical, ssp119], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
@@ -436,9 +436,9 @@ diagnostics:
 #           - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: [historical, ssp245], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}# Excluded from run
             - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: [historical, ssp370], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
 #           - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: [historical, ssp370], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}# Excluded from run
-            - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp126], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp245], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp370], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp126], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp245], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Amon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp370], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
 
 
 
@@ -525,7 +525,7 @@ diagnostics:
 #           - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorCPM1, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}# Excluded from run
             - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: historical, ensemble: r2i1p1f1, start_year: 1850, end_year: 2014}
-            - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
+#            - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: CCCma, dataset: CanESM5, exp: [historical, ssp119], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: CCCma, dataset: CanESM5, exp: [historical, ssp119], ensemble: r1i1p2f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: CCCma, dataset: CanESM5, exp: [historical, ssp119], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
@@ -703,9 +703,9 @@ diagnostics:
 #           - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: [historical, ssp245], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}# Excluded from run
             - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: [historical, ssp370], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
 #           - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: [historical, ssp370], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}# Excluded from run
-            - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp126], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp245], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp370], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp126], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp245], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Lmon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp370], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
 
 
 
@@ -794,7 +794,7 @@ diagnostics:
 #           - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorCPM1, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}# Excluded from run
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: historical, ensemble: r2i1p1f1, start_year: 1850, end_year: 2014}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
+#            - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Omon, grid: gn, institute: CCCma, dataset: CanESM5, exp: [historical, ssp119], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: CCCma, dataset: CanESM5, exp: [historical, ssp119], ensemble: r1i1p2f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: CCCma, dataset: CanESM5, exp: [historical, ssp119], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
@@ -972,9 +972,9 @@ diagnostics:
 #           - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: [historical, ssp245], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}# Excluded from run
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: [historical, ssp370], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
 #           - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: [historical, ssp370], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}# Excluded from run
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp126], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp245], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp370], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp126], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp245], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-MM, exp: [historical, ssp370], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
 
 
     scripts:
