@@ -18,10 +18,10 @@ preprocessors:
 
   land_sea:
     extract_region: 
-      start_longitude: 4
-      end_longitude: 5
-      start_latitude: 47
-      end_latitude: 48
+      start_longitude: 13
+      end_longitude: 14
+      start_latitude: 60
+      end_latitude: 61
 
     mask_landsea:
       mask_out: sea
