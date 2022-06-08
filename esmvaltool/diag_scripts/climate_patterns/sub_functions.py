@@ -1,3 +1,10 @@
+"""Script containing relevant sub-functions for main driving scripts.
+
+Author
+------
+Gregory Munday (Met Office, UK)
+"""
+
 import logging
 import os
 from pathlib import Path
@@ -11,53 +18,24 @@ from scipy.sparse.linalg import spsolve
 logger = logging.getLogger(Path(__file__).stem)
 
 
-def stats(x):
-    if isinstance(x, int):
-        print('single number, you numpty. Max/min/mean = ', x)
-    elif isinstance(x, str):
-        print('cant stat a string!')
-    elif isinstance(x, list) or isinstance(x, np.ndarray):
-        print('max = ', np.max(x))
-        print('min = ', np.min(x))
-        print('mean = ', np.mean(x))
-        print('st-dev = ', np.std(x))
-    else:
-        print('what have you given me??')
-
-
-def months_appended(x):
-    mn2 = x.coord("time")
-    m2 = mn2.units.num2date(mn2.points)
-    m3 = len(m2)
-    time = np.linspace(0, m3, m3)
-
-    return time
-
-
-def load_cubelist_to_cube(filename=None, load_file=True, cube=None):
-    if load_file:
-        cube = iris.load(filename)
-    if isinstance(cube, iris.cube.CubeList):
-        for ijk in np.arange(0, int(len(cube))):
-            for key in list(cube[ijk].attributes.keys()):
-                del cube[ijk].attributes[key]
-            if ijk > 0:
-                cube[ijk].coord("time").convert_units(
-                    cube[0].coord("time").units)
-    cube = cube.concatenate_cube()
-
-    return cube
-
-
 def area_avg(x, return_cube=None):
-    # If the cube does not have bounds, add bounds
+    """Calculates the global mean of a variable in a cube, area-weighted.
+
+    Parameters
+    ----------
+    x (cube): input cube
+    return_cube (bool): option to return a cube or array
+
+    Returns
+    -------
+    x2 (cube): cube with collapsed lat-lons, global mean over time
+    x2.data (arr): array with collapsed lat-lons, global mean over time
+    """
     if not x.coord('latitude').has_bounds():
         x.coord('latitude').guess_bounds()
     if not x.coord('longitude').has_bounds():
         x.coord('longitude').guess_bounds()
-    # Get the area weights using the same cube
     area = iris.analysis.cartography.area_weights(x, normalize=False)
-    # Now collapse the lat and lon to find a global mean over time
     x2 = x.collapsed(['latitude', 'longitude'],
                      iris.analysis.MEAN,
                      weights=area)
@@ -69,13 +47,27 @@ def area_avg(x, return_cube=None):
 
 
 def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
-    # If the cube does not have bounds, add bounds
+    """Calculates the global mean of a variable in a cube, with options to be
+    land or ocean weighted.
+
+    Parameters
+    ----------
+    x (cube): input cube
+    ocean_frac (cube): ocean fraction cube, found from sftlf
+    land_frac (cube): land fraction cube, sftlf
+    land (bool): option to weight be land or ocean
+    return_cube (bool): option to return a cube or array
+
+    Returns
+    -------
+    x2 (cube): cube with collapsed lat-lons, global mean over time
+    x2.data (arr): array with collapsed lat-lons, global mean over time
+    """
     if not x.coord('latitude').has_bounds():
         x.coord('latitude').guess_bounds()
     if not x.coord('longitude').has_bounds():
         x.coord('longitude').guess_bounds()
 
-    # Get the area weights using the same cube
     global_weights = iris.analysis.cartography.area_weights(x, normalize=False)
 
     if land is False:
@@ -89,9 +81,9 @@ def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
         x2 = x.copy()
         x2.data = x2.data * global_weights * ocean_frac.data
 
-        # Now collapse the lat and lon to find a global mean over time
         x2 = x2.collapsed(['latitude', 'longitude'],
                           iris.analysis.SUM) / 1e12 / ocean_area.data
+
     if land:
         land_frac.data = np.ma.masked_less(land_frac.data, 0.01)
         weights = iris.analysis.cartography.area_weights(land_frac,
@@ -112,6 +104,23 @@ def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
 
 
 def kappa_calc_predict(q, f, kappa, lambda_o, lambda_l, nu):
+    """Energy balance model test function, which predicts ocean surface
+    temperature given the forcing, kappa, and existing atmospheric parameter
+    values.
+
+    Parameters
+    ----------
+    q (arr): derived effective radiative forcing
+    f (float): ocean fraction
+    kappa (float): ocean diffusivity parameter (W m-1 K-1)
+    lambda_o (float): climate sensitivity of land (W m-2 K-1)
+    lambda_l (float): climate sensitivity of ocean (W m-2 K-1)
+    nu_ratio (float): land-sea temperature contrast in warming
+
+    Returns
+    -------
+    temp_ocean_top (arr): ocean surface temp. (Huntingford & Cox, 2000)
+    """
     cp = 4.04E6
     nyr = q.shape[0]
     n_pde = 20
@@ -195,6 +204,19 @@ def kappa_calc_predict(q, f, kappa, lambda_o, lambda_l, nu):
 
 
 def make_model_dirs(cube_initial, work_path, plot_path):
+    """Creates directories for each input model for saving.
+
+    Parameters
+    ----------
+    cube_initial (cube): initial input cube used to retrieve model name
+    work_path (path): path to work_dir
+    plot_path (path): path to plot_dir
+
+    Returns
+    -------
+    model_work_dir (path): path to specific model directory in work_dir
+    model_plot_dir (path): path to specific plot directory in plot_dir
+    """
     w_path = os.path.join(work_path, cube_initial.attributes['source_id'])
     p_path = os.path.join(plot_path, cube_initial.attributes['source_id'])
     os.mkdir(w_path)
@@ -207,11 +229,17 @@ def make_model_dirs(cube_initial, work_path, plot_path):
 
 
 def parallelise(f, processes=None):
-    """ Wrapper to parallelise any function
-        Example:
-        somefunc_star_parallel = parallelise(somefunc_star_linear)
-        inargs = itertools.izip(np.arange(N), itertools.repeat(2))
-        parallel_result = somefunc_star_parallel(inargs)
+    """Wrapper to parallelise any function, graciously supplied by George Ford
+    (Met Office).
+
+    Parameters
+    ----------
+    f (func): function to be parallelised
+    processes (int): number of threads to be used in parallelisation
+
+    Returns
+    -------
+    result (any): results of parallelised elements
     """
     import multiprocessing as mp
     if processes is None:

@@ -1,5 +1,14 @@
 def rename_clim_variables(cube):
-    # rename variables to fit in JULES framework
+    """Renames variables and a coord to fit in JULES framework.
+
+    Parameters
+    ----------
+    cube (cube): input cube
+
+    Returns
+    -------
+    cube (cube): cube with renamed variables
+    """
     if cube.var_name == "tas":
         cube.rename("Air Temperature")
         cube.var_name = "tl1_clim"
@@ -34,7 +43,16 @@ def rename_clim_variables(cube):
 
 
 def rename_anom_variables(cube):
-    # rename variables to fit in JULES framework
+    """Renames variables and a coord to fit in JULES framework.
+
+    Parameters
+    ----------
+    cube (cube): input cube
+
+    Returns
+    -------
+    cube (cube): cube with renamed variables
+    """
     if cube.var_name == "tas":
         cube.rename("Air Temperature")
         cube.var_name = "tl1_anom"
@@ -69,7 +87,16 @@ def rename_anom_variables(cube):
 
 
 def rename_variables(cube):
-    # rename variables to fit in JULES framework
+    """Renames variables and a coord to fit in JULES framework.
+
+    Parameters
+    ----------
+    cube (cube): input cube
+
+    Returns
+    -------
+    cube (cube): cube with renamed variables
+    """
     if cube.var_name == "tas":
         cube.rename("Air Temperature")
         cube.var_name = "tl1"
@@ -101,7 +128,16 @@ def rename_variables(cube):
 
 
 def rename_regression_variables(cube):
-    # rename variables to fit in JULES framework
+    """Renames variables to fit in JULES framework.
+
+    Parameters
+    ----------
+    cube (cube): input cube
+
+    Returns
+    -------
+    cube (cube): cube with renamed variables
+    """
     if cube.var_name == "tl1_anom":
         cube.rename("Air Temperature")
         cube.var_name = "tl1_patt"
@@ -134,7 +170,16 @@ def rename_regression_variables(cube):
 
 
 def rename_variables_base(cube):
-    # rename variables for imogen_mode='off'
+    """Renames variables and a coord for imogen_mode='off'.
+
+    Parameters
+    ----------
+    cube (cube): input cube
+
+    Returns
+    -------
+    cube (cube): cube with renamed variables
+    """
     if cube.var_name == "tl1_patt":
         cube.rename("Air Temperature")
         cube.var_name = "tas"

@@ -68,6 +68,7 @@ def compute_diagnostic(filename):
 
     logger.debug("Running example computation")
     cube = iris.util.squeeze(cube)
+
     return cube
 
 
@@ -624,8 +625,7 @@ def ebm_params(model):
 
 
 def main(cfg):
-    """
-    Takes in driving data with parallelisation options - saves parameters
+    """Takes in driving data with parallelisation options - saves parameters
     to file for IMOGEN-JULES input.
 
     Parameters

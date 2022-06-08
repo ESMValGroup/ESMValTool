@@ -6,6 +6,16 @@ import sub_functions as sf
 
 
 def subplot_positions(j):
+    """Function to manually determine sub-plot positions in a 3x3 figure.
+
+    Parameters
+    ----------
+    j (int): index of cube position in cubelist
+
+    Returns
+    -------
+    x, y (int): subplot positions
+    """
     if j <= 2:
         y = j
         x = 0
@@ -20,7 +30,17 @@ def subplot_positions(j):
 
 
 def plot_patterns(cube_list, plot_path):
-    """Plots climate patterns for imogen_mode: off."""
+    """Plots climate patterns for imogen_mode: off.
+
+    Parameters
+    ----------
+    cube_list (cubelist): input cubelist for plotting patterns per variable
+    plot_path (path): path to plot_dir
+
+    Returns
+    -------
+    None
+    """
     fig, ax = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
     fig.suptitle("Patterns from a random grid-cell", fontsize=18, y=0.98)
 
@@ -51,7 +71,17 @@ def plot_patterns(cube_list, plot_path):
 
 
 def plot_cp_timeseries(list_cubelists, plot_path):
-    """Plots timeseries of aggregated cubes, across all scenarios."""
+    """Plots timeseries and maps of climatologies, anomalies and patterns.
+
+    Parameters
+    ----------
+    list_cubelists (cubelist): input cubelist for plotting per variable
+    plot_path (path): path to plot_dir
+
+    Returns
+    -------
+    None
+    """
     fig1, ax1 = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
     fig1.suptitle("40 Year Climatologies, 1850-1889", fontsize=18, y=0.98)
 
@@ -113,7 +143,17 @@ def plot_cp_timeseries(list_cubelists, plot_path):
 
 
 def plot_scores(cube_list, plot_path):
-    # plot color mesh of individual months
+    """Plots color mesh of scores per variable per month.
+
+    Parameters
+    ----------
+    cube_list (cube): input cubelist for plotting
+    plot_path (path): path to plot_dir
+
+    Returns
+    -------
+    None
+    """
     for cube in cube_list:
         plt.figure(figsize=(14, 12))
         plt.subplots_adjust(hspace=0.5)
@@ -142,7 +182,28 @@ def plot_scores(cube_list, plot_path):
 def ebm_plots(reg, avg_list, yrs, forcing, forcing_126, lambda_c, temp_global,
               tas_delta, temp_global_126, tas_126_delta, plot_path):
     """Plots the regression between tas and rtmt, as well as the resultant
-    forcing timeseries."""
+    forcing timeseries.
+
+    Parameters
+    ----------
+    reg (obj): linear regression outputs with attributes of tas_4x_cube and
+        rtmt_4x_cube
+    avg_list (arr): array of variable anomaly timeseries
+    yrs (arr): array of timeseries years for plotting
+    forcing (arr): derived effective forcing
+    forcing_126 (arr): effective forcing timeseries, SSP126
+    lambda_c (float): derived climate sensitivity, from reg.slope
+    temp_global (arr): EBM predicted global near-surface air temperature
+    tas_delta (cube): near-surface air temperature anomaly
+    temp_global_126 (cube): EBM predicted global near-surface
+        air temperature, SSP126
+    tas_126_delta (cube): near-surface air temperature anomaly, SSP126
+    plot_path (path): path to plot_dir
+
+    Returns
+    -------
+    None
+    """
     yrs = (1850 + np.arange(temp_global.shape[0])).astype('float')
 
     # regression line
