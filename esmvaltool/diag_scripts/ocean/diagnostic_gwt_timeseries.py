@@ -1280,7 +1280,7 @@ def standardized_ens(ens):
     return '_'.join(ens)
 
 def standardized_exps(exp):
-    experiments = ['historical', 'piControl', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 
+    experiments = ['historical', 'piControl', 'ssp119', 'ssp126', 'ssp245', 'ssp370',
                    'ssp434', 'ssp585', 'ssp534-over']
     if exp in experiments:
         return exp
@@ -1295,16 +1295,16 @@ def standardized_exps(exp):
 
     if exp in experiments:
         return exp
-  
+
     exp = exp.replace('-', '_')
     if exp in ['historical_ssp534_over', 'historical_ssp585_ssp534_over', 'ssp534_over']:
         return 'ssp534-over'
 
     for exp1 in experiments:
-        if '_'.join(['historical', exp1]) == exp: 
+        if '_'.join(['historical', exp1]) == exp:
             return exp1
     print('exp not recognised:', exp)
-    assert 0 
+    assert 0
 
 
 def load_timeseries(cfg, short_names):
@@ -1416,7 +1416,7 @@ def load_timeseries(cfg, short_names):
             #cube = diagtools.bgc_units(cube, short_name)
 
             print('load_timeseries:\t%s successfull loaded data:', (dataset, short_name, exp, ensemble), 'mean:', cube.data.mean())
-        
+
             data_dict[(dataset, short_name, exp, ensemble)] = cube
 
 #    if 'co2' in short_names_to_load:
@@ -2026,7 +2026,7 @@ def calc_tls(cfg, data_dict):
         nbp_dict = {int(t):d for t,d in zip(times, data)}
 
         luegt_dict = data_dict.get((dataset, 'luegt', exp, ensemble), False)
-        if not luegt_dict: 
+        if not luegt_dict:
             continue
         for t, d in zip(luegt_dict['time'], luegt_dict['luegt']):
             if not nbp_dict.get(t, nbp_dict.get(int(t), False)):
@@ -3073,7 +3073,7 @@ def prepare_percentages_data( cfg,
 
     data_dict_shelve = diagtools.folder([cfg['work_dir'], 'percentages_dicts'])
     data_dict_shelve+='_'.join(['allocations', threshold])+'.shelve'
-    overwrite_shelve=True 
+    overwrite_shelve=True
 
     if not overwrite_shelve and glob.glob(data_dict_shelve+'*'):
         print('loading:', data_dict_shelve)
@@ -3147,7 +3147,7 @@ def prepare_percentages_data( cfg,
                 if t_short1 != 'tls': continue
                 print('candidate:', (t_dataset, 'tls',  t_exp, t_ens))
            assert 0
-    
+
 
         fgco2gt_cumul = data_dict[(t_dataset, 'fgco2gt_cumul', t_exp, t_ens)] # cube
         print('prepare_percentages_data: vworking here right now', threshold_times)
@@ -4250,20 +4250,20 @@ def make_cumulative_timeseries(cfg, data_dict,
     tmp_times, tmp_dat = unzip_time(data['atmos_carbon'])
     data['atmos_carbon'] = zip_time({'time':tmp_times, 'atmos_carbon':tmp_dat}, 'atmos_carbon')
 
-    found=0
-    for key in ['nbpgt_cumul', 'fgco2gt_cumul']:
-        print('adding atmospheric stock', key)
-        key_times, key_dat = unzip_time(data[key])
-        print(dataset, ssp, tmp_dat, key_dat, key_times, tmp_times)
-        if len(tmp_times) != len(key_times):
-            print('error:', len(tmp_times), '!=', len(key_times))
-            print('carbon_times:', tmp_times[0], tmp_times[-1])
-            print(key, 'times', key_times[0], key_times[-1])
-            assert 0
-            continue
-        tmp_dat = tmp_dat - key_dat
-        found+=1
-    if found==0:return fig, ax
+    # found=0
+    # for key in ['nbpgt_cumul', 'fgco2gt_cumul']:
+    #     print('adding atmospheric stock', key)
+    #     key_times, key_dat = unzip_time(data[key])
+    #     print(dataset, ssp, tmp_dat, key_dat, key_times, tmp_times)
+    #     if len(tmp_times) != len(key_times):
+    #         print('error:', len(tmp_times), '!=', len(key_times))
+    #         print('carbon_times:', tmp_times[0], tmp_times[-1])
+    #         print(key, 'times', key_times[0], key_times[-1])
+    #         assert 0
+    #         continue
+    #     tmp_dat = tmp_dat - key_dat
+    #     found+=1
+    # if found==0:return fig, ax
 
     #data['atmos_carbon'] = zip_time({'time':tmp_times, 'atmos_carbon':tmp_dat}, 'atmos_carbon')
     #colours['atmos_carbon'] = 'purple'
@@ -4390,6 +4390,8 @@ def make_cumulative_timeseries(cfg, data_dict,
         nbt, nbd = unzip_time(data['nbpgt_cumul'])
         att, atd = unzip_time(data['atmos_carbon'])
 
+        if att == nbt == ont == lat: pass
+        else: assert 0
         total = ond + lad + atd
         water_land_line = (ond/total)*100.
         land_air_line = 100. *(ond + lad)/total
@@ -5073,7 +5075,7 @@ def main(cfg):
                     for pane in ['tas_norm','atmos_carbon','tls', 'fgco2gt_cumul',]:
                         timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
                             panes = [pane, ])
-               
+
 #                timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean', 'all_models_means', 'all_ensembles'],
 #                        panes = ['atmos_carbon', ],) # defaults
 #                timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean', 'all_models_means', 'all_ensembles'],
@@ -5121,7 +5123,7 @@ def main(cfg):
                     make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'], plot_dataset=plotdataset)
 
 
-            do_cumulative_ts_megaplot = False 
+            do_cumulative_ts_megaplot = False
             # Massive plot that has like 12 panes.
             if do_cumulative_ts_megaplot:
                 make_cumulative_timeseries_megaplot(cfg, data_dict,
@@ -5141,7 +5143,7 @@ def main(cfg):
                              ensemble = 'ensemble_mean',
                              dataset=dataset)
 
-            do_make_cumulative_timeseries_pair = True 
+            do_make_cumulative_timeseries_pair = True
 #           # This is all done in a single plot with make_cumulative_timeseries_megaplot
             if do_make_cumulative_timeseries_pair:
                 plot_types = ['pair', ]
