@@ -62,6 +62,7 @@ import cf_units
 import glob
 import shelve
 import csv
+import scipy
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -3492,9 +3493,9 @@ def make_ensemble_barchart_pane(
     emissions_bottoms = []
 
     previous_datasets = {}
-    if ensemble_key == 'ensemble_mean':
-        gap = 0.3
-    else: gap = 0.6
+#    if ensemble_key == 'ensemble_mean':
+#        gap = 0.3
+#    else: gap = 0.6
     quit = False
 
     if ensemble_key == 'ensemble_mean':
@@ -3594,6 +3595,9 @@ def make_ensemble_barchart_pane(
             labels.append([''.join(['.' for k in range(i)]), ])
 
 
+#        if i == 0: 
+#            print(i, unique_key)
+#            assert 0
         # create bar label.
         #if ensemble_key == 'ensemble_mean':
         #    label_keys = [t_dataset, t_exp]
@@ -3603,13 +3607,15 @@ def make_ensemble_barchart_pane(
 
         labels.append(label_keys)
 
-        if i == 0:
-            xvalues.append(0.)
-            widths.append(1.)
-        else:
-            xvalues.append(xvalues[-1]+1.)
-            widths.append(1.)
+        xvalues.append(i+0.5)
+        widths.append(1.)
 
+#        if i == 0:
+#            xvalues.append(0.)
+#            widths.append(1.)
+#        else:
+#            xvalues.append(xvalues[-1]+1.)
+#            widths.append(1.)
 
         if plot_style == 'percentages':
             land.append(100. * landc/total)
@@ -3718,9 +3724,9 @@ def make_ensemble_barchart_pane(
             if group_by == 'ecs':
                  ecs= str(round(ECS_data_ssp[t_exp][t_dataset],2))
                  if t_dataset == 'CMIP6':
-                     label_strs.append(' '.join(['Multi-model mean', ecs]))
+                     label_strs.append(' '.join(['Multi-model mean', ])) # ecs
                  else:
-                     label_strs.append(' '.join([t_dataset, ecs ]))
+                     label_strs.append(' '.join([t_dataset, ])) # ecs
 
         else:
             if group_by == 'group_by_model':
@@ -3737,8 +3743,6 @@ def make_ensemble_barchart_pane(
                    label_strs.append(t_exp)
                else: label_strs.append(' ')
 
-
-
     #labels = [' '.join(label) for label in labels]
     if len(label_strs)== len(land) == len(widths) == len(xvalues) == len(colours_land): pass
     else:
@@ -3754,7 +3758,8 @@ def make_ensemble_barchart_pane(
     # ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color='dodgerblue')
     # ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color='grey')
     #ax.set_xlabel('Scenarios')
-    plt.xticks(rotation=90)
+    plt.xticks(rotation=90, fontsize='xx-small')
+    plt.xlim([-0.1, np.sum(widths)+0.1])
 
     # # Add bars:
     # horizontal = False
@@ -3842,7 +3847,7 @@ def make_ensemble_barchart(
     """
     fig = plt.figure()
     fig.set_size_inches(12 , 6)
-    gs = gridspec.GridSpec(2, 4, figure=fig, hspace=0.230,height_ratios=[6.  , 1])
+    gs = gridspec.GridSpec(2, 4, figure=fig, hspace=0.230,height_ratios=[8.  , 1])
     ax_2=  fig.add_subplot(gs[0, 0])
     ax_3 =  fig.add_subplot(gs[0, 1])
     ax_4 =  fig.add_subplot(gs[0, 2])
@@ -3857,7 +3862,7 @@ def make_ensemble_barchart(
 #            sorting=sorting,
             )
         plt.xticks(rotation=90)
-        ax.tick_params(axis = 'x', labelsize = 'small')
+        ax.tick_params(axis = 'x', labelsize = 'x-small')
 
         if ax in [ax_3, ax_4]:
             ax.set_yticks([])
@@ -3886,9 +3891,9 @@ def make_ensemble_barchart(
     #gs.update(width_ratios=(xr[1] for xr in xranges))
 
     print('New width ratios:', xranges)
-    xranges.append(np.sum(xranges)/10.) # for legend.
+    xranges.append(np.sum(xranges)/15.) # for legend.
     gs.set_width_ratios(xranges)
-    fig.subplots_adjust(wspace=0.05)
+    fig.subplots_adjust(wspace=0.02 )
 
     # Adding legend.
     # from: https://stackoverflow.com/questions/31908982/python-matplotlib-multi-color-legend-entry
@@ -3946,7 +3951,7 @@ def make_ensemble_barchart(
         labels.append(sspify(ssp))
 
     legd = ax_leg.legend(keys, labels,
-        bbox_to_anchor=(1.5, 0.5),
+        bbox_to_anchor=(2.6, 0.5), # 
         numpoints=1, labelspacing=1.2,
         loc='center right', ) #tsize=16)
 
@@ -4176,13 +4181,37 @@ def zip_time(dict, key):
     out_dict = {t:d for t,d in zip(dict['time'], dict[key]) if t < 2100.}
     return out_dict
 
+
 def unzip_time(dict_t):
     """
     zip data_dict style dict into a time:value style dict.
     """
     times = np.array(sorted(list(dict_t.keys())))
     data = np.array([dict_t[t] for t in times])
+    
     return times, data
+
+
+def align_times(list_of_pairs):
+    """
+    try to find the range of the set of data by interpolating over the shared range.
+    """
+    min_times = []
+    max_times = []
+    for times, dats in list_of_pairs:
+        min_times.append(np.min(times))
+        max_times.append(np.max(times))
+    ranges = [np.max(min_times), np.min(max_times)] # overlap
+    output = []
+    out_times = np.arange(ranges[0], ranges[1], 0.1 )
+    for times, dats in list_of_pairs:
+        interp = scipy.interpolate.interp1d(times, dats)
+        out_data = interp(out_times)
+        output.append([out_times, out_data])
+    return output
+ 
+
+
 
 
 def make_cumulative_timeseries(cfg, data_dict,
@@ -4309,25 +4338,30 @@ def make_cumulative_timeseries(cfg, data_dict,
         # emt, emd = unzip_time(data['cumul_emissions'])
         lat, lad = unzip_time(data['tls'])
         ont, ond = unzip_time(data['fgco2gt_cumul'])
-        lut, lud = unzip_time(data['luegt'])
+#        lut, lud = unzip_time(data['luegt'])
         nbt, nbd = unzip_time(data['nbpgt_cumul'])
         att, atd = unzip_time(data['atmos_carbon'])
+
+        [[lat, lad], [ont, ond ], [nbt, nbd], [att, atd]] = align_times([[lat, lad], [ont, ond ], [nbt, nbd], [att, atd]])
 
         if plot_type in ['area',] :
             ond = -1.* ond
             lad = -1.*(lad + ond)
         if plot_type in ['area_over_zero',] :
-            lad = lad+ond
-            atd = atd # air land sea.
+            atd_t = atd + lad + ond # air land sea.
+            lad_t = lad + ond
+            ond_t = ond
+#            lad = lad+ond
+ #           atd = atd + lad# air land sea.
 
             # print('emissions times:', emt[:5], emt[-5:])
-            print('LUE times:', lut[:5], lut[-5:])
+#            print('LUE times:', lut[:5], lut[-5:])
             #print('emissions data:', emd[:5], emd[-5:])
-            print('LUE data :', lud[:5], lud[-5:])
+#            print('LUE data :', lud[:5], lud[-5:])
             # print('sizes:', len(emt), len(emd), len(lut), len(lud))
-            if np.max(lut) > np.max(att):
-                lut = lut[:-1] # Remove 2015.5 (not in histor period)
-                lud = lud[:-1]
+#            if np.max(lut) > np.max(att):
+#                lut = lut[:-1] # Remove 2015.5 (not in histor period)
+#                lud = lud[:-1]
 
 #            plt.plot(emt, emd+lud, 'k-', lw=1.3,label='Emissions+LUE')
 #            plt.plot(lat, lad, 'k--', lw=1.3, label='LUE')
@@ -4340,8 +4374,8 @@ def make_cumulative_timeseries(cfg, data_dict,
         #     label = )
         ax.fill_between(# zero and blue line
             ont,
-            np.zeros_like(ond),
-            ond, # zero and blue line
+            np.zeros_like(ond_t),
+            ond_t, # zero and blue line
             lw=0,
             label='Ocean',
             color=colours['fgco2gt_cumul'])
@@ -4355,8 +4389,8 @@ def make_cumulative_timeseries(cfg, data_dict,
         #     label = 'True Land Sink')
         ax.fill_between( # blue line and land line
             lat,
-            ond, # ocean line
-            lad, # land + ocean
+            ond_t, # ocean line
+            lad_t, # land + ocean
             #lw=2,
             color=colours['tls'],
             label = 'Land')
@@ -4369,9 +4403,9 @@ def make_cumulative_timeseries(cfg, data_dict,
         #     color=colours['cumul_emissions'],
         #     label = 'Atmosphere')
         ax.fill_between( # atmos anthro stock
-            att,
-            lad, # land + ocean
-            atd, #
+            lat,
+            lad_t, # land + ocean
+            atd_t, # land ocean and air
             #lw=2,
             color=colours['atmos_carbon'],
             label = 'Atmosphere')
@@ -4389,9 +4423,8 @@ def make_cumulative_timeseries(cfg, data_dict,
         #lut, lud = unzip_time(data['luegt'])
         nbt, nbd = unzip_time(data['nbpgt_cumul'])
         att, atd = unzip_time(data['atmos_carbon'])
+        [[lat, lad], [ont, ond ], [nbt, nbd], [att, atd]] = align_times([[lat, lad], [ont, ond ], [nbt, nbd], [att, atd]])
 
-        if att == nbt == ont == lat: pass
-        else: assert 0
         total = ond + lad + atd
         water_land_line = (ond/total)*100.
         land_air_line = 100. *(ond + lad)/total
@@ -4465,7 +4498,7 @@ def make_cumulative_timeseries(cfg, data_dict,
 
 
    # threshold_colours = {2.0: 'darkorange', 3.0:'red', 4.0:'purple',}
-    threshold_colours = {2.0: 'darkblue', 3.0:'darkred', 4.0:'purple',}
+    threshold_colours = {1.5: 'black', 2.0: 'darkblue', 3.0:'darkred', 4.0:'purple',}
 
     if threshold_stlye=='new':
         print(thresholds)
@@ -4479,7 +4512,7 @@ def make_cumulative_timeseries(cfg, data_dict,
             if plot_type == 'pc':
                 ymax=1.
             elif plot_type == 'area_over_zero':
-                 ymax = atd[index]/2000.
+                 ymax = atd_t[index]/2000.
             plt.axvline(
                 x=x,
                 ymin=0.,
@@ -4490,7 +4523,10 @@ def make_cumulative_timeseries(cfg, data_dict,
                 ls='-',)
 
             if plot_type == 'pc':
-                plt.text(x+2.4, 5, str(int(thres)) + r'$\degree$'+'C - '+str(int(dt.year)),
+                if thres == 1.5:
+                    txt = ''.join('1.5', r'$\degree$', 'C - ', str(int(dt.year)))
+                else: txt = str(int(thres)) + r'$\degree$'+'C - '+str(int(dt.year))
+                plt.text(x+2.4, 5, txt,
                     c = threshold_colours[thres],
                     ha='left', # Left puts txt on right of line. Right puts txt on left of line.
                     va='bottom', # top puts txt below x axes.
@@ -5106,7 +5142,7 @@ def main(cfg):
 #                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
 #                        panes = ['tas', 'atmos_carbon','tls', 'fgco2', 'lue', 'nbp'])
 
-            do_cumulative_plot = False
+            do_cumulative_plot = True 
             if do_cumulative_plot:
 
                 plot_styles = ['percentages', 'values']
@@ -5131,7 +5167,6 @@ def main(cfg):
                                        ssps= ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
                                        plot_types = ['pair', 'area_over_zero'],
                                        ensemble = 'ensemble_mean')
-                return
                 datasets = {}
                 for (dataset, short_name, exp, ensemble),cube  in data_dict.items():
                     datasets[dataset] = True
@@ -5143,7 +5178,7 @@ def main(cfg):
                              ensemble = 'ensemble_mean',
                              dataset=dataset)
 
-            do_make_cumulative_timeseries_pair = True
+            do_make_cumulative_timeseries_pair = False 
 #           # This is all done in a single plot with make_cumulative_timeseries_megaplot
             if do_make_cumulative_timeseries_pair:
                 plot_types = ['pair', ]
