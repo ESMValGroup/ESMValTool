@@ -210,10 +210,11 @@ def main(cfg):
     if cfg['plot_each_model']:
         for model in groups:
             for attributes in groups[model]:
-                logger.info("Processing dataset %s", attributes['dataset'])
-                input_file = attributes['filename']
-                cube = compute_diagnostic(input_file)
-                plot_model(cube, attributes, cfg)
+                if attributes['dataset'] != "MultiModelMean":
+                    logger.info("Processing dataset %s", attributes['dataset'])
+                    input_file = attributes['filename']
+                    cube = compute_diagnostic(input_file)
+                    plot_model(cube, attributes, cfg)
 
     groups = group_metadata(input_data, 'variable_group', sort='dataset')
 

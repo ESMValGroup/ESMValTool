@@ -13,9 +13,13 @@ documentation:
     - acknow_project
 
 
-YEARS: &years
+YEARS: &years_hist
   start_year: 2000
   end_year: 2004
+
+YEARS_scen: &years_scen
+  start_year: 2080
+  end_year: 2100
 
 
 DATASETS_ECS_HIGH: &datasets_ecs_high
@@ -224,16 +228,17 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
-        <<: *years
-        additional_datasets: *datasets_ecs_high
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_high_scenario
       ECS_med:
         <<: *var_clt
-        additional_datasets: *datasets_ecs_med
+        additional_datasets: *datasets_ecs_med_scenario
       ECS_low:
         <<: *var_clt
-        additional_datasets: *datasets_ecs_low
+        additional_datasets: *datasets_ecs_low_scenario
       OBS:
         <<: *var_clt
+        <<: *years_hist
         preprocessor: lat_lon
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
@@ -252,19 +257,20 @@ diagnostics:
         <<: *var_clt
         short_name: lwp
         derive: true
-        additional_datasets: *datasets_ecs_high
+        additional_datasets: *datasets_ecs_high_scenario
       ECS_med:
         <<: *var_clt
         short_name: lwp
         derive: true
-        additional_datasets: *datasets_ecs_med
+        additional_datasets: *datasets_ecs_med_scenario
       ECS_low:
         <<: *var_clt
         short_name: lwp
         derive: true
-        additional_datasets: *datasets_ecs_low
+        additional_datasets: *datasets_ecs_low_scenario
       OBS:
         <<: *var_clt
+        <<: *years_hist
         short_name: lwp
         derive: true
         preprocessor: lat_lon
@@ -279,17 +285,18 @@ diagnostics:
       ECS_high:
         <<: *var_clt
         short_name: clivi
-        additional_datasets: *datasets_ecs_high
+        additional_datasets: *datasets_ecs_high_scenario
       ECS_med:
         <<: *var_clt
         short_name: clivi
-        additional_datasets: *datasets_ecs_med
+        additional_datasets: *datasets_ecs_med_scenario
       ECS_low:
         <<: *var_clt
         short_name: clivi
-        additional_datasets: *datasets_ecs_low
+        additional_datasets: *datasets_ecs_low_scenario
       OBS:
         <<: *var_clt
+        <<: *years_hist
         short_name: clivi
         preprocessor: lat_lon
         additional_datasets:
@@ -304,19 +311,20 @@ diagnostics:
         <<: *var_clt
         short_name: netcre
         derive: true
-        additional_datasets: *datasets_ecs_high
+        additional_datasets: *datasets_ecs_high_scenario
       ECS_med:
         <<: *var_clt
         short_name: netcre
         derive: true
-        additional_datasets: *datasets_ecs_med
+        additional_datasets: *datasets_ecs_med_scenario
       ECS_low:
         <<: *var_clt
         short_name: netcre
         derive: true
-        additional_datasets: *datasets_ecs_low
+        additional_datasets: *datasets_ecs_low_scenario
       OBS:
         <<: *var_clt
+        <<: *years_hist
         short_name: netcre
         derive: true
         preprocessor: lat_lon
@@ -332,19 +340,20 @@ diagnostics:
         <<: *var_clt
         short_name: swcre
         derive: true
-        additional_datasets: *datasets_ecs_high
+        additional_datasets: *datasets_ecs_high_scenario
       ECS_med:
         <<: *var_clt
         short_name: swcre
         derive: true
-        additional_datasets: *datasets_ecs_med
+        additional_datasets: *datasets_ecs_med_scenario
       ECS_low:
         <<: *var_clt
         short_name: swcre
         derive: true
-        additional_datasets: *datasets_ecs_low
+        additional_datasets: *datasets_ecs_low_scenario
       OBS:
         <<: *var_clt
+        <<: *years_hist
         short_name: swcre
         derive: true
         preprocessor: lat_lon
@@ -360,19 +369,20 @@ diagnostics:
         <<: *var_clt
         short_name: lwcre
         derive: true
-        additional_datasets: *datasets_ecs_high
+        additional_datasets: *datasets_ecs_high_scenario
       ECS_med:
         <<: *var_clt
         short_name: lwcre
         derive: true
-        additional_datasets: *datasets_ecs_med
+        additional_datasets: *datasets_ecs_med_scenario
       ECS_low:
         <<: *var_clt
         short_name: lwcre
         derive: true
-        additional_datasets: *datasets_ecs_low
+        additional_datasets: *datasets_ecs_low_scenario
       OBS:
         <<: *var_clt
+        <<: *years_hist
         short_name: lwcre
         derive: true
         preprocessor: lat_lon

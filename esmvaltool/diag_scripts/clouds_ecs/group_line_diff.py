@@ -158,12 +158,12 @@ def compute_diagnostic(filename):
       cube.units = cube.units / 'kg m-3'
       cube.data = cube.core_data() / 1000.
       cube.convert_units('mm day-1')
-    elif cube.var_name == 'clivi':
+    elif cube.var_name == 'cli':
         cube.convert_units('g/kg')
-    elif cube.var_name == 'lwp':
+    elif cube.var_name == 'clw':
         cube.convert_units('g/kg')
 
-    logger.debug("Reading data")
+    logger.debug("Reading %s", filename)
     cube = iris.util.squeeze(cube)
     #print(cube)
     return cube
@@ -182,10 +182,10 @@ def compute_diff(filename1, filename2):
       cube2.units = cube.units / 'kg m-3'
       cube2.data = cube.core_data() / 1000.
       cube2.convert_units('mm day-1')
-    elif cube1.var_name == 'clivi':
+    elif cube1.var_name == 'cli':
         cube1.convert_units('g/kg')
         cube2.convert_units('g/kg')
-    elif cube1.var_name == 'lwp':
+    elif cube1.var_name == 'clw':
         cube1.convert_units('g/kg')
         cube2.convert_units('g/kg')
 
@@ -196,7 +196,7 @@ def compute_diff(filename1, filename2):
     return cube
 
 
-def compute_diff_temp(input_data, group, dataset):
+def compute_diff_temp(input_data, group, dataset, cfg):
     """Compute relative change per temperture change."""
 
     dataset_name = dataset['dataset']
@@ -233,7 +233,10 @@ def compute_diff_temp(input_data, group, dataset):
 
     cube = compute_diagnostic(input_file_1)
     if var in ['lwp', 'clivi']:
-        cube.data[cube.data < 0.001] = 0.0
+        cube.data[cube.data < 0.01] = 0.0
+    elif var in ['netcre', 'swcre', 'lwcre']:
+        print('var = ', var)
+        cube.data[abs(cube.data) < 0.1] = 0.0
 
     cube_diff = compute_diff(input_file_1, input_file_2)
     cube_tas_diff = compute_diff(input_file_tas_1, input_file_tas_2)
@@ -247,9 +250,17 @@ def compute_diff_temp(input_data, group, dataset):
 
     cube_diff.metadata = cube.metadata
 
+    plot_model_map(cube_diff, dataset, cfg)
+
+    #print(cube_diff)
+    logger.debug("Computing zonal mean")
+    cube_diff = cube_diff.collapsed('longitude', iris.analysis.MEAN)
+    #print(cube_diff)
+
     #cube_diff.units = 'K'
     #cube_diff.units = 'g/kg/K'
-    cube_diff.units = '%/K'
+    #cube_diff.units = '%'
+    #cube_diff.units = '%/K'
     
     return cube_diff
 
@@ -269,6 +280,70 @@ def plot_model(cube, attributes, plot_type, cfg):
                                   dataset_name))
     #filename = ('{}_{}_{}'.format(VAR_NAMES.get(cube.var_name, cube.var_name),
     #                              attributes['exp'], dataset_name))
+
+    plt.title(title)
+    plot_path = get_plot_filename(filename, cfg)
+    plt.savefig(plot_path,
+                bbox_inches='tight',
+                orientation='landscape')
+    logger.info("Wrote %s", plot_path)
+    plt.close()
+
+
+def plot_model_map(cube, attributes, cfg):
+    # Plot each model.
+
+    #levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+    levels = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
+    cmap = 'bwr'
+    #if attributes['short_name'] == 'clt':
+    #    levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+    #    cmap = 'viridis'
+    #elif attributes['short_name'] == 'clivi':
+    #    levels = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2]
+    #    cmap = 'viridis'
+    #elif attributes['short_name'] == 'lwp':
+    #    levels = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2]
+    #    cmap = 'viridis'
+    #elif attributes['short_name'] == 'netcre':
+    #    levels = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
+    #    cmap = 'bwr' 
+    #elif attributes['short_name'] == 'lwcre':
+    #    #levels = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
+    #    levels = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+    #    cmap = 'Reds' 
+    #elif attributes['short_name'] == 'swcre':
+    #    levels = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0]
+    #    cmap = 'Blues_r' 
+    plt.axes(projection=ccrs.Robinson())
+    iplt.contourf(cube, levels=levels, cmap=cmap, extend ='both')
+    #plt.clim(0., 100.)
+    plt.gca().coastlines()
+    colorbar = plt.colorbar(orientation='horizontal')
+    colorbar.set_label( cube.var_name + '/' + cube.units.origin)
+    ticks = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
+    #if attributes['short_name'] == 'clt':
+    #    ticks = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+    #elif attributes['short_name'] == 'clivi':
+    #    ticks = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2]
+    #elif attributes['short_name'] == 'lwp':
+    #    ticks = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2]
+    #elif attributes['short_name'] == 'netcre':
+    #    ticks = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
+    #elif attributes['short_name'] == 'lwcre':
+    #    ticks = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+    #elif attributes['short_name'] == 'swcre':
+    #    ticks = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0]
+    colorbar.set_ticks(ticks)
+    colorbar.set_ticklabels([str(tick) for tick in ticks])
+
+    # And save the plot
+
+    # Appearance
+    dataset_name = attributes['dataset']
+    title = f'{VAR_NAMES.get(cube.var_name, cube.var_name)} for {dataset_name}'
+    filename = ('{}_{}_{}'.format(VAR_NAMES.get(cube.var_name, cube.var_name),
+                                  attributes['exp'], dataset_name, 'cube_diff'))
 
     plt.title(title)
     plot_path = get_plot_filename(filename, cfg)
@@ -322,9 +397,9 @@ def plot_diagnostic_diff(cube, legend, plot_type, cfg):
           cube.units = cube.units / 'kg m-3'
           cube.data = cube.core_data() / 1000.
           cube.convert_units('mm day-1')
-        elif cube.var_name == 'clivi':
+        elif cube.var_name == 'cli':
             cube.convert_units('g/kg')
-        elif cube.var_name == 'lwp':
+        elif cube.var_name == 'clw':
             cube.convert_units('g/kg')
 
         if plot_type == 'height':
@@ -355,10 +430,10 @@ def plot_errorband(cube1, cube2, legend, plot_type, cfg):
       cube2.units = cube2.units / 'kg m-3'
       cube2.data = cube2.core_data() / 1000.
       cube2.convert_units('mm day-1')
-    elif cube1.var_name == 'clivi':
+    elif cube1.var_name == 'cli':
         cube1.convert_units('g/kg')
         cube2.convert_units('g/kg')
-    elif cube1.var_name == 'lwp':
+    elif cube1.var_name == 'clw':
         cube1.convert_units('g/kg')
         cube2.convert_units('g/kg')
 
@@ -380,6 +455,7 @@ def main(cfg):
     cfg = deepcopy(cfg)
     cfg.setdefault('title_key', 'dataset')
     cfg.setdefault('filename_attach', 'base')
+    cfg.setdefault('plot_each_model', False)
     logger.info("Using key '%s' to create titles for datasets",
                 cfg['title_key'])
 
@@ -412,6 +488,8 @@ def main(cfg):
 
                     input_file = dataset['filename']
                     cube = compute_diagnostic(input_file)
+                    logger.debug("Computing zonal mean")
+                    cube = cube.collapsed('longitude', iris.analysis.MEAN)
 
                     cubes[dataset_name] = cube
 
@@ -457,12 +535,12 @@ def main(cfg):
                 logger.info("Loop dataset %s", dataset_name)
                 dataset_names.append(dataset_name)
 
-                cube_diff = compute_diff_temp(input_data, group_name, dataset)
+                cube_diff = compute_diff_temp(input_data, group_name, dataset, cfg)
 
                 cubes_diff[dataset_name] = cube_diff
 
-                if cfg['plot_each_model']:
-                    plot_model(cube_diff, dataset, plot_type, cfg)
+                #if cfg['plot_each_model']:
+                #    plot_model(cube_diff, dataset, plot_type, cfg)
 
         cube_mmm = _get_multi_model_mean(cubes_diff, var)
 
