@@ -1272,7 +1272,6 @@ def print_data_dict(data_dict):
 def load_scenario_carbon(cfg, data_dict):
     data_dict = load_co2_forcing(cfg, data_dict) # co2
     data_dict = calc_atmos_carbon(cfg, data_dict)
-    #data_dict = calc_emissions(cfg, data_dict)
     return data_dict
 
 
@@ -3595,7 +3594,7 @@ def make_ensemble_barchart_pane(
             labels.append([''.join(['.' for k in range(i)]), ])
 
 
-#        if i == 0: 
+#        if i == 0:
 #            print(i, unique_key)
 #            assert 0
         # create bar label.
@@ -3951,7 +3950,7 @@ def make_ensemble_barchart(
         labels.append(sspify(ssp))
 
     legd = ax_leg.legend(keys, labels,
-        bbox_to_anchor=(2.6, 0.5), # 
+        bbox_to_anchor=(2.6, 0.5), #
         numpoints=1, labelspacing=1.2,
         loc='center right', ) #tsize=16)
 
@@ -4188,7 +4187,7 @@ def unzip_time(dict_t):
     """
     times = np.array(sorted(list(dict_t.keys())))
     data = np.array([dict_t[t] for t in times])
-    
+
     return times, data
 
 
@@ -4209,7 +4208,7 @@ def align_times(list_of_pairs):
         out_data = interp(out_times)
         output.append([out_times, out_data])
     return output
- 
+
 
 
 
@@ -4331,6 +4330,29 @@ def make_cumulative_timeseries(cfg, data_dict,
 #        plt.axhline(y=0., c='k', ls='--')
 #        if do_leg: plt.legend()
 
+    lat, lad = unzip_time(data['tls'])
+    ont, ond = unzip_time(data['fgco2gt_cumul'])
+    #        lut, lud = unzip_time(data['luegt'])
+    nbt, nbd = unzip_time(data['nbpgt_cumul'])
+    att, atd = unzip_time(data['atmos_carbon'])
+    [[lat, lad], [ont, ond ], [nbt, nbd], [att, atd]] = align_times([[lat, lad], [ont, ond ], [nbt, nbd], [att, atd]])
+    emt = lat[:]
+    emd = lad + ond + atd
+    aligned_interpolated_data_shelve = diagtools.folder([cfg['work_dir'], 'aligned_interpolated_data'])+'aligned_interpolated_data.shelve'
+    sh = shelve.open(aligned_interpolated_data_shelve)
+    sh['lat'] = lat
+    sh['lad'] = lad
+    sh['ont'] = ont
+    sh['ond'] = ond
+    sh['nbt'] = nbt
+    sh['nbd'] = nbd
+    sh['att'] = att
+    sh['atd'] = atd
+    sh['emt'] = emt
+    sh['emd'] = emd
+    sh.close()
+
+
     # plot simple time series:
     if plot_type in ['area', 'area_over_zero']:
         #colours = {'cumul_emissions': 'grey', 'fgco2gt_cumul':'blue', 'nbpgt_cumul':'orange', 'tls':'green'}
@@ -4343,6 +4365,7 @@ def make_cumulative_timeseries(cfg, data_dict,
         att, atd = unzip_time(data['atmos_carbon'])
 
         [[lat, lad], [ont, ond ], [nbt, nbd], [att, atd]] = align_times([[lat, lad], [ont, ond ], [nbt, nbd], [att, atd]])
+
 
         if plot_type in ['area',] :
             ond = -1.* ond
@@ -4725,6 +4748,79 @@ def make_cumulative_timeseries_pair(cfg, data_dict,
     plt.close()
 
 
+def do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'emissions', fig = None, ax = None):
+
+    save_single_plot= False
+    if fig is None or ax is None:
+        fig = plt.figure()
+        fig.set_size_inches(7 , 6)
+        ax = fig.add_subplot(111)
+        save_single_plot = True
+    else:
+        plt.sca(ax)
+        #gs = gridspec.GridSpec(2, 3, figure=fig, hspace=0.5)
+
+    Model_colours = {}
+    marker_styles = {1.5: None, 2.: 's', 3.: 'o', 4:'^', 5.:None}
+
+    aligned_interpolated_data_shelve = diagtools.folder([cfg['work_dir'], 'aligned_interpolated_data'])+'aligned_interpolated_data.shelve'
+    if not len(glob.glob(aligned_interpolated_data_shelve+'*')):
+        print('ERROR:, missing data, run make_cumulative_timeseries first!')
+        assert 0
+    sh = shelve.open(aligned_interpolated_data_shelve)
+    lat = sh['lat']
+    lad = sh['lad']
+    ont = sh['ont']
+    ond = sh['ond']
+    nbt = sh['nbt']
+    nbd = sh['nbd']
+    att = sh['att']
+    atd = sh['atd']
+    emt = sh['emt']
+    emd = sh['emd']
+    sh.close()
+
+    if x_axis == 'emissions':
+        y_time = emt
+        y_data = emd
+    .
+    if x_axis == 'land':
+        y_time = lat
+        y_data = lad
+
+    if x_axis == 'ocean':
+        y_time = ont
+        y_data = ond
+
+    if x_axis == 'atmosphere':
+        y_time = att
+        y_data = atd
+
+    for (dataset, short_name, exp, ensemble), thresholds in thresholds_dict.items():
+        if short_name != 'tas': continue
+        if ensemble != 'ensemble_mean': continue
+        colour = Model_colours[dataset]
+
+        for threshold, time in thresholds.items():
+            if time is None: continue # no GWT.
+            ms = marker_styles.get(threshold, None)
+            if not ms: continue
+            x = time.year + 0.5
+            index - np.argmin(np.abs(y_time - x))
+            y = y_data[index]
+            #label =
+            plt.scatter(x,y, c = colour, maker = ms)
+
+
+    if not save_single_plot: return fig, ax
+
+    image_extention = diagtools.get_image_format(cfg)
+    path = diagtools.folder([cfg['plot_dir'], 'emissions_scatter',])
+    path += '_'.join(['emssions_scatter', x_axis]) + image_extention
+    plt.savefig(path)
+    plt.close()
+
+
 
 def make_cumulative_vs_threshold(cfg, data_dict,
     thresholds_dict,
@@ -5070,6 +5166,8 @@ def main(cfg):
     for do_ma in [True, ]:#False]:
         data_dict = load_timeseries(cfg, short_names)
         data_dict = load_scenario_carbon(cfg, data_dict)
+        # data_dict = calc_emissions(cfg, data_dict)
+
         #data_dict = calc_model_mean(cfg, short_names, data_dict)
 
         #data_dict = fix_indices(data_dict)
@@ -5085,7 +5183,9 @@ def main(cfg):
         #ake_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', land_carbon = 'tls')
 
 
-
+        do_emission_scatter = True
+        if do_emission_scatter:
+            do_emission_scatterplot(cfg, data_dict, thresholds_dict)
         #assert 0
 
         if jobtype in ['cumulative_plot', 'debug']:
@@ -5142,7 +5242,7 @@ def main(cfg):
 #                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
 #                        panes = ['tas', 'atmos_carbon','tls', 'fgco2', 'lue', 'nbp'])
 
-            do_cumulative_plot = True 
+            do_cumulative_plot = False
             if do_cumulative_plot:
 
                 plot_styles = ['percentages', 'values']
@@ -5178,7 +5278,7 @@ def main(cfg):
                              ensemble = 'ensemble_mean',
                              dataset=dataset)
 
-            do_make_cumulative_timeseries_pair = False 
+            do_make_cumulative_timeseries_pair = False
 #           # This is all done in a single plot with make_cumulative_timeseries_megaplot
             if do_make_cumulative_timeseries_pair:
                 plot_types = ['pair', ]
