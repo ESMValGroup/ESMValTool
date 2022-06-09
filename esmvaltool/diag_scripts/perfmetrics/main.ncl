@@ -104,10 +104,22 @@ begin
 
   enter_msg(DIAG_SCRIPT, "")
 
+  vars = metadata_att_as_array(variable_info, "short_name")
+
   ; Get variables and datasets
   var0 = variable_info[0]@short_name
   info_items = select_metadata_by_name(input_file_info, var0)
   nDatasets = ListCount(info_items)
+
+  if (dimsizes(vars) .gt. 1) then
+    var1 = variable_info[1]@short_name
+    info_items_1 = select_metadata_by_name(input_file_info, var1)
+    cnt = ListCount(info_items_1)
+    do ii = 0, cnt - 1
+      ListAppend(info_items, info_items_1[ii])
+    end do
+    nDatasets = ListCount(info_items)
+  end if
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"plot_type", "time_avg", "region"/))
@@ -212,6 +224,8 @@ begin
     datasetnames = new_datasetnames
     delete(new_datasetnames)
   end if
+  ;; Save projects
+  ;projectnames = metadata_att_as_array(info_items, "project")
 
   ; Save list of preproc files for provenance in collect.ncl
   preproc_files = metadata_att_as_array(info_items, "filename")
@@ -231,6 +245,7 @@ begin
     nobs = 2
     alt_ind = ind(datasetnames.eq.variable_info[0]@alternative_dataset)
     ref_inds := (/ref_ind, alt_ind/)
+print("alt_ind = " + alt_ind)
   end if
 
   ; Create output plot directory
@@ -258,10 +273,14 @@ begin
     grading!3 = "reference"
     grading&diagnostics = \
       variable_info[0]@diagnostic + "-" + diag_script_info@region
+printVarSummary(datasetnames)
+print("ref_inds = " + ref_inds)
     grading&models = remove_index(datasetnames, ref_inds)
     if (isdim(grading, "reference")) then
       grading&reference = datasetnames(ref_inds)
     end if
+    grading@projects = str_join(remove_index(projectnames, ref_inds), " ")
+
     grading@projects = str_join(remove_index(projectnames, ref_inds), " ")
 
     ; Special case Taylor
@@ -441,23 +460,25 @@ begin
         diag_script_info@metric(met) + ".nc"
 
       if (fileexists(temp_dir)) then
-        temp_file = addfile(temp_dir, "r")
-        temp_list = temp_file->temp_list
-        temp_list := tostring(temp_list)
-        temp_list := array_append_record(temp_list, ncdf_dir(met), 0)
-        temp_list := tochar(temp_list)
+      ;  temp_file = addfile(temp_dir, "r")
+      ;  temp_list = temp_file->temp_list
+      ;  temp_list := tostring(temp_list)
+      ;  temp_list := array_append_record(temp_list, ncdf_dir(met), 0)
+      ;  temp_list := tochar(temp_list)
         system("rm -f " + temp_dir)
-      else
+      end if
+      ;else
         ncdf_char = tochar(ncdf_dir(met))
         temp_list = new((/1, dimsizes(ncdf_char)/), character)
         temp_list(0, :) = ncdf_char
-      end if
+        delete(ncdf_char)
+      ;end if
 
       ; Create new file and add list
       temp = addfile(temp_dir, "c")
       temp->temp_list = temp_list
 
-      delete([/metric, temp_dir, temp_list, ncdf_char/])
+      delete([/metric, temp_dir, temp_list/])
 
     end do
 
