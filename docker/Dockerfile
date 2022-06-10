@@ -2,9 +2,9 @@
 # docker build -t esmvaltool:latest . -f docker/Dockerfile
 FROM continuumio/miniconda3
 
-COPY ./environment.yml /src/ESMValTool/environment.yml
+COPY ./conda-linux-64.lock /src/ESMValTool/conda-linux-64.lock
 WORKDIR /src/ESMValTool
-RUN conda update -y conda && conda install -y -c conda-forge mamba && mamba env create --name esmvaltool --file environment.yml && conda clean --all -y
+RUN conda install -y -c conda-forge mamba && mamba create --name esmvaltool --file conda-linux-64.lock && conda clean --all -y
 
 # Make RUN commands use the new environment:
 SHELL ["conda", "run", "--name", "esmvaltool", "/bin/bash", "-c"]
