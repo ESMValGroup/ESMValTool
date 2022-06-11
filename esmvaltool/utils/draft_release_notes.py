@@ -15,7 +15,7 @@ import dateutil
 import esmvalcore
 import fire
 
-import esmvaltool
+#import esmvaltool
 
 try:
     from github import Github
@@ -32,8 +32,8 @@ except FileNotFoundError:
           "for-the-command-line")
 
 VERSION = {
-    'esmvalcore': f"v{esmvalcore.__version__}",
-    'esmvaltool': f"v{esmvaltool.__version__}"
+    'esmvalcore': "v2.6.0rc1",#f"v{esmvalcore.__version__}",
+#    'esmvaltool': f"v{esmvaltool.__version__}"
 }
 GITHUB_REPO = {
     'esmvalcore': "ESMValGroup/ESMValCore",
@@ -41,22 +41,31 @@ GITHUB_REPO = {
 }
 
 PREVIOUS_RELEASE = {
-    'esmvalcore': datetime.datetime(2021, 11, 8, 00),
+    'esmvalcore': datetime.datetime(2022, 3, 15, 00),
     'esmvaltool': datetime.datetime(2021, 11, 9, 00),
 }
+
+
 LABELS = {
     'esmvalcore': (
+        'api',
         'backwards incompatible change',
         'bug',
+        'cmor',
+        'containerization',
+        'community',
+        'deployment',
         'deprecated feature',
         'documentation',
-        'fix for dataset',
-        'cmor',
-        'preprocessor',
-        'api',
-        'testing',
-        'installation',
         'enhancement',
+        'fix for dataset',
+        'installation',
+        'iris',
+        'preprocessor',
+        'release',
+        'testing',
+        'UX',
+        'variable derivation'
     ),
     'esmvaltool': (
         'backwards incompatible change',
@@ -122,6 +131,8 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
             continue
         print(pull.updated_at, pull.merged_at, pull.number, pull.title)
         pr_labels = {label.name for label in pull.labels}
+        if 'automatedPR' in pr_labels:
+            continue
         for label in labels:
             if label in pr_labels:
                 break
@@ -144,7 +155,9 @@ def format_notes(lines, version):
         '-' * len(version),
         'Highlights',
         '',
-        'TODO: add highlights',
+        '- A new set of CMOR fixes is now available in order to load native EMAC model output and CMORize it on the fly. For details, see :ref:`Supported native models: EMAC <read_emac>',
+        '- The version number of ESMValCore is now automatically generated using `setuptools_scm <https://github.com/pypa/setuptools_scm/#default-versioning-scheme>`__'
+        '',
         '',
         "This release includes",
     ]
