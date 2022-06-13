@@ -54,7 +54,7 @@ import datetime
 import iris
 import matplotlib.pyplot as plt
 logging.getLogger('matplotlib.font_manager').disabled = True
-from matplotlib import gridspec
+from matplotlib import gridspec, cm as mplcm
 from matplotlib.colors import to_rgba
 import numpy as np
 from itertools import product
@@ -4748,75 +4748,115 @@ def make_cumulative_timeseries_pair(cfg, data_dict,
     plt.close()
 
 
-def do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'emissions', fig = None, ax = None):
+def do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ocean', fig = None, ax = None):
 
     save_single_plot= False
     if fig is None or ax is None:
         fig = plt.figure()
-        fig.set_size_inches(7 , 6)
-        ax = fig.add_subplot(111)
+        fig.set_size_inches(8, 7)
+        gs = gridspec.GridSpec(1, 2, figure=fig, hspace=0.5, width_ratios=[4,1])
+        ax = fig.add_subplot(gs[0, 0])
+        ax_leg = fig.add_subplot(gs[0, 1]) 
         save_single_plot = True
-    else:
-        plt.sca(ax)
+    plt.sca(ax)
         #gs = gridspec.GridSpec(2, 3, figure=fig, hspace=0.5)
 
-    Model_colours = {}
+    model_colours = {'CMIP6': 'black'}
+
+    datasets = {}
+    exps = {}
+    for (dataset, short_name, exp, ensemble), thresholds in thresholds_dict.items():
+        if model_colours.get(dataset, False): continue
+        datasets[dataset] = True
+
+    cmap = mplcm.get_cmap('jet')
+    for i,dataset in enumerate(sorted(datasets)):
+        model_colours[dataset] = cmap(float(i)/(len(datasets)-1.))
+
     marker_styles = {1.5: None, 2.: 's', 3.: 'o', 4:'^', 5.:None}
 
-    aligned_interpolated_data_shelve = diagtools.folder([cfg['work_dir'], 'aligned_interpolated_data'])+'aligned_interpolated_data.shelve'
-    if not len(glob.glob(aligned_interpolated_data_shelve+'*')):
-        print('ERROR:, missing data, run make_cumulative_timeseries first!')
-        assert 0
-    sh = shelve.open(aligned_interpolated_data_shelve)
-    lat = sh['lat']
-    lad = sh['lad']
-    ont = sh['ont']
-    ond = sh['ond']
-    nbt = sh['nbt']
-    nbd = sh['nbd']
-    att = sh['att']
-    atd = sh['atd']
-    emt = sh['emt']
-    emd = sh['emd']
-    sh.close()
-
-    if x_axis == 'emissions':
-        y_time = emt
-        y_data = emd
-    .
+#    if x_axis == 'emissions':
+#        short_name_1 = ''
     if x_axis == 'land':
-        y_time = lat
-        y_data = lad
-
+          short_name_1 = 'tls'
     if x_axis == 'ocean':
-        y_time = ont
-        y_data = ond
-
+        short_name_1 = 'fgco2gt_cumul'
     if x_axis == 'atmosphere':
-        y_time = att
-        y_data = atd
+        short_name_1 = 'atmos_carbon'
 
+    ensemble_alpha = {'ensemble_mean':1.}   
+    sizes = {'ensemble_mean':60}
     for (dataset, short_name, exp, ensemble), thresholds in thresholds_dict.items():
         if short_name != 'tas': continue
         if ensemble != 'ensemble_mean': continue
-        colour = Model_colours[dataset]
+        if ensemble in ['ensemble_min', 'ensemble_max']: continue
+        exps[exp] = exp_colours_fill[exp]
+        colour = model_colours[dataset]
+        edgecolor= exp_colours_fill[exp]
+        alpha= ensemble_alpha.get(ensemble, 1.  )
+        data = data_dict[(dataset, short_name_1, exp, ensemble)]
+        if x_axis == 'ocean':
+            y_time = cube_to_years(data)
+            y_data = data.data
+        else:
+            y_time = data['time']
+            y_data = data[short_name_1]
 
         for threshold, time in thresholds.items():
             if time is None: continue # no GWT.
             ms = marker_styles.get(threshold, None)
+            size = sizes.get(ensemble, 60 )
+            if dataset == 'CMIP6': size = 100.
+
+            if ms == '^': size = size*1.3
+
             if not ms: continue
             x = time.year + 0.5
-            index - np.argmin(np.abs(y_time - x))
+            index = np.argmin(np.abs(y_time - x))
             y = y_data[index]
-            #label =
-            plt.scatter(x,y, c = colour, maker = ms)
+            
+            plt.scatter(x,y, c = colour, marker = ms, edgecolor=edgecolor, linewidth=2.5, alpha = alpha, s=size)
 
-
+    plt.suptitle('CMIP6 GWTs in the '+x_axis)
     if not save_single_plot: return fig, ax
+
+
+    plt.sca(ax_leg)
+
+    for thresh, style in marker_styles.items():
+        if style is None: continue
+        lab = ''.join([str(int(thresh)), r'$\degree$', 'C'])
+        ax_leg.scatter([], [], marker=style, c='w', edgecolor='k',linewidth=2.5, s=80, label=lab)
+
+    for exp in sorted(exps.keys()):
+        if exp=='historical': continue
+        color = exps[exp]
+        if color is None: continue
+        lab = sspify(exp)
+        ax_leg.scatter([], [], marker='s', c='w', edgecolor=color,linewidth=2.5, s=80, label=lab)
+
+    for model, color in model_colours.items():
+        lab = model
+        ax_leg.scatter([], [], marker='s', c=color, edgecolor='k', linewidth=1.5, s=80, label=lab)
+
+    legd = ax_leg.legend(#keys, labels,
+        bbox_to_anchor=(1.5, 0.5), #
+        numpoints=1, labelspacing=0.8,
+        loc='center right', ) #tsize=16)
+
+    legd.draw_frame(False)
+    legd.get_frame().set_alpha(0.)
+    ax_leg.get_xaxis().set_visible(False)
+    ax_leg.get_yaxis().set_visible(False)
+    plt.axis('off')
+
+
+
 
     image_extention = diagtools.get_image_format(cfg)
     path = diagtools.folder([cfg['plot_dir'], 'emissions_scatter',])
     path += '_'.join(['emssions_scatter', x_axis]) + image_extention
+    print('saving:', path)
     plt.savefig(path)
     plt.close()
 
@@ -5182,12 +5222,6 @@ def main(cfg):
         #ake_bar_chart(cfg, data_dict, thresholds_dict, threshold = '3.0', land_carbon = 'tls')
         #ake_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', land_carbon = 'tls')
 
-
-        do_emission_scatter = True
-        if do_emission_scatter:
-            do_emission_scatterplot(cfg, data_dict, thresholds_dict)
-        #assert 0
-
         if jobtype in ['cumulative_plot', 'debug']:
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls')
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
@@ -5292,6 +5326,12 @@ def main(cfg):
 #                   make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
 #               #continue
 
+            print(datasets)
+
+            do_emission_scatter = True
+            if do_emission_scatter:
+                for x_axis in ['ocean', 'land', 'atmosphere']:
+                    do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis=x_axis)
 
 
         return
