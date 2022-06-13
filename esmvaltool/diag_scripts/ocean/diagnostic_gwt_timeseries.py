@@ -4756,7 +4756,7 @@ def do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ocean', f
         fig.set_size_inches(8, 7)
         gs = gridspec.GridSpec(1, 2, figure=fig, hspace=0.5, width_ratios=[4,1])
         ax = fig.add_subplot(gs[0, 0])
-        ax_leg = fig.add_subplot(gs[0, 1]) 
+        ax_leg = fig.add_subplot(gs[0, 1])
         save_single_plot = True
     plt.sca(ax)
         #gs = gridspec.GridSpec(2, 3, figure=fig, hspace=0.5)
@@ -4784,7 +4784,7 @@ def do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ocean', f
     if x_axis == 'atmosphere':
         short_name_1 = 'atmos_carbon'
 
-    ensemble_alpha = {'ensemble_mean':1.}   
+    ensemble_alpha = {'ensemble_mean':1.}
     sizes = {'ensemble_mean':60}
     for (dataset, short_name, exp, ensemble), thresholds in thresholds_dict.items():
         if short_name != 'tas': continue
@@ -4814,7 +4814,7 @@ def do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ocean', f
             x = time.year + 0.5
             index = np.argmin(np.abs(y_time - x))
             y = y_data[index]
-            
+
             plt.scatter(x,y, c = colour, marker = ms, edgecolor=edgecolor, linewidth=2.5, alpha = alpha, s=size)
 
     plt.suptitle('CMIP6 GWTs in the '+x_axis)
@@ -4859,6 +4859,111 @@ def do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ocean', f
     print('saving:', path)
     plt.savefig(path)
     plt.close()
+
+
+
+
+def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = None, ax = None):
+
+    save_single_plot= False
+    if fig is None or ax is None:
+        fig = plt.figure()
+        fig.set_size_inches(8, 7)
+        gs = gridspec.GridSpec(1, 2, figure=fig, hspace=0.5, width_ratios=[4,1])
+        ax = fig.add_subplot(gs[0, 0])
+        ax_leg = fig.add_subplot(gs[0, 1])
+        save_single_plot = True
+    plt.sca(ax)
+        #gs = gridspec.GridSpec(2, 3, figure=fig, hspace=0.5)
+
+    model_colours = {'CMIP6': 'black'}
+
+    datasets = {}
+    exps = {}
+    for (dataset, short_name, exp, ensemble), thresholds in thresholds_dict.items():
+        if model_colours.get(dataset, False): continue
+        datasets[dataset] = True
+
+    cmap = mplcm.get_cmap('jet')
+    for i,dataset in enumerate(sorted(datasets)):
+        model_colours[dataset] = cmap(float(i)/(len(datasets)-1.))
+
+    marker_styles = {1.5: None, 2.: 's', 3.: 'o', 4:'^', 5.:None}
+
+#    if x_axis == 'emissions':
+#        short_name_1 = ''
+    if x_axis == 'ecs':
+        short_name_1='ecs'
+        ECS_data = load_ecs_data()
+
+    ensemble_alpha = {'ensemble_mean':1.}
+    sizes = {'ensemble_mean':60}
+    for (dataset, short_name, exp, ensemble), thresholds in thresholds_dict.items():
+        if short_name != 'tas': continue
+        if ensemble != 'ensemble_mean': continue
+        if ensemble in ['ensemble_min', 'ensemble_max']: continue
+        exps[exp] = exp_colours_fill[exp]
+        colour = model_colours[dataset]
+        edgecolor= exp_colours_fill[exp]
+        alpha= ensemble_alpha.get(ensemble, 1.  )
+        data = data_dict[(dataset, short_name_1, exp, ensemble)]
+        if x_axis == 'ecs':
+            model_ecs = ECS_data[dataset]
+
+        for threshold, time in thresholds.items():
+            if time is None: continue # no GWT.
+            ms = marker_styles.get(threshold, None)
+            size = sizes.get(ensemble, 60 )
+            if dataset == 'CMIP6': size = 100.
+
+            if ms == '^': size = size*1.3
+
+            if not ms: continue
+            x = time.year + 0.5
+            y =model_ecs
+
+            plt.scatter(x,y, c = colour, marker = ms, edgecolor=edgecolor, linewidth=2.5, alpha = alpha, s=size)
+
+    plt.suptitle('CMIP6 GWTs in the '+x_axis)
+    if not save_single_plot: return fig, ax
+
+    plt.sca(ax_leg)
+
+    for thresh, style in marker_styles.items():
+        if style is None: continue
+        lab = ''.join([str(int(thresh)), r'$\degree$', 'C'])
+        ax_leg.scatter([], [], marker=style, c='w', edgecolor='k',linewidth=2.5, s=80, label=lab)
+
+    for exp in sorted(exps.keys()):
+        if exp=='historical': continue
+        color = exps[exp]
+        if color is None: continue
+        lab = sspify(exp)
+        ax_leg.scatter([], [], marker='s', c='w', edgecolor=color,linewidth=2.5, s=80, label=lab)
+
+    for model, color in model_colours.items():
+        lab = model
+        ax_leg.scatter([], [], marker='s', c=color, edgecolor='k', linewidth=1.5, s=80, label=lab)
+
+    legd = ax_leg.legend(#keys, labels,
+        bbox_to_anchor=(1.5, 0.5), #
+        numpoints=1, labelspacing=0.8,
+        loc='center right', ) #tsize=16)
+
+    legd.draw_frame(False)
+    legd.get_frame().set_alpha(0.)
+    ax_leg.get_xaxis().set_visible(False)
+    ax_leg.get_yaxis().set_visible(False)
+    plt.axis('off')
+
+    image_extention = diagtools.get_image_format(cfg)
+    path = diagtools.folder([cfg['plot_dir'], 'ecs_scatter',])
+    path += '_'.join(['ecs_vs_time',]) + image_extention
+    print('saving:', path)
+    plt.savefig(path)
+    plt.close()
+
+
 
 
 
@@ -5328,7 +5433,11 @@ def main(cfg):
 
             print(datasets)
 
-            do_emission_scatter = True
+            do_ecs_scatter = True
+            if do_ecs_scatter:
+                do_ecs_scatterplot(cfg, data_dict, thresholds_dict)
+
+            do_emission_scatter = False
             if do_emission_scatter:
                 for x_axis in ['ocean', 'land', 'atmosphere']:
                     do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis=x_axis)
