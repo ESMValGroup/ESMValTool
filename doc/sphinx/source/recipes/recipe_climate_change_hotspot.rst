@@ -7,9 +7,9 @@ Overview
 --------
 
 In the context of a changing climate, it is found that
-not all regions change at the same pace and in the same
+not all regions change at the same pace and the same
 way. The regions that change at a faster rate than the rest
-of the globe are labelled as climate change hotspots. Projecting
+of the globe are labelled as climate change hotspots. Estimating
 the location and magnitude of the hotspots is important
 for climate change adaptation, and it is usually computed using
 the projected climate variables' differences between the regional
@@ -40,15 +40,15 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * ``recipe_climate_change_hotspot.yml``: Loads the data, ensembles
-      the data, computes the necessary climate change hotspot diagnostics
-      and plots the results figures.
+    * ``recipe_climate_change_hotspot.yml``: Loads and ensembles the data, 
+       computes the necessary climate change hotspot diagnostics
+       and plots the results figures.
 
 Diagnostics are stored in esmvaltool/diag_scripts/cos22esd/
 
     * ``climate_change_hotspot.py``: Calculates the regional field hotspot
       for temperature and precipitation and the 10-year rolling mean
-      timeseries for regional and large scale temperature and precipitation.
+      timeseries for regional and large-scale temperature and precipitation.
 
     * ``hotspot_plotter.py``: Gathers the data output from the
       ``climate_change_hotspot.py`` script and plots the hotspot fields and
@@ -85,7 +85,7 @@ User settings in the recipe
 
    * ``region``: List of longitudes and latitudes that enclose a region.
      In the form of [start_longitude, end_longitude, start_latitude, end_latitude].
-     Used in the title to identify the precipitation large scale region.
+     Used in the title to identify the precipitation large-scale region.
 
    * ``region_name``: Name of the region used in the plot titles.
 
@@ -93,7 +93,7 @@ User settings in the recipe
 Modifying the datasets and scenarios used
 -----------------------------------------
 
-``recipe_climate_change_hotspot.yml`` can be modifyed to use different scenario combinations.
+``recipe_climate_change_hotspot.yml`` can be modified to use different scenario combinations.
 The standard recipe uses data from scenarios with the radiative forcings 2.6, 4.5 and 8.5 `Wm^{-2}` (referred to as 26, 45 and 85),
 but any combination of three scenarios from the following list can be used:
 
@@ -194,8 +194,8 @@ Example plots
    :align:  center
 
    Mediterranean region temperature (upper rows) and precipitation (lower rows) change differences against the mean global temperature
-   change and the mean 30–45º  N latitudinal belt precipitation change respectively. The changes for the periods 2041–2060 (first and third
-   row) and 2081–2100 (second and fourth row) are evaluated against the 1986–2005 mean. The differences are shown for the CMIP5 (left)
+   change and the mean 30–45º  N latitudinal belt precipitation change respectively. The changes for the periods 2041–2060 (first and third
+   row) and 2081–2100 (second and fourth row) are evaluated against 1986–2005 mean. The differences are shown for the CMIP5 (left)
    and CMIP6 (right) DJF, JJA and annual mean projections (columns) under the high emission scenario RCP8.5 and SSP5-8.5 respectively. N
    indicates the number of models included in the ensemble mean.
 
@@ -206,7 +206,7 @@ Example plots
    Mediterranean region warming against global warming for the summer
    2.6, 4.5 and 8.5 `Wm^{-2}` RCP and SSP scenarios
    for the CMIP5 and CMIP6 ensemble means.
-   Each dot represents a 10 year mean change beginning from 1960-1969 (light coloring)
+   Each dot represents a 10-year mean change beginning from the period 1960-1969 (light colouring)
    until 2091-2100 (opaque coloring). The changes are computed with 1986-2005 as the baseline.
    An ordinary least squares linear regression is computed and the slope and $r$ values are shown.
    N indicates the number of models included in the ensemble mean.

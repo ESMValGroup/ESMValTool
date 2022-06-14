@@ -2,7 +2,7 @@
 
 A comparison between the global and hotspot region tas and pr can be done
 Output:
- - scatter plots relating large vs regional scale changes.
+ - scatter plots relating large vs regional-scale changes.
  - fields of the hotspot for DJF and JJA in CMIP5 and CMIP6.
 """
 import iris
@@ -23,7 +23,7 @@ from esmvaltool.diag_scripts.shared import run_diagnostic, save_data
 class HotspotDiag:
     """Hotspot diagnostics' class.
 
-    Class that reads, postprocesses and calls the plotting functions
+    Class that reads, post-processes and calls the plotting functions
     necessary to obtain the hotspot figures.
     """
 

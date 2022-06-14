@@ -248,12 +248,12 @@ class HotspotPlot:
         save_figure(basename, provenance_record, self.cfg)
 
     def timeseries_scatter_plot(self, results_dict, season, var_combination):
-        """Regional vs large scale changes for three scenarios.
+        """Regional vs large-scale changes for three scenarios.
 
         Computed for different seasons for the CMIP5 and CMIP6 ensemble means.
-        Each dot in the plot represents a 10 year mean change beginning from
+        Each dot in the plot represents a 10-year mean change beginning from
         1960-1969 (light coloring) until 2091-2100 (opaque coloring).
-        The changes are computed with 1986-2005 as baseline.
+        The changes are computed with 1986-2005 as a baseline.
 
         An ordinary least squares linear regression is computed and the
         slope and rvalue are shown. N indicates the number of models
