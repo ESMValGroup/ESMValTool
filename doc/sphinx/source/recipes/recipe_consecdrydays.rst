@@ -46,7 +46,7 @@ User settings in recipe
 
    * cmap: the name of a colormap. cmocean colormaps are also supported.
 
-   * other matplotlib plot keyword arguments can also be supplied.
+   * other keyword arguments to :func:`esmvaltool.diag_scripts.shared.plot.global_pcolormesh` can also be supplied.
 
 Variables
 ---------
