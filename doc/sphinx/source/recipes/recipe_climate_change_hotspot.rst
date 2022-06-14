@@ -158,7 +158,7 @@ files available for ``cmip6_60`` and ``cmip5_60``, and the previous diagnostic w
         <<: *script_input
 
 Finally, if the datasets that need to be included in the multi-model means are common for all scenarios,
-the datasets could be simplified to :
+the datasets could be simplified to:
 
 .. code-block:: yaml
 
