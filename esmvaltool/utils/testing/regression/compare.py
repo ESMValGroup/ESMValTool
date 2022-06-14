@@ -23,6 +23,7 @@ except ImportError:
 IGNORE_FILES: tuple[str, ...] = (
     '*_citation.bibtex',
     '*_data_citation_info.txt',
+    '*_info.ncl',
     '*_provenance.xml',
     'metadata.yml',
 )
