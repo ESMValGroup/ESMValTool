@@ -1,0 +1,711 @@
+# ESMValTool
+---
+documentation:
+  title: Mediterranean hotspot figures
+  description: |
+    Recipe to compute the CMIP5 and CMIP6 projected
+    Mediterranean hotspot for Near-Surface Air Temperature (tas) and Precipitation (pr) changes.
+  authors:
+    - cos_josep
+  maintainers:
+    - loosveldt-tomas_saskia
+    - cos_josep
+  references:
+    - cos22esd
+
+cmip5_85: &cmip5_85
+  - &cmip5_h-rcp85 {
+    project: CMIP5,
+    exp: [historical, rcp85],
+    dataset: ACCESS1-0,
+    ensemble: r1i1p1,
+    start_year: 1980,
+    end_year: 2100,
+  }
+
+  - {<<: *cmip5_h-rcp85, dataset: ACCESS1-3}
+
+  - {<<: *cmip5_h-rcp85, dataset: bcc-csm1-1}
+
+  - {<<: *cmip5_h-rcp85, dataset: bcc-csm1-1-m}
+
+  - {<<: *cmip5_h-rcp85, dataset: BNU-ESM}
+
+  - {<<: *cmip5_h-rcp85, dataset: CanESM2, ensemble: r(1:5)i1p1}
+
+  - {<<: *cmip5_h-rcp85, dataset: CCSM4, ensemble: r(1:5)i1p1}
+
+  - {<<: *cmip5_h-rcp85, dataset: CESM1-BGC}
+
+  - {<<: *cmip5_h-rcp85, dataset: CESM1-CAM5, ensemble: r(1:3)i1p1}
+
+  - {<<: *cmip5_h-rcp85, dataset: CMCC-CESM}
+
+  - {<<: *cmip5_h-rcp85, dataset: CMCC-CM}
+
+  - {<<: *cmip5_h-rcp85, dataset: CMCC-CMS}
+
+  - {<<: *cmip5_h-rcp85, dataset: CNRM-CM5, ensemble: r(1:2)i1p1}
+  - {<<: *cmip5_h-rcp85, dataset: CNRM-CM5, ensemble: r4i1p1}
+  - {<<: *cmip5_h-rcp85, dataset: CNRM-CM5, ensemble: r6i1p1}
+  - {<<: *cmip5_h-rcp85, dataset: CNRM-CM5, ensemble: r10i1p1}
+
+  - {<<: *cmip5_h-rcp85, dataset: CSIRO-Mk3-6-0, ensemble: r(1:10)i1p1}
+
+  - {<<: *cmip5_h-rcp85, dataset: FGOALS-s2, ensemble: r(1:3)i1p1}
+
+  - {<<: *cmip5_h-rcp85, dataset: FIO-ESM, ensemble: r(1:3)i1p1}
+
+  - {<<: *cmip5_h-rcp85, dataset: GFDL-CM3}
+
+  - {<<: *cmip5_h-rcp85, dataset: GFDL-ESM2G}
+
+  - {<<: *cmip5_h-rcp85, dataset: GFDL-ESM2M}
+
+  - {<<: *cmip5_h-rcp85, dataset: GISS-E2-H, ensemble: r(1:2)i1p1}
+
+  - {<<: *cmip5_h-rcp85, dataset: GISS-E2-H-CC}
+
+  - {<<: *cmip5_h-rcp85, dataset: GISS-E2-R, ensemble: r(1:2)i1p1}
+
+  - {<<: *cmip5_h-rcp85, dataset: GISS-E2-R-CC}
+
+  - {<<: *cmip5_h-rcp85, dataset: HadGEM2-AO}
+
+  - {<<: *cmip5_h-rcp85, dataset: HadGEM2-ES, ensemble: r(1:4)i1p1}
+
+  - {<<: *cmip5_h-rcp85, dataset: inmcm4}
+
+  - {<<: *cmip5_h-rcp85, dataset: IPSL-CM5A-LR, ensemble: r(1:4)i1p1}
+
+  - {<<: *cmip5_h-rcp85, dataset: IPSL-CM5A-MR}
+
+  - {<<: *cmip5_h-rcp85, dataset: IPSL-CM5B-LR}
+
+  - {<<: *cmip5_h-rcp85, dataset: MIROC-ESM}
+
+  - {<<: *cmip5_h-rcp85, dataset: MIROC-ESM-CHEM}
+
+  - {<<: *cmip5_h-rcp85, dataset: MIROC5, ensemble: r(2:3)i1p1}
+
+  - {<<: *cmip5_h-rcp85, dataset: MPI-ESM-LR, ensemble: r(1:3)i1p1}
+
+  - {<<: *cmip5_h-rcp85, dataset: MPI-ESM-MR}
+
+  - {<<: *cmip5_h-rcp85, dataset: MRI-CGCM3}
+
+  - {<<: *cmip5_h-rcp85, dataset: MRI-ESM1}
+
+  - {<<: *cmip5_h-rcp85, dataset: NorESM1-M}
+
+cmip5_45: &cmip5_45
+  - &cmip5_h-rcp45 {
+    project: CMIP5,
+    exp: [historical, rcp45],
+    dataset: ACCESS1-0,
+    ensemble: r1i1p1,
+    start_year: 1980,
+    end_year: 2100,
+  }
+
+  - {<<: *cmip5_h-rcp45, dataset: ACCESS1-3}
+
+  - {<<: *cmip5_h-rcp45, dataset: bcc-csm1-1}
+
+  - {<<: *cmip5_h-rcp45, dataset: bcc-csm1-1-m}
+
+  - {<<: *cmip5_h-rcp45, dataset: BNU-ESM}
+
+  - {<<: *cmip5_h-rcp45, dataset: CanESM2, ensemble: r(1:5)i1p1}
+
+  - {<<: *cmip5_h-rcp45, dataset: CCSM4, ensemble: r(1:5)i1p1}
+
+  - {<<: *cmip5_h-rcp45, dataset: CESM1-BGC}
+
+  - {<<: *cmip5_h-rcp45, dataset: CESM1-CAM5, ensemble: r(1:3)i1p1}
+
+  - {<<: *cmip5_h-rcp45, dataset: CMCC-CM}
+
+  - {<<: *cmip5_h-rcp45, dataset: CMCC-CMS}
+
+  - {<<: *cmip5_h-rcp45, dataset: CSIRO-Mk3-6-0, ensemble: r(1:10)i1p1}
+
+  - {<<: *cmip5_h-rcp45, dataset: FGOALS-s2, ensemble: r(1:3)i1p1}
+
+  - {<<: *cmip5_h-rcp45, dataset: FIO-ESM, ensemble: r(1:3)i1p1}
+
+  - {<<: *cmip5_h-rcp45, dataset: GFDL-CM3}
+
+  - {<<: *cmip5_h-rcp45, dataset: GISS-E2-H, ensemble: r(1:3)i1p1}
+  - {<<: *cmip5_h-rcp45, dataset: GISS-E2-H, ensemble: r5i1p1}
+
+  - {<<: *cmip5_h-rcp45, dataset: GISS-E2-R, ensemble: r2i1p1}
+  - {<<: *cmip5_h-rcp45, dataset: GISS-E2-R, ensemble: r6i1p1}
+
+  - {<<: *cmip5_h-rcp45, dataset: HadGEM2-ES, ensemble: r(1:4)i1p1}
+
+  - {<<: *cmip5_h-rcp45, dataset: inmcm4}
+
+  - {<<: *cmip5_h-rcp45, dataset: IPSL-CM5A-LR, ensemble: r3i1p1}
+
+  - {<<: *cmip5_h-rcp45, dataset: IPSL-CM5A-MR}
+
+  - {<<: *cmip5_h-rcp45, dataset: IPSL-CM5B-LR}
+
+  - {<<: *cmip5_h-rcp45, dataset: MIROC-ESM}
+
+  - {<<: *cmip5_h-rcp45, dataset: MIROC-ESM-CHEM}
+
+  - {<<: *cmip5_h-rcp45, dataset: MIROC5, ensemble: r(2:3)i1p1}
+
+  - {<<: *cmip5_h-rcp45, dataset: MPI-ESM-LR, ensemble: r(1:3)i1p1}
+
+  - {<<: *cmip5_h-rcp45, dataset: MPI-ESM-MR, ensemble: r(1:3)i1p1}
+
+  - {<<: *cmip5_h-rcp45, dataset: MRI-CGCM3}
+
+  - {<<: *cmip5_h-rcp45, dataset: NorESM1-M}
+
+  - {<<: *cmip5_h-rcp45, dataset: NorESM1-ME}
+
+cmip5_26: &cmip5_26
+  - &cmip5_h-rcp26 {
+    project: CMIP5,
+    exp: [historical, rcp26],
+    dataset: bcc-csm1-1,
+    ensemble: r1i1p1,
+    start_year: 1980,
+    end_year: 2100,
+  }
+
+  - {<<: *cmip5_h-rcp26, dataset: bcc-csm1-1-m}
+
+  - {<<: *cmip5_h-rcp26, dataset: BNU-ESM}
+
+  - {<<: *cmip5_h-rcp26, dataset: CanESM2, ensemble: r(1:5)i1p1}
+
+  - {<<: *cmip5_h-rcp26, dataset: CCSM4, ensemble: r(1:5)i1p1}
+
+  - {<<: *cmip5_h-rcp26, dataset: CESM1-CAM5, ensemble: r(1:3)i1p1}
+
+  - {<<: *cmip5_h-rcp26, dataset: CNRM-CM5}
+
+  - {<<: *cmip5_h-rcp26, dataset: CSIRO-Mk3-6-0, ensemble: r(1:10)i1p1}
+
+  - {<<: *cmip5_h-rcp26, dataset: FIO-ESM, ensemble: r(1:3)i1p1}
+
+  - {<<: *cmip5_h-rcp26, dataset: GFDL-ESM2G}
+
+  - {<<: *cmip5_h-rcp26, dataset: GFDL-ESM2M}
+
+  - {<<: *cmip5_h-rcp26, dataset: GISS-E2-H}
+
+  - {<<: *cmip5_h-rcp26, dataset: GISS-E2-R}
+
+  - {<<: *cmip5_h-rcp26, dataset: HadGEM2-AO}
+
+  - {<<: *cmip5_h-rcp26, dataset: HadGEM2-ES, ensemble: r(1:4)i1p1}
+
+  - {<<: *cmip5_h-rcp26, dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+  - {<<: *cmip5_h-rcp26, dataset: IPSL-CM5A-LR, ensemble: r(3:4)i1p1}
+
+  - {<<: *cmip5_h-rcp26, dataset: IPSL-CM5A-MR}
+
+  - {<<: *cmip5_h-rcp26, dataset: MIROC-ESM}
+
+  - {<<: *cmip5_h-rcp26, dataset: MIROC-ESM-CHEM}
+
+  - {<<: *cmip5_h-rcp26, dataset: MIROC5, ensemble: r(2:3)i1p1}
+
+  - {<<: *cmip5_h-rcp26, dataset: MPI-ESM-LR, ensemble: r(1:3)i1p1}
+
+  - {<<: *cmip5_h-rcp26, dataset: MPI-ESM-MR}
+
+  - {<<: *cmip5_h-rcp26, dataset: MRI-CGCM3}
+
+  - {<<: *cmip5_h-rcp26, dataset: NorESM1-M}
+
+cmip6_85: &cmip6_85
+  - &cmip6_h-ssp585 {
+    project: CMIP6,
+    exp: [historical, ssp585],
+    dataset: ACCESS-CM2,
+    ensemble: r1i1p1f1,
+    grid: gn,
+    start_year: 1980,
+    end_year: 2100,
+  }
+
+  - {<<: *cmip6_h-ssp585, dataset: ACCESS-ESM1-5, ensemble: r(1:3)i1p1f1}
+
+  - {<<: *cmip6_h-ssp585, dataset: AWI-CM-1-1-MR}
+
+  - {<<: *cmip6_h-ssp585, dataset: BCC-CSM2-MR}
+
+  - {
+    <<: *cmip6_h-ssp585,
+    dataset: CanESM5,
+    ensemble: r(1:10)i1p1f1,
+  }
+
+  - {
+    <<: *cmip6_h-ssp585,
+    dataset: CanESM5-CanOE,
+    ensemble: r(1:3)i1p2f1,
+  }
+
+  - {<<: *cmip6_h-ssp585, dataset: CESM2, ensemble: r(1:2)i1p1f1}
+
+  - {<<: *cmip6_h-ssp585, dataset: CESM2-WACCM}
+
+  - {<<: *cmip6_h-ssp585, dataset: CIESM, grid: gr}
+
+  - {<<: *cmip6_h-ssp585, dataset: CMCC-CM2-SR5}
+
+  - {<<: *cmip6_h-ssp585, dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+
+  - {<<: *cmip6_h-ssp585, dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+
+  - {<<: *cmip6_h-ssp585, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+
+  - {<<: *cmip6_h-ssp585, dataset: EC-Earth3, ensemble: r4i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp585, dataset: EC-Earth3, ensemble: r6i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp585, dataset: EC-Earth3, ensemble: r9i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp585, dataset: EC-Earth3, ensemble: r11i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp585, dataset: EC-Earth3, ensemble: r13i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp585, dataset: EC-Earth3, ensemble: r15i1p1f1, grid: gr}
+
+  - {<<: *cmip6_h-ssp585, dataset: FGOALS-f3-L, grid: gr}
+
+  - {<<: *cmip6_h-ssp585, dataset: FGOALS-g3, ensemble: r1i1p1f1}
+
+  - {<<: *cmip6_h-ssp585, dataset: FIO-ESM-2-0, ensemble: r(1:3)i1p1f1}
+
+  - {<<: *cmip6_h-ssp585, dataset: GFDL-ESM4, grid: gr1}
+
+  - {
+    <<: *cmip6_h-ssp585,
+    dataset: GISS-E2-1-G,
+    ensemble: r1i1p3f1,
+  }
+
+  - {<<: *cmip6_h-ssp585, dataset: HadGEM3-GC31-LL, ensemble: r(1:3)i1p1f3}
+
+  - {<<: *cmip6_h-ssp585, dataset: INM-CM4-8, grid: gr}
+
+  - {<<: *cmip6_h-ssp585, dataset: INM-CM5-0, grid: gr}
+
+  - {<<: *cmip6_h-ssp585, dataset: IPSL-CM6A-LR, grid: gr}
+
+  - {<<: *cmip6_h-ssp585, dataset: KACE-1-0-G, grid: gr}
+
+  - {<<: *cmip6_h-ssp585, dataset: MCM-UA-1-0, ensemble: [r1i1p1f1, r1i1p1f2]}
+
+  - {<<: *cmip6_h-ssp585, dataset: MIROC6, ensemble: r(1:3)i1p1f1}
+
+  - {<<: *cmip6_h-ssp585, dataset: MIROC-ES2L, ensemble: r1i1p1f2}
+
+  - {<<: *cmip6_h-ssp585, dataset: MPI-ESM1-2-HR}
+
+  - {<<: *cmip6_h-ssp585, dataset: MPI-ESM1-2-LR, ensemble: r(1:10)i1p1f1}
+
+  - {<<: *cmip6_h-ssp585, dataset: MRI-ESM2-0}
+
+  - {<<: *cmip6_h-ssp585, dataset: NESM3, ensemble: r(1:2)i1p1f1}
+
+  - {<<: *cmip6_h-ssp585, dataset: NorESM2-LM}
+
+  - {<<: *cmip6_h-ssp585, dataset: NorESM2-MM}
+
+  - {<<: *cmip6_h-ssp585, dataset: UKESM1-0-LL, ensemble: r(1:4)i1p1f2}
+  - {<<: *cmip6_h-ssp585, dataset: UKESM1-0-LL, ensemble: r8i1p1f2}
+
+cmip6_45: &cmip6_45
+  - &cmip6_h-ssp245 {
+    project: CMIP6,
+    exp: [historical, ssp245],
+    dataset: ACCESS-CM2,
+    ensemble: r1i1p1f1,
+    grid: gn,
+    start_year: 1980,
+    end_year: 2100,
+  }
+
+  - {<<: *cmip6_h-ssp245, dataset: ACCESS-CM2, ensemble: r2i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: ACCESS-ESM1-5, ensemble: r(1:10)i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: AWI-CM-1-1-MR}
+
+  - {<<: *cmip6_h-ssp245, dataset: BCC-CSM2-MR, ensemble: r1i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: CanESM5, ensemble: r(1:10)i1p1f1}
+
+  - {
+    <<: *cmip6_h-ssp245,
+    dataset: CanESM5-CanOE,
+    ensemble: r(1:3)i1p2f1,
+  }
+
+  - {<<: *cmip6_h-ssp245, dataset: CAS-ESM2-0, ensemble: r1i1p1f1}
+  - {<<: *cmip6_h-ssp245, dataset: CAS-ESM2-0, ensemble: r3i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: CESM2, ensemble: r1i1p1f1}
+  - {<<: *cmip6_h-ssp245, dataset: CESM2, ensemble: r4i1p1f1}
+  - {<<: *cmip6_h-ssp245, dataset: CESM2, ensemble: r(10:11)i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: CESM2-WACCM, ensemble: r(1:3)i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: CIESM, grid: gr, ensemble: r1i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: CMCC-ESM2, ensemble: r1i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: CNRM-CM6-1, ensemble: r(1:6)i1p1f2, grid: gr}
+
+  - {<<: *cmip6_h-ssp245, dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+
+  - {
+    <<: *cmip6_h-ssp245,
+    dataset: CNRM-ESM2-1,
+    ensemble: r(1:5)i1p1f2,
+    grid: gr,
+  }
+
+  - {
+    <<: *cmip6_h-ssp245,
+    dataset: EC-Earth3,
+    ensemble: r(18:24)i1p1f1,
+    grid: gr,
+  }
+  - {<<: *cmip6_h-ssp245, dataset: EC-Earth3, ensemble: r2i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp245, dataset: EC-Earth3, ensemble: r7i1p1f1, grid: gr}
+
+  - {<<: *cmip6_h-ssp245, dataset: FGOALS-g3, ensemble: r(1:4)i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: FGOALS-f3-L, grid: gr}
+
+  - {<<: *cmip6_h-ssp245, dataset: FIO-ESM-2-0, ensemble: r(1:3)i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: GFDL-ESM4, grid: gr1}
+
+  - {<<: *cmip6_h-ssp245, dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
+
+  - {<<: *cmip6_h-ssp245, dataset: INM-CM4-8, grid: gr1}
+
+  - {<<: *cmip6_h-ssp245, dataset: INM-CM5-0, grid: gr1}
+
+  - {
+    <<: *cmip6_h-ssp245,
+    dataset: IPSL-CM6A-LR,
+    ensemble: r(1:6)i1p1f1,
+    grid: gr,
+  }
+  - {
+    <<: *cmip6_h-ssp245,
+    dataset: IPSL-CM6A-LR,
+    ensemble: r(10:11)i1p1f1,
+    grid: gr,
+  }
+  - {<<: *cmip6_h-ssp245, dataset: IPSL-CM6A-LR, ensemble: r14i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp245, dataset: IPSL-CM6A-LR, ensemble: r22i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp245, dataset: IPSL-CM6A-LR, ensemble: r25i1p1f1, grid: gr}
+
+  - {<<: *cmip6_h-ssp245, dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp245, dataset: KACE-1-0-G, ensemble: r3i1p1f1, grid: gr}
+
+  - {<<: *cmip6_h-ssp245, dataset: KIOST-ESM, grid: gr1}
+
+  - {<<: *cmip6_h-ssp245, dataset: MCM-UA-1-0, ensemble: [r1i1p1f1, r1i1p1f2]}
+
+  - {<<: *cmip6_h-ssp245, dataset: MIROC6, ensemble: r(1:3)i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: MIROC-ES2L, ensemble: r1i1p1f2}
+
+  - {<<: *cmip6_h-ssp245, dataset: MPI-ESM1-2-HR}
+
+  - {<<: *cmip6_h-ssp245, dataset: MPI-ESM1-2-LR, ensemble: r(1:10)i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: MRI-ESM2-0, ensemble: r1i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: NESM3, ensemble: r(1:2)i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: NorESM2-LM, ensemble: r(1:3)i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: NorESM2-MM, ensemble: r1i1p1f1}
+
+  - {<<: *cmip6_h-ssp245, dataset: UKESM1-0-LL, ensemble: r(1:4)i1p1f2}
+  - {<<: *cmip6_h-ssp245, dataset: UKESM1-0-LL, ensemble: r8i1p1f2}
+
+cmip6_26: &cmip6_26
+  - &cmip6_h-ssp126 {
+    project: CMIP6,
+    exp: [historical, ssp126],
+    dataset: ACCESS-CM2,
+    ensemble: r1i1p1f1,
+    grid: gn,
+    start_year: 1980,
+    end_year: 2100,
+  }
+
+  - {<<: *cmip6_h-ssp126, dataset: ACCESS-ESM1-5, ensemble: r(1:3)i1p1f1}
+
+  - {<<: *cmip6_h-ssp126, dataset: AWI-CM-1-1-MR}
+
+  - {<<: *cmip6_h-ssp126, dataset: BCC-CSM2-MR, ensemble: r1i1p1f1}
+
+  - {<<: *cmip6_h-ssp126, dataset: CanESM5, ensemble: r(1:10)i1p1f1}
+
+  - {<<: *cmip6_h-ssp126, dataset: CanESM5-CanOE, ensemble: r(1:3)i1p2f1}
+
+  - {<<: *cmip6_h-ssp126, dataset: CESM2, ensemble: r1i1p1f1}
+
+  - {<<: *cmip6_h-ssp126, dataset: CESM2-WACCM}
+
+  - {<<: *cmip6_h-ssp126, dataset: CMCC-CM2-SR5}
+
+  - {<<: *cmip6_h-ssp126, dataset: CNRM-CM6-1, ensemble: r(1:6)i1p1f2, grid: gr}
+
+  - {<<: *cmip6_h-ssp126, dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+
+  - {
+    <<: *cmip6_h-ssp126,
+    dataset: CNRM-ESM2-1,
+    ensemble: r(1:5)i1p1f2,
+    grid: gr,
+  }
+
+  - {<<: *cmip6_h-ssp126, dataset: EC-Earth3, ensemble: r4i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp126, dataset: EC-Earth3, ensemble: r6i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp126, dataset: EC-Earth3, ensemble: r9i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp126, dataset: EC-Earth3, ensemble: r11i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp126, dataset: EC-Earth3, ensemble: r13i1p1f1, grid: gr}
+  - {<<: *cmip6_h-ssp126, dataset: EC-Earth3, ensemble: r15i1p1f1, grid: gr}
+
+  - {<<: *cmip6_h-ssp126, dataset: FGOALS-g3, ensemble: r1i1p1f1}
+
+  - {<<: *cmip6_h-ssp126, dataset: FGOALS-f3-L, grid: gr}
+
+  - {<<: *cmip6_h-ssp126, dataset: FIO-ESM-2-0, ensemble: r(1:3)i1p1f1}
+
+  - {<<: *cmip6_h-ssp126, dataset: GFDL-ESM4, grid: gr1}
+
+  - {<<: *cmip6_h-ssp126, dataset: GISS-E2-1-G, ensemble: r1i1p3f1}
+
+  - {<<: *cmip6_h-ssp126, dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
+
+  - {<<: *cmip6_h-ssp126, dataset: INM-CM4-8, grid: gr1}
+
+  - {<<: *cmip6_h-ssp126, dataset: INM-CM5-0, grid: gr1}
+
+  - {
+    <<: *cmip6_h-ssp126,
+    dataset: IPSL-CM6A-LR,
+    ensemble: r(1:4)i1p1f1,
+    grid: gr,
+  }
+  - {<<: *cmip6_h-ssp126, dataset: IPSL-CM6A-LR, ensemble: r6i1p1f1, grid: gr}
+
+  - {<<: *cmip6_h-ssp126, dataset: KACE-1-0-G, ensemble: r(1:2)i1p1f1, grid: gr}
+
+  - {<<: *cmip6_h-ssp126, dataset: MCM-UA-1-0, ensemble: [r1i1p1f1, r1i1p1f2]}
+
+  - {<<: *cmip6_h-ssp126, dataset: MIROC6, ensemble: r(1:3)i1p1f1}
+
+  - {<<: *cmip6_h-ssp126, dataset: MIROC-ES2L, ensemble: r1i1p1f2}
+
+  - {<<: *cmip6_h-ssp126, dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1}
+
+  - {<<: *cmip6_h-ssp126, dataset: MPI-ESM1-2-LR, ensemble: r(1:10)i1p1f1}
+
+  - {<<: *cmip6_h-ssp126, dataset: MRI-ESM2-0, ensemble: r1i1p1f1}
+
+  - {<<: *cmip6_h-ssp126, dataset: NESM3, ensemble: r(1:2)i1p1f1}
+
+  - {<<: *cmip6_h-ssp126, dataset: NorESM2-LM}
+
+  - {<<: *cmip6_h-ssp126, dataset: NorESM2-MM}
+
+  - {<<: *cmip6_h-ssp126, dataset: UKESM1-0-LL, ensemble: r(1:4)i1p1f2}
+  - {<<: *cmip6_h-ssp126, dataset: UKESM1-0-LL, ensemble: r8i1p1f2}
+
+preprocessors:
+  ensemble_members: &ensemble
+    regrid:
+      target_grid: 1x1
+      scheme: area_weighted
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+    seasonal_statistics:
+      operator: mean
+
+diagnostics:
+  tas_cmip6_85:
+    themes: &themes
+      - phys
+    realms: &realms
+      - atmos
+    statistics:
+      - mean
+      - anomaly
+      - diff
+    variables:
+      tas:
+        mip: Amon
+        short_name: tas
+        preprocessor: ensemble_members
+        additional_datasets: *cmip6_85
+    scripts:
+      tas_cmip6_85: &script_input
+        script: cos22esd/climate_change_hotspot.py
+        baseline_period: &baseline [1986, 2005]
+        future_periods: &future ["2041-2060", "2081-2100"]
+        region: &region [-10, 40, 30, 45]
+        region_name: &reg_name "Mediterranean"
+
+  pr_cmip6_85:
+    variables:
+      pr:
+        mip: Amon
+        short_name: pr
+        preprocessor: ensemble_members
+        additional_datasets: *cmip6_85
+    scripts:
+      pr_cmip6_85:
+        <<: *script_input
+
+  tas_cmip5_85:
+    variables:
+      tas:
+        mip: Amon
+        short_name: tas
+        preprocessor: ensemble_members
+        additional_datasets: *cmip5_85
+    scripts:
+      tas_cmip5_85:
+        <<: *script_input
+
+  pr_cmip5_85:
+    variables:
+      pr:
+        mip: Amon
+        short_name: pr
+        preprocessor: ensemble_members
+        additional_datasets: *cmip5_85
+    scripts:
+      pr_cmip5_85:
+        <<: *script_input
+
+  tas_cmip6_45:
+    variables:
+      tas:
+        mip: Amon
+        short_name: tas
+        preprocessor: ensemble_members
+        additional_datasets: *cmip6_45
+    scripts:
+      tas_cmip6_45:
+        <<: *script_input
+
+  pr_cmip6_45:
+    variables:
+      pr:
+        mip: Amon
+        short_name: pr
+        preprocessor: ensemble_members
+        additional_datasets: *cmip6_45
+    scripts:
+      pr_cmip6_45:
+        <<: *script_input
+
+  tas_cmip5_45:
+    variables:
+      tas:
+        mip: Amon
+        short_name: tas
+        preprocessor: ensemble_members
+        additional_datasets: *cmip5_45
+    scripts:
+      tas_cmip5_45:
+        <<: *script_input
+
+  pr_cmip5_45:
+    variables:
+      pr:
+        mip: Amon
+        short_name: pr
+        preprocessor: ensemble_members
+        additional_datasets: *cmip5_45
+    scripts:
+      pr_cmip5_45:
+        <<: *script_input
+
+  tas_cmip6_26:
+    variables:
+      tas:
+        mip: Amon
+        short_name: tas
+        preprocessor: ensemble_members
+        additional_datasets: *cmip6_26
+    scripts:
+      tas_cmip6_26:
+        <<: *script_input
+
+  pr_cmip6_26:
+    variables:
+      pr:
+        mip: Amon
+        short_name: pr
+        preprocessor: ensemble_members
+        additional_datasets: *cmip6_26
+    scripts:
+      pr_cmip6_26:
+        <<: *script_input
+
+  tas_cmip5_26:
+    variables:
+      tas:
+        mip: Amon
+        short_name: tas
+        preprocessor: ensemble_members
+        additional_datasets: *cmip5_26
+    scripts:
+      tas_cmip5_26:
+        <<: *script_input
+
+  pr_cmip5_26:
+    variables:
+      pr:
+        mip: Amon
+        short_name: pr
+        preprocessor: ensemble_members
+        additional_datasets: *cmip5_26
+    scripts:
+      pr_cmip5_26:
+        <<: *script_input
+
+  generate_plots:
+    plot_types:
+      - scatter
+      - geo
+    scripts:
+      generate_plots:
+        ancestors: [tas_cmip6_85/*,
+                    pr_cmip6_85/*,
+                    tas_cmip5_85/*,
+                    pr_cmip5_85/*,
+                    tas_cmip6_45/*,
+                    pr_cmip6_45/*,
+                    tas_cmip5_45/*,
+                    pr_cmip5_45/*,
+                    tas_cmip6_26/*,
+                    pr_cmip6_26/*,
+                    tas_cmip5_26/*,
+                    pr_cmip5_26/*]
+        script: cos22esd/hotspot_plotter.py
+        baseline_period: *baseline
+        future_periods: *future
+        region: *region
+        region_name: *reg_name
