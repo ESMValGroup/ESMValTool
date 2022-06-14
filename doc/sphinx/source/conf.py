@@ -72,13 +72,16 @@ autodoc_default_options = {
 
 autodoc_mock_imports = [
     'cartopy',
-    'cftime',
     'cf_units',
+    'cftime',
+    'eofs',
     'ESMPy',
     'esmvalcore',
     'GDAL',
     'iris',
+    'mapgenerator',
     'psutil',
+    'psyplot',
     'rasterio',
     'scipy',
     'sklearn',
@@ -420,6 +423,7 @@ numfig = True
 
 # Configuration for intersphinx
 intersphinx_mapping = {
+    'cartopy': ('https://scitools.org.uk/cartopy/docs/latest/', None),
     'cf_units': ('https://cf-units.readthedocs.io/en/latest/', None),
     'esmvalcore':
     (f'https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/',

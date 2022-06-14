@@ -23,6 +23,10 @@ dependencies:
   - imagemagick
   - julia
   - nco
+  - psyplot
+  - psy-maps
+  - psy-reg
+  - psy-simple
   - python-cdo
   - rasterio
   - ruamel.yaml

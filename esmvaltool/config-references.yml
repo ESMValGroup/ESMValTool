@@ -683,21 +683,22 @@ projects:
   cmip6dicad: BMBF CMIP6 Project Germany
   cmug: ESA CMUG
   crescendo: EU H2020 project CRESCENDO
-  dlrveu: DLR project VEU
   dlrveu2: DLR project VEU2
+  dlrveu: DLR project VEU
   embrace: EU FP7 project EMBRACE
+  esm2025: EU H2020 project ESM2025 - Earth system models for the future
   esmval: DLR project ESMVal
+  eucp: EU H2020 European Climate prediction
   eval4cmip: DLR and University of Bremen project funded by the Initiative and Networking Fund of the Helmholtz Society
   ewatercycle: eWaterCycle project
   ipcc_ar6: IPCC AR6 WG1 contributions
+  isenes3: EU H2020 Infrastructure for the European Network for Earth System Modelling - Phase 3
   primavera: EU H2020 project PRIMAVERA
   qa4ecv: QA4ECV
   russell_project: US Clivar, Ocean Carbon Biogeochemistry, ESGF, NOAA, NSF, NASA, US Antarctic program
   trr181: DFG Project TRR-181, Energy transfers in Atmosphere and Ocean
   ukesm: UKESM, UK Earth System Model project (NERC)
   usmile: ERC Synergy Grant USMILE
-  isenes3: EU H2020 Infrastructure for the European Network for Earth System Modelling - Phase 3
-  eucp: EU H2020 European Climate prediction
 
 
 realms:

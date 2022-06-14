@@ -205,6 +205,43 @@ There you will find the run shell: ``run_example``, as well as an example
 how to set the configuration file. If you don't have Met Office credentials,
 a copy of `u-bd684` is always located in ``/home/users/valeriu/roses/u-bd684`` on Jasmin.
 
+.. _compare_recipe_runs:
+
+Comparing recipe runs
+=====================
+
+A command-line tool is available for comparing one or more recipe runs to
+known good previous run(s).
+This tool uses `xarray <https://docs.xarray.dev/en/stable/>`_ to compare NetCDF
+files and difference hasing provided by
+`imagehash <https://pypi.org/project/ImageHash/>`_ to compare PNG images.
+All other file types are compared byte for byte.
+
+To use it, first install the package imagehash_:
+
+.. code-block:: bash
+
+   pip install imagehash
+
+Next, go to the location where ESMValTool is installed and run
+
+.. code-block:: bash
+
+    python esmvaltool/utils/testing/regression/compare.py ~/reference_output/ ~/output/recipe_python_20220310_180417/
+
+where the first argument is a reference run or a directory containing such
+runs and the second and following arguments are directories with runs to compare
+to the reference run(s).
+
+To compare all results from the current version to the previous version, use e.g.:
+
+.. code-block:: bash
+
+    python esmvaltool/utils/testing/regression/compare.py /shared/esmvaltool/v2.4.0 /shared/esmvaltool/v2.5.0
+
+To get more information on how a result is different, run the tool with the
+``--verbose`` flag.
+
 Testing recipe settings
 =======================
 
