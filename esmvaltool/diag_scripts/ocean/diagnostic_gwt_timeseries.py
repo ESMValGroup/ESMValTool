@@ -4869,7 +4869,7 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
     if fig is None or ax is None:
         fig = plt.figure()
         fig.set_size_inches(8, 7)
-        gs = gridspec.GridSpec(1, 2, figure=fig, hspace=0.5, width_ratios=[4,1])
+        gs = gridspec.GridSpec(1, 2, figure=fig, hspace=0.5, width_ratios=[6,1])
         ax = fig.add_subplot(gs[0, 0])
         ax_leg = fig.add_subplot(gs[0, 1])
         save_single_plot = True
@@ -4898,20 +4898,24 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
 
     ensemble_alpha = {'ensemble_mean':1.}
     sizes = {'ensemble_mean':60}
+    gaps = {}
+    linregdat = {}
     for (dataset, short_name, exp, ensemble), thresholds in thresholds_dict.items():
         if short_name != 'tas': continue
         if ensemble != 'ensemble_mean': continue
         if ensemble in ['ensemble_min', 'ensemble_max']: continue
+        if dataset == 'CMIP6': continue
         exps[exp] = exp_colours_fill[exp]
-        colour = model_colours[dataset]
-        edgecolor= exp_colours_fill[exp]
+        model_colour = model_colours[dataset]
+        exp_colour = exp_colours_fill[exp]
+        #dgecolor= exp_colours_fill[exp]
         alpha= ensemble_alpha.get(ensemble, 1.  )
-        data = data_dict[(dataset, short_name_1, exp, ensemble)]
+        #data = data_dict[(dataset, short_name_1, exp, ensemble)]
         if x_axis == 'ecs':
             model_ecs = ECS_data[dataset]
 
         for threshold, time in thresholds.items():
-            if time is None: continue # no GWT.
+#           if time is None: continue # no GWT.
             ms = marker_styles.get(threshold, None)
             size = sizes.get(ensemble, 60 )
             if dataset == 'CMIP6': size = 100.
@@ -4919,14 +4923,123 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
             if ms == '^': size = size*1.3
 
             if not ms: continue
+            if threshold==2. and time is None:
+#                x = 2105
+                y = model_ecs
+                print('gap', (dataset, short_name, exp, ensemble), threshold, time) 
+                gaps[(dataset, exp)]= model_ecs
+                #s = 'x'
+#                plt.scatter(x,y, c = (0,0,0,0), edgecolor=exp_colour, linewidth=2, marker = ms, alpha = 0.7, s=size, zorder=1)
+                continue
+            if time is None: continue
             x = time.year + 0.5
             y =model_ecs
+         
+            plt.scatter(x,y, c = exp_colour, marker = ms, alpha = alpha, s=size, zorder=1)
+            if linregdat.get((exp, threshold), False):
+                linregdat[(exp, threshold)].append((x,y))
+            else:
+                linregdat[(exp, threshold)] = [(x,y), ]
 
-            plt.scatter(x,y, c = colour, marker = ms, edgecolor=edgecolor, linewidth=2.5, alpha = alpha, s=size)
+            #plt.scatter(x,y, c = colour, marker = ms, edgecolor=edgecolor, linewidth=2.5, alpha = alpha, s=size, zorder=1)
+    xlims = [2000., 2100.,]
+    # outside plot dots.
+    x_times = {dataset:2105 for dataset in datasets}
+    for (dataset, exp) in sorted(gaps.keys()):
+        if exp == 'historical': continue
+        y = gaps[(dataset, exp)]
+        x = x_times[dataset]
+        if x > xlims[1]: xlims[1] = x +5.
+        exp_colour = exp_colours_fill[exp]
 
-    plt.suptitle('CMIP6 GWTs in the '+x_axis)
+        plt.scatter(x,y, c = 'w', edgecolor=exp_colour, linewidth=2, marker = 'D', s=60, zorder=1)
+        x_times[dataset] += 5.        
+    
+    # vertical line
+    plt.axvline(2100, c='k', ls='-', lw=1., zorder=-1)
+    ylims = ax.get_ylim()
+
+    # Add linear regression lines:
+    fn = cfg['work_dir']+'/new_recipe.yml'
+
+    fn = diagtools.folder([cfg['plot_dir'], 'ecs_scatter',])
+    fn += '_'.join(['ecs_vs_time',]) + '.txt'
+    txt = '    \\begin{tabular}{|ll|ccccc|}\n'
+    txt = latexhline(txt)
+    txt += latexrow(['SSP', 'GWT', 'Slope, ','Inverse slope', 'R', 'err', 'N'])
+    txt = latexendline(txt)
+    txt = latexhline(txt)
+
+# latexendline = lambda a: ''.join([a, '\\\\', '\n'])
+# latexhline = lambda a: ''.join([a, '\hline', '\n'])
+# latexrow = lambda a: ' & '.join(a)
+
+
+    line_styles = {2:'dashed', 3.:'dashdot', 4.:'dotted',} 
+    for (exp, threshold) in sorted(linregdat.keys()):
+        xy_dats = linregdat[(exp, threshold)]
+        xy_dats = sorted(xy_dats)
+        x_es = [x for (x,y ) in xy_dats]
+        y_es = [y for (x,y ) in xy_dats]
+        if len(x_es) <2: continue
+
+        # lines between  data
+        #plt.plot(x_es, y_es, c=exp_colour, lw=0.7)
+
+        # linear regression
+
+        linr = scipy.stats.linregress(x_es, y_es)
+        slope, intercept = linr[0], linr[1]
+        if np.isnan(slope): continue
+        txt += latexrow([ exp, str(threshold), 
+                         str(linr[0])[:7], 
+                         str(1./linr[0])[:6],
+                         str(linr[2])[:7],
+                         str(linr[4])[:7], str(len(x_es))])
+        txt = latexendline(txt)
+
+        linx = np.arange(2020., 2101., 1.)
+        liny = slope*linx + intercept
+        exp_colour = exp_colours_fill[exp]
+        plt.plot(linx, liny, c=exp_colour, lw=1.7, ls=line_styles[threshold])
+
+
+    print('Saved to: ', fn)
+    out = open(fn, 'w')
+    out.write(txt)
+    out.close()
+
+        
+    # boring plotting settings:
+    ax.set_xlim(xlims)
+    ax.set_ylim(ylims)
+    ax.set_xlabel('Global Warming Threshold Year')
+    ax.set_ylabel(''.join(['Equilibrium Climate Sensitivity ', r'$\degree$', 'C']))
+
+    # Only show ticks on the left and bottom spines
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.get_xaxis().tick_bottom()
+    ax.get_yaxis().tick_left()
+
+    # h lines:
+    for model in sorted(datasets.keys()):   
+        if model == 'CMIP6': continue
+        ecs = ECS_data[model]
+        plt.axhline(ecs, c='k', ls='-', lw=0.75, zorder=-1)
+        if model in ['CanESM5-CanOE', '']:
+            gap = -0.015
+            va='top'
+        else: 
+            va = 'bottom'
+            gap=0.0051
+        ax.text(2000.5, ecs+gap, model, horizontalalignment='left',
+             verticalalignment=va)
+
+    #plt.suptitle('Equilibrium Climate Sensitivity against Global Warming Threshold')
     if not save_single_plot: return fig, ax
 
+    # Legend part:
     plt.sca(ax_leg)
 
     for thresh, style in marker_styles.items():
@@ -4934,16 +5047,25 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
         lab = ''.join([str(int(thresh)), r'$\degree$', 'C'])
         ax_leg.scatter([], [], marker=style, c='w', edgecolor='k',linewidth=2.5, s=80, label=lab)
 
+    ax_leg.scatter([], [], marker='D', c='w', edgecolor='k',linewidth=2.5, s=80, label='No GWT')
+
     for exp in sorted(exps.keys()):
         if exp=='historical': continue
         color = exps[exp]
         if color is None: continue
         lab = sspify(exp)
-        ax_leg.scatter([], [], marker='s', c='w', edgecolor=color,linewidth=2.5, s=80, label=lab)
+        ax_leg.scatter([], [], marker='s', c=color, s=80, label=lab)
+        #'ax_leg.scatter([], [], marker='s', c='w', edgecolor=color,linewidth=2.5, s=80, label=lab)
 
-    for model, color in model_colours.items():
-        lab = model
-        ax_leg.scatter([], [], marker='s', c=color, edgecolor='k', linewidth=1.5, s=80, label=lab)
+
+#    for model, color in model_colours.items():
+#        lab = model
+#        ax_leg.scatter([], [], marker='s', c=color, edgecolor='k', linewidth=1.5, s=80, label=lab)
+
+    for thresh, style in line_styles.items():
+        # = {2.:'dotted', 3:'dashed', 4.:'dashdot'}
+        lab = ''.join([str(int(thresh)), r'$\degree$', 'C fit'])
+        plt.plot([], [], c='k', lw=1.5, ls=style, label=lab)
 
     legd = ax_leg.legend(#keys, labels,
         bbox_to_anchor=(1.5, 0.5), #
