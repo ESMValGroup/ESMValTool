@@ -205,7 +205,8 @@ authors:
   gier_bettina:
     name: Gier, Bettina
     institute: University of Bremen, Germany
-    orcid:
+    orcid: https://orcid.org/0000-0002-2928-8664
+    github: bettina-gier
   gottschaldt_klaus-dirk:
     name: Gottschaldt, Klaus-Dirk
     institute: DLR, Germany
