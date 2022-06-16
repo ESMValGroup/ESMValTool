@@ -69,7 +69,8 @@ def get_data_times_and_ids(attributes):
     times = [x.point.strftime("%Y-%m-%d") for x in time_coord.cells()]
 
     # first string to float, then to int
-    ids = cube.coord('shape_id').core_points().astype(numpy.float).astype(numpy.int)
+    ids = cube.coord('shape_id').core_points().astype(
+        numpy.float).astype(numpy.int)
 
     return data, times, ids
 
