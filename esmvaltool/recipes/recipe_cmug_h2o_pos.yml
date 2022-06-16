@@ -40,6 +40,19 @@ preprocessors:
       span: overlap
       statistics: [mean]
       exclude: [reference_dataset, alternative_dataset]
+  pptropnh:
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    extract_region:
+      start_latitude: 30
+      end_latitude: 60
+      start_longitude: 0
+      end_longitude: 360
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset, alternative_dataset]
 
   spatial_mean:
     area_statistics:
@@ -58,8 +71,8 @@ preprocessors:
 
 
 diagnostics:
-#  deangelisf3f4:
-#    description: Diagnostic for reproducing figure 3 and 4 from
+#   deangelisf3f4:
+#     description: Diagnostic for reproducing figure 3 and 4 from
 #                 DeAngelis et al., 2015 Nature.
 #                 In this version HOABS data are used as a replacement for
 #                 expected ESACCI water vapour data for ESA-CMUG, CDR-2.
@@ -68,84 +81,108 @@ diagnostics:
 #                 that cover the global land and ocean areas with
 #                 a spatial resolution of 0.05° / 0.5° for
 #                 the period July 2002 to December 2017.
-#    variables:
-#      rsnstcs: &spatial_mean3_cmip5_r1i1p1_amon_t2ms
-#        preprocessor: spatial_mean
-#        project: CMIP5
-#        ensemble: r1i1p1
-#        mip: Amon
-#        derive: true
-#        force_derivation: false
-#      rsnstcsnorm: &tropical_cmip5_r1i1p1_amon_t2ms
-#        preprocessor: tropical_ocean
-#        project: CMIP5
-#        ensemble: r1i1p1
-#        mip: Amon
-#        derive: true
-#        force_derivation: false
-#        additional_datasets:
-#          - {dataset: CERES-EBAF, project: obs4MIPs, type: satellite,
-#             level: L3B, version: Ed2-8, start_year: 2003,
-#             end_year: 2014, tier: 1}
-#      tas:
-#        <<: *spatial_mean3_cmip5_r1i1p1_amon_t2ms
-#        derive: false
-#      prw:
-#        <<: *tropical_cmip5_r1i1p1_amon_t2ms
-#        derive: false
-#        additional_datasets:
+#     variables:
+#       rsnstcs: &spatial_mean3_cmip5_r1i1p1_amon_t2ms
+#         preprocessor: spatial_mean
+#         project: CMIP5
+#         ensemble: r1i1p1
+#         mip: Amon
+#         derive: true
+#         force_derivation: false
+#       rsnstcsnorm: &tropical_cmip5_r1i1p1_amon_t2ms
+#         preprocessor: tropical_ocean
+#         project: CMIP5
+#         ensemble: r1i1p1
+#         mip: Amon
+#         derive: true
+#         force_derivation: false
+#         additional_datasets:
+#           - {dataset: CERES-EBAF, project: obs4MIPs, type: satellite,
+#              level: L3B, version: Ed2-8, start_year: 2003,
+#              end_year: 2014, tier: 1}
+#       tas:
+#         <<: *spatial_mean3_cmip5_r1i1p1_amon_t2ms
+#         derive: false
+#       prw:
+#         <<: *tropical_cmip5_r1i1p1_amon_t2ms
+#         derive: false
+#         additional_datasets:
 #          # - {dataset: ESACCI-WV, project: OBS, type: sat,
 #          #    version: HOAPS-v4.0, start_year: 2001, end_year: 2012, tier: 2}
-#          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
-#             version: CDR2-L3S-05deg_fv3.1, start_year: 2003, end_year: 2014, tier: 3}
-#    additional_datasets:
-#      - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
-#      - {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 1, end_year: 150}
-#      - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 449}
-#      - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 449}
-#      - {dataset: ACCESS1-3, exp: piControl, start_year: 250, end_year: 399}
-#      - {dataset: ACCESS1-3, exp: abrupt4xCO2, start_year: 250, end_year: 399}
-#      - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
-#      - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-#      - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
-#      - {dataset: CNRM-CM5, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-#      - {dataset: GFDL-ESM2G, exp: piControl, start_year: 1, end_year: 150}
-#      - {dataset: GFDL-ESM2G, exp: abrupt4xCO2, start_year: 1, end_year: 150}
-#      - {dataset: GFDL-ESM2M, exp: piControl, start_year: 1, end_year: 150}
-#      - {dataset: GFDL-ESM2M, exp: abrupt4xCO2, start_year: 1, end_year: 150}
-#      - {dataset: GISS-E2-R, exp: piControl, start_year: 3331, end_year: 3480}
-#      - {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1850,
-#         end_year: 1999}
-#      - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
-#      - {dataset: inmcm4, exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
-#      # IPSL-CM5A-MR only 140 years available
-#      - {dataset: IPSL-CM5A-MR, exp: piControl, start_year: 1850,
-#         end_year: 1989}
-#      - {dataset: IPSL-CM5A-MR, exp: abrupt4xCO2, start_year: 1850,
-#         end_year: 1989}
-#      - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850,
-#         end_year: 1999}
-#      - {dataset: IPSL-CM5B-LR, exp: abrupt4xCO2, start_year: 1850,
-#         end_year: 1999}
-#      - {dataset: MIROC-ESM, exp: piControl, start_year: 1800, end_year: 1949}
-#      - {dataset: MIROC-ESM, exp: abrupt4xCO2, start_year: 1, end_year: 150}
-#      - {dataset: MIROC5, exp: piControl, start_year: 2100, end_year: 2249}
-#      - {dataset: MIROC5, exp: abrupt4xCO2, start_year: 2100, end_year: 2249}
-#      - {dataset: MPI-ESM-LR, exp: piControl, start_year: 2015, end_year: 2164}
-#      - {dataset: MPI-ESM-LR, exp: abrupt4xCO2, start_year: 1850,
-#         end_year: 1999}
-#      - {dataset: MPI-ESM-MR, exp: piControl, start_year: 2015, end_year: 2164}
-#      - {dataset: MPI-ESM-MR, exp: abrupt4xCO2, start_year: 1850,
-#         end_year: 1999}
-#      - {dataset: MRI-CGCM3, exp: piControl, start_year: 1851, end_year: 2000}
-#      - {dataset: MRI-CGCM3, exp: abrupt4xCO2, start_year: 1851,
-#         end_year: 2000}
-#      - {dataset: NorESM1-M, exp: piControl, start_year: 700, end_year: 849}
-#      - {dataset: NorESM1-M, exp: abrupt4xCO2, start_year: 1, end_year: 150}
-#
-#    scripts:
-#      deangelisf3f4:
-#        script: deangelis15nat/deangelisf3f4.py
+#           - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
+#              version: CDR2-L3S-05deg_fv3.1, start_year: 2003, end_year: 2014, tier: 3}
+#           # - {dataset: ERA5, project: native6, type: reanaly, version: 1,
+#           #    start_year: 2003, end_year: 2014, tier: 3}
+#     additional_datasets:
+#       # - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
+#       # - {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+#       # - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 449}
+#       # - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 449}
+#       # - {dataset: ACCESS1-3, exp: piControl, start_year: 250, end_year: 399}
+#       # - {dataset: ACCESS1-3, exp: abrupt4xCO2, start_year: 250, end_year: 399}
+#       # - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
+#       # - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+#       # - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
+#       # - {dataset: CNRM-CM5, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+#       # - {dataset: GFDL-ESM2G, exp: piControl, start_year: 1, end_year: 150}
+#       # - {dataset: GFDL-ESM2G, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+#       # - {dataset: GFDL-ESM2M, exp: piControl, start_year: 1, end_year: 150}
+#       # - {dataset: GFDL-ESM2M, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+#       # - {dataset: GISS-E2-R, exp: piControl, start_year: 3331, end_year: 3480}
+#       # - {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1850,
+#       #    end_year: 1999}
+#       # - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
+#       # - {dataset: inmcm4, exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
+#       # # IPSL-CM5A-MR only 140 years available
+#       # - {dataset: IPSL-CM5A-MR, exp: piControl, start_year: 1850,
+#       #    end_year: 1989}
+#       # - {dataset: IPSL-CM5A-MR, exp: abrupt4xCO2, start_year: 1850,
+#       #    end_year: 1989}
+#       # - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850,
+#       #    end_year: 1999}
+#       # - {dataset: IPSL-CM5B-LR, exp: abrupt4xCO2, start_year: 1850,
+#       #    end_year: 1999}
+#       # - {dataset: MIROC-ESM, exp: piControl, start_year: 1800, end_year: 1949}
+#       # - {dataset: MIROC-ESM, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+#       # - {dataset: MIROC5, exp: piControl, start_year: 2100, end_year: 2249}
+#       # - {dataset: MIROC5, exp: abrupt4xCO2, start_year: 2100, end_year: 2249}
+#       # - {dataset: MPI-ESM-LR, exp: piControl, start_year: 2015, end_year: 2164}
+#       # - {dataset: MPI-ESM-LR, exp: abrupt4xCO2, start_year: 1850,
+#       #    end_year: 1999}
+#       # - {dataset: MPI-ESM-MR, exp: piControl, start_year: 2015, end_year: 2164}
+#       # - {dataset: MPI-ESM-MR, exp: abrupt4xCO2, start_year: 1850,
+#       #    end_year: 1999}
+#       # - {dataset: MRI-CGCM3, exp: piControl, start_year: 1851, end_year: 2000}
+#       # - {dataset: MRI-CGCM3, exp: abrupt4xCO2, start_year: 1851,
+#       #    end_year: 2000}
+#       # - {dataset: NorESM1-M, exp: piControl, start_year: 700, end_year: 849}
+#       # - {dataset: NorESM1-M, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+      
+      
+#       - {dataset: AWI-CM-1-1-MR, institute: AWI, project: CMIP6,  exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    2851, end_year:  2900}
+#       - {dataset: AWI-CM-1-1-MR, institute: AWI, project: CMIP6,  exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn, start_year:    1850, end_year:  1999}
+#       - {dataset: CNRM-CM6-1-HR, institute: CNRM-CERFACS, project: CMIP6,  exp: piControl, ensemble: r1i1p1f2,  grid: gr, start_year:    1850, end_year:  1999} 
+#       - {dataset: CNRM-CM6-1-HR, institute: CNRM-CERFACS, project: CMIP6,  exp: abrupt-4xCO2, ensemble: r1i1p1f2,  grid: gr, start_year:    1850, end_year:  1999} 
+#       - {dataset: FGOALS-g3, institute: CAS, project: CMIP6,  exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    463, end_year:  612} 
+#       - {dataset: FGOALS-g3, institute: CAS, project: CMIP6,  exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn, start_year:    463, end_year:  612} 
+      
+#       - {dataset: BCC-CSM2-MR, institute: BCC, project: CMIP6,  exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    1850, end_year:  1999}
+#       - {dataset: BCC-CSM2-MR, institute: BCC, project: CMIP6,   exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn,   start_year:    1850, end_year:  1999}
+#       - {dataset: MIROC6, institute: MIROC, project: CMIP6,      exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    3200, end_year:  3349}
+#       - {dataset: MIROC6, institute: MIROC, project: CMIP6,      exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn,   start_year:    3200, end_year:  3349}
+#         # - {dataset: MRI-ESM2-0, institute: MRI, project: CMIP6,      exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    1851, end_year:  2000}
+#         # - {dataset: MRI-ESM2-0, institute: MRI, project: CMIP6,      exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn,   start_year:    1851, end_year:  2000}
+#       - {dataset: GISS-E2-1-G, institute: NASA-GISS, project: CMIP6,      exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    4151, end_year:  4300}
+#       - {dataset: GISS-E2-1-G, institute: NASA-GISS, project: CMIP6,      exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn,   start_year:    1851, end_year:  2000}
+#       - {dataset: GISS-E2-1-H, institute: NASA-GISS, project: CMIP6,      exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    3381, end_year:  3530}
+#       - {dataset: GISS-E2-1-H, institute: NASA-GISS, project: CMIP6,      exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn,   start_year:    1851, end_year:  2000}
+#       # 2m height for tas missing
+#       - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,      exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    1, end_year:  150}
+#       - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,      exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn,   start_year:    1, end_year:  150}
+
+#     scripts:
+#       deangelisf3f4:
+#         script: deangelis15nat/deangelisf3f4.py
 #
 #  tropo:
 #    description: Plot given variable at tropopause height,
@@ -211,58 +248,113 @@ diagnostics:
                  part of the cmorizer. Here, ERA-Interim  data are used.
     variables:
       hus:
-        preprocessor: pptrop
+        preprocessor: pptroptrop
         reference_dataset: ERA5
         alternative_dataset: SWOOSH
         mip: Amon
         field: T3M
         start_year: 1985
-        end_year: 2014
-        additional_datasets:
-          - {dataset: SWOOSH, project: OBS6, type: sat,
-             version: v02.6-10deg-L31-filled,
-             tier: 3}
+        end_year: 2005
+        # additional_datasets:
+        #   - {dataset: SWOOSH, project: OBS6, type: sat,
+        #      version: v02.6-5deg-L31-filled,
+        #      tier: 3}
       ta:
-        preprocessor: pptrop
+        preprocessor: pptroptrop
         reference_dataset: ERA5
         alternative_dataset: SWOOSH
         mip: Amon
         field: T3M
         start_year: 1985
-        end_year: 2014
+        end_year: 2005
     additional_datasets:
       - {dataset: ERA5, project: native6, type: reanaly, version: 1,
          tier: 3}
-      - {dataset: MIROC6, institute: MIROC,
-         project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-      - {dataset: IPSL-CM6A-LR, institute: IPSL,
-         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
-         grid: gr}
-      - {dataset: BCC-CSM2-MR, institute: BCC, project: CMIP6,
-         exp: historical, ensemble: r1i1p1f1, grid: gn}
-      - {dataset: MRI-ESM2-0, institute: MRI, project: CMIP6,
-         exp: historical, ensemble: r1i1p1f1, grid: gn}
+      # - {dataset: MIROC6, institute: MIROC,
+      #    project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      # - {dataset: IPSL-CM6A-LR, institute: IPSL,
+      #    project: CMIP6, exp: historical, ensemble: r1i1p1f1,
+      #    grid: gr}
+      # - {dataset: BCC-CSM2-MR, institute: BCC, project: CMIP6,
+      #    exp: historical, ensemble: r1i1p1f1, grid: gn}
+      # - {dataset: MRI-ESM2-0, institute: MRI, project: CMIP6,
+      #    exp: historical, ensemble: r1i1p1f1, grid: gn}
       - {dataset: AWI-CM-1-1-MR, institute: AWI, mip: Amon,
          project: CMIP6, exp: historical, ensemble: r1i1p1f1,
          grid: gn}
-      - {dataset: ACCESS-ESM1-5, institute: CSIRO, mip: Amon,
-         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
-         grid: gn}
+      # - {dataset: ACCESS-ESM1-5, institute: CSIRO, mip: Amon,
+      #    project: CMIP6, exp: historical, ensemble: r1i1p1f1,
+      #    grid: gn}
       - {dataset: BCC-CSM2-MR, institute:  BCC, mip: Amon,
          project: CMIP6, exp: historical, ensemble: r1i1p1f1,
          grid:  gn}
       - {dataset: CNRM-CM6-1-HR, institute: CNRM-CERFACS, mip: Amon,
          project: CMIP6, exp: historical, ensemble: r1i1p1f2,
          grid: gr}   
-      - {dataset: CanESM5, institute: CCCma, mip: Amon,
-         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
-         grid: gn}
+      # - {dataset: CanESM5, institute: CCCma, mip: Amon,
+      #    project: CMIP6, exp: historical, ensemble: r1i1p1f1,
+      #    grid: gn}
       - {dataset: CMCC-ESM2, institute: CMCC, mip: Amon,
          project: CMIP6, exp: historical, ensemble: r1i1p1f1,
          grid: gn}
       - {dataset: FGOALS-g3, institute: CAS, mip: Amon,
          project: CMIP6, exp: historical, ensemble: r1i1p1f1,
          grid: gn}
+      
+      - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      # - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p2f1, grid: gn}
+      # - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r12i1p2f1, grid: gn}
+      # - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      # r1i1p1f1 and r2i1p1f1 for ssp585 retracted
+      # - {dataset: CESM2, institute: NCAR, project: CMIP6, exp: historical, ensemble: r(1:2)i1p1f1, grid: gn}
+      # - {dataset: CESM2, institute: NCAR, project: CMIP6, exp: historical, ensemble: r(10:11)i1p1f1, grid: gn}
+      # - {dataset: CESM2, institute: NCAR, project: CMIP6, exp: historical, ensemble: r4i1p1f1, grid: gn}
+      # ESGF file for ssp585 corrupted/retracted
+      # - {dataset: CIESM, institute: THU, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+      # - {dataset: CNRM-CM6-1, institute: CNRM-CERFACS, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+        # Some years are missing, maybe retreated?   
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium,project: CMIP6, exp: historical, ensemble: r1i1p1f1,grid: gr}
+      # - {dataset: EC-Earth3, institute: EC-Earth-Consortium,project: CMIP6, exp: historical, ensemble: r4i1p1f1,grid: gr}
+      # - {dataset: EC-Earth3, institute: EC-Earth-Consortium,project: CMIP6, exp: historical, ensemble: r6i1p1f1,grid: gr}
+      # - {dataset: EC-Earth3, institute: EC-Earth-Consortium,project: CMIP6, exp: historical, ensemble: r11i1p1f1,grid: gr}
+      # - {dataset: EC-Earth3, institute: EC-Earth-Consortium,project: CMIP6, exp: historical, ensemble: r13i1p1f1,grid: gr}
+      # - {dataset: EC-Earth3, institute: EC-Earth-Consortium,project: CMIP6, exp: historical, ensemble: r15i1p1f1,grid: gr}
+      # Error (fix needed?)
+      # - {dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+      # - {dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium, project: CMIP6, exp: historical, ensemble: r(2:3)i1p1f1, grid: gr}
+      # - {dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium, project: CMIP6, exp: historical, ensemble: r4i1p1f1, grid: gr}
+      # - {dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium, project: CMIP6, exp: historical, ensemble: r6i1p1f1, grid: gr}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
+      # ssp585 missing
+      # - {dataset: GFDL-CM4, institute: NOAA-GFDL, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
+      # - {dataset: HadGEM3-GC31-LL, institute: MOHC, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn}
+      # - {dataset: HadGEM3-GC31-MM, institute: MOHC, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn}
+      # - {dataset: HadGEM3-GC31-LL, institute: MOHC, project: CMIP6, exp: historical, ensemble: r2i1p1f3, grid: gn}
+      # - {dataset: HadGEM3-GC31-LL, institute: MOHC, project: CMIP6, exp: historical, ensemble: r3i1p1f3, grid: gn}
+      # - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+      # - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: historical, ensemble: r2i1p1f1, grid: gr}
+      # - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: historical, ensemble: r3i1p1f1, grid: gr}
+      # - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: historical, ensemble: r4i1p1f1, grid: gr}
+      # - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: historical, ensemble: r6i1p1f1, grid: gr}
+      # - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: historical, ensemble: r14i1p1f1, grid: gr}
+      - {dataset: MIROC6, institute: MIROC, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      # - {dataset: MIROC6, institute: MIROC, project: CMIP6, exp: historical, ensemble: r2i1p1f1, grid: gn}
+      # - {dataset: MIROC6, institute: MIROC, project: CMIP6, exp: historical, ensemble: r3i1p1f1, grid: gn}
+      - {dataset: MIROC-ES2L, institute: MIROC, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
+      # Missing
+      # - {dataset: MPI-ESM1-2-HR, institute: MPI-M, project: CMIP6, exp: historical, ensemble: r(1:2)i1p1f1, grid: gn}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      # - {dataset: MPI-ESM1-2-LR, institute: MPI-M, project: CMIP6, exp: historical, ensemble: r8i1p1f1, grid: gn}
+      # - {dataset: MPI-ESM1-2-LR, institute: MPI-M, project: CMIP6, exp: historical, ensemble: r9i1p1f1, grid: gn}
+      # - {dataset: MPI-ESM1-2-LR, institute: MPI-M, project: CMIP6, exp: historical, ensemble: r10i1p1f1, grid: gn}
+      - {dataset: MRI-ESM2-0, institute: MRI, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NESM3, institute: NUIST, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      # - {dataset: NESM3, institute: NUIST, project: CMIP6, exp: historical, ensemble: r2i1p1f1, grid: gn}
+      # - {dataset: NorESM2-MM, institute: NCC, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      # - {dataset: UKESM1-0-LL, institute: MOHC, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
+      # - {dataset: UKESM1-0-LL, institute: MOHC, project: CMIP6, exp: historical, ensemble: r2i1p1f2, grid: gn}
+      # - {dataset: UKESM1-0-LL, institute: MOHC, project: CMIP6, exp: historical, ensemble: r3i1p1f2, grid: gn}
+      # - {dataset: UKESM1-0-LL, institute: MOHC, project: CMIP6, exp: historical, ensemble: r8i1p1f2, grid: gn}
 
 
     scripts:

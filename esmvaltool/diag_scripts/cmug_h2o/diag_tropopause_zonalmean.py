@@ -335,29 +335,27 @@ def plot_logprofiles(cfg, profiles, projects, available_vars):
 
             if projects[dataset] == 'CMIP6':
                 style = plot.get_dataset_style(dataset, style_file='cmip6')
-                lwd = 1
             elif projects[dataset] == 'CMIP5':
                 style = plot.get_dataset_style(dataset, style_file='cmip5')
-                lwd = 1
             elif dataset == 'ERA5':
-                style = {'color': (0, 0, 1, 1.0)}
-                lwd = 3
+                style = {'color': (0, 0, 1, 1.0),
+                         'thick': 3}
             elif dataset == 'SWOOSH':
-                style = {'color': (0, 1, 0, 1.0)}
-                lwd = 3
+                style = {'color': (0, 1, 0, 1.0),
+                        'thick': 3}
             else:
-                style = {'color': (0, 0, 0, 1.0)}
-                lwd = 1
+                style = {'color': (0, 0, 0, 1.0),
+                        'thick': 1}
 
             if dataset == 'MultiModelMean':
-                style = {'color': (1, 0, 0, 1.0)}
-                lwd = 3
+                style = {'color': (1, 0, 0, 1.0),
+                         'thick': 3}
 
             plt.plot((profiles[svar][dataset]).data,
                      (profiles[svar][dataset]).coord('air_pressure').points /
                      100.0, 
                      color=style['color'],
-                     linewidth=lwd,
+                     linewidth=style['thick'],
                      label=dataset)
             if iii == 0:
                 profiles_save = iris.cube.CubeList([profiles[svar][dataset]])
