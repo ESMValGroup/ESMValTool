@@ -305,13 +305,48 @@ authors:
     family-names: Roberts
     given-names: Charles
     orcid: "https://orcid.org/0000-0002-1147-8961"
+  -
+    affiliation: "Netherlands eScience Center"
+    family-names: Kalverla
+    given-names: Peter
+    orcid: "https://orcid.org/0000-0002-5025-7862"
+  -
+    affiliation: "Netherlands eScience Center"
+    family-names: Alidoost
+    given-names: Sarah
+    orcid: "https://orcid.org/0000-0001-8407-6472"
+  -
+    affiliation: "Netherlands eScience Center"
+    family-names: Verhoeven
+    given-names: Stefan
+    orcid: "https://orcid.org/0000-0002-5821-2060"
+  -
+    affiliation: "Netherlands eScience Center"
+    family-names: Vreede
+    given-names: Barbara
+    orcid: "https://orcid.org/0000-0002-5023-4601"
+  -
+    affiliation: "Netherlands eScience Center"
+    family-names: Smeets
+    given-names: Stef
+    orcid: "https://orcid.org/0000-0002-5413-9038"
+  -
+    affiliation: "Netherlands eScience Center"
+    family-names: Soares Siqueira
+    given-names: Abel
+    orcid: "https://orcid.org/0000-0003-4451-281X"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Kazeroni
+    given-names: Rémi
+    orcid: "https://orcid.org/0000-0001-7205-9528"
 
-cff-version: "1.0.3"
-date-released: 2021-11-09
+cff-version: 1.2.0
+date-released: 2022-03-15
 doi: "10.5281/zenodo.3401363"
 license: "Apache-2.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/ESMValGroup/ESMValTool/"
 title: ESMValTool
-version: "v2.4.0"
+version: "v2.5.0"
 ...

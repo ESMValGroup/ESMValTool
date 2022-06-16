@@ -21,6 +21,11 @@ make sure to download all files with the same name but different extensions.
 The recipe examples/recipe_julia.yml produces a map plot with the mean temperature
 over the year 1997 plus a number that is configurable from the recipe.
 
+The recipe examples/recipe_decadal.yml showcases how the ``timerange`` tag 
+can be used to load datasets belonging to the DCPP activity. Produces timeseries
+plots comparing the global mean temperature of a DCPP dataset with an observational
+dataset.
+
 For detailed instructions on obtaining input data, please refer to
 :ref:`inputdata`. However, in case you just quickly want to run through the
 example, you can use the following links to obtain the data from ESGF:
@@ -39,12 +44,14 @@ Recipes are stored in esmvaltool/recipes/
 
     * examples/recipe_python.yml
     * examples/recipe_extract_shape.yml
-    * examples/recipe_jula.yml
+    * examples/recipe_julia.yml
+    * examples/recipe_decadal.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
     * examples/diagnostic.py: visualize results and store provenance information
     * examples/diagnostic.jl: visualize results and store provenance information
+    * examples/decadal_example.py: visualize results and store provenance information
 
 User settings in recipe
 -----------------------
@@ -93,3 +100,10 @@ Example plots
    :align:   center
 
    Mean air temperature over the Elbe catchment during 2000-2002 according to CMIP5 CanESM2.
+
+.. _decadal_first_example:
+.. figure::   /recipes/figures/examples/decadal_first_example.png
+   :align:   center
+
+   Global mean temperature of CMIP6 dcppA-hindcast EC-Earth3 and OBS ERA-Interim.
+   

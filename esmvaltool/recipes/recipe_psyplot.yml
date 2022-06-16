@@ -1,0 +1,63 @@
+# ESMValTool
+# recipe_psyplot.yml
+---
+documentation:
+  title: >
+    Create arbitrary Psyplot plots.
+
+  description: >
+    This recipes showcases the use of the Psyplot diagnostic that provides a
+    high-level interface to Psyplot for ESMValTool recipes. For each input
+    dataset, an individual plot is created.
+
+  authors:
+    - schlund_manuel
+
+  maintainer:
+    - schlund_manuel
+
+  references:
+    - sommer17joss
+
+  projects:
+    - 4c
+    - esm2025
+    - isenes3
+    - usmile
+
+
+datasets:
+  - {project: CMIP6, dataset: CanESM5,     exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1995, end_year: 2014}
+  - {project: CMIP6, dataset: ICON-ESM-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1995, end_year: 2014}
+
+
+preprocessors:
+  climatology:
+    climate_statistics:
+      operator: mean
+
+
+diagnostics:
+  plot_map:
+    description: Plot climatology maps.
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: climatology
+    scripts:
+      plot:
+        script: psyplot_diag.py
+        psyplot_func: mapplot
+        psyplot_kwargs:
+          bounds:
+            method: rounded
+            vmin: 240
+            vmax: 300
+          clabel: '{long_name} [{units}]'
+          cmap: viridis
+          datagrid:
+            color: black
+            linewidth: 0.3
+          map_extent: Europe
+          projection: robin
+          title: '{long_name} Climatology of {dataset} ({start_year}-{end_year})'

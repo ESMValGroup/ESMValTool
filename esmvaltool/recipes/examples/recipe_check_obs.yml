@@ -123,6 +123,7 @@ diagnostics:
       pr:
       psl:
     additional_datasets:
+    # yamllint disable rule:octal-values
       - {dataset: E-OBS, project: OBS, mip: day, tier: 2, type: ground,
          version: v20.0e-0.1, start_year: 1950, end_year: 2019, end_month: 07}
       - {dataset: E-OBS, project: OBS, mip: day, tier: 2, type: ground,
@@ -131,6 +132,7 @@ diagnostics:
          version: v20.0e-0.1, start_year: 1950, end_year: 2019, end_month: 07}
       - {dataset: E-OBS, project: OBS, mip: Amon, tier: 2, type: ground,
          version: v20.0e-0.25, start_year: 1950, end_year: 2019, end_month: 07}
+    # yamllint enable rule:octal-values
     scripts: null
 
 
@@ -205,14 +207,25 @@ diagnostics:
          start_year: 1998, end_year: 2012}
     scripts: null
 
+  ESACCI-LST:
+    # TODO change years to full data coverage
+    description: ESACCI-LST check
+    variables:
+      ts:
+    additional_datasets:
+      - {dataset: ESACCI-LST, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: "1.00",
+         start_year: 2003, end_year: 2018}
+    scripts: null
+
 
   ESACCI-OC:
     description: ESACCI-OC check
     variables:
       chl:
     additional_datasets:
-      - {dataset: ESACCI-OC, project: OBS, mip: Omon, tier: 2,
-         type: sat, version: fv3.1, start_year: 1997, end_year: 2016}
+      - {dataset: ESACCI-OC, project: OBS6, mip: Omon, tier: 2,
+         type: sat, version: fv5.0, start_year: 1998, end_year: 2020}
     scripts: null
 
 
@@ -235,6 +248,17 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
              type: sat, version: L3, start_year: 2007, end_year: 2008}
+    scripts: null
+
+  ESACCI-SEA-SURFACE-SALINITY:
+    description: ESACCI-SEA-SURFACE-SALINITY check
+    variables:
+      sos:
+    additional_datasets:
+      - {dataset: ESACCI-SEA-SURFACE-SALINITY, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: fv1.8, start_year: 2010, end_year: 2018}
+      - {dataset: ESACCI-SEA-SURFACE-SALINITY, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: fv2.31, start_year: 2010, end_year: 2018}
     scripts: null
 
 
@@ -408,11 +432,12 @@ diagnostics:
     description: HadCRUT5 check
     variables:
       tas:
+      tasa:
     additional_datasets:
       - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
-         type: ground, version: analysis, start_year: 1850, end_year: 2018}
+         type: ground, version: 5.0.1.0-analysis, start_year: 1850, end_year: 2021}
       - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
-         type: ground, version: noninfilled, start_year: 1850, end_year: 2018}
+         type: ground, version: 5.0.1.0-noninfilled, start_year: 1850, end_year: 2021}
     scripts: null
 
 
@@ -439,6 +464,24 @@ diagnostics:
     additional_datasets:
       - {dataset: HALOE, project: OBS, mip: Amon, tier: 2,
          type: sat, version: 1, start_year: 1991, end_year: 2002}
+    scripts: null
+
+  ISCCP-FH:
+    description: ISCCP-FH check
+    variables:
+      alb:
+    additional_datasets:
+      - {dataset: ISCCP-FH, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: v0, start_year: 1984, end_year: 2016}
+    scripts: null
+
+  Kadow2020:
+    description: Kadow2020 check
+    variables:
+      tasa:
+    additional_datasets:
+      - {dataset: Kadow2020, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: 5.0.1.0, start_year: 1850, end_year: 2020}
     scripts: null
 
 
@@ -581,7 +624,7 @@ diagnostics:
       co2s:
     additional_datasets:
       - {dataset: Scripps-CO2-KUM, project: OBS6, mip: Amon, tier: 2,
-         type: ground, version: 15-Nov-2019, start_year: 1979, end_year: 2019}
+         type: ground, version: 14-Oct-2021, start_year: 1979, end_year: 2021}
     scripts: null
 
 
@@ -591,19 +634,19 @@ diagnostics:
       tas:
         additional_datasets:
           - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
-            type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
+             type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
           - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
-            type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
+             type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
       pr:
         additional_datasets:
           - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
-            type: ground, version: v1.1-CRU, start_year: 1980, end_year: 2018}
+             type: ground, version: v1.1-CRU, start_year: 1980, end_year: 2018}
           - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
-            type: ground, version: v1.1-CRU, start_year: 1980, end_year: 2018}
+             type: ground, version: v1.1-CRU, start_year: 1980, end_year: 2018}
           - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
-            type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
+             type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
           - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
-            type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
+             type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
     scripts: null
 
 
@@ -741,7 +784,7 @@ diagnostics:
       xch4:
     additional_datasets:
       - {dataset: CDS-XCH4, project: OBS, mip: Amon, tier: 3,
-         type: sat, version: L3, start_year: 2003, end_year: 2016}
+         type: sat, version: L3, start_year: 2003, end_year: 2018}
     scripts: null
 
 

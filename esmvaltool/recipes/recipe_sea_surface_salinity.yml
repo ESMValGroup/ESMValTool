@@ -1,0 +1,75 @@
+---
+documentation:
+  title: CMUG diagnostics for sea surface salinity
+
+  description: |
+    Recipe for evaluating models against ESACCI Sea Surface Salinity dataset
+
+  authors:
+    - vegas-regidor_javier
+
+  maintainer:
+    - vegas-regidor_javier
+
+  references:
+    - contact_authors
+
+  projects:
+    - cmug
+
+preprocessors:
+  timeseries:
+    extract_shape:
+      # Relative paths are relative to 'auxiliary_data_dir' as configured in
+      # the config-user.yml file.
+      # The example shapefile can be downloaded from
+      # https://marineregions.org/download_file.php?name=World_Seas_IHO_v3.zip
+      # but any shapefile can be used
+      shapefile: World_Seas_IHO_v3/World_Seas_IHO_v3.shp
+      decomposed: True
+      method: contains
+      crop: False
+      ids:
+        - Arctic Ocean
+        - Southern Ocean
+        - North Atlantic Ocean
+        - South Atlantic Ocean
+        - North Pacific Ocean
+        - South Pacific Ocean
+        - Indian Ocean
+    area_statistics:
+      operator: mean
+      fx_variables:
+        areacello:
+
+datasets:
+  - &cmip6 {project: CMIP6, exp: historical, dataset: ACCESS-CM2, ensemble: r1i1p1f1,
+           start_year: 1950, end_year: 2014, alias: ACCESS-CM2}
+  - {<<: *cmip6, dataset: CMCC-CM2-HR4, alias: CMCC-CM2-HR4}
+  - {<<: *cmip6, dataset: CanESM5, alias: CanESM5}
+  - {<<: *cmip6, dataset: IPSL-CM6A-LR, alias: IPSL-CM6A-LR}
+  - {<<: *cmip6, dataset: MIROC6, alias: MIROC6}
+  - {<<: *cmip6, dataset: MPI-ESM1-2-HR, alias: MPI-ESM1-2-HR}
+  - {<<: *cmip6, dataset: NorESM2-MM, alias: NorESM2-MM}
+  - {<<: *cmip6, dataset: GISS-E2-2-H, alias: GISS-E2-2-H, institute: NASA-GISS}
+          
+
+diagnostics:
+  compare_salinity:
+    description: ESACCI-SEA-SURFACE-SALINITY check
+    variables:
+      sos:
+        reference_dataset: ESACCI-SEA-SURFACE-SALINITY_V1
+        preprocessor: timeseries
+        mip: Omon
+        grid: gn
+    additional_datasets:
+      - {dataset: ESACCI-SEA-SURFACE-SALINITY, project: OBS6, tier: 2,
+          type: reanaly, version: fv1.8, start_year: 2010, end_year: 2018,
+          alias: ESACCI-SEA-SURFACE-SALINITY_V1}
+      - {dataset: ESACCI-SEA-SURFACE-SALINITY, project: OBS6,  tier: 2,
+          type: reanaly, version: fv2.31, start_year: 2010, end_year: 2019,
+          alias: ESACCI-SEA-SURFACE-SALINITY_V2}
+    scripts:
+      compare_salinity:
+        script: sea_surface_salinity/compare_salinity.py

@@ -34,7 +34,7 @@ apply_common_mask: bool, optional (default: False)
     Apply common mask to all datasets prior to plotting. Requires identical
     shapes for all datasets.
 group_attribute_as_default_alias: bool, optional (default: True)
-    If ``True``, sse value of attribute given by ``group_by_attribute`` as
+    If ``True``, use value of attribute given by ``group_by_attribute`` as
     default alias if possible. If ``False``, use full group name (including
     ``var_type``) as default alias.
 group_by_attribute: str, optional (default: 'mlr_model_name')
@@ -103,7 +103,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from cf_units import Unit
 from scipy.stats import linregress
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
@@ -179,7 +178,8 @@ def _get_cube(var_type, group_by_attribute, attr, datasets):
     })
     if attr is not None:
         cube.attributes[group_by_attribute] = attr
-    _unify_time_coord(cube)
+    if cube.coords('time', dim_coords=True):
+        ih.unify_time_coord(cube)
     return cube
 
 
@@ -250,27 +250,6 @@ def _mask_cube(cube):
     threshold = val_range * 5e-2
     cube.data = np.ma.masked_inside(cube.data, -threshold, threshold)
     return cube
-
-
-def _unify_time_coord(cube):
-    """Unify time coordinate of cube."""
-    if not cube.coords('time', dim_coords=True):
-        return
-    time_coord = cube.coord('time')
-    dates_points = time_coord.units.num2date(time_coord.points)
-    dates_bounds = time_coord.units.num2date(time_coord.bounds)
-    new_units = Unit('days since 1850-01-01 00:00:00')
-    new_time_coord = iris.coords.DimCoord(
-        new_units.date2num(dates_points),
-        bounds=new_units.date2num(dates_bounds),
-        var_name='time',
-        standard_name='time',
-        long_name='time',
-        units=new_units,
-    )
-    coord_dims = cube.coord_dims('time')
-    cube.remove_coord('time')
-    cube.add_dim_coord(new_time_coord, coord_dims)
 
 
 def _write_map_provenance(cfg, cube, plot_path, title, *attrs):
@@ -860,8 +839,8 @@ def main(cfg):
         ]
         corr = ALL_CUBES.corr()
         with pd.option_context(*pandas_print_options):
-            logger.info("Means:\n%s", ALL_CUBES.mean(axis=0))
-            logger.info("Correlations:\n%s", corr)
+            logger.info("Unweighted means:\n%s", ALL_CUBES.mean(axis=0))
+            logger.info("Unweighted correlations:\n%s", corr)
         corr_path = get_diagnostic_filename('corr', cfg).replace('.nc', '.csv')
         corr.to_csv(corr_path)
         logger.info("Wrote %s", corr_path)

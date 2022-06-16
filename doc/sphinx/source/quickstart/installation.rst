@@ -8,7 +8,7 @@ Installation
    ESMValTool now uses `mamba` instead of `conda` for the recommended installation.
    For more information about the change, have a look at :ref:`Move to Mamba<move-to-mamba>`.
 
-ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.7+.
+ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.8+.
 
 The ESMValTool can be installed in multiple ways.
 
@@ -41,8 +41,8 @@ See `common installation issues`_ if you run into trouble.
 
 .. _install_with_mamba:
 
-Mamba installation
-==================
+Mamba/Conda installation
+========================
 
 In order to install the `conda <https://docs.conda.io>`_ package, you will need
 mamba pre-installed.
@@ -80,21 +80,21 @@ this should show the path to your mamba executable, e.g.
 ``~/mambaforge/bin/mamba``.
 
 ESMValTool installation
------------------------
+=======================
 
 Once you have installed the above prerequisites, you can install the entire
 ESMValTool package by running:
 
 .. code-block:: bash
 
-    mamba create --name esmvaltool esmvaltool python=3.9
+    mamba create --name esmvaltool esmvaltool 'python=3.10'
 
 Here ``mamba`` is the executable calling the mamba package manager to install
-``esmvaltool``. The reason why we are also specifying ``python=3.9`` is that it
-will make it easier for mamba to find a working combination of all required
-packages, see `Mamba fails to solve the environment`_ in `common installation issues`_
-for an in-depth explanation. Python 3.7 and 3.8 are also supported, in case you
-prefer to work with an older version of Python.
+``esmvaltool``. The reason why we are also specifying ``'python=3.10'`` is that
+it will make it easier for mamba to find a working combination of all required
+packages, see `Mamba fails to solve the environment`_ in `common installation
+issues`_ for an in-depth explanation. Python 3.8 and 3.9 are also supported, in
+case you prefer to work with an older version of Python.
 
 This will create a new
 `conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`_
@@ -187,13 +187,13 @@ container is advised.
 
 The ``esmvaltool-python`` diagnostics can be installed as follows:
 
-First, ensure mamba is pre-installed (see `Mamba installation`_ for more details).
+First, ensure mamba is pre-installed (see `Mamba/Conda installation`_ for more details).
 
 Create a new environment with the ``esmvaltool-python`` package:
 
 .. code-block:: bash
 
-    mamba create --name esmvaltool esmvaltool-python python=3.9
+    mamba create --name esmvaltool esmvaltool-python 'python=3.10'
 
 Activate the new environment:
 
@@ -418,9 +418,8 @@ file.
 If you choose to use this option, download the compressed file and extract its
 contents at the desired location.
 
-
-Prerequisites
--------------
+Installation Using Mamba from Source
+------------------------------------
 
 It is recommended to use mamba to manage ESMValTool dependencies.
 For a minimal mamba installation go to https://mamba.readthedocs.io/en/latest/installation.html.
@@ -488,7 +487,7 @@ containing just Python with the command
 
 .. code-block:: bash
 
-    mamba create --name esmvaltool 'python=3.9'
+    mamba create --name esmvaltool 'python=3.10'
 
 if needed, older versions of Python can also be selected.
 Next, install many of the required dependencies, including the ESMValCore package
@@ -668,6 +667,34 @@ to install it yourself if you are just running diagnostics:
    nodes (`mistralpp.dkrz.de`) after login and module loading via `module load esmvaltool`; the command
    `module help esmvaltool` provides some information about the module.
 
+Installation from the conda lock file
+=====================================
+
+A fast conda environment creation is possible using the provided conda lock file. This is a secure alternative
+to the installation from source, whenever the conda environment can not be created for some reason. A conda lock file
+is an explicit environment file that contains pointers to dependency packages as they are hosted on the Anaconda cloud;
+these have frozen version numbers, build hashes, and channel names, parameters established at the time
+of the conda lock file creation, so may be obsolete after a while,
+but they allow for a robust environment creation while they're still up-to-date.
+We regenerate these lock files every 10 days through automatic Pull Requests
+(or more frequently, since the automatic generator runs on merges on the main branch too),
+so to minimize the risk of dependencies becoming obsolete. Conda environment creation from
+a lock file is done just like with any other environment file:
+
+.. code-block:: bash
+
+   conda create --name esmvaltool --file conda-linux-64.lock
+
+The latest, most up-to-date file can always be downloaded directly from the source code
+repository, a direct download link can be found `here <https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/conda-linux-64.lock>`__.
+
+.. note::
+   `pip` and `conda` are NOT installed, so you will have to install them in the new environment: use conda-forge as channel): ``conda install -c conda-forge pip`` at the very minimum so we can install `esmvalcore` afterwards.
+
+.. note::
+   For instructions on how to manually create the lock file, see
+   :ref:`these instructions <esmvalcore:condalock-installation-creation>`.
+
 .. _common installation issues:
 
 Common installation problems and their solutions
@@ -699,13 +726,13 @@ for example by running
 
 .. code-block:: bash
 
-    mamba create -n esmvaltool esmvaltool python=3.9
+    mamba create -n esmvaltool esmvaltool 'python=3.10'
 
-you ask for Python 3.9 specifically and that makes it much easier for mamba to
+you ask for Python 3.10 specifically and that makes it much easier for mamba to
 solve the environment, because now it can ignore any packages that were built
-for other Python versions. Note that, since the esmvaltool package is built with Python>=3.7,
-asking for an older Python version, e.g. `python=3.6`, in this way, it will result in
-installation failure.
+for other Python versions. Note that, since the esmvaltool package is built
+with Python>=3.8, asking for an older Python version, e.g. `python=3.7`, in
+this way, it will result in installation failure.
 
 Problems with proxies
 ---------------------

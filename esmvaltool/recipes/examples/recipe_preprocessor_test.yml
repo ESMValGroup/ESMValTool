@@ -20,7 +20,7 @@ documentation:
 
 datasets:
   - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1, tag: group1}
   - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1}
 
 preprocessors:
@@ -74,10 +74,58 @@ preprocessors:
     mask_fillvalues: false
     multi_model_statistics: false
 
+
+  # Simple ensemble mean and median for multiple models
+  preprocessor_5:
+    ensemble_statistics:
+      statistics: [mean, median]
+      exclude: [GFDL-ESM2G]
+
+  # Calculate ensemble means, then multi-model mean
+  preprocessor_6:
+    regrid:
+      target_grid: 3x3
+      scheme: linear
+    ensemble_statistics:
+      statistics: [mean]
+      exclude: [GFDL-ESM2G]
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      keep_input_datasets: false
+      exclude: [GFDL-ESM2G]
+
+  # Multi-model mean with more complex groupby
+  preprocessor_7:
+    regrid:
+      target_grid: 3x3
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      groupby: [dataset, tag]
+      exclude: [bcc-csm1-1, MPI-ESM-LR, GFDL-ESM2G]
+
+  # First calculate ensemble mean and median, then multi-model min and max
+
+  preprocessor_8:
+    regrid:
+      target_grid: 3x3
+      scheme: linear
+    ensemble_statistics:
+      statistics: [mean, median]
+      exclude: [GFDL-ESM2G]
+    multi_model_statistics:
+      span: overlap
+      statistics: [max, min]
+      groupby: [ensemble_statistics]
+      keep_input_datasets: false
+      exclude: [GFDL-ESM2G]
+
 diagnostics:
 
-  diagnostic_1: &diag
-    description: Preprocessor test diagnostic.
+  diagnostic_1:
+    description: Test extract_levels, mask_landsea, regrid, mask_fillvalues, multi_model_statistics.
     variables:
       ta:
         preprocessor: preprocessor_1
@@ -91,7 +139,7 @@ diagnostics:
     scripts: null
 
   diagnostic_2:
-    <<: *diag
+    description: Test custom_order, regrid, levels, multi_model_statistics.
     variables:
       ta:
         preprocessor: preprocessor_2
@@ -101,7 +149,7 @@ diagnostics:
     scripts: null
 
   diagnostic_3_and_4:
-    description: Preprocessor test diagnostic.
+    description: Test extract_levels, regrid.
     variables:
       ta:
         preprocessor: preprocessor_3
@@ -113,4 +161,62 @@ diagnostics:
         mip: Amon
         start_year: 2000
         end_year: 2002
+    scripts: null
+
+  diagnostic_5:
+    description: Test ensemble_statistics.
+    variables:
+      tas:
+        preprocessor: preprocessor_5
+        mip: Amon
+        start_year: 2000
+        end_year: 2000
+        additional_datasets:
+          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: 'r(2:3)i1p1'}
+          - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r2i1p1}
+    scripts: null
+
+  diagnostic_6:
+    description: Test regrid, ensemble_statistics, multi_model_statistics.
+    variables:
+      tas:
+        preprocessor: preprocessor_6
+        mip: Amon
+        start_year: 2000
+        end_year: 2000
+        additional_datasets:
+          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: 'r(2:3)i1p1'}
+          - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r2i1p1}
+    scripts: null
+
+  diagnostic_7:
+    description: Test regrid, multi_model_statistics.
+    variables:
+      tas:
+        preprocessor: preprocessor_7
+        mip: Amon
+        start_year: 2000
+        end_year: 2000
+        additional_datasets:
+          - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, tag: abc}
+          - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r2i1p1, tag: abc}
+          - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r3i1p1}
+          - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r4i1p1}
+          - {dataset: CanESM2,    project: CMIP5, exp: historical, ensemble: r1i1p1, tag: group1}
+          - {dataset: CanESM2,    project: CMIP5, exp: historical, ensemble: r2i1p1, tag: group1}
+          - {dataset: CanESM2,    project: CMIP5, exp: historical, ensemble: r3i1p1, tag: group2}
+          - {dataset: CanESM2,    project: CMIP5, exp: historical, ensemble: r4i1p1, tag: group2}
+    scripts: null
+
+  diagnostic_8:
+    description: Test regrid, ensemble_statistics, multi_model_statistics.
+    variables:
+      tas:
+        preprocessor: preprocessor_8
+        mip: Amon
+        start_year: 2000
+        end_year: 2000
+        additional_datasets:
+          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: 'r(2:3)i1p1'}
+          - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r2i1p1}
     scripts: null
