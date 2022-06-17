@@ -16,7 +16,6 @@ and the data is described in a
 `CMOR table <http://pcmdi.github.io/software/cmorTable/index.html>`__
 as used in the various
 `Climate Model Intercomparison Projects <http://pcmdi.github.io/mips/>`__.
-This section provides some guidelines for unfamiliar users.
 
 .. _cordex_note:
 
@@ -30,6 +29,12 @@ This section provides some guidelines for unfamiliar users.
     are most welcome. We are particularly interested in contributions from
     people with good understanding of the CORDEX project and its standards.
 
+This section provides an introduction to getting (access to) climate data
+for use with the ESMValTool.
+
+Because the amount of data required by ESMValTool is typically large, it is
+recommended that you use the tool on a compute cluster where the data is
+already available, for example because it is connected to an
 `ESGF node <https://esgf.llnl.gov/index.html>`__.
 Examples of such compute clusters are
 `Mistral <https://www.dkrz.de/up/systems/mistral>`__
