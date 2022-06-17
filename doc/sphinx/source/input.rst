@@ -18,9 +18,18 @@ as used in the various
 `Climate Model Intercomparison Projects <http://pcmdi.github.io/mips/>`__.
 This section provides some guidelines for unfamiliar users.
 
-Because the amount of data required by ESMValTool is typically large, it is
-recommended that you use the tool on a compute cluster where the data is
-already available, for example because it is connected to an
+.. _cordex_note:
+
+.. note::
+
+    CORDEX support is still
+    `work in progress <https://github.com/orgs/ESMValGroup/projects/11>`__.
+    Contributions, in the form of
+    :ref:`pull request reviews <reviewing>` or
+    :ref:`pull requests <esmvalcore:contributing>`
+    are most welcome. We are particularly interested in contributions from
+    people with good understanding of the CORDEX project and its standards.
+
 `ESGF node <https://esgf.llnl.gov/index.html>`__.
 Examples of such compute clusters are
 `Mistral <https://www.dkrz.de/up/systems/mistral>`__
@@ -125,7 +134,7 @@ Datasets for which auto-download is supported can be downloaded with:
     esmvaltool data download --config_file [CONFIG_FILE] [DATASET_LIST]
 
 Note that all Tier3 and some Tier2 datasets for which auto-download is supported
-will require an authentification. In such cases enter your credentials in your
+will require an authentication. In such cases enter your credentials in your
 ``~/.netrc`` file as explained
 `here <https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html>`_.
 
