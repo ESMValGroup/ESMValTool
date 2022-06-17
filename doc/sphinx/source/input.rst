@@ -30,7 +30,7 @@ as used in the various
     people with good understanding of the CORDEX project and its standards.
 
 This section provides an introduction to getting (access to) climate data
-for use with the ESMValTool.
+for use with ESMValTool.
 
 Because the amount of data required by ESMValTool is typically large, it is
 recommended that you use the tool on a compute cluster where the data is
