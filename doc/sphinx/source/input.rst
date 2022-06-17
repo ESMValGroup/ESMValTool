@@ -37,7 +37,7 @@ recommended that you use the tool on a compute cluster where the data is
 already available, for example because it is connected to an
 `ESGF node <https://esgf.llnl.gov/index.html>`__.
 Examples of such compute clusters are
-`Mistral <https://www.dkrz.de/up/systems/mistral>`__
+`Levante <https://docs.dkrz.de/doc/levante/index.html>`__
 and
 `Jasmin <https://www.jasmin.ac.uk/>`__,
 but many more exist around the world.
