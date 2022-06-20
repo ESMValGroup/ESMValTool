@@ -153,6 +153,7 @@ authors:
     name: Cos, Josep
     institute: BSC, Spain
     orcid: https://orcid.org/0000-0002-3050-2306
+    github: pepcos
   crezee_bas:
     name: Crezee, Bas
     institute: ETH Zurich, Switzerland
@@ -306,6 +307,7 @@ authors:
     name: Loosveldt-Tomas, Saskia
     institute: BSC, Spain
     orcid: https://orcid.org/0000-0002-7530-7053
+    github: sloosvel
   lorenz_ruth:
     name: Lorenz, Ruth
     institute: ETH Zurich, Switzerland
@@ -354,6 +356,7 @@ authors:
     name: Moreno-Chamarro, Eduardo
     institute: BSC, Spain
     orcid:
+    github: emchamarro
   dalvi_mohit:
     name: Dalvi, Mohit
     institute: MetOffice, UK
