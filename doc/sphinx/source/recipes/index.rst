@@ -124,4 +124,5 @@ Other
    recipe_seaice_drift
    recipe_seaice_feedback
    recipe_shapeselect
+   recipes_testing
    recipe_toymodel
