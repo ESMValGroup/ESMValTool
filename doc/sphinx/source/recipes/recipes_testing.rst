@@ -30,5 +30,5 @@ The recipe recipe_deangelis15nat_fig1_fast.yml calls the first diagnostic (deang
 It can be run with CMIP5 and CMIP6 models for any duration.
 Several flux variables (W m\ :sup:`-2`\) and up to 6 different model experiments can be handled.
 Each variable needs to be given for each model experiment. The same experiments must
-be given for all models. For testing purpose it was reduce to one Model, 4 experiments and one year.
+be given for all models. For testing purpose it was reduce to two models, 3 experiments and one year.
 For a more detailed documentation see :ref: recipes_deangelis15nat 
