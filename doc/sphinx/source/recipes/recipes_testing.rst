@@ -24,7 +24,7 @@ Diagnostics are stored in diag_scripts/
 
 
 User settings in recipes
------------------------
+------------------------
 
 The recipe recipe_deangelis15nat_fig1_fast.yml calls the first diagnostic (deangelisf1b.py) from the original recipe recipe_deangelis15nat.yml.
 It can be run with CMIP5 and CMIP6 models for any duration.
