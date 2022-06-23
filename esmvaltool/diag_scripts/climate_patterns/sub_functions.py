@@ -18,6 +18,24 @@ from scipy.sparse.linalg import spsolve
 logger = logging.getLogger(Path(__file__).stem)
 
 
+def compute_diagnostic(filename):
+    """Loads cube, removes any dimensions of length: 1.
+
+    Parameters
+    ----------
+    filename (path): path to load cube file
+
+    Returns
+    -------
+    cube (cube): a cube
+    """
+    logger.debug("Loading %s", filename)
+    cube = iris.load_cube(filename)
+    cube = iris.util.squeeze(cube)
+
+    return cube
+
+
 def area_avg(x, return_cube=None):
     """Calculates the global mean of a variable in a cube, area-weighted.
 
@@ -198,7 +216,7 @@ def kappa_calc_predict(q, f, kappa, lambda_o, lambda_l, nu):
             t_ocean_new[i] + t_ocean_new[i - 1]) * dz
 
     conserved = 100.0 * (q_energy_derived / q_energy)
-    logger.info("Heat conservation check (%) = ", round(conserved, 2))
+    logger.info("Heat conservation check (%): ", round(conserved, 2))
 
     return temp_ocean_top
 

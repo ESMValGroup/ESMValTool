@@ -56,27 +56,7 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 logger = logging.getLogger(Path(__file__).stem)
 
 
-def compute_diagnostic(filename):
-    """Loads cube, removes any dimensions of length: 1.
-
-    Parameters
-    ----------
-    filename (path): path to load cube file
-
-    Returns
-    -------
-    cube (cube): a cube
-    """
-    logger.debug("Loading %s", filename)
-    cube = iris.load_cube(filename)
-
-    logger.debug("Running example computation")
-    cube = iris.util.squeeze(cube)
-
-    return cube
-
-
-def climatology(cube):
+def climatology(cube, syr=1850, eyr=1889):
     """Handles aggregation to make climatology.
 
     Parameters
@@ -85,17 +65,18 @@ def climatology(cube):
 
     Returns
     -------
-    cube_aggregated (cube): 40 year climatology cube from 1850-1889
+    cube_aggregated (cube): 40 year climatology cube from syr-eyr
+        (default 1850-1889)
     """
     cube_40yr = cube.extract(
-        iris.Constraint(time=lambda t: 1850 <= t.point.year <= 1889,
+        iris.Constraint(time=lambda t: syr <= t.point.year <= eyr,
                         month_number=lambda t: 1 <= t.point <= 12))
     cube_aggregated = make_monthly_climatology(cube_40yr)
 
     return cube_aggregated
 
 
-def constrain_latitude(cube):
+def constrain_latitude(cube, min_lat=-55, max_lat=82.5):
     """Constrains latitude to decrease run-time when output fed to IMOGEN.
 
     Parameters
@@ -107,7 +88,7 @@ def constrain_latitude(cube):
     cube_clipped (cube): cube with latitudes set from -55 to 82.5 degrees
     """
     cube_clipped = cube.extract(
-        iris.Constraint(latitude=lambda cell: 82.5 >= cell >= -55))
+        iris.Constraint(latitude=lambda cell: max_lat >= cell >= min_lat))
 
     return cube_clipped
 
@@ -133,7 +114,7 @@ def make_monthly_climatology(cube):
 
 
 def diurnal_temp_range(cubelist):
-    """Calculates diurnal range from daily max and min temperatures.
+    """Calculates diurnal range from monthly max and min temperatures.
 
     Parameters
     ----------
@@ -144,6 +125,11 @@ def diurnal_temp_range(cubelist):
     range_cube (cube): cube of calculated diurnal range
     """
     range_cube = cubelist[0] - cubelist[1]
+
+    # check in case cubes are wrong way around
+    if np.mean(range_cube.data) < 0:
+        range_cube = -range_cube
+
     range_cube.rename("Diurnal Range")
     range_cube.var_name = ("range_tl1")
 
@@ -165,17 +151,17 @@ def calculate_diurnal_range(clim_list, ts_list):
     ts_list_final (cubelist): cubelist of standard timeseries cubes
         including diurnal range
     """
-    temp_range_list_clim = iris.load([])
-    temp_range_list_ts = iris.load([])
+    temp_range_list_clim = iris.cube.CubeList([])
+    temp_range_list_ts = iris.cube.CubeList([])
     comb_list = [clim_list, ts_list]
 
-    for i in range(len(comb_list)):
+    for i, _ in enumerate(comb_list):
         for cube in comb_list[i]:
-            if (cube.var_name == "tasmax"
-                    or cube.var_name == "tasmin") and cube in clim_list:
+            if (cube.var_name in ('tasmax', 'tasmin')) \
+                    and cube in clim_list:
                 temp_range_list_clim.append(cube)
-            elif (cube.var_name == "tasmax"
-                  or cube.var_name == "tasmin") and cube in ts_list:
+            elif (cube.var_name in ('tasmax', 'tasmin')) \
+                    and cube in ts_list:
                 temp_range_list_ts.append(cube)
             else:
                 pass
@@ -210,15 +196,15 @@ def append_diurnal_range(derived_diurnal_clim, derived_diurnal_ts, clim_list,
     """
     # creating cube list without tasmax or tasmin
     # (since we just wanted the diurnal range)
-    clim_list_final = iris.load([])
-    ts_list_final = iris.load([])
+    clim_list_final = iris.cube.CubeList([])
+    ts_list_final = iris.cube.CubeList([])
 
     for cube in clim_list:
-        if not (cube.var_name == "tasmax" or cube.var_name == "tasmin"):
+        if cube.var_name not in ('tasmax', 'tasmin'):
             clim_list_final.append(cube)
 
     for cube in ts_list:
-        if not (cube.var_name == "tasmax" or cube.var_name == "tasmin"):
+        if cube.var_name not in ('tasmax', 'tasmin'):
             ts_list_final.append(cube)
 
     clim_list_final.append(derived_diurnal_clim)
@@ -248,7 +234,7 @@ def calculate_anomaly(clim_list, ts_list):
 
     # calc the anom by subtracting the monthly climatology from
     # the time series
-    for i in range(len(ts_list_final)):
+    for i, _ in enumerate(ts_list_final):
         i_months = anom_list_final[i].coord(
             'month_number').points - 1  # -1 because months are numbered 1..12
         anom_list_final[i].data -= clim_list_final[i][i_months].data
@@ -313,7 +299,7 @@ def regression_units(tas, cube):
     return units
 
 
-def calculate_regressions(anom_list):
+def calculate_regressions(anom_list, yrs=85):
     """Facilitates the calculation of regression coefficients (climate
     patterns) and the creation of a new cube of patterns per variable.
 
@@ -330,19 +316,20 @@ def calculate_regressions(anom_list):
     """
     regr_var_list = iris.cube.CubeList([])
     score_list = iris.cube.CubeList([])
+    months = yrs * 12
 
     for cube in anom_list:
         if cube.var_name == 'tl1_anom':
 
-            # getting last 85 years from full timeseries
-            tas = cube[-1020:]
+            # convert years to months when selecting
+            tas = cube[-months:]
 
     for cube in anom_list:
-        cube_ssp = cube[-1020:]
+        cube_ssp = cube[-months:]
         month_list = iris.cube.CubeList([])
         score_month_list = iris.cube.CubeList([])
 
-        # exctracting months, regressing, and merging
+        # extracting months, regressing, and merging
         for i in range(1, 13):
             month_constraint = iris.Constraint(imogen_drive=i)
             month_cube_ssp = cube_ssp.extract(month_constraint)
@@ -352,8 +339,7 @@ def calculate_regressions(anom_list):
                                                  month_cube_ssp.data)
 
             # re-creating cube
-            if (cube.var_name == 'swdown_anom'
-                    or cube.var_name == 'lwdown_anom'):
+            if cube.var_name in ('swdown_anom', 'lwdown_anom'):
                 units = 'W m-2 K-1'
             else:
                 units = regression_units(tas, cube_ssp)
@@ -488,18 +474,18 @@ def saving_outputs(clim_list_final, anom_list_final, regressions, scores,
                        name_list,
                        mode='imogen_scores')
 
-        elif r2_scores is False:
+        else:
             plot_cp_timeseries(list_of_cubelists, plot_path)
             cube_saver(list_of_cubelists, work_path, name_list, mode='imogen')
 
-    elif imogen_mode is False:
+    else:
         if r2_scores is True:
             plot_scores(list_of_cubelists[3], plot_path)
             write_scores(scores, work_path)
             plot_patterns(list_of_cubelists[2], plot_path)
             cube_saver(list_of_cubelists, work_path, name_list, mode='scores')
 
-        elif r2_scores is False:
+        else:
             plot_patterns(list_of_cubelists[2], plot_path)
             cube_saver(list_of_cubelists, work_path, name_list, mode='base')
 
@@ -523,15 +509,15 @@ def patterns(model):
         work_path = cfg["work_dir"] + "/"
         plot_path = cfg["plot_dir"] + "/"
 
-    clim_list = iris.load([])
-    ts_list = iris.load([])
+    clim_list = iris.cube.CubeList([])
+    ts_list = iris.cube.CubeList([])
 
     for dataset in input_data:
         if dataset['dataset'] == model:
             input_file = dataset["filename"]
 
             # preparing single cube
-            cube_initial = compute_diagnostic(input_file)
+            cube_initial = sf.compute_diagnostic(input_file)
 
             if grid_spec == "constrained":
                 cube = constrain_latitude(cube_initial)
@@ -548,7 +534,7 @@ def patterns(model):
     # calculate anomaly over historical + ssp timeseries
     clim_list_final, anom_list_final = calculate_anomaly(clim_list, ts_list)
 
-    for i in range(len(clim_list_final)):
+    for i, _ in enumerate(clim_list_final):
         rename_clim_variables(clim_list_final[i])
         rename_anom_variables(anom_list_final[i])
 

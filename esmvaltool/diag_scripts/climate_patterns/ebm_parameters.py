@@ -52,26 +52,6 @@ logger = logging.getLogger(Path(__file__).stem)
 params_file = os.path.join(os.path.dirname(__file__), 'params.json')
 
 
-def compute_diagnostic(filename):
-    """Loads cube, removes any dimensions of length: 1.
-
-    Parameters
-    ----------
-    filename (path): path to load cube file
-
-    Returns
-    -------
-    cube (cube): a cube
-    """
-    logger.debug("Loading %s", filename)
-    cube = iris.load_cube(filename)
-
-    logger.debug("Running example computation")
-    cube = iris.util.squeeze(cube)
-
-    return cube
-
-
 def net_flux_calculation(toa_list):
     """Calculates the Net Downward Radiative Flux at Top Of Atmosphere Model
     from its components.
@@ -137,12 +117,12 @@ def ocean_fraction_calc(sftlf):
     return ocean_frac, land_frac, of
 
 
-def kappa_parameter(f, toa_delta, tas_delta_ocean):
+def kappa_parameter(of, toa_delta, tas_delta_ocean):
     """Driving function to calculate kappa.
 
     Parameters
     ----------
-    f (float): ocean fraction
+    of (float): ocean fraction
     toa_delta (cube): net downward radiative flux at TOA anomaly
     tas_delta_ocean (cube): ocean-weighted global temperature anomaly
 
@@ -155,22 +135,22 @@ def kappa_parameter(f, toa_delta, tas_delta_ocean):
     for i_kappa in range(0, 150):
         kappa_test = 20.0 + 20.0 * float(i_kappa)
 
-        temp_ocean_top = kappa_calc(f, toa_delta, kappa_test)
+        temp_ocean_top = kappa_calc(of, toa_delta, kappa_test)
         rms_local = np.sqrt(
             np.mean((temp_ocean_top - tas_delta_ocean)**2) /
             tas_delta_ocean.shape[0])
-        if (rms_local <= rms):
+        if rms_local <= rms:
             rms = rms_local
             kappa = kappa_test
 
     return kappa
 
 
-def kappa_calc(f, toa_delta, kappa):
+def kappa_calc(of, toa_delta, kappa):
     """
     Parameters
     ----------
-    f (float): ocean fraction
+    of (float): ocean fraction
     toa_delta (cube): net downward radiative flux at TOA anomaly
     kappa (float): ocean diffusivity parameter (W m-1 K-1)
 
@@ -207,7 +187,7 @@ def kappa_calc(f, toa_delta, kappa):
 
     # Now start loop over the different years.
     for j in range(0, nyr):
-        factor1 = -toa_delta[j] / (kappa * f)
+        factor1 = -toa_delta[j] / (kappa * of)
         factor2 = 0.0
 
         for k in range(0, n_pde):
@@ -273,12 +253,17 @@ def kappa_calc(f, toa_delta, kappa):
             t_ocean_new[i] + t_ocean_new[i - 1]) * dz
 
     conserved = 100.0 * (q_energy_derived / q_energy)
-    logger.info("Heat conservation check (%) = ", round(conserved, 2))
+    logger.info("Heat conservation check % = ", round(conserved, 2))
 
     return temp_ocean_top
 
 
-def anomalies_calc(toa_cube, tas_cube, tas_126_cube, ocean_frac, land_frac):
+def anomalies_calc(toa_cube,
+                   tas_cube,
+                   tas_126_cube,
+                   ocean_frac,
+                   land_frac,
+                   climatol_length=40):
     """Calculates variable anomalies from arguments, using first 40 years.
 
     Parameters
@@ -338,7 +323,7 @@ def anomalies_calc(toa_cube, tas_cube, tas_126_cube, ocean_frac, land_frac):
     ]
 
     # calculating anomalies
-    delta_list = [x - np.mean(x[0:40]) for x in init_list]
+    delta_list = [x - np.mean(x[0:climatol_length]) for x in init_list]
     (toa_delta, toa_delta_land, toa_delta_ocean, tas_delta, tas_delta_land,
      tas_delta_ocean, tas_126_delta) = delta_list
 
@@ -346,8 +331,12 @@ def anomalies_calc(toa_cube, tas_cube, tas_126_cube, ocean_frac, land_frac):
             tas_delta_land, tas_delta_ocean, tas_126_delta)
 
 
-def atmos_params_calc(rf, toa_delta_land, toa_delta_ocean, tas_delta_land,
-                      tas_delta_ocean):
+def atmos_params_calc(rf,
+                      toa_delta_land,
+                      toa_delta_ocean,
+                      tas_delta_land,
+                      tas_delta_ocean,
+                      ssp_yrs=85):
     """Calculates atmospheric parameters for EBM prediction and output.
 
     Parameters
@@ -370,15 +359,15 @@ def atmos_params_calc(rf, toa_delta_land, toa_delta_ocean, tas_delta_land,
     """
     # calculating lambda_ocean
     lambda_o_init = (rf - toa_delta_ocean) / tas_delta_ocean
-    lambda_o = np.mean(lambda_o_init[-90:])
+    lambda_o = np.mean(lambda_o_init[-ssp_yrs:])
 
     # calculating lambda_land
     lambda_l_init = (rf - toa_delta_land) / tas_delta_land
-    lambda_l = np.mean(lambda_l_init[-90:])
+    lambda_l = np.mean(lambda_l_init[-ssp_yrs:])
 
     # calculating nu-ratio
     nu_ratio_init = tas_delta_land / tas_delta_ocean
-    nu_ratio = np.mean(nu_ratio_init[-90:])
+    nu_ratio = np.mean(nu_ratio_init[-ssp_yrs:])
 
     return lambda_o, lambda_l, nu_ratio
 
@@ -415,8 +404,13 @@ def save_params(model, f_ocean, kappa, lambda_o, lambda_l, nu_ratio):
     return param_dict
 
 
-def create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube,
-                           tas_126, rtmt_126):
+def create_regression_plot(tas_cube,
+                           rtmt_cube,
+                           tas_4x_cube,
+                           rtmt_4x_cube,
+                           tas_126,
+                           rtmt_126,
+                           climatol_length=40):
     """Derives effective forcing for SSP585 and SSP126 scenarios, and prepares
     for plotting.
 
@@ -445,7 +439,7 @@ def create_regression_plot(tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube,
         tas_cube, rtmt_cube, tas_4x_cube, rtmt_4x_cube, tas_126, rtmt_126
     ]
     avg_list = [sf.area_avg(x, return_cube=True) for x in var_list]
-    avg_list = [x.data - np.mean(x.data[0:40]) for x in avg_list]
+    avg_list = [x.data - np.mean(x.data[0:climatol_length]) for x in avg_list]
 
     # linear regression
     reg = stats.linregress(avg_list[2].data, avg_list[3].data)
@@ -535,7 +529,7 @@ def ebm_params(model):
             input_file = dataset["filename"]
 
             # preparing single cube
-            cube_initial = compute_diagnostic(input_file)
+            cube_initial = sf.compute_diagnostic(input_file)
 
             if dataset["exp"] == "piControl":
                 if cube_initial.var_name == "sftlf":
@@ -562,13 +556,14 @@ def ebm_params(model):
     rtmt_4x_cube = net_flux_calculation(toa_4x_list)
 
     # calculating ocean fraction
-    ocean_frac, land_frac, of = ocean_fraction_calc(sftlf_cube)
+    ocean_frac_cube, land_frac_cube, of = ocean_fraction_calc(sftlf_cube)
 
     # calculating TOA averages, subtracting mean of first 4 decades
     (toa_delta, toa_delta_land, toa_delta_ocean, tas_delta, tas_delta_land,
      tas_delta_ocean, tas_126_delta) = anomalies_calc(rtmt_cube, tas_cube,
-                                                      tas_126_cube, ocean_frac,
-                                                      land_frac)
+                                                      tas_126_cube,
+                                                      ocean_frac_cube,
+                                                      land_frac_cube)
 
     # calculating EBM parameter, Kappa
     if params is True:
@@ -646,7 +641,6 @@ def main(cfg):
     models = []
 
     for x in input_data:
-        print(x)
         model = x['dataset']
         if model not in models:
             models.append(model)
@@ -657,7 +651,7 @@ def main(cfg):
         for model in models:
             model_data.append(ebm_params(model))
 
-    file = open(work_path + "params.dat", 'a')
+    file = open(work_path + "params.json", 'a')
     file.write(json.dumps(model_data))
     file.close()
 

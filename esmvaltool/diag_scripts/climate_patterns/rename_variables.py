@@ -1,3 +1,12 @@
+"""Script containing cube re-naming functions for main driving scripts,
+dependent on recipe switch settings.
+
+Author
+------
+Gregory Munday (Met Office, UK)
+"""
+
+
 def rename_clim_variables(cube):
     """Renames variables and a coord to fit in JULES framework.
 

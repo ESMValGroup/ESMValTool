@@ -1,3 +1,10 @@
+"""Script containing plotting functions for driving scripts.
+
+Author
+------
+Gregory Munday (Met Office, UK)
+"""
+
 import iris.plot as iplt
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
@@ -95,7 +102,7 @@ def plot_cp_timeseries(list_cubelists, plot_path):
     plt.subplots_adjust(hspace=0.5)
     plt.suptitle("Global Patterns, January", fontsize=18, y=0.95)
 
-    for i in range(len(list_cubelists)):
+    for i, _ in enumerate(list_cubelists):
         cube_list = list_cubelists[i]
         for j, cube in enumerate(cube_list):
             # determining plot positions
@@ -216,6 +223,9 @@ def ebm_plots(reg, avg_list, yrs, forcing, forcing_126, lambda_c, temp_global,
     ax[0].scatter(avg_list[2].data, avg_list[3].data, c='b', label='tas, rtmt')
     ax[0].plot(x_reg, y_reg, c='r', label='regression')
     ax[0].legend(loc='upper left')
+    ax[0].set_ylabel(
+        "Net Downward Radiative Flux at Top of Atmosphere / $Wm^{-2}$")
+    ax[0].set_xlabel("Near Surface Air Temperature / $K$")
 
     # plotting forcing timeseries
     ax[1].plot(yrs, forcing, color='red', label='SSP585')
@@ -247,10 +257,10 @@ def ebm_plots(reg, avg_list, yrs, forcing, forcing_126, lambda_c, temp_global,
                linewidth=1.5,
                label='EBM Prediction SSP126')
     ax[2].plot(yrs, tas_delta, color='red', label='Model SSP585')
-    ax[2].plot(yrs, tas_126_delta, color='blue', label='Model SSP585')
+    ax[2].plot(yrs, tas_126_delta, color='blue', label='Model SSP126')
     ax[2].legend(loc='upper left')
     ax[2].set_xlabel("Time")
     ax[2].set_ylabel("Air Surface Temperature (K)")
 
-    fig.savefig(plot_path + 'ebm_plots')
+    fig.savefig(plot_path + 'ebm_plots', dpi=200)
     plt.close(fig)
