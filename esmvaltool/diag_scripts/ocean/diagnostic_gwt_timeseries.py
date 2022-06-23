@@ -2037,13 +2037,12 @@ def calc_tls(cfg, data_dict):
         new_times = np.array(sorted(nbp_dict.keys()))
         new_data = np.array([nbp_dict[t] for t in new_times])
 
-        tmp_data_dict[(dataset, 'tls', exp, ensemble)] = {'time':new_times+0.5, 'tls': new_data }
+        tmp_data_dict[(dataset, 'tls', exp, ensemble)] = {'time':new_times+0.5, 'tls': new_data}
 
     #print(tmp_data_dict.keys(), tmp_data_dict)
     if not len(tmp_data_dict): assert 0
     data_dict.update(tmp_data_dict)
     return data_dict
-
 
 
 def calc_atmos_carbon(cfg, data_dict):
@@ -5459,11 +5458,14 @@ def main(cfg):
             if do_count_and_sensitivity_table:
                 make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict)
 
-            do_timeseries_megaplot = False
+            do_timeseries_megaplot = True 
             if do_timeseries_megaplot:
                 # master
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean'],
                         panes = ['tas_norm', 'atmos_carbon', 'fgco2gt_cumul', 'nbpgt_cumul', ],) # defaults
+                timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean'],
+                        panes = ['tas_norm', 'atmos_carbon', 'fgco2gt_cumul', 'tls', ],) # defaults
+
 
                 for plot_styles in [
                        'CMIP6_range', 'all_models_range', 'all_models_means',

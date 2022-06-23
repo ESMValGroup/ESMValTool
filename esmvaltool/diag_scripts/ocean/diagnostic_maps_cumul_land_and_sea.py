@@ -82,7 +82,7 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 #         spco2 / npp
 
 plot_pairs= {
-             'temp':{'land': 'tsl', 'sea': 'tos'},
+#             'temp':{'land': 'tsl', 'sea': 'tos'},
              'cflux':{'land': 'nbp', 'sea': 'fgco2'},
              ##'pp':{'land': 'gpp', 'sea': 'intpp'},
 #             'spco2_npp':{'land': 'npp', 'sea': 'spco2'},
@@ -1674,7 +1674,7 @@ def calculate_custom_netcdf(custom_var_name, custom_inputs_files, path):
     assert 0
 
 
-def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3., 4., '1.5os', '1.6os','1.7os','1.8os','1.9os','2.os', '3.os']):
+def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3., 4.,] ):#os', '1.6os','1.7os','1.8os','1.9os','2.os', '3.os']):
     """
     Generate a dictionary of GWTs.
     """
@@ -1686,7 +1686,7 @@ def generate_gwts_dict(cfg, tas_dicts,  areacella_fn, thresholds = [1.5, 2., 3.,
         gwts = sh['gwts']
         sh.close()
         for index, time in gwts.items(): print('gwt', index, time)
-        assert 0
+        #assert 0
         return gwts
 
     gwts = {}
@@ -1782,7 +1782,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
 
     """
     metadatas = diagtools.get_input_files(cfg)
-    do_single_plots=True
+    do_single_plots = True 
     #do_variable_group_plots=True
     #do_threshold_plots=True
 
@@ -1796,7 +1796,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
     variables = set()
     datasets = set()
     mips = set()
-    thresholds = set()
+    thresholds = {2.:True, 3.:True, 4.:True} # set()
     #fx_fn = ''
     fx_fns = {}
     all_cubes = {}
@@ -1922,6 +1922,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
 
     # Make a plot for a single land-sea pair.
     #cube_pairs = {}
+    variable_group_means = {}
     for (dataset, mip, exp, ensemble, short_name), cube in all_cubes.items():
         for var_name, plot_pair in plot_pairs.items():
             if not do_single_plots:
@@ -1957,13 +1958,20 @@ def make_gwt_map_land_sea_plots(cfg, ):
             #if land_cube is None: continue
 #            cube_pairs[(dataset, mip, exp, ensemble)] = {'sea': sea_cube, 'land': land_cube}
 
-            for threshold in ['1.5os','1.6os', '1.7os', '1.8os', '1.9os', '2.os','3.os', 2., 3, 4, 1.5 ]:# 4.]:
+            for threshold in [2., 3., 4., ]: #'1.5os','1.6os', '1.7os', '1.8os', '1.9os', '2.os','3.os', 2., 3, 4, 1.5 ]:# 4.]:
                 print(land_cube,sea_cube)
                 lc_threshold = extract_window(gwts, land_cube.copy(), threshold=threshold, dataset=dataset, exp=exp, ensemble=ensemble)
                 oc_threshold = extract_window(gwts, sea_cube.copy(), threshold=threshold, dataset=dataset, exp=exp, ensemble=ensemble)
 
                 if lc_threshold == None or oc_threshold == None: continue
                 gwt_year = gwts[(dataset, threshold, exp, ensemble)]#year
+
+                var_index_sea = (dataset, exp,  plot_pair['sea'], threshold)
+                var_index_land = (dataset, exp,  plot_pair['land'], threshold)
+                variable_group_means[var_index_sea] = oc_threshold
+                variable_group_means[var_index_land] = lc_threshold
+
+                continue
                 single_pane_land_sea_plot(
                     cfg,
                     metadatas,
@@ -1973,7 +1981,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
                     gwt_year = gwt_year, 
                     unique_keys = [var_name, dataset, exp, ensemble, threshold, str(gwt_year)]
                 )
-    assert 0
+
     ####
     # Create variable_group_means.
     #    This is a mean of all ensemble memnbers of a given model in a scenario at a given threshold.
@@ -2041,32 +2049,40 @@ def make_gwt_map_land_sea_plots(cfg, ):
 #            )
 
     for dataset, threshold in product(datasets, thresholds):
-        if not threshold: continue
+        print('dataset, threshold', dataset, threshold)
+        #if not threshold: continue
         for var_name, plot_pair in plot_pairs.items():
             sea_cubes = {}
             land_cubes = {}
-            for (variable_group_i, dataset_i, exp_i, short_name_i), cube in variable_group_means.items():
+            for (dataset_i, exp_i, short_name_i, threshold_i), cube in variable_group_means.items():
+                print('iterating:', (dataset_i, exp_i, short_name_i, threshold_i))
                 if short_name_i != plot_pair['sea']:
+                    print('short_name_i != plot_pair[sea]', short_name_i, '!=', plot_pair['sea'])
                     continue
                 if dataset_i != dataset:
+                    print('dataset_i',dataset_i,'dataset', dataset)
                     continue
-                variable1, exp1, threshold1 = split_variable_groups(variable_group_i)
+
+                if threshold_i != threshold:
+                    print('threshold_i', threshold_i, 'threshold', threshold) 
+                    continue
+                #variable1, exp1, threshold1 = split_variable_groups(variable_group_i)
 
                 if exp_i in ['historical', ]:
                     pass
-                elif threshold1 != threshold:
-                    continue
+                print('FOUND sea!:', (dataset_i, exp_i, short_name_i, threshold_i))
+ #               if len(threshold1):
+ #                   land_variable_group = '_'.join([plot_pair['land'], exp1, threshold])
+ #               else:
+ #                   land_variable_group = '_'.join([plot_pair['land'], exp1])
 
-                if len(threshold1):
-                    land_variable_group = '_'.join([plot_pair['land'], exp1, threshold])
-                else:
-                    land_variable_group = '_'.join([plot_pair['land'], exp1])
-
-                land_index = (land_variable_group, dataset_i, exp_i, plot_pair['land'])
-                print((variable_group_i, dataset_i, exp_i, short_name_i), ':', land_index)
+                land_index = (dataset_i, exp_i, plot_pair['land'], threshold_i)
+                print((dataset_i, exp_i, short_name_i, threshold_i), ':', land_index)
                 land_cube = variable_group_means.get(land_index, None)
 
-                if land_cube is None: continue
+                if land_cube is None:
+                    print('No Land cube:', land_index)
+                    continue
                 sea_cubes[exp_i] = cube
                 land_cubes[exp_i] = land_cube
 
@@ -2101,7 +2117,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
                         land_cubes=land_cubes.copy(),
                         sea_cubes=sea_cubes.copy(),
                         plot_pair=plot_pair,
-                        unique_keys = [dataset, var_name,'after',threshold+ u'\N{DEGREE SIGN}', 'warming: ',ssp1,'-', ssp2],
+                        unique_keys = [dataset, var_name,'after',str(threshold)+ u'\N{DEGREE SIGN}', 'warming: ',ssp1,'-', ssp2],
                         region=region,
                         ssp1=ssp1,
                         ssp2=ssp2,
@@ -2113,7 +2129,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
                     land_cubes=land_cubes.copy(),
                     sea_cubes=sea_cubes.copy(),
                     plot_pair=plot_pair,
-                    unique_keys = [dataset, var_name,'after',threshold+ u'\N{DEGREE SIGN}', 'warming'],
+                    unique_keys = [dataset, var_name,'after',str(threshold)+ u'\N{DEGREE SIGN}', 'warming'],
                     region=region,
                     )
                 multi_pane_land_sea_plot(
