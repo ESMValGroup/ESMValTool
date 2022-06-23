@@ -189,6 +189,13 @@ mod_exp_ens_skips = {
     ('IPSL-CM5A2-INCA', 'historical', 'r1i1p1f1',): True, # no SSP runs.
     ('IPSL-CM5A2-INCA', 'piControl', 'r1i1p1f1'): True,
 
+    ('CNRM-ESM2-1',  'historical', '*'): True ,  # CNRM has a weird air-seaflux of CO2, which includes some weird river stuff.
+    ('CNRM-ESM2-1',  'ssp119', '*'): True ,
+    ('CNRM-ESM2-1',  'ssp126', '*'): True ,
+    ('CNRM-ESM2-1',  'ssp245', '*'): True ,
+    ('CNRM-ESM2-1',  'ssp370', '*'): True ,
+    ('CNRM-ESM2-1',  'ssp585', '*'): True ,
+
     ('CESM2-WACCM-FV2', 'historical', 'r1i1p1f1',): True, # no SSP runs.
     ('CESM2-FV2', 'historical', 'r1i1p1f1',): True, # no SSP runs.
 
@@ -4925,7 +4932,7 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
             if threshold==2. and time is None:
 #                x = 2105
                 y = model_ecs
-                print('gap', (dataset, short_name, exp, ensemble), threshold, time) 
+                print('gap', (dataset, short_name, exp, ensemble), threshold, time)
                 gaps[(dataset, exp)]= model_ecs
                 #s = 'x'
 #                plt.scatter(x,y, c = (0,0,0,0), edgecolor=exp_colour, linewidth=2, marker = ms, alpha = 0.7, s=size, zorder=1)
@@ -4933,7 +4940,7 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
             if time is None: continue
             x = time.year + 0.5
             y =model_ecs
-         
+
             plt.scatter(x,y, c = exp_colour, marker = ms, alpha = alpha, s=size, zorder=1)
             if linregdat.get((exp, threshold), False):
                 linregdat[(exp, threshold)].append((x,y))
@@ -4952,8 +4959,8 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
         exp_colour = exp_colours_fill[exp]
 
         plt.scatter(x,y, c = 'w', edgecolor=exp_colour, linewidth=2, marker = 'D', s=60, zorder=1)
-        x_times[dataset] += 5.        
-    
+        x_times[dataset] += 5.
+
     # vertical line
     plt.axvline(2100, c='k', ls='-', lw=1., zorder=-1)
     ylims = ax.get_ylim()
@@ -4974,7 +4981,7 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
 # latexrow = lambda a: ' & '.join(a)
 
 
-    line_styles = {2:'dashed', 3.:'dashdot', 4.:'dotted',} 
+    line_styles = {2:'dashed', 3.:'dashdot', 4.:'dotted',}
     for (exp, threshold) in sorted(linregdat.keys()):
         xy_dats = linregdat[(exp, threshold)]
         xy_dats = sorted(xy_dats)
@@ -4990,8 +4997,8 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
         linr = scipy.stats.linregress(x_es, y_es)
         slope, intercept = linr[0], linr[1]
         if np.isnan(slope): continue
-        txt += latexrow([ exp, str(threshold), 
-                         str(linr[0])[:7], 
+        txt += latexrow([ exp, str(threshold),
+                         str(linr[0])[:7],
                          str(1./linr[0])[:6],
                          str(linr[2])[:7],
                          str(linr[4])[:7], str(len(x_es))])
@@ -5008,7 +5015,7 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
     out.write(txt)
     out.close()
 
-        
+
     # boring plotting settings:
     ax.set_xlim(xlims)
     ax.set_ylim(ylims)
@@ -5022,14 +5029,14 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
     ax.get_yaxis().tick_left()
 
     # h lines:
-    for model in sorted(datasets.keys()):   
+    for model in sorted(datasets.keys()):
         if model == 'CMIP6': continue
         ecs = ECS_data[model]
         plt.axhline(ecs, c='k', ls='-', lw=0.75, zorder=-1)
         if model in ['CanESM5-CanOE', '']:
             gap = -0.015
             va='top'
-        else: 
+        else:
             va = 'bottom'
             gap=0.0051
         ax.text(2000.5, ecs+gap, model, horizontalalignment='left',
@@ -5458,7 +5465,7 @@ def main(cfg):
             if do_count_and_sensitivity_table:
                 make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict)
 
-            do_timeseries_megaplot = True 
+            do_timeseries_megaplot = True
             if do_timeseries_megaplot:
                 # master
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean'],
