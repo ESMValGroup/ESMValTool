@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Diagnostic script to plot figure 9.14 of IPCC AR5 chapter 9.
 
 Description
@@ -24,19 +23,22 @@ import logging
 import os
 
 import iris
-from iris.experimental.equalise_cubes import equalise_attributes
-from iris.exceptions import CoordinateNotFoundError
 import iris.plot as iplt
 import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator
 import matplotlib.ticker as mticker
 import numpy as np
+from iris.exceptions import CoordinateNotFoundError
+from iris.util import equalise_attributes
+from matplotlib.ticker import MultipleLocator
 
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, get_diagnostic_filename,
-    get_plot_filename, group_metadata, run_diagnostic)
-
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    run_diagnostic,
+)
 
 matplotlib.rcParams.update({'font.size': 9})
 
@@ -112,25 +114,26 @@ def _lat_heimisphere(latitude):
 def _east_west_formatted(longitude, num_format='g'):
     fmt_string = u'{longitude:{num_format}}{degree}{hemisphere}'
     longitude = _fix_lons(longitude)[0]
-    return fmt_string.format(longitude=abs(longitude), num_format=num_format,
+    return fmt_string.format(longitude=abs(longitude),
+                             num_format=num_format,
                              hemisphere=_lon_heimisphere(longitude),
                              degree=DEGREE_SYMBOL)
 
 
 def _north_south_formatted(latitude, num_format='g'):
     fmt_string = u'{latitude:{num_format}}{degree}{hemisphere}'
-    return fmt_string.format(latitude=abs(latitude), num_format=num_format,
+    return fmt_string.format(latitude=abs(latitude),
+                             num_format=num_format,
                              hemisphere=_lat_heimisphere(latitude),
                              degree=DEGREE_SYMBOL)
 
 
 #: A formatter which turns longitude values into nice longitudes such as 110W
-LONGITUDE_FORMATTER = mticker.FuncFormatter(lambda v, pos:
-                                            _east_west_formatted(v))
+LONGITUDE_FORMATTER = mticker.FuncFormatter(
+    lambda v, pos: _east_west_formatted(v))
 #: A formatter which turns longitude values into nice longitudes such as 45S
-LATITUDE_FORMATTER = mticker.FuncFormatter(lambda v, pos:
-                                           _north_south_formatted(v))
-
+LATITUDE_FORMATTER = mticker.FuncFormatter(
+    lambda v, pos: _north_south_formatted(v))
 
 CM_PER_INCH = 2.54
 
@@ -150,17 +153,22 @@ def calc_error(data, reference=None):
     if name is None:
         name = data.name()
     error.long_name = '{} error'.format(name)
+    time_coordinates = error.coords('time')
+    if len(time_coordinates) > 1:
+        # if data and reference times differ (usually in calendar),
+        # keep the reference time coordinate for easy merging.
+        data_time_coordinate = data.coord('time')
+        error.remove_coord(data_time_coordinate)
     return error
 
 
 def multi_model_merge(cubes):
-    """
-    Merge cubes of different models into one cube.
+    """Merge cubes of different models into one cube.
 
-    This merges cubes from different models/datsets into one big cube
-    by promoting the cmip model_id attribute to a scalar coordinate and then
-    performing a merge along that coordinate. Conflicting attributes and
-    coordinates are simply removed.
+    This merges cubes from different models/datasets into one big cube
+    by promoting the cmip model_id attribute to a scalar coordinate and
+    then performing a merge along that coordinate. Conflicting
+    attributes and coordinates are simply removed.
     """
     def promote_model_name(cube):
         """Promote model_id attribute to scalar variable."""
@@ -173,11 +181,12 @@ def multi_model_merge(cubes):
                                      var_name='model')
         new_cube.add_aux_coord(coord)
         return new_cube
+
     cube_list = iris.cube.CubeList([promote_model_name(m) for m in cubes])
     equalise_attributes(cube_list)
     for cube in cube_list:
         cube.cell_methods = tuple()
-        for coord in ['day_of_month', 'month_number', 'year']:
+        for coord in ['day_of_year', 'day_of_month', 'month_number', 'year']:
             try:
                 cube.remove_coord(coord)
             except CoordinateNotFoundError:
@@ -231,12 +240,16 @@ def prepare_data(config):
 def setup_figure():
     """Setup basic figure."""
     fig = plt.figure(figsize=(cm_to_inch(18), cm_to_inch(15)))
-    axes = np.array(
-        [[fig.add_axes([0.10, 0.56, 0.30, 0.35]),
-          fig.add_axes([0.50, 0.56, 0.30, 0.35])],
-         [fig.add_axes([0.10, 0.10, 0.30, 0.35]),
-          fig.add_axes([0.50, 0.10, 0.30, 0.35])]]
-    )
+    axes = np.array([
+        [
+            fig.add_axes([0.10, 0.56, 0.30, 0.35]),
+            fig.add_axes([0.50, 0.56, 0.30, 0.35])
+        ],
+        [
+            fig.add_axes([0.10, 0.10, 0.30, 0.35]),
+            fig.add_axes([0.50, 0.10, 0.30, 0.35])
+        ],
+    ])
     return fig, axes
 
 
@@ -251,18 +264,24 @@ def plot_zonal_mean_errors_ensemble(axes, zonal_mean_errors, ref_line_style):
     axes.xaxis.set_major_formatter(LATITUDE_FORMATTER)
     axes.set_ylim(-5., 5.)
     axes.set_xlim(-90., 90.)
-    axes.tick_params(which='both', direction='in', top=True, right=True,
+    axes.tick_params(which='both',
+                     direction='in',
+                     top=True,
+                     right=True,
                      labelsize=7.)
     axes.xaxis.set_label_text(u'Latitude')
     lines = []
     labels = []
     cube_list = multi_model_merge(zonal_mean_errors)
     for error in zonal_mean_errors:
-        lines.append(iplt.plot(error, axes=axes)[0])
+        lines.append(iplt.plot(error.coord('latitude'), error, axes=axes)[0])
         labels.append(error.attributes['model_id'])
     ensemble_mean = cube_list.collapsed('model', iris.analysis.MEAN)
-    mean_line = iplt.plot(ensemble_mean,
-                          axes=axes, color='#e61f25', **ref_line_style)[0]
+    mean_line = iplt.plot(ensemble_mean.coord('latitude'),
+                          ensemble_mean,
+                          axes=axes,
+                          color='#e61f25',
+                          **ref_line_style)[0]
     lines = [mean_line] + lines
     labels = ['CMIP5 mean'] + labels
     return (lines, labels)
@@ -279,15 +298,21 @@ def plot_equatorial_errors(axes, equatorial_errors, ref_line_style):
     axes.xaxis.set_major_formatter(LONGITUDE_FORMATTER)
     axes.set_ylim(-5., 5.)
     axes.set_xlim(25., 360.)
-    axes.tick_params(which='both', direction='in', top=True, right=True,
+    axes.tick_params(which='both',
+                     direction='in',
+                     top=True,
+                     right=True,
                      labelsize=7.)
     axes.xaxis.set_label_text(u'Longitude')
     for error in equatorial_errors:
         iplt.plot(error, label=error.attributes['model_id'], axes=axes)
     cube_list = multi_model_merge(equatorial_errors)
     ensemble_mean = cube_list.collapsed('model', iris.analysis.MEAN)
-    iplt.plot(ensemble_mean, label='CMIP5 mean',
-              axes=axes, color='#e61f25', **ref_line_style)
+    iplt.plot(ensemble_mean,
+              label='CMIP5 mean',
+              axes=axes,
+              color='#e61f25',
+              **ref_line_style)
 
 
 def plot_zonal_mean_errors_project(axes, zonal_mean_errors, ref_line_style):
@@ -301,7 +326,10 @@ def plot_zonal_mean_errors_project(axes, zonal_mean_errors, ref_line_style):
     axes.xaxis.set_major_formatter(LATITUDE_FORMATTER)
     axes.set_ylim(-5., 5.)
     axes.set_xlim(-90., 90.)
-    axes.tick_params(which='both', direction='in', top=True, right=True,
+    axes.tick_params(which='both',
+                     direction='in',
+                     top=True,
+                     right=True,
                      labelsize=7.)
     axes.xaxis.set_label_text(u'Latitude')
     lat = zonal_mean_errors[0].coord('latitude').points
@@ -323,7 +351,10 @@ def plot_equatorials(axes, reference, equatorials, ref_line_style):
     axes.xaxis.set_major_formatter(LONGITUDE_FORMATTER)
     axes.set_ylim(22., 31.)
     axes.set_xlim(25., 360.)
-    axes.tick_params(which='both', direction='in', top=True, right=True,
+    axes.tick_params(which='both',
+                     direction='in',
+                     top=True,
+                     right=True,
                      labelsize=7.)
     axes.xaxis.set_label_text(u'Longitude')
     lon = reference.coord('longitude').points
@@ -338,7 +369,8 @@ def plot_equatorials(axes, reference, equatorials, ref_line_style):
 
 def draw_legend(fig, lines, labels):
     """Draw the legend."""
-    return fig.legend(lines, labels,
+    return fig.legend(lines,
+                      labels,
                       loc='upper left',
                       fontsize=6.,
                       bbox_to_anchor=(.81, .92))
@@ -348,42 +380,35 @@ def produce_plots(config, data):
     """Produce all elements of the full plot."""
     ref_line_style = {'linestyle': '-', 'linewidth': 2.}
     fig, axes = setup_figure()
-    lines, labels = plot_zonal_mean_errors_ensemble(
-        axes[0, 0],
-        data['zonal_mean_errors'],
-        ref_line_style)
-    plot_equatorial_errors(axes[0, 1],
-                           data['equatorial_errors'],
+    lines, labels = plot_zonal_mean_errors_ensemble(axes[0, 0],
+                                                    data['zonal_mean_errors'],
+                                                    ref_line_style)
+    plot_equatorial_errors(axes[0, 1], data['equatorial_errors'],
                            ref_line_style)
-    plot_zonal_mean_errors_project(axes[1, 0],
-                                   data['zonal_mean_errors'],
+    plot_zonal_mean_errors_project(axes[1, 0], data['zonal_mean_errors'],
                                    ref_line_style)
-    ref_ls, ref_labels = plot_equatorials(axes[1, 1],
-                                          data['equatorial_ref'],
-                                          data['equatorials'],
-                                          ref_line_style)
+    ref_ls, ref_labels = plot_equatorials(axes[1, 1], data['equatorial_ref'],
+                                          data['equatorials'], ref_line_style)
     all_lines = ref_ls + lines
     all_labels = ref_labels + labels
     legend = draw_legend(fig, all_lines, all_labels)
     path = get_plot_filename('fig-9-14', config)
-    fig.savefig(path, additional_artists=[legend], tight_layout=True)
+    fig.savefig(path, bbox_extra_artists=(legend, ))
     return path
 
 
 def write_data(config, data):
     """Write all the calculated data to output file."""
-    cubes = iris.cube.CubeList([data['equatorial_ref']]
-                               + data['zonal_mean_errors']
-                               + data['equatorials']
-                               + data['equatorial_errors'])
+    cubes = iris.cube.CubeList([data['equatorial_ref']] +
+                               data['zonal_mean_errors'] +
+                               data['equatorials'] + data['equatorial_errors'])
     path = get_diagnostic_filename('fig-9-14', config)
     iris.save(cubes, path)
     return path
 
 
 def main(config):
-    """
-    Run sst zonal mean and equatorial errors diagnostic.
+    """Run sst zonal mean and equatorial errors diagnostic.
 
     Arguments
         config: Dictionary containing project information
@@ -393,15 +418,13 @@ def main(config):
     """
     load_data(config)
     data = prepare_data(config)
-    if config['write_plots']:
-        plot_path = produce_plots(config, data)
+    plot_path = produce_plots(config, data)
     ancestor_files = list(config['input_data'].keys())
     provenance_record = get_provenance_record(ancestor_files)
-    if config['write_plots']:
-        provenance_record['plot_file'] = plot_path
     netcdf_path = write_data(config, data)
     with ProvenanceLogger(config) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 if __name__ == '__main__':

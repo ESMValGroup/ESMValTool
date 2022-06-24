@@ -2,6 +2,7 @@
 # recipe_miles_block.yml
 ---
 documentation:
+  title: Blocking Statistics by MiLES
   description: |
     Recipe for computing and plotting blocking statistics using
     the MiLES (Mid-Latitude Evaluation System) package
@@ -52,6 +53,3 @@ diagnostics:
         miles_block:
             script: miles/miles_block.R
             seasons: DJF # Select season ('DJF','MAM','JJA','SON')
-
-
-

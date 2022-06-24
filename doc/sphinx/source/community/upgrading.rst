@@ -4,7 +4,7 @@
 Upgrading a namelist (recipe) or diagnostic to ESMValTool v2
 ************************************************************
 
-This guide summarizes the main steps to be taken in order to port an ESMValTool namelist (now called **recipe**) and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively. The new ESMValTool version is being developed in the public git branch ``master``. An identical version of this branch is maintained in the private repository as well and kept synchronized on an hourly basis.
+This guide summarizes the main steps to be taken in order to port an ESMValTool namelist (now called **recipe**) and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively. The new ESMValTool version is being developed in the public git branch ``main``. An identical version of this branch is maintained in the private repository as well and kept synchronized on an hourly basis.
 
 In the following, it is assumed that the user has successfully installed ESMValTool v2 and has a rough overview of its structure (see `Technical Overview <http://www.esmvaltool.org/download/Righi_ESMValTool2-TechnicalOverview.pdf>`_).
 
@@ -17,15 +17,15 @@ Do not forget to assign it to yourself.
 Create your own branch
 ======================
 
-Create your own branch from ``master`` for each namelist (recipe) to be ported:
+Create your own branch from ``main`` for each namelist (recipe) to be ported:
 
 .. code-block:: bash
 
-    git checkout master
+    git checkout main
     git pull
     git checkout -b <recipe>
 
-``master`` contains only v2.0 under the ``./esmvaltool/`` directory.
+``main`` contains only v2.0 under the ``./esmvaltool/`` directory.
 
 Convert xml to yml
 ==================
@@ -214,4 +214,4 @@ If necessary, add or update the documentation for your recipes in the corrspondi
 Open a pull request
 ===================
 
-Create a pull request on github to merge your branch back to ``master``, provide a short description of what has been done and nominate one or more reviewers.
+Create a pull request on github to merge your branch back to ``main``, provide a short description of what has been done and nominate one or more reviewers.

@@ -67,6 +67,7 @@
 ;        variable has been calculated from) the *second* (third, ...)
 ;
 ; Modification history
+;   20211006-lauer_axel: removed write_plots
 ;   20190221-lauer_axel: added provenance to output (v2.0)
 ;   20181120-lauer_axel: adapted code to multi-variable capable framework
 ;   20180923-lauer_axel: added writing of results to netcdf
@@ -238,12 +239,6 @@ begin
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
-
-  if (diag_script_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
 
 end
 
@@ -868,23 +863,19 @@ begin
     end if
 
     ; plot
-    if (write_plots) then
-      ropts@tiMainString   = var0 + " (" + season(is) + ")"  ; title
-      ; observational uncertainties as normalized RMS error
-      ropts@rmsobs = rmsobs(is)
+    ropts@tiMainString   = var0 + " (" + season(is) + ")"  ; title
+    ; observational uncertainties as normalized RMS error
+    ropts@rmsobs = rmsobs(is)
 
-      plot = taylor_diagram(wks, legendwks, ratio(:, :, is), cc(:, :, is), \
-                            ropts)
+    plot = taylor_diagram(wks, legendwks, ratio(:, :, is), cc(:, :, is), \
+                          ropts)
 
-      plotfile(is) = wks@fullname
-      log_info("Wrote " + plotfile)
+    plotfile(is) = wks@fullname
+    log_info("Wrote " + plotfile)
 
-      if (embracelegend.and.(is.eq.(numseas-1))) then
-        frame(legendwks)
-      end if
-    else
-      plotfile(is) = ""
-    end if  ; if write_plots
+    if (embracelegend.and.(is.eq.(numseas-1))) then
+      frame(legendwks)
+    end if
   end do  ; is-loop (seasons)
 
   ; write netCDF output

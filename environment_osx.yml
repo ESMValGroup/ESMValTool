@@ -1,0 +1,35 @@
+---
+name: esmvaltool
+channels:
+  # The release candidate channel should only be activated
+  # during the rc phase right before the next release of the
+  # ESMValCore.
+  # - conda-forge/label/esmvalcore_rc
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  - pip!=21.3
+  - python>=3.8
+  # Python packages that cannot be installed from PyPI:
+  - cartopy
+  - compilers
+  - esmpy
+  - esmvalcore
+  - gdal
+  - matplotlib-base
+  # Non-Python dependencies
+  - cdo
+  - imagemagick
+  - nco
+  - psy-maps
+  - psy-reg
+  - psy-simple
+  - psyplot
+  - python-cdo
+  - rasterio
+  - ruamel.yaml
+  # may hit hw-specific issue if from pypi
+  # https://github.com/scikit-learn/scikit-learn/issues/14485
+  - scikit-learn
+  - xgboost

@@ -5,6 +5,8 @@ documentation:
   description: |
     Calculate the Pearsons r correlation coefficient over specified dimensions.
 
+  title: Recipe that computes Pearson-r correlation coefficients.
+
   authors:
     - andela_bouwe
 

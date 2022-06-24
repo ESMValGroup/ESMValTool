@@ -267,11 +267,11 @@ def main(cfg):
     caption = f"{metadata['long_name']} for multiple datasets."
     provenance_record = get_provenance_record(caption, all_files)
     provenance_record.update({
-        'plot_file': plot_path,
         'plot_types': ['bar'],
     })
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 if __name__ == '__main__':

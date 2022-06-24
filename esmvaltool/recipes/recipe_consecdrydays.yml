@@ -2,6 +2,8 @@
 # recipe_consecdrydays
 ---
 documentation:
+  title: Consecutive dry days
+
   description: |
     Recipe to calculate consecutive dry days
 
@@ -29,5 +31,5 @@ diagnostics:
         dryindex: 'cdd'
         plim: 1
         frlim: 5
-        quickplot:
-          plot_type: pcolormesh
+        plot:
+          cmap: rain

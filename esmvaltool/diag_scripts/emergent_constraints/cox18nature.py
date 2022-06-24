@@ -254,11 +254,12 @@ def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
     legend = _get_line_plot_legend()
 
     # Save plot
-    provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
+    plot_path = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 def plot_psi(cfg, psi_cubes, lambda_cube, obs_name):
@@ -301,11 +302,12 @@ def plot_psi(cfg, psi_cubes, lambda_cube, obs_name):
     legend = _get_line_plot_legend()
 
     # Save plot
-    provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
+    plot_path = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
@@ -371,11 +373,12 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
     legend = AXES.legend(loc='upper left')
 
     # Save plot
-    provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
+    plot_path = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 def plot_pdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name):
@@ -416,11 +419,12 @@ def plot_pdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name):
     legend = AXES.legend(loc='upper left')
 
     # Save plot
-    provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
+    plot_path = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 def plot_cdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name):
@@ -473,11 +477,12 @@ def plot_cdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name):
     legend = AXES.legend(loc='upper left')
 
     # Save plot
-    provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
+    plot_path = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 def get_ecs_range(cfg, ecs_lin, ecs_pdf):

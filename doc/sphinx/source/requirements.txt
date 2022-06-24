@@ -4,6 +4,7 @@ cdsapi
 cmocean
 cython
 dask[array]
+docutils <0.17
 ecmwf-api-client
 eofs
 fiona

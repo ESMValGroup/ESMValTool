@@ -2,15 +2,17 @@
 # recipe_shapeselect.yml
 ---
 documentation:
+  title: Shape selection
+
   description: |
     This recipe selects grid points belonging to a provided shapefile
-    
+
   authors:
     - berg_peter
-    
+
   projects:
     - c3s-magic
-    
+
   references:
     - acknow_project
 

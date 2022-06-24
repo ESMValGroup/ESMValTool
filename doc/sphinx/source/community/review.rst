@@ -204,7 +204,7 @@ their opinion and try to find a solution.
 .. _`@ESMValGroup/science-reviewers`: https://github.com/orgs/ESMValGroup/teams/science-reviewers
 .. _`@ESMValGroup/esmvaltool-coreteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-coreteam
 .. _`@remi-kazeroni`: https://github.com/remi-kazeroni
-.. _`pull request template`: https://raw.githubusercontent.com/ESMValGroup/ESMValTool/master/.github/pull_request_template.md
+.. _`pull request template`: https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/.github/pull_request_template.md
 .. _`Google meet`: https://meet.google.com
 .. _`Jitsi meet`: https://meet.jit.si
 .. _`git blame`: https://www.freecodecamp.org/news/git-blame-explained-with-examples/

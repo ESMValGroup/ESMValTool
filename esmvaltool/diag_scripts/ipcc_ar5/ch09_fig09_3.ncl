@@ -25,6 +25,7 @@
 ;   none
 ;
 ; Modification history
+;   20211006-lauer_axel: removed write_plots
 ;   20200714-lauer_axel: code rewritten for ESMValTool v2.0, renamed to
 ;                        ch09_fig09-3.ncl (was seasonality_mm.ncl)
 ;   20170622-lauer_axel: added tags for reporting
@@ -68,11 +69,6 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
-  if (diag_script_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
 end
 
 begin
@@ -135,126 +131,122 @@ begin
   ; ============================= plotting =================================
   ; ========================================================================
 
-  if (write_plots) then
-    seas_mm@res_gsnMaximize       = True         ; use full page for the plot
-    seas_mm@res_cnFillOn          = True         ; color plot desired
-    seas_mm@res_cnLineLabelsOn    = False        ; contour lines
-    seas_mm@res_cnLinesOn         = False
-    seas_mm@res_tiMainOn                 = True
-    seas_mm@res_gsnLeftStringFontHeightF = 0.015
-    seas_mm@res_cnLevelSelectionMode     = "ExplicitLevels"
-    seas_mm@res_mpOutlineOn              = True
-    seas_mm@res_mpFillOn                 = False
-    seas_mm@res_lbLabelBarOn             = True
-    seas_mm@res_gsnRightString           = ""
-    seas_mm@res_mpFillDrawOrder          = "PostDraw"     ; draw map fill last
-    seas_mm@res_cnMissingValFillColor    = "Gray"
-    seas_mm@res_tmYLLabelsOn             = False
-    seas_mm@res_tmYLOn                   = False
-    seas_mm@res_tmYRLabelsOn             = False
-    seas_mm@res_tmYROn                   = False
-    seas_mm@res_tmXBLabelsOn             = False
-    seas_mm@res_tmXBOn                   = False
-    seas_mm@res_tmXTLabelsOn             = False
-    seas_mm@res_tmXTOn                   = False
-    seas_mm@res_cnInfoLabelOn            = False      ; turn off cn info label
-    seas_mm@res_mpProjection             = diag_script_info@projection
+  seas_mm@res_gsnMaximize       = True         ; use full page for the plot
+  seas_mm@res_cnFillOn          = True         ; color plot desired
+  seas_mm@res_cnLineLabelsOn    = False        ; contour lines
+  seas_mm@res_cnLinesOn         = False
+  seas_mm@res_tiMainOn                 = True
+  seas_mm@res_gsnLeftStringFontHeightF = 0.015
+  seas_mm@res_cnLevelSelectionMode     = "ExplicitLevels"
+  seas_mm@res_mpOutlineOn              = True
+  seas_mm@res_mpFillOn                 = False
+  seas_mm@res_lbLabelBarOn             = True
+  seas_mm@res_gsnRightString           = ""
+  seas_mm@res_mpFillDrawOrder          = "PostDraw"     ; draw map fill last
+  seas_mm@res_cnMissingValFillColor    = "Gray"
+  seas_mm@res_tmYLLabelsOn             = False
+  seas_mm@res_tmYLOn                   = False
+  seas_mm@res_tmYRLabelsOn             = False
+  seas_mm@res_tmYROn                   = False
+  seas_mm@res_tmXBLabelsOn             = False
+  seas_mm@res_tmXBOn                   = False
+  seas_mm@res_tmXTLabelsOn             = False
+  seas_mm@res_tmXTOn                   = False
+  seas_mm@res_cnInfoLabelOn            = False      ; turn off cn info label
+  seas_mm@res_mpProjection             = diag_script_info@projection
 
-    ; --------------------------------------------------------------------
-    ; create workspace
+  ; --------------------------------------------------------------------
+  ; create workspace
 
-    wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "seasonality_" + var0)
-;    drawNDCGrid(wks) ; debugging option
+  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "seasonality_" + var0)
+;  drawNDCGrid(wks) ; debugging option
 
-    plots = new((/4/), graphic)
+  plots = new((/4/), graphic)
 
-    ; --------------------------------------------------------------------
-    ; plot contour map
+  ; --------------------------------------------------------------------
+  ; plot contour map
 
-    seas_mm@res_gsnDraw         = False  ; Do not draw yet
-    seas_mm@res_gsnFrame        = False  ; Don't advance frame.
-    seas_mm@res_mpPerimOn       = False
+  seas_mm@res_gsnDraw         = False  ; Do not draw yet
+  seas_mm@res_gsnFrame        = False  ; Don't advance frame.
+  seas_mm@res_mpPerimOn       = False
 
-    seas_mm@res_lbTitleString   = "(" + seas_mm@units + ")"
-    seas_mm@res_lbTitlePosition      = "Bottom"
+  seas_mm@res_lbTitleString   = "(" + seas_mm@units + ")"
+  seas_mm@res_lbTitlePosition      = "Bottom"
 
-    seas_mm@res_lbLabelFontHeightF   = 0.014
-    seas_mm@res_lbTopMarginF         = 0.1
-    seas_mm@res_lbTitleFontHeightF   = 0.014
+  seas_mm@res_lbLabelFontHeightF   = 0.014
+  seas_mm@res_lbTopMarginF         = 0.1
+  seas_mm@res_lbTitleFontHeightF   = 0.014
 
-    seas_mm@res_tiMainFontHeightF    = 0.016
+  seas_mm@res_tiMainFontHeightF    = 0.016
 
-    seas_mm@res_tiMainString = "Multi Model Mean Bias"
+  seas_mm@res_tiMainString = "Multi Model Mean Bias"
+
+  if (isatt(seas_mm, "res_cnLevels")) then
+    delete(seas_mm@res_cnLevels)
+  end if
+
+  if (isatt(variable_info[0], "map_diff_levels")) then
+    seas_mm@res_cnLevels = variable_info@map_diff_levels
+  end if
+
+  copy_VarMeta(seas_mm, abs_seas)
+  copy_VarMeta(seas_mm, bias_seas)
+  copy_VarMeta(seas_mm, bias_abs_seas)
+
+  if (var0.eq."tas") then
+    pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
+                             + "ipcc-tas.rgb")
+    seas_mm@res_cnFillColors = pal
+    pal2 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
+                              + "ipcc-tas-absdelta.rgb")
+    abs_seas@res_cnFillColors = pal2
+    pal3 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
+                              + "ipcc-tas-seasdelta.rgb")
+    bias_seas@res_cnFillColors = pal3
+    bias_abs_seas@res_cnFillColors = pal3
 
     if (isatt(seas_mm, "res_cnLevels")) then
       delete(seas_mm@res_cnLevels)
     end if
-
-    if (isatt(variable_info[0], "map_diff_levels")) then
-      seas_mm@res_cnLevels = variable_info@map_diff_levels
+    if (isatt(abs_seas, "res_cnLevels")) then
+      delete(abs_seas@res_cnLevels)
+    end if
+    if (isatt(bias_seas, "res_cnLevels")) then
+      delete(bias_seas@res_cnLevels)
+    end if
+    if (isatt(bias_abs_seas, "res_cnLevels")) then
+      delete(bias_abs_seas@res_cnLevels)
     end if
 
-    copy_VarMeta(seas_mm, abs_seas)
-    copy_VarMeta(seas_mm, bias_seas)
-    copy_VarMeta(seas_mm, bias_abs_seas)
-
-    if (var0.eq."tas") then
-      pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
-                               + "ipcc-tas.rgb")
-      seas_mm@res_cnFillColors = pal
-      pal2 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
-                                + "ipcc-tas-absdelta.rgb")
-      abs_seas@res_cnFillColors = pal2
-      pal3 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
-                                + "ipcc-tas-seasdelta.rgb")
-      bias_seas@res_cnFillColors = pal3
-      bias_abs_seas@res_cnFillColors = pal3
-
-      if (isatt(seas_mm, "res_cnLevels")) then
-        delete(seas_mm@res_cnLevels)
-      end if
-      if (isatt(abs_seas, "res_cnLevels")) then
-        delete(abs_seas@res_cnLevels)
-      end if
-      if (isatt(bias_seas, "res_cnLevels")) then
-        delete(bias_seas@res_cnLevels)
-      end if
-      if (isatt(bias_abs_seas, "res_cnLevels")) then
-        delete(bias_abs_seas@res_cnLevels)
-      end if
-
-      ; IPCC ch.9 fig. 9.3 scales for tas
-      seas_mm@res_cnLevels = fspan(-50, 50, 21)
-      abs_seas@res_cnLevels = fspan(5, 50, 10)
-      bias_seas@res_cnLevels = fspan(-8, 8, 17)
-      bias_abs_seas@res_cnLevels = fspan(-8, 8, 17)
-    end if
-
-    seas_mm@res_tiMainString = "Multi Model Mean"
-    abs_seas@res_tiMainString = "Multi Model Mean of Absolute Seasonality"
-    bias_seas@res_tiMainString = "Multi Model Mean Bias in Seasonality"
-    bias_abs_seas@res_tiMainString = "Multi Model Mean Bias in Absolute " \
-                                     + "Seasonality"
-
-    ; panelling resources
-
-    pres                 = True
-    pres@gsnPanelCenter  = False
-    pres@gsnPanelRowSpec = True
-    pres@gsnPanelYWhiteSpacePercent = 5
-    pres@gsnPanelXWhiteSpacePercent = 5
-
-    plots(0) = contour_map(wks, seas_mm, var0)
-    plots(1) = contour_map(wks, abs_seas, var0)
-    plots(2) = contour_map(wks, bias_seas, var0)
-    plots(3) = contour_map(wks, bias_abs_seas, var0)
-
-    gsn_panel(wks, plots, (/2, 2/), pres)
-
-    plotfile = wks@fullname
-  else
-    plotfile = ""
+    ; IPCC ch.9 fig. 9.3 scales for tas
+    seas_mm@res_cnLevels = fspan(-50, 50, 21)
+    abs_seas@res_cnLevels = fspan(5, 50, 10)
+    bias_seas@res_cnLevels = fspan(-8, 8, 17)
+    bias_abs_seas@res_cnLevels = fspan(-8, 8, 17)
   end if
+
+  seas_mm@res_tiMainString = "Multi Model Mean"
+  abs_seas@res_tiMainString = "Multi Model Mean of Absolute Seasonality"
+  bias_seas@res_tiMainString = "Multi Model Mean Bias in Seasonality"
+  bias_abs_seas@res_tiMainString = "Multi Model Mean Bias in Absolute " \
+                                   + "Seasonality"
+
+  ; panelling resources
+
+  pres                 = True
+  pres@gsnPanelCenter  = False
+  pres@gsnPanelRowSpec = True
+  pres@gsnPanelYWhiteSpacePercent = 5
+  pres@gsnPanelXWhiteSpacePercent = 5
+
+  plots(0) = contour_map(wks, seas_mm, var0)
+  plots(1) = contour_map(wks, abs_seas, var0)
+  plots(2) = contour_map(wks, bias_seas, var0)
+  plots(3) = contour_map(wks, bias_abs_seas, var0)
+
+  gsn_panel(wks, plots, (/2, 2/), pres)
+
+  plotfile = wks@fullname
 
   ; ###########################################
   ; # output to netCDF                        #

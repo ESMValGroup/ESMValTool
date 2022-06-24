@@ -176,6 +176,20 @@ begin
   end do
   levels = round(100. * levels, 0) / 100.
 
+  ; Determine breakpoints for x-values
+  vals = new(nmod, float)
+  vals = 1
+  if isatt(data, "breakpoints") then
+    nbreak = dimsizes(data@breakpoints)
+    do ibreak = 0, nbreak - 1
+      vals(data@breakpoints(ibreak)) = 3.
+    end do
+  else
+    nbreak = 0
+  end if
+  x_space = cumsum(vals, 2) - 1
+  delete(vals)
+
   ; Display metrics value on the plot
   flag_values = False
   if (isatt(data, "disp_values")) then
@@ -249,7 +263,7 @@ begin
   res@tmYLOn = False
   res@tmYROn = False
   res@trXMinF = 0.
-  res@trXMaxF = 1.0
+  res@trXMaxF = 1.0 + 2.*nbreak/nmod
   res@trYMinF = 0.
   res@trYMaxF = 1.0
 
@@ -373,8 +387,9 @@ begin
       end if
 
       if (l_square) then
-        xx = (/imod * xbsize, (imod + 1) * xbsize, \
-              (imod + 1) * xbsize, imod * xbsize, imod * xbsize/)
+        xx = (/x_space(imod) * xbsize, (x_space(imod) + 1) * xbsize, \
+              (x_space(imod) + 1) * xbsize, x_space(imod) * xbsize, \
+              x_space(imod) * xbsize/)
         yy = (/idiag * ybsize, idiag * ybsize, (idiag + 1) * ybsize, \
               (idiag + 1) * ybsize, idiag * ybsize/)
         poly(idiag, imod, 0) = gsn_add_polygon(wks, plot, xx, yy, resPol)
@@ -402,8 +417,8 @@ begin
       else
 
         ; Primary reference => lower triangle
-        xx = (/imod * xbsize, (imod + 1) * xbsize, \
-              (imod + 1) * xbsize, imod * xbsize/)
+        xx = (/x_space(imod) * xbsize, (x_space(imod) + 1) * xbsize, \
+              (x_space(imod) + 1) * xbsize, x_space(imod) * xbsize/)
         yy = (/idiag * ybsize, idiag * ybsize, (idiag + 1) * ybsize, \
               idiag * ybsize/)
         poly(idiag, imod, 0) = gsn_add_polygon(wks, plot, xx, yy, resPol)
@@ -457,8 +472,8 @@ begin
         end if
 
         ; Alternative reference => upper triangle
-        xx = (/imod * xbsize, (imod + 1) * xbsize, \
-              imod * xbsize, imod * xbsize/)
+        xx = (/x_space(imod) * xbsize, (x_space(imod) + 1) * xbsize, \
+              x_space(imod) * xbsize, x_space(imod) * xbsize/)
         yy = (/idiag * ybsize, (idiag + 1) * ybsize, \
               (idiag + 1) * ybsize, idiag * ybsize/)
         poly(idiag, imod, 1) = gsn_add_polygon(wks, plot, xx, yy, resPol)
@@ -517,11 +532,10 @@ begin
   resTxt@txAngleF = 90.
   step = res@vpWidthF / nmod
   resTxt@txJust = "CenterRight"
-  xpos = 0.2 + step / 2.
+  xposs = 0.2 + (x_space+.5)*(res@vpWidthF/(nmod+2.*nbreak))
   ypos = 0.19
   do imod = 0, nmod - 1
-    gsn_text_ndc(wks, data&models(imod), xpos, ypos, resTxt)
-    xpos = xpos + step
+    gsn_text_ndc(wks, data&models(imod), xposs(imod), ypos, resTxt)
   end do
 
   ; Draw a labelbar

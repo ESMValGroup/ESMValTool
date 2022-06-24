@@ -144,6 +144,8 @@ User settings in recipe
 
    * variable "lwp": diag_scripts/shared/plots/rgb/qcm3.rgb
 
+.. _clouds_ipcc.ncl:
+
 #. Script clouds_ipcc.ncl
 
    *Required settings (scripts)*
@@ -226,20 +228,20 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4mips data can be used directly without any preprocessing;
-(2) see headers of reformat scripts for non-obs4mips data for download
+*Note: (1) obs4MIPs data can be used directly without any preprocessing;
+(2) use `esmvaltool data info DATASET` or see headers of reformat scripts for non-obs4MIPs data for download
 instructions.*
 
-* CERES-EBAF (obs4mips) - CERES TOA radiation fluxes (used for calculation of
+* CERES-EBAF (obs4MIPs) - CERES TOA radiation fluxes (used for calculation of
   cloud forcing)
-* GPCP-SG (obs4mips) - Global Precipitation Climatology Project total
+* GPCP-SG (obs4MIPs) - Global Precipitation Climatology Project total
   precipitation
-* MODIS (obs4mips) - MODIS total cloud fraction
+* MODIS (obs4MIPs) - MODIS total cloud fraction
 * UWisc - University of Wisconsin-Madison liquid water path climatology, based
   on satellite observbations from TMI, SSM/I, and AMSR-E, reference: O'Dell et
   al. (2008), J. Clim.
 
-  *Reformat script:* reformat_scripts/obs/reformat_obs_UWisc.ncl
+  *Reformat script:* esmvaltool/cmorizers/data/formatters/datasets/uwisc.ncl
 
 References
 ----------

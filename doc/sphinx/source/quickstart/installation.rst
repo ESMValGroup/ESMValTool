@@ -4,25 +4,31 @@
 Installation
 ************
 
-ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.6+.
+.. note::
+   ESMValTool now uses `mamba` instead of `conda` for the recommended installation.
+   For more information about the change, have a look at :ref:`Move to Mamba<move-to-mamba>`.
+
+ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.8+.
 
 The ESMValTool can be installed in multiple ways.
 
 Recommended installation methods:
 
-* On Linux, please install via the :ref:`conda package manager<install_with_conda>` (see https://anaconda.com);
+* On Linux, please install via the :ref:`mamba package manager<install_with_mamba>` (see https://anaconda.com);
 
 * For MacOSX, please follow separate instructions for :ref:`installation on MacOSX<install_on_macosx>`.
 
 Further options for installation are:
 
-* :ref:`Installation with pip and conda<install_with_pip>` (see https://pypi.org);
+* :ref:`Installation with pip and mamba<install_with_pip>` (see https://pypi.org);
 
 * :ref:`Deployment through a Docker container<install_with_docker>` (see https://www.docker.com);
 
 * :ref:`Deployment through a Singularity container<install_with_singularity>` (see https://sylabs.io/guides/latest/user-guide/);
 
-* :ref:`From the source code<install_from_source>` available at https://github.com/ESMValGroup/ESMValTool.
+* :ref:`From the source code<install_from_source>` available at https://github.com/ESMValGroup/ESMValTool;
+
+* :ref:`From pre-installed versions on HPC clusters<install_on_hpc>`.
 
 The next sections will detail the procedure to install ESMValTool through each
 of these methods.
@@ -33,95 +39,67 @@ available with more explanations and guidance if the installation instructions
 here are too concise.
 See `common installation issues`_ if you run into trouble.
 
-.. _install_with_conda:
+.. _install_with_mamba:
 
-Conda installation
-==================
+Mamba/Conda installation
+========================
 
 In order to install the `conda <https://docs.conda.io>`_ package, you will need
-conda pre-installed.
+mamba pre-installed.
 
-For a minimal conda installation (recommended) go to https://conda.io/miniconda.html.
-It is recommended that you always use the latest version of conda, as problems
+For a minimal mamba installation (recommended) go to
+https://mamba.readthedocs.io/en/latest/installation.html.
+It is recommended that you always use the latest version of mamba, as problems
 have been reported when trying to use older versions.
 
 First download the installation file for
-`Linux <https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh>`_
+`Linux <https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh>`_
 or
-`MacOSX <https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh>`_.
+`MacOSX <https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-MacOSX-x86_64.sh>`_.
 After downloading the installation file from one of the links above, execute it
 by running (Linux example):
 
 .. code-block:: bash
 
-    bash Miniconda3-latest-Linux-x86_64.sh
+    bash Mambaforge-Linux-x86_64.sh
 
 and follow the instructions on your screen.
-Immediately update conda after installing it:
+Immediately update mamba after installing it:
 
 .. code-block:: bash
 
-    conda update --name base conda
+    mamba update --name base mamba
 
-You can check that conda installed correctly by running
-
-.. code-block:: bash
-
-    which conda
-
-this should show the path to your conda executable, e.g.
-``~/miniconda3/bin/conda``.
-
-Julia installation
-------------------
-
-Because Julia cannot be installed from conda, if you want to use the entire
-ESMValTool (or only the ESMValTool Julia functionality), you will also need to
-pre-install Julia.
-
-Installation instructions for Julia can be found on the
-`Julia installation instructions page <https://julialang.org/downloads/platform/>`_.
-One way to install Julia is by using `Jill.py <https://github.com/johnnychen94/jill.py>`_
+You can check that mamba installed correctly by running
 
 .. code-block:: bash
 
-    conda create --name jill pip
-    conda activate jill
-    pip install jill
-    jill install
-    conda deactivate
+    which mamba
 
-You can check that Julia installed correctly by running
-
-.. code-block:: bash
-
-    which julia
-
-this should show the path to your Julia executable, e.g. ``~/.local/bin/julia``.
+this should show the path to your mamba executable, e.g.
+``~/mambaforge/bin/mamba``.
 
 ESMValTool installation
------------------------
+=======================
 
 Once you have installed the above prerequisites, you can install the entire
 ESMValTool package by running:
 
 .. code-block:: bash
 
-    conda create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool python=3.9
+    mamba create --name esmvaltool esmvaltool 'python=3.10'
 
-Here ``conda`` is the executable calling the conda package manager to install
-``esmvaltool`` and the ``-c`` flag specifies the conda software channels in which the
-``esmvaltool`` package and its dependencies can be found.
-The reason why we are also specifying ``python=3.9`` is that it will make it
-easier for conda to find a working combination of all required packages, see
-`Conda fails to solve the environment`_ in `common installation issues`_ for an
-in-depth explanation.
-Python 3.7 and 3.8 are also supported, in case you prefer to work with an older
-version of Python.
+Here ``mamba`` is the executable calling the mamba package manager to install
+``esmvaltool``. The reason why we are also specifying ``'python=3.10'`` is that
+it will make it easier for mamba to find a working combination of all required
+packages, see `Mamba fails to solve the environment`_ in `common installation
+issues`_ for an in-depth explanation. Python 3.8 and 3.9 are also supported, in
+case you prefer to work with an older version of Python.
 
 This will create a new
 `conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`_
 and install ESMValTool into it with a single command.
+
 
 .. code-block:: bash
 
@@ -144,11 +122,18 @@ message to the console.
     Creating a new conda environment is often much faster and more reliable than
     trying to update an existing conda environment.
 
-.. note::
+Julia installation
+------------------
 
-    The esmvaltool conda package will require Python>=3.7 so make sure that your
-    conda is new enough to be able to install the required version of Python; we
-    recommend that the conda version should be at least 4.9.
+If you want to use the ESMValTool Julia functionality, you will also need to
+install Julia. If you are just getting started, we suggest that you
+come back to this step later when and if you need it.
+To perform the Julia installation, make sure that your conda
+environment is activated and then execute
+
+.. code-block:: bash
+
+    mamba install julia
 
 .. _conda subpackages:
 
@@ -158,9 +143,8 @@ Installation of subpackages
 The diagnostics bundled in ESMValTool are scripts in four different programming
 languages: Python, NCL, R, and Julia.
 
-There are four language specific packages available:
+There are three language specific packages available:
 
-* ``esmvaltool-julia``
 * ``esmvaltool-ncl``
 * ``esmvaltool-python``
 * ``esmvaltool-r``
@@ -177,14 +161,11 @@ environment, run
 
 .. code-block:: bash
 
-    conda install esmvaltool-python esmvaltool-ncl -c esmvalgroup -c conda-forge
+    mamba install esmvaltool-python esmvaltool-ncl
 
 Some of the CMORization scripts are written in Python, while others are written
-in  NCL. Therefore, both ``esmvaltool-python`` and ``esmvaltool-ncl`` need to be
+in NCL. Therefore, both ``esmvaltool-python`` and ``esmvaltool-ncl`` need to be
 installed in order to be able to run all CMORization scripts.
-
-Note that it is only necessary to install Julia prior to the conda installation
-if you are going to install the ``esmvaltool-julia`` package.
 
 Note that the ESMValTool source code is contained in the ``esmvaltool-python``
 package, so this package will always be installed as a dependency if you install
@@ -200,19 +181,19 @@ that describes the installation of the ESMValTool in more detail. It can be foun
 Installation on MacOSX
 ======================
 
-The Python diagnostics of the ESMValTool are supported on MacOSX, but Julia, NCL
+The Python diagnostics of the ESMValTool are supported on MacOSX, but Julia, NCL,
 and R are not. If any of these are needed, deployment through a :ref:`Docker<install_with_docker>`
 container is advised.
 
 The ``esmvaltool-python`` diagnostics can be installed as follows:
 
-First, ensure conda is pre-installed (see `Conda installation`_ for more details).
+First, ensure mamba is pre-installed (see `Mamba/Conda installation`_ for more details).
 
 Create a new environment with the ``esmvaltool-python`` package:
 
 .. code-block:: bash
 
-    conda create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool-python python=3.9
+    mamba create --name esmvaltool esmvaltool-python 'python=3.10'
 
 Activate the new environment:
 
@@ -226,6 +207,16 @@ Confirm that the ESMValTool is working with:
 
     esmvaltool --help
 
+Note that some recipes may depend on the OpenMP library, which does not
+install via mamba on MacOSX. To install this library, run:
+
+.. code-block:: bash
+
+    brew install libomp
+
+to install the library with Homebrew. In case you do not have Homebrew, follow
+installation instructions `here <https://brew.sh/>`__.
+
 .. _install_with_pip:
 
 Pip installation
@@ -233,21 +224,22 @@ Pip installation
 
 It is also possible to install ESMValTool from `PyPI <https://pypi.org/project/ESMValTool/>`_.
 However, this requires first installing dependencies that are not available on PyPI in some other way.
-By far the easiest way to install these dependencies is to use conda_.
-For a minimal conda installation (recommended) go to https://conda.io/miniconda.html.
+By far the easiest way to install these dependencies is to use `mamba`.
+For a minimal mamba installation (recommended) go to https://mamba.readthedocs.io/en/latest/installation.html.
 
-After installing conda, download
-`the file with the list of dependencies <https://raw.githubusercontent.com/ESMValGroup/ESMValTool/master/environment.yml>`_:
+After installing mamba, download
+`the file with the list of dependencies <https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/environment.yml>`_:
 
 .. code-block:: bash
 
-    wget https://raw.githubusercontent.com/ESMValGroup/ESMValTool/master/environment.yml
+    wget https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/environment.yml
 
 and install these dependencies into a new conda environment with the command
 
 .. code-block:: bash
 
-    conda env create --name esmvaltool --file environment.yml
+    mamba env create --name esmvaltool --file environment.yml
+
 
 Finally, activate the newly created environment
 
@@ -262,7 +254,7 @@ and install ESMValTool as well as any remaining Python dependencies with the com
     pip install esmvaltool
 
 If you would like to run Julia diagnostic scripts, you will also need to
-`install Julia <https://julialang.org/downloads/platform/>`_ and the Julia dependencies:
+install the Julia dependencies:
 
 .. code-block:: bash
 
@@ -291,7 +283,7 @@ You can get the latest release with
 
    docker pull esmvalgroup/esmvaltool:stable
 
-If you want to use the current master branch, use
+If you want to use the current main branch, use
 
 .. code-block:: bash
 
@@ -323,7 +315,7 @@ or script to abbreviate the above command, for example
 
 .. code-block:: bash
 
-	 alias esmvaltool="docker run -e HOME -v $HOME:$HOME -v /data:/data esmvalgroup/esmvaltool:stable"
+   alias esmvaltool="docker run -e HOME -v $HOME:$HOME -v /data:/data esmvalgroup/esmvaltool:stable"
 
 would allow using the ``esmvaltool`` command without even noticing that the
 tool is running inside a Docker container.
@@ -353,7 +345,7 @@ or script to abbreviate the above command, for example
 
 .. code-block:: bash
 
-	 alias esmvaltool="singularity run -B $HOME:$HOME -B /data:/data docker://esmvalgroup/esmvaltool:stable"
+   alias esmvaltool="singularity run -B $HOME:$HOME -B /data:/data docker://esmvalgroup/esmvaltool:stable"
 
 would allow using the ``esmvaltool`` command without even noticing that the
 tool is running inside a Singularity container.
@@ -426,23 +418,22 @@ file.
 If you choose to use this option, download the compressed file and extract its
 contents at the desired location.
 
+Installation Using Mamba from Source
+------------------------------------
 
-Prerequisites
--------------
-
-It is recommended to use conda to manage ESMValTool dependencies.
-For a minimal conda installation go to https://conda.io/miniconda.html. To
-simplify the installation process, an environment definition file is provided
+It is recommended to use mamba to manage ESMValTool dependencies.
+For a minimal mamba installation go to https://mamba.readthedocs.io/en/latest/installation.html.
+To simplify the installation process, an environment definition file is provided
 in the repository (``environment.yml`` in the root folder).
 
 .. attention::
     Some systems provide a preinstalled version of conda (e.g., via the module environment).
     However, several users reported problems when installing NCL with such versions. It is
-    therefore preferable to use a local, fully user-controlled conda installation.
-    Using an older version of conda can also be a source of problems, so if you have conda
-    installed already, make sure it is up to date by running ``conda update -n base conda``.
+    therefore preferable to use a local, fully user-controlled mamba installation.
+    Using an older version of mamba can also be a source of problems, so if you have mamba
+    installed already, make sure it is up to date by running ``mamba update -n base mamba``.
 
-To enable the ``conda`` command, please source the appropriate configuration file
+To enable the ``mamba`` command, please source the appropriate configuration file
 from your ``~/.bashrc``  file:
 
 .. code-block:: bash
@@ -456,13 +447,13 @@ or ``~/.cshrc``/``~/.tcshrc`` file:
     source <prefix>/etc/profile.d/conda.csh
 
 where ``<prefix>`` is the install location of your anaconda or miniconda
-(e.g. ``/home/$USER/anaconda3`` or ``/home/$USER/miniconda3``).
+(e.g. ``/home/$USER/mambaforge``, ``/home/$USER/anaconda3`` or ``/home/$USER/miniconda3``).
 
 
 .. note::
-    Note that during the installation, conda will ask you
+    Note that during the installation, mamba will ask you
     if you want the installation to be automatically sourced from your
-    ``.bashrc`` or ``.bash-profile`` files; if you answered yes, then conda
+    ``.bashrc`` or ``.bash-profile`` files; if you answered yes, then mamba
     will write bash directives to those files and every time you get to your
     shell, you will automatically be inside conda's ``(base)`` environment.
     To deactivate this feature, look for the ``# >>> conda initialize >>>``
@@ -470,19 +461,19 @@ where ``<prefix>`` is the install location of your anaconda or miniconda
 
 
 The ESMValTool conda environment file can also be used as a requirements list
-for those cases in which a conda installation is not possible or advisable.
+for those cases in which a mamba installation is not possible or advisable.
 From now on, we will assume that the installation is going to be done through
-conda.
+mamba.
 
 Ideally, you should create a separate conda environment for ESMValTool, so it is
 independent from any other Python tools present in the system.
 
-Note that it is advisable to update conda to the latest version before
+Note that it is advisable to update mamba to the latest version before
 installing ESMValTool, using the command (as mentioned above)
 
 .. code-block:: bash
 
-    conda update --name base conda
+    mamba update --name base mamba
 
 To create an environment, go to the directory containing the ESMValTool source
 code (called ``ESMValTool`` if you did not choose a different name)
@@ -491,14 +482,28 @@ code (called ``ESMValTool`` if you did not choose a different name)
 
     cd ESMValTool
 
-and run
+and (when on Linux) create a new environment called ``esmvaltool``
+containing just Python with the command
 
 .. code-block:: bash
 
-    conda env create --name esmvaltool --file environment.yml
+    mamba create --name esmvaltool 'python=3.10'
 
-This command installs many of the required dependencies from conda, including
-the ESMValCore package and Python, R, and NCL interpreters.
+if needed, older versions of Python can also be selected.
+Next, install many of the required dependencies, including the ESMValCore package
+and Python, R, and NCL interpreters, into this environment by running
+
+.. code-block:: bash
+
+    mamba env update --name esmvaltool --file environment.yml
+
+**MacOSX note:** ESMValTool functionalities in Julia, NCL, and R are not
+supported on MacOSX, due to conflicts in the conda environment. To install a
+conda environment on MacOSX, use the dedicated environment file:
+
+.. code-block:: bash
+
+    mamba env create --name esmvaltool --file environment_osx.yml
 
 The environment is called ``esmvaltool`` by default, but it is possible to use
 the option ``--name SOME_ENVIRONMENT_NAME`` to define a custom name. You should
@@ -513,7 +518,7 @@ file. This may be useful when updating an older installation of ESMValTool:
 
 .. code-block:: bash
 
-    conda env update --name esmvaltool --file environment.yml
+    mamba env update --name esmvaltool --file environment.yml
 
 but if you run into trouble, please try creating a new environment.
 
@@ -539,24 +544,8 @@ tool.
 This command will also install extra development dependencies needed for
 building the documentation, running the unit tests, etc.
 
-If you would like to run Julia diagnostic scripts, you will also need to
-`install Julia <https://julialang.org/downloads/platform/>`_.
-One way to install Julia is by using `Jill.py <https://github.com/johnnychen94/jill.py>`_
-
-.. code-block:: bash
-
-    pip install jill
-    jill install
-
-You can check that Julia installed correctly by running
-
-.. code-block:: bash
-
-    which julia
-
-this should show the path to your Julia executable.
-
-Next, install the ESMValTool Julia dependencies:
+If you would like to run Julia diagnostic scripts, you will need to
+install the ESMValTool Julia dependencies:
 
 .. code-block:: bash
 
@@ -578,6 +567,16 @@ To do this, run the tool with:
 
 If everything was installed properly, ESMValTool should have printed a
 help message to the console.
+
+**MacOSX note:** some recipes may depend on the OpenMP library, which does not
+install via mamba on MacOSX. Instead run
+
+.. code-block:: bash
+
+    brew install libomp
+
+to install the library with Homebrew. In case you do not have Homebrew, follow
+installation instructions `here <https://brew.sh/>`__.
 
 For a more complete installation verification, run the automated tests and
 confirm that no errors are reported:
@@ -648,49 +647,92 @@ To check that the installation was successful, run
 this should show the directory of the source code that you just downloaded.
 
 If the command above shows a directory inside your conda environment instead,
-e.g. ``~/conda/envs/esmvaltool/lib/python3.8/site-packages/esmvalcore``, you
+e.g. ``~/mamba/envs/esmvaltool/lib/python3.8/site-packages/esmvalcore``, you
 may need to manually remove that directory and run
 ```pip install -e '.[develop]'``
 again.
+
+.. _install_on_hpc:
+
+Pre-installed versions on HPC clusters
+======================================
+
+The ESMValTool is also available on the HPC clusters CEDA-JASMIN and DKRZ-MISTRAL and there will be no need
+to install it yourself if you are just running diagnostics:
+
+ - CEDA-JASMIN: `esmvaltool` is available on the scientific compute nodes (`sciX.jasmin.ac.uk` where
+   `X = 1, 2, 3, 4, 5`) after login and module loading via `module load esmvaltool`; see the helper page at
+   `CEDA <https://help.jasmin.ac.uk/article/4955-community-software-esmvaltool>`__ ;
+ - DKRZ-Mistral: `esmvaltool` is available on login nodes (`mistral.dkrz.de`) and pre- and post-processing
+   nodes (`mistralpp.dkrz.de`) after login and module loading via `module load esmvaltool`; the command
+   `module help esmvaltool` provides some information about the module.
+
+Installation from the conda lock file
+=====================================
+
+A fast conda environment creation is possible using the provided conda lock file. This is a secure alternative
+to the installation from source, whenever the conda environment can not be created for some reason. A conda lock file
+is an explicit environment file that contains pointers to dependency packages as they are hosted on the Anaconda cloud;
+these have frozen version numbers, build hashes, and channel names, parameters established at the time
+of the conda lock file creation, so may be obsolete after a while,
+but they allow for a robust environment creation while they're still up-to-date.
+We regenerate these lock files every 10 days through automatic Pull Requests
+(or more frequently, since the automatic generator runs on merges on the main branch too),
+so to minimize the risk of dependencies becoming obsolete. Conda environment creation from
+a lock file is done just like with any other environment file:
+
+.. code-block:: bash
+
+   conda create --name esmvaltool --file conda-linux-64.lock
+
+The latest, most up-to-date file can always be downloaded directly from the source code
+repository, a direct download link can be found `here <https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/conda-linux-64.lock>`__.
+
+.. note::
+   `pip` and `conda` are NOT installed, so you will have to install them in the new environment: use conda-forge as channel): ``conda install -c conda-forge pip`` at the very minimum so we can install `esmvalcore` afterwards.
+
+.. note::
+   For instructions on how to manually create the lock file, see
+   :ref:`these instructions <esmvalcore:condalock-installation-creation>`.
 
 .. _common installation issues:
 
 Common installation problems and their solutions
 ================================================
 
-Conda fails to solve the environment
+Mamba fails to solve the environment
 ------------------------------------
 If you see the text ``Solving environment:`` with the characters ``-\|/`` rotating
-behind it for more than 10 minutes, conda may be having problems finding a
+behind it for more than 10 minutes, mamba may be having problems finding a
 working combination of versions of the packages that the ESMValTool depends on.
 Because the ESMValTool is a community tool, there is no strict selection of
 which tools can be used and installing the ESMValTool requires installing almost
 any package that is available for processing climate data.
-To help conda solve the environment, you can try the following.
+To help mamba solve the environment, you can try the following.
 
-Always use the latest version of conda, as problems have been reported by people
+Always use the latest version of mamba, as problems have been reported by people
 using older versions, to update, run:
 
 .. code-block:: bash
 
-    conda update --name base conda
+    mamba update --name base mamba
 
-Usually conda is much better at solving new environments than updating older
+Usually mamba is much better at solving new environments than updating older
 environments, so it is often a good idea to create a new environment if updating
 does not work.
 
-It can help conda if you let it know what version of certain packages you want,
+It can help mamba if you let it know what version of certain packages you want,
 for example by running
 
 .. code-block:: bash
 
-    conda create -n esmvaltool -c conda-forge -c esmvalgroup esmvaltool python=3.8
+    mamba create -n esmvaltool esmvaltool 'python=3.10'
 
-you ask for Python 3.8 specifically and that makes it much easier for conda to
+you ask for Python 3.10 specifically and that makes it much easier for mamba to
 solve the environment, because now it can ignore any packages that were built
-for other Python versions. Note that, since the esmvaltool package is built with Python>=3.7,
-asking for an older Python version, e.g. `python=3.6`, in this way, it will result in
-installation failure.
+for other Python versions. Note that, since the esmvaltool package is built
+with Python>=3.8, asking for an older Python version, e.g. `python=3.7`, in
+this way, it will result in installation failure.
 
 Problems with proxies
 ---------------------
@@ -722,12 +764,10 @@ will solve the problem.
 Installation of R packages fails
 --------------------------------
 Problems have been reported if the ``R`` interpreter was made available
-through the ``module load`` command in addition to installation from conda.
-ESMValTool works fine with either way of installing R, but do not try to use
-both installation methods at the same time.
+through the ``module load`` command in addition to installation from mamba.
 If your ESMValTool conda environment is called ``esmvaltool`` and you want to
-use the R interpreter installed from conda, the path to the R interpreter should
-end with ``conda/envs/esmvaltool/bin/R``.
+use the R interpreter installed from mamba, the path to the R interpreter should
+end with ``mamba/envs/esmvaltool/bin/R`` or ``conda/envs/esmvaltool/bin/R``.
 When the conda environment for ESMValTool is activated, you can check which R
 interpreter is used by running
 
@@ -752,10 +792,27 @@ origin or login machines’ ``.profile``.
 
 Problems when updating the conda environment
 --------------------------------------------
-Usually conda is much better at solving new environments than updating older
+Usually mamba is much better at solving new environments than updating older
 environments, so it is often a good idea to create a new environment if updating
-does not work. See also `Conda fails to solve the environment`_.
+does not work. See also `Mamba fails to solve the environment`_.
 
-Do not run ``conda update --update-all`` in the ``esmvaltool``
+Do not run ``mamba update --update-all`` in the ``esmvaltool``
 environment since that will update some packages that are pinned to
 specific versions for the correct functionality of the tool.
+
+
+.. _move-to-mamba:
+
+Move to Mamba
+=============
+
+Mamba is a much faster alternative to `conda`, and environment creation and updating
+benefits from the use of a much faster (C++ backend) dependency solver; tests have been performed
+to verify the integrity of the `esmvaltool` environment built with `mamba`, and we are
+now confident that the change will not affect the way ESMValTool is installed and run, whether it be on a Linux or OSX platform.
+From the user's perspective, it is a straightforward use change: the CLI (command line
+interface) of `mamba` is identical to `conda`: any command that was run with `conda` before
+will now be run with `mamba` instead, keeping all the other command line arguments and
+flags as they were before. The only place where `conda` should not be replaced with `mamba`
+at command line level is at the environment activation point: `conda activate` will still
+have to be used.

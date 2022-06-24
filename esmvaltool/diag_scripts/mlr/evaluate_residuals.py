@@ -108,12 +108,12 @@ def _write_provenance(cfg, data_frame, plot_path, title, ancestors,
         'ancestors': ancestors,
         'authors': ['schlund_manuel'],
         'caption': f"Boxplot of {title}.",
-        'plot_file': plot_path,
         'plot_types': ['box'],
         'references': ['schlund20jgr'],
     }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, record)
+        provenance_logger.log(plot_path, record)
 
 
 def get_residual_data(cfg):

@@ -1,0 +1,34 @@
+---
+# Common global attributes for Cmorizer output
+
+
+# Input
+# CDR-2
+filename: 'ESACCI-WATERVAPOUR-L3S-TCWV-*-05deg-{year}{month}-fv3.1.nc'
+# CDR-1
+# filename: 'dataset3_1/CDR-1/monthlies/ESACCI-WATERVAPOUR-L3?-TCWV-*-05deg-{year}{month}-fv3.1.nc'
+attributes:
+  dataset_id: ESACCI-WATERVAPOUR
+  # CDR-2
+  version: 'CDR2-L3S-05deg_fv3.1'
+  # CDR-1
+  # version: 'CDR1-L3-05deg_fv3.1'
+  tier: 3
+  modeling_realm: sat
+  project_id: OBS
+  source: "ftp.brockmann-consult.de, access currently restricted"
+  reference: ["esacci-watervapour"]
+  comment: "Preliminary data."
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+  prw:
+    mip: Amon
+    raw: tcwv
+    # Output automatially added: Amon_<var>_200910-200910.nc
+    # CDR-2
+    file: OBS_ESACCI-WATERVAPOUR-CDR2-L3S-TCWV-05deg
+    # CDR-1
+    # file: OBS_ESACCI-WATERVAPOUR-CDR1-L3-TCWV-05deg
+    start_year: 2003
+    end_year: 2017

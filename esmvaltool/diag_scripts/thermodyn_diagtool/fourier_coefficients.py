@@ -27,10 +27,10 @@ def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
 
     Arguments:
     ---------
-    - tadiagfile: the name of a file to store modified t fields;
-    - outfile: the name of a file to store the Fourier coefficients;
-    - ta_input: the name of a file containing t,u,v,w fields;
-    - tas_input: the name of a file containing t2m field.
+    tadiagfile: the name of a file to store modified t fields;
+    outfile: the name of a file to store the Fourier coefficients;
+    ta_input: the name of a file containing t,u,v,w fields;
+    tas_input: the name of a file containing t2m field.
     """
     with Dataset(ta_input) as dataset:
         lon = dataset.variables['lon'][:]
@@ -122,18 +122,16 @@ def pr_output(dict_v, nc_f, fileo, file_desc, wave2):
 
     Arguments:
     ---------
-        - var1, var2, var3, var4: the fields to be stored, with shape
-          (time,level,wave,lon);
-        - nc_f: the existing dataset, from where the metadata are
-          retrieved. Coordinates time,level and lon have to be the same
-          dimension as the fields to be saved to the new files;
-        - fileo: the name of the output file;
-        - wave2: an array containing the zonal wavenumbers;
-        - name1, name2, name3, name4: the name of the variables to be
-          saved;
+    var1, var2, var3, var4: the fields to be stored, with shape
+                            (time,level,wave,lon);
+    nc_f: the existing dataset, from where the metadata are retrieved.
+          Coordinates time,level and lon have to be the same dimension as the
+          fields to be saved to the new files;
+    fileo: the name of the output file;
+    wave2: an array containing the zonal wavenumbers;
+    name1, name2, name3, name4: the name of the variables to be saved;
 
-    PROGRAMMER(S)
-        Chris Slocum (2014), modified by Valerio Lembo (2018).
+    @author: Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
     # Writing NetCDF files
     with Dataset(fileo, 'w', format='NETCDF4') as var_nc_fid:
@@ -164,15 +162,14 @@ def pr_output_diag(var1, nc_f, fileo, name1):
 
     Arguments:
     ---------
-        - var1: the field to be stored, with shape (time,level,lat,lon);
-        - nc_f: the existing dataset, from where the metadata are
-          retrieved. Coordinates time,level, lat and lon have to be the
-          same dimension as the fields to be saved to the new files;
-        - fileo: the name of the output file;
-        - name1: the name of the variable to be saved;
+    var1: the field to be stored, with shape (time,level,lat,lon);
+    nc_f: the existing dataset, from where the metadata are retrieved.
+          Coordinates time,level, lat and lon have to be the same dimension as
+          the fields to be saved to the new files;
+    fileo: the name of the output file;
+    name1: the name of the variable to be saved;
 
-    PROGRAMMER(S)
-        Chris Slocum (2014), modified by Valerio Lembo (2018).
+    @author: Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
     with Dataset(fileo, 'w', format='NETCDF4') as var_nc_fid:
         var_nc_fid.description = "Fourier coefficients"
@@ -193,13 +190,11 @@ def extr_lat(nc_fid, var_nc_fid, latn):
 
     Arguments:
     ---------
-        - nc_f: the existing dataset, from where the metadata are
-          retrieved. Time,level and lon dimensions
-          are retrieved;
-        - var_nc_fid: the id of the new NC dataset previously created;
-        - latn: the name of the latitude dimension;
+    nc_f: the existing dataset, from where the metadata are
+          retrieved. Time,level and lon dimensions are retrieved;
+    var_nc_fid: the id of the new NC dataset previously created;
+    latn: the name of the latitude dimension;
     """
-    # Extract coordinates from NetCDF file
     lats = nc_fid.variables['lat'][:]
     var_nc_fid.createDimension(latn, len(lats))
     var_nc_dim = var_nc_fid.createVariable(latn, nc_fid.variables['lat'].dtype,
@@ -214,12 +209,10 @@ def extr_lon(nc_fid, var_nc_fid):
 
     Arguments:
     ---------
-        - nc_f: the existing dataset, from where the metadata are
-          retrieved. Time,level and lon dimensions
-          are retrieved;
-        - var_nc_fid: the id of the new NC dataset previously created;
+    nc_f: the existing dataset, from where the metadata are
+          retrieved. Time,level and lon dimensions are retrieved;
+    var_nc_fid: the id of the new NC dataset previously created;
     """
-    # Extract coordinates from NetCDF file
     lons = nc_fid.variables['lon'][:]
     var_nc_fid.createDimension('lon', len(lons))
     var_nc_dim = var_nc_fid.createVariable('lon',
@@ -235,10 +228,9 @@ def extr_plev(nc_fid, var_nc_fid):
 
     Arguments:
     ---------
-        - nc_f: the existing dataset, from where the metadata are
-          retrieved. Time,level and lon dimensions
-          are retrieved;
-        - var_nc_fid: the id of the new NC dataset previously created;
+    nc_f: the existing dataset, from where the metadata are
+          retrieved. Time,level and lon dimensions are retrieved;
+    var_nc_fid: the id of the new NC dataset previously created;
     """
     plev = nc_fid.variables['plev'][:]
     var_nc_fid.createDimension('plev', len(plev))
@@ -256,14 +248,11 @@ def extr_time(nc_fid, var_nc_fid):
 
     Arguments:
     ---------
-        - nc_f: the existing dataset, from where the metadata are
-          retrieved. Time,level and lon dimensions
-          are retrieved;
-        - var_nc_fid: the id of the new NC dataset previously created;
+    nc_f: the existing dataset, from where the metadata are
+          retrieved. Time,level and lon dimensions are retrieved;
+    var_nc_fid: the id of the new NC dataset previously created;
     """
-    # Extract coordinates from NetCDF file
     time = nc_fid.variables['time'][:]
-    # Using our previous dimension info, we can create the new dimensions.
     var_nc_fid.createDimension('time', len(time))
     var_nc_dim = var_nc_fid.createVariable('time',
                                            nc_fid.variables['time'].dtype,
@@ -279,8 +268,8 @@ def varatts(w_nc_var, varname):
 
     Arguments:
     ---------
-    - w_nc_var: a variable object;
-    - varname: the name of the variable, among ta, ua, va and wap.
+    w_nc_var: a variable object;
+    varname: the name of the variable, among ta, ua, va and wap.
     """
     if varname == 'ta':
         w_nc_var.setncatts({
@@ -302,8 +291,7 @@ def varatts(w_nc_var, varname):
         })
     elif varname == 'wap':
         w_nc_var.setncatts({
-            'long_name': 'Lagrangian tendency of '
-                         'air pressure',
+            'long_name': 'Lagrangian tendency of air pressure',
             'units': "Pa s-1",
             'level_desc': 'pressure levels'
         })

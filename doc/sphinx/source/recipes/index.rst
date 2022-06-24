@@ -12,8 +12,8 @@ Atmosphere
    :maxdepth: 1
 
    recipe_miles
-   recipe_climwip
    recipe_clouds
+   recipe_cmug_h2o
    recipe_crem
    recipe_combined_climate_extreme_index
    recipe_consecdrydays
@@ -28,14 +28,19 @@ Atmosphere
    recipe_hyint
    recipe_impact
    recipe_modes_of_variability
+   recipe_mpqb_xch4
    recipe_quantilebias
    recipe_bock20jgr
    recipe_spei
    recipe_martin18grl
    recipe_autoassess_stratosphere
+   recipe_autoassess_landsurface_permafrost
+   recipe_autoassess_landsurface_surfrad
+   recipe_autoassess_landsurface_soilmoisture
    recipe_zmnam
    recipe_thermodyn_diagtool
    recipe_validation
+   recipe_radiation_budget
 
 Climate metrics
 ^^^^^^^^^^^^^^^
@@ -50,6 +55,7 @@ Future projections
 .. toctree::
    :maxdepth: 1
 
+   recipe_climwip
    recipe_li17natcc
    recipe_schlund20jgr
    recipe_meehl20sciadv
@@ -63,6 +69,7 @@ Future projections
    recipe_wenzel16jclim
    recipe_wenzel16nat
    recipe_tcr
+   recipe_climate_change_hotspot
 
 IPCC
 ^^^^
@@ -93,7 +100,9 @@ Ocean
    recipe_arctic_ocean
    recipe_cvdp
    recipe_combined_indices
+   recipe_esacci_oc
    recipe_oceans
+   recipe_sea_surface_salinity
    recipe_russell18jgr
 
 Other
@@ -101,13 +110,19 @@ Other
 .. toctree::
    :maxdepth: 1
 
-   recipe_examples
    recipe_capacity_factor
+   recipe_cmorizers
    recipe_ensclus
+   recipe_esacci_lst
+   recipe_examples
+   recipe_monitor
    recipe_multimodel_products
+   recipe_psyplot
+   recipe_pv_capacity_factor
    recipe_rainfarm
-   recipe_seaice_feedback
    recipe_seaice
    recipe_seaice_drift
+   recipe_seaice_feedback
    recipe_shapeselect
+   recipes_testing
    recipe_toymodel

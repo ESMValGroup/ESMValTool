@@ -166,6 +166,7 @@ begin
         data_all(0, :, :) = data_temp
         data_all!1 = "models"
         data_all&models = data_temp&models
+        projectnames = str_split(data_temp@projects, " ")
       end if
 
       ; Make sure model coordinate is consistent
@@ -181,6 +182,7 @@ begin
         data_all(ii, :, :) = (/data_temp/)
         copy_VarCoords(data_temp, data_all(ii:ii, :, :))
       else
+        projects = str_split(data_temp@projects, " ")
         do imod2 = 0, dimsizes(data_temp&models) - 1
           if (.not.any(data_temp&models(imod2).eq.data_all&models)) then
             ; Append record for dataset(imod)
@@ -191,6 +193,8 @@ begin
               (/data_temp&models(imod2)/)
             data_all := data_new
             delete(data_new)
+            projectnames := array_append_record(projectnames, \
+                                                projects(imod2), 0)
           else
             ; Loop over datasets of data
             do imod = 0, dimsizes(data_all&models) - 1
@@ -203,6 +207,7 @@ begin
             end do
           end if
         end do
+        delete(projects)
       end if
       delete(data_temp)
     end if  ; metric distinction end 1
@@ -286,10 +291,8 @@ begin
     plotpath = config_user_info@plot_dir + "SMPI"
 
     ; Write output
-    if (diag_script_info@write_netcdf) then
-      system("mkdir -p " + config_user_info@work_dir)
-      ncdf_outfile = ncdf_write(data_smpi, workpath)
-    end if
+    system("mkdir -p " + config_user_info@work_dir)
+    ncdf_outfile = ncdf_write(data_smpi, workpath)
 
     ; Attach plotting options
     copy_VarAtts(diag_script_info, data_smpi)
@@ -324,6 +327,45 @@ begin
           data_all := data_all(:, pid)
         end if
         delete(pid)
+      end if
+    elseif (isatt(diag_script_info, "project_order")) then
+      data_temp = data_all
+      n_proj = dimsizes(diag_script_info@project_order)
+      id1 = ind(projectnames.eq.diag_script_info@project_order(0))
+      n1 = dimsizes(id1)
+      breakpoints = n1
+      pid1 = sort_alphabetically(data_all&models(id1), -1, "begin")
+      if (dimsizes(dimsizes(data_all)).eq.3) then
+        data_all(:, 0:(n1-1), :) = data_temp(:, id1(pid1), :)
+      else
+        data_all(:, 0:(n1-1)) = data_temp(:, id1(pid1))
+      end if
+      if (n_proj .gt. 1) then
+        id2 = ind(projectnames.eq.diag_script_info@project_order(1))
+        pid2 = sort_alphabetically(data_temp&models(id2), -1, "begin")
+        n2 = dimsizes(id2)
+        breakpoints = n1
+        if (dimsizes(dimsizes(data_all)).eq.3) then
+          data_all(:, n1:(n1+n2-1), :) = data_temp(:, id2(pid2), :)
+        else
+          data_all(:, n1:(n1+n2-1)) = data_temp(:, id2(pid2))
+        end if
+        if (n_proj .gt. 2) then
+          id3 = ind(projectnames.eq.diag_script_info@project_order(2))
+          pid3 = sort_alphabetically(data_temp&models(id3), -1, "begin")
+          n3 = dimsizes(id3)
+          breakpoints := array_append_record(breakpoints, n1+n2, 0)
+          if (dimsizes(dimsizes(data_all)).eq.3) then
+            data_all(:, (n1+n2):(n1+n2+n3-1), :) = data_temp(:, id3(pid3), :)
+          else
+            data_all(:, (n1+n2):(n1+n2+n3-1)) = data_temp(:, id3(pid3))
+          end if
+          if (n_proj .gt. 3) then
+            error_msg("w", DIAG_SCRIPT, "", "number of projects greater" + \
+                      "than 3, not implemented")
+          end if
+        end if
+        data_all@breakpoints = breakpoints
       end if
     end if
 
@@ -372,10 +414,8 @@ begin
     delete(diags)
 
     ; Write output
-    if (diag_script_info@write_netcdf) then
-      system("mkdir -p " + config_user_info@work_dir)
-      ncdf_outfile = ncdf_write(data_all, workpath)
-    end if
+    system("mkdir -p " + config_user_info@work_dir)
+    ncdf_outfile = ncdf_write(data_all, workpath)
 
     ; Attach plotting options
     copy_VarAtts(diag_script_info, data_all)

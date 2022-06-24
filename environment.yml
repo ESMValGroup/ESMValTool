@@ -1,32 +1,44 @@
 ---
 name: esmvaltool
 channels:
+  # The release candidate channel should only be activated
+  # during the rc phase right before the next release of the
+  # ESMValCore.
+  # - conda-forge/label/esmvalcore_rc
   - conda-forge
-  - esmvalgroup
+  - nodefaults
 
 dependencies:
+  - pip!=21.3
+  - python>=3.8
   # Python packages that cannot be installed from PyPI:
-  - cartopy>=0.18
+  - cartopy
   - compilers
-  - gdal
   - esmpy
-  - esmvalcore>=2.2.0,<2.3
-  - iris>=3.0.1
-  - matplotlib>3.3.1  # bug in 3.3.1 but 3.3.3 gets installed automatically
+  - esmvalcore
+  - gdal
+  - matplotlib-base
   # Non-Python dependencies
-  - cdo>=1.9.7
-  - eccodes!=2.19.0  # cdo dependency; something messed up with libeccodes.so
+  - cdo
   - imagemagick
-  - mpich<3.4  # avoid 3.4.1 external_2 from conda-forge like the plague
+  - julia
   - nco
+  - psyplot
+  - psy-maps
+  - psy-reg
+  - psy-simple
+  - python-cdo
+  - rasterio
   - ruamel.yaml
   - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
+  - xgboost
 
   # Multi language support:
-  - ncl>=6.5.0  # this should always install 6.6.0 though
-  - r-base>=3.5
+  - ncl
+  - r-base
   # R packages needed for development
   - r-docopt
+  - r-git2r  # dependency of lintr
   - r-lintr
   - r-styler
   - r-yaml

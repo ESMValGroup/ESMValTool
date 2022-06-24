@@ -2,6 +2,7 @@
 # recipe_climwip.yml
 ---
 documentation:
+  title: Basic test recipe for ClimWIP weighting method
   description: EUCP ClimWIP
 
   authors:
@@ -60,7 +61,7 @@ preprocessors:
       operator: mean
     anomalies:
       period: full
-      reference:
+      reference: &ref_period
         start_year: 1981
         start_month: 1
         start_day: 1
@@ -114,23 +115,28 @@ diagnostics:
         script: weighting/weighted_temperature_graph.py
         ancestors: [calculate_weights_climwip/climwip, tas]
         weights: 'weights.nc'
+        settings:
+          <<: *ref_period
+          central_estimate: mean
+          lower_bound: 16.7
+          upper_bound: 83.3
 
   weighted_temperature_map:
     variables:
-      tas: &map_settings
+      tas_CLIM_future: &map_settings
         short_name: tas
         start_year: 2081
         end_year: 2100
         mip: Amon
         preprocessor: climatological_mean
-      tas_reference:
+      tas_CLIM_reference:
         <<: *map_settings
         start_year: 1995
         end_year: 2014
     scripts:
       weighted_temperature_map:
         script: weighting/weighted_temperature_map.py
-        ancestors: [calculate_weights_climwip/climwip, tas, tas_reference]
+        ancestors: [calculate_weights_climwip/climwip, tas_CLIM_future, tas_CLIM_reference]
         weights: 'weights.nc'
         # optional arguments
         model_aggregation: mean  # [ mean (default) | median | integer in (0, 100) ]

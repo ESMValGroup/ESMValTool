@@ -1,0 +1,247 @@
+# ESMValTool
+# recipe_climwip_brunner20esd.yml
+---
+documentation:
+  title: Reproduce ClimWIP results from Brunner et al. (2020)
+  description: >
+    Calculate weights similar to Brunner et al. (2020). Each model weight is based on the models performance
+    in reproducing historical observations as well as its independence from all the other models in the
+    multi-model ensemble. For more information see documentation and Brunner et al. (2020).
+    Differences compared to Brunner et al. (2020):
+      - The models CAMS-CSM1-0 and MPI-ESM1-2-HR (r2) had to be excluded due to errors in the ESMValCore pre-processor
+      - Use only ERA5 (instead of ERA5 and MERRA2) as observational data set
+  authors:
+    - kalverla_peter
+    - smeets_stef
+    - brunner_lukas
+    - camphuijsen_jaro
+    - lorenz_ruth
+  maintainer:
+    - kalverla_peter
+    - smeets_stef
+    - brunner_lukas
+    - lorenz_ruth
+  references:
+    - brunner2020
+
+datasets: &model_data
+    - {dataset: ACCESS-CM2, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    - {dataset: ACCESS-ESM1-5, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:3)i1p1f1}
+    - {dataset: AWI-CM-1-1-MR, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    - {dataset: BCC-CSM2-MR, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    - {dataset: CanESM5-CanOE, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:3)i1p2f1}
+    - {dataset: CanESM5, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:25)i1p1f1}
+    - {dataset: CanESM5, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:25)i1p2f1}
+    - {dataset: CESM2-WACCM, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    # ssp585 data missing on ESGF for the follwoing dataset
+    # see https://github.com/ESMValGroup/ESMValTool/pull/2581 for details
+    #- {dataset: CESM2, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:2)i1p1f1}
+    - {dataset: CNRM-CM6-1-HR, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r1i1p1f2}
+    - {dataset: CNRM-CM6-1, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r(1:6)i1p1f2}
+    - {dataset: CNRM-ESM2-1, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r(1:5)i1p1f2}
+    - {dataset: EC-Earth3-Veg, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r(1:2)i1p1f1}
+    - {dataset: EC-Earth3-Veg, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r4i1p1f1}
+    - {dataset: EC-Earth3, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    - {dataset: EC-Earth3, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r4i1p1f1}
+    - {dataset: EC-Earth3, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r6i1p1f1}
+    - {dataset: EC-Earth3, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r9i1p1f1}
+    - {dataset: EC-Earth3, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r11i1p1f1}
+    - {dataset: EC-Earth3, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r13i1p1f1}
+    - {dataset: EC-Earth3, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r15i1p1f1}
+    - {dataset: FGOALS-f3-L, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    - {dataset: FGOALS-g3, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    - {dataset: FIO-ESM-2-0, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:3)i1p1f1}
+    - {dataset: GFDL-ESM4, project: CMIP6, grid: gr1, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    - {dataset: GISS-E2-1-G, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r1i1p3f1}
+    - {dataset: HadGEM3-GC31-LL, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r1i1p1f3}
+    - {dataset: INM-CM4-8, project: CMIP6, grid: gr1, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    - {dataset: INM-CM5-0, project: CMIP6, grid: gr1, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    - {dataset: IPSL-CM6A-LR, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r(1:4)i1p1f1}
+    - {dataset: IPSL-CM6A-LR, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r6i1p1f1}
+    - {dataset: IPSL-CM6A-LR, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r14i1p1f1}
+    - {dataset: KACE-1-0-G, project: CMIP6, grid: gr, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    - {dataset: MCM-UA-1-0, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r1i1p1f2}
+    - {dataset: MIROC6, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:3)i1p1f1}
+    - {dataset: MIROC-ES2L, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r1i1p1f2}
+    - {dataset: MPI-ESM1-2-HR, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    - {dataset: MPI-ESM1-2-LR, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:10)i1p1f1}
+    - {dataset: MRI-ESM2-0, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    - {dataset: NESM3, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:2)i1p1f1}
+    - {dataset: NorESM2-MM, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r1i1p1f1}
+    - {dataset: UKESM1-0-LL, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r(1:4)i1p1f2}
+    - {dataset: UKESM1-0-LL, project: CMIP6, grid: gn, exp: [historical, ssp585], ensemble: r8i1p1f2}
+
+
+obs_data: &obs_data  # for climwip performance metrics
+  - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
+
+preprocessors:
+  climwip_general: &general
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: linear
+
+  climatological_mean:
+    <<: *general
+    climate_statistics:
+      operator: mean
+
+  detrended_std:
+    custom_order: true
+    <<: *general
+    annual_statistics:
+      operator: mean
+    detrend:
+      dimension: time
+      method: linear
+    climate_statistics:
+      operator: std_dev
+
+  annual_trend:
+    <<: *general
+    annual_statistics:
+      operator: mean
+    linear_trend:
+      coordinate: time
+    convert_units:
+      units: "K year-1"
+
+  global_mean:
+    <<: *general
+    climate_statistics:
+      operator: mean
+    area_statistics:
+      operator: mean
+
+  temperature_anomalies:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference: &ref_period
+        start_year: 1995
+        start_month: 1
+        start_day: 1
+        end_year: 2014
+        end_month: 12
+        end_day: 31
+      standardize: false
+
+diagnostics:
+  # if local anomalies are needed as predictors they need to be calculated first
+  calculate_local_anomalies:
+    variables:
+      tas_CLIM: &performance_settings
+        short_name: tas
+        start_year: 1980
+        end_year: 2014
+        mip: Amon
+        preprocessor: climatological_mean
+        additional_datasets: *obs_data
+      tas_GLOBAL:
+        <<: *performance_settings
+        preprocessor: global_mean
+      psl_CLIM:
+        <<: *performance_settings
+        short_name: psl
+        preprocessor: climatological_mean
+      psl_GLOBAL:
+        <<: *performance_settings
+        short_name: psl
+        preprocessor: global_mean
+    scripts:
+      local_anomalies:
+        script: weighting/calculate_difference_variable_group.py
+        obs_data: native6
+
+
+  calculate_weights_climwip:
+    variables:
+      tas_CLIM_i: &independence_settings
+        short_name: tas
+        start_year: 1980
+        end_year: 2014
+        mip: Amon
+        preprocessor: climatological_mean
+        additional_datasets: *obs_data
+      psl_CLIM_i:
+        <<: *independence_settings
+        short_name: psl
+      tas_STD:
+        <<: *performance_settings
+        preprocessor: detrended_std
+      psl_STD:
+        <<: *performance_settings
+        short_name: psl
+        preprocessor: detrended_std
+      tas_TREND:
+        <<: *performance_settings
+        preprocessor: annual_trend
+      tas_CLIM_reference: &target_settings
+        short_name: tas
+        start_year: 1995
+        end_year: 2014
+        mip: Amon
+        preprocessor: climatological_mean
+      tas_CLIM_future:
+        <<: *target_settings
+        start_year: 2081
+        end_year: 2100
+
+    scripts:
+      climwip:
+        script: weighting/climwip/main.py
+        obs_data: native6
+        ancestors: [calculate_local_anomalies/local_anomalies,
+                    tas_CLIM_i, psl_CLIM_i, tas_STD, psl_STD, tas_TREND,
+                    tas_CLIM_reference, tas_CLIM_future]
+        combine_ensemble_members: true
+        performance_sigma: 0.43
+        # if performance_sigma is not set this needs to be commented in
+        # calibrate_performance_sigma:
+        #   target_ref: tas_CLIM_reference
+        #   target: tas_CLIM_future
+        performance_contributions:
+          tas_ANOM: 1
+          tas_STD: 1
+          psl_ANOM: 1
+          psl_STD: 1
+          tas_TREND: 4
+        independence_sigma: 0.54
+        independence_contributions:
+          tas_CLIM_i: 1
+          psl_CLIM_i: 1
+
+  weighted_temperature_graph:
+    variables:
+      tas:
+        start_year: 1960
+        end_year: 2100
+        mip: Amon
+        preprocessor: temperature_anomalies
+    scripts:
+      weighted_temperature_graph:
+        script: weighting/weighted_temperature_graph.py
+        ancestors: [calculate_weights_climwip/climwip, tas]
+        weights: 'weights.nc'
+        settings:
+          <<: *ref_period
+          central_estimate: mean
+          lower_bound: 16.7
+          upper_bound: 83.3
+
+  weighted_temperature_map:
+    scripts:
+      weighted_temperature_map:
+        script: weighting/weighted_temperature_map.py
+        ancestors: [calculate_weights_climwip/climwip,
+                    calculate_weights_climwip/tas_CLIM_future,
+                    calculate_weights_climwip/tas_CLIM_reference]
+        weights: 'weights.nc'
+        # optional arguments
+        model_aggregation: mean  # [ mean (default) | median | integer in (0, 100) ]
+        xticks: [-150, -100, -50, 0, 50, 100, 150]  # if not given ticks will be set automatically
+        yticks: [-90, -45, 0, 45, 90]

@@ -137,7 +137,7 @@ def configure_logging(cfg_file: str = None,
     if cfg_file is None:
         cfg_loc = Path(esmvalcore.__file__ + "esmvalcore")
         # TODO change to new location of config module in 2.3.0
-        cfg_file = cfg_loc.parents[0] / 'config-logging.yml'
+        cfg_file = cfg_loc.parents[0] / '_config' / 'config-logging.yml'
 
     cfg_file = Path(cfg_file).absolute()
 

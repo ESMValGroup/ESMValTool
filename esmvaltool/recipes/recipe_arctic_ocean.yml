@@ -2,6 +2,7 @@
 # recipe_arctic_ocean.yml
 ---
 documentation:
+  title: Arctic Ocean Diagnostics
   description: |
     Arctic Ocean diagnostics.
 

@@ -766,11 +766,11 @@ def _write_provenance(netcdf_path, plot_path, caption, ancestors, cfg,
     provenance_record = _get_provenance_record(caption)
     provenance_record.update({
         'ancestors': ancestors,
-        'plot_file': plot_path,
         **kwargs,
     })
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 def calculate_ecs(input_data, cfg, description=None):

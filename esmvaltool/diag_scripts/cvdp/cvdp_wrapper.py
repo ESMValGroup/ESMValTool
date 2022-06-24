@@ -271,7 +271,6 @@ def set_provenance(cfg):
             'statistics': [_get_stat(filename)],
             'domain': 'global',
             'plot_type': _get_plot_type(filename),
-            'plot_file': filename,
             'authors': [
                 'phillips_adam',
             ],

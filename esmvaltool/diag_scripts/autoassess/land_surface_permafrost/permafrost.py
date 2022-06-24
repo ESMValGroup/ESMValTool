@@ -12,8 +12,30 @@ import iris.quickplot as qplt
 import iris.util as ut
 
 from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
-# from esmvaltool.diag_scripts.shared._supermeans import get_supermean
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 from . import permafrost_koven_sites
+
+
+def get_provenance_record(caption, run):
+    """Create a provenance record describing the diagnostic data and plot."""
+    record = {
+        'caption': caption,
+        'statistics': ['mean'],
+        'domains': ['global'],
+        'plot_types': ['map', 'metrics'],
+        'authors': [
+            'burke_eleanor',
+            'sellar_alistair',
+        ],
+        'references': [
+            'brown02nsidc',
+            'legates90tac',
+            'koven13jclim',
+        ],
+        'ancestors': run,
+    }
+
+    return record
 
 
 # main permafrost subroutine
@@ -23,12 +45,16 @@ def land_permafrost_top(run):
 
     Code development Eleanor Burke.
 
-    Arguments:
-        run - dictionary containing model run metadata
-              (see auto_assess/model_run.py for description)
+    Parameters
+    ----------
+    run: dict
+        dictionary containing model run metadata
+        (see auto_assess/model_run.py for description)
 
-    Returns:
-        metrics - dictionary of metrics names and values
+    Returns
+    -------
+    metrics: dict
+        dictionary of metrics names and values
         also produces image files in the current working directory
 
     """
@@ -108,8 +134,9 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     # set all non-masked values to 1 for area calculation
     # (may be a better way of doing this but I'm not sure what it is)
     pf_periods = pf_periods / pf_periods
-    # mask for land area also
-    pf_periods = pf_periods * mask
+    # mask for land area also; using `sftlf` which has percents data
+    # divide by 100 to account for absolute fraction and not percents
+    pf_periods = pf_periods * mask / 100.
 
     # calculate the area of permafrost
     # Generate area-weights array. This method requires bounds on lat/lon
@@ -161,6 +188,16 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     plt.title('Permafrost extent & zero degree isotherm ({})'.format(
         run['runid']))
     plt.savefig('pf_extent_asia_' + run['runid'] + '.png')
+
+    # record provenance
+    plot_file = 'pf_extent_asia_' + run['runid']
+    caption = 'Permafrost extent & zero degree isotherm ({})'.format(
+        run['runid'])
+    provenance_record = get_provenance_record(caption, run)
+    cfg = {}
+    cfg['run_dir'] = run['out_dir']
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, provenance_record)
 
     # defining metrics for return up to top level
     metrics = {
@@ -220,25 +257,22 @@ def get_nonice_mask(run):
     """
     Get the land points without ice.
 
-    Need to read the soil moisture data from the supermeans
+    Derive ice mask from points that have zero liquid water content.
+
     """
-    # TODO: currently set to mrsofc: soil_moisture_content_at_field_capacity
     supermean_data_dir = os.path.join(run['data_root'], run['runid'],
                                       run['_area'] + '_supermeans')
 
     # m01s08i223
-    # TODO: original code
-    # cube = get_supermean('moisture_content_of_soil_layer', 'ann',
-    #                      supermean_data_dir)
-    # replaced with new time-invariant variable
+    # use mrsos (moisture in surface soil layer), Lmon
     name_constraint = iris.Constraint(
-        name='soil_moisture_content_at_field_capacity')
+        name='mass_content_of_water_in_soil_layer'
+    )
     cubes_path = os.path.join(supermean_data_dir, 'cubeList.nc')
     cubes = iris.load(cubes_path)
     cube = cubes.extract_cube(name_constraint)
-
-    # TODO: mrsofc does not have depth
-    # cube = cube.extract(iris.Constraint(depth=2.0))  # layer from 1m to 3m
+    # mrsol data comes a time-lat-lon, collapse on time
+    cube = cube.collapsed('time', iris.analysis.MEAN)
 
     # make it into a mask of ones - extract first layer
     # use masked_values for floating point fuzzy equals
@@ -278,10 +312,11 @@ def koven_temp_offsets(soiltemp, airtemp):
 
     # assign metrics
     metrics = {}
-    metrics['offset 1m minus surface'] = np.median(soiltemp_1m_1d -
-                                                   soiltemp_surf_1d)
-    metrics['offset surface minus air'] = np.median(soiltemp_surf_1d -
-                                                    airtemp_1d)
+    off_surf = soiltemp_1m_1d - soiltemp_surf_1d
+    off_air = soiltemp_surf_1d - airtemp_1d
+    metrics['offset 1m minus surface'] = np.ma.median(off_surf)
+    metrics['offset surface minus air'] = np.ma.median(off_air)
+
     return metrics
 
 

@@ -282,22 +282,16 @@ begin
   ; Check diag_script_info@wdiag
   if (isatt(diag_script_info, "wdiag") .and. \
       .not. any(diag_script_info@wdiag .eq. "")) then
-    if (diag_script_info@write_netcdf) then
-      if (.not. isatt(diag_script_info, "ref_dataset")) then
-        error_msg("w", scriptname, funcname, "Skipping MDER output: " + \
-                  "attribute 'ref_dataset' not given in recipe")
-        out = False
-      else
-        log_info("Writing MDER output with the following diagnostics: " + \
-                 diag_script_info@wdiag)
-        out = True
-        out@work_dir = config_user_info@work_dir
-        system("mkdir -p " + out@work_dir)
-      end if
-    else
+    if (.not. isatt(diag_script_info, "ref_dataset")) then
       error_msg("w", scriptname, funcname, "Skipping MDER output: " + \
-                "'write_netcdf' is set to False in user configuration")
+                "attribute 'ref_dataset' not given in recipe")
       out = False
+    else
+      log_info("Writing MDER output with the following diagnostics: " + \
+               diag_script_info@wdiag)
+      out = True
+      out@work_dir = config_user_info@work_dir
+      system("mkdir -p " + out@work_dir)
     end if
   else
     log_info("Skipping MDER output: 'wdiag' is not given in recipe")

@@ -170,7 +170,7 @@ def _get_mmm_anomaly(cubes, ancestors, cfg):
 def _plot(cfg, cube, dataset_name, tcr):
     """Create scatterplot of temperature anomaly vs. time."""
     if not cfg.get('plot', True):
-        return (None, None)
+        return (None, None, None)
     logger.debug("Plotting temperature anomaly vs. time for '%s'",
                  dataset_name)
     (_, axes) = plt.subplots()
@@ -215,11 +215,10 @@ def _plot(cfg, cube, dataset_name, tcr):
         f"(TCR) defined as the 20 year average temperature anomaly centered "
         f"at the time of CO2 doubling (vertical dashed lines).")
     provenance_record.update({
-        'plot_file': plot_path,
         'plot_types': ['times'],
     })
 
-    return (netcdf_path, provenance_record)
+    return (netcdf_path, plot_path, provenance_record)
 
 
 def calculate_tcr(cfg):
@@ -239,12 +238,13 @@ def calculate_tcr(cfg):
                     anomaly_cube.units)
 
         # Plot
-        (path, provenance_record) = _plot(cfg, anomaly_cube, dataset_name,
-                                          new_tcr)
+        (path, plot_path, provenance_record) = _plot(cfg, anomaly_cube,
+                                                     dataset_name, new_tcr)
         if path is not None:
             provenance_record['ancestors'] = ancestors[dataset_name]
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(path, provenance_record)
+                provenance_logger.log(plot_path, provenance_record)
 
     return tcr
 

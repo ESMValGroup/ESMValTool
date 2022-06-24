@@ -61,11 +61,17 @@ def set_antimeridian(dataarray, to: str):
 def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
             **colormesh_args):
     """Visualize weighted temperature."""
-    period = '{start_year}-{end_year}'.format(**read_metadata(cfg)['tas'][0])
-    if 'tas_reference' in read_metadata(cfg).keys():
-        meta = read_metadata(cfg)['tas_reference']
-        period = 'change: {} minus {start_year}-{end_year}'.format(
-            period, **meta[0])
+    metadata = read_metadata(cfg)
+    metadata_future = metadata['tas_CLIM_future']
+    start_year = metadata_future[0]['start_year']
+    end_year = metadata_future[0]['end_year']
+
+    period = f'{start_year}-{end_year}'
+    if 'tas_CLIM_reference' in metadata:
+        metadata_reference = metadata['tas_CLIM_reference']
+        start_year_ref = metadata_reference[0]['start_year']
+        end_year_ref = metadata_reference[0]['end_year']
+        period = f'change: {period} minus {start_year_ref}-{end_year_ref}'
     metric = cfg['model_aggregation']
     if isinstance(metric, int):
         metric = f'{metric}perc'
@@ -172,12 +178,13 @@ def main(cfg):
     weights_path = Path(input_files[0]) / filename
     weights = read_weights(weights_path)
 
-    models = read_metadata(cfg)['tas']
+    metadata = read_metadata(cfg)
+    models = metadata['tas_CLIM_future']
     model_data, model_data_files = read_model_data(models)
 
     # if a historical period is given calculate the change
-    if 'tas_reference' in read_metadata(cfg).keys():
-        models_hist = read_metadata(cfg)['tas_reference']
+    if 'tas_CLIM_reference' in metadata:
+        models_hist = metadata['tas_CLIM_reference']
         model_data_hist, model_data_files_hist = read_model_data(models_hist)
         model_data_files += model_data_files_hist
         model_data = model_data - model_data_hist

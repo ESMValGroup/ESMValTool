@@ -2,6 +2,9 @@
 # recipe_ocean_multimap.yml
 ---
 documentation:
+ 
+  title: Maps of ESMs biases against observations
+ 
   description: |
     Recipe to evaluate multiple model bias against a reference dataset
     Written by Tomas Lovato, CMCC, tomas.lovato@cmcc.it
@@ -19,6 +22,15 @@ documentation:
     - crescendo
 
 
+# Write options for scripts
+# --------------------------------------------------
+WRITE_OPTS: &write_opts
+   - { write_plots: True, write_netcdf: True }
+
+
+# --------------------------------------------------
+# DATASETS
+# --------------------------------------------------
 datasets:
 # working datasets
 # CMIP5
@@ -78,4 +90,5 @@ diagnostics:
       Global_Ocean_multi_vs_obs:
         script: ocean/diagnostic_maps_multimodel.py
         observational_dataset: {dataset: Landschuetzer2016, project: OBS}
+        <<: *write_opts
 

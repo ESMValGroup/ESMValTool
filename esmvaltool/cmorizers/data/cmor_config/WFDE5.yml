@@ -1,0 +1,46 @@
+---
+# Filename (will be extended by variable name and reference)
+filename: '{raw_name}_WFDE5_{reference}_*_v1.1.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: WFDE5
+  version: 'v1.1'
+  tier: 2
+  modeling_realm: ground
+  project_id: OBS
+  source: 'https://doi.org/10.24381/cds.20d54e34'
+  reference: 'wfde5'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  tas_CRU:
+    short_name: tas
+    raw_name: Tair
+    reference: CRU
+    mip: day
+    raw_units: K
+    calendar: gregorian
+    save_hourly: False
+    add_mon: True
+  pr_CRU-GPCC:
+    short_name: pr
+    raw_name: Rainf
+    raw_name_snow: Snowf
+    reference: CRU+GPCC
+    mip: day
+    raw_units: kg m-2 s-1
+    calendar: gregorian
+    save_hourly: False
+    add_mon: True
+  pr_CRU:
+    short_name: pr
+    raw_name: Rainf
+    raw_name_snow: Snowf
+    reference: CRU
+    mip: day
+    raw_units: kg m-2 s-1
+    calendar: gregorian
+    save_hourly: False
+    add_mon: True

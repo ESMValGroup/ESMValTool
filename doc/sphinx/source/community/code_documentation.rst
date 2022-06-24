@@ -27,7 +27,7 @@ New development should preferably be done in the
 GitHub repository.
 However, for scientists requiring confidentiality, private repositories are
 available, see :ref:`private_repository` for more information.
-The default git branch is ``master``. Use
+The default git branch is ``main``. Use
 this branch to create a new feature branch from and make a pull request
 against.
 This
@@ -263,9 +263,9 @@ and is built using `Sphinx <https://www.sphinx-doc.org>`_.
 There are two main ways of adding documentation:
 
 #. As written text in the directory
-   `doc/sphinx/source <https://github.com/ESMValGroup/ESMValTool/tree/master/doc/sphinx/source>`__.
+   `doc/sphinx/source <https://github.com/ESMValGroup/ESMValTool/tree/main/doc/sphinx/source>`__.
    When writing
-   `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
+   `reStructuredText <https://www.sphinx-doc.org/en/main/usage/restructuredtext/basics.html>`_
    (``.rst``) files, please try to limit the line length to 80 characters and
    always start a sentence on a new line.
    This makes it easier to review changes to documentation on GitHub.
@@ -275,7 +275,7 @@ There are two main ways of adding documentation:
    `docstrings <https://www.python.org/dev/peps/pep-0257/>`__
    of Python modules, classes, and functions
    that are mentioned in
-   `doc/sphinx/source/api <https://github.com/ESMValGroup/ESMValTool/tree/master/doc/sphinx/source/api>`__
+   `doc/sphinx/source/api <https://github.com/ESMValGroup/ESMValTool/tree/main/doc/sphinx/source/api>`__
    are used to generate documentation.
    This results in the :ref:`api`.
 
@@ -312,13 +312,13 @@ repository was cloned and run
 
 ::
 
-   python setup.py build_sphinx
+   sphinx-build doc/sphinx/source/ doc/sphinx/build/
 
 or
 
 ::
 
-   python setup.py build_sphinx -Ea
+   sphinx-build -Ea doc/sphinx/source/ doc/sphinx/build/
 
 to build it from scratch.
 Make sure that your newly added documentation builds without warnings or
@@ -327,12 +327,14 @@ CircleCI_ will build the documentation with the command
 
 .. code-block:: bash
 
-   python setup.py build_sphinx --warning-is-error
+   sphinx-build -W doc/sphinx/source/ doc/sphinx/build/
 
 to catch mistakes that can be detected automatically.
 
 The configuration file for Sphinx_ is
-`doc/shinx/source/conf.py <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/conf.py>`_.
+`doc/sphinx/source/conf.py <https://github.com/ESMValGroup/ESMValTool/blob/main/doc/sphinx/source/conf.py>`_
+and the configuration file for ReadTheDocs is
+`.readthedocs.yaml <https://github.com/ESMValGroup/ESMValTool/blob/main/.readthedocs.yaml>`_.
 
 When reviewing a pull request, always check that the documentation checks
 shown below the pull request were successful.
@@ -355,9 +357,9 @@ For example, ``:ref:`esmvalcore:recipe``` to link to
 There is a script that generates the navigation menu shown on the left when
 you view the documentation.
 This script is called
-`doc/sphinx/source/gensidebar.py <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/gensidebar.py>`_
+`doc/sphinx/source/gensidebar.py <https://github.com/ESMValGroup/ESMValTool/blob/main/doc/sphinx/source/gensidebar.py>`_
 in the ESMValTool repository and it should be identical to
-`doc/gensidebar.py <https://github.com/ESMValGroup/ESMValCore/blob/master/doc/gensidebar.py>`_
+`doc/gensidebar.py <https://github.com/ESMValGroup/ESMValCore/blob/main/doc/gensidebar.py>`_
 in the ESMValCore repository, or the sidebar will change when navigating from
 the ESMValTool documentation to the ESMValCore documentation and vice-versa.
 
@@ -367,7 +369,7 @@ Tests
 -----
 
 To check various aspects of the recipes and code, there tests available in the
-`tests <https://github.com/ESMValGroup/ESMValTool/tree/master/tests>`__
+`tests <https://github.com/ESMValGroup/ESMValTool/tree/main/tests>`__
 directory.
 
 Whenever you make a pull request or push new commits to an existing pull
@@ -389,16 +391,16 @@ These nightly tests have been designed to mimic the installation procedures
 described in the documentation, e.g. in the :ref:`install` chapter.
 The nightly tests are run using both CircleCI and GitHub Actions, the
 result of the tests ran by CircleCI can be seen on the
-`CircleCI project page <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool?branch=master>`__
+`CircleCI project page <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool?branch=main>`__
 and the result of the tests ran by GitHub Actions can be viewed on the
 `Actions tab <https://github.com/ESMValGroup/ESMValTool/actions>`__
 of the repository.
 
 The configuration of the tests run by CircleCI can be found in the directory
-`.circleci <https://github.com/ESMValGroup/ESMValTool/blob/master/.circleci>`__,
+`.circleci <https://github.com/ESMValGroup/ESMValTool/blob/main/.circleci>`__,
 while the configuration of the tests run by GitHub Actions can be found in the
 directory
-`.github/workflows <https://github.com/ESMValGroup/ESMValTool/blob/master/.github/workflows>`__.
+`.github/workflows <https://github.com/ESMValGroup/ESMValTool/blob/main/.github/workflows>`__.
 
 When reviewing a pull request, always check that all test jobs on CircleCI_ were
 successful.
@@ -420,7 +422,7 @@ name to the list of authors in ``CITATION.cff`` and generate the entry for the
    cffconvert --ignore-suspect-keys --outputformat zenodo --outfile .zenodo.json
 
 Note that authors of recipes and/or diagnostics also need to be added to the file
-`esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/config-references.yml>`__,
+`esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/config-references.yml>`__,
 see :ref:`recording-provenance` for more information.
 
 .. _dependencies:
@@ -433,7 +435,7 @@ Before considering adding a new dependency, carefully check that the
 of the dependency you want to add and any of its dependencies are
 `compatible <https://the-turing-way.netlify.app/reproducible-research/licensing/licensing-compatibility.html>`__
 with the
-`Apache 2.0 <https://github.com/ESMValGroup/ESMValTool/blob/master/LICENSE/>`_
+`Apache 2.0 <https://github.com/ESMValGroup/ESMValTool/blob/main/LICENSE/>`_
 license that applies to the ESMValTool.
 Note that GPL version 2 license is considered incompatible with the Apache 2.0
 license, while the compatibility of GPL version 3 license with the Apache 2.0
@@ -447,6 +449,9 @@ the following files:
 - ``environment.yml``
   contains development dependencies that cannot be installed from
   `PyPI <https://pypi.org/>`__/`CRAN <https://cran.r-project.org/>`__/`Julia package registry <https://github.com/JuliaRegistries/General>`__
+- ``environment_osx.yml``
+  contains development dependencies for MacOSX. Should be the same as ``environment.yml``,
+  but currently without multi language support.
 - ``docs/sphinx/source/requirements.txt``
   contains Python dependencies needed to build the documentation that can be
   installed from PyPI
@@ -463,11 +468,6 @@ the following files:
   package registry
 - ``setup.py``
   contains all Python dependencies, regardless of their installation source
-- ``package/meta.yaml``
-  contains dependencies for the conda package; all Python and compiled
-  dependencies that can be installed from conda should be listed here, but no R
-  or Julia dependencies because doing that would make it impossible to solve the
-  conda environment
 
 Note that packages may have a different name on
 `conda-forge <https://conda-forge.org/>`__ than on PyPI or CRAN.
@@ -500,8 +500,8 @@ You can attract the attention of the `@ESMValGroup/esmvaltool-coreteam`_ by
 mentioning them in the issue if it looks like no-one is working on solving the
 problem yet.
 The issue needs to be fixed in a separate pull request first.
-After that has been merged into the ``master`` branch and all checks are green
-again on the ``master`` branch, merge it into your own branch to get the tests
+After that has been merged into the ``main`` branch and all checks are green
+again on the ``main`` branch, merge it into your own branch to get the tests
 to pass.
 
 When reviewing a pull request, always make sure that all checks were successful.

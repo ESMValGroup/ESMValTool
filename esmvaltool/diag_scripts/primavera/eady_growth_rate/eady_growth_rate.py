@@ -304,7 +304,7 @@ class EadyGrowthRate:
             'caption': caption,
             'domains': ['global'],
             'authors': ['sanchez-gomez_emilia', 'moreno-chamarro_eduardo'],
-            'references': ['acknow_project'],
+            'references': ['morenochamarro2021', 'acknow_project'],
             'ancestors': ancestors
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:

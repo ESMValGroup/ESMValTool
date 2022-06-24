@@ -1,0 +1,101 @@
+# ESMValTool
+# globwat.yml
+---
+documentation:
+  title: Generate forcing for the GlobWat hydrological model
+  description: |
+    Recipe pre-processes ERA-Interim and ERA-5 data
+    for use in the GlobWat hydrological model.
+    GlobWat is a Global Hydrological Model provided by FAO
+    http://www.fao.org/nr/water/aquamaps/
+
+    By default, PET is calculated by the De Bruin method (De Bruin et al. 2016).
+    However, users can choose the Langbein method by setting the langbein_pet
+    (Langbein et al. 1949) in the recipe to True.
+
+    More information about the De Bruin method can be found at:
+    https://doi.org/10.1175/JHM-D-15-0006.1 page 1376, equation 6.
+    More information about the Langbein method can be found at:
+    https://doi.org/10.3133/cir52 page 8, figure 1.
+    An example of using Langbein method can be found at:
+    https://doi.org/10.1080/02626667.2017.1332416 page 1472, equation 7.
+
+    A target_grid_file has been generated from one of the models sample files,
+    see the recipe documentation.
+
+  authors:
+    - abdollahi_banafsheh
+    - alidoost_sarah
+
+  maintainer:
+    - abdollahi_banafsheh
+
+  projects:
+    - ewatercycle
+
+  references:
+    - acknow_project
+    - debruin16ams
+    - hoogeveen15hess
+    - langbein1949usgs
+
+preprocessors:
+    area_selection:
+      extract_region:
+        start_longitude: 40
+        end_longitude: 65
+        start_latitude: 25
+        end_latitude: 40
+
+diagnostics:
+  diagnostic_daily_GlobWat:
+    description: daily precipitation of ERA5 & ERA-Interim
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+      - {dataset: ERA5, project: OBS6, type: reanaly, version: '1', tier: 3}
+    variables:
+      pr: &daily_var
+        mip: day
+        # for 30 years, this calculation takes a very long time
+        # timerange: 1986/2016  # uncomment this line for the original settings
+        timerange: 19860101/19860110  # comment this line for the original settings
+        # comment preprocessor to process data on the global scale
+        preprocessor: area_selection
+      tas: *daily_var
+      # comment psl, rsds and rsdt if langbein_pet is True
+      psl: *daily_var
+      rsds: *daily_var
+      rsdt:
+        <<: *daily_var
+        mip: CFday
+    scripts:
+      script:
+        script: hydrology/globwat.py
+        target_grid_file: 'globwat/globwat_target_grid.nc'
+        evaporation_method: debruin # options: debruin or langbein
+        regrid_scheme: area_weighted
+
+  diagnostic_monthly_GlobWat:
+    description: monthly precipitation and potential evaporation of ERA5 & ERA-Interim
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
+    variables:
+      pr: &var_monthly
+        mip: Amon
+        # for 30 years, this calculation takes a very long time
+        # timerange: 1986/2016  # uncomment this line for the original settings
+        timerange: 198601/198612  # comment this line for the original settings
+        # comment preprocessor to process data on the global scale
+        preprocessor: area_selection
+      tas: *var_monthly
+      # comment psl, rsds and rsdt if langbein_pet is True
+      psl: *var_monthly
+      rsds: *var_monthly
+      rsdt: *var_monthly
+    scripts:
+      script:
+        script: hydrology/globwat.py
+        target_grid_file: 'globwat/globwat_target_grid.nc'
+        evaporation_method: debruin # options: debruin or langbein
+        regrid_scheme: area_weighted

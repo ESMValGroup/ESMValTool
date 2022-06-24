@@ -2,6 +2,8 @@
 # recipe_anav13jclim.xml
 ---
 documentation:
+  title: Land and ocean components of the global carbon cycle in CMIP5
+
   description: |
     This recipe reproduces most of the figures of Anav et al. (2013).
 
@@ -39,7 +41,7 @@ preprocessors:
       area_type: land
       exclude: [
         'bcc-csm1-1-m',
-        'GCP',
+        'GCP2018',
         'inmcm4',
         'JMA-TRANSCOM',
         'LAI3g',
@@ -308,7 +310,7 @@ diagnostics:
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
         additional_datasets:
-          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2017, frequency: yr}
+          - {dataset: GCP2018, project: OBS, type: reanaly, version: '1.0', tier: 2, start_year: 1959, end_year: 2017, frequency: yr}
     additional_datasets: &nbp_datasets
       - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 2018, tier: 3, start_year: 1986, end_year: 2005}
       - {dataset: BNU-ESM}
@@ -330,7 +332,7 @@ diagnostics:
     scripts:
       main_global:
         <<: *main_global
-        evolution_plot_ref_dataset: GCP
+        evolution_plot_ref_dataset: GCP2018
         evolution_plot_anomaly: false
         anav_month: true
 
@@ -611,16 +613,16 @@ diagnostics:
           - {dataset: MPI-ESM-LR}
           - {dataset: MPI-ESM-MR}
           - {dataset: NorESM1-ME}
-      fgco2_GCP:
+      fgco2_GCP2018:
         <<: *var_fgco2
         short_name: fgco2
         preprocessor: default
         additional_datasets:
-          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2017, frequency: yr}
+          - {dataset: GCP2018, project: OBS, type: reanaly, version: '1.0', tier: 2, start_year: 1959, end_year: 2017, frequency: yr}
     scripts:
       main_global:
         <<: *main_global
-        evolution_plot_ref_dataset: GCP
+        evolution_plot_ref_dataset: GCP2018
         evolution_plot_anomaly: false
 
   diag_main_fgco2_not_global:

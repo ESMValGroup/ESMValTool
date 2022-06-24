@@ -2,6 +2,8 @@
 # recipe_spei.yml
 ---
 documentation:
+  title: Drought indices SPI and SPEI
+
   description: |
     Calculates the SPI and SPEI drought indices
 

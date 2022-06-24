@@ -15,6 +15,7 @@ from cdo import Cdo
 from cmocean import cm as cmo
 from matplotlib import cm
 from matplotlib import pylab as plt
+from matplotlib.colors import LinearSegmentedColormap
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
@@ -47,8 +48,8 @@ def genfilename(basedir,
         name of the region
     data_type: str
         type of the data, for example `timmean`
-    extention: str
-        fiel extention, for example `nc`
+    extension: str
+        file extension, for example `nc`
     basis: str
         basis name that can be used for series of
         diagnostics
@@ -219,8 +220,8 @@ def get_cmap(cmap_name):
     Additional custom colormap for salinity is provided:
     - "custom_salinity1"
     """
-    cm.register_cmap(name='cubehelix3',
-                     data=mpl._cm.cubehelix(gamma=1.0, s=2.0, r=1.0, h=3))
+    cm.register_cmap(cmap=LinearSegmentedColormap(
+        'cubehelix3', mpl._cm.cubehelix(gamma=1.0, s=2.0, r=1.0, h=3)))
 
     if cmap_name in cmo.cmapnames:
         colormap = cmo.cmap_d[cmap_name]
@@ -265,8 +266,9 @@ def point_distance(lon_s4new, lat_s4new):
 def get_series_lenght(datafile, cmor_var):
     """Get the length of the series.
 
-    Fix for climatology, ESMValTool reduces the dimentions
-    if one of the dimentions is empty."""
+    Fix for climatology, ESMValTool reduces the dimensions if one of the
+    dimensions is empty.
+    """
     if datafile.variables[cmor_var].ndim < 4:
         series_lenght = 1
     else:
