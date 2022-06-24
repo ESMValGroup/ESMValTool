@@ -289,8 +289,19 @@ How to make an ESMValTool release
 
 The release manager makes the release, assisted by the release manager of the
 previous release, or if that person is not available, another previous release
-manager. Perform the steps listed below with two persons, to reduce the risk of
+manager.
+Perform the steps listed below with two persons, to reduce the risk of
 error.
+
+.. note::
+
+   The previous release manager ensures the current release manager has the
+   required administrative permissions to make the release.
+   Consider the following services:
+   `conda-forge <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__,
+   `DockerHub <https://hub.docker.com/orgs/esmvalgroup>`__,
+   `PyPI <https://pypi.org/project/ESMValTool/>`__, and
+   `readthedocs <https://readthedocs.org/dashboard/esmvaltool/users/>`__.
 
 To make a new release of the package, follow these steps:
 
@@ -433,7 +444,7 @@ There are three main Docker container images available for ESMValTool on
   ``main`` branch on Github.
 - ``esmvalgroup/esmvaltool:experimental``, built from `docker/Dockerfile.exp <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile.exp>`_,
   this is a tag that always points to the latest development version of
-  ESMValTool with the lastest development version of ESMValCore.
+  ESMValTool with the latest development version of ESMValCore.
   Note that some recipes may not work as expected with this image because
   the ESMValTool development version has been designed to work with the latest
   release of ESMValCore (i.e. not with the development version).
