@@ -2,8 +2,12 @@
 from unittest import mock
 
 import iris
+import iris.coords
+import iris.cube
+import iris.exceptions
 import numpy as np
 import pytest
+from cf_units import Unit
 
 from esmvaltool import ESMValToolDeprecationWarning
 from esmvaltool.diag_scripts.shared import iris_helpers as ih
@@ -417,6 +421,86 @@ def test_unify_1d_cubes(mock_unify_time, mock_transform, cubes, coord_name,
         assert mock_unify_time.call_count == 1
     else:
         assert not mock_unify_time.called
+
+
+@pytest.fixture
+def cube_with_time():
+    """Cube that includes time coordinate."""
+    time_coord = iris.coords.DimCoord(
+        [1, 3],
+        bounds=[[0, 2], [2, 4]],
+        standard_name='time',
+        units='days since 1850-01-03',
+    )
+    cube = iris.cube.Cube(
+        [1, 2],
+        var_name='x',
+        dim_coords_and_dims=[(time_coord, 0)],
+    )
+    return cube
+
+
+def test_unify_time_coord_str(cube_with_time):
+    """Test ``unify_time_coord``."""
+    ih.unify_time_coord(cube_with_time)
+
+    expected_units = Unit('days since 1850-01-01 00:00:00',
+                          calendar='standard')
+    time_coord = cube_with_time.coord('time')
+
+    assert time_coord.var_name == 'time'
+    assert time_coord.standard_name == 'time'
+    assert time_coord.long_name == 'time'
+    assert time_coord.units == expected_units
+    assert time_coord.attributes == {}
+
+    np.testing.assert_array_equal(time_coord.points, [3, 5])
+    np.testing.assert_array_equal(time_coord.bounds, [[2, 4], [4, 6]])
+
+
+def test_unify_time_coord_unit(cube_with_time):
+    """Test ``unify_time_coord``."""
+    target_units = Unit('days since 1850-01-02 00:00:00', calendar='gregorian')
+    ih.unify_time_coord(cube_with_time, target_units=target_units)
+
+    expected_units = Unit('days since 1850-01-02 00:00:00',
+                          calendar='gregorian')
+    time_coord = cube_with_time.coord('time')
+
+    assert time_coord.var_name == 'time'
+    assert time_coord.standard_name == 'time'
+    assert time_coord.long_name == 'time'
+    assert time_coord.units == expected_units
+    assert time_coord.attributes == {}
+    assert time_coord.units == expected_units
+
+    np.testing.assert_array_equal(time_coord.points, [2, 4])
+    np.testing.assert_array_equal(time_coord.bounds, [[1, 3], [3, 5]])
+
+
+def test_unify_time_coord_no_bounds(cube_with_time):
+    """Test ``unify_time_coord``."""
+    cube_with_time.coord('time').bounds = None
+    ih.unify_time_coord(cube_with_time, 'days since 1850-01-04')
+
+    expected_units = Unit('days since 1850-01-04 00:00:00')
+    time_coord = cube_with_time.coord('time')
+
+    assert time_coord.var_name == 'time'
+    assert time_coord.standard_name == 'time'
+    assert time_coord.long_name == 'time'
+    assert time_coord.units == expected_units
+    assert time_coord.attributes == {}
+
+    np.testing.assert_array_equal(time_coord.points, [0, 2])
+    assert time_coord.bounds is None
+
+
+def test_unify_time_coord_no_time(cube_with_time):
+    """Test ``unify_time_coord``."""
+    cube_with_time.remove_coord('time')
+    with pytest.raises(iris.exceptions.CoordinateNotFoundError):
+        ih.unify_time_coord(cube_with_time)
 
 
 def test_var_name_constraint():
