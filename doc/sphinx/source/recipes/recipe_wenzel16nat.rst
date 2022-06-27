@@ -20,7 +20,7 @@ Recipes are stored in recipes/
 Diagnostics are stored in diag_scripts/carbon_ec/
 
     * carbon_beta: (1) scatter plot of annual gpp vs. annual CO\ :sub:`2` and
-      (2) barchart of gpp(2xCO\ :sub:`2`)/gpp(1xCO\ :sub:`2`:Q!:); calculates beta
+      (2) barchart of gpp(2xCO\ :sub:`2`)/gpp(1xCO\ :sub:`2`); calculates beta
       for emergent constraint (carbon_co2_cycle.ncl)
     * carbon_co2_cycle.ncl: (1) scatter plot of CO\ :sub:`2` amplitude vs.
       annual CO\ :sub:`2`, (2) barchart of sensitivity of CO\ :sub:`2` amplitude
