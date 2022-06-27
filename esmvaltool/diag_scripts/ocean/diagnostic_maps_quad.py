@@ -61,6 +61,7 @@ import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -185,8 +186,19 @@ def multi_model_maps(
         # Saving files:
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
-
         plt.close()
+
+        provenance_record = diagtools.prepare_provenance_record(
+            cfg,
+            caption=f'Quadmap models comparison against {obs}',
+            statistics=['mean', 'diff', ],
+            domain=['global'],
+            plot_type=['map'],
+            ancestors=list(input_files.keys()),
+        )
+
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
 
 def main(cfg):
