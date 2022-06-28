@@ -3,6 +3,7 @@ import logging
 import os
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
+from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +34,10 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         overwrite=overwrite,
     )
 
+    filename = read_cmor_config(dataset)['filenames']['gridded']
     os.makedirs(downloader.local_folder, exist_ok=True)
     downloader.download_file(
-        "https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/"
-        "v5/access/gridded/"
-        "NOAAGlobalTemp_v5.0.0_gridded_s188001_e202203_c20220408T133258.nc",
+        f"https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/"
+        f"v5/access/gridded/"
+        f"{filename}",
         wget_options=[])
