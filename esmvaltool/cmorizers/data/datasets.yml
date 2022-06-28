@@ -866,6 +866,14 @@ datasets:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
 
+  NOAAGlobalTemp:
+    tier: 2
+    source: https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/v5/access/
+    last_access: 2022-06-28
+    info: |
+      Download the following files:
+      [SOURCE]/gridded/NOAAGlobalTemp_v5.0.0_gridded_s188001_e202205_c20220608T133245.nc
+
   NSIDC-0116-sh:
     tier: 3
     source: https://nsidc.org/data/NSIDC-0116
