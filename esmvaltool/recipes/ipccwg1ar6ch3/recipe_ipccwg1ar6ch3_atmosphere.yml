@@ -819,7 +819,7 @@ diagnostics:
           - {dataset: HadCRUT5, project: OBS, type: ground,
              version: 5.0.1.0-analysis, tier: 2}
           - {dataset: BerkeleyEarth, project: OBS, type: reanaly,
-             version: 2020, tier: 2}
+            version: 2020, tier: 2, end_year: 2019}
           - {dataset: NOAAGlobalTemp, project: OBS, type: ground,
              version: v5.0.0, tier: 2, start_year: 1880}
           - {dataset: Kadow2020, project: OBS, type: ground,
