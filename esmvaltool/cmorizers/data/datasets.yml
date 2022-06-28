@@ -872,7 +872,7 @@ datasets:
     last_access: 2022-05-12
     info: |
       Download the following files:
-      [SOURCE]/gridded/NOAAGlobalTemp_v5.0.0_gridded_s188001_e202203_c20220408T133258.nc
+      [SOURCE]/gridded/NOAAGlobalTemp_v5.0.0_gridded_s188001_e202205_c20220608T133245.nc
 
   NSIDC-0116-sh:
     tier: 3
