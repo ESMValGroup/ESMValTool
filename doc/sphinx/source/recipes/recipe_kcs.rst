@@ -13,7 +13,7 @@ The original method created 8 resampled datasets:
 * 2 main scenarios: Moderate (M) and Warm (W) (Lenderink 2014 uses "G" instead of "M").
 * 2 'sub'scenarios: Relatively high (H) or low (L) changes in seasonal temperature and precipitation
 * 2 time horizons: Mid-century (MOC; 2050) and end-of-century (EOC; 2085)
-* Each scenario consists of changes calculated between 2 periods: Control (1981-2010) and future (variable).
+* Each scenario consists of changes calculated between 2 periods: Control (e.g. 1981-2010) and future (variable).
 
 The configuration settings for these resamples can be found in table 1 of Lenderink 2014's `supplementary data <https://iopscience.iop.org/1748-9326/9/11/115008/media/erl503687suppdata.pdf>`_.
 
@@ -147,6 +147,9 @@ The diagnostic ``local_resampling`` procudes a number of output files:
      Combination 6          7         2         2         0         6         6         5         2         1         5         4         2
      Combination 7          6         3         2         1         6         1         2         1         0         2         1         3
 
+
+* ``resampled_control_<scenario>.nc``: containing the monthly means for the control period according to the final combinations.
+* ``resampled_future_<scenario>.nc``: containing the monthly means for the future period according to the final combinations.
 
 * Provenance information: bibtex, xml, and/or text files containing citation information are stored alongside the final result and the final figure.
   The final combinations only derive from the target model data, whereas the figure also uses CMIP data.

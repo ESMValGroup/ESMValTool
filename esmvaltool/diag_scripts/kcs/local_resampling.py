@@ -28,6 +28,7 @@ def _create_provenance_record(ancestor_files):
             'kalverla_peter',
             'alidoost_sarah',
             'rol_evert',
+            'daniels_emma',
         ],
         'ancestors': ancestor_files,
     }
@@ -322,7 +323,7 @@ def select_final_subset(cfg, subsets, prov=None):
     return all_scenarios
 
 
-def _cmip_envelope(datasetlist, variable, target_year):
+def _cmip_envelope(datasetlist, variable, target_year, control_period):
     """Determine the change in <variable> PDF of each CMIP model.
 
     Note: using mf_dataset not possible due to different calendars.
@@ -332,7 +333,8 @@ def _cmip_envelope(datasetlist, variable, target_year):
     ancestors = []
     for data_dict in cmip:
         dataset = xr.open_dataset(data_dict['filename'])[variable]
-        control = dataset.sel(time=slice('1981', '2010'))
+        control = dataset.sel(time=slice(str(control_period[0]),
+                                         str(control_period[1])))
         future = dataset.sel(time=slice(str(target_year -
                                             15), str(target_year + 15)))
 
@@ -366,13 +368,17 @@ def _recombine(segments, combinations):
                                coords={'segment': range(n_segments)})
 
         # Recombine the segments using the indexer
-        resample = segments.sel(ensemble_member=indexer).mean('segment')
+        resample = segments.sel(ensemble_member=indexer).mean('segment',
+                                                              keep_attrs=True)
         new_climates.append(resample)
     return xr.concat(new_climates, dim='sample')
 
 
-def _get_climatology(cfg, scenario_name, table):
-    """Determine the change in <variable> PDF of each scenario."""
+def _get_climatology(cfg, scenario_name, table, prov=None):
+    """Determine the change in <variable> PDF of each scenario.
+
+    Save the resampled climates of each scenario to nc files.
+    """
     dataset, _ = _get_data_target_model(cfg)
 
     future = cfg['scenarios'][scenario_name]['resampling_period']
@@ -381,6 +387,29 @@ def _get_climatology(cfg, scenario_name, table):
 
     resampled_control = _recombine(segments_control, table['control'])
     resampled_future = _recombine(segments_future, table['future'])
+    # Store the resampled contol climates
+    filename = get_diagnostic_filename(f'resampled_control_{scenario_name}',
+                                       cfg,
+                                       extension='nc')
+    resampled_control.to_netcdf(filename)
+    LOGGER.info("Created control resamples for scenario %s: \n %s",
+                scenario_name, table)
+    LOGGER.info('Output stored as %s', filename)
+    # # Write provenance information
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, prov)
+
+        # Store the resampled future climates
+    filename = get_diagnostic_filename(f'resampled_future_{scenario_name}',
+                                       cfg,
+                                       extension='nc')
+    resampled_future.to_netcdf(filename)
+    LOGGER.info("Created future resamples for scenario %s: \n %s",
+                scenario_name, table)
+    LOGGER.info('Output stored as %s', filename)
+    # # Write provenance information
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, prov)
 
     quantiles = [.05, .1, .25, .5, .75, .90, .95]
     qcontrol = resampled_control.groupby('time.season').quantile(
@@ -393,22 +422,30 @@ def _get_climatology(cfg, scenario_name, table):
     return xr.merge([qchange_tas, qchange_pr])
 
 
-def make_plots(cfg, scenario_tables):
+def get_climatologies(cfg, scenario_tables, prov=None):
+    """Determine the changes in <variable> PDF of all scenarios."""
+    climates = {}
+    for name in cfg['scenarios'].keys():
+        climatology = _get_climatology(cfg, name, table=scenario_tables[name],
+                                       prov=prov)
+        climates[name] = climatology
+    return climates
+
+
+def make_plots(cfg, climates):
     """Reproduce figure 5 from the paper."""
     # Note that quantile is applied twice! Once to get the pdf's of seasonal
     # tas/pr and once to get the multimodel pdf of the quantile changes
     metadata = cfg['input_data'].values()
 
-    climates = {}
-    for name, info in cfg['scenarios'].items():
-        climatology = _get_climatology(cfg, name, table=scenario_tables[name])
-        climates[name] = climatology
-
-    for year in [2050, 2085]:
+    years = np.unique([scenario['scenario_year']
+                       for scenario in cfg['scenarios'].values()])
+    for year in years:
         fig, subplots = plt.subplots(2, 2, figsize=(12, 8))
 
         for row, variable in zip(subplots, ['pr', 'tas']):
-            cmip, prov = _cmip_envelope(metadata, variable, year)
+            cmip, prov = _cmip_envelope(metadata, variable, year,
+                                        cfg['control_period'])
 
             for axes, season in zip(row, ['DJF', 'JJA']):
                 percentiles = cmip.percentile.values
@@ -453,10 +490,13 @@ def main(cfg):
     subsets = get_percentile_subsets(cfg, segment_season_means, top1000s)
 
     # Step 3: select final set of eight samples
-    scenarios = select_final_subset(cfg, subsets, prov=provenance)
+    scenario_tables = select_final_subset(cfg, subsets, prov=provenance)
 
-    # Step 4: plot the results
-    make_plots(cfg, scenarios)
+    # Step 4: create the resampled climates
+    climates = get_climatologies(cfg, scenario_tables, prov=provenance)
+
+    # Step 5: plot the results
+    make_plots(cfg, climates)
 
 
 if __name__ == '__main__':

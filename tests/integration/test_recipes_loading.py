@@ -22,7 +22,7 @@ def config_user(tmp_path_factory):
     filename = write_config_user_file(path)
     # The fixture scope is set to module to avoid very slow
     # test runs, as the following line also reads the CMOR tables
-    cfg = esmvalcore._config.read_config_user_file(filename, 'recipe_test')
+    cfg = esmvalcore._config.read_config_user_file(filename, 'recipe_test', {})
     cfg['offline'] = True
     cfg['auxiliary_data_dir'] = str(path / 'auxiliary_data_dir')
     cfg['check_level'] = esmvalcore.cmor.check.CheckLevels['DEFAULT']
@@ -46,7 +46,7 @@ def test_recipe_valid(recipe_file, config_user, monkeypatch):
     find_files = create_autospec(esmvalcore._data_finder.find_files,
                                  spec_set=True)
     find_files.side_effect = lambda *_, **__: [
-        'test_0000-1849.nc',
+        'test_0001-1849.nc',
         'test_1850-9999.nc',
     ]
     monkeypatch.setattr(esmvalcore._data_finder, 'find_files', find_files)

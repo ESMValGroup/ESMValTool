@@ -41,8 +41,8 @@ GITHUB_REPO = {
 }
 
 PREVIOUS_RELEASE = {
-    'esmvalcore': datetime.datetime(2021, 7, 23, 00),
-    'esmvaltool': datetime.datetime(2021, 7, 27, 00),
+    'esmvalcore': datetime.datetime(2021, 11, 8, 00),
+    'esmvaltool': datetime.datetime(2021, 11, 9, 00),
 }
 LABELS = {
     'esmvalcore': (
@@ -111,12 +111,16 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
 
     lines = {label: [] for label in labels}
     labelless_pulls = []
+    print(f"The following PRs (updated after {previous_release_date}) are "
+          f"considered in the changelog")
+    print(f"Note: Unmerged PRs or PRs that have been merged before "
+          f"{previous_release_date} are not shown\n")
     for pull in pulls:
-        print(pull.updated_at, pull.merged_at, pull.number, pull.title)
         if pull.updated_at < previous_release_date:
             break
         if not pull.merged or pull.merged_at < previous_release_date:
             continue
+        print(pull.updated_at, pull.merged_at, pull.number, pull.title)
         pr_labels = {label.name for label in pull.labels}
         for label in labels:
             if label in pr_labels:
@@ -157,6 +161,7 @@ def format_notes(lines, version):
                     'TODO: add examples of how to deal with these changes\n')
             sections.append('\n'.join(entry for _, entry in entries))
     notes = '\n'.join(sections)
+    print("Copy the following lines to changelog.rst:\n")
     print(notes)
 
 
@@ -177,6 +182,8 @@ def _list_labelless_pulls(labelless_pulls):
         for pull in labelless_pulls:
             print(pull.html_url)
         print('\n')
+    else:
+        print('\nNo PR has missing labels!\n')
 
 
 def _compose_note(pull):
