@@ -364,7 +364,7 @@ diagnostics:
       feedback_parameters: &script_feedback_parameters
         script: climate_metrics/feedback_parameters.py
         calculate_mmm: true
-        only_consider_mmm: true
+        only_consider_mmm: false
         output_attributes:  # Dummy attributes necessary for mlr/plot.py
           tag: cre_feedback_parameter
           var_type: prediction_output
@@ -478,18 +478,20 @@ diagnostics:
         output_file_name: lwcre
 
 
-  fig_ecs_feddback:
+  fig_ecs_netcre_feedback:
     title: Scatter plot.
     description: Plot figure.
     scripts:
       scatterplot:
         script: clouds_ecs/scatterplot.py
         ancestors: ['feedback_*_ECS/feedback_parameters', '*/ecs']
-        patterns: ['ecs.nc', 'lambda_netcre_vs_latitude-longitude_MultiModelMean_all_150_years.nc']
+        file1: 'ecs.nc'
+        file2: 'netcre.nc'
+        preprocess: ['lambda_netcre_vs_latitude-longitude_*_all_150_years.nc']
         output_file_name: ecs_netcre
         #plot_kwargs:
         #  cbar_label: '$\lambda_{netcre}$ [W m$^{-2}$ K$^{-1}$]'
         #  cmap: bwr
         #  extend: both
         #  levels: [-8., -7., -6., -5., -4., -3., -2., -1., 0., 1., 2., 3., 4., 5., 6., 7., 8.]
-        years_in_title: false
+        #years_in_title: false

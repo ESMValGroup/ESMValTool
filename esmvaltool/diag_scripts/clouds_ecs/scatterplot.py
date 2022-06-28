@@ -359,7 +359,7 @@ def _write_xy_provenance(cfg, cubes, plot_path, title, *attrs):
         provenance_logger.log(plot_path, record)
 
 
-def _xy_plot(cube, x_coord=None, reg_line=False, **plot_kwargs):
+def _xy_plot(x_data, y_data, reg_line=False, **plot_kwargs):
     """Create single X-Y plot."""
     plot_kwargs = deepcopy(plot_kwargs)
     if reg_line:
@@ -369,24 +369,11 @@ def _xy_plot(cube, x_coord=None, reg_line=False, **plot_kwargs):
             plot_kwargs.setdefault('marker', 's')
         plot_kwargs['linestyle'] = 'none'
         plot_kwargs.setdefault('markersize', 3)
-    if x_coord is None:
-        iris.plot.plot(cube, **plot_kwargs)
-        if cube.coords(dim_coords=True):
-            coord = cube.coord(dim_coords=True)
-            x_data = coord.points
-        else:
-            coord = None
-            x_data = np.arange(cube.shape[0])
-    else:
-        coord = cube.coord(x_coord)
-        iris.plot.plot(coord, cube, **plot_kwargs)
-        x_data = coord.points
     if not reg_line:
         return
     plot_kwargs['linestyle'] = '-'
     plot_kwargs['marker'] = None
     plot_kwargs.pop('label', None)
-    y_data = cube.data
     reg = linregress(x_data, y_data)
     y_reg = reg.slope * x_data + reg.intercept
     plt.plot(x_data, y_reg, **plot_kwargs)
@@ -662,21 +649,156 @@ def plot_scatter_with_errors(cfg, cube_dict):
     _write_xy_error_provenance(cfg, cubes, plot_path, None, all_ancestors)
 
 
+def plot_scatter(data_dict, cfg):
+    """Plot scattterplot from dictionary."""
+    x_data = ()
+    y_data = ()
+    for key, value in data_dict:
+        x_data.append(value(0))
+        y_data.append(value(1))
+
+    _xy_plot(x_data, y_data, True, **plot_kwargs)
+             #reg_line=cfg['plot_xy'].get('reg_line', False), **plot_kwargs)
+
+    process_pyplot_kwargs(cfg, 'plot_xy')
+    plt.legend(**cfg.get('legend_kwargs'))
+    plot_path = get_plot_filename(cfg['output_file_name'], cfg)
+    savefig_kwargs = get_savefig_kwargs(cfg)
+    plt.savefig(plot_path, **savefig_kwargs)
+    logger.info("Wrote %s", plot_path)
+    plt.close()
+    _write_xy_provenance(cfg, cubes, plot_path, None, *all_attrs)
+
+
+def read_data(cfg):
+    """Read files and extract vars."""
+    logger.debug("Reading data")
+    filename1 = cfg['filename1']
+    filename2 = cfg['filename2']
+    var1 = cfg['var1']
+    var2 = cfg['var2']
+    logger.debug("Loading %s", filename1)
+    cube1 = iris.load_cube(filename)
+    logger.debug("Reading %s", filename1)
+    cube1 = iris.util.squeeze(cube)
+    data1 = {}
+    for dataset in cube1['dataset']:
+        data1[dataset] = cube1[dataset].data
+
+    logger.debug("Loading %s", filename2)
+    cube2 = iris.load_cube(filename)
+    logger.debug("Reading %s", filename2)
+    cube2 = iris.util.squeeze(cube)
+    data2 = {}
+    for dataset in cube2['dataset']:
+        data2[dataset] = cube2[dataset].data
+
+    for key, value in data2.items():
+        if key in data1:
+            data1[key].extend(value)
+        else:
+            logger.debug("Dataset %s is ot part of file %s", key, filename1)
+    for key, value in data1.items():
+        if len(value) == 1:
+            logger.debug("Dataset %s is ot part of file %s", key, filename2)
+
+    return data1
+
+
+def read_data_and_preprocess(cfg):
+    """Read files and extract vars."""
+    logger.debug("Reading data")
+    filename1 = cfg['file1']
+    filename2 = cfg['file2']
+
+    input_files = io.get_all_ancestor_files(cfg, pattern=filename1)
+    print(input_files)
+    cube1 = iris.cube.CubeList()
+    for input_file in input_files:
+      logger.debug("Loading %s", input_file)
+      cube = iris.load_cube(input_file)
+      print(cube.coord('dataset'))
+      #cube.remove_aux_coords
+      #cube1.append(cube)
+      cube1 = cube
+      logger.debug("Reading %s", input_file)
+    print(cube1)
+    #cube1.concatenate_cube()
+    #print(cube1)
+    #print(cube1.coord('dataset'))
+    #cube1 = iris.util.squeeze(cube1)
+    #print(cube1('dataset'))
+    #print(cube1)
+
+    #data1 = {}
+    #for dataset in cube1['dataset']:
+    #    data1[dataset] = cube1[dataset].data
+
+    input_files = io.get_all_ancestor_files(cfg, pattern=cfg['preprocess'])
+    print(input_files)
+    cube2 = iris.cube.CubeList()
+    data = []
+    datasets = []
+    for input_file in input_files:
+      logger.debug("Loading %s", input_file)
+      cube = iris.load_cube(input_file)
+      print(cube)
+      #cube.coord('latitude').guess_bounds()
+      #cube.coord('longitude').guess_bounds()
+      grid_areas = iris.analysis.cartography.area_weights(cube)
+      new_cube = cube.collapsed(['longitude', 'latitude'], iris.analysis.MEAN,
+                                weights=grid_areas)
+      print(new_cube)
+      data.append(new_cube.data)
+      datasets.append(cube.attributes['dataset'])
+      #cube1.append(cube)
+      #cube1 = cube
+      logger.debug("Reading %s", input_file)
+    print(data)
+    print(datasets)
+    cube1 = iris.cube.Cube(data)
+    cube1.metadata = cube.metadata
+    print(cube1)
+    new_coord = iris.coords.AuxCoord(datasets, standard_name='datasets', long_name='datasets')
+    cube1.add_aux_coord(new_coord)
+    print(cube1)
+
+    logger.debug("Loading %s", filename2)
+    cube2 = iris.load_cube(filename2)
+    logger.debug("Reading %s", filename2)
+    cube2 = iris.util.squeeze(cube)
+
+    for key, value in data2.items():
+        if key in data1:
+            data1[key].extend(value)
+        else:
+            logger.debug("Dataset %s is ot part of file %s", key, filename1)
+    for key, value in data1.items():
+        if len(value) == 1:
+            logger.debug("Dataset %s is ot part of file %s", key, filename2)
+
+    return data1
+
+
 def main(cfg):
     """Run the diagnostic."""
     sns.set(**cfg.get('seaborn_settings', {}))
     cfg = deepcopy(cfg)
-    cfg.setdefault('group_by_attribute', 'mlr_model_name')
-    cfg.setdefault('group_attribute_as_default_alias', True)
+    #cfg.setdefault('group_by_attribute', 'mlr_model_name')
+    #cfg.setdefault('group_attribute_as_default_alias', True)
     cfg.setdefault('legend_kwargs', {})
     cfg.setdefault('map_plot_type', 'pcolormesh')
     cfg.setdefault('print_corr', False)
     cfg.setdefault('years_in_title', False)
     cfg.setdefault('output_file_name', None)
 
-    cube_dict = get_cube_dict(cfg, cfg['group_by_attribute'])
+    #cube_dict = get_cube_dict(cfg, cfg['group_by_attribute'])
+    if cfg['preprocess']:
+        data_dict = read_data_and_preprocess(cfg)
+    else:
+        data_dict = read_data(cfg)
 
-    plot_scatter_with_errors(cfg, cube_dict)
+    plot_scatter(data_dict, cfg)
 
 
 # Run main function when this script is called
