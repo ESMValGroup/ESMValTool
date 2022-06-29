@@ -159,14 +159,14 @@ authors:
     name: Crezee, Bas
     institute: ETH Zurich, Switzerland
     orcid: https://orcid.org/0000-0002-1774-1126
-  mohr_christianwilhelm:
-    name: Mohr, Christian Wilhelm
-    institute: Cicero, Norway
-    orcid: https://orcid.org/0000-0003-2656-1802
   daniels_emma:
     name: Daniels, Emma
     institute: KNMI, Netherlands
     orcid:
+  dalvi_mohit:
+    name: Dalvi, Mohit
+    institute: MetOffice, UK
+    orcid: https://orcid.org/0000-0003-1669-0811
   davin_edouardleopold:
     name: Davin, Edouard Leopold
     institute: ETH Zurich, Switzerland
@@ -212,6 +212,10 @@ authors:
     institute: University of Bremen, Germany
     orcid: https://orcid.org/0000-0002-2928-8664
     github: bettina-gier
+  gonzalez-reviriego_nube:
+    name: Gonzalez-Reviriego, Nube
+    institute: BSC, Spain
+    orcid: https://orcid.org/0000-0002-5919-6701
   gottschaldt_klaus-dirk:
     name: Gottschaldt, Klaus-Dirk
     institute: DLR, Germany
@@ -228,10 +232,6 @@ authors:
     name: Hansson, Ulf
     institute: SMHI, Sweden
     orcid:
-  vonhardenberg_jost:
-    name: von Hardenberg, Jost
-    institute: ISAC-CNR, Torino, Italy
-    orcid: https://orcid.org/0000-0002-5312-8070
   hassler_birgit:
     name: Hassler, Birgit
     institute: DLR, Germany
@@ -339,10 +339,6 @@ authors:
     name: Mason, Erik
     institute: NOAA, USA
     orcid:
-  sandstad_marit:
-    name: Sandstad, Marit
-    institute: Cicero, Norway
-    orcid:
   massonnet_francois:
     name: Massonnet, Francois
     institute: Universite Catholique de Louvain, Belgium
@@ -359,15 +355,15 @@ authors:
     name: Mello, Felipe
     institute: INPE, Brazil
     orcid: https://orcid.org/0000-0002-8832-2869
+  mohr_christianwilhelm:
+    name: Mohr, Christian Wilhelm
+    institute: Cicero, Norway
+    orcid: https://orcid.org/0000-0003-2656-1802
   moreno-chamarro_eduardo:
     name: Moreno-Chamarro, Eduardo
     institute: BSC, Spain
     orcid:
     github: emchamarro
-  dalvi_mohit:
-    name: Dalvi, Mohit
-    institute: MetOffice, UK
-    orcid: https://orcid.org/0000-0003-1669-0811
   nikulin_grigory:
     name: Nikulin, Grigory
     institute: SMHI, Sweden
@@ -376,10 +372,6 @@ authors:
     name: Nobre, Paulo
     institute: INPE, Brazil
     orcid: https://orcid.org/0000-0001-9061-4556
-  gonzalez-reviriego_nube:
-    name: Gonzalez-Reviriego, Nube
-    institute: BSC, Spain
-    orcid: https://orcid.org/0000-0002-5919-6701
   oliveira_arildo:
     name: Oliveira, Arildo
     institute: INPE, Brazil
@@ -438,6 +430,10 @@ authors:
     name: Sanchez, Emilia
     institute: CERFACS, France
     orcid:
+  sandstad_marit:
+    name: Sandstad, Marit
+    institute: Cicero, Norway
+    orcid:
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
@@ -482,6 +478,10 @@ authors:
     name: Verhoeven, Stefan
     institute: NLeSC, Netherlands
     orcid: https://orcid.org/0000-0002-5821-2060
+  vonhardenberg_jost:
+    name: von Hardenberg, Jost
+    institute: ISAC-CNR, Torino, Italy
+    orcid: https://orcid.org/0000-0002-5312-8070
   walton_jeremy:
     name: Walton, Jeremy
     institute: MetOffice, UK
