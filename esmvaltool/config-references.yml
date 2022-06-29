@@ -323,9 +323,10 @@ authors:
     name: Makela, Jarmo
     institute: FMI, Finland
     orcid:
-  malinina_liza:
-    name: Malinina, Liza
-    institute: ECCC
+  malinina_elizaveta:
+    name: Malinina, Elizaveta
+    institute: CCCma, Canada
+    orchid: https://orcid.org/0000-0002-4102-2877
     github: malininae
   maloney_eric:
     name: Maloney, Eric
