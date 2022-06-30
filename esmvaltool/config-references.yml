@@ -160,6 +160,7 @@ authors:
     name: Crezee, Bas
     institute: ETH Zurich, Switzerland
     orcid: https://orcid.org/0000-0002-1774-1126
+    github: bascrezee
   daniels_emma:
     name: Daniels, Emma
     institute: KNMI, Netherlands
@@ -647,6 +648,11 @@ authors:
     name: Pascoe, Stephen
     institute: STFC, UK
     orcid:
+  reader_cathy:
+    name: Reader, Cathy
+    institute:
+    orcid:
+    github: mcreader97
   senftleben_daniel:
     name: Senftleben, Daniel
     institute: DLR, Germany
