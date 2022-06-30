@@ -423,7 +423,7 @@ authors:
   ruhe_lukas:
     name: Ruhe, Lukas
     institute: University of Bremen, Germany
-    orcid:
+    orcid: https://orcid.org/0000-0001-6349-9118
     github: lukruh
   russell_joellen:
     name: Russell, Joellen
