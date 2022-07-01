@@ -233,15 +233,15 @@ def compute_diff_temp(input_data, group, dataset, cfg):
 
     cube = compute_diagnostic(input_file_1)
     if var in ['lwp', 'clivi']:
-        cube.data[cube.data < 0.01] = 0.0
+        cube.data[cube.data < 0.001] = 0.0
     elif var in ['netcre', 'swcre', 'lwcre']:
-        cube.data[abs(cube.data) < 0.1] = 0.0
+        cube.data[abs(cube.data) < 1.] = 0.0
 
     cube_diff = compute_diff(input_file_1, input_file_2)
     cube_tas_diff = compute_diff(input_file_tas_1, input_file_tas_2)
 
-    cube_diff.data[abs(cube_diff.data) < 0.1] = np.nan
-    #cube_tas_diff.data[cube_tas_diff.data < 0.01] = 0.0
+    #cube_diff.data[abs(cube_diff.data) < 0.1] = np.nan
+    cube_tas_diff.data[cube_tas_diff.data < 0.01] = 0.0
 
     #cube_diff = cube
     #cube_diff = cube_tas_diff
