@@ -16,7 +16,6 @@ and the data is described in a
 `CMOR table <http://pcmdi.github.io/software/cmorTable/index.html>`__
 as used in the various
 `Climate Model Intercomparison Projects <http://pcmdi.github.io/mips/>`__.
-This section provides some guidelines for unfamiliar users.
 
 .. _cordex_note:
 
@@ -30,9 +29,15 @@ This section provides some guidelines for unfamiliar users.
     are most welcome. We are particularly interested in contributions from
     people with good understanding of the CORDEX project and its standards.
 
+This section provides an introduction to getting (access to) climate data
+for use with ESMValTool.
+
+Because the amount of data required by ESMValTool is typically large, it is
+recommended that you use the tool on a compute cluster where the data is
+already available, for example because it is connected to an
 `ESGF node <https://esgf.llnl.gov/index.html>`__.
 Examples of such compute clusters are
-`Mistral <https://www.dkrz.de/up/systems/mistral>`__
+`Levante <https://docs.dkrz.de/doc/levante/index.html>`__
 and
 `Jasmin <https://www.jasmin.ac.uk/>`__,
 but many more exist around the world.
@@ -340,6 +345,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | NDP                          | cVeg (Lmon)                                                                                          |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NIWA-BS                      | toz, tozStderr (Amon)                                                                                |   3  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| NOAAGlobalTemp               | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NSIDC-0116-[nh|sh]           | usi, vsi (day)                                                                                       |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
