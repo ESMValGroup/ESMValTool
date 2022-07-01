@@ -102,6 +102,7 @@ import pandas as pd
 import seaborn as sns
 from cf_units import Unit
 from scipy.stats import linregress
+from scipy.stats import pearsonr
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts import mlr
@@ -369,14 +370,26 @@ def _xy_plot(x_data, y_data, reg_line=False, **plot_kwargs):
             plot_kwargs.setdefault('marker', 's')
         plot_kwargs['linestyle'] = 'none'
         plot_kwargs.setdefault('markersize', 3)
+    #plt.plot(x_data, y_data, **plot_kwargs)
     if not reg_line:
         return
     plot_kwargs['linestyle'] = '-'
     plot_kwargs['marker'] = None
     plot_kwargs.pop('label', None)
-    reg = linregress(x_data, y_data)
-    y_reg = reg.slope * x_data + reg.intercept
-    plt.plot(x_data, y_reg, **plot_kwargs)
+    #reg = linregress(x_data, y_data)
+    #y_reg = reg.slope * np.array(x_data) + reg.intercept
+    #plt.plot(x_data, y_reg, **plot_kwargs)
+    x, y = pd.Series(x_data, name="x_var"), pd.Series(y_data, name="y_var")
+    sns.regplot(x=x_data, y=y_data, ci=95, truncate=False,
+                line_kws={"color":"r","alpha":0.7,"lw":5})
+
+    # Pearson correlation with SciPy:
+    corr = pearsonr(x_data, y_data)
+    corr = [np.round(c, 2) for c in corr]
+    # Extracting the r-value and the p-value:
+    title = 'r=%s, p=%s' % (corr[0], corr[1])
+    # Adding the text to the Seaborn plot:
+    plt.title(title, loc='right')
 
 
 def _xy_plot_with_errors(cfg, cube_dict, split_key, **plot_kwargs):
@@ -649,16 +662,20 @@ def plot_scatter_with_errors(cfg, cube_dict):
     _write_xy_error_provenance(cfg, cubes, plot_path, None, all_ancestors)
 
 
-def plot_scatter(data_dict, cfg):
+def plot_scatter(x_data, y_data, cfg):
     """Plot scattterplot from dictionary."""
-    x_data = ()
-    y_data = ()
-    for key, value in data_dict:
-        x_data.append(value(0))
-        y_data.append(value(1))
+
+    plot_kwargs = get_plot_kwargs(cfg, 'plot_xy')
 
     _xy_plot(x_data, y_data, True, **plot_kwargs)
-             #reg_line=cfg['plot_xy'].get('reg_line', False), **plot_kwargs)
+
+    #plt.title(title)
+    plt.ylabel(cfg['ylabel'])
+    plt.xlabel(cfg['xlabel'])
+    plt.axvline(4.03, color='grey', linestyle='dashed')
+    plt.axvline(2.87, color='grey', linestyle='dashed')
+
+    plt.ylim(cfg.get('y_range'))
 
     process_pyplot_kwargs(cfg, 'plot_xy')
     plt.legend(**cfg.get('legend_kwargs'))
@@ -667,7 +684,7 @@ def plot_scatter(data_dict, cfg):
     plt.savefig(plot_path, **savefig_kwargs)
     logger.info("Wrote %s", plot_path)
     plt.close()
-    _write_xy_provenance(cfg, cubes, plot_path, None, *all_attrs)
+    #_write_xy_provenance(cfg, cubes, plot_path, None, *all_attrs)
 
 
 def read_data(cfg):
@@ -712,72 +729,44 @@ def read_data_and_preprocess(cfg):
     filename2 = cfg['file2']
 
     input_files = io.get_all_ancestor_files(cfg, pattern=filename1)
-    print(input_files)
-    cube1 = iris.cube.CubeList()
+    data1 = []
+    datasets1 = []
     for input_file in input_files:
       logger.debug("Loading %s", input_file)
       cube = iris.load_cube(input_file)
-      print(cube.coord('dataset'))
-      #cube.remove_aux_coords
-      #cube1.append(cube)
-      cube1 = cube
+      datasets = cube.coord('dataset').points
+      for item in datasets:
+        datasets1.append(item)
+      for item in cube.data[:]:
+        data1.append(item)
       logger.debug("Reading %s", input_file)
-    print(cube1)
-    #cube1.concatenate_cube()
-    #print(cube1)
-    #print(cube1.coord('dataset'))
-    #cube1 = iris.util.squeeze(cube1)
-    #print(cube1('dataset'))
-    #print(cube1)
 
-    #data1 = {}
-    #for dataset in cube1['dataset']:
-    #    data1[dataset] = cube1[dataset].data
-
-    input_files = io.get_all_ancestor_files(cfg, pattern=cfg['preprocess'])
-    print(input_files)
-    cube2 = iris.cube.CubeList()
-    data = []
-    datasets = []
+    input_files = io.get_all_ancestor_files(cfg, pattern=filename2)
+    data2 = []
+    datasets2 = []
     for input_file in input_files:
       logger.debug("Loading %s", input_file)
       cube = iris.load_cube(input_file)
-      print(cube)
-      #cube.coord('latitude').guess_bounds()
-      #cube.coord('longitude').guess_bounds()
       grid_areas = iris.analysis.cartography.area_weights(cube)
       new_cube = cube.collapsed(['longitude', 'latitude'], iris.analysis.MEAN,
                                 weights=grid_areas)
-      print(new_cube)
-      data.append(new_cube.data)
-      datasets.append(cube.attributes['dataset'])
-      #cube1.append(cube)
-      #cube1 = cube
+      data2.append(np.asscalar(new_cube.data))
+      datasets2.append(cube.attributes['dataset'])
       logger.debug("Reading %s", input_file)
-    print(data)
-    print(datasets)
-    cube1 = iris.cube.Cube(data)
-    cube1.metadata = cube.metadata
-    print(cube1)
-    new_coord = iris.coords.AuxCoord(datasets, standard_name='datasets', long_name='datasets')
-    cube1.add_aux_coord(new_coord)
-    print(cube1)
 
-    logger.debug("Loading %s", filename2)
-    cube2 = iris.load_cube(filename2)
-    logger.debug("Reading %s", filename2)
-    cube2 = iris.util.squeeze(cube)
-
-    for key, value in data2.items():
-        if key in data1:
-            data1[key].extend(value)
+    x_data = []
+    y_data = []
+    for idx, dataset in enumerate(datasets1):
+        if dataset in datasets2:
+            x_data.append(data1[idx])
+            y_data.append(data2[datasets2.index(dataset)])
         else:
-            logger.debug("Dataset %s is ot part of file %s", key, filename1)
-    for key, value in data1.items():
-        if len(value) == 1:
-            logger.debug("Dataset %s is ot part of file %s", key, filename2)
+            logger.debug("Dataset %s is not part of file2", dataset)
+    for idx, dataset in enumerate(datasets2):
+        if dataset not in datasets1:
+            logger.debug("Dataset %s is not part of file1", dataset)
 
-    return data1
+    return x_data, y_data
 
 
 def main(cfg):
@@ -793,12 +782,9 @@ def main(cfg):
     cfg.setdefault('output_file_name', None)
 
     #cube_dict = get_cube_dict(cfg, cfg['group_by_attribute'])
-    if cfg['preprocess']:
-        data_dict = read_data_and_preprocess(cfg)
-    else:
-        data_dict = read_data(cfg)
+    x_data, y_data = read_data_and_preprocess(cfg)
 
-    plot_scatter(data_dict, cfg)
+    plot_scatter(x_data, y_data, cfg)
 
 
 # Run main function when this script is called
