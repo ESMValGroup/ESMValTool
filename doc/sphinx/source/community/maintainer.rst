@@ -1,1 +1,1 @@
-## Recipe maintainer ##
+## Maintaining a recipe ##
