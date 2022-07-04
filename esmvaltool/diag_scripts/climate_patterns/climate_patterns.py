@@ -51,7 +51,7 @@ from rename_variables import (
     rename_variables_base,
 )
 
-from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -490,6 +490,29 @@ def saving_outputs(clim_list_final, anom_list_final, regressions, scores,
             cube_saver(list_of_cubelists, work_path, name_list, mode='base')
 
 
+def get_provenance_record():
+    """Create a provenance record describing the diagnostic data and plot.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    record (dict): provenance record
+    """
+    record = {
+        'caption': ['Generating Climate Patterns from CMIP6 Models'],
+        'statistics': ['mean', 'other'],
+        'domains': ['global'],
+        'themes': ['carbon'],
+        'realms': ['atmos'],
+        'authors': ['munday_gregory'],
+    }
+
+    return record
+
+
 def patterns(model):
     """Driving function for script, taking in model data and saving parameters.
 
@@ -521,7 +544,7 @@ def patterns(model):
 
             if grid_spec == "constrained":
                 cube = constrain_latitude(cube_initial)
-            elif grid_spec == "full":
+            else:
                 cube = cube_initial
 
             # appending to timeseries list
@@ -545,6 +568,11 @@ def patterns(model):
 
     saving_outputs(clim_list_final, anom_list_final, regressions, scores,
                    imogen_mode, r2_scores, model_plot_dir, model_work_dir)
+
+    provenance_record = get_provenance_record()
+    path = model_work_dir + 'patterns.nc'
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(path, provenance_record)
 
 
 def main(cfg):

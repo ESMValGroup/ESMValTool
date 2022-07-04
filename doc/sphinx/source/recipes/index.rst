@@ -13,6 +13,7 @@ Atmosphere
 
    recipe_miles
    recipe_clouds
+   recipe_climate_patterns
    recipe_cmug_h2o
    recipe_crem
    recipe_combined_climate_extreme_index

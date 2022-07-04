@@ -59,7 +59,7 @@ def plot_patterns(cube_list, plot_path):
         # determining plot positions
         x, y = subplot_positions(j)
         months = np.arange(1, 13)
-        # plots patterns for a random grid cell
+        # plots patterns for an arbitrary grid cell
         ax[x, y].plot(months, cube[:, 50, 50].data)
         ax[x, y].set_ylabel(str(cube.var_name) + " / " + str(cube.units))
         if j > 5:

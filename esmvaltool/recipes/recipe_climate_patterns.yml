@@ -260,7 +260,7 @@ diagnostics:
     scripts:
       energy_balance_script:
         script: climate_patterns/ebm_parameters.py
-        include_params: on # options: on, off
+        include_params: off # options: on, off
         parallelise: on # options: on, off
         parallel_threads: 20 # int, optional
 
