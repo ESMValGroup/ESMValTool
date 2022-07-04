@@ -9,7 +9,7 @@ Overview
 These are CMORizer recipes calling CMORizer diagnostic scripts.
 
 ESMValCore supports ERA5 hourly and monthly datasets in their native
-format, see :ref:`CMORization as a fix <esmvaltool:cmorization_as_fix>`
+format, see :ref:`cmorization_as_fix`
 and `ERA5 data documentation <https://confluence.ecmwf.int/display/CKB/ERA5%3A+data+documentation>`_.
 It may be useful in some cases to create ERA5 daily CMORized data. This can be
 achieved by using a CMORizer *recipe*,
