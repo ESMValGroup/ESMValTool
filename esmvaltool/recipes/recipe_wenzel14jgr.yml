@@ -587,13 +587,13 @@ diagnostics:
         plot_units_y: GtC y-1
         ec_anom : True
         ec_volc : True      #(optional)
-        scatter_log : False # set logaritmic axes in scatterplot.ncl
+        scatter_log : False # set logarithmic axes in scatterplot.ncl
         styleset: CMIP5     # Plot style
 
   ### Wenzel et al. 2014, Fig. 05: Diagnose GAMMA_LT and create Emergent Constraint #############
 
   diag_gammaLT_5:
-    description: Fig 5 correlates gamma hist vs gammaLT and calculates PDF
+    description: Fig 5 correlates gamma historical vs gammaLT and calculates PDF
     variables:
       nbp_1pct:
         short_name: nbp
