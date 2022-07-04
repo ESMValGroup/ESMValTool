@@ -9,7 +9,7 @@ This chapter explains how to contribute to ESMValTool.
 We greatly value contributions of any kind.
 Contributions could include, but are not limited to documentation improvements,
 bug reports, new or improved diagnostic code, scientific and technical code
-reviews, infrastructure improvements, mailing list and chat participation,
+reviews, infrastructure improvements, maintenance of recipes, mailing list and chat participation,
 community help/building, education and outreach.
 
 If you have a bug or other issue to report, please open an issue on the
@@ -27,6 +27,7 @@ help, e.g. on our
 		Contributing a diagnostic or recipe <diagnostic>
 		Contributing a dataset <dataset>
 		Contributing a review <review>
+		Maintaining a recipe <maintenance>
 		Upgrading a namelist to a recipe <upgrading>
 		GitHub workflow <repository>
 		Moving work from the private to the public repository <private_repository>
