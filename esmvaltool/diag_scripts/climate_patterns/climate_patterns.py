@@ -43,7 +43,11 @@ import iris.cube
 import numpy as np
 import sklearn.linear_model
 import sub_functions as sf
-from plotting import plot_cp_timeseries, plot_patterns, plot_scores
+from cp_plotting import (
+    plot_cp_timeseries,
+    plot_patterns,
+    plot_scores,
+)
 from rename_variables import (
     rename_anom_variables,
     rename_clim_variables,

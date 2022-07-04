@@ -42,7 +42,7 @@ import iris.coord_categorisation
 import iris.cube
 import numpy as np
 import sub_functions as sf
-from plotting import ebm_plots
+from cp_plotting import ebm_plots
 from scipy import stats
 from scipy.sparse.linalg import spsolve
 
