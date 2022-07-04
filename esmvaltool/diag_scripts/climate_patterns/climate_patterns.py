@@ -82,6 +82,8 @@ def constrain_latitude(cube, min_lat=-55, max_lat=82.5):
     Parameters
     ----------
     cube (cube): cube loaded from config dictionary
+    min_lat (float): minimum latitude to crop
+    max_lat (float): maximum latitude to crop
 
     Returns
     -------
@@ -94,7 +96,7 @@ def constrain_latitude(cube, min_lat=-55, max_lat=82.5):
 
 
 def make_monthly_climatology(cube):
-    """Generates a climatology by month_number.
+    """Generate a climatology by month_number.
 
     Parameters
     ----------
@@ -114,7 +116,7 @@ def make_monthly_climatology(cube):
 
 
 def diurnal_temp_range(cubelist):
-    """Calculates diurnal range from monthly max and min temperatures.
+    """Calculate diurnal range from monthly max and min temperatures.
 
     Parameters
     ----------
@@ -137,7 +139,7 @@ def diurnal_temp_range(cubelist):
 
 
 def calculate_diurnal_range(clim_list, ts_list):
-    """Facilitates diurnal range calculation and appending.
+    """Facilitate diurnal range calculation and appending.
 
     Parameters
     ----------
@@ -178,7 +180,7 @@ def calculate_diurnal_range(clim_list, ts_list):
 
 def append_diurnal_range(derived_diurnal_clim, derived_diurnal_ts, clim_list,
                          ts_list):
-    """Appends diurnal range to cubelists.
+    """Append diurnal range to cubelists.
 
     Parameters
     ----------
@@ -214,7 +216,7 @@ def append_diurnal_range(derived_diurnal_clim, derived_diurnal_ts, clim_list,
 
 
 def calculate_anomaly(clim_list, ts_list):
-    """Calculates variables as anomalies, and adds diurnal range as variable.
+    """Calculate variables as anomalies, and adds diurnal range as variable.
 
     Parameters
     ----------
@@ -243,7 +245,7 @@ def calculate_anomaly(clim_list, ts_list):
 
 
 def regression(tas, cube_data):
-    """Calculates the coefficients of regression between global surface temp
+    """Calculate the coefficients of regression between global surface temp
     and a variable.
 
     Parameters
@@ -281,7 +283,7 @@ def regression(tas, cube_data):
 
 
 def regression_units(tas, cube):
-    """Calculates regression coefficient units.
+    """Calculate regression coefficient units.
 
     Parameters
     ----------
@@ -300,7 +302,7 @@ def regression_units(tas, cube):
 
 
 def calculate_regressions(anom_list, yrs=85):
-    """Facilitates the calculation of regression coefficients (climate
+    """Facilitate the calculation of regression coefficients (climate
     patterns) and the creation of a new cube of patterns per variable.
 
     Parameters
@@ -385,7 +387,7 @@ def calculate_regressions(anom_list, yrs=85):
 
 
 def write_scores(scores, work_path):
-    """Saves the global average regression scores per variable in a text file.
+    """Save the global average regression scores per variable in a text file.
 
     Parameters
     ----------
@@ -409,7 +411,7 @@ def write_scores(scores, work_path):
 
 
 def cube_saver(list_of_cubelists, work_path, name_list, mode):
-    """Saves desired cubelists to work_dir, depending on switch settings.
+    """Save desired cubelists to work_dir, depending on switch settings.
 
     Parameters
     ----------
@@ -444,7 +446,7 @@ def cube_saver(list_of_cubelists, work_path, name_list, mode):
 
 def saving_outputs(clim_list_final, anom_list_final, regressions, scores,
                    imogen_mode, r2_scores, plot_path, work_path):
-    """Saves data and plots to relevant directories.
+    """Save data and plots to relevant directories.
 
     Parameters
     ----------
@@ -576,7 +578,7 @@ def patterns(model):
 
 
 def main(cfg):
-    """Takes in driving data with parallelisation options.
+    """Take in driving data with parallelisation options.
 
     Parameters
     ----------

@@ -53,7 +53,7 @@ params_file = os.path.join(os.path.dirname(__file__), "params.json")
 
 
 def net_flux_calculation(toa_list):
-    """Calculates the Net Downward Radiative Flux at Top Of Atmosphere Model
+    """Calculate the Net Downward Radiative Flux at Top Of Atmosphere Model
     from its components.
 
     Parameters
@@ -80,7 +80,7 @@ def net_flux_calculation(toa_list):
 
 
 def ocean_fraction_calc(sftlf):
-    """Calculates land and ocean fractions (gridded) and ocean fraction (float)
+    """Calculate land and ocean fractions (gridded) and ocean fraction (float)
     for area-weights and EBM.
 
     Parameters
@@ -266,7 +266,7 @@ def anomalies_calc(toa_cube,
                    ocean_frac,
                    land_frac,
                    climatol_length=40):
-    """Calculates variable anomalies from arguments, using first 40 years.
+    """Calculate variable anomalies from arguments, using first 40 years.
 
     Parameters
     ----------
@@ -357,7 +357,7 @@ def atmos_params_calc(rf,
                       tas_delta_land,
                       tas_delta_ocean,
                       ssp_yrs=85):
-    """Calculates atmospheric parameters for EBM prediction and output.
+    """Calculate atmospheric parameters for EBM prediction and output.
 
     Parameters
     ----------
@@ -393,7 +393,7 @@ def atmos_params_calc(rf,
 
 
 def save_params(model, f_ocean, kappa, lambda_o, lambda_l, nu_ratio):
-    """Saves kappa and atmospheric parameters as a dict before saving to file.
+    """Save kappa and atmospheric parameters as a dict before saving to file.
 
     Parameters
     ----------
@@ -433,7 +433,7 @@ def create_regression_plot(
     rtmt_126,
     climatol_length=40,
 ):
-    """Derives effective forcing for SSP585 and SSP126 scenarios, and prepares
+    """Derive effective forcing for SSP585 and SSP126 scenarios, and prepares
     for plotting.
 
     Parameters
@@ -479,7 +479,7 @@ def create_regression_plot(
 
 
 def return_forcing_cube(forcing_585, forcing_126, yrs, work_path):
-    """Saves a cube of effective forcing over time.
+    """Save a cube of effective forcing over time.
 
     Parameters
     ----------
@@ -507,7 +507,7 @@ def return_forcing_cube(forcing_585, forcing_126, yrs, work_path):
 
 
 def ebm_check(rad_forcing, of, kappa, lambda_o, lambda_l, nu_ratio):
-    """Calculates EBM prediction of global surface temperature.
+    """Calculate EBM prediction of global surface temperature.
 
     Parameters
     ----------
@@ -694,7 +694,7 @@ def ebm_params(model):
 
 
 def main(cfg):
-    """Takes in driving data with parallelisation options - saves parameters
+    """Take in driving data with parallelisation options - save parameters
     to file for IMOGEN-JULES input.
 
     Parameters

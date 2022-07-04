@@ -8,7 +8,7 @@ Gregory Munday (Met Office, UK)
 
 
 def rename_clim_variables(cube):
-    """Renames variables and a coord to fit in JULES framework.
+    """Rename variables and a coord to fit in JULES framework.
 
     Parameters
     ----------
@@ -52,7 +52,7 @@ def rename_clim_variables(cube):
 
 
 def rename_anom_variables(cube):
-    """Renames variables and a coord to fit in JULES framework.
+    """Rename variables and a coord to fit in JULES framework.
 
     Parameters
     ----------
@@ -96,7 +96,7 @@ def rename_anom_variables(cube):
 
 
 def rename_variables(cube):
-    """Renames variables and a coord to fit in JULES framework.
+    """Rename variables and a coord to fit in JULES framework.
 
     Parameters
     ----------
@@ -137,7 +137,7 @@ def rename_variables(cube):
 
 
 def rename_regression_variables(cube):
-    """Renames variables to fit in JULES framework.
+    """Rename variables to fit in JULES framework.
 
     Parameters
     ----------
@@ -179,7 +179,7 @@ def rename_regression_variables(cube):
 
 
 def rename_variables_base(cube):
-    """Renames variables and a coord for imogen_mode='off'.
+    """Rename variables and a coord for imogen_mode='off'.
 
     Parameters
     ----------

@@ -19,7 +19,7 @@ logger = logging.getLogger(Path(__file__).stem)
 
 
 def compute_diagnostic(filename):
-    """Loads cube, removes any dimensions of length: 1.
+    """Load cube, remove any dimensions of length: 1.
 
     Parameters
     ----------
@@ -37,7 +37,7 @@ def compute_diagnostic(filename):
 
 
 def area_avg(x, return_cube=None):
-    """Calculates the global mean of a variable in a cube, area-weighted.
+    """Calculate the global mean of a variable in a cube, area-weighted.
 
     Parameters
     ----------
@@ -65,7 +65,7 @@ def area_avg(x, return_cube=None):
 
 
 def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
-    """Calculates the global mean of a variable in a cube, with options to be
+    """Calculate the global mean of a variable in a cube, with options to be
     land or ocean weighted.
 
     Parameters
@@ -222,7 +222,7 @@ def kappa_calc_predict(q, f, kappa, lambda_o, lambda_l, nu):
 
 
 def make_model_dirs(cube_initial, work_path, plot_path):
-    """Creates directories for each input model for saving.
+    """Create directories for each input model for saving.
 
     Parameters
     ----------
