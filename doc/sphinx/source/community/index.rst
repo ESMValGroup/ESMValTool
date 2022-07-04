@@ -27,7 +27,7 @@ help, e.g. on our
 		Contributing a diagnostic or recipe <diagnostic>
 		Contributing a dataset <dataset>
 		Contributing a review <review>
-		Maintaining a recipe <maintenance>
+		Maintaining a recipe <maintainer>
 		Upgrading a namelist to a recipe <upgrading>
 		GitHub workflow <repository>
 		Moving work from the private to the public repository <private_repository>
