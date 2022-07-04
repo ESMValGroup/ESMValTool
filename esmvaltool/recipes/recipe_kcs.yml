@@ -15,6 +15,9 @@ documentation:
     - kalverla_peter
     - alidoost_sarah
 
+  maintainer:
+    - unmaintained
+
   projects:
     - eucp
 

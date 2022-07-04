@@ -12,6 +12,9 @@ documentation:
   references:
     - martin18grl
 
+  maintainer:
+    - unmaintained
+
   projects:
     - eval4cmip
 

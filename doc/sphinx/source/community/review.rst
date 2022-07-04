@@ -101,8 +101,9 @@ An easy way to find out who previously worked on a particular piece of code is
 to use `git blame`_.
 GitHub will also suggest reviewers based on who previously worked on the files
 changed in a pull request.
-Every recipe has a maintainer and authors listed in the recipe, it is a good
-idea to ask these people for a review.
+All recipes contain a list of the recipe authors (and some of them in addition
+a list of recipe maintainers).
+It is a good idea to ask these people for a review.
 
 If there is no obvious reviewer, you can attract the attention of the relevant
 team of reviewers by writing to `@ESMValGroup/tech-reviewers`_ or
