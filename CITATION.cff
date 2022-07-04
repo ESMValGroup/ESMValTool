@@ -244,6 +244,10 @@ authors:
     given-names: Christian Wilhelm
     orcid: "https://orcid.org/0000-0003-2656-1802"
   -
+    affiliation: "Met Office, UK"
+    family-names: Munday
+    given-names: Gregory
+  -
     affiliation: "University of Arizona, USA"
     family-names: Amarjiit
     given-names: Pandde
