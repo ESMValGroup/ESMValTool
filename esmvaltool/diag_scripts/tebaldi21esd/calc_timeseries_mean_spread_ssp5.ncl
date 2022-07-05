@@ -53,14 +53,28 @@ begin
   ; ###########################################
   ; # Get data and average annual and globally#
   ; ###########################################
+  ; How many historical model runs?
+  if (isatt(diag_script_info, "reference_run")) then
+    reference_run_name = diag_script_info@reference_run
+  else
+    log_info("No reference run name given, set to default 'historical'")
+    reference_run_name = "historical"
+  end if
+  attsh = True
+  attsh@exp = reference_run_name
+  item_hist = select_metadata_by_atts(info_items, attsh)
+  print(item_hist[0]@recipe_dataset_index)
+  dim_MOD_hist = ListCount(item_hist)
+
   ; get data from first dataset for historical period
   imod = 0  ; NCL array indices start from zero
-  log_debug("processing " + info_items[imod]@dataset + "_" \
-            + info_items[imod]@exp + "_" \
-            + info_items[imod]@ensemble)
+  idx_hist = item_hist[0]@recipe_dataset_index
+  log_debug("processing " + info_items[idx_hist]@dataset + "_" \
+            + info_items[idx_hist]@exp + "_" \
+            + info_items[idx_hist]@ensemble)
 
   ; See ./interface_scripts/data_handling.ncl
-  A0 = read_data(info_items[imod])
+  A0 = read_data(info_items[idx_hist])
 
   ; Check dimensions
   dims = getvardims(A0)
@@ -92,19 +106,6 @@ begin
   else
     data1_glob = coswgt_areaave(data1)
   end if
-
-  ; How many historical model runs?
-  if (isatt(diag_script_info, "reference_run")) then
-    reference_run_name = diag_script_info@reference_run
-  else
-    log_info("No reference run name given, set to default 'historical'")
-    reference_run_name = "historical"
-  end if
-
-  attsh = True
-  attsh@exp = reference_run_name
-  item_hist = select_metadata_by_atts(info_items, attsh)
-  dim_MOD_hist = ListCount(item_hist)
 
   ref_data2 = new((/dim_MOD_hist/), float, data1_glob@_FillValue)
   data2_rel = new((/dim_MOD_hist, dim_file(0)/), float, \
@@ -156,11 +157,12 @@ begin
   end if
 
   do imod = 0, dim_MOD_hist - 1
+    idx_hist = item_hist[imod]@recipe_dataset_index
     if (imod .eq. 0) then
       data2 = data1
       delete(A0)
     else
-      A0 = read_data(info_items[imod])
+      A0 = read_data(info_items[idx_hist])
       data2 = time_operations(A0, -1, -1, "average", "yearly", True)
       delete(A0)
     end if
@@ -185,9 +187,9 @@ begin
     delete([/data2, data2_glob/])
     ; find all other runs from this model and calculate relative ts
     atts = True
-    atts@dataset = info_items[imod]@dataset
+    atts@dataset = info_items[idx_hist]@dataset
     atts@exp = diag_script_info@scenarios(0)
-    atts@ensemble = info_items[imod]@ensemble
+    atts@ensemble = info_items[idx_hist]@ensemble
     item_534 = select_metadata_by_atts(info_items, atts)
     if (ListCount(item_534) .ne. 0) then
       A1 = read_data(item_534[0])
@@ -197,7 +199,7 @@ begin
       if (dim_data3g .ne. nyearsp1) then
         if (dim_data3g .gt. nyearsp1) then
           error_msg("w", DIAG_SCRIPT, "", "Length of dataset " + \
-                    info_items[imod]@dataset + " in recipe is " + \
+                    info_items[idx_hist]@dataset + " in recipe is " + \
                     "longer than period given in recipe (" + nyearsp1 + \
                     " years)")
         else
@@ -217,7 +219,7 @@ begin
       delete([/A1, data3, data3_glob/])
     else
       log_info("No corresponding model for historial run " + \
-               info_items[imod]@dataset + " found in scenario " + \
+               info_items[idx_hist]@dataset + " found in scenario " + \
                diag_script_info@scenarios(0) + \
                ", cannot calculate relative change.")
     end if
@@ -235,7 +237,7 @@ begin
         if (dim_data3g .ne. nyearsp2) then
           if (dim_data3g .gt. nyearsp2) then
             error_msg("w", diag_script, "", "Length of dataset " + \
-                      info_items[imod]@dataset + " in recipe is " + \
+                      info_items[idx_hist]@dataset + " in recipe is " + \
                       "longer than period given in recipe (" + nyearsp2 + \
                       " years)")
           else
@@ -272,7 +274,7 @@ begin
         delete([/A1, data3, data3_glob/])
       else
         log_info("No corresponding model ensemble for historial run " + \
-                 info_items[imod]@dataset + " found in scenario " + \
+                 info_items[idx_hist]@dataset + " found in scenario " + \
                  diag_script_info@scenarios(1) + \
                  ", cannot calculate relative change.")
       end if
@@ -386,7 +388,6 @@ begin
 
   ; ###########################################
   ; # Other Metadata: diag_script, var        #
-  ; ###########################################
   ; Add to to_plot, as attributes without prefix
   if(isatt(to_plot, "diag_script")) then  ; Add to existing entries
     temp = to_plot@diag_script

@@ -54,14 +54,28 @@ begin
   ; ###########################################
   ; # Get data and average annual and globally#
   ; ###########################################
+  ; How many historical model runs?
+  if (isatt(diag_script_info, "reference_run")) then
+    reference_run_name = diag_script_info@reference_run
+  else
+    log_info("No reference run name given, set to default 'historical'")
+    reference_run_name = "historical"
+  end if
+
+  attsh = True
+  attsh@exp = reference_run_name
+  item_hist = select_metadata_by_atts(info_items, attsh)
+  dim_MOD_hist = ListCount(item_hist)
+
   ; get data from first dataset for historical period
   imod = 0  ; NCL array indices start from zero
-  log_debug("processing " + info_items[imod]@dataset + "_" \
-            + info_items[imod]@exp + "_" \
-            + info_items[imod]@ensemble)
+  idx_hist = item_hist[0]@recipe_dataset_index
+  log_debug("processing " + info_items[idx_hist]@dataset + "_" \
+            + info_items[idx_hist]@exp + "_" \
+            + info_items[idx_hist]@ensemble)
 
   ; See ./interface_scripts/data_handling.ncl
-  A0 = read_data(info_items[imod])
+  A0 = read_data(info_items[idx_hist])
 
   ; Check dimensions
   dims = getvardims(A0)
@@ -94,23 +108,9 @@ begin
     data1_glob = coswgt_areaave(data1)
   end if
 
-  ; How many historical model runs?
-  if (isatt(diag_script_info, "reference_run")) then
-    reference_run_name = diag_script_info@reference_run
-  else
-    log_info("No reference run name given, set to default 'historical'")
-    reference_run_name = "historical"
-  end if
-
-  attsh = True
-  attsh@exp = reference_run_name
-  item_hist = select_metadata_by_atts(info_items, attsh)
-  dim_MOD_hist = ListCount(item_hist)
-
   ref_data2 = new((/dim_MOD_hist/), float, data1_glob@_FillValue)
   data2_rel = new((/dim_MOD_hist, dim_file(0)/), float, \
                   data1_glob@_FillValue)
-
   ; How many scenarios?
   dim_scen = dimsizes(diag_script_info@scenarios)
   ; start and end years of timeperiods
@@ -188,12 +188,13 @@ begin
   end if
 
   do imod = 0, dim_MOD_hist - 1
+    idx_hist = item_hist[imod]@recipe_dataset_index
     need_runave_data2rel = True
     if (imod .eq. 0) then
       data2 = data1
       delete(A0)
     else
-      A0 = read_data(info_items[imod])
+      A0 = read_data(info_items[idx_hist])
       data2 = time_operations(A0, -1, -1, "average", "yearly", True)
       delete(A0)
     end if
@@ -219,9 +220,9 @@ begin
 
     ; find all other runs from this model and calculate relative ts
     atts = True
-    atts@dataset = info_items[imod]@dataset
+    atts@dataset = info_items[idx_hist]@dataset
     atts@exp = diag_script_info@scenarios(0)
-    atts@ensemble = info_items[imod]@ensemble
+    atts@ensemble = info_items[idx_hist]@ensemble
     item_26 = select_metadata_by_atts(info_items, atts)
     if (ListCount(item_26) .ne. 0) then
       A1 = read_data(item_26[0])
@@ -231,7 +232,7 @@ begin
       if (dim_data3g .ne. nyearsp1) then
         if (dim_data3g .gt. nyearsp1) then
           error_msg("w", DIAG_SCRIPT, "", "Length of dataset " + \
-                    info_items[imod]@dataset + " in recipe is " + \
+                    info_items[idx_hist]@dataset + " in recipe is " + \
                     "longer than period given in recipe (" + nyearsp1 + \
                     " years)")
         else
@@ -259,7 +260,7 @@ begin
       delete([/A1, data3, data3_glob/])
     else
       log_info("No corresponding model for historial run " + \
-               info_items[imod]@dataset + " found in scenario " + \
+               info_items[idx_hist]@dataset + " found in scenario " + \
                diag_script_info@scenarios(0) + \
                ", cannot calculate relative change.")
     end if
@@ -277,7 +278,7 @@ begin
         if (dim_data3g .ne. nyearsp1) then
           if (dim_data3g .gt. nyearsp1) then
             error_msg("w", diag_script, "", "Length of dataset " + \
-                      info_items[imod]@dataset + " in recipe is " + \
+                      info_items[idx_hist]@dataset + " in recipe is " + \
                       "longer than period given in recipe (" + nyearsp1 + \
                       " years)")
           else
@@ -305,7 +306,7 @@ begin
         delete([/A1, data3, data3_glob/])
       else
         log_info("No corresponding model ensemble for historial run " + \
-                 info_items[imod]@dataset + " found in scenario " + \
+                 info_items[idx_hist]@dataset + " found in scenario " + \
                  diag_script_info@scenarios(1) + \
                  ", cannot calculate relative change.")
       end if
@@ -324,7 +325,7 @@ begin
         if (dim_data3g .ne. nyearsp1) then
           if (dim_data3g .gt. nyearsp1) then
             error_msg("w", diag_script, "", "Length of dataset " + \
-                      info_items[imod]@dataset + " in recipe is " + \
+                      info_items[idx_hist]@dataset + " in recipe is " + \
                       "longer than period given in recipe (" + nyearsp1 + \
                       " years)")
           else
@@ -371,7 +372,7 @@ begin
         delete([/A1, data3, data3_glob/])
       else
         log_info("No corresponding model ensemble for historial run " + \
-                 info_items[imod]@dataset + " found in scenario " + \
+                 info_items[idx_hist]@dataset + " found in scenario " + \
                  diag_script_info@scenarios(2) + \
                  ", cannot calculate relative change.")
       end if
@@ -390,7 +391,7 @@ begin
         if (dim_data3g .ne. nyearsp1) then
           if (dim_data3g .gt. nyearsp1) then
             error_msg("w", diag_script, "", "Length of dataset " + \
-                      info_items[imod]@dataset + " in recipe is " + \
+                      info_items[idx_hist]@dataset + " in recipe is " + \
                       "longer than period given in recipe (" + nyearsp1 + \
                       " years)")
           else
@@ -420,7 +421,7 @@ begin
         delete(data3_glob)
       else
         log_info("No corresponding model ensemble for historial run " + \
-                 info_items[imod]@dataset + " found in scenario " + \
+                 info_items[idx_hist]@dataset + " found in scenario " + \
                  diag_script_info@scenarios(3) + \
                  ", cannot calculate relative change, set to missing.")
       end if
@@ -438,7 +439,7 @@ begin
         if (dim_data3g .ne. nyearsp1) then
           if (dim_data3g .gt. nyearsp1) then
             error_msg("w", diag_script, "", "Length of dataset " + \
-                      info_items[imod]@dataset + " in recipe is " + \
+                      info_items[idx_hist]@dataset + " in recipe is " + \
                       "longer than period given in recipe (" + nyearsp1 + \
                       " years)")
           else
@@ -475,7 +476,7 @@ begin
         delete(data3_glob)
       else
         log_info("No corresponding model ensemble for historial run " + \
-                 info_items[imod]@dataset + " found in scenario " + \
+                 info_items[idx_hist]@dataset + " found in scenario " + \
                  diag_script_info@scenarios(3) + \
                  ", cannot calculate relative change, set to missing.")
       end if
