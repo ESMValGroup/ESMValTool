@@ -669,7 +669,7 @@ authors:
   # If no maintainer is available for a recipe, the following entry is used
   unmaintained:
     name: No maintainer available
-    institute: No affiliation
+    institute: Unseen University
 
 # Note: the reference section has been replaced by the folder esmvaltool/references that contains bibtex files.
 # How to add a bibtex file to esmvaltool/references:
