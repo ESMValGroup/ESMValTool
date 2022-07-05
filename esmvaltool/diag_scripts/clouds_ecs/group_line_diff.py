@@ -196,7 +196,7 @@ def compute_diff(filename1, filename2):
     return cube
 
 
-def compute_diff_temp(input_data, group, dataset, cfg):
+def compute_diff_temp(input_data, group, dataset, plot_type, cfg):
     """Compute relative change per temperture change."""
 
     dataset_name = dataset['dataset']
@@ -214,48 +214,70 @@ def compute_diff_temp(input_data, group, dataset, cfg):
 
     input_file_2 = var_data_2[0]['filename']
 
-    tas_data_1 = select_metadata(input_data,
-                              short_name='tas',
-                              dataset=dataset_name,
-                              variable_group='tas_'+group[0]) 
-    tas_data_2 = select_metadata(input_data,
-                              short_name='tas',
-                              dataset=dataset_name,
-                              variable_group='tas_'+group[1]) 
-    if not tas_data_1:
+    if plot_type == 'zonal':
+      ta_data_1 = select_metadata(input_data,
+                                short_name='tas',
+                                dataset=dataset_name,
+                                variable_group='tas_'+group[0]) 
+      ta_data_2 = select_metadata(input_data,
+                                short_name='tas',
+                                dataset=dataset_name,
+                                variable_group='tas_'+group[1]) 
+    elif plot_type == 'height':
+      ta_data_1 = select_metadata(input_data,
+                                short_name='ta',
+                                dataset=dataset_name,
+                                variable_group='ta_'+group[0]) 
+      ta_data_2 = select_metadata(input_data,
+                                short_name='ta',
+                                dataset=dataset_name,
+                                variable_group='ta_'+group[1]) 
+    if not ta_data_1:
         raise ValueError(
-            f"No 'tas' data for '{dataset_name}' in '{group[0]}' available")
-    if not tas_data_2:
+            f"No temperature data for '{dataset_name}' in '{group[0]}' available")
+    if not ta_data_2:
         raise ValueError(
-            f"No 'tas' data for '{dataset_name}' in '{group[1]}' available")
-    input_file_tas_1 = tas_data_1[0]['filename']
-    input_file_tas_2 = tas_data_2[0]['filename']
+            f"No temperature data for '{dataset_name}' in '{group[1]}' available")
+    input_file_ta_1 = ta_data_1[0]['filename']
+    input_file_ta_2 = ta_data_2[0]['filename']
 
     cube = compute_diagnostic(input_file_1)
-    if var in ['lwp', 'clivi']:
+    if var in ['lwp', 'clivi', 'clw', 'cli']:
         cube.data[cube.data < 0.001] = 0.0
+    elif var in ['cl']:
+        cube.data[cube.data < 0.1] = 0.0
     elif var in ['netcre', 'swcre', 'lwcre']:
         cube.data[abs(cube.data) < 1.] = 0.0
 
     cube_diff = compute_diff(input_file_1, input_file_2)
-    cube_tas_diff = compute_diff(input_file_tas_1, input_file_tas_2)
+    cube_ta_diff = compute_diff(input_file_ta_1, input_file_ta_2)
 
     #cube_diff.data[abs(cube_diff.data) < 0.1] = np.nan
-    cube_tas_diff.data[cube_tas_diff.data < 0.01] = 0.0
+    cube_ta_diff.data[cube_ta_diff.data < 0.01] = 0.0
 
-    #cube_diff = cube
-    #cube_diff = cube_tas_diff
+    #cube_diff = cube_diff
+    #cube_diff = cube_ta_diff
     #cube_diff = 100. * (cube_diff / cube)
-    cube_diff = 100. * (cube_diff / cube) / cube_tas_diff
+    cube_diff = 100. * (cube_diff / cube) / cube_ta_diff
 
     cube_diff.metadata = cube.metadata
 
     #plot_model_map(cube_diff, dataset, cfg)
 
-    logger.debug("Computing zonal mean")
-    cube_diff = cube_diff.collapsed('longitude', iris.analysis.MEAN)
+    if plot_type == 'zonal':
+        logger.debug("Computing zonal mean")
+        cube_diff = cube_diff.collapsed('longitude', iris.analysis.MEAN)
+    elif plot_type == 'height':
+        logger.debug("Computing field mean")
+        grid_areas = iris.analysis.cartography.area_weights(cube_diff)
+        cube_diff = cube_diff.collapsed(['longitude', 'latitude'],
+                                        iris.analysis.MEAN,
+                                        weights=grid_areas)
+    else:
+        raise ValueError(f"Plot type {plot_type} is not implemented.")
 
     #cube_diff.units = 'K'
+    #cube_diff.units = 'g/kg'
     #cube_diff.units = 'g/kg/K'
     #cube_diff.units = '%'
     cube_diff.units = '%/K'
@@ -469,7 +491,8 @@ def main(cfg):
     plt.figure(figsize=(8, 12))
 
     for group_name in groups:
-        if 'tas_' not in group_name:
+        #if any['tas_', 'ta_'] not in group_name:
+        if ('tas_' not in group_name) and ('ta_' not in group_name):
             logger.info("Processing variable %s", group_name)
 
             dataset_names = []
@@ -487,7 +510,14 @@ def main(cfg):
                     input_file = dataset['filename']
                     cube = compute_diagnostic(input_file)
                     logger.debug("Computing zonal mean")
-                    cube = cube.collapsed('longitude', iris.analysis.MEAN)
+                    if plot_type == 'zonal':
+                        cube = cube.collapsed('longitude', iris.analysis.MEAN)
+                    elif plot_type == 'height':
+                        grid_areas = iris.analysis.cartography.area_weights(cube)
+                        cube = cube.collapsed(['longitude', 'latitude'], iris.analysis.MEAN,
+                                                  weights=grid_areas)
+                    else:
+                        raise ValueError(f"Plot type {plot_type} is not implemented.")
 
                     cubes[dataset_name] = cube
 
@@ -533,7 +563,7 @@ def main(cfg):
                 logger.info("Loop dataset %s", dataset_name)
                 dataset_names.append(dataset_name)
 
-                cube_diff = compute_diff_temp(input_data, group_name, dataset, cfg)
+                cube_diff = compute_diff_temp(input_data, group_name, dataset, plot_type, cfg)
 
                 cubes_diff[dataset_name] = cube_diff
 
@@ -545,6 +575,7 @@ def main(cfg):
         plot_diagnostic_diff(cube_mmm, group_name[0], plot_type, cfg)
 
     if plot_type == 'height':
+      plt.xlim(0., 1.)
       plt.ylim(1000.,100.)
       plt.yscale('log')
       plt.yticks([1000., 800., 600., 400., 300., 200., 100.], [1000, 800, 600, 400, 300, 200, 100])

@@ -205,10 +205,15 @@ def compute_diff_temp(input_data, group, dataset):
     input_file_ta_2 = ta_data_2[0]['filename']
 
     cube = compute_diagnostic(input_file_1)
-    cube.data[cube.data < 0.001] = 0.0
+    if var in ['clw', 'cli']:
+        cube.data[cube.data < 0.001] = 0.0
+    elif var in ['cl']:
+        cube.data[cube.data < 0.1] = 0.0
 
     cube_diff = compute_diff(input_file_1, input_file_2)
     cube_ta_diff = compute_diff(input_file_ta_1, input_file_ta_2)
+
+    cube_ta_diff.data[cube_ta_diff.data < 0.01] = 0.0
 
     #cube_diff = cube_diff / cube_ta_diff
     cube_diff = 100. * (cube_diff / cube) / cube_ta_diff
