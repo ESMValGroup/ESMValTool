@@ -60,8 +60,8 @@ def test_maintainers(recipe_file):
     # Check that maintainers are valid
     invalid_maintainers = []
     for maintainer in maintainers:
-        if maintainer not in AUTHORS and maintainer != 'unmaintained':
+        if maintainer not in AUTHORS:
             invalid_maintainers.append(maintainer)
     msg = (f"Got invalid maintainers: {invalid_maintainers}. Valid entries "
-           f"are 'unmaintained' or authors from {CONFIG_REFERENCES_PATH}.")
+           f"are authors from {CONFIG_REFERENCES_PATH}.")
     assert not invalid_maintainers, msg
