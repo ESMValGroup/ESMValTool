@@ -56,6 +56,10 @@ import matplotlib.pyplot as plt
 logging.getLogger('matplotlib.font_manager').disabled = True
 from matplotlib import gridspec, cm as mplcm
 from matplotlib.colors import to_rgba
+from matplotlib.ticker import MaxNLocator
+
+
+
 import numpy as np
 from itertools import product
 import cf_units
@@ -3417,7 +3421,6 @@ def make_ensemble_barchart_pane(
     ensemble_key = 'ensemble_mean',
     plot_style = 'percentages',
     group_by = 'group_by_model',
-    sorting='alphabetical',
     stacked_hists=False,
     fig=None,
     ax=None):
@@ -3428,7 +3431,14 @@ def make_ensemble_barchart_pane(
     """
     if fig == None:
         if not stacked_hists:
-            fig, (ax0, ax1, ax2) = plt.subplots(3, 1)
+            fig = plt.figure()
+
+            gs = gridspec.GridSpec(4, 1, figure=fig, hspace=0.1230,height_ratios=[1., 1. ,1., 0.4])
+            ax0 =  fig.add_subplot(gs[0, 0])
+            ax1  =  fig.add_subplot(gs[1, 0])
+            ax2  =  fig.add_subplot(gs[2, 0])
+            #fig, (ax0, ax1, ax2) = plt.subplots(3, 1)
+            fig.set_size_inches(6, 5)
             make_figure_here = True
         else:
             fig, ax = plt.subplots()
@@ -3839,11 +3849,11 @@ def make_ensemble_barchart_pane(
         assert 0
 
     if stacked_hists:
-       ax.bar(xvalues, land, width=widths, label='Land', color=colours_land, tick_label = label_strs, edgecolor=edge_colours, linewidth=linewidths)
-       ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color=colours_ocean, edgecolor=edge_colours, linewidth=linewidths)
-       ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color=colours_air, edgecolor=edge_colours, linewidth=linewidths)
-       plt.xticks(rotation=90, fontsize='xx-small')
-       plt.xlim([-0.1, np.sum(widths)+0.1])
+        ax.bar(xvalues, land, width=widths, label='Land', color=colours_land, tick_label = label_strs, edgecolor=edge_colours, linewidth=linewidths)
+        ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color=colours_ocean, edgecolor=edge_colours, linewidth=linewidths)
+        ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color=colours_air, edgecolor=edge_colours, linewidth=linewidths)
+        plt.xticks(rotation=90, fontsize='xx-small')
+        plt.xlim([-0.1, np.sum(widths)+0.1])
         if float(threshold) > 1850.:
             ax.set_title(str(threshold))
         else:
@@ -3858,31 +3868,52 @@ def make_ensemble_barchart_pane(
         if do_legend:
             ax.legend()
 
+
+        if draw_hlines:
+            for exp in exps:
+                ax.axhline(np.mean(hline_land[exp]), lw=1.2, color=ssp_land[exp])
+                ax.axhline(np.mean(hline_ocean[exp]), lw=1.2, color=ssp_ocean[exp])
+                ax.axhline(np.mean(hline_air[exp]), lw=1.2, color=ssp_air[exp])
+
     else:
-       ax2.bar(xvalues, land, width=widths, label='Land', color=colours_land, tick_label = label_strs, edgecolor=edge_colours, linewidth=linewidths)
-       ax1.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color=colours_ocean, edgecolor=edge_colours, linewidth=linewidths)
-       ax0.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color=colours_air, edgecolor=edge_colours, linewidth=linewidths)
-       for ax in [ax0, ax1, ax2]:
+        ax2.bar(xvalues, land, width=widths, label='Land', color=colours_land, tick_label = label_strs, edgecolor=edge_colours, linewidth=linewidths)
+        ax1.bar(xvalues, ocean, width=widths, label='Ocean', color=colours_ocean, edgecolor=edge_colours, linewidth=linewidths)
+        ax0.bar(xvalues, air, width=widths, label='Atmos', color=colours_air, edgecolor=edge_colours, linewidth=linewidths)
+        if plot_style == 'percentages':
+            ax1.set_ylabel('Fractional Carbon Allocation, %')
+        else:
+            ax1.set_ylabel('Total Carbon Allocation, Pg')
+
+        label_dict = ['Atmosphere', 'Ocean', 'Land']
+        for ax, label in zip([ax0, ax1, ax2], label_dict):
             plt.sca(ax)
             plt.xlim([-0.1, np.sum(widths)+0.1])
+            plt.text(ax.get_xlim()[1]*0.02, ax.get_ylim()[1]*0.95,  label, ha='left', va='top') #fontsize=8, fontweight='bold',rotation=90)
 
-            if plot_style == 'percentages':
-                ax.set_ylim([0., 100.,])
-                ax.set_ylabel('Fractional Carbon Allocation, %')
-            else:
-                ax.set_ylabel('Total Carbon Allocation, Pg')
+            if ax in [ax0, ax1]:
+                ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+                ax.xaxis.set_ticklabels([])
+
+            if ax in [ax2,]:
+                plt.xticks(rotation=90, fontsize='x-small')
+
 
         if float(threshold) > 1850.:
             ax0.set_title(str(threshold))
         else:
             ax0.set_title(str(threshold)+r'$\degree$'+' warming')
 
-    draw_hlines = False
-    if draw_hlines:
-        for exp in exps:
-            ax.axhline(np.mean(hline_land[exp]), lw=1.2, color=ssp_land[exp])
-            ax.axhline(np.mean(hline_ocean[exp]), lw=1.2, color=ssp_ocean[exp])
-            ax.axhline(np.mean(hline_air[exp]), lw=1.2, color=ssp_air[exp])
+        draw_hlines = False
+        if draw_hlines:
+            for ax in [ax0, ax1, ax2]:
+                xlims = ax.get_xlim()
+                new_xlims = [xlims[0], xlims[1]+2]
+                ax.set_xlim(new_xlims)
+                
+            for exp in exps:
+                ax2.axhline(np.mean(hline_land[exp]), xmin=new_xlims[1]-2., xmax=new_xlims[1], lw=1.2, color=ssp_land[exp])
+                ax1.axhline(np.mean(hline_ocean[exp]), xmin=new_xlims[1]-2., xmax=new_xlims[1], lw=1.2, color=ssp_ocean[exp])
+                ax0.axhline(np.mean(hline_air[exp]), xmin=new_xlims[1]-2., xmax=new_xlims[1], lw=1.2, color=ssp_air[exp])
 
 
     # ax.bar(xvalues, land, width=widths, label='Land', color='green', tick_label = label_strs)
@@ -3890,11 +3921,10 @@ def make_ensemble_barchart_pane(
     # ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color='grey')
     #ax.set_xlabel('Scenarios')
 
-
     if make_figure_here:
         image_extention = diagtools.get_image_format(cfg)
         path = diagtools.folder([cfg['plot_dir'], 'single_barcharts' ])
-        path += '_'.join(['ensemble_barchart'+str(threshold), land_carbon, atmos, group_by]) + image_extention
+        path += '_'.join(['ensemble_barchart'+str(threshold), land_carbon, group_by, ensemble_key, plot_style, ]) + image_extention
         plt.savefig(path)
         plt.close()
     else:
@@ -3909,7 +3939,6 @@ def make_ensemble_barchart(
         ensemble_key = 'ensemble_mean',
         group_by = 'group_by_model',
         thresholds = ['4.0', '3.0', '2.0'],
-#        sorting='alphabetical',
     ):
     """
     Make a barchat for the whole ensemble
@@ -3930,7 +3959,6 @@ def make_ensemble_barchart(
             plot_style= plot_style,
             ensemble_key = ensemble_key,
             group_by = group_by,
-#            sorting=sorting,
             )
         plt.xticks(rotation=90)
         ax.tick_params(axis = 'x', labelsize = 'x-small')
@@ -5614,7 +5642,9 @@ def main(cfg):
 
                 for plot_style in plot_styles: # = ['percentages', 'values']
                     make_ensemble_barchart_pane(
-                        cfg, data_dict, thresholds_dict,threshold = 2.0, do_legend=True,
+                        cfg, data_dict, thresholds_dict,
+                        threshold = '2.0', 
+                        do_legend=True,
                         plot_style= plot_style,
                         ensemble_key = 'ensemble_mean',
                         group_by = 'ecs',
