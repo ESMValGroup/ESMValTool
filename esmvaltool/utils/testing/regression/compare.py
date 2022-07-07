@@ -162,7 +162,7 @@ def adapt_attributes(attributes: dict, ignore_attributes: tuple[str, ...],
             recipe_dir = get_recipe_dir_from_str(attr_val, recipe_name)
 
             # If recipe_dir is present in attribute value, assume this
-            # attribute values is a path and convert it to a relative path
+            # attribute value is a path and convert it to a relative path
             if recipe_dir is not None:
                 attr_val = Path(attr_val).relative_to(recipe_dir)
 
@@ -372,7 +372,7 @@ def get_recipe_dir_from_str(str_in: str, recipe_name: str) -> Optional[Path]:
         if recipe_dir_match[0] in str(parent):
             return parent
 
-    # If not valid parent is found, return str_in
+    # If no valid parent is found, return str_in
     # E.g., for str_in = /root/path/recipe_test_20220202_222222 no valid
     # parents are found; thus, return str_in itself
     return Path(str_in)
