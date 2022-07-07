@@ -462,9 +462,8 @@ def plot_map_spei_multi(cfg, data_dict, input_filenames, colormap='jet'):
 
     # Plot data
     # Create figure and axes instances
-    fig, axx = plt.subplots(figsize=(8, 4))
-
-    axx = plt.axes(projection=cart.PlateCarree(central_longitude=0.0))
+    subplot_kw = {'projection': cart.PlateCarree(central_longitude=0.0)}
+    fig, axx = plt.subplots(figsize=(6.5, 4), subplot_kw=subplot_kw)
     axx.set_extent([-180.0, 180.0, -90.0, 90.0],
                    cart.PlateCarree(central_longitude=0.0))
 
@@ -556,9 +555,8 @@ def plot_map_spei(cfg, cube, levels, name_dict):
 
     # Plot data
     # Create figure and axes instances
-    fig, axx = plt.subplots(figsize=(8, 4))
-
-    axx = plt.axes(projection=cart.PlateCarree(central_longitude=0.0))
+    subplot_kw = {'projection': cart.PlateCarree(central_longitude=0.0)}
+    fig, axx = plt.subplots(figsize=(8, 4), subplot_kw=subplot_kw)
     axx.set_extent([-180.0, 180.0, -90.0, 90.0],
                    cart.PlateCarree(central_longitude=0.0))
 

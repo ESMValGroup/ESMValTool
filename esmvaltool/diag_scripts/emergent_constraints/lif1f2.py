@@ -139,8 +139,8 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
 
     # Plot data
     # create figure and axes instances
-    fig, axx = plt.subplots(figsize=(8, 5))
-    axx = plt.axes(projection=cart.PlateCarree())
+    subplot_kw = {'projection': cart.PlateCarree()}
+    fig, axx = plt.subplots(figsize=(8, 5), subplot_kw=subplot_kw)
     axx.set_extent([45, 120, -15, 30], cart.PlateCarree())
 
     # draw filled contours
@@ -274,8 +274,8 @@ def plot_rain(cfg, titlestr, data, lats, lons):
     """Plot contour map."""
     # Plot data
     # create figure and axes instances
-    fig, axx = plt.subplots(figsize=(7, 5))
-    axx = plt.axes(projection=cart.PlateCarree())
+    subplot_kw = {'projection': cart.PlateCarree()}
+    fig, axx = plt.subplots(figsize=(7, 5), subplot_kw=subplot_kw)
     axx.set_extent([45, 120, -15, 35], cart.PlateCarree())
 
     # draw filled contours
@@ -354,8 +354,8 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
 
     # Plot data
     # create figure and axes instances
-    fig, axx = plt.subplots(figsize=(8, 4))
-    axx = plt.axes(projection=cart.PlateCarree(central_longitude=180))
+    subplot_kw = {'projection': cart.PlateCarree(central_longitude=180)}
+    fig, axx = plt.subplots(figsize=(8, 4), subplot_kw=subplot_kw)
     axx.set_extent(
         [-150, 60, -15, 30], cart.PlateCarree(central_longitude=180))
 
