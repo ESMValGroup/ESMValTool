@@ -30,12 +30,21 @@ IGNORE_FILES: tuple[str, ...] = (
 """Files to ignore when comparing results."""
 
 IGNORE_GLOBAL_ATTRIBUTES: tuple[str, ...] = (
+    'ancestors',
     'creation_date',
     'history',
     'provenance',
     'software',
 )
 """Global NetCDF attributes to ignore when comparing."""
+
+IGNORE_VARIABLE_ATTRIBUTES: tuple[str, ...] = IGNORE_GLOBAL_ATTRIBUTES
+"""Variable NetCDF attributes to ignore when comparing."""
+
+IGNORE_VARIABLES: tuple[str, ...] = (
+    'temp_list',  # used by perfmetrics diagnostics to save absolute paths
+)
+"""Variables in NetCDF files to ignore when comparing."""
 
 COMPARE_SUBDIRS: tuple[str, ...] = (
     'plots',
@@ -126,18 +135,54 @@ def diff_dataset(ref: xr.Dataset, cur: xr.Dataset) -> str:
     return '\n'.join(msg)
 
 
-def load_nc(filename: Path) -> xr.Dataset:
+def adapt_attributes(attributes: dict, ignore_attributes: tuple[str, ...],
+                     root_dir: Path) -> dict:
+    """Remove ignored attributes and references to absolute paths."""
+    root_dir = root_dir.resolve()
+    new_attrs = {}
+
+    for (attr, attr_val) in attributes.items():
+
+        # Ignore attributes
+        if attr in ignore_attributes:
+            continue
+
+        # Convert absolute paths to relative paths
+        if isinstance(attr_val, str):
+            attr_path = Path(attr_val)
+            if attr_path.is_absolute():
+                attr_path = attr_path.resolve()  # resolve links
+            if attr_path.is_relative_to(root_dir):
+                attr_val = str(attr_path.relative_to(root_dir))
+
+        new_attrs[attr] = attr_val
+
+    return new_attrs
+
+
+def load_nc(filename: Path, file_dir: Path) -> xr.Dataset:
     """Load a NetCDF file."""
     dataset = xr.open_dataset(filename, chunks={}, decode_times=False)
-    for attr in IGNORE_GLOBAL_ATTRIBUTES:
-        dataset.attrs.pop(attr, None)
+
+    # Remove ignored variables
+    dataset = dataset.drop_vars(IGNORE_VARIABLES, errors='ignore')
+
+    # Remove ignored attributes and modify attributes that contain paths
+    dataset.attrs = adapt_attributes(dataset.attrs, IGNORE_GLOBAL_ATTRIBUTES,
+                                     file_dir)
+    for var in dataset:
+        dataset[var].attrs = adapt_attributes(dataset[var].attrs,
+                                              IGNORE_VARIABLE_ATTRIBUTES,
+                                              file_dir)
+
     return dataset
 
 
-def debug_nc(reference_file: Path, current_file: Path) -> str:
+def debug_nc(reference_file: Path, current_file: Path, reference_dir: Path,
+             current_dir: Path) -> str:
     """Find out the differences between two NetCDF files."""
-    ref = load_nc(reference_file)
-    cur = load_nc(current_file)
+    ref = load_nc(reference_file, reference_dir)
+    cur = load_nc(current_file, current_dir)
 
     if diff := diff_dataset(ref, cur):
         msg = diff
@@ -147,7 +192,7 @@ def debug_nc(reference_file: Path, current_file: Path) -> str:
     return msg
 
 
-def debug_txt(reference_file: Path, current_file: Path) -> str:
+def debug_txt(reference_file: Path, current_file: Path, _, ___) -> str:
     """Find out the differences between two text files."""
     with reference_file.open('rt') as file:
         ref = file.readlines()
@@ -168,15 +213,16 @@ debug_html = debug_txt
 debug_grid = debug_txt
 
 
-def compare_nc(reference_file: Path, current_file: Path) -> bool:
+def compare_nc(reference_file: Path, current_file: Path, reference_dir: Path,
+               current_dir: Path) -> bool:
     """Compare two NetCDF files."""
-    ref = load_nc(reference_file)
-    cur = load_nc(current_file)
+    ref = load_nc(reference_file, reference_dir)
+    cur = load_nc(current_file, current_dir)
 
     return cur.identical(ref)
 
 
-def compare_png(reference_file: Path, current_file: Path) -> bool:
+def compare_png(reference_file: Path, current_file: Path, _, ___) -> bool:
     """Compare two PNG files."""
     # Based on:
     # https://scitools-iris.readthedocs.io/en/latest/developers_guide/contributing_graphics_tests.html
@@ -195,25 +241,29 @@ def compare_png(reference_file: Path, current_file: Path) -> bool:
     return distance < max_distance
 
 
-def debug(reference_file: Path, current_file: Path) -> str:
+def debug(reference_file: Path, current_file: Path, reference_dir: Path,
+          current_dir: Path) -> str:
     """Try to find out why two files are different."""
     suffix = reference_file.suffix
     fn_name = f"debug_{suffix[1:]}"
     if fn_name in globals():
         debug_fn = globals()[fn_name]
-        msg = debug_fn(reference_file, current_file)
+        msg = debug_fn(reference_file, current_file, reference_dir,
+                       current_dir)
     else:
         msg = ""
     return indent(msg, "  ")
 
 
-def files_equal(reference_file: Path, current_file: Path) -> bool:
+def files_equal(reference_file: Path, current_file: Path, reference_dir: Path,
+                current_dir: Path) -> bool:
     """Compare two files."""
     suffix = reference_file.suffix[1:].lower()
     fn_name = f"compare_{suffix}"
     if fn_name in globals():
         compare_fn = globals()[fn_name]
-        same = compare_fn(reference_file, current_file)
+        same = compare_fn(reference_file, current_file, reference_dir,
+                          current_dir)
     else:
         same = filecmp.cmp(reference_file, current_file, shallow=False)
     return same
@@ -226,10 +276,11 @@ def compare_files(reference_dir: Path, current_dir: Path, files: list[Path],
     for file in files:
         ref_file = reference_dir / file
         cur_file = current_dir / file
-        if not files_equal(ref_file, cur_file):
+        if not files_equal(ref_file, cur_file, reference_dir, current_dir):
             msg = str(file)
             if verbose:
-                if info := debug(ref_file, cur_file):
+                info = debug(ref_file, cur_file, reference_dir, current_dir)
+                if info:
                     msg += ":\n" + info
             different.append(msg)
     return different
