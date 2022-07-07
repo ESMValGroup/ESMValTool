@@ -6,6 +6,7 @@ import difflib
 import filecmp
 import fnmatch
 import os
+import re
 import sys
 from pathlib import Path
 from textwrap import indent
@@ -52,6 +53,14 @@ COMPARE_SUBDIRS: tuple[str, ...] = (
     'work',
 )
 """Directories of subdirectories to compare."""
+
+RECIPE_DATETIME_PATTERN: str = r'[0-9]{8}_[0-9]{6}'
+"""Regex pattern for datetime in recipe output directory."""
+
+RECIPE_OUTPUT_DIR_PATTERN: str = (
+    r'recipe_(?P<recipe_name>[^\s]*?)_' + RECIPE_DATETIME_PATTERN
+)
+"""Regex pattern for recipe output directories."""
 
 
 def as_txt(msg: list[str]) -> str:
@@ -136,9 +145,8 @@ def diff_dataset(ref: xr.Dataset, cur: xr.Dataset) -> str:
 
 
 def adapt_attributes(attributes: dict, ignore_attributes: tuple[str, ...],
-                     root_dir: Path) -> dict:
+                     recipe_name: str) -> dict:
     """Remove ignored attributes and references to absolute paths."""
-    root_dir = root_dir.resolve()
     new_attrs = {}
 
     for (attr, attr_val) in attributes.items():
@@ -147,42 +155,45 @@ def adapt_attributes(attributes: dict, ignore_attributes: tuple[str, ...],
         if attr in ignore_attributes:
             continue
 
-        # Convert absolute paths to relative paths
+        # Convert absolute paths to relative paths using the recipe name
         if isinstance(attr_val, str):
-            attr_path = Path(attr_val)
-            if attr_path.is_absolute():
-                attr_path = attr_path.resolve()  # resolve links
-            if attr_path.is_relative_to(root_dir):
-                attr_val = str(attr_path.relative_to(root_dir))
+            recipe_dir = get_recipe_dir_from_str(attr_val, recipe_name)
+
+            # If recipe_dir is present in attribute value, assume this
+            # attribute values is a path and convert it to a relative path
+            if recipe_dir is not None:
+                print("<---", attr_val)
+                attr_val = Path(attr_val).relative_to(recipe_dir)
+                print("--->", attr_val)
 
         new_attrs[attr] = attr_val
 
     return new_attrs
 
 
-def load_nc(filename: Path, file_dir: Path) -> xr.Dataset:
+def load_nc(filename: Path) -> xr.Dataset:
     """Load a NetCDF file."""
     dataset = xr.open_dataset(filename, chunks={}, decode_times=False)
+    recipe_name = get_recipe_name_from_file(filename)
 
     # Remove ignored variables
     dataset = dataset.drop_vars(IGNORE_VARIABLES, errors='ignore')
 
     # Remove ignored attributes and modify attributes that contain paths
     dataset.attrs = adapt_attributes(dataset.attrs, IGNORE_GLOBAL_ATTRIBUTES,
-                                     file_dir)
+                                     recipe_name)
     for var in dataset:
         dataset[var].attrs = adapt_attributes(dataset[var].attrs,
                                               IGNORE_VARIABLE_ATTRIBUTES,
-                                              file_dir)
+                                              recipe_name)
 
     return dataset
 
 
-def debug_nc(reference_file: Path, current_file: Path, reference_dir: Path,
-             current_dir: Path) -> str:
+def debug_nc(reference_file: Path, current_file: Path) -> str:
     """Find out the differences between two NetCDF files."""
-    ref = load_nc(reference_file, reference_dir)
-    cur = load_nc(current_file, current_dir)
+    ref = load_nc(reference_file)
+    cur = load_nc(current_file)
 
     if diff := diff_dataset(ref, cur):
         msg = diff
@@ -192,7 +203,7 @@ def debug_nc(reference_file: Path, current_file: Path, reference_dir: Path,
     return msg
 
 
-def debug_txt(reference_file: Path, current_file: Path, _, ___) -> str:
+def debug_txt(reference_file: Path, current_file: Path) -> str:
     """Find out the differences between two text files."""
     with reference_file.open('rt') as file:
         ref = file.readlines()
@@ -213,16 +224,15 @@ debug_html = debug_txt
 debug_grid = debug_txt
 
 
-def compare_nc(reference_file: Path, current_file: Path, reference_dir: Path,
-               current_dir: Path) -> bool:
+def compare_nc(reference_file: Path, current_file: Path) -> bool:
     """Compare two NetCDF files."""
-    ref = load_nc(reference_file, reference_dir)
-    cur = load_nc(current_file, current_dir)
+    ref = load_nc(reference_file)
+    cur = load_nc(current_file)
 
     return cur.identical(ref)
 
 
-def compare_png(reference_file: Path, current_file: Path, _, ___) -> bool:
+def compare_png(reference_file: Path, current_file: Path) -> bool:
     """Compare two PNG files."""
     # Based on:
     # https://scitools-iris.readthedocs.io/en/latest/developers_guide/contributing_graphics_tests.html
@@ -241,29 +251,25 @@ def compare_png(reference_file: Path, current_file: Path, _, ___) -> bool:
     return distance < max_distance
 
 
-def debug(reference_file: Path, current_file: Path, reference_dir: Path,
-          current_dir: Path) -> str:
+def debug(reference_file: Path, current_file: Path) -> str:
     """Try to find out why two files are different."""
     suffix = reference_file.suffix
     fn_name = f"debug_{suffix[1:]}"
     if fn_name in globals():
         debug_fn = globals()[fn_name]
-        msg = debug_fn(reference_file, current_file, reference_dir,
-                       current_dir)
+        msg = debug_fn(reference_file, current_file)
     else:
         msg = ""
     return indent(msg, "  ")
 
 
-def files_equal(reference_file: Path, current_file: Path, reference_dir: Path,
-                current_dir: Path) -> bool:
+def files_equal(reference_file: Path, current_file: Path) -> bool:
     """Compare two files."""
     suffix = reference_file.suffix[1:].lower()
     fn_name = f"compare_{suffix}"
     if fn_name in globals():
         compare_fn = globals()[fn_name]
-        same = compare_fn(reference_file, current_file, reference_dir,
-                          current_dir)
+        same = compare_fn(reference_file, current_file)
     else:
         same = filecmp.cmp(reference_file, current_file, shallow=False)
     return same
@@ -276,11 +282,10 @@ def compare_files(reference_dir: Path, current_dir: Path, files: list[Path],
     for file in files:
         ref_file = reference_dir / file
         cur_file = current_dir / file
-        if not files_equal(ref_file, cur_file, reference_dir, current_dir):
+        if not files_equal(ref_file, cur_file):
             msg = str(file)
             if verbose:
-                info = debug(ref_file, cur_file, reference_dir, current_dir)
-                if info:
+                if info := debug(ref_file, cur_file):
                     msg += ":\n" + info
             different.append(msg)
     return different
@@ -292,7 +297,7 @@ def compare(reference_dir: Optional[Path], current_dir: Path,
 
     Returns True if the runs were identical, False otherwise.
     """
-    recipe_name = get_recipe_name(current_dir)
+    recipe_name = get_recipe_name_from_dir(current_dir)
     print("")
     print(f"recipe_{recipe_name}.yml: ", end='')
     if reference_dir is None:
@@ -332,9 +337,43 @@ def compare(reference_dir: Optional[Path], current_dir: Path,
     return False
 
 
-def get_recipe_name(recipe_dir: Path) -> str:
+def get_recipe_name_from_dir(recipe_dir: Path) -> str:
     """Extract recipe name from output dir."""
-    return recipe_dir.stem[7:-16]
+    recipe_match = re.search(RECIPE_OUTPUT_DIR_PATTERN, recipe_dir.stem)
+    return recipe_match['recipe_name']
+
+
+def get_recipe_name_from_file(filename: Path) -> str:
+    """Extract recipe name from arbitrary recipe output file."""
+    # Iterate starting from the root dir to avoid false matches
+    for parent in filename.parents[::-1]:
+        recipe_match = re.search(RECIPE_OUTPUT_DIR_PATTERN, str(parent))
+        if recipe_match is not None:
+            return recipe_match['recipe_name']
+    raise ValueError(f"Failed to extract recipe name from file {filename}")
+
+
+def get_recipe_dir_from_str(str_in: str, recipe_name: str) -> Optional[Path]:
+    """Try to extract recipe directory from arbitrary string."""
+    recipe_dir_pattern = rf'recipe_{recipe_name}_' + RECIPE_DATETIME_PATTERN
+    recipe_dir_match = re.search(recipe_dir_pattern, str_in)
+
+    # If recipe directory is not found in string, return None
+    if recipe_dir_match is None:
+        return None
+
+    # If recipe directory is found, return entire parent directory
+    # E.g., for str_in = /root/path/recipe_test_20220202_222222/work/file.nc
+    # return /root/path/recipe_test_20220202_222222
+    # For this, iterate from the right (::-1) through the parents
+    for parent in Path(str_in).parents[::-1]:
+        if recipe_dir_match[0] in str(parent):
+            return parent
+
+    # If not valid parent is found, return str_in
+    # E.g., for str_in = /root/path/recipe_test_20220202_222222 no valid
+    # parents are found; thus, return str_in itself
+    return Path(str_in)
 
 
 def find_files(recipe_dir: Path) -> set[Path]:
@@ -375,7 +414,7 @@ def find_recipes(reference: Path,
     """Yield tuples of current and reference directories."""
     for current_dir in current:
         for recipe_dir in find_successful_runs(current_dir):
-            recipe_name = get_recipe_name(recipe_dir)
+            recipe_name = get_recipe_name_from_dir(recipe_dir)
             reference_dirs = find_successful_runs(reference, recipe_name)
             if reference_dirs:
                 reference_dir = reference_dirs[-1]
@@ -422,7 +461,7 @@ def main() -> int:
     for current_dir, reference_dir in find_recipes(args.reference,
                                                    args.current):
         same = compare(reference_dir, current_dir, verbose=args.verbose)
-        recipe = f"recipe_{get_recipe_name(current_dir)}.yml"
+        recipe = f"recipe_{get_recipe_name_from_dir(current_dir)}.yml"
         if same:
             success.append(f"{recipe}:\t{current_dir}")
         else:
