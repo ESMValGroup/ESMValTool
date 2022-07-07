@@ -14,8 +14,9 @@ from pathlib import Path
 
 import esmvalcore
 import yaml
-from esmvalcore._config import configure_logging, read_config_user_file
+from esmvalcore._config import configure_logging
 from esmvalcore._task import write_ncl_settings
+from esmvalcore.experimental import CFG
 
 from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
@@ -55,8 +56,9 @@ class Formatter():
         else:
             self.datasets = datasets
 
-        self.config = read_config_user_file(config_file, f'data_{command}',
-                                            options)
+        CFG.load_from_file(config_file)
+        CFG.update(options)
+        self.config = CFG.start_session(f'data_{command}')
 
         if not os.path.isdir(self.run_dir):
             os.makedirs(self.run_dir)
@@ -90,12 +92,12 @@ class Formatter():
     @property
     def output_dir(self):
         """Output folder path."""
-        return self.config['output_dir']
+        return self.config.session_dir
 
     @property
     def run_dir(self):
         """Run dir folder path."""
-        return os.path.join(self.config['output_dir'], 'run')
+        return self.config.run_dir
 
     @property
     def log_level(self):
