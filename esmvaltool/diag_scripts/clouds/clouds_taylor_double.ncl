@@ -554,11 +554,21 @@ begin
 
     mstring = "z"
     fontnum = 35
-    size   = 1.5
+    size   = 1.75  ; 1.5
     angle  = 0.0
 
     new_index = NhlNewMarker(wks, mstring, fontnum, 0.0, 0.0, \
                              1.0, size, angle)
+
+    ; create new marker: filled dot
+
+    mstring = "m"
+    fontnum = 37
+    size   = 1.0
+    angle  = 0.0
+
+    new_index_dot = NhlNewMarker(wks, mstring, fontnum, 0.0, 0.0, \
+                                 1.0, size, angle)
 
     legendwks = wks
 
@@ -595,7 +605,7 @@ begin
         testidx = ind(projectgroups .eq. projects(ii))
         if (.not.ismissing(testidx)) then
           colors(i) = projectcolors(testidx)
-          markers(i) = 16
+          markers(i) = new_index_dot  ; 16
         end if
 
         i = i + 1
@@ -640,7 +650,7 @@ begin
         testidx = ind(projectgroups .eq. projects(ii))
         if (.not.ismissing(testidx)) then
           colors(i) = projectcolors(testidx)
-          markers(i) = 16
+          markers(i) = new_index_dot  ; 16
         end if
 
       end do
@@ -663,7 +673,7 @@ begin
                            0.9, 0.95, 0.99 /)
     ropts@ccRays_color  = "Black"
     ropts@centerDiffRMS = True
-    ropts@centerDiffRMS_color = "LightGray"  ; "PaleGreen1"
+    ropts@centerDiffRMS_color = "PaleGreen1"  ; "LightGray"
 
     ropts@printDataLabels = False  ; print numeric label for each data pt.
     ropts@reverseOrder  = True  ; reverse order of items in legend

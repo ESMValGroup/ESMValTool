@@ -1,4 +1,4 @@
-# recipe_clouds_clim.yml
+# recipe_lauer22jclim_fig1_clim.yml
 ---
 documentation:
   title: Cloud diagnostics v2 (climatologies)
@@ -194,8 +194,10 @@ diagnostics:
         derive: true
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
-             start_year: 2001, end_year: 2012}
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
+#             start_year: 2001, end_year: 2012}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2,
+             start_year: 2001, end_year: 2021}
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
@@ -210,8 +212,10 @@ diagnostics:
         derive: true
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
-             start_year: 2001, end_year: 2012}
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
+#             start_year: 2001, end_year: 2012}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2,
+             start_year: 2001, end_year: 2021}
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
@@ -336,8 +340,10 @@ diagnostics:
         derive: true
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
-             start_year: 2001, end_year: 2012}
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
+#             start_year: 2001, end_year: 2012}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2,
+             start_year: 2001, end_year: 2021}
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
@@ -352,8 +358,10 @@ diagnostics:
         derive: true
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
-             start_year: 2001, end_year: 2012}
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
+#             start_year: 2001, end_year: 2012}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2,
+             start_year: 2001, end_year: 2021}
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,

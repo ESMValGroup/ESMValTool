@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_clouds_zonal.yml
+# recipe_lauer22jclim_fig3-4_zonal.yml
 ---
 documentation:
   title: Cloud diagnostics v2 (zonal means)
