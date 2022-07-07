@@ -148,7 +148,7 @@ def diff_dataset(ref: xr.Dataset, cur: xr.Dataset) -> str:
 
 def adapt_attributes(attributes: dict, ignore_attributes: tuple[str, ...],
                      recipe_name: str) -> dict:
-    """Remove ignored attributes and references to absolute paths."""
+    """Remove ignored attributes and make absolute paths relative."""
     new_attrs = {}
 
     for (attr, attr_val) in attributes.items():
