@@ -32,10 +32,12 @@ IGNORE_FILES: tuple[str, ...] = (
 
 IGNORE_GLOBAL_ATTRIBUTES: tuple[str, ...] = (
     'ancestors',
+    'auxiliary_data_dir',
     'creation_date',
     'history',
     'provenance',
     'software',
+    'version',
 )
 """Global NetCDF attributes to ignore when comparing."""
 
@@ -54,11 +56,11 @@ COMPARE_SUBDIRS: tuple[str, ...] = (
 )
 """Directories of subdirectories to compare."""
 
-RECIPE_DATETIME_PATTERN: str = r'[0-9]{8}_[0-9]{6}'
+RECIPE_DIR_DATETIME_PATTERN: str = r'[0-9]{8}_[0-9]{6}'
 """Regex pattern for datetime in recipe output directory."""
 
-RECIPE_OUTPUT_DIR_PATTERN: str = (
-    r'recipe_(?P<recipe_name>[^\s]*?)_' + RECIPE_DATETIME_PATTERN
+RECIPE_DIR_PATTERN: str = (
+    r'recipe_(?P<recipe_name>[^\s]*?)_' + RECIPE_DIR_DATETIME_PATTERN
 )
 """Regex pattern for recipe output directories."""
 
@@ -162,9 +164,7 @@ def adapt_attributes(attributes: dict, ignore_attributes: tuple[str, ...],
             # If recipe_dir is present in attribute value, assume this
             # attribute values is a path and convert it to a relative path
             if recipe_dir is not None:
-                print("<---", attr_val)
                 attr_val = Path(attr_val).relative_to(recipe_dir)
-                print("--->", attr_val)
 
         new_attrs[attr] = attr_val
 
@@ -339,7 +339,7 @@ def compare(reference_dir: Optional[Path], current_dir: Path,
 
 def get_recipe_name_from_dir(recipe_dir: Path) -> str:
     """Extract recipe name from output dir."""
-    recipe_match = re.search(RECIPE_OUTPUT_DIR_PATTERN, recipe_dir.stem)
+    recipe_match = re.search(RECIPE_DIR_PATTERN, recipe_dir.stem)
     return recipe_match['recipe_name']
 
 
@@ -347,7 +347,7 @@ def get_recipe_name_from_file(filename: Path) -> str:
     """Extract recipe name from arbitrary recipe output file."""
     # Iterate starting from the root dir to avoid false matches
     for parent in filename.parents[::-1]:
-        recipe_match = re.search(RECIPE_OUTPUT_DIR_PATTERN, str(parent))
+        recipe_match = re.search(RECIPE_DIR_PATTERN, str(parent))
         if recipe_match is not None:
             return recipe_match['recipe_name']
     raise ValueError(f"Failed to extract recipe name from file {filename}")
@@ -355,7 +355,9 @@ def get_recipe_name_from_file(filename: Path) -> str:
 
 def get_recipe_dir_from_str(str_in: str, recipe_name: str) -> Optional[Path]:
     """Try to extract recipe directory from arbitrary string."""
-    recipe_dir_pattern = rf'recipe_{recipe_name}_' + RECIPE_DATETIME_PATTERN
+    recipe_dir_pattern = (
+        rf'recipe_{recipe_name}_' + RECIPE_DIR_DATETIME_PATTERN
+    )
     recipe_dir_match = re.search(recipe_dir_pattern, str_in)
 
     # If recipe directory is not found in string, return None
