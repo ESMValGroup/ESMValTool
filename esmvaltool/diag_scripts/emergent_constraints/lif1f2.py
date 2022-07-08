@@ -417,9 +417,9 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
         't-test. All the precipitation changes are normalized by the ' + \
         'corresponding global mean SST increase for each model'
 
-    selection = _get_sel_files_var(cfg, ['pr', 'ts'])
-
-    provenance_record = get_provenance_record(selection,
+    provenance_record = get_provenance_record(_get_sel_files_var(cfg,
+                                                                 ['pr',
+                                                                  'ts']),
                                               caption, ['corr'], ['reg'])
 
     diagnostic_file = get_diagnostic_filename('li17natcc_fig1b', cfg)
