@@ -31,12 +31,14 @@ IGNORE_FILES: tuple[str, ...] = (
 """Files to ignore when comparing results."""
 
 IGNORE_GLOBAL_ATTRIBUTES: tuple[str, ...] = (
-    'auxiliary_data_dir',  # see https://github.com/ESMValGroup/ESMValCore/issues/1657
+    # see https://github.com/ESMValGroup/ESMValCore/issues/1657
+    'auxiliary_data_dir',
     'creation_date',
     'history',
     'provenance',
     'software',
-    'version',  # see https://github.com/ESMValGroup/ESMValCore/issues/1657
+    # see https://github.com/ESMValGroup/ESMValCore/issues/1657
+    'version',
 )
 """Global NetCDF attributes to ignore when comparing."""
 
@@ -44,8 +46,8 @@ IGNORE_VARIABLE_ATTRIBUTES: tuple[str, ...] = IGNORE_GLOBAL_ATTRIBUTES
 """Variable NetCDF attributes to ignore when comparing."""
 
 IGNORE_VARIABLES: tuple[str, ...] = (
-    'temp_list',  # used by perfmetrics diagnostics to save absolute paths
     # see https://github.com/ESMValGroup/ESMValTool/issues/2714
+    'temp_list',  # used by perfmetrics diagnostics to save absolute paths
 )
 """Variables in NetCDF files to ignore when comparing."""
 
