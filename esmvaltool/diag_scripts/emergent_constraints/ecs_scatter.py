@@ -555,7 +555,7 @@ def su(grouped_data, cfg):
             plt.close()
 
             # Provenance
-            ancestors = cube.attributes['ancestors'].split('|')
+            ancestors = cube.attributes.pop('ancestors').split('|')
             provenance_record = ec.get_provenance_record(
                 {'su': attrs}, ['su'],
                 caption=f'{cube.long_name} for {dataset_name}.',
