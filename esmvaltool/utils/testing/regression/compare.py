@@ -31,7 +31,7 @@ IGNORE_FILES: tuple[str, ...] = (
 """Files to ignore when comparing results."""
 
 IGNORE_GLOBAL_ATTRIBUTES: tuple[str, ...] = (
-    'auxiliary_data_dir',
+    'auxiliary_data_dir',  # see https://github.com/ESMValGroup/ESMValCore/issues/1657
     'creation_date',
     'history',
     'provenance',
