@@ -31,7 +31,6 @@ IGNORE_FILES: tuple[str, ...] = (
 """Files to ignore when comparing results."""
 
 IGNORE_GLOBAL_ATTRIBUTES: tuple[str, ...] = (
-    'ancestors',
     'auxiliary_data_dir',
     'creation_date',
     'history',
