@@ -45,6 +45,7 @@ IGNORE_VARIABLE_ATTRIBUTES: tuple[str, ...] = IGNORE_GLOBAL_ATTRIBUTES
 
 IGNORE_VARIABLES: tuple[str, ...] = (
     'temp_list',  # used by perfmetrics diagnostics to save absolute paths
+    # see https://github.com/ESMValGroup/ESMValTool/issues/2714
 )
 """Variables in NetCDF files to ignore when comparing."""
 
