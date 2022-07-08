@@ -36,7 +36,7 @@ IGNORE_GLOBAL_ATTRIBUTES: tuple[str, ...] = (
     'history',
     'provenance',
     'software',
-    'version',
+    'version',  # see https://github.com/ESMValGroup/ESMValCore/issues/1657
 )
 """Global NetCDF attributes to ignore when comparing."""
 
