@@ -19,11 +19,14 @@ Configuration options in recipe
 -------------------------------
 add_mean : str, optional
     Add a bar representing the mean for each class.
-label_attribute : str, optional
-    Cube attribute which is used as label for different input files.
+group_by_attribute : str, optional
+    Cube attribute which is used to group the input data. E.g.,. use
+    ``group_by_attribute: project`` on CMIP5 and CMIP6 data to create two
+    groups of data (CMIP5 + CMIP6).
 order : list of str, optional
-    Specify the order of the different classes in the barplot by giving the
-    ``label``, makes most sense when combined with ``label_attribute``.
+    Specify the order of the different classes in the barplot. Makes most sense
+    when combined with ``group_by_attribute``, e.g., use ``order: [CMIP5,
+    CMIP6]`` for ``group_by_attribute: project``.
 patterns : list of str, optional
     Patterns to filter list of input data.
 savefig_kwargs : dict, optional
@@ -73,28 +76,32 @@ def _adjust_lightness(rgb_color, amount=0.6):
     return colorsys.hls_to_rgb(*new_color)
 
 
-def _get_data_for_label(cfg, cube):
-    """Extract data from :class:`iris.cube.Cube`."""
-    datasets = cube.coord('dataset').points
-    values = cube.data
+def _sort_and_add_mean(cfg, all_data):
+    """Sort data and add mean if requested."""
+    for (group, vals) in all_data.items():
+        datasets = vals[0]
+        values = vals[1]
 
-    # Add mean if desired
-    if 'add_mean' in cfg:
-        logger.debug("Adding mean")
-        datasets = np.hstack((datasets, 'Mean'))
-        values = np.hstack((values, np.ma.mean(values)))
+        # Add mean
+        if 'add_mean' in cfg:
+            logger.debug("Adding mean to group %s", group)
+            datasets.append('Mean')
+            values.append(np.ma.mean(values))
 
-    # Sort if desired
-    if cfg.get('sort_ascending'):
-        sort_idx = np.argsort(values)
-    elif cfg.get('sort_descending'):
-        sort_idx = np.argsort(values)[::-1]
-    else:
-        sort_idx = np.argsort(datasets)
-    datasets = datasets[sort_idx]
-    values = values[sort_idx]
+        # Sort
+        if cfg.get('sort_ascending'):
+            sort_idx = np.argsort(values)
+        elif cfg.get('sort_descending'):
+            sort_idx = np.argsort(values)[::-1]
+        else:
+            sort_idx = np.argsort(datasets)
 
-    return (datasets, values)
+        datasets = np.array(datasets)[sort_idx]
+        values = np.ma.array(values)[sort_idx]
+
+        all_data[group] = (datasets, values)
+
+    return all_data
 
 
 def _get_ordered_dict(cfg, all_data):
@@ -131,18 +138,23 @@ def get_all_data(cfg, input_files):
         cube = iris.load_cube(filename)
         try:
             cube.coord('dataset')
-        except iris.exceptions.CoordinateNotFoundError:
+        except iris.exceptions.CoordinateNotFoundError as exc:
             raise iris.exceptions.CoordinateNotFoundError(
                 f"File '{filename}' does not contain necessary coordinate "
-                f"'dataset'")
+                f"'dataset'") from exc
         logger.info("Processing '%s'", filename)
 
         # Add to data dictionary
-        if cfg.get('label_attribute') in cube.attributes:
-            label = cube.attributes[cfg.get('label_attribute')]
+        group_by_attribute = cfg.get('group_by_attribute')
+        if group_by_attribute in cube.attributes:
+            group = cube.attributes[group_by_attribute]
         else:
-            label = filename
-        all_data[label] = _get_data_for_label(cfg, cube)
+            group = None
+        all_data.setdefault(group, ([], []))  # idx 0: datasets, idx 1: values
+        new_datasets = cube.coord('dataset').points
+        new_values = cube.data
+        all_data[group][0].extend(new_datasets)
+        all_data[group][1].extend(new_values)
 
         # Check cube metadata
         new_metadata = {
@@ -157,6 +169,10 @@ def get_all_data(cfg, input_files):
                 raise ValueError(
                     f"Got differing metadata for the different input files, "
                     f"{metadata} and {new_metadata}")
+
+    # Sort data and add mean if requested
+    all_data = _sort_and_add_mean(cfg, all_data)
+
     return (all_data, all_files, metadata)
 
 
@@ -182,10 +198,10 @@ def plot_data(cfg, all_data, metadata):
     x_labels = []
     offset = 0.0
     all_data = _get_ordered_dict(cfg, all_data)
-    for (label, xy_data) in all_data.items():
+    for (group, xy_data) in all_data.items():
         xy_data = (xy_data[0], xy_data[1])
         pos = np.arange(len(xy_data[0])) + offset + 0.5
-        bars = axes.bar(pos, xy_data[1], align='center', label=label)
+        bars = axes.bar(pos, xy_data[1], align='center', label=group)
         all_pos.extend(pos)
         x_labels.extend(xy_data[0])
         offset += len(pos) + 1.0
@@ -201,13 +217,13 @@ def plot_data(cfg, all_data, metadata):
     axes.tick_params(axis='x', which='major', pad=-5.0)
     axes.set_ylabel(f"{metadata['var_name']} / {metadata['units']}")
     axes.set_ylim(cfg.get('y_range'))
-    if 'label_attribute' in cfg:
+    if 'group_by_attribute' in cfg:
         axes.legend(loc='upper right')
     if cfg.get('value_labels'):
         for rect in axes.patches:
             axes.text(rect.get_x() + rect.get_width() / 2.0,
                       rect.get_height() + 0.05,
-                      "{:.2f}".format(rect.get_height()),
+                      f"{rect.get_height():.2f}",
                       rotation=90.0,
                       ha='center',
                       va='bottom',
