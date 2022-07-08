@@ -267,6 +267,10 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(get_plot_filename(dataname +
+                                                '_li17natcc_fig1a',
+                                                cfg),
+                              provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
@@ -343,6 +347,8 @@ def plot_rain(cfg, titlestr, data, lats, lons):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(get_plot_filename(figname, cfg),
+                              provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
@@ -428,6 +434,8 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(get_plot_filename('li17natcc_fig1b', cfg),
+                              provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
@@ -503,6 +511,8 @@ def plot_reg_li(cfg, data_ar, future_exp):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(get_plot_filename('li17natcc_fig2a', cfg),
+                              provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
@@ -602,6 +612,8 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(get_plot_filename('li17natcc_fig2b', cfg),
+                              provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
