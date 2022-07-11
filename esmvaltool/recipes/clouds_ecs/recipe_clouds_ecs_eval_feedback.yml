@@ -334,6 +334,21 @@ diagnostics:
         dataset_style: cmip6
 
 
+  barplot:
+    description: Create barplot of ECS.
+    scripts:
+      barplot:
+        script: climate_metrics/create_barplot.py
+        ancestors: ['*/ecs']
+        #add_mean: true
+        #label_attribute: project
+        #order: ['CMIP5', 'CMIP6']
+        patterns: ['ecs.nc']
+        sort_descending: true
+        value_labels: true
+        y_range: [0.0, 6.0]
+
+
   feedback_high_ECS:
     title: CMIP5 cloud feedback
     description: Calculate grid-level CRE feedback parameters for CMIP5 models.

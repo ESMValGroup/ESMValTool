@@ -206,14 +206,14 @@ def compute_diff_temp(input_data, group, dataset):
 
     cube = compute_diagnostic(input_file_1)
     if var in ['clw', 'cli']:
-        cube.data[cube.data < 0.001] = 0.0
+        cube.data[cube.data < 0.001] = np.nan
     elif var in ['cl']:
-        cube.data[cube.data < 0.1] = 0.0
+        cube.data[cube.data < 0.1] = np.nan
 
     cube_diff = compute_diff(input_file_1, input_file_2)
     cube_ta_diff = compute_diff(input_file_ta_1, input_file_ta_2)
 
-    cube_ta_diff.data[cube_ta_diff.data < 0.01] = 0.0
+    cube_ta_diff.data[cube_ta_diff.data < 0.1] = np.nan
 
     #cube_diff = cube_diff / cube_ta_diff
     cube_diff = 100. * (cube_diff / cube) / cube_ta_diff
@@ -299,7 +299,7 @@ def plot_diagnostic_diff(cube, legend, plot_type, cfg):
         plt.yscale('log')
         plt.yticks([1000., 800., 600., 400., 300., 200., 100.], [1000, 800, 600, 400, 300, 200, 100])
         cube.coord('air_pressure').convert_units('hPa')
-        levels = np.linspace(-20., 20., 21)
+        levels = np.linspace(-8., 8., 33)
         if cube.var_name == 'cl':
             levels = np.linspace(-6., 6., 13)
         elif cube.var_name == 'cli':

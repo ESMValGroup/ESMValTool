@@ -193,6 +193,9 @@ def calculate_icefrac(input_data, cfg, description=None):
         ancestors.extend(dataset['ancestors'] + cli_data[0]['ancestors']
                          + clw_data[0]['ancestors'])
 
+        cli_cube.data[cli_cube.data < 0.001] = np.nan
+        clw_cube.data[clw_cube.data < 0.001] = np.nan
+
         # Calculate ice fraction
         ice_fraction = (cli_cube / (clw_cube + cli_cube))
 
