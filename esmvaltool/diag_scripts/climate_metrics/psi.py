@@ -35,10 +35,15 @@ import iris.coord_categorisation
 import numpy as np
 from scipy import stats
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            group_metadata, io, run_diagnostic,
-                                            select_metadata)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    group_metadata,
+    io,
+    run_diagnostic,
+    select_metadata,
+    sorted_metadata,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -102,9 +107,12 @@ def get_provenance_record(caption, ancestor_files):
 
 def get_attributes(cfg, single_psi_cube, input_data):
     """Get attributes for psi cube for all datasets."""
-    datasets = "|".join({str(d['dataset']) for d in input_data})
-    projects = "|".join({str(d['project']) for d in input_data})
-    ref = "|".join({str(d.get('reference_dataset')) for d in input_data})
+    datasets = sorted(list({str(d['dataset']) for d in input_data}))
+    projects = sorted(list({str(d['project']) for d in input_data}))
+    ref = sorted(list({str(d.get('reference_dataset')) for d in input_data}))
+    datasets = "|".join(datasets)
+    projects = "|".join(projects)
+    ref = "|".join(ref)
     attrs = single_psi_cube.attributes
     attrs.update({
         'dataset': datasets,
@@ -120,6 +128,7 @@ def main(cfg):
     input_data = (
         select_metadata(cfg['input_data'].values(), short_name='tas') +
         select_metadata(cfg['input_data'].values(), short_name='tasa'))
+    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
     if not input_data:
         raise ValueError("This diagnostics needs 'tas' or 'tasa' variable")
 
@@ -162,7 +171,7 @@ def main(cfg):
     io.save_scalar_data(psis, out_path, psi_attrs, attributes=attrs)
 
     # Provenance
-    caption = "{long_name} for mutliple climate models.".format(**psi_attrs)
+    caption = "{long_name} for multiple climate models.".format(**psi_attrs)
     ancestor_files = [d['filename'] for d in input_data]
     provenance_record = get_provenance_record(caption, ancestor_files)
     with ProvenanceLogger(cfg) as provenance_logger:
