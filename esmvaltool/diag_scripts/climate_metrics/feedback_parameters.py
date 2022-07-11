@@ -56,6 +56,7 @@ from esmvaltool.diag_scripts.shared import (
     plot,
     run_diagnostic,
     select_metadata,
+    sorted_metadata,
     variables_available,
 )
 
@@ -467,8 +468,13 @@ def _create_table(table, cfg, description=None):
         'SW = short wave, LW = long wave, cs = clear sky, CRE = cloud '
         'radiative effect (similar to Andrews et al., Geophys. Res. Lett., '
         '39, 2012).')
-    _write_provenance(netcdf_path, plot_path, caption,
-                      [d['filename'] for d in cfg['input_data'].values()], cfg)
+    _write_provenance(
+        netcdf_path,
+        plot_path,
+        caption,
+        sorted([d['filename'] for d in cfg['input_data'].values()]),
+        cfg,
+    )
 
 
 def _dict_to_array(dict_):
@@ -536,7 +542,8 @@ def _get_cube_list_for_table(cell_data, row_labels, col_labels, col_units):
     cubes = iris.cube.CubeList()
     for (idx, label) in enumerate(col_labels):
         if label in ('ECS', 'F', 'rtnt') and RTMT_DATASETS:
-            attrs = {'net_toa_radiation': RTMT_TEXT.format(RTMT_DATASETS)}
+            rtmt_datasets = sorted(list(RTMT_DATASETS))
+            attrs = {'net_toa_radiation': RTMT_TEXT.format(rtmt_datasets)}
         else:
             attrs = {}
         cube = iris.cube.Cube(
@@ -714,7 +721,8 @@ def _write_scalar_data(data, ancestor_files, cfg, description=None):
     ]
     global_attrs = {'project': list(cfg['input_data'].values())[0]['project']}
     if RTMT_DATASETS:
-        global_attrs['net_toa_radiation'] = RTMT_TEXT.format(RTMT_DATASETS)
+        rtmt_datasets = sorted(list(RTMT_DATASETS))
+        global_attrs['net_toa_radiation'] = RTMT_TEXT.format(rtmt_datasets)
     for (idx, var_attr) in enumerate(var_attrs):
         caption = '{long_name} for multiple climate models'.format(**var_attr)
         if description is not None:
@@ -973,6 +981,7 @@ def plot_regressions(input_data, cfg, description=None):
 def preprocess_data(cfg, year_idx=None):
     """Calculate anomalies and multi-model mean."""
     input_data = deepcopy(list(cfg['input_data'].values()))
+    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
 
     # Use 'rtmt' instead of 'rtmt' if necessary
     for dataset in input_data:
