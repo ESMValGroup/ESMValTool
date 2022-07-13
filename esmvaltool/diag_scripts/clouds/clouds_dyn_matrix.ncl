@@ -711,9 +711,11 @@ begin
       yaddplots(ii) = gsn_csm_xy(wks, dim_avg_n(plotdata, 1), \
                                  result&bin_y, xyres2)
       xyres1@gsnAttachPlotsXAxis = True
-      plots(ii, 0) = gsn_attach_plots(baseplots(ii), xaddplots(ii), res, xyres1)
+      plots(ii, 0) = gsn_attach_plots(baseplots(ii), xaddplots(ii), \
+                                      res, xyres1)
       delete(xyres1@gsnAttachPlotsXAxis)
-      plots(ii, 1) = gsn_attach_plots(baseplots(ii), yaddplots(ii), res, xyres2)
+      plots(ii, 1) = gsn_attach_plots(baseplots(ii), yaddplots(ii), \
+                                      res, xyres2)
     end if
 
     draw(baseplots(ii))
