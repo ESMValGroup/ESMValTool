@@ -316,6 +316,17 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
+      clivi:
+        preprocessor: ppSEPacific
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
       lwp:
         preprocessor: ppSEPacific
         mip: Amon
@@ -351,10 +362,10 @@ diagnostics:
         ymin_mm: -150.0
         ymax_mm: 0.0
         filename_add: sep_cmip5
-      scatter_lwp:
+      scatter_totalcwp:
         script: clouds/clouds_scatter.ncl
         var_x: clt
-        var_y: lwp
+        var_y: totalcwp
         xmin: 0
         xmax: 100
         ymin_mm: 0.0
@@ -370,6 +381,17 @@ diagnostics:
       - atmos
     variables:
       clt:
+        preprocessor: ppSEPacific
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1996
+        end_year: 2014
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      clivi:
         preprocessor: ppSEPacific
         mip: Amon
         project: CMIP6
@@ -415,10 +437,10 @@ diagnostics:
         ymin_mm: -150.0
         ymax_mm: 0.0
         filename_add: sep_cmip6
-      scatter_lwp:
+      scatter_totalcwp:
         script: clouds/clouds_scatter.ncl
         var_x: clt
-        var_y: lwp
+        var_y: totalcwp
         xmin: 0
         xmax: 100
         ymin_mm: 0.0

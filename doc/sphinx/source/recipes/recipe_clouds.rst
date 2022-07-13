@@ -167,6 +167,7 @@ User settings in recipe
    * clevels: explicit values for probability labelbar (array)
    * filename_add: optionally add this string to plot filesnames
    * nbins: number of equally spaced bins (var_x), default = 100
+   * sidepanels: show/hide side panels (default = False)
    * xlabel: label overriding variable name for x-axis (e.g. SST)
    * ylabel: label overriding variable name for y-axis (e.g. omega500)
    * zdmin: min z value for labelbar (difference plots)

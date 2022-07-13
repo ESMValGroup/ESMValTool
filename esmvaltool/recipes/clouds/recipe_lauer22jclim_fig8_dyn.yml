@@ -170,9 +170,12 @@ diagnostics:
         exp: historical
         start_year: 1986
         end_year: 2005
-        reference_dataset: ERA-Interim
+#        reference_dataset: ERA-Interim
+        reference_dataset: ERA5
         additional_datasets:
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+#             start_year: 1992, end_year: 2016}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
              start_year: 1992, end_year: 2016}
       wap:
         preprocessor: clim500_ocean
@@ -181,9 +184,12 @@ diagnostics:
         exp: historical
         start_year: 1986
         end_year: 2005
-        reference_dataset: ERA-Interim
+#        reference_dataset: ERA-Interim
+        reference_dataset: ERA5
         additional_datasets:
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+#             start_year: 1992, end_year: 2016}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
              start_year: 1992, end_year: 2016}
       clivi:
         preprocessor: clim_ocean
@@ -272,9 +278,12 @@ diagnostics:
         exp: historical
         start_year: 1995
         end_year: 2014
-        reference_dataset: ERA-Interim
+#        reference_dataset: ERA-Interim
+        reference_dataset: ERA5
         additional_datasets:
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+#             start_year: 1992, end_year: 2016}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
              start_year: 1992, end_year: 2016}
       wap:
         preprocessor: clim500_ocean
@@ -283,9 +292,12 @@ diagnostics:
         exp: historical
         start_year: 1995
         end_year: 2014
-        reference_dataset: ERA-Interim
+#        reference_dataset: ERA-Interim
+        reference_dataset: ERA5
         additional_datasets:
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+#             start_year: 1992, end_year: 2016}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
              start_year: 1992, end_year: 2016}
       clivi:
         preprocessor: clim_ocean

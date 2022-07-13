@@ -231,7 +231,8 @@ begin
 ;    res@gsnFrame                 = False
     res@gsnHistogramComputePercentages = True
     res@gsnHistogramPercentSign = True
-    res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
+;    res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
+    res@tiXAxisString = data1@var + " (" + data1@units + ")"
     res@tmYLOn = False
     res@tiYAxisOn = False
     res@tiMainString             = names(imod)
@@ -405,7 +406,8 @@ begin
   else
     res@trYMaxF  = max(data_all)
   end if
-  res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
+;  res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
+  res@tiXAxisString = data1@var + " (" + data1@units + ")"
   res@tiYAxisString = "Frequency (" + data_all@units + ")"
 
   lineplot = gsn_csm_xy(wks_line, data_all&$var0$, data_all, res)

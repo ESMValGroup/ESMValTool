@@ -19,6 +19,7 @@
 ;   clevels: explicit values for probability labelbar (array)
 ;   filename_add: optionally add this string to plot filesnames
 ;   nbins: number of equally spaced bins (var_x), default = 100
+;   sidepanels: show/hide side panels
 ;   xlabel: label overriding variable name for x-axis (e.g. SST)
 ;   ylabel: label overriding variable name for y-axis (e.g. omega500)
 ;   zdmin:  min z value for labelbar (difference plots)
@@ -182,6 +183,7 @@ begin
 
   set_default_att(diag_script_info, "filename_add", "")
   set_default_att(diag_script_info, "nbins", 100)
+  set_default_att(diag_script_info, "sidepanels", False)
   set_default_att(diag_script_info, "xlabel", var_x)
   set_default_att(diag_script_info, "ylabel", var_y)
 
@@ -189,6 +191,12 @@ begin
     filename_add = "_" + diag_script_info@filename_add
   else
     filename_add = ""
+  end if
+
+  if (diag_script_info@sidepanels) then
+    flag_sidepanels = True
+  else
+    flag_sidepanels = False
   end if
 
   nbins = toint(diag_script_info@nbins)
@@ -597,6 +605,10 @@ begin
   res@lbTitlePosition    = "Right"
   res@lbTitleFontHeightF = 0.0275
   res@lbLabelFontHeightF = 0.0275
+  res@tmXMajorGrid = True
+  res@tmXMinorGrid = True
+  res@tmYMajorGrid = True
+  res@tmYMinorGrid = True
 
   dres = res
 
@@ -690,17 +702,19 @@ begin
 
     baseplots(ii) = gsn_csm_contour(wks, plotdata, res)
 
-    xyres1@tiYAxisString = zunits
-    xyres2@tiXAxisString = zunits
+    if (flag_sidepanels) then
+      xyres1@tiYAxisString = zunits
+      xyres2@tiXAxisString = zunits
 
-    xaddplots(ii) = gsn_csm_xy(wks, result&bin_x, \
-                               dim_avg_n(plotdata, 0), xyres1)
-    yaddplots(ii) = gsn_csm_xy(wks, dim_avg_n(plotdata, 1), \
-                               result&bin_y, xyres2)
-    xyres1@gsnAttachPlotsXAxis = True
-    plots(ii, 0) = gsn_attach_plots(baseplots(ii), xaddplots(ii), res, xyres1)
-    delete(xyres1@gsnAttachPlotsXAxis)
-    plots(ii, 1) = gsn_attach_plots(baseplots(ii), yaddplots(ii), res, xyres2)
+      xaddplots(ii) = gsn_csm_xy(wks, result&bin_x, \
+                                 dim_avg_n(plotdata, 0), xyres1)
+      yaddplots(ii) = gsn_csm_xy(wks, dim_avg_n(plotdata, 1), \
+                                 result&bin_y, xyres2)
+      xyres1@gsnAttachPlotsXAxis = True
+      plots(ii, 0) = gsn_attach_plots(baseplots(ii), xaddplots(ii), res, xyres1)
+      delete(xyres1@gsnAttachPlotsXAxis)
+      plots(ii, 1) = gsn_attach_plots(baseplots(ii), yaddplots(ii), res, xyres2)
+    end if
 
     draw(baseplots(ii))
     frame(wks)
@@ -729,17 +743,19 @@ begin
 
     baseplots_c(ii) = gsn_csm_contour(cwks, countdata, cres)
 
-    xaddplots_c(ii) = gsn_csm_xy(cwks, count&bin_x, \
-                                 dim_avg_n(countdata, 0), xyres1)
-    yaddplots_c(ii) = gsn_csm_xy(cwks, dim_avg_n(countdata, 1), \
-                                 count&bin_y, xyres2)
+    if (flag_sidepanels) then
+      xaddplots_c(ii) = gsn_csm_xy(cwks, count&bin_x, \
+                                   dim_avg_n(countdata, 0), xyres1)
+      yaddplots_c(ii) = gsn_csm_xy(cwks, dim_avg_n(countdata, 1), \
+                                   count&bin_y, xyres2)
 
-    xyres1@gsnAttachPlotsXAxis = True
-    plots_c(ii, 0) = gsn_attach_plots(baseplots_c(ii), \
-                                      xaddplots_c(ii), cres, xyres1)
-    delete(xyres1@gsnAttachPlotsXAxis)
-    plots_c(ii, 1) = gsn_attach_plots(baseplots_c(ii), \
-                                      yaddplots_c(ii), cres, xyres2)
+      xyres1@gsnAttachPlotsXAxis = True
+      plots_c(ii, 0) = gsn_attach_plots(baseplots_c(ii), \
+                                        xaddplots_c(ii), cres, xyres1)
+      delete(xyres1@gsnAttachPlotsXAxis)
+      plots_c(ii, 1) = gsn_attach_plots(baseplots_c(ii), \
+                                        yaddplots_c(ii), cres, xyres2)
+    end if
 
     draw(baseplots_c(ii))
     frame(cwks)
