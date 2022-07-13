@@ -9,12 +9,14 @@ recipes might require some work to fix such problems and make the recipe fully f
 A first **contact point** for the technical lead development team in such cases is the recipe "maintainer". The recipe
 maintainer is then asked to check the affected recipe and if possible, fix the problems or work with the technical
 lead development team to find a solution. Ideally, a recipe maintainer is able to tell whether the results of a fixed
-recipe are scientifically valid and look as expected. The tasks of a recipe maintainer constists of the following items:
+recipe are scientifically valid and look as expected. Being a recipe maintainer constists of the following tasks:
 
-* answering timely to requests from the technical lead deveopment team if a recipe is broken
-* checking and trying to fix the affected recipe / working with the technical lead development team to find a solution
-  (fixing a recipe might include updating the actual recipe, diagnostic code or documentation)
-* checking the output of the fixed recipe for scientific validity (asking science lead development team for advice if needed)
+* answering timely to requests from the technical lead deveopment team, e.g. if a recipe is broken
+* if needed, checking and trying to fix their recipe(s) / working with the technical lead development team
+  (e.g. fixing a recipe might include updating the actual recipe, diagnostic code or documentation)
+* if needed, checking the output of the fixed recipe for scientific validity (asking science lead development team
+  for advice if needed)
+* informing the core development team when no longer available as maintainer
 
 Ideally, a recipe maintainer is named when contributing a new recipe to the ESMValTool. Recipe maintainers are asked to inform
 the core development team when they are no longer able to act as maintainer or when they would like to step down from this duty
