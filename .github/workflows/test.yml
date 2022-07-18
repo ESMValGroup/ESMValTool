@@ -40,9 +40,6 @@ jobs:
       - name: Install ESMValTool
         shell: bash -l {0}
         run: pip install -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
-      - name: Install R dependencies
-        shell: bash -l {0}
-        run: esmvaltool install R
       - name: Install Julia dependencies
         shell: bash -l {0}
         run: esmvaltool install Julia
