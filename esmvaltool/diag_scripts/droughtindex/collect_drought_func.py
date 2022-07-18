@@ -464,7 +464,7 @@ def plot_map_spei_multi(cfg, data_dict, input_filenames, colormap='jet'):
         # sort the array
         index = np.argsort(lons)
         lons = lons[index]
-        spei = spei[np.ix_(range(len(data_dict['latitude'])), index)]
+        spei = spei[np.ix_(range(data_dict['latitude'].size), index)]
 
     # Plot data
     # Create figure and axes instances
