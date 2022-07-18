@@ -192,7 +192,7 @@ def global_contourf(cube,
     cbar_ticks : list, optional
         Ticks for the colorbar.
     **kwargs
-        Keyword argument for :mod:`iris.plot.contourf()`.
+        Keyword argument for :func:`iris.plot.contourf()`.
 
     Returns
     -------
@@ -276,7 +276,7 @@ def global_pcolormesh(cube,
     cbar_ticks : list, optional
         Ticks for the colorbar.
     **kwargs
-        Keyword argument for :mod:`iris.plot.pcolormesh()`.
+        Keyword argument for :func:`iris.plot.pcolormesh()`.
 
     Returns
     -------

@@ -69,6 +69,7 @@ Future projections
    recipe_wenzel16jclim
    recipe_wenzel16nat
    recipe_tcr
+   recipe_climate_change_hotspot
 
 IPCC
 ^^^^
@@ -123,4 +124,5 @@ Other
    recipe_seaice_drift
    recipe_seaice_feedback
    recipe_shapeselect
+   recipes_testing
    recipe_toymodel
