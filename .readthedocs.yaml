@@ -25,7 +25,7 @@ python:
 
 # Build documentation in the doc directory with Sphinx
 sphinx:
-  configuration: doc/source/sphinx/conf.py
+  configuration: doc/sphinx/source/conf.py
   fail_on_warning: true
 
 # If using Sphinx, optionally build your docs in additional formats such as PDF
