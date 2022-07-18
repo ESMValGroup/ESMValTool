@@ -77,6 +77,10 @@ commands:
             conda activate esmvaltool
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
+            if [[ "<<parameters.flags>>" != *'--editable'* ]]
+            then
+              rm -r esmvaltool
+            fi
       - run:
           name: Log versions
           command: |
