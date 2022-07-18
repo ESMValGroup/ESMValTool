@@ -37,7 +37,7 @@ commands:
           path: /logs
       - run:
           name: Compress pytest artifacts
-          command: tar -cvzf pytest.tar.gz -C /tmp/pytest-of-root/pytest-0/ .
+          command: tar -cvzf pytest.tar.gz -C /tmp/pytest-of-root/ .
           when: always
       - store_artifacts:
           path: pytest.tar.gz
@@ -213,8 +213,8 @@ workflows:
       - run_tests
       - test_installation_from_source_test_mode
       - test_installation_from_source_develop_mode
-      - build_documentation
-      - test_installation_from_conda
+      - build_documentation  # TODO: disable
+      - test_installation_from_conda  # TODO: disable
   nightly:
     triggers:
       - schedule:
