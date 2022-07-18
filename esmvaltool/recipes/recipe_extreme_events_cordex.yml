@@ -1,0 +1,57 @@
+# ESMValTool
+# recipe_ExtremeEvents.yml - execution time 66 minutes
+---
+documentation:
+  description: |
+     Calculate 5 extreme indices related to precipitation for 13 Eurocordex dataset.
+     Is considered a period of 20 years (1981-2000).
+     The indexes are "cddETCCDI_yr", 'r95p_yr', 'r99p_yr', 'rx5day_mon', 'sdii_yr'.
+
+  authors:
+    - repola_francesco
+
+  maintainer:
+    - repola_francesco
+
+  references:
+    - zhang11wcc
+
+  projects:
+    - crescendo
+    - c3s-magic
+
+datasets: 
+ - {project: CORDEX, domain: EUR-11, driver: ICHEC-EC-EARTH, exp: historical, ensemble: r12i1p1, institute: CLMcom, rcm_name: CCLM4-8-17, dataset: CLMcom-CCLM4-8-17, rcm_version: v1, mip: day, start_year: 1981, end_year: 2000 }
+ - {project: CORDEX, domain: EUR-11, driver: CNRM-CERFACS-CNRM-CM5, exp: historical, ensemble: r1i1p1, institute: SMHI, rcm_name: RCA4, dataset: SMHI-RCA4, rcm_version: v1, mip: day, start_year: 1981, end_year: 2000}  
+ - {project: CORDEX, domain: EUR-11, driver: ICHEC-EC-EARTH, exp: historical, ensemble: r12i1p1, institute: KNMI, rcm_name: RACMO22E, dataset: KNMI-RACMO22E, rcm_version: v1, mip: day, start_year: 1981, end_year: 2000}
+ - {project: CORDEX, domain: EUR-11, driver: ICHEC-EC-EARTH, exp: historical, ensemble: r12i1p1, institute: SMHI, rcm_name: RCA4, dataset: SMHI-RCA4, rcm_version: v1, mip: day, start_year: 1981, end_year: 2000}
+ - {project: CORDEX, domain: EUR-11, driver: ICHEC-EC-EARTH, exp: historical, ensemble: r1i1p1, institute: KNMI, rcm_name: RACMO22E, dataset: KNMI-RACMO22E, rcm_version: v1, mip: day, start_year: 1981, end_year: 2000}
+ - {project: CORDEX, domain: EUR-11, driver: IPSL-IPSL-CM5A-MR, exp: historical, ensemble: r1i1p1, institute: SMHI, rcm_name: RCA4, dataset: SMHI-RCA4, rcm_version: v1, mip: day, start_year: 1981, end_year: 2000}
+ - {project: CORDEX, domain: EUR-11, driver: MOHC-HadGEM2-ES, exp: historical, ensemble: r1i1p1, institute: CLMcom, rcm_name: CCLM4-8-17, dataset: CLMcom-CCLM4-8-17, rcm_version: v1, mip: day, start_year: 1981, end_year: 2000}
+ - {project: CORDEX, domain: EUR-11, driver: MOHC-HadGEM2-ES, exp: historical, ensemble: r1i1p1, institute: KNMI, rcm_name: RACMO22E, dataset: KNMI-RACMO22E, rcm_version: v2, mip: day, start_year: 1981, end_year: 2000}
+ - {project: CORDEX, domain: EUR-11, driver: MOHC-HadGEM2-ES, exp: historical, ensemble: r1i1p1, institute: SMHI, rcm_name: RCA4, dataset: SMHI-RCA4, rcm_version: v1, mip: day, start_year: 1981, end_year: 2000}
+ - {project: CORDEX, domain: EUR-11, driver: MPI-M-MPI-ESM-LR, exp: historical, ensemble: r1i1p1, institute: CLMcom, rcm_name: CCLM4-8-17, dataset: CLMcom-CCLM4-8-17, rcm_version: v1, mip: day, start_year: 1981, end_year: 2000}
+ - {project: CORDEX, domain: EUR-11, driver: MPI-M-MPI-ESM-LR, exp: historical, ensemble: r1i1p1, institute: MPI-CSC, rcm_name: REMO2009, dataset: MPI-CSC-REMO2009, rcm_version: v1, mip: day, start_year: 1981, end_year: 2000}
+ - {project: CORDEX, domain: EUR-11, driver: MPI-M-MPI-ESM-LR, exp: historical, ensemble: r1i1p1, institute: SMHI, rcm_name: RCA4, dataset: SMHI-RCA4, rcm_version: v1a, mip: day, start_year: 1981, end_year: 2000}
+ - {project: CORDEX, domain: EUR-11, driver: MPI-M-MPI-ESM-LR, exp: historical, ensemble: r2i1p1, institute: MPI-CSC, rcm_name: REMO2009, dataset: MPI-CSC-REMO2009, rcm_version: v1, mip: day, start_year: 1981, end_year: 2000}
+
+
+diagnostics:
+  extreme_events:
+    description: calculate extreme events
+    variables:
+      pr:
+        mip: day
+
+    scripts:
+      main:
+        script: extreme_events_cordex/extreme_events.R
+        reference_datasets: "ICHEC-EC-EARTH_CLMcom-CCLM4-8-17_historical_r12i1p1_v1"
+        regrid_dataset: "ICHEC-EC-EARTH_CLMcom-CCLM4-8-17"
+        mip_name: EUROCORDEX
+        timeseries_idx: ["cddETCCDI_yr", 'r95pETCCDI_yr', 'r99pETCCDI_yr', 'rx5dayETCCDI_mon', 'sdiiETCCDI_yr'] 
+        gleckler_idx: ["cddETCCDI_yr", 'r95pETCCDI_yr', 'r99pETCCDI_yr', 'rx5dayETCCDI_mon', 'sdiiETCCDI_yr']
+        ts_plt: true
+        glc_plt: true
+        base_range: [1981, 2000]
+        analysis_range: [1981, 2000]
