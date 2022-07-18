@@ -72,7 +72,7 @@ dependencies:
   - pytest-xdist
   # Python packages needed for building docs
   - autodocsumm>=0.2.2
-  - sphinx>2
+  - sphinx>=5
   - sphinx_rtd_theme
   # Python packages needed for development
   - codespell

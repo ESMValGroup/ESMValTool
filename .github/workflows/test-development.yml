@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - main
+      - update-infra
   schedule:
     - cron: '0 0 * * *'
 
@@ -24,7 +25,9 @@ jobs:
         python-version: ["3.8", "3.9", "3.10"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: esmvaltool
