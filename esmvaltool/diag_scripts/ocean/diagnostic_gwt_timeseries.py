@@ -343,6 +343,11 @@ cmap_ssp_air = {
         'SSP585': 'lightcoral',
     }
 
+
+threshold_colours = {1.: 'black', 1.5: 'black', 2.0: 'darkblue', 3.0:'darkred', 4.0:'purple',}
+threshold_marker_styles = {1.: 'v', 1.5: None, 2.: 's', 3.: 'o', 4:'^', 5.:None}
+
+
 def sspify(ssp):
     sspdict = {
         'historical': 'Historical',
@@ -1670,7 +1675,7 @@ def save_data_dict(data_dict, data_dict_shelve):
     sh.close()
 
 
-def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 2., 3., 4., 5.], ):
+def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1., 1.5, 2., 3., 4., 5.], ):
     """
     Load thresholds  as a dict.
 
@@ -2425,7 +2430,7 @@ def load_ensemble(data_dict, short_name, exp, ensemble):
 #                    'historical-ssp585': 'red',
 #                    'historical-ssp585-ssp534-over':'orange'}
 #
-#     marker_styles = {1.5: '*', 2.:'o', 3.:'D', 4.:'s', 5.:'X'}
+#     threshold_marker_styles = {1.5: '*', 2.:'o', 3.:'D', 4.:'s', 5.:'X'}
 #
 #     #if ensemble_mean: ensembles = ['ensemble_mean', ]
 #     exps = sorted(exps.keys())
@@ -2576,7 +2581,7 @@ def load_ensemble(data_dict, short_name, exp, ensemble):
 #
 #                 plt.plot(x_data[x_point],
 #                          y_data[y_point],
-#                          marker_styles[threshold],
+#                          threshold_marker_styles[threshold],
 #                          markersize = ms,
 #                          fillstyle='none',
 #                          color=exp_colours[exp_1])
@@ -2630,7 +2635,7 @@ def load_ensemble(data_dict, short_name, exp, ensemble):
 #                     'lw': 2.,
 #                     'label': exp
 #                 }
-#     for thres,ms in sorted(marker_styles.items()):
+#     for thres,ms in sorted(threshold_marker_styles.items()):
 #         plot_details[str(thres)] = {
 #                     'c': 'black',
 #                     'marker': ms,
@@ -2677,7 +2682,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     fig=None,
     ax=None,
     do_legend=True,
-    plot_thresholds = [1.5, 2., 3., 4., 5.,],
+    plot_thresholds = [1., 1.5, 2., 3., 4., 5.,],
     skip_historical_ssp=False,
     experiments = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
     #short_time_range = False,
@@ -2747,7 +2752,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
 #                   'historical-ssp585': 'red',
 #                   'historical-ssp585-ssp534-over':'orange'}
 
-    marker_styles = {1.5: '*', 2.:'o', 3.:'D', 4.:'s', 5.:'X'}
+    #threshold_marker_styles = {1.5: '*', 2.:'o', 3.:'D', 4.:'s', 5.:'X'}
 
     if plot_styles == ['ensemble_mean', ]:
         ensembles = ['ensemble_mean', ]
@@ -3032,7 +3037,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                 #assert 0
                 plt.plot(x_data[x_point],
                          y_data[y_point],
-                         marker_styles[threshold],
+                         threshold_marker_styles[threshold],
                          markersize = ms,
                          fillstyle='full',
                          zorder=10,
@@ -3073,7 +3078,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                         'lw': 2.,
                         'label': exp
                     }
-        for thres,ms in sorted(marker_styles.items()):
+        for thres,ms in sorted(threshold_marker_styles.items()):
             plot_details[str(thres)] = {
                         'c': 'black',
                         'marker': ms,
@@ -3445,7 +3450,7 @@ def make_ensemble_barchart_pane(
             make_figure_here = True
     else:
         make_figure_here = False
-        stacked_hists = False
+        stacked_hists = True 
         plt.sca(ax)
 
     # single pane, single threshold
@@ -3763,7 +3768,7 @@ def make_ensemble_barchart_pane(
     colours_land, colours_ocean, colours_air = [],[],[]
 
     ssp_land = {
-        #'historical':'black',
+        'HISTORICAL':'black',
         'SSP119': 'darkgreen',
         'SSP126': 'blue',
         'SSP245': 'saddlebrown',
@@ -3771,6 +3776,7 @@ def make_ensemble_barchart_pane(
         'SSP585': 'darkred',
         }
     ssp_ocean = {
+        'HISTORICAL':'darkgrey',
         'SSP119': 'green',
         'SSP126': 'royalblue',
         'SSP245': 'darkorange',
@@ -3778,6 +3784,7 @@ def make_ensemble_barchart_pane(
         'SSP585': 'red',
     }
     ssp_air = {
+        'HISTORICAL':'lightgrey',
         'SSP119': 'lightgreen',
         'SSP126': 'dodgerblue',
         'SSP245': 'sandybrown',
@@ -3849,6 +3856,8 @@ def make_ensemble_barchart_pane(
         assert 0
 
     if stacked_hists:
+
+        print(threshold, xvalues, land,widths, colours_land, label_strs, edge_colours, linewidths)
         ax.bar(xvalues, land, width=widths, label='Land', color=colours_land, tick_label = label_strs, edgecolor=edge_colours, linewidth=linewidths)
         ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color=colours_ocean, edgecolor=edge_colours, linewidth=linewidths)
         ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color=colours_air, edgecolor=edge_colours, linewidth=linewidths)
@@ -3868,7 +3877,7 @@ def make_ensemble_barchart_pane(
         if do_legend:
             ax.legend()
 
-
+        draw_hlines = False
         if draw_hlines:
             for exp in exps:
                 ax.axhline(np.mean(hline_land[exp]), lw=1.2, color=ssp_land[exp])
@@ -3938,7 +3947,7 @@ def make_ensemble_barchart(
         plot_style='percentages',
         ensemble_key = 'ensemble_mean',
         group_by = 'group_by_model',
-        thresholds = ['4.0', '3.0', '2.0'],
+        thresholds = ['4.0', '3.0', '2.0', '1.0',],
     ):
     """
     Make a barchat for the whole ensemble
@@ -3947,13 +3956,22 @@ def make_ensemble_barchart(
     """
     fig = plt.figure()
     fig.set_size_inches(12 , 6)
-    gs = gridspec.GridSpec(2, 4, figure=fig, hspace=0.230,height_ratios=[8.  , 1])
-    ax_2=  fig.add_subplot(gs[0, 0])
-    ax_3 =  fig.add_subplot(gs[0, 1])
-    ax_4 =  fig.add_subplot(gs[0, 2])
-    ax_leg = fig.add_subplot(gs[0, 3])
-
-    axes = [ax_4, ax_3, ax_2]
+    if len(thresholds) == 3:
+        gs = gridspec.GridSpec(2, 4, figure=fig, hspace=0.230,height_ratios=[8.  , 1])
+        ax_2=  fig.add_subplot(gs[0, 0])
+        ax_3 =  fig.add_subplot(gs[0, 1])
+        ax_4 =  fig.add_subplot(gs[0, 2])
+        ax_leg = fig.add_subplot(gs[0, 3])
+        axes = [ax_4, ax_3, ax_2]
+    if len(thresholds) == 4:
+        gs = gridspec.GridSpec(2, 5, figure=fig, hspace=0.230,height_ratios=[8.  , 1])
+        ax_1=  fig.add_subplot(gs[0, 0])
+        ax_2=  fig.add_subplot(gs[0, 1])
+        ax_3 =  fig.add_subplot(gs[0, 2])
+        ax_4 =  fig.add_subplot(gs[0, 3])
+        ax_leg = fig.add_subplot(gs[0, 4])
+        axes = [ax_4, ax_3, ax_2, ax_1]
+    
     for ax, threshold in zip(axes, thresholds):
         make_ensemble_barchart_pane(cfg, data_dict, thresholds_dict,threshold = threshold,fig=fig, ax=ax, do_legend=False,
             plot_style= plot_style,
@@ -3963,7 +3981,7 @@ def make_ensemble_barchart(
         plt.xticks(rotation=90)
         ax.tick_params(axis = 'x', labelsize = 'x-small')
 
-        if ax in [ax_3, ax_4]:
+        if ax in axes[:-1]: #[ax_3, ax_4]:
             ax.set_yticks([])
             ax.set_yticklabels([])
             ax.set_ylabel('')
@@ -3971,12 +3989,12 @@ def make_ensemble_barchart(
 
     xranges = []
     ranges = []
-    for ax in [ax_2, ax_3, ax_4]:
+    for ax in axes:
         plt.sca(ax)
         ranges.append(ax.get_ylim())
         xranges.append(np.max(ax.get_xlim()) - np.min(ax.get_xlim()))
 
-    for ax in [ax_2, ax_3, ax_4]:
+    for ax in axes:
         plt.sca(ax)
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
@@ -4595,14 +4613,25 @@ def make_cumulative_timeseries(cfg, data_dict,
         #x.set_xlim([2010., 2100])
         ax.set_ylim([0., 100.])
 
-    if ssp in ['historical', ]:
-        if plot_type in ['pc', ]:
+
+    if plot_type in ['pc', ]:
+
+        if ssp in ['historical', ]:
             plt.plot([1959.,1980., 2000., 2012.], [56., 56., 56., 56.,], c='k', ls=':', label = 'Raupach 2014' )
             plt.plot([1959.,1980., 2000., 2012.], [25., 25., 25., 25.,], c='navy', ls='-.', label = 'Watson 2020')
 
-        else:
             plt.plot([], [], c='k', ls=':', label = 'Raupach 2014' )
             plt.plot([], [], c='navy', ls='-.', label = 'Watson 2020'  )
+        else:
+            ipcc_data = {'ssp119': [70., 70.],
+                         'ssp126': [65., 65. ],
+                         'ssp245': [54., 54.],
+                         'ssp370': [44., 44.],
+                         'ssp585': [38., 38.],}
+            add_ipcc = True
+            if add_ipcc:
+                plt.plot([2095.,2100., ], ipcc_data[ssp], c='k', ls='-', lw=2.1,  label = 'SPM.7',) # cmap_ssp_ocean[ssp.upper()]
+
 
     if do_leg:plt.legend(fontsize='small')
 
@@ -4621,7 +4650,7 @@ def make_cumulative_timeseries(cfg, data_dict,
 
 
    # threshold_colours = {2.0: 'darkorange', 3.0:'red', 4.0:'purple',}
-    threshold_colours = {1.5: 'black', 2.0: 'darkblue', 3.0:'darkred', 4.0:'purple',}
+    #threshold_colours = {1.: 'black', 1.5: 'black', 2.0: 'darkblue', 3.0:'darkred', 4.0:'purple',}
 
     if threshold_stlye=='new':
         print(thresholds)
@@ -4705,7 +4734,7 @@ def make_cumulative_timeseries_megaplot(cfg, data_dict,
             ensemble = ensemble,
             dataset = dataset,
             plot_type = 'area_over_zero',
-            plot_thresholds = [2., 3., 4.],
+            plot_thresholds = [1., 2., 3., 4.],
             fig = fig,
             ax= ax1,
             do_leg=False,
@@ -4722,7 +4751,7 @@ def make_cumulative_timeseries_megaplot(cfg, data_dict,
             ensemble = ensemble,
             dataset = dataset,
             plot_type = 'pc',
-            plot_thresholds = [2., 3., 4.],
+            plot_thresholds = [1., 2., 3., 4.],
             fig = fig,
             ax= ax2,
             do_leg=False,
@@ -4745,8 +4774,8 @@ def make_cumulative_timeseries_megaplot(cfg, data_dict,
             ax1.set_xlim([1860., 2015.])
             ax2.set_xlim([1860., 2015.])
         else:
-            ax1.set_xlim([2015., 2100.])
-            ax2.set_xlim([2015., 2100.])
+            ax1.set_xlim([2001., 2100.])
+            ax2.set_xlim([2001., 2100.])
 
     plt.sca(ax_leg)
     colours = { #'cumul_emissions': 'silver',
@@ -4761,7 +4790,7 @@ def make_cumulative_timeseries_megaplot(cfg, data_dict,
     plt.plot([],[], c='dodgerblue', lw=8, ls='-', label = 'Ocean')
 
     #threshold_colours = {2.0: 'darkorange', 3.0:'red', 4.0:'purple',}
-    threshold_colours = {2.0: 'darkblue', 3.0:'darkred', 4.0:'purple',}
+    #threshold_colours = {2.0: 'darkblue', 3.0:'darkred', 4.0:'purple',}
     #plt.plot([],[], c=threshold_colours[2.0], ls='-', lw=1.7, label='2'+r'$\degree$'+ ' GWT', alpha=0.7,)
     #plt.plot([],[], c=threshold_colours[3.0], ls='-', lw=1.7, label='3'+r'$\degree$'+ ' GWT', alpha=0.7,)
     #plt.plot([],[], c=threshold_colours[4.0], ls='-', lw=1.7, label='4'+r'$\degree$'+ ' GWT', alpha=0.7,)
@@ -4770,6 +4799,10 @@ def make_cumulative_timeseries_megaplot(cfg, data_dict,
     #plt.plot([],[], 'k--', lw=1.3, label='LUE')
     plt.plot([], [], c='k', ls=':', label = 'Raupach (2014)' )
     plt.plot([], [], c='navy', ls='-.', label = 'Watson (2020)'  )
+    add_ipcc = True
+    if add_ipcc:
+        plt.plot([], [], c='k', ls='-', lw=2.8,  label = 'SPM.7')
+
 
     legd = ax_leg.legend( #keys, labels,
         bbox_to_anchor=(1.7, 0.5),
@@ -4848,12 +4881,12 @@ def make_cumulative_timeseries_pair(cfg, data_dict,
     plt.close()
 
 
-def do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ocean', fig = None, ax = None):
+def do_emission_scatterplot(cfg, data_dict, thresholds_dict, y_axis = 'ocean', x_axis='gwt_year', fig = None, ax = None):
 
     save_single_plot= False
     if fig is None or ax is None:
         fig = plt.figure()
-        fig.set_size_inches(8, 7)
+        fig.set_size_inches(9, 7)
         gs = gridspec.GridSpec(1, 2, figure=fig, hspace=0.5, width_ratios=[4,1])
         ax = fig.add_subplot(gs[0, 0])
         ax_leg = fig.add_subplot(gs[0, 1])
@@ -4873,16 +4906,17 @@ def do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ocean', f
     for i,dataset in enumerate(sorted(datasets)):
         model_colours[dataset] = cmap(float(i)/(len(datasets)-1.))
 
-    marker_styles = {1.5: None, 2.: 's', 3.: 'o', 4:'^', 5.:None}
+    #threshold_marker_styles = {1. 'v', 1.5: None, 2.: 's', 3.: 'o', 4:'^', 5.:None}
 
 #    if x_axis == 'emissions':
 #        short_name_1 = ''
-    if x_axis == 'land':
+    if y_axis in ['land', 'land_pc']:
           short_name_1 = 'tls'
-    if x_axis == 'ocean':
+    if y_axis in ['ocean', 'ocean_pc']:
         short_name_1 = 'fgco2gt_cumul'
-    if x_axis == 'atmosphere':
+    if y_axis == 'atmosphere':
         short_name_1 = 'atmos_carbon'
+
 
     ensemble_alpha = {'ensemble_mean':1.}
     sizes = {'ensemble_mean':60}
@@ -4895,35 +4929,106 @@ def do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ocean', f
         edgecolor= exp_colours_fill[exp]
         alpha= ensemble_alpha.get(ensemble, 1.  )
         data = data_dict[(dataset, short_name_1, exp, ensemble)]
-        if x_axis == 'ocean':
+
+        if y_axis == 'gwt_year':
+            assert 0 # you monster.
+
+        if y_axis in ['ocean', 'ocean_pc']:
             y_time = cube_to_years(data)
             y_data = data.data
         else:
             y_time = data['time']
             y_data = data[short_name_1]
 
+        if x_axis in ['ocean', 'ocean_pc']:
+            datax = data_dict[(dataset, 'fgco2gt_cumul', exp, ensemble)]
+            x_time = cube_to_years(datax)
+            x_data = datax.data
+        elif x_axis == 'gwt_year':
+            try: x_data = cube_to_years(data)
+            except: x_data = data['time']
+        else:
+            x_time = data['time']
+            x_data = data[short_name_1]
+
+        if '_pc' in [x_axis[-3:], y_axis[-3:]]:
+            print(data_dict[(dataset, 'fgco2gt_cumul', exp, ensemble)].data.shape)
+            print(data_dict[(dataset, 'tls', exp, ensemble)]['tls'].shape)
+            print(data_dict[(dataset, 'atmos_carbon', exp, ensemble)]['atmos_carbon'].shape)
+            total = data_dict[(dataset, 'fgco2gt_cumul', exp, ensemble)].data[-85:] + data_dict[(dataset, 'tls', exp, ensemble)]['tls'][-85:] + data_dict[(dataset, 'atmos_carbon', exp, ensemble)]['atmos_carbon'][-85:]
+
+            if x_axis in ['ocean_pc',]:
+                x_data = x_data[-85:]
+                x_time = x_time[-85:]
+            if y_axis in ['land_pc',]:
+                y_data = y_data[-85:]
+                y_time = y_time[-85:]
+
+            if '_pc' == x_axis[-3:]:
+                x_data = 100.* (x_data/total)
+            if '_pc' == y_axis[-3:]:
+                y_data = 100.* (y_data/total)
+            for t, xd, yd, to in zip(x_time, x_data, y_data, total): print(t, xd, yd, to )
+
         for threshold, time in thresholds.items():
             if time is None: continue # no GWT.
-            ms = marker_styles.get(threshold, None)
+            
+            ms = threshold_marker_styles.get(threshold, None)
             size = sizes.get(ensemble, 60 )
             if dataset == 'CMIP6': size = 100.
 
             if ms == '^': size = size*1.3
 
             if not ms: continue
-            x = time.year + 0.5
-            index = np.argmin(np.abs(y_time - x))
+            t = time.year + 0.49
+
+            if x_axis in ['ocean', 'ocean_pc']:
+                index = np.argmin(np.abs(x_time - t))
+                if index in [-1, ]: 
+                    print(threshold, time, index, 'error',(dataset, short_name, exp, ensemble), t, x_time.min()) 
+                    assert 0 
+                x = x_data[index]
+            else:
+                x = time.year + 0.5
+
+            index = np.argmin(np.abs(y_time - t))
+            if index in [-1,  ]:
+                print(threshold, time, index, 'error',(dataset, short_name, exp, ensemble), t, y_time.min())
+                assert 0
+
+
             y = y_data[index]
 
             plt.scatter(x,y, c = colour, marker = ms, edgecolor=edgecolor, linewidth=2.5, alpha = alpha, s=size)
 
-    plt.suptitle('CMIP6 GWTs in the '+x_axis)
+    #plt.suptitle('CMIP6: '+x_axis+' vs '+y_axis)
+
+    labels = {'ocean': 'Ocean sink, Pg',
+        'ocean_pc': 'Ocean sink, %',
+        'land': 'Land sink, Pg',
+        'land_pc': 'Land sink, %',
+        'gwt_year': 'Global Warming Level Year',
+        }
+    ax.set_xlabel(labels.get(x_axis, ''))
+    ax.set_ylabel(labels.get(y_axis, ''))
+
+    if x_axis == 'ocean' and y_axis == 'land' or x_axis == 'ocean_pc' and y_axis == 'land_pc':
+        lims = []
+        if x_axis == 'ocean': lims.append(0.)
+        lims.extend(ax.get_xlim())
+        lims.extend(ax.get_ylim())
+        lims = [np.min(lims), np.max(lims)]
+        ax.set_xlim(lims)
+        ax.set_ylim(lims)
+        plt.plot(lims, lims, c='k', lw=0.5, ls=':')
+        ax.set_aspect('equal', adjustable='box')
+
     if not save_single_plot: return fig, ax
 
 
     plt.sca(ax_leg)
 
-    for thresh, style in marker_styles.items():
+    for thresh, style in threshold_marker_styles.items():
         if style is None: continue
         lab = ''.join([str(int(thresh)), r'$\degree$', 'C'])
         ax_leg.scatter([], [], marker=style, c='w', edgecolor='k',linewidth=2.5, s=80, label=lab)
@@ -4950,12 +5055,9 @@ def do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ocean', f
     ax_leg.get_yaxis().set_visible(False)
     plt.axis('off')
 
-
-
-
     image_extention = diagtools.get_image_format(cfg)
     path = diagtools.folder([cfg['plot_dir'], 'emissions_scatter',])
-    path += '_'.join(['emssions_scatter', x_axis]) + image_extention
+    path += '_'.join(['emssions_scatter', x_axis, y_axis]) + image_extention
     print('saving:', path)
     plt.savefig(path)
     plt.close()
@@ -4963,7 +5065,7 @@ def do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ocean', f
 
 
 
-def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = None, ax = None):
+def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', include_1=False, fig = None, ax = None):
 
     save_single_plot= False
     if fig is None or ax is None:
@@ -4988,7 +5090,7 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
     for i,dataset in enumerate(sorted(datasets)):
         model_colours[dataset] = cmap(float(i)/(len(datasets)-1.))
 
-    marker_styles = {1.5: None, 2.: 's', 3.: 'o', 4:'^', 5.:None}
+    #threshold_marker_styles = {1.: 'v', 1.5: None, 2.: 's', 3.: 'o', 4:'^', 5.:None}
 
 #    if x_axis == 'emissions':
 #        short_name_1 = ''
@@ -5015,8 +5117,9 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
             model_ecs = ECS_data[dataset]
 
         for threshold, time in thresholds.items():
+            if not include_1 and int(threshold)==1: continue
 #           if time is None: continue # no GWT.
-            ms = marker_styles.get(threshold, None)
+            ms = threshold_marker_styles.get(threshold, None)
             size = sizes.get(ensemble, 60 )
             if dataset == 'CMIP6': size = 100.
 
@@ -5042,7 +5145,10 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
                 linregdat[(exp, threshold)] = [(x,y), ]
 
             #plt.scatter(x,y, c = colour, marker = ms, edgecolor=edgecolor, linewidth=2.5, alpha = alpha, s=size, zorder=1)
-    xlims = [2000., 2100.,]
+    if include_1:
+        xlims = [1970., 2100.,]
+    else: 
+        xlims = [2000., 2100.,]
     # outside plot dots.
     x_times = {dataset:2105 for dataset in datasets}
     for (dataset, exp) in sorted(gaps.keys()):
@@ -5061,9 +5167,11 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
 
     # Add linear regression lines:
     fn = cfg['work_dir']+'/new_recipe.yml'
-
     fn = diagtools.folder([cfg['plot_dir'], 'ecs_scatter',])
-    fn += '_'.join(['ecs_vs_time',]) + '.txt'
+    if include_1:
+        fn += '_'.join(['ecs_vs_time','1gwt']) + '.txt'
+    else:
+        fn += '_'.join(['ecs_vs_time',]) + '.txt'
     txt = '    \\begin{tabular}{|ll|ccccc|}\n'
     txt = latexhline(txt)
     txt += latexrow(['SSP', 'GWT', 'Slope, ','Inverse slope', 'R', 'err', 'N'])
@@ -5074,8 +5182,7 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
 # latexhline = lambda a: ''.join([a, '\hline', '\n'])
 # latexrow = lambda a: ' & '.join(a)
 
-
-    line_styles = {2:'dashed', 3.:'dashdot', 4.:'dotted',}
+    line_styles = {1.: 'solid',2:'dashed', 3.:'dashdot', 4.:'dotted',}
     for (exp, threshold) in sorted(linregdat.keys()):
         xy_dats = linregdat[(exp, threshold)]
         xy_dats = sorted(xy_dats)
@@ -5098,7 +5205,11 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
                          str(linr[4])[:7], str(len(x_es))])
         txt = latexendline(txt)
 
-        linx = np.arange(2020., 2101., 1.)
+        if include_1:
+            linx = np.arange(1970., 2101., 1.)
+
+        else:
+            linx = np.arange(2020., 2101., 1.)
         liny = slope*linx + intercept
         exp_colour = exp_colours_fill[exp]
         plt.plot(linx, liny, c=exp_colour, lw=1.7, ls=line_styles[threshold])
@@ -5123,6 +5234,11 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
     ax.get_yaxis().tick_left()
 
     # h lines:
+    if include_1:
+        x_loc = 1970.5
+    else:
+        x_loc = 2000.5
+
     for model in sorted(datasets.keys()):
         if model == 'CMIP6': continue
         ecs = ECS_data[model]
@@ -5133,7 +5249,7 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
         else:
             va = 'bottom'
             gap=0.0051
-        ax.text(2000.5, ecs+gap, model, horizontalalignment='left',
+        ax.text(x_loc, ecs+gap, model, horizontalalignment='left',
              verticalalignment=va)
 
     #plt.suptitle('Equilibrium Climate Sensitivity against Global Warming Threshold')
@@ -5142,7 +5258,7 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
     # Legend part:
     plt.sca(ax_leg)
 
-    for thresh, style in marker_styles.items():
+    for thresh, style in threshold_marker_styles.items():
         if style is None: continue
         lab = ''.join([str(int(thresh)), r'$\degree$', 'C'])
         ax_leg.scatter([], [], marker=style, c='w', edgecolor='k',linewidth=2.5, s=80, label=lab)
@@ -5180,7 +5296,10 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', fig = No
 
     image_extention = diagtools.get_image_format(cfg)
     path = diagtools.folder([cfg['plot_dir'], 'ecs_scatter',])
-    path += '_'.join(['ecs_vs_time',]) + image_extention
+    if include_1:
+        path += '_'.join(['ecs_vs_time','1gwt']) + image_extention
+    else:
+        path += '_'.join(['ecs_vs_time',]) + image_extention
     print('saving:', path)
     plt.savefig(path)
     plt.close()
@@ -5319,7 +5438,7 @@ def timeseries_megapane(cfg, data_dict, thresholds_dict, key,
         fig=fig,
         ax=ax,
         do_legend = False,
-        plot_thresholds = [2., 3., 4.,],
+        plot_thresholds = [1., 2., 3., 4.,],
         plot_styles=plot_styles,
         skip_historical_ssp = True,
         experiments = experiments,
@@ -5432,11 +5551,11 @@ def timeseries_megaplot(cfg, data_dict, thresholds_dict,
         #keys.append(plt.plot([],[], ls='-', c=exp_colours[exp], lw=4.), label = )
         #labels.append(sspify(exp))
 
-    marker_styles = {1.5: '*', 2.:'o', 3.:'D', 4.:'s', 5.:'X'}
+    #threshold_marker_styles = {1.5: '*', 2.:'o', 3.:'D', 4.:'s', 5.:'X'}
     for gwt in [2., 3., 4.]:
         lab = ''.join([str(int(gwt)), r'$\degree$', 'C'])
-        plt.scatter([], [], marker=marker_styles[gwt], c='k', label=lab)
-        #keys.append(plt.scatter([], [], marker=marker_styles[gwt], c='k',))
+        plt.scatter([], [], marker=threshold_marker_styles[gwt], c='k', label=lab)
+        #keys.append(plt.scatter([], [], marker=threshold_marker_styles[gwt], c='k',))
         #labels.append(''.join([str(int(gwt)), r'$\degree$', 'C']))
 
 
@@ -5571,11 +5690,11 @@ def main(cfg):
             # make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             # make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
 
-            do_count_and_sensitivity_table = True
+            do_count_and_sensitivity_table = False # True
             if do_count_and_sensitivity_table:
                 make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict)
 
-            do_timeseries_megaplot = False
+            do_timeseries_megaplot = False # True 
             if do_timeseries_megaplot:
                 # master
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean'],
@@ -5627,7 +5746,7 @@ def main(cfg):
 #                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
 #                        panes = ['tas', 'atmos_carbon','tls', 'fgco2', 'lue', 'nbp'])
 
-            do_cumulative_plot = False
+            do_cumulative_plot = False #True 
             if do_cumulative_plot:
                #vertical bar chart
                 plot_styles = ['percentages', 'values']
@@ -5636,14 +5755,15 @@ def main(cfg):
                 for plot_style, ens, group_by in product(plot_styles, ens_styles, group_bys):
                     make_ensemble_barchart(cfg, data_dict, thresholds_dict, plot_style=plot_style, ensemble_key=ens, group_by=group_by)
 
-            do_cumulative_panes = True
+            do_cumulative_panes = 0 #True  
             if do_cumulative_panes:
                 plot_styles = ['percentages', 'values']
 
                 for plot_style in plot_styles: # = ['percentages', 'values']
+                  for threshold in ['2.0', ]: #'1.0',  '3.0', '4.0']:
                     make_ensemble_barchart_pane(
                         cfg, data_dict, thresholds_dict,
-                        threshold = '2.0', 
+                        threshold = threshold,
                         do_legend=True,
                         plot_style= plot_style,
                         ensemble_key = 'ensemble_mean',
@@ -5651,7 +5771,7 @@ def main(cfg):
                         stacked_hists=False,
                         )
 
-            do_horizontal_plot = False
+            do_horizontal_plot = 0 #True 
             if do_horizontal_plot:
                 # Horizontal bar charts with allocartions:
                 for plotdataset in sorted(datasets.keys()):
@@ -5659,7 +5779,7 @@ def main(cfg):
                     make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'], plot_dataset=plotdataset)
 
 
-            do_cumulative_ts_megaplot = False#False
+            do_cumulative_ts_megaplot = True #False
             # Massive plot that has like 12 panes.
             if do_cumulative_ts_megaplot:
                 make_cumulative_timeseries_megaplot(cfg, data_dict,
@@ -5694,14 +5814,20 @@ def main(cfg):
 
             print(datasets)
 
-            do_ecs_scatter = True
+            do_ecs_scatter = 0 #True
             if do_ecs_scatter:
                 do_ecs_scatterplot(cfg, data_dict, thresholds_dict)
+                do_ecs_scatterplot(cfg, data_dict, thresholds_dict, include_1=True)
+
 
             do_emission_scatter = True #False
             if do_emission_scatter:
-                for x_axis in ['ocean', 'land', 'atmosphere']:
-                    do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis=x_axis)
+                do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis='ocean_pc', y_axis='land_pc')
+
+                for y_axis in ['ocean', 'land', 'atmosphere']:
+                    do_emission_scatterplot(cfg, data_dict, thresholds_dict, y_axis=y_axis)
+                do_emission_scatterplot(cfg, data_dict, thresholds_dict, x_axis='ocean', y_axis='land')
+
 
 
         return
