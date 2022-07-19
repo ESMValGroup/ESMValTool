@@ -516,9 +516,9 @@ diagnostics:
             - {project: CMIP6, mip: Amon, grid: gn, institute: MIROC, dataset: MIROC-ES2L, exp: [historical,ssp585], ensemble: r3i1p1f2, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: MIROC, dataset: MIROC-ES2L, exp: [historical,ssp585], ensemble: r4i1p1f2, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: MIROC, dataset: MIROC-ES2L, exp: [historical,ssp585], ensemble: r5i1p1f2, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Amon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014}
+            # - {project: CMIP6, mip: Amon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Amon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r11i1p1f1, start_year: 1850, end_year: 2014}
-            - {project: CMIP6, mip: Amon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r10i1p1f1, start_year: 1850, end_year: 2014}
+            # - {project: CMIP6, mip: Amon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r10i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Amon, grid: gn, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], ensemble: r4i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], ensemble: r11i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], ensemble: r10i1p1f1, start_year: 1985, end_year: 2100}
@@ -864,9 +864,9 @@ diagnostics:
             - {project: CMIP6, mip: Lmon, grid: gn, institute: MIROC, dataset: MIROC-ES2L, exp: [historical,ssp585], ensemble: r3i1p1f2, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: MIROC, dataset: MIROC-ES2L, exp: [historical,ssp585], ensemble: r4i1p1f2, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: MIROC, dataset: MIROC-ES2L, exp: [historical,ssp585], ensemble: r5i1p1f2, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Lmon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014}
+            # - {project: CMIP6, mip: Lmon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r11i1p1f1, start_year: 1850, end_year: 2014}
-            - {project: CMIP6, mip: Lmon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r10i1p1f1, start_year: 1850, end_year: 2014}
+            # - {project: CMIP6, mip: Lmon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r10i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], ensemble: r4i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], ensemble: r11i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], ensemble: r10i1p1f1, start_year: 1985, end_year: 2100}
@@ -1215,9 +1215,9 @@ diagnostics:
             - {project: CMIP6, mip: Omon, grid: gn, institute: MIROC, dataset: MIROC-ES2L, exp: [historical,ssp585], ensemble: r3i1p1f2, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: MIROC, dataset: MIROC-ES2L, exp: [historical,ssp585], ensemble: r4i1p1f2, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: MIROC, dataset: MIROC-ES2L, exp: [historical,ssp585], ensemble: r5i1p1f2, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014}
+            # - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r11i1p1f1, start_year: 1850, end_year: 2014}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r10i1p1f1, start_year: 1850, end_year: 2014}
+            # - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r10i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], ensemble: r4i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], ensemble: r11i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], ensemble: r10i1p1f1, start_year: 1985, end_year: 2100}
