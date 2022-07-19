@@ -488,7 +488,7 @@ diagnostics:
             - {project: CMIP6, mip: Amon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r3i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r4i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Amon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
+            - {project: CMIP6, mip: Amon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r5i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: DKRZ, dataset: MPI-ESM1-2-LR, exp: [historical,ssp585], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: DKRZ, dataset: MPI-ESM1-2-LR, exp: [historical,ssp585], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: DKRZ, dataset: MPI-ESM1-2-LR, exp: [historical,ssp585], ensemble: r3i1p1f1, start_year: 1985, end_year: 2100}
@@ -856,7 +856,7 @@ diagnostics:
             - {project: CMIP6, mip: Lmon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r3i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r4i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Lmon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
+            - {project: CMIP6, mip: Lmon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r5i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: DKRZ, dataset: MPI-ESM1-2-LR, exp: [historical,ssp585], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: DKRZ, dataset: MPI-ESM1-2-LR, exp: [historical,ssp585], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: DKRZ, dataset: MPI-ESM1-2-LR, exp: [historical,ssp585], ensemble: r3i1p1f1, start_year: 1985, end_year: 2100}
@@ -1232,7 +1232,7 @@ diagnostics:
             - {project: CMIP6, mip: Omon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r3i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r4i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
+            - {project: CMIP6, mip: Omon, grid: gn, institute: MPI-M, dataset: MPI-ESM1-2-LR, exp: [historical, ssp370], ensemble: r5i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: DKRZ, dataset: MPI-ESM1-2-LR, exp: [historical,ssp585], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: DKRZ, dataset: MPI-ESM1-2-LR, exp: [historical,ssp585], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: DKRZ, dataset: MPI-ESM1-2-LR, exp: [historical,ssp585], ensemble: r3i1p1f1, start_year: 1985, end_year: 2100}
