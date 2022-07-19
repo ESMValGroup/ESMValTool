@@ -18,6 +18,7 @@
 - [**ESMValTool Tutorial**](https://esmvalgroup.github.io/ESMValTool_Tutorial/index.html)
 - [**ESMValGroup Project on GitHub**](https://github.com/ESMValGroup)
 - [**Gallery**](https://docs.esmvaltool.org/en/latest/gallery.html)
+- [**`conda-forge` package feedstock**](https://github.com/conda-forge/esmvaltool-suite-feedstock)
 
 # Introduction
 
