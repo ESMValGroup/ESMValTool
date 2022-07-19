@@ -37,9 +37,29 @@ dependencies:
   - ncl
   - r-base
   # R packages needed for development
+  - r-abind
+  - r-akima<=0.6-2.3
+  - r-climdex.pcic
+  - r-ClimProjDiags
   - r-docopt
+  - r-functional
+  - r-ggplot2
   - r-git2r  # dependency of lintr
+  - r-gridExtra  
   - r-lintr
+  - r-logging
+  - r-mapproj
+  - r-maps
+  - r-multiApply
+  - r-ncdf4
+  - r-ncdf4.helpers
+  - r-PCICt
+  - r-plyr
+  - r-RColorBrewer
+  - r-Rcpp
+  - r-s2dverification
+  - r-snow
+  - r-SPEI
   - r-styler
   - r-yaml
   - r-udunits2  # needed by the docker build

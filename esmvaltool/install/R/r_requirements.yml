@@ -25,32 +25,4 @@
 #     url: my_repo_url
 #     ref: my_branch_commit_or_tag
 
-abind:
-akima:
-  origin: cran
-  version: 0.6-2.3
-climdex.pcic:
-ClimProjDiags:
-docopt:
-dotCall64:
-functional:
-ggplot2:
-gridExtra:
-lintr:
-logging:
-mapproj:
-maps:
-multiApply:
-ncdf4:
-ncdf4.helpers:
-PCICt:
-plyr:
-RColorBrewer:
-Rcpp:
-s2dverification:
-snow:
-SPEI:
-styler:
 tools:
-udunits2:
-yaml:
