@@ -12,7 +12,6 @@ on:
   push:
     branches:
       - main
-      - update-infra
   schedule:
     - cron: '0 0 * * *'
 

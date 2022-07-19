@@ -217,8 +217,6 @@ workflows:
       - run_tests
       - test_installation_from_source_test_mode
       - test_installation_from_source_develop_mode
-      - build_documentation  # TODO: disable
-      - test_installation_from_conda  # TODO: disable
   nightly:
     triggers:
       - schedule:
