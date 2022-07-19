@@ -14,7 +14,7 @@ dependencies:
   - cartopy
   - cdo>=1.9.7
   - cdsapi
-  - cf-units
+  - cf-units >=3.0.0,<3.1.0,!=3.0.1.post0  # see https://github.com/ESMValGroup/ESMValCore/issues/1655
   - cftime
   - cmocean
   - cython
@@ -36,7 +36,6 @@ dependencies:
   - nc-time-axis
   - netCDF4
   - numpy
-  - numba  # undeclared dependency of xesmf: https://github.com/pangeo-data/xESMF/issues/158
   - openpyxl
   - pandas
   - progressbar2

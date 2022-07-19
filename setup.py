@@ -24,7 +24,8 @@ REQUIREMENTS = {
         'cdo',
         'cdsapi',
         # see https://github.com/SciTools/cf-units/issues/218
-        'cf-units>=3.0.0,!=3.0.1.post0',
+        # see https://github.com/ESMValGroup/ESMValCore/issues/1655
+        'cf-units>=3.0.0,<3.1.0,!=3.0.1.post0',
         'cftime',
         'cmocean',
         'dask',
