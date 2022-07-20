@@ -64,7 +64,7 @@ REQUIREMENTS = {
         'seawater',
         'shapely<2.0.0',  # github.com/ESMValGroup/ESMValTool/issues/2965
         'xarray',
-        'xesmf==0.3.0',
+        'xesmf>=0.4.0',
         'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
         'zarr',
