@@ -1,3 +1,5 @@
+.. _dataset-versions:
+
 Support for several dataset versions
 ************************************
 
