@@ -13,8 +13,8 @@
 
 begin
 
-  inpath = "/pf/b/b380103/workesm/esmvaltool_output/" \
-           + "recipe_clouds_lifrac_scatter_20211110_123241/work"
+  inpath = "/work/bd0854/b380103/esmvaltool_output/" \
+           + "recipe_lauer22jclim_fig5_lifrac_regs_20220719_084255/work"
 
   diag = "clouds_lifrac_scatter_postproc.ncl"
 
@@ -30,6 +30,12 @@ begin
 
   refname = "CLOUDSAT-L2-CALIPSO-ICECLOUD-ERA5"
 
+  t_int = (/240., 250., 260., 270./)
+
+;  reg = "global"
+;  reg = "so"
+  reg = "itcz"
+
   dims = dimsizes(models)
   nmod = dims(0)
 
@@ -43,14 +49,18 @@ begin
   mmp90 = new((/nbins, 2/), float)
   mmstd = new((/nbins, 2/), float)
 
+  if (reg .ne. "") then
+    reg = "_" + reg
+  end if
+
   ; CMIP5
-  fname5 = inpath + "/lifrac_scatter_cmip5/lifrac_scatter/" \
-    + "clouds_lifrac_scatter_ice_cmip5.nc"
+  fname5 = inpath + "/lifrac_scatter_cmip5" + reg + "/lifrac_scatter/" \
+    + "clouds_lifrac_scatter_ice_cmip5" + reg + ".nc"
   infile5 = addfile(fname5, "r")
   icefrac5 = infile5->icefrac
   ; CMIP6
-  fname6 = inpath + "/lifrac_scatter_cmip6/lifrac_scatter/" \
-    + "clouds_lifrac_scatter_ice_cmip6.nc"
+  fname6 = inpath + "/lifrac_scatter_cmip6" + reg + "/lifrac_scatter/" \
+    + "clouds_lifrac_scatter_ice_cmip6" + reg + ".nc"
   infile6 = addfile(fname6, "r")
   icefrac6 = infile6->icefrac
 
@@ -112,6 +122,9 @@ begin
 
   ; calculate multi-model, p10 and p90, mean and standard deviation
 
+  print("T (K), CMIP5-CMIP6 (abs), CMIP5-CMIP6 (rel), CMIP5, CMIP6, ref")
+  print("--------------------------------------------------------------")
+
   do n = 0, nbins - 1
     selection = icefrac5(idx5, n)
     itmp = ind(.not.ismissing(selection))
@@ -165,9 +178,28 @@ begin
 
     delta = mmmean(n, 0) - mmmean(n, 1)
 
-    print(tostring(results&bin(n)) + ", " + tostring(delta) + " (" \
-          + tostring(delta / mmmean(n, 0) * 100.0 + "%)"))
+    if (n .ge. 1) then
+      do it = 0, dimsizes(t_int) - 1
+        if ((results&bin(n - 1) .lt. t_int(it)) .and. \
+            (results&bin(n) .gt. t_int(it))) then
+          dx = results&bin(n) - results&bin(n - 1)
+          dy5 = mmmean(n, 0) - mmmean(n - 1, 0)
+          dy6 = mmmean(n, 1) - mmmean(n - 1, 1)
+          dyr = refdata(n) - refdata(n - 1)
+          r5 = mmmean(n - 1, 0) + dy5 / dx * (t_int(it) - results&bin(n - 1))
+          r6 = mmmean(n - 1, 1) + dy6 / dx * (t_int(it) - results&bin(n - 1))
+          rr = refdata(n - 1) + dyr / dx * (t_int(it) - results&bin(n - 1))
 
+          print(tostring(t_int(it)) + ", " + tostring(r5) + ", " \
+                + tostring(r6) + ", " + tostring(rr))
+        end if
+      end do
+    end if
+
+    print(tostring(results&bin(n)) + ", " + tostring(delta) + " (" \
+          + tostring(delta / mmmean(n, 0) * 100.0 + "%)") \
+          + ", " + tostring(mmmean(n, 0)) + ", " + tostring(mmmean(n, 1)) \
+          + ", " + tostring(refdata(n)))
   end do
 
   ; ###########################################
@@ -209,7 +241,7 @@ begin
   lgres@lgLineLabelsOn     = False
   lgres@lgMarkerSizeF      = 0.01
 
-  wks = gsn_open_wks("pdf", "clouds_lifrac_scatter_post_ice")
+  wks = gsn_open_wks("pdf", "clouds_lifrac_scatter_post_ice" + reg)
 
   data = new((/3, nbins/), float)
 
