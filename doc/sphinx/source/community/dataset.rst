@@ -4,7 +4,7 @@ Making a new dataset
 ********************
 
 If you are contributing a new dataset, please have a look at :ref:`new-cmorizer` for how to do so.
-If you need the new dataset for a new recipe, please make a separate pull
+If you need the new dataset for a new recipe, please make a separate pull request
 for the CMORizer script.
 
 .. _dataset-documentation:
@@ -16,7 +16,7 @@ The documentation required for a CMORizer script is the following:
 
 - Make sure that the new dataset is added to the list of
   :ref:`supported_datasets` and to the file datasets.yml_.
-- The in code documentation should contain clear instructions on how to obtain
+- The code documentation should contain clear instructions on how to obtain
   the data.
 - A BibTeX file named ``<dataset>.bibtex`` defining the reference for the new
   dataset should be placed in the directory ``esmvaltool/references/``, see
