@@ -12,8 +12,7 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER
-
-from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
+from iris import NameConstraint
 
 from .plotting import segment2list
 
@@ -35,8 +34,7 @@ def weight_cosine(cube):
 
 
 def cmap_and_norm(cmap, levels, reverse=False):
-    """
-    Generate interpolated colour map.
+    """Generate interpolated colour map.
 
     Routine to generate interpolated colourmap and normalisation from
     given colourmap and level set.
@@ -49,12 +47,10 @@ def cmap_and_norm(cmap, levels, reverse=False):
 
 
 def plot_zmean(cube, levels, title, log=False, ax1=None):
-    """
-    Plot zonal means.
+    """Plot zonal means.
 
-    Routine to plot zonal mean fields as latitude-pressure contours with given
-    contour levels.
-    Option to plot against log(pressure).
+    Routine to plot zonal mean fields as latitude-pressure contours with
+    given contour levels. Option to plot against log(pressure).
     """
     (colormap, normalisation) = cmap_and_norm('brewer_RdBu_11', levels)
     if ax1 is None:
@@ -75,12 +71,10 @@ def plot_zmean(cube, levels, title, log=False, ax1=None):
 
 
 def plot_timehgt(cube, levels, title, log=False, ax1=None):
-    """
-    Plot fields as time-pressure.
+    """Plot fields as time-pressure.
 
-    Routine to plot fields as time-pressure contours with given
-    contour levels.
-    Option to plot against log(pressure).
+    Routine to plot fields as time-pressure contours with given contour
+    levels. Option to plot against log(pressure).
     """
     (colormap, normalisation) = cmap_and_norm('brewer_RdBu_11', levels)
     if ax1 is None:
@@ -142,15 +136,15 @@ def plot_qbo(cube, filename):
 
 
 def calc_qbo_index(qbo):
-    """
-    Routine to calculate QBO indices.
+    """Routine to calculate QBO indices.
 
-    The segment of code you include scans the timeseries of U(30hPa) and looks
-    for the times where this crosses the zero line.  Essentially U(30hPa)
-    oscillates between positive and negative, and we're looking for a period,
-    defined as the length of time between where U becomes positive and then
-    negative and then becomes positive again (or negative/positive/negative).
-    Also, periods less than 12 months are discounted.
+    The segment of code you include scans the timeseries of U(30hPa) and
+    looks for the times where this crosses the zero line.  Essentially
+    U(30hPa) oscillates between positive and negative, and we're looking
+    for a period, defined as the length of time between where U becomes
+    positive and then negative and then becomes positive again (or
+    negative/positive/negative). Also, periods less than 12 months are
+    discounted.
     """
     ufin = qbo.data
 
@@ -169,8 +163,7 @@ def calc_qbo_index(qbo):
         logger.warning(
             "This means the model U(30hPa, around tropics) doesn't oscillate"
             "between positive and negative"
-            "with a period<12 months, QBO can't be computed, set to 0."
-        )
+            "with a period<12 months, QBO can't be computed, set to 0.")
         (kup, kdown) = (0, 0)
     # Translate upwards and downwards indices into U wind values
     periodsmin = counterup - kup
@@ -211,8 +204,8 @@ def calc_qbo_index(qbo):
     period1 = 0.0
     period2 = 0.0
     if counterdown > 1:
-        period1 = (indiciesdown[counterdown - 1] - indiciesdown[0]) / (
-            counterdown - 1)
+        period1 = (indiciesdown[counterdown - 1] -
+                   indiciesdown[0]) / (counterdown - 1)
     if counterup > 1:
         period2 = (indiciesup[counterup - 1] - indiciesup[0]) / (counterup - 1)
     # Pick larger oscillation period
@@ -225,18 +218,16 @@ def calc_qbo_index(qbo):
 
 
 def flatten_list(list_):
-    """
-    Flatten list.
+    """Flatten list.
 
-    Turn list of lists into a list of all elements.
-    [[1], [2, 3]] -> [1, 2, 3]
+    Turn list of lists into a list of all elements. [[1], [2, 3]] -> [1,
+    2, 3]
     """
     return [item for sublist in list_ for item in sublist]
 
 
 def find_zero_crossings(array):
-    """
-    Find zero crossings in 1D iterable.
+    """Find zero crossings in 1D iterable.
 
     Returns two lists with indices, last_pos and last_neg.
     If a zero crossing includes zero, zero is used as last positive
@@ -269,11 +260,10 @@ def find_zero_crossings(array):
 
 
 def pnj_strength(cube, winter=True):
-    """
-    Calculate PNJ.
+    """Calculate PNJ.
 
     Calculate PNJ and ENJ strength as max/(-min) of zonal mean U wind
-    for nh/sh in winter and sh/nh in summer repsectively.
+    for nh/sh in winter and sh/nh in summer respectively.
     """
     # Extract regions of interest
     notrop = iris.Constraint(air_pressure=lambda p: p < 8000.)
@@ -294,11 +284,10 @@ def pnj_strength(cube, winter=True):
 
 
 def pnj_metrics(run, ucube, metrics):
-    """
-    Calculate PNJ strength.
+    """Calculate PNJ strength.
 
-    Routine to calculate PNJ strength metrics from zonal mean U
-    Also produce diagnostic plots of zonal mean U
+    Routine to calculate PNJ strength metrics from zonal mean U Also
+    produce diagnostic plots of zonal mean U
     """
     # TODO side effect: changes metrics without returning
 
@@ -355,12 +344,11 @@ def qbo_metrics(run, ucube, metrics):
 
 
 def tpole_metrics(run, tcube, metrics):
-    """
-    Compute 50hPa polar temp.
+    """Compute 50hPa polar temp.
 
     Routine to calculate polar 50hPa temperature metrics from zonal mean
+    temperature. Also produce diagnostic plots of zonal mean
     temperature.
-    Also produce diagnostic plots of zonal mean temperature.
     """
     # TODO side effect: changes metrics without returning
     # Calculate and extract seasonal mean temperature
@@ -371,8 +359,7 @@ def tpole_metrics(run, tcube, metrics):
     t_son = t_seas_mean.extract(iris.Constraint(clim_season='son'))
 
     # Calculate area averages over polar regions at 50hPa
-    nhpole = iris.Constraint(latitude=lambda la: la >= 60,
-                             air_pressure=5000.0)
+    nhpole = iris.Constraint(latitude=lambda la: la >= 60, air_pressure=5000.0)
     shpole = iris.Constraint(latitude=lambda la: la <= -60,
                              air_pressure=5000.0)
 
@@ -408,7 +395,7 @@ def mean_and_strength(cube):
     tmin = cube.collapsed('time', iris.analysis.MIN)
     tstrength = (tmax - tmin) / 2.
     # TODO Why take off 180.0?
-    return (tmean.data - 180.0, tstrength.data)
+    return tmean.data - 180.0, tstrength.data
 
 
 def t_mean(cube):
@@ -507,12 +494,11 @@ def q_metrics(run, qcube, metrics):
 
 
 def summary_metric(metrics):
-    """
-    Compute weighted avg of metrics.
+    """Compute weighted avg of metrics.
 
-    This is a weighted average of all 13 metrics,
-    giving equal weights to the averages of extratropical U,
-    extratropical T, QBO, and equatorial T metrics.
+    This is a weighted average of all 13 metrics, giving equal weights
+    to the averages of extratropical U, extratropical T, QBO, and
+    equatorial T metrics.
     """
     # TODO side effect: changes metrics without returning
     pnj_metric = metrics['Polar night jet: northern hem (January)'] \
@@ -530,9 +516,9 @@ def summary_metric(metrics):
         + metrics['100 hPa equatorial temp (annual cycle strength)']
     q_metric = metrics['70 hPa 10Sto10N wv (annual mean)']
     # TODO magic numbers
-    summary = (
-        (pnj_metric / 4.) + (2.4 * t50_metric / 4.) + (3.1 * qbo_metric / 3.) +
-        (8.6 * teq_metric / 2.) + (18.3 * q_metric)) / 33.4
+    summary = ((pnj_metric / 4.) + (2.4 * t50_metric / 4.) +
+               (3.1 * qbo_metric / 3.) + (8.6 * teq_metric / 2.) +
+               (18.3 * q_metric)) / 33.4
 
     # Add to metrics dictionary
     metrics['Summary'] = summary
@@ -542,12 +528,25 @@ def mainfunc(run):
     """Main function in stratospheric assessment code."""
     metrics = dict()
 
-    # Set up to only run for 10 year period (eventually)
-    year_cons = dict(from_dt=run['from_monthly'], to_dt=run['to_monthly'])
+    # Read in the list of cubes
+    cubelist_file = 'cubeList.nc'
+    cubelist_path = os.path.join(run['data_root'], run['runid'], run['_area'],
+                                 cubelist_file)
 
-    # Read zonal mean U (lbproc=192) and add month number to metadata
-    ucube = load_run_ss(
-        run, 'monthly', 'eastward_wind', lbproc=192, **year_cons)
+    cubes = iris.load(cubelist_path)
+
+    # Set time constraints
+    from_dt = run['from_monthly']
+    to_dt = run['to_monthly']
+
+    # Read zonal mean U (lbproc=192)
+    ucube_constraint = iris.Constraint(averaging_period="monthly",
+                                       lbproc=192,
+                                       from_monthly=from_dt,
+                                       to_monthly=to_dt)\
+        & NameConstraint(var_name="eastward_wind")
+    ucube = cubes.extract_cube(ucube_constraint)
+
     # Although input data is a zonal mean, iris does not recognise it as such
     # and just reads it as having a single longitudinal coordinate. This
     # removes longitude as a dimension coordinate and makes it a scalar
@@ -563,10 +562,14 @@ def mainfunc(run):
     if 'month_number' not in aux_coord_names:
         icc.add_month_number(ucube, 'time', name='month_number')
 
-    # Read zonal mean T (lbproc=192) and add clim month and season to metadata
-    tcube = load_run_ss(
-        run, 'monthly', 'air_temperature', lbproc=192,
-        **year_cons)  # m01s30i204
+    # Read zonal mean T (lbproc=192) STASH=m01s30i204
+    tcube_constraint = iris.Constraint(averaging_period="monthly",
+                                       lbproc=192,
+                                       from_monthly=from_dt,
+                                       to_monthly=to_dt)\
+        & NameConstraint(var_name="air_temperature")
+    tcube = cubes.extract_cube(tcube_constraint)
+
     # Although input data is a zonal mean, iris does not recognise it as such
     # and just reads it as having a single longitudinal coordinate. This
     # removes longitude as a dimension coordinate and makes it a scalar
@@ -583,10 +586,14 @@ def mainfunc(run):
     if 'clim_season' not in aux_coord_names:
         icc.add_season(tcube, 'time', name='clim_season')
 
-    # Read zonal mean q (lbproc=192) and add clim month and season to metadata
-    qcube = load_run_ss(
-        run, 'monthly', 'specific_humidity', lbproc=192,
-        **year_cons)  # m01s30i205
+    # Read zonal mean q (lbproc=192) STASH=m01s30i205
+    qcube_constraint = iris.Constraint(averaging_period="monthly",
+                                       lbproc=192,
+                                       from_monthly=from_dt,
+                                       to_monthly=to_dt)\
+        & NameConstraint(var_name="specific_humidity")
+    qcube = cubes.extract_cube(qcube_constraint)
+
     # Although input data is a zonal mean, iris does not recognise it as such
     # and just reads it as having a single longitudinal coordinate. This
     # removes longitude as a dimension coordinate and makes it a scalar
@@ -683,8 +690,7 @@ def multi_qbo_plot(run):
 
 
 def multi_teq_plot(run):
-    """
-    Plot temperature.
+    """Plot temperature.
 
     Plot 100hPa equatorial temperature seasonal cycle comparing
     experiments on one plot.
@@ -751,10 +757,8 @@ def calc_merra(run):
     (t, q) = iris.load_cubes(merrafile,
                              ['air_temperature', 'specific_humidity'])
     # Strip out required times
-    time = iris.Constraint(
-        time=lambda cell:
-        run['from_monthly'] <= cell.point <= run['to_monthly']
-    )
+    time = iris.Constraint(time=lambda cell: run['from_monthly'] <= cell.point
+                           <= run['to_monthly'])
     t = t.extract(time)
     q = q.extract(time)
 
@@ -796,9 +800,9 @@ def calc_merra(run):
     t = t.collapsed('time', iris.analysis.MEAN)
     q = q.collapsed('time', iris.analysis.MEAN)
     # Create return values
-    tmerra = t.data                        # K
+    tmerra = t.data  # K
     # TODO magic numbers
-    qmerra = ((1000000. * 29. / 18.) * q.data)   # ppmv
+    qmerra = ((1000000. * 29. / 18.) * q.data)  # ppmv
 
     return tmerra, qmerra
 
@@ -810,10 +814,8 @@ def calc_erai(run):
     (t, q) = iris.load_cubes(eraifile,
                              ['air_temperature', 'specific_humidity'])
     # Strip out required times
-    time = iris.Constraint(
-        time=lambda cell:
-        run['from_monthly'] <= cell.point <= run['to_monthly']
-    )
+    time = iris.Constraint(time=lambda cell: run['from_monthly'] <= cell.point
+                           <= run['to_monthly'])
     t = t.extract(time)
     q = q.extract(time)
     # Calculate time mean
