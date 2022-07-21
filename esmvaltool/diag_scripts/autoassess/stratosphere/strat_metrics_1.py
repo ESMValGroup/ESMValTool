@@ -542,8 +542,8 @@ def mainfunc(run):
     # Read zonal mean U (lbproc=192)
     ucube_constraint = iris.Constraint(averaging_period="monthly",
                                        lbproc=192,
-                                       from_monthly=from_dt,
-                                       to_monthly=to_dt)\
+                                       time=lambda cell:
+                                       from_dt <= cell.point < to_dt) \
         & NameConstraint(var_name="eastward_wind")
     ucube = cubes.extract_cube(ucube_constraint)
 
@@ -565,8 +565,8 @@ def mainfunc(run):
     # Read zonal mean T (lbproc=192) STASH=m01s30i204
     tcube_constraint = iris.Constraint(averaging_period="monthly",
                                        lbproc=192,
-                                       from_monthly=from_dt,
-                                       to_monthly=to_dt)\
+                                       time=lambda cell:
+                                       from_dt <= cell.point < to_dt) \
         & NameConstraint(var_name="air_temperature")
     tcube = cubes.extract_cube(tcube_constraint)
 
@@ -589,8 +589,8 @@ def mainfunc(run):
     # Read zonal mean q (lbproc=192) STASH=m01s30i205
     qcube_constraint = iris.Constraint(averaging_period="monthly",
                                        lbproc=192,
-                                       from_monthly=from_dt,
-                                       to_monthly=to_dt)\
+                                       time=lambda cell:
+                                       from_dt <= cell.point < to_dt) \
         & NameConstraint(var_name="specific_humidity")
     qcube = cubes.extract_cube(qcube_constraint)
 
