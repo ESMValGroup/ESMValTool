@@ -63,7 +63,7 @@ REQUIREMENTS = {
         'seawater',
         'shapely',
         'xarray',
-        'xesmf<=0.3.0',
+        'xesmf==0.3.0',
         'xgboost',
         'xlsxwriter',
     ],
