@@ -331,9 +331,8 @@ git using [setuptools-scm](https://pypi.org/project/setuptools-scm/), but a
 static version number is stored in ``CITATION.cff``.
 Make sure to update the version number and release date in ``CITATION.cff``.
 See https://semver.org for more information on choosing a version number.
-Update the `environment.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/environment.yml#L25>`__
-and `ènvironment_osx.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/environment_osx.yml#L25>`__
-files to use the latest version of ESMValCore.
+Make sure that the ESMValCore version that is being used is set to the latest version.
+See the :ref:`dependencies <dependencies>` section in order to find more details on how update the ESMValCore version.
 Make a pull request and get it merged into ``main``.
 
 3. Add release notes
