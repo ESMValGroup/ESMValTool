@@ -260,13 +260,6 @@ install the Julia dependencies:
 
     esmvaltool install Julia
 
-If you would like to run R diagnostic scripts, you will also need to install the R
-dependencies:
-
-.. code-block:: bash
-
-    esmvaltool install R
-
 .. _install_with_docker:
 
 Docker installation
@@ -550,13 +543,6 @@ install the ESMValTool Julia dependencies:
 .. code-block:: bash
 
     esmvaltool install Julia
-
-If you would like to run R diagnostic scripts, you will also need to install the R
-dependencies. Install the R dependency packages:
-
-.. code-block:: bash
-
-    esmvaltool install R
 
 The next step is to check that the installation works properly.
 To do this, run the tool with:
