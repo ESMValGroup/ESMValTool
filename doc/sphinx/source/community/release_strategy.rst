@@ -303,6 +303,7 @@ error.
    `PyPI <https://pypi.org/project/ESMValTool/>`__, and
    `readthedocs <https://readthedocs.org/dashboard/esmvaltool/users/>`__.
 
+The release of ESMValTool should come after the release of ESMValCore.
 To make a new release of the package, follow these steps:
 
 1. Check that all tests and builds work
@@ -330,6 +331,9 @@ git using [setuptools-scm](https://pypi.org/project/setuptools-scm/), but a
 static version number is stored in ``CITATION.cff``.
 Make sure to update the version number and release date in ``CITATION.cff``.
 See https://semver.org for more information on choosing a version number.
+Update the `environment.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/environment.yml#L25>`__
+and `ènvironment_osx.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/environment_osx.yml#L25>`__
+files to use the latest version of ESMValCore.
 Make a pull request and get it merged into ``main``.
 
 3. Add release notes
@@ -352,21 +356,7 @@ Announce the name of the branch in an issue and ask the members of the
 `ESMValTool development team <https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam>`__
 to run their favourite recipe using this branch.
 
-5. Cherry pick bugfixes into the release branch
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If a bug is found and fixed (i.e. pull request merged into the
-``main`` branch) during the period of testing, use the command
-``git cherry-pick COMMIT_HASH``, where ``COMMIT_HASH`` is the commit hash of the
-commit that needs to be cherry-picked, to include the commit for this bugfix
-into the release branch.
-Cherry-pick any new contributions in the order they were merged, to avoid
-conflicts.
-When the testing period is over, make a pull request to update
-the release notes with the latest changes (do not forget to include the pull
-request itself into the changelog), get it merged into ``main`` and
-cherry-pick it into the release branch.
-
-6. Make the release on GitHub
+5. Make the release on GitHub
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Do a final check that all tests on CircleCI and GitHub Actions completed
@@ -377,7 +367,7 @@ and create the new release from the release branch (i.e. not from ``main``).
 The release tag always starts with the letter ``v`` followed by the version
 number, e.g. ``v2.1.0``.
 
-7. Create and upload the PyPI package
+6. Create and upload the PyPI package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The package is automatically uploaded to the
@@ -408,7 +398,7 @@ Follow these steps to create a new Python package:
 You can read more about this in
 `Packaging Python Projects <https://packaging.python.org/tutorials/packaging-projects/>`__.
 
-8. Create the Conda package
+7. Create the Conda package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ``esmvaltool`` package is published on the `conda-forge conda channel
@@ -429,7 +419,7 @@ they will merge the pull request, which will in turn publish the package on
 conda-forge some time later.
 Contact the feedstock maintainers if you want to become a maintainer yourself.
 
-9. Check the Docker images
+8. Check the Docker images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There are three main Docker container images available for ESMValTool on
@@ -508,7 +498,7 @@ by the actual ID.
 
 Changelog
 ---------
-
+- 2022-07-21 Update instructions to follow the new release procedure
 - 2020-09-09 Converted to rst and added to repository (future changes tracked by git)
 - 2020-09-03 Update during video conference (present: Bouwe Andela, Niels Drost, Javier Vegas, Valeriu Predoi, Klaus Zimmermann)
 - 2020-07-27 Update including tidying up and Glossary by Klaus Zimmermann and Bouwe Andela
