@@ -498,7 +498,6 @@ by the actual ID.
 
 Changelog
 ---------
-- 2022-07-21 Update instructions to follow the new release procedure
 - 2020-09-09 Converted to rst and added to repository (future changes tracked by git)
 - 2020-09-03 Update during video conference (present: Bouwe Andela, Niels Drost, Javier Vegas, Valeriu Predoi, Klaus Zimmermann)
 - 2020-07-27 Update including tidying up and Glossary by Klaus Zimmermann and Bouwe Andela
