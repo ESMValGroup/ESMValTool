@@ -193,17 +193,20 @@ mod_exp_ens_skips = {
     ('IPSL-CM5A2-INCA', 'historical', 'r1i1p1f1',): True, # no SSP runs.
     ('IPSL-CM5A2-INCA', 'piControl', 'r1i1p1f1'): True,
 
-    ('CESM2', 'historical', 'r10i1p1f1') : True, # historical without any ssps!
-    #'CESM2', 'historical', 'r1i1p1f1') : True, # historical without any ssps!
-    ('CESM2', 'historical', 'r2i1p1f1') : True, # historical without any ssps!
-    ('CESM2', 'historical', 'r3i1p1f1') : True, # historical without any ssps!
-                                                # r4 includes some data./
-    ('CESM2', 'historical', 'r5i1p1f1') : True, # historical without any ssps!
-    ('CESM2', 'historical', 'r6i1p1f1') : True, # historical without any ssps!
-    ('CESM2', 'historical', 'r7i1p1f1') : True, # historical without any ssps!
-    ('CESM2', 'historical', 'r8i1p1f1') : True, # historical without any ssps!
-    ('CESM2', 'historical', 'r9i1p1f1') : True, # historical without any ssps!
-    ('NorESM2-LM', 'historical', 'r2i1p1f1') : True, # historical without any ssps!
+#    ('CESM2', 'historical', 'r10i1p1f1') : True, # historical without any ssps!
+#    #'CESM2', 'historical', 'r1i1p1f1') : True, # historical without any ssps!
+#    ('CESM2', 'historical', 'r2i1p1f1') : True, # historical without any ssps!
+#    ('CESM2', 'historical', 'r3i1p1f1') : True, # historical without any ssps!
+#                                                # r4 includes some data./
+#    ('CESM2', 'historical', 'r5i1p1f1') : True, # historical without any ssps!
+#    ('CESM2', 'historical', 'r6i1p1f1') : True, # historical without any ssps!
+#    ('CESM2', 'historical', 'r7i1p1f1') : True, # historical without any ssps!
+#    ('CESM2', 'historical', 'r8i1p1f1') : True, # historical without any ssps!
+#    ('CESM2', 'historical', 'r9i1p1f1') : True, # historical without any ssps!
+#    ('NorESM2-LM', 'historical', 'r2i1p1f1') : True, # historical without any ssps!
+
+    ('EC-Earth3-CC', 'historical', 'r1i1p1f1'): True, #historical-ssp245_r1i1p1f1
+    ('EC-Earth3-CC', 'ssp245', 'r1i1p1f1'): True, #historical-ssp245_r1i1p1f1
 
 
     ('CNRM-ESM2-1',  'historical', '*'): True ,  # CNRM has a weird air-seaflux of CO2, which includes some weird river stuff.
@@ -230,6 +233,11 @@ mod_exp_ens_skips = {
     ('NorCPM1', 'historical', 'r1i1p1f1',): True, # no SSP runs.
 
     ('NorESM2-LM', 'ssp370', 'r2i1p1f1',): True, # SSP run ends at 2054.
+
+
+    ('CESM2', 'ssp585', 'r10i1p1f1') : True, # No historical run on jasmin
+    ('IPSL-CM6A-LR', 'ssp119', 'r14i1p1f1') : True, # No historical run on jasmin
+    ('IPSL-CM6A-LR', 'ssp585', 'r14i1p1f1') : True, # No historical run on jasmin
 
     ('*', 'ssp534-over', ''): True, # no LUE data available.
     }
@@ -344,8 +352,12 @@ cmap_ssp_air = {
     }
 
 
-threshold_colours = {1.: 'black', 1.5: 'black', 2.0: 'darkblue', 3.0:'darkred', 4.0:'purple',}
-threshold_marker_styles = {1.: 'v', 1.5: None, 2.: 's', 3.: 'o', 4:'^', 5.:None}
+threshold_colours = {1.: None,  #'black', 
+                     1.5: 'black', 2.0: 'darkblue', 3.0:'darkred', 4.0:'purple',}
+threshold_marker_styles = {1.: None, #'v', 
+                           1.5: None, 
+                           2.: 's', 3.: 'o', 4:'^',
+                           5.:None}
 
 
 def sspify(ssp):
@@ -3248,6 +3260,18 @@ def prepare_percentages_data( cfg,
 #                    print('ERROR:', t_short, t_exp, t_ens, thresh, threshold, time, (landc,fgco2gt, remnant))
 #                    assert 0
             #if t_ens
+            if isinstance(remnant, np.ndarray):
+                 print('ERROR: This should be a single value but it is an array:', remnant)
+                 print(threshold, time, t_dataset, t_short, t_exp, t_ens)
+                 print('a_xpoint:', a_xpoint)
+                 print('atmos_carbon:', atmos_carbon)
+
+                 assert 0
+            if isinstance(fgco2gt, np.ndarray):
+                 assert 0
+            if isinstance(landc, np.ndarray):
+                 assert 0
+
             unique_key = (t_dataset, t_exp, t_ens, threshold)
             # emissions[unique_key] = emission
             remnants[unique_key] = remnant
@@ -3702,6 +3726,8 @@ def make_ensemble_barchart_pane(
         oceanc = fgco2gts[unique_key]
         total = remnant + landc + oceanc
 
+
+
         adding_gaps = False
         dataset_blank = (i>0 and group_by == 'group_by_model' and t_dataset not in labels[-1])
         exp_blank =  (i>0 and group_by == 'group_by_ssp' and t_exp not in labels[-1])
@@ -3739,6 +3765,7 @@ def make_ensemble_barchart_pane(
 #            widths.append(1.)
 
         if plot_style == 'percentages':
+            if not isinstance(landc, float): assert 0
             land.append(100. * landc/total)
             ocean.append(100. * oceanc/total)
             air.append(100. * remnant/total)
@@ -3857,7 +3884,17 @@ def make_ensemble_barchart_pane(
 
     if stacked_hists:
 
-        print(threshold, xvalues, land,widths, colours_land, label_strs, edge_colours, linewidths)
+        print('threshold:', threshold, 
+              '\nxvalues:', xvalues, 
+              '\nland:', land,
+              '\nocean:', ocean,
+              '\nair:', air, 
+              '\nmwidths:', widths, 
+              '\ncolours_land:', colours_land,
+              '\nlabel_strs:', label_strs,
+              '\nedge_colours:', edge_colours, 
+              '\nlinewidths:', linewidths,
+              '\nplot_style:', plot_style)
         ax.bar(xvalues, land, width=widths, label='Land', color=colours_land, tick_label = label_strs, edgecolor=edge_colours, linewidth=linewidths)
         ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color=colours_ocean, edgecolor=edge_colours, linewidth=linewidths)
         ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color=colours_air, edgecolor=edge_colours, linewidth=linewidths)
@@ -3947,7 +3984,7 @@ def make_ensemble_barchart(
         plot_style='percentages',
         ensemble_key = 'ensemble_mean',
         group_by = 'group_by_model',
-        thresholds = ['4.0', '3.0', '2.0', '1.0',],
+        thresholds = ['4.0', '3.0', '2.0', ],
     ):
     """
     Make a barchat for the whole ensemble
@@ -4734,7 +4771,7 @@ def make_cumulative_timeseries_megaplot(cfg, data_dict,
             ensemble = ensemble,
             dataset = dataset,
             plot_type = 'area_over_zero',
-            plot_thresholds = [1., 2., 3., 4.],
+            plot_thresholds = [2., 3., 4.],
             fig = fig,
             ax= ax1,
             do_leg=False,
@@ -4751,7 +4788,7 @@ def make_cumulative_timeseries_megaplot(cfg, data_dict,
             ensemble = ensemble,
             dataset = dataset,
             plot_type = 'pc',
-            plot_thresholds = [1., 2., 3., 4.],
+            plot_thresholds = [2., 3., 4.], #1.
             fig = fig,
             ax= ax2,
             do_leg=False,
@@ -5438,7 +5475,7 @@ def timeseries_megapane(cfg, data_dict, thresholds_dict, key,
         fig=fig,
         ax=ax,
         do_legend = False,
-        plot_thresholds = [1., 2., 3., 4.,],
+        plot_thresholds = [2., 3., 4.,],
         plot_styles=plot_styles,
         skip_historical_ssp = True,
         experiments = experiments,
@@ -5690,11 +5727,11 @@ def main(cfg):
             # make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             # make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
 
-            do_count_and_sensitivity_table = False # True
+            do_count_and_sensitivity_table = True
             if do_count_and_sensitivity_table:
                 make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict)
 
-            do_timeseries_megaplot = False # True 
+            do_timeseries_megaplot =  False #True 
             if do_timeseries_megaplot:
                 # master
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean'],
@@ -5746,7 +5783,7 @@ def main(cfg):
 #                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
 #                        panes = ['tas', 'atmos_carbon','tls', 'fgco2', 'lue', 'nbp'])
 
-            do_cumulative_plot = False #True 
+            do_cumulative_plot = True 
             if do_cumulative_plot:
                #vertical bar chart
                 plot_styles = ['percentages', 'values']
@@ -5755,7 +5792,7 @@ def main(cfg):
                 for plot_style, ens, group_by in product(plot_styles, ens_styles, group_bys):
                     make_ensemble_barchart(cfg, data_dict, thresholds_dict, plot_style=plot_style, ensemble_key=ens, group_by=group_by)
 
-            do_cumulative_panes = 0 #True  
+            do_cumulative_panes = False 
             if do_cumulative_panes:
                 plot_styles = ['percentages', 'values']
 
@@ -5771,7 +5808,7 @@ def main(cfg):
                         stacked_hists=False,
                         )
 
-            do_horizontal_plot = 0 #True 
+            do_horizontal_plot = True 
             if do_horizontal_plot:
                 # Horizontal bar charts with allocartions:
                 for plotdataset in sorted(datasets.keys()):
@@ -5814,7 +5851,7 @@ def main(cfg):
 
             print(datasets)
 
-            do_ecs_scatter = 0 #True
+            do_ecs_scatter = True
             if do_ecs_scatter:
                 do_ecs_scatterplot(cfg, data_dict, thresholds_dict)
                 do_ecs_scatterplot(cfg, data_dict, thresholds_dict, include_1=True)

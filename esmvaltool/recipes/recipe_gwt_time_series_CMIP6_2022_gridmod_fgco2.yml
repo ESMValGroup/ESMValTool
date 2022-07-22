@@ -28,8 +28,9 @@ preprocessors:
           operator: mean
           #fx_variables: [{short_name: areacello, mip: Ofx, exp: piControl, ensemble: [r1i1p1f2,r1i1p1f1], grid: gn, activity: CMIP}]
           #fx_variables: [{short_name: areacello, mip: Ofx, exp: '*', ensemble: [r1i1p1f2,r1i1p1f1], grid: gn, activity: CMIP}]
-          fx_variables: [{short_name: areacello, mip: Ofx, exp: '*', ensemble: '*', grid: gn, activity: CMIP}]
-
+#          fx_variables: [{short_name: areacello, mip: Ofx, activity: CMIP }] #, exp: '*', ensemble: '*', grid: gn, activity: CMIP}]
+          fx_variables:
+            areacello:
         annual_statistics:
           operator: mean
 
@@ -973,9 +974,9 @@ diagnostics:
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r8i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2, exp: historical, ensemble: r9i1p1f1, start_year: 1850, end_year: 2014}
 #           - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-FV2, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}# Excluded from run
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: historical, ensemble: r2i1p1f1, start_year: 1850, end_year: 2014}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: historical, ensemble: r3i1p1f1, start_year: 1850, end_year: 2014}
+#            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
+#            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: historical, ensemble: r2i1p1f1, start_year: 1850, end_year: 2014}
+#            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: historical, ensemble: r3i1p1f1, start_year: 1850, end_year: 2014}
 #           - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM-FV2, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}# Excluded from run
 #           - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorCPM1, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}# Excluded from run
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
@@ -1145,14 +1146,14 @@ diagnostics:
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2, exp: [historical, ssp126], ensemble: r4i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2, exp: [historical, ssp245], ensemble: r4i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2, exp: [historical, ssp370], ensemble: r4i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp126], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp245], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp245], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp245], ensemble: r3i1p1f1, start_year: 1985, end_year: 2100}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp370], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp126], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp245], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp245], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp245], ensemble: r3i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp370], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
 #           - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp370], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}# Excluded from run
 #           - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp370], ensemble: r3i1p1f1, start_year: 1985, end_year: 2100}# Excluded from run
-            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp585], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
+#            - {project: CMIP6, mip: Omon, grid: gn, institute: NCAR, dataset: CESM2-WACCM, exp: [historical, ssp585], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: [historical, ssp126], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: [historical, ssp245], ensemble: r1i1p1f1, start_year: 1985, end_year: 2100}
 #           - {project: CMIP6, mip: Omon, grid: gn, institute: NCC, dataset: NorESM2-LM, exp: [historical, ssp245], ensemble: r2i1p1f1, start_year: 1985, end_year: 2100}# Excluded from run
