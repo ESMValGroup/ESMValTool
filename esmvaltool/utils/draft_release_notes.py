@@ -156,7 +156,7 @@ def format_notes(lines, version):
         '-' * len(version),
         'Highlights',
         '',
-        '',
+        'TODO: add highlights',
         '',
         "This release includes",
     ]
