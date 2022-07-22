@@ -15,7 +15,7 @@ import dateutil
 import esmvalcore
 import fire
 
-#import esmvaltool
+import esmvaltool
 
 try:
     from github import Github
@@ -32,8 +32,8 @@ except FileNotFoundError:
           "for-the-command-line")
 
 VERSION = {
-    'esmvalcore': "v2.6.0rc1",#f"v{esmvalcore.__version__}",
-#    'esmvaltool': f"v{esmvaltool.__version__}"
+    'esmvalcore': f"v{esmvalcore.__version__}",
+    'esmvaltool': f"v{esmvaltool.__version__}"
 }
 GITHUB_REPO = {
     'esmvalcore': "ESMValGroup/ESMValCore",
@@ -41,8 +41,8 @@ GITHUB_REPO = {
 }
 
 PREVIOUS_RELEASE = {
-    'esmvalcore': datetime.datetime(2022, 3, 15, 00),
-    'esmvaltool': datetime.datetime(2021, 11, 9, 00),
+    'esmvalcore': datetime.datetime(2022, 7, 15, 18),
+    'esmvaltool': datetime.datetime(2022, 7, 22, 18),
 }
 
 
@@ -70,6 +70,7 @@ LABELS = {
     'esmvaltool': (
         'backwards incompatible change',
         'bug',
+        'community',
         'deprecated feature',
         'documentation',
         'diagnostic',
@@ -155,8 +156,6 @@ def format_notes(lines, version):
         '-' * len(version),
         'Highlights',
         '',
-        '- A new set of CMOR fixes is now available in order to load native EMAC model output and CMORize it on the fly. For details, see :ref:`Supported native models: EMAC <read_emac>',
-        '- The version number of ESMValCore is now automatically generated using `setuptools_scm <https://github.com/pypa/setuptools_scm/#default-versioning-scheme>`__'
         '',
         '',
         "This release includes",
