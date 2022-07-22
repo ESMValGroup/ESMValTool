@@ -12,7 +12,7 @@ v2.6.0
 Highlights
 ~~~~~~~~~~
 
-- A new monitoring diagnostic has been added to allow the comparison of model runs against reference datasets. For details, see :ref:`Monitoring diagnostic to show multiple datasets in one plot (incl. biases) <api.esmvaltool.diag_scripts.monitor.multi_datasets>`
+- A new monitoring diagnostic has been added to allow the comparison of model runs against reference datasets. For details, see :ref:`Monitoring diagnostic to show multiple datasets in one plot (incl. biases) <api.esmvaltool.diag_scripts.monitor.multi_datasets>`.
 - A tool has been developed to compare the output of recipe runs against previous runs, in order to detect in an automatized way breaking changes between releases. Find more information in :ref:`Comparing recipe runs <compare_recipe_runs>`.
 - The recipe :ref:`Climate Change Hotspot <recipe_climate_change_hotspot.rst>` allows to compute hotspots in any rectangular region. 
 
