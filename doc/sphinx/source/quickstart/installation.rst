@@ -260,13 +260,6 @@ install the Julia dependencies:
 
     esmvaltool install Julia
 
-If you would like to run R diagnostic scripts, you will also need to install the R
-dependencies:
-
-.. code-block:: bash
-
-    esmvaltool install R
-
 .. _install_with_docker:
 
 Docker installation
@@ -551,13 +544,6 @@ install the ESMValTool Julia dependencies:
 
     esmvaltool install Julia
 
-If you would like to run R diagnostic scripts, you will also need to install the R
-dependencies. Install the R dependency packages:
-
-.. code-block:: bash
-
-    esmvaltool install R
-
 The next step is to check that the installation works properly.
 To do this, run the tool with:
 
@@ -663,9 +649,8 @@ to install it yourself if you are just running diagnostics:
  - CEDA-JASMIN: `esmvaltool` is available on the scientific compute nodes (`sciX.jasmin.ac.uk` where
    `X = 1, 2, 3, 4, 5`) after login and module loading via `module load esmvaltool`; see the helper page at
    `CEDA <https://help.jasmin.ac.uk/article/4955-community-software-esmvaltool>`__ ;
- - DKRZ-Mistral: `esmvaltool` is available on login nodes (`mistral.dkrz.de`) and pre- and post-processing
-   nodes (`mistralpp.dkrz.de`) after login and module loading via `module load esmvaltool`; the command
-   `module help esmvaltool` provides some information about the module.
+ - DKRZ-Levante: `esmvaltool` is available on login nodes (`levante.dkrz.de`) after login and module loading
+   via `module load esmvaltool`; the command `module help esmvaltool` provides some information about the module.
 
 Installation from the conda lock file
 =====================================

@@ -210,7 +210,13 @@ def test_fix_coords():
     assert cube.coord("time").has_bounds()
     assert cube.coord("time").bounds[0][1] == 30.
     assert cube.coord("time").units == 'days since 1950-1-1 00:00:00'
-    assert cube.coord("time").units.calendar == "gregorian"
+    # Up to but not including CF Conventions version 1.9, `gregorian` and
+    # `standard` where synonyms. From then, `gregorian` has been deprecated in
+    # favor of `standard`. This lead to `cf-units` using `standard`, even when
+    # the calendar passed to the `Unit` constructor is `gregorian`. To support
+    # both cf-units <= 3.1.0 and later versions, we list both variants in the
+    # following assertion.
+    assert cube.coord("time").units.calendar in ("standard", "gregorian")
     assert cube.coord("longitude").points[0] == 178.5
     assert cube.coord("longitude").points[1] == 179.5
     assert cube.coord("longitude").has_bounds()
