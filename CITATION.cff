@@ -342,11 +342,11 @@ authors:
     orcid: "https://orcid.org/0000-0001-7205-9528"
 
 cff-version: 1.2.0
-date-released: 2022-03-15
+date-released: 2022-07-22
 doi: "10.5281/zenodo.3401363"
 license: "Apache-2.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/ESMValGroup/ESMValTool/"
 title: ESMValTool
-version: "v2.5.0"
+version: "v2.6.0"
 ...
