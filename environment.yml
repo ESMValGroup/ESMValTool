@@ -22,7 +22,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.5.*
+  - esmvalcore 2.6.*
   - fiona
   - fire
   - gdal
