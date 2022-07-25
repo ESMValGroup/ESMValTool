@@ -190,9 +190,6 @@ mod_exp_ens_skips = {
 #    ('MPI-ESM1-2-LR', 'historical-ssp245', 'r3i1p1f1') : True, # No historical run on jasmin
 #    ('MPI-ESM1-2-LR', 'historical-ssp370', 'r2i1p1f1') : True, # No historical run on jasmin
 
-    ('IPSL-CM5A2-INCA', 'historical', 'r1i1p1f1',): True, # no SSP runs.
-    ('IPSL-CM5A2-INCA', 'piControl', 'r1i1p1f1'): True,
-
 #    ('CESM2', 'historical', 'r10i1p1f1') : True, # historical without any ssps!
 #    #'CESM2', 'historical', 'r1i1p1f1') : True, # historical without any ssps!
 #    ('CESM2', 'historical', 'r2i1p1f1') : True, # historical without any ssps!
@@ -205,9 +202,7 @@ mod_exp_ens_skips = {
 #    ('CESM2', 'historical', 'r9i1p1f1') : True, # historical without any ssps!
 #    ('NorESM2-LM', 'historical', 'r2i1p1f1') : True, # historical without any ssps!
 
-    ('EC-Earth3-CC', 'historical', 'r1i1p1f1'): True, #historical-ssp245_r1i1p1f1
-    ('EC-Earth3-CC', 'ssp245', 'r1i1p1f1'): True, #historical-ssp245_r1i1p1f1
-
+    ('*', 'ssp534-over', ''): True, # no LUE data available.
 
     ('CNRM-ESM2-1',  'historical', '*'): True ,  # CNRM has a weird air-seaflux of CO2, which includes some weird river stuff.
     ('CNRM-ESM2-1',  'ssp119', '*'): True ,
@@ -216,6 +211,13 @@ mod_exp_ens_skips = {
     ('CNRM-ESM2-1',  'ssp370', '*'): True ,
     ('CNRM-ESM2-1',  'ssp585', '*'): True ,
     ('CNRM-ESM2-1',  'piControl', '*'): True ,
+
+#    ('EC-Earth3-CC', 'historical', 'r1i1p1f1'): True, #historical-ssp245_r1i1p1f1
+#    ('EC-Earth3-CC', 'ssp245', 'r1i1p1f1'): True, #historical-ssp245_r1i1p1f1
+    } 
+"""
+    ('IPSL-CM5A2-INCA', 'historical', 'r1i1p1f1',): True, # no SSP runs.
+    ('IPSL-CM5A2-INCA', 'piControl', 'r1i1p1f1'): True,
 
 
     ('CESM2-WACCM-FV2', 'historical', 'r1i1p1f1',): True, # no SSP runs.
@@ -231,16 +233,12 @@ mod_exp_ens_skips = {
     ('MPI-ESM-1-2-HAM', 'ssp370', 'r2i1p1f1',): True, # SSP run ends at 2054.
 
     ('NorCPM1', 'historical', 'r1i1p1f1',): True, # no SSP runs.
-
     ('NorESM2-LM', 'ssp370', 'r2i1p1f1',): True, # SSP run ends at 2054.
-
 
     ('CESM2', 'ssp585', 'r10i1p1f1') : True, # No historical run on jasmin
     ('IPSL-CM6A-LR', 'ssp119', 'r14i1p1f1') : True, # No historical run on jasmin
     ('IPSL-CM6A-LR', 'ssp585', 'r14i1p1f1') : True, # No historical run on jasmin
-
-    ('*', 'ssp534-over', ''): True, # no LUE data available.
-    }
+"""
 
 def extend_mod_exp_ens_skips(mod_exp_ens_skips):
     new_dict = {}
@@ -3245,6 +3243,8 @@ def prepare_percentages_data( cfg,
             n_xpoint = get_threshold_point(landc_cumul, time.year)
             f_xpoint = get_threshold_point(fgco2gt_cumul, time.year)
 
+            if None in [a_xpoint,n_xpoint,f_xpoint]: assert 0
+
             # emission = cumul_emissions['cumul_emissions'][e_xpoint]
             remnant = atmos_carbon['atmos_carbon'][a_xpoint]
             fgco2gt = fgco2gt_cumul.data[f_xpoint]
@@ -5731,7 +5731,7 @@ def main(cfg):
             if do_count_and_sensitivity_table:
                 make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict)
 
-            do_timeseries_megaplot =  False #True 
+            do_timeseries_megaplot = True 
             if do_timeseries_megaplot:
                 # master
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean'],
