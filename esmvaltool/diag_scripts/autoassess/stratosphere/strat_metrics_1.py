@@ -535,16 +535,8 @@ def mainfunc(run):
 
     cubes = iris.load(cubelist_path)
 
-    # Set time constraints
-    from_dt = run['from_monthly']
-    to_dt = run['to_monthly']
-
     # Read zonal mean U (lbproc=192)
-    ucube_constraint = iris.Constraint(averaging_period="monthly",
-                                       lbproc=192,
-                                       time=lambda cell:
-                                       from_dt <= cell.point < to_dt) \
-        & NameConstraint(var_name="eastward_wind")
+    ucube_constraint = NameConstraint(standard_name="eastward_wind")
     ucube = cubes.extract_cube(ucube_constraint)
 
     # Although input data is a zonal mean, iris does not recognise it as such
@@ -563,11 +555,7 @@ def mainfunc(run):
         icc.add_month_number(ucube, 'time', name='month_number')
 
     # Read zonal mean T (lbproc=192) STASH=m01s30i204
-    tcube_constraint = iris.Constraint(averaging_period="monthly",
-                                       lbproc=192,
-                                       time=lambda cell:
-                                       from_dt <= cell.point < to_dt) \
-        & NameConstraint(var_name="air_temperature")
+    tcube_constraint = NameConstraint(standard_name="air_temperature")
     tcube = cubes.extract_cube(tcube_constraint)
 
     # Although input data is a zonal mean, iris does not recognise it as such
@@ -587,11 +575,7 @@ def mainfunc(run):
         icc.add_season(tcube, 'time', name='clim_season')
 
     # Read zonal mean q (lbproc=192) STASH=m01s30i205
-    qcube_constraint = iris.Constraint(averaging_period="monthly",
-                                       lbproc=192,
-                                       time=lambda cell:
-                                       from_dt <= cell.point < to_dt) \
-        & NameConstraint(var_name="specific_humidity")
+    qcube_constraint = NameConstraint(standard_name="specific_humidity")
     qcube = cubes.extract_cube(qcube_constraint)
 
     # Although input data is a zonal mean, iris does not recognise it as such
