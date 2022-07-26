@@ -35,8 +35,8 @@ preprocessors:
 
       prep_total_sea:
         custom_order: true
-        #mask_landsea:
-        #  mask_out: land
+        mask_landsea:
+          mask_out: land
 
       prep_timeseries_2d_land:
         custom_order: true
