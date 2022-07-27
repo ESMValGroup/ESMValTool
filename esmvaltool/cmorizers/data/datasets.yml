@@ -631,13 +631,13 @@ datasets:
   HadCRUT5:
     tier: 2
     source: https://crudata.uea.ac.uk/cru/data/temperature
-    last_access: 2021-11-29
+    last_access: 2022-03-28
     info: |
       Download the following files:
         infilling
-            [Source]/HadCRUT.5.0.0.0.analysis.anomalies.ensemble_mean.nc
+            [Source]/HadCRUT.5.0.1.0.analysis.anomalies.ensemble_mean.nc
         no-infilling
-            [Source]/HadCRUT.5.0.0.0.anomalies.ensemble_mean.nc
+            [Source]/HadCRUT.5.0.1.0.anomalies.ensemble_mean.nc
         climatology
             [Source]/absolute_v5.nc
 
@@ -697,6 +697,14 @@ datasets:
       (Department of Atmosphere, Ocean and Earth System Modeling Research,
       Meteorological Research Institute, Tsukuba City, Japan). See link above
       for more information.
+
+  Kadow2020:
+    tier: 2
+    source: http://users.met.fu-berlin.de/~ChristopherKadow/
+    last_access: 2022-03-29
+    info: |
+      Download the following file:
+      [SOURCE]/HadCRUT.5.0.1.0.anomalies.Kadow_et_al_2020_20crAI-infilled.ensemble_mean_185001-202012.nc
 
   LAI3g:
     tier: 3
@@ -857,6 +865,14 @@ datasets:
       Download daily data from:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
+
+  NOAAGlobalTemp:
+    tier: 2
+    source: https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/v5/access/
+    last_access: 2022-06-28
+    info: |
+      Download the following files:
+      [SOURCE]/gridded/NOAAGlobalTemp_v5.0.0_gridded_s188001_e202205_c20220608T133245.nc
 
   NSIDC-0116-sh:
     tier: 3

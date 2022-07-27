@@ -37,7 +37,7 @@ create_grid <- function(path = idx_dir, loc = "./gridDef") {
     "griddes -delvar,time_bnds",
     input = first_file,
     stdout = loc,
-    options = "-O"
+    options = "-s -O"
   )
 }
 

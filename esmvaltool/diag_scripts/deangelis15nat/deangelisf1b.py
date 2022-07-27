@@ -122,7 +122,8 @@ def plot_bar_deangelis(cfg, data_var_sum, available_exp, available_vars):
     axx.legend(loc=1)
 
     fig.tight_layout()
-    fig.savefig(get_plot_filename('bar_all', cfg), dpi=300)
+    plot_file = get_plot_filename('bar_all', cfg)
+    fig.savefig(plot_file, dpi=300)
     plt.close()
 
     caption = 'Global average multi-model mean comparing different ' + \
@@ -150,6 +151,7 @@ def plot_bar_deangelis(cfg, data_var_sum, available_exp, available_vars):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 

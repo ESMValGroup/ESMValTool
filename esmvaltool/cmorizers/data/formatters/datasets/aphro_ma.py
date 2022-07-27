@@ -55,6 +55,7 @@ from warnings import catch_warnings, filterwarnings
 
 import iris
 from esmvalcore.preprocessor import monthly_statistics
+from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -76,12 +77,12 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
         try:
             cube = iris.load_cube(
                 str(filepath),
-                constraint=utils.var_name_constraint(var['raw']),
+                constraint=NameConstraint(var_name=var['raw']),
             )
         except iris.exceptions.ConstraintMismatchError:
             cube = iris.load_cube(
                 str(filepath),
-                constraint=utils.var_name_constraint(var['raw_fallback']),
+                constraint=NameConstraint(var_name=var['raw_fallback']),
             )
 
     # Fix var units

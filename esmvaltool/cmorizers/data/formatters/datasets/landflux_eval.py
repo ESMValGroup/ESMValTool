@@ -24,6 +24,7 @@ from datetime import datetime
 import iris
 import numpy as np
 from cf_units import Unit
+from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -33,7 +34,7 @@ logger = logging.getLogger(__name__)
 def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
-    cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
+    cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
     _fix_time_coord(cube)
     utils.fix_var_metadata(cube, cmor_info)
     utils.convert_timeunits(cube, 1950)

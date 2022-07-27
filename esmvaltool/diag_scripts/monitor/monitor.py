@@ -1,7 +1,114 @@
-"""Diagnostic to plot preprocessor output."""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""Diagnostic to plot preprocessor output.
+
+Description
+-----------
+This diagnostic can be used to visualize arbitrary preprocessor output.
+
+Currently supported plot types (use the option ``plots`` to specify them):
+    - Climatology (plot type ``clim``): Plots climatology. Supported
+      coordinates: (`latitude`, `longitude`, `month_number`).
+    - Seasonal climatologies (plot type ``seasonclim``): It produces a multi
+      panel (2x2) plot with the seasonal climatologies. Supported coordinates:
+      (`latitude`, `longitude`, `month_number`).
+    - Monthly climatologies (plot type ``monclim``): It produces a multi panel
+      (3x4) plot with the monthly climatologies. Can be customized to show only
+      certain months and to rearrange the number of columns and rows. Supported
+      coordinates: (`latitude`, `longitude`, `month_number`).
+    - Time series (plot type ``timeseries``): Generate time series plots. It
+      will always generate the full period time series, but if the period is
+      longer than 75 years, it will also generate two extra time series for the
+      first and last 50 years. It will produce multi panel plots for data with
+      `shape_id` or `region` coordinates of length > 1. Supported coordinates:
+      `time`, `shape_id` (optional) and `region` (optional).
+    - Annual cycle (plot type ``annual_cycle``): Generate an annual cycle plot
+      (timeseries like climatological from January to December). It will
+      produce multi panel plots for data with `shape_id` or `region`
+      coordinates of length > 1. Supported coordinates: `time`, `shape_id`
+      (optional) and `region` (optional).
+
+Configuration options in recipe
+-------------------------------
+cartopy_data_dir: str, optional (default: None)
+    Path to cartopy data dir. Defaults to None. See
+    https://scitools.org.uk/cartopy/docs/latest/.
+config_file: str, optional
+    Path to the monitor configuration file. Defaults to ``monitor_config.yml``
+    in the same folder as the diagnostic script. More information on the
+    monitor configuration file can be found :ref:`here <monitor_config_file>`.
+plots: dict, optional
+    Plot types plotted by this diagnostic (see list above). Dictionary keys
+    must be ``clim``, ``seasonclim``, ``monclim``, ``timeseries`` or
+    ``annual_cycle``. Dictionary values are dictionaries used as options for
+    the corresponding plot. The allowed options for the different plot types
+    are given below.
+plot_filename: str, optional
+    Filename pattern for the plots.
+    Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
+    All tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replaced with the corresponding tags).
+plot_folder: str, optional
+    Path to the folder to store figures. Defaults to
+    ``{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}``.  All
+    tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replaced with the corresponding tags).  ``{plot_dir}`` is replaced with the
+    default ESMValTool plot directory (i.e.,
+    ``output_dir/plots/diagnostic_name/script_name/``, see
+    :ref:`esmvalcore:user configuration file`).
+rasterize_maps: bool, optional (default: True)
+    If ``True``, use `rasterization
+    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
+    map plots to produce smaller files. This is only relevant for vector
+    graphics (e.g., ``output_file_type=pdf,svg,ps``).
+
+In the variable definitions, users can set the attribute ``plot_name`` to fix
+the variable name that will be used for the plot's title. If it is not set,
+``mapgenerator`` will try to choose a sensible one from the name attributes
+(``long_name``, ``standard_name`` and ``var_name``).
+
+Configuration options for plot type ``clim``
+--------------------------------------------
+maps: list of str, optional (default: ['global'])
+    List of maps to plot, as defined in the monitor configuration file.
+
+Configuration options for plot type ``seasonclim``
+--------------------------------------------------
+maps: list of str, optional (default: ['global'])
+    List of maps to plot, as defined in the monitor configuration file.
+
+Configuration options for plot type ``monclim``
+-----------------------------------------------
+maps: list of str, optional (default: ['global'])
+    List of maps to plot, as defined in the monitor configuration file.
+months: list of int, optional
+    Select only specific months. Defaults to ``None`` (i.e. show all months).
+plot_size: tuple of int, optional (default: (5, 4))
+    Size of each individual figure.
+columns: int, optional (default: 3)
+    Number of columns in the plot.
+rows: int, optional (default: 4)
+    Number of rows in the plot.
+
+Configuration options for plot type ``timeseries``
+--------------------------------------------------
+None
+
+Configuration options for plot type ``annual_cycle``
+----------------------------------------------------
+None
+
+.. hint::
+
+   Extra arguments given to the recipe are ignored, so it is safe to use yaml
+   anchors to share the configuration of common arguments with other monitor
+   diagnostic script.
+
+"""
 
 import calendar
 import logging
+from copy import deepcopy
 
 import iris
 import iris.coord_categorisation
@@ -27,6 +134,10 @@ class Monitor(MonitorBase):
         super().__init__(config)
         self.plots = config.get('plots', {})
         self.has_errors = False
+
+        # Get default settings
+        self.cfg = deepcopy(self.cfg)
+        self.cfg.setdefault('rasterize_maps', True)
 
     def compute(self):
         """Plot preprocessed data."""
@@ -107,15 +218,15 @@ class Monitor(MonitorBase):
             self.plot_timeseries(cube.extract(
                 iris.Constraint(
                     year=lambda cell: cell <= (var_info[n.START_YEAR] + 50))),
-                                var_info,
-                                period='start',
-                                suptitle='First 50 years')
+                var_info,
+                period='start',
+                suptitle='First 50 years')
             self.plot_timeseries(cube.extract(
                 iris.Constraint(
                     year=lambda cell: cell >= (var_info[n.END_YEAR] - 50))),
-                                 var_info,
-                                 period='end',
-                                 suptitle='Last 50 years')
+                var_info,
+                period='end',
+                suptitle='Last 50 years')
 
     def plot_annual_cycle(self, cube, var_info):
         """Plot the annual cycle according to configuration.
@@ -144,9 +255,9 @@ class Monitor(MonitorBase):
 
         plotter = PlotSeries()
         plotter.outdir = self.get_plot_folder(var_info)
-        plotter.img_template = self.get_plot_name('annualcycle', var_info,
-                                                  None)
-        plotter.filefmt = 'svg'
+        plotter.img_template = self.get_plot_path('annualcycle', var_info,
+                                                  add_ext=False)
+        plotter.filefmt = self.cfg['output_file_type']
         region_coords = ('shape_id', 'region')
         options = {
             'xlabel': '',
@@ -158,10 +269,15 @@ class Monitor(MonitorBase):
                 plotter.multiplot_cube(cube, 'month', region_coord, **options)
                 return
         plotter.plot_cube(cube, 'month', **options)
+        caption = (f"Annual cycle of {var_info[n.LONG_NAME]} of "
+                   f"dataset {var_info[n.DATASET]} (project "
+                   f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} to "
+                   f"{var_info[n.END_YEAR]}.")
         self.record_plot_provenance(
-            self.get_plot_path('annualcycle', var_info, 'svg'),
+            self.get_plot_path('annualcycle', var_info),
             var_info,
             'Annual cycle',
+            caption=caption,
         )
 
     def plot_monthly_climatology(self, cube, var_info):
@@ -212,7 +328,7 @@ class Monitor(MonitorBase):
                 f'({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})'
                 f'\n{cube.long_name} ({cube.units})',
                 fontsize=plot_map.fontsize + 4.,
-                y=1.025 - rows * 0.025,
+                y=1.2 - rows * 0.07,
             )
             plt.subplots_adjust(
                 top=0.85,
@@ -222,26 +338,28 @@ class Monitor(MonitorBase):
                 hspace=.20,
                 wspace=.15,
             )
-            filename = self.get_plot_path(f'monclim{map_name}',
-                                          var_info,
-                                          file_type='png')
+            filename = self.get_plot_path(f'monclim{map_name}', var_info)
             plt.savefig(
                 filename,
                 bbox_inches='tight',
                 pad_inches=.2,
             )
             plt.close(plt.gcf())
+            caption = (f"Monthly climatology of {var_info[n.LONG_NAME]} of "
+                       f"dataset {var_info[n.DATASET]} (project "
+                       f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} "
+                       f"to {var_info[n.END_YEAR]}.")
             self.record_plot_provenance(
                 filename,
                 var_info,
                 'Monthly climatology',
                 region=map_name,
+                caption=caption,
             )
         cube.remove_coord('month')
         cube.remove_coord('month_name')
 
-    @staticmethod
-    def _plot_monthly_cube(plot_map, months, columns, rows, map_options,
+    def _plot_monthly_cube(self, plot_map, months, columns, rows, map_options,
                            variable_options, cube_slice):
         month = cube_slice.coord('month_number').points[0]
         month_name = cube_slice.coord('month_name').points[0]
@@ -263,6 +381,8 @@ class Monitor(MonitorBase):
                 **variable_options
             },
         )
+        if self.cfg['rasterize_maps']:
+            self._set_rasterized()
 
     def plot_seasonal_climatology(self, cube, var_info):
         """Plot the seasonal climatology as a multipanel plot.
@@ -335,6 +455,8 @@ class Monitor(MonitorBase):
                         **variable_options,
                     },
                 )
+                if self.cfg['rasterize_maps']:
+                    self._set_rasterized()
             plt.tight_layout()
             plt.suptitle(
                 'Seasonal climatology  '
@@ -350,19 +472,23 @@ class Monitor(MonitorBase):
                 hspace=.20,
                 wspace=.15,
             )
-            filename = self.get_plot_path(f'seasonclim{map_name}', var_info,
-                                          'png')
+            filename = self.get_plot_path(f'seasonclim{map_name}', var_info)
             plt.savefig(
                 filename,
                 bbox_inches='tight',
                 pad_inches=.2,
             )
             plt.close(plt.gcf())
+            caption = (f"Seasonal climatology of {var_info[n.LONG_NAME]} of "
+                       f"dataset {var_info[n.DATASET]} (project "
+                       f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} "
+                       f"to {var_info[n.END_YEAR]}.")
             self.record_plot_provenance(
                 filename,
                 var_info,
                 'Seasonal climatology',
                 region=map_name,
+                caption=caption,
             )
         cube.remove_coord('season')
 
@@ -412,22 +538,32 @@ class Monitor(MonitorBase):
                                    **map_options,
                                    **variable_options
                                })
+
+            # Note: plt.gca() is the colorbar here, use plt.gcf().axes to
+            # access the correct axes
+            if self.cfg['rasterize_maps']:
+                self._set_rasterized(plt.gcf().axes[0])
             plt.suptitle(
                 f'Climatology ({var_info[n.START_YEAR]}'
                 f'-{var_info[n.END_YEAR]})',
                 y=map_options.get('suptitle_pos', 0.95),
                 fontsize=plot_map.fontsize + 4)
-            filename = self.get_plot_path(f'clim{map_name}', var_info, 'png')
+            filename = self.get_plot_path(f'clim{map_name}', var_info)
             plt.savefig(filename,
                         bbox_inches='tight',
                         pad_inches=.2,
                         dpi=plot_map.dpi)
             plt.close(plt.gcf())
+            caption = (f"Climatology of {var_info[n.LONG_NAME]} of dataset "
+                       f"{var_info[n.DATASET]} (project "
+                       f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} "
+                       f"to {var_info[n.END_YEAR]}.")
             self.record_plot_provenance(
                 filename,
                 var_info,
                 'Climatology',
                 region=map_name,
+                caption=caption,
             )
 
 
