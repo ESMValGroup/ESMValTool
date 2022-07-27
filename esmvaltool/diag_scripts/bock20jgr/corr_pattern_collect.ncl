@@ -228,7 +228,7 @@ begin
   ; For now just CMIP projects
   c_projects = str_match_ic(data_all&models@project, "CMIP")
   projects = get_unique_entries(c_projects)
-  projects = (/"CMIP5", "CMIP6"/)
+  projects = (/"CMIP3", "CMIP5", "CMIP6"/)
   n_var = dimsizes(data_all&vars)
 
   nr_projects = dimsizes(projects)
