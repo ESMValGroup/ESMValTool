@@ -28,6 +28,7 @@
 ;   none
 ;
 ; Modification history
+;   20211006-lauer_axel: removed write_plots
 ;   20190222-lauer_axel: added output of provenance (v2.0)
 ;   20181119-lauer_axel: adapted code to multi-variable capable framework
 ;   20180923-lauer_axel: added writing of results to netcdf

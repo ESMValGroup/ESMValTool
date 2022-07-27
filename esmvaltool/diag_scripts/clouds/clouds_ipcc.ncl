@@ -50,6 +50,7 @@
 ;        plot is written to 2 separate netCDFs.
 ;
 ; Modification history
+;   20211006-lauer_axel: removed write_plots
 ;   20190222-lauer_axel: added output of provenance (v2.0)
 ;   20181119-lauer_axel: adapted code to multi-variable capable framework
 ;   20180923-lauer_axel: added writing of results to netcdf
@@ -154,7 +155,6 @@ begin
 
   ; make sure path for (mandatory) netcdf output exists
 
-  write_nc = True
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
@@ -473,6 +473,8 @@ begin
     log_info(DIAG_SCRIPT + " (var: " + var0 + "):")
     log_info("info: using default contour levels")
     cnLevels = fspan(min(diff), max(diff), 20)
+  else
+    cnLevels = diag_script_info@explicit_cn_levels
   end if
 
   diff@diag_script = DIAG_SCRIPT
@@ -550,6 +552,12 @@ begin
     pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                              + "ipcc-precip-delta.rgb")
     diff@res_cnFillColors         = pal
+  end if
+
+  if (var0 .eq. "swcre") then
+    pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
+                             + "ipcc-ar6_misc_div.rgb")
+    diff@res_cnFillPalette = pal
   end if
 
   plots = new((/2, numseas/), graphic)
