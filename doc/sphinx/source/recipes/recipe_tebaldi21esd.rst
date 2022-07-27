@@ -44,7 +44,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/tebaldi21esd/
   specified scenarios and time periods relative to the historical
   baseline.
 * calc_table_warming_level.ncl: computes the warming level crossing year
-  (mean, five percents and ninety-five percents quantiles of crossing
+  (mean, five percent and ninety-five percent quantiles of crossing
   years) for specified scenarios and warming levels.
 * calc_timeseries_mean_spread_runave.ncl: computes
   multi-model time series of change against historical baseline for
@@ -92,7 +92,7 @@ User settings in recipe
    * eyears: list with end years in time periods (end year of historical runs
      and SSPs)
    * begin_ref_year: start year of reference period (e.g. 1995)
-   * end_ref_year: end year of reference period (e.g 2014)
+   * end_ref_year: end year of reference period (e.g. 2014)
    * n_samples: number of samples of size 10 to draw among all the ensembles
      of sampled_model
    * sampled_model: name of dataset on which to sample
@@ -201,9 +201,9 @@ User settings in recipe
    * syears: list with start years of time periods to include in the table
    * eyears: list with end years of the time periods to include in the table
    * begin_ref_year: start year of historical baseline period (e.g. 1995)
-   * end_ref_year: end year of historical baseline period period (e.g 2014)
+   * end_ref_year: end year of historical baseline period (e.g. 2014)
    * spread: multiplier of standard deviation to calculate spread with
-     (e.g 1.64)
+     (e.g. 1.64)
    * label: list of scenario names included in the table
 
 #. Script calc_table_warming_level.ncl
@@ -215,7 +215,7 @@ User settings in recipe
    * syears: list with start years of time periods (historical then SSPs)
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1995)
-   * end_ref_year: end year of historical baseline period period (e.g 2014)
+   * end_ref_year: end year of historical baseline period (e.g. 2014)
    * offset: offset between current historical baseline and 1850-1900 period
    * label: list of scenario names included in the table
 
@@ -227,7 +227,7 @@ User settings in recipe
    * syears: list with start years of time periods (historical then SSPs)
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1986)
-   * end_ref_year: end year of historical baseline period period (e.g 2005)
+   * end_ref_year: end year of historical baseline period (e.g. 2005)
    * spread: how many standard deviations to calculate the spread with
 
    *Optional settings for script*
@@ -248,7 +248,7 @@ User settings in recipe
    * syears: list with start years of time periods (historical then SSPs)
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1986)
-   * end_ref_year: end year of historical baseline period period (e.g 2005)
+   * end_ref_year: end year of historical baseline period (e.g. 2005)
    * spread: how many standard deviations to calculate the spread with
 
    *Optional settings for script*
@@ -269,7 +269,7 @@ User settings in recipe
    * syears: list with start years of time periods (historical then SSPs)
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1986)
-   * end_ref_year: end year of historical baseline period period (e.g 2005)
+   * end_ref_year: end year of historical baseline period (e.g. 2005)
    * spread: how many standard deviations to calculate the spread with
 
    *Optional settings for script*
@@ -302,7 +302,7 @@ User settings in recipe
    * span: span whole colormap? (True, False, default = True)
    * pltname: alternative name for output plot, default is diagnostic +
      varname + time_avg
-   * units: units written next to colorbar, e.g (~F35~J~F~C)
+   * units: units written next to colorbar, e.g. (~F35~J~F~C)
    * sig: plot stippling for significance? (True, False)
    * not_sig: plot hatching for uncertainty? (True, False)
    * label: label to add in the legend
