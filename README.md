@@ -18,6 +18,7 @@
 - [**ESMValTool Tutorial**](https://esmvalgroup.github.io/ESMValTool_Tutorial/index.html)
 - [**ESMValGroup Project on GitHub**](https://github.com/ESMValGroup)
 - [**Gallery**](https://docs.esmvaltool.org/en/latest/gallery.html)
+- [**`conda-forge` package feedstock**](https://github.com/conda-forge/esmvaltool-suite-feedstock)
 
 # Introduction
 
@@ -40,14 +41,15 @@ scientific community, and included after a scientific and technical review proce
 
 # Input data
 
-ESMValTool can run with the following types of data as input:
+ESMValTool can run with the following types of [data as input](https://docs.esmvaltool.org/en/latest/input.html):
 
-- CMIP5
 - CMIP6
-- OBS, OBS6
+- CMIP5
+- CMIP3
+- [observational and re-analysis datasets](https://docs.esmvaltool.org/en/latest/input.html#supported-datasets-for-which-a-cmorizer-script-is-available)
 - obs4MIPs
 - ana4mips
-- CORDEX
+- CORDEX ([work in progress](https://docs.esmvaltool.org/en/latest/input.html#cordex-note))
 
 # Getting started
 

@@ -52,6 +52,7 @@ from esmvaltool.diag_scripts.shared import (
     io,
     run_diagnostic,
     select_metadata,
+    sorted_metadata,
     variables_available,
 )
 
@@ -108,6 +109,7 @@ def _get_anomaly_cubes(cfg):
     cubes = {}
     ancestors = {}
     input_data = cfg['input_data'].values()
+    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
     onepct_data = select_metadata(input_data, short_name='tas', exp='1pctCO2')
 
     # Process data
@@ -329,7 +331,7 @@ def write_data(cfg, tcr, external_file=None):
     for dataset_name in tcr.keys():
         datasets = select_metadata(cfg['input_data'].values(),
                                    dataset=dataset_name)
-        ancestor_files.extend([d['filename'] for d in datasets])
+        ancestor_files.extend(sorted([d['filename'] for d in datasets]))
     if external_file is not None:
         ancestor_files.append(external_file)
     provenance_record['ancestors'] = ancestor_files
