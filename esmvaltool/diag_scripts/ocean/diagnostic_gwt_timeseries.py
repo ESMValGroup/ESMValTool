@@ -73,6 +73,7 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvalcore.preprocessor._time import regrid_time
 from esmvalcore.preprocessor._multimodel import multi_model_statistics, _multicube_statistics
 from esmvalcore.preprocessor._io import _fix_cube_attributes
+from esmvalcore.preprocessor._mask import mask_landsea
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -639,7 +640,7 @@ def plot_data_dict(cfg, data_dict):
     image_extention = diagtools.get_image_format(cfg)
 
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
-        if short_name in ['areacello', 'areacella']: continue
+        if short_name in ['areacello', 'areacella', 'areacella_air', 'areacella_land']: continue
         datasets[dataset] = True
         short_names[short_name] = True
         exps[exp] = True
@@ -915,9 +916,25 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
     test_data_dict(data_dict)
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name == 'areacello':
+            try: 
+                cube = mask_landsea(cube, mask_out= 'land')
+            except: pass
             area = cube.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
-            areas[dataset] =  area
+            
+            if area.data > 4.8e14: # Global total surface area! Too large for land surface.
+                print('ERROR: Ocean Surface too large!',area.data, dataset, short_name, exp, ensemble) 
+                continue
+            if areas.get(dataset, False):
+                print('already found this dataset:', dataset, short_name, exp, ensemble)
+                print('current cube:', area.data)
+                print('previous cube:',areas[dataset])
+                if 0.99 < area.data/areas[dataset] < 1.01: continue
+                else: assert 0 
+            areas[dataset] =  area.data
 
+    print(areas)
+    mean_cmip6_area = np.array([a for d,a in areas.items()]).mean()
+    print('mean area:', mean_cmip6_area)
     tmp_dict = {}
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name != short:
@@ -926,10 +943,11 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
             continue
         if dataset in ['CMIP6',]: continue
 
-        area = areas.get(dataset, None)
+        area = areas.get(dataset, 3.61e14) # using a default value.
         if not area:
             print(dataset, 'area not found', sorted(areas.keys()))
             assert 0
+
         #if not isinstance(area, (type(np.array([0])), float, list, )):
         # assume properly masked! (done in preprocessor)
         # print(dataset, 'areacella cube:', area)
@@ -945,13 +963,13 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
             sec_peryear = 365*24*60*60.
 
         if cube.units == cf_units.Unit('kg m-2 s-1'):
-            cubegt.data = cube.data * area.data * 1.E-12 * sec_peryear
+            cubegt.data = cube.data * area * 1.E-12 * sec_peryear
             cubegt.units = cf_units.Unit('Pg yr^-1') #-1}$')
         elif cube.units == cf_units.Unit('kg m-2'):
-            cubegt.data = cube.data * area.data * 1.E-12
+            cubegt.data = cube.data * area * 1.E-12
             cubegt.units = cf_units.Unit('Pg')
         elif cube.units == cf_units.Unit('mol m-2 s-1'):
-            cubegt.data = cube.data * area.data * 12.0107* 1.E-15 * sec_peryear
+            cubegt.data = cube.data * area * 12.0107* 1.E-15 * sec_peryear
             cubegt.units = cf_units.Unit('Pg yr^-1')
         else:
             print('Units not Recognised:', cube.units)
@@ -1102,6 +1120,7 @@ def fgco2gt_cumul(data_dict):
     data_dict = marine_gt(data_dict, short='fgco2', gt='fgco2gt')
     return calculate_cumulative(data_dict, short_name='fgco2gt', cumul_name='fgco2gt_cumul', new_units = 'Pg')
 
+
 def test_data_dict( data_dict):
     for index, cube in data_dict.items():
         if len(index) != 4:
@@ -1116,17 +1135,36 @@ def land_gt(data_dict, short='npp', gt='nppgt'):
     areas = {}
     test_data_dict(data_dict)
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
-        if short_name == 'areacella':
+        if short_name == 'areacella_land':
             area = cube.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
-            areas[dataset] = area
+            if dataset in areas:
+                print('already found this dataset:', dataset, short_name, exp, ensemble)
+                print('current cube:', area.data)
+                print('previous cube:',areas[dataset])
+                if 0.99 < area.data/areas[dataset] < 1.01 : continue
+#               if dataset == 'CanESM5' and exp=='historical':
+#                   pass
+#               else:
+                assert 0
 
+            if area.data > 4.8e14: # Global total surface area! Too large for land surface.
+                print('WARNING: global total surface area too large for land surface:', area.data, dataset) 
+                assert 0
+                continue
+            
+            areas[dataset] = area.data
+
+    print('areas:',areas)
+    mean_cmip6_area = np.array([a for d,a in areas.items()]).mean()
+    print('mean area:', mean_cmip6_area)
+#    assert 0
     tmp_dict={}
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
-        area = areas.get(dataset, None)
+        area = areas.get(dataset, 1.48326e14) # default value
         if dataset in ['CMIP6',]: continue
         if not area:
             print(dataset, 'area not found', sorted(areas.keys()))
-            print('other keddys:',  (dataset, short_name, exp, ensemble))
+            print('other keys:',  (dataset, short_name, exp, ensemble))
             assert 0
         # assume properly masked! (done in preprocessor)
         #print(dataset, 'areacella cube:', area)
@@ -1147,7 +1185,7 @@ def land_gt(data_dict, short='npp', gt='nppgt'):
         else:
             sec_peryear = 365*24*60*60.
 
-        cubegt.data = cube.data * area.data * 1.E-12 * sec_peryear
+        cubegt.data = cube.data * area * 1.E-12 * sec_peryear
 
         cubegt.units = cf_units.Unit('Pg yr^-1')
 
@@ -1398,10 +1436,10 @@ def load_timeseries(cfg, short_names):
 
     transforms = {
         'fgco2gt': ['fgco2', 'areacello'],
-        'gppgt': ['gpp', 'areacella'],
-        'nppgt': ['npp', 'areacella'],
-        'nbpgt': ['nbp', 'areacella'],
-        'rhgt': ['rh', 'areacella'],
+        'gppgt': ['gpp', 'areacella_land'],
+        'nppgt': ['npp', 'areacella_land'],
+        'nbpgt': ['nbp', 'areacella_land'],
+        'rhgt': ['rh', 'areacella_land'],
         'epc100gt': ['epc100', 'areacello'],
         'intppgt': ['intpp', 'areacello'],
         'intdicgt': ['intdic', 'areacello'],
@@ -1410,15 +1448,15 @@ def load_timeseries(cfg, short_names):
         'frocgt': ['froc', 'areacello'],
         'frc': ['fric', 'froc', 'areacello'],
         'frcgt': ['frc', ],
-        'exchange': ['rh', 'npp', 'areacella'],
-        'inverse_exchange': ['rh', 'npp', 'areacella'],
+        'exchange': ['rh', 'npp', 'areacella_land'],
+        'inverse_exchange': ['rh', 'npp', 'areacella_land'],
         'tas_norm': ['tas', ],
         'nppgt_norm': ['nppgt', ],
         'rhgt_norm': ['rhgt', ],
         'exchange_norm': ['exchange', ],
         'fgco2gt_norm': ['fgco2gt', ],
         'fgco2gt_cumul': ['fgco2', 'areacello' ],
-        'nbpgt_cumul' : ['nbp', 'areacella' ],
+        'nbpgt_cumul' : ['nbp', 'areacella_land' ],
         # 'tls': ['nbp', 'nbpgt', 'luegt']
         }
 
@@ -1462,8 +1500,17 @@ def load_timeseries(cfg, short_names):
             exp = standardized_exps(metadatas[fn]['exp'])
             dataset = metadatas[fn]['dataset']
             ensemble = standardized_ens(metadatas[fn]['ensemble'])
+            variable_group = metadatas[fn]['variable_group']
             if isinstance(exp, list): exp = tuple(exp)
             if isinstance(ensemble, list): ensemble = tuple(ensemble)
+
+            if short_name == 'areacella':
+                if variable_group == 'area_land':
+                    short_name = 'areacella_land'
+                elif variable_group == 'area_air':
+                    short_name = 'areacella_air'
+                else: assert 0
+
 
             if data_dict.get((dataset, short_name, exp, ensemble), False): continue
             if isinstance(ensemble ,list): ensemble = tuple(ensemble)
@@ -1491,8 +1538,8 @@ def load_timeseries(cfg, short_names):
 #    if 'co2' in short_names_to_load:
 #        data_dict = load_co2_forcing(cfg, data_dict)
 
-    if 'luegt' in short_names_to_load or 'tls' in short_names_to_load:
-        data_dict = load_luegt(cfg, data_dict)
+#    if 'luegt' in short_names_to_load or 'tls' in short_names_to_load:
+    data_dict = load_luegt(cfg, data_dict)
         #if 'tls' in short_names_to_load:
         #    data_dict = calc_tls(cfg, data_dict)
         #    print(data_dict.keys())
@@ -1503,6 +1550,7 @@ def load_timeseries(cfg, short_names):
 #        data_dict = load_emissions_forcing(cfg, data_dict)
 
     for sn in short_names_to_load:
+
         if sn in transforms:
             data_dict = transforms_functions[sn](data_dict)
 
@@ -1533,7 +1581,7 @@ def calc_model_mean(cfg, short_names_in, data_dict):
             # if dataset in data_dict_skips.keys():
             #     if ensemble in data_dict_skips[dataset]:
             #         continue
-            if short_name in ['areacello', 'areacella']:continue
+            if short_name in ['areacello', 'areacella', 'areacella_air', 'areacella_land']:continue
             if short_name not in short_names_in:continue
             if dataset in ['CMIP6', ]: continue
             short_names[short_name] = True
@@ -1542,7 +1590,7 @@ def calc_model_mean(cfg, short_names_in, data_dict):
 
         print(calc_model_mean,short_names, exps, datasets)
         for short_name, exp, dataset in product(short_names.keys(), exps.keys(), datasets.keys()):
-            if short_name in ['areacello', 'areacella']:
+            if short_name in ['areacello', 'areacella', 'areacella_air', 'areacella_land']:
                 continue
             if short_name not in short_names_in:continue
 
@@ -1614,7 +1662,7 @@ def calc_model_mean(cfg, short_names_in, data_dict):
         # Calculate the mean of multiple datasets ensemble_means
         short_names, exps, datasets = {}, {}, {}
         for (dataset, short_name, exp, ensemble) in  data_dict.keys():
-            if short_name in ['areacello', 'areacella']:continue
+            if short_name in ['areacello', 'areacella', 'areacella_air', 'areacella_land']:continue
             if short_name not in short_names_in:continue
 
             if mod_exp_ens_skips.get((dataset, exp, ensemble), False):
@@ -1631,7 +1679,7 @@ def calc_model_mean(cfg, short_names_in, data_dict):
 
         for short_name, exp in product(short_names.keys(), exps.keys()):
             cubes = []
-            if short_name in ['areacello', 'areacella']:continue
+            if short_name in ['areacello', 'areacella', 'areacella_air', 'areacella_land']:continue
             print("calculate_cmip6_mean: including:", short_name, exp)
             if data_dict.get(('CMIP6', short_name, exp, 'ensemble_mean'), False): continue
 
@@ -1879,7 +1927,7 @@ def load_co2_forcing(cfg, data_dict):
     tmp_dict = {}
     for (dataset, short_name, exp, ensemble), ssp_cube in data_dict.items():
         continue
-        if short_name in ['co2', 'areacella', 'areacello',]:
+        if short_name in ['co2', 'areacella', 'areacello','areacella_air', 'areacella_land']:
             continue
         if (dataset, 'co2', 'historical-'+exp, 'historical-ssp585-'+exp, ensemble ) in tmp_dict.keys():
             continue
@@ -2154,6 +2202,7 @@ def calc_emissions(cfg, data_dict):
     Using the other values, we calculate emissions.
     # emmissions
     """
+    data_dict = calc_tls(cfg, data_dict)  
     return data_dict
 
 
@@ -2240,7 +2289,7 @@ def load_luegt(cfg, data_dict):
         exps[exp] = True
         ensembles[ensemble] = True
         datasets[dataset] = True
-    print(exps, ensembles, datasets)
+    print('calc_lue:', exps, ensembles, datasets)
 
     #for exp, ensemble,dataset in product(exps.keys(), ensembles.keys(),datasets.keys()):
     #    if data_dict.get((dataset, short, exp, ensemble), False: continue
@@ -2248,7 +2297,7 @@ def load_luegt(cfg, data_dict):
     # assert 0
     # This data was added to the esmvaltool/diagnostics/ocean/aux_data directory.
     aux_fn = cfg['auxiliary_data_dir']+'/land_usage/landusage_ssp.txt'
-    data = {}
+    lue_data = {}
     years = []
     header = {}
     print('load_luegt', ensembles, exps)
@@ -2261,40 +2310,49 @@ def load_luegt(cfg, data_dict):
                     print('load_luegt: header: ', d, da)
                     da = da.replace(' ', '')
                     header[d] = da
-                    data[da] = []
+                    lue_data[da] = []
                 print('load_luegt: header:', header)
                 continue
 
             years.append(float(row[0])+0.5)
             for d, da in enumerate(row):
-
                 #if d == 0: continue
                 if da == ' ': continue
-                data[header[d]].append(float(da))
+                # add each year to the lue data dict with ssp as keys
+                lue_data[header[d]].append(float(da))
+                
+            print('appending:', len(years), len(lue_data[header[d]]), row)
 
     for exp, ensemble,dataset in product(exps.keys(), ensembles.keys(),datasets.keys()):
+        # skip existings:
         if data_dict.get((dataset, short, exp, ensemble), False): continue
-        print(exp, ensemble)
-        da =  data.get(exp, [])
-        if not da:
-            da =  data.get(exp.replace('historical-',''), [])
-        if not da:
-            da =  data.get('-'.join(['historical',exp]), [])
-        if not da:
-            print('problem', exp, 'and', exp.replace('historical-',''), 'not int', data.keys())
-            #assert 0
+
+        # No pi Control LUE data.
+        if exp == 'piControl': continue
+        #load lue data list from exp:  
+        lue_da =  lue_data.get(exp, [])
+        if lue_da == []:
+            lue_da =  lue_data.get(exp.replace('historical-',''), [])
+        if lue_da == []:
+            lue_da =  lue_data.get(''.join(['historical-',exp]), [])
+
+        if lue_da==[]:
+            print('problem', (dataset, short, exp, ensemble), exp, 'and', exp.replace('historical-',''), 'not in:', lue_data.keys())
+            assert 0
             continue
-        if len(da) != len(years):
-            print("data and time don't match:", len(da),  len(years))
-            y2 = years[:len(da)]
+
+        if len(lue_da) != len(years):
+            if exp == 'historical':
+                # historical stops at 2014, so data is shorter than years (which includes ssp)
+                y2 = years[:len(lue_da)]
+            else:
+                print("lue_data and time don't match:", len(lue_da),  len(years), lue_da, years, dataset, short, exp, ensemble)
+                assert 0
         else:
             y2 = years
-        tmp_data_dict[(dataset, short, exp, ensemble)] = {'time': y2, short: da}
+        tmp_data_dict[(dataset, short, exp, ensemble)] = {'time': y2, short: lue_da}
 
-    #print(tmp_data_dict.keys())
-    #assert 0
     data_dict.update(tmp_data_dict)
-    #assert 0
     return data_dict
 
 
@@ -3984,7 +4042,7 @@ def make_ensemble_barchart(
         plot_style='percentages',
         ensemble_key = 'ensemble_mean',
         group_by = 'group_by_model',
-        thresholds = ['4.0', '3.0', '2.0', ],
+        thresholds = ['2.0', '3.0', '4.0', ],
     ):
     """
     Make a barchat for the whole ensemble
@@ -3999,7 +4057,7 @@ def make_ensemble_barchart(
         ax_3 =  fig.add_subplot(gs[0, 1])
         ax_4 =  fig.add_subplot(gs[0, 2])
         ax_leg = fig.add_subplot(gs[0, 3])
-        axes = [ax_4, ax_3, ax_2]
+        axes = [ax_2, ax_3, ax_4,]
     if len(thresholds) == 4:
         gs = gridspec.GridSpec(2, 5, figure=fig, hspace=0.230,height_ratios=[8.  , 1])
         ax_1=  fig.add_subplot(gs[0, 0])
@@ -4007,7 +4065,7 @@ def make_ensemble_barchart(
         ax_3 =  fig.add_subplot(gs[0, 2])
         ax_4 =  fig.add_subplot(gs[0, 3])
         ax_leg = fig.add_subplot(gs[0, 4])
-        axes = [ax_4, ax_3, ax_2, ax_1]
+        axes = [ax_1, ax_2, ax_3, ax_4]
     
     for ax, threshold in zip(axes, thresholds):
         make_ensemble_barchart_pane(cfg, data_dict, thresholds_dict,threshold = threshold,fig=fig, ax=ax, do_legend=False,
@@ -4018,7 +4076,7 @@ def make_ensemble_barchart(
         plt.xticks(rotation=90)
         ax.tick_params(axis = 'x', labelsize = 'x-small')
 
-        if ax in axes[:-1]: #[ax_3, ax_4]:
+        if ax in axes[1:]: #[ax_3, ax_4]:
             ax.set_yticks([])
             ax.set_yticklabels([])
             ax.set_ylabel('')
@@ -5707,8 +5765,9 @@ def main(cfg):
     for do_ma in [True, ]:#False]:
         data_dict = load_timeseries(cfg, short_names)
         data_dict = load_scenario_carbon(cfg, data_dict)
-        # data_dict = calc_emissions(cfg, data_dict)
-        # data_dict = calc_model_mean(cfg, short_names, data_dict)
+
+        data_dict = calc_emissions(cfg, data_dict)
+        data_dict = calc_model_mean(cfg, short_names, data_dict)
         # data_dict = fix_indices(data_dict)
 
         thresholds_dict = load_thresholds(cfg, data_dict)
@@ -5745,6 +5804,11 @@ def main(cfg):
                     timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['all_ensembles', 'all_models_means'],
                             panes = ['tas_norm', 'atmos_carbon', 'fgco2gt_cumul', 'tls', 'luegt', 'nbpgt_cumul', ],
                             plot_dataset=dataset )
+
+                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['all_ensembles', 'all_models_means'],
+                            panes = ['tls', 'luegt', 'nbpgt_cumul', 'nbpgt', 'nbp'],
+                            plot_dataset=dataset )
+
 #                for plot_styles in [
 #                       'CMIP6_range', 'all_models_range', 'all_models_means',
 #                       'all_ensembles',  'CMIP6_mean'
