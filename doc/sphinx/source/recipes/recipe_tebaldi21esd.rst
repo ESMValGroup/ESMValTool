@@ -7,7 +7,7 @@ Climate model projections from the ScenarioMIP of CMIP6
 Overview
 --------
 
-This recipe is implemented into ESMValTool to evaluate the temperature and precipitation changes from the ScenarioMIP of CMIP6. It produces the original plots and tables of Tebaldi et al. (2021), https://doi.org/10.5194/esd-2020-68
+This recipe is implemented into ESMValTool to evaluate the temperature and precipitation changes from the ScenarioMIP of CMIP6. It produces the original plots and tables of Tebaldi et al. (2021), https://doi.org/10.5194/esd-12-253-2021
 
 Available recipe and diagnostics
 ---------------------------------
@@ -44,7 +44,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/tebaldi21esd/
   specified scenarios and time periods relative to the historical
   baseline.
 * calc_table_warming_level.ncl: computes the warming level crossing year
-  (mean, five percents and ninety-five percents quantiles of crossing
+  (mean, five percent and ninety-five percent quantiles of crossing
   years) for specified scenarios and warming levels.
 * calc_timeseries_mean_spread_runave.ncl: computes
   multi-model time series of change against historical baseline for
@@ -92,7 +92,7 @@ User settings in recipe
    * eyears: list with end years in time periods (end year of historical runs
      and SSPs)
    * begin_ref_year: start year of reference period (e.g. 1995)
-   * end_ref_year: end year of reference period (e.g 2014)
+   * end_ref_year: end year of reference period (e.g. 2014)
    * n_samples: number of samples of size 10 to draw among all the ensembles
      of sampled_model
    * sampled_model: name of dataset on which to sample
@@ -201,9 +201,9 @@ User settings in recipe
    * syears: list with start years of time periods to include in the table
    * eyears: list with end years of the time periods to include in the table
    * begin_ref_year: start year of historical baseline period (e.g. 1995)
-   * end_ref_year: end year of historical baseline period period (e.g 2014)
+   * end_ref_year: end year of historical baseline period (e.g. 2014)
    * spread: multiplier of standard deviation to calculate spread with
-     (e.g 1.64)
+     (e.g. 1.64)
    * label: list of scenario names included in the table
 
 #. Script calc_table_warming_level.ncl
@@ -215,7 +215,7 @@ User settings in recipe
    * syears: list with start years of time periods (historical then SSPs)
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1995)
-   * end_ref_year: end year of historical baseline period period (e.g 2014)
+   * end_ref_year: end year of historical baseline period (e.g. 2014)
    * offset: offset between current historical baseline and 1850-1900 period
    * label: list of scenario names included in the table
 
@@ -227,7 +227,7 @@ User settings in recipe
    * syears: list with start years of time periods (historical then SSPs)
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1986)
-   * end_ref_year: end year of historical baseline period period (e.g 2005)
+   * end_ref_year: end year of historical baseline period (e.g. 2005)
    * spread: how many standard deviations to calculate the spread with
 
    *Optional settings for script*
@@ -248,7 +248,7 @@ User settings in recipe
    * syears: list with start years of time periods (historical then SSPs)
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1986)
-   * end_ref_year: end year of historical baseline period period (e.g 2005)
+   * end_ref_year: end year of historical baseline period (e.g. 2005)
    * spread: how many standard deviations to calculate the spread with
 
    *Optional settings for script*
@@ -269,7 +269,7 @@ User settings in recipe
    * syears: list with start years of time periods (historical then SSPs)
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1986)
-   * end_ref_year: end year of historical baseline period period (e.g 2005)
+   * end_ref_year: end year of historical baseline period (e.g. 2005)
    * spread: how many standard deviations to calculate the spread with
 
    *Optional settings for script*
@@ -302,191 +302,190 @@ User settings in recipe
    * span: span whole colormap? (True, False, default = True)
    * pltname: alternative name for output plot, default is diagnostic +
      varname + time_avg
-   * units: units written next to colorbar, e.g (~F35~J~F~C)
+   * units: units written next to colorbar, e.g. (~F35~J~F~C)
    * sig: plot stippling for significance? (True, False)
    * not_sig: plot hatching for uncertainty? (True, False)
    * label: label to add in the legend
 
 #. Script plot_table_changes.ncl
 
-    *Required settings for script*
+   *Required settings for script*
 
-    * ancestors: variable and diagnostics that calculated field to be plotted
-    * scenarios: list of scenarios included in the figure
-    * syears: list of start years of periods of interest
-    * eyears: list of end years of periods of interest
-    * label: list of labels of the scenarios
+   * ancestors: variable and diagnostics that calculated field to be plotted
+   * scenarios: list of scenarios included in the figure
+   * syears: list of start years of periods of interest
+   * eyears: list of end years of periods of interest
+   * label: list of labels of the scenarios
 
-    *Optional settings (script)*
+   *Optional settings (script)*
 
-    * title: title of the plot
+   * title: title of the plot
 
 #. Script plot_table_warming_level.ncl
 
-    *Required settings for script*
+   *Required settings for script*
 
-    * scenarios: list of scenarios included in the figure
-    * warming_levels: list of warming levels
-    * syears: list of start years of historical and SSPs scenarios
-    * eyears: list of end years of historical and SSPs scenarios
-    * begin_ref_year: start year of reference period
-    * end_ref_year: end year of reference period
-    * label: list of labels of the scenarios
-    * offset: offset between reference baseline and 1850-1900
+   * scenarios: list of scenarios included in the figure
+   * warming_levels: list of warming levels
+   * syears: list of start years of historical and SSPs scenarios
+   * eyears: list of end years of historical and SSPs scenarios
+   * begin_ref_year: start year of reference period
+   * end_ref_year: end year of reference period
+   * label: list of labels of the scenarios
+   * offset: offset between reference baseline and 1850-1900
 
 #. Script plot_timeseries_mean_spread_3scenarios.ncl
 
-    *Required settings for script*
+   *Required settings for script*
 
-    * ancestors: variable and diagnostics that calculated field to be plotted
-    * scenarios: list of scenarios included in the figure
-    * syears: list of start years of historical and SSPs scenarios
-    * eyears: list of end years of historical and SSPs scenarios
-    * begin_ref_year: start year of reference period
-    * end_ref_year: end year of reference period
-    * label: list of labels of the scenarios
+   * ancestors: variable and diagnostics that calculated field to be plotted
+   * scenarios: list of scenarios included in the figure
+   * syears: list of start years of historical and SSPs scenarios
+   * eyears: list of end years of historical and SSPs scenarios
+   * begin_ref_year: start year of reference period
+   * end_ref_year: end year of reference period
+   * label: list of labels of the scenarios
 
-    *Optional settings for script*
+   *Optional settings for script*
 
-    * title: specify plot title
-    * yaxis: specify y-axis title
-    * ymin: minimim value on y-axis, default calculated from data
-    * ymax: maximum value on y-axis
-    * colormap: alternative colormap, path to rgb file or ncl name
-    * model_nr: save number of model runs per period and scenario
-    * styleset: color style
-    * spread: how many standard deviations to calculate the spread with,
-      default is 1, ipcc tas is 1.64
+   * title: specify plot title
+   * yaxis: specify y-axis title
+   * ymin: minimim value on y-axis, default calculated from data
+   * ymax: maximum value on y-axis
+   * colormap: alternative colormap, path to rgb file or ncl name
+   * model_nr: save number of model runs per period and scenario
+   * styleset: color style
+   * spread: how many standard deviations to calculate the spread with,
+     default is 1, ipcc tas is 1.64
 
 #. Script plot_timeseries_mean_spread_constrained_projections.ncl
 
-    *Required settings for script*
+   *Required settings for script*
 
-    * ancestors: variable and diagnostics that calculated field to be plotted
-    * scenarios: list of scenarios included in the figure
-    * syears: list of start years of historical and SSPs scenarios
-    * eyears: list of end years of historical and SSPs scenarios
-    * begin_ref_year: start year of reference period
-    * end_ref_year: end year of reference period
-    * label: list of labels of the scenarios
-    * baseline_offset: offset between reference period (baseline) and 1850-1900
-    * lower_constrained_projections: list of lower bounds of the constrained
-      projections for the scenarios included in the same order as the scenarios
-    * upper_constrained_projections: list of upper bounds of the constrained
-      projections for the scenarios included in the same order as the scenarios
-    * mean_constrained_projections: list of means of the constrained
-      projections for the scenarios included in the same order as the scenarios
+   * ancestors: variable and diagnostics that calculated field to be plotted
+   * scenarios: list of scenarios included in the figure
+   * syears: list of start years of historical and SSPs scenarios
+   * eyears: list of end years of historical and SSPs scenarios
+   * begin_ref_year: start year of reference period
+   * end_ref_year: end year of reference period
+   * label: list of labels of the scenarios
+   * baseline_offset: offset between reference period (baseline) and 1850-1900
+   * lower_constrained_projections: list of lower bounds of the constrained
+     projections for the scenarios included in the same order as the scenarios
+   * upper_constrained_projections: list of upper bounds of the constrained
+     projections for the scenarios included in the same order as the scenarios
+   * mean_constrained_projections: list of means of the constrained
+     projections for the scenarios included in the same order as the scenarios
 
+   *Optional settings for script*
 
-    *Optional settings for script*
-
-    * title: specify plot title
-    * yaxis: specify y-axis title
-    * ymin: minimim value on y-axis, default calculated from data
-    * ymax: maximum value on y-axis
-    * colormap: alternative colormap, path to rgb file or ncl name
-    * model_nr: save number of model runs per period and scenario
-    * styleset: color style
-    * spread: how many standard deviations to calculate the spread with,
-      default is 1, ipcc tas is 1.64
+   * title: specify plot title
+   * yaxis: specify y-axis title
+   * ymin: minimim value on y-axis, default calculated from data
+   * ymax: maximum value on y-axis
+   * colormap: alternative colormap, path to rgb file or ncl name
+   * model_nr: save number of model runs per period and scenario
+   * styleset: color style
+   * spread: how many standard deviations to calculate the spread with,
+     default is 1, ipcc tas is 1.64
 
 #. Script plot_timeseries_mean_spread.ncl
 
-    *Required settings for script*
+   *Required settings for script*
 
-    * ancestors: variable and diagnostics that calculated field to be plotted
-    * scenarios: list of scenarios included in the figure
-    * syears: list of start years of historical and SSPs scenarios
-    * eyears: list of end years of historical and SSPs scenarios
-    * begin_ref_year: start year of reference period
-    * end_ref_year: end year of reference period
-    * label: list of labels of the scenarios
+   * ancestors: variable and diagnostics that calculated field to be plotted
+   * scenarios: list of scenarios included in the figure
+   * syears: list of start years of historical and SSPs scenarios
+   * eyears: list of end years of historical and SSPs scenarios
+   * begin_ref_year: start year of reference period
+   * end_ref_year: end year of reference period
+   * label: list of labels of the scenarios
 
-    *Optional settings for script*
+   *Optional settings for script*
 
-    * title: specify plot title
-    * yaxis: specify y-axis title
-    * ymin: minimim value on y-axis, default calculated from data
-    * ymax: maximum value on y-axis
-    * colormap: alternative colormap, path to rgb file or ncl name
-    * model_nr: save number of model runs per period and scenario
-    * styleset: color style
-    * spread: how many standard deviations to calculate the spread with,
-      default is 1, ipcc tas is 1.64
+   * title: specify plot title
+   * yaxis: specify y-axis title
+   * ymin: minimim value on y-axis, default calculated from data
+   * ymax: maximum value on y-axis
+   * colormap: alternative colormap, path to rgb file or ncl name
+   * model_nr: save number of model runs per period and scenario
+   * styleset: color style
+   * spread: how many standard deviations to calculate the spread with,
+     default is 1, ipcc tas is 1.64
 
 #. Script plot_timeseries_mean_spread_ssp4.ncl
 
-    *Required settings for script*
+   *Required settings for script*
 
-    * ancestors: variable and diagnostics that calculated field to be plotted
-    * scenarios: list of scenarios included in the figure
-    * syears: list of start years of historical and SSPs scenarios
-    * eyears: list of end years of historical and SSPs scenarios
-    * begin_ref_year: start year of reference period
-    * end_ref_year: end year of reference period
-    * label: list of labels of the scenarios
+   * ancestors: variable and diagnostics that calculated field to be plotted
+   * scenarios: list of scenarios included in the figure
+   * syears: list of start years of historical and SSPs scenarios
+   * eyears: list of end years of historical and SSPs scenarios
+   * begin_ref_year: start year of reference period
+   * end_ref_year: end year of reference period
+   * label: list of labels of the scenarios
 
-    *Optional settings for script*
+   *Optional settings for script*
 
-    * title: specify plot title
-    * yaxis: specify y-axis title
-    * ymin: minimim value on y-axis, default calculated from data
-    * ymax: maximum value on y-axis
-    * colormap: alternative colormap, path to rgb file or ncl name
-    * model_nr: save number of model runs per period and scenario
-    * styleset: color style
-    * spread: how many standard deviations to calculate the spread with,
-      default is 1, ipcc tas is 1.64
+   * title: specify plot title
+   * yaxis: specify y-axis title
+   * ymin: minimim value on y-axis, default calculated from data
+   * ymax: maximum value on y-axis
+   * colormap: alternative colormap, path to rgb file or ncl name
+   * model_nr: save number of model runs per period and scenario
+   * styleset: color style
+   * spread: how many standard deviations to calculate the spread with,
+     default is 1, ipcc tas is 1.64
 
 #. Script plot_timeseries_mean_spread_ssp5.ncl
 
-    *Required settings for script*
+   *Required settings for script*
 
-    * ancestors: variable and diagnostics that calculated field to be plotted
-    * scenarios: list of scenarios included in the figure
-    * syears: list of start years of historical and SSPs scenarios
-    * eyears: list of end years of historical and SSPs scenarios
-    * begin_ref_year: start year of reference period
-    * end_ref_year: end year of reference period
-    * label: list of labels of the scenarios
+   * ancestors: variable and diagnostics that calculated field to be plotted
+   * scenarios: list of scenarios included in the figure
+   * syears: list of start years of historical and SSPs scenarios
+   * eyears: list of end years of historical and SSPs scenarios
+   * begin_ref_year: start year of reference period
+   * end_ref_year: end year of reference period
+   * label: list of labels of the scenarios
 
-    *Optional settings for script*
+   *Optional settings for script*
 
-    * title: specify plot title
-    * yaxis: specify y-axis title
-    * ymin: minimim value on y-axis, default calculated from data
-    * ymax: maximum value on y-axis
-    * colormap: alternative colormap, path to rgb file or ncl name
-    * model_nr: save number of model runs per period and scenario
-    * styleset: color style
-    * spread: how many standard deviations to calculate the spread with,
-      default is 1, ipcc tas is 1.64
+   * title: specify plot title
+   * yaxis: specify y-axis title
+   * ymin: minimim value on y-axis, default calculated from data
+   * ymax: maximum value on y-axis
+   * colormap: alternative colormap, path to rgb file or ncl name
+   * model_nr: save number of model runs per period and scenario
+   * styleset: color style
+   * spread: how many standard deviations to calculate the spread with,
+     default is 1, ipcc tas is 1.64
 
 #. Script plot_timeseries_across_realization_stddev_runave.ncl
 
-    *Required settings for script*
+   *Required settings for script*
 
-    * ancestors: variable and diagnostics that calculated field to be plotted
-    * scenarios: list of scenarios included in the figure
-    * syears: list of start years of historical and SSPs scenarios
-    * eyears: list of end years of historical and SSPs scenarios
-    * begin_ref_year: start year of reference period
-    * end_ref_year: end year of reference period
-    * label: list of labels of the scenarios
-    * n_samples: number of samples of size 10 to draw among all the ensembles
-      of sampled_model only
-    * sampled_model: name of dataset on which to sample
+   * ancestors: variable and diagnostics that calculated field to be plotted
+   * scenarios: list of scenarios included in the figure
+   * syears: list of start years of historical and SSPs scenarios
+   * eyears: list of end years of historical and SSPs scenarios
+   * begin_ref_year: start year of reference period
+   * end_ref_year: end year of reference period
+   * label: list of labels of the scenarios
+   * n_samples: number of samples of size 10 to draw among all the ensembles
+     of sampled_model only
+   * sampled_model: name of dataset on which to sample
 
-    *Optional settings for script*
+   *Optional settings for script*
 
-    * trend: whether the trend is calculated en displayed
-    * runave_window: only used if trend is true, size window used for the
-      centered running average
-    * title: specify plot title
-    * yaxis: specify y-axis title
-    * ymin: minimim value on y-axis, default calculated from data
-    * ymax: maximum value on y-axis
-    * colormap: alternative colormap, path to rgb file or ncl name
+   * trend: whether the trend is calculated en displayed
+   * runave_window: only used if trend is true, size window used for the
+     centered running average
+   * title: specify plot title
+   * yaxis: specify y-axis title
+   * ymin: minimim value on y-axis, default calculated from data
+   * ymax: maximum value on y-axis
+   * colormap: alternative colormap, path to rgb file or ncl name
 
 
 Variables
@@ -502,7 +501,7 @@ riables of the same kind can be used.*
 References
 ----------
 
-* Tebaldi, C., Debeire, K., Eyring, V., Fischer, E., Fyfe, J., Friedlingstein, P., Knutti, R., Lowe, J., O'Neill, B., Sanderson, B., van Vuuren, D., Riahi, K., Meinshausen, M., Nicholls, Z., Hurtt, G., Kriegler, E., Lamarque, J.-F., Meehl, G., Moss, R., Bauer, S. E., Boucher, O., Brovkin, V., Golaz, J.-C., Gualdi, S., Guo, H., John, J. G., Kharin, S., Koshiro, T., Ma, L., Olivié, D., Panickal, S., Qiao, F., Rosenbloom, N., Schupfner, M., Seferian, R., Song, Z., Steger, C., Sellar, A., Swart, N., Tachiiri, K., Tatebe, H., Voldoire, A., Volodin, E., Wyser, K., Xin, X., Xinyao, R., Yang, S., Yu, Y., and Ziehn, T.: Climate model projections from the Scenario Model Intercomparison Project (ScenarioMIP) of CMIP6, Earth Syst. Dynam. Discuss, https://doi.org/10.5194/esd-2020-68
+* Tebaldi, C., Debeire, K., Eyring, V., Fischer, E., Fyfe, J., Friedlingstein, P., Knutti, R., Lowe, J., O'Neill, B., Sanderson, B., van Vuuren, D., Riahi, K., Meinshausen, M., Nicholls, Z., Hurtt, G., Kriegler, E., Lamarque, J.-F., Meehl, G., Moss, R., Bauer, S. E., Boucher, O., Brovkin, V., Golaz, J.-C., Gualdi, S., Guo, H., John, J. G., Kharin, S., Koshiro, T., Ma, L., Olivié, D., Panickal, S., Qiao, F., Rosenbloom, N., Schupfner, M., Seferian, R., Song, Z., Steger, C., Sellar, A., Swart, N., Tachiiri, K., Tatebe, H., Voldoire, A., Volodin, E., Wyser, K., Xin, X., Xinyao, R., Yang, S., Yu, Y., and Ziehn, T.: Climate model projections from the Scenario Model Intercomparison Project (ScenarioMIP) of CMIP6, Earth Syst. Dynam., 12, 253-293, https://doi.org/10.5194/esd-12-253-2021
 
 Example plots
 -------------

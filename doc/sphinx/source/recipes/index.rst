@@ -70,6 +70,7 @@ Future projections
    recipe_wenzel16nat
    recipe_tcr
    recipe_tebaldi21esd
+   recipe_climate_change_hotspot
 
 IPCC
 ^^^^
