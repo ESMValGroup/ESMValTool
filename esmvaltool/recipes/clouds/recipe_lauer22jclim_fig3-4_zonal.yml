@@ -13,6 +13,9 @@ documentation:
   maintainer:
     - lauer_axel
 
+  references:
+    - lauer22jclim
+
   projects:
     - cmug
 

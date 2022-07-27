@@ -1,10 +1,10 @@
-# recipe_lauer22jclim_fig2_taylor.yml
+# recipe_lauer22jclim_fig2_taylor_amip.yml
 ---
 documentation:
   title: Cloud diagnostics v2 (taylor)
 
   description: |
-    Taylor diagrams of clouds properties.
+    Taylor diagrams of clouds properties (AMIP models).
 
   authors:
     - lauer_axel
@@ -32,7 +32,7 @@ diagnostics:
   # Taylor plots of multi-year mean quantities
   # ==========================================================================
 
-  clouds_tay:
+  clouds_tay_amip:
     description: climatological annual means
     themes:
       - clouds
@@ -42,7 +42,7 @@ diagnostics:
       clt:
         preprocessor: clim
         mip: Amon
-        exp: historical
+        exp: amip
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
@@ -60,7 +60,7 @@ diagnostics:
       clivi:
         preprocessor: clim
         mip: Amon
-        exp: historical
+        exp: amip
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
@@ -78,7 +78,7 @@ diagnostics:
       lwp:
         preprocessor: clim
         mip: Amon
-        exp: historical
+        exp: amip
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
@@ -99,7 +99,7 @@ diagnostics:
       swcre:
         preprocessor: clim
         mip: Amon
-        exp: historical
+        exp: amip
         derive: true
         reference_dataset: CERES-EBAF
         additional_datasets:
@@ -114,7 +114,7 @@ diagnostics:
       lwcre:
         preprocessor: clim
         mip: Amon
-        exp: historical
+        exp: amip
         derive: true
         reference_dataset: CERES-EBAF
         additional_datasets:
@@ -129,7 +129,7 @@ diagnostics:
       prw:
         preprocessor: clim
         mip: Amon
-        exp: historical
+        exp: amip
         reference_dataset: ESACCI-WATERVAPOUR
         additional_datasets:
           - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
@@ -146,63 +146,79 @@ diagnostics:
       - {dataset: bcc-csm1-1, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
       - {dataset: bcc-csm1-1-m, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
       - {dataset: BNU-ESM, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: CanESM2, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+#       - {dataset: CanESM2, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}  no amip
+      - {dataset: CanAM4, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
       - {dataset: CCSM4, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: CESM1-BGC, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+#       - {dataset: CESM1-BGC, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
       - {dataset: CESM1-CAM5, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: CESM1-WACCM, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: CMCC-CESM, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+#       - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
+#       - {dataset: CESM1-WACCM, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
+#       - {dataset: CMCC-CESM, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
       - {dataset: CMCC-CM, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      #missing_data - {dataset: CMCC-CMS, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+##missing data  - {dataset: CMCC-CMS, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
+      - {dataset: CNRM-CM5, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
       - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
       - {dataset: FGOALS-g2, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: FIO-ESM, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+      - {dataset: FGOALS-s2, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+#       - {dataset: FIO-ESM, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}  no amip
       - {dataset: GFDL-CM3, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2G, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2M, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: GISS-E2-H, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+#       - {dataset: GFDL-ESM2G, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
+#       - {dataset: GFDL-ESM2M, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
+      - {dataset: GFDL-HIRAM-C180, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-HIRAM-C360, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+#       - {dataset: GISS-E2-H-CC, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
+#       - {dataset: GISS-E2-H, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
+#       - {dataset: GISS-E2-R-CC, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
       - {dataset: GISS-E2-R, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: HadGEM2-CC, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: HadGEM2-ES, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+      - {dataset: HadGEM2-A, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} 
+#       - {dataset: HadGEM2-CC, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
+#       - {dataset: HadGEM2-ES, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
       - {dataset: inmcm4, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
       - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: MIROC4h, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+#       - {dataset: MIROC4h, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
       - {dataset: MIROC5, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+#       - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
       - {dataset: MIROC-ESM, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-MR, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: MPI-ESM-P, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+#       - {dataset: MPI-ESM-P, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
       - {dataset: MRI-CGCM3, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: MRI-ESM1, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: NorESM1-ME, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
+#       - {dataset: MRI-ESM1, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
+#       - {dataset: NorESM1-ME, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005} no amip
       - {dataset: NorESM1-M, ensemble: r1i1p1, project: CMIP5, start_year: 1986, end_year: 2005}
-      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
-      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
-      #time_coord_problem_rlut - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
+#       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014} no amip
+#error time coordinate  - {dataset: BCC-CSM2-MR, ensemble: r2i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
+#time_coord_problem_rlut  - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
+      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}  
       - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
+      - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
       - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
       - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
       - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
       - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr, project: CMIP6, start_year: 1995, end_year: 2014}
-      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6, start_year: 1995, end_year: 2014}
+#error time coordinate  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6, start_year: 1995, end_year: 2014}
       - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6, start_year: 1995, end_year: 2014}
-      #no_prw - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr, project: CMIP6, start_year: 1995, end_year: 2014}
-      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
+      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6, start_year: 1995, end_year: 2014}
+      - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6, start_year: 1995, end_year: 2014}
+##no_prw  - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr, project: CMIP6, start_year: 1995, end_year: 2014} no prw in amip either
+#  - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014} not all necessary variables in amip
+#error time coordinate  - {dataset: GFDL-AM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6, start_year: 1995, end_year: 2014}
       - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6, start_year: 1995, end_year: 2014}
-      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6, start_year: 1995, end_year: 2014}
-      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
-      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
+#  - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6, start_year: 1995, end_year: 2014} not all necessary variables in amip
+#error concatenating cubes  - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
+#  - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014} no amip
+      - {dataset: GISS-E2-2-G, ensemble: r1i1p3f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}  
       - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
-      - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr, project: CMIP6, start_year: 1995, end_year: 2014}
-      - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr, project: CMIP6, start_year: 1995, end_year: 2014}
+      - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
+      - {dataset: INM-CM4-8, ensemble: r1i1p1f1, grid: gr1, project: CMIP6, start_year: 1995, end_year: 2014}
+      - {dataset: INM-CM5-0, ensemble: r1i1p1f1, grid: gr1, project: CMIP6, start_year: 1995, end_year: 2014}
+      - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr, project: CMIP6, start_year: 1995, end_year: 2014} 
+#  - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr, project: CMIP6, start_year: 1995, end_year: 2014} not all necessary variables in amip
       - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
-      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
+#  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014} not all necessary variables in amip
       - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
       - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
       - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
@@ -210,8 +226,8 @@ diagnostics:
       - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
       - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
       - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
-      - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
-      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
+#  - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014} not all necessary variables in amip
+# error parent_time_units  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f4, grid: gn, project: CMIP6, start_year: 1995, end_year: 2014}
     scripts:
       tayclt: &settings
         script: clouds/clouds_taylor_double.ncl

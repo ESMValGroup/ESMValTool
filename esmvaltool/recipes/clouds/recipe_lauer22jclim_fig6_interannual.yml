@@ -13,11 +13,10 @@ documentation:
     - lauer_axel
 
   references:
-    - lauer13jclim
+    - lauer22jclim
 
   projects:
-    - esmval
-    - embrace
+    - cmug
 
 
 preprocessors:
