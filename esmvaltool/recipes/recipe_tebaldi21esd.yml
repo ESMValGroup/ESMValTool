@@ -12,7 +12,7 @@ preprocessors:
   preproc_decadal_mean:
     decadal_statistics: {operator: mean}
   preproc_land_only:
-    mask_landsea: {always_use_ne_mask: true, mask_out: sea}
+    mask_landsea: {fx_variables: null, mask_out: sea}
     regrid: {scheme: linear, target_grid: 1x1}
   preproc_landonly_decadal_mean:
     decadal_statistics: {operator: mean}
@@ -20,7 +20,7 @@ preprocessors:
   preproc_map:
     regrid: {scheme: linear, target_grid: 1x1}
   preproc_ocean_only:
-    mask_landsea: {always_use_ne_mask: true, mask_out: land}
+    mask_landsea: {fx_variables: null, mask_out: land}
     regrid: {scheme: linear, target_grid: 1x1}
 diagnostics:
   fig1_timeseries_pr:
