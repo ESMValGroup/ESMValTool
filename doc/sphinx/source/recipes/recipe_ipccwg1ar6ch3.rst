@@ -6,10 +6,11 @@ IPCC AR6 Chapter 3 (selected figures)
 Overview
 --------
 
-The goal of this recipe is to collect diagnostics to reproduce Chapter 3 of AR6,
-so that the plots can be readily reproduced and compared to previous CMIP
-versions. In this way we can next time start with what was available in the
-previous round and can focus on developing more innovative methods of analysis
+This recipe collects selected diagnostics used in IPCC AR6 WGI Chapter 3: 
+Human influence on the climate system. Plots from IPCC AR6 can be readily
+reproduced and compared to previous versions. The aim is to be able to start
+with what was available now the next time allowing us to
+focus on developing more innovative analysis methods
 rather than constantly having to "re-invent the wheel".
 
 The plots are produced collecting the diagnostics from individual recipes. The
