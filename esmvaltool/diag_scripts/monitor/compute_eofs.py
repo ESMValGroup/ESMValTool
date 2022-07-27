@@ -1,10 +1,48 @@
 """Diagnostic to compute and plot the first EOF of an arbitrary input.
 
-It is part of the monitoring recipe. Imports class MonitorBase and
-class PlotMap from mapgenerator in order to create plots, build
-paths and record provenance.
+Description
+-----------
+This diagnostic can be used to compute and show Empirical Orthogonal Functions
+(EOFs) and Principal Components (PCs) of arbitrary input. It creates a map plot
+of the first EOF and the associated PC time series.
+
+Configuration options in recipe
+-------------------------------
+cartopy_data_dir: str, optional (default: None)
+    Path to cartopy data dir. Defaults to None. See
+    https://scitools.org.uk/cartopy/docs/latest/.
+config_file: str, optional
+    Path to the monitor configuration file. Defaults to ``monitor_config.yml``
+    in the same folder as the diagnostic script. More information on the
+    monitor configuration file can be found :ref:`here <monitor_config_file>`.
+plot_filename: str, optional
+    Filename pattern for the plots.
+    Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
+    All tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replaced with the corresponding tags).
+plot_folder: str, optional
+    Path to the folder to store figures. Defaults to
+    ``{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}``.  All
+    tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
+    replaced with the corresponding tags).  ``{plot_dir}`` is replaced with the
+    default ESMValTool plot directory (i.e.,
+    ``output_dir/plots/diagnostic_name/script_name/``, see
+    :ref:`esmvalcore:user configuration file`).
+rasterize_maps: bool, optional (default: True)
+    If ``True``, use `rasterization
+    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
+    map plots to produce smaller files. This is only relevant for vector
+    graphics (e.g., ``output_file_type=pdf,svg,ps``).
+
+.. hint::
+
+   Extra arguments given to the recipe are ignored, so it is safe to use yaml
+   anchors to share the configuration of common arguments with other monitor
+   diagnostic script.
+
 """
 import logging
+from copy import deepcopy
 
 import iris
 import matplotlib.pyplot as plt
@@ -26,6 +64,14 @@ class Eofs(MonitorBase):
     plotting capabilities in diagnostics that can not be done using only
     the preprocessor.
     """
+
+    def __init__(self, config):
+        """Initialize class member."""
+        super().__init__(config)
+
+        # Get default settings
+        self.cfg = deepcopy(self.cfg)
+        self.cfg.setdefault('rasterize_maps', True)
 
     def compute(self):
         """Compute the diagnostic."""
@@ -60,7 +106,8 @@ class Eofs(MonitorBase):
                 # Use rasterization if desired
                 # Note: plt.gca() is the colorbar here, use plt.gcf().axes to
                 # access the correct axes
-                self.set_rasterized(plt.gcf().axes[0])
+                if self.cfg['rasterize_maps']:
+                    self._set_rasterized(plt.gcf().axes[0])
                 # Get filename for the EOF plot
                 filename = self.get_plot_path('eof', var_info)
                 # Save figure

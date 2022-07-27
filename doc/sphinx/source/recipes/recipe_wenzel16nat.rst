@@ -33,6 +33,12 @@ Diagnostics are stored in diag_scripts/carbon_ec/
 User settings
 -------------
 
+.. note::
+
+   Make sure to run this recipe setting ``output_file_type: pdf`` in the ``config_user.yml``
+   file or using the CLI flag ``--output_file_type=pdf``.
+
+
 #. Script carbon_beta.ncl
 
    *Required Settings (scripts)*

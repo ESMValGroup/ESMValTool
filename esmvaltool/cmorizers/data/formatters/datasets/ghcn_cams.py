@@ -15,6 +15,7 @@ import logging
 import os
 
 import iris
+from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
 def _extract_variable(short_name, var, cfg, filepath, out_dir):
     """Extract variable."""
     raw_var = var.get('raw', short_name)
-    cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
+    cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
     # Fix units
     if 'raw_units' in var:
