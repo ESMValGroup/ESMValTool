@@ -781,7 +781,7 @@ diagnostics:
         blending: false
         ref_mask: true
         write_stat: true
-        styleset: CMIP6
+        styleset: CMIP6_ipcc
 
 
   fig_3_4_cmip5:
@@ -881,7 +881,7 @@ diagnostics:
         multi_model_mean: true
         plot_units: "degC"
         plot_legend: false
-        styleset: CMIP6
+        styleset: CMIP6_ipcc
 
 
   # **********************************************************************
