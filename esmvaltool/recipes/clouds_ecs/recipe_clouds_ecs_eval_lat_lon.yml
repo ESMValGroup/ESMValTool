@@ -14,11 +14,11 @@ documentation:
 
 
 YEARS: &years_hist
-  start_year: 2000
+  start_year: 1985
   end_year: 2004
 
 YEARS_scen: &years_scen
-  start_year: 2080
+  start_year: 2081
   end_year: 2100
 
 
@@ -228,14 +228,14 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
-        <<: *years_scen
-        additional_datasets: *datasets_ecs_high_scenario
+        <<: *years_hist
+        additional_datasets: *datasets_ecs_high
       ECS_med:
         <<: *var_clt
-        additional_datasets: *datasets_ecs_med_scenario
+        additional_datasets: *datasets_ecs_med
       ECS_low:
         <<: *var_clt
-        additional_datasets: *datasets_ecs_low_scenario
+        additional_datasets: *datasets_ecs_low
       OBS:
         <<: *var_clt
         <<: *years_hist
@@ -247,7 +247,7 @@ diagnostics:
       lat_lon:
         script: clouds_ecs/group_lat_lon.py
         group_by: variable_group
-        plot_each_model: true
+        plot_each_model: false
 
 
   lwp_lat_lon:
@@ -257,17 +257,17 @@ diagnostics:
         <<: *var_clt
         short_name: lwp
         derive: true
-        additional_datasets: *datasets_ecs_high_scenario
+        additional_datasets: *datasets_ecs_high
       ECS_med:
         <<: *var_clt
         short_name: lwp
         derive: true
-        additional_datasets: *datasets_ecs_med_scenario
+        additional_datasets: *datasets_ecs_med
       ECS_low:
         <<: *var_clt
         short_name: lwp
         derive: true
-        additional_datasets: *datasets_ecs_low_scenario
+        additional_datasets: *datasets_ecs_low
       OBS:
         <<: *var_clt
         <<: *years_hist
@@ -285,15 +285,15 @@ diagnostics:
       ECS_high:
         <<: *var_clt
         short_name: clivi
-        additional_datasets: *datasets_ecs_high_scenario
+        additional_datasets: *datasets_ecs_high
       ECS_med:
         <<: *var_clt
         short_name: clivi
-        additional_datasets: *datasets_ecs_med_scenario
+        additional_datasets: *datasets_ecs_med
       ECS_low:
         <<: *var_clt
         short_name: clivi
-        additional_datasets: *datasets_ecs_low_scenario
+        additional_datasets: *datasets_ecs_low
       OBS:
         <<: *var_clt
         <<: *years_hist
@@ -311,26 +311,25 @@ diagnostics:
         <<: *var_clt
         short_name: netcre
         derive: true
-        additional_datasets: *datasets_ecs_high_scenario
+        additional_datasets: *datasets_ecs_high
       ECS_med:
         <<: *var_clt
         short_name: netcre
         derive: true
-        additional_datasets: *datasets_ecs_med_scenario
+        additional_datasets: *datasets_ecs_med
       ECS_low:
         <<: *var_clt
         short_name: netcre
         derive: true
-        additional_datasets: *datasets_ecs_low_scenario
+        additional_datasets: *datasets_ecs_low
       OBS:
         <<: *var_clt
-        <<: *years_hist
         short_name: netcre
         derive: true
         preprocessor: lat_lon
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
-             tier: 1}
+            tier: 1, start_year: 2000, end_year: 2013}
 
 
   swcre_lat_lon:
@@ -340,26 +339,25 @@ diagnostics:
         <<: *var_clt
         short_name: swcre
         derive: true
-        additional_datasets: *datasets_ecs_high_scenario
+        additional_datasets: *datasets_ecs_high
       ECS_med:
         <<: *var_clt
         short_name: swcre
         derive: true
-        additional_datasets: *datasets_ecs_med_scenario
+        additional_datasets: *datasets_ecs_med
       ECS_low:
         <<: *var_clt
         short_name: swcre
         derive: true
-        additional_datasets: *datasets_ecs_low_scenario
+        additional_datasets: *datasets_ecs_low
       OBS:
         <<: *var_clt
-        <<: *years_hist
         short_name: swcre
         derive: true
         preprocessor: lat_lon
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
-             tier: 1}
+             tier: 1, start_year: 2000, end_year: 2013}
 
 
   lwcre_lat_lon:
@@ -369,23 +367,22 @@ diagnostics:
         <<: *var_clt
         short_name: lwcre
         derive: true
-        additional_datasets: *datasets_ecs_high_scenario
+        additional_datasets: *datasets_ecs_high
       ECS_med:
         <<: *var_clt
         short_name: lwcre
         derive: true
-        additional_datasets: *datasets_ecs_med_scenario
+        additional_datasets: *datasets_ecs_med
       ECS_low:
         <<: *var_clt
         short_name: lwcre
         derive: true
-        additional_datasets: *datasets_ecs_low_scenario
+        additional_datasets: *datasets_ecs_low
       OBS:
         <<: *var_clt
-        <<: *years_hist
         short_name: lwcre
         derive: true
         preprocessor: lat_lon
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
-             tier: 1}
+             tier: 1, start_year: 2000, end_year: 2013}

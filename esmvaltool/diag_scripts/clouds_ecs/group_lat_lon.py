@@ -80,6 +80,30 @@ def _get_cube_list(input_files):
     return cubes
 
 
+def area_weighted_mean(cube):
+    logger.debug("Computing field mean")
+    grid_areas = iris.analysis.cartography.area_weights(cube)
+    mean = cube.collapsed(['longitude', 'latitude'],
+                               iris.analysis.MEAN,
+                                           weights=grid_areas)
+    return mean
+
+
+def calculate_bias(model_cube, obs_cube):
+    logger.debug("Computing bias")
+    diff = model_cube - obs_cube
+    bias = area_weighted_mean(diff)
+    bias.attributes = model_cube.attributes
+    return bias
+
+
+def calculate_rmsd(model_cube, obs_cube):
+    logger.debug("Computing RMSD")
+    diff = model_cube - obs_cube
+    rmsd = area_weighted_mean(diff**2)**0.5
+    rmsd.attributes = model_cube.attributes
+    return rmsd
+
 
 def compute_diagnostic(filename):
     
@@ -151,7 +175,7 @@ def plot_model(cube, attributes, cfg):
     plt.close()
 
 
-def plot_diagnostic(cube, fig, attributes, legend, cfg):
+def plot_diagnostic(cube, mean, fig, attributes, legend, cfg):
     """Create diagnostic data and plot it."""
 
     # Save the data used for the plot
@@ -190,7 +214,11 @@ def plot_diagnostic(cube, fig, attributes, legend, cfg):
         #im = iplt.contourf(cube, extend ='both')
         #plt.clim(0., 100.)
         plt.gca().coastlines()
-        plt.title(legend)
+        plt.title(legend, fontsize=18)
+        if attributes['short_name'] in ['clivi', 'lwp']:
+            plt.title('mean = {:.3f}'.format(mean.data), fontsize = 14, loc='right')
+        else:
+            plt.title('mean = {:.1f}'.format(mean.data), fontsize = 14, loc='right')
 
         return im
 
@@ -224,7 +252,8 @@ def main(cfg):
     #fig.tight_layout()
     fig.set_figheight(10)
     fig.set_figwidth(14)
-    plt.subplots_adjust(left=0.11, bottom=0.2, right=0.90, top=0.95, wspace=0.05, hspace=0.05)
+    plt.subplots_adjust(left=0.05, bottom=0.22, right=0.95, top=0.95, wspace=0.02, hspace=0.02)
+    #plt.subplots_adjust(left=0.11, bottom=0.2, right=0.90, top=0.95, wspace=0.05, hspace=0.05)
     #plt.subplots_adjust(hspace=0.)
 
     for group_name in groups:
@@ -232,13 +261,26 @@ def main(cfg):
 
         for attributes in groups[group_name]:
             logger.info("Processing dataset %s", attributes['dataset'])
-            input_file = attributes['filename']
-            cube = compute_diagnostic(input_file)
             if attributes['dataset'] == 'MultiModelMean' or group_name == 'OBS':
+                input_file = attributes['filename']
+                cube = compute_diagnostic(input_file)
+                cube.attributes['variable_group'] = group_name
+                #print(cube)
                 cubes.append(cube)
 
-                im = plot_diagnostic(cube, fig, attributes, group_name, cfg)
+                mean = area_weighted_mean(cube)
 
+                im = plot_diagnostic(cube, mean, fig, attributes, group_name, cfg)
+
+    #print(cubes)
+    #for group in cubes.attributes['variable_group']:
+    cubes.extract_cube(iris.Constraint(cube_func=lambda cube: cube.attributes['variable_group']=='OBS'))
+    for cube in cubes:
+        #print(cube.attributes['variable_group'])
+        if cube.attributes['variable_group'] != 'OBS':
+            bias = calculate_bias(cube, cubes.extract_cube(iris.Constraint(cube_func=lambda cube: cube.attributes['variable_group']=='OBS')))
+            rmsd = calculate_rmsd(cube, cubes.extract_cube(iris.Constraint(cube_func=lambda cube: cube.attributes['variable_group']=='OBS')))
+            print('{0} : bias = {1}, rmsd = {2}'.format(cube.attributes['variable_group'], bias.data, rmsd.data))
 
     provenance_record = get_provenance_record(
         attributes, ancestor_files=cfg['input_files'])
@@ -248,7 +290,7 @@ def main(cfg):
     save_data(basename, provenance_record, cfg, cubes)
 
     title = attributes['long_name']
-    fig.suptitle(title)
+    fig.suptitle(title, fontsize = 22)
     cbar_ax = fig.add_axes([0.2, 0.2, 0.6, 0.03])
     colorbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal')
     colorbar.set_label( cube.var_name + '/' + cube.units.origin)
