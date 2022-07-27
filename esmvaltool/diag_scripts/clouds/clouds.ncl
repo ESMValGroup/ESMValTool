@@ -34,8 +34,7 @@
 ;   rel_diff:           if showdiff = True, then plot relative differences (%)
 ;                       (default = False)
 ;   rel_diff_min:       lower cutoff value in case of calculating relative
-;                       differences
-;                       (in units of input variable)
+;                       differences (in units of input variable)
 ;   region:             show only selected geographic region given as latmin,
 ;                       latmax, lonmin, lonmax
 ;   timemean:           time averaging - "seasonal" = DJF, MAM, JJA, SON),
@@ -60,6 +59,7 @@
 ;
 ; Modification history
 ;   20211021-lauer_axel: added output of basic statistics as ascii files
+;   20211006-lauer_axel: removed write_plots
 ;   20210325-lauer_axel: added option to estimate observational uncertainty
 ;                        from multiple observational datasets
 ;   20210318-lauer_axel: added option to speficfy variable if more than one

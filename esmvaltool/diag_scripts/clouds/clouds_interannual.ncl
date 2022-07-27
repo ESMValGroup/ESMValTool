@@ -31,6 +31,7 @@
 ;   none
 ;
 ; Modification history
+;   20211006-lauer_axel: removed write_plots
 ;   20210413-lauer_axel: added multi-obs mean and average over all models
 ;                        as individual plots
 ;   20210407-lauer_axel: added option to speficfy variable if more than one
