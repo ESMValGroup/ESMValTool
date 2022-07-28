@@ -6,9 +6,16 @@ Clouds
 Overview
 --------
 
-Two recipes are available to evaluate cloud climatologies from CMIP models.
+Four recipes are available to evaluate cloud climatologies from CMIP models.
 
-1) Recipe recipe_lauer13jclim.yml computes the climatology and interannual
+1) recipe_clouds_bias.yml computes climatologies and create map plots of
+   multi-model mean, mean bias, absolute bias and relative bias simular to
+   IPCC AR5 (ch. 9) fig. 9.2 a/b/c (Flato et al., 2013).
+
+2) recipe_clouds_ipcc.yml computes multi-model mean bias and zonal means
+   similar to IPCC AR5 (ch. 9) fig. 9.5 (Flato et al., 2013).
+
+3) Recipe recipe_lauer13jclim.yml computes the climatology and interannual
    variability of climate relevant cloud variables such as cloud radiative forcing
    (CRE), liquid water path (lwp), cloud amount (clt), and total precipitation (pr)
    reproducing some of the evaluation results of Lauer and Hamilton (2013). The
@@ -22,7 +29,8 @@ Two recipes are available to evaluate cloud climatologies from CMIP models.
    estimated as the relative temporal standard deviation from multi-year timeseries
    of data with the temporal standard deviations calculated from monthly anomalies
    after subtracting the climatological mean seasonal cycle.
-2) Recipe family recipe_lauer22jclim_*.yml is an extension of
+
+4) Recipe family recipe_lauer22jclim_*.yml is an extension of
    recipe_lauer13jclim.yml for evaluation of cloud radiative forcing
    (CRE), liquid water path (lwp), ice water path (clivi), total cloud amount (clt),
    cloud liquid water content (clw), cloud ice water content (cli), cloud fraction
@@ -43,6 +51,8 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/clouds
 
+    * recipe_clouds_bias.yml
+    * recipe_clouds_ipcc.yml
     * recipe_lauer13jclim.yml
     * recipe_lauer22jclim_*.yml
 
@@ -54,7 +64,7 @@ Diagnostics are stored in diag_scripts/clouds/
       mean bias
     * clouds_dyn_matrix.ncl: cloud properties by dynamical regime (SST, omega500)
     * clouds_interannual: global maps of the interannual variability
-    * clouds_isccp: global maps of multi-model mean minus observations + zonal
+    * clouds_ipcc: global maps of multi-model mean minus observations + zonal
       averages of individual models, multi-model mean and observations
     * clouds_lifrac_scatter.ncl: cloud liquid water fraction as a function of
       temperaure
@@ -456,8 +466,8 @@ References
   26, 3823-3845, doi: 10.1175/JCLI-D-12-00451.1.
 
 * Lauer, A., L. Bock, B. Hassler, M. Schröder, and M. Stengel, Cloud climatologies
-  from global climate models  a comparison of CMIP5 and CMIP6 models with satellite
-  data, submitted.
+  from global climate models - a comparison of CMIP5 and CMIP6 models with satellite
+  data, J. Climate (under review).
 
 
 Example plots
@@ -469,7 +479,8 @@ Example plots
 
    The 20-yr average LWP (1986-2005) from the CMIP5 historical model runs and
    the multi-model mean in comparison with the UWisc satellite climatology
-   (1988-2007) based on SSM/I, TMI, and AMSR-E (O'Dell et al. 2008).
+   (1988-2007) based on SSM/I, TMI, and AMSR-E (O'Dell et al. 2008). Produced
+   with recipe_lauer13jclim.yml.
 
 .. _fig_cloud_2:
 .. figure::  /recipes/figures/clouds/liq_h2o_taylor.png
@@ -477,7 +488,8 @@ Example plots
    :width:   7cm
 
    Taylor diagram showing the 20-yr annual average performance of CMIP5 models
-   for total cloud fraction as compared to MODIS satellite observations.
+   for total cloud fraction as compared to MODIS satellite observations. Produced
+   with recipe_lauer13jclim.yml.
 
 .. _fig_cloud_3:
 .. figure::  /recipes/figures/clouds/cloud_sweffect.png
@@ -493,12 +505,13 @@ Example plots
    :width:   9cm
 
    20-year average (1986-2005) annual mean cloud radiative effects of CMIP5
-   models against the CERES EBAF (2001–2012). Top row shows the shortwave
+   models against the CERES-EBAF (2001–2012). Top row shows the shortwave
    effect; middle row the longwave effect, and bottom row the net effect.
-   Multi-model mean biases against CERES EBAF are shown on the left, whereas the
-   right panels show zonal averages from CERES EBAF (thick black), the
+   Multi-model mean biases against CERES-EBAF are shown on the left, whereas the
+   right panels show zonal averages from CERES-EBAF (thick black), the
    individual CMIP5 models (thin gray lines) and the multi-model mean (thick
-   red line). Similar to Figure 9.5 of Flato et al. (2013).
+   red line). Similar to Figure 9.5 of Flato et al. (2013). Produced
+   with recipe_clouds_ipcc.yml.
 
 .. _fig_cloud_4:
 .. figure::  /recipes/figures/clouds/cloud_var_multi.png
@@ -507,7 +520,8 @@ Example plots
    Interannual variability of modeled and observed (GPCP) precipitation rates
    estimated as relative temporal standard deviation from 20 years (1986-2005)
    of data. The temporal standard devitions are calculated from monthly
-   anomalies after subtracting the climatological mean seasonal cycle.
+   anomalies after subtracting the climatological mean seasonal cycle. Produced
+   with recipe_lauer13jclim.yml.
 
 .. _fig_cloud_5:
 .. figure::  /recipes/figures/clouds/clouds_zonal_clcalipso_annual_cmip6.png
@@ -515,7 +529,8 @@ Example plots
    :width:   14cm
 
    Zonal mean of the multi-year annual mean cloud fraction as seen from
-   CALIPSO from CMIP6 models in comparison to CALIPSO-GOCCP data.
+   CALIPSO from CMIP6 models in comparison to CALIPSO-GOCCP data. Produced
+   with recipe_lauer22jclim_fig3-4_zonal.yml.
 
 .. _fig_cloud_6:
 .. figure::  /recipes/figures/clouds/clouds_scatter_clt_swcre_so_cmip6.png
@@ -528,7 +543,8 @@ Example plots
    Shown are the CMIP6 multi-model mean (red filled circles and lines) and 
    observational estimates from ESACCI-CLOUD (black circles and lines).
    The red shaded areas represent the range between the 10th and 90th percentiles
-   of the results from all individual models.
+   of the results from all individual models. Produced with
+   recipe_lauer22jclim_fig9-11ab_scatter.yml.
 
 .. _fig_cloud_7:
 .. figure::  /recipes/figures/clouds/clouds_pdf_clt_so_cmip6_line.png
@@ -539,4 +555,14 @@ Example plots
    in comparison to ESACCI-CLOUD data. The red curve shows the multi-model average,
    the blue curve the ESACCI-CLOUD data and the thin gray lines the individual
    models. The red shading shows ±1 standard deviation of the inter-model spread.
+   Produced with recipe_lauer22jclim_fig9-11c_pdf.yml.
 
+.. _fig_cloud_8:
+.. figure::  /recipes/figures/clouds/clouds_dyn_matrix_ts_wap_clt_cmip6_ocean.png
+   :align:   center
+   :width:   8cm
+
+   2-dimensional distribution of average total cloud cover (clt) binned by sea
+   surface temperature (SST, x-axis) and vertical velocity at 500 hPa (ω500, y-axis)
+   averaged over 20 years and all grid cells over the ocean. Produced with
+   recipe_lauer22jclim_fig8_dyn.yml.
