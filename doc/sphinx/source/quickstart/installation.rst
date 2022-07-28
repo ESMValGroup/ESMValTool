@@ -640,8 +640,8 @@ again.
 
 .. _install_on_hpc:
 
-Pre-installed versions on HPC clusters
-======================================
+Pre-installed versions on HPC clusters / other servers
+======================================================
 
 The ESMValTool is also available on the HPC clusters CEDA-JASMIN and DKRZ-MISTRAL and there will be no need
 to install it yourself if you are just running diagnostics:
