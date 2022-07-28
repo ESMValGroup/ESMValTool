@@ -58,6 +58,21 @@ datasets:
       Put all files under a single directory (no subdirectories with years).
         3D_CloudFraction330m_yyyymm_avg_CFMIP2_sat_3.1.2.nc
 
+  CALIPSO-ICECLOUD:
+    tier: 2
+    source: https://eosweb.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard_V1-00
+    last_access: 2020-04-08
+    info: |
+      Download and processing instructions
+      (requires EarthData login; see https://urs.earthdata.nasa.gov/)
+      1) Go to https://eosweb.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard_V1-00
+      2) Click on "Get Dataset"
+      3) Select Granules "A" containing both, day and night (Day/Night filter = "Both")
+      4) Download selected granules
+      5) Enter EarthData login and password (https://urs.earthdata.nasa.gov/)
+      6) Follow download instructions in email from EarthData and put all
+         files in the same directory
+
   CDS-SATELLITE-ALBEDO:
     tier: 3
     source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-albedo?tab=form

@@ -39,6 +39,16 @@ diagnostics:
     scripts: null
 
 
+  CALIPSO-ICECLOUD:
+    description: CALIPSO-ICECLOUD check
+    variables:
+      cli:
+    additional_datasets:
+      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,
+         mip: Amon, tier: 2, start_year: 2007, end_year: 2015}
+    scripts: null
+
+
   CERES-EBAF:
     description: CERES-EBAF check
     variables:
