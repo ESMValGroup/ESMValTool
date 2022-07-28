@@ -11,21 +11,75 @@ channels:
 dependencies:
   - pip!=21.3
   - python>=3.8
-  # Python packages that cannot be installed from PyPI:
   - cartopy
-  - compilers
+  - cdo>=1.9.7
+  - cdsapi
+  - cf-units >=3.0.0,<3.1.0,!=3.0.1.post0  # see https://github.com/ESMValGroup/ESMValCore/issues/1655
+  - cftime
+  - cmocean
+  - cython
+  - dask
+  - ecmwf-api-client
+  - eofs
   - esmpy
-  - esmvalcore
+  - esmvalcore 2.6.*
+  - fiona
+  - fire
   - gdal
+  - iris>=3.1.0
+  - jinja2
+  - joblib
+  - lime
+  - mapgenerator>=1.0.5
   - matplotlib-base
-  # Non-Python dependencies
-  - cdo
-  - imagemagick
-  - nco
+  - natsort
+  - nc-time-axis
+  - netCDF4
+  - numpy
+  - openpyxl
+  - pandas
+  - progressbar2
+  - prov
+  - psyplot
+  - psy-maps
+  - psy-reg
+  - psy-simple
+  - pyproj>=2.1
   - python-cdo
+  - python-dateutil
+  - pyyaml
   - rasterio
+  - requests
   - ruamel.yaml
-  # may hit hw-specific issue if from pypi
-  # https://github.com/scikit-learn/scikit-learn/issues/14485
+  - scikit-image
   - scikit-learn
+  - scipy
+  - seaborn
+  - seawater
+  - shapely
+  - xarray>=0.12.0
+  - xesmf==0.3.0
   - xgboost
+  - xlsxwriter
+  # Python packages needed for testing
+  - pytest >=3.9,!=6.0.0rc1,!=6.0.0
+  - pytest-cov
+  - pytest-env
+  - pytest-flake8
+  - pytest-html !=2.1.0
+  - pytest-metadata >=1.5.1
+  - pytest-xdist
+  # Python packages needed for building docs
+  - autodocsumm>=0.2.2
+  - sphinx>=5
+  - sphinx_rtd_theme
+  # Python packages needed for development
+  - codespell
+  - docformatter
+  - isort
+  - pre-commit
+  - prospector
+  - pyroma
+  # - vprof not on conda-forge
+  - yamllint
+  - yapf

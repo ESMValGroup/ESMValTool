@@ -538,6 +538,16 @@ diagnostics:
     scripts: null
 
 
+  NOAAGlobalTemp:
+    decription: NOAAGlobalTemp check
+    variables:
+      tasa:
+    additional_datasets:
+      - {dataset: NOAAGlobalTemp, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: v5.0.0, start_year: 1880, end_year: 2021}
+    scripts: null
+
+
   OSI-450:
     description: OSI-450 check
     variables:

@@ -186,49 +186,57 @@ Detailed timeline steps
 
 These are the detailed steps to take to make a release.
 
-1. Populate the milestone
+#. Populate the milestone
 
    - The core development team will make sure it adds issues that it intends to work on as early as possible.
    - Any contributor is welcome to add issues or pull requests that they intend to work on themselves to a milestone.
 
 
-2. ESMValCore feature freeze
+#. ESMValCore feature freeze
 
    - A release branch is created and branch protection rules are set up so only the release manager (i.e. the person in charge of the release branch) can push commits to that branch.
    - The creation of the release branch is announced to the ESMValTool development team along with the procedures to use the branch for testing and making last-minute changes (see next step)
 
 
-3. Some additional testing of ESMValCore
+#. Some additional testing of ESMValCore
 
    - Run all the recipes (optionally with a reduced amount of data) to check that they still work
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
 
 
-4. ESMValCore release
+#. ESMValCore release
 
    - Make the release by following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>`.
    - Ask the user engagement team to announce the release to the user mailing list, the development team mailing list, on twitter
 
 
-5. ESMValTool feature freeze
+#. ESMValTool feature freeze
 
    - A release branch is created and branch protection rules are set up so only the release manager (i.e. the person in charge of the release branch) can push commits to that branch.
    - The creation of the release branch is announced to the ESMValTool development team along with the procedures to use the branch for testing and making last-minute changes (see next step)
 
 
-6. Some additional testing of ESMValTool
+#. Some additional testing of ESMValTool
 
-   - Run all the recipes to check that they still work and ask authors to review the plots
+   - :ref:`Run all the recipes to check that they still work and generate the overview HTML pages.<running_multiple_recipes>`
+   - Upload the results to the webpage at https://esmvaltool.dkrz.de/shared/esmvaltool/.
+   - :ref:`Compare the results to those obtained with the previous release.<compare_recipe_runs>`
+   - Create a `GitHub discussion <https://github.com/ESMValGroup/ESMValTool/discussions>`__ to communicate about the results.
+   - If there are differences with the previous release, ask recipe maintainers
+     or authors to review the plots and NetCDF files of their diagnostics, for
+     example by
+     `mentioning <https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#mentioning-people-and-teams>`__
+     them in the discussion.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
 
 
-7. ESMValTool release
+#. ESMValTool release
 
    - Make the release by following :ref:`How to make a release`
    - Ask the user engagement team to announce the release to the user mailing list, the development team mailing list, and on twitter
 
 
-8. Core development team meets to coordinate the content of next milestone
+#. Core development team meets to coordinate the content of next milestone
 
    - Create a doodle for the meeting or even better, have the meeting during an ESMValTool workshop
    - Prepare the meeting by filling the milestone
@@ -247,10 +255,10 @@ Next to the feature releases described above, it is also possible to have bugfix
 Procedure
 ~~~~~~~~~
 
-1. One or more issues are resolved that are deemed (by the core development team) to warrant a bugfix release.
-2. A release branch is created from the last release tag and the commit that fixes the bug/commits that fix the bugs are cherry-picked into it from the main branch.
-3. Some additional testing of the release branch takes place.
-4. The release takes place.
+#. One or more issues are resolved that are deemed (by the core development team) to warrant a bugfix release.
+#. A release branch is created from the last release tag and the commit that fixes the bug/commits that fix the bugs are cherry-picked into it from the main branch.
+#. Some additional testing of the release branch takes place.
+#. The release takes place.
 
 Compatibility between ESMValTool and ESMValCore is ensured by the appropriate version pinning of ESMValCore by ESMValTool.
 
@@ -281,26 +289,46 @@ How to make an ESMValTool release
 
 The release manager makes the release, assisted by the release manager of the
 previous release, or if that person is not available, another previous release
-manager. Perform the steps listed below with two persons, to reduce the risk of
+manager.
+Perform the steps listed below with two persons, to reduce the risk of
 error.
+
+.. note::
+
+   The previous release manager ensures the current release manager has the
+   required administrative permissions to make the release.
+   Consider the following services:
+   `conda-forge <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__,
+   `DockerHub <https://hub.docker.com/orgs/esmvalgroup>`__,
+   `PyPI <https://pypi.org/project/ESMValTool/>`__, and
+   `readthedocs <https://readthedocs.org/dashboard/esmvaltool/users/>`__.
 
 To make a new release of the package, follow these steps:
 
-1. Check the tests on GitHub Actions and CircleCI
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. Check that all tests and builds work
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Check the ``nightly``
-`build on CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool/tree/main>`__
-and the
-`GitHub Actions run <https://github.com/ESMValGroup/ESMValTool/actions>`__.
+- Check that the ``nightly``
+  `test run on CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool/tree/main>`__
+  was successful.
+- Check that the
+  `GitHub Actions test runs <https://github.com/ESMValGroup/ESMValTool/actions>`__
+  were successful.
+- Check that the documentation builds successfully on
+  `readthedocs <https://readthedocs.org/projects/esmvaltool/builds/>`__.
+- Check that the
+  `Docker images <https://hub.docker.com/repository/docker/esmvalgroup/esmvaltool/builds>`__
+  are building successfully.
+
 All tests should pass before making a release (branch).
 
 2. Increase the version number
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The version number is stored in ``esmvaltool/__init__.py``, ``CITATION.cff``.
-Make sure to update both files.
-Also update the release date in ``CITATION.cff``.
+The version number is automatically generated from the information provided by
+git using [setuptools-scm](https://pypi.org/project/setuptools-scm/), but a
+static version number is stored in ``CITATION.cff``.
+Make sure to update the version number and release date in ``CITATION.cff``.
 See https://semver.org for more information on choosing a version number.
 Make a pull request and get it merged into ``main``.
 
@@ -400,6 +428,83 @@ Once approved by the `feedstock maintainers
 they will merge the pull request, which will in turn publish the package on
 conda-forge some time later.
 Contact the feedstock maintainers if you want to become a maintainer yourself.
+
+9. Check the Docker images
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are three main Docker container images available for ESMValTool on
+`Dockerhub <https://hub.docker.com/r/esmvalgroup/esmvaltool/tags>`_:
+
+- ``esmvalgroup/esmvaltool:stable``, built from `docker/Dockerfile <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile>`_,
+  this is a tag that is always the same as the latest released version.
+  This image is only built by Dockerhub when a new release is created.
+- ``esmvalgroup/esmvaltool:development``, built from `docker/Dockerfile.dev <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile.dev>`_,
+  this is a tag that always points to the latest development version of
+  ESMValTool.
+  This image is built by Dockerhub every time there is a new commit to the
+  ``main`` branch on Github.
+- ``esmvalgroup/esmvaltool:experimental``, built from `docker/Dockerfile.exp <https://github.com/ESMValGroup/ESMValTool/blob/main/docker/Dockerfile.exp>`_,
+  this is a tag that always points to the latest development version of
+  ESMValTool with the latest development version of ESMValCore.
+  Note that some recipes may not work as expected with this image because
+  the ESMValTool development version has been designed to work with the latest
+  release of ESMValCore (i.e. not with the development version).
+  This image is built by Dockerhub every time there is a new commit to the
+  ESMValTool ``main`` branch on Github.
+
+In addition to the three images mentioned above, there is an image available
+for every release (e.g. ``esmvalgroup/esmvaltool:v2.5.0``).
+When working on the Docker images, always try to follow the
+`best practices <https://docs.docker.com/develop/develop-images/dockerfile_best-practices/>`__.
+
+After making the release, check that the Docker image for that release has been
+built correctly by
+
+1. checking that the version tag is available on `Dockerhub`_ and the ``stable``
+   tag has been updated,
+2. running some recipes with the ``stable`` tag Docker container, for example one
+   recipe for Python, NCL, R, and Julia,
+3. running a recipe with a Singularity container built from the ``stable`` tag.
+
+If there is a problem with the automatically built container image, you can fix
+the problem and build a new image locally.
+For example, to
+`build <https://docs.docker.com/engine/reference/commandline/build/>`__ and
+`upload <https://docs.docker.com/engine/reference/commandline/push/>`__
+the container image for v2.5.0 of the tool run:
+
+.. code-block:: bash
+
+   git checkout v2.5.0
+   git clean -x
+   docker build -t esmvalgroup/esmvaltool:v2.5.0 . -f docker/Dockerfile
+   docker push esmvalgroup/esmvaltool:v2.5.0
+
+and if it is the latest release that you are updating, also run
+
+.. code-block:: bash
+
+   docker tag esmvalgroup/esmvaltool:v2.5.0 esmvalgroup/esmvaltool:stable
+   docker push esmvalgroup/esmvaltool:stable
+
+Note that the ``docker push`` command will overwrite the existing tags on
+Dockerhub.
+
+If you would like to make a small change to an existing Docker container image,
+it is also possible to do just that using the
+`docker commit <https://docs.docker.com/engine/reference/commandline/commit/>`__
+command.
+Note that this is only recommended for very small changes, as it is not
+reproducible and it will add an extra layer, increasing the size of the image.
+To do this, start the container with
+``docker run -it --entrypoint /bin/bash esmvalgroup/esmvaltool:v2.5.0``
+and make your changes.
+Exit the container by pressing `ctrl+d` and find it back by running
+``docker ps -a``.
+Find the `CONTAINER ID` of the image you would like to save and run
+``docker commit -c 'ENTRYPOINT ["conda", "run", "--name", "esmvaltool", "esmvaltool"]' 633696a8b53a esmvalgroup/esmvaltool:v2.5.0``
+where ``633696a8b53c`` is the an example of a container ID, replace it by
+by the actual ID.
 
 Changelog
 ---------
