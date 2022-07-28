@@ -55,7 +55,12 @@ Recipes are stored in recipes/clouds
     * recipe_clouds_bias.yml
     * recipe_clouds_ipcc.yml
     * recipe_lauer13jclim.yml
-    * recipe_lauer22jclim_*.yml
+    * recipe_lauer22jclim_*.yml (recipe_lauer22jclim_fig1_clim_amip.yml,
+	  recipe_lauer22jclim_fig1_clim.yml, recipe_lauer22jclim_fig2_taylor_amip.yml,
+      recipe_lauer22jclim_fig2_taylor.yml, recipe_lauer22jclim_fig3-4_zonal.yml,
+      recipe_lauer22jclim_fig5_lifrac.yml, recipe_lauer22jclim_fig6_interannual.yml,
+      recipe_lauer22jclim_fig7_seas.yml, recipe_lauer22jclim_fig8_dyn.yml,
+	  recipe_lauer22jclim_fig9-11ab_scatter.yml, recipe_lauer22jclim_fig9-11c_pdf.yml)
 
 Diagnostics are stored in diag_scripts/clouds/
 
