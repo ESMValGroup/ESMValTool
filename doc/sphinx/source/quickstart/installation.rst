@@ -651,7 +651,8 @@ to install it yourself if you are just running diagnostics:
    `CEDA <https://help.jasmin.ac.uk/article/4955-community-software-esmvaltool>`__ ;
  - DKRZ-Levante: `esmvaltool` is available on login nodes (`levante.dkrz.de`) after login and module loading
    via `module load esmvaltool`; the command `module help esmvaltool` provides some information about the module.
- - Met Office: `esmvaltool` is available on the linux estate after login and molude loading via `module load`; see the ESMValTool Community of Practice sharepoint site for more details.
+ - Met Office: `esmvaltool` is available on the Linux estate after login and module loading via `module load`;
+   see the ESMValTool Community of Practice SharePoint site for more details.
 
 Installation from the conda lock file
 =====================================
