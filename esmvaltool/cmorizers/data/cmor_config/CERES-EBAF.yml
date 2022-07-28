@@ -5,7 +5,7 @@ filename: 'CERES_EBAF-TOA_Ed4.1_Subset_200003-202203.nc'
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: CERES-EBAF
-  version: 'Ed4.01
+  version: 'Ed4.01'
   tier: 2
   modeling_realm: sat
   project_id: OBS
