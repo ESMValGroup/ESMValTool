@@ -64,12 +64,12 @@ Diagnostics are stored in diag_scripts/clouds/
     * clouds_bias.ncl: global maps of the multi-model mean and the multi-model
       mean bias
     * clouds_dyn_matrix.ncl: cloud properties by dynamical regime (SST, omega500)
-    * clouds_interannual: global maps of the interannual variability
-    * clouds_ipcc: global maps of multi-model mean minus observations + zonal
+    * clouds_interannual.ncl: global maps of the interannual variability
+    * clouds_ipcc.ncl: global maps of multi-model mean minus observations + zonal
       averages of individual models, multi-model mean and observations
     * clouds_lifrac_scatter.ncl: cloud liquid water fraction as a function of
       temperaure
-    * clouds_pdf.ynl: pdf of cloud parameters
+    * clouds_pdf.ncl: pdf of cloud parameters
     * clouds_seasonal_cycle.ncl: seasonal cycle amplitude
     * clouds_taylor.ncl: Taylor diagrams (as in Lauer and Hamilton, 2013)
     * clouds_taylor_double.ncl: Taylor diagrams (as in Lauer et al., 2022)
