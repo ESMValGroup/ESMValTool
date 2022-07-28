@@ -10,16 +10,16 @@ Four recipes are available to evaluate cloud climatologies from CMIP models.
 
 1) recipe_clouds_bias.yml computes climatologies and creates map plots of
    multi-model mean, mean bias, absolute bias and relative bias of a given
-   variable. Simular to IPCC AR5 (ch. 9) fig. 9.2 a/b/c (Flato et al., 2013).
+   variable. Simular to IPCC AR5 (ch. 9) fig. 9.2 a/b/c (`Flato et al., 2013`_).
 
 2) recipe_clouds_ipcc.yml computes multi-model mean bias and zonal means of
    the clouds radiative effect (shortwave, longwave and net). Similar to
-   IPCC AR5 (ch. 9) fig. 9.5 (Flato et al., 2013).
+   IPCC AR5 (ch. 9) fig. 9.5 (`Flato et al., 2013`_).
 
 3) Recipe recipe_lauer13jclim.yml computes the climatology and interannual
    variability of climate relevant cloud variables such as cloud radiative forcing
    (CRE), liquid water path (lwp), cloud amount (clt), and total precipitation (pr)
-   reproducing some of the evaluation results of Lauer and Hamilton (2013). The
+   reproducing some of the evaluation results of `Lauer and Hamilton (2013)`_. The
    recipe includes a comparison of the geographical distribution of multi-year
    average cloud parameters from individual models and the multi-model mean with
    satellite observations. Taylor diagrams are generated that show the multi-year
@@ -46,6 +46,9 @@ Four recipes are available to evaluate cloud climatologies from CMIP models.
    of SST and 500 hPa vertical velocity, shortwave CRE and total cloud water path
    binned by total cloud cover and pdfs of total cloud cover for selected regions.
 
+.. _`Flato et al., 2013`: https://www.ipcc.ch/site/assets/uploads/2018/02/WG1AR5_Chapter09_FINAL.pdf
+.. _`Lauer and Hamilton (2013)`: https://journals.ametsoc.org/view/journals/clim/26/11/jcli-d-12-00451.1.xml
+
 
 Available recipes and diagnostics
 ---------------------------------
@@ -55,12 +58,9 @@ Recipes are stored in recipes/clouds
     * recipe_clouds_bias.yml
     * recipe_clouds_ipcc.yml
     * recipe_lauer13jclim.yml
-    * recipe_lauer22jclim_*.yml (recipe_lauer22jclim_fig1_clim_amip.yml,
-	  recipe_lauer22jclim_fig1_clim.yml, recipe_lauer22jclim_fig2_taylor_amip.yml,
-      recipe_lauer22jclim_fig2_taylor.yml, recipe_lauer22jclim_fig3-4_zonal.yml,
-      recipe_lauer22jclim_fig5_lifrac.yml, recipe_lauer22jclim_fig6_interannual.yml,
-      recipe_lauer22jclim_fig7_seas.yml, recipe_lauer22jclim_fig8_dyn.yml,
-	  recipe_lauer22jclim_fig9-11ab_scatter.yml, recipe_lauer22jclim_fig9-11c_pdf.yml)
+    * recipe_lauer22jclim_*.yml (* = fig1_clim_amip, fig1_clim, fig2_taylor_amip,
+      fig2_taylor, fig3-4_zonal, fig5_lifrac, fig6_interannual, fig7_seas,
+      fig8_dyn, fig9-11ab_scatter, fig9-11c_pdf)
 
 Diagnostics are stored in diag_scripts/clouds/
 
@@ -76,8 +76,8 @@ Diagnostics are stored in diag_scripts/clouds/
       temperaure
     * clouds_pdf.ncl: pdf of cloud parameters
     * clouds_seasonal_cycle.ncl: seasonal cycle amplitude
-    * clouds_taylor.ncl: Taylor diagrams (as in Lauer and Hamilton, 2013)
-    * clouds_taylor_double.ncl: Taylor diagrams (as in Lauer et al., 2022)
+    * clouds_taylor.ncl: Taylor diagrams (as in `Lauer and Hamilton (2013)`_)
+    * clouds_taylor_double.ncl: Taylor diagrams (as in Lauer et al. (2022))
     * clouds_zonal.ncl: zonal means of 3-dim variables
 
 
@@ -516,7 +516,7 @@ Example plots
    Multi-model mean biases against CERES-EBAF are shown on the left, whereas the
    right panels show zonal averages from CERES-EBAF (thick black), the
    individual CMIP5 models (thin gray lines) and the multi-model mean (thick
-   red line). Similar to Figure 9.5 of Flato et al. (2013). Produced
+   red line). Similar to Figure 9.5 of `Flato et al., 2013`_. Produced
    with recipe_clouds_ipcc.yml.
 
 .. _fig_cloud_4:
@@ -544,7 +544,7 @@ Example plots
    :width:   10cm
 
    Multi-year seasonal average (December-January-February) of cloud shortwave
-   radiative effect (W m-2) vs. total cloud fraction (clt, %) averaged over the
+   radiative effect (W m\ :sup:`-2`) vs. total cloud fraction (clt, %) averaged over the
    Southern Ocean defined as latitude belt 30°S-65°S (ocean grid cells only).
    Shown are the CMIP6 multi-model mean (red filled circles and lines) and 
    observational estimates from ESACCI-CLOUD (black circles and lines).
@@ -569,6 +569,6 @@ Example plots
    :width:   8cm
 
    2-dimensional distribution of average total cloud cover (clt) binned by sea
-   surface temperature (SST, x-axis) and vertical velocity at 500 hPa (ω500, y-axis)
+   surface temperature (SST, x-axis) and vertical velocity at 500 hPa (ω\ :sub:`500`, y-axis)
    averaged over 20 years and all grid cells over the ocean. Produced with
    recipe_lauer22jclim_fig8_dyn.yml.
