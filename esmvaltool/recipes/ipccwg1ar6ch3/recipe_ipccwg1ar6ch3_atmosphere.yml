@@ -696,7 +696,6 @@ diagnostics:
         end_year: 2014
         additional_datasets: *models_cmip6_historical
     additional_datasets:
-            #- {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
     scripts:
       fig_3_3:
@@ -725,7 +724,6 @@ diagnostics:
         end_year: 2004
         additional_datasets: *models_cmip5_historical
     additional_datasets:
-            #- {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
     scripts:
       fig_3_3:
