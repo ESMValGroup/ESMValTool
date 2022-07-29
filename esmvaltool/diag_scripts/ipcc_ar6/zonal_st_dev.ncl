@@ -24,7 +24,7 @@
 ;                       plotted
 ;
 ;  Modification history
-;  20190304-A_bock_li: written
+;  20190304-bock_lisa: written
 ;
 ; #############################################################################
 

@@ -79,7 +79,7 @@ User settings in recipe
 
    *Required settings (variables)*
 
-   * reference_dataset: name of reference datatset
+   * reference_dataset: name of reference dataset
 
    *Color tables*
 
@@ -193,14 +193,14 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* BerkeleyEarth (tasa - esmvaltool/cmorizers/obs/cmorize_obs_berkeleyearth.py)
-* CRU (pr - esmvaltool/cmorizers/obs/cmorize_obs_cru.py)
+* BerkeleyEarth (tasa - esmvaltool/cmorizers/data/formatters/datasets/berkeleyearth.py)
+* CRU (pr - esmvaltool/cmorizers/data/formatters/datasets/cru.py)
 * ERA5 (tas - ERA5 data can be used via the native6 project)
-* GHCN (pr - esmvaltool/cmorizers/obs/cmorize_obs_ghcn.ncl)
+* GHCN (pr - esmvaltool/cmorizers/data/formatters/datasets/ghcn.ncl)
 * GPCP-SG (pr - obs4MIPs)
-* HadCRUT5 (tasa - esmvaltool/cmorizers/obs/cmorize_obs_hadcrut5.py)
-* Kadow (tasa - esmvaltool/cmorizers/obs/cmorize_obs_kadow.ncl)
-* NOAAGlobalTemp (tasa - esmvaltool/cmorizers/obs/cmorize_obs_noaaglobaltemp.ncl)
+* HadCRUT5 (tasa - esmvaltool/cmorizers/data/formatters/datasets/hadcrut5.py)
+* Kadow2020 (tasa - esmvaltool/cmorizers/data/formatters/datasets/kadow2020.py)
+* NOAAGlobalTemp (tasa - esmvaltool/cmorizers/data/formatters/datasets/noaaglobaltemp.py)
 
 
 References

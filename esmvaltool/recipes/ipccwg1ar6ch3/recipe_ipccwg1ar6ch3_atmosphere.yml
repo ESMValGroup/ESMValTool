@@ -14,7 +14,7 @@ documentation:
     - eyring_veronika
 
   mantainer:
-    - bock_ls
+    - bock_lisa
 
   projects:
     - ipcc_ar6
@@ -149,9 +149,6 @@ models_cmip6_historical: &models_cmip6_historical  # historical, Amon, tas+pr
   - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
   - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
   - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
-  # - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr} # preproc error
-  # - {dataset: E3SM-1-1-ECA, ensemble: r1i1p1f1, grid: gr} # preproc error
-  # - {dataset: E3SM-1-1, ensemble: r1i1p1f1, grid: gr} # preproc error
   - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr}
   - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr}
   - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr}
@@ -214,9 +211,6 @@ datasets_cmip6: &cmip6_models  # historical+ssp245, all ens members, Amon, tas+p
   - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
   - {dataset: CNRM-ESM2-1, ensemble: r(1:5)i1p1f2, grid: gr}
   - {dataset: CNRM-ESM2-1, ensemble: r(7:10)i1p1f2, grid: gr}
-  # - {dataset: E3SM-1-0, ensemble: r(1:5)i1p1f1, grid: gr, end_year: 2014} # preproc error
-  # - {dataset: E3SM-1-1-ECA, ensemble: r1i1p1f1, grid: gr, end_year: 2014} # preproc error
-  # - {dataset: E3SM-1-1, ensemble: r1i1p1f1, grid: gr, end_year: 2014} # preproc error
   - {dataset: EC-Earth3, ensemble: r(1:2)i1p1f1, grid: gr}
   - {dataset: EC-Earth3, ensemble: r4i1p1f1, grid: gr}
   - {dataset: EC-Earth3, ensemble: r(6:7)i1p1f1, grid: gr}
