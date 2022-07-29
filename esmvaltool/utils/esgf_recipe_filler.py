@@ -1,10 +1,23 @@
+import os
+import argparse
 import itertools
 import logging
 import pyesgf.search as pys
 import re
+import yaml
 
 from esmvalcore.esgf._search import get_esgf_facets
 from esmvalcore.esgf.facets import DATASET_MAP, FACETS
+
+
+# Intial testing done with an input type like:
+# Input "recipe" file
+# datasets:
+#  - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, mip: Amon, grid: gn, short_name: tas}
+#  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, mip: Amon, short_name: tas}
+
+# set up logging
+logger = logging.getLogger(__name__)
 
 
 def load_esgf_pyclient_config():
@@ -67,15 +80,23 @@ def get_facet_options(variable, facet):
     return result
 
 
-def format_dataset(project, dataset, ensemble, grid=None):
+def format_dataset(project, dataset, ensemble, dataset_dict, grid=None):
+    ds = dataset_dict["dataset"]
+    exp = dataset_dict["exp"]
+    ensemble = dataset_dict["ensemble"]
+    mip = dataset_dict["mip"]
+    short_name = dataset_dict["short_name"]
     if project == 'CMIP5':
-        print(
-            "  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: "
-            + dataset + ", ensemble: " + ensemble + "}")
+        if ds == dataset:
+            logger.info(
+                " - {dataset: %s, project: CMIP6, exp: %s, ensemble: %s, mip: %s, short_name: %s}",
+                ds, exp, ensemble, mip, short_name)
     elif project == 'CMIP6':
-        print(
-            "  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: "
-            + dataset + ", ensemble: " + ensemble + ", grid: " + grid + "}")
+        grid = dataset_dict["grid"]
+        if ds == dataset:
+            logger.info(
+                " - {dataset: %s, project: CMIP6, exp: %s, ensemble: %s, mip: %s, short_name: %s, grid: %s}",
+                ds, exp, ensemble, mip, short_name, grid)
 
 
 def search_variables(variables, facet):
@@ -147,15 +168,16 @@ def _group_ensembles(ensembles, i=0):
     return grouped_ensembles
 
 
-def _expand_dataset(dataset_file):
+def _expand_dataset(dataset):
     """Load a recipe or a dict containing datasets info."""
+    grids = []
     # expand from dataset dict
     project = dataset["project"]
     exps = dataset["exp"]
     if not isinstance(exps, list):
         exps = [exps]
     mip = dataset["mip"]
-    if grid in dataset:
+    if "grid" in dataset:
         grids = dataset["grid"]
         if not isinstance(grids, list):
             grids = [grids]
@@ -163,70 +185,113 @@ def _expand_dataset(dataset_file):
     if not isinstance(short_names, list):
         short_names = [short_names]
 
-    return project, exps, mips, grids, short_names
+    return project, exps, mip, grids, short_names
 
 
-def search_datasets_esgf(dataset_file):
+def get_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('-r', '--recipe', required=False,
+                        help='Path/name of yaml pilot recipe file')
+    parser.add_argument('-o',
+                        '--output',
+                        required=False,
+                        default=os.path.join(os.getcwd(),
+                                             'recipe_autofilled.yml'),
+                        help='Output recipe, default recipe_autofilled.yml')
+
+    args = parser.parse_args()
+
+    return args
+
+
+def _parse_recipe_to_dicts(yamlrecipe):
+    """Parse a recipe's variables into a dictionary of dictionairies."""
+    datasets = yamlrecipe["datasets"]
+
+    return datasets
+
+
+def search_datasets_esgf(dataset_list=None):
     """Search the SEGF database for requested datasets."""
     logging.basicConfig(format="%(asctime)s [%(process)d] %(levelname)-8s "
                         "%(name)s,%(lineno)s\t%(message)s")
     logging.getLogger().setLevel('info'.upper())
 
-    # expand from dataset dict
-    project, exps, mips, grids, short_names = _expand_dataset(dataset_file)
+    # load inputs
+    args = get_args()
+    input_recipe = args.recipe
+    output_recipe = args.output
+    if input_recipe is not None:
+        logger.info("Running from the command line.")
+        with open(input_recipe, 'r') as yamlfile:
+            yamlrecipe = yaml.safe_load(yamlfile)
+            dataset_list = _parse_recipe_to_dicts(yamlrecipe)
+    else:
+        logger.info("Running via module import.")
 
-    # run the thing
-    if project == 'CMIP5':
-        variables = []
-        for exp in exps:
-            for short_name in short_names:
-                variable = {
-                    'project': project,
-                    'exp': exp,
-                    'mip': mip,
-                    'short_name': short_name,
-                }
-                variables.append(variable)
+    logger.info("Found the following datasets on ESGF from your recipe:")
 
-        datasets = sorted(search_variables(variables, 'dataset'),
-                                           key=str.lower)
-        for dataset in datasets:
-            for variable in variables:
-                variable['dataset'] = dataset
-            ensembles = search_variables(variables, 'ensemble')
-            for ensemble in group_ensembles(ensembles):
-                if dataset == 'fio-esm':
-                    dataset = 'FIO-ESM'
-                format_dataset(project, dataset, ensemble)
+    if dataset_list:
+        for dataset_dict in dataset_list:
+            # expand from dataset dict
+            project, exps, mip, grids, short_names = \
+                _expand_dataset(dataset_dict)
 
-    elif project == 'CMIP6':
-        results = []
-        for grid in grids:
-            variables = []
-            for exp in exps:
-                for short_name in short_names:
-                    variable = {
-                        'project': project,
-                        'exp': exp,
-                        'mip': mip,
-                        'short_name': short_name,
-                        'grid': grid,
-                    }
-                    variables.append(variable)
+            # run the thing
+            if project == 'CMIP5':
+                variables = []
+                for exp in exps:
+                    for short_name in short_names:
+                        variable = {
+                            'project': project,
+                            'exp': exp,
+                            'mip': mip,
+                            'short_name': short_name,
+                        }
+                        variables.append(variable)
 
-            datasets = sorted(search_variables(variables, 'dataset'),
-                              key=str.lower)
-            for dataset in datasets:
-                for variable in variables:
-                    variable['dataset'] = dataset
-                ensembles = search_variables(variables, 'ensemble')
-                for ensemble in group_ensembles(ensembles):
-                    results.append([dataset, ensemble, grid])
+                datasets = sorted(search_variables(variables, 'dataset'),
+                                                   key=str.lower)
+                for dataset in datasets:
+                    for variable in variables:
+                        variable['dataset'] = dataset
+                    ensembles = search_variables(variables, 'ensemble')
+                    for ensemble in group_ensembles(ensembles):
+                        if dataset == 'fio-esm':
+                            dataset = 'FIO-ESM'
+                        format_dataset(project, dataset, ensemble, dataset_dict)
 
-    results.sort(key=lambda i: (i[0].lower(
-    ), tuple(int(i) for i in re.findall(r'\d+', i[1]))))
-    for dataset, ensemble, grid in results:
-        format_dataset(project, dataset, ensemble, grid)
+            elif project == 'CMIP6':
+                results = []
+                for grid in grids:
+                    variables = []
+                    for exp in exps:
+                        for short_name in short_names:
+                            variable = {
+                                'project': project,
+                                'exp': exp,
+                                'mip': mip,
+                                'short_name': short_name,
+                                'grid': grid,
+                            }
+                            variables.append(variable)
+
+                    datasets = sorted(search_variables(variables, 'dataset'),
+                                      key=str.lower)
+                    for dataset in datasets:
+                        for variable in variables:
+                            variable['dataset'] = dataset
+                        ensembles = search_variables(variables, 'ensemble')
+                        for ensemble in group_ensembles(ensembles):
+                            results.append([dataset, ensemble, grid])
+
+                results.sort(key=lambda i: (i[0].lower(
+                ), tuple(int(i) for i in re.findall(r'\d+', i[1]))))
+                for dataset, ensemble, grid in results:
+                    format_dataset(project, dataset, ensemble, dataset_dict, grid)
 
 
 if __name__ == "__main__":
