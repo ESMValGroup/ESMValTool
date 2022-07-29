@@ -109,6 +109,7 @@ User settings in recipe
    * time_avg: time_avg: time averaging ("annualclim", "seasonalclim")
 
    *Optional settings for script*
+   
    * percent: determines if difference expressed in percent (0, 1, default= 0)
 
 #. Script calc_IAV_hatching.ncl
@@ -150,9 +151,9 @@ User settings in recipe
 
    *Optional settings for script*
 
-   seasons: list with season index if time_avg is "seasonalclim" (then seasons
+   * seasons: list with season index if time_avg is "seasonalclim" (then seasons
    is required),  DJF:0, MAM:1, JJA:2, SON:3
-   iavmode: calculate IAV from multi-model mean or save individual models
+   * iavmode: calculate IAV from multi-model mean or save individual models
    ("each": save individual models, "mmm": multi-model mean, default), needs
    to be consistent with calc_IAV_hatching.ncl
    percent: determines if difference expressed in percent (0, 1, default = 0)
@@ -290,7 +291,7 @@ User settings in recipe
    * periods: list with start years of periods
    * ancestors: variable and diagnostics that calculated field to be plotted
 
-   *Optional settings (script)*
+   *Optional settings for script*
 
    * projection: map projection, any valid ncl projection, default = Robinson
    * diff_levs: list with explicit levels for all contour plots
@@ -317,7 +318,7 @@ User settings in recipe
    * eyears: list of end years of periods of interest
    * label: list of labels of the scenarios
 
-   *Optional settings (script)*
+   *Optional settings for script*
 
    * title: title of the plot
 
@@ -491,8 +492,8 @@ User settings in recipe
 Variables
 ---------
 
-*Note: These are the variables tested and used in IPCC AR5. However, the code is flexible and in theory other va
-riables of the same kind can be used.*
+*Note: These are the variables tested and used in the original paper. However, the code is flexible and in theory other
+variables of the same kind can be used.*
 
 * tas (atmos, monthly mean, longitude latitude time)
 * pr (atmos, monthly mean, longitude latitude time)
