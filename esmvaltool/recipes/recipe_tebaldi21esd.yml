@@ -3595,7 +3595,7 @@ diagnostics:
         styleset: CMIP6, time_avg: annualclim}
     additional_datasets: *fig6_IAV_datasets
   fig6d:
-    description: Fig6d, Patterns of global PR for SSP5-3.4 with hatching
+    description: Fig6d, Patterns of global PR for SSP5-3.4 with hatching. Due to a mistake in the paper, this correponds to fig7d in the paper.
     realms: [atmos]
     themes: [phys]
     variables:
@@ -3722,7 +3722,7 @@ diagnostics:
     - &id1106 {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r2i1p1f2, exp: ssp534-over,
       grid: gn, institute: MOHC, start_year: 2081}
   fig6c:
-    description: Fig6c, Patterns of global TAS for SSP5-3.4 with hatching
+    description: Fig6c, Patterns of global TAS for SSP5-3.4 with hatching. Due to a mistake in the paper, this corresponds to fig7c in the paper.
     realms: [atmos]
     themes: [phys]
     variables:
@@ -3892,7 +3892,7 @@ diagnostics:
         syears: *id1127
     additional_datasets: *fig6_ts_datasets
   fig7d_IAV:
-    description: Fig7, Calculate temperature interannual variability for hatching
+    description: Fig7d, Calculate temperature interannual variability for hatching
     realms: [atmos]
     themes: [varmodes]
     variables:
@@ -3911,7 +3911,7 @@ diagnostics:
     - &id1128 {dataset: GISS-E2-1-G, end_year: 7850, ensemble: r1i1p1f2, exp: piControl,
       grid: gn, institute: NASA-GISS, start_year: 7550}
   fig7c_IAV:
-    description: Fig7, Calculate temperature interannual variability for hatching
+    description: Fig7c, Calculate temperature interannual variability for hatching
     realms: [atmos]
     themes: [varmodes]
     variables:
@@ -3929,7 +3929,7 @@ diagnostics:
     - *id1083
     - *id1128
   fig7d:
-    description: Fig7, Pattern of PR change for SSP4-3.4 with hatching
+    description: Fig7d, Pattern of PR change for SSP4-3.4 with hatching. Due to a mistake in the paper, this corresponds to fig6d in the paper.
     realms: [atmos]
     themes: [phys]
     variables:
@@ -3986,7 +3986,7 @@ diagnostics:
     - &id1138 {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r1i1p1f2, exp: ssp434,
       grid: gr, institute: CNRM-CERFACS, start_year: 2081}
   fig7f:
-    description: Pattern difference of PR between SSP4-6.0 and SSP4-3.4
+    description: Fig7f, Pattern difference of PR between SSP4-6.0 and SSP4-3.4
     realms: [atmos]
     themes: [phys]
     variables:
@@ -4046,7 +4046,7 @@ diagnostics:
     - &id1151 {dataset: FGOALS-g3, end_year: 2100, ensemble: r1i1p1f1, exp: ssp460,
       grid: gn, institute: CAS, start_year: 2081}
   fig7c:
-    description: Fig7, Pattern of TAS change for SSP4-3.4 with hatching
+    description: Fig7c, Pattern of TAS change for SSP4-3.4 with hatching. Due to a mistake in the paper, this corresponds to fig6c of the paper.
     realms: [atmos]
     themes: [phys]
     variables:
@@ -4078,7 +4078,7 @@ diagnostics:
         title: SSP4-3.4 TAS change
     additional_datasets: *fig7_ssp434_datasets
   fig7e:
-    description: Pattern difference of TAS between SSP4-6.0 and SSP4-3.4
+    description: Fig7e, Pattern difference of TAS between SSP4-6.0 and SSP4-3.4
     realms: [atmos]
     themes: [phys]
     variables:
@@ -4105,7 +4105,7 @@ diagnostics:
         title: Difference between SSP4-6.0 and SSP4-3.4 temperature pattern
     additional_datasets: *fig7_ssp460vssp434_datasets
   fig7b:
-    description: Fig7, Time series of PR change for SSP4-6.0 and SSP4-3.4
+    description: Fig7b, Time series of PR change for SSP4-6.0 and SSP4-3.4
     realms: [atmos]
     themes: [phys]
     variables:
@@ -4177,7 +4177,7 @@ diagnostics:
     - &id1172 {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r1i1p1f2, exp: ssp460,
       grid: gr, institute: CNRM-CERFACS, start_year: 2015}
   fig7a:
-    description: Fig7, Time series of TAS change for SSP4-6.0 and SSP4-3.4
+    description: Fig7a, Time series of TAS change for SSP4-6.0 and SSP4-3.4
     realms: [atmos]
     themes: [phys]
     variables:
@@ -7475,7 +7475,7 @@ diagnostics:
     - *id111
       #- *id876
     - *id112
-  tableA8_warming_level_crossing_cmip5:
+  tableA8_cmip5:
     description: TableA8, Table of CMIP5 warming level crossing for given ssp scenarios
       and warming levels.
     realms: [atmos]
@@ -7712,7 +7712,7 @@ diagnostics:
       start_year: 2006}
     - {dataset: CNRM-CM5, end_year: 2100, ensemble: r1i1p1, exp: rcp85, institute: CNRM-CERFACS,
       start_year: 2006}
-  tableA8_warming_level_crossing_cmip6:
+  tableA8_cmip6:
     description: TableA8, Table of CMIP6 warming level crossing for given ssp scenarios
       and warming levels.
     realms: [atmos]
