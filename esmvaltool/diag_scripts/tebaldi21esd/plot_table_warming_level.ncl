@@ -146,7 +146,7 @@ begin
   netcdf_dir = diag_script_info@input_files(1)
   datapath = netcdf_dir + "/" + variable_info[0]@diagnostic + ".nc"
   nc_file = datapath
-  plot_file = outfile
+  plot_file = plot_dir + "/" + outfile + "." + file_type
   caption = text4
   statistics = ("mean")
   domains = ("global")
