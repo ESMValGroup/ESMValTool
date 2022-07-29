@@ -396,7 +396,7 @@ begin
 
   ; collect meta-data
   nc_file = ncdf_outfile
-  plot_file = "None"
+  plot_file = work_dir + "/None"
   caption = "Inter-annual variability based on piControl runs."
   statistics = ("var")
   domains = ("global")
