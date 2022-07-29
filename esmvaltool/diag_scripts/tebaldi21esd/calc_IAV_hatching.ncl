@@ -59,6 +59,9 @@ begin
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)
+
+  plot_dir = config_user_info@plot_dir
+  system("mkdir -p " + plot_dir)
 end
 
 begin
@@ -396,7 +399,7 @@ begin
 
   ; collect meta-data
   nc_file = ncdf_outfile
-  plot_file = "None"
+  plot_file = plot_dir + "/None"
   caption = "Inter-annual variability based on piControl runs."
   statistics = ("var")
   domains = ("global")

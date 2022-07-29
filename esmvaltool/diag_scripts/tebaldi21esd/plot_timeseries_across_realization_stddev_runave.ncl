@@ -203,7 +203,7 @@ begin
 
   ; collect meta-data
   nc_file = datapath
-  plot_file = outfile
+  plot_file = plot_dir + "/" + outfile + "." + file_type
   statistics = ("stddev")
   domains = ("global")
   plot_types = ("times")

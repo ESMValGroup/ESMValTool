@@ -2415,6 +2415,7 @@ diagnostics:
         projection: Robinson
         scenarios: &id816 [ssp119, ssp126, ssp245, ssp370, ssp585]
         script: tebaldi21esd/plot_pattern.ncl
+        time_avg: annualclim
         sig: false
         title: Difference between CMIP6 and CMIP5 patterns ~C~     of temperature
           change scaled by global T
