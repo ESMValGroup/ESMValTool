@@ -141,11 +141,12 @@ datasets:
 
   CERES-EBAF:
     tier: 2
-    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAF4Selection.jsp
-    last_access: 2019-11-26
+    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA41Selection.jsp
+    last_access: 2022-07-01
     info: |
-      Select: "TOA Fluxes" ("Shortwave Flux" and "Longwave Flux", "All Sky"
-      and "Clear Sky"), "Monthly Mean", "Regional 1x1 global grid".
+      Select: "TOA Fluxes" (all), "Monthly", "Regional" (0-360, -90-90)
+      Enter "Email Address" and click on "Get Data"
+      Wait for the processing to be finished and click on "Download"
 
   CERES-SYN1deg:
     tier: 3
