@@ -152,11 +152,11 @@ User settings in recipe
    *Optional settings for script*
 
    * seasons: list with season index if time_avg is "seasonalclim" (then seasons
-   is required),  DJF:0, MAM:1, JJA:2, SON:3
-   * iavmode: calculate IAV from multi-model mean or save individual models
-   ("each": save individual models, "mmm": multi-model mean, default), needs
-   to be consistent with calc_IAV_hatching.ncl
-   percent: determines if difference expressed in percent (0, 1, default = 0)
+     is required),  DJF:0, MAM:1, JJA:2, SON:3
+   * iavmode: calculate IAV from multi-model mean or save individual models 
+     ("each": save individual models, "mmm": multi-model mean, default), 
+     needs to be consistent with calc_IAV_hatching.ncl
+   * percent: determines if difference expressed in percent (0, 1, default = 0)
 
 #. Script calc_pattern_intermodel_stddev_scaleT.ncl
 
