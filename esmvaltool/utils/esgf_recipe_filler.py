@@ -1,10 +1,36 @@
 import itertools
 import logging
+import pyesgf.search as pys
 import re
 
-from esmvalcore.esgf._logon import get_connection
 from esmvalcore.esgf._search import get_esgf_facets
 from esmvalcore.esgf.facets import DATASET_MAP, FACETS
+
+
+def load_esgf_pyclient_config():
+    """Load a basic esgf-pyclient configuration."""
+    cfg = {
+        'logon': {
+            'interactive': False,
+            'bootstrap': True,
+        },
+        'search_connection': {
+            'url': 'http://esgf-node.llnl.gov/esg-search',
+            'distrib': True,
+            'timeout': 120,
+            'cache': '~/.esmvaltool/cache/pyesgf-search-results',
+            'expire_after': 86400,
+        },
+    }
+
+    return cfg
+
+
+def get_connection():
+    """Connect to ESGF."""
+    cfg = load_esgf_pyclient_config()
+    connection = pys.SearchConnection(**cfg["search_connection"])
+    return connection
 
 
 def list_cmip6_grids():
