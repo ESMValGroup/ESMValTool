@@ -202,32 +202,10 @@ def read_config_user_file(config_file, folder_name, options=None):
     with open(config_file, 'r') as file:
         cfg = yaml.safe_load(file)
 
-    # DEPRECATED: remove in v2.4
-    for setting in ('write_plots', 'write_netcdf'):
-        if setting in cfg:
-            msg = (
-                f"Using '{setting}' in {config_file} is deprecated and will "
-                "be removed in ESMValCore version 2.4. For diagnostics "
-                "that support this setting, it should be set in the "
-                "diagnostic script section of the recipe instead. "
-                f"Remove the setting from {config_file} to get rid of this "
-                "warning message.")
-            print(f"Warning: {msg}")
-            warnings.warn(DeprecationWarning(msg))
-
     if options is None:
         options = dict()
     for key, value in options.items():
         cfg[key] = value
-        # DEPRECATED: remove in v2.4
-        if key in ('write_plots', 'write_netcdf'):
-            msg = (
-                f"Setting '{key}' from the command line is deprecated and "
-                "will be removed in ESMValCore version 2.4. For diagnostics "
-                "that support this setting, it should be set in the "
-                "diagnostic script section of the recipe instead.")
-            print(f"Warning: {msg}")
-            warnings.warn(DeprecationWarning(msg))
 
     # set defaults
     defaults = {
@@ -243,9 +221,6 @@ def read_config_user_file(config_file, folder_name, options=None):
         'profile_diagnostic': False,
         'config_developer_file': None,
         'drs': {},
-        # DEPRECATED: remove default settings below in v2.4
-        'write_plots': True,
-        'write_netcdf': True,
     }
 
     for key in defaults:
