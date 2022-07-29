@@ -696,7 +696,8 @@ diagnostics:
         end_year: 2014
         additional_datasets: *models_cmip6_historical
     additional_datasets:
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+            #- {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
     scripts:
       fig_3_3:
         script: ipcc_ar6/model_bias.ncl
@@ -724,7 +725,8 @@ diagnostics:
         end_year: 2004
         additional_datasets: *models_cmip5_historical
     additional_datasets:
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+            #- {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
     scripts:
       fig_3_3:
         script: ipcc_ar6/model_bias.ncl
@@ -925,7 +927,7 @@ diagnostics:
         end_year: 2014
         additional_datasets: *models_cmip6_historical
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3,
          tier: 1}
     scripts:
       fig_3_13:
@@ -954,7 +956,7 @@ diagnostics:
         end_year: 2004
         additional_datasets: *models_cmip5_historical
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3,
          tier: 1}
     scripts:
       fig_3_13:
@@ -1028,7 +1030,7 @@ diagnostics:
         additional_datasets: *models_cmip6_hist-nat
     additional_datasets:
       - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3,
          tier: 1, start_year: 1979}
       - {dataset: CRU, mip: Amon, project: OBS, type: reanaly,
          version: TS4.02, tier: 2}
