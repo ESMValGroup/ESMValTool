@@ -6600,23 +6600,23 @@ diagnostics:
       calc_table_tas:
         begin_ref_year: 1995
         end_ref_year: 2014
-        eyears: &id1293 [2060, 2100]
-        label: &id1294 [SSP1-1.9, SSP1-2.6, SSP2-4.5, SSP3-7.0, SSP5-8.5]
-        scenarios: &id1295 [ssp119, ssp126, ssp245, ssp370, ssp585]
+        eyears: &id2293 [2060, 2100]
+        label: &id2294 [SSP1-1.9, SSP1-2.6, SSP2-4.5, SSP3-7.0, SSP5-8.5]
+        scenarios: &id2295 [ssp119, ssp126, ssp245, ssp370, ssp585]
         script: tebaldi21esd/calc_table_changes.ncl
         spread: 1.64
-        syears: &id1296 [2041, 2081]
+        syears: &id2296 [2041, 2081]
         yaxis: Relative to 1995-2014 (~S~o~N~ C)
       plot_table_tas:
         ancestors: [tas, calc_table_tas]
         begin_ref_year: 1995
         end_ref_year: 2014
-        eyears: *id1293
-        label: *id1294
-        scenarios: *id1295
+        eyears: *id2293
+        label: *id2294
+        scenarios: *id2295
         script: tebaldi21esd/plot_table_changes.ncl
         spread: 1.64
-        syears: *id1296
+        syears: *id2296
         title: Table of CMIP6 ocean-only TAS change relative to 1995-2014 (~S~o~N~
           C)
     themes: [phys]
@@ -6885,22 +6885,22 @@ diagnostics:
       calc_table_pr:
         begin_ref_year: 1995
         end_ref_year: 2014
-        eyears: &id1301 [2060, 2100]
-        label: &id1302 [SSP1-1.9, SSP1-2.6, SSP2-4.5, SSP3-7.0, SSP5-8.5]
-        scenarios: &id1303 [ssp119, ssp126, ssp245, ssp370, ssp585]
+        eyears: &id2301 [2060, 2100]
+        label: &id2302 [SSP1-1.9, SSP1-2.6, SSP2-4.5, SSP3-7.0, SSP5-8.5]
+        scenarios: &id2303 [ssp119, ssp126, ssp245, ssp370, ssp585]
         script: tebaldi21esd/calc_table_changes.ncl
         spread: 1.64
-        syears: &id1304 [2041, 2081]
+        syears: &id2304 [2041, 2081]
       plot_table_pr:
         ancestors: [pr, calc_table_pr]
         begin_ref_year: 1995
         end_ref_year: 2014
-        eyears: *id1301
-        label: *id1302
-        scenarios: *id1303
+        eyears: *id2301
+        label: *id2302
+        scenarios: *id2303
         script: tebaldi21esd/plot_table_changes.ncl
         spread: 1.64
-        syears: *id1304
+        syears: *id2304
         title: Table of CMIP6 ocean-only PR change relative to 1995-2014 (%)
     themes: [phys]
     variables:

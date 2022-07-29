@@ -116,7 +116,7 @@ User settings in recipe
    *Required settings for script*
 
    * time_avg: time_avg: time averaging ("annualclim", "seasonalclim") needs to
-     be consistent with calc_IAV_hatching.ncl
+     be consistent with calc_pattern_stippling_hatching.ncl
 
    *Optional settings for script*
 
@@ -124,7 +124,7 @@ User settings in recipe
      default is total time period
    * iavmode: calculate IAV from multi-model mean or save individual models
      ("each": save individual models, "mmm": multi-model mean, default),
-     needs to be consistent with <xxxxxxxxxxx>
+     needs to be consistent with calc_pattern_stippling_hatching.ncl
 
 #. Script calc_pattern_diff_scaleT.ncl
 
