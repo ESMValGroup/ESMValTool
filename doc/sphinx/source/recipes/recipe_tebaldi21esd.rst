@@ -492,11 +492,12 @@ User settings in recipe
 Variables
 ---------
 
-*Note: These are the variables tested and used in the original paper. However, the code is flexible and in theory other
-variables of the same kind can be used.*
+*Note: These are the variables tested and used in the original paper.*
 
 * tas (atmos, monthly mean, longitude latitude time)
 * pr (atmos, monthly mean, longitude latitude time)
+
+*However, the code is flexible and in theory other variables of the same kind can be used.*
 
 
 References
