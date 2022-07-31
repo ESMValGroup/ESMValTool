@@ -44,6 +44,7 @@ import numpy as np
 import xarray as xr
 import xesmf as xe
 from esmvalcore.preprocessor._regrid import _global_stock_cube
+from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -165,7 +166,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
 
     cube = iris.load_cube(str(in_file),
-                          constraint=utils.var_name_constraint(var['raw']))
+                          constraint=NameConstraint(var_name=var['raw']))
 
     # Time has strange values, so use forecast_reference_time instead
     cube.remove_coord('time')

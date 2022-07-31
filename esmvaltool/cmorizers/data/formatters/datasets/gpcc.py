@@ -29,6 +29,7 @@ import cftime
 import iris
 import numpy as np
 from cf_units import Unit
+from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -66,7 +67,7 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
             category=UserWarning,
             module='iris',
         )
-        cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
+        cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
     # Fix units (mm/month) -> 'kg m-2 month-1' -> 'kg m-2 s-1'
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
@@ -125,7 +126,7 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
             module='iris',
         )
         constr_cube = iris.load_cube(filepath,
-                                     utils.var_name_constraint(constraint_var))
+                                     NameConstraint(var_name=constraint_var))
 
     # fix flipped latitude
     utils.flip_dim_coord(constr_cube, 'latitude')
