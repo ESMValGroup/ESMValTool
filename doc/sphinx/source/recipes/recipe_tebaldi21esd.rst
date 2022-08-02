@@ -260,7 +260,7 @@ User settings in recipe
      (default 1)
    * label: list of scenario names included in the legend
    * percent: determines if difference expressed in percent (0, 1, default = 0)
-   * model_nr: whether to save number of model used for each scenario
+   * model_nr: whether to save number of models used for each scenario
 
 #. Script calc_timeseries_mean_spread_runave_ssp5.ncl
 
