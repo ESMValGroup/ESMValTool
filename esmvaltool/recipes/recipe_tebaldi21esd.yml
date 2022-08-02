@@ -1,28 +1,66 @@
+# ESMValTool
+# recipe_tebaldi21esd.yml
+---
 documentation:
-  authors: [debeire_kevin]
-  title: 'Tebaldi et al.,ESD, 2021'
-  description: 'Reproduces plots and tables of tebaldi21esd : TAS and PR climate model
-    projections from the Scenario Model Intercomparison Project (ScenarioMIP) of CMIP6'
-  maintainer: [debeire_kevin]
-  projects: [esmval]
-  references: [tebaldi21esd]
+  title: Tebaldi et al.,ESD, 2021
+
+  description: >
+    Reproduces plots and tables of tebaldi21esd : TAS and PR climate model
+    projections from the Scenario Model Intercomparison Project (ScenarioMIP)
+    of CMIP6
+
+  authors:
+    - debeire_kevin
+
+  maintainer:
+    - debeire_kevin
+
+  references:
+    - tebaldi21esd
+
+  projects:
+    - esmval
+
 preprocessors:
+
   preproc_annual_mean:
-    annual_statistics: {operator: mean}
+    annual_statistics:
+      operator: mean
+
   preproc_decadal_mean:
-    decadal_statistics: {operator: mean}
+    decadal_statistics:
+      operator: mean
+
   preproc_land_only:
-    mask_landsea: {fx_variables: null, mask_out: sea}
-    regrid: {scheme: linear, target_grid: 1x1}
+    mask_landsea:
+      fx_variables: null
+      mask_out: sea
+    regrid:
+      scheme: linear
+      target_grid: 1x1
+
   preproc_landonly_decadal_mean:
-    decadal_statistics: {operator: mean}
-    mask_landsea: {mask_out: sea}
+    decadal_statistics:
+      operator: mean
+    mask_landsea:
+      mask_out: sea
+
   preproc_map:
-    regrid: {scheme: linear, target_grid: 1x1}
+    regrid:
+      scheme: linear
+      target_grid: 1x1
+
   preproc_ocean_only:
-    mask_landsea: {fx_variables: null, mask_out: land}
-    regrid: {scheme: linear, target_grid: 1x1}
+    mask_landsea:
+      fx_variables: null
+      mask_out: land
+    regrid:
+      scheme: linear
+      target_grid: 1x1
+
+
 diagnostics:
+
   fig1b:
     description: Fig1b, Time series of relative change in precipitation in multiple
       scenarios incl. spread
@@ -441,6 +479,7 @@ diagnostics:
       grid: gr1, institute: NOAA-GFDL, start_year: 1850}
     - &id194 {dataset: IITM-ESM, end_year: 2098, ensemble: r1i1p1f1, exp: ssp370,
       grid: gn, institute: CCCR-IITM, start_year: 2015}
+
   fig1a:
     description: Fig1a, Time series of relative change of temperature in multiple scenarios
       incl. spread
@@ -676,6 +715,7 @@ diagnostics:
     - *id192
     - *id193
     - *id194
+
   fig2b:
     description: Fig2b, Map of multi-model mean of precipitation change scaled by
       global T change.
@@ -1101,6 +1141,7 @@ diagnostics:
       grid: gr, institute: CNRM-CERFACS, start_year: 2081}
     - &id396 {dataset: IITM-ESM, end_year: 2098, ensemble: r1i1p1f1, exp: ssp585,
       grid: gn, institute: CCCR-IITM, start_year: 2081}
+
   fig2a:
     description: Fig2a, Map of multi-model mean temperature change scaled by global
       T change.
@@ -1333,6 +1374,7 @@ diagnostics:
     - &id406 {dataset: KIOST-ESM, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585,
       grid: gr1, institute: KIOST, start_year: 2081}
     - *id396
+
   fig2d:
     description: Fig2d, Standard deviation of normalized PR patterns
     realms: [atmos]
@@ -1368,6 +1410,7 @@ diagnostics:
         title: Standard deviation of precipitation ~C~        change scaled by global
           T ~C~
     additional_datasets: *fig2_pr_datasets
+
   fig2c:
     description: Fig2c, Standard deviation of normalized TAS patterns
     realms: [atmos]
@@ -1397,6 +1440,7 @@ diagnostics:
         title: Standard deviation of temperature ~C~       change scaled by global
           T ~C~
     additional_datasets: *fig2_tas_datasets
+
   fig2f:
     description: Fig2f, Standard deviation of normalized PR patterns after averaging
       across models, highlighting the role of inter-scenario variability
@@ -1433,6 +1477,7 @@ diagnostics:
         title: Intermodel standard deviation of precipitation ~C~               change
           scaled by global T
     additional_datasets: *fig2_pr_datasets
+
   fig2e:
     description: Fig2e, Standard deviation of normalized TAS patterns after averaging
       across models, highlighting the role of inter-scenario variability
@@ -1463,6 +1508,7 @@ diagnostics:
         title: Intermodel standard deviation of temperature ~C~              change
           scaled by global T
     additional_datasets: *fig2_tas_datasets
+
   fig2h:
     description: Fig2h, standard deviation of normalized PR patterns after averaging
       across scenarios
@@ -1499,6 +1545,7 @@ diagnostics:
         title: Interscenario standard deviation of precipitation ~C~               change
           scaled by global T~C~
     additional_datasets: *fig2_pr_datasets
+
   fig2g:
     description: Fig2g, standard deviation of normalized TAS patterns after averaging
       across scenarios
@@ -1529,6 +1576,7 @@ diagnostics:
         title: Interscenario standard deviation of temperature ~C~                 change
           scaled by global T~C~
     additional_datasets: *fig2_tas_datasets
+
   fig3b:
     description: Fig3b, Normalized patterns of percent precipitation computed from
       CMIP5 models and scenarios
@@ -1793,6 +1841,7 @@ diagnostics:
     - &id595 {dataset: CESM1-WACCM, end_year: 2099, ensemble: r2i1p1, exp: rcp85,
       institute: NSF-DOE-NCAR, start_year: 2081}
     - &id596 {dataset: IPSL-CM5A-LR, ensemble: r1i1p1, exp: rcp85, institute: IPSL}
+
   fig3a:
     description: Fig3a, Normalized patterns of TAS computed from CMIP5 models
       and scenarios
@@ -1823,6 +1872,7 @@ diagnostics:
         time_avg: annualclim
         title: Temperature change scaled by global T, CMIP5
     additional_datasets: *fig3_row1_datasets
+
   fig3d:
     description: Fig3d, Map of difference between CMIP6 and CMIP5 multi-model
       mean for PR scaled by global T change.
@@ -2396,6 +2446,7 @@ diagnostics:
       project: CMIP5}
     - &id813 {dataset: CSIRO-Mk3-6-0, ensemble: r9i1p1, exp: rcp85, institute: CSIRO-QCCCE,
       project: CMIP5}
+
   fig3c:
     description: Fig3c, Map of difference between CMIP6 and CMIP5 multi-model
       mean for TAS scaled by global T change.
@@ -2427,6 +2478,7 @@ diagnostics:
         script: tebaldi21esd/calc_cmip6_and_cmip5_pattern_diff_scaleT.ncl
         time_avg: annualclim
     additional_datasets: *fig3_row2_datasets
+
   fig4d:
     description: Fig4d, Time series of RCP2.6, RCP4.5 and RCP8.5 for global average
       precipitation change incl. spread
@@ -2645,6 +2697,7 @@ diagnostics:
       institute: MIROC, start_year: 1850}
     - &id869 {dataset: CSIRO-Mk3-6-0, end_year: 2005, ensemble: r9i1p1, exp: historical,
       institute: CSIRO-QCCCE, start_year: 1850}
+
   fig4c:
     description: Fig4c, Time series of SSP1-2.6, SSP2-4.5 and SSP5-8.5 for global average
       precipitation change incl. spread
@@ -2828,6 +2881,7 @@ diagnostics:
     - *id191
     - *id192
     - *id193
+
   fig4b:
     description: Fig4b, Time series of RCP2.6, RCP4.5 and RCP8.5 for global average temperature
       change incl. spread
@@ -2868,6 +2922,7 @@ diagnostics:
         spread: 1.64
         syears: *id873
     additional_datasets: *fig4_cmip5_datasets
+
   fig4a:
     description: Fig4a, Time series of SSP1-2.6, SSP2-4.5 and SSP5-8.5 for global average
       temperature change incl. spread and constrained projections bar in 2100
@@ -3057,6 +3112,7 @@ diagnostics:
     - *id877
     - *id192
     - *id193
+
   fig5b:
     description: Fig5b, Timeseries of annual PR Stddev across realization
     realms: [atmos]
@@ -3456,6 +3512,7 @@ diagnostics:
       grid: gn, institute: MPI-M, start_year: 2015}
     - &id1065 {dataset: MPI-ESM1-2-LR, end_year: 2100, ensemble: r5i1p1f1, exp: ssp370,
       grid: gn, institute: MPI-M, start_year: 2015}
+
   fig5d:
     description: Fig5d, Timeseries of decadal PR Stddev across realization
     realms: [atmos]
@@ -3489,6 +3546,7 @@ diagnostics:
         script: tebaldi21esd/calc_timeseries_across_realization_stddev_runave.ncl
         syears: *id1068
     additional_datasets: *fig5_datasets
+
   fig5a:
     description: Fig5a, Timeseries of annual TAS Stddev across realization
     realms: [atmos]
@@ -3522,6 +3580,7 @@ diagnostics:
         script: tebaldi21esd/calc_timeseries_across_realization_stddev_runave.ncl
         syears: *id1071
     additional_datasets: *fig5_datasets
+
   fig5c:
     description: Fig5c, Timeseries of decadal TAS Stddev across realization
     realms: [atmos]
@@ -3555,6 +3614,7 @@ diagnostics:
         script: tebaldi21esd/calc_timeseries_across_realization_stddev_runave.ncl
         syears: *id1074
     additional_datasets: *fig5_datasets
+
   fig6d_IAV:
     description: Fig6d, Calculate precipitation interannual variability for hatching
     realms: [atmos]
@@ -3584,6 +3644,7 @@ diagnostics:
       grid: gn, institute: MRI, start_year: 1850}
     - &id1083 {dataset: CNRM-ESM2-1, end_year: 2150, ensemble: r1i1p1f2, exp: piControl,
       grid: gr, institute: CNRM-CERFACS, start_year: 1850}
+
   fig6c_IAV:
     description: Fig6c, Calculate temperature interannual variability for hatching
     realms: [atmos]
@@ -3594,6 +3655,7 @@ diagnostics:
       calc_IAV_for_stippandhatch_tas: {iavmode: mmm, periodlength: 20.0, script: tebaldi21esd/calc_IAV_hatching.ncl,
         styleset: CMIP6, time_avg: annualclim}
     additional_datasets: *fig6_IAV_datasets
+
   fig6d:
     description: Fig6d, Patterns of global PR for SSP5-3.4 with hatching. Due to a mistake in the paper, this correponds to fig7d in the paper.
     realms: [atmos]
@@ -3665,6 +3727,7 @@ diagnostics:
       grid: gr, institute: CNRM-CERFACS, start_year: 2081}
     - &id1094 {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r2i1p1f2, exp: ssp585,
       grid: gr, institute: CNRM-CERFACS, start_year: 2081}
+
   fig6f:
     description: fig6f, Pattern of the difference between global PR for SSP5-8.5 and SSP5-3.4-OS
     realms: [atmos]
@@ -3721,6 +3784,7 @@ diagnostics:
       grid: gn, institute: MOHC, start_year: 2081}
     - &id1106 {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r2i1p1f2, exp: ssp534-over,
       grid: gn, institute: MOHC, start_year: 2081}
+
   fig6c:
     description: Fig6c, Patterns of global TAS for SSP5-3.4 with hatching. Due to a mistake in the paper, this corresponds to fig7c in the paper.
     realms: [atmos]
@@ -3752,6 +3816,7 @@ diagnostics:
         time_avg: annualclim
         title: SSP5-3.4-OS TAS change
     additional_datasets: *fig6_ssp534_datasets
+
   fig6e:
     description: Fig6e, Pattern of the difference between global TAS for SSP5-8.5 and SSP5-3.4-OS
     realms: [atmos]
@@ -3779,6 +3844,7 @@ diagnostics:
         time_avg: annualclim
         title: Difference between SSP5-8.5 and SSP5-3.4 temperature pattern
     additional_datasets: *fig6_ssp585vssp534_datasets
+
   fig6b:
     description: fig6b, Time series of PR percentage change comparing SSP5-8.5 and SSP5-3.4-OS
       incl. spread
@@ -3855,6 +3921,7 @@ diagnostics:
       grid: gr, institute: CNRM-CERFACS, start_year: 2040}
     - &id1123 {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r2i1p1f2, exp: ssp585,
       grid: gr, institute: CNRM-CERFACS, start_year: 2015}
+
   fig6a:
     description: Fig6a, Time series of global TAS change comparing SSP5-8.5 and SSP5-3.4-OS
       including spread
@@ -3891,6 +3958,7 @@ diagnostics:
         spread: 1.64
         syears: *id1127
     additional_datasets: *fig6_ts_datasets
+
   fig7d_IAV:
     description: Fig7d, Calculate temperature interannual variability for hatching
     realms: [atmos]
@@ -3910,6 +3978,7 @@ diagnostics:
     - *id1083
     - &id1128 {dataset: GISS-E2-1-G, end_year: 7850, ensemble: r1i1p1f2, exp: piControl,
       grid: gn, institute: NASA-GISS, start_year: 7550}
+
   fig7c_IAV:
     description: Fig7c, Calculate temperature interannual variability for hatching
     realms: [atmos]
@@ -3928,6 +3997,7 @@ diagnostics:
     - *id1082
     - *id1083
     - *id1128
+
   fig7d:
     description: Fig7d, Pattern of PR change for SSP4-3.4 with hatching. Due to a mistake in the paper, this corresponds to fig6d in the paper.
     realms: [atmos]
@@ -3985,6 +4055,7 @@ diagnostics:
       grid: gn, institute: MRI, start_year: 2081}
     - &id1138 {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r1i1p1f2, exp: ssp434,
       grid: gr, institute: CNRM-CERFACS, start_year: 2081}
+
   fig7f:
     description: Fig7f, Pattern difference of PR between SSP4-6.0 and SSP4-3.4
     realms: [atmos]
@@ -4045,6 +4116,7 @@ diagnostics:
       grid: gn, institute: NASA-GISS, start_year: 2081}
     - &id1151 {dataset: FGOALS-g3, end_year: 2100, ensemble: r1i1p1f1, exp: ssp460,
       grid: gn, institute: CAS, start_year: 2081}
+
   fig7c:
     description: Fig7c, Pattern of TAS change for SSP4-3.4 with hatching. Due to a mistake in the paper, this corresponds to fig6c of the paper.
     realms: [atmos]
@@ -4077,6 +4149,7 @@ diagnostics:
         time_avg: annualclim
         title: SSP4-3.4 TAS change
     additional_datasets: *fig7_ssp434_datasets
+
   fig7e:
     description: Fig7e, Pattern difference of TAS between SSP4-6.0 and SSP4-3.4
     realms: [atmos]
@@ -4104,6 +4177,7 @@ diagnostics:
         time_avg: annualclim
         title: Difference between SSP4-6.0 and SSP4-3.4 temperature pattern
     additional_datasets: *fig7_ssp460vssp434_datasets
+
   fig7b:
     description: Fig7b, Time series of PR change for SSP4-6.0 and SSP4-3.4
     realms: [atmos]
@@ -4176,6 +4250,7 @@ diagnostics:
       grid: gn, institute: MRI, start_year: 2015}
     - &id1172 {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r1i1p1f2, exp: ssp460,
       grid: gr, institute: CNRM-CERFACS, start_year: 2015}
+
   fig7a:
     description: Fig7a, Time series of TAS change for SSP4-6.0 and SSP4-3.4
     realms: [atmos]
@@ -4215,6 +4290,7 @@ diagnostics:
         ymax: 8
         ymin: -2
     additional_datasets: *fig7_ts_datasets      
+
   figA2c:
     description: Fig A2c, Time series of relative change in precipitation in multiple
       scenarios incl. spread over land-only
@@ -4254,6 +4330,7 @@ diagnostics:
         styleset: CMIP6
         syears: *id1180
     additional_datasets: *fig1_pr_datasets
+
   figA2d:
     description: FigA2d, Time series of relative change in precipitation in multiple
       scenarios incl. spread over ocean-only
@@ -4293,6 +4370,7 @@ diagnostics:
         styleset: CMIP6
         syears: *id1184
     additional_datasets: *fig1_pr_datasets
+
   figA2a:
     description: FigA2a, Time series of relative change of temperature in multiple
       scenarios incl. spread over land-only
@@ -4330,6 +4408,7 @@ diagnostics:
         spread: 1.64
         syears: *id1188
     additional_datasets: *fig1_tas_datasets
+
   figA2b:
     description: FigA2b, Time series of relative change of temperature in multiple
       scenarios incl. spread over ocean-only
@@ -4367,6 +4446,7 @@ diagnostics:
         spread: 1.64
         syears: *id1192
     additional_datasets: *fig1_tas_datasets
+
   figA4_IAV_calc_pr:
     description: FigA4, Calculate precipitation interannual variability for hatching
     realms: [atmos]
@@ -4467,6 +4547,7 @@ diagnostics:
       institute: CNRM-CERFACS, start_year: 1850}
     - &id1237 {dataset: SAM0-UNICON, end_year: 301, ensemble: r1i1p1f1, grid: gn,
       institute: SNU, start_year: 1}
+
   figA4_IAV_calc_tas:
     description: FigA4, Calculate TAS interannual variability for hatching
     realms: [atmos]
@@ -4529,6 +4610,7 @@ diagnostics:
     - *id1237
     - {dataset: KIOST-ESM, end_year: 2989, ensemble: r1i1p1f1, grid: gr1, institute: KIOST,
       start_year: 2689}
+
   figA4b:
     description: FigA4b, Pattern precipitation changes (not scaled by global T) for
       SSP1-1.9
@@ -4619,6 +4701,7 @@ diagnostics:
     - *id251
     - *id252
     - *id253
+
   figA4d:
     description: FigA4d, Pattern precipitation changes (not scaled by global T) for
       SSP1-2.6
@@ -4733,6 +4816,7 @@ diagnostics:
     - *id288
     - *id289
     - *id290
+
   figA4f:
     description: FigA4f, Pattern precipitation changes (not scaled by global T) for
       SSP2-4.5
@@ -4846,6 +4930,7 @@ diagnostics:
     - *id324
     - *id325
     - *id326
+
   figA4h:
     description: FigA4h, Pattern precipitation changes (not scaled by global T) for
       SSP3-7.0
@@ -4955,6 +5040,7 @@ diagnostics:
     - *id357
     - *id358
     - *id359        
+
   figA4j:
     description: FigA4j, Pattern precipitation changes (not scaled by global T) for
       SSP5-8.5
@@ -5069,6 +5155,7 @@ diagnostics:
     - *id394
     - *id395
     - *id396        
+
   figA4a:
     description: FigA4a, Pattern temperature changes (not scaled by global T) for SSP1-1.9
     realms: [atmos]
@@ -5155,6 +5242,7 @@ diagnostics:
     - *id251
     - *id252
     - *id253        
+
   figA4c:
     description: FigA4c, Pattern temperature changes (not scaled by global T) for SSP1-2.6
     realms: [atmos]
@@ -5266,6 +5354,7 @@ diagnostics:
     - *id289
     - *id404
     - *id290        
+
   figA4e:
     description: FigA4e, Pattern temperature changes (not scaled by global T) for SSP2-4.5
     realms: [atmos]
@@ -5376,6 +5465,7 @@ diagnostics:
     - *id325
     - *id326
     - *id405        
+
   figA4g:
     description: FigA4g, Pattern temperature changes (not scaled by global T) for SSP3-7.0
     realms: [atmos]
@@ -5482,6 +5572,7 @@ diagnostics:
     - *id357
     - *id358
     - *id359        
+
   figA4i:
     description: FigA4i, Pattern temperature changes (not scaled by global T) for SSP5-8.5
     realms: [atmos]
@@ -5593,6 +5684,7 @@ diagnostics:
     - *id395
     - *id406
     - *id396        
+
   figA5b:
     description: FigA5b, Pattern of PR standard deviation scaled by global T change
     realms: [atmos]
@@ -5799,6 +5891,7 @@ diagnostics:
     - *id594
     - *id595
     - *id596        
+
   figA5a:
     description: FigA5a, Pattern of TAS standard deviation scaled by global T
       change
@@ -6000,6 +6093,7 @@ diagnostics:
     - *id594
     - *id595
     - *id596        
+
   figA5f:
     description: FigA5f, Pattern of PR standard deviation after averaging across models scale
       by global T change
@@ -6036,6 +6130,7 @@ diagnostics:
       pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
         start_year: 2081}
     additional_datasets: *figA5_pr_datasets        
+
   figA5e:
     description: Fig A5e, Pattern of TAS standard deviation after averaging across models scale
       by global T change
@@ -6066,6 +6161,7 @@ diagnostics:
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5,
         short_name: tas, start_year: 2081}
     additional_datasets: *figA5_tas_datasets        
+
   figA5d:
     description: FigA5d, Intermodel standard deviation of PR pattern scaled by
       global T change
@@ -6101,6 +6197,7 @@ diagnostics:
       pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
         start_year: 2081}
     additional_datasets: *figA5_pr_datasets        
+
   figA5c:
     description: FigA5c, Intermodel standard deviation of TAS pattern scaled by
       global T change
@@ -6131,6 +6228,7 @@ diagnostics:
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5,
         short_name: tas, start_year: 2081}
     additional_datasets: *figA5_tas_datasets       
+
   table1:
     description: Table1, warming level crossing for given ssp scenarios and warming
       levels.
@@ -6327,6 +6425,7 @@ diagnostics:
     - *id154
     - *id155
     - *id156
+
   tableA3_landonly:
     description: TableA3, Projected land-only CMIP6 TAS changes under the five scenarios
       by 2041-2060 and 2081-2100 relative to the historical baseline of 1995-2014.
@@ -6560,6 +6659,7 @@ diagnostics:
     - *id194
     - &id1292 {dataset: TaiESM1, end_year: 2100, ensemble: r1i1p1f1, exp: ssp370,
       grid: gn, institute: AS-RCEC, start_year: 2015}
+
   tableA3_oceanonly:
     description: TableA3, Projected ocean-only CMIP6 TAS changes under the five scenarios
       by 2041-2060 and 2081-2100 relative to the historical baseline of 1995-2014.
@@ -6592,6 +6692,7 @@ diagnostics:
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_ocean_only, project: CMIP6,
         short_name: tas, start_year: 2015}
     additional_datasets: *tableA3_datasets
+
   tableA3_global:
     description: TableA3, Projected global CMIP6 TAS changes under the five scenarios
       by 2041-2060 and 2081-2100 relative to the historical baseline of 1995-2014.
@@ -6847,6 +6948,7 @@ diagnostics:
     - *id240
     - *id194
     - *id1292
+
   tableA4_oceanonly:
     description: tableA4, Projected ocean-only CMIP6 PR changes under the five scenarios
       by 2041-2060 and 2081-2100 relative to the historical baseline of 1995-2014.
@@ -6877,6 +6979,7 @@ diagnostics:
       pr: {end_year: 2100, mip: Amon, preprocessor: preproc_ocean_only, project: CMIP6,
         short_name: pr, start_year: 2015}
     additional_datasets: *tableA4_datasets
+
   tableA4_global:
     description: tableA4, Projected global CMIP6 PR changes under the five scenarios
       by 2041-2060 and 2081-2100 relative to the historical baseline of 1995-2014.
@@ -7085,6 +7188,7 @@ diagnostics:
     - *id558
     - *id559
     - *id560
+
   tableA6_pr_cmip6:
     description: Table A6, Projected PR change for CMIP6 relative to 1986-2005
     realms: [atmos]
@@ -7265,6 +7369,7 @@ diagnostics:
     - *id110
     - *id111
     - *id112
+
   tableA6_tas_cmip5:
     description: Table A6, Projected TAS change for CMIP5 relative to 1986-2005
     realms: [atmos]
@@ -7293,6 +7398,7 @@ diagnostics:
     variables:
       tas: {end_year: 2100, mip: Amon, project: CMIP5, short_name: tas, start_year: 2006}
     additional_datasets: *tableA6_cmip5_datasets
+
   tableA6_tas_cmip6:
     description: Table A6, Projected TAS change for CMIP6 relative to 1986-2005
     realms: [atmos]
@@ -7475,6 +7581,7 @@ diagnostics:
     - *id111
       #- *id876
     - *id112
+
   tableA8_cmip5:
     description: TableA8, Table of CMIP5 warming level crossing for given ssp scenarios
       and warming levels.
@@ -7712,6 +7819,7 @@ diagnostics:
       start_year: 2006}
     - {dataset: CNRM-CM5, end_year: 2100, ensemble: r1i1p1, exp: rcp85, institute: CNRM-CERFACS,
       start_year: 2006}
+
   tableA8_cmip6:
     description: TableA8, Table of CMIP6 warming level crossing for given ssp scenarios
       and warming levels.
