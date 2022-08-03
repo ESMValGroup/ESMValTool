@@ -56,8 +56,6 @@ Diagnostics are stored in esmvaltool/diag_scripts/tebaldi21esd/
   window is performed.
 * calc_timeseries_mean_spread_ssp5.ncl: computes multi-model time series
   of change against historical baseline for ssp534-over and ssp585 with spread.
-  A running average with specified multi-model time series of change against
-  historical baseline for ssp534-over and ssp585 with spread.
   A running average with specified window is performed.
 * plot_pattern.ncl: plots a pattern.
 * plot_table_changes: plots a table of the multi-model mean and spread for
