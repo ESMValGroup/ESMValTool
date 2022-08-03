@@ -67,9 +67,9 @@ Diagnostics are stored in esmvaltool/diag_scripts/tebaldi21esd/
 * plot_timeseries_mean_spread_constrained_projections.ncl: plot
   time series with brackets for constrained projections.
 * plot_timeseries_mean_spread.ncl: plot time series (multi-model mean and
-  spread) for 3 scenarios.
+  spread) for 5 scenarios.
 * plot_timeseries_mean_spread_rightaxis_5scen.ncl: plot time series
-  (multi-model mean and spread) for 3 scenarios.
+  (multi-model mean and spread) for 5 scenarios and with an additional right axis.
 * plot_timeseries_mean_spread_ssp4.ncl: plot time series for two ssp4
   scenarios.
 * plot_timeseries_mean_spread_ssp5.ncl: plot time series for two ssp5
