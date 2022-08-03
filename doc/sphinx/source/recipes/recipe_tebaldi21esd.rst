@@ -409,6 +409,31 @@ User settings in recipe
    * spread: how many standard deviations to calculate the spread with,
      default is 1, ipcc tas is 1.64
 
+#. Script plot_timeseries_mean_spread_rightaxis_5scen.ncl
+
+   *Required settings for script*
+
+   * ancestors: variable and diagnostics that calculated field to be plotted
+   * scenarios: list of scenarios included in the figure
+   * syears: list of start years of historical and SSPs scenarios
+   * eyears: list of end years of historical and SSPs scenarios
+   * begin_ref_year: start year of reference period
+   * end_ref_year: end year of reference period
+   * rightaxis_offset: offset of the right axis relative to the left axis
+   * label: list of labels of the scenarios
+
+   *Optional settings for script*
+
+   * title: specify plot title
+   * yaxis: specify y-axis title
+   * ymin: minimim value on y-axis, default calculated from data
+   * ymax: maximum value on y-axis
+   * colormap: alternative colormap, path to rgb file or ncl name
+   * model_nr: save number of model runs per period and scenario
+   * styleset: color style
+   * spread: how many standard deviations to calculate the spread with,
+     default is 1, ipcc tas is 1.64
+
 #. Script plot_timeseries_mean_spread_ssp4.ncl
 
    *Required settings for script*
