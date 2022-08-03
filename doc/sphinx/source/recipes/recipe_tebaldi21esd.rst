@@ -499,7 +499,7 @@ User settings in recipe
 
    *Optional settings for script*
 
-   * trend: whether the trend is calculated en displayed
+   * trend: whether the trend is calculated and displayed
    * runave_window: only used if trend is true, size window used for the
      centered running average
    * title: specify plot title
