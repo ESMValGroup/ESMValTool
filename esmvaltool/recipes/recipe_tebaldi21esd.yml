@@ -2,7 +2,8 @@
 # recipe_tebaldi21esd.yml
 ---
 documentation:
-  title: Tebaldi et al.,ESD, 2021
+  title: >
+    Climate model projections from the ScenarioMIP of CMIP6
 
   description: >
     Reproduces plots and tables of tebaldi21esd : TAS and PR climate model
