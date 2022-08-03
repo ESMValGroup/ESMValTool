@@ -1,14 +1,51 @@
 ; #############################################################################
 ; Plot global timeseries for historical and SSP with constrained projections
 ; in 2100
+; Derived and adapted from
+; diag_scripts/ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl
 ; Author: Kevin Debeire (DLR, Germany)
 ; #############################################################################
 ;
-; Description
-; Plot global timeseries of TAS and bar plots of constrained projections from
-; predefined csv files.
+;  Description
+;     Plot global timeseries of TAS and bar plots of constrained projections
+;     from specified constrained values
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;     ancestors: variable and diagnostics that calculated timeseries to plot
+;     scenarios: list of scenarios included in the figure
+;     syears: list of start years of historical and SSPs scenarios
+;     eyears: list of end years of historical and SSPs scenarios
+;     begin_ref_year: start year of reference period
+;     end_ref_year: end year of reference period
+;     label: list of labels of the scenarios
+;     baseline_offset: offset between reference period (baseline) and 1850-1900
+;     lower_constrained_projections: list of lower bounds of the constrained
+;                                    projections for the scenarios included in
+;                                     the same order as the scenarios
+;     upper_constrained_projections: list of upper bounds of the constrained
+;                                    projections for the scenarios included in
+;                                    the same order as the scenarios
+;     mean_constrained_projections: list of means of the constrained projections
+;                                   of the scenarios included in the same order
+;                                   as the scenarios
+;
+;  Optional diag_script_info attributes (diagnostic specific)
+;     title: specify plot title
+;     yaxis: specify y-axis title
+;     ymin: minimim value on y-axis, default calculated from data
+;     ymax: maximum value on y-axis
+;     colormap: alternative colormap, path to rgb file or ncl name
+;     model_nr: save number of model runs per period and scenario
+;     styleset: color style
+;     spread: how many standard deviations to calculate the spread with,
+;             default is 1, ipcc tas is 1.64
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
+;
 ; #############################################################################
-
+; A temporary file written by the invoking Python script
+; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/plot/style.ncl"

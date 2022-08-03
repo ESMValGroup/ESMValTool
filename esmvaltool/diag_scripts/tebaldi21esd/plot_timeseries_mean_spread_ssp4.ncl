@@ -1,7 +1,39 @@
 ; #############################################################################
 ; Plot timeseries for SSP4-3.4 and SSP4-6.0 scenarios
+; Derived and adapted from
+; diag_scripts/ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl
 ; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
+;
+;  Description
+;     Plot time series (mean and spread) for two ssp4 scenarios.
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;     ancestors: variable and diagnostics that calculated field to be plotted
+;     scenarios: list of scenarios included in the figure
+;     syears: list of start years of historical and SSPs scenarios
+;     eyears: list of end years of historical and SSPs scenarios
+;     begin_ref_year: start year of reference period
+;     end_ref_year: end year of reference period
+;     label: list of labels of the scenarios
+;
+;  Optional diag_script_info attributes (diagnostic specific)
+;     title: specify plot title
+;     yaxis: specify y-axis title
+;     ymin: minimim value on y-axis, default calculated from data
+;     ymax: maximum value on y-axis
+;     colormap: alternative colormap, path to rgb file or ncl name
+;     model_nr: save number of model runs per period and scenario
+;     styleset: color style
+;     spread: how many standard deviations to calculate the spread with,
+;             default is 1, ipcc tas is 1.64
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
+;
+; #############################################################################
+; A temporary file written by the invoking Python script
+; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/plot/style.ncl"

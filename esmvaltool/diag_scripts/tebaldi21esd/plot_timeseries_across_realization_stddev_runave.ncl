@@ -1,8 +1,38 @@
 ; #############################################################################
-; Plot across realization Std. dev. for large ensemble experiment (SSP3-7.0)
+; Plot timeseries of across-realization Std. dev. for large ensemble experiment
 ; Author: Kevin Debeire (DLR, Germany)
 ; #############################################################################
-
+;
+;  Description
+;     Plot time series of inter-member standard deviation (ex: SSP3-7.0)
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;    ancestors: variable and diagnostics that calculated timeseries to plot
+;    scenarios: list of scenarios included in the figure
+;    syears: list of start years of historical and SSPs scenarios
+;    eyears: list of end years of historical and SSPs scenarios
+;    begin_ref_year: start year of reference period
+;    end_ref_year: end year of reference period
+;    label: list of labels of the scenarios
+;    sampled_model: name of dataset on which to sample
+;    n_samples: number of samples of size 10 to draw among all the ensembles
+;               of sampled_model only
+;
+;  Optional diag_script_info attributes (diagnostic specific)
+;     trend: whether the trend is calculated and displayed
+;     runave_window: only used if trend is true, size window used for the
+;                    centered running average
+;     title: specify plot title
+;     yaxis: specify y-axis title
+;     ymin: minimim value on y-axis, default calculated from data
+;     ymax: maximum value on y-axis
+;     colormap: alternative colormap, path to rgb file or ncl name
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
+;
+; #############################################################################
+; A temporary file written by the invoking Python script
 ; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 

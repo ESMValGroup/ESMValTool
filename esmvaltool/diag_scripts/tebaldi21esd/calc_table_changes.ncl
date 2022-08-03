@@ -1,9 +1,27 @@
 ; #############################################################################
-;  Computes the entries for the table of changes given scenario and period
-;  Author: Debeire Kevin (DLR, Germany)
+; Computes the entries for the table of changes given scenario and period
+; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
+;  Description
+;     Computes the changes (mean and spreads) for the specified scenarios and
+;     time periods relative to the historical baseline.
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;     scenarios: list with scenarios included in the table
+;     syears: list with start years of time periods to include in the table
+;     eyears: list with end years of the time periods to include in the table
+;     begin_ref_year: start year of historical baseline period (e.g. 1995)
+;     end_ref_year: end year of historical baseline period (e.g. 2014)
+;     spread: multiplier of standard deviation to calculate spread with
+;             (e.g. 1.64)
+;     label: list of scenario names included in the table
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
+;
 ; #############################################################################
-
+; A temporary file written by the invoking Python script
+; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/latlon.ncl"

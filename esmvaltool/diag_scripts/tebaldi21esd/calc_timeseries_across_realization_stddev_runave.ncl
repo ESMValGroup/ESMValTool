@@ -2,7 +2,31 @@
 ;  Compute across realization Std. dev. for large ensemble experiment(SSP3-7.0)
 ;  Author: Kevin Debeire (DLR, Germany)
 ; #############################################################################
-
+;
+;  Description
+;     Computes time series of ensemble spreads (inter-member stddev).
+;     One dataset is used for resampling subsets of 10 members.
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;     scenarios: list with scenarios to be included in the
+;                figure, e.g (/"ssp370"/)
+;     syears: list with start years in time periods (e.g. start of historical
+;             period and SSPs)
+;     eyears: list with end years in time periods (end year of historical
+;             period and SSPs)
+;     begin_ref_year: start year of reference period (e.g. 1995)
+;     end_ref_year: end year of reference period (e.g. 2014)
+;     sampled_model: name of dataset on which to sample (ex. CanESM5)
+;     n_samples: number of samples of size 10 to draw among all the
+;                ensembles of sampled_model
+;     runave_window: size window used for the centered running average
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
+;
+; #############################################################################
+; A temporary file written by the invoking Python script
+; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/latlon.ncl"

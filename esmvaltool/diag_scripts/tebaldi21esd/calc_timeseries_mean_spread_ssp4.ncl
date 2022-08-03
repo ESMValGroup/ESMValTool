@@ -1,8 +1,35 @@
 ; #############################################################################
-;  Computes timeseries of two SSP4 scenarios between 2015-2100
-;  Author: Debeire Kevin (DLR, Germany)
+; Computes timeseries of two SSP4 scenarios between 2015-2100
+; Derived and adapted from
+; diag_scripts/ipcc_ar5/ch12_tsline_mean_spread.ncl
+; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
-
+;
+;  Description
+;     Computes multi-model time series of change against historical baseline for
+;     ssp434 and ssp460 with spread. A running average with specified
+;     window is performed.
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;     scenarios: list with scenarios to be included: ssp434, ssp460
+;     syears: list with start years of time periods (historical then SSPs)
+;     eyears: list with end years of the time periods (historical then SSPs)
+;     begin_ref_year: start year of historical baseline period (e.g. 1995)
+;     end_ref_year: end year of historical baseline period (e.g. 2014)
+;     label: list of scenario names included in the legend
+;
+;  Optional diag_script_info attributes (diagnostic specific)
+;     runave_window_size: size of the window for the running average (default 11)
+;     spread: how many standard dev. to calculate the spread with (default 1)
+;     percent: determines if difference expressed in percent (0, 1, default = 0)
+;     model_nr: whether to save number of models used for each scenario
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
+;
+; #############################################################################
+; A temporary file written by the invoking Python script
+; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/latlon.ncl"

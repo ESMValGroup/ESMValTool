@@ -1,8 +1,29 @@
 ; #############################################################################
-;  Produces entries for the table of warming level crossings
-;  Author: Debeire Kevin (DLR, Germany)
+; Produces entries for the table of warming level crossings
+; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
-
+;
+;  Description
+;     Computes the warming level crossing year (mean, five percent and
+;     ninety-five percent quantiles of crossing years) for specified scenarios
+;     and warming levels.
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;     scenarios: list with scenarios to be included
+;     warming_levels: list of warming levels to include in the table
+;     syears: list with start years of time periods (historical then SSPs)
+;     eyears: list with end years of the time periods (historical then SSPs)
+;     begin_ref_year: start year of historical baseline period (e.g. 1995)
+;     end_ref_year: end year of historical baseline period (e.g. 2014)
+;     offset: offset between current historical baseline and 1850-1900 period
+;     label: list of scenario names included in the table
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
+;
+; #############################################################################
+; A temporary file written by the invoking Python script
+; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/latlon.ncl"

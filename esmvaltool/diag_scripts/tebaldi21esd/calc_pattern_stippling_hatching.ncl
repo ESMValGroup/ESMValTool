@@ -2,7 +2,43 @@
 ; Multi-model mean change map with significance
 ; Author: Kevin Debeire (DLR, Germany)
 ; #############################################################################
-
+;
+;  Description
+;     computes the map of multi-model mean change with stippling for significant
+;     region and hatching for non-significant region. Significant is where the
+;     multi-model mean change is greater than two standard deviations of the
+;     internal variability and where at least 90% of the models agree on the
+;     sign of change. Not significant is where the multi-model mean change is
+;     less than one standard deviation of internal variability.
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;     ancestors: variable and diagnostics that calculated interannual
+;                variability for stippling and hatching
+;     scenarios: list with scenarios to be included in the
+;                figure, e.g (/"ssp245","ssp585"/)
+;     periods: list with start years of periods to be included
+;              e.g. (/"2046","2081"/)
+;     time_avg: list with seasons or annual to be included
+;               e.g (/"annualclim"/)
+;     sig: plot stippling for significance? (True, False)
+;     not_sig: plot hatching for uncertainty? (True, False)
+;     iavmode: calculate IAV from multi-model mean or save individual models
+;             ("each": save individual models, "mmm": multi-model mean, default)
+;             , needs to be consistent with calc_IAV_hatching.ncl
+;     labels: list with labels to use in legend depending on scenarios
+;
+;  Optional diag_script_info attributes (diagnostic specific)
+;     seasons: list with seasons index to be included if
+;              averagetime is "seasonalclim" (required for
+;              seasonalclim), DJF:0, MAM:1, JJA:2, SON:3
+;     percent: 0 or 1, difference in percent = 1, default = 0
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
+;
+; #############################################################################
+; A temporary file written by the invoking Python script
+; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/statistics.ncl"

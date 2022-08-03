@@ -1,8 +1,34 @@
 ; #############################################################################
 ; Plots the multi-model mean change map with significance and
 ; hatching if specified
+; Derived and adapted from
+; diag_scripts/ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
 ; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
+;
+;  Description
+;     Plots map
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;     scenarios: list with scenarios to be included in the
+;                figure, e.g (/"ssp245","ssp585"/)
+;     periods: list with start years of periods to be included
+;              e.g. (/"2046","2081"/);
+;
+;  Optional diag_script_info attributes (diagnostic specific)
+;     sig: plot stippling for significance? (True, False)
+;     not_sig: plot hatching for uncertainty? (True, False)
+;     label: label to add in the legend
+;     colormap: alternative colormap, path to rgb file or ncl name
+;     model_nr: save number of model runs per period and scenario in netcdf
+;               to print in plot? (True, False, default = False)
+;     units: units written next to colorbar, e.g. (~F35~J~F~C)
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
+;
+; #############################################################################
+; A temporary file written by the invoking Python script
 ; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 

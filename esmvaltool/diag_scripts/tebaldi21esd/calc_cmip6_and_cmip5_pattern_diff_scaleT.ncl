@@ -1,9 +1,36 @@
 ; #############################################################################
-; Computes the pattern difference between CMIP6 and CMIP5.
-; It uses the multi-model change between historical and all included scenarios
-; scaled by global T change
+; Computes the pattern difference between CMIP6 and CMIP5 based on the
+; multi-model change between historical and all included scenarios
+; scaled by global T change.
+; Derived and adapted from
+; diag_scripts/ipcc_ar5/ch12_calc_map_diff_scaleT_mmm_stipp.ncl
 ; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
+;
+;  Description
+;     Pattern scaling. Computes the pattern difference between the CMIP6
+;     multi-model mean change and the CMIP5 multi-model mean change.
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;     scenarios_cimp6: list with CMIP6 scenarios to be included in the
+;                      figure, e.g (/"ssp245"/)
+;     scenarios_cmip5: list with CMIP5 scenarios to be included in the
+;                      figure, e.g (/"rcp45"/)
+;     periods: list with start years of periods to be included
+;              e.g. (/"2046","2081"/)
+;     time_avg: list with seasons or annual to be included
+;               e.g (/"annualclim"/)
+;
+;  Optional diag_script_info attributes (diagnostic specific)
+;     percent: 0 or 1, difference in percent = 1, default = 0
+;     units: unit string in ncl formatting for legend title
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
+;
+; #############################################################################
+; A temporary file written by the invoking Python script
+; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/statistics.ncl"

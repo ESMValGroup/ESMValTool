@@ -1,9 +1,31 @@
 ; #############################################################################
-; Plots the table of changes between historical and scenario
-; for different periods
+; Plot the table of changes between historical and specified scenarios
+; across different periods
 ; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
-
+;
+;  Description
+;     Plots a table of the multi-model mean and spread for specified scenarios
+;     and periods.
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;     ancestors: variable and diagnostics used to calculate the values to plot
+;     scenarios: list of scenarios included in the figure
+;     syears: list of start years of historical and SSPs scenarios
+;     eyears: list of end years of historical and SSPs scenarios
+;     label: list of labels of the scenarios
+;     begin_ref_year: start year of reference period
+;     end_ref_year: end year of reference period
+;
+;  Optional diag_script_info attributes (diagnostic specific)
+;     title: specify title of the table
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
+;
+; #############################################################################
+; A temporary file written by the invoking Python script
+; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/latlon.ncl"

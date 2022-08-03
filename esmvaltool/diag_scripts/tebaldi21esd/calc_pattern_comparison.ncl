@@ -1,11 +1,38 @@
 ; #############################################################################
 ; Computes the difference between two patterns
+; Derived and adapted from
+; diag_scripts/ipcc_ar5/ch12_calc_map_diff_scaleT_mmm_stipp.ncl
 ; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
-; Description
-; Output the pattern differences between the  multi-model mean patterns
-; of two scenarios
-
+;
+;  Description
+;     Computes the difference between the patterns of multi-model mean change
+;     of two different scenarios (ex: SSP4-6.0 and SSP4-3.4)
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;     scenarios: list with two scenarios included in figure. The last scenario
+;                is taken as reference. For example to compute the difference
+;                of pattern between SSP4-6.0 and SSP4-3.4 (ssp460 - ssp434),
+;                scenario ssp460 should be the last element of the list.
+;     periods: list with start years of periods to be included
+;              e.g. (/"2046","2081"/)
+;     time_avg: list with seasons or annual to be included
+;               e.g (/"annualclim"/)
+;     label: label of periods (ex. 2081-2100 relative to 1995-2014)
+;
+;  Optional diag_script_info attributes (diagnostic specific)
+;     seasons: list with seasons index to be included if
+;              averagetime is "seasonalclim" (required for
+;              seasonalclim), DJF:0, MAM:1, JJA:2, SON:3
+;     percent: 0 or 1, difference in percent = 1, default = 0
+;     units: unit string in ncl formatting for legend title
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
+;
+; #############################################################################
+; A temporary file written by the invoking Python script
+; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/latlon.ncl"

@@ -1,15 +1,38 @@
 ; #############################################################################
 ; Computes the pattern maps of multi-model change between historical and
 ; scenarios  scaled by global T change
+; Derived and adapted from
+; diag_scripts/ipcc_ar5/ch12_calc_map_diff_scaleT_mmm_stipp.ncl
 ; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
 ;
-; Description
-;    Pattern scaling. Annual mean or seasonal change scaled by global T
-;    change per model multi-model mean with significance in different
-;    periods (e.g. 2081-2100 and 2181-2200 with respect to 1986-2005)
+;  Description
+;     Pattern scaling. Annual mean or seasonal change scaled by global T
+;     change per multi-model mean with significance in different
+;     periods (e.g. 2081-2100 with respect to 1995-2014)
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;     scenarios: list with scenarios to be included in the
+;                figure, e.g (/"ssp245","ssp585"/)
+;     periods: list with start years of periods to be included
+;              e.g. (/"2046","2081"/)
+;     time_avg: list with seasons or annual to be included
+;               e.g (/"annualclim"/)
+;     label: label of periods (ex. 2081-2100 relative to 1995-2014)
+;
+;  Optional diag_script_info attributes (diagnostic specific)
+;     seasons: list with seasons index to be included if
+;              averagetime is "seasonalclim" (required for
+;              seasonalclim), DJF:0, MAM:1, JJA:2, SON:3
+;     percent: 0 or 1, difference in percent = 1, default = 0
+;     units: unit string in ncl formatting for legend title
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
 ;
 ; #############################################################################
+; A temporary file written by the invoking Python script
+; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/statistics.ncl"

@@ -1,9 +1,29 @@
 ; #############################################################################
-; Plots the table of warming level crossings, as in Table 1 of Tebaldi et al.
+; Plot the table of warming level crossings, as in Table 1 of Tebaldi et al.
 ; with mean and 5-95 percent confidence intervals
 ; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
-
+;
+;  Description
+;     Plot a table of warming level crossing years for specified scenarios
+;     (columns) and warming levels (rows):
+;
+;  Required diag_script_info attributes (diagnostics specific)
+;     scenarios: list of scenarios included in the figure
+;     warming_levels: list of warming levels
+;     syears: list of start years of historical and SSPs scenarios
+;     eyears: list of end years of historical and SSPs scenarios
+;     begin_ref_year: start year of reference period
+;     end_ref_year: end year of reference period
+;     label: list of labels of the scenarios
+;     offset: offset between reference baseline and 1850-1900
+;
+;  Modification history
+;     20220803-A_debe_kevin: written for ESMValTool
+;
+; #############################################################################
+; A temporary file written by the invoking Python script
+; Passes on a number of variables from Python to NCL
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/latlon.ncl"
