@@ -227,7 +227,6 @@ User settings in recipe
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1986)
    * end_ref_year: end year of historical baseline period (e.g. 2005)
-   * spread: how many standard deviations to calculate the spread with
 
    *Optional settings for script*
 
@@ -248,7 +247,6 @@ User settings in recipe
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1986)
    * end_ref_year: end year of historical baseline period (e.g. 2005)
-   * spread: how many standard deviations to calculate the spread with
 
    *Optional settings for script*
 
@@ -269,7 +267,6 @@ User settings in recipe
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1986)
    * end_ref_year: end year of historical baseline period (e.g. 2005)
-   * spread: how many standard deviations to calculate the spread with
 
    *Optional settings for script*
 
