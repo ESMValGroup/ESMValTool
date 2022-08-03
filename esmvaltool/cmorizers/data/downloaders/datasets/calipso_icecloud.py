@@ -32,7 +32,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         downloader.download_file(path)
 
 
-SERVER = "https://asdc.larc.nasa.gov/data/CALIPSO/LID_L3_Ice_Cloud-Standard-V1-00"
+SERVER = ("https://asdc.larc.nasa.gov/data/"
+          "CALIPSO/LID_L3_Ice_Cloud-Standard-V1-00")
 
 FILES = f"""{SERVER}/2016/CAL_LID_L3_Ice_Cloud-Standard-V1-00.2016-12A.hdf
 {SERVER}/2016/CAL_LID_L3_Ice_Cloud-Standard-V1-00.2016-11A.hdf
