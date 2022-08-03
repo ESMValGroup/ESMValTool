@@ -640,17 +640,19 @@ again.
 
 .. _install_on_hpc:
 
-Pre-installed versions on HPC clusters
-======================================
+Pre-installed versions on HPC clusters / other servers
+======================================================
 
-The ESMValTool is also available on the HPC clusters CEDA-JASMIN and DKRZ-MISTRAL and there will be no need
-to install it yourself if you are just running diagnostics:
+ESMValTool is available on the HPC clusters CEDA-JASMIN and DKRZ-Levante, and on the Met Office Linux
+estate, so there is no need to install ESMValTool if you are just running recipes:
 
  - CEDA-JASMIN: `esmvaltool` is available on the scientific compute nodes (`sciX.jasmin.ac.uk` where
    `X = 1, 2, 3, 4, 5`) after login and module loading via `module load esmvaltool`; see the helper page at
    `CEDA <https://help.jasmin.ac.uk/article/4955-community-software-esmvaltool>`__ ;
  - DKRZ-Levante: `esmvaltool` is available on login nodes (`levante.dkrz.de`) after login and module loading
    via `module load esmvaltool`; the command `module help esmvaltool` provides some information about the module.
+ - Met Office: `esmvaltool` is available on the Linux estate after login and module loading via `module load`;
+   see the ESMValTool Community of Practice SharePoint site for more details.
 
 Installation from the conda lock file
 =====================================
