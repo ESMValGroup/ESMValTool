@@ -4,12 +4,13 @@
 ; #############################################################################
 ;
 ;  Description
-;     computes the map of multi-model mean change with stippling for significant
-;     region and hatching for non-significant region. Significant is where the
-;     multi-model mean change is greater than two standard deviations of the
-;     internal variability and where at least 90% of the models agree on the
-;     sign of change. Not significant is where the multi-model mean change is
-;     less than one standard deviation of internal variability.
+;     computes the map of multi-model mean change with stippling for
+;     significant region and hatching for non-significant region. Significant
+;     is where the multi-model mean change is greater than two standard
+;     deviations of the internal variability and where at least 90% of the
+;     models agree on the sign of change. Not significant is where the
+;     multi-model mean change is less than one standard deviation of
+;     internal variability.
 ;
 ;  Required diag_script_info attributes (diagnostics specific)
 ;     ancestors: variable and diagnostics that calculated interannual
@@ -23,8 +24,8 @@
 ;     sig: plot stippling for significance? (True, False)
 ;     not_sig: plot hatching for uncertainty? (True, False)
 ;     iavmode: calculate IAV from multi-model mean or save individual models
-;             ("each": save individual models, "mmm": multi-model mean, default)
-;             , needs to be consistent with calc_IAV_hatching.ncl
+;             ("each": save individual models, "mmm": multi-model mean,
+;             default), needs to be consistent with calc_IAV_hatching.ncl
 ;     labels: list with labels to use in legend depending on scenarios
 ;
 ;  Optional diag_script_info attributes (diagnostic specific)

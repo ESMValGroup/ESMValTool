@@ -25,7 +25,7 @@
 ;     upper_constrained_projections: list of upper bounds of the constrained
 ;                                    projections for the scenarios included in
 ;                                    the same order as the scenarios
-;     mean_constrained_projections: list of means of the constrained projections
+;     mean_constrained_projections: list of means of the constrained projection
 ;                                   of the scenarios included in the same order
 ;                                   as the scenarios
 ;

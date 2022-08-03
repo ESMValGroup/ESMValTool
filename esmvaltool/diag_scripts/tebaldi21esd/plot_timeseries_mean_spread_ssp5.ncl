@@ -9,7 +9,7 @@
 ;     Plot time series (mean and spread) for two ssp5 scenarios.
 ;
 ;  Required diag_script_info attributes (diagnostics specific)
-;     ancestors: variable and diagnostics that calculated the timeseries to plot
+;     ancestors: variable and diagnostics that calculate the timeseries to plot
 ;     scenarios: list of scenarios included in the figure
 ;     syears: list of start years of historical and SSPs scenarios
 ;     eyears: list of end years of historical and SSPs scenarios

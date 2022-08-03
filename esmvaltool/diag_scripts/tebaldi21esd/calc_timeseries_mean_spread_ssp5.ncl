@@ -6,8 +6,8 @@
 ; #############################################################################
 ;
 ;  Description
-;     Computes multi-model time series of change against historical baseline for
-;     ssp534-over and ssp585 with spread. A running average with specified
+;     Computes multi-model time series of change against historical baseline
+;     for ssp534-over and ssp585 with spread. A running average with specified
 ;     window is performed.
 ;
 ;  Required diag_script_info attributes (diagnostics specific)
@@ -19,9 +19,9 @@
 ;     label: list of scenario names included in the legend
 ;
 ;  Optional diag_script_info attributes (diagnostic specific)
-;     runave_window_size: size of the window for the running average (default 11)
+;     runave_window_size: size of the running average window (default 11)
 ;     spread: how many standard dev. to calculate the spread with (default 1)
-;     percent: determines if difference expressed in percent (0, 1, default = 0)
+;     percent: determines if difference is in percent (0, 1, default = 0)
 ;     model_nr: whether to save number of models used for each scenario
 ;
 ;  Modification history
