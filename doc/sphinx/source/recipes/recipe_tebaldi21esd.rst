@@ -50,11 +50,11 @@ Diagnostics are stored in esmvaltool/diag_scripts/tebaldi21esd/
   multi-model time series of change against historical baseline for
   specified scenarios with spread. A running average with specified window
   is performed.
-* calc_timeseries_mean_spread_runave_ssp4.ncl: computes
+* calc_timeseries_mean_spread_ssp4.ncl: computes
   multi-model time series of change against historical baseline for
   specified ssp434 and ssp460 with spread. A running average with specified
   window is performed.
-* calc_timeseries_mean_spread_runave_ssp5.ncl: computes multi-model time series
+* calc_timeseries_mean_spread_ssp5.ncl: computes multi-model time series
   of change against historical baseline for ssp534-over and ssp585 with spread.
   A running average with specified multi-model time series of change against
   historical baseline for ssp534-over and ssp585 with spread.
@@ -241,7 +241,7 @@ User settings in recipe
    * percent: determines if difference expressed in percent (0, 1, default = 0)
    * model_nr: whether to save number of models used for each scenario
 
-#. Script calc_timeseries_mean_spread_runave_ssp4.ncl
+#. Script calc_timeseries_mean_spread_ssp4.ncl
 
    *Required settings for script*
 
@@ -262,7 +262,7 @@ User settings in recipe
    * percent: determines if difference expressed in percent (0, 1, default = 0)
    * model_nr: whether to save number of models used for each scenario
 
-#. Script calc_timeseries_mean_spread_runave_ssp5.ncl
+#. Script calc_timeseries_mean_spread_ssp5.ncl
 
    *Required settings for script*
 
