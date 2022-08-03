@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_autoassess_stratosphere.yml
+# recipe_stratosphere.yml
 ---
 documentation:
   description: |
@@ -14,7 +14,7 @@ documentation:
     - predoi_valeriu
     - sellar_alistair
 
-  title: Diagnostic that computes stratospheric indices (from Autoassess).
+  title: Diagnostic that computes stratospheric indices.
 
   maintainer:
     - predoi_valeriu
@@ -49,9 +49,9 @@ diagnostics:
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, start_year: 2000, end_year: 2002, tier: 3}
     scripts:
-      autoassess_strato_test_1: &autoassess_strato_test_1_settings
+      strato_test_1: &strato_test_1_settings
         script: autoassess/autoassess_area_base.py
-        title: "Autoassess Stratosphere Diagnostic Metric MPI-MPI"
+        title: "Stratosphere Diagnostic Metric MPI-MPI"
         area: stratosphere
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
@@ -59,9 +59,9 @@ diagnostics:
         additional_metrics: [ERA-Interim, inmcm4]  # list to hold additional datasets for metrics
         start: 1997/12/01
         end: 2002/12/01
-      autoassess_strato_test_2: &autoassess_strato_test_2_settings
+      strato_test_2: &strato_test_2_settings
         script: autoassess/autoassess_area_base.py
-        title: "Autoassess Stratosphere Diagnostic Metric MPI-INM"
+        title: "Stratosphere Diagnostic Metric MPI-INM"
         area: stratosphere
         control_model: MPI-ESM-LR
         exp_model: inmcm4
@@ -74,26 +74,26 @@ diagnostics:
     description: Wrapper to collect and plot previously calculated metrics
     scripts:
       plot_strato_test_1: &plot_strato_test_1_settings
-        <<: *autoassess_strato_test_1_settings
+        <<: *strato_test_1_settings
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [ERA-Interim]
         script: autoassess/plot_autoassess_metrics.py
-        ancestors: ['*/autoassess_strato_test_1']
+        ancestors: ['*/strato_test_1']
         title: "Plot Stratosphere Metrics MPI-MPI"
         plot_name: "Stratosphere_Metrics"
         diag_tag: aa_strato
-        diag_name: autoassess_strato_test_1
+        diag_name: strato_test_1
         error_metric: ERA-Interim  # has to be from additional_metrics list
       plot_strato_test_2: &plot_strato_test_2_settings
-        <<: *autoassess_strato_test_2_settings
+        <<: *strato_test_2_settings
         control_model: MPI-ESM-LR
         exp_model: inmcm4
         obs_models: [ERA-Interim]
         script: autoassess/plot_autoassess_metrics.py
-        ancestors: ['*/autoassess_strato_test_2']
+        ancestors: ['*/strato_test_2']
         title: "Plot Stratosphere Metrics MPI-MPI"
         plot_name: "Stratosphere_Metrics"
         diag_tag: aa_strato
-        diag_name: autoassess_strato_test_2
+        diag_name: strato_test_2
         error_metric: ERA-Interim  # has to be from additional_metrics list

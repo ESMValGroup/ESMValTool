@@ -192,7 +192,7 @@ using this script:
    [configure ~/u-bd684/rose_suite.conf]
    [configure ~/u-bd684/app/esmvaltool/env_setup]
    python esmvt_rose_wrapper.py -c config-user.yml \
-   -r recipe_autoassess_stratosphere.yml recipe_OceanPhysics.yml \
+   -r recipe_stratosphere.yml recipe_OceanPhysics.yml \
    -d $HOME/esmvaltool_rose
    rose suite-run u-bd684
 

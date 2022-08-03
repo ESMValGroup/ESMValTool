@@ -33,7 +33,7 @@ Atmosphere
    recipe_bock20jgr
    recipe_spei
    recipe_martin18grl
-   recipe_autoassess_stratosphere
+   recipe_stratosphere
    recipe_autoassess_landsurface_permafrost
    recipe_autoassess_landsurface_surfrad
    recipe_autoassess_landsurface_soilmoisture
