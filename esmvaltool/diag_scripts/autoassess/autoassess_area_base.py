@@ -1,5 +1,4 @@
-"""
-Base autoassess area metrics diagnostic.
+"""Base autoassess area metrics diagnostic.
 
 Wrapper that takes two datasets (control_model and exp_model
 and observational data (optionally); base for all area diags for
@@ -21,13 +20,15 @@ custom -- not yet implemented
 Author: Valeriu Predoi, UREAD (valeriu.predoi@ncas.ac.uk)
 First version: September 2018.
 """
-import os
-import datetime
-import logging
-import importlib
 import csv
+import datetime
+import importlib
+import logging
+import os
 import tempfile
+
 import iris
+
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 logger = logging.getLogger(__name__)
@@ -37,12 +38,16 @@ def _import_package(area):
     """Import the right area package."""
     root_import = 'esmvaltool.diag_scripts.autoassess.'
     available_areas = [
-        'monsoon', 'stratosphere', 'hydrocycle', 'conservation', 'globaltrop',
+        'monsoon', 'hydrocycle', 'conservation', 'globaltrop',
         'land_surface_surfrad', 'land_surface_snow',
         'land_surface_soilmoisture', 'land_surface_permafrost'
     ]
     if area in available_areas:
         module = root_import + area
+        area_package = importlib.import_module(module)
+        return area_package
+    elif area == 'stratosphere':
+        module = 'esmvaltool.diag_scripts.stratosphere'
         area_package = importlib.import_module(module)
         return area_package
     else:
@@ -77,7 +82,7 @@ def _make_tmp_dir(cfg):
 
 def _make_main_dirs(cfg):
     """Create main dirs to hold analysis."""
-    locations = {}  # locations for control, exp and any addional metrics
+    locations = {}  # locations for control, exp and any additional metrics
     suite_loc_m1 = os.path.join(cfg['work_dir'], cfg['control_model'])
     if not os.path.exists(suite_loc_m1):
         os.makedirs(suite_loc_m1)
@@ -196,8 +201,7 @@ def _process_metrics_data(all_files, suites, smeans):
 
 
 def create_output_tree(out_dir, ref_suite_id, exp_suite_id, area):
-    """
-    Create directory tree for area output according to the following scheme.
+    """Create directory tree for area output according to the following scheme.
 
         `out_dir`/`exp_suite_id`_vs_`ref_suite_id`/`area`
 
@@ -215,7 +219,6 @@ def create_output_tree(out_dir, ref_suite_id, exp_suite_id, area):
     Returns
     -------
     Path to area output directory.
-
     """
     assessment_name = exp_suite_id + '_vs_' + ref_suite_id
     # make sure out_dir exists in output folder
@@ -231,8 +234,7 @@ def create_output_tree(out_dir, ref_suite_id, exp_suite_id, area):
 
 
 def create_tmp_dir(tmp_dir, ref_suite_id, exp_suite_id, area):
-    """
-    Create directory tree for temporary data.
+    """Create directory tree for temporary data.
 
     The structure is:
 
@@ -252,7 +254,6 @@ def create_tmp_dir(tmp_dir, ref_suite_id, exp_suite_id, area):
     Returns
     -------
     Path to area temporary directory.
-
     """
     assessment_name = exp_suite_id + '_vs_' + ref_suite_id
     # create unique temporary folder in tmp dir
@@ -347,8 +348,7 @@ def _create_run_dict(cfg):
 
 
 def run_area(cfg):
-    """
-    Kick start the area diagnostic.
+    """Kick start the area diagnostic.
 
     Takes the settings metadata file with all the diagnostic
     and preprocessing settings and sets up the running workflow
@@ -365,7 +365,6 @@ def run_area(cfg):
     cfg: dict
         contents of the metadata file as produced by the preprocessor
         in dictionary format.
-
     """
     run_obj = _create_run_dict(cfg)
     area_out_dir = create_output_tree(run_obj['out_dir'], run_obj['suite_id1'],
