@@ -50,14 +50,12 @@ Diagnostics are stored in esmvaltool/diag_scripts/tebaldi21esd/
   multi-model time series of change against historical baseline for
   specified scenarios with spread. A running average with specified window
   is performed.
-* calc_timeseries_mean_spread_runave_ssp4.ncl: computes
+* calc_timeseries_mean_spread_ssp4.ncl: computes
   multi-model time series of change against historical baseline for
   specified ssp434 and ssp460 with spread. A running average with specified
   window is performed.
-* calc_timeseries_mean_spread_runave_ssp5.ncl: computes multi-model time series
+* calc_timeseries_mean_spread_ssp5.ncl: computes multi-model time series
   of change against historical baseline for ssp534-over and ssp585 with spread.
-  A running average with specified multi-model time series of change against
-  historical baseline for ssp534-over and ssp585 with spread.
   A running average with specified window is performed.
 * plot_pattern.ncl: plots a pattern.
 * plot_table_changes: plots a table of the multi-model mean and spread for
@@ -69,9 +67,9 @@ Diagnostics are stored in esmvaltool/diag_scripts/tebaldi21esd/
 * plot_timeseries_mean_spread_constrained_projections.ncl: plot
   time series with brackets for constrained projections.
 * plot_timeseries_mean_spread.ncl: plot time series (multi-model mean and
-  spread) for 3 scenarios.
+  spread) for 5 scenarios.
 * plot_timeseries_mean_spread_rightaxis_5scen.ncl: plot time series
-  (multi-model mean and spread) for 3 scenarios.
+  (multi-model mean and spread) for 5 scenarios and with an additional right axis.
 * plot_timeseries_mean_spread_ssp4.ncl: plot time series for two ssp4
   scenarios.
 * plot_timeseries_mean_spread_ssp5.ncl: plot time series for two ssp5
@@ -229,7 +227,6 @@ User settings in recipe
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1986)
    * end_ref_year: end year of historical baseline period (e.g. 2005)
-   * spread: how many standard deviations to calculate the spread with
 
    *Optional settings for script*
 
@@ -241,7 +238,7 @@ User settings in recipe
    * percent: determines if difference expressed in percent (0, 1, default = 0)
    * model_nr: whether to save number of models used for each scenario
 
-#. Script calc_timeseries_mean_spread_runave_ssp4.ncl
+#. Script calc_timeseries_mean_spread_ssp4.ncl
 
    *Required settings for script*
 
@@ -250,7 +247,6 @@ User settings in recipe
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1986)
    * end_ref_year: end year of historical baseline period (e.g. 2005)
-   * spread: how many standard deviations to calculate the spread with
 
    *Optional settings for script*
 
@@ -262,7 +258,7 @@ User settings in recipe
    * percent: determines if difference expressed in percent (0, 1, default = 0)
    * model_nr: whether to save number of models used for each scenario
 
-#. Script calc_timeseries_mean_spread_runave_ssp5.ncl
+#. Script calc_timeseries_mean_spread_ssp5.ncl
 
    *Required settings for script*
 
@@ -271,7 +267,6 @@ User settings in recipe
    * eyears: list with end years of the time periods (historical then SSPs)
    * begin_ref_year: start year of historical baseline period (e.g. 1986)
    * end_ref_year: end year of historical baseline period (e.g. 2005)
-   * spread: how many standard deviations to calculate the spread with
 
    *Optional settings for script*
 
@@ -414,6 +409,31 @@ User settings in recipe
    * spread: how many standard deviations to calculate the spread with,
      default is 1, ipcc tas is 1.64
 
+#. Script plot_timeseries_mean_spread_rightaxis_5scen.ncl
+
+   *Required settings for script*
+
+   * ancestors: variable and diagnostics that calculated field to be plotted
+   * scenarios: list of scenarios included in the figure
+   * syears: list of start years of historical and SSPs scenarios
+   * eyears: list of end years of historical and SSPs scenarios
+   * begin_ref_year: start year of reference period
+   * end_ref_year: end year of reference period
+   * rightaxis_offset: offset of the right axis relative to the left axis
+   * label: list of labels of the scenarios
+
+   *Optional settings for script*
+
+   * title: specify plot title
+   * yaxis: specify y-axis title
+   * ymin: minimim value on y-axis, default calculated from data
+   * ymax: maximum value on y-axis
+   * colormap: alternative colormap, path to rgb file or ncl name
+   * model_nr: save number of model runs per period and scenario
+   * styleset: color style
+   * spread: how many standard deviations to calculate the spread with,
+     default is 1, ipcc tas is 1.64
+
 #. Script plot_timeseries_mean_spread_ssp4.ncl
 
    *Required settings for script*
@@ -479,7 +499,7 @@ User settings in recipe
 
    *Optional settings for script*
 
-   * trend: whether the trend is calculated en displayed
+   * trend: whether the trend is calculated and displayed
    * runave_window: only used if trend is true, size window used for the
      centered running average
    * title: specify plot title
