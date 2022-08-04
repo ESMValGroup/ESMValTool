@@ -3,7 +3,7 @@
 ; #############################################################################
 ;
 ; Tier
-;    Tier 3: other freely-available dataset.
+;    Tier 3: restricted dataset (registration required).
 ;
 ; Source
 ;    EarthData via https://eosweb.larc.nasa.gov/project/CALIPSO/
