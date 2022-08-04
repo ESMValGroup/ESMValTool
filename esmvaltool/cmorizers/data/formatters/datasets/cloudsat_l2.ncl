@@ -3,7 +3,7 @@
 ; #############################################################################
 ;
 ; Tier
-;    Tier 2: other freely-available dataset.
+;    Tier 3: restricted dataset (registration required).
 ;
 ; Source
 ;    https://www.cloudsat.cira.colostate.edu/
@@ -83,7 +83,7 @@ begin
   obsname = "CLOUDSAT-L2"
 
   ; Tier
-  tier = 2
+  tier = 3
 
   ; Period
   year1 = toint(getenv("year1"))

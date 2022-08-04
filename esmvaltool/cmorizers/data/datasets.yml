@@ -197,7 +197,7 @@ datasets:
         7) Untar all .tar files into a single directory.
 
   CLOUDSAT-L2:
-    tier: 2
+    tier: 3
     source: https://www.cloudsat.cira.colostate.edu/
     last_access: 2021-09-27
     info: |
