@@ -35,7 +35,7 @@ loadscript(getenv("esmvaltool_root") + \
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_calipso-icecloud.ncl"
+  DIAG_SCRIPT = "calipso_icecloud.ncl"
 
   ; Source name
   OBSNAME = "CALIPSO-ICECLOUD"
