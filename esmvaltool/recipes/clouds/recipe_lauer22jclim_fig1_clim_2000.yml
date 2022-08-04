@@ -1,10 +1,10 @@
-# recipe_lauer22jclim_fig6_interannual.yml
+# recipe_lauer22jclim_fig1_clim.yml
 ---
 documentation:
-  title: Cloud diagnostics v2 (interannual variability)
+  title: Cloud diagnostics v2 (climatologies)
 
   description: |
-    Diagnostics for interannual variability of 2-d cloud parameters.
+    Multi-year annaul means of cloud properties.
 
   authors:
     - lauer_axel
@@ -30,6 +30,8 @@ preprocessors:
       exclude: [CERES-EBAF, CLARA-AVHRR, CLOUDSAT-L2, ERA5, ERA-Interim, ESACCI-CLOUD,
                 ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x,
                 reference_dataset, SSMI-MERIS]
+#    annual_statistics:
+#      operator: mean
 
 
 CMIP5: &cmip5_models
@@ -110,15 +112,12 @@ CMIP6: &cmip6_models
 
 diagnostics:
 
- # ==========================================================================
- # Lauer and Hamilton (2013) - Equation 2, part of Figure 8
- # Interannual variability: relative temporal standard deviation calculated
- # from monthly mean anomalies after subtracting the climatological mean
- # seasonal cycle
- # ==========================================================================
+  # ==========================================================================
+  # Geographical distribution of multi-year annual/seasonal means (panel plot)
+  # ==========================================================================
 
-  clouds_intera_cmip5:
-    description: interannual variability
+  clouds_clim_cmip5:
+    description: climatological annual means
     themes:
       - clouds
     realms:
@@ -134,13 +133,15 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1992, end_year: 2016}
+             start_year: 2001, end_year: 2016}
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3,
              start_year: 1982, end_year: 2018}
           - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2,
              start_year: 1982, end_year: 2016}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
              start_year: 2003, end_year: 2018}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
       clivi:
         preprocessor: clim
         mip: Amon
@@ -151,13 +152,15 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1992, end_year: 2016}
+             start_year: 2001, end_year: 2016}
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip,
              start_year: 2006, end_year: 2017, tier: 3}
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3,
              start_year: 1982, end_year: 2018}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
              start_year: 2003, end_year: 2018}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
       lwp:
         preprocessor: clim
         mip: Amon
@@ -169,7 +172,7 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1992, end_year: 2016}
+             start_year: 2001, end_year: 2016}
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3,
              start_year: 1982, end_year: 2018}
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip,
@@ -178,6 +181,8 @@ diagnostics:
              start_year: 1988, end_year: 2016}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
              start_year: 2003, end_year: 2018}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
       swcre:
         preprocessor: clim
         mip: Amon
@@ -188,10 +193,12 @@ diagnostics:
         derive: true
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
-             start_year: 2001, end_year: 2012}
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
+#             start_year: 2001, end_year: 2012}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2,
+             start_year: 2001, end_year: 2021}
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1992, end_year: 2016}
+             start_year: 2001, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
              start_year: 1984, end_year: 2016}
       lwcre:
@@ -204,10 +211,12 @@ diagnostics:
         derive: true
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
-             start_year: 2001, end_year: 2012}
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
+#             start_year: 2001, end_year: 2012}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2,
+             start_year: 2001, end_year: 2021}
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1992, end_year: 2016}
+             start_year: 2001, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
              start_year: 1984, end_year: 2016}
       prw:
@@ -225,40 +234,36 @@ diagnostics:
 #             start_year: 2003, end_year: 2008, tier: 1}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
              start_year: 1984, end_year: 2016}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
     additional_datasets: *cmip5_models
     scripts:
-      varclt: &settings5
-        script: clouds/clouds_interannual.ncl
-        colormap: WhiteBlueGreenYellowRed
+      avgclt: &settings5
+        script: clouds/clouds.ncl
         projection: Robinson
         timemean: annualclim
+        showdiff: true
+        multiobs_uncertainty: true
+        multiobs_exclude: ["ERA-Interim", "ERA5"]
         filename_add: cmip5
         var: clt
-        epsilon: 1.0
-      varclivi:
+      avgclivi:
         <<: *settings5
         var: clivi
-        epsilon: 0.001
-      varlwp:
+      avglwp:
         <<: *settings5
         var: lwp
-        epsilon: 0.001
-      varlwcre:
-        <<: *settings5
-        var: lwcre
-        epsilon: 1.0
-      varswcre:
+      avgswcre:
         <<: *settings5
         var: swcre
-        epsilon: 1.0
-      varprw:
+      avglwcre:
+        <<: *settings5
+        var: lwcre
+      avgprw:
         <<: *settings5
         var: prw
-        epsilon: 1.0
 
-
-  clouds_intera_cmip6:
-    description: interannual variability
+  clouds_clim_cmip6:
+    description: climatological annual means
     themes:
       - clouds
     realms:
@@ -274,13 +279,15 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1992, end_year: 2016}
+             start_year: 2001, end_year: 2016}
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3,
              start_year: 1982, end_year: 2018}
           - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2,
              start_year: 1982, end_year: 2016}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
              start_year: 2003, end_year: 2018}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
       clivi:
         preprocessor: clim
         mip: Amon
@@ -291,13 +298,15 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1992, end_year: 2016}
+             start_year: 2001, end_year: 2016}
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip,
              start_year: 2006, end_year: 2017, tier: 3}
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3,
              start_year: 1982, end_year: 2018}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
              start_year: 2003, end_year: 2018}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
       lwp:
         preprocessor: clim
         mip: Amon
@@ -309,7 +318,7 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1992, end_year: 2016}
+             start_year: 2001, end_year: 2016}
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3,
              start_year: 1982, end_year: 2018}
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip,
@@ -318,6 +327,8 @@ diagnostics:
              start_year: 1988, end_year: 2016}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
              start_year: 2003, end_year: 2018}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
       swcre:
         preprocessor: clim
         mip: Amon
@@ -328,10 +339,12 @@ diagnostics:
         derive: true
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
-             start_year: 2001, end_year: 2012}
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
+#             start_year: 2001, end_year: 2012}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2,
+             start_year: 2001, end_year: 2021}
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1992, end_year: 2016}
+             start_year: 2001, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
              start_year: 1984, end_year: 2016}
       lwcre:
@@ -339,15 +352,17 @@ diagnostics:
         mip: Amon
         project: CMIP6
         exp: historical
-        start_year: 1995
-        end_year: 2014
+        start_year: 2001
+        end_year: 2010
         derive: true
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
-             start_year: 2001, end_year: 2012}
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1,
+#             start_year: 2001, end_year: 2012}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2,
+             start_year: 2001, end_year: 2021}
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-             start_year: 1992, end_year: 2016}
+             start_year: 2001, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
              start_year: 1984, end_year: 2016}
       prw:
@@ -365,33 +380,30 @@ diagnostics:
 #             start_year: 2003, end_year: 2008, tier: 1}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
              start_year: 1984, end_year: 2016}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
     additional_datasets: *cmip6_models
     scripts:
-      varclt: &settings6
-        script: clouds/clouds_interannual.ncl
-        colormap: WhiteBlueGreenYellowRed
+      avgclt: &settings6
+        script: clouds/clouds.ncl
         projection: Robinson
         timemean: annualclim
-        var: clt
-        epsilon: 1.0
+        showdiff: true
+        multiobs_uncertainty: true
+        multiobs_exclude: ["ERA-Interim", "ERA5"]
         filename_add: cmip6
-      varclivi:
+        var: clt
+      avgclivi:
         <<: *settings6
         var: clivi
-        epsilon: 0.001
-      varlwp:
+      avglwp:
         <<: *settings6
         var: lwp
-        epsilon: 0.001
-      varlwcre:
-        <<: *settings6
-        var: lwcre
-        epsilon: 1.0
-      varswcre:
+      avgswcre:
         <<: *settings6
         var: swcre
-        epsilon: 1.0
-      varprw:
+      avglwcre:
+        <<: *settings6
+        var: lwcre
+      avgprw:
         <<: *settings6
         var: prw
-        epsilon: 1.0

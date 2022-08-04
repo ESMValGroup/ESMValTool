@@ -77,7 +77,7 @@ diagnostics:
         reference_dataset: CLOUDSAT-L2
         additional_datasets:
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
-             version: P1-R05-gridbox-average-noprecip, tier: 2,
+             version: P1-R05-gridbox-average-noprecip, tier: 3,
              start_year: 2007, end_year: 2015}
       cli:
         preprocessor: pp27_all_lev
@@ -89,7 +89,7 @@ diagnostics:
         reference_dataset: CALIPSO-ICECLOUD
         additional_datasets:
           - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat,
-             version: 1-00, mip: Amon, tier: 2,
+             version: 1-00, mip: Amon, tier: 3,
              start_year: 2007, end_year: 2015}
       ta:
         preprocessor: pp27_all_lev
@@ -162,7 +162,7 @@ diagnostics:
         reference_dataset: CLOUDSAT-L2
         additional_datasets:
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
-             version: P1-R05-gridbox-average-noprecip, tier: 2,
+             version: P1-R05-gridbox-average-noprecip, tier: 3,
              start_year: 2007, end_year: 2015}
       cli:
         preprocessor: pp27_all_lev
@@ -174,7 +174,7 @@ diagnostics:
         reference_dataset: CALIPSO-ICECLOUD
         additional_datasets:
           - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,
-             mip: Amon, tier: 2,
+             mip: Amon, tier: 3,
              start_year: 2007, end_year: 2015}
       ta:
         preprocessor: pp27_all_lev

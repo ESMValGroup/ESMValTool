@@ -154,7 +154,7 @@ diagnostics:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip,
-             start_year: 2006, end_year: 2017, tier: 2}
+             start_year: 2006, end_year: 2017, tier: 3}
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3,
              start_year: 1982, end_year: 2018}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
@@ -176,7 +176,7 @@ diagnostics:
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3,
              start_year: 1982, end_year: 2018}
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip,
-             start_year: 2006, end_year: 2017, tier: 2}
+             start_year: 2006, end_year: 2017, tier: 3}
           - {dataset: MAC-LWP, project: OBS, type: sat, version: v1, tier: 3,
              start_year: 1988, end_year: 2016}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
@@ -300,7 +300,7 @@ diagnostics:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip,
-             start_year: 2006, end_year: 2017, tier: 2}
+             start_year: 2006, end_year: 2017, tier: 3}
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3,
              start_year: 1982, end_year: 2018}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
@@ -322,7 +322,7 @@ diagnostics:
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01, tier: 3,
              start_year: 1982, end_year: 2018}
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip,
-             start_year: 2006, end_year: 2017, tier: 2}
+             start_year: 2006, end_year: 2017, tier: 3}
           - {dataset: MAC-LWP, project: OBS, type: sat, version: v1, tier: 3,
              start_year: 1988, end_year: 2016}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,

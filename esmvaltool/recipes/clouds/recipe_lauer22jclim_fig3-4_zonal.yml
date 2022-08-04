@@ -73,7 +73,7 @@ diagnostics:
     additional_datasets:
       - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
          version: P1-R05-gridbox-average-noprecip,
-         start_year: 2006, end_year: 2017, mip: Amon, tier: 2}
+         start_year: 2006, end_year: 2017, mip: Amon, tier: 3}
 ###      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r1i1p1f1, grid: gn} #concatenation error
 ###      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn} #concatenation error
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
@@ -142,7 +142,7 @@ diagnostics:
     additional_datasets:
       - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
          version: P1-R05-gridbox-average-noprecip,
-         start_year: 2006, end_year: 2017, tier: 2}
+         start_year: 2006, end_year: 2017, tier: 3}
 ###      - {dataset: ACCESS1-0, ensemble: r1i1p1} #concatenation error
 ###      - {dataset: ACCESS1-3, ensemble: r1i1p1} #concatenation error
       - {dataset: bcc-csm1-1, ensemble: r1i1p1}
@@ -298,7 +298,7 @@ diagnostics:
         end_year: 2014
     additional_datasets:
       - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, mip: Amon,
-         start_year: 2007, end_year: 2015, tier: 2}
+         start_year: 2007, end_year: 2015, tier: 3}
 ###      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r1i1p1f1, grid: gn} #concatenation error
 ###      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn} #concatenation error
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
@@ -363,7 +363,7 @@ diagnostics:
         end_year: 2005
     additional_datasets:
       - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, mip: Amon,
-         start_year: 2007, end_year: 2015, tier: 2}
+         start_year: 2007, end_year: 2015, tier: 3}
 ###      - {dataset: ACCESS1-0, ensemble: r1i1p1} #concatenation error
 ###      - {dataset: ACCESS1-3, ensemble: r1i1p1} #concatenation error
       - {dataset: bcc-csm1-1, ensemble: r1i1p1}
