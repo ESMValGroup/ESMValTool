@@ -35,7 +35,7 @@ preprocessors:
 
 diagnostics:
   aa_strato:
-    description: Autoassess test diag for Stratosphere.
+    description: Test diag for Stratosphere.
     variables:
       ta:
         preprocessor: pp_aa_area
@@ -50,7 +50,7 @@ diagnostics:
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, start_year: 2000, end_year: 2002, tier: 3}
     scripts:
       strato_test_1: &strato_test_1_settings
-        script: autoassess/autoassess_area_base.py
+        script: stratosphere/area_base.py
         title: "Stratosphere Diagnostic Metric MPI-MPI"
         area: stratosphere
         control_model: MPI-ESM-LR
@@ -60,7 +60,7 @@ diagnostics:
         start: 1997/12/01
         end: 2002/12/01
       strato_test_2: &strato_test_2_settings
-        script: autoassess/autoassess_area_base.py
+        script: stratosphere/area_base.py
         title: "Stratosphere Diagnostic Metric MPI-INM"
         area: stratosphere
         control_model: MPI-ESM-LR
@@ -73,24 +73,24 @@ diagnostics:
   plot_standard:
     description: Wrapper to collect and plot previously calculated metrics
     scripts:
-      plot_strato_test_1: &plot_strato_test_1_settings
+      plot_strato_test_1:
         <<: *strato_test_1_settings
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [ERA-Interim]
-        script: autoassess/plot_autoassess_metrics.py
+        script: stratosphere/plot_metrics.py
         ancestors: ['*/strato_test_1']
         title: "Plot Stratosphere Metrics MPI-MPI"
         plot_name: "Stratosphere_Metrics"
         diag_tag: aa_strato
         diag_name: strato_test_1
         error_metric: ERA-Interim  # has to be from additional_metrics list
-      plot_strato_test_2: &plot_strato_test_2_settings
+      plot_strato_test_2:
         <<: *strato_test_2_settings
         control_model: MPI-ESM-LR
         exp_model: inmcm4
         obs_models: [ERA-Interim]
-        script: autoassess/plot_autoassess_metrics.py
+        script: stratosphere/plot_metrics.py
         ancestors: ['*/strato_test_2']
         title: "Plot Stratosphere Metrics MPI-MPI"
         plot_name: "Stratosphere_Metrics"
