@@ -46,10 +46,6 @@ def _import_package(area):
         module = root_import + area
         area_package = importlib.import_module(module)
         return area_package
-    elif area == 'stratosphere':
-        module = 'esmvaltool.diag_scripts.stratosphere'
-        area_package = importlib.import_module(module)
-        return area_package
     else:
         raise Exception('Unknown area: ' + area)
 

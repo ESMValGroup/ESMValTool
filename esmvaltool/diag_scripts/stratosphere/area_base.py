@@ -35,18 +35,7 @@ logger = logging.getLogger(__name__)
 
 
 def _import_package(area):
-    """Import the right area package."""
-    root_import = 'esmvaltool.diag_scripts.autoassess.'
-    available_areas = [
-        'monsoon', 'hydrocycle', 'conservation', 'globaltrop',
-        'land_surface_surfrad', 'land_surface_snow',
-        'land_surface_soilmoisture', 'land_surface_permafrost'
-    ]
-    if area in available_areas:
-        module = root_import + area
-        area_package = importlib.import_module(module)
-        return area_package
-    elif area == 'stratosphere':
+    if area == 'stratosphere':
         module = 'esmvaltool.diag_scripts.stratosphere'
         area_package = importlib.import_module(module)
         return area_package
@@ -423,6 +412,5 @@ def run_area(cfg):
 
 
 if __name__ == '__main__':
-
     with run_diagnostic() as config:
         run_area(config)
