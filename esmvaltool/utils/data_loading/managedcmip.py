@@ -51,9 +51,6 @@ def search_managed_cmip_for_data(root_paths=None, search_paths=None):
     for root_path in root_paths:
         for search_path in search_paths:
             subprocess.Popen(root_path)
-            print([
-                'find', root_path, '-type d', '-name *' + search_path, '-print'
-            ])
             subprocess.run([
                 'find', {root_path}, '-type d', '-name *' + search_path,
                 '-print'
