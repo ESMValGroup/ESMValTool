@@ -59,9 +59,9 @@ datasets:
         3D_CloudFraction330m_yyyymm_avg_CFMIP2_sat_3.1.2.nc
 
   CALIPSO-ICECLOUD:
-    tier: 2
+    tier: 3
     source: https://eosweb.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard_V1-00
-    last_access: 2020-04-08
+    last_access: 2022-08-04
     info: |
       Download and processing instructions
       (requires EarthData login; see https://urs.earthdata.nasa.gov/)

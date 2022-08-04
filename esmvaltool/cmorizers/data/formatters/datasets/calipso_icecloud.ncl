@@ -3,14 +3,14 @@
 ; #############################################################################
 ;
 ; Tier
-;    Tier 2: other freely-available dataset.
+;    Tier 3: other freely-available dataset.
 ;
 ; Source
 ;    EarthData via https://eosweb.larc.nasa.gov/project/CALIPSO/
 ;      CAL_LID_L3_Ice_Cloud-Standard_V1-00
 ;
 ; Last access
-;    20200408
+;    20220804
 ;
 ; Download and processing instructions
 ; (requires EarthData login; see https://urs.earthdata.nasa.gov/)
@@ -41,7 +41,7 @@ begin
   OBSNAME = "CALIPSO-ICECLOUD"
 
   ; Tier
-  TIER = 2
+  TIER = 3
 
   ; Period (complete years only)
   YEAR1 = 2007
