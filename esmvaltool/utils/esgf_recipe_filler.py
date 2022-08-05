@@ -59,13 +59,16 @@ def get_facet_counts(facets):
     return context.facet_counts
 
 
-def get_facet_options(variable, facet):
+def get_facet_options(variable, facets):
     project = variable['project']
     connection = get_connection()
     esgf_facets = get_esgf_facets(variable)
-    esgf_facet = FACETS[project][facet]
+    all_facets = []
+    for facet in facets:
+        esgf_facet = FACETS[project][facet]
+        all_facets.append(esgf_facet)
     context = connection.new_context(**esgf_facets,
-                                     facets=[esgf_facet],
+                                     facets=all_facets,
                                      latest=True)
     result = list(context.facet_counts[esgf_facet])
     if facet == 'dataset':
@@ -98,11 +101,11 @@ def format_dataset(project, dataset, ensemble, dataset_dict, grid=None):
                 ds, exp, ensemble, mip, short_name, grid)
 
 
-def search_variables(variables, facet):
+def search_variables(variables, facets):
     """Search datasets that have all variables."""
     result = None
     for variable in variables:
-        options = get_facet_options(variable, facet)
+        options = get_facet_options(variable, facets)
         if result is None:
             result = set(options)
         else:
@@ -225,18 +228,56 @@ def _assemble_variable(project, exps, mips, grids, short_names):
         'grid': grids,
     }
 
+    facets = []
     to_remove = []
+
     # remove all values of ["*"] or None
+    # and add to facets if ["*"]
     for key, val in variable.items():
         if not val:
             to_remove.append(key)
         elif isinstance(val, list) and val[0] == "*":
             to_remove.append(key)
+            facets.append(key)
     if to_remove:
         for key in to_remove:
             del variable[key]
 
-    return variable
+    return variable, facets
+
+
+def _get_results(project, exps,
+                 mips, grids,
+                 short_names):
+    """Get ESGF search results."""
+    variables = []
+    all_facets = []
+    results = []
+
+    for exp in exps:
+        for mip in mips:
+            for short_name in short_names:
+                variable, facets = _assemble_variable(project, exps,
+                                                      mips, grids,
+                                                      short_names)
+                variables.append(variable)
+                all_facets.extend(facets)
+
+    logger.info("We will use the following facets %s for search", str(facets))
+    datasets = sorted(search_variables(variables, ['dataset']),
+                                       key=str.lower)
+    for dataset in datasets:
+        if dataset == 'fio-esm':
+            dataset = 'FIO-ESM'
+        for variable in variables:
+            variable['dataset'] = dataset
+        if not all_facets:
+            results.append([dataset])
+        else:
+            result = search_variables(variables, facets)
+            results.append(result)
+
+    return results
 
 
 def search_datasets_esgf(dataset_list=None):
@@ -269,45 +310,14 @@ def search_datasets_esgf(dataset_list=None):
 
             # run the thing
             if project == 'CMIP5':
-                variables = []
-                for exp in exps:
-                    for mip in mips:
-                        for short_name in short_names:
-                            variable = _assemble_variable(project, exps,
-                                                          mips, grids,
-                                                          short_names)
-                            variables.append(variable)
-
-                datasets = sorted(search_variables(variables, 'dataset'),
-                                                   key=str.lower)
-                for dataset in datasets:
-                    for variable in variables:
-                        variable['dataset'] = dataset
-                    ensembles = search_variables(variables, 'ensemble')
-                    for ensemble in group_ensembles(ensembles):
-                        if dataset == 'fio-esm':
-                            dataset = 'FIO-ESM'
-                        results.append([dataset, ensemble])
-
+                results = _get_results(project, exps,
+                                       mips, grids,
+                                       short_names)
             elif project == 'CMIP6':
                 for grid in grids:
-                    variables = []
-                    for exp in exps:
-                        for mip in mips:
-                            for short_name in short_names:
-                                variable = _assemble_variable(project, exps,
-                                                              mips, grids,
-                                                              short_names)
-                                variables.append(variable)
-
-                    datasets = sorted(search_variables(variables, 'dataset'),
-                                      key=str.lower)
-                    for dataset in datasets:
-                        for variable in variables:
-                            variable['dataset'] = dataset
-                        ensembles = search_variables(variables, 'ensemble')
-                        for ensemble in group_ensembles(ensembles):
-                            results.append([dataset, ensemble, grid])
+                    results = _get_results(project, exps,
+                                           mips, grids,
+                                           short_names)
 
             if results:
                 results.sort(key=lambda i: (i[0].lower(
