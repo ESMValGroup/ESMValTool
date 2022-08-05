@@ -177,6 +177,8 @@ def _expand_dataset(dataset):
     if not isinstance(exps, list):
         exps = [exps]
     mip = dataset["mip"]
+    if not isinstance(mip, list):
+        mips = [mip]
     if "grid" in dataset:
         grids = dataset["grid"]
         if not isinstance(grids, list):
@@ -185,7 +187,7 @@ def _expand_dataset(dataset):
     if not isinstance(short_names, list):
         short_names = [short_names]
 
-    return project, exps, mip, grids, short_names
+    return project, exps, mips, grids, short_names
 
 
 def get_args():
@@ -214,8 +216,32 @@ def _parse_recipe_to_dicts(yamlrecipe):
     return datasets
 
 
+def _assemble_variable(project, exps, mips, grids, short_names):
+    """Get a dict for variable."""
+    variable = {
+        'project': project,
+        'exp': exps,
+        'mip': mips,
+        'short_name': short_names,
+        'grid': grids,
+    }
+
+    to_remove = []
+    # remove all values of ["*"] or None
+    for key, val in variable.items():
+        if not val:
+            to_remove.append(key)
+        elif isinstance(val, list) and val[0] == "*":
+            to_remove.append(key)
+    if to_remove:
+        for key in to_remove:
+            del variable[key]
+
+    return variable
+
+
 def search_datasets_esgf(dataset_list=None):
-    """Search the SEGF database for requested datasets."""
+    """Search the ESGF database for requested datasets."""
     logging.basicConfig(format="%(asctime)s [%(process)d] %(levelname)-8s "
                         "%(name)s,%(lineno)s\t%(message)s")
     logging.getLogger().setLevel('info'.upper())
@@ -237,21 +263,19 @@ def search_datasets_esgf(dataset_list=None):
     if dataset_list:
         for dataset_dict in dataset_list:
             # expand from dataset dict
-            project, exps, mip, grids, short_names = \
+            project, exps, mips, grids, short_names = \
                 _expand_dataset(dataset_dict)
 
             # run the thing
             if project == 'CMIP5':
                 variables = []
                 for exp in exps:
-                    for short_name in short_names:
-                        variable = {
-                            'project': project,
-                            'exp': exp,
-                            'mip': mip,
-                            'short_name': short_name,
-                        }
-                        variables.append(variable)
+                    for mip in mips:
+                        for short_name in short_names:
+                            variable = _assemble_variable(project, exps,
+                                                          mips, grids,
+                                                          short_names)
+                            variables.append(variable)
 
                 datasets = sorted(search_variables(variables, 'dataset'),
                                                    key=str.lower)
@@ -269,15 +293,12 @@ def search_datasets_esgf(dataset_list=None):
                 for grid in grids:
                     variables = []
                     for exp in exps:
-                        for short_name in short_names:
-                            variable = {
-                                'project': project,
-                                'exp': exp,
-                                'mip': mip,
-                                'short_name': short_name,
-                                'grid': grid,
-                            }
-                            variables.append(variable)
+                        for mip in mips:
+                            for short_name in short_names:
+                                variable = _assemble_variable(project, exps,
+                                                              mips, grids,
+                                                              short_names)
+                                variables.append(variable)
 
                     datasets = sorted(search_variables(variables, 'dataset'),
                                       key=str.lower)
