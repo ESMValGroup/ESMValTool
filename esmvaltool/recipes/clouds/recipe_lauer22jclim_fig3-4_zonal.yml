@@ -74,8 +74,10 @@ diagnostics:
       - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
          version: P1-R05-gridbox-average-noprecip,
          start_year: 2006, end_year: 2017, mip: Amon, tier: 3}
-###      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r1i1p1f1, grid: gn} #concatenation error
-###      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn} #concatenation error
+      # concetenation error - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS,
+      #                        ensemble: r1i1p1f1, grid: gn}
+      # concetenation error - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1,
+      #                        grid: gn}
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
       - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
       - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
@@ -84,18 +86,19 @@ diagnostics:
       - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-WACCM, ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-WACCM-FV2, ensemble: r1i1p1f1, grid: gn}
-#error      - {dataset: CMCC-CM2-HR4, ensemble: r1i1p1f1, grid: gn}
+      # error - {dataset: CMCC-CM2-HR4, ensemble: r1i1p1f1, grid: gn}
       - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
       - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
       - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
-#error      - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr}
+      # error - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr}
       - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
       - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
-#ERROR_ps_missing      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+      # ERROR_ps_missing - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
       - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
       - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
       - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
-#ERROR_coordinates_screwed      - {dataset: IPSL-CM6A-LR, ensemble: r4i1p1f1, grid: gr}
+      # ERROR_coordinates_screwed - {dataset: IPSL-CM6A-LR, ensemble: r4i1p1f1,
+      #                              grid: gr}
       - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
       - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
       - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
@@ -115,8 +118,10 @@ diagnostics:
         embracesetup: false
         extralegend: false
         panel_labels: true
-        explicit_cn_levels: [0., 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.12, 0.13, 0.14]
-        explicit_cn_dlevels: [-0.05, -0.04, -0.03, -0.02, -0.01, 0., 0.01, 0.02, 0.03, 0.04, 0.05]
+        explicit_cn_levels: [0., 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08,
+                             0.09, 0.1, 0.11, 0.12, 0.13, 0.14]
+        explicit_cn_dlevels: [-0.05, -0.04, -0.03, -0.02, -0.01, 0., 0.01, 0.02,
+                              0.03, 0.04, 0.05]
         units_to: g/kg
         showdiff: true
         rel_diff: false
@@ -143,8 +148,8 @@ diagnostics:
       - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
          version: P1-R05-gridbox-average-noprecip,
          start_year: 2006, end_year: 2017, tier: 3}
-###      - {dataset: ACCESS1-0, ensemble: r1i1p1} #concatenation error
-###      - {dataset: ACCESS1-3, ensemble: r1i1p1} #concatenation error
+      # concatenation error - {dataset: ACCESS1-0, ensemble: r1i1p1}
+      # concatenation error - {dataset: ACCESS1-3, ensemble: r1i1p1}
       - {dataset: bcc-csm1-1, ensemble: r1i1p1}
       - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
       - {dataset: BNU-ESM, ensemble: r1i1p1}
@@ -154,11 +159,11 @@ diagnostics:
       - {dataset: CESM1-CAM5, ensemble: r1i1p1}
       - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
       - {dataset: CESM1-WACCM, ensemble: r1i1p1}
-###      - {dataset: CMCC-CESM, ensemble: r1i1p1} #data look wrong
-###      - {dataset: CMCC-CM, ensemble: r1i1p1} #data look wrong
-###      - {dataset: CMCC-CMS, ensemble: r1i1p1} #data look wrong
-###      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
-###      - {dataset: FGOALS-g2, ensemble: r1i1p1}
+      # data look wrong - {dataset: CMCC-CESM, ensemble: r1i1p1}
+      # data look wrong - {dataset: CMCC-CM, ensemble: r1i1p1}
+      # data look wrong - {dataset: CMCC-CMS, ensemble: r1i1p1}
+      # - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+      # - {dataset: FGOALS-g2, ensemble: r1i1p1}
       - {dataset: FIO-ESM, ensemble: r1i1p1}
       - {dataset: GFDL-CM3, ensemble: r1i1p1}
       - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
@@ -173,8 +178,8 @@ diagnostics:
       - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
       - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
       - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
-###      - {dataset: MIROC4h, ensemble: r1i1p1}
-###      - {dataset: MIROC5, ensemble: r1i1p1} #concatenation error
+      # - {dataset: MIROC4h, ensemble: r1i1p1}
+      # concatenation error - {dataset: MIROC5, ensemble: r1i1p1}
       - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
       - {dataset: MIROC-ESM, ensemble: r1i1p1}
       - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
@@ -191,8 +196,10 @@ diagnostics:
         embracesetup: false
         extralegend: false
         panel_labels: true
-        explicit_cn_levels: [0., 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.12, 0.13, 0.14]
-        explicit_cn_dlevels: [-0.05, -0.04, -0.03, -0.02, -0.01, 0., 0.01, 0.02, 0.03, 0.04, 0.05]
+        explicit_cn_levels: [0., 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08,
+                             0.09, 0.1, 0.11, 0.12, 0.13, 0.14]
+        explicit_cn_dlevels: [-0.05, -0.04, -0.03, -0.02, -0.01, 0., 0.01, 0.02,
+                              0.03, 0.04, 0.05]
         units_to: g/kg
         showdiff: true
         rel_diff: false
@@ -297,10 +304,12 @@ diagnostics:
         start_year: 1995
         end_year: 2014
     additional_datasets:
-      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, mip: Amon,
-         start_year: 2007, end_year: 2015, tier: 3}
-###      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r1i1p1f1, grid: gn} #concatenation error
-###      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn} #concatenation error
+      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,
+         mip: Amon, start_year: 2007, end_year: 2015, tier: 3}
+      # concatenation error - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS,
+      #                        ensemble: r1i1p1f1, grid: gn}
+      # concatenation error - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1,
+      #                        grid: gn}
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
       - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
       - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
@@ -311,14 +320,15 @@ diagnostics:
       - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
       - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
       - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
-#error      - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr}
+      # error - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr}
       - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
       - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
-#ERROR_ps_missing      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+      # ERROR_ps_missing - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
       - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
       - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
       - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
-#ERROR_coordinates_screwed      - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr}
+      # ERROR_coordinates_screwed - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1,
+      #                              grid: gr}
       - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
       - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
       - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
@@ -335,9 +345,10 @@ diagnostics:
       zonal:
         script: clouds/clouds_zonal.ncl
         timemean: annualclim
-        t_test: false
-        explicit_cn_levels: [0., 0.002, 0.004, 0.006, 0.008, 0.01, 0.012, 0.014, 0.016, 0.018, 0.02, 0.022, 0.024, 0.026, 0.028]
-        explicit_cn_dlevels: [-0.01, -0.008, -0.006, -0.004, -0.002, 0., 0.002, 0.004, 0.006, 0.008, 0.01]
+        explicit_cn_levels: [0., 0.002, 0.004, 0.006, 0.008, 0.01, 0.012, 0.014,
+                             0.016, 0.018, 0.02, 0.022, 0.024, 0.026, 0.028]
+        explicit_cn_dlevels: [-0.01, -0.008, -0.006, -0.004, -0.002, 0., 0.002,
+                              0.004, 0.006, 0.008, 0.01]
         extralegend: false
         panel_labels: true
         showdiff: true
@@ -362,10 +373,10 @@ diagnostics:
         start_year: 1986
         end_year: 2005
     additional_datasets:
-      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, mip: Amon,
-         start_year: 2007, end_year: 2015, tier: 3}
-###      - {dataset: ACCESS1-0, ensemble: r1i1p1} #concatenation error
-###      - {dataset: ACCESS1-3, ensemble: r1i1p1} #concatenation error
+      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,
+         mip: Amon, start_year: 2007, end_year: 2015, tier: 3}
+      # concatenation error - {dataset: ACCESS1-0, ensemble: r1i1p1}
+      # concatenation error - {dataset: ACCESS1-3, ensemble: r1i1p1}
       - {dataset: bcc-csm1-1, ensemble: r1i1p1}
       - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
       - {dataset: BNU-ESM, ensemble: r1i1p1}
@@ -375,11 +386,11 @@ diagnostics:
       - {dataset: CESM1-CAM5, ensemble: r1i1p1}
       - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
       - {dataset: CESM1-WACCM, ensemble: r1i1p1}
-#fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
-#fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
-#fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
-###      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
-###      - {dataset: FGOALS-g2, ensemble: r1i1p1}
+      # fix needed - {dataset: CMCC-CESM, ensemble: r1i1p1}
+      # fix needed - {dataset: CMCC-CM, ensemble: r1i1p1}
+      # fix needed - {dataset: CMCC-CMS, ensemble: r1i1p1}
+      # - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+      # - {dataset: FGOALS-g2, ensemble: r1i1p1}
       - {dataset: FIO-ESM, ensemble: r1i1p1}
       - {dataset: GFDL-CM3, ensemble: r1i1p1}
       - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
@@ -394,7 +405,7 @@ diagnostics:
       - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
       - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
       - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
-#error_concatenating_cubes      - {dataset: MIROC5, ensemble: r1i1p1}
+      # concatenation error - {dataset: MIROC5, ensemble: r1i1p1}
       - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
       - {dataset: MIROC-ESM, ensemble: r1i1p1}
       - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
@@ -409,8 +420,11 @@ diagnostics:
         script: clouds/clouds_zonal.ncl
         timemean: annualclim
         t_test: true
-        explicit_cn_levels: [0., 0.002, 0.004, 0.006, 0.008, 0.01, 0.012, 0.014, 0.016, 0.018, 0.02, 0.022, 0.024, 0.026, 0.028]
-        explicit_cn_dlevels: [-0.01, -0.008, -0.006, -0.004, -0.002, 0., 0.002, 0.004, 0.006, 0.008, 0.01]
+        explicit_cn_levels: [0., 0.002, 0.004, 0.006, 0.008, 0.01, 0.012,
+                             0.014, 0.016, 0.018, 0.02, 0.022, 0.024, 0.026,
+                             0.028]
+        explicit_cn_dlevels: [-0.01, -0.008, -0.006, -0.004, -0.002, 0., 0.002,
+                              0.004, 0.006, 0.008, 0.01]
         extralegend: false
         panel_labels: true
         showdiff: true
@@ -432,42 +446,46 @@ diagnostics:
         project: CMIP6
         start_year: 1995
         end_year: 2014
-        project: CMIP6
         exp: historical
     additional_datasets:
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1b, tier: 3,
          start_year: 1986, end_year: 2014}
-###      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r1i1p1f1, grid: gn} #concatenation error
-###      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn} #concatenation error
+      # concatenation error - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS,
+      #                        ensemble: r1i1p1f1, grid: gn}
+      # concatenation error - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1,
+      #                        grid: gn}
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
       - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
       - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
       - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
       - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
-      - {dataset: CESM2-WACCM-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR, ensemble: r1i1p1f1,
+         grid: gn}
       - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
       - {dataset: CIESM, ensemble: r1i1p1f1, grid: gr}
-#error      - {dataset: CMCC-CM2-HR4, ensemble: r1i1p1f1, grid: gn}
+      # error - {dataset: CMCC-CM2-HR4, ensemble: r1i1p1f1, grid: gn}
       - {dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn}
       - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
       - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
       - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
       - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr}
-#error      - {dataset: E3SM-1-1-ECA, ensemble: r1i1p1f1, grid: gr}
+      # error - {dataset: E3SM-1-1-ECA, ensemble: r1i1p1f1, grid: gr}
       - {dataset: E3SM-1-1, ensemble: r1i1p1f1, grid: gr}
-#error      - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr}
+      # error - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr}
       - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
       - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
-#error      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
-      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS, ensemble: r1i1p1f1, grid: gn}
+      # error - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS, ensemble: r1i1p1f1,
+         grid: gn}
       - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
       - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
       - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
       - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
-#ERROR_coordinates_screwed      - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr}
+      # ERROR_coordinates_screwed - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1,
+      #                              grid: gr}
       - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
-#error      - {dataset: MCM-UA-1-0, ensemble: r1i1p1f1, grid: gn}
+      # error - {dataset: MCM-UA-1-0, ensemble: r1i1p1f1, grid: gn}
       - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
       - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
       - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
@@ -484,7 +502,8 @@ diagnostics:
       zonal:
         script: clouds/clouds_zonal.ncl
         timemean: annualclim
-        explicit_cn_dlevels: [-25., -20., -15., -10., -5., 0., 5., 10., 15., 20., 25.]
+        explicit_cn_dlevels: [-25., -20., -15., -10., -5., 0., 5., 10., 15.,
+                              20., 25.]
         explicit_cn_levels: [5., 10., 15., 20., 25., 30., 35., 40., 45., 50.]
         extralegend: false
         panel_labels: true
@@ -507,7 +526,6 @@ diagnostics:
         project: CMIP5
         start_year: 1986
         end_year: 2005
-        project: CMIP5
         exp: historical
     additional_datasets:
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1b, tier: 3,
@@ -523,9 +541,9 @@ diagnostics:
       - {dataset: CESM1-CAM5, ensemble: r1i1p1}
       - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
       - {dataset: CESM1-WACCM, ensemble: r1i1p1}
-#fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
-#fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
-#fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
+      # fix needed - {dataset: CMCC-CESM, ensemble: r1i1p1}
+      # fix needed - {dataset: CMCC-CM, ensemble: r1i1p1}
+      # fix needed - {dataset: CMCC-CMS, ensemble: r1i1p1}
       - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
       - {dataset: FGOALS-g2, ensemble: r1i1p1}
       - {dataset: FIO-ESM, ensemble: r1i1p1}
@@ -557,7 +575,8 @@ diagnostics:
       zonal:
         script: clouds/clouds_zonal.ncl
         timemean: annualclim
-        explicit_cn_dlevels: [-25., -20., -15., -10., -5., 0., 5., 10., 15., 20., 25.]
+        explicit_cn_dlevels: [-25., -20., -15., -10., -5., 0., 5., 10., 15.,
+                              20., 25.]
         explicit_cn_levels: [5., 10., 15., 20., 25., 30., 35., 40., 45., 50.]
         extralegend: false
         panel_labels: true

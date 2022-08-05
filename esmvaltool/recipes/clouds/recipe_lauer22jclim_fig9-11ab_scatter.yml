@@ -86,7 +86,7 @@ CMIP5: &cmip5_models
   - {dataset: CESM1-WACCM, ensemble: r1i1p1}
   - {dataset: CMCC-CESM, ensemble: r1i1p1}
   - {dataset: CMCC-CM, ensemble: r1i1p1}
-#missing data  - {dataset: CMCC-CMS, ensemble: r1i1p1}
+  # missing data - {dataset: CMCC-CMS, ensemble: r1i1p1}
   - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
   - {dataset: FGOALS-g2, ensemble: r1i1p1}
   - {dataset: FIO-ESM, ensemble: r1i1p1}
@@ -97,8 +97,8 @@ CMIP5: &cmip5_models
   - {dataset: GISS-E2-H, ensemble: r1i1p1}
   - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
   - {dataset: GISS-E2-R, ensemble: r1i1p1}
-#error_extract_season  - {dataset: HadGEM2-CC, ensemble: r1i1p1}
-#error_extract_season  - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+  # error_extract_season - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+  # error_extract_season - {dataset: HadGEM2-ES, ensemble: r1i1p1}
   - {dataset: inmcm4, ensemble: r1i1p1}
   - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
   - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
@@ -118,7 +118,7 @@ CMIP5: &cmip5_models
 CMIP6: &cmip6_models
   - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
   - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
-#time_coord_problem_rlut  - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
+  # time_coord_problem_rlut - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
   - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
   - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
   - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
@@ -126,7 +126,7 @@ CMIP6: &cmip6_models
   - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
   - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
   - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
-#no_prw  - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr}
+  # no_prw - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr}
   - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
   - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
   - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
@@ -167,7 +167,8 @@ diagnostics:
         end_year: 2005
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       clivi:
         preprocessor: ppSouthernOcean
@@ -178,7 +179,8 @@ diagnostics:
         end_year: 2005
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       lwp:
         preprocessor: ppSouthernOcean
@@ -190,7 +192,8 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       swcre:
         preprocessor: ppSouthernOcean
@@ -202,7 +205,8 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
     additional_datasets: *cmip5_models
     scripts:
@@ -242,7 +246,8 @@ diagnostics:
         end_year: 2014
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       clivi:
         preprocessor: ppSouthernOcean
@@ -253,7 +258,8 @@ diagnostics:
         end_year: 2014
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       lwp:
         preprocessor: ppSouthernOcean
@@ -265,7 +271,8 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       swcre:
         preprocessor: ppSouthernOcean
@@ -277,7 +284,8 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
     additional_datasets: *cmip6_models
     scripts:
@@ -317,7 +325,8 @@ diagnostics:
         end_year: 2005
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       clivi:
         preprocessor: ppSEPacific
@@ -328,7 +337,8 @@ diagnostics:
         end_year: 2005
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       lwp:
         preprocessor: ppSEPacific
@@ -340,7 +350,8 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       swcre:
         preprocessor: ppSEPacific
@@ -352,7 +363,8 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
     additional_datasets: *cmip5_models
     scripts:
@@ -392,7 +404,8 @@ diagnostics:
         end_year: 2014
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       clivi:
         preprocessor: ppSEPacific
@@ -403,7 +416,8 @@ diagnostics:
         end_year: 2014
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       lwp:
         preprocessor: ppSEPacific
@@ -415,7 +429,8 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       swcre:
         preprocessor: ppSEPacific
@@ -427,7 +442,8 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
     additional_datasets: *cmip6_models
     scripts:
@@ -467,7 +483,8 @@ diagnostics:
         end_year: 2005
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       clivi:
         preprocessor: ppITCZPacific
@@ -478,7 +495,8 @@ diagnostics:
         end_year: 2005
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       lwp:
         preprocessor: ppITCZPacific
@@ -490,7 +508,8 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       swcre:
         preprocessor: ppITCZPacific
@@ -502,7 +521,8 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
     additional_datasets: *cmip5_models
     scripts:
@@ -542,7 +562,8 @@ diagnostics:
         end_year: 2014
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       clivi:
         preprocessor: ppITCZPacific
@@ -553,7 +574,8 @@ diagnostics:
         end_year: 2014
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       lwp:
         preprocessor: ppITCZPacific
@@ -565,7 +587,8 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
       swcre:
         preprocessor: ppITCZPacific
@@ -577,7 +600,8 @@ diagnostics:
         derive: true
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
              start_year: 1992, end_year: 2016}
     additional_datasets: *cmip6_models
     scripts:
