@@ -84,22 +84,34 @@ def get_facet_options(variable, facet):
     return result
 
 
-def format_dataset(project, dataset, ensemble, dataset_dict, grid=None):
+def format_dataset(project, result,
+                   facets, dataset_dict, grid=None):
     ds = dataset_dict["dataset"]
-    exp = dataset_dict["exp"]
-    mip = dataset_dict["mip"]
+    mips = [dataset_dict["mip"]]
+    exps = [dataset_dict["exp"]]
+    for facet, value in zip(facets, result):
+        if facet == "mip":
+            mips = value
+        elif facet == "exp":
+            exps = value
+        elif facet == "ensemble":
+            ensembles = value
     short_name = dataset_dict["short_name"]
     if project == 'CMIP5':
         if ds == dataset:
-            logger.info(
-                " - {dataset: %s, project: CMIP5, exp: %s, ensemble: %s, mip: %s, short_name: %s}",
-                ds, exp, ensemble, mip, short_name)
+            for mip in mips:
+                for exp in exps:
+                    logger.info(
+                        " - {dataset: %s, project: CMIP5, exp: %s, ensemble: %s, mip: %s, short_name: %s}",
+                        ds, exp, ensemble, mip, short_name)
     elif project == 'CMIP6':
         grid = dataset_dict["grid"]
         if ds == dataset:
-            logger.info(
-                " - {dataset: %s, project: CMIP6, exp: %s, ensemble: %s, mip: %s, short_name: %s, grid: %s}",
-                ds, exp, ensemble, mip, short_name, grid)
+            for mip in mips:
+                for exp in exps:
+                    logger.info(
+                        " - {dataset: %s, project: CMIP6, exp: %s, ensemble: %s, mip: %s, short_name: %s, grid: %s}",
+                        ds, exp, ensemble, mip, short_name, grid)
 
 
 def search_variables(variables, facet):
@@ -300,7 +312,7 @@ def search_datasets_esgf(dataset_list=None):
     else:
         logger.info("Running via module import.")
 
-    logger.info("Found the following datasets on ESGF from your recipe:")
+    logger.info("Found the following datasets on ESGF:")
 
     if dataset_list:
         for dataset_dict in dataset_list:
@@ -321,11 +333,9 @@ def search_datasets_esgf(dataset_list=None):
                                                    mips, grids,
                                                    short_names)
 
-            print(facets)
             if results:
                 for result in results:
-                    dataset, ensemble, grid = result
-                    format_dataset(project, dataset, ensemble,
+                    format_dataset(project, result, facets,
                                    dataset_dict, grid)
 
 
