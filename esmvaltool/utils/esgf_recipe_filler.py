@@ -83,13 +83,12 @@ def get_facet_options(variable, facet):
 def format_dataset(project, dataset, ensemble, dataset_dict, grid=None):
     ds = dataset_dict["dataset"]
     exp = dataset_dict["exp"]
-    ensemble = dataset_dict["ensemble"]
     mip = dataset_dict["mip"]
     short_name = dataset_dict["short_name"]
     if project == 'CMIP5':
         if ds == dataset:
             logger.info(
-                " - {dataset: %s, project: CMIP6, exp: %s, ensemble: %s, mip: %s, short_name: %s}",
+                " - {dataset: %s, project: CMIP5, exp: %s, ensemble: %s, mip: %s, short_name: %s}",
                 ds, exp, ensemble, mip, short_name)
     elif project == 'CMIP6':
         grid = dataset_dict["grid"]
@@ -262,6 +261,8 @@ def search_datasets_esgf(dataset_list=None):
 
     if dataset_list:
         for dataset_dict in dataset_list:
+            results = []
+
             # expand from dataset dict
             project, exps, mips, grids, short_names = \
                 _expand_dataset(dataset_dict)
@@ -286,10 +287,9 @@ def search_datasets_esgf(dataset_list=None):
                     for ensemble in group_ensembles(ensembles):
                         if dataset == 'fio-esm':
                             dataset = 'FIO-ESM'
-                        format_dataset(project, dataset, ensemble, dataset_dict)
+                        results.append([dataset, ensemble])
 
             elif project == 'CMIP6':
-                results = []
                 for grid in grids:
                     variables = []
                     for exp in exps:
@@ -309,10 +309,18 @@ def search_datasets_esgf(dataset_list=None):
                         for ensemble in group_ensembles(ensembles):
                             results.append([dataset, ensemble, grid])
 
+            if results:
                 results.sort(key=lambda i: (i[0].lower(
                 ), tuple(int(i) for i in re.findall(r'\d+', i[1]))))
-                for dataset, ensemble, grid in results:
-                    format_dataset(project, dataset, ensemble, dataset_dict, grid)
+                for result in results:
+                    if len(result) == 3:
+                        dataset, ensemble, grid = result
+                        format_dataset(project, dataset, ensemble,
+                                       dataset_dict, grid)
+                    else:
+                        dataset, ensemble = result
+                        format_dataset(project, dataset, ensemble,
+                                       dataset_dict)
 
 
 if __name__ == "__main__":
