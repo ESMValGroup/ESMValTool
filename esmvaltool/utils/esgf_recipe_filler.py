@@ -59,16 +59,15 @@ def get_facet_counts(facets):
     return context.facet_counts
 
 
-def get_facet_options(variable, facets):
+def get_facet_options(variable, facet):
     project = variable['project']
     connection = get_connection()
     esgf_facets = get_esgf_facets(variable)
-    all_facets = []
-    for facet in facets:
-        esgf_facet = FACETS[project][facet]
-        all_facets.append(esgf_facet)
+    if isinstance(facet, list) and len(facet) == 1:
+        facet = facet[0]
+    esgf_facet = FACETS[project][facet]
     context = connection.new_context(**esgf_facets,
-                                     facets=all_facets,
+                                     facets=[esgf_facet],
                                      latest=True)
     result = list(context.facet_counts[esgf_facet])
     if facet == 'dataset':
@@ -79,7 +78,9 @@ def get_facet_options(variable, facets):
         }
         for i, dataset in enumerate(result):
             result[i] = reverse_dataset_map[project].get(dataset, dataset)
+
     result.sort()
+
     return result
 
 
@@ -101,11 +102,11 @@ def format_dataset(project, dataset, ensemble, dataset_dict, grid=None):
                 ds, exp, ensemble, mip, short_name, grid)
 
 
-def search_variables(variables, facets):
+def search_variables(variables, facet):
     """Search datasets that have all variables."""
     result = None
     for variable in variables:
-        options = get_facet_options(variable, facets)
+        options = get_facet_options(variable, facet)
         if result is None:
             result = set(options)
         else:
@@ -251,7 +252,7 @@ def _get_results(project, exps,
                  short_names):
     """Get ESGF search results."""
     variables = []
-    all_facets = []
+    all_facets = ["dataset"]
     results = []
 
     for exp in exps:
@@ -274,10 +275,11 @@ def _get_results(project, exps,
         if not all_facets:
             results.append([dataset])
         else:
-            result = search_variables(variables, facets)
-            results.append(result)
+            for facet in all_facets:
+                result = search_variables(variables, facet)
+                results.append(result)
 
-    return results
+    return results, all_facets
 
 
 def search_datasets_esgf(dataset_list=None):
@@ -310,27 +312,21 @@ def search_datasets_esgf(dataset_list=None):
 
             # run the thing
             if project == 'CMIP5':
-                results = _get_results(project, exps,
-                                       mips, grids,
-                                       short_names)
+                results, facets = _get_results(project, exps,
+                                               mips, grids,
+                                               short_names)
             elif project == 'CMIP6':
                 for grid in grids:
-                    results = _get_results(project, exps,
-                                           mips, grids,
-                                           short_names)
+                    results, facets = _get_results(project, exps,
+                                                   mips, grids,
+                                                   short_names)
 
+            print(facets)
             if results:
-                results.sort(key=lambda i: (i[0].lower(
-                ), tuple(int(i) for i in re.findall(r'\d+', i[1]))))
                 for result in results:
-                    if len(result) == 3:
-                        dataset, ensemble, grid = result
-                        format_dataset(project, dataset, ensemble,
-                                       dataset_dict, grid)
-                    else:
-                        dataset, ensemble = result
-                        format_dataset(project, dataset, ensemble,
-                                       dataset_dict)
+                    dataset, ensemble, grid = result
+                    format_dataset(project, dataset, ensemble,
+                                   dataset_dict, grid)
 
 
 if __name__ == "__main__":
