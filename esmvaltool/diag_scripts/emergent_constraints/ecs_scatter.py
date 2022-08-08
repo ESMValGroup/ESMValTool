@@ -64,6 +64,7 @@ from esmvaltool.diag_scripts.shared import (
     io,
     run_diagnostic,
     select_metadata,
+    sorted_metadata,
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -276,7 +277,7 @@ def _get_su_cube_dict(grouped_data, var_name, reference_datasets):
         ref_filenames.append(grouped_data[ref_dataset_name][0]['filename'])
     ref_cube = cube.copy(ref_data)
     ref_cube.attributes['dataset'] = reference_datasets
-    ref_cube.attributes['ancestors'] = '|'.join(ref_filenames)
+    ref_cube.attributes['ancestors'] = '|'.join(sorted(ref_filenames))
     ref_cube.coord('air_pressure').attributes['positive'] = 'down'
 
     # All other cubes
@@ -554,7 +555,7 @@ def su(grouped_data, cfg):
             plt.close()
 
             # Provenance
-            ancestors = cube.attributes['ancestors'].split('|')
+            ancestors = cube.attributes.pop('ancestors').split('|')
             provenance_record = ec.get_provenance_record(
                 {'su': attrs}, ['su'],
                 caption=f'{cube.long_name} for {dataset_name}.',
@@ -772,9 +773,12 @@ def get_default_settings(cfg):
 
 def get_global_attributes(input_data, cfg):
     """Get attributes for psi cube for all datasets."""
-    datasets = "|".join({str(d['dataset']) for d in input_data})
-    projects = "|".join({str(d['project']) for d in input_data})
-    ref = "|".join({str(d.get('reference_dataset')) for d in input_data})
+    datasets = sorted(list({str(d['dataset']) for d in input_data}))
+    projects = sorted(list({str(d['project']) for d in input_data}))
+    ref = sorted(list({str(d.get('reference_dataset')) for d in input_data}))
+    datasets = "|".join(datasets)
+    projects = "|".join(projects)
+    ref = "|".join(ref)
     attrs = {
         'dataset': datasets,
         'project': projects,
@@ -794,6 +798,7 @@ def main(cfg):
     input_data = list(cfg['input_data'].values())
     input_data.extend(io.netcdf_to_metadata(cfg, pattern=cfg.get('pattern')))
     input_data = deepcopy(input_data)
+    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
     check_input_data(input_data)
     grouped_data = group_metadata(input_data, 'dataset')
 
