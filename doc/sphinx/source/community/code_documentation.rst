@@ -447,22 +447,11 @@ When adding or removing dependencies, please consider applying the changes in
 the following files:
 
 - ``environment.yml``
-  contains development dependencies that cannot be installed from
-  `PyPI <https://pypi.org/>`__/`CRAN <https://cran.r-project.org/>`__/`Julia package registry <https://github.com/JuliaRegistries/General>`__
+  contains dependencies that cannot be installed from
+  `PyPI <https://pypi.org/>`__/`Julia package registry <https://github.com/JuliaRegistries/General>`__
 - ``environment_osx.yml``
   contains development dependencies for MacOSX. Should be the same as ``environment.yml``,
   but currently without multi language support.
-- ``docs/sphinx/source/requirements.txt``
-  contains Python dependencies needed to build the documentation that can be
-  installed from PyPI
-- ``docs/sphinx/source/conf.py``
-  contains a list of Python dependencies needed to build the documentation that
-  cannot be installed from PyPI and need to be mocked when building the
-  documentation.
-  (We do not use conda to build the documentation because this is too time
-  consuming.)
-- ``esmvaltool/install/R/r_requirements.txt``
-  contains R dependencies that can be installed from CRAN
 - ``esmvaltool/install/Julia/Project.toml``
   contains Julia dependencies that can be installed from the default Julia
   package registry

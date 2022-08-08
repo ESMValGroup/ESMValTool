@@ -20,6 +20,7 @@ from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
     io,
     select_metadata,
+    sorted_metadata,
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -542,6 +543,7 @@ def get_input_data(cfg, pattern=None, check_mlr_attributes=True, ignore=None):
         if not datasets_have_mlr_attributes(valid_data, log_level='error'):
             raise ValueError("At least one input dataset does not have valid "
                              "MLR attributes")
+    valid_data = sorted_metadata(valid_data, ['var_type', 'tag', 'dataset'])
     logger.debug("Found files:")
     logger.debug(pformat([d['filename'] for d in valid_data]))
     return valid_data
