@@ -126,7 +126,8 @@ begin
 
   ; Global attributes
   source = "https://www.cloudsat.cira.colostate.edu/"
-  ref = ""
+  ref = "Stephens et al., Bull. Am. Meteorol. Soc., " \
+        + "doi:10.1175/BAMS-D-16-0324.1, 2017"
 end
 
 begin
