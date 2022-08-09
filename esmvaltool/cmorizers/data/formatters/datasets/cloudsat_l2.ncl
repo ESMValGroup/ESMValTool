@@ -277,7 +277,7 @@ begin
 
     ; process all days of the year
 
-    do dayofyear = 1, 1;;;;;day_of_year(calyear, 12, 31)
+    do dayofyear = 1, day_of_year(calyear, 12, 31)
       print("day = " + tostring(dayofyear))
       caldate = yyyyddd_to_yyyymmdd(calyear * 10000 + dayofyear)
       calmonth = mod(caldate / 100, 100)
