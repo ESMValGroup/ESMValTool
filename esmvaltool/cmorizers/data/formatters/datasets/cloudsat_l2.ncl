@@ -90,9 +90,9 @@ begin
   ; Tier
   tier = 3
 
-  ; Period (range of complete years: 2006-2017)
-  year1 = get_year(start_year, 2006)
-  year2 = get_year(end_year, 2006)
+  ; Period (range of complete years: 2007-2017)
+  year1 = get_year(start_year, 2007)
+  year2 = get_year(end_year, 2007)
 
   if ((year2 - year1) .gt. 0) then
     log_info("Note: processing of " + tostring(year2 - year1 + 1) + \
@@ -277,7 +277,7 @@ begin
 
     ; process all days of the year
 
-    do dayofyear = 1, day_of_year(calyear, 12, 31)
+    do dayofyear = 1, 1;;;;;day_of_year(calyear, 12, 31)
       print("day = " + tostring(dayofyear))
       caldate = yyyyddd_to_yyyymmdd(calyear * 10000 + dayofyear)
       calmonth = mod(caldate / 100, 100)
