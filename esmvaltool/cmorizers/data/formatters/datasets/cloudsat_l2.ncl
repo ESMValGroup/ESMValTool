@@ -59,10 +59,15 @@
 ; Note: one year of data consists of approximately 110 GB and 10,000 files.
 ;       Processing one year takes about 5-6 hours. It is therefore recommended
 ;       to process only one year at a time instead of multiple years. The
-;       year(s) to process are specified below by "year1" (first year) and
-;       "year2" (last year).
+;       year(s) to process are specified when running "esmvaltool" with
+;       the options "--start=year1" and "--end=year2", e.g. (w/o line break)
+;
+;       esmvaltool data format --config_file [CONFIG_FILE] --start=2015
+;                  --end=2015 CLOUDSAT-L2
 ;
 ; Modification history
+;    20220809-lauer_axel: adapted CMORizer to new format introduced in
+;                         ESMValTool v2.5.0 and added info message
 ;    20210924-lauer_axel: added processing of lwp and iwp
 ;    20201119-lauer_axel: allowing more flexible filenames for precipitation
 ;                         data
@@ -77,7 +82,7 @@ loadscript(getenv("esmvaltool_root") + \
 
 begin
   ; Script name (for logger)
-  diag_script = "cmorize_obs_cloudsat-l2.ncl"
+  diag_script = "cloudsat-l2.ncl"
 
   ; Source name
   obsname = "CLOUDSAT-L2"
@@ -85,14 +90,21 @@ begin
   ; Tier
   tier = 3
 
-  ; Period
-  year1 = toint(getenv("year1"))
-  year2 = toint(getenv("year2"))
-  if (ismissing(year1)) then
-    year1 = 2007
-  end if
-  if (ismissing(year2)) then
-    year2 = 2007
+  ; Period (range of complete years: 2006-2017)
+  year1 = get_year(start_year, 2006)
+  year2 = get_year(end_year, 2006)
+
+  if ((year2 - year1) .gt. 0) then
+    log_info("Note: processing of " + tostring(year2 - year1 + 1) + \
+             " years requested (start_year = " + sprinti("%04d", year1) + \
+             ", end_year = " + sprinti("%04d", year2) + ").")
+    log_info("One year of data consists of approximately 110 GB and 10,000 " \
+             + "files, processing may take up to several hours.")
+    log_info("It is therefore recommended to process only one year at a time.")
+    log_info("The year(s) to process are specified when running esmvaltool " \
+             + "with the options --start=year1 and --end=year2, e.g.")
+    log_info("esmvaltool data format --config_file [CONFIG_FILE] " + \
+             "--start=2015 --end=2015 CLOUDSAT-L2")
   end if
 
   ; output variable (standard name)
