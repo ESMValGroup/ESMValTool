@@ -328,10 +328,10 @@ begin
         ; remove old (possibly broken) links before creating new ones
 
         if (fileexists(slink1)) then
-          system("rm -f " + link1)
+          system("rm -f " + slink1)
         end if
         if (fileexists(slink2)) then
-          system("rm -f " + link2)
+          system("rm -f " + slink2)
         end if
 
         ; create symbolic links
