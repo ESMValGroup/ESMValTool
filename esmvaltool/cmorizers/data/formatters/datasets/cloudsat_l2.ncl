@@ -7,10 +7,9 @@
 ;
 ; Source
 ;    https://www.cloudsat.cira.colostate.edu/
-;    ftp://ftp.cloudsat.cira.colostate.edu/
 ;
 ; Last access
-;    20201107
+;    20220810
 ;
 ; Download and processing instructions:
 ;
@@ -18,19 +17,12 @@
 ;       (https://www.cloudsat.cira.colostate.edu/)
 ;
 ;    2) Download the datasets '2B-CWC-RO' and '2C-PRECIP-COLUMN' from
-;       ftp.cloudsat.cira.colostate.edu (e.g. using wget):
-;
-;       wget -nd -N -r --user=<user name> --password=<password>
-;          ftp://ftp.cloudsat.cira.colostate.edu/2B-CWC-RO.P1_R05/2007
-;       wget -nd -N -r --user=<user name> --password=<passsword>
-;          ftp://ftp.cloudsat.cira.colostate.edu/2C-PRECIP-COLUMN.P1_R05/2007
-;
-;       Note: replace "2007" with the year to download. In the examples
-;             above, only data from 2007 will be downloaded.
+;       www.cloudsat.cira.colostate.edu (via sftp) following the instructions
+;       given here: https://www.cloudsat.cira.colostate.edu/order/sftp-access
 ;
 ;    3) Put all files for a specific year under a single directory
 ;       named like the year (e.g. 2007), no subdirectories with
-;       years and days). The wget commands given above do this automatically.
+;       days etc.
 ;
 ; Description:
 ;
