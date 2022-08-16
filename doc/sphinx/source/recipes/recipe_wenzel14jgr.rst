@@ -24,6 +24,11 @@ Diagnostics are stored in diag_scripts/
 User settings
 -------------
 
+.. note::
+
+   Make sure to run this recipe setting ``max_parallel_tasks: 1`` in the ``config_user.yml``
+   file or using the CLI flag ``--max_parallel_tasks=1``.
+
 User setting files (cfg files) are stored in nml/cfg_carbon/
 
 #. carbon_tsline

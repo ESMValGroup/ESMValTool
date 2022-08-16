@@ -21,3 +21,9 @@ variables:
     mip: Amon
     raw: sst_uncertainty
     file: ESACCI-SST_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB
+
+# uncomment this part to produce sst cmorized data for ocean realm (Omon, tos)
+#  tos:
+#    mip: Omon
+#    raw: sst
+#    file: ESACCI-SST_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB

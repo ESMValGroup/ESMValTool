@@ -103,7 +103,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from cf_units import Unit
 from scipy.stats import linregress
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
@@ -179,7 +178,8 @@ def _get_cube(var_type, group_by_attribute, attr, datasets):
     })
     if attr is not None:
         cube.attributes[group_by_attribute] = attr
-    unify_time_coord(cube)
+    if cube.coords('time', dim_coords=True):
+        ih.unify_time_coord(cube)
     return cube
 
 
@@ -804,27 +804,6 @@ def plot_xy_with_errors(cfg, cube_dict):
     logger.info("Wrote %s", plot_path)
     plt.close()
     _write_xy_error_provenance(cfg, cubes, plot_path, None, all_ancestors)
-
-
-def unify_time_coord(cube):
-    """Unify time coordinate of cube."""
-    if not cube.coords('time', dim_coords=True):
-        return
-    time_coord = cube.coord('time')
-    dates_points = time_coord.units.num2date(time_coord.points)
-    dates_bounds = time_coord.units.num2date(time_coord.bounds)
-    new_units = Unit('days since 1850-01-01 00:00:00')
-    new_time_coord = iris.coords.DimCoord(
-        new_units.date2num(dates_points),
-        bounds=new_units.date2num(dates_bounds),
-        var_name='time',
-        standard_name='time',
-        long_name='time',
-        units=new_units,
-    )
-    coord_dims = cube.coord_dims('time')
-    cube.remove_coord('time')
-    cube.add_dim_coord(new_time_coord, coord_dims)
 
 
 def main(cfg):
