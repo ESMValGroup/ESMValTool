@@ -217,3 +217,21 @@ diagnostics:
         filename_add: cmip5
         min_mass: 1.0e-6
         panel_labels: true
+
+  postproc:
+    description: |
+      Post-processing: CMIP5/CMIP6 comparison and additional statistics
+    scripts:
+      cmip5cmip6:
+        script: clouds/clouds_lifrac_scatter_postproc.ncl
+        ancestors: ['lifrac_scatter_cmip*/lifrac_scatter']
+        models: [["bcc-csm1-1", "BCC-CSM2-MR"],
+                 ["CESM1-WACCM", "CESM2-WACCM"],
+                 ["GFDL-CM3", "GFDL-CM4"],
+                 ["GISS-E2-H", "GISS-E2-1-H"],
+                 ["HadGEM2-CC", "HadGEM3-GC31-LL"],
+                 ["MIROC-ESM", "MIROC-ES2L"],
+                 ["MPI-ESM-LR", "MPI-ESM1-2-LR"],
+                 ["MRI-ESM1", "MRI-ESM2-0"],
+                 ["NorESM1-M", "NorESM2-LM"]]
+        refname: "CLOUDSAT-L2-CALIPSO-ICECLOUD-ERA5"
