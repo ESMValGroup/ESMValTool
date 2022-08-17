@@ -6,6 +6,7 @@ import difflib
 import filecmp
 import fnmatch
 import os
+import re
 import sys
 from pathlib import Path
 from textwrap import indent
@@ -30,12 +31,25 @@ IGNORE_FILES: tuple[str, ...] = (
 """Files to ignore when comparing results."""
 
 IGNORE_GLOBAL_ATTRIBUTES: tuple[str, ...] = (
+    # see https://github.com/ESMValGroup/ESMValCore/issues/1657
+    'auxiliary_data_dir',
     'creation_date',
     'history',
     'provenance',
     'software',
+    # see https://github.com/ESMValGroup/ESMValCore/issues/1657
+    'version',
 )
 """Global NetCDF attributes to ignore when comparing."""
+
+IGNORE_VARIABLE_ATTRIBUTES: tuple[str, ...] = IGNORE_GLOBAL_ATTRIBUTES
+"""Variable NetCDF attributes to ignore when comparing."""
+
+IGNORE_VARIABLES: tuple[str, ...] = (
+    # see https://github.com/ESMValGroup/ESMValTool/issues/2714
+    'temp_list',  # used by perfmetrics diagnostics to save absolute paths
+)
+"""Variables in NetCDF files to ignore when comparing."""
 
 COMPARE_SUBDIRS: tuple[str, ...] = (
     'plots',
@@ -43,6 +57,14 @@ COMPARE_SUBDIRS: tuple[str, ...] = (
     'work',
 )
 """Directories of subdirectories to compare."""
+
+RECIPE_DIR_DATETIME_PATTERN: str = r'[0-9]{8}_[0-9]{6}'
+"""Regex pattern for datetime in recipe output directory."""
+
+RECIPE_DIR_PATTERN: str = (
+    r'recipe_(?P<recipe_name>[^\s]*?)_' + RECIPE_DIR_DATETIME_PATTERN
+)
+"""Regex pattern for recipe output directories."""
 
 
 def as_txt(msg: list[str]) -> str:
@@ -126,11 +148,47 @@ def diff_dataset(ref: xr.Dataset, cur: xr.Dataset) -> str:
     return '\n'.join(msg)
 
 
+def adapt_attributes(attributes: dict, ignore_attributes: tuple[str, ...],
+                     recipe_name: str) -> dict:
+    """Remove ignored attributes and make absolute paths relative."""
+    new_attrs = {}
+
+    for (attr, attr_val) in attributes.items():
+
+        # Ignore attributes
+        if attr in ignore_attributes:
+            continue
+
+        # Convert absolute paths to relative paths using the recipe name
+        if isinstance(attr_val, str):
+            recipe_dir = get_recipe_dir_from_str(attr_val, recipe_name)
+
+            # If recipe_dir is present in attribute value, assume this
+            # attribute value is a path and convert it to a relative path
+            if recipe_dir is not None:
+                attr_val = Path(attr_val).relative_to(recipe_dir)
+
+        new_attrs[attr] = attr_val
+
+    return new_attrs
+
+
 def load_nc(filename: Path) -> xr.Dataset:
     """Load a NetCDF file."""
     dataset = xr.open_dataset(filename, chunks={}, decode_times=False)
-    for attr in IGNORE_GLOBAL_ATTRIBUTES:
-        dataset.attrs.pop(attr, None)
+    recipe_name = get_recipe_name_from_file(filename)
+
+    # Remove ignored variables
+    dataset = dataset.drop_vars(IGNORE_VARIABLES, errors='ignore')
+
+    # Remove ignored attributes and modify attributes that contain paths
+    dataset.attrs = adapt_attributes(dataset.attrs, IGNORE_GLOBAL_ATTRIBUTES,
+                                     recipe_name)
+    for var in dataset:
+        dataset[var].attrs = adapt_attributes(dataset[var].attrs,
+                                              IGNORE_VARIABLE_ATTRIBUTES,
+                                              recipe_name)
+
     return dataset
 
 
@@ -241,7 +299,7 @@ def compare(reference_dir: Optional[Path], current_dir: Path,
 
     Returns True if the runs were identical, False otherwise.
     """
-    recipe_name = get_recipe_name(current_dir)
+    recipe_name = get_recipe_name_from_dir(current_dir)
     print("")
     print(f"recipe_{recipe_name}.yml: ", end='')
     if reference_dir is None:
@@ -281,9 +339,45 @@ def compare(reference_dir: Optional[Path], current_dir: Path,
     return False
 
 
-def get_recipe_name(recipe_dir: Path) -> str:
+def get_recipe_name_from_dir(recipe_dir: Path) -> str:
     """Extract recipe name from output dir."""
-    return recipe_dir.stem[7:-16]
+    recipe_match = re.search(RECIPE_DIR_PATTERN, recipe_dir.stem)
+    return recipe_match['recipe_name']
+
+
+def get_recipe_name_from_file(filename: Path) -> str:
+    """Extract recipe name from arbitrary recipe output file."""
+    # Iterate starting from the root dir to avoid false matches
+    for parent in filename.parents[::-1]:
+        recipe_match = re.search(RECIPE_DIR_PATTERN, str(parent))
+        if recipe_match is not None:
+            return recipe_match['recipe_name']
+    raise ValueError(f"Failed to extract recipe name from file {filename}")
+
+
+def get_recipe_dir_from_str(str_in: str, recipe_name: str) -> Optional[Path]:
+    """Try to extract recipe directory from arbitrary string."""
+    recipe_dir_pattern = (
+        rf'recipe_{recipe_name}_' + RECIPE_DIR_DATETIME_PATTERN
+    )
+    recipe_dir_match = re.search(recipe_dir_pattern, str_in)
+
+    # If recipe directory is not found in string, return None
+    if recipe_dir_match is None:
+        return None
+
+    # If recipe directory is found, return entire parent directory
+    # E.g., for str_in = /root/path/recipe_test_20220202_222222/work/file.nc
+    # return /root/path/recipe_test_20220202_222222
+    # For this, iterate from the right (::-1) through the parents
+    for parent in Path(str_in).parents[::-1]:
+        if recipe_dir_match[0] in str(parent):
+            return parent
+
+    # If no valid parent is found, return str_in
+    # E.g., for str_in = /root/path/recipe_test_20220202_222222 no valid
+    # parents are found; thus, return str_in itself
+    return Path(str_in)
 
 
 def find_files(recipe_dir: Path) -> set[Path]:
@@ -324,7 +418,7 @@ def find_recipes(reference: Path,
     """Yield tuples of current and reference directories."""
     for current_dir in current:
         for recipe_dir in find_successful_runs(current_dir):
-            recipe_name = get_recipe_name(recipe_dir)
+            recipe_name = get_recipe_name_from_dir(recipe_dir)
             reference_dirs = find_successful_runs(reference, recipe_name)
             if reference_dirs:
                 reference_dir = reference_dirs[-1]
@@ -371,7 +465,7 @@ def main() -> int:
     for current_dir, reference_dir in find_recipes(args.reference,
                                                    args.current):
         same = compare(reference_dir, current_dir, verbose=args.verbose)
-        recipe = f"recipe_{get_recipe_name(current_dir)}.yml"
+        recipe = f"recipe_{get_recipe_name_from_dir(current_dir)}.yml"
         if same:
             success.append(f"{recipe}:\t{current_dir}")
         else:

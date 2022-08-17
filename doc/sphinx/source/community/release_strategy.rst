@@ -52,19 +52,7 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.6.0 (Release Manager: `Saskia Loosveldt Tomas`_)
-
-+------------+--------------------------+
-| 2022-06-06 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2022-06-13 |ESMValCore release        |
-+------------+--------------------------+
-| 2022-06-20 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2022-06-27 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.7.0 (Release Manager: TBD)
+- 2.7.0 (Release Manager: `Valeriu Predoi`_)
 
 +------------+--------------------------+
 | 2022-10-03 |ESMValCore feature freeze |
@@ -78,6 +66,20 @@ Upcoming releases
 
 Past releases
 ^^^^^^^^^^^^^
+
+- 2.6.0 (Release Manager: `Saskia Loosveldt Tomas`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2022-06-06 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2022-06-13 | 2022-07-15 | `ESMValCore Release 2.6.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.6.0>`_ | :ref:`esmvalcore:changelog-v2-6-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2022-06-20 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2022-06-27 | 2022-07-25 | `ESMValTool Release 2.6.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.6.0>`_ |      :ref:`changelog-v2-6-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
 
 - 2.5.0 (Coordinating Release Manager: `Axel Lauer`_, team members: `Manuel Schlund`_, `Rémi Kazeroni`_)
 
@@ -325,9 +327,10 @@ All tests should pass before making a release (branch).
 2. Increase the version number
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The version number is stored in ``esmvaltool/__init__.py``, ``CITATION.cff``.
-Make sure to update both files.
-Also update the release date in ``CITATION.cff``.
+The version number is automatically generated from the information provided by
+git using [setuptools-scm](https://pypi.org/project/setuptools-scm/), but a
+static version number is stored in ``CITATION.cff``.
+Make sure to update the version number and release date in ``CITATION.cff``.
 See https://semver.org for more information on choosing a version number.
 Make a pull request and get it merged into ``main``.
 

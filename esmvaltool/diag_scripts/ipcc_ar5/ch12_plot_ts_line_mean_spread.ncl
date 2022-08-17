@@ -255,7 +255,7 @@ begin
 
   ; collect meta-data
   nc_file = datapath
-  plot_file = outfile
+  plot_file = plot_dir + "/" + outfile + "." + file_type
 
   if (isatt(diag_script_info, "spread")) then
     spread_str = diag_script_info@spread

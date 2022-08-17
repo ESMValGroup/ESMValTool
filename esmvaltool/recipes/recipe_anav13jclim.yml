@@ -855,12 +855,40 @@ diagnostics:
         cm_reverse: true
         cm_interval: [2, 63]
         sort: true
+        diag_order: [
+          'diag_grading_gpp-global',
+          'diag_grading_nbp-global',
+          'diag_grading_lai-global',
+          'diag_grading_tas-global',
+          'diag_grading_pr-global',
+        ]
       collect_nh:
         <<: *collect_global
         ancestors: ['diag_grading_*/grading_nh']
+        diag_order: [
+          'diag_grading_gpp-nh',
+          'diag_grading_nbp-nh',
+          'diag_grading_lai-nh',
+          'diag_grading_tas-nh',
+          'diag_grading_pr-nh',
+        ]
       collect_sh:
         <<: *collect_global
         ancestors: ['diag_grading_*/grading_sh']
+        diag_order: [
+          'diag_grading_gpp-sh',
+          'diag_grading_nbp-sh',
+          'diag_grading_lai-sh',
+          'diag_grading_tas-sh',
+          'diag_grading_pr-sh',
+        ]
       collect_trop:
         <<: *collect_global
         ancestors: ['diag_grading_*/grading_trop']
+        diag_order: [
+          'diag_grading_gpp-trop',
+          'diag_grading_nbp-trop',
+          'diag_grading_lai-trop',
+          'diag_grading_tas-trop',
+          'diag_grading_pr-trop',
+        ]
