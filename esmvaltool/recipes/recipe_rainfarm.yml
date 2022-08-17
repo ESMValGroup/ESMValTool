@@ -11,6 +11,9 @@ documentation:
     - arnone_enrico
     - vonhardenberg_jost
 
+  maintainer:
+    - unmaintained
+
   references:
     - donofrio14jh
     - rebora06jhm

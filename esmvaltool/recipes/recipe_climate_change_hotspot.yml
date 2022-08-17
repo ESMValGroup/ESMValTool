@@ -7,7 +7,7 @@ documentation:
     Mediterranean hotspot for Near-Surface Air Temperature (tas) and Precipitation (pr) changes.
   authors:
     - cos_josep
-  maintainers:
+  maintainer:
     - loosveldt-tomas_saskia
     - cos_josep
   references:
