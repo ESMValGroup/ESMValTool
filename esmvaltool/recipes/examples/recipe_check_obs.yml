@@ -48,7 +48,7 @@ diagnostics:
       rsutcs:
     additional_datasets:
       - {dataset: CERES-EBAF, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: Ed4.0, start_year: 2001, end_year: 2018}
+         type: sat, version: Ed4.1, start_year: 2001, end_year: 2021}
     scripts: null
 
 
@@ -733,6 +733,16 @@ diagnostics:
     scripts: null
 
 
+  CALIPSO-ICECLOUD:
+    description: CALIPSO-ICECLOUD check
+    variables:
+      cli:
+    additional_datasets:
+      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,
+         mip: Amon, tier: 3, start_year: 2007, end_year: 2015}
+    scripts: null
+
+
   CDS-SATELLITE-ALBEDO:
     description: CDS-SATELLITE-ALBEDO check
     variables:
@@ -891,6 +901,28 @@ diagnostics:
     additional_datasets:
       - {dataset: CLARA-AVHRR, project: OBS, tier: 3,
          type: sat, version: V002_01, start_year: 1982, end_year: 2018}
+    scripts: null
+
+
+  CLOUDSAT-L2:
+    description: CloudSat-level2 check
+    variables:
+      clivi:
+      clw:
+      lwp:
+    additional_datasets:
+      - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
+         version: P1-R05-gridbox-average-all, mip: Amon, start_year: 2006,
+         end_year: 2017}
+      - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
+         version: P1-R05-gridbox-average-noprecip, mip: Amon, start_year: 2006,
+         end_year: 2017}
+      - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
+         version: P1-R05-in-cloud-all, mip: Amon, start_year: 2006,
+         end_year: 2017}
+      - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
+         version: P1-R05-in-cloud-noprecip, mip: Amon, start_year: 2006,
+         end_year: 2017}
     scripts: null
 
 
