@@ -547,6 +547,30 @@ begin
   log_provenance(nc_outfile, outfile, caption, statistics, domain, \
                  plottype, "", "", infiles)
 
+  ; ----------------------------------------------------------------------
+  ; write differences of the multi-model and multi-obs means to netcdf
+  ; ----------------------------------------------------------------------
+
+  if (flag_multimod .and. flag_multiobs) then
+    diff = multimod
+    diff = diff - multiobs
+    diff@var = "MMM-MOBSMEAN"
+
+    nc_filename2 = work_dir + "clouds_interannual_" + var0 + \
+      "_mmm-mobsmean-absdiff.nc"
+    nc_filename2@existing = "append"
+
+    diff@var_long_name = "MMM - MOBSMEAN"
+    multimod@var = "MMM"
+    multimod@var_long_name = "multi-model mean (MMM)"
+    multiobs@var = "MOBSMEAN"
+    multiobs@var_long_name = "multi-obs mean (MOBSMEAN)"
+
+    nc_outfile2 = ncdf_write(diff, nc_filename2)
+    nc_outfile2 = ncdf_write(multimod, nc_filename2)
+    nc_outfile2 = ncdf_write(multiobs, nc_filename2)
+  end if
+
   leave_msg(DIAG_SCRIPT, "")
 
 end

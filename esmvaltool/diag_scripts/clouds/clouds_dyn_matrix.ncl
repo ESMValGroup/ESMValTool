@@ -203,7 +203,7 @@ begin
 
   ; make sure path for (mandatory) netcdf output exists
 
-  work_dir = config_user_info@work_dir + "/"
+  work_dir = config_user_info@work_dir
   ; Create work dir
   system("mkdir -p " + work_dir)
 
@@ -499,7 +499,7 @@ begin
     ; This approach to grid the data is significantly slower than
     ; using "bin_avg" but still fine for moderate grids (e.g. 100x100 grid
     ; cells). In NCL 6.6.2, the function bin_avg crashes after being
-    ; called several times (segmentation violation, etc.). This is the reason
+    ; called several times (segmentation violation). This is the reason
     ; for choosing this "manual" approach.
 
     do n = 0, nbins - 1
@@ -805,6 +805,26 @@ begin
   caption = "Scatterplot of " + var_x + " (x) vs. " + var_y + " (y)."
   log_provenance(nc_outfile, outfile, caption, statistics, \
                  domain, plottype, "", "", infiles)
+
+  ; ----------------------------------------------------------------------
+  ; write relative differences of the probabilities (count) to netcdf
+  ; ----------------------------------------------------------------------
+
+  ref = where(count(ref_ind, :, :) .gt. 1.0e-3, count(ref_ind, :, :), \
+              count@_FillValue)
+  modavg = dim_avg_n_Wrap(count(idxmod, :, :), 0)
+  modavg = where(modavg .gt. 1.0e-3, modavg, modavg@_FillValue)
+
+  diff = modavg
+  diff = (diff - ref) / ref * 100.0
+
+  nc_filename3 = work_dir + "clouds_scatter_prob_" + var_x + "_" + var_y + \
+    "_mmm-ref-reldiff" + filename_add + ".nc"
+
+  diff@var_long_name = "(count(MMM) - count(REF)) / count(REF) * 100%"
+  diff@var_units = "%"
+
+  nc_outfile3 = ncdf_write(diff, nc_filename3)
 
   leave_msg(DIAG_SCRIPT, "")
 

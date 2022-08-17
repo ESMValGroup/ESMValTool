@@ -6,40 +6,89 @@
 ;   Read ice fraction from clouds_lifrac_scatter.ncl and plot results for
 ;   cmip5/cmip6 model pairs defined below.
 ;
+; Required diag_script_info attributes (diagnostic specific)
+;   models: array of CMIP5/CMIP6 model pairs to be compared
+;   refname: name of reference dataset
+;
+; Optional diag_script_info attributes (diagnostic specific)
+;   nbins: number of bins used by clouds_lifrac_scatter.ncl (default = 20)
+;   reg: region (string) (default = "")
+;   t_int: array of temperatures for printing additional diagnostics
+;
+; Required variable attributes (variable specific)
+;   none
+;
+; Optional variable_info attributes (variable specific)
+;   none
+;
+; Caveats
+;   none
+;
 ; Modification history
 ;   20211113-lauer_axel: written.
 ;
 ; ############################################################################
 
+load "$diag_scripts/../interface_scripts/interface.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
+
 begin
 
-  inpath = "/work/bd0854/b380103/esmvaltool_output/" \
-           + "recipe_lauer22jclim_fig5_lifrac_regs_20220719_084255/work"
+  enter_msg(DIAG_SCRIPT, "")
 
-  diag = "clouds_lifrac_scatter_postproc.ncl"
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info(DIAG_SCRIPT)
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  models = (/(/"bcc-csm1-1", "BCC-CSM2-MR"/), \
-             (/"CESM1-WACCM", "CESM2-WACCM"/), \
-             (/"GFDL-CM3", "GFDL-CM4"/), \
-             (/"GISS-E2-H", "GISS-E2-1-H"/), \
-             (/"HadGEM2-CC", "HadGEM3-GC31-LL"/), \
-             (/"MIROC-ESM", "MIROC-ES2L"/), \
-             (/"MPI-ESM-LR", "MPI-ESM1-2-LR"/), \
-             (/"MRI-ESM1", "MRI-ESM2-0"/), \
-             (/"NorESM1-M", "NorESM2-LM"/)/)
+  set_default_att(diag_script_info, "nbins", 20)
+  set_default_att(diag_script_info, "reg", "")
+  set_default_att(diag_script_info, "t_int", (/240.0, 250.0, 260.0, 270.0/))
 
-  refname = "CLOUDSAT-L2-CALIPSO-ICECLOUD-ERA5"
+  models = diag_script_info@models
+  t_int = diag_script_info@t_int
 
-  t_int = (/240., 250., 260., 270./)
-
-;  reg = "global"
-;  reg = "so"
-  reg = "itcz"
+  if (isatt(diag_script_info, "refname")) then
+    refname = diag_script_info@refname
+  else
+    error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined (refname).")
+  end if
 
   dims = dimsizes(models)
   nmod = dims(0)
 
-  nbins = 20
+  nbins = diag_script_info@nbins
+  reg = diag_script_info@reg
+
+  test = str_lower(diag_script_info@input_files)
+
+  i = dimsizes(test)
+  if (i .ne. 2) then
+    error_msg("f", DIAG_SCRIPT, "", "number of datasets (ancestors) is " \
+              + tostring(i) + ", expected 2")
+  end if
+
+  if (reg .ne. "") then
+    reg = "_" + reg
+  end if
+
+  fname5 = ""
+  fname6 = ""
+
+  do i = 0, dimsizes(test) - 1
+    if (isStrSubset(test(i), "cmip5")) then
+      fname5 = test(i) + "/clouds_lifrac_scatter_ice_cmip5" + reg + ".nc"
+    end if
+    if (isStrSubset(test(i), "cmip6")) then
+      fname6 = test(i) + "/clouds_lifrac_scatter_ice_cmip6" + reg + ".nc"
+    end if
+  end do
+
+  if (fname5 .eq. "") then
+    error_msg("f", DIAG_SCRIPT, "", "no dataset (ancestor) for CMIP5 found.")
+  end if
+  if (fname6 .eq. "") then
+    error_msg("f", DIAG_SCRIPT, "", "no dataset (ancestor) for CMIP6 found.")
+  end if
 
   results = new((/nmod, nbins, 2/), float)
   refdata = new(nbins, float)
@@ -49,18 +98,10 @@ begin
   mmp90 = new((/nbins, 2/), float)
   mmstd = new((/nbins, 2/), float)
 
-  if (reg .ne. "") then
-    reg = "_" + reg
-  end if
-
   ; CMIP5
-  fname5 = inpath + "/lifrac_scatter_cmip5" + reg + "/lifrac_scatter/" \
-    + "clouds_lifrac_scatter_ice_cmip5" + reg + ".nc"
   infile5 = addfile(fname5, "r")
   icefrac5 = infile5->icefrac
   ; CMIP6
-  fname6 = inpath + "/lifrac_scatter_cmip6" + reg + "/lifrac_scatter/" \
-    + "clouds_lifrac_scatter_ice_cmip6" + reg + ".nc"
   infile6 = addfile(fname6, "r")
   icefrac6 = infile6->icefrac
 
@@ -105,20 +146,38 @@ begin
   idx6 = ind(idxtmp .ge. 0)
   delete(idxtmp)
 
+  model_ok = new((/nmod, 2/), logical)
+  model_ok = False
+  ref_ok = False
+
   do imod = 0, nmod - 1
     idx = ind(models5 .eq. models(imod, 0))
     if (.not. ismissing(idx)) then
       results(imod, :, 0) = icefrac5(idx, :)
+      model_ok(imod, 0) = True
     end if
     idx = ind(models6 .eq. models(imod, 1))
     if (.not. ismissing(idx)) then
       results(imod, :, 1) = icefrac6(idx, :)
+      model_ok(imod, 1) = True
     end if
     idx = ind(models6 .eq. refname)
     if (.not. ismissing(idx)) then
       refdata(:) = icefrac6(idx, :)
+      ref_ok = True
     end if
   end do
+
+  if (any(.not. model_ok(:, 0))) then
+    inotok = ind(.not. model_ok(:, 0))
+    log_info("warning: could not find data for the following CMIP5 model(s) " \
+             + str_join(models(inotok, 0), ","))
+  end if
+  if (any(.not. model_ok(:, 1))) then
+    inotok = ind(.not. model_ok(:, 1))
+    log_info("warning: could not find data for the following CMIP6 model(s) " \
+             + str_join(models(inotok, 1), ","))
+  end if
 
   ; calculate multi-model, p10 and p90, mean and standard deviation
 
@@ -196,6 +255,8 @@ begin
       end do
     end if
 
+    mmmean = where(mmmean .eq. 0, mmmean@_FillValue, mmmean)
+
     print(tostring(results&bin(n)) + ", " + tostring(delta) + " (" \
           + tostring(delta / mmmean(n, 0) * 100.0 + "%)") \
           + ", " + tostring(mmmean(n, 0)) + ", " + tostring(mmmean(n, 1)) \
@@ -241,7 +302,8 @@ begin
   lgres@lgLineLabelsOn     = False
   lgres@lgMarkerSizeF      = 0.01
 
-  wks = gsn_open_wks("pdf", "clouds_lifrac_scatter_post_ice" + reg)
+  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, \
+                "clouds_lifrac_scatter_post_ice" + reg)
 
   data = new((/3, nbins/), float)
 

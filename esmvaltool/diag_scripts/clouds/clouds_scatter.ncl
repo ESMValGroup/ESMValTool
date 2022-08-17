@@ -567,6 +567,33 @@ begin
   log_provenance(nc_outfile, outfile, caption, statistics, \
                  domain, plottype, "", "", infiles)
 
+  ; ----------------------------------------------------------------------
+  ; write mmm and ref to additional netcdf
+  ; ----------------------------------------------------------------------
+
+  if ((mm_ind .ge. 0) .and. (ref_ind .ge. 0)) then
+    mmm = result_avg(mm_ind, :)
+    ref = result_avg(ref_ind, :)
+
+    mmm@var = var_y + "_mmm"
+    ref@var = var_y + "_ref"
+
+    ratio = mmm
+    ratio = ratio / ref
+    ratio@average = avg(ratio)
+    ratio@var = var_y + "_ratio"
+
+    nc_filename2 = work_dir + "clouds_scatter_" + var_x + "_" + var_y + \
+      filename_add + "_ref_mmm_ratio.nc"
+
+    nc_outfile2 = ncdf_write(mmm, nc_filename2)
+    nc_filename2@existing = "append"
+    nc_outfile2 = ncdf_write(ref, nc_filename2)
+    nc_outfile2 = ncdf_write(ratio, nc_filename2)
+  end if
+
+  ; ----------------------------------------------------------------------
+
   leave_msg(DIAG_SCRIPT, "")
 
 end

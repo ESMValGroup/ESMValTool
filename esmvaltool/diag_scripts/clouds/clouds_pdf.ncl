@@ -506,6 +506,46 @@ begin
   log_provenance(nc_outfile, outfile, caption, statistics, \
                  domain, plottype, "", "", climofiles)
 
+  ; ----------------------------------------------------------------------
+  ; write mmm and ref to additional netcdf
+  ; ----------------------------------------------------------------------
+
+  if (isvar("idxmod")) then
+    delete(idxmod)
+  end if
+  idxmod = get_mod(names, projects)
+  ; calculate mmm
+  mmmpdf = dim_avg_n_Wrap(data_all(idxmod, :), 0)
+
+  mmmpdf@diag_script = (/DIAG_SCRIPT/)
+  mmmpdf@var = var0 + "_pdf_mmm"
+  mmmpdf@datasets = str_join(names(idxmod), ", ")
+
+  if (var0 .eq. "clt") then
+    x = mmmpdf&$var0$
+    idx60 = ind(x .ge. 60.)
+    idx80 = ind(x .ge. 80.)
+    mmmpdf@cummulative_freq_ge_60 = sum(mmmpdf(idx60))
+    mmmpdf@cummulative_freq_ge_80 = sum(mmmpdf(idx80))
+  end if
+
+  nc_filename2 = work_dir + "clouds_pdf_" + var0 + filename_add + "_mmm_ref.nc"
+
+  if (ref_ind .ge. 0) then
+    refpdf = data_all(ref_ind, :)
+    refpdf@diag_script = (/DIAG_SCRIPT/)
+    refpdf@var = var0 + "_pdf_ref"
+    refpdf@datasets = names(ref_ind)
+    if (var0 .eq. "clt") then
+      refpdf@cummulative_freq_ge_60 = sum(refpdf(idx60))
+      refpdf@cummulative_freq_ge_80 = sum(refpdf(idx80))
+    end if
+    nc_outfile2 = ncdf_write(refpdf, nc_filename2)
+    nc_filename2@existing = "append"
+  end if
+
+  nc_outfile2 = ncdf_write(mmmpdf, nc_filename2)
+
   ; ========================================================================
 
   leave_msg(DIAG_SCRIPT, "")
