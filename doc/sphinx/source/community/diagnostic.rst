@@ -110,6 +110,10 @@ In the recipe
 Fill in the ``documentation`` section of the recipe as described in
 :ref:`esmvalcore:recipe_documentation` and add a ``description`` to each
 diagnostic entry.
+Please note that the ``maintainer`` entry is per se not necessary to run a
+recipe, but mandatory for recipes within the ESMValTool repository (enforced by
+a unit test).
+If no maintainer is available, use the single entry ``unmaintained``.
 When reviewing a recipe, check that these entries have been filled with
 descriptive content.
 

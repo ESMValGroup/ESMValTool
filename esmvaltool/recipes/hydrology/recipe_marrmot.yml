@@ -15,6 +15,9 @@ documentation:
     - camphuijsen_jaro
     - alidoost_sarah
 
+  maintainer:
+    - unmaintained
+
   projects:
     - ewatercycle
 
