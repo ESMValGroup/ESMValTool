@@ -8,7 +8,6 @@ import iris
 
 from esmvalcore.preprocessor import regrid
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
-from esmvaltool.diag_scripts.hydrology.compute_chunks import compute_chunks
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             group_metadata, run_diagnostic)
@@ -38,13 +37,6 @@ def create_provenance_record():
         'ancestors': [],
     }
     return record
-
-
-def rechunk_and_regrid(src, tgt, scheme):
-    """Rechunk cube src and regrid it onto the grid of cube tgt."""
-    src_chunks = compute_chunks(src, tgt)
-    src.data = src.lazy_data().rechunk(src_chunks)
-    return regrid(src, tgt, scheme)
 
 
 def get_input_cubes(metadata):
@@ -105,7 +97,7 @@ def regrid_temperature(src_temp, src_height, target_height, scheme):
     src_slt = src_temp.copy(data=src_temp.core_data() + src_dtemp.core_data())
 
     # Interpolate sea-level temperature to target grid
-    target_slt = rechunk_and_regrid(src_slt, target_height, scheme)
+    target_slt = regrid(src_slt, target_height, scheme)
 
     # Convert sea-level temperature to new target elevation
     target_dtemp = lapse_rate_correction(target_height)
@@ -224,7 +216,7 @@ def main(cfg):
 
         logger.info("Processing variable precipitation_flux")
         scheme = cfg['regrid']
-        pr_dem = rechunk_and_regrid(all_vars['pr'], dem, scheme)
+        pr_dem = regrid(all_vars['pr'], dem, scheme)
 
         logger.info("Processing variable temperature")
         tas_dem = regrid_temperature(
@@ -237,12 +229,12 @@ def main(cfg):
         logger.info("Processing variable potential evapotranspiration")
         if 'evspsblpot' in all_vars:
             pet = all_vars['evspsblpot']
-            pet_dem = rechunk_and_regrid(pet, dem, scheme)
+            pet_dem = regrid(pet, dem, scheme)
         else:
             logger.info("Potential evapotransporation not available, deriving")
-            psl_dem = rechunk_and_regrid(all_vars['psl'], dem, scheme)
-            rsds_dem = rechunk_and_regrid(all_vars['rsds'], dem, scheme)
-            rsdt_dem = rechunk_and_regrid(all_vars['rsdt'], dem, scheme)
+            psl_dem = regrid(all_vars['psl'], dem, scheme)
+            rsds_dem = regrid(all_vars['rsds'], dem, scheme)
+            rsdt_dem = regrid(all_vars['rsdt'], dem, scheme)
             pet_dem = debruin_pet(
                 tas=tas_dem,
                 psl=psl_dem,

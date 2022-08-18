@@ -24,6 +24,11 @@ authors:
     institute: DLR, Germany
     email: bjoern.broetz@dlr.de
     orcid:
+  debeire_kevin:
+    name: Debeire, Kevin
+    institute: DLR, Germany
+    email: kevin.debeire@dlr.de
+    orcid: https://orcid.org/0000-0001-6006-8750
   demora_lee:
     name: de Mora, Lee
     institute: PML, UK
@@ -699,6 +704,11 @@ authors:
   tilmes_simone:
     name: Tilmes, Simone
     institute: NCAR, US
+    orcid:
+  # If no maintainer is available for a recipe, the following entry is used
+  unmaintained:
+    name: No maintainer available
+    institute: Unseen University
     orcid:
 
 # Note: the reference section has been replaced by the folder esmvaltool/references that contains bibtex files.
