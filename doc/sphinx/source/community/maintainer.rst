@@ -3,7 +3,7 @@ Maintaining a recipe
 
 As development of the ESMValTool continues, new features may be added, old ones replaced or retired or
 the interface of library functions may change when updating to new versions. This or for example the
-withdrawl of datasets used by a recipe can result in an existing recipe to stop workinge. Such "broken"
+withdrawl of datasets used by a recipe can result in an existing recipe to stop working. Such "broken"
 recipes might require some work to fix such problems and make the recipe fully functional again.
 
 A first **contact point** for the technical lead development team in such cases is the recipe "maintainer". The recipe
