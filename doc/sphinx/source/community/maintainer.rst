@@ -9,7 +9,7 @@ recipes might require some work to fix such problems and make the recipe fully f
 A first **contact point** for the technical lead development team in such cases is the recipe "maintainer". The recipe
 maintainer is then asked to check the affected recipe and if possible, fix the problems or work with the technical
 lead development team to find a solution. Ideally, a recipe maintainer is able to tell whether the results of a fixed
-recipe are scientifically valid and look as expected. Being a recipe maintainer constists of the following tasks:
+recipe are scientifically valid and look as expected. Being a recipe maintainer consists of the following tasks:
 
 * answering timely to requests from the technical lead development team, e.g. if a recipe is broken
 * if needed, checking and trying to fix their recipe(s) / working with the technical lead development team
