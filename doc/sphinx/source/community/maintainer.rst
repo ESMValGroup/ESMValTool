@@ -6,7 +6,7 @@ the interface of library functions may change when updating to new versions. Thi
 withdrawl of datasets used by a recipe can result in an existing recipe to stop working. Such "broken"
 recipes might require some work to fix such problems and make the recipe fully functional again.
 
-A first **contact point** for the technical lead development team in such cases is the recipe "maintainer". The recipe
+A first **contact point** for the technical lead development team (`@ESMValGroup/technical-lead-development-team`_) in such cases is the recipe "maintainer". The recipe
 maintainer is then asked to check the affected recipe and if possible, fix the problems or work with the technical
 lead development team to find a solution. Ideally, a recipe maintainer is able to tell whether the results of a fixed
 recipe are scientifically valid and look as expected. Being a recipe maintainer consists of the following tasks:
