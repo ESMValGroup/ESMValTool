@@ -11,7 +11,7 @@ maintainer is then asked to check the affected recipe and if possible, fix the p
 lead development team to find a solution. Ideally, a recipe maintainer is able to tell whether the results of a fixed
 recipe are scientifically valid and look as expected. Being a recipe maintainer constists of the following tasks:
 
-* answering timely to requests from the technical lead deveopment team, e.g. if a recipe is broken
+* answering timely to requests from the technical lead development team, e.g. if a recipe is broken
 * if needed, checking and trying to fix their recipe(s) / working with the technical lead development team
   (e.g. fixing a recipe might include updating the actual recipe, diagnostic code or documentation)
 * if needed, checking the output of the fixed recipe for scientific validity (asking science lead development team
