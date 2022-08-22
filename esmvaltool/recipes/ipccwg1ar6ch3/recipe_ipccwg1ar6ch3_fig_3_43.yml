@@ -3,17 +3,21 @@
 ---
 documentation:
 
+  title: IPCC AR6 WG1 Chapter 3 Fig. 3.43
+
   description: |
-    Producing figure 3.43 from IPCC WGI AR6, chap. 3
+    Producing Fig. 3.43 in the IPCC Working Group I
+  Contribution to the Sixth Assessment Report: Chapter 3
 
   authors:
     - bock_lisa
     - eyring_veronika
 
-#  maintainer:
+  maintainer:
+    - bock_lisa
     
   references:
-    - flato13ipcc
+    - eyring21ipcc
 
   projects:
     - ipcc_ar6
