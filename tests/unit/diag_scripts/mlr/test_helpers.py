@@ -390,7 +390,7 @@ TEST_GET_INPUT_DATA = [
     (CFG_3, [], False, IGNORE, [D_3], 0),
     (CFG_3, [D_1], True, None, ValueError, 1),
     (CFG_3, [D_1], True, IGNORE, ValueError, 1),
-    (CFG_3, [D_1], False, None, [D_1, D_3, D_1], 0),
+    (CFG_3, [D_1], False, None, [D_1, D_1, D_3], 0),
     (CFG_3, [D_1], False, IGNORE, [D_3], 0),
     (CFG_4, [], True, None, ValueError, 2),
     (CFG_4, [], True, IGNORE, ValueError, 1),
@@ -398,7 +398,7 @@ TEST_GET_INPUT_DATA = [
     (CFG_4, [], False, IGNORE, [D_3], 0),
     (CFG_4, [D_1], True, None, ValueError, 2),
     (CFG_4, [D_1], True, IGNORE, ValueError, 1),
-    (CFG_4, [D_1], False, None, [D_1, D_2, D_3, D_1], 0),
+    (CFG_4, [D_1], False, None, [D_1, D_2, D_1, D_3], 0),
     (CFG_4, [D_1], False, IGNORE, [D_3], 0),
 ]
 

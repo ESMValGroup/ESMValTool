@@ -69,6 +69,7 @@ Future projections
    recipe_wenzel16jclim
    recipe_wenzel16nat
    recipe_tcr
+   recipe_tebaldi21esd
    recipe_climate_change_hotspot
 
 IPCC
@@ -76,6 +77,7 @@ IPCC
 .. toctree::
    :maxdepth: 1
 
+   recipe_ipccwg1ar6ch3
    recipe_flato13ipcc
    recipe_collins13ipcc
 
