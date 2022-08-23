@@ -39,7 +39,7 @@ def create_provenance_record():
     return record
 
 
-def get_input_cubes(metadata):
+def get_input_cubes(metadata, chunksize=None):
     """Create a dict with all (preprocessed) input files."""
     provenance = create_provenance_record()
     all_vars = {}
@@ -52,6 +52,11 @@ def get_input_cubes(metadata):
         logger.info("Loading variable %s", short_name)
         cube = iris.load_cube(filename)
         cube.attributes.clear()
+
+        # process one year at a time
+        if chunksize is not None:
+            cube.data = cube.lazy_data().rechunk(chunksize, -1, -1)
+
         all_vars[short_name] = cube
         provenance['ancestors'].append(filename)
 
@@ -202,7 +207,7 @@ def main(cfg):
     input_metadata = cfg['input_data'].values()
 
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
-        all_vars, provenance = get_input_cubes(metadata)
+        all_vars, provenance = get_input_cubes(metadata, cfg['chunksize'])
 
         if dataset == 'ERA5':
             shift_era5_time_coordinate(all_vars['tas'])

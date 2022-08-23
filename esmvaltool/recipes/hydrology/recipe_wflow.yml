@@ -59,3 +59,8 @@ diagnostics:
         basin: Rhine
         dem_file: 'wflow_parameterset/wflow_rhine_sbm/staticmaps/wflow_dem.map'
         regrid: area_weighted
+        # Use the chunksize parameter to chunk the data along the time
+        # dimension. -1 means no chunking, a positive integer (e.g. 365) means
+        # the data will be processed one block at the time. This is slower, but
+        # uses less memory.
+        chunksize: -1
