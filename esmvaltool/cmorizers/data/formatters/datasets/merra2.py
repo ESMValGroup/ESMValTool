@@ -26,6 +26,8 @@ from esmvalcore.cmor.table import CMOR_TABLES
 
 from esmvaltool.cmorizers.data import utilities as utils
 
+# iris spits out a large amount of warnings
+logging.disable('WARNING')
 logger = logging.getLogger(__name__)
 
 
@@ -51,10 +53,34 @@ def _fix_time_monthly(cube):
     return cube
 
 
+def _var_pairs(cube_list, var_parts, op):
+    """Return a selection composed of two variables."""
+    selected_1 = [c for c in cube_list if c.var_name == var_parts[0]]
+    selected_2 = [c for c in cube_list if c.var_name == var_parts[1]]
+    if op == "-":
+        selected = [
+            cube_1 - cube_2 for cube_1, cube_2 in zip(selected_1, selected_2)
+        ]
+        selected = iris.cube.CubeList(selected)
+
+    return selected
+
+
 def _load_cube(in_files, var):
     cube_list = iris.load_raw(in_files)
-    selected = [c for c in cube_list if c.var_name == var['raw']]
-    selected = iris.cube.CubeList(selected)
+    pairwise_ops = ["+", "-", ":"]
+    var_parts = []
+    for op in pairwise_ops:
+        split_var = var['raw'].split(op)
+        if len(split_var) == 2:
+            var_parts = [split_var[0],  split_var[1]]
+            break
+    if not var_parts:
+        selected = [c for c in cube_list if c.var_name == var['raw']]
+        selected = iris.cube.CubeList(selected)
+    else:
+        selected = _var_pairs(cube_list, var_parts, op)
+
 
     drop_attrs = [
         'History', 'Filename', 'Comment', 'RangeBeginningDate',
