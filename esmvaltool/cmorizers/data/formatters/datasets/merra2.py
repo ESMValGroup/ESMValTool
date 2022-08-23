@@ -57,6 +57,12 @@ def _var_pairs(cube_list, var_parts, op):
     """Return a selection composed of two variables."""
     selected_1 = [c for c in cube_list if c.var_name == var_parts[0]]
     selected_2 = [c for c in cube_list if c.var_name == var_parts[1]]
+    if not selected_1:
+        logger.error(f"Raw variable {var_parts[0]} could not be found "
+                     "in str(cube_list) - operation can not be performed.")
+    if not selected_2:
+        logger.error(f"Raw variable {var_parts[1]} could not be found "
+                     "in str(cube_list) - operation can not be performed.")
     if op == "-":
         selected = [
             cube_1 - cube_2 for cube_1, cube_2 in zip(selected_1, selected_2)
@@ -75,6 +81,11 @@ def _load_cube(in_files, var):
         if len(split_var) == 2:
             var_parts = [split_var[0],  split_var[1]]
             break
+        elif len(split_var) > 2:
+            logger.error(f"Splitting raw variable {var['raw']} by "
+                         f"operation {op} results in more than two"
+                         " raw variables, this is not yet implemented.")
+            raise NotImplementedError
     if not var_parts:
         selected = [c for c in cube_list if c.var_name == var['raw']]
         selected = iris.cube.CubeList(selected)
