@@ -57,6 +57,23 @@ def _create_sample_cube():
     return cube
 
 
+def test_load_cube_single_var(tmp_path):
+    """Test loading MERRA2 cubes."""
+    path_cubes = tmp_path / "cubes.nc"
+    cube_1 = _create_sample_cube()
+    cube_1.var_name = "SWTDN"
+    cubes = iris.cube.CubeList([cube_1])
+    iris.save(cubes, str(path_cubes))
+    var = {
+        'short_name': 'rsut',
+        'mip': 'Amon', 'raw': 'SWTDN',
+        'file': 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+    }
+    in_files = str(tmp_path / "cubes.nc")
+    selection = _load_cube(in_files, var)
+    assert np.mean(selection.data) == 2.75
+
+
 def test_load_cube_pairwise_vars(tmp_path):
     """Test loading MERRA2 cubes."""
     path_cubes = tmp_path / "cubes.nc"
@@ -90,6 +107,66 @@ def test_load_cube_threewise_vars(tmp_path):
     var = {
         'short_name': 'rsut',
         'mip': 'Amon', 'raw': 'SWTDN-SWTNT-COW',
+        'file': 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+    }
+    in_files = str(tmp_path / "cubes.nc")
+    with pytest.raises(NotImplementedError) as exc:
+        _load_cube(in_files, var)
+    print(exc)
+
+
+def test_load_cube_pairwise_vars_var_not_found(tmp_path):
+    """Test loading MERRA2 cubes."""
+    path_cubes = tmp_path / "cubes.nc"
+    cube_1 = _create_sample_cube()
+    cube_1.var_name = "SWTDN"
+    cube_2 = _create_sample_cube()
+    cube_2.var_name = "SWTNT"
+    cubes = iris.cube.CubeList([cube_1, cube_2])
+    iris.save(cubes, str(path_cubes))
+    var = {
+        'short_name': 'rsut',
+        'mip': 'Amon', 'raw': 'COWABUNGA-CORVETTE',
+        'file': 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+    }
+    in_files = str(tmp_path / "cubes.nc")
+    with pytest.raises(ValueError) as exc:
+        _load_cube(in_files, var)
+    print(exc)
+
+
+def test_load_cube_pairwise_vars_var_not_found_2(tmp_path):
+    """Test loading MERRA2 cubes."""
+    path_cubes = tmp_path / "cubes.nc"
+    cube_1 = _create_sample_cube()
+    cube_1.var_name = "SWTDN"
+    cube_2 = _create_sample_cube()
+    cube_2.var_name = "SWTNT"
+    cubes = iris.cube.CubeList([cube_1, cube_2])
+    iris.save(cubes, str(path_cubes))
+    var = {
+        'short_name': 'rsut',
+        'mip': 'Amon', 'raw': 'SWTDN-CORVETTE',
+        'file': 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+    }
+    in_files = str(tmp_path / "cubes.nc")
+    with pytest.raises(ValueError) as exc:
+        _load_cube(in_files, var)
+    print(exc)
+
+
+def test_load_cube_pairwise_vars_wrong_oper(tmp_path):
+    """Test loading MERRA2 cubes."""
+    path_cubes = tmp_path / "cubes.nc"
+    cube_1 = _create_sample_cube()
+    cube_1.var_name = "SWTDN"
+    cube_2 = _create_sample_cube()
+    cube_2.var_name = "SWTNT"
+    cubes = iris.cube.CubeList([cube_1, cube_2])
+    iris.save(cubes, str(path_cubes))
+    var = {
+        'short_name': 'rsut',
+        'mip': 'Amon', 'raw': 'SWTDN+SWTNT',
         'file': 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
     }
     in_files = str(tmp_path / "cubes.nc")
