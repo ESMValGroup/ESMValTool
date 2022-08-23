@@ -184,16 +184,30 @@ begin
     if ((end_yr(0, 0) - start_yr(0, 0) + 1) .lt. 500) then
       log_info("warning: Control run is less than 500 years.")
     end if
-    new_start_yr = toint((start_yr(0, 0) + 100))
+    if ((isatt(diag_script_info, "not_cut_100_years") .and. \
+        diag_script_info@not_cut_100_years .eq. True) .or. \
+        (end_yr(0, 0) - start_yr(0, 0) + 1) .lt. 500) then
+      new_start_yr = toint(start_yr(0, 0))
+    else
+      new_start_yr = toint((start_yr(0, 0) + 100))
+    end if
     end_yr_int = toint(end_yr(0, 0))
     if (isatt(diag_script_info, "periodlength")) then
       length_of_period = toint(diag_script_info@periodlength)
-      nr_periods = toint(floor((dimsizes(time) - 12 * 100) / \
-                               (length_of_period * 12.)))
+      if ((end_yr(0, 0) - start_yr(0, 0) + 1) .lt. 500) then
+        nr_periods = toint(floor((dimsizes(time)) / \
+                                 (length_of_period * 12.)))
+      else
+        nr_periods = toint(floor((dimsizes(time) - 12 * 100) / \
+                                 (length_of_period * 12.)))
+      end if
       if (nr_periods .lt. 1) then
         error_msg("w", DIAG_SCRIPT, "", "time range too short, " + \
                   "less than 1 period covered, continue with " + \
                   "next model")
+        delete(start_yr)
+        delete(end_yr)
+        delete(time)
         continue
       end if
       yr_possible = (dimsizes(time) - 12 * 100) / (length_of_period * 12.)
@@ -278,8 +292,8 @@ begin
     delete(end_yr)
     delete(time)
 
-    if ((isatt(diag_script_info, "iavmode")) .and. \
-        (diag_script_info@iavmode .eq. "each")) then
+;    if ((isatt(diag_script_info, "iavmode")) .and. \
+;        (diag_script_info@iavmode .eq. "each")) then
       outfile = "IAV_" + info_items[imod]@exp + "_" + \
         info_items[imod]@dataset + "_" + info_items[imod]@ensemble + "_" + \
         var0 + "_" + diag_script_info@time_avg + ".nc"
@@ -336,7 +350,7 @@ begin
       end if
       ; Function in ~/interface_scripts/auxiliary.ncl
       ncdf_outfile = ncdf_write(write_data, work_dir + outfile)
-    end if
+;    end if
   end do  ; imod
 
   if ((.not. isatt(diag_script_info, "iavmode")) .or. \
