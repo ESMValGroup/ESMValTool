@@ -61,10 +61,12 @@ def _var_pairs(cube_list, var_parts, oper):
         logger.error("Raw variable %s could not be found "
                      "in str(cube_list) - operation can not be performed.",
                      var_parts[0])
+        raise ValueError
     if not selected_2:
         logger.error("Raw variable %s could not be found "
                      "in str(cube_list) - operation can not be performed.",
                      var_parts[0])
+        raise ValueError
     if oper == "-":
         selected = [
             cube_1 - cube_2 for cube_1, cube_2 in zip(selected_1, selected_2)
