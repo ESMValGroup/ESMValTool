@@ -53,21 +53,27 @@ def _fix_time_monthly(cube):
     return cube
 
 
-def _var_pairs(cube_list, var_parts, op):
+def _var_pairs(cube_list, var_parts, oper):
     """Return a selection composed of two variables."""
     selected_1 = [c for c in cube_list if c.var_name == var_parts[0]]
     selected_2 = [c for c in cube_list if c.var_name == var_parts[1]]
     if not selected_1:
-        logger.error(f"Raw variable {var_parts[0]} could not be found "
-                     "in str(cube_list) - operation can not be performed.")
+        logger.error("Raw variable %s could not be found "
+                     "in str(cube_list) - operation can not be performed.",
+                     var_parts[0])
     if not selected_2:
-        logger.error(f"Raw variable {var_parts[1]} could not be found "
-                     "in str(cube_list) - operation can not be performed.")
-    if op == "-":
+        logger.error("Raw variable %s could not be found "
+                     "in str(cube_list) - operation can not be performed.",
+                     var_parts[0])
+    if oper == "-":
         selected = [
             cube_1 - cube_2 for cube_1, cube_2 in zip(selected_1, selected_2)
         ]
         selected = iris.cube.CubeList(selected)
+    else:
+        raise NotImplementedError(f"Pairwise variables operation {oper} "
+                                  "not implemented yet, you can do it "
+                                  "yourself in the MERRA2 cmorizer.")
 
     return selected
 
@@ -76,22 +82,22 @@ def _load_cube(in_files, var):
     cube_list = iris.load_raw(in_files)
     pairwise_ops = ["+", "-", ":"]
     var_parts = []
-    for op in pairwise_ops:
-        split_var = var['raw'].split(op)
+    for oper in pairwise_ops:
+        split_var = var['raw'].split(oper)
         if len(split_var) == 2:
             var_parts = [split_var[0],  split_var[1]]
             break
-        elif len(split_var) > 2:
-            logger.error(f"Splitting raw variable {var['raw']} by "
-                         f"operation {op} results in more than two"
-                         " raw variables, this is not yet implemented.")
+        if len(split_var) > 2:
+            logger.error("Splitting raw variable %s by "
+                         "operation %s results in more than two"
+                         " raw variables, this is not yet implemented.",
+                         var['raw'], oper)
             raise NotImplementedError
     if not var_parts:
         selected = [c for c in cube_list if c.var_name == var['raw']]
         selected = iris.cube.CubeList(selected)
     else:
-        selected = _var_pairs(cube_list, var_parts, op)
-
+        selected = _var_pairs(cube_list, var_parts, oper)
 
     drop_attrs = [
         'History', 'Filename', 'Comment', 'RangeBeginningDate',
