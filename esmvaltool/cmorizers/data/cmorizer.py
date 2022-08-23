@@ -261,7 +261,9 @@ class Formatter():
             'datasets', self._dataset_to_module(dataset))
         tier = self._get_dataset_tier(dataset)
         if tier is None:
-            logger.error('Data for %s not found', dataset)
+            logger.error(f"Data for {dataset} not found. Perhaps you are not"
+                         f" storing it in a RAWOBS/TierX/{dataset}"
+                         " (X=2 or 3) directory structure?")
             return False
 
         # in-data dir; build out-dir tree
