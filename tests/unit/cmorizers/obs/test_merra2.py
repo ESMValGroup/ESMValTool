@@ -197,3 +197,33 @@ def test_extract_variable(tmp_path):
           cmorized_cube.coord("latitude"))
     assert cmorized_cube.coord('time').core_points()[0] == 48226.
     assert cmorized_cube.attributes["raw"] == 'SWTDN'
+
+
+def test_extract_variable_pairs(tmp_path):
+    """Test variable extraction."""
+    # call is _extract_variable(in_files, var, cfg, out_dir)
+    path_cubes = tmp_path / "cubes.nc"
+    cube_1 = _create_sample_cube()
+    cube_1.var_name = "SWTDN"
+    cube_2 = _create_sample_cube()
+    cube_2.var_name = "SWTNT"
+    cubes = iris.cube.CubeList([cube_1, cube_2])
+    iris.save(cubes, str(path_cubes))
+    var = {
+        'short_name': 'rsut',
+        'mip': 'Amon', 'raw': 'SWTDN-SWTNT',
+        'file': 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+    }
+    in_files = str(tmp_path / "cubes.nc")
+    cfg = read_cmor_config("MERRA2")
+    _extract_variable(in_files, var, cfg, tmp_path)
+    cmorized_data = \
+        tmp_path / "OBS6_MERRA2_reanaly_5.12.4_Amon_rsut_198201-198201.nc"
+    cmorized_cube = iris.load_cube(str(cmorized_data))
+    print(cmorized_cube,
+          cmorized_cube.coord("time"),
+          cmorized_cube.coord("latitude"))
+    assert cmorized_cube.coord('time').core_points()[0] == 48226.
+    assert cmorized_cube.attributes["raw"] == 'SWTDN-SWTNT'
+    assert cmorized_cube.attributes["component_raw_1"] == "SWTDN"
+    assert cmorized_cube.attributes["component_raw_2"] == "SWTNT"
