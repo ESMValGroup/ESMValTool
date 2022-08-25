@@ -11,6 +11,9 @@ documentation:
     - kalverla_peter
     - alidoost_sarah
 
+  maintainer:
+    - unmaintained
+
   references:
     - acknow_project
     - hersbach20rmets

@@ -77,6 +77,7 @@ IPCC
 .. toctree::
    :maxdepth: 1
 
+   recipe_ipccwg1ar6ch3
    recipe_flato13ipcc
    recipe_collins13ipcc
 
