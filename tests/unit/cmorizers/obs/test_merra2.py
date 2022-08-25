@@ -6,8 +6,10 @@ import pytest
 from cf_units import Unit
 
 from esmvaltool.cmorizers.data.formatters.datasets.merra2 import (
-    _load_cube
+    _load_cube,
+    _extract_variable
 )
+from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
 
 def _create_sample_cube():
@@ -16,26 +18,22 @@ def _create_sample_cube():
     cube_data = np.ones((1, 3, 2, 2))
     cube_data[0, 1, 1, 1] = 22.
     time = iris.coords.DimCoord([
-        1.0,
+        100,
     ],
                                 standard_name='time',
-                                bounds=[[0.5, 1.5]],
-                                units=Unit('days since 0000-01-01',
+                                units=Unit('minutes since 1982-01-01 00:30:00',
                                            calendar='gregorian'))
     zcoord = iris.coords.DimCoord([0.5, 5., 50.],
                                   var_name='depth',
                                   standard_name='depth',
-                                  bounds=[[0., 2.5], [2.5, 25.], [25., 250.]],
                                   units='m',
                                   attributes={'positive': 'down'})
     lons = iris.coords.DimCoord([1.5, 2.5],
                                 standard_name='longitude',
-                                bounds=[[1., 2.], [2., 3.]],
                                 units='K',
                                 coord_system=coord_sys)
     lats = iris.coords.DimCoord([1.5, 2.5],
                                 standard_name='latitude',
-                                bounds=[[1., 2.], [2., 3.]],
                                 units='K',
                                 coord_system=coord_sys)
     coords_spec = [(time, 0), (zcoord, 1), (lats, 2), (lons, 3)]
@@ -52,7 +50,7 @@ def _create_sample_cube():
     ]
     for attr in drop_time_attrs:
         cube.coord('time').attributes[attr] = "1982"
-    cube.coord('time').attributes["valid_range"] = [1982, 1989]
+    cube.coord('time').attributes["valid_range"] = [50, 150]
 
     return cube
 
@@ -173,3 +171,29 @@ def test_load_cube_pairwise_vars_wrong_oper(tmp_path):
     with pytest.raises(NotImplementedError) as exc:
         _load_cube(in_files, var)
     print(exc)
+
+
+def test_extract_variable(tmp_path):
+    """Test variable extraction."""
+    # call is _extract_variable(in_files, var, cfg, out_dir)
+    path_cubes = tmp_path / "cubes.nc"
+    cube_1 = _create_sample_cube()
+    cube_1.var_name = "SWTDN"
+    cubes = iris.cube.CubeList([cube_1])
+    iris.save(cubes, str(path_cubes))
+    var = {
+        'short_name': 'rsut',
+        'mip': 'Amon', 'raw': 'SWTDN',
+        'file': 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+    }
+    in_files = str(tmp_path / "cubes.nc")
+    cfg = read_cmor_config("MERRA2")
+    _extract_variable(in_files, var, cfg, tmp_path)
+    cmorized_data = \
+        tmp_path / "OBS6_MERRA2_reanaly_5.12.4_Amon_rsut_198201-198201.nc"
+    cmorized_cube = iris.load_cube(str(cmorized_data))
+    print(cmorized_cube,
+          cmorized_cube.coord("time"),
+          cmorized_cube.coord("latitude"))
+    assert cmorized_cube.coord('time').core_points()[0] == 48226.
+    assert cmorized_cube.attributes["raw"] == 'SWTDN'
