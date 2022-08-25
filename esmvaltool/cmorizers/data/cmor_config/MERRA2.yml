@@ -176,3 +176,43 @@ variables:
     mip: Amon
     raw: "SWTDN-SWTNTCLR"  
     file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  ta_monthly:
+    short_name: ta
+    mip: Amon
+    raw: "T"
+    file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+  ua_monthly:
+    short_name: ua
+    mip: Amon
+    raw: "U"
+    file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+  uv_monthly:
+    short_name: uv
+    mip: Amon
+    raw: "V"
+    file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+  tro3_monthly:
+    short_name: tro3
+    mip: Amon
+    raw: "O3"
+    file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+  zg_monthly:
+    short_name: zg
+    mip: Amon
+    raw: "H"
+    file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+  hus_monthly:
+    short_name: hus
+    mip: Amon
+    raw: "QV"
+    file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+  wap_monthly:
+    short_name: wap
+    mip: Amon
+    raw: "OMEGA"
+    file: 'MERRA2_???.instM_3d_asm_Np.{year}??.nc4'
+  hur_monthly:
+    short_name: hur
+    mip: Amon
+    raw: "RH"
+    file: 'MERRA2_???.instM_3d_asm_Np.{year}??.nc4'
