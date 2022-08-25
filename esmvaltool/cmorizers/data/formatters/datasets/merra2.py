@@ -145,6 +145,16 @@ def _extract_variable(in_files, var, cfg, out_dir):
                 var['short_name'], ', '.join(in_files))
     attributes = deepcopy(cfg['attributes'])
     attributes['mip'] = var['mip']
+    attributes['raw'] = var['raw']
+    pairwise_ops = ["+", "-", ":"]
+    for oper in pairwise_ops:
+        if oper in var['raw']:
+            components = var['raw'].split(oper)
+            if len(components) == 2:
+                attributes['component_raw_1'] = components[0]
+                attributes['component_raw_2'] = components[1]
+                attributes['component_operation'] = oper
+                break
     cmor_table = CMOR_TABLES[attributes['project_id']]
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
 
