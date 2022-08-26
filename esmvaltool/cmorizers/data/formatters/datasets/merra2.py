@@ -27,7 +27,8 @@ from esmvalcore.cmor.table import CMOR_TABLES
 from esmvaltool.cmorizers.data import utilities as utils
 
 # iris spits out a large amount of warnings
-logging.disable('WARNING')
+# logging.disable('WARNING')  # careful: this deactivates writing
+# to log files in the pytest test environment for other cmorizer tests
 logger = logging.getLogger(__name__)
 
 
