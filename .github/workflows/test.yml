@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - update_MERRA2_cmorizer
   schedule:
     - cron: '0 0 * * *'
 
