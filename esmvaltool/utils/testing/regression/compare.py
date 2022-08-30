@@ -348,8 +348,8 @@ def get_recipe_name_from_dir(recipe_dir: Path) -> str:
 def get_recipe_name_from_file(filename: Path) -> str:
     """Extract recipe name from arbitrary recipe output file."""
     # Iterate starting from the root dir to avoid false matches
-    for parent in filename.parents[::-1]:
-        recipe_match = re.search(RECIPE_DIR_PATTERN, str(parent))
+    for path, _, _ in os.walk(os.path.dirname(filename)):
+        recipe_match = re.search(RECIPE_DIR_PATTERN, str(path))
         if recipe_match is not None:
             return recipe_match['recipe_name']
     raise ValueError(f"Failed to extract recipe name from file {filename}")
