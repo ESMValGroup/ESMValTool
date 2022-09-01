@@ -115,30 +115,32 @@ def plot_cp_timeseries(list_cubelists, plot_path):
         cube_list = list_cubelists[i]
         for j, cube in enumerate(cube_list):
             # determining plot positions
-            x, y = subplot_positions(j)
+            x_pos, y_pos = subplot_positions(j)
             yrs = (1850 + np.arange(cube.shape[0])).astype("float")
             if i == 0:
                 # climatology
                 avg_cube = sf.area_avg(cube, return_cube=False)
-                ax1[x, y].plot(yrs, avg_cube)
-                ax1[x, y].set_ylabel(cube.long_name + " / " + str(cube.units))
+                ax1[x_pos, y_pos].plot(yrs, avg_cube)
+                ax1[x_pos,
+                    y_pos].set_ylabel(cube.long_name + " / " + str(cube.units))
                 if j > 5:
-                    ax1[x, y].set_xlabel("Time")
+                    ax1[x_pos, y_pos].set_xlabel("Time")
             if i == 1:
                 # anomaly timeseries
                 avg_cube = sf.area_avg(cube, return_cube=False)
-                ax2[x, y].plot(yrs, avg_cube)
-                ax2[x, y].set_ylabel(cube.long_name + " / " + str(cube.units))
+                ax2[x_pos, y_pos].plot(yrs, avg_cube)
+                ax2[x_pos,
+                    y_pos].set_ylabel(cube.long_name + " / " + str(cube.units))
                 if j > 5:
-                    ax2[x, y].set_xlabel("Time")
+                    ax2[x_pos, y_pos].set_xlabel("Time")
             if i == 2:
                 months = np.arange(1, 13)
                 # avg_cube = sf.area_avg(cube, return_cube=False)
-                ax3[x, y].plot(months, cube[:, 50, 50].data)
-                ax3[x, y].set_ylabel(
+                ax3[x_pos, y_pos].plot(months, cube[:, 50, 50].data)
+                ax3[x_pos, y_pos].set_ylabel(
                     str(cube.var_name) + " / " + str(cube.units))
                 if j > 5:
-                    ax3[x, y].set_xlabel("Time")
+                    ax3[x_pos, y_pos].set_xlabel("Time")
             if i == 2:
                 # January patterns
                 plt.subplot(3, 3, j + 1)
