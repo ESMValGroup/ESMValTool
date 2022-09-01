@@ -13,36 +13,42 @@ import sub_functions as sf
 
 
 def subplot_positions(j):
-    """Function to manually determine sub-plot positions in a 3x3 figure.
+    """Determine sub-plot positions in a 3x3 figure.
 
     Parameters
     ----------
-    j (int): index of cube position in cubelist
+    j : int
+        index of cube position in cubelist
 
     Returns
     -------
-    x, y (int): subplot positions
+    x_pos : int
+        x subplot position
+    y_pos : int
+        y subplot position
     """
     if j <= 2:
-        y = j
-        x = 0
+        y_pos = j
+        x_pos = 0
     elif 2 < j <= 5:
-        y = j - 3
-        x = 1
+        y_pos = j - 3
+        x_pos = 1
     else:
-        y = j - 6
-        x = 2
+        y_pos = j - 6
+        x_pos = 2
 
-    return x, y
+    return x_pos, y_pos
 
 
 def plot_patterns(cube_list, plot_path):
-    """Plots climate patterns for imogen_mode: off.
+    """Plot climate patterns for imogen_mode: off.
 
     Parameters
     ----------
-    cube_list (cubelist): input cubelist for plotting patterns per variable
-    plot_path (path): path to plot_dir
+    cube_list : cubelist
+        input cubelist for plotting patterns per variable
+    plot_path : path
+        path to plot_dir
 
     Returns
     -------
@@ -57,13 +63,14 @@ def plot_patterns(cube_list, plot_path):
 
     for j, cube in enumerate(cube_list):
         # determining plot positions
-        x, y = subplot_positions(j)
+        x_pos, y_pos = subplot_positions(j)
         months = np.arange(1, 13)
         # plots patterns for an arbitrary grid cell
-        ax[x, y].plot(months, cube[:, 50, 50].data)
-        ax[x, y].set_ylabel(str(cube.var_name) + " / " + str(cube.units))
+        ax[x_pos, y_pos].plot(months, cube[:, 50, 50].data)
+        ax[x_pos,
+           y_pos].set_ylabel(str(cube.var_name) + " / " + str(cube.units))
         if j > 5:
-            ax[x, y].set_xlabel("Time")
+            ax[x_pos, y_pos].set_xlabel("Time")
 
         # January patterns
         plt.subplot(3, 3, j + 1)
@@ -78,12 +85,14 @@ def plot_patterns(cube_list, plot_path):
 
 
 def plot_cp_timeseries(list_cubelists, plot_path):
-    """Plots timeseries and maps of climatologies, anomalies and patterns.
+    """Plot timeseries and maps of climatologies, anomalies and patterns.
 
     Parameters
     ----------
-    list_cubelists (cubelist): input cubelist for plotting per variable
-    plot_path (path): path to plot_dir
+    list_cubelists : cubelist
+        input cubelist for plotting per variable
+    plot_path : path
+        path to plot_dir
 
     Returns
     -------
@@ -150,12 +159,14 @@ def plot_cp_timeseries(list_cubelists, plot_path):
 
 
 def plot_scores(cube_list, plot_path):
-    """Plots color mesh of scores per variable per month.
+    """Plot color mesh of scores per variable per month.
 
     Parameters
     ----------
-    cube_list (cube): input cubelist for plotting
-    plot_path (path): path to plot_dir
+    cube_list : cube
+        input cubelist for plotting
+    plot_path : path
+        path to plot_dir
 
     Returns
     -------
