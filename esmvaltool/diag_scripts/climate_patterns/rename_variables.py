@@ -1,5 +1,4 @@
-"""Script containing cube re-naming functions for main driving scripts,
-dependent on recipe switch settings.
+"""Script containing cube re-naming functions for driving scripts.
 
 Author
 ------
@@ -12,11 +11,13 @@ def rename_clim_variables(cube):
 
     Parameters
     ----------
-    cube (cube): input cube
+    cube : cube
+        input cube
 
     Returns
     -------
-    cube (cube): cube with renamed variables
+    cube : cube
+        cube with renamed variables
     """
     if cube.var_name == "tas":
         cube.rename("Air Temperature")
@@ -56,11 +57,13 @@ def rename_anom_variables(cube):
 
     Parameters
     ----------
-    cube (cube): input cube
+    cube : cube
+        input cube
 
     Returns
     -------
-    cube (cube): cube with renamed variables
+    cube : cube
+        cube with renamed variables
     """
     if cube.var_name == "tas":
         cube.rename("Air Temperature")
@@ -100,11 +103,13 @@ def rename_variables(cube):
 
     Parameters
     ----------
-    cube (cube): input cube
+    cube : cube
+        input cube
 
     Returns
     -------
-    cube (cube): cube with renamed variables
+    cube : cube
+        cube with renamed variables
     """
     if cube.var_name == "tas":
         cube.rename("Air Temperature")
@@ -141,11 +146,13 @@ def rename_regression_variables(cube):
 
     Parameters
     ----------
-    cube (cube): input cube
+    cube : cube
+        input cube
 
     Returns
     -------
-    cube (cube): cube with renamed variables
+    cube : cube
+        cube with renamed variables
     """
     if cube.var_name == "tl1_anom":
         cube.rename("Air Temperature")
@@ -183,11 +190,13 @@ def rename_variables_base(cube):
 
     Parameters
     ----------
-    cube (cube): input cube
+    cube : cube
+        input cube
 
     Returns
     -------
-    cube (cube): cube with renamed variables
+    cube : cube
+        cube with renamed variables
     """
     if cube.var_name == "tl1_patt":
         cube.rename("Air Temperature")
