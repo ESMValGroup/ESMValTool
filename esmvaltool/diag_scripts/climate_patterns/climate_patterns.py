@@ -63,6 +63,10 @@ def climatology(cube, syr=1850, eyr=1889):
     ----------
     cube : cube
         cube loaded from config dictionary
+    syr : int
+        set climatology start year
+    eyr : int
+        set climatology end year
 
     Returns
     -------
