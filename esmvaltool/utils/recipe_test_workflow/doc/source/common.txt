@@ -1,0 +1,22 @@
+.. (C) Crown Copyright 2022, the Met Office.
+
+.. Glossary substitutions make it easier to refer to pluralised /
+.. capitalised glossary terms.
+
+.. |CAW| replace:: :term:`CAW`
+.. |CMIP| replace:: :term:`CMIP`
+.. |Cylc| replace:: :term:`Cylc`
+.. |ESM| replace:: :term:`ESM`
+.. |ESMs| replace:: :term:`ESMs <ESM>`
+.. |ESMValTool| replace:: :term:`ESMValTool`
+.. |MIAO| replace:: :term:`MIAO`
+.. |Rose| replace:: :term:`Rose`
+
+.. Links
+
+.. _CMIP Documentation: https://www.wcrp-climate.org/wgcm-cmip
+.. _Cylc Documentation: https://cylc.github.io/cylc-doc/stable/html/index.html
+.. _Cylc Review: https://cylc.github.io/cylc-doc/7.9.3/html/tutorial.html#viewing-suite-logs-in-a-web-browser-cylc-review
+.. _ESMValTool Documentation: https://www.esmvaltool.org/
+.. _Radiation budget: https://docs.esmvaltool.org/en/latest/recipes/recipe_radiation_budget.html
+.. _Rose Documentation: https://metomi.github.io/rose/doc/html/index.html

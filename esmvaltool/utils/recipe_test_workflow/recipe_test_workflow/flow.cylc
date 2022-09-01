@@ -1,0 +1,58 @@
+#!jinja2
+[scheduler]
+    UTC mode = True
+
+[task parameters]
+    metric = radiation_budget
+
+[scheduling]
+    [[graph]]
+        R1 = install_cold => configure => process<metric>
+
+[runtime]
+    [[root]]
+        script = rose task-run
+        env-script = "eval $(rose task-env)"
+        [[[environment]]]
+            MODULE_NAME = {{ MODULE_NAME }}
+            USER_CONFIG_DIR = ${CYLC_WORKFLOW_RUN_DIR}/etc
+            USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
+
+    [[install_cold]]
+        platform = localhost
+        [[[environment]]]
+            SITE = {{ SITE }}
+
+    [[configure]]
+        pre-script = "mkdir -p ${USER_CONFIG_DIR}"
+        platform = localhost
+        [[[environment]]]
+            ROSE_TASK_APP = configure
+            DRS_CMIP3 = {{ DRS_CMIP3 }}
+            DRS_CMIP5 = {{ DRS_CMIP5 }}
+            DRS_CMIP6 = {{ DRS_CMIP6 }}
+            DRS_CORDEX = {{ DRS_CORDEX }}
+            DRS_OBS = {{ DRS_OBS }}
+            DRS_OBS6 = {{ DRS_OBS6 }}
+            DRS_ANA4MIPS = {{ DRS_ANA4MIPS }}
+            DRS_NATIVE6 = {{ DRS_NATIVE6 }}
+            DRS_OBS4MIPS = {{ DRS_OBS4MIPS }}
+            MAX_PARALLEL_TASKS = {{ MAX_PARALLEL_TASKS }}
+            ROOTPATH_CMIP3 = {{ ROOTPATH_CMIP3 }}
+            ROOTPATH_CMIP5 = {{ ROOTPATH_CMIP5 }}
+            ROOTPATH_CMIP6 = {{ ROOTPATH_CMIP6 }}
+            ROOTPATH_CORDEX = {{ ROOTPATH_CORDEX }}
+            ROOTPATH_OBS = {{ ROOTPATH_OBS }}
+            ROOTPATH_OBS6 = {{ ROOTPATH_OBS6 }}
+            ROOTPATH_ANA4MIPS = {{ ROOTPATH_ANA4MIPS }}
+            ROOTPATH_NATIVE6 = {{ ROOTPATH_NATIVE6 }}
+            ROOTPATH_OBS4MIPS = {{ ROOTPATH_OBS4MIPS }}
+            ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
+
+    [[process<metric>]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = process
+            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_metric}.yml"
+
+{% include 'site/' ~ SITE ~ '.cylc' %}
