@@ -46,7 +46,7 @@ def rename_clim_variables(cube):
         cube.rename("Surface Downwelling Longwave Radiation")
         cube.var_name = "lwdown_clim"
 
-    cube.coord('month_number').rename('imogen_drive')
+    cube.coord("month_number").rename("imogen_drive")
 
     return cube
 
@@ -90,7 +90,7 @@ def rename_anom_variables(cube):
         cube.rename("Surface Downwelling Longwave Radiation")
         cube.var_name = "lwdown_anom"
 
-    cube.coord('month_number').rename('imogen_drive')
+    cube.coord("month_number").rename("imogen_drive")
 
     return cube
 
@@ -131,7 +131,7 @@ def rename_variables(cube):
         cube.rename("Surface Downwelling Longwave Radiation")
         cube.var_name = "lwdown"
 
-    cube.coord('month_number').rename('imogen_drive')
+    cube.coord("month_number").rename("imogen_drive")
 
     return cube
 
@@ -217,6 +217,6 @@ def rename_variables_base(cube):
         cube.rename("Surface Downwelling Longwave Radiation")
         cube.var_name = "rlds"
 
-    cube.coord('imogen_drive').rename('month_number')
+    cube.coord("imogen_drive").rename("month_number")
 
     return cube

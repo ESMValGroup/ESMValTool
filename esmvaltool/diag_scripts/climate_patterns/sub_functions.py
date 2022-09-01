@@ -16,6 +16,7 @@ import numpy as np
 
 logger = logging.getLogger(Path(__file__).stem)
 
+
 def compute_diagnostic(filename):
     """Load cube, remove any dimensions of length: 1.
 
@@ -47,12 +48,12 @@ def area_avg(x, return_cube=None):
     x2 (cube): cube with collapsed lat-lons, global mean over time
     x2.data (arr): array with collapsed lat-lons, global mean over time
     """
-    if not x.coord('latitude').has_bounds():
-        x.coord('latitude').guess_bounds()
-    if not x.coord('longitude').has_bounds():
-        x.coord('longitude').guess_bounds()
+    if not x.coord("latitude").has_bounds():
+        x.coord("latitude").guess_bounds()
+    if not x.coord("longitude").has_bounds():
+        x.coord("longitude").guess_bounds()
     area = iris.analysis.cartography.area_weights(x, normalize=False)
-    x2 = x.collapsed(['latitude', 'longitude'],
+    x2 = x.collapsed(["latitude", "longitude"],
                      iris.analysis.MEAN,
                      weights=area)
 
@@ -79,10 +80,10 @@ def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
     x2 (cube): cube with collapsed lat-lons, global mean over time
     x2.data (arr): array with collapsed lat-lons, global mean over time
     """
-    if not x.coord('latitude').has_bounds():
-        x.coord('latitude').guess_bounds()
-    if not x.coord('longitude').has_bounds():
-        x.coord('longitude').guess_bounds()
+    if not x.coord("latitude").has_bounds():
+        x.coord("latitude").guess_bounds()
+    if not x.coord("longitude").has_bounds():
+        x.coord("longitude").guess_bounds()
 
     global_weights = iris.analysis.cartography.area_weights(x, normalize=False)
 
@@ -90,28 +91,28 @@ def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
         ocean_frac.data = np.ma.masked_less(ocean_frac.data, 0.01)
         weights = iris.analysis.cartography.area_weights(ocean_frac,
                                                          normalize=False)
-        ocean_area = ocean_frac.collapsed(["latitude", "longitude"],
-                                          iris.analysis.SUM,
-                                          weights=weights) / 1e12
+        ocean_area = (ocean_frac.collapsed(
+            ["latitude", "longitude"], iris.analysis.SUM, weights=weights) /
+                      1e12)
         print("Ocean area: ", ocean_area.data)
         x2 = x.copy()
         x2.data = x2.data * global_weights * ocean_frac.data
 
-        x2 = x2.collapsed(['latitude', 'longitude'],
-                          iris.analysis.SUM) / 1e12 / ocean_area.data
+        x2 = (x2.collapsed(["latitude", "longitude"], iris.analysis.SUM) /
+              1e12 / ocean_area.data)
 
     if land:
         land_frac.data = np.ma.masked_less(land_frac.data, 0.01)
         weights = iris.analysis.cartography.area_weights(land_frac,
                                                          normalize=False)
-        land_area = land_frac.collapsed(["latitude", "longitude"],
-                                        iris.analysis.SUM,
-                                        weights=weights) / 1e12
+        land_area = (land_frac.collapsed(
+            ["latitude", "longitude"], iris.analysis.SUM, weights=weights) /
+                     1e12)
         print("Land area: ", land_area.data)
         x2 = x.copy()
         x2.data = x2.data * global_weights * land_frac.data
-        x2 = x2.collapsed(['latitude', 'longitude'],
-                          iris.analysis.SUM) / 1e12 / land_area.data
+        x2 = (x2.collapsed(["latitude", "longitude"], iris.analysis.SUM) /
+              1e12 / land_area.data)
 
     if return_cube:
         return x2
@@ -133,8 +134,8 @@ def make_model_dirs(cube_initial, work_path, plot_path):
     model_work_dir (path): path to specific model directory in work_dir
     model_plot_dir (path): path to specific plot directory in plot_dir
     """
-    w_path = os.path.join(work_path, cube_initial.attributes['source_id'])
-    p_path = os.path.join(plot_path, cube_initial.attributes['source_id'])
+    w_path = os.path.join(work_path, cube_initial.attributes["source_id"])
+    p_path = os.path.join(plot_path, cube_initial.attributes["source_id"])
     os.mkdir(w_path)
     os.mkdir(p_path)
 
@@ -158,6 +159,7 @@ def parallelise(f, processes=None):
     result (any): results of parallelised elements
     """
     import multiprocessing as mp
+
     if processes is None:
         processes = max(1, mp.cpu_count() - 1)
     if processes <= 0:
@@ -171,4 +173,5 @@ def parallelise(f, processes=None):
         return result
 
     from functools import partial
+
     return partial(easy_parallise, f)

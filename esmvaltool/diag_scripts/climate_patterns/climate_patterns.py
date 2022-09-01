@@ -43,11 +43,7 @@ import iris.cube
 import numpy as np
 import sklearn.linear_model
 import sub_functions as sf
-from cp_plotting import (
-    plot_cp_timeseries,
-    plot_patterns,
-    plot_scores,
-)
+from cp_plotting import plot_cp_timeseries, plot_patterns, plot_scores
 from rename_variables import (
     rename_anom_variables,
     rename_clim_variables,
@@ -65,7 +61,7 @@ def climatology(cube, syr=1850, eyr=1889):
 
     Parameters
     ----------
-    cube : cube 
+    cube : cube
         cube loaded from config dictionary
 
     Returns
@@ -74,8 +70,10 @@ def climatology(cube, syr=1850, eyr=1889):
         (default 1850-1889)
     """
     cube_40yr = cube.extract(
-        iris.Constraint(time=lambda t: syr <= t.point.year <= eyr,
-                        month_number=lambda t: 1 <= t.point <= 12))
+        iris.Constraint(
+            time=lambda t: syr <= t.point.year <= eyr,
+            month_number=lambda t: 1 <= t.point <= 12,
+        ))
     cube_aggregated = make_monthly_climatology(cube_40yr)
 
     return cube_aggregated
@@ -138,7 +136,7 @@ def diurnal_temp_range(cubelist):
         range_cube = -range_cube
 
     range_cube.rename("Diurnal Range")
-    range_cube.var_name = ("range_tl1")
+    range_cube.var_name = "range_tl1"
 
     return range_cube
 
@@ -164,11 +162,9 @@ def calculate_diurnal_range(clim_list, ts_list):
 
     for i, _ in enumerate(comb_list):
         for cube in comb_list[i]:
-            if (cube.var_name in ('tasmax', 'tasmin')) \
-                    and cube in clim_list:
+            if (cube.var_name in ("tasmax", "tasmin")) and cube in clim_list:
                 temp_range_list_clim.append(cube)
-            elif (cube.var_name in ('tasmax', 'tasmin')) \
-                    and cube in ts_list:
+            elif (cube.var_name in ("tasmax", "tasmin")) and cube in ts_list:
                 temp_range_list_ts.append(cube)
             else:
                 pass
@@ -207,11 +203,11 @@ def append_diurnal_range(derived_diurnal_clim, derived_diurnal_ts, clim_list,
     ts_list_final = iris.cube.CubeList([])
 
     for cube in clim_list:
-        if cube.var_name not in ('tasmax', 'tasmin'):
+        if cube.var_name not in ("tasmax", "tasmin"):
             clim_list_final.append(cube)
 
     for cube in ts_list:
-        if cube.var_name not in ('tasmax', 'tasmin'):
+        if cube.var_name not in ("tasmax", "tasmin"):
             ts_list_final.append(cube)
 
     clim_list_final.append(derived_diurnal_clim)
@@ -242,16 +238,16 @@ def calculate_anomaly(clim_list, ts_list):
     # calc the anom by subtracting the monthly climatology from
     # the time series
     for i, _ in enumerate(ts_list_final):
-        i_months = anom_list_final[i].coord(
-            'month_number').points - 1  # -1 because months are numbered 1..12
+        i_months = (anom_list_final[i].coord("month_number").points - 1
+                    )  # -1 because months are numbered 1..12
         anom_list_final[i].data -= clim_list_final[i][i_months].data
 
     return clim_list_final, anom_list_final
 
 
 def regression(tas, cube_data):
-    """Calculate the coefficients of regression between global surface temp
-    and a variable.
+    """Calculate the coefficients of regression between global surface temp and
+    a variable.
 
     Parameters
     ----------
@@ -299,16 +295,16 @@ def regression_units(tas, cube):
     -------
     units (str): string of calculated regression units
     """
-    print('Cube Units: ', cube.units)
+    print("Cube Units: ", cube.units)
     units = cube.units / tas.units
-    print('Regression Units: ', units)
+    print("Regression Units: ", units)
 
     return units
 
 
 def calculate_regressions(anom_list, yrs=85):
-    """Facilitate the calculation of regression coefficients (climate
-    patterns) and the creation of a new cube of patterns per variable.
+    """Facilitate the calculation of regression coefficients (climate patterns)
+    and the creation of a new cube of patterns per variable.
 
     Parameters
     ----------
@@ -326,7 +322,7 @@ def calculate_regressions(anom_list, yrs=85):
     months = yrs * 12
 
     for cube in anom_list:
-        if cube.var_name == 'tl1_anom':
+        if cube.var_name == "tl1_anom":
 
             # convert years to months when selecting
             tas = cube[-months:]
@@ -346,8 +342,8 @@ def calculate_regressions(anom_list, yrs=85):
                                                  month_cube_ssp.data)
 
             # re-creating cube
-            if cube.var_name in ('swdown_anom', 'lwdown_anom'):
-                units = 'W m-2 K-1'
+            if cube.var_name in ("swdown_anom", "lwdown_anom"):
+                units = "W m-2 K-1"
             else:
                 units = regression_units(tas, cube_ssp)
 
@@ -357,27 +353,30 @@ def calculate_regressions(anom_list, yrs=85):
             dim_coords_and_dims = [(coord1, 0), (coord2, 1)]
 
             # assigning aux_coord
-            coord_month = iris.coords.AuxCoord(i, var_name='imogen_drive')
+            coord_month = iris.coords.AuxCoord(i, var_name="imogen_drive")
             aux_coords_and_dims = [(coord_month, ())]
 
             cube = rename_regression_variables(cube)
 
             # creating cube of regression values
-            regr_cube = iris.cube.Cube(regr_array,
-                                       units=units,
-                                       dim_coords_and_dims=dim_coords_and_dims,
-                                       aux_coords_and_dims=aux_coords_and_dims,
-                                       var_name=cube.var_name,
-                                       standard_name=cube.standard_name)
+            regr_cube = iris.cube.Cube(
+                regr_array,
+                units=units,
+                dim_coords_and_dims=dim_coords_and_dims,
+                aux_coords_and_dims=aux_coords_and_dims,
+                var_name=cube.var_name,
+                standard_name=cube.standard_name,
+            )
 
             # calculating cube of r2 scores
             score_cube = iris.cube.Cube(
                 score_array,
-                units='R2',
+                units="R2",
                 dim_coords_and_dims=dim_coords_and_dims,
                 aux_coords_and_dims=aux_coords_and_dims,
                 var_name=cube.var_name,
-                standard_name=cube.standard_name)
+                standard_name=cube.standard_name,
+            )
 
             month_list.append(regr_cube)
             score_month_list.append(score_cube)
@@ -408,10 +407,10 @@ def write_scores(scores, work_path):
         mean_score = np.mean(score)
 
         # saving scores
-        file = open(work_path + 'scores', 'a')
-        data = '{0:10.3f}'.format(mean_score)
+        file = open(work_path + "scores", "a")
+        data = "{0:10.3f}".format(mean_score)
         name = cube.var_name
-        file.write(name + ': ' + data + '\n')
+        file.write(name + ": " + data + "\n")
         file.close()
 
 
@@ -429,28 +428,36 @@ def cube_saver(list_of_cubelists, work_path, name_list, mode):
     -------
     None
     """
-    if mode == 'imogen_scores':
+    if mode == "imogen_scores":
         for i in range(0, 4):
             iris.save(list_of_cubelists[i], work_path + name_list[i])
 
-    if mode == 'imogen':
+    if mode == "imogen":
         for i in range(0, 3):
             iris.save(list_of_cubelists[i], work_path + name_list[i])
 
-    if mode == 'scores':
+    if mode == "scores":
         for i in range(2, 4):
             for cube in list_of_cubelists[i]:
                 rename_variables_base(cube)
             iris.save(list_of_cubelists[i], work_path + name_list[i])
 
-    if mode == 'base':
+    if mode == "base":
         for cube in list_of_cubelists[2]:
             rename_variables_base(cube)
         iris.save(list_of_cubelists[2], work_path + name_list[2])
 
 
-def saving_outputs(clim_list_final, anom_list_final, regressions, scores,
-                   imogen_mode, r2_scores, plot_path, work_path):
+def saving_outputs(
+    clim_list_final,
+    anom_list_final,
+    regressions,
+    scores,
+    imogen_mode,
+    r2_scores,
+    plot_path,
+    work_path,
+):
     """Save data and plots to relevant directories.
 
     Parameters
@@ -466,8 +473,10 @@ def saving_outputs(clim_list_final, anom_list_final, regressions, scores,
     """
     list_of_cubelists = [clim_list_final, anom_list_final, regressions, scores]
     name_list = [
-        "climatology_variables.nc", "anomaly_variables.nc", "patterns.nc",
-        "scores.nc"
+        "climatology_variables.nc",
+        "anomaly_variables.nc",
+        "patterns.nc",
+        "scores.nc",
     ]
 
     # saving data + plotting
@@ -479,22 +488,22 @@ def saving_outputs(clim_list_final, anom_list_final, regressions, scores,
             cube_saver(list_of_cubelists,
                        work_path,
                        name_list,
-                       mode='imogen_scores')
+                       mode="imogen_scores")
 
         else:
             plot_cp_timeseries(list_of_cubelists, plot_path)
-            cube_saver(list_of_cubelists, work_path, name_list, mode='imogen')
+            cube_saver(list_of_cubelists, work_path, name_list, mode="imogen")
 
     else:
         if r2_scores is True:
             plot_scores(list_of_cubelists[3], plot_path)
             write_scores(scores, work_path)
             plot_patterns(list_of_cubelists[2], plot_path)
-            cube_saver(list_of_cubelists, work_path, name_list, mode='scores')
+            cube_saver(list_of_cubelists, work_path, name_list, mode="scores")
 
         else:
             plot_patterns(list_of_cubelists[2], plot_path)
-            cube_saver(list_of_cubelists, work_path, name_list, mode='base')
+            cube_saver(list_of_cubelists, work_path, name_list, mode="base")
 
 
 def get_provenance_record():
@@ -509,12 +518,12 @@ def get_provenance_record():
     record (dict): provenance record
     """
     record = {
-        'caption': ['Generating Climate Patterns from CMIP6 Models'],
-        'statistics': ['mean', 'other'],
-        'domains': ['global'],
-        'themes': ['carbon'],
-        'realms': ['atmos'],
-        'authors': ['munday_gregory'],
+        "caption": ["Generating Climate Patterns from CMIP6 Models"],
+        "statistics": ["mean", "other"],
+        "domains": ["global"],
+        "themes": ["carbon"],
+        "realms": ["atmos"],
+        "authors": ["munday_gregory"],
     }
 
     return record
@@ -543,7 +552,7 @@ def patterns(model):
     ts_list = iris.cube.CubeList([])
 
     for dataset in input_data:
-        if dataset['dataset'] == model:
+        if dataset["dataset"] == model:
             input_file = dataset["filename"]
 
             # preparing single cube
@@ -573,11 +582,19 @@ def patterns(model):
     model_work_dir, model_plot_dir = sf.make_model_dirs(
         cube_initial, work_path, plot_path)
 
-    saving_outputs(clim_list_final, anom_list_final, regressions, scores,
-                   imogen_mode, r2_scores, model_plot_dir, model_work_dir)
+    saving_outputs(
+        clim_list_final,
+        anom_list_final,
+        regressions,
+        scores,
+        imogen_mode,
+        r2_scores,
+        model_plot_dir,
+        model_work_dir,
+    )
 
     provenance_record = get_provenance_record()
-    path = model_work_dir + 'patterns.nc'
+    path = model_work_dir + "patterns.nc"
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(path, provenance_record)
 
@@ -599,7 +616,7 @@ def main(cfg):
 
     models = []
     for x in input_data:
-        model = x['dataset']
+        model = x["dataset"]
         if model not in models:
             models.append(model)
 

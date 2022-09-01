@@ -63,18 +63,18 @@ def plot_patterns(cube_list, plot_path):
         ax[x, y].plot(months, cube[:, 50, 50].data)
         ax[x, y].set_ylabel(str(cube.var_name) + " / " + str(cube.units))
         if j > 5:
-            ax[x, y].set_xlabel('Time')
+            ax[x, y].set_xlabel("Time")
 
         # January patterns
         plt.subplot(3, 3, j + 1)
         qplt.pcolormesh(cube[0])
 
     plt.tight_layout()
-    plt.savefig(plot_path + 'Patterns')
+    plt.savefig(plot_path + "Patterns")
     plt.close()
 
     fig.tight_layout()
-    fig.savefig(plot_path + 'Patterns Timeseries')
+    fig.savefig(plot_path + "Patterns Timeseries")
 
 
 def plot_cp_timeseries(list_cubelists, plot_path):
@@ -107,21 +107,21 @@ def plot_cp_timeseries(list_cubelists, plot_path):
         for j, cube in enumerate(cube_list):
             # determining plot positions
             x, y = subplot_positions(j)
-            yrs = (1850 + np.arange(cube.shape[0])).astype('float')
+            yrs = (1850 + np.arange(cube.shape[0])).astype("float")
             if i == 0:
                 # climatology
                 avg_cube = sf.area_avg(cube, return_cube=False)
                 ax1[x, y].plot(yrs, avg_cube)
                 ax1[x, y].set_ylabel(cube.long_name + " / " + str(cube.units))
                 if j > 5:
-                    ax1[x, y].set_xlabel('Time')
+                    ax1[x, y].set_xlabel("Time")
             if i == 1:
                 # anomaly timeseries
                 avg_cube = sf.area_avg(cube, return_cube=False)
                 ax2[x, y].plot(yrs, avg_cube)
                 ax2[x, y].set_ylabel(cube.long_name + " / " + str(cube.units))
                 if j > 5:
-                    ax2[x, y].set_xlabel('Time')
+                    ax2[x, y].set_xlabel("Time")
             if i == 2:
                 months = np.arange(1, 13)
                 # avg_cube = sf.area_avg(cube, return_cube=False)
@@ -129,24 +129,24 @@ def plot_cp_timeseries(list_cubelists, plot_path):
                 ax3[x, y].set_ylabel(
                     str(cube.var_name) + " / " + str(cube.units))
                 if j > 5:
-                    ax3[x, y].set_xlabel('Time')
+                    ax3[x, y].set_xlabel("Time")
             if i == 2:
                 # January patterns
                 plt.subplot(3, 3, j + 1)
                 qplt.pcolormesh(cube[0])
 
     plt.tight_layout()
-    plt.savefig(plot_path + 'Patterns')
+    plt.savefig(plot_path + "Patterns")
     plt.close()
 
     fig1.tight_layout()
-    fig1.savefig(plot_path + 'Climatologies')
+    fig1.savefig(plot_path + "Climatologies")
 
     fig2.tight_layout()
-    fig2.savefig(plot_path + 'Anomalies')
+    fig2.savefig(plot_path + "Anomalies")
 
     fig3.tight_layout()
-    fig3.savefig(plot_path + 'Patterns Timeseries')
+    fig3.savefig(plot_path + "Patterns Timeseries")
 
 
 def plot_scores(cube_list, plot_path):
@@ -170,7 +170,7 @@ def plot_scores(cube_list, plot_path):
             qplt.pcolormesh(cube[j])
 
         plt.tight_layout()
-        plt.savefig(plot_path + 'R2_Scores_' + str(cube.var_name))
+        plt.savefig(plot_path + "R2_Scores_" + str(cube.var_name))
         plt.close()
 
     # plot global scores timeseries per variable
@@ -178,9 +178,9 @@ def plot_scores(cube_list, plot_path):
     for cube in cube_list:
         score = sf.area_avg(cube, return_cube=True)
         iplt.plot(score, label=cube.var_name)
-        plt.xlabel('Time')
-        plt.ylabel('R2 Score')
-        plt.legend(loc='center left')
+        plt.xlabel("Time")
+        plt.ylabel("R2 Score")
+        plt.legend(loc="center left")
 
-    plt.savefig(plot_path + 'score_timeseries')
+    plt.savefig(plot_path + "score_timeseries")
     plt.close()
