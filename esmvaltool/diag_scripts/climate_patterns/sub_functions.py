@@ -39,44 +39,44 @@ def compute_diagnostic(filename):
     return cube
 
 
-def area_avg(x, return_cube=None):
+def area_avg(cube, return_cube=None):
     """Calculate the global mean of a variable in a cube, area-weighted.
 
     Parameters
     ----------
-    x : cube
+    cube : cube
         input cube
     return_cube : bool
         option to return a cube or array
 
     Returns
     -------
-    x2 : cube
+    cube2 : cube
         cube with collapsed lat-lons, global mean over time
-    x2.data : arr
+    cube2.data : arr
         array with collapsed lat-lons, global mean over time
     """
-    if not x.coord("latitude").has_bounds():
-        x.coord("latitude").guess_bounds()
-    if not x.coord("longitude").has_bounds():
-        x.coord("longitude").guess_bounds()
-    area = iris.analysis.cartography.area_weights(x, normalize=False)
-    x2 = x.collapsed(["latitude", "longitude"],
-                     iris.analysis.MEAN,
-                     weights=area)
+    if not cube.coord("latitude").has_bounds():
+        cube.coord("latitude").guess_bounds()
+    if not cube.coord("longitude").has_bounds():
+        cube.coord("longitude").guess_bounds()
+    area = iris.analysis.cartography.area_weights(cube, normalize=False)
+    cube2 = cube.collapsed(["latitude", "longitude"],
+                           iris.analysis.MEAN,
+                           weights=area)
 
     if return_cube:
-        return x2
+        return cube2
 
-    return x2.data
+    return cube2.data
 
 
-def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
+def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
     """Calculate the global mean of a variable in a cube.
 
     Parameters
     ----------
-    x : cube
+    cube : cube
         input cube
     ocean_frac : cube
         ocean fraction cube, found from sftlf
@@ -89,17 +89,18 @@ def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
 
     Returns
     -------
-    x2 : cube
+    cube2 : cube
         cube with collapsed lat-lons, global mean over time
-    x2.data : arr
+    cube2.data : arr
         array with collapsed lat-lons, global mean over time
     """
-    if not x.coord("latitude").has_bounds():
-        x.coord("latitude").guess_bounds()
-    if not x.coord("longitude").has_bounds():
-        x.coord("longitude").guess_bounds()
+    if not cube.coord("latitude").has_bounds():
+        cube.coord("latitude").guess_bounds()
+    if not cube.coord("longitude").has_bounds():
+        cube.coord("longitude").guess_bounds()
 
-    global_weights = iris.analysis.cartography.area_weights(x, normalize=False)
+    global_weights = iris.analysis.cartography.area_weights(cube,
+                                                            normalize=False)
 
     if land is False:
         ocean_frac.data = np.ma.masked_less(ocean_frac.data, 0.01)
@@ -109,11 +110,12 @@ def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
             ["latitude", "longitude"], iris.analysis.SUM, weights=weights) /
                       1e12)
         print("Ocean area: ", ocean_area.data)
-        x2 = x.copy()
-        x2.data = x2.data * global_weights * ocean_frac.data
+        cube2 = cube.copy()
+        cube2.data = cube2.data * global_weights * ocean_frac.data
 
-        x2 = (x2.collapsed(["latitude", "longitude"], iris.analysis.SUM) /
-              1e12 / ocean_area.data)
+        cube2 = (
+            cube2.collapsed(["latitude", "longitude"], iris.analysis.SUM) /
+            1e12 / ocean_area.data)
 
     if land:
         land_frac.data = np.ma.masked_less(land_frac.data, 0.01)
@@ -123,15 +125,16 @@ def area_avg_landsea(x, ocean_frac, land_frac, land=True, return_cube=None):
             ["latitude", "longitude"], iris.analysis.SUM, weights=weights) /
                      1e12)
         print("Land area: ", land_area.data)
-        x2 = x.copy()
-        x2.data = x2.data * global_weights * land_frac.data
-        x2 = (x2.collapsed(["latitude", "longitude"], iris.analysis.SUM) /
-              1e12 / land_area.data)
+        cube2 = cube.copy()
+        cube2.data = cube2.data * global_weights * land_frac.data
+        cube2 = (
+            cube2.collapsed(["latitude", "longitude"], iris.analysis.SUM) /
+            1e12 / land_area.data)
 
     if return_cube:
-        return x2
+        return cube2
 
-    return x2.data
+    return cube2.data
 
 
 def make_model_dirs(cube_initial, work_path, plot_path):
@@ -164,8 +167,8 @@ def make_model_dirs(cube_initial, work_path, plot_path):
     return model_work_dir, model_plot_dir
 
 
-def parallelise(f, processes=None):
-    """Wrapper to parallelise any function, by George Ford (Met Office).
+def parallelise(func, processes=None):
+    """Parallelise any function, by George Ford (Met Office).
 
     Parameters
     ----------
@@ -184,11 +187,11 @@ def parallelise(f, processes=None):
     if processes <= 0:
         processes = 1
 
-    def easy_parallise(f, sequence):
+    def easy_parallise(func, sequence):
         pool = mp.Pool(processes=processes)
-        result = pool.map_async(f, sequence).get()
+        result = pool.map_async(func, sequence).get()
         pool.close()
         pool.join()
         return result
 
-    return partial(easy_parallise, f)
+    return partial(easy_parallise, func)

@@ -442,7 +442,7 @@ def write_scores(scores, work_path):
 
         # saving scores
         file = open(work_path + "scores", "a", encoding='utf-8')
-        data = "{0:10.3f}".format(mean_score)
+        data = f"{mean_score:10.3f}"
         name = cube.var_name
         file.write(name + ": " + data + "\n")
         file.close()
