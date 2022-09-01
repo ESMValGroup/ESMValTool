@@ -6,6 +6,6 @@ Available assessment areas
 
 .. include:: common.txt
 
-The following assessment areas are currently available in the |CAW|:
+The following assessment areas are currently available in the |RTW|:
 
 * `Radiation budget`_ (implemented in |ESMValTool|)

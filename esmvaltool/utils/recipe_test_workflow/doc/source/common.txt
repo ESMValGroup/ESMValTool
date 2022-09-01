@@ -3,7 +3,7 @@
 .. Glossary substitutions make it easier to refer to pluralised /
 .. capitalised glossary terms.
 
-.. |CAW| replace:: :term:`CAW`
+.. |RTW| replace:: :term:`RTW`
 .. |CMIP| replace:: :term:`CMIP`
 .. |Cylc| replace:: :term:`Cylc`
 .. |ESM| replace:: :term:`ESM`

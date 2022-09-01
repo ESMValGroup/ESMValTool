@@ -7,4 +7,4 @@ Support
 .. include:: common.txt
 
 Please contact the |MIAO| team at ciao@metoffice.gov.uk to request support
-related to the |CAW|.
+related to the |RTW|.

@@ -8,7 +8,7 @@ Glossary
 
 .. glossary::
 
-   CAW
+   RTW
      Recipe Test Workflow
 
    CMIP
