@@ -111,11 +111,13 @@ def make_monthly_climatology(cube):
 
     Parameters
     ----------
-    cube (cube): cube loaded from config dictionary
+    cube : cube
+        cube loaded from config dictionary
 
     Returns
     -------
-    cube_month_climatol (cube): cube aggregated by month_number
+    cube_month_climatol : cube
+        cube aggregated by month_number
     """
     if not cube.coords("month_number"):
         iris.coord_categorisation.add_month_number(cube, "time",
@@ -131,11 +133,13 @@ def diurnal_temp_range(cubelist):
 
     Parameters
     ----------
-    cubelist (cubelist): cubelist of tasmin and tasmax
+    cubelist : cubelist
+        cubelist of tasmin and tasmax
 
     Returns
     -------
-    range_cube (cube): cube of calculated diurnal range
+    range_cube : cube
+        cube of calculated diurnal range
     """
     range_cube = cubelist[0] - cubelist[1]
 
@@ -154,15 +158,17 @@ def calculate_diurnal_range(clim_list, ts_list):
 
     Parameters
     ----------
-    clim_list (cubelist): cubelist of climatology cubes
-    ts_list (cubelist): cubelist of standard timeseries cubes
+    clim_list : cubelist
+        cubelist of climatology cubes
+    ts_list : cubelist
+        cubelist of standard timeseries cubes
 
     Returns
     -------
-    clim_list_final (cubelist): cubelist of climatology cubes
-        including diurnal range
-    ts_list_final (cubelist): cubelist of standard timeseries cubes
-        including diurnal range
+    clim_list_final : cubelist
+        cubelist of climatology cubes including diurnal range
+    ts_list_final : cubelist
+        cubelist of standard timeseries cubes including diurnal range
     """
     temp_range_list_clim = iris.cube.CubeList([])
     temp_range_list_ts = iris.cube.CubeList([])
@@ -193,17 +199,21 @@ def append_diurnal_range(derived_diurnal_clim, derived_diurnal_ts, clim_list,
 
     Parameters
     ----------
-    derived_diurnal_clim (cube): derived diurnal climatology cube
-    derived_diurnal_ts (cube): derived diurnal timeseries cube
-    clim_list (cubelist): existing climatology cubelist, no range
-    ts_list (cubelist): existing timeseries cubelist, no range
+    derived_diurnal_clim : cube
+        derived diurnal climatology cube
+    derived_diurnal_ts : cube
+        derived diurnal timeseries cube
+    clim_list : cubelist
+        existing climatology cubelist, no range
+    ts_list : cubelist
+        existing timeseries cubelist, no range
 
     Returns
     -------
-    clim_list_final (cubelist): cubelist of climatology cubes
-        including diurnal range
-    ts_list_final (cubelist): cubelist of standard timeseries cubes
-        including diurnal range
+    clim_list_final : cubelist
+        cubelist of climatology cubes including diurnal range
+    ts_list_final : cubelist
+        cubelist of standard timeseries cubes including diurnal range
     """
     # creating cube list without tasmax or tasmin
     # (since we just wanted the diurnal range)
@@ -229,13 +239,17 @@ def calculate_anomaly(clim_list, ts_list):
 
     Parameters
     ----------
-    clim_list (cubelist): cubelist of climatology variables
-    ts_list (cubelist): cubelist of standard variable timeseries
+    clim_list : cubelist
+        cubelist of climatology variables
+    ts_list : cubelist
+        cubelist of standard variable timeseries
 
     Returns
     -------
-    clim_list_final (cubelist): cubelist of clim. vars, inc. diurnal range
-    anom_list_final (cubelist): cubelist of anomaly vars, inc. diurnal range
+    clim_list_final : cubelist
+        cubelist of clim. vars, inc. diurnal range
+    anom_list_final : cubelist
+        cubelist of anomaly vars, inc. diurnal range
     """
     # calculate diurnal temperature range cube
     clim_list_final, ts_list_final = calculate_diurnal_range(
@@ -254,19 +268,22 @@ def calculate_anomaly(clim_list, ts_list):
 
 
 def regression(tas, cube_data):
-    """Calculate the coefficients of regression between global surface temp and
-    a variable.
+    """Calculate coeffs of regression between global surf temp and variable.
 
     Parameters
     ----------
-    tas (cube): near-surface air temperature
-    cube_data (arr): cube.data array of a variable
+    tas : cube
+        near-surface air temperature
+    cube_data : arr
+        cube.data array of a variable
 
     Returns
     -------
-    slope_array (arr): array of grid cells with same shape as initial cube,
+    slope_array : arr
+        array of grid cells with same shape as initial cube,
         containing the regression slope
-    score_array (arr): array of grid cells with same shape as initial cube,
+    score_array : arr
+        array of grid cells with same shape as initial cube,
         containing the regression score as a measure of robustness
     """
     slope_array = np.full(tas.data.shape[1:], np.nan)
@@ -281,12 +298,12 @@ def regression(tas, cube_data):
                 model = sklearn.linear_model.LinearRegression(
                     fit_intercept=False, copy_X=True)
 
-                x = tas_data.reshape(-1, 1)
-                y = cube_data[:, i, j]
+                x_val = tas_data.reshape(-1, 1)
+                y_val = cube_data[:, i, j]
 
-                model.fit(x, y)
+                model.fit(x_val, y_val)
                 slope_array[i, j] = model.coef_
-                score_array[i, j] = model.score(x, y)
+                score_array[i, j] = model.score(x_val, y_val)
 
     return slope_array, score_array
 
@@ -296,12 +313,15 @@ def regression_units(tas, cube):
 
     Parameters
     ----------
-    tas (cube): near-surface air temperature
-    cube (cube): cube of a given variable
+    tas : cube
+        near-surface air temperature
+    cube : cube
+        cube of a given variable
 
     Returns
     -------
-    units (str): string of calculated regression units
+    units : str
+        string of calculated regression units
     """
     print("Cube Units: ", cube.units)
     units = cube.units / tas.units
@@ -311,19 +331,21 @@ def regression_units(tas, cube):
 
 
 def calculate_regressions(anom_list, yrs=85):
-    """Facilitate the calculation of regression coefficients (climate patterns)
-    and the creation of a new cube of patterns per variable.
+    """Facilitate the calculation of regression coeffs (climate patterns).
+
+    Also creates of a new cube of patterns per variable.
 
     Parameters
     ----------
-    anom_list (cubelist): cube list of variables as anomalies
+    anom_list : cubelist
+        cube list of variables as anomalies
 
     Returns
     -------
-    regr_var_list (cubelist): cube list of newly created regression slope
-        value cubes, for each variable
-    score_list (cubelist): cube list of newly created regression score cubes,
-        for each variable
+    regr_var_list : cubelist
+        cube list of newly created regression slope value cubes, for each var
+    score_list : cubelist
+        cube list of newly created regression score cubes, for each var
     """
     regr_var_list = iris.cube.CubeList([])
     score_list = iris.cube.CubeList([])
@@ -403,8 +425,10 @@ def write_scores(scores, work_path):
 
     Parameters
     ----------
-    scores (cubelist): cube list of regression score cubes, for each variable
-    work_path (path): path to work_dir, to save scores
+    scores : cubelist
+        cube list of regression score cubes, for each variable
+    work_path : path
+        path to work_dir, to save scores
 
     Returns
     -------
@@ -427,10 +451,14 @@ def cube_saver(list_of_cubelists, work_path, name_list, mode):
 
     Parameters
     ----------
-    list_of_cubelists (list): list containing desired cubelists
-    work_path (path): path to work_dir, to save cubelists
-    name_list (list): list of filename strings for saving
-    mode (str): switch option passed through by ESMValTool config dict
+    list_of_cubelists : list
+        list containing desired cubelists
+    work_path : path
+        path to work_dir, to save cubelists
+    name_list : list
+        list of filename strings for saving
+    mode : str
+        switch option passed through by ESMValTool config dict
 
     Returns
     -------
@@ -470,10 +498,14 @@ def saving_outputs(
 
     Parameters
     ----------
-    clim_list_final (cubelist): cube list of all variable climatologies
-    anom_list_final (cubelist): cube list of all variable anomalies
-    regressions (cubelist): cube list of all variable regression slopes
-    scores (cubelist): cube list of all variable regression scores
+    clim_list_final : cubelist
+        cube list of all variable climatologies
+    anom_list_final : cubelist
+        cube list of all variable anomalies
+    regressions : cubelist
+        cube list of all variable regression slopes
+    scores : cubelist
+        cube list of all variable regression scores
 
     Returns
     -------
@@ -523,7 +555,8 @@ def get_provenance_record():
 
     Returns
     -------
-    record (dict): provenance record
+    record : dict
+        provenance record
     """
     record = {
         "caption": ["Generating Climate Patterns from CMIP6 Models"],
@@ -542,7 +575,8 @@ def patterns(model):
 
     Parameters
     ----------
-    model (str): model name
+    model : str
+        model name
 
     Returns
     -------
@@ -612,7 +646,8 @@ def main(cfg):
 
     Parameters
     ----------
-    cfg (dict): the global config dictionary, passed by ESMValTool.
+    cfg : dict
+        the global config dictionary, passed by ESMValTool.
 
     Returns
     -------
@@ -623,8 +658,8 @@ def main(cfg):
     threads = cfg["parallel_threads"]
 
     models = []
-    for x in input_data:
-        model = x["dataset"]
+    for mod in input_data:
+        model = mod["dataset"]
         if model not in models:
             models.append(model)
 
