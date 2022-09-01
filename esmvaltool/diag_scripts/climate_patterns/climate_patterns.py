@@ -339,6 +339,8 @@ def calculate_regressions(anom_list, yrs=85):
     ----------
     anom_list : cubelist
         cube list of variables as anomalies
+    yrs : int
+        int to specify length of scenario
 
     Returns
     -------
@@ -439,7 +441,7 @@ def write_scores(scores, work_path):
         mean_score = np.mean(score)
 
         # saving scores
-        file = open(work_path + "scores", "a")
+        file = open(work_path + "scores", "a", encoding='utf-8')
         data = "{0:10.3f}".format(mean_score)
         name = cube.var_name
         file.write(name + ": " + data + "\n")
@@ -506,6 +508,14 @@ def saving_outputs(
         cube list of all variable regression slopes
     scores : cubelist
         cube list of all variable regression scores
+    imogen_mode : bool
+        imogen_mode on or off
+    r2_scores : bool
+        determinant output on or off
+    plot_path : str
+        path to plot_dir
+    work_path : str
+        path to work_dir
 
     Returns
     -------
