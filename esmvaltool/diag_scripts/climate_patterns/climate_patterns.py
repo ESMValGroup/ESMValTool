@@ -57,7 +57,7 @@ logger = logging.getLogger(Path(__file__).stem)
 
 
 def climatology(cube, syr=1850, eyr=1889):
-    """Handles aggregation to make climatology.
+    """Handle aggregation to make climatology.
 
     Parameters
     ----------
@@ -66,8 +66,8 @@ def climatology(cube, syr=1850, eyr=1889):
 
     Returns
     -------
-    cube_aggregated (cube): 40 year climatology cube from syr-eyr
-        (default 1850-1889)
+    cube_aggregated : cube
+        40 year climatology cube from syr-eyr (default 1850-1889)
     """
     cube_40yr = cube.extract(
         iris.Constraint(
@@ -84,13 +84,17 @@ def constrain_latitude(cube, min_lat=-55, max_lat=82.5):
 
     Parameters
     ----------
-    cube (cube): cube loaded from config dictionary
-    min_lat (float): minimum latitude to crop
-    max_lat (float): maximum latitude to crop
+    cube : cube
+        cube loaded from config dictionary
+    min_lat : float
+        minimum latitude to crop
+    max_lat : float
+        maximum latitude to crop
 
     Returns
     -------
-    cube_clipped (cube): cube with latitudes set from -55 to 82.5 degrees
+    cube_clipped : cube
+        cube with latitudes set from -55 to 82.5 degrees
     """
     cube_clipped = cube.extract(
         iris.Constraint(latitude=lambda cell: max_lat >= cell >= min_lat))
