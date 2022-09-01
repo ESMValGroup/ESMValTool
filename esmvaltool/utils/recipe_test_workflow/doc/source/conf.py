@@ -16,7 +16,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Climate Assessment Workflow (CAW)'
+project = 'Recipe Test Workflow (RTW)'
 copyright = 'Crown Copyright 2022, the Met Office'
 author = 'Emma Hogan'
 version = "0.1.0"

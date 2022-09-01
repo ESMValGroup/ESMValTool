@@ -9,7 +9,7 @@ Glossary
 .. glossary::
 
    CAW
-     Climate Assessment Workflow
+     Recipe Test Workflow
 
    CMIP
      Coupled Model Intercomparison Project, see the `CMIP Documentation`_.
