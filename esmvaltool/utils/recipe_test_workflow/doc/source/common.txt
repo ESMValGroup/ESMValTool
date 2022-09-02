@@ -9,7 +9,6 @@
 .. |ESM| replace:: :term:`ESM`
 .. |ESMs| replace:: :term:`ESMs <ESM>`
 .. |ESMValTool| replace:: :term:`ESMValTool`
-.. |MIAO| replace:: :term:`MIAO`
 .. |Rose| replace:: :term:`Rose`
 
 .. Links
