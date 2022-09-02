@@ -1,11 +1,9 @@
-.. (C) Crown Copyright 2022, the Met Office.
-
-**************************
-Available assessment areas
-**************************
+************************
+Currently tested recipes
+************************
 
 .. include:: common.txt
 
 The following currently tested recipes are available in the |RTW|:
 
-* `Radiation budget`_ (implemented in |ESMValTool|)
+* `Radiation budget`_

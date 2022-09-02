@@ -11,7 +11,6 @@ Welcome to the Recipe Test Workflow's documentation!
    :caption: Contents
 
    about
-   assessment_areas
+   tested_recipes
    user_guide/index.rst
-   support
    glossary

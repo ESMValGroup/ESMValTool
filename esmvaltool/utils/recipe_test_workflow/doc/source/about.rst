@@ -1,5 +1,3 @@
-.. (C) Crown Copyright 2022, the Met Office.
-
 *****
 About
 *****

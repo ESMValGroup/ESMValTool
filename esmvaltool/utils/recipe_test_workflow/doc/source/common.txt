@@ -1,5 +1,3 @@
-.. (C) Crown Copyright 2022, the Met Office.
-
 .. Glossary substitutions make it easier to refer to pluralised /
 .. capitalised glossary terms.
 
