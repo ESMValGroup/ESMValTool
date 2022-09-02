@@ -174,8 +174,8 @@ def calculate_diurnal_range(clim_list, ts_list):
     temp_range_list_ts = iris.cube.CubeList([])
     comb_list = [clim_list, ts_list]
 
-    for i, _ in enumerate(comb_list):
-        for cube in comb_list[i]:
+    for cube_list in comb_list:
+        for cube in cube_list:
             if (cube.var_name in ("tasmax", "tasmin")) and cube in clim_list:
                 temp_range_list_clim.append(cube)
             elif (cube.var_name in ("tasmax", "tasmin")) and cube in ts_list:
@@ -625,8 +625,8 @@ def patterns(model):
     # calculate anomaly over historical + ssp timeseries
     clim_list_final, anom_list_final = calculate_anomaly(clim_list, ts_list)
 
-    for i, _ in enumerate(clim_list_final):
-        rename_clim_variables(clim_list_final[i])
+    for i, cube in enumerate(clim_list_final):
+        rename_clim_variables(cube)
         rename_anom_variables(anom_list_final[i])
 
     regressions, scores = calculate_regressions(anom_list_final.copy())

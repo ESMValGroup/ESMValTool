@@ -54,7 +54,7 @@ def plot_patterns(cube_list, plot_path):
     -------
     None
     """
-    fig, ax = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
+    fig, axis = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
     fig.suptitle("Patterns from a random grid-cell", fontsize=18, y=0.98)
 
     plt.figure(figsize=(14, 12))
@@ -66,11 +66,11 @@ def plot_patterns(cube_list, plot_path):
         x_pos, y_pos = subplot_positions(j)
         months = np.arange(1, 13)
         # plots patterns for an arbitrary grid cell
-        ax[x_pos, y_pos].plot(months, cube[:, 50, 50].data)
-        ax[x_pos,
-           y_pos].set_ylabel(str(cube.var_name) + " / " + str(cube.units))
+        axis[x_pos, y_pos].plot(months, cube[:, 50, 50].data)
+        axis[x_pos,
+             y_pos].set_ylabel(str(cube.var_name) + " / " + str(cube.units))
         if j > 5:
-            ax[x_pos, y_pos].set_xlabel("Time")
+            axis[x_pos, y_pos].set_xlabel("Time")
 
         # January patterns
         plt.subplot(3, 3, j + 1)
@@ -111,8 +111,7 @@ def plot_cp_timeseries(list_cubelists, plot_path):
     plt.subplots_adjust(hspace=0.5)
     plt.suptitle("Global Patterns, January", fontsize=18, y=0.95)
 
-    for i, _ in enumerate(list_cubelists):
-        cube_list = list_cubelists[i]
+    for i, cube_list in enumerate(list_cubelists):
         for j, cube in enumerate(cube_list):
             # determining plot positions
             x_pos, y_pos = subplot_positions(j)

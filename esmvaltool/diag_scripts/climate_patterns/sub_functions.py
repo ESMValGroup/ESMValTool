@@ -172,7 +172,7 @@ def parallelise(func, processes=None):
 
     Parameters
     ----------
-    f : func
+    func : function
         function to be parallelised
     processes : int
         number of threads to be used in parallelisation
