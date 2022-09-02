@@ -5,7 +5,7 @@ set -eux
 
 SOURCE_PATH="${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}-env"
 TARGET_DIR="${CYLC_WORKFLOW_RUN_DIR}/bin"
-ENV_FILE="caw-env"
+ENV_FILE="rtw-env"
 
 # Create the 'bin' directory in the installed workflow.
 mkdir "${TARGET_DIR}"

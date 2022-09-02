@@ -3,7 +3,7 @@
     [[COMPUTE]]
         platform = spice
         [[[directives]]]
-            --wckey = CAW
+            --wckey = RTW
             --ntasks = {{ MAX_PARALLEL_TASKS }}
 
     [[process<metric=radiation_budget>]]
