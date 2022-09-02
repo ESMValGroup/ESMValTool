@@ -26,8 +26,6 @@ Glossary
      routine evaluation of |ESMs| in |CMIP|, see the
      `ESMValTool Documentation`_.
 
-   MIAO
-     Model Inputs And Outputs
 
    Rose
      Rose is a toolkit for writing, editing and running application
