@@ -8,9 +8,6 @@ Glossary
 
 .. glossary::
 
-   RTW
-     Recipe Test Workflow
-
    CMIP
      Coupled Model Intercomparison Project, see the `CMIP Documentation`_.
 
@@ -26,7 +23,12 @@ Glossary
      routine evaluation of |ESMs| in |CMIP|, see the
      `ESMValTool Documentation`_.
 
+   MIAO
+     Model Inputs And Outputs
 
    Rose
      Rose is a toolkit for writing, editing and running application
      configurations, see the `Rose Documentation`_.
+
+   RTW
+     Recipe Test Workflow
