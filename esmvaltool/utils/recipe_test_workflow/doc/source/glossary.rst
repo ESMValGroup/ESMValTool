@@ -1,5 +1,3 @@
-.. (C) Crown Copyright 2022, the Met Office.
-
 ********
 Glossary
 ********
@@ -22,9 +20,6 @@ Glossary
      ESMValTool is a community diagnostic and performance metrics tool for
      routine evaluation of |ESMs| in |CMIP|, see the
      `ESMValTool Documentation`_.
-
-   MIAO
-     Model Inputs And Outputs
 
    Rose
      Rose is a toolkit for writing, editing and running application
