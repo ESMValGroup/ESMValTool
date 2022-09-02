@@ -9,7 +9,7 @@ Quick Start
 
 * Configure the |RTW|::
 
-    cd recipe_test_workflow/recipe_test_workflow
+    cd ESMValTool/esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
     rose edit
 
 * Run the |RTW| at the Met Office, where ``<run-name>`` is a unique run name
