@@ -501,7 +501,8 @@ class MultiDatasets(MonitorBase):
                 z_coord = cube.coord('altitude')
                 z_coord.attributes['positive'] = 'up'
 
-            if cube.var_name == 'pr':
+            # Convert pr units if necessary
+            if cube.var_name == 'pr' and cube.units == 'kg m-2 s-1':
                 cube.units = 'mm s-1'
                 cube.convert_units('mm day-1')
                 dataset['units'] = 'mm day-1'
