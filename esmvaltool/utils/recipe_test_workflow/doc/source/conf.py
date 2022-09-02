@@ -17,8 +17,6 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Recipe Test Workflow (RTW)'
-copyright = 'Crown Copyright 2022, the Met Office'
-author = 'Emma Hogan'
 version = "0.1.0"
 
 # -- General configuration ---------------------------------------------------
