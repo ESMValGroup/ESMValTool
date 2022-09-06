@@ -175,6 +175,8 @@ rasterize: bool, optional (default: True)
     <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
     map plots to produce smaller files. This is only relevant for vector
     graphics (e.g., ``output_file_type=pdf,svg,ps``).
+show_stats: bool, optional (default: True)
+    Show basic statistics on the plots.
 
 Configuration options for plot type ``profile``
 -----------------------------------------------
@@ -243,6 +245,8 @@ rasterize: bool, optional (default: True)
     graphics (e.g., ``output_file_type=pdf,svg,ps``).
 show_y_minor_ticklabels: bool, optional (default: False)
     Show tick labels for the minor ticks on the Y axis.
+show_stats: bool, optional (default: True)
+    Show basic statistics on the plots.
 
 .. hint::
 
@@ -260,8 +264,11 @@ import cartopy.crs as ccrs
 import iris
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
+from iris.analysis.cartography import area_weights
 from iris.coord_categorisation import add_year
+from iris.coords import AuxCoord
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import FormatStrFormatter, NullFormatter
 
@@ -320,6 +327,7 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('common_cbar', False)
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
                 self.plots[plot_type].setdefault('rasterize', True)
+                self.plots[plot_type].setdefault('show_stats', True)
 
             # Defaults profile plots
             if plot_type == 'profile':
@@ -364,6 +372,62 @@ class MultiDatasets(MonitorBase):
             cbar_right = plt.colorbar(plot_right, ax=axes_right, **cbar_kwargs)
             cbar_right.set_label(cbar_label_right, fontsize=fontsize)
             cbar_right.ax.tick_params(labelsize=fontsize)
+
+    def _add_stats(self, plot_type, axes, dim_coords, cube, ref_cube=None):
+        """Add text to plot that describes basic statistics."""
+        if not self.plots[plot_type]['show_stats']:
+            return
+
+        # Different options for the different plots types
+        fontsize = 6.0
+        y_pos = 0.95
+        if plot_type == 'map':
+            x_pos_bias = 0.92
+            x_pos = 0.0
+        elif plot_type == 'profile':
+            x_pos_bias = 0.7
+            x_pos = 0.01
+        else:
+            raise NotImplementedError(f"plot_type '{plot_type}' not supported")
+
+        # For profile plots add scalar longitude coordinate (necessary for
+        # calculation of area weights). The exact values for the points/bounds
+        # of this coordinate do not matter since they don't change the weights.
+        if not cube.coords('longitude'):
+            lon_coord = AuxCoord(
+                180.0,
+                bounds=[0.0, 360.0],
+                var_name='lon',
+                standard_name='longitude',
+                long_name='longitude',
+                units='degrees_east',
+            )
+            cube.add_aux_coord(lon_coord, ())
+
+        # Mean
+        weights = area_weights(cube)
+        if ref_cube is None:
+            mean = cube.collapsed(dim_coords, iris.analysis.MEAN,
+                                  weights=weights)
+        else:
+            mean = (cube - ref_cube).collapsed(dim_coords, iris.analysis.MEAN,
+                                               weights=weights)
+        axes.text(x_pos, y_pos, f"{mean.data:.2f}{cube.units}",
+                  fontsize=fontsize, transform=axes.transAxes)
+        if ref_cube is None:
+            return
+
+        # RMSE and R2 for biases
+        rmse = (cube - ref_cube).collapsed(dim_coords, iris.analysis.RMS,
+                                           weights=weights)
+        axes.text(x_pos_bias, y_pos, f"RMSE={rmse.data:.2f}{cube.units}",
+                  fontsize=fontsize, transform=axes.transAxes)
+        r2_score = np.ma.corrcoef(
+            cube.core_data().ravel(),
+            ref_cube.core_data().ravel(),
+        )[0, 1]
+        axes.text(x_pos_bias, y_pos - 0.1, rf"R$^2$={r2_score:.2f}",
+                  fontsize=fontsize, transform=axes.transAxes)
 
     def _get_custom_mpl_rc_params(self, plot_type):
         """Get custom matplotlib rcParams."""
@@ -520,8 +584,8 @@ class MultiDatasets(MonitorBase):
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
         ref_cube = ref_dataset['cube']
-        self._check_cube_dimensions(cube, plot_type)
-        self._check_cube_dimensions(ref_cube, plot_type)
+        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
+        dim_coords_ref = self._check_cube_dimensions(ref_cube, plot_type)
 
         # Create single figure with multiple axes
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -544,6 +608,7 @@ class MultiDatasets(MonitorBase):
             if gridline_kwargs is not False:
                 axes_data.gridlines(**gridline_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
+            self._add_stats(plot_type, axes_data, dim_coords_dat, cube)
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -559,6 +624,7 @@ class MultiDatasets(MonitorBase):
             if gridline_kwargs is not False:
                 axes_ref.gridlines(**gridline_kwargs)
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
+            self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_cube)
 
             # Add colorbar(s)
             self._add_colorbar(plot_type, plot_data, plot_ref, axes_data,
@@ -587,6 +653,8 @@ class MultiDatasets(MonitorBase):
                 fontsize=fontsize,
             )
             cbar_bias.ax.tick_params(labelsize=fontsize)
+            self._add_stats(plot_type, axes_bias, dim_coords_dat, cube,
+                            ref_cube)
 
             # Customize plot
             fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
@@ -607,7 +675,7 @@ class MultiDatasets(MonitorBase):
 
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
-        self._check_cube_dimensions(cube, plot_type)
+        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
 
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -620,6 +688,9 @@ class MultiDatasets(MonitorBase):
             gridline_kwargs = self._get_gridline_kwargs()
             if gridline_kwargs is not False:
                 axes.gridlines(**gridline_kwargs)
+
+            # Print statistics if desired
+            self._add_stats(plot_type, axes, dim_coords_dat, cube)
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']
@@ -650,8 +721,8 @@ class MultiDatasets(MonitorBase):
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
         ref_cube = ref_dataset['cube']
-        self._check_cube_dimensions(cube, plot_type)
-        self._check_cube_dimensions(ref_cube, plot_type)
+        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
+        dim_coords_ref = self._check_cube_dimensions(ref_cube, plot_type)
 
         # Create single figure with multiple axes
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -679,6 +750,7 @@ class MultiDatasets(MonitorBase):
                     FormatStrFormatter('%.1f'))
             else:
                 axes_data.get_yaxis().set_minor_formatter(NullFormatter())
+            self._add_stats(plot_type, axes_data, dim_coords_dat, cube)
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -692,6 +764,7 @@ class MultiDatasets(MonitorBase):
             plot_ref = plot_func(ref_cube, **plot_kwargs)
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
             plt.setp(axes_ref.get_yticklabels(), visible=False)
+            self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_cube)
 
             # Add colorbar(s)
             self._add_colorbar(plot_type, plot_data, plot_ref, axes_data,
@@ -719,6 +792,8 @@ class MultiDatasets(MonitorBase):
                 fontsize=fontsize,
             )
             cbar_bias.ax.tick_params(labelsize=fontsize)
+            self._add_stats(plot_type, axes_bias, dim_coords_dat, cube,
+                            ref_cube)
 
             # Customize plot
             fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
@@ -739,7 +814,7 @@ class MultiDatasets(MonitorBase):
 
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
-        self._check_cube_dimensions(cube, plot_type)
+        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
 
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -748,6 +823,9 @@ class MultiDatasets(MonitorBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
             plot_profile = plot_func(cube, **plot_kwargs)
+
+            # Print statistics if desired
+            self._add_stats(plot_type, axes, dim_coords_dat, cube)
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']
@@ -808,7 +886,7 @@ class MultiDatasets(MonitorBase):
         for dims in expected_dimensions:
             cube_dims = [cube.coords(dim, dim_coords=True) for dim in dims]
             if all(cube_dims) and cube.ndim == len(dims):
-                return
+                return dims
         expected_dims_str = ' or '.join(
             [str(dims) for dims in expected_dimensions]
         )
