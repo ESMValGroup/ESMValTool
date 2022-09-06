@@ -6,6 +6,7 @@ Tier
 
 Source
     https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
+    https://daac.gsfc.nasa.gov/datasets/M2IUNPASM_5.12.4/summary?keywords=MERRA2
 
 Last access
     20191129
