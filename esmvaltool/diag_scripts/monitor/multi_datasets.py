@@ -1046,6 +1046,12 @@ class MultiDatasets(MonitorBase):
                 )
                 ancestors.append(ref_dataset['filename'])
 
+            # If statistics are shown add a brief description to the caption
+            if self.plots[plot_type]['show_stats']:
+                caption += (
+                    " The number in the top left corner corresponds to the "
+                    "spatial mean (weighted by grid cell areas).")
+
             # Save plot
             plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
             logger.info("Wrote %s", plot_path)
@@ -1105,6 +1111,12 @@ class MultiDatasets(MonitorBase):
                     f"{dataset['start_year']} to {dataset['end_year']}."
                 )
                 ancestors.append(ref_dataset['filename'])
+
+            # If statistics are shown add a brief description to the caption
+            if self.plots[plot_type]['show_stats']:
+                caption += (
+                    " The number in the top left corner corresponds to the "
+                    "spatial mean (weighted by grid cell areas).")
 
             # Save plot
             plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
