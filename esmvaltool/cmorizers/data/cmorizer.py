@@ -24,13 +24,15 @@ datasets_file = os.path.join(os.path.dirname(__file__), 'datasets.yml')
 
 
 class Formatter():
-    """Class to manage the download and formatting of datasets.
+    """
+    Class to manage the download and formatting of datasets.
 
     Parameters
     ----------
     info : dict
         Datasets information
     """
+
     def __init__(self, info):
         self.datasets = []
         self.datasets_info = info
@@ -261,9 +263,9 @@ class Formatter():
             'datasets', self._dataset_to_module(dataset))
         tier = self._get_dataset_tier(dataset)
         if tier is None:
-            logger.error(f"Data for {dataset} not found. Perhaps you are not"
-                         f" storing it in a RAWOBS/TierX/{dataset}"
-                         " (X=2 or 3) directory structure?")
+            logger.error("Data for %s not found. Perhaps you are not"
+                         " storing it in a RAWOBS/TierX/%s"
+                         " (X=2 or 3) directory structure?", dataset, dataset)
             return False
 
         # in-data dir; build out-dir tree
@@ -392,9 +394,10 @@ class Formatter():
 
 class DataCommand():
     """Download and format data to use with ESMValTool."""
+
     def __init__(self):
-        with open(datasets_file) as data:
-            self._info = yaml.safe_load(data)
+        with open(datasets_file, 'r') as file:
+            self._info = yaml.safe_load(file)
         self.formatter = Formatter(self._info)
 
     def _has_downloader(self, dataset):
