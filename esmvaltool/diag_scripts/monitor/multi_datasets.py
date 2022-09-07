@@ -271,6 +271,7 @@ from iris.coord_categorisation import add_year
 from iris.coords import AuxCoord
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import FormatStrFormatter, NullFormatter
+from sklearn.metrics import r2_score
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
@@ -417,16 +418,20 @@ class MultiDatasets(MonitorBase):
         if ref_cube is None:
             return
 
-        # RMSE and R2 for biases
+        # Weighted RMSE
         rmse = (cube - ref_cube).collapsed(dim_coords, iris.analysis.RMS,
                                            weights=weights)
         axes.text(x_pos_bias, y_pos, f"RMSE={rmse.data:.2f}{cube.units}",
                   fontsize=fontsize, transform=axes.transAxes)
-        r2_score = np.ma.corrcoef(
-            cube.core_data().ravel(),
-            ref_cube.core_data().ravel(),
-        )[0, 1]
-        axes.text(x_pos_bias, y_pos - 0.1, rf"R$^2$={r2_score:.2f}",
+
+        # Weighted R2
+        mask = np.ma.getmaskarray(cube.data).ravel()
+        mask |= np.ma.getmaskarray(ref_cube.data).ravel()
+        cube_data = cube.data.ravel()[~mask]
+        ref_cube_data = ref_cube.data.ravel()[~mask]
+        weights = weights.ravel()[~mask]
+        r2_val = r2_score(cube_data, ref_cube_data, sample_weight=weights)
+        axes.text(x_pos_bias, y_pos - 0.1, rf"R$^2$={r2_val:.2f}",
                   fontsize=fontsize, transform=axes.transAxes)
 
     def _get_custom_mpl_rc_params(self, plot_type):
