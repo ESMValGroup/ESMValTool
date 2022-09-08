@@ -126,3 +126,6 @@ dependencies:
 
   # Julia (dependencies installed by separate script)
   - julia
+
+  # Zarr
+  - zarr
