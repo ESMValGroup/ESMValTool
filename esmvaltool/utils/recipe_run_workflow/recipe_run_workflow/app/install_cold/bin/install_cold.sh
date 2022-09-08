@@ -5,10 +5,10 @@ set -eux
 if [[ -d ${SOURCE_DIR} ]]; then
     rm -rf "${SOURCE_DIR}"
 fi
+printf 'This is running.'
+# Checkout ESMValTool.
+#git clone -b "${BRANCH}" "${ESMVALTOOL_URL}" "${SOURCE_DIR}"
 
-# Checkout uthpy.
-git clone -b "${BRANCH}" "${URL}" "${SOURCE_DIR}"
-
-# Install uthpy.
-cd "${SOURCE_DIR}"
-pip install . --prefix="${UTH_INSTALL_ROOT}"
+# Install ESMValTool.
+#cd "${SOURCE_DIR}"
+#pip install . --prefix="${RRW_INSTALL_ROOT}"
