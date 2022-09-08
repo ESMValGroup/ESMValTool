@@ -514,6 +514,13 @@ datasets:
                     data/tcwv/dataset3_1/CDR-*/...
         All files need to be in one directory, not in yearly subdirectories.
 
+  ESDC:
+    tier: 2 # TODO Doublecheck
+    source: http://data.rsc4earth.de/EarthSystemDataCube/
+    last_access: 2022-09-06
+    info: |
+      TODO
+
   ESRL:
     tier: 2
     source: http://www.esrl.noaa.gov/gmd/dv/data/index.php
