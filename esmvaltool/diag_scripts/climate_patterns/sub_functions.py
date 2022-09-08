@@ -189,7 +189,7 @@ def parallelise(func, processes=None):
 
     def easy_parallise(f, sequence, cfg):
         pool = mp.Pool(processes=processes)
-        config_wrapper=partial(f, cfg=cfg)
+        config_wrapper = partial(f, cfg=cfg)
         result = pool.map_async(config_wrapper, sequence).get()
         pool.close()
         pool.join()
