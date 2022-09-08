@@ -82,8 +82,13 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     attributes = deepcopy(cfg['attributes'])
     attributes['mip'] = var['mip']
     cmor_table = CMOR_TABLES[attributes['project_id']]
-    definition = cmor_table.get_variable(var['mip'], var['short_name'])
+    definition = cmor_table.get_variable(var['mip'], short_name)
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
 
+    print(attributes)
+    print(cmor_table)
+    print(short_name)
+    
     # load data
     raw_var = var.get('raw', short_name)
     cube = iris.load_cube(raw_filepath)
@@ -94,6 +99,12 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     _fix_units(cube, definition)
     print("third stop")
 
+    #utils.fix_var_metadata(cube, definition)
+    print(cube)
+    print(definition)
+    utils.fix_var_metadata(cube, cmor_info)
+    
+    
     # fix time units
     cube.coord('time').convert_units(
         Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
@@ -116,7 +127,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
         logger.info("CMORizing variable '%s'", short_name)
-        var['short_name'] = short_name
+        short_name = var['short_name']
+        print(short_name)
         raw_filepath = os.path.join(in_dir, var['file'])
         print(raw_filepath)
 
