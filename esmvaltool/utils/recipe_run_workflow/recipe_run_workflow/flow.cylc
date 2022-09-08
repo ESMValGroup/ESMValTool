@@ -1,0 +1,18 @@
+[scheduler]
+    allow implicit tasks = True
+[scheduling]
+    [[graph]]
+        R1 = install_cold
+
+[runtime]
+    [[root]]
+        script = rose task-run
+        env-script = "eval $(rose task-env)"
+        [[[environment]]]
+            MODULE_NAME = {{ MODULE_NAME }}
+            USER_CONFIG_DIR = ${CYLC_WORKFLOW_RUN_DIR}/etc
+            USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
+            RRW_INSTALL_ROOT = ${CYLC_WORKFLOW_RUN_DIR}
+
+    [[install_cold]]
+        platform = localhost
