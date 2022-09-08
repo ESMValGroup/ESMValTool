@@ -139,23 +139,6 @@ drs:
 #  CORDEX: ESGF
 #  obs4MIPs: ESGF
 
-# Site-specific entries: Met Office
-# Uncomment the lines below to locate data at the Met Office.
-#rootpath:
-#  CMIP5: /project/champ/data/cmip5/output1
-#  CMIP6: /project/champ/data/CMIP6
-#  CORDEX: /project/champ/data/cordex/output
-#  OBS: /data/users/esmval/ESMValTool/temporary/obs/
-#  obs4MIPs: /project/champ/data/obs4MIPs
-#  ana4mips: /project/champ/data/ana4MIPs
-#drs:
-#  CMIP5: BADC
-#  CMIP6: BADC
-#  CORDEX: BADC
-#  OBS: default
-#  obs4MIPs: BADC
-#  ana4mips: BADC
-
 # Site-specific entries: JASMIN
 # Uncomment the lines below to locate data on JASMIN.
 #auxiliary_data_dir: /gws/nopw/j04/esmeval/aux_data/AUX
@@ -240,3 +223,20 @@ drs:
 #  ana4mips: default
 #  OBS: not_yet
 #  OBS6: not_yet
+
+# Site-specific entries: Met Office
+# Uncomment the lines below to locate data at the Met Office.
+#rootpath:
+#  CMIP5: /project/champ/data/cmip5/output1
+#  CMIP6: /project/champ/data/CMIP6
+#  CORDEX: /project/champ/data/cordex/output
+#  OBS: /data/users/esmval/ESMValTool/temporary/obs/
+#  obs4MIPs: /project/champ/data/obs4MIPs
+#  ana4mips: /project/champ/data/ana4MIPs
+#drs:
+#  CMIP5: BADC
+#  CMIP6: BADC
+#  CORDEX: BADC
+#  OBS: default
+#  obs4MIPs: BADC
+#  ana4mips: BADC
