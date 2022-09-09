@@ -1,0 +1,321 @@
+# ESMValTool
+# recipe_Arctic_telecon_tests.yml
+---
+documentation:
+  description: |
+    Recipe of EG in Arctic-midlatitude teleconnections.
+
+  title: Recipe that runs an example empty diagnostic written in Python.
+
+  authors:
+    - galytska_evgenia
+
+  maintainer:
+    - galytska_evgenia
+
+  references:
+    - acknow_project
+
+  projects:
+    - esmval
+
+
+preprocessors:
+
+  bk_ice:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 70.
+      end_latitude: 80.
+      start_longitude: 30.
+      end_longitude: 105.
+    area_statistics:
+      operator: mean
+
+  ok_ice:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 50.
+      end_latitude: 60.
+      start_longitude: 140.
+      end_longitude: 160.
+    area_statistics:
+      operator: mean
+
+  pv:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_levels:
+      levels: [10000., 7000., 5000., 3000., 2000., 1000.]
+      scheme: linear
+    extract_region:
+      start_latitude: 65.
+      end_latitude: 90.
+      start_longitude: 0.
+      end_longitude: 360.
+    area_statistics:
+      operator: mean
+
+  pressure_sib:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 40.
+      end_latitude: 65.
+      start_longitude: 85.
+      end_longitude: 120.
+    area_statistics:
+      operator: mean
+
+  pressure_ural:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 45.
+      end_latitude: 70.
+      start_longitude: 40.
+      end_longitude: 85.
+    area_statistics:
+      operator: mean
+
+  pressure_aleut:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 45.
+      end_latitude: 80.
+      start_longitude: 160.
+      end_longitude: 260.
+    area_statistics:
+      operator: mean
+
+  pre_tas:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 65.
+      end_latitude: 90.
+      start_longitude: 0.
+      end_longitude: 360.
+    area_statistics:
+      operator: mean
+
+  pre_tas_baffin:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 55.
+      end_latitude: 75.
+      start_longitude: 290.
+      end_longitude: 310.
+    area_statistics:
+      operator: mean
+
+  pre_tas_sib:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 60.
+      end_latitude: 70.
+      start_longitude: 20.
+      end_longitude: 100.
+    area_statistics:
+      operator: mean
+
+  heat_flux:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_levels:
+      levels: 10000
+      scheme: linear
+    extract_region:
+      start_latitude: 45.
+      end_latitude: 75.
+      start_longitude: 0.
+      end_longitude: 360.
+
+  zonal_wind:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 50.
+      end_latitude: 70.
+      start_longitude: 0.
+      end_longitude: 360.
+    area_statistics:
+      operator: mean
+
+diagnostics:
+
+  diagnostic_general:
+    description: Get most of Arctic_midlat actors
+    themes:
+       - phys
+    realms:
+      - atmos
+    variables:
+      pv: &my_settings
+        short_name: zg
+        preprocessor: pv
+        start_year: 2021
+        end_year: 2023
+        mip: Amon
+        project: CMIP6
+        exp:
+#          - historical
+          - ssp585
+        ensemble: r1i1p1f1
+        additional_datasets:
+
+          - {dataset: ACCESS-CM2, grid: gn}
+#          - {dataset: ACCESS-ESM1-5, grid: gn}
+#          - {dataset: BCC-CSM2-MR , grid: gn}
+#          - {dataset: CAMS-CSM1-0, grid: gn}
+#          - {dataset: CanESM5, grid: gn}
+#          - {dataset: CMCC-CM2-SR5, grid: gn}
+#          - {dataset: CMCC-ESM2, grid: gn}
+#          - {dataset: EC-Earth3, grid: gr}
+#          - {dataset: EC-Earth3-Veg, grid: gr}
+#          - {dataset: EC-Earth3-Veg-LR, grid: gr}
+#          - {dataset: GFDL-CM4, grid: gr1}
+#          - {dataset: GFDL-ESM4, grid: gr1}
+#          - {dataset: INM-CM4-8, grid: gr1}
+#          - {dataset: INM-CM5-0, grid: gr1}          
+#          - {dataset: IPSL-CM6A-LR , grid: gr}
+#          - {dataset: MPI-ESM1-2-HR, grid: gn}
+#          - {dataset: MPI-ESM1-2-LR, grid: gn}
+#          - {dataset: MIROC6 , grid: gn}
+#          - {dataset: MRI-ESM2-0, grid: gn}
+      tas:
+        <<: *my_settings
+        short_name: tas
+        preprocessor: pre_tas
+
+      tas_baffin:
+        <<: *my_settings
+        short_name: tas
+        preprocessor: pre_tas_baffin
+
+      tas_sib:
+        <<: *my_settings
+        short_name: tas
+        preprocessor: pre_tas_sib
+
+      psl_Ural:
+        <<: *my_settings
+        short_name: psl
+        preprocessor: pressure_ural
+
+      psl_Sib:
+        <<: *my_settings
+        short_name: psl
+        preprocessor: pressure_sib
+
+      psl_Aleut:
+        <<: *my_settings
+        short_name: psl
+        preprocessor: pressure_aleut
+  
+      zon_wind:
+        <<: *my_settings
+        short_name: uas
+        preprocessor: zonal_wind
+   
+      va:
+        <<: *my_settings
+        short_name: va
+        preprocessor: heat_flux
+
+      ta:
+        <<: *my_settings
+        short_name: ta
+        preprocessor: heat_flux
+
+
+      sic_BK_siconc:
+        <<: *my_settings
+        short_name: siconc
+        preprocessor: bk_ice
+        mip: SImon
+        additional_datasets:
+          - {dataset: ACCESS-CM2, grid: gn}
+#          - {dataset: ACCESS-ESM1-5, grid: gn}
+#          - {dataset: BCC-CSM2-MR , grid: gn}
+#          - {dataset: CAMS-CSM1-0, grid: gn}
+#          - {dataset: CanESM5, grid: gn}   
+#          - {dataset: CMCC-CM2-SR5, grid: gn}
+#          - {dataset: CMCC-ESM2, grid: gn}          
+#          - {dataset: EC-Earth3, grid: gn}
+#          - {dataset: EC-Earth3-Veg, grid: gn}
+#          - {dataset: EC-Earth3-Veg-LR, grid: gn}
+#          - {dataset: GFDL-CM4, grid: gr}
+#          - {dataset: GFDL-ESM4, grid: gr}
+#          - {dataset: INM-CM4-8, grid: gr1}
+#          - {dataset: INM-CM5-0, grid: gr1}      
+#          - {dataset: IPSL-CM6A-LR , grid: gn}
+#          - {dataset: MPI-ESM1-2-HR, grid: gn}
+#          - {dataset: MPI-ESM1-2-LR, grid: gn} 
+#          - {dataset: MIROC6, grid: gn}
+#          - {dataset: MRI-ESM2-0, grid: gn}
+      sic_Ok_siconc:
+        <<: *my_settings
+        short_name: siconc
+        preprocessor: ok_ice
+        mip: SImon
+        additional_datasets:
+          - {dataset: ACCESS-CM2, grid: gn}
+#          - {dataset: ACCESS-ESM1-5, grid: gn}
+#         - {dataset: BCC-CSM2-MR , grid: gn}
+#          - {dataset: CAMS-CSM1-0, grid: gn}
+#          - {dataset: CanESM5, grid: gn}
+#          - {dataset: CMCC-CM2-SR5, grid: gn}
+#          - {dataset: CMCC-ESM2, grid: gn}          
+#          - {dataset: EC-Earth3, grid: gn}
+#          - {dataset: EC-Earth3-Veg, grid: gn}
+#          - {dataset: EC-Earth3-Veg-LR, grid: gn}
+#          - {dataset: GFDL-CM4, grid: gr}
+#          - {dataset: GFDL-ESM4, grid: gr}
+#          - {dataset: INM-CM4-8, grid: gr1}
+#          - {dataset: INM-CM5-0, grid: gr1}
+#          - {dataset: IPSL-CM6A-LR , grid: gn}
+#          - {dataset: MPI-ESM1-2-HR, grid: gn}
+#          - {dataset: MPI-ESM1-2-LR, grid: gn}
+#          - {dataset: MIROC6, grid: gn}
+#          - {dataset: MRI-ESM2-0, grid: gn}
+
+    scripts:
+      rename:
+        script: /work/bd0854/b380971/v2/ESMValTool/esmvaltool/diag_scripts/galytska22/my_little_diagnostic_EG.py
