@@ -50,6 +50,3 @@ fi
 if [[ -z ${QUIET_MODE:-} ]]; then
     echo "[OK] Modules loaded."
 fi
-
-command="/usr/bin/time -v -o ${CYLC_TASK_LOG_ROOT}.time $@"
-exec ${command}

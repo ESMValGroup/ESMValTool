@@ -3,7 +3,7 @@
     allow implicit tasks = True
 [scheduling]
     [[graph]]
-        R1 = install_cold
+        R1 = install_cold => install_esmvaltool
 
 [runtime]
     [[root]]
@@ -18,5 +18,13 @@
         platform = localhost
         [[[environment]]]
             SITE = {{ SITE }}
+            MODULE_NAME = {{ MODULE_NAME }}
+
+    [[install_esmvaltool]]
+        platform = localhost
+        [[[environment]]]
+            SITE = {{ SITE }}
+            MODULE_NAME = {{ MODULE_NAME }}
+
 
 {% include 'site/' ~ SITE ~ '.cylc' %}
