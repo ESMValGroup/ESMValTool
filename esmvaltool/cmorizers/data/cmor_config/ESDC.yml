@@ -1,16 +1,16 @@
 ---
-# filename: ???
+# filename: '*.zarr'
 
 attributes:
   project_id: OBS6
   dataset_id: ESDC
   version: 2.1.0
   tier: 2 # TODO Double check
-#   modeling_realm: ???
-#   source: ???
-#   reference: ???
-#   comment: ???
+  modeling_realm: ???
+  source: http://data.rsc4earth.de/EarthSystemDataCube/
+  reference: ???
+  comment: ???
 
-# variables:
-#   ???:
-#     mip: ???
+variables:
+  tas:
+    mip: Amon
