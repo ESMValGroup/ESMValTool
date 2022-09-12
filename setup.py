@@ -64,7 +64,7 @@ REQUIREMENTS = {
         'shapely',
         'xarray',
         'xesmf==0.3.0',
-        'xgboost',
+        'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
     ],
     # Test dependencies
