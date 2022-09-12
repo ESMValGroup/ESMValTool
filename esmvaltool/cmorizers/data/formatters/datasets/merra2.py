@@ -162,6 +162,33 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
     cube = _load_cube(in_files, var)
 
+    # keep the following raw cube attributes
+    attrs_to_keep = [
+        "institution", "Institution",
+        "institute_id", "VersionID",
+        "experiment_id",
+        "source", "Source",  # overrides empty string default
+        "model_id", "ModelID",
+        "contact", "Contact",
+        "references",
+        "tracking_id",
+        "mip_specs",  # described by "mip" already
+        "source_id", "SourceID",
+        "product", "Product",
+        "frequency", "Frequency",
+        "creation_date",
+        "project_id", "ProjectID",
+        "table_id", "TableID",
+        "title", "Title",
+        "modeling_realm",
+        "doi",
+        "VersionID",  # described by "version" already
+    ]
+
+    attrs_to_keep_exist = [att for att in cube.attributes if att in attrs_to_keep]
+    for att in attrs_to_keep_exist:
+        attributes[att] = cube.attributes[att]
+
     utils.set_global_atts(cube, attributes)
 
     # Set correct names
