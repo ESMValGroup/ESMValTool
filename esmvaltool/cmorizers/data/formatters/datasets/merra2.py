@@ -185,7 +185,9 @@ def _extract_variable(in_files, var, cfg, out_dir):
         "VersionID",  # described by "version" already
     ]
 
-    attrs_to_keep_exist = [att for att in cube.attributes if att in attrs_to_keep]
+    attrs_to_keep_exist = [
+        att for att in cube.attributes if att in attrs_to_keep
+    ]
     for att in attrs_to_keep_exist:
         attributes[att] = cube.attributes[att]
 
