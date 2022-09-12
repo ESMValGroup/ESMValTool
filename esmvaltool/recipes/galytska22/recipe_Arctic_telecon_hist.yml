@@ -311,5 +311,5 @@ diagnostics:
         additional_datasets:
           - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly,  version: 1, tier: 2}
     scripts:
-      rename:
+      output:
         script: /work/bd0854/b380971/v2_copied/ESMValTool-private/esmvaltool/diag_scripts/galytska22/select_actors_for_tigramite.py
