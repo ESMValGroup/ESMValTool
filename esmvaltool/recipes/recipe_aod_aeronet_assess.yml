@@ -1,0 +1,49 @@
+# ESMValTool
+# recipe_aod_aeronet_assess.yml
+---
+documentation:
+  description: |
+    Recipe to plot seasonal maps of global aerosol optical depth (AOD) at 440nm.
+
+  title: Recipe that runs an AOD diagnostic
+
+  authors:
+    - hogan_emma
+    - lillis_jon
+#    - hardacre_catherine
+
+  maintainer:
+    - hogan_emma
+    - lillis_jon
+
+  projects:
+    - esmval
+
+datasets:
+  - {dataset: UKESM1-0-LL, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f3, grid: gn}
+
+preprocessors:
+  ma_season_mean:
+    climate_statistics:
+      operator: mean
+      period: season
+      seasons: ['DJF', 'MAM', 'JJA', 'SON']
+
+
+diagnostics:
+  od440aer_climatologies:
+    description: Visualise spatial multiannual seasonal means AOD at 440nm.
+    variables:
+      od440aer_season:
+        mip: AERmon
+        short_name: od440aer
+        preprocessor: ma_season_mean
+        start_year: 1980
+        end_year: 2014
+
+    scripts:
+      script1:
+        script: /home/h04/chardacr/.esmvaltool/ESMValTool/esmvaltool/diag_scripts/aerosols/aod_aeronet_assess.py
+        quickplot:
+          plot_type: plot
