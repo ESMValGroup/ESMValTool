@@ -52,6 +52,17 @@ def _create_sample_cube():
         cube.coord('time').attributes[attr] = "1982"
     cube.coord('time').attributes["valid_range"] = [50, 150]
 
+    extra_special_attrs = [
+        "Institution",
+        "VersionID",
+        "experiment_id",
+        "Source",
+        "ModelID",
+        "Contact",
+    ]
+    for attr in extra_special_attrs:
+        cube.attributes[attr] = "moose"
+
     return cube
 
 
@@ -201,7 +212,6 @@ def test_extract_variable(tmp_path):
 
 def test_extract_variable_pairs(tmp_path):
     """Test variable extraction."""
-    # call is _extract_variable(in_files, var, cfg, out_dir)
     path_cubes = tmp_path / "cubes.nc"
     cube_1 = _create_sample_cube()
     cube_1.var_name = "SWTDN"
@@ -227,3 +237,14 @@ def test_extract_variable_pairs(tmp_path):
     assert cmorized_cube.attributes["raw"] == 'SWTDN-SWTNT'
     assert cmorized_cube.attributes["component_raw_1"] == "SWTDN"
     assert cmorized_cube.attributes["component_raw_2"] == "SWTNT"
+
+    # Test the existence of extra attributes
+    extra_special_attrs = [
+        "Institution",
+        "VersionID",
+        "experiment_id",
+        "ModelID",
+        "Contact",
+    ]
+    for attr in extra_special_attrs:
+        assert attr in cmorized_cube.attributes
