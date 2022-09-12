@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_Arctic_telecon_tests.yml
+# recipe_Arctic_telecon_hist.yml
 ---
 documentation:
   description: |
@@ -18,7 +18,6 @@ documentation:
 
   projects:
     - esmval
-
 
 preprocessors:
 
@@ -212,7 +211,7 @@ diagnostics:
 #          - {dataset: GFDL-CM4, grid: gr1}
 #          - {dataset: GFDL-ESM4, grid: gr1}
 #          - {dataset: INM-CM4-8, grid: gr1}
-#          - {dataset: INM-CM5-0, grid: gr1}          
+#          - {dataset: INM-CM5-0, grid: gr1}
 #          - {dataset: IPSL-CM6A-LR , grid: gr}
 #          - {dataset: MPI-ESM1-2-HR, grid: gn}
 #          - {dataset: MPI-ESM1-2-LR, grid: gn}
@@ -247,12 +246,12 @@ diagnostics:
         <<: *my_settings
         short_name: psl
         preprocessor: pressure_aleut
-  
+
       zon_wind:
         <<: *my_settings
         short_name: uas
         preprocessor: zonal_wind
-   
+
       va:
         <<: *my_settings
         short_name: va
@@ -263,45 +262,24 @@ diagnostics:
         short_name: ta
         preprocessor: heat_flux
 
-
-      sic_BK_siconc:
-        <<: *my_settings
+      sic_BK_siconc: &ice_settings
         short_name: siconc
         preprocessor: bk_ice
+        start_year: 1979
+        end_year: 1980
         mip: SImon
+        project: CMIP6
+        exp:
+          - historical
+        ensemble: r1i1p1f1
         additional_datasets:
           - {dataset: ACCESS-CM2, grid: gn}
 #          - {dataset: ACCESS-ESM1-5, grid: gn}
 #          - {dataset: BCC-CSM2-MR , grid: gn}
 #          - {dataset: CAMS-CSM1-0, grid: gn}
-#          - {dataset: CanESM5, grid: gn}   
-#          - {dataset: CMCC-CM2-SR5, grid: gn}
-#          - {dataset: CMCC-ESM2, grid: gn}          
-#          - {dataset: EC-Earth3, grid: gn}
-#          - {dataset: EC-Earth3-Veg, grid: gn}
-#          - {dataset: EC-Earth3-Veg-LR, grid: gn}
-#          - {dataset: GFDL-CM4, grid: gr}
-#          - {dataset: GFDL-ESM4, grid: gr}
-#          - {dataset: INM-CM4-8, grid: gr1}
-#          - {dataset: INM-CM5-0, grid: gr1}      
-#          - {dataset: IPSL-CM6A-LR , grid: gn}
-#          - {dataset: MPI-ESM1-2-HR, grid: gn}
-#          - {dataset: MPI-ESM1-2-LR, grid: gn} 
-#          - {dataset: MIROC6, grid: gn}
-#          - {dataset: MRI-ESM2-0, grid: gn}
-      sic_Ok_siconc:
-        <<: *my_settings
-        short_name: siconc
-        preprocessor: ok_ice
-        mip: SImon
-        additional_datasets:
-          - {dataset: ACCESS-CM2, grid: gn}
-#          - {dataset: ACCESS-ESM1-5, grid: gn}
-#         - {dataset: BCC-CSM2-MR , grid: gn}
-#          - {dataset: CAMS-CSM1-0, grid: gn}
 #          - {dataset: CanESM5, grid: gn}
 #          - {dataset: CMCC-CM2-SR5, grid: gn}
-#          - {dataset: CMCC-ESM2, grid: gn}          
+#          - {dataset: CMCC-ESM2, grid: gn}
 #          - {dataset: EC-Earth3, grid: gn}
 #          - {dataset: EC-Earth3-Veg, grid: gn}
 #          - {dataset: EC-Earth3-Veg-LR, grid: gn}
@@ -314,19 +292,24 @@ diagnostics:
 #          - {dataset: MPI-ESM1-2-LR, grid: gn}
 #          - {dataset: MIROC6, grid: gn}
 #          - {dataset: MRI-ESM2-0, grid: gn}
-#      sic_BK:
-#        <<: *my_settings
-#        short_name: sic
-#        preprocessor: bk_ice
-#        additional_datasets:
-#          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly,  version: 1, tier: 2}
+      sic_Ok_siconc:
+        <<: *ice_settings
+        short_name: siconc
+        preprocessor: ok_ice
 
-#      sic_Ok:
-#        <<: *my_settings
-#        short_name: sic
-#        preprocessor: ok_ice
-#        additional_datasets:
-#          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly,  version: 1, tier: 2}
+      sic_BK:
+        <<: *ice_settings
+        short_name: sic
+        preprocessor: bk_ice
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly,  version: 1, tier: 2}
+
+      sic_Ok:
+        <<: *ice_settings
+        short_name: sic
+        preprocessor: ok_ice
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly,  version: 1, tier: 2}
     scripts:
       rename:
-        script: /work/bd0854/b380971/v2_copied/ESMValTool-private/esmvaltool/diag_scripts/galytska22/my_little_diagnostic_EG.py
+        script: /work/bd0854/b380971/v2_copied/ESMValTool-private/esmvaltool/diag_scripts/galytska22/select_actors_for_tigramite.py

@@ -14,7 +14,7 @@
 # Submit job with: sbatch job_DKRZ-MISTRAL.sh
 
 # Input arguments
-RECIPE=/work/bd0854/b380971/v2_copied/ESMValTool-private/esmvaltool/recipes/galytska22/recipe_Arctic_telecon_tests.yml
+RECIPE=/work/bd0854/b380971/v2_copied/ESMValTool-private/esmvaltool/recipes/galytska22/recipe_Arctic_telecon_hist.yml
 CONFIG=/work/bd0854/b380971/v2_copied/ESMValTool-private/config-user_EG_levante.yml
 
 # Set environment
