@@ -1,0 +1,84 @@
+# ESMValTool
+# recipe_proportionality.yml
+---
+documentation:
+  title: Comparison of ocean heat and carbon uptake
+  
+  description: |
+    Recipe to produce figures comparing ocean heat and carbon uptake in 4xCO2.
+
+  authors:
+    - gillett_nathan
+
+preprocessors:
+
+ 
+  global_land:
+    weighting_landsea_fraction:
+      area_type: land
+    area_statistics:
+          operator: sum
+
+
+  global_ocean:
+    weighting_landsea_fraction:
+      area_type: sea
+    area_statistics:
+      operator: sum
+      fx_variables:
+        areacello:
+
+  global_mean:
+    area_statistics:
+      operator: mean
+      fx_variables:
+        areacella:
+
+
+
+diagnostics:
+  diag_prop_figs:
+    variables:
+      nbp: &var_nbp
+        preprocessor: global_land #land_fraction_weighting
+        project: CMIP6
+        mip: Lmon
+        exp: abrupt-4xCO2
+        ensemble: r1i1p1f1
+        grid: gn
+        start_year: 1850
+        end_year: 2000
+        cumulate: True
+        additional_datasets: &2xCO2_dataset
+          - {dataset: CanESM5, institute: CCCma}
+
+      tas: &var_tas
+        preprocessor: global_mean
+        project: CMIP6
+        mip: Amon
+        exp: abrupt-4xCO2
+        ensemble: r1i1p1f1
+        grid: gn
+        start_year: 1850
+        end_year: 2000
+        additional_datasets:  &tas_dataset
+          - {dataset: CanESM5, institute: CCCma}
+
+      fgco2:
+        preprocessor: global_ocean
+        project: CMIP6
+        mip: Omon
+        exp: abrupt-4xCO2
+        ensemble: r1i1p1f1
+        grid: gn
+        start_year: 1850
+        end_year: 2000
+        cumulate: True
+        additional_datasets: &fgco2_dataset
+          - {dataset: CanESM5, institute: CCCma}
+
+    scripts:
+      fig_proportionality:
+        script: prop_figs.py
+  
+ 
