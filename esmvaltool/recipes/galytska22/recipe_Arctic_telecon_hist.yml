@@ -5,7 +5,7 @@ documentation:
   description: |
     Recipe of EG in Arctic-midlatitude teleconnections.
 
-  title: Recipe that runs an example empty diagnostic written in Python.
+  title: Recipe that runs an diagnostic that prepares actors for Causal Discovery.
 
   authors:
     - galytska_evgenia
