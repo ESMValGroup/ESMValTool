@@ -396,7 +396,7 @@ class DataCommand():
     """Download and format data to use with ESMValTool."""
 
     def __init__(self):
-        with open(datasets_file, 'r') as data:
+        with open(datasets_file, 'r', encoding='utf8') as data:
             self._info = yaml.safe_load(data)
         self.formatter = Formatter(self._info)
 
