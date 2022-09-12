@@ -16,7 +16,7 @@ rootpath:
 #  native6:  ~/native6_inputpath
   RAWOBS: /work/bd0854/DATA/ESMValTool2/OBS
   default: /work/bd0854/DATA/ESMValTool2/OBS
-  native6: [/work/bd0854/b380971/data_temp/CDS, /work/bd0854/DATA/ESMValTool2/RAWOBS]
+  native6: /work/bd0854/DATA/ESMValTool2/RAWOBS
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
 # See config-developer.yml for definitions.
