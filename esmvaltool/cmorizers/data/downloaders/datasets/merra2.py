@@ -44,4 +44,19 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         downloader.download_folder(
             "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
             f"M2TMNXLND.5.12.4/{year}/")
+        downloader.download_folder(
+            "https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
+            f"M2IMNPANA.5.12.4/{year}/")
+        downloader.download_folder(
+            "https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
+            f"M2IMNPASM.5.12.4/{year}/")
+        downloader.download_folder(
+            "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
+            f"M2TMNXRAD.5.12.4/{year}/")
+        downloader.download_folder(
+            "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
+            f"M2TMNXSLV.5.12.4/{year}/")
+        downloader.download_folder(
+            "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
+            f"M2TMNXFLX.5.12.4/{year}/")
         loop_date += relativedelta.relativedelta(years=1)
