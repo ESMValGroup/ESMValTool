@@ -1424,10 +1424,129 @@ diagnostics:
   MERRA2:
     description: MERRA2 check
     variables:
-      sm:
+      sm_monthly:
+        short_name: sm
+        mip: Lmon
+      t_monthly:
+        short_name: clt
+        mip: Amon
+      pr_monthly:
+        short_name: pr
+        mip: Amon
+      evspsbl_monthly:
+        short_name: evspsbl
+        mip: Amon
+      hfss_monthly:
+        short_name: hfss
+        mip: Amon
+      hfls_monthly:
+        short_name: hfls
+        mip: Amon
+      huss_monthly:
+        short_name: huss
+        mip: Amon
+      prc_monthly:
+        short_name: prc
+        mip: Amon
+      prsn_monthly:
+        short_name: prsn
+        mip: Amon
+      prw_monthly:
+        short_name: prw
+        mip: Amon
+      ps_monthly:
+        short_name: ps
+        mip: Amon
+      psl_monthly:
+        short_name: psl
+        mip: Amon
+      rlds_monthly:
+        short_name: rlds
+        mip: Amon
+      rldscs_monthly:
+        short_name: rlds
+        mip: Amon
+      rlus_monthly:
+        short_name: rlus
+        mip: Amon
+      rlut_monthly:
+        short_name: rlut
+        mip: Amon
+      rsds_monthly:
+        short_name: rsds
+        mip: Amon
+      rsdscs_monthly:
+        short_name: rsdscs
+        mip: Amon
+      rsdt_monthly:
+        short_name: rsdt
+        mip: Amon
+      tas_monthly:
+        short_name: tas
+        mip: Amon
+      tasmax_monthly:
+        short_name: tasmax
+        mip: Amon
+      tasmin_monthly:
+        short_name: tasmin
+        mip: Amon
+      tauu_monthly:
+        short_name: tauu
+        mip: Amon
+      tauv_monthly:
+        short_name: tauv
+        mip: Amon
+      rlutcs_monthly:
+        short_name: rlutcs
+        mip: Amon
+      ts_monthly:
+        short_name: ts
+        mip: Amon
+      uas_monthly:
+        short_name: uas
+        mip: Amon
+      vas_monthly:
+        short_name: vas
+        mip: Amon
+      rsus_monthly:
+        short_name: rsus
+        mip: Amon
+      rsuscs_monthly:
+        short_name: rsuscs
+        mip: Amon
+      rsut_monthly:
+        short_name: rsut
+        mip: Amon
+      rsutcs_monthly:
+        short_name: rsutcs
+        mip: Amon
+      ta_monthly:
+        short_name: ta
+        mip: Amon
+      ua_monthly:
+        short_name: ua
+        mip: Amon
+      uv_monthly:
+        short_name: uv
+        mip: Amon
+      tro3_monthly:
+        short_name: tro3
+        mip: Amon
+      zg_monthly:
+        short_name: zg
+        mip: Amon
+      hus_monthly:
+        short_name: hus
+        mip: Amon
+      wap_monthly:
+        short_name: wap
+        mip: Amon
+      hur_monthly:
+        short_name: hur
+        mip: Amon
     additional_datasets:
-      - {dataset: MERRA2, project: OBS6, mip: Lmon, tier: 3,
-         type: reanaly, version: 5.12.4, start_year: 1980, end_year: 2018}
+      - {dataset: MERRA2, project: OBS6, tier: 3,
+         type: reanaly, version: 5.12.4, start_year: 1980, end_year: 2022}
     scripts: null
 
 
