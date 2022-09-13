@@ -190,11 +190,12 @@ diagnostics:
         short_name: zg
         preprocessor: pv
         start_year: 1979
-        end_year: 1980
+        end_year: 1981
         mip: Amon
         project: CMIP6
         exp:
           - historical
+#          - ssp585
         ensemble: r1i1p1f1
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: 1, tier: 3}
@@ -266,11 +267,12 @@ diagnostics:
         short_name: siconc
         preprocessor: bk_ice
         start_year: 1979
-        end_year: 1980
+        end_year: 1981
         mip: SImon
         project: CMIP6
         exp:
           - historical
+#          - ssp585
         ensemble: r1i1p1f1
         additional_datasets:
           - {dataset: ACCESS-CM2, grid: gn}
@@ -297,19 +299,19 @@ diagnostics:
         short_name: siconc
         preprocessor: ok_ice
 
-      sic_BK:
-        <<: *ice_settings
-        short_name: sic
-        preprocessor: bk_ice
-        additional_datasets:
-          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly,  version: 1, tier: 2}
+#      sic_BK:
+#        <<: *ice_settings
+#        short_name: sic
+#        preprocessor: bk_ice
+#        additional_datasets:
+#          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly,  version: 1, tier: 2}
 
-      sic_Ok:
-        <<: *ice_settings
-        short_name: sic
-        preprocessor: ok_ice
-        additional_datasets:
-          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly,  version: 1, tier: 2}
+#      sic_Ok:
+#        <<: *ice_settings
+#        short_name: sic
+#        preprocessor: ok_ice
+#        additional_datasets:
+#          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly,  version: 1, tier: 2}
     scripts:
       output:
-        script: /work/bd0854/b380971/v2_copied/ESMValTool-private/esmvaltool/diag_scripts/galytska22/select_actors_for_tigramite.py
+        script: galytska22/select_actors_for_tigramite.py
