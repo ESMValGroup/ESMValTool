@@ -43,39 +43,38 @@ diagnostics:
         preprocessor: global_land #land_fraction_weighting
         project: CMIP6
         mip: Lmon
-        exp: abrupt-4xCO2
-        ensemble: r1i1p1f1
         grid: gn
-        start_year: 1850
-        end_year: 2000
-        cumulate: True
         additional_datasets: &2xCO2_dataset
-          - {dataset: CanESM5, institute: CCCma}
+          - {dataset: CanESM5, institute: CCCma, exp: abrupt-4xCO2, ensemble: r1i1p2f1, start_year: 1850, end_year: 2000}
+          - {dataset: CanESM5, institute: CCCma, exp: piControl, ensemble: r1i1p2f1, start_year: 5550, end_year: 5700}
 
       tas: &var_tas
         preprocessor: global_mean
         project: CMIP6
         mip: Amon
-        exp: abrupt-4xCO2
-        ensemble: r1i1p1f1
         grid: gn
-        start_year: 1850
-        end_year: 2000
         additional_datasets:  &tas_dataset
-          - {dataset: CanESM5, institute: CCCma}
+          - {dataset: CanESM5, institute: CCCma, exp: abrupt-4xCO2, ensemble: r1i1p2f1, start_year: 1850, end_year: 2000}
+          - {dataset: CanESM5, institute: CCCma, exp: piControl, ensemble: r1i1p2f1, start_year: 5550, end_year: 5700}
+
+      co2: &var_co2
+        preprocessor: global_mean
+        project: CMIP6
+        mip: Amon
+        grid: gn
+        additional_datasets:  &co2_dataset
+          - {dataset: CanESM5, institute: CCCma, exp: abrupt-4xCO2, ensemble: r1i1p2f1, start_year: 1850, end_year: 2000}
+          - {dataset: CanESM5, institute: CCCma, exp: piControl, ensemble: r1i1p2f1, start_year: 5550, end_year: 5700}
 
       fgco2:
         preprocessor: global_ocean
         project: CMIP6
         mip: Omon
-        exp: abrupt-4xCO2
-        ensemble: r1i1p1f1
         grid: gn
-        start_year: 1850
-        end_year: 2000
-        cumulate: True
         additional_datasets: &fgco2_dataset
-          - {dataset: CanESM5, institute: CCCma}
+          - {dataset: CanESM5, institute: CCCma, exp: abrupt-4xCO2, ensemble: r1i1p2f1, start_year: 1850, end_year: 2000}
+          - {dataset: CanESM5, institute: CCCma, exp: piControl, ensemble: r1i1p2f1, start_year: 5550, end_year: 5700}
+
 
     scripts:
       fig_proportionality:
