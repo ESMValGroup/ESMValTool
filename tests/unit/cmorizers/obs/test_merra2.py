@@ -24,8 +24,8 @@ def _create_sample_cube():
                                 units=Unit('minutes since 1982-01-01 00:30:00',
                                            calendar='gregorian'))
     zcoord = iris.coords.DimCoord([0.5, 5., 50.],
-                                  var_name='depth',
-                                  standard_name='depth',
+                                  long_name='vertical level',
+                                  var_name='lev',
                                   units='m',
                                   attributes={'positive': 'down'})
     lons = iris.coords.DimCoord([1.5, 2.5],
@@ -248,3 +248,62 @@ def test_extract_variable_pairs(tmp_path):
     ]
     for attr in extra_special_attrs:
         assert attr in cmorized_cube.attributes
+
+
+def test_vertical_levels(tmp_path):
+    """Test cases for cmorization with vertical levels."""
+    path_cubes = tmp_path / "cubes.nc"
+    cube_1 = _create_sample_cube()
+    cube_1.var_name = "V"
+    cube_2 = _create_sample_cube()
+    cube_2.var_name = "U10M"
+    cube_3 = _create_sample_cube()
+    cube_3.var_name = "T2M"
+    cubes = iris.cube.CubeList([cube_1, cube_2, cube_3])
+    iris.save(cubes, str(path_cubes))
+    var_1 = {
+        'short_name': 'uv',
+        'mip': 'Amon', 'raw': 'V',
+        'file': 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+    }
+    var_2 = {
+        'short_name': 'uas',
+        'mip': 'Amon', 'raw': 'U10M',
+        'file': 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'
+    }
+    var_3 = {
+        'short_name': 'tas',
+        'mip': 'Amon', 'raw': 'T2M',
+        'file': 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'
+    }
+    in_files = str(tmp_path / "cubes.nc")
+    cfg = read_cmor_config("MERRA2")
+
+    # extract uv
+    _extract_variable(in_files, var_1, cfg, tmp_path)
+    cmorized_data = \
+        tmp_path / "OBS6_MERRA2_reanaly_5.12.4_Amon_uv_198201-198201.nc"
+    cmorized_cube = iris.load_cube(str(cmorized_data))
+    print(cmorized_cube,
+          cmorized_cube.coord("air_pressure"))
+    assert cmorized_cube.coord("air_pressure").has_bounds()
+    np.testing.assert_array_equal(cmorized_cube.coord("air_pressure").points,
+                                  [0.5, 5., 50.])
+
+    # extract uas
+    _extract_variable(in_files, var_2, cfg, tmp_path)
+    cmorized_data = \
+        tmp_path / "OBS6_MERRA2_reanaly_5.12.4_Amon_uas_198201-198201.nc"
+    cmorized_cube = iris.load_cube(str(cmorized_data))
+    print(cmorized_cube)
+    np.testing.assert_array_equal(cmorized_cube.coord("height").points,
+                                  [10.])
+
+    # extract tas
+    _extract_variable(in_files, var_3, cfg, tmp_path)
+    cmorized_data = \
+        tmp_path / "OBS6_MERRA2_reanaly_5.12.4_Amon_tas_198201-198201.nc"
+    cmorized_cube = iris.load_cube(str(cmorized_data))
+    print(cmorized_cube)
+    np.testing.assert_array_equal(cmorized_cube.coord("height").points,
+                                  [2.])
