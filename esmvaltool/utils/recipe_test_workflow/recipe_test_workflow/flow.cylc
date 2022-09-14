@@ -7,7 +7,7 @@
 
 [scheduling]
     [[graph]]
-        R1 = install_cold => configure => process<metric>
+        R1 = install_cold
 
 [runtime]
     [[root]]
@@ -22,6 +22,7 @@
         platform = localhost
         [[[environment]]]
             SITE = {{ SITE }}
+            MODULE_NAME = {{ MODULE_NAME }}
 
     [[configure]]
         pre-script = "mkdir -p ${USER_CONFIG_DIR}"
