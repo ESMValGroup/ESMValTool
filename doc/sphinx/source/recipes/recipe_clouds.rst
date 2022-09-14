@@ -74,6 +74,8 @@ Diagnostics are stored in diag_scripts/clouds/
       averages of individual models, multi-model mean and observations
     * clouds_lifrac_scatter.ncl: cloud liquid water fraction as a function of
       temperaure
+    * clouds_lifrac_scatter_postproc.ncl: additional plots and diagnostics using
+      the output of clouds_lifrac_scatter.ncl for given CMIP5/CMIP6 model pairs
     * clouds_pdf.ncl: pdf of cloud parameters
     * clouds_seasonal_cycle.ncl: seasonal cycle amplitude
     * clouds_taylor.ncl: Taylor diagrams as in `Lauer and Hamilton (2013)`_
@@ -276,6 +278,27 @@ User settings in recipe
 
    * reference_dataset: reference dataset
 
+#. Script clouds_lifrac_scatter_postproc.ncl
+
+   *Required settings (scripts)*
+
+   * models: array of CMIP5/CMIP6 model pairs to be compared
+   * refname: name of reference dataset
+
+   *Optional settings (scripts)*
+
+   * nbins: number of bins used by clouds_lifrac_scatter.ncl (default = 20)
+   * reg: region (string) (default = "")
+   * t_int: array of temperatures for printing additional diagnostics
+
+   *Required settings (variables)*
+
+   none
+
+   *Optional settings (variables)*
+
+   none
+
 #. Script clouds_lifrac_pdf.ncl
 
    *Required settings (scripts)*
@@ -411,9 +434,30 @@ User settings in recipe
 
    *Optional settings (scripts)*
 
+   * embracesetup: True = 2 plots per line, False = 4 plots per line (default)
+   * explicit_cn_levels: explicit contour levels for mean values (array)
+   * explicit_cn_dlevels: explicit contour levels for differences (array)
+   * extralegend: plot legend(s) to extra file(s)
+   * filename_add: optionally add this string to plot filesnames
+   * panel_labels: label individual panels (true, false)
+   * PanelTop: manual override for "@gnsPanelTop" used by panel plot(s)
+   * showdiff: calculate and plot differences (default = False)
+   * rel_diff: if showdiff = True, then plot relative differences (%) (default = False)
+   * rel_diff_min: lower cutoff value in case of calculating relative differences
+     (in units of input variable)
+   * t_test: perform t-test when calculating differences (default = False)
+   * timemean: time averaging - "seasonal" = DJF, MAM, JJA, SON), "annual" = annual mean
+   * units_to: target units (automatic conversion)
+
    *Required settings (variables)*
 
+   none
+
    *Optional settings (variables)*
+
+   * long_name: variable description
+   * reference_dataset: reference dataset; REQUIRED when calculating differences (showdiff = True)
+   * units: variable units (for labeling plot only)
 
 
 Variables
