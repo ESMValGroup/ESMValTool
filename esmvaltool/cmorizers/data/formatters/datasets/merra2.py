@@ -126,8 +126,14 @@ def _load_cube(in_files, var):
 
 def _fix_coordinates(cube, definition):
     """Fix coordinates."""
-    axis2def = {'T': 'time', 'X': 'longitude', 'Y': 'latitude'}
-    for axis in 'T', 'X', 'Y':
+    if cube.ndim == 3:
+        axis2def = {'T': 'time', 'X': 'longitude', 'Y': 'latitude'}
+        axes = ['T', 'X', 'Y']
+    elif cube.ndim == 4:
+        axis2def = {'T': 'time', 'X': 'longitude',
+                    'Y': 'latitude', 'Z': 'plev19'}
+        axes = ['T', 'X', 'Y', 'Z']
+    for axis in axes:
         coord_def = definition.coordinates.get(axis2def[axis])
         if coord_def:
             coord = cube.coord(axis=axis)
@@ -139,6 +145,7 @@ def _fix_coordinates(cube, definition):
             coord.points = coord.core_points().astype('float64')
             if len(coord.points) > 1:
                 coord.guess_bounds()
+
     return cube
 
 
