@@ -258,10 +258,14 @@ def _split_response(cfg, cube, cube_mmm):
     cube_forced_comp.data = cube_mmm_subset.data * slope + intercept
     cube_forced_comp.var_name += "_forced_comp"
     cube_forced_comp.long_name += " (Forced Component)"
+    cube_forced_comp.attributes['optimal_fingerprinting'] = 'forced'
+
+    # Calculate unforced component
     cube_unforced_comp = cube.copy()
     cube_unforced_comp.data = cube.data - cube_forced_comp.data
     cube_unforced_comp.var_name += "_unforced_comp"
     cube_unforced_comp.long_name += " (Unforced Component)"
+    cube_unforced_comp.attributes['optimal_fingerprinting'] = 'unforced'
 
     return (cube_forced_comp, cube_unforced_comp)
 
