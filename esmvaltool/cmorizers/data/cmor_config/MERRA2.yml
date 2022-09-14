@@ -18,7 +18,7 @@ variables:
     short_name: sm
     mip: Lmon
     raw: SFMC
-    file: 'MERRA2_?00.tavgM_2d_lnd_Nx.{year}??.nc4'
+    file: 'MERRA2_???.tavgM_2d_lnd_Nx.{year}??.nc4'
   # monthly frequency
   # 2 dimensional variables
   clt_monthly:
@@ -95,7 +95,7 @@ variables:
     short_name: rlut
     mip: Amon
     raw: LWTUP
-    file: 'MERRA2_?00.tavgM_2d_rad_Nx.{year}??.nc4'
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
   rlutcs_monthly:
     short_name: rlutcs
     mip: Amon
