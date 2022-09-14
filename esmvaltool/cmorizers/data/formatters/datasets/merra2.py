@@ -145,6 +145,22 @@ def _fix_coordinates(cube, definition):
             coord.points = coord.core_points().astype('float64')
             if len(coord.points) > 1:
                 coord.guess_bounds()
+        else:
+            # special case for UV
+            # variable "uv" (raw: "V") comes with "alevel" instead
+            # of "plev19" in the table; "alevel" has empty fields for
+            # standard_name, out_name etc. so we need to set them; it's safe
+            # to do so since the cmor checker/fixer will convert that during
+            # preprocessing at cmor fix stage
+            if cube.var_name == "uv" and axis == "Z":
+                coord = cube.coord(axis=axis)
+                coord_def = definition.coordinates.get('alevel')
+                coord.standard_name = "air_pressure"
+                coord.var_name = "plev"
+                coord.long_name = "pressure"
+                coord.points = coord.core_points().astype('float64')
+                if len(coord.points) > 1:
+                    coord.guess_bounds()
 
     return cube
 
