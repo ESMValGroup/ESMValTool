@@ -208,6 +208,12 @@ def _extract_variable(in_files, var, cfg, out_dir):
     # Fix units
     cube.units = definition.units
 
+    # Add height2m or height10m if needed
+    if 'height2m' in definition.dimensions:
+        utils.add_height2m(cube)
+    elif 'height10m' in definition.dimensions:
+        utils.add_height10m(cube)
+
     # Fix data type
     cube.data = cube.core_data().astype('float32')
 
