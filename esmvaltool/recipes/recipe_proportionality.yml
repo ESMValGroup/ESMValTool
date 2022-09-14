@@ -17,8 +17,9 @@ preprocessors:
     weighting_landsea_fraction:
       area_type: land
     area_statistics:
-          operator: sum
-
+      operator: sum
+    annual_statistics:
+      operator: mean
 
   global_ocean:
     weighting_landsea_fraction:
@@ -27,12 +28,16 @@ preprocessors:
       operator: sum
       fx_variables:
         areacello:
+    annual_statistics:
+      operator: mean
 
   global_mean:
     area_statistics:
       operator: mean
       fx_variables:
         areacella:
+    annual_statistics:
+      operator: mean
 
 
 
@@ -72,6 +77,15 @@ diagnostics:
         mip: Omon
         grid: gn
         additional_datasets: &fgco2_dataset
+          - {dataset: CanESM5, institute: CCCma, exp: abrupt-4xCO2, ensemble: r1i1p2f1, start_year: 1850, end_year: 2000}
+          - {dataset: CanESM5, institute: CCCma, exp: piControl, ensemble: r1i1p2f1, start_year: 5550, end_year: 5700}
+
+      hfds:
+        preprocessor: global_ocean
+        project: CMIP6
+        mip: Omon
+        grid: gn
+        additional_datasets: &hfds_dataset
           - {dataset: CanESM5, institute: CCCma, exp: abrupt-4xCO2, ensemble: r1i1p2f1, start_year: 1850, end_year: 2000}
           - {dataset: CanESM5, institute: CCCma, exp: piControl, ensemble: r1i1p2f1, start_year: 5550, end_year: 5700}
 
