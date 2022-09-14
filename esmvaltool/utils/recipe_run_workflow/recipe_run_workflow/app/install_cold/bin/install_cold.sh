@@ -30,3 +30,11 @@ rrw-launch
 # Checkout main branch for ESMValTool and ESMValCore from github.
 git clone -b "${BRANCH}" "${ESMVALTOOL_URL}" "${ESMVALTOOL_DIR}"
 git clone -b "${BRANCH}" "${ESMVALCORE_URL}" "${ESMVALCORE_DIR}"
+
+# add esmvaltool to PYTHONPATH
+cd "${ESMVALTOOL_DIR}"
+export PYTHONPATH=`pwd`
+
+# add esmvalcore to PYTHONPATH
+cd "${ESMVALCORE_DIR}"
+export PYTHONPATH=`pwd`
