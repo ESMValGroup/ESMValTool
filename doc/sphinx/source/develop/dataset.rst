@@ -120,10 +120,10 @@ The downloading script for the given dataset can be run with:
  esmvaltool data download --config_file <config-user.yml>  <dataset-name>
 
 The options ``--start`` and ``--end`` can be added to the command above to 
-restrict the download of raw data to a time range. They will be ignored is a specific dataset
+restrict the download of raw data to a time range. They will be ignored if a specific dataset
 does not support it (i.e. because it is provided as a single file). Valid formats are
 ``YYYY``, ``YYYYMM`` and ``YYYYMMDD``. By default, already downloaded data are not overwritten
-unleess the option ``--overwrite=True`` is used.
+unless the option ``--overwrite=True`` is used.
 
 4. Create a cmorizer for the dataset
 ====================================
@@ -259,7 +259,7 @@ The cmorizing script for the given dataset can be run with:
  esmvaltool data format --config_file <config-user.yml> <dataset-name>
 
 The options ``--start`` and ``--end`` can be added to the command above to 
-restrict the formatting of raw data to a time range. They will be ignored is a specific dataset
+restrict the formatting of raw data to a time range. They will be ignored if a specific dataset
 does not support it (i.e. because it is provided as a single file). Valid formats are
 ``YYYY``, ``YYYYMM`` and ``YYYYMMDD``.
 
