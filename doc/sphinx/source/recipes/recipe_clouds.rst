@@ -38,7 +38,7 @@ Four recipes are available to evaluate cloud climatologies from CMIP models.
    (cl) and water vapor path (prw) from CMIP6 models in comparison to CMIP5 results
    and satellite observations. Whereever possible, the diagnostics use
    multi-observational products as reference datatsets. The recipe family
-   reproduces all figures from Lauer et al. (2022): maps of the geographical
+   reproduces all figures from `Lauer et al. (2022)`_: maps of the geographical
    distribution of multi-year averages, Taylor diagrams for multi-year annual
    averages, temporal variability, seasonal cycle amplitude, cloud ice fraction
    as a function of temperature, zonal means of 3-dim cloud liquid/ice content and
@@ -48,6 +48,7 @@ Four recipes are available to evaluate cloud climatologies from CMIP models.
 
 .. _`Flato et al., 2013`: https://www.ipcc.ch/site/assets/uploads/2018/02/WG1AR5_Chapter09_FINAL.pdf
 .. _`Lauer and Hamilton (2013)`: https://journals.ametsoc.org/view/journals/clim/26/11/jcli-d-12-00451.1.xml
+.. _`Lauer et al. (2022)`: https://journals.ametsoc.org/view/journals/clim/
 
 
 Available recipes and diagnostics
@@ -55,38 +56,35 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/clouds
 
-    * recipe_clouds_bias.yml
-    * recipe_clouds_ipcc.yml
-    * recipe_lauer13jclim.yml
-    * recipe_lauer22jclim_*.yml (* = fig1_clim_amip, fig1_clim, fig2_taylor_amip,
-      fig2_taylor, fig3-4_zonal, fig5_lifrac, fig6_interannual, fig7_seas,
-      fig8_dyn, fig9-11ab_scatter, fig9-11c_pdf)
+* recipe_clouds_bias.yml
+* recipe_clouds_ipcc.yml
+* recipe_lauer13jclim.yml
+* recipe_lauer22jclim_*.yml (* = fig1_clim_amip, fig1_clim, fig2_taylor_amip,
+  fig2_taylor, fig3-4_zonal, fig5_lifrac, fig6_interannual, fig7_seas,
+  fig8_dyn, fig9-11ab_scatter, fig9-11c_pdf)
 
 Diagnostics are stored in diag_scripts/clouds/
 
-    * clouds.ncl: global maps of (multi-year) annual means including multi-model
-      mean
-    * clouds_bias.ncl: global maps of the multi-model mean and the multi-model
-      mean bias
-    * clouds_dyn_matrix.ncl: cloud properties by dynamical regime (SST, omega500)
-    * clouds_interannual.ncl: global maps of the interannual variability
-    * clouds_ipcc.ncl: global maps of multi-model mean minus observations + zonal
-      averages of individual models, multi-model mean and observations
-    * clouds_lifrac_scatter.ncl: cloud liquid water fraction as a function of
-      temperaure
-    * clouds_lifrac_scatter_postproc.ncl: additional plots and diagnostics using
-      the output of clouds_lifrac_scatter.ncl for given CMIP5/CMIP6 model pairs
-    * clouds_pdf.ncl: pdf of cloud parameters
-    * clouds_seasonal_cycle.ncl: seasonal cycle amplitude
-    * clouds_taylor.ncl: Taylor diagrams as in `Lauer and Hamilton (2013)`_
-    * clouds_taylor_double.ncl: Taylor diagrams as in Lauer et al. (2022)
-    * clouds_zonal.ncl: zonal means of 3-dim variables
+* clouds.ncl: global maps of (multi-year) annual means including multi-model mean
+* clouds_bias.ncl: global maps of the multi-model mean and the multi-model mean bias
+* clouds_dyn_matrix.ncl: cloud properties by dynamical regime (SST, omega500)
+* clouds_interannual.ncl: global maps of the interannual variability
+* clouds_ipcc.ncl: global maps of multi-model mean minus observations + zonal
+  averages of individual models, multi-model mean and observations
+* clouds_lifrac_scatter.ncl: cloud liquid water fraction as a function of temperaure
+* clouds_lifrac_scatter_postproc.ncl: additional plots and diagnostics using
+  the output of clouds_lifrac_scatter.ncl for given CMIP5/CMIP6 model pairs
+* clouds_pdf.ncl: pdf of cloud parameters
+* clouds_seasonal_cycle.ncl: seasonal cycle amplitude
+* clouds_taylor.ncl: Taylor diagrams as in `Lauer and Hamilton (2013)`_
+* clouds_taylor_double.ncl: Taylor diagrams as in `Lauer et al. (2022)`_
+* clouds_zonal.ncl: zonal means of 3-dim variables
 
 
 User settings in recipe
 -----------------------
 
-#. Script clouds.ncl
+1. Script clouds.ncl
 
    *Required settings (scripts)*
 
@@ -139,7 +137,7 @@ User settings in recipe
 
    * variable "lwp": diag_scripts/shared/plot/rgb/qcm3.rgb
 
-#. Script clouds_bias.ncl
+2. Script clouds_bias.ncl
 
    *Required settings (scripts)*
 
@@ -168,7 +166,7 @@ User settings in recipe
    * variable "pr-mmday": diag_scripts/shared/plots/rgb/ipcc-precip.rgb,
      diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
 
-#. Script clouds_dyn_matrix.ncl
+3. Script clouds_dyn_matrix.ncl
 
    *Required settings (scripts)*
 
@@ -199,7 +197,7 @@ User settings in recipe
 
    * reference_dataset: reference dataset
 
-#. Script clouds_interannual.ncl
+4. Script clouds_interannual.ncl
 
    *Required settings (scripts)*
 
@@ -225,8 +223,7 @@ User settings in recipe
    * reference_dataset: name of reference datatset
 
 .. _clouds_ipcc.ncl:
-
-#. Script clouds_ipcc.ncl
+5. Script clouds_ipcc.ncl
 
    *Required settings (scripts)*
 
@@ -257,7 +254,7 @@ User settings in recipe
 
    * variables "pr", "pr-mmday": diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
 
-#. Script clouds_lifrac_scatter.ncl
+6. Script clouds_lifrac_scatter.ncl
 
    *Required settings (scripts)*
 
@@ -278,7 +275,7 @@ User settings in recipe
 
    * reference_dataset: reference dataset
 
-#. Script clouds_lifrac_scatter_postproc.ncl
+7. Script clouds_lifrac_scatter_postproc.ncl
 
    *Required settings (scripts)*
 
@@ -299,7 +296,7 @@ User settings in recipe
 
    none
 
-#. Script clouds_lifrac_pdf.ncl
+8. Script clouds_lifrac_pdf.ncl
 
    *Required settings (scripts)*
 
@@ -322,7 +319,7 @@ User settings in recipe
 
    * reference_dataset: reference dataset
 
-#. Script clouds_seasonal_cycle.ncl
+9. Script clouds_seasonal_cycle.ncl
 
    *Required settings (scripts)*
 
@@ -345,119 +342,119 @@ User settings in recipe
    * long_name: description of variable
    * reference_dataset: name of reference datatset
 
-#. Script clouds_taylor.ncl
+10. Script clouds_taylor.ncl
 
-   *Required settings (scripts)*
+    *Required settings (scripts)*
 
-   none
+    none
 
-   *Optional settings (scripts)*
+    *Optional settings (scripts)*
 
-   * embracelegend: false (default) = include legend in plot, max. 2 columns
-     with dataset names in legend; true = write extra file with legend, max. 7
-     dataset names per column in legend, alternative observational dataset(s)
-     will be plotted as a red star and labeled "altern. ref. dataset" in legend
-     (only if dataset is of class "OBS")
-   * estimate_obs_uncertainty: true = estimate observational uncertainties
-     from mean values (assuming fractions of obs. RMSE from documentation of
-     the obs data); only available for "CERES-EBAF", "MODIS", "MODIS-L3";
-     false = do not estimate obs. uncertainties from mean values
-   * filename_add: legacy feature: arbitrary string to be added to all
-     filenames of plots and netcdf output produced (default = "")
-   * legend_filter: do not show individual datasets in legend that are of
-     project "legend_filter" (default = "")
-   * mask_ts_sea_ice: true = mask T < 272 K as sea ice (only for variable "ts");
-     false = no additional grid cells masked for variable "ts"
-   * multiobs_exclude: list of *observational* datasets to be excluded when
-     calculating uncertainty estimates from multiple observational datasets
-     (see also multiobs_uncertainty)
-   * multiobs_uncertainty: calculate uncertainty estimates from multiple
-     observational datasets (true, false); by default, all "obs", "obs6",
-     "obs4mips" and "native6" datasets are used; any of such datasets can be
-     explicitely excluded when also specifying "multiobs_exclude"
-   * styleset: "CMIP5", "DEFAULT" (if not set, clouds_taylor.ncl will create a
-     color table and symbols for plotting)
-   * timemean: time averaging; annualclim (default) = 1 plot annual mean;
-     seasonalclim = 4 plots (DJF, MAM, JJA, SON)
-   * valid_fraction: used for creating sea ice mask (mask_ts_sea_ice = true):
-     fraction of valid time steps required to mask grid cell as valid data
-   * var: short_name of variable to process (default = "" - use first variable
-     in variable list)
+    * embracelegend: false (default) = include legend in plot, max. 2 columns
+      with dataset names in legend; true = write extra file with legend, max. 7
+      dataset names per column in legend, alternative observational dataset(s)
+      will be plotted as a red star and labeled "altern. ref. dataset" in legend
+      (only if dataset is of class "OBS")
+    * estimate_obs_uncertainty: true = estimate observational uncertainties
+      from mean values (assuming fractions of obs. RMSE from documentation of
+      the obs data); only available for "CERES-EBAF", "MODIS", "MODIS-L3";
+      false = do not estimate obs. uncertainties from mean values
+    * filename_add: legacy feature: arbitrary string to be added to all
+      filenames of plots and netcdf output produced (default = "")
+    * legend_filter: do not show individual datasets in legend that are of
+      project "legend_filter" (default = "")
+    * mask_ts_sea_ice: true = mask T < 272 K as sea ice (only for variable "ts");
+      false = no additional grid cells masked for variable "ts"
+    * multiobs_exclude: list of *observational* datasets to be excluded when
+      calculating uncertainty estimates from multiple observational datasets
+      (see also multiobs_uncertainty)
+    * multiobs_uncertainty: calculate uncertainty estimates from multiple
+      observational datasets (true, false); by default, all "obs", "obs6",
+      "obs4mips" and "native6" datasets are used; any of such datasets can be
+      explicitely excluded when also specifying "multiobs_exclude"
+    * styleset: "CMIP5", "DEFAULT" (if not set, clouds_taylor.ncl will create a
+      color table and symbols for plotting)
+    * timemean: time averaging; annualclim (default) = 1 plot annual mean;
+      seasonalclim = 4 plots (DJF, MAM, JJA, SON)
+    * valid_fraction: used for creating sea ice mask (mask_ts_sea_ice = true):
+      fraction of valid time steps required to mask grid cell as valid data
+    * var: short_name of variable to process (default = "" - use first variable
+      in variable list)
 
-   *Required settings (variables)*
+    *Required settings (variables)*
 
-   * reference_dataset: name of reference data set
+    * reference_dataset: name of reference data set
 
-   *Optional settings (variables)*
+    *Optional settings (variables)*
 
-   none
+    none
 
-#. Script clouds_taylor_double.ncl
+11. Script clouds_taylor_double.ncl
 
-   *Required settings (scripts)*
+    *Required settings (scripts)*
 
-   none
+    none
 
-   *Optional settings (scripts)*
+    *Optional settings (scripts)*
 
-   * filename_add: legacy feature: arbitrary string to be added to all
-     filenames of plots and netcdf output produced (default = "")
-   * multiobs_exclude: list of *observational* datasets to be excluded when
-     calculating uncertainty estimates from multiple observational datasets
-     (see also multiobs_uncertainty)
-   * multiobs_uncertainty: calculate uncertainty estimates from multiple
-     observational datasets (true, false); by default, all "obs", "obs6",
-     "obs4mips" and "native6" datasets are used; any of such datasets can be
-     explicitely excluded when also specifying "multiobs_exclude"
-   * projectcolors: colors for each projectgroups
-     (e.g. (/"(/0.0, 0.0, 1.0/)", "(/1.0, 0.0, 0.0/)"/)
-   * projectgroups: calculated mmm per "projectgroup"
-     (e.g. (/"cmip5", "cmip6")/)
-   * styleset: "CMIP5", "DEFAULT" (if not set, CLOUDS_TAYLOR_DOUBLE will
-     create a color table and symbols for plotting)
-   * timemean: time averaging; annualclim (default) = 1 plot annual mean,
-     seasonalclim = 4 plots (DJF, MAM, JJA, SON)
-   * var: short_name of variable to process (default = "" - use first variable
-     in variable list)
+    * filename_add: legacy feature: arbitrary string to be added to all
+      filenames of plots and netcdf output produced (default = "")
+    * multiobs_exclude: list of *observational* datasets to be excluded when
+      calculating uncertainty estimates from multiple observational datasets
+      (see also multiobs_uncertainty)
+    * multiobs_uncertainty: calculate uncertainty estimates from multiple
+      observational datasets (true, false); by default, all "obs", "obs6",
+      "obs4mips" and "native6" datasets are used; any of such datasets can be
+      explicitely excluded when also specifying "multiobs_exclude"
+    * projectcolors: colors for each projectgroups
+      (e.g. (/"(/0.0, 0.0, 1.0/)", "(/1.0, 0.0, 0.0/)"/)
+    * projectgroups: calculated mmm per "projectgroup"
+      (e.g. (/"cmip5", "cmip6")/)
+    * styleset: "CMIP5", "DEFAULT" (if not set, CLOUDS_TAYLOR_DOUBLE will
+      create a color table and symbols for plotting)
+    * timemean: time averaging; annualclim (default) = 1 plot annual mean,
+      seasonalclim = 4 plots (DJF, MAM, JJA, SON)
+    * var: short_name of variable to process (default = "" - use first variable
+      in variable list)
 
-   *Required settings (variables)*
+    *Required settings (variables)*
 
-   * reference_dataset: name of reference data set
+    * reference_dataset: name of reference data set
 
-   *Optional settings (variables)*
+    *Optional settings (variables)*
 
-#. Script clouds_zonal.ncl
+12. Script clouds_zonal.ncl
 
-   *Required settings (scripts)*
+    *Required settings (scripts)*
 
-   none
+    none
 
-   *Optional settings (scripts)*
+    *Optional settings (scripts)*
 
-   * embracesetup: True = 2 plots per line, False = 4 plots per line (default)
-   * explicit_cn_levels: explicit contour levels for mean values (array)
-   * explicit_cn_dlevels: explicit contour levels for differences (array)
-   * extralegend: plot legend(s) to extra file(s)
-   * filename_add: optionally add this string to plot filesnames
-   * panel_labels: label individual panels (true, false)
-   * PanelTop: manual override for "@gnsPanelTop" used by panel plot(s)
-   * showdiff: calculate and plot differences (default = False)
-   * rel_diff: if showdiff = True, then plot relative differences (%) (default = False)
-   * rel_diff_min: lower cutoff value in case of calculating relative differences
-     (in units of input variable)
-   * t_test: perform t-test when calculating differences (default = False)
-   * timemean: time averaging - "seasonal" = DJF, MAM, JJA, SON), "annual" = annual mean
-   * units_to: target units (automatic conversion)
+    * embracesetup: True = 2 plots per line, False = 4 plots per line (default)
+    * explicit_cn_levels: explicit contour levels for mean values (array)
+    * explicit_cn_dlevels: explicit contour levels for differences (array)
+    * extralegend: plot legend(s) to extra file(s)
+    * filename_add: optionally add this string to plot filesnames
+    * panel_labels: label individual panels (true, false)
+    * PanelTop: manual override for "@gnsPanelTop" used by panel plot(s)
+    * showdiff: calculate and plot differences (default = False)
+    * rel_diff: if showdiff = True, then plot relative differences (%) (default = False)
+    * rel_diff_min: lower cutoff value in case of calculating relative differences
+      (in units of input variable)
+    * t_test: perform t-test when calculating differences (default = False)
+    * timemean: time averaging - "seasonal" = DJF, MAM, JJA, SON), "annual" = annual mean
+    * units_to: target units (automatic conversion)
 
-   *Required settings (variables)*
+    *Required settings (variables)*
 
-   none
+    none
 
-   *Optional settings (variables)*
+    *Optional settings (variables)*
 
-   * long_name: variable description
-   * reference_dataset: reference dataset; REQUIRED when calculating differences (showdiff = True)
-   * units: variable units (for labeling plot only)
+    * long_name: variable description
+    * reference_dataset: reference dataset; REQUIRED when calculating differences (showdiff = True)
+    * units: variable units (for labeling plot only)
 
 
 Variables
@@ -517,7 +514,7 @@ References
 
 * Lauer, A., L. Bock, B. Hassler, M. Schröder, and M. Stengel, Cloud climatologies
   from global climate models - a comparison of CMIP5 and CMIP6 models with satellite
-  data, J. Climate (under review).
+  data, J. Climate (in review).
 
 
 Example plots
