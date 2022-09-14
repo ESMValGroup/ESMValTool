@@ -612,7 +612,9 @@ begin
 
   dres = res
 
-  res@pmLabelBarOrthogonalPosF = 0.35
+  if (flag_sidepanels) then
+    res@pmLabelBarOrthogonalPosF = 0.35
+  end if
 
   cres = res
   cres@lbTitleString = count@var_units
