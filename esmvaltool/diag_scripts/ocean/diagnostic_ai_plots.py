@@ -2893,7 +2893,7 @@ def main(cfg):
                     ssp_time_range = [2015., 2050.],
                     region=reg,
                     single_model=single_model )
-            assert 0
+            #assert 0
 
         # Profile pair
         plottings =  [['all_models',], ['means_split',], ['5-95_split',], ['means_split', '5-95_split', ],  ]
