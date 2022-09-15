@@ -1427,7 +1427,7 @@ diagnostics:
       sm_monthly:
         short_name: sm
         mip: Lmon
-      t_monthly:
+      clt_monthly:
         short_name: clt
         mip: Amon
       pr_monthly:
