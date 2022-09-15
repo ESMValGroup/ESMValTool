@@ -45,6 +45,7 @@ from scipy import stats
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     get_diagnostic_filename,
+    io,
     run_diagnostic,
     select_metadata,
 )
@@ -258,14 +259,12 @@ def _split_response(cfg, cube, cube_mmm):
     cube_forced_comp.data = cube_mmm_subset.data * slope + intercept
     cube_forced_comp.var_name += "_forced_comp"
     cube_forced_comp.long_name += " (Forced Component)"
-    cube_forced_comp.attributes['optimal_fingerprinting'] = 'forced'
 
     # Calculate unforced component
     cube_unforced_comp = cube.copy()
     cube_unforced_comp.data = cube.data - cube_forced_comp.data
     cube_unforced_comp.var_name += "_unforced_comp"
     cube_unforced_comp.long_name += " (Unforced Component)"
-    cube_unforced_comp.attributes['optimal_fingerprinting'] = 'unforced'
 
     return (cube_forced_comp, cube_unforced_comp)
 
@@ -309,8 +308,10 @@ def main(cfg):
         record['caption'] = "Forced " + general_caption
         path_forced_comp = get_diagnostic_filename(
             Path(filename).stem + '_forced_comp', cfg)
-        iris.save(cube_forced_comp, path_forced_comp)
-        logger.info("Wrote %s", path_forced_comp)
+        dataset_forced = deepcopy(dataset)
+        dataset_forced['filename'] = path_forced_comp
+        dataset_forced['optimal_fingerprinting'] = 'forced'
+        io.metadata_to_netcdf(cube_forced_comp, dataset_forced)
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(path_forced_comp, record)
 
@@ -318,8 +319,10 @@ def main(cfg):
         record['caption'] = "Unforced " + general_caption
         path_unforced_comp = get_diagnostic_filename(
             Path(filename).stem + '_unforced_comp', cfg)
-        iris.save(cube_unforced_comp, path_unforced_comp)
-        logger.info("Wrote %s", path_unforced_comp)
+        dataset_unforced = deepcopy(dataset)
+        dataset_unforced['filename'] = path_unforced_comp
+        dataset_unforced['optimal_fingerprinting'] = 'unforced'
+        io.metadata_to_netcdf(cube_unforced_comp, dataset_unforced)
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(path_unforced_comp, record)
 
