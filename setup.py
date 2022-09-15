@@ -42,7 +42,7 @@ REQUIREMENTS = {
         'matplotlib',
         'natsort',
         'nc-time-axis',
-        'netCDF4!=1.6.1',  # https://github.com/ESMValGroup/ESMValCore/pull/1724
+        'netCDF4!=1.6.1',  # github.com/ESMValGroup/ESMValCore/pull/1724
         'numpy',
         'openpyxl',
         'pandas',
