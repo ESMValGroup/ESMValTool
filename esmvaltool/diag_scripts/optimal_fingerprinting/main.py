@@ -119,7 +119,7 @@ def _check_dims(cfg, cube, cube_mmm):
     # It is allowed for the cube to only contain a subset of the data of the
     # MMM cube, but all points in cube need to be present in the MMM cube.
     cube_mmm_subset = cube_mmm.subset(dim_obs_coord)
-    if (cube_mmm_subset.coord(dim_obs).shape[0] != dim_obs_coord.shape[0]):
+    if cube_mmm_subset.coord(dim_obs).shape[0] != dim_obs_coord.shape[0]:
         raise ValueError(
             f"The points of dimension '{dim_obs}' of cube "
             f"{cube.summary(shorten=True)} must be a subset of the points of "
@@ -282,10 +282,6 @@ def main(cfg):
     cube_mmm = iris.load_cube(filename_mmm)
     logger.info("Loaded MMM data from %s", filename_mmm)
 
-    import pandas as pd
-    df_raw = pd.DataFrame({'x': [], 'y': []})
-    df_new = pd.DataFrame({'x': [], 'y': []})
-
     # Remove forced response for each dataset to separate the signal into the
     # forced and unforced component
     for dataset in input_data:
@@ -326,58 +322,6 @@ def main(cfg):
         logger.info("Wrote %s", path_unforced_comp)
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(path_unforced_comp, record)
-
-        if dataset == dataset_mmm:
-            continue
-
-        # Raw data
-        target = cube.extract(
-            iris.Constraint(year=lambda cell: 2081 <= cell.point <= 2100)
-        ).collapsed('year', iris.analysis.MEAN)
-
-        from esmvaltool.diag_scripts.mlr.preprocess import (
-            _calculate_slope_along_coord,
-        )
-        feature = cube.extract(
-            iris.Constraint(year=lambda cell: 1980 <= cell.point <= 2020)
-        )
-        feature, _ = _calculate_slope_along_coord(feature, 'year')
-        df_raw = pd.concat(
-            [
-                df_raw,
-                pd.DataFrame({
-                    'x': feature.data.ravel(),
-                    'y': target.data.ravel(),
-                }),
-            ],
-            ignore_index=True,
-        )
-
-        # Forced signal
-        target = cube_forced_comp.extract(
-            iris.Constraint(year=lambda cell: 2081 <= cell.point <= 2100)
-        ).collapsed('year', iris.analysis.MEAN)
-
-        feature = cube_forced_comp.extract(
-            iris.Constraint(year=lambda cell: 1980 <= cell.point <= 2020)
-        )
-        feature, _ = _calculate_slope_along_coord(feature, 'year')
-        df_new = pd.concat(
-            [
-                df_new,
-                pd.DataFrame({
-                    'x': feature.data.ravel(),
-                    'y': target.data.ravel(),
-                }),
-            ],
-            ignore_index=True,
-        )
-
-    # Print correlations
-    print(df_raw)
-    print(df_new)
-    print(df_raw.corr())
-    print(df_new.corr())
 
 
 if __name__ == '__main__':

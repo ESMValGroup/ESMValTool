@@ -10,6 +10,9 @@ documentation:
   authors:
     - schlund_manuel
 
+  maintainer:
+    - schlund_manuel
+
 
 preprocessors:
 
@@ -37,7 +40,8 @@ preprocessors:
 
 
 DATASETS_TAS: &datasets_tas
-  # - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 1959}
+  - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 1959, end_year: 2021}
+
   - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
   - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
   - {dataset: AWI-CM-1-1-MR, grid: gn}
