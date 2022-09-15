@@ -82,7 +82,7 @@ variables:
     raw: LWGAB
     file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
   rldscs_monthly:
-    short_name: rlds
+    short_name: rldscs
     mip: Amon
     raw: LWGABCLR
     file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
