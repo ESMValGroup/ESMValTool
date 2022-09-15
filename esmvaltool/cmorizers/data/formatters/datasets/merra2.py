@@ -9,7 +9,7 @@ Source
     https://daac.gsfc.nasa.gov/datasets/M2IUNPASM_5.12.4/summary?keywords=MERRA2
 
 Last access
-    20191129
+    20220913
 
 Download and processing instructions
     - For download instructions see the download script `download_merra2.sh`.
