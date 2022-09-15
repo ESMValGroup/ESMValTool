@@ -1464,7 +1464,7 @@ diagnostics:
         short_name: rlds
         mip: Amon
       rldscs_monthly:
-        short_name: rlds
+        short_name: rldscs
         mip: Amon
       rlus_monthly:
         short_name: rlus
