@@ -297,7 +297,7 @@ def main(cfg):
         # Provencance tracking
         general_caption = (
             f"component of {dataset['long_name']} of dataset "
-            f"{dataset['dataset']} (experiment {dataset['exp']}) from "
+            f"{dataset['dataset']} (project {dataset['project']}) from "
             f"{dataset['start_year']} to {dataset['end_year']}"
         )
         record = {
