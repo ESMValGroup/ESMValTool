@@ -125,6 +125,21 @@ yet included.
 Note that datasets CMORized for ESMValTool v1 may not be working with v2, due
 to the much stronger constraints on metadata set by the iris library.
 
+ESMValTool provides the ``esmvaltool data`` command line tool, which can be
+used to download and format datasets.
+
+To list the available commands, run
+
+.. code-block:: bash
+
+    esmvaltool data --help
+
+It is also possible to get help on specific commands, e.g.
+
+.. code-block:: bash
+
+    esmvaltool data download --help
+
 The list of datasets supported by ESMValTool through a CMORizer script can be
 obtained with:
 
