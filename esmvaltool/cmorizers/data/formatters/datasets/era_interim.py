@@ -116,7 +116,7 @@ def _fix_units(cube, definition):
         cube.attributes['positive'] = 'down'
     if cube.var_name in {'tauu', 'tauv'}:
         cube.attributes['positive'] = 'down'
-    if cube.var_name in {'sftlf', 'clt'}:
+    if cube.var_name in {'sftlf', 'clt', 'cl', 'clt-low', 'clt-med', 'clt-high'}:
         # Change units from fraction to percentage
         cube.units = definition.units
         cube.data = cube.core_data() * 100.
@@ -126,6 +126,8 @@ def _fix_units(cube, definition):
         # https://apps.ecmwf.int/codes/grib/param-db?id=129
         cube.units = cube.units / 'm s-2'
         cube.data = cube.core_data() / 9.80665
+    if cube.var_name in {'cli','clw'}:
+        cube.units = 'kg kg-1'
 
 
 def _fix_coordinates(cube, definition):
@@ -270,6 +272,14 @@ def _load_cube(in_files, var):
         {
             'raw': 'tcc',
             'units': '(0 - 1)',
+        },
+        {
+            'raw': 'tciw',
+            'units': 'kg m**-2',
+        },
+        {
+            'raw': 'tclw',
+            'units': 'kg m**-2',
         },
         {
             'raw': 'lsm',

@@ -138,10 +138,10 @@ MONTH_PARAMS = [
     ('238.128', 'tsn', 'an'),  # Temperature of snow layer
     ('212.128', 'tisr', 'accu'),  # TOA incident solar radiation
     ('164.128', 'tcc', 'an'),  # Total cloud cover
-    ('56.162', 'p56.162', 'an'),  # Vertical integral of cloud liquid water
-    ('57.162', 'p57.162', 'an'),  # Vertical integral of cloud frozen water
+    ('56.162', 'vilw', 'an'),  # Vertical integral of cloud liquid water
+    ('57.162', 'viiw', 'an'),  # Vertical integral of cloud frozen water
     ('137.128', 'tcwv', 'an'),  # Total column water vapour
-    ('134.128', 'sp', 'an'),  # Surface pressure
+    ('134.128', 'sp', 'an'),  # Surface pressure 
     ('229.128', 'iews', 'fc'),  # Inst. eastward turbulent surface stress
     ('230.128', 'inss', 'fc'),  # Inst. northward turbulent surface stress
     ('34.128', 'sst', 'an'),  # Sea surface temperature
@@ -149,6 +149,8 @@ MONTH_PARAMS = [
     ('147.128', 'slhf', 'accu'),  # Surface latent heat flux
     ('146.128', 'sshf', 'accu'),  # Surface sensible heat flux
     ('157.128', 'r', '3d'),  # Relative humidity
+    ('246.128', 'clwc', '3d'),  # Specific cloud liquid water content
+    ('247.128', 'ciwc', '3d'),  # Specific cloud ice water content
     ('130.128', 't', '3d'),  # Temperature
     ('131.128', 'u', '3d'),  # U component of wind
     ('132.128', 'v', '3d'),  # V component of wind
