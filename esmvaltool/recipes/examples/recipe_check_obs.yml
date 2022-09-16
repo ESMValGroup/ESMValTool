@@ -288,6 +288,18 @@ diagnostics:
     scripts: null
 
 
+  ESDC:
+    description: ESDC check
+    variables:
+      tas:
+      tasmin:
+      tasmax:
+    additional_datasets:
+      - {dataset: ESDC, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 2.1.1,
+         start_year: 1979, end_year: 2018}
+    scripts: null
+
   ESRL:
     description: ESRL check
     variables:
