@@ -34,7 +34,7 @@ dependencies:
   - matplotlib-base
   - natsort
   - nc-time-axis
-  - netCDF4
+  - netCDF4!=1.6.1  # https://github.com/ESMValGroup/ESMValCore/pull/1724
   - numpy
   - openpyxl
   - pandas
@@ -59,7 +59,7 @@ dependencies:
   - shapely
   - xarray>=0.12.0
   - xesmf==0.3.0
-  - xgboost
+  - xgboost>1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
   - xlsxwriter
   # Python packages needed for testing
   - pytest >=3.9,!=6.0.0rc1,!=6.0.0
