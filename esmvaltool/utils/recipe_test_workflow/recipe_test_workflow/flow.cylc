@@ -1,13 +1,19 @@
 #!jinja2
 [scheduler]
     UTC mode = True
+    allow implicit tasks = True
 
 [task parameters]
-    metric = radiation_budget
+    small = radiation_budget, toymodel
+    medium = autoassess_stratosphere, capacity_factor
 
 [scheduling]
+    initial cycle point = 1
+    cycling mode = integer
     [[graph]]
-        R1 = install_cold
+        R1 = install_cold => configure
+        P2 = configure[-P2] => process<small>
+        2/P1 = configure[-P1] => process<medium>
 
 [runtime]
     [[root]]
@@ -50,10 +56,16 @@
             ROOTPATH_OBS4MIPS = {{ ROOTPATH_OBS4MIPS }}
             ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
 
-    [[process<metric>]]
+    [[process<small>]]
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = process
-            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_metric}.yml"
+            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_small}.yml"
+
+    [[process<medium>]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = process
+            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_medium}.yml"
 
 {% include 'site/' ~ SITE ~ '.cylc' %}
