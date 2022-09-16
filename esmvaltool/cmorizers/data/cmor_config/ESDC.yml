@@ -5,13 +5,13 @@ attributes:
   project_id: OBS6
   dataset_id: ESDC
   version: 2.1.1
-  tier: 2 # TODO Double check
+  tier: 2  # TODO Double check
   grid: 0.25deg
   chunking: 1x720x1440
   # chunking: 184x90x90
   modeling_realm: reanaly
   source: http://data.rsc4earth.de/EarthSystemDataCube/
-  reference: ??? # BibTex file with reference to how to cite the paper
+  reference: ???  # BibTex file with reference to how to cite the paper
   comment: ''
 
 variables:
@@ -24,6 +24,6 @@ variables:
   tasmin:
     mip: Amon
     raw: min_air_temperature_2m
-  # rsds:
-  #   mip: Amon
-  #   raw: radiation_era5
+#   rsds:
+#     mip: Amon
+#     raw: radiation_era5

@@ -515,7 +515,7 @@ datasets:
         All files need to be in one directory, not in yearly subdirectories.
 
   ESDC:
-    tier: 2 # TODO Doublecheck
+    tier: 2  # TODO Doublecheck
     source: http://data.rsc4earth.de/EarthSystemDataCube/
     last_access: 2022-09-06
     info: |
