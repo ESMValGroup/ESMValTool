@@ -208,12 +208,17 @@ def main(cfg):
             shift_era5_time_coordinate(all_vars['tas'])
             shift_era5_time_coordinate(all_vars['psl'])
 
-        # Interpolating variables onto the dem grid
+        # Adjust longitude coordinate to wflow convention
+        for cube in all_vars.values():
+            cube.coord('longitude').points = (cube.coord('longitude').points +
+                                              180) % 360 - 180
+
         # Read the target cube, which contains target grid and target elevation
         dem_path = Path(cfg['auxiliary_data_dir']) / cfg['dem_file']
         dem = load_dem(dem_path)
         check_dem(dem, all_vars['pr'])
 
+        # Interpolating variables onto the dem grid
         logger.info("Processing variable precipitation_flux")
         scheme = cfg['regrid']
         pr_dem = regrid(all_vars['pr'], dem, scheme)
@@ -253,11 +258,6 @@ def main(cfg):
         pr_dem.convert_units('mm day-1')
 
         tas_dem.convert_units('degC')
-
-        # Adjust longitude coordinate to wflow convention
-        for cube in [tas_dem, pet_dem, pr_dem]:
-            cube.coord('longitude').points = (cube.coord('longitude').points +
-                                              180) % 360 - 180
 
         cubes = iris.cube.CubeList([pr_dem, tas_dem, pet_dem])
         save(cubes, dataset, provenance, cfg)
