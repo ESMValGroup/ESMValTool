@@ -1,6 +1,21 @@
 """ESMValTool CMORizer for Earth System Data Cube data.
 
-<We will add some useful info here later>
+Tier
+    Tier 2: other freely-available dataset.
+
+Source
+    http://data.rsc4earth.de/EarthSystemDataCube/
+
+Last access
+    20220927
+
+Download and processing instructions
+    It is not necessary to download the data, as the cmorizer script can access
+    it directly from the cloud if it is not available locally.
+
+    To download a dataset, the dataset folder can be explored on the source website,
+    and downloaded using wget:
+        ```wget -m -nH http://data.rsc4earth.de/EarthSystemDataCube/VERSION/DATASET```
 """
 import logging
 from pathlib import Path
@@ -14,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 def fix_cube(short_name, var, cube, cfg):
-    """General fixes for all cubes"""
+    """General fixes for all cubes."""
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     utils.fix_coords(cube)
     cube.convert_units(cmor_info.units)
@@ -32,9 +47,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     logger.debug("cfg_user: '%s'", cfg_user)
 
     if start_date:
-        logger.warning("start_date set to %s, but will be ignored", start_date)
+        logger.warning('start_date set to "%s", but will be ignored',
+                       start_date)
     if end_date:
-        logger.warning("end_date set to %s, but will be ignored", end_date)
+        logger.warning('end_date set to "%s", but will be ignored', end_date)
 
     attributes = cfg['attributes']
     variables = cfg['variables']
@@ -48,12 +64,13 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     def cmorize_cube(path):
         logger.info('Opening zarr in "%s"', path)
         try:
-            # dataset = xr.open_zarr(path, consolidated=True)
-            # TODO: Where to put consolidated, kwargs or backend_kwargs?
-            dataset = xr.open_dataset(path, engine='zarr', consolidated=True)
+            dataset = xr.open_dataset(path, engine='zarr')
         except KeyError as exception:
+            # Happens when the zarr folder is missing metadata, e.g. when
+            # it is a zarr array instead of a zarr dataset.
             logger.info('Could not open zarr dataset "%s": "KeyError: %s"',
                         path, exception)
+            logger.info('Skipping path')
             return
 
         for short_name, var in variables.items():
@@ -76,18 +93,20 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                 outdir=out_dir,
                                 attrs=all_attributes)
 
-    matches = list(Path(in_dir, f'v{version}').glob(filename_pattern))
-    logger.debug('Pattern %s matched: %s',
-                 Path(in_dir, version, filename_pattern), matches)
+    local_path = Path(in_dir, f'v{version}')
+    matches = list(local_path.glob(filename_pattern))
+    logger.debug('Pattern %s matched: %s', Path(local_path, filename_pattern),
+                 matches)
 
     if len(matches) != 0:
         for match in matches:
             cmorize_cube(match)
     else:
         logger.info(
-            "Dataset not found locally, attempting connection to the cloud.")
+            'No local matches for pattern "%s", attempting connection to the cloud.',
+            Path(local_path, filename_pattern))
         if '*' in filename_pattern:
             logger.warning(
-                "For cloud connection, \"%s\" shouldn't contain wildcards",
-                filename_pattern)
+                'Detected a wildcard character in path (*), '
+                'online connection to \"%s\" may not work', filename_pattern)
         cmorize_cube(f'{attributes["source"]}/v{version}/{filename_pattern}')
