@@ -13,9 +13,9 @@ Download and processing instructions
     It is not necessary to download the data, as the cmorizer script can access
     it directly from the cloud if it is not available locally.
 
-    To download a dataset, the dataset folder can be explored on the source website,
-    and downloaded using wget:
-        ```wget -m -nH http://data.rsc4earth.de/EarthSystemDataCube/VERSION/DATASET```
+    To download a dataset, the dataset folder can be explored on the source
+    website, and downloaded using wget:
+    ```wget -m -nH http://data.rsc4earth.de/EarthSystemDataCube/VERSION/DATASET```
 """
 import logging
 from pathlib import Path
@@ -103,7 +103,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             cmorize_cube(match)
     else:
         logger.info(
-            'No local matches for pattern "%s", attempting connection to the cloud.',
+            'No local matches for pattern "%s", '
+            'attempting connection to the cloud.',
             Path(local_path, filename_pattern))
         if '*' in filename_pattern:
             logger.warning(
