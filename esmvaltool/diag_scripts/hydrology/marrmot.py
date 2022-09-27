@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 
 import iris
+import numpy as np
 import scipy.io as sio
 
 from esmvalcore import preprocessor as preproc
@@ -136,12 +137,14 @@ def main(cfg):
         time_start_end, lat_lon = _get_extra_info(temp)
 
         # make data structure
+        # use astype(np.float64) to make sure data is in
+        # double-Precision Floating Point
         # delta_t_days could also be extracted from the cube
         output_data = {
             'forcing': {
-                'precip': precip.data,
-                'temp': temp.data,
-                'pet': pet.data,
+                'precip': precip.data.astype(np.float64),
+                'temp': temp.data.astype(np.float64),
+                'pet': pet.data.astype(np.float64),
                 'delta_t_days': float(1),
                 'time_unit': 'day',
             },

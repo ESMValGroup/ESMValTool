@@ -69,12 +69,15 @@ Future projections
    recipe_wenzel16jclim
    recipe_wenzel16nat
    recipe_tcr
+   recipe_tebaldi21esd
+   recipe_climate_change_hotspot
 
 IPCC
 ^^^^
 .. toctree::
    :maxdepth: 1
 
+   recipe_ipccwg1ar6ch3
    recipe_flato13ipcc
    recipe_collins13ipcc
 
@@ -123,4 +126,5 @@ Other
    recipe_seaice_drift
    recipe_seaice_feedback
    recipe_shapeselect
+   recipes_testing
    recipe_toymodel

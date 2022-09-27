@@ -16,6 +16,9 @@ documentation:
     - smeets_stef
     - aerts_jerom
 
+  maintainer:
+    - unmaintained
+
   projects:
     - ewatercycle
 

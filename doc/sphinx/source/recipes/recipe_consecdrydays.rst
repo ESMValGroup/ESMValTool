@@ -40,6 +40,13 @@ User settings in recipe
 
    * frlim: the shortest number of consecutive dry days for entering statistic on frequency of dry periods.
 
+   *Optional settings (script)*
+
+   Under ``plot``:
+
+   * cmap: the name of a colormap. cmocean colormaps are also supported.
+
+   * other keyword arguments to :func:`esmvaltool.diag_scripts.shared.plot.global_pcolormesh` can also be supplied.
 
 Variables
 ---------

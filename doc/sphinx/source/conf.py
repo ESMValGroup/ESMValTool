@@ -32,7 +32,7 @@ on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
 # This is used for linking and such so we link to the thing we're building
 rtd_version = os.environ.get("READTHEDOCS_VERSION", "latest")
-if rtd_version not in ["latest", "doc"]:  # TODO: add "stable" once we have it
+if rtd_version not in ["latest", "stable", "doc"]:
     rtd_version = "latest"
 
 # Generate gallery
@@ -69,25 +69,6 @@ autodoc_default_options = {
     'show-inheritance': True,
     'autosummary': True,
 }
-
-autodoc_mock_imports = [
-    'cartopy',
-    'cf_units',
-    'cftime',
-    'eofs',
-    'ESMPy',
-    'esmvalcore',
-    'GDAL',
-    'iris',
-    'mapgenerator',
-    'psutil',
-    'psyplot',
-    'rasterio',
-    'scipy',
-    'sklearn',
-    'xesmf',
-    'xgboost',
-]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -431,7 +412,7 @@ intersphinx_mapping = {
     'esmvaltool': (f'https://docs.esmvaltool.org/en/{rtd_version}/', None),
     'iris': ('https://scitools-iris.readthedocs.io/en/latest/', None),
     'lime': ('https://lime-ml.readthedocs.io/en/latest/', None),
-    'matplotlib': ('https://matplotlib.org/', None),
+    'matplotlib': ('https://matplotlib.org/stable/', None),
     'numpy': ('https://numpy.org/doc/stable/', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
     'python': ('https://docs.python.org/3/', None),

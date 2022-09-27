@@ -16,14 +16,28 @@ and the data is described in a
 `CMOR table <http://pcmdi.github.io/software/cmorTable/index.html>`__
 as used in the various
 `Climate Model Intercomparison Projects <http://pcmdi.github.io/mips/>`__.
-This section provides some guidelines for unfamiliar users.
+
+.. _cordex_note:
+
+.. note::
+
+    CORDEX support is still
+    `work in progress <https://github.com/orgs/ESMValGroup/projects/11>`__.
+    Contributions, in the form of
+    :ref:`pull request reviews <reviewing>` or
+    :ref:`pull requests <esmvalcore:contributing>`
+    are most welcome. We are particularly interested in contributions from
+    people with good understanding of the CORDEX project and its standards.
+
+This section provides an introduction to getting (access to) climate data
+for use with ESMValTool.
 
 Because the amount of data required by ESMValTool is typically large, it is
 recommended that you use the tool on a compute cluster where the data is
 already available, for example because it is connected to an
 `ESGF node <https://esgf.llnl.gov/index.html>`__.
 Examples of such compute clusters are
-`Mistral <https://www.dkrz.de/up/systems/mistral>`__
+`Levante <https://docs.dkrz.de/doc/levante/index.html>`__
 and
 `Jasmin <https://www.jasmin.ac.uk/>`__,
 but many more exist around the world.
@@ -111,6 +125,21 @@ yet included.
 Note that datasets CMORized for ESMValTool v1 may not be working with v2, due
 to the much stronger constraints on metadata set by the iris library.
 
+ESMValTool provides the ``esmvaltool data`` command line tool, which can be
+used to download and format datasets.
+
+To list the available commands, run
+
+.. code-block:: bash
+
+    esmvaltool data --help
+
+It is also possible to get help on specific commands, e.g.
+
+.. code-block:: bash
+
+    esmvaltool data download --help
+
 The list of datasets supported by ESMValTool through a CMORizer script can be
 obtained with:
 
@@ -125,7 +154,7 @@ Datasets for which auto-download is supported can be downloaded with:
     esmvaltool data download --config_file [CONFIG_FILE] [DATASET_LIST]
 
 Note that all Tier3 and some Tier2 datasets for which auto-download is supported
-will require an authentification. In such cases enter your credentials in your
+will require an authentication. In such cases enter your credentials in your
 ``~/.netrc`` file as explained
 `here <https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html>`_.
 
@@ -204,6 +233,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CALIPSO-GOCCP                | clcalipso (cfMon)                                                                                    |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| CALIPSO-ICECLOUD             | cli (AMon)                                                                                           |   3  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CDS-SATELLITE-ALBEDO         | bdalb (Lmon), bhalb (Lmon)                                                                           |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CDS-SATELLITE-LAI-FAPAR      | fapar (Lmon), lai (Lmon)                                                                             |   3  | Python          |
@@ -222,6 +253,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 |                              | rlds, rldscs, rlus, rlut, rlutcs, rsds, rsdt, rsus, rsut, rsutcs (Amon)                              |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CLARA-AVHRR                  | clt, clivi, lwp (Amon)                                                                               |   3  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| CLOUDSAT-L2                  | clw, clivi, lwp (Amon)                                                                               |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CowtanWay                    | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -331,6 +364,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | NDP                          | cVeg (Lmon)                                                                                          |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NIWA-BS                      | toz, tozStderr (Amon)                                                                                |   3  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| NOAAGlobalTemp               | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NSIDC-0116-[nh|sh]           | usi, vsi (day)                                                                                       |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
