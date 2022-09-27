@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def fix_cube(short_name, var, cube, cfg):
-    """"General fixes for all cubes"""
+    """General fixes for all cubes"""
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     utils.fix_coords(cube)
     cube.convert_units(cmor_info.units)
@@ -49,7 +49,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         logger.info('Opening zarr in "%s"', path)
         try:
             # dataset = xr.open_zarr(path, consolidated=True)
-            # TODO: How to properly use consolidated (kwargs or backend_kwargs?).
+            # TODO: Where to put consolidated, kwargs or backend_kwargs?
             dataset = xr.open_dataset(path, engine='zarr', consolidated=True)
         except KeyError as exception:
             logger.info('Could not open zarr dataset "%s": "KeyError: %s"',
