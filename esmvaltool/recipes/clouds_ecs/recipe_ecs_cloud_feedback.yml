@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_clouds_ecs_feedback.yml
+# recipe_ecs_cloud_feedback.yml
 ---
 documentation:
 
@@ -19,7 +19,7 @@ preprocessors:
 
   regrid: &regrid
     regrid:
-      target_grid: 5x5
+      target_grid: 2x2
       scheme: linear
 
   global_mean:
@@ -387,6 +387,7 @@ diagnostics:
           start_year: 1
           end_year: 150
 
+
   feedback_med_ECS:
     title: CMIP5 cloud feedback
     description: Calculate grid-level CRE feedback parameters for CMIP5 models.
@@ -422,6 +423,7 @@ diagnostics:
           project: med_ECS
           start_year: 1
           end_year: 150
+
 
   feedback_low_ECS:
     title: CMIP5 cloud feedback
