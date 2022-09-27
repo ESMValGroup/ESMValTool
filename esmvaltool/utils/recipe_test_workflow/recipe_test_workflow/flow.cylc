@@ -18,6 +18,8 @@
             USER_CONFIG_DIR = ${CYLC_WORKFLOW_RUN_DIR}/etc
             USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
             PYTHONPATH_PREPEND = ${CYLC_WORKFLOW_RUN_DIR}/lib
+            OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/${CYLC_TASK_CYCLE_POINT}
+
 
     [[install_cold]]
         platform = localhost
@@ -59,8 +61,10 @@
 
     [[compare<metric>]]
         inherit = None, COMPUTE
+        platform = localhost
         [[[environment]]]
             ROSE_TASK_APP = compare
             KGO_NAME = "${CYLC_TASK_PARAM_metric}"
+            KGO_PATH = {{ KGO_PATH }}
 
 {% include 'site/' ~ SITE ~ '.cylc' %}
