@@ -51,7 +51,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     def cmorize_cube(path):
         logger.info(f'Opening zarr in "{path}"')
         try:
-            ds = xr.open_zarr(path, consolidated=True)
+            # ds = xr.open_zarr(path, consolidated=True)
+            # ds = xr.open_mfdataset(path, engine='zarr', backend_kwargs={"consolidated": True})
+            ds = xr.open_dataset(path, engine='zarr', consolidated=True)  # TODO: How to properly use consolidated (kwargs or backend_kwargs?).
         except KeyError as e:
             logger.info(
                 f'Could not open zarr dataset "{path}": "KeyError: {e}"')
