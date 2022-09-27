@@ -13,16 +13,10 @@ from esmvaltool.cmorizers.data import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def fix_time_coordinate(cube):
-    time = cube.coord(axis='T')
-    time.convert_units('days since 1850-1-1 00:00:00.0')
-
-
 def fix_cube(short_name, var, cube, cfg):
+    """"General fixes for all cubes"""
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
-    # fix_time_coordinate(cube)
     utils.fix_coords(cube)
-    logger.info(cmor_info.units)
     cube.convert_units(cmor_info.units)
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
@@ -32,12 +26,15 @@ def fix_cube(short_name, var, cube, cfg):
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize the dataset."""
-
-    # This is where you'll add the cmorization code
     # 1. find the input data
     logger.debug("in_dir: '%s'", in_dir)
     logger.debug("cfg: '%s'", cfg)
     logger.debug("cfg_user: '%s'", cfg_user)
+
+    if start_date:
+        logger.warning("start_date set to %s, but will be ignored", start_date)
+    if end_date:
+        logger.warning("end_date set to %s, but will be ignored", end_date)
 
     attributes = cfg['attributes']
     variables = cfg['variables']
@@ -49,14 +46,14 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                               version=version)
 
     def cmorize_cube(path):
-        logger.info(f'Opening zarr in "{path}"')
+        logger.info('Opening zarr in "%s"', path)
         try:
-            # ds = xr.open_zarr(path, consolidated=True)
-            # ds = xr.open_mfdataset(path, engine='zarr', backend_kwargs={"consolidated": True})
-            ds = xr.open_dataset(path, engine='zarr', consolidated=True)  # TODO: How to properly use consolidated (kwargs or backend_kwargs?).
-        except KeyError as e:
-            logger.info(
-                f'Could not open zarr dataset "{path}": "KeyError: {e}"')
+            # dataset = xr.open_zarr(path, consolidated=True)
+            # TODO: How to properly use consolidated (kwargs or backend_kwargs?).
+            dataset = xr.open_dataset(path, engine='zarr', consolidated=True)
+        except KeyError as exception:
+            logger.info('Could not open zarr dataset "%s": "KeyError: %s"',
+                        path, exception)
             return
 
         for short_name, var in variables.items():
@@ -65,7 +62,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 **var
             }  # add the mip to the other attributes
             raw_name = var['raw']
-            cube_xr = ds[raw_name]
+            cube_xr = dataset[raw_name]
 
             cube_iris = cube_xr.to_iris()
 
@@ -79,10 +76,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                 outdir=out_dir,
                                 attrs=all_attributes)
 
-    matches = [m for m in Path(in_dir, f'v{version}').glob(filename_pattern)]
-    logger.debug(
-        f'Pattern {Path(in_dir, version, filename_pattern)} matched: {matches}'
-    )
+    matches = list(Path(in_dir, f'v{version}').glob(filename_pattern))
+    logger.debug('Pattern %s matched: %s',
+                 Path(in_dir, version, filename_pattern), matches)
 
     if len(matches) != 0:
         for match in matches:
@@ -92,6 +88,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             "Dataset not found locally, attempting connection to the cloud.")
         if '*' in filename_pattern:
             logger.warning(
-                f"For cloud connection, \"{filename_pattern}\" shouldn't contain wildcards"
-            )
+                "For cloud connection, \"%s\" shouldn't contain wildcards",
+                filename_pattern)
         cmorize_cube(f'{attributes["source"]}/v{version}/{filename_pattern}')
