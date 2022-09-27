@@ -11,7 +11,7 @@ attributes:
   # chunking: 184x90x90
   modeling_realm: reanaly
   source: http://data.rsc4earth.de/EarthSystemDataCube/
-  reference: ???  # BibTex file with reference to how to cite the paper
+  reference: 'esdc'
   comment: ''
 
 variables:
