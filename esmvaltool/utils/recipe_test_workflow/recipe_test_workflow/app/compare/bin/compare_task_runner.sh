@@ -3,18 +3,11 @@
 BASH_XTRACEFD=1
 #set -eux
 
-echo output dir is $OUTPUT_DIR
+FOLDER_NAME=$(find "${OUTPUT_DIR}" -type d -name "recipe_${KGO_METRIC}*")
 
-FOLDER_NAME=$(ls -d ${OUTPUT_DIR}/recipe_${KGO_NAME}*)
-
-
-echo this is the folder name $folder_name
 # Fix this line later
 cd /net/project/ukmo/scitools/opt_scitools/conda/environments/esmvaltool-2.6.0/lib/python3.10/site-packages/esmvaltool
 
-$KGO_PATH
-$KGO_NAME
-$FOLDER_NAME
 
-KGO=$(ls -d ${KGO_PATH}/recipe_${KGO_NAME}*)
-python utils/testing/regression/compare.py ${KGO} "${FOLDER_NAME}"
+KGO=$(find "${KGO_PATH}" -type d -name "recipe_${KGO_METRIC}*")
+python utils/testing/regression/compare.py "${FOLDER_NAME}" "${KGO}"

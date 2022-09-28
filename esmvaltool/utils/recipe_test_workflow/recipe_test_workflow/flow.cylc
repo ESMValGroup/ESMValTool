@@ -64,7 +64,7 @@
         platform = localhost
         [[[environment]]]
             ROSE_TASK_APP = compare
-            KGO_NAME = "${CYLC_TASK_PARAM_metric}"
+            KGO_METRIC = "${CYLC_TASK_PARAM_metric}"
             KGO_PATH = {{ KGO_PATH }}
 
 {% include 'site/' ~ SITE ~ '.cylc' %}
