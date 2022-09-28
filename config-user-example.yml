@@ -231,12 +231,12 @@ drs:
 #  CMIP6: /project/champ/data/CMIP6
 #  CORDEX: /project/champ/data/cordex/output
 #  OBS: /data/users/esmval/ESMValTool/temporary/obs/
-#  obs4MIPs: /project/champ/data/obs4MIPs
+#  obs4MIPs: /data/users/esmval/ESMValTool/temporary/obs/
 #  ana4mips: /project/champ/data/ana4MIPs
 #drs:
 #  CMIP5: BADC
 #  CMIP6: BADC
 #  CORDEX: BADC
 #  OBS: default
-#  obs4MIPs: BADC
+#  obs4MIPs: default
 #  ana4mips: BADC
