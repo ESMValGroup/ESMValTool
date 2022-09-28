@@ -12,3 +12,5 @@ mkdir "${TARGET_DIR}"
 
 # Copy the environment file to the 'bin' directory.
 cp "${SOURCE_PATH}" "${TARGET_DIR}/${ENV_FILE}"
+
+rtw-env pip install imagehash -t "${CYLC_WORKFLOW_RUN_DIR}/lib"

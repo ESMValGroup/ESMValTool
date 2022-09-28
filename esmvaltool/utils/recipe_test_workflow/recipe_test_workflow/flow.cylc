@@ -7,7 +7,7 @@
 
 [scheduling]
     [[graph]]
-        R1 = install_cold => configure => process<metric>
+        R1 = install_cold => configure => process<metric> => compare<metric>
 
 [runtime]
     [[root]]
@@ -17,6 +17,8 @@
             MODULE_NAME = {{ MODULE_NAME }}
             USER_CONFIG_DIR = ${CYLC_WORKFLOW_RUN_DIR}/etc
             USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
+            PYTHONPATH_PREPEND = ${CYLC_WORKFLOW_RUN_DIR}/lib
+            OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/${CYLC_TASK_CYCLE_POINT}
 
     [[install_cold]]
         platform = localhost
@@ -54,5 +56,13 @@
         [[[environment]]]
             ROSE_TASK_APP = process
             RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_metric}.yml"
+
+    [[compare<metric>]]
+        inherit = None, COMPUTE
+        platform = localhost
+        [[[environment]]]
+            ROSE_TASK_APP = compare
+            KGO_METRIC = "${CYLC_TASK_PARAM_metric}"
+            KGO_PATH = {{ KGO_PATH }}
 
 {% include 'site/' ~ SITE ~ '.cylc' %}
