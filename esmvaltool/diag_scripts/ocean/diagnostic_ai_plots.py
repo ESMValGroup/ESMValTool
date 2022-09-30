@@ -402,7 +402,7 @@ def multi_model_time_series(
 
     # create a csv of the model contents:
     # short_name, model, scenario, ensemble member
-    make_csvs = False
+    make_csvs = True
     if make_csvs and single_model=='all':
         # load the netcdfs and populate the shelve dicts
         lines = []
@@ -610,6 +610,138 @@ def multi_model_time_series(
         mp_fn.close()
         print('csv_str:',csv_str)
         print('saved to path:', csv_path)
+
+
+        #anomaly table:
+        # want a table that includes:
+        # field: historical mean anomaly against 1850-1900 for years 2000-2010 +/1 std, each scenario +/- std
+        model_values = {}
+        ensembles_dict = {}
+        model_ensembles_dict={}
+        anomalgy_basis = {}
+        for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
+            if scenario.lower().find('historical')==-1: continue
+            times = np.array([t for t in sorted(data.keys())])
+            values = np.array([data[t] for t in times])
+            times = np.ma.masked_outside(times, 1850., 1900.)
+            value = np.ma.masked_where(times.mask, values).mean()
+            anomalgy_basis[ (short_name, dataset, ensemble[:3])] = value
+            print('anomalgy_basis:', (short_name, dataset, ensemble), ':', value)
+
+        for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
+            times = np.array([t for t in sorted(data.keys())])
+            values = np.array([data[t] for t in times])
+            if scenario == 'historical':
+                times = np.ma.masked_outside(times, 2000., 2010.)
+            else:
+                times = np.ma.masked_outside(times, 2040., 2050.)
+            
+            if (short_name, dataset, ensemble[:3]) in  anomalgy_basis:
+                anom =  anomalgy_basis[(short_name, dataset, ensemble[:3])]
+            elif (short_name, dataset, 'r1i') in  anomalgy_basis:
+                anom =  anomalgy_basis[(short_name, dataset, 'r1i')]
+            else:
+                print('unalbe to include:', (short_name, dataset, ensemble[:3]) ) 
+                continue
+            value = np.ma.masked_where(times.mask, values).mean() - anom
+            key = (short_name, dataset, scenario)
+            model_values = add_dict_list(model_values, key, value)
+
+            model_ensembles_dict = add_dict_list(model_ensembles_dict, key, ensemble)
+            ensembles_dict = add_dict_list(ensembles_dict, (short_name, scenario), ensemble)
+            #print('mean:', variable_group, short_name, dataset, scenario, ensemble, value)
+        #assert 0
+
+
+        scenario_values = {}
+        for (short_name, dataset, scenario), means in model_values.items():
+            model_mean =  np.mean(means)
+            scenario_values = add_dict_list(scenario_values, (short_name, scenario), model_mean)
+
+        header = ['field', ]
+        line = [short_name, ]
+        for (short_name, scenario) in sorted(scenario_values.keys()):
+            header.append(scenario)
+            model_means = np.array(scenario_values[(short_name, scenario)])
+            line.append(' '.join([str(round(model_means.mean(),sigfigs=4)),'\pm', str(round(model_means.std(), sigfigs=3))]))
+        header.append('\n')
+        line.append('\n')
+        header = ', '.join(header)
+        line   = ', '.join(line  )
+
+        csv_str = ''.join([header, line])
+        csv_path  = diagtools.folder(cfg['work_dir']+'/model_table')
+        csv_path += 'anomaly_table_'+short_name+'.csv'
+        mp_fn = open(csv_path, 'w')
+        mp_fn.write(csv_str)
+        mp_fn.close()
+        print('csv_str:',csv_str)
+        print('saved to path:', csv_path)
+
+
+        # historiocal anomaly table:
+        # want a table that includes:
+        # field: historical mean anomaly against 1850-1900 for years 2000-2010 +/1 std, each scenario +/- std
+        model_values = {}
+        ensembles_dict = {}
+        model_ensembles_dict={}
+        anomalgy_basis = {}
+        for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
+            if scenario.lower().find('historical')==-1: continue
+            times = np.array([t for t in sorted(data.keys())])
+            values = np.array([data[t] for t in times])
+            times = np.ma.masked_outside(times, 2000., 2010.)
+            value = np.ma.masked_where(times.mask, values).mean()
+            anomalgy_basis[ (short_name, dataset, ensemble[:3])] = value
+            print('anomalgy_basis:', (short_name, dataset, ensemble), ':', value)
+
+        for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
+            times = np.array([t for t in sorted(data.keys())])
+            values = np.array([data[t] for t in times])
+            if scenario == 'historical':
+                times = np.ma.masked_outside(times, 2000., 2010.)
+            else:
+                times = np.ma.masked_outside(times, 2040., 2050.)
+
+            if (short_name, dataset, ensemble[:3]) in  anomalgy_basis:
+                anom =  anomalgy_basis[(short_name, dataset, ensemble[:3])]
+            elif (short_name, dataset, 'r1i') in  anomalgy_basis:
+                anom =  anomalgy_basis[(short_name, dataset, 'r1i')]
+            else:
+                print('unalbe to include:', (short_name, dataset, ensemble[:3]) )
+                continue
+            value = np.ma.masked_where(times.mask, values).mean() - anom
+            key = (short_name, dataset, scenario)
+            model_values = add_dict_list(model_values, key, value)
+
+            model_ensembles_dict = add_dict_list(model_ensembles_dict, key, ensemble)
+            ensembles_dict = add_dict_list(ensembles_dict, (short_name, scenario), ensemble)
+
+        scenario_values = {}
+        for (short_name, dataset, scenario), means in model_values.items():
+            model_mean =  np.mean(means)
+            scenario_values = add_dict_list(scenario_values, (short_name, scenario), model_mean)
+
+        header = ['field', ]
+        line = [short_name, ]
+        for (short_name, scenario) in sorted(scenario_values.keys()):
+            header.append(scenario)
+            model_means = np.array(scenario_values[(short_name, scenario)])
+            line.append(' '.join([str(round(model_means.mean(),sigfigs=4)),'\pm', str(round(model_means.std(), sigfigs=3))]))
+        header.append('\n')
+        line.append('\n')
+        header = ', '.join(header)
+        line   = ', '.join(line  )
+
+        csv_str = ''.join([header, line])
+        csv_path  = diagtools.folder(cfg['work_dir']+'/model_table')
+        csv_path += 'historical_anomaly_table_'+short_name+'.csv'
+        mp_fn = open(csv_path, 'w')
+        mp_fn.write(csv_str)
+        mp_fn.close()
+        print('csv_str:',csv_str)
+        print('saved to path:', csv_path)
+
 
         # number of ensembles
         # Number of models, number of ensembles, (ensembles per model)
@@ -2866,6 +2998,7 @@ def main(cfg):
                     plotting = plotting,
                     single_model=single_model,
                 )
+        sys.exit()     
         #assert 0
         # Climatology plot
         plottings =  [['OneModelOneVote',],['means', 'OneModelOneVote',], ['OMOC_modelmeans','OneModelOneVote','OMOC_modelranges'],] # ['all_models',],[ 'means',  '5-95'], ]#  ['means',],  ['5-95',], ['all_models', ]]
