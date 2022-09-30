@@ -4,16 +4,18 @@
     allow implicit tasks = True
 
 [task parameters]
-    small = radiation_budget, toymodel
-    medium = autoassess_stratosphere, capacity_factor
+    small = modes_of_variability, multimodel_products
+    medium = ensclus, heatwaves_coldwaves
 
 [scheduling]
     initial cycle point = 1
     cycling mode = integer
     [[graph]]
-        R1 = install_cold => configure
-        P2 = configure[-P2] => process<small>
-        2/P1 = configure[-P1] => process<medium>
+        R1 = """
+             install_cold => configure
+             configure:succeed => process<small>
+             configure:succeed => process<medium>
+        """
 
 [runtime]
     [[root]]
