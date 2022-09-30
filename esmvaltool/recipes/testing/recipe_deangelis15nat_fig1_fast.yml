@@ -1,0 +1,62 @@
+# ESMValTool
+# recipe_deangelis15nat.yml
+---
+documentation:
+  title: "Evaluate water vapor short wave radiance absorption schemes of ESMs with the observations"
+  description: |
+    Recipe for reproducing the plots in DeAngelis et al., 2015 Nature
+    Short version of Fig. 1b for test cases.
+
+  authors:
+    - weigel_katja
+
+  maintainer:
+    - weigel_katja
+
+  references:
+    - deangelis15nat
+
+  projects:
+    - eval4cmip
+
+preprocessors:
+  spatial_mean:
+    area_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  deangelisf1b:
+    description: Bar plot similar to (DeAngelis Fig. 1b).
+    # Global multi-model experiment mean for flux variables, e.g. rlnst, rsnst, lvp, hfss
+    variables:
+      rlnst: &spatial_mean_cmip5_r1i1p1_amon_t2ms
+        preprocessor: spatial_mean
+        project: CMIP5
+        ensemble: r1i1p1
+        mip: Amon
+        derive: true
+        force_derivation: false
+      rsnst:
+        <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
+      lvp:
+        <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
+      hfss:
+        <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
+        derive: false
+    additional_datasets:
+      - {dataset: GFDL-CM3, exp: piControl, start_year: 1,
+         end_year: 1}
+      - {dataset: GFDL-CM3, exp: rcp85, start_year: 2091,
+         end_year: 2091}
+      - {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 141, end_year: 141}
+      - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 300}
+      - {dataset: ACCESS1-0, exp: rcp85, start_year: 2091, end_year: 2091}
+      - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 300}
+
+    scripts:
+      deangelisf1b:
+        script: deangelis15nat/deangelisf1b.py
+
+

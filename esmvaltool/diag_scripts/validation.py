@@ -22,11 +22,54 @@ from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
 )
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def plot_contour(cube, plt_title, file_name):
+def _get_provenance_record(cfg, plot_file, caption, loc):
+    """Create a provenance record describing the diagnostic data and plot."""
+    all_input_files = [
+        k for k in cfg["input_data"].keys() if k.endswith(".nc")
+    ]
+    if "_vs_" in plot_file:
+        model_1 = plot_file.split("_vs_")[0].split("_")[-1]
+        if plot_file.endswith(".png"):
+            model_2 = plot_file.split("_vs_")[1].strip(".png")
+        elif plot_file.endswith(".nc"):
+            model_2 = plot_file.split("_vs_")[1].strip(".nc")
+        ancestor_1 = [
+            k for k in all_input_files if model_1 in os.path.basename(k)
+        ][0]
+        ancestor_2 = [
+            k for k in all_input_files if model_2 in os.path.basename(k)
+        ][0]
+        ancestor_files = [ancestor_1, ancestor_2]
+    else:
+        model = os.path.basename(plot_file).split("_")[0]
+        ancestor_files = [
+            k for k in all_input_files if model in os.path.basename(k)
+        ]
+    record = {
+        'caption': caption,
+        'statistics': ['mean'],
+        'domains': ['global'],
+        'plot_types': ['map', 'metrics'],
+        'authors': [
+            'predoi_valeriu',
+        ],
+        'references': [],
+        'plot_file': plot_file,
+        'ancestors': ancestor_files,
+    }
+
+    p_cfg = {}
+    p_cfg['run_dir'] = loc
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, record)
+
+
+def plot_contour(cube, cfg, plt_title, file_name):
     """Plot a contour with iris.quickplot (qplot)."""
     if len(cube.shape) == 2:
         qplt.contourf(cube, cmap='RdYlBu_r', bbox_inches='tight')
@@ -37,6 +80,8 @@ def plot_contour(cube, plt_title, file_name):
     plt.tight_layout()
     plt.savefig(file_name)
     plt.close()
+    _get_provenance_record(cfg, file_name,
+                           plt_title, loc=os.path.basename(file_name))
 
 
 def save_plotted_cubes(cube, cfg, plot_name):
@@ -46,6 +91,15 @@ def save_plotted_cubes(cube, cfg, plot_name):
             save_name = plot_name.replace("png", "nc")
             save_path = os.path.join(cfg['work_dir'], save_name)
             iris.save(cube, save_path)
+            parsed_file_name = plot_name.replace(".png", "").replace("_", " ")
+            prov_name = "Output file: " + parsed_file_name
+            # files are overwritten once; provenance fails second time
+            try:
+                _get_provenance_record(cfg, save_path,
+                                       prov_name,
+                                       loc=os.path.dirname(save_path))
+            except KeyError:
+                pass
 
 
 def plot_latlon_cubes(cube_1,
@@ -78,7 +132,7 @@ def plot_latlon_cubes(cube_1,
     # plot difference: cube_1 - cube_2; use numpy.ma.abs()
     diffed_cube = imath.subtract(cube_1, cube_2)
 
-    plot_contour(diffed_cube, 'Difference ' + plot_title, plot_file_path)
+    plot_contour(diffed_cube, cfg, 'Difference ' + plot_title, plot_file_path)
     save_plotted_cubes(diffed_cube, cfg, 'Difference_' + plot_name)
 
     # plot each cube
@@ -90,7 +144,7 @@ def plot_latlon_cubes(cube_1,
                 plot_file_path = os.path.join(
                     cfg['plot_dir'], "alltime",
                     "_".join([cube_name, var]) + ".png")
-                plot_contour(cube,
+                plot_contour(cube, cfg,
                              " ".join([cube_name, cfg['analysis_type'],
                                        var]), plot_file_path)
             else:
@@ -98,7 +152,7 @@ def plot_latlon_cubes(cube_1,
                     cfg['plot_dir'], season,
                     "_".join([cube_name, var, season]) + ".png")
                 plot_contour(
-                    cube,
+                    cube, cfg,
                     " ".join([season, cube_name, cfg['analysis_type'],
                               var]), plot_file_path)
             save_plotted_cubes(cube, cfg, os.path.basename(plot_file_path))
@@ -107,7 +161,7 @@ def plot_latlon_cubes(cube_1,
         if not season:
             plot_file_path = os.path.join(cfg['plot_dir'], "alltime",
                                           "_".join([obs_name, var]) + ".png")
-            plot_contour(cube_2,
+            plot_contour(cube_2, cfg,
                          " ".join([obs_name, cfg['analysis_type'],
                                    var]), plot_file_path)
         else:
@@ -115,8 +169,8 @@ def plot_latlon_cubes(cube_1,
                 cfg['plot_dir'], season,
                 "_".join([obs_name, var, season]) + ".png")
             plot_contour(
-                cube_2, " ".join([season, obs_name, cfg['analysis_type'],
-                                  var]), plot_file_path)
+                cube_2, cfg, " ".join([season, obs_name, cfg['analysis_type'],
+                                       var]), plot_file_path)
         save_plotted_cubes(cube_2, cfg, os.path.basename(plot_file_path))
 
 
@@ -153,6 +207,9 @@ def plot_zonal_cubes(cube_1, cube_2, cfg, plot_data):
         "_".join([cube_names[1],
                   os.path.basename(plot_file_path)]))
     plt.close()
+    caption = period + ' Zonal/Meridional Mean for ' + var + ' ' + data_names
+    _get_provenance_record(cfg, plot_file_path,
+                           caption, loc=os.path.join(cfg['plot_dir'], period))
 
 
 def apply_seasons(data_set_dict):

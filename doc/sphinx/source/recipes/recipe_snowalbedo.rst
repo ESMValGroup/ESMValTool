@@ -97,8 +97,8 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* ERA-Interim (tas - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
-* ISCCP-FH (rsuscs, rsdscs, rsdt - esmvaltool/utils/cmorizers/obs/cmorize_obs_isccp_fh.ncl)
+* ERA-Interim (tas - esmvaltool/cmorizers/data/formatters/datasets/era_interim.py)
+* ISCCP-FH (rsuscs, rsdscs, rsdt - esmvaltool/cmorizers/data/formatters/datasets/isccp_fh.ncl)
 
 
 References

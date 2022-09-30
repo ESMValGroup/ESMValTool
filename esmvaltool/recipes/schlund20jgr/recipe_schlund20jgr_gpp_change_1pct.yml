@@ -2,10 +2,14 @@
 # recipe_schlund20jgr_gpp_change_1pct.yml
 ---
 documentation:
+  title: >
+    Constraining uncertainty in projected gross primary production (GPP) with
+    machine learning
 
-  description: |
-    Plot emergent constraint of Wenzel et al. (2016) for global mean gross
-    primary production (GPP) in biogeochemically-coupled 1%CO2 run.
+  description: >
+    Use the emergent constraint of Wenzel et al. (2016) to constrain global
+    mean gross primary production (GPP) in the CMIP5 biogeochemically coupled
+    1%CO2 run.
 
   authors:
     - schlund_manuel
@@ -90,7 +94,7 @@ SEABORN_SETTINGS: &seaborn_settings
 
 WEIGHTED_SAMPLES: &weighted_samples
   area_weighted: true
-  time_weighted: true
+  time_weighted: false
 
 VARIABLE_SETTINGS_FEATURE_CO2: &variable_settings_feature_co2
   project: CMIP5

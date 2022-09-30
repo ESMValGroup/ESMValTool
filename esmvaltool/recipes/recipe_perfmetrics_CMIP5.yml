@@ -2,6 +2,8 @@
 # recipe_perfmetrics_CMIP5.yml
 ---
 documentation:
+  title: Performance metrics for essential climate variables in CMIP5
+
   description: |
     Recipe for plotting the performance metrics for the CMIP5 datasets,
     including the standard ECVs as in Gleckler et al., and some additional
@@ -471,7 +473,7 @@ diagnostics:
       - {dataset: CCSM4}
       - {dataset: CESM1-BGC}
       - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-CAM5-1-FV2}
+      # - {dataset: CESM1-CAM5-1-FV2}  # data is missing on ESGF
       - {dataset: CESM1-FASTCHEM}
       - {dataset: CESM1-WACCM}
       - {dataset: CMCC-CESM}
@@ -666,7 +668,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: GPCP-SG, project: obs4mips, level: L3,
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3,
          version: v2.2, tier: 1}
     scripts:
       grading:
@@ -806,7 +808,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-7, tier: 1}
     scripts:
       latlon:
@@ -878,7 +880,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-7, tier: 1}
     scripts:
       latlon:
@@ -953,7 +955,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-7, tier: 1}
     scripts:
       grading:
@@ -1019,7 +1021,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: AIRS, project: obs4mips, level: L3,
+      - {dataset: AIRS, project: obs4MIPs, level: L3,
          version: RetStd-v5, tier: 1}
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
@@ -1085,7 +1087,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-7, tier: 1}
     scripts:
       grading:
@@ -1843,41 +1845,40 @@ diagnostics:
         <<: *grading_settings
 
 
-  # NEEDS Iris 3.0
   ### od550lt1aer: FINE MODE AEROSOL OPTICAL DEPTH AT 550 nm ##################
-  # od550lt1aer:
-  #   description: Fine mode optical depth at 550 nm
-  #   themes:
-  #     - aerosols
-  #   realms:
-  #     - atmos
-  #   variables:
-  #     od550lt1aer:
-  #       preprocessor: ppNOLEV1thr10
-  #       reference_dataset: ESACCI-AEROSOL
-  #       mip: aero
-  #       project: CMIP5
-  #       exp: historical
-  #       ensemble: r1i1p1
-  #       start_year: 2002
-  #       end_year: 2004
-  #   additional_datasets:
-  #     - {dataset: CSIRO-Mk3-6-0}
-  #     - {dataset: GFDL-CM3}
-  #     - {dataset: GFDL-ESM2G}
-  #     - {dataset: GFDL-ESM2M}
-  #     - {dataset: GISS-E2-H, ensemble: r1i1p2}
-  #     - {dataset: GISS-E2-R, ensemble: r1i1p2}
-  #     - {dataset: IPSL-CM5B-LR}
-  #     - {dataset: MIROC5}
-  #     - {dataset: MIROC-ESM}
-  #     - {dataset: MIROC-ESM-CHEM}
-  #     - {dataset: MRI-CGCM3}
-  #     - {dataset: ESACCI-AEROSOL, project: OBS, type: sat,
-  #        version: SU-v4.21, tier: 2}
-  #   scripts:
-  #     grading:
-  #       <<: *grading_settings
+  od550lt1aer:
+    description: Fine mode optical depth at 550 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
+    variables:
+      od550lt1aer:
+        preprocessor: ppNOLEV1thr10
+        reference_dataset: ESACCI-AEROSOL
+        mip: aero
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2002
+        end_year: 2004
+    additional_datasets:
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MRI-CGCM3}
+      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat,
+         version: SU-v4.21, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
 
 
   ### toz: TOTAL COLUMN OZONE #################################################

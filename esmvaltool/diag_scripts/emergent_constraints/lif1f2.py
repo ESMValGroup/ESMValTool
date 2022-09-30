@@ -127,9 +127,6 @@ def cube_to_save_scatter(var1, var2, names):
 
 def plot_rain_and_wind(cfg, dataname, data, future_exp):
     """Plot contour map."""
-    if not cfg[n.WRITE_PLOTS]:
-        return
-
     plotdata = {}
     if data['ar_diff_rain'].ndim == 3:
         plotdata['pr'] = np.mean(data['ar_diff_rain'], axis=2)
@@ -142,8 +139,8 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
 
     # Plot data
     # create figure and axes instances
-    fig, axx = plt.subplots(figsize=(8, 5))
-    axx = plt.axes(projection=cart.PlateCarree())
+    subplot_kw = {'projection': cart.PlateCarree()}
+    fig, axx = plt.subplots(figsize=(8, 5), subplot_kw=subplot_kw)
     axx.set_extent([45, 120, -15, 30], cart.PlateCarree())
 
     # draw filled contours
@@ -270,18 +267,19 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(get_plot_filename(dataname +
+                                                '_li17natcc_fig1a',
+                                                cfg),
+                              provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
 def plot_rain(cfg, titlestr, data, lats, lons):
     """Plot contour map."""
-    if not cfg[n.WRITE_PLOTS]:
-        return
-
     # Plot data
     # create figure and axes instances
-    fig, axx = plt.subplots(figsize=(7, 5))
-    axx = plt.axes(projection=cart.PlateCarree())
+    subplot_kw = {'projection': cart.PlateCarree()}
+    fig, axx = plt.subplots(figsize=(7, 5), subplot_kw=subplot_kw)
     axx.set_extent([45, 120, -15, 35], cart.PlateCarree())
 
     # draw filled contours
@@ -349,6 +347,8 @@ def plot_rain(cfg, titlestr, data, lats, lons):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(get_plot_filename(figname, cfg),
+                              provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
@@ -360,8 +360,8 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
 
     # Plot data
     # create figure and axes instances
-    fig, axx = plt.subplots(figsize=(8, 4))
-    axx = plt.axes(projection=cart.PlateCarree(central_longitude=180))
+    subplot_kw = {'projection': cart.PlateCarree(central_longitude=180)}
+    fig, axx = plt.subplots(figsize=(8, 4), subplot_kw=subplot_kw)
     axx.set_extent(
         [-150, 60, -15, 30], cart.PlateCarree(central_longitude=180))
 
@@ -417,9 +417,9 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
         't-test. All the precipitation changes are normalized by the ' + \
         'corresponding global mean SST increase for each model'
 
-    selection = _get_sel_files_var(cfg, ['pr', 'ts'])
-
-    provenance_record = get_provenance_record(selection,
+    provenance_record = get_provenance_record(_get_sel_files_var(cfg,
+                                                                 ['pr',
+                                                                  'ts']),
                                               caption, ['corr'], ['reg'])
 
     diagnostic_file = get_diagnostic_filename('li17natcc_fig1b', cfg)
@@ -434,6 +434,8 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(get_plot_filename('li17natcc_fig1b', cfg),
+                              provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
@@ -509,6 +511,8 @@ def plot_reg_li(cfg, data_ar, future_exp):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(get_plot_filename('li17natcc_fig2a', cfg),
+                              provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
@@ -608,6 +612,8 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(get_plot_filename('li17natcc_fig2b', cfg),
+                              provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 

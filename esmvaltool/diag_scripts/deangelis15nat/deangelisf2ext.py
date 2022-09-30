@@ -306,9 +306,6 @@ def get_provenance_record(ancestor_files, caption, statistics,
 
 def plot_slope_regression(cfg, data_dict):
     """Scatter plot of linear regression slope, some variables (fig2a)."""
-    if not cfg[n.WRITE_PLOTS]:
-        return
-
     sa_dict = {}
     sa_dict["lvpdt"] = data_dict['regressions'][:, 3]
     sa_dict["rsnstdt"] = data_dict['regressions'][:, 1]
@@ -424,9 +421,6 @@ def plot_slope_regression(cfg, data_dict):
 
 def plot_slope_regression_all(cfg, data_dict, available_vars):
     """Scatter plot of linear regression slope, all variables (exfig2a)."""
-    if not cfg[n.WRITE_PLOTS]:
-        return
-
     data_model = data_dict['regressions']
     m_all = np.array([np.mean(data_model[:, 3]), np.mean(data_model[:, 0]),
                       np.mean(data_model[:, 1]), np.mean(data_model[:, 2]),
@@ -546,9 +540,6 @@ def plot_slope_regression_all(cfg, data_dict, available_vars):
 
 def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
     """Plot linear regression used to calculate ECS."""
-    if not cfg[n.WRITE_PLOTS]:
-        return
-
     filepath = get_plot_filename(dataset_name, cfg)
 
     # Regression line

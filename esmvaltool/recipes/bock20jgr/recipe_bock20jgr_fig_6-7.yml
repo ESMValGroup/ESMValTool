@@ -393,7 +393,7 @@ diagnostics:
       - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
       - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
 
-      - {dataset: GPCP-SG, project: obs4mips, level: L3,
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3,
          version: v2.2, tier: 1}
       - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
     scripts:
@@ -530,7 +530,7 @@ diagnostics:
       - {dataset: CIESM, grid: gr, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
@@ -568,7 +568,7 @@ diagnostics:
       - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn, project: CMIP6}
       - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
@@ -611,7 +611,7 @@ diagnostics:
       - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
       - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
@@ -652,7 +652,7 @@ diagnostics:
       - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
       - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
 
-      - {dataset: AIRS, project: obs4mips, level: L3,
+      - {dataset: AIRS, project: obs4MIPs, level: L3,
          version: RetStd-v5, tier: 1, start_year: 2003, end_year: 2010}
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
@@ -694,7 +694,7 @@ diagnostics:
       - {dataset: CIESM, grid: gr, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
     scripts:
       grading:
@@ -1113,7 +1113,7 @@ diagnostics:
       - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
       - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
 
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2, tier: 1}
       - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
 
   psl_cor:
@@ -1175,7 +1175,7 @@ diagnostics:
       - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
       - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-8,
          tier: 1, start_year: 2001, end_year: 2015}
 
   swcre_cor:
@@ -1199,7 +1199,7 @@ diagnostics:
       - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn, project: CMIP6}
       - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-8,
          tier: 1, start_year: 2001, end_year: 2015}
 
   fig_7:

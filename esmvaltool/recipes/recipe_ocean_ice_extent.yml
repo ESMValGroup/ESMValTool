@@ -2,6 +2,8 @@
 # recipe_ocean_ice_extent.yml
 ---
 documentation:
+  title: Ice Extent analysis
+
   description: |
     Recipe to demonstrate several sea ice plots based.
 

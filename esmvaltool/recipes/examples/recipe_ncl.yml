@@ -26,8 +26,6 @@ datasets:
      start_year: 2000, end_year: 2002}
   - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
      start_year: 2000, end_year: 2002}
-  - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1,
-     start_year: 2000, end_year: 2002}
 
 preprocessors:
   preprocessor_1:
@@ -45,10 +43,10 @@ diagnostics:
     variables:
       ta:
         preprocessor: preprocessor_1
-        reference_dataset: ERA-Interim
+        reference_dataset: MPI-ESM-LR
         mip: Amon
         additional_datasets:
-          - {dataset: NCEP, project: OBS, tier: 2, type: reanaly, version: 1,
+          - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
              start_year: 2000, end_year: 2002}
     scripts:
       test_ta: &settings

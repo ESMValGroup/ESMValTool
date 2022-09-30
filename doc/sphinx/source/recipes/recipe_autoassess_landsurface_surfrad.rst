@@ -177,6 +177,6 @@ over to the diagnostic/metric is listed below.
         control_model: UKESM1-0-LL
         exp_model: UKESM1-0-LL
         obs_models: [CERES-EBAF]
-        obs_type: obs4mips
+        obs_type: obs4MIPs
         start: 1997/12/01
         end: 2002/12/01

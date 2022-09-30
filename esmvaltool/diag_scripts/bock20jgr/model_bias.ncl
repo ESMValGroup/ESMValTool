@@ -25,7 +25,8 @@
 ;   none
 ;
 ; Modification history
-;   20190312-A_bock_ls: adapted code (based on clouds/clouds_bias.ncl)
+;   20211006-lauer_axel: removed write_plots
+;   20190312-bock_lisa: adapted code (based on clouds/clouds_bias.ncl)
 ;
 ; ############################################################################
 

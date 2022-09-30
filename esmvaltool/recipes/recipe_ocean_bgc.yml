@@ -2,7 +2,8 @@
 # recipe_ocean_bcg.yml
 ---
 documentation:
-  
+  title: Marine Biogeochemistry analysis suite
+
   description: |
     Recipe to evaluate the marine biogeochemistry models of CMIP5.
     There are also some physical evaluation metrics here too.
@@ -76,7 +77,7 @@ preprocessors:
     custom_order: true
     extract_levels:
       levels:  [0., ]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     area_statistics:
       operator: mean
     #multi_model_statistics:
@@ -97,7 +98,7 @@ preprocessors:
   prep_surface_map_3D:
     extract_levels:
       levels:  [0., ]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     climate_statistics:
       operator: mean
 
@@ -105,7 +106,7 @@ preprocessors:
     custom_order: true
     extract_levels:
       levels:  [0., ]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     climate_statistics:
       operator: mean
     regrid:

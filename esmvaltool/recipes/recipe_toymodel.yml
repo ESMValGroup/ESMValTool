@@ -2,15 +2,19 @@
 # recipe_toymodel.yml
 ---
 documentation:
+  title: Generate artificial forecasts from observations
   description: |
     Tool for generating synthetic observations based on the model presented
     in Weigel et al. (2008) QJRS with an extension to consider non-stationary
     (2008) QJRS with an extension to consider non-stationary distributions
     distributions prescribing a linear trend. The toymodel allows to
-    generate an aritifical forecast based on obsevations provided as input.
+    generate an artificial forecast based on observations provided as input.
 
   authors:
     - bellprat_omar
+
+  maintainer:
+    - unmaintained
 
   projects:
     - c3s-magic
@@ -20,8 +24,8 @@ documentation:
 
 
 datasets:
-#  - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
-#  - {dataset: MPI-ESM-LR, type: exp, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2020, end_year: 2050}
+  # - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
+  # - {dataset: MPI-ESM-LR, type: exp, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2020, end_year: 2050}
   - {dataset: bcc-csm1-1, type: exp, project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2051, end_year: 2060}
 
 preprocessors:

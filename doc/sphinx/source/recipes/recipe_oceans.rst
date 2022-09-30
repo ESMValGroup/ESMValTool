@@ -425,13 +425,13 @@ and an example of an appropriate diagnostic section of the recipe would be:
 	  additional_datasets:
 	#        filename: tos_ATSR_L3_ARC-v1.1.1_199701-201112.nc
 	#        download from: https://datashare.is.ed.ac.uk/handle/10283/536
-	    - {dataset: ATSR,  project: obs4mips,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 3}
+	    - {dataset: ATSR,  project: obs4MIPs,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 3}
 	  scripts:
 	    Global_Ocean_map:
 	      script: ocean/diagnostic_maps_quad.py
 	      control_model: {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
 	      exper_model: {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-	      observational_dataset: {dataset: ATSR, project: obs4mips,}
+	      observational_dataset: {dataset: ATSR, project: obs4MIPs,}
 
 Note that the details about the control model, the experiment models
 and the observational dataset are all provided in the script section of the
@@ -800,7 +800,7 @@ The following WOA datasets are used by the ocean diagnostics:
  - Silicate
  - Dissolved Oxygen
 
-These files need to be reformatted using the `cmorize_obs_py` script with output name `WOA`.
+These files need to be reformatted using the `esmvaltool data format WOA` command.
 
 
 Landschuetzer 2016
@@ -814,7 +814,7 @@ The following variables are used by the ocean diagnostics:
  - spco2, Surface Aqueous Partial Pressure of CO2
  - dpco2, Delta CO2 Partial Pressure
 
-The file needs to be reformatted using the `cmorize_obs_py` script with output name `Landschuetzer2016`.
+The file needs to be reformatted using the `esmvaltool data format Landschuetzer2016` command.
 
 
 

@@ -2,6 +2,7 @@
 # recipe_quantilebias.yml
 ---
 documentation:
+  title: Precipitation Quantile Bias
   description: |
     Tool for calculation of precipitation quantile bias
 
@@ -20,7 +21,7 @@ documentation:
 
 datasets:
    - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2005}
-   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1, start_year: 1979, end_year: 2005}
+   - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3, tier: 1, start_year: 1979, end_year: 2005}
 
 preprocessors:
   mask_regrid_preproc:
@@ -32,10 +33,10 @@ preprocessors:
 
 diagnostics:
   quantilebias:
-    description: Tool for calculation of precipitation quantile bias 
+    description: Tool for calculation of precipitation quantile bias
     variables:
       pr:
-        preprocessor: mask_regrid_preproc 
+        preprocessor: mask_regrid_preproc
         reference_dataset: "GPCP-SG"
         mip: Amon
 

@@ -4,11 +4,12 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3401363.svg)](https://doi.org/10.5281/zenodo.3401363)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ESMValGroup?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![CircleCI](https://circleci.com/gh/ESMValGroup/ESMValTool/tree/main.svg?style=svg)](https://circleci.com/gh/ESMValGroup/ESMValTool/tree/main)
-[![example branch parameter](https://github.com/github/docs/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/ESMValGroup/ESMValTool/actions)
+[![Test in Full Development Mode](https://github.com/ESMValGroup/ESMValTool/actions/workflows/test-development.yml/badge.svg)](https://github.com/ESMValGroup/ESMValTool/actions/workflows/test-development.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/79bf6932c2e844eea15d0fb1ed7e415c)](https://www.codacy.com/gh/ESMValGroup/ESMValTool?utm_source=github.com&utm_medium=referral&utm_content=ESMValGroup/ESMValTool&utm_campaign=Badge_Coverage)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/79bf6932c2e844eea15d0fb1ed7e415c)](https://www.codacy.com/gh/ESMValGroup/ESMValTool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ESMValGroup/ESMValTool&amp;utm_campaign=Badge_Grade)
 [![Docker Build Status](https://img.shields.io/docker/cloud/build/esmvalgroup/esmvaltool.svg)](https://hub.docker.com/r/esmvalgroup/esmvaltool/)
 [![Anaconda-Server Badge](https://anaconda.org/esmvalgroup/esmvaltool/badges/installer/conda.svg)](https://conda.anaconda.org/esmvalgroup)
+![stand with Ukraine](https://badgen.net/badge/stand%20with/UKRAINE/?color=0057B8&labelColor=FFD700)
 
 ![esmvaltoollogo](https://github.com/ESMValGroup/ESMValTool/blob/main/doc/sphinx/source/figures/ESMValTool-logo-2.png)
 
@@ -17,6 +18,7 @@
 - [**ESMValTool Tutorial**](https://esmvalgroup.github.io/ESMValTool_Tutorial/index.html)
 - [**ESMValGroup Project on GitHub**](https://github.com/ESMValGroup)
 - [**Gallery**](https://docs.esmvaltool.org/en/latest/gallery.html)
+- [**`conda-forge` package feedstock**](https://github.com/conda-forge/esmvaltool-suite-feedstock)
 
 # Introduction
 
@@ -39,14 +41,15 @@ scientific community, and included after a scientific and technical review proce
 
 # Input data
 
-ESMValTool can run with the following types of data as input:
+ESMValTool can run with the following types of [data as input](https://docs.esmvaltool.org/en/latest/input.html):
 
-- CMIP5
 - CMIP6
-- OBS, OBS6
-- obs4mips
+- CMIP5
+- CMIP3
+- [observational and re-analysis datasets](https://docs.esmvaltool.org/en/latest/input.html#supported-datasets-for-which-a-cmorizer-script-is-available)
+- obs4MIPs
 - ana4mips
-- CORDEX
+- CORDEX ([work in progress](https://docs.esmvaltool.org/en/latest/input.html#cordex-note))
 
 # Getting started
 

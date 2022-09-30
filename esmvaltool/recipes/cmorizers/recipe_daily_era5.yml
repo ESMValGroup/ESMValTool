@@ -4,10 +4,15 @@
 documentation:
   description: Create daily ERA5 data
 
+  title: Daily ERA5 data CMORization and creation
+
   authors:
     - andela_bouwe
     - kalverla_peter
     - alidoost_sarah
+
+  maintainer:
+    - unmaintained
 
   references:
     - acknow_project
