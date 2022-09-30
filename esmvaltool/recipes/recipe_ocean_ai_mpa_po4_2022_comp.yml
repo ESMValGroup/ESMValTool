@@ -3,7 +3,7 @@ diagnostics:
     scripts:
       Model_range_polots: {script: ocean/diagnostic_ai_plots.py}
     variables:
-      no3_map_hist:
+      po4_map_hist:
         additional_datasets:
         - {dataset: ACCESS-ESM1-5, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: CanESM5, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
@@ -51,9 +51,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_map_surf
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2000
-      no3_map_ssp126:
+      po4_map_ssp126:
         additional_datasets:
 
         - {dataset: ACCESS-ESM1-5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -88,9 +88,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_map_surf
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2040
-      no3_map_ssp245:
+      po4_map_ssp245:
         additional_datasets:
 
         - {dataset: ACCESS-ESM1-5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -114,9 +114,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_map_surf
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2040
-      no3_map_ssp370:
+      po4_map_ssp370:
         additional_datasets:
 
         - {dataset: ACCESS-ESM1-5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -151,9 +151,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_map_surf
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2040
-      no3_map_ssp585:
+      po4_map_ssp585:
         additional_datasets:
 
         - {dataset: ACCESS-ESM1-5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -184,9 +184,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_map_surf
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2040
-      no3_profile_hist:
+      po4_profile_hist:
         additional_datasets:
         # - {dataset: CanESM5, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         # - {dataset: CMCC-ESM2, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
@@ -234,9 +234,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_profile_2
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2000
-      no3_profile_ssp126:
+      po4_profile_ssp126:
         additional_datasets:
 
         - {dataset: ACCESS-ESM1-5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -271,9 +271,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_profile_2
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2040
-      no3_profile_ssp245:
+      po4_profile_ssp245:
         additional_datasets:
 
         - {dataset: ACCESS-ESM1-5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -297,9 +297,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_profile_2
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2040
-      no3_profile_ssp370:
+      po4_profile_ssp370:
         additional_datasets:
 
         - {dataset: ACCESS-ESM1-5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -335,9 +335,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_profile_2
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2040
-      no3_profile_ssp585:
+      po4_profile_ssp585:
         additional_datasets:
 
         - {dataset: ACCESS-ESM1-5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -349,7 +349,7 @@ diagnostics:
         - {dataset: MIROC-ES2L, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
         - {dataset: MPI-ESM1-2-LR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
         - {dataset: MRI-ESM2-0, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
-          
+
         - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
         - {dataset: CMCC-ESM2, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
         - {dataset: EC-Earth3-CC, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -368,9 +368,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_profile_2
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2040
-      no3_ts_hist:
+      po4_ts_hist:
         additional_datasets:
         - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r10i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
         - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r11i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
@@ -420,9 +420,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_regional_ts_3d_surface
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 1850
-      no3_ts_ssp126:
+      po4_ts_ssp126:
         additional_datasets:
         - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r10i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
         - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r11i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -458,9 +458,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_regional_ts_3d_surface
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2015
-      no3_ts_ssp245:
+      po4_ts_ssp245:
         additional_datasets:
         - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r1i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
         - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r2i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -484,9 +484,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_regional_ts_3d_surface
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2015
-      no3_ts_ssp370:
+      po4_ts_ssp370:
         additional_datasets:
         - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r10i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
         - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r11i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -521,9 +521,9 @@ diagnostics:
         mip: Omon
         preprocessor: prep_regional_ts_3d_surface
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2015
-      no3_ts_ssp585:
+      po4_ts_ssp585:
         additional_datasets:
         # - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
         # - {dataset: CMCC-ESM2, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -553,7 +553,7 @@ diagnostics:
         mip: Omon
         preprocessor: prep_regional_ts_3d_surface
         project: CMIP6
-        short_name: no3
+        short_name: po4
         start_year: 2015
 documentation:
   authors: [demora_lee]
@@ -562,7 +562,7 @@ documentation:
   maintainer: [demora_lee]
   projects: [ukesm]
   references: [demora2018gmd]
-  title: CRACAB No3 analysis
+  title: CRACAB po4 analysis
 
 preprocessors:
   # --------------------------------------------------
