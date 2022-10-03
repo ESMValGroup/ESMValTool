@@ -3,14 +3,6 @@
 BASH_XTRACEFD=1
 set -eux
 
-# Remove esmvaltool and esmvalcore directories, if they exist.
-if [[ -d ${ESMVALTOOL_DIR} ]]; then
-    rm -rf "${ESMVALTOOL_DIR}"
-fi
-
-if [[ -d ${ESMVALCORE_DIR} ]]; then
-    rm -rf "${ESMVALCORE_DIR}"
-fi
 
 # Copy the site specific environment launch file to the cylc run /bin
 # Where it will be identified by rose task-run
@@ -24,18 +16,15 @@ mkdir "${TARGET_DIR}"
 # Copy the environment file to the 'bin' directory.
 cp "${SOURCE_PATH}" "${TARGET_DIR}/${ENV_FILE}"
 
-# Launch the local site environment
-rtw-env
+# Remove esmvaltool and esmvalcore directories, if they exist.
+if [[ -d ${ESMVALTOOL_DIR} ]]; then
+    rm -rf "${ESMVALTOOL_DIR}"
+fi
 
+if [[ -d ${ESMVALCORE_DIR} ]]; then
+    rm -rf "${ESMVALCORE_DIR}"
+fi
 
 # Checkout main branch for ESMValTool and ESMValCore from github.
-git clone -b "${BRANCH}" "${ESMVALTOOL_URL}" "${ESMVALTOOL_DIR}"
-git clone -b "${BRANCH}" "${ESMVALCORE_URL}" "${ESMVALCORE_DIR}"
-
-# add esmvaltool to PYTHONPATH
-cd "${ESMVALTOOL_DIR}"
-export PYTHONPATH=`pwd`
-
-# add esmvalcore to PYTHONPATH
-cd "${ESMVALCORE_DIR}"
-export PYTHONPATH=`pwd`
+git clone -q -b "${BRANCH}" "${ESMVALTOOL_URL}" "${ESMVALTOOL_DIR}"
+git clone -q -b "${BRANCH}" "${ESMVALCORE_URL}" "${ESMVALCORE_DIR}"
