@@ -62,6 +62,6 @@
         [[[environment]]]
             ROSE_TASK_APP = compare
             KGO_METRIC = "${CYLC_TASK_PARAM_metric}"
-            KGO_PATH = {{ KGO_PATH }}
+            KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
 
 {% include 'site/' ~ SITE ~ '.cylc' %}
