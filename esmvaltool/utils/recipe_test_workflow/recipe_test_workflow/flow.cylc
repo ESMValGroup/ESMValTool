@@ -14,6 +14,7 @@
         script = rose task-run
         env-script = "eval $(rose task-env)"
         [[[environment]]]
+            MODULE_NAME = {{ MODULE_NAME }}
             USER_CONFIG_DIR = ${CYLC_WORKFLOW_RUN_DIR}/etc
             USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
             ESMVALCORE_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValCore
@@ -24,7 +25,6 @@
         platform = localhost
         [[[environment]]]
             SITE = {{ SITE }}
-            MODULE_NAME = {{ MODULE_NAME }}
 
     [[configure]]
         pre-script = "mkdir -p ${USER_CONFIG_DIR}"
