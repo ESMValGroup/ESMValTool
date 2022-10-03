@@ -11,7 +11,7 @@ The |RTW| performs the following steps:
 ``install_cold``
   :Description:
      Activates the environment for |ESMValTool|, based on the ``SITE`` provided
-     Installs the latest versions of |ESMValTool| and |ESMValCore| from github
+     Checks out the latest versions of |ESMValTool| and |ESMValCore| from github
   :Runs on:
      Localhost
   :Executes:
