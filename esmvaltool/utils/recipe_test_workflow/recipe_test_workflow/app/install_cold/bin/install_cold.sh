@@ -4,8 +4,9 @@ BASH_XTRACEFD=1
 set -eux
 
 
-# Copy the site specific environment launch file to the cylc run /bin
-# Where it will be identified by rose task-run
+# Copy the site specific environment file to the 'bin' directory in the
+# installed Cylc workflow (this directory is automatically added to the
+# ${PATH} by Cylc).
 SOURCE_PATH="${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}-env"
 TARGET_DIR="${CYLC_WORKFLOW_RUN_DIR}/bin"
 ENV_FILE="rtw-env"
