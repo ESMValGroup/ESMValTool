@@ -59,7 +59,6 @@
 
     [[compare<metric>]]
         inherit = None, COMPUTE
-        platform = localhost
         [[[environment]]]
             ROSE_TASK_APP = compare
             KGO_METRIC = "${CYLC_TASK_PARAM_metric}"
