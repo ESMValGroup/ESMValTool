@@ -13,4 +13,6 @@ mkdir "${TARGET_DIR}"
 # Copy the environment file to the 'bin' directory.
 cp "${SOURCE_PATH}" "${TARGET_DIR}/${ENV_FILE}"
 
+# Manually and temporarily install imagehash (it will be included in the
+# next ESMValTool community environment).
 rtw-env pip install imagehash -t "${CYLC_WORKFLOW_RUN_DIR}/lib"
