@@ -3,11 +3,16 @@
     UTC mode = True
 
 [task parameters]
-    metric = radiation_budget
+    small = modes_of_variability, multimodel_products
+    medium = ensclus, heatwaves_coldwaves
 
 [scheduling]
     [[graph]]
-        R1 = install_cold => configure => process<metric>
+        R1 = """
+             install_cold => configure
+             configure:succeed => process<small>
+             configure:succeed => process<medium>
+        """
 
 [runtime]
     [[root]]
@@ -49,10 +54,16 @@
             ROOTPATH_OBS4MIPS = {{ ROOTPATH_OBS4MIPS }}
             ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
 
-    [[process<metric>]]
+    [[process<small>]]
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = process
-            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_metric}.yml"
+            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_small}.yml"
+
+    [[process<medium>]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = process
+            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_medium}.yml"
 
 {% include 'site/' ~ SITE ~ '.cylc' %}
