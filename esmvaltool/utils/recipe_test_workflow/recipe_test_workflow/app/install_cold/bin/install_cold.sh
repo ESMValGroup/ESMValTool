@@ -25,6 +25,8 @@ if [[ -d ${ESMVALCORE_DIR} ]]; then
     rm -rf "${ESMVALCORE_DIR}"
 fi
 
-# Checkout main branch for ESMValTool and ESMValCore from github.
+# Checkout the specified branch for ESMValCore and ESMValTool. Use the
+# quiet ('-q') option to prevent the progress status from being reported
+# (which is done via done via 'stderr').
 git clone -q -b "${BRANCH}" "${ESMVALTOOL_URL}" "${ESMVALTOOL_DIR}"
 git clone -q -b "${BRANCH}" "${ESMVALCORE_URL}" "${ESMVALCORE_DIR}"
