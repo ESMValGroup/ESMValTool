@@ -9,4 +9,8 @@ FOLDER_NAME=$(find "${OUTPUT_DIR}" -type d -name "recipe_${KGO_METRIC}*")
 
 
 KGO=$(find "${KGO_PATH}" -type d -name "recipe_${KGO_METRIC}*")
-python utils/testing/regression/compare.py "${FOLDER_NAME}" "${KGO}"
+# Create a variable that defines the path to the compare script.
+COMPARE_SCRIPT=${SSS_TAG_DIR}/lib/python3.10/site-packages/esmvaltool/utils/testing/regression/compare.py
+
+# Run the compare script.
+python "${COMPARE_SCRIPT}" "${FOLDER_NAME}" "${KGO}"
