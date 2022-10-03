@@ -17,7 +17,7 @@ mkdir "${TARGET_DIR}"
 # Copy the environment file to the 'bin' directory.
 cp "${SOURCE_PATH}" "${TARGET_DIR}/${ENV_FILE}"
 
-# Remove esmvaltool and esmvalcore directories, if they exist.
+# Remove the ESMValTool and ESMValCore directories, if they exist.
 if [[ -d ${ESMVALTOOL_DIR} ]]; then
     rm -rf "${ESMVALTOOL_DIR}"
 fi
