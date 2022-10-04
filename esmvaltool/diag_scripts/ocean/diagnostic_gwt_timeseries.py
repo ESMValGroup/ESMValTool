@@ -215,7 +215,7 @@ mod_exp_ens_skips = {
 
 #    ('EC-Earth3-CC', 'historical', 'r1i1p1f1'): True, #historical-ssp245_r1i1p1f1
 #    ('EC-Earth3-CC', 'ssp245', 'r1i1p1f1'): True, #historical-ssp245_r1i1p1f1
-    } 
+    }
 """
     ('IPSL-CM5A2-INCA', 'historical', 'r1i1p1f1',): True, # no SSP runs.
     ('IPSL-CM5A2-INCA', 'piControl', 'r1i1p1f1'): True,
@@ -352,10 +352,10 @@ cmap_ssp_air = {
     }
 
 
-threshold_colours = {1.: None,  #'black', 
+threshold_colours = {1.: None,  #'black',
                      1.5: 'black', 2.0: 'darkblue', 3.0:'darkred', 4.0:'purple',}
-threshold_marker_styles = {1.: None, #'v', 
-                           1.5: None, 
+threshold_marker_styles = {1.: None, #'v',
+                           1.5: None,
                            2.: 's', 3.: 'o', 4:'^',
                            5.:None}
 
@@ -917,20 +917,20 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
     test_data_dict(data_dict)
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name == 'areacello':
-            try: 
+            try:
                 cube = mask_landsea(cube, mask_out= 'land')
             except: pass
             area = cube.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
-            
+
             if area.data > 4.8e14: # Global total surface area! Too large for land surface.
-                print('ERROR: Ocean Surface too large!',area.data, dataset, short_name, exp, ensemble) 
+                print('ERROR: Ocean Surface too large!',area.data, dataset, short_name, exp, ensemble)
                 continue
             if areas.get(dataset, False):
                 print('already found this dataset:', dataset, short_name, exp, ensemble)
                 print('current cube:', area.data)
                 print('previous cube:',areas[dataset])
                 if 0.99 < area.data/areas[dataset] < 1.01: continue
-                else: assert 0 
+                else: assert 0
             areas[dataset] =  area.data
 
     print(areas)
@@ -1149,10 +1149,10 @@ def land_gt(data_dict, short='npp', gt='nppgt'):
                 assert 0
 
             if area.data > 4.8e14: # Global total surface area! Too large for land surface.
-                print('WARNING: global total surface area too large for land surface:', area.data, dataset) 
+                print('WARNING: global total surface area too large for land surface:', area.data, dataset)
                 assert 0
                 continue
-            
+
             areas[dataset] = area.data
 
     print('areas:',areas)
@@ -2204,7 +2204,7 @@ def calc_emissions(cfg, data_dict):
     Using the other values, we calculate emissions.
     # emmissions
     """
-    data_dict = calc_tls(cfg, data_dict)  
+    data_dict = calc_tls(cfg, data_dict)
     return data_dict
 
 
@@ -2322,7 +2322,7 @@ def load_luegt(cfg, data_dict):
                 if da == ' ': continue
                 # add each year to the lue data dict with ssp as keys
                 lue_data[header[d]].append(float(da))
-                
+
             print('appending:', len(years), len(lue_data[header[d]]), row)
 
     for exp, ensemble,dataset in product(exps.keys(), ensembles.keys(),datasets.keys()):
@@ -2331,7 +2331,7 @@ def load_luegt(cfg, data_dict):
 
         # No pi Control LUE data.
         if exp == 'piControl': continue
-        #load lue data list from exp:  
+        #load lue data list from exp:
         lue_da =  lue_data.get(exp, [])
         if lue_da == []:
             lue_da =  lue_data.get(exp.replace('historical-',''), [])
@@ -3511,6 +3511,7 @@ def make_ensemble_barchart_pane(
     plot_style = 'percentages',
     group_by = 'group_by_model',
     stacked_hists=False,
+    barh= False,
     fig=None,
     ax=None):
     """
@@ -3534,7 +3535,7 @@ def make_ensemble_barchart_pane(
             make_figure_here = True
     else:
         make_figure_here = False
-        stacked_hists = True 
+        stacked_hists = True
         plt.sca(ax)
 
     # single pane, single threshold
@@ -3608,54 +3609,6 @@ def make_ensemble_barchart_pane(
                         if unique_key not in remnants: continue
                         print('Key added', unique_key)
                         unique_key_order.append(unique_key)
-
-#     if group_by == 'gwlyear':
-#
-#         gwlyear_data = load_ecs_data()
-#         gwlyear_data_ssp = {}
-#         for exp in exps:
-#             gwlyearS_data_ssp[exp] = {'CMIP6': []}
-#
-#             for (t_dataset, t_short, t_exp, t_ens), threshold_times in thresholds_dict.items():
-#         if t_dataset != plot_dataset: continue
-#         if t_short != 'tas': continue
-#         if t_ens != 'ensemble_mean': continue
-#         if t_exp != exp1: continue
-#             for dat in datasets:
-#                 if dat=='CMIP6': continue
-#                 ecs = ECS_data.get(dat, False)
-#                 if not ecs: continue
-#                 ECS_data_ssp[exp]['CMIP6'].append(ecs)
-#                 ECS_data_ssp[exp][dat] = ecs
-#             ECS_data_ssp[exp]['CMIP6'] = np.mean(ECS_data_ssp[exp]['CMIP6'])
-#
-#         print('ECS_data_ssp:', ECS_data_ssp)
-#         for thr in thresholds:
-#             for exp in exps:
-#                 new_dataset_order = sorted((value, key) for (key,value) in ECS_data_ssp[exp].items())
-#                 new_dataset_order=[k for v, k in new_dataset_order]
-#
-# #               new_dataset_order = {d:ecs for (d, e), ecs in ECS_data_ssp.items() if e == exp}
-#                 print(thr, exp, 'new_dataset_order:', new_dataset_order)
-#  #              new_dataset_order = sorted(new_dataset_order.items(), key=lambda x:x[1])
-#                 #print(ECS_data_ssp)
-#                 #assert 0
-#                 #dataset_order = sortedECS_data_ssp.items()
-#                 #or dset,ecs in new_dataset_order.items():
-#
-#                 for dset in new_dataset_order:
-#                     print(dset,ecs)
-#                     for ens in ensembles:
-#                         if ensemble_key == 'ensemble_mean' and ens != 'ensemble_mean':
-#                             continue
-#                         if ensemble_key != 'ensemble_mean' and ens == 'ensemble_mean' and dset!= 'CMIP6': continue
-#                         if dset.find('UKESM')>-1: print(dset, exp, ens, thr)
-#                         unique_key = (dset, exp, ens, thr)
-#                         if unique_key in unique_key_order: continue
-#                         if unique_key not in remnants: continue
-#                         print('Key added', unique_key)
-#                         unique_key_order.append(unique_key)
-
 
     if group_by == 'group_by_model':
         for thr in thresholds:
@@ -3769,12 +3722,12 @@ def make_ensemble_barchart_pane(
     hline_air = {exp:[] for exp in exps}
     hline_ocean = {exp:[] for exp in exps}
 
-
     for i, unique_key in enumerate(unique_key_order):
     #for unique_key, remnant in sorted(remnants.items()):
         (t_dataset, t_exp, t_ens, t_threshold) = unique_key
 
-        if ensemble_key == 'ensemble_mean' and t_ens != 'ensemble_mean': continue
+        if ensemble_key == 'ensemble_mean' and t_ens != 'ensemble_mean':
+                continue
 
         #if 'CMIP6' in unique_key: continue
 
@@ -3785,8 +3738,6 @@ def make_ensemble_barchart_pane(
         landc = landcs[unique_key]
         oceanc = fgco2gts[unique_key]
         total = remnant + landc + oceanc
-
-
 
         adding_gaps = False
         dataset_blank = (i>0 and group_by == 'group_by_model' and t_dataset not in labels[-1])
@@ -3801,28 +3752,12 @@ def make_ensemble_barchart_pane(
             emissions_bottoms.append(0.)
             labels.append([''.join(['.' for k in range(i)]), ])
 
-
-#        if i == 0:
-#            print(i, unique_key)
-#            assert 0
-        # create bar label.
-        #if ensemble_key == 'ensemble_mean':
-        #    label_keys = [t_dataset, t_exp]
-        #else:
         label_keys = [t_dataset, t_exp, t_ens]
- #       if 'CMIP6' in label_keys and 'SSP119' in t_exp and
 
         labels.append(label_keys)
 
         xvalues.append(i+0.5)
         widths.append(1.)
-
-#        if i == 0:
-#            xvalues.append(0.)
-#            widths.append(1.)
-#        else:
-#            xvalues.append(xvalues[-1]+1.)
-#            widths.append(1.)
 
         if plot_style == 'percentages':
             if not isinstance(landc, float): assert 0
@@ -3881,7 +3816,6 @@ def make_ensemble_barchart_pane(
     full_alpha = (0.,0.,0.,0.)
 
     for i, lablist in enumerate(labels):
-
         if lablist[0][0] == '.':
             # empty bar
             label_strs.append(' ')
@@ -3942,44 +3876,62 @@ def make_ensemble_barchart_pane(
         print('ERROR:',  len(labels),len(land),len(widths), len(xvalues), len(label_strs), len(colours_land))
         assert 0
 
+    if stacked_hists and barh:
+        assert 0
+
     if stacked_hists:
 
-        print('threshold:', threshold, 
-              '\nxvalues:', xvalues, 
+        print('threshold:', threshold,
+              '\nxvalues:', xvalues,
               '\nland:', land,
               '\nocean:', ocean,
-              '\nair:', air, 
-              '\nmwidths:', widths, 
+              '\nair:', air,
+              '\nmwidths:', widths,
               '\ncolours_land:', colours_land,
               '\nlabel_strs:', label_strs,
-              '\nedge_colours:', edge_colours, 
+              '\nedge_colours:', edge_colours,
               '\nlinewidths:', linewidths,
               '\nplot_style:', plot_style)
-        ax.bar(xvalues, land, width=widths, label='Land', color=colours_land, tick_label = label_strs, edgecolor=edge_colours, linewidth=linewidths)
-        ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color=colours_ocean, edgecolor=edge_colours, linewidth=linewidths)
-        ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color=colours_air, edgecolor=edge_colours, linewidth=linewidths)
-        plt.xticks(rotation=90, fontsize='xx-small')
-        plt.xlim([-0.1, np.sum(widths)+0.1])
+
+        if barh:
+            ax.barh(xvalues, land, height=widths, label='Land', color=colours_land, tick_label = label_strs, edgecolor=edge_colours, linewidth=linewidths)
+            ax.barh(xvalues, ocean, height=widths, bottom = land,  label='Ocean', color=colours_ocean, edgecolor=edge_colours, linewidth=linewidths)
+            ax.barh(xvalues, air, height=widths, bottom = emissions_bottoms,  label='Atmos', color=colours_air, edgecolor=edge_colours, linewidth=linewidths)
+            plt.yticks(rotation=90, fontsize='xx-small')
+            plt.ylim([-0.1, np.sum(widths)+0.1])
+            if plot_style == 'percentages':
+                ax.set_xlim([0., 100.,])
+                ax.set_xlabel('Fractional Carbon Allocation, %')
+            else:
+                ax.set_xlabel('Total Carbon Allocation, Pg')
+
+        else:
+            ax.bar(xvalues, land, width=widths, label='Land', color=colours_land, tick_label = label_strs, edgecolor=edge_colours, linewidth=linewidths)
+            ax.bar(xvalues, ocean, width=widths, bottom = land,  label='Ocean', color=colours_ocean, edgecolor=edge_colours, linewidth=linewidths)
+            ax.bar(xvalues, air, width=widths, bottom = emissions_bottoms,  label='Atmos', color=colours_air, edgecolor=edge_colours, linewidth=linewidths)
+            plt.xticks(rotation=90, fontsize='xx-small')
+            plt.xlim([-0.1, np.sum(widths)+0.1])
+
+            draw_hlines = False
+            if draw_hlines:
+                for exp in exps:
+                    ax.axhline(np.mean(hline_land[exp]), lw=1.2, color=ssp_land[exp])
+                    ax.axhline(np.mean(hline_ocean[exp]), lw=1.2, color=ssp_ocean[exp])
+                    ax.axhline(np.mean(hline_air[exp]), lw=1.2, color=ssp_air[exp])
+
+            if plot_style == 'percentages':
+                ax.set_ylim([0., 100.,])
+                ax.set_ylabel('Fractional Carbon Allocation, %')
+            else:
+                ax.set_ylabel('Total Carbon Allocation, Pg')
+
         if float(threshold) > 1850.:
             ax.set_title(str(threshold))
         else:
             ax.set_title(str(threshold)+r'$\degree$'+' warming')
 
-        if plot_style == 'percentages':
-            ax.set_ylim([0., 100.,])
-            ax.set_ylabel('Fractional Carbon Allocation, %')
-        else:
-            ax.set_ylabel('Total Carbon Allocation, Pg')
-
         if do_legend:
             ax.legend()
-
-        draw_hlines = False
-        if draw_hlines:
-            for exp in exps:
-                ax.axhline(np.mean(hline_land[exp]), lw=1.2, color=ssp_land[exp])
-                ax.axhline(np.mean(hline_ocean[exp]), lw=1.2, color=ssp_ocean[exp])
-                ax.axhline(np.mean(hline_air[exp]), lw=1.2, color=ssp_air[exp])
 
     else:
         ax2.bar(xvalues, land, width=widths, label='Land', color=colours_land, tick_label = label_strs, edgecolor=edge_colours, linewidth=linewidths)
@@ -4003,7 +3955,6 @@ def make_ensemble_barchart_pane(
             if ax in [ax2,]:
                 plt.xticks(rotation=90, fontsize='x-small')
 
-
         if float(threshold) > 1850.:
             ax0.set_title(str(threshold))
         else:
@@ -4015,7 +3966,7 @@ def make_ensemble_barchart_pane(
                 xlims = ax.get_xlim()
                 new_xlims = [xlims[0], xlims[1]+2]
                 ax.set_xlim(new_xlims)
-                
+
             for exp in exps:
                 ax2.axhline(np.mean(hline_land[exp]), xmin=new_xlims[1]-2., xmax=new_xlims[1], lw=1.2, color=ssp_land[exp])
                 ax1.axhline(np.mean(hline_ocean[exp]), xmin=new_xlims[1]-2., xmax=new_xlims[1], lw=1.2, color=ssp_ocean[exp])
@@ -4035,6 +3986,155 @@ def make_ensemble_barchart_pane(
         plt.close()
     else:
         return fig, ax
+
+def make_ensemble_barchart_both(
+        cfg,
+        data_dict,
+        thresholds_dict,
+        ensemble_key = 'ensemble_mean',
+        group_by = 'ecs',
+        thresholds = ['2.0', '3.0', '4.0', ],
+):
+    """
+    Make a barchat for the whole ensemble
+    Horizontal bars
+
+    """
+    fig = plt.figure()
+    fig.set_size_inches(6, 15)
+    if len(thresholds) == 3:
+        gs = gridspec.GridSpec(3, 4, figure=fig, hspace=0.230,width_ratios=[1., 4., 4., 1]) # rows, columns
+        pcax_2=  fig.add_subplot(gs[0, 1]) # Percentage axes
+        pcax_3 =  fig.add_subplot(gs[1, 1])
+        pcax_4 =  fig.add_subplot(gs[2, 1])
+        vaax_2=  fig.add_subplot(gs[0, 2]) # value axes
+        vaax_3 =  fig.add_subplot(gs[1, 2])
+        vaax_4 =  fig.add_subplot(gs[2, 2])
+        ax_leg = fig.add_subplot(gs[:, 3]) # llegend axes
+        pcaxes = [pcax_2, pcax_3, pcax_4,]
+        vaaxes = [vaax_2, vaax_3, vaax_4, ]
+
+    # pc first:
+    for ax, threshold in zip(pcaxes, thresholds):
+        make_ensemble_barchart_pane(
+            cfg,
+            data_dict,
+            thresholds_dict,
+            threshold = threshold,
+            fig=fig,
+            ax=ax,
+            do_legend=False,
+            plot_style= 'percentages',
+            ensemble_key = ensemble_key,
+            group_by = group_by,
+            barh= True,
+            )
+        #plt.xticks(rotation=90)
+        ax.tick_params(axis = 'y', labelsize = 'x-small')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        if ax in [pcax_2, pcax_3,]:
+            ax.set_xticks([])
+            ax.set_xticklabels([])
+            ax.set_xlabel('')
+            ax.spines['left'].set_visible(False)
+
+
+    # pc first:
+    for ax, threshold in zip(vaaxes, thresholds):
+        make_ensemble_barchart_pane(
+            cfg,
+            data_dict,
+            thresholds_dict,
+            threshold = threshold,
+            fig=fig,
+            ax=ax,
+            do_legend=False,
+            plot_style= 'values',
+            ensemble_key = ensemble_key,
+            group_by = group_by,
+            barh= True,
+            )
+
+        #plt.xticks(rotation=90)
+        ax.set_yticks([])
+        ax.set_yticklabels([])
+        ax.set_ylabel('')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.tick_params(axis = 'y', labelsize = 'x-small')
+        if ax in [vaax_2, vaax_3,]: #[ax_3, ax_4]:
+            ax.set_xticks([])
+            ax.set_xticklabels([])
+            ax.set_xlabel('')
+            ax.spines['left'].set_visible(False)
+
+
+    yranges = []
+    for ax in pcaxes:
+        plt.sca(ax)
+        yranges.append(np.max(ax.get_ylim()) - np.min(ax.get_ylim()))
+        ax.set_xlim([0., 100.])
+
+    varanges = []
+    for ax in vaaxes:
+        plt.sca(ax)
+        varanges.append(ax.get_xlim())
+    for ax in vaaxes:
+        plt.sca(ax)
+        ax.set_xlim([np.min(varanges), np.max(varanges)])
+
+    print('New width ratios:', yranges)
+    gs.set_height_ratios(yranges)
+    fig.subplots_adjust(hspace=0.02)
+
+    # Draw legend.
+    plt.sca(ax_leg)
+    ms = 10
+    mland, = ax.plot([], [], c='black', marker='s', markersize=ms,
+              linestyle='none', markeredgecolor="black")
+    mocean, = ax.plot([], [], c='grey', marker='s', markersize=ms,
+              linestyle='none', markeredgecolor="black")
+    mair, = ax.plot([], [], c='silver', marker='s', markersize=ms,
+              linestyle='none', markeredgecolor="black")
+
+    dummies = {}
+    for ssp in cmap_ssp_air.keys():
+        dummies[(ssp, 'land')], = ax.plot([], [], c=cmap_ssp_land[ssp], marker='s', markersize=ms,
+              fillstyle='bottom',linestyle='none', markeredgecolor=cmap_ssp_ocean[ssp])
+        #dummies[(ssp, 'ocean')], = ax.plot([], [], c=cmap_ssp_ocean[ssp], marker='s', markersize=20,
+        #      fillstyle='cent', linestyle='none', markeredgecolor="black")
+        dummies[(ssp, 'air')], = ax.plot([], [], c=cmap_ssp_air[ssp], marker='s', markersize=ms,
+              fillstyle='top', linestyle='none', markeredgecolor=cmap_ssp_ocean[ssp])
+
+    keys, labels = [], []
+    for k, label in zip([mair , mocean, mland],['Atmosphere', 'Ocean', 'Land']):
+        keys.append(k)
+        labels.append(label)
+
+    for ssp in cmap_ssp_air.keys():
+        #keys.append((dummies[(ssp, 'land')], dummies[(ssp, 'ocean')], dummies[(ssp, 'sea')]))
+        keys.append((dummies[(ssp, 'land')], dummies[(ssp, 'air')]))
+
+        labels.append(sspify(ssp))
+
+    legd = ax_leg.legend(keys, labels,
+        bbox_to_anchor=(2.6, 0.5), #
+        numpoints=1, labelspacing=1.2,
+        loc='center right', ) #tsize=16)
+
+    legd.draw_frame(False)
+    legd.get_frame().set_alpha(0.)
+    ax_leg.get_xaxis().set_visible(False)
+    ax_leg.get_yaxis().set_visible(False)
+    plt.axis('off')
+
+    image_extention = diagtools.get_image_format(cfg)
+    path = diagtools.folder([cfg['plot_dir'], 'ensemble_barcharts_both'])
+    path += '_'.join(['ensemble_barcharts_both', ensemble_key, group_by]) + image_extention
+    print('Save image:', path)
+    plt.savefig(path)
+    plt.close()
 
 
 def make_ensemble_barchart(
@@ -4068,7 +4168,7 @@ def make_ensemble_barchart(
         ax_4 =  fig.add_subplot(gs[0, 3])
         ax_leg = fig.add_subplot(gs[0, 4])
         axes = [ax_1, ax_2, ax_3, ax_4]
-    
+
     for ax, threshold in zip(axes, thresholds):
         make_ensemble_barchart_pane(cfg, data_dict, thresholds_dict,threshold = threshold,fig=fig, ax=ax, do_legend=False,
             plot_style= plot_style,
@@ -5109,7 +5209,7 @@ def do_emission_scatterplot(cfg, data_dict, thresholds_dict, y_axis = 'ocean', x
 
         for threshold, time in thresholds.items():
             if time is None: continue # no GWT.
-            
+
             ms = threshold_marker_styles.get(threshold, None)
             size = sizes.get(ensemble, 60 )
             if dataset == 'CMIP6': size = 100.
@@ -5121,9 +5221,9 @@ def do_emission_scatterplot(cfg, data_dict, thresholds_dict, y_axis = 'ocean', x
 
             if x_axis in ['ocean', 'ocean_pc']:
                 index = np.argmin(np.abs(x_time - t))
-                if index in [-1, ]: 
-                    print(threshold, time, index, 'error',(dataset, short_name, exp, ensemble), t, x_time.min()) 
-                    assert 0 
+                if index in [-1, ]:
+                    print(threshold, time, index, 'error',(dataset, short_name, exp, ensemble), t, x_time.min())
+                    assert 0
                 x = x_data[index]
             else:
                 x = time.year + 0.5
@@ -5284,7 +5384,7 @@ def do_ecs_scatterplot(cfg, data_dict, thresholds_dict, x_axis = 'ecs', include_
             #plt.scatter(x,y, c = colour, marker = ms, edgecolor=edgecolor, linewidth=2.5, alpha = alpha, s=size, zorder=1)
     if include_1:
         xlims = [1970., 2100.,]
-    else: 
+    else:
         xlims = [2000., 2100.,]
     # outside plot dots.
     x_times = {dataset:2105 for dataset in datasets}
@@ -5868,11 +5968,20 @@ def main(cfg):
                         make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'], plot_dataset=plotdataset, plot_pcs=plot_pcs)
 
 
+            do_cumulative_plot = True
+            if do_cumulative_plot:
+                   # doubke colourful bar chart
+                    plot_styles = ['percentages', 'values']
+                    group_bys = ['ecs', ] #'group_by_ssp', 'ecs'] # 'group_by_model'
+                    for group_by in group_bys):
+                        make_ensemble_barchart_both(cfg, data_dict, thresholds_dict, ensemble_key='ensemble_mean', group_by=group_by)
+
+
             do_count_and_sensitivity_table = True
             if do_count_and_sensitivity_table:
                 make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict)
 
-            do_timeseries_megaplot = True 
+            do_timeseries_megaplot = True
             if do_timeseries_megaplot:
                 # master
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean'],
@@ -5929,7 +6038,8 @@ def main(cfg):
 #                    timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=plot_styles,
 #                        panes = ['tas', 'atmos_carbon','tls', 'fgco2', 'lue', 'nbp'])
 
-            do_cumulative_plot = True 
+
+            do_cumulative_plot = True
             if do_cumulative_plot:
                #vertical bar chart
                 plot_styles = ['percentages', 'values']
@@ -5938,7 +6048,7 @@ def main(cfg):
                 for plot_style, ens, group_by in product(plot_styles, ens_styles, group_bys):
                     make_ensemble_barchart(cfg, data_dict, thresholds_dict, plot_style=plot_style, ensemble_key=ens, group_by=group_by)
 
-            do_cumulative_panes = False 
+            do_cumulative_panes = False
             if do_cumulative_panes:
                 plot_styles = ['percentages', 'values']
 
@@ -5953,6 +6063,14 @@ def main(cfg):
                         group_by = 'ecs',
                         stacked_hists=False,
                         )
+
+            do_horizontal_plot = True
+            if do_horizontal_plot:
+                # Horizontal bar charts with allocartions:
+                for plotdataset in sorted(datasets.keys()):
+                    make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, plot_dataset=plotdataset)
+                    make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'], plot_dataset=plotdataset)
+
 
             do_cumulative_ts_megaplot = True #False
             # Massive plot that has like 12 panes.
