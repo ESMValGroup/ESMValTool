@@ -6,6 +6,7 @@
 .. |Cylc| replace:: :term:`Cylc`
 .. |ESM| replace:: :term:`ESM`
 .. |ESMs| replace:: :term:`ESMs <ESM>`
+.. |ESMValCore| replace:: :term:`ESMValCore`
 .. |ESMValTool| replace:: :term:`ESMValTool`
 .. |ESMValCore| replace:: :term:`ESMValCore`
 .. |Rose| replace:: :term:`Rose`

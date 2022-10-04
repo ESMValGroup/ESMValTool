@@ -67,7 +67,7 @@ def get_config_values_from_task_env():
         },
         "extra_facets_dir": [],
         "max_parallel_tasks": int(os.environ["MAX_PARALLEL_TASKS"]),
-        "output_dir": os.environ["CYLC_WORKFLOW_SHARE_DIR"],
+        "output_dir": os.environ["OUTPUT_DIR"],
         "rootpath": {
             "ana4mips": os.environ["ROOTPATH_ANA4MIPS"],
             "CMIP3": os.environ["ROOTPATH_CMIP3"],
