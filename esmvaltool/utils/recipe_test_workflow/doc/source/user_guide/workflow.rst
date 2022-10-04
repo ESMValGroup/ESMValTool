@@ -39,7 +39,7 @@ The |RTW| performs the following steps:
   :Executes:
      The |ESMValTool| command line script
   :Details:
-     Runs for every metric defined in the workflow
+     Runs for every group of recipes defined in the workflow
 
 Design considerations
 ---------------------
@@ -59,6 +59,7 @@ and ``opt`` directories within the workflow. The files required are:
 
 ``opt/rose-suite-<site>.conf``
   Contains configuration items specific to the ``SITE``, including ``SITE``
+  Defines paths specific to the ``SITE`` on where to find required datasets
 
 Metadata
 ~~~~~~~~
