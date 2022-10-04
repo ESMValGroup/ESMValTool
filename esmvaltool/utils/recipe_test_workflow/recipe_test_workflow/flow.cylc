@@ -11,8 +11,8 @@
    initial cycle point = 1
     [[graph]]
         R1 = install_cold => configure
-        2/P2 = configure[-P1] => process<fast> => compare<fast>
-        3/P2 = configure[-P2] => process<medium> => compare<medium>
+        2/P2 = configure[-P1] => configure => process<fast> => compare<fast>
+        3/P2 = configure[-P2] => configure => process<medium> => compare<medium>
 
 [runtime]
     [[root]]
@@ -74,7 +74,6 @@
     [[compare<fast>]]
         inherit = None, COMPUTE
         [[[environment]]]
-            OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/1
             ROSE_TASK_APP = compare
             KGO_METRIC = "${CYLC_TASK_PARAM_fast}"
             KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
@@ -82,7 +81,6 @@
     [[compare<medium>]]
         inherit = None, COMPUTE
         [[[environment]]]
-            OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/1
             ROSE_TASK_APP = compare
             KGO_METRIC = "${CYLC_TASK_PARAM_medium}"
             KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
