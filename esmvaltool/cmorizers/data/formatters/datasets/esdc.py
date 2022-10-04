@@ -36,6 +36,11 @@ def fix_cube(short_name, var, cube, cfg):
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
     cube = monthly_statistics(cube, operator="mean")  # Fix frequency
+    # Fix metadata
+    attrs = cfg['attributes']
+    attrs['mip'] = var['mip']
+    utils.fix_var_metadata(cube, cmor_info)
+    utils.set_global_atts(cube, attrs)
     return cube
 
 
