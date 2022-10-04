@@ -35,4 +35,4 @@ git clone -q -b "${BRANCH}" "${ESMVALCORE_URL}" "${ESMVALCORE_DIR}"
 
 # Manually and temporarily install imagehash (it will be included in the
 # next ESMValTool community environment).
-rtw-env pip install imagehash -t "${CYLC_WORKFLOW_RUN_DIR}/lib"
+rtw-env pip install imagehash -t "${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValTool"
