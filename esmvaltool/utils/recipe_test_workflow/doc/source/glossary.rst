@@ -17,8 +17,7 @@ Glossary
      Earth System Model
 
    ESMValCore
-     ESMValCore is a separate repository that contains core functionalities
-     for the `ESMValTool`.
+     ESMValCore contains the core functionalities for the ESMValTool.
 
    ESMValTool
      ESMValTool is a community diagnostic and performance metrics tool for
