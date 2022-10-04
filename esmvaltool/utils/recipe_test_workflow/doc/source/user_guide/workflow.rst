@@ -43,8 +43,8 @@ The |RTW| performs the following steps:
 
 ``compare``
   :Description:
-     Runs the compare script in |ESMValTool| on the recipe previously run
-     in ``process`` and a known good output.
+     Compares the output from the ``process`` job with a Known Good Output
+     (KGO).
   :Runs on:
      ``COMPUTE``, which depends on the ``SITE``; at the Met Office, the
      ``compare`` jobs will run on SPICE
