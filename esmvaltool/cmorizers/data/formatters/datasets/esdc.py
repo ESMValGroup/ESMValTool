@@ -92,7 +92,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             cube = fix_cube(short_name, var, cube_iris, cfg)
 
             # 3. store the data with the correct filename
-
             utils.save_variable(cube=cube,
                                 var=short_name,
                                 outdir=out_dir,
