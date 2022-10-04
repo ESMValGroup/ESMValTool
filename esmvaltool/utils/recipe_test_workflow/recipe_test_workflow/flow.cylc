@@ -20,9 +20,9 @@
         env-script = "eval $(rose task-env)"
         [[[environment]]]
             MODULE_NAME = {{ MODULE_NAME }}
+            OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/${CYLC_TASK_CYCLE_POINT}
             USER_CONFIG_DIR = ${CYLC_WORKFLOW_RUN_DIR}/etc
             USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
-            OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/${CYLC_TASK_CYCLE_POINT}
             ESMVALCORE_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValCore
             ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValTool
             PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
@@ -64,6 +64,7 @@
             ROSE_TASK_APP = process
             RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_fast}.yml"
 
+
     [[process<medium>]]
         inherit = None, COMPUTE
         [[[environment]]]
@@ -73,15 +74,17 @@
     [[compare<fast>]]
         inherit = None, COMPUTE
         [[[environment]]]
+            OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/1
             ROSE_TASK_APP = compare
-            KGO_METRIC = "${CYLC_TASK_PARAM_metric}"
+            KGO_METRIC = "${CYLC_TASK_PARAM_fast}"
             KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
 
     [[compare<medium>]]
         inherit = None, COMPUTE
         [[[environment]]]
+            OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/1
             ROSE_TASK_APP = compare
-            KGO_METRIC = "${CYLC_TASK_PARAM_metric}"
+            KGO_METRIC = "${CYLC_TASK_PARAM_medium}"
             KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
 
 {% include 'site/' ~ SITE ~ '.cylc' %}
