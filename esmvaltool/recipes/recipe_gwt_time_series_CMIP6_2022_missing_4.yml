@@ -1,4 +1,3 @@
-@@ -1,464 +0,0 @@
 # ESMValTool
 # recipe_gwt_time_series.yml
 ---
@@ -84,68 +83,68 @@ diagnostics:
         project: CMIP6
         mip: Amon
         additional_datasets:
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r12i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r13i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r6i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r7i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r8i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r9i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp585], grid: gr, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r10i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r11i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r12i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r13i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r1i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r4i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r6i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r7i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r8i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r9i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r10i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r11i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r4i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp126], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r2i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r3i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r5i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp370], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r2i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r3i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r5i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r1i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r2i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r3i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r4i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r5i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp126], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r2i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r3i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp370], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp585], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r1i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r2i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r3i1p1f1, start_year:1850, end_year:2014, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r12i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r13i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r6i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r7i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r8i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r9i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp585], grid: gr, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r10i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r11i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r12i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r13i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r6i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r7i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r8i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r9i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r10i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r11i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp126], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r2i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r3i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r5i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp370], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r2i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r3i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r5i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r2i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r3i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Amon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r5i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp126], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r2i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r3i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp370], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp585], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r2i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Amon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r3i1p1f1, start_year: 1850, end_year: 2014, }
 
 
 
@@ -158,74 +157,74 @@ diagnostics:
         project: CMIP6
         mip: Omon
         # exp: historical
-        # start_year: 1850
-        # end_year: 2014
+        # start_year:  1850
+        # end_year:  2014
         # grid: gn
         # ensemble: "*"
         additional_datasets:
 
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r12i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r13i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r6i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r7i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r8i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r9i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp585], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r10i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r11i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r12i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r13i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r1i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r4i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r6i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r7i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r8i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r9i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r10i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r11i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r4i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp126], grid: gr, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gr, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gr, ensemble: r2i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gr, ensemble: r3i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gr, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gr, ensemble: r5i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp370], grid: gr, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gr, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gr, ensemble: r2i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gr, ensemble: r3i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gr, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gr, ensemble: r5i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gr, ensemble: r1i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gr, ensemble: r2i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gr, ensemble: r3i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gr, ensemble: r4i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gr, ensemble: r5i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp126], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r2i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r3i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp370], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp585], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r1i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r2i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r3i1p1f1, start_year:1850, end_year:2014, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r12i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r13i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r6i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r7i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r8i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gn, ensemble: r9i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp585], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r10i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r11i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r12i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r13i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r6i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r7i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r8i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gn, ensemble: r9i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r10i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r11i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp126], grid: gr, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gr, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gr, ensemble: r2i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gr, ensemble: r3i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gr, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gr, ensemble: r5i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp370], grid: gr, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gr, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gr, ensemble: r2i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gr, ensemble: r3i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gr, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gr, ensemble: r5i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gr, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gr, ensemble: r2i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gr, ensemble: r3i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gr, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Omon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gr, ensemble: r5i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp126], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r2i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r3i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp370], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp585], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r2i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Omon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r3i1p1f1, start_year: 1850, end_year: 2014, }
 
 
       ########################
@@ -237,73 +236,73 @@ diagnostics:
         project: CMIP6
         mip: Lmon
         # exp: historical
-        # start_year: 1850
-        # end_year: 2014
+        # start_year:  1850
+        # end_year:  2014
         # grid: gn
         # ensemble: "*"
         additional_datasets:
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r12i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r13i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r6i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r7i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r8i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r9i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp585], grid: gr, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r10i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r11i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r12i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r13i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r1i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r4i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r6i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r7i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r8i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r9i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r10i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r11i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r10i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r11i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r4i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp126], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r2i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r3i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r5i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp370], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r2i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r3i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r4i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r5i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r1i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r2i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r3i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r4i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r5i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp126], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r2i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r3i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp370], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp585], grid: gn, ensemble: r1i1p1f1, start_year:1985, end_year:2100, }
-          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r1i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r2i1p1f1, start_year:1850, end_year:2014, }
-          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r3i1p1f1, start_year:1850, end_year:2014, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r12i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r13i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r6i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r7i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r8i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp245], grid: gr, ensemble: r9i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: [historical,ssp585], grid: gr, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r10i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r11i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r12i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r13i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r6i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r7i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r8i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: EC-Earth-Consortium, dataset: EC-Earth3-CC, exp: historical, grid: gr, ensemble: r9i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp126], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp245], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp370], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r10i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r11i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: [historical,ssp585], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r10i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r11i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2, exp: historical, grid: gn, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp126], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r2i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r3i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp245], grid: gn, ensemble: r5i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp370], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r2i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r3i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r4i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: [historical,ssp585], grid: gn, ensemble: r5i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r2i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r3i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r4i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Lmon, institute: NCAR, dataset: CESM2-WACCM, exp: historical, grid: gn, ensemble: r5i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp126], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r2i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp245], grid: gn, ensemble: r3i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp370], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+#          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: [historical,ssp585], grid: gn, ensemble: r1i1p1f1, start_year: 1985, end_year: 2100, }
+          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014, }
+          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r2i1p1f1, start_year: 1850, end_year: 2014, }
+#          - {project: CMIP6, mip: Lmon, institute: NCC, dataset: NorESM2-LM, exp: historical, grid: gn, ensemble: r3i1p1f1, start_year: 1850, end_year: 2014, }
 
 
 

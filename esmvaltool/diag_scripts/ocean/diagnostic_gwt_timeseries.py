@@ -259,6 +259,7 @@ def extend_mod_exp_ens_skips(mod_exp_ens_skips):
 
     mod_exp_ens_skips.update(new_dict)
     return mod_exp_ens_skips
+
 mod_exp_ens_skips = extend_mod_exp_ens_skips(mod_exp_ens_skips)
 
 # For models (like UKESM), where the hist and ssp have different ensemble ids:
@@ -1500,6 +1501,7 @@ def load_timeseries(cfg, short_names):
             exp = standardized_exps(metadatas[fn]['exp'])
             dataset = metadatas[fn]['dataset']
             ensemble = standardized_ens(metadatas[fn]['ensemble'])
+            print(fn, short_name, exp, dataset, ensemble)  
             variable_group = metadatas[fn]['variable_group']
             if isinstance(exp, list): exp = tuple(exp)
             if isinstance(ensemble, list): ensemble = tuple(ensemble)
@@ -4189,8 +4191,9 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     atmos='atmos_carbon',
     exp_order = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585'],
     plot_dataset='CMIP6',
+    plot_pcs=False,
     fig=None,
-     ax=None):
+    ax=None):
     """
     Make a bar chart (of my favourite pies)
     """
@@ -4242,7 +4245,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
             t_exp = t_exp.replace('historical-', '').upper()
             experiments.append(t_exp)
             continue
-        print('threshold_times: vworking here right now', threshold_times)
+
         for thresh, time in threshold_times.items():
             print("make_bar_chart", t_short, t_exp, t_ens, thresh, threshold, time)
             if float(threshold) != float(thresh):
@@ -4289,7 +4292,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
                 fgco2gts.append(fgco2gt_cumul.data[f_xpoint])
 
             t_exp = t_exp.replace('historical-', '').upper()
-            experiments.append(t_exp)
+            experiments.append(sspify(t_exp))
 
     if fig == None:
         fig, ax = plt.subplots()
@@ -4318,36 +4321,71 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
         print("Final values:",threshold, i, exp, totals[i], '=',emissions_diff[i],('or', remnant[i]), '+', landcs[i], '+', fgco2gts[i], '(a, l, o)')
     #assert 0
     # Add bars:
-    horizontal = True
-    if horizontal:
-        ax.barh(experiments, landcs, label='Land', color='mediumseagreen')
-        ax.barh(experiments, fgco2gts, left = landcs,  label='Ocean', color='dodgerblue')
-        ax.barh(experiments, emissions_diff, left = emissions_bottoms,  label='Atmos', color='silver')
-#        ax.set_ylabel(str(threshold)+r'$\degree$'+' warming')
 
-    else:
-        ax.barh(experiments, landcs, label='Land', color='green')
-        ax.barh(experiments, fgco2gts, bottom = landcs,  label='Ocean', color='dodgerblue')
-        ax.barh(experiments, emissions_diff, bottom = emissions_bottoms,  label='Atmos', color='grey')
-#        ax.set_xlabel('Scenarios')
+    if plot_pcs: # plots this figure as percentages instead of totals.
+        
+        landcs = np.array(landcs)
+        fgco2gts = np.array(fgco2gts)
+        remnant =  np.array(remnant)
+        emissions_diff = np.array(emissions_diff)
+        pctotals = 100./(landcs + fgco2gts + remnant)
+        ax.barh(experiments, landcs* pctotals, label='Land', color='mediumseagreen')
+        ax.barh(experiments, fgco2gts*pctotals, left = landcs*pctotals,  label='Ocean', color='dodgerblue')
+        ax.barh(experiments, emissions_diff*pctotals, left = emissions_bottoms*pctotals,  label='Atmos', color='silver')
 
-    # Add percentages:
-    add_pc_text = True
-    if add_pc_text:
-        def pc(a,b): return str("{0:.1f}%".format(100.*a/b))
-        for e, exp in enumerate(experiments):
-            print(e, exp, landcs[e], fgco2gts[e], emissions_diff[e])
-            t = totals[e]
-            ax.text(landcs[e]/2, e, pc(landcs[e], t),
+        # Add percentages:
+        add_pc_text = True
+        if add_pc_text:
+            #def pc(a,b): 
+            #    return ''.join([str(int(a)), 'Pg (', "{0:.1f}%".format(100.*a/b),')'])
+            def pc(a,b): 
+                 return str("{0:.1f}%".format(100.*a/b))
+            for e, exp in enumerate(experiments):
+                print(e, exp, landcs[e], fgco2gts[e], emissions_diff[e])
+                t = totals[e]
+                ax.text(100.*landcs[e]/(2*t), e, pc(landcs[e], t),
                     color='#002200', #'darkgreen',
                     fontsize=8 , # fontweight='bold',
                     verticalalignment='center',horizontalalignment='center')
 
-            ax.text(landcs[e]+fgco2gts[e]/2., e, pc(fgco2gts[e], t),
+                ax.text(100.*(landcs[e]+fgco2gts[e]/2.)/t, e, pc(fgco2gts[e], t),
                     color='darkblue', fontsize=8 , # fontweight='bold',
                     verticalalignment='center',horizontalalignment='center')
 
-            ax.text(emissions_bottoms[e]+emissions_diff[e]/2., e, pc(emissions_diff[e],t ),
+                ax.text(100.*(emissions_bottoms[e]+emissions_diff[e]/2.)/t, e, pc(emissions_diff[e],t ),
+                    color='black', fontsize=8 , # fontweight='bold',
+                    verticalalignment='center',horizontalalignment='center')
+
+    else:
+        horizontal = True
+        if horizontal:
+            ax.barh(experiments, landcs, label='Land', color='mediumseagreen')
+            ax.barh(experiments, fgco2gts, left = landcs,  label='Ocean', color='dodgerblue')
+            ax.barh(experiments, emissions_diff, left = emissions_bottoms,  label='Atmos', color='silver')
+        else:
+            ax.barh(experiments, landcs, label='Land', color='green')
+            ax.barh(experiments, fgco2gts, bottom = landcs,  label='Ocean', color='dodgerblue')
+            ax.barh(experiments, emissions_diff, bottom = emissions_bottoms,  label='Atmos', color='grey')
+
+        # Add percentages:
+        add_pc_text = True
+        if add_pc_text:
+            #def pc(a,b): return str("{0:.1f}%".format(100.*a/b))
+            def pc(a,b): return str(int(a)) #"{0:.1f}%".format(100.*a/b))
+
+            for e, exp in enumerate(experiments):
+                print(e, exp, landcs[e], fgco2gts[e], emissions_diff[e])
+                t = totals[e]
+                ax.text(landcs[e]/2, e, pc(landcs[e], t),
+                    color='#002200', #'darkgreen',
+                    fontsize=8 , # fontweight='bold',
+                    verticalalignment='center',horizontalalignment='center')
+
+                ax.text(landcs[e]+fgco2gts[e]/2., e, pc(fgco2gts[e], t),
+                    color='darkblue', fontsize=8 , # fontweight='bold',
+                    verticalalignment='center',horizontalalignment='center')
+
+                ax.text(emissions_bottoms[e]+emissions_diff[e]/2., e, pc(emissions_diff[e],t ),
                     color='black', fontsize=8 , # fontweight='bold',
                     verticalalignment='center',horizontalalignment='center')
 
@@ -4366,9 +4404,13 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
         ax.set_ylabel(str(threshold)) #+r'$\degree$'+' warming')
 
     else:
-        ax.set_ylabel(str(threshold)+r'$\degree$'+'C GWT')
+        ax.set_ylabel(str(threshold)+r'$\degree$'+'C GWL')
 #        ax.set_title('Carbon Allocation at '+str(threshold)+r'$\degree$'+' warming')
-    ax.set_xlabel('Anthropogenic Carbon Allocation, Pg')
+    if plot_pcs:
+        ax.set_xlabel('Anthropogenic Carbon Allocation, %')
+
+    else:
+        ax.set_xlabel('Anthropogenic Carbon Allocation, Pg')
 
     if do_legend:
         ax.legend(loc='lower right')
@@ -5409,6 +5451,7 @@ def make_cumulative_vs_threshold(cfg, data_dict,
     LHS_panes = [{'x':'atmos_carbon', 'y':'tas_norm'}, ],
     thresholds = ['4.0', '3.0', '2.0'],
     plot_dataset='CMIP6',
+    plot_pcs=False,
 ):
     """
     Make a specific kind of figure.
@@ -5423,8 +5466,8 @@ def make_cumulative_vs_threshold(cfg, data_dict,
         fig.set_size_inches(7 , 6)
         gs = gridspec.GridSpec(3, 1, figure=fig, hspace=0.5)
     else:
-        fig.set_size_inches(14, 6)
-        gs = gridspec.GridSpec(3, 2,figure=fig, width_ratios=[1,1], wspace=0.5, hspace=0.5)
+        fig.set_size_inches(10, 7)
+        gs = gridspec.GridSpec(3, 2,figure=fig, width_ratios=[1,1], wspace=0.05, hspace=0.3)
 
     # Get a big line graph on LHS.
     if len(LHS_panes) ==1:
@@ -5441,18 +5484,42 @@ def make_cumulative_vs_threshold(cfg, data_dict,
 
     if len(LHS_panes) ==3:
         for i, LHS_pane in enumerate(LHS_panes):
-            ax_ts =  fig.add_subplot(gs[i, 0])
-            fig, ax = make_ts_figure(cfg, data_dict, thresholds_dict,
-                x=LHS_pane['x'],
-                y=LHS_pane['y'],
-                markers='thresholds',
-                draw_line=True,
-                do_moving_average=False,
-                ensemble_mean = True,
-                fig=fig,
-                ax = ax_ts,)
-            if LHS_pane['x'] == 'time':
-                ax_ts.set_xlim([2000., 2100.])
+            if LHS_pane.get('x', False):
+                ax_ts =  fig.add_subplot(gs[i, 0])
+                fig, ax = make_ts_figure(cfg, data_dict, thresholds_dict,
+                    x=LHS_pane['x'],
+                    y=LHS_pane['y'],
+                    markers='thresholds',
+                    draw_line=True,
+                    do_moving_average=False,
+                    ensemble_mean = True,
+                    fig=fig,
+                    ax = ax_ts,)
+                if LHS_pane['x'] == 'time':
+                    ax_ts.set_xlim([2000., 2100.])
+            else:
+                lhax_4 =  fig.add_subplot(gs[0, 0])
+                lhax_3 =  fig.add_subplot(gs[1, 0])
+                lhax_2 =  fig.add_subplot(gs[2, 0])
+                lhaxes = [lhax_4, lhax_3, lhax_2]
+                legends= {lhax_4:False, lhax_3:False, lhax_2:False}
+
+                ranges=[]
+                for ax, threshold in zip(lhaxes, thresholds):
+                    make_bar_chart(cfg, data_dict, thresholds_dict,
+                           threshold = threshold, land_carbon = land_carbon,fig=fig, ax=ax, do_legend=legends[ax],
+                           plot_dataset = plot_dataset, plot_pcs=not plot_pcs)
+                    ranges.append(ax.get_xlim())
+
+                for ax in [lhax_4, lhax_3, lhax_2]:
+                    plt.sca(ax)
+                    ax.set_xlim([np.min(ranges), np.max(ranges)])
+                    ax.spines['top'].set_visible(False)
+                    ax.spines['right'].set_visible(False)
+                    ax.yaxis.set_tick_params(length=0)
+                    if ax in [lhax_3, lhax_4]:
+                        ax.set_xlabel('')
+                    ax.spines['left'].set_visible(False)
 
 
     if len(LHS_panes) ==0:
@@ -5470,7 +5537,7 @@ def make_cumulative_vs_threshold(cfg, data_dict,
     for ax, threshold in zip(axes, thresholds):
         make_bar_chart(cfg, data_dict, thresholds_dict,
                        threshold = threshold, land_carbon = land_carbon,fig=fig, ax=ax, do_legend=legends[ax],
-                       plot_dataset = plot_dataset)
+                       plot_dataset = plot_dataset, plot_pcs=plot_pcs)
 
     ranges = []
     height_ratios = []
@@ -5485,23 +5552,31 @@ def make_cumulative_vs_threshold(cfg, data_dict,
         ax.set_xlim([np.min(ranges), np.max(ranges)])
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
-        if ax in [ax_3, ax_2]:
+        if ax in [ax_3, ax_4]:
             ax.set_xlabel('')
-            ax.spines['left'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+        ax.yaxis.set_tick_params(length=0)
+
         if ax == ax_2:
             ax.legend(loc='upper right')
+        if len(LHS_panes):
+            ax.set_ylabel('')
+            ax.set_yticks([])
 
-    if len(LHS_panes) ==0:
-        # Set y axis size to make all panes the same aspect ratio (maybe)
-        print('New height ratios:', height_ratios)
-        gs.set_height_ratios(height_ratios)
-        fig.subplots_adjust(wspace=0.05)
+
+#    if len(LHS_panes) ==0:
+    # Set y axis size to make all panes the same aspect ratio (maybe)
+    print('New height ratios:', height_ratios)
+    gs.set_height_ratios(height_ratios)
+    fig.subplots_adjust(wspace=0.05)
     # plt.suptitle('Carbon Allocation')
 
     if plot_dataset != 'all_models':
         plt.suptitle(' '.join([plot_dataset, 'Carbon Allocation', ]))
     image_extention = diagtools.get_image_format(cfg)
     path = diagtools.folder([cfg['plot_dir'], 'emissions_figures_new', plot_dataset])
+    if plot_pcs:
+        path = diagtools.folder([cfg['plot_dir'], 'emissions_figures_pcs', plot_dataset])
     path += '_'.join(['emssions_figure', land_carbon, str(len(LHS_panes)), '_'.join(thresholds), plot_dataset]) + image_extention
     plt.savefig(path)
     plt.close()
@@ -5781,10 +5856,17 @@ def main(cfg):
         # ake_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', land_carbon = 'tls')
 
         if jobtype in ['cumulative_plot', 'debug']:
-            # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls')
-            # make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
-            # make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
-            # make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
+            do_horizontal_plot = True
+            if do_horizontal_plot:
+                make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = [{},{},{}], plot_dataset='CMIP6',plot_pcs=False)
+
+                # Horizontal bar charts with allocartions:
+                for plot_pcs in [True, False]:
+                    for plotdataset in sorted(datasets.keys()):
+                        make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = [{},{},{}], plot_dataset=plotdataset,plot_pcs=plot_pcs)
+                        make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, plot_dataset=plotdataset,plot_pcs=plot_pcs)
+                        make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'], plot_dataset=plotdataset, plot_pcs=plot_pcs)
+
 
             do_count_and_sensitivity_table = True
             if do_count_and_sensitivity_table:
@@ -5871,14 +5953,6 @@ def main(cfg):
                         group_by = 'ecs',
                         stacked_hists=False,
                         )
-
-            do_horizontal_plot = True 
-            if do_horizontal_plot:
-                # Horizontal bar charts with allocartions:
-                for plotdataset in sorted(datasets.keys()):
-                    make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, plot_dataset=plotdataset)
-                    make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'], plot_dataset=plotdataset)
-
 
             do_cumulative_ts_megaplot = True #False
             # Massive plot that has like 12 panes.
