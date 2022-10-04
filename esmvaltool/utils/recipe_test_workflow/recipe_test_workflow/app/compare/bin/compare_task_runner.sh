@@ -1,7 +1,7 @@
 #!/bin/bash
 # Send the output from 'set -x' to 'stdout' rather than 'stderr'.
 BASH_XTRACEFD=1
-#set -eux
+set -eux
 
 FOLDER_NAME="${OUTPUT_DIR}/recipe_${KGO_METRIC}*"
 KGO="${KGO_ROOT_PATH}/recipe_${KGO_METRIC}*"
