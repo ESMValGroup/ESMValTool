@@ -13,5 +13,5 @@
 
     [[process<medium>]]
         [[[directives]]]
-            --time = 4
+            --time = 6
             --mem = 2G
