@@ -16,6 +16,9 @@ Glossary
    ESM
      Earth System Model
 
+   ESMValCore
+     ESMValCore contains the core functionalities for the ESMValTool.
+
    ESMValTool
      ESMValTool is a community diagnostic and performance metrics tool for
      routine evaluation of |ESMs| in |CMIP|, see the

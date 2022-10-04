@@ -41,6 +41,19 @@ The |RTW| performs the following steps:
   :Details:
      Runs for every metric defined in the workflow
 
+``compare``
+  :Description:
+     Compares the output from the ``process`` job with a Known Good Output
+     (KGO).
+  :Runs on:
+     ``COMPUTE``, which depends on the ``SITE``; at the Met Office, the
+     ``compare`` jobs will run on SPICE
+  :Executes:
+     The ``compare.py`` script from |ESMValTool| through the
+     ``compare_task_runner.sh`` script from the |Rose| app
+  :Details:
+     Runs for every metric defined in the workflow
+
 Design considerations
 ---------------------
 
