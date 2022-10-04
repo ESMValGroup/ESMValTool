@@ -3,15 +3,15 @@
     UTC mode = True
 
 [task parameters]
-    small = modes_of_variability, multimodel_products
+    fast = modes_of_variability, multimodel_products
     medium = ensclus, heatwaves_coldwaves
 
 [scheduling]
     [[graph]]
         R1 = """
              install_cold => configure
-             configure:succeed => process<small>
-             configure:succeed => process<medium>
+             configure => process<fast>
+             configure => process<medium>
         """
 
 [runtime]
@@ -54,11 +54,11 @@
             ROOTPATH_OBS4MIPS = {{ ROOTPATH_OBS4MIPS }}
             ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
 
-    [[process<small>]]
+    [[process<fast>]]
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = process
-            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_small}.yml"
+            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_fast}.yml"
 
     [[process<medium>]]
         inherit = None, COMPUTE

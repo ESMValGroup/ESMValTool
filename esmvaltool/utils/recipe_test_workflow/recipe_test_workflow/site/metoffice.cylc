@@ -6,12 +6,12 @@
             --wckey = RTW
             --ntasks = {{ MAX_PARALLEL_TASKS }}
 
-    [[process<small>]]
+    [[process<fast>]]
         [[[directives]]]
-            --time = 4
-            --mem = 6G
+            --time = 2
+            --mem = 2G
 
     [[process<medium>]]
         [[[directives]]]
-            --time = 8
-            --mem = 6G
+            --time = 4
+            --mem = 2G
