@@ -12,7 +12,7 @@
     [[graph]]
         R1 = install_cold => configure
         2/P2 = configure[-P1] => configure => process<fast> => compare<fast>
-        3/P2 = configure[-P2] => configure => process<medium> => compare<medium>
+        3/P2 = configure[-P1] => configure => process<medium> => compare<medium>
 
 [runtime]
     [[root]]
