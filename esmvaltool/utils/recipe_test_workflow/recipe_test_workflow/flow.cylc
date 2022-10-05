@@ -23,7 +23,7 @@
             PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
 
     [[install_cold]]
-        platform = localhost
+        platform = localhost # Suggest putting "local" type tasks in a common family - LOCAL? - and handling platform in there
         [[[environment]]]
             SITE = {{ SITE }}
 
