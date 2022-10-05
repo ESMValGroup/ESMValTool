@@ -45,7 +45,7 @@ def _extract_variable(cmor_info, attrs, var_file, out_dir, cfg):
                                 var_name='time',
                                 long_name='time')
     lats = iris.coords.DimCoord(
-        90.0 - np.arange(array.shape[1]) * cfg['delta_degrees'],
+        83.65972 - np.arange(array.shape[1]) * cfg['delta_degrees'],
         standard_name='latitude',
         var_name='lat',
         long_name='latitude')
