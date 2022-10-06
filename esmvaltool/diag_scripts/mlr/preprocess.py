@@ -28,9 +28,9 @@ apply_common_mask: bool, optional (default: False)
     datasets.
 area_weighted: bool, optional (default: True)
     Use weighted aggregation when collapsing over latitude and/or longitude
-    using ``collapse``. Weights are estimated using grid cell boundaries. Only
-    possible if the dataset contains ``latitude`` and ``longitude``
-    coordinates.
+    using ``collapse``. Weights are estimated using grid cell bounds. Only
+    possible for datasets on regular grids that contain ``latitude`` and
+    ``longitude`` coordinates.
 argsort: dict, optional
     Calculate :func:`numpy.ma.argsort` along given coordinate to get ranking.
     The coordinate can be specified by the ``coord`` key. If ``descending`` is
@@ -59,8 +59,8 @@ ignore: list of dict, optional
 landsea_fraction_weighted: str, optional
     When given, use land/sea fraction for weighted aggregation when collapsing
     over latitude and/or longitude using ``collapse``. Only possible if the
-    dataset contains ``latitude`` and ``longitude`` coordinates. Must be one of
-    ``'land'``, ``'sea'``.
+    dataset contains ``latitude`` and ``longitude`` coordinates and for regular
+    grids. Must be one of ``'land'``, ``'sea'``.
 mask: dict of dict
     Mask datasets. Keys have to be :mod:`numpy.ma` conversion operations (see
     `<https://docs.scipy.org/doc/numpy/reference/routines.ma.html>`_) and
@@ -107,7 +107,7 @@ scalar_operations: dict, optional
     :obj:`int`) are scalars that are used with the operations.
 time_weighted: bool, optional (default: True)
     Use weighted aggregation when collapsing over time dimension using
-    ``collapse``. Weights are estimated using grid cell boundaries.
+    ``collapse``. Weights are estimated using time bounds.
 unify_coords_to: dict, optional
     If given, replace coordinates of all datasets with that of a reference cube
     (if necessary and possible, broadcast beforehand). The reference dataset
@@ -376,15 +376,6 @@ def _get_horizontal_weights(cfg, cube):
         area_weighted=cfg['area_weighted'],
         landsea_fraction_weighted=cfg.get('landsea_fraction_weighted'))
     return weights
-
-
-def _get_landsea_fraction_weights(cfg, cube):
-    """Calculate land/sea fraction weights."""
-    landsea_fraction_weights = None
-    if 'landsea_fraction_weighted' in cfg:
-        landsea_fraction_weights = mlr.get_landsea_fraction_weights(
-            cube, cfg['landsea_fraction_weighted'])
-    return landsea_fraction_weights
 
 
 def _get_ref_calc(cfg, dataset, ref_datasets, ref_option):

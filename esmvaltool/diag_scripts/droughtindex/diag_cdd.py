@@ -3,6 +3,7 @@ import logging
 import os
 from copy import deepcopy
 
+import cmocean.cm
 import iris
 import numpy as np
 
@@ -11,7 +12,7 @@ from esmvaltool.diag_scripts.shared import (
     save_data,
     save_figure,
 )
-from esmvaltool.diag_scripts.shared.plot import quickplot
+from esmvaltool.diag_scripts.shared.plot import global_pcolormesh
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -28,9 +29,12 @@ def save_results(cfg, cube, basename, ancestor_files):
         'ancestors': ancestor_files,
     }
     save_data(basename, provenance, cfg, cube)
-    if cfg.get('quickplot'):
-        quickplot(cube, **cfg['quickplot'])
-        save_figure(basename, provenance, cfg)
+    kwargs = dict(cfg.get('plot', {}))
+    cmap_name = kwargs.get('cmap', 'rain')
+    if cmap_name in cmocean.cm.cmap_d:
+        kwargs['cmap'] = cmocean.cm.cmap_d[cmap_name]
+    global_pcolormesh(cube, **kwargs)
+    save_figure(basename, provenance, cfg)
 
 
 def main(cfg):

@@ -1,9 +1,15 @@
 """Convenience functions for :mod:`iris` objects."""
 import logging
+import warnings
 from pprint import pformat
 
 import iris
 import numpy as np
+from cf_units import Unit
+from iris import NameConstraint
+from iris.exceptions import CoordinateNotFoundError
+
+from esmvaltool import ESMValToolDeprecationWarning
 
 from ._base import group_metadata
 
@@ -78,8 +84,8 @@ def check_coordinate(cubes, coord_name):
     for cube in cubes:
         try:
             new_coord = cube.coord(coord_name)
-        except iris.exceptions.CoordinateNotFoundError:
-            raise iris.exceptions.CoordinateNotFoundError(
+        except CoordinateNotFoundError:
+            raise CoordinateNotFoundError(
                 f"'{coord_name}' is not a coordinate of cube\n{cube}")
         if coord is None:
             coord = new_coord
@@ -216,8 +222,8 @@ def intersect_dataset_coordinates(cubes):
     for cube in cubes:
         try:
             coord_points = cube.coord('dataset').points
-        except iris.exceptions.CoordinateNotFoundError:
-            raise iris.exceptions.CoordinateNotFoundError(
+        except CoordinateNotFoundError:
+            raise CoordinateNotFoundError(
                 f"'dataset' is not a coordinate of cube\n{cube}")
         if len(set(coord_points)) != len(coord_points):
             raise ValueError(
@@ -301,8 +307,8 @@ def unify_1d_cubes(cubes, coord_name):
             raise ValueError(f"Dimension of cube\n{cube}\nis not 1")
         try:
             new_coord = cube.coord(coord_name)
-        except iris.exceptions.CoordinateNotFoundError:
-            raise iris.exceptions.CoordinateNotFoundError(
+        except CoordinateNotFoundError:
+            raise CoordinateNotFoundError(
                 f"'{coord_name}' is not a coordinate of cube\n{cube}")
         if not np.array_equal(np.unique(new_coord.points),
                               np.sort(new_coord.points)):
@@ -321,18 +327,79 @@ def unify_1d_cubes(cubes, coord_name):
     return _transform_coord_to_ref(cubes, ref_coord)
 
 
-def var_name_constraint(var_name):
-    """:class:`iris.Constraint` using ``var_name`` of an :mod:`iris.cube.Cube`.
+def unify_time_coord(cube, target_units='days since 1850-01-01 00:00:00'):
+    """Unify time coordinate of cube in-place.
 
     Parameters
     ----------
-    var_name : str
-        Short name (``var_name`` in :mod:`iris`) for the constraint.
+    cube: iris.cube.Cube
+        Cube whose time coordinate is transformed in-place.
+    target_units: str or cf_units.Unit, optional
+        Target time units.
+
+    Raises
+    ------
+    iris.exceptions.CoordinateNotFoundError
+        Cube does not contain coordinate ``time``.
+
+    """
+    if not cube.coords('time'):
+        raise CoordinateNotFoundError(
+            f"Coordinate 'time' not found in cube "
+            f"{cube.summary(shorten=True)}")
+
+    # Convert points and (if possible) bounds to new units
+    target_units = Unit(target_units)  # works if target_units already is Unit
+    time_coord = cube.coord('time')
+    new_points = target_units.date2num(
+        time_coord.units.num2date(time_coord.points))
+    if time_coord.bounds is None:
+        new_bounds = None
+    else:
+        new_bounds = target_units.date2num(
+            time_coord.units.num2date(time_coord.bounds))
+
+    # Create new coordinate and add it to the cube
+    new_time_coord = iris.coords.DimCoord(
+        new_points,
+        bounds=new_bounds,
+        var_name='time',
+        standard_name='time',
+        long_name='time',
+        units=target_units,
+    )
+    coord_dims = cube.coord_dims('time')
+    cube.remove_coord('time')
+    cube.add_dim_coord(new_time_coord, coord_dims)
+
+
+def var_name_constraint(var_name):
+    """:class:`iris.Constraint` using ``var_name``.
+
+    Warning
+    -------
+    .. deprecated:: 2.6.0
+        This function has been deprecated in ESMValTool version 2.6.0 and is
+        scheduled for removal in version 2.8.0. Please use the function
+        :class:`iris.NameConstraint` with the argument ``var_name`` instead:
+        this is an exact replacement.
+
+    Parameters
+    ----------
+    var_name: str
+        ``var_name`` used for the constraint.
 
     Returns
     -------
     iris.Constraint
-        Constraint to select only cubes with correct ``var_name``.
+        Constraint.
 
     """
-    return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
+    deprecation_msg = (
+        "The function ``var_name_constraint`` has been deprecated in "
+        "ESMValTool version 2.6.0 and is scheduled for removal in version "
+        "2.8.0. Please use the function ``iris.NameConstraint`` with the "
+        "argument ``var_name`` instead: this is an exact replacement."
+    )
+    warnings.warn(deprecation_msg, ESMValToolDeprecationWarning)
+    return NameConstraint(var_name=var_name)

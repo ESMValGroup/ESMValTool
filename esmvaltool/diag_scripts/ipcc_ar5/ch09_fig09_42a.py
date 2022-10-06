@@ -34,6 +34,7 @@ seaborn_settings : dict, optional
 
 import logging
 import os
+from copy import deepcopy
 
 import iris
 import seaborn as sns
@@ -47,6 +48,7 @@ from esmvaltool.diag_scripts.shared import (
     io,
     plot,
     run_diagnostic,
+    sorted_metadata,
     variables_available,
 )
 
@@ -163,7 +165,8 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
 def main(cfg):
     """Run the diagnostic."""
     sns.set(**cfg.get('seaborn_settings', {}))
-    input_data = cfg['input_data'].values()
+    input_data = deepcopy(list(cfg['input_data'].values()))
+    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
     project = list(group_metadata(input_data, 'project').keys())
     project = [p for p in project if 'obs' not in p.lower()]
     if len(project) == 1:

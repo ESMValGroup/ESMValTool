@@ -41,8 +41,8 @@ See `common installation issues`_ if you run into trouble.
 
 .. _install_with_mamba:
 
-Mamba installation
-==================
+Mamba/Conda installation
+========================
 
 In order to install the `conda <https://docs.conda.io>`_ package, you will need
 mamba pre-installed.
@@ -80,7 +80,7 @@ this should show the path to your mamba executable, e.g.
 ``~/mambaforge/bin/mamba``.
 
 ESMValTool installation
------------------------
+=======================
 
 Once you have installed the above prerequisites, you can install the entire
 ESMValTool package by running:
@@ -187,7 +187,7 @@ container is advised.
 
 The ``esmvaltool-python`` diagnostics can be installed as follows:
 
-First, ensure mamba is pre-installed (see `Mamba installation`_ for more details).
+First, ensure mamba is pre-installed (see `Mamba/Conda installation`_ for more details).
 
 Create a new environment with the ``esmvaltool-python`` package:
 
@@ -259,13 +259,6 @@ install the Julia dependencies:
 .. code-block:: bash
 
     esmvaltool install Julia
-
-If you would like to run R diagnostic scripts, you will also need to install the R
-dependencies:
-
-.. code-block:: bash
-
-    esmvaltool install R
 
 .. _install_with_docker:
 
@@ -418,9 +411,8 @@ file.
 If you choose to use this option, download the compressed file and extract its
 contents at the desired location.
 
-
-Prerequisites
--------------
+Installation Using Mamba from Source
+------------------------------------
 
 It is recommended to use mamba to manage ESMValTool dependencies.
 For a minimal mamba installation go to https://mamba.readthedocs.io/en/latest/installation.html.
@@ -552,13 +544,6 @@ install the ESMValTool Julia dependencies:
 
     esmvaltool install Julia
 
-If you would like to run R diagnostic scripts, you will also need to install the R
-dependencies. Install the R dependency packages:
-
-.. code-block:: bash
-
-    esmvaltool install R
-
 The next step is to check that the installation works properly.
 To do this, run the tool with:
 
@@ -655,19 +640,19 @@ again.
 
 .. _install_on_hpc:
 
-Pre-installed versions on HPC clusters
-======================================
+Pre-installed versions on HPC clusters / other servers
+======================================================
 
-The ESMValTool is also available on the HPC clusters CEDA-JASMIN and DKRZ-MISTRAL and there will be no need
-to install it yourself if you are just running diagnostics:
+ESMValTool is available on the HPC clusters CEDA-JASMIN and DKRZ-Levante, and on the Met Office Linux
+estate, so there is no need to install ESMValTool if you are just running recipes:
 
  - CEDA-JASMIN: `esmvaltool` is available on the scientific compute nodes (`sciX.jasmin.ac.uk` where
    `X = 1, 2, 3, 4, 5`) after login and module loading via `module load esmvaltool`; see the helper page at
    `CEDA <https://help.jasmin.ac.uk/article/4955-community-software-esmvaltool>`__ ;
- - DKRZ-Mistral: `esmvaltool` is available on login nodes (`mistral.dkrz.de`) and pre- and post-processing
-   nodes (`mistralpp.dkrz.de`) after login and module loading via `module load esmvaltool`; the command
-   `module help esmvaltool` provides some information about the module.
-
+ - DKRZ-Levante: `esmvaltool` is available on login nodes (`levante.dkrz.de`) after login and module loading
+   via `module load esmvaltool`; the command `module help esmvaltool` provides some information about the module.
+ - Met Office: `esmvaltool` is available on the Linux estate after login and module loading via `module load`;
+   see the ESMValTool Community of Practice SharePoint site for more details.
 
 Installation from the conda lock file
 =====================================
@@ -696,7 +681,6 @@ repository, a direct download link can be found `here <https://raw.githubusercon
 .. note::
    For instructions on how to manually create the lock file, see
    :ref:`these instructions <esmvalcore:condalock-installation-creation>`.
-
 
 .. _common installation issues:
 

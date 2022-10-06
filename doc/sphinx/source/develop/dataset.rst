@@ -25,8 +25,8 @@ data set for the use in ESMValTool.
   *fixes*. As compared to the workflow described below, this has the advantage that
   the user does not need to store a duplicate (CMORized) copy of the data. Instead, the
   CMORization is performed 'on the fly' when running a recipe. **ERA5** is the first dataset
-  for which this 'CMORization on the fly' is supported. For more information, see:
-  :ref:`cmorization_as_fix`.
+  for which this 'CMORization on the fly' is supported. For more information, see
+  :ref:`inputdata_native_datasets`.
 
 
 1. Check if your variable is CMOR standard
@@ -119,10 +119,11 @@ The downloading script for the given dataset can be run with:
 
  esmvaltool data download --config_file <config-user.yml>  <dataset-name>
 
-.. note::
-  The options ``--start`` and ``--end`` can be added to the command above to 
-  restrict the download of raw data to a time range. They will be ignored is a specific dataset
-  does not support it (i.e. because it is provided as a single file).
+The options ``--start`` and ``--end`` can be added to the command above to 
+restrict the download of raw data to a time range. They will be ignored if a specific dataset
+does not support it (i.e. because it is provided as a single file). Valid formats are
+``YYYY``, ``YYYYMM`` and ``YYYYMMDD``. By default, already downloaded data are not overwritten
+unless the option ``--overwrite=True`` is used.
 
 4. Create a cmorizer for the dataset
 ====================================
@@ -257,6 +258,10 @@ The cmorizing script for the given dataset can be run with:
 
  esmvaltool data format --config_file <config-user.yml> <dataset-name>
 
+The options ``--start`` and ``--end`` can be added to the command above to 
+restrict the formatting of raw data to a time range. They will be ignored if a specific dataset
+does not support it (i.e. because it is provided as a single file). Valid formats are
+``YYYY``, ``YYYYMM`` and ``YYYYMMDD``.
 
 .. note::
 
@@ -280,6 +285,9 @@ the cmorizing scripts can be run in a single command with:
 .. code-block:: console
 
  esmvaltool data prepare --config_file <config-user.yml> <dataset-name>
+
+Note that options from the ```esmvaltool data download`` and 
+``esmvaltool data format`` commands can be passed to the above command.
 
 6. Naming convention of the observational data files
 ====================================================

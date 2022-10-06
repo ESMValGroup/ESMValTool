@@ -10,6 +10,9 @@ documentation:
     - hassler_birgit
     - mueller_benjamin
 
+  maintainer:
+    - unmaintained
+
 
 ################################################
 # Define some default parameters using anchors #

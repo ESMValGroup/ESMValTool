@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import shutil
+import warnings
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -14,7 +15,9 @@ import yaml
 from cf_units import Unit
 from dask import array as da
 from esmvalcore.cmor.table import CMOR_TABLES
+from iris import NameConstraint
 
+from esmvaltool import ESMValToolDeprecationWarning
 from esmvaltool import __file__ as esmvaltool_file
 from esmvaltool import __version__ as version
 
@@ -37,6 +40,22 @@ def add_height2m(cube):
         Returns the cube with new 2m height coordinate.
     """
     add_scalar_height_coord(cube, height=2.)
+
+
+def add_height10m(cube):
+    """Add scalar coordinate 'height' with value of 10m.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        data cube to get the 10m height coordinate.
+
+    Returns
+    -------
+    iris.cube.Cube
+        Returns the cube with new 10m height coordinate.
+    """
+    add_scalar_height_coord(cube, height=10.)
 
 
 def add_scalar_height_coord(cube, height=2.):
@@ -397,8 +416,35 @@ def set_global_atts(cube, attrs):
 
 
 def var_name_constraint(var_name):
-    """:mod:`iris.Constraint` using `var_name` of an :mod:`iris.cube.Cube`."""
-    return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
+    """:class:`iris.Constraint` using ``var_name``.
+
+    Warning
+    -------
+    .. deprecated:: 2.6.0
+        This function has been deprecated in ESMValTool version 2.6.0 and is
+        scheduled for removal in version 2.8.0. Please use the function
+        :class:`iris.NameConstraint` with the argument ``var_name`` instead:
+        this is an exact replacement.
+
+    Parameters
+    ----------
+    var_name: str
+        ``var_name`` used for the constraint.
+
+    Returns
+    -------
+    iris.Constraint
+        Constraint.
+
+    """
+    deprecation_msg = (
+        "The function ``var_name_constraint`` has been deprecated in "
+        "ESMValTool version 2.6.0 and is scheduled for removal in version "
+        "2.8.0. Please use the function ``iris.NameConstraint`` with the "
+        "argument ``var_name`` instead: this is an exact replacement."
+    )
+    warnings.warn(deprecation_msg, ESMValToolDeprecationWarning)
+    return NameConstraint(var_name=var_name)
 
 
 def fix_bounds(cube, dim_coord):
