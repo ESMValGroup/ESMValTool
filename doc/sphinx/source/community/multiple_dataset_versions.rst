@@ -1,7 +1,7 @@
 .. _dataset-versions:
 
 Support for multiple versions of a dataset
-************************************
+******************************************
 
 If you plan to update a CMORizer script to support a newer version of an existing dataset,
 indicate in the issue or pull request if support for previous versions should be kept.
@@ -9,7 +9,7 @@ If the dataset is used in recipes, please also indicate if the recipes should be
 the newest dataset version.
 
 Policy for dropping support for older dataset versions
-================================
+======================================================
 
 Support for older versions should preferably be kept as long as the data are publicly available.
 This ensures reproducibility and eases comparison of results of recipes using this dataset.
