@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - core_v270rc2
   schedule:
     - cron: '0 0 * * *'
 
