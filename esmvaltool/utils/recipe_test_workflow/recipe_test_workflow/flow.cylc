@@ -3,16 +3,16 @@
     UTC mode = True
 
 [task parameters]
-    fast = modes_of_variability, multimodel_products
+    fast = radiation_budget
     medium = ensclus, heatwaves_coldwaves
 
 [scheduling]
    cycling mode = integer
    initial cycle point = 1
     [[graph]]
-        R1 = install_cold => configure
-        2/P2 = configure[-P1] => configure => process<fast> => compare<fast>
-        3/P2 = configure[-P1] => configure => process<medium> => compare<medium>
+        R1 = install_cold => configure => process<fast> & process<medium> => compare<fast> & compare<medium>
+        3/P2 = compare<fast>[-P2] => configure => process<fast> => compare<fast>
+        4/P3 = compare<medium>[-P3] => configure => process<medium> => compare<medium>
 
 [runtime]
     [[root]]
