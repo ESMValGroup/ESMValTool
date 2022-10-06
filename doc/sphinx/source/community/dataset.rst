@@ -4,8 +4,7 @@ Making a new dataset
 ********************
 
 If you are contributing a new dataset, please have a look at :ref:`new-cmorizer` for how to do so.
-If you need the new dataset for a new recipe, please make a separate pull request
-for the CMORizer script.
+Please always create separate pull requests for CMORizer scripts, even when introducing a new dataset or updating an existing dataset with a new recipe.
 
 If you are updating a CMORizer script to support a different dataset version, please have a look
 at :ref:`dataset-versions` for how to handle multiple dataset versions.
