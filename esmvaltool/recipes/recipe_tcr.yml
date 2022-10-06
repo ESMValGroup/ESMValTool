@@ -11,6 +11,9 @@ documentation:
   authors:
     - schlund_manuel
 
+  maintainer:
+    - schlund_manuel
+
   references:
     - gregory08jgr
 
