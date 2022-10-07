@@ -323,9 +323,9 @@ def regression_units(tas, cube):
     units : str
         string of calculated regression units
     """
-    print("Cube Units: ", cube.units)
+    logger.debug("Cube Units: ", cube.units)
     units = cube.units / tas.units
-    print("Regression Units: ", units)
+    logger.debug("Regression Units: ", units)
 
     return units
 
@@ -486,7 +486,7 @@ def cube_saver(list_of_cubelists, work_path, name_list, mode):
         iris.save(list_of_cubelists[2], work_path + name_list[2])
 
 
-def saving_outputs(
+def save_outputs(
     clim_list_final,
     anom_list_final,
     regressions,
@@ -608,7 +608,7 @@ def patterns(model):
             input_file = dataset["filename"]
 
             # preparing single cube
-            cube_initial = sf.compute_diagnostic(input_file)
+            cube_initial = sf.load_cube(input_file)
 
             if grid_spec == "constrained":
                 cube = constrain_latitude(cube_initial)
@@ -634,7 +634,7 @@ def patterns(model):
     model_work_dir, model_plot_dir = sf.make_model_dirs(
         cube_initial, work_path, plot_path)
 
-    saving_outputs(
+    save_outputs(
         clim_list_final,
         anom_list_final,
         regressions,

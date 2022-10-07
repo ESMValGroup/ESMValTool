@@ -28,7 +28,7 @@ monthly_global_settings_day: &monthly_global_settings_day
   project: CMIP6
   preprocessor: global_mean_monthly
 
-CMIP6_DAY: &cmip6_no_tasmax 
+CMIP6_no_tasmax: &cmip6_no_tasmax 
   - {dataset: E3SM-1-0,        exp: [historical, ssp585], ensemble: r2i1p1f1, grid: gr, start_year: 1850, end_year: 2099}
   - {dataset: NorESM2-LM,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
   - {dataset: NorESM2-MM,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
@@ -160,12 +160,12 @@ diagnostics:
         <<: *monthly_global_settings
         additional_datasets: *cmip6_no_tasmax
 
-      rsds_585:
+      rsds_585_no_tasmax:
         short_name: rsds
         <<: *monthly_global_settings
         additional_datasets: *cmip6_no_tasmax
 
-      rlds_585:
+      rlds_585_no_tasmax:
         short_name: rlds
         <<: *monthly_global_settings
         additional_datasets: *cmip6_no_tasmax

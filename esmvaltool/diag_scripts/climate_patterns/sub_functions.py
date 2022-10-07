@@ -19,7 +19,7 @@ import numpy as np
 logger = logging.getLogger(Path(__file__).stem)
 
 
-def compute_diagnostic(filename):
+def load_cube(filename):
     """Load cube, remove any dimensions of length: 1.
 
     Parameters
@@ -168,7 +168,7 @@ def make_model_dirs(cube_initial, work_path, plot_path):
 
 
 def parallelise(func, processes=None):
-    """Parallelise any function, by George Ford (Met Office).
+    """Parallelise any function, by George Ford, Met Office.
 
     Parameters
     ----------
