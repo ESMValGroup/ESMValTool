@@ -16,6 +16,9 @@ with warnings.catch_warnings():
     import esmvalcore.experimental as esmvaltool
 import yaml
 
+ESMVALTOOL_DIR = os.environ["ESMVALTOOL_DIR"]
+LATEST_USER_CONFIG_FILE = os.path.join(ESMVALTOOL_DIR,
+                                       "config-user-example.yml")
 USER_CONFIG_PATH = os.environ["USER_CONFIG_PATH"]
 
 
@@ -52,7 +55,7 @@ def get_config_values_from_task_env():
     # additional datasets, so may need to be configured in the future.
     config_values_from_task_env = {
         "auxiliary_data_dir": "",
-        "config_file": USER_CONFIG_PATH,
+        "config_file": LATEST_USER_CONFIG_FILE,
         "download_dir": "",
         "drs": {
             "ana4mips": os.environ["DRS_ANA4MIPS"],
