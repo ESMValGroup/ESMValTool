@@ -28,7 +28,11 @@ def main():
     # Get the default configuration values from ESMValTool. A dictionary is
     # needed here to avoid the config object from converting paths to PosixPath
     # objects, which causes issues when writing the YAML file.
+    # The dictionary is then updated with the path to the latest checked out
+    # version of config-user-example.yml from the ESMValTool directory.
     config_values = dict(esmvaltool.CFG)
+    latest_config_file = {'config_file': LATEST_USER_CONFIG_FILE}
+    config_values.update(latest_config_file)
 
     # Get the configuration values defined in the environment for the
     # ``configure`` task.
