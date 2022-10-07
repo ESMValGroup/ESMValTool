@@ -340,6 +340,10 @@ authors:
     family-names: Kazeroni
     given-names: Rémi
     orcid: "https://orcid.org/0000-0001-7205-9528"
+  -
+    affiliation: "NASA, USA"
+    family-names: Potter
+    given-names: Jerry
 
 cff-version: 1.2.0
 date-released: 2022-07-25
