@@ -1,0 +1,39 @@
+# ESMValTool
+#
+# Configuration related to plotting of different ECVs
+# for usage in the different MPQB diagnostics.
+---
+
+datasetnames:
+  JRA-55: JRA-55
+  ERA5: ERA5
+  ERA-Interim: ERA-Interim
+  MERRA2: MERRA2
+  NCEP-DOE-R2: NCEP-DOE-R2
+  NCEP-NCAR-R1: NCEP-NCAR-R1
+  CLARA-AVHRR: CLARA-AVHRR
+  ESACCI-CLOUD: ESACCI-CLOUD
+  MODIS: MODIS
+  PATMOS-x: PATMOS-x
+  CESM2-WACCM-FV2: CESM2-WACCM-FV2
+  GFDL-ESM4: GFDL-ESM4
+
+datasetcolors:
+  JRA-55: '#d62728'
+  ERA5: '#a569bd'
+  ERA-Interim: '#2ca02c'
+  MERRA2: '#1f77b4'
+  NCEP-DOE-R2: '#458ef6'
+  NCEP-NCAR-R1: '#2ca02c'
+  CLARA-AVHRR: '#1f77b4'
+  ESACCI-CLOUD: '#633974' 
+  MODIS: '#aed6f1'
+  PATMOS-x: '#17a589' 
+  CESM2-WACCM-FV2: '#76d7c4'
+  GFDL-ESM4: '#9c640c'
+
+# From:
+# https://stackoverflow.com/questions/42086276/
+# Cycle continues like this:
+#  '#17becf'
+# Hint: use colorbrewer for setting colors.
