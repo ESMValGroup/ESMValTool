@@ -580,7 +580,7 @@ def get_provenance_record():
     return record
 
 
-def patterns(model):
+def patterns(model, cfg):
     """Driving function for script, taking in model data and saving parameters.
 
     Parameters
@@ -592,13 +592,12 @@ def patterns(model):
     -------
     None
     """
-    with run_diagnostic() as cfg:
-        input_data = cfg["input_data"].values()
-        grid_spec = cfg["grid"]
-        imogen_mode = cfg["imogen_mode"]
-        r2_scores = cfg["output_r2_scores"]
-        work_path = cfg["work_dir"] + "/"
-        plot_path = cfg["plot_dir"] + "/"
+    input_data = cfg["input_data"].values()
+    grid_spec = cfg["grid"]
+    imogen_mode = cfg["imogen_mode"]
+    r2_scores = cfg["output_r2_scores"]
+    work_path = cfg["work_dir"] + "/"
+    plot_path = cfg["plot_dir"] + "/"
 
     clim_list = iris.cube.CubeList([])
     ts_list = iris.cube.CubeList([])
@@ -674,10 +673,10 @@ def main(cfg):
             models.append(model)
 
     if parallelise is True:
-        sf.parallelise(patterns, threads)(models)
+        sf.parallelise(patterns, threads)(models, cfg)
     else:
         for model in models:
-            patterns(model)
+            patterns(model, cfg)
 
 
 if __name__ == "__main__":

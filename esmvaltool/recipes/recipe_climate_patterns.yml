@@ -8,6 +8,9 @@ documentation:
   authors:
     - munday_gregory
 
+  maintainer:
+    - munday_gregory
+
 preprocessors:
   global_mean_monthly:
     monthly_statistics:
