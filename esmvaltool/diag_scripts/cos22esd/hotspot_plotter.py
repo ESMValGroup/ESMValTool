@@ -347,8 +347,9 @@ class HotspotPlot:
 
         provenance_record = self.get_rolling_mean_provenance(
             suptitle, ancestor_files)
-        save_figure(f"scenario_combination_{var_combination}_{season}",
-                    provenance_record, self.cfg)
+        basename = ("scenario_combination_"
+                    f"{var_combination.replace(':', '-')}_{season}")
+        save_figure(basename, provenance_record, self.cfg)
 
     @staticmethod
     def _timeseries_scatter_plot_data(results_dict, large_scale_key,
