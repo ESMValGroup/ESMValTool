@@ -347,7 +347,7 @@ class HotspotPlot:
 
         provenance_record = self.get_rolling_mean_provenance(
             suptitle, ancestor_files)
-        save_figure(f"scenario_combination_{var_combination}_{season}",
+        save_figure(f"scenario_combination_{var_combination.replace(':', '-')}_{season}",
                     provenance_record, self.cfg)
 
     @staticmethod
