@@ -65,7 +65,6 @@
             ROSE_TASK_APP = process
             RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_fast}.yml"
 
-
     [[process<medium>]]
         inherit = None, COMPUTE
         [[[environment]]]
