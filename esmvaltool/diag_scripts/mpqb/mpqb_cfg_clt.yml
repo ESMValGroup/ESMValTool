@@ -17,16 +17,16 @@ datasetnames:
   OBS_PATMOS-x: PATMOS-x
 
 datasetcolors:
-  ana4mips: '#d62728'
+  ana4mips: '#17a589' 
   native6: '#a569bd'
-  OBS6_ERA-Interim: '#2ca02c'
+  OBS6_ERA-Interim: '#633974'
   OBS6_MERRA2: '#1f77b4'
   OBS6_NCEP-DOE-R2: '#458ef6'
-  OBS6_NCEP-NCAR-R1: '#633974'
-  OBS_CLARA-AVHRR: '#aed6f1'
-  OBS_ESACCI-CLOUD: '#76d7c4' 
+  OBS6_NCEP-NCAR-R1: '#aed6f1'
+  OBS_CLARA-AVHRR: '#990000'
+  OBS_ESACCI-CLOUD: '#ff9933' 
   OBS_MODIS: '#9c640c'
-  OBS_PATMOS-x: '#17a589' 
+  OBS_PATMOS-x: '#d62728'
 
 # From:
 # https://stackoverflow.com/questions/42086276/
