@@ -27,8 +27,8 @@ The |RTW| performs the following steps:
   :Executes:
      The ``configure.py`` script from the |Rose| app
   :Details:
-     Runs once at the start of the workflow, immediately after the successful
-     completion of the ``install_cold`` job
+     Runs once at the start of each cycle, immediately after the successful
+     completion of the previous cycle's compare job
 
 ``process``
   :Description:
@@ -39,7 +39,7 @@ The |RTW| performs the following steps:
   :Executes:
      The |ESMValTool| command line script
   :Details:
-     Runs for every group of recipes defined in the workflow
+     Runs for every recipe defined in the workflow
 
 ``compare``
   :Description:
