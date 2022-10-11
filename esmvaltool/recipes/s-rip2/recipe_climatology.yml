@@ -125,9 +125,9 @@ diagnostics:
           - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2',
              tier: 2, start_year: 1979, end_year: 2021}
           - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1',
-             tier: 2, start_year: 1948, end_year: 2021}
+             tier: 2, start_year: 1970, end_year: 2021}
           - {dataset: JRA-55, project: ana4mips, type: reanalysis,
-             tier: 1, start_year: 1958, end_year: 2019}
+             tier: 1, start_year: 1970, end_year: 2019}
     scripts:
       ts_clt:
         script: mpqb/mpqb_lineplot.py
