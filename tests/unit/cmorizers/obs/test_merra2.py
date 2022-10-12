@@ -258,7 +258,7 @@ def test_vertical_levels(tmp_path):
     path_cubes = tmp_path / "cubes.nc"
     cube_1 = _create_sample_cube()
     cube_1.var_name = "V"
-    cube_1.units = Unit('m2 s-2')
+    cube_1.units = Unit('m s-1')
     cube_2 = _create_sample_cube()
     cube_2.var_name = "U10M"
     cube_2.units = Unit('m s-1')
@@ -268,7 +268,7 @@ def test_vertical_levels(tmp_path):
     cubes = iris.cube.CubeList([cube_1, cube_2, cube_3])
     iris.save(cubes, str(path_cubes))
     var_1 = {
-        'short_name': 'uv',
+        'short_name': 'va',
         'mip': 'Amon', 'raw': 'V',
         'file': 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
     }
@@ -285,10 +285,10 @@ def test_vertical_levels(tmp_path):
     in_files = str(tmp_path / "cubes.nc")
     cfg = read_cmor_config("MERRA2")
 
-    # extract uv
+    # extract va
     _extract_variable(in_files, var_1, cfg, tmp_path)
     cmorized_data = \
-        tmp_path / "OBS6_MERRA2_reanaly_5.12.4_Amon_uv_198201-198201.nc"
+        tmp_path / "OBS6_MERRA2_reanaly_5.12.4_Amon_va_198201-198201.nc"
     cmorized_cube = iris.load_cube(str(cmorized_data))
     print(cmorized_cube,
           cmorized_cube.coord("air_pressure"))
