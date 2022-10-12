@@ -190,6 +190,7 @@ def test_extract_variable(tmp_path):
     path_cubes = tmp_path / "cubes.nc"
     cube_1 = _create_sample_cube()
     cube_1.var_name = "SWTDN"
+    cube_1.units = Unit('W m-2')
     cubes = iris.cube.CubeList([cube_1])
     iris.save(cubes, str(path_cubes))
     var = {
@@ -215,8 +216,10 @@ def test_extract_variable_pairs(tmp_path):
     path_cubes = tmp_path / "cubes.nc"
     cube_1 = _create_sample_cube()
     cube_1.var_name = "SWTDN"
+    cube_1.units = Unit('W m-2')
     cube_2 = _create_sample_cube()
     cube_2.var_name = "SWTNT"
+    cube_2.units = Unit('W m-2')
     cubes = iris.cube.CubeList([cube_1, cube_2])
     iris.save(cubes, str(path_cubes))
     var = {
@@ -255,10 +258,13 @@ def test_vertical_levels(tmp_path):
     path_cubes = tmp_path / "cubes.nc"
     cube_1 = _create_sample_cube()
     cube_1.var_name = "V"
+    cube_1.units = Unit('m2 s-2')
     cube_2 = _create_sample_cube()
     cube_2.var_name = "U10M"
+    cube_2.units = Unit('m s-1')
     cube_3 = _create_sample_cube()
     cube_3.var_name = "T2M"
+    cube_3.units = Unit('K')
     cubes = iris.cube.CubeList([cube_1, cube_2, cube_3])
     iris.save(cubes, str(path_cubes))
     var_1 = {
