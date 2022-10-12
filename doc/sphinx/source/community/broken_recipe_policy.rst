@@ -2,7 +2,8 @@ Broken recipe policy
 ====================
 
 Recipes might stop working for different reasons. Among those are, for instance, withdrawal of datasets
-used by the recipe, continued development of the ESMValTool including new features or retiring old ones as well as
+used by the recipe (i.e. the recipe contains data that are no longer publicly available), continued development
+of the ESMValTool including new features or retiring old ones as well as
 changes to Python or used dependencies such as library functions.
 In such cases, the :ref:`recipe maintainer<Maintaining a recipe>` is contacted by the technical core development team to find
 a solution, fixing the affected recipe and checking the scientific output after applying the fix. If no recipe maintainer is
