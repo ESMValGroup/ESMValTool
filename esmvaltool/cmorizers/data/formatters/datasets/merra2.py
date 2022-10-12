@@ -225,7 +225,6 @@ def _extract_variable(in_files, var, cfg, out_dir):
     # input variable reports m-3 m-3 instead of m3 m-3
     if (cube.var_name == "sm"):
         cube.units = definition.units
-        
     # Convert units to CMOR units
     cube.convert_units(definition.units)
 
