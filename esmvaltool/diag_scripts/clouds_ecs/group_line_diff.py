@@ -243,22 +243,22 @@ def compute_diff_temp(input_data, group, dataset, plot_type, cfg):
 
     cube = compute_diagnostic(input_file_1)
     if var in ['lwp', 'clivi', 'clw', 'cli']:
-        cube.data[cube.data < 0.001] = 0.0
+        cube.data[cube.data < 0.001] = np.nan
     elif var in ['cl']:
-        cube.data[cube.data < 0.1] = 0.0
+        cube.data[cube.data < 0.1] = np.nan
     elif var in ['netcre', 'swcre', 'lwcre']:
-        cube.data[abs(cube.data) < 1.] = 0.0
+        cube.data[abs(cube.data) < 1.] = np.nan
 
     cube_diff = compute_diff(input_file_1, input_file_2)
     cube_ta_diff = compute_diff(input_file_ta_1, input_file_ta_2)
 
     #cube_diff.data[abs(cube_diff.data) < 0.1] = np.nan
-    cube_ta_diff.data[cube_ta_diff.data < 0.01] = 0.0
+    cube_ta_diff.data[cube_ta_diff.data < 1.] = np.nan
 
     #cube_diff = cube_diff
     #cube_diff = cube_ta_diff
     #cube_diff = 100. * (cube_diff / cube)
-    cube_diff = 100. * (cube_diff / cube) / cube_ta_diff
+    cube_diff = 100. * (cube_diff / iris.analysis.maths.abs(cube)) / cube_ta_diff
 
     cube_diff.metadata = cube.metadata
 
@@ -314,7 +314,9 @@ def plot_model_map(cube, attributes, cfg):
     # Plot each model.
 
     #levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
-    levels = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
+    #levels = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
+    levels = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+    #levels = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
     cmap = 'bwr'
     #if attributes['short_name'] == 'clt':
     #    levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
@@ -341,7 +343,8 @@ def plot_model_map(cube, attributes, cfg):
     plt.gca().coastlines()
     colorbar = plt.colorbar(orientation='horizontal')
     colorbar.set_label( cube.var_name + '/' + cube.units.origin)
-    ticks = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
+    #ticks = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
+    ticks = levels
     #if attributes['short_name'] == 'clt':
     #    ticks = [10, 20, 30, 40, 50, 60, 70, 80, 90]
     #elif attributes['short_name'] == 'clivi':
