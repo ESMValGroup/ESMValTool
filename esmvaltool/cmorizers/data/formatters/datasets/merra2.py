@@ -263,12 +263,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     else:
         start_date = start_date.year
     if end_date is None:
-        end_date = 1980  #2022
+        end_date = 2022
     else:
         end_date = end_date.year
     for year in range(start_date, end_date + 1):
         for short_name, var in cfg['variables'].items():
-            print(short_name)
             if 'short_name' not in var:
                 var['short_name'] = short_name
             # Now get list of files
