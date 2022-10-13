@@ -54,6 +54,7 @@ import logging
 import os
 import glob
 import itertools
+import sys
 
 import iris
 import iris.quickplot as qplt
@@ -68,7 +69,7 @@ import cartopy
 import cartopy.crs as ccrs
 from shelve import open as shopen
 
-from sigfig import round
+#from sigfig import round
 
 
 from esmvalcore.preprocessor._time import extract_time, annual_statistics, regrid_time
@@ -113,8 +114,10 @@ long_name_dict = {
     'o2': 'Dissolved Oxygen',
     'intpp': 'Integrated Primary production'}
 
-models_to_skip = ['GISS-E2-1-G', ] #SST is strangely high and there are very few SSP ensembles.
-
+#odels_to_skip = ['GISS-E2-1-G', ] #SST is strangely high and there are very few SSP ensembles.
+models_to_skip = {'all': ['GISS-E2-1-G', ],
+    'chl': ['MPI-ESM1-2-LR', ],
+	}
 # used to
 hard_wired_obs = {
     ('so', 'timeseries', 'min'): {1980:35.8812, 2010:35.8812}, # time range assumed from https://www.ncei.noaa.gov/sites/default/files/2020-04/woa18_vol2.pdf page 1
@@ -145,6 +148,10 @@ hard_wired_obs = {
 
     ('no3', 'timeseries', 'min') : {1971:0.039, 2008:0.039},
     ('no3', 'timeseries', 'max') : {1971:0.411, 2008:0.411},
+
+    ('po4', 'timeseries', 'min') : {1971:0.126, 2008:0.126},
+    ('po4', 'timeseries', 'max') : {1971:0.204, 2008:0.204},
+
 
     }
 
@@ -205,6 +212,8 @@ def timeplot(cube, **kwargs):
 
     times = diagtools.cube_time_to_float(cube)
     plt.plot(times, cubedata, **kwargs)
+
+
 
 
 def moving_average(cube, window):
@@ -296,7 +305,7 @@ def moving_average(cube, window):
 
 def write_csv_ts(cfg, metadatas, data_values, single_model, short_name):
     """
-    Write a CSV file for the
+    Write a CSV file for the time series
     """
     out_shelve_dir = diagtools.folder([cfg['work_dir'], 'timeseries_csv', ])
 
@@ -375,7 +384,10 @@ def multi_model_time_series(
         for fn in sorted(filenames):
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             dataset = metadatas[fn]['dataset']
-            if dataset in models_to_skip: continue
+            short_name = metadatas[fn]['short_name']  
+            if dataset in models_to_skip['all']: continue
+            if dataset in models_to_skip.get(short_name, {}): continue
+
             if single_model == 'all': pass
             elif dataset != single_model: continue
             variable_groups[variable_group] = True
@@ -415,7 +427,10 @@ def multi_model_time_series(
             for fn in sorted(filenames):
                 if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
                 dataset = metadatas[fn]['dataset']
-                if dataset in models_to_skip: continue
+                short_name = metadatas[fn]['short_name']
+                if dataset in models_to_skip['all']: continue
+                if dataset in models_to_skip.get(short_name, {}): continue
+
                 short_name = metadatas[fn]['short_name']
                 scenario = metadatas[fn]['exp']
                 ensemble = metadatas[fn]['ensemble']
@@ -503,7 +518,10 @@ def multi_model_time_series(
         for fn in sorted(filenames):
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             dataset = metadatas[fn]['dataset']
-            if dataset in models_to_skip: continue
+            short_name = metadatas[fn]['short_name']
+            if dataset in models_to_skip['all']: continue
+            if dataset in models_to_skip.get(short_name, {}): continue
+
             if single_model == 'all': pass
             elif dataset != single_model: continue
             #if ukesm == 'not' and dataset == 'UKESM1-0-LL': continue
@@ -596,7 +614,9 @@ def multi_model_time_series(
         for (short_name, scenario) in sorted(scenario_values.keys()):
             header.append(scenario)
             model_means = np.array(scenario_values[(short_name, scenario)])
-            line.append(' '.join([str(round(model_means.mean(),sigfigs=4)),'\pm', str(round(model_means.std(), sigfigs=3))]))
+            try: line.append(' '.join([str(round(model_means.mean(),sigfigs=4)),'\pm', str(round(model_means.std(), sigfigs=3))]))
+            except: line.append(' '.join([str(round(model_means.mean(),4)),'\pm', str(round(model_means.std(), 3))]))
+
         header.append('\n')
         line.append('\n')
         header = ', '.join(header)
@@ -663,7 +683,9 @@ def multi_model_time_series(
         for (short_name, scenario) in sorted(scenario_values.keys()):
             header.append(scenario)
             model_means = np.array(scenario_values[(short_name, scenario)])
-            line.append(' '.join([str(round(model_means.mean(),sigfigs=4)),'\pm', str(round(model_means.std(), sigfigs=3))]))
+            try: line.append(' '.join([str(round(model_means.mean(),sigfigs=4)),'\pm', str(round(model_means.std(), sigfigs=3))]))
+            except:line.append(' '.join([str(round(model_means.mean(),4)),'\pm', str(round(model_means.std(), 3))]))
+
         header.append('\n')
         line.append('\n')
         header = ', '.join(header)
@@ -686,6 +708,7 @@ def multi_model_time_series(
         ensembles_dict = {}
         model_ensembles_dict={}
         anomalgy_basis = {}
+        # Calculate the anomaly against region (2000-2010 hist)
         for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
             if scenario.lower().find('historical')==-1: continue
             times = np.array([t for t in sorted(data.keys())])
@@ -710,6 +733,7 @@ def multi_model_time_series(
             else:
                 print('unalbe to include:', (short_name, dataset, ensemble[:3]) )
                 continue
+            # calculate the single model ensemble diff against the historical anomaly.
             value = np.ma.masked_where(times.mask, values).mean() - anom
             key = (short_name, dataset, scenario)
             model_values = add_dict_list(model_values, key, value)
@@ -717,23 +741,52 @@ def multi_model_time_series(
             model_ensembles_dict = add_dict_list(model_ensembles_dict, key, ensemble)
             ensembles_dict = add_dict_list(ensembles_dict, (short_name, scenario), ensemble)
 
+        # calculate the single model means:
         scenario_values = {}
         for (short_name, dataset, scenario), means in model_values.items():
             model_mean =  np.mean(means)
             scenario_values = add_dict_list(scenario_values, (short_name, scenario), model_mean)
 
+        # generate the output line:
         header = ['field', ]
-        line = [short_name, ]
+        line = [short_name, ] 
+        line1 = [short_name, ]
+        line2 = [short_name, ]
+        line3 = [short_name, ]
         for (short_name, scenario) in sorted(scenario_values.keys()):
             header.append(scenario)
             model_means = np.array(scenario_values[(short_name, scenario)])
-            line.append(' '.join([str(round(model_means.mean(),sigfigs=4)),'\pm', str(round(model_means.std(), sigfigs=3))]))
+            try:
+                value1 = str(round(model_means.mean(),sigfigs=4)) 
+                value2 = str(round(model_means.std(), sigfigs=3))
+                value3 = str(round(model_means.min(), sigfigs=4))
+                value4 = str(round(model_means.max(), sigfigs=4))
+            except:
+                value1 = str(round(model_means.mean(), 4))
+                value2 = str(round(model_means.std(), 3))
+                value3 = str(round(model_means.min(), 4))
+                value4 = str(round(model_means.max(), 4))
+            line.append(''.join([' ', value1, ' $\pm$ ', value2,]))
+            line1.append(''.join(['"', value1, ' $\pm$ ', value2, '"',]))
+            line2.append(''.join(['"', value1, ' + ', value4, ' - ', value3, '"',]))
+            l3 = [str(round(v, 3)) for v in model_means]
+            l3.insert(0,value1)
+            line3.append(' '.join(l3))
+            #try: line.append(' '.join([str(round(model_means.mean(),sigfigs=4)),'\pm', str(round(model_means.std(), sigfigs=3))]))
+            #except:line.append(' '.join([str(round(model_means.mean(),4)),'\pm', str(round(model_means.std(), 3))]))
+
         header.append('\n')
         line.append('\n')
+        line1.append('# summary hist anom\n')
+        line2.append('# min max ranges \n')
+        line3.append('# single job means \n')
         header = ', '.join(header)
-        line   = ', '.join(line  )
+        line   = ' & '.join(line  ) # latex
+        line1 = ', '.join(line1) # python
+        line2 = ', '.join(line2) # python
+        line3 = ', '.join(line3) # python
 
-        csv_str = ''.join([header, line])
+        csv_str = ''.join([header, line, line1, line2, line3])
         csv_path  = diagtools.folder(cfg['work_dir']+'/model_table')
         csv_path += 'historical_anomaly_table_'+short_name+'.csv'
         mp_fn = open(csv_path, 'w')
@@ -741,7 +794,6 @@ def multi_model_time_series(
         mp_fn.close()
         print('csv_str:',csv_str)
         print('saved to path:', csv_path)
-
 
         # number of ensembles
         # Number of models, number of ensembles, (ensembles per model)
@@ -781,8 +833,6 @@ def multi_model_time_series(
         mp_fn.close()
         print('csv_str:',csv_str)
         print('saved to path:', csv_path)
-        assert 0
-
 
     # Make the figure
     if fig is None or ax is None:
@@ -1406,7 +1456,11 @@ def multi_model_clim_figure(
     for variable_group, filenames  in ts_dict.items():
         for fn in sorted(filenames):
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
-            if metadatas[fn]['dataset'] in models_to_skip: continue
+            dataset = metadatas[fn]['dataset'] 
+            short_name = metadatas[fn]['short_name']
+            if dataset in models_to_skip['all']: continue
+            if dataset in models_to_skip.get(short_name, {}): continue
+
             if single_model == 'all': pass
             elif metadatas[fn]['dataset'] != single_model: continue
             model = metadatas[fn]['dataset']
@@ -1458,7 +1512,11 @@ def multi_model_clim_figure(
             print(variable_group, fn)
             #assert 0
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
-            if metadatas[fn]['dataset'] in models_to_skip: continue
+            dataset = metadatas[fn]['dataset']
+            short_name = metadatas[fn]['short_name']
+            if dataset in models_to_skip['all']: continue
+            if dataset in models_to_skip.get(short_name, {}): continue
+
             #if ukesm == 'only' and dataset != 'UKESM1-0-LL': continue
             if single_model == 'all': pass
             elif metadatas[fn]['dataset'] != single_model: continue
@@ -1581,7 +1639,11 @@ def multi_model_clim_figure(
             fn = model_cubes_paths[variable_group][i]
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             scenario = metadatas[fn]['exp']
-            if metadatas[fn]['dataset'] in models_to_skip: continue
+            
+            dataset = metadatas[fn]['dataset']
+            short_name = metadatas[fn]['short_name']
+            if dataset in models_to_skip['all']: continue
+            if dataset in models_to_skip.get(short_name, {}): continue
 
 
             months =  cube['month_number']
@@ -1993,7 +2055,11 @@ def make_multi_model_profiles_plotpair(
     model_cubes_paths = {}
     for variable_group, filenames in profile_fns.items():
         for i, fn in enumerate(filenames):
-            if metadatas[fn]['dataset'] in models_to_skip: continue
+            dataset = metadatas[fn]['dataset']
+            short_name = metadatas[fn]['short_name']
+            if dataset in models_to_skip['all']: continue
+            if dataset in models_to_skip.get(short_name, {}): continue
+
             if single_model == 'all': pass
             elif metadatas[fn]['dataset'] != single_model: continue
 
@@ -2039,7 +2105,11 @@ def make_multi_model_profiles_plotpair(
         for i, cube in enumerate(cubes):
             fn = model_cubes_paths[variable_group][i]
             metadata = metadatas[fn]
-            if metadata['dataset'] in models_to_skip: continue
+            dataset = metadatas[fn]['dataset']
+            short_name = metadatas[fn]['short_name']
+            if dataset in models_to_skip['all']: continue
+            if dataset in models_to_skip.get(short_name, {}): continue
+
             if single_model == 'all': pass
             elif metadata['dataset'] != single_model: continue
 
@@ -2399,7 +2469,9 @@ def multi_model_map_figure(
     for variable_group, filenames in maps_fns.items():
         for i, fn in enumerate(filenames):
             dataset = metadatas[fn]['dataset']
-            if dataset in models_to_skip: continue
+            short_name = metadatas[fn]['short_name']
+            if dataset in models_to_skip['all']: continue
+            if dataset in models_to_skip.get(short_name, {}): continue
             if single_model == 'all': pass
             elif dataset != single_model: continue
             models[dataset] = True
@@ -2432,7 +2504,7 @@ def multi_model_map_figure(
         for model_itr in models:
             print('variable_group:', variable_group, model_itr, 'looking for ', single_model)
 
-            if model_itr in models_to_skip:
+            if model_itr in models_to_skip['all']:
                  continue
             if single_model == 'all':
                  pass
@@ -2465,7 +2537,11 @@ def multi_model_map_figure(
                 model = metadatas[fn]['dataset']
                 ensemble = metadatas[fn]['ensemble']
                 if model != model_itr: continue
-                if model_itr in models_to_skip: continue
+                if model_itr in models_to_skip['all']: continue
+                short_name = metadatas[fn]['short_name']
+                if model in models_to_skip.get(short_name, {}): continue
+
+
 #                if single_model == 'all': pass
 #                elif model != single_model: continue
                 print('loading:', i, variable_group ,scenario, fn)
@@ -2474,7 +2550,7 @@ def multi_model_map_figure(
                 cube = regrid_intersect(cube, region)
                 if short_name == 'chl':
                     cube = fix_chl(cube)
-                    if cube.data.max()>10000.:
+                    if cube.data.max()>100000.:
                         print('WHAT!? Thats too much ChlorophYLL!', cube.data.max(), cube.units)
                         #cube.data = cube.data/1000.
                         assert 0
@@ -2778,7 +2854,6 @@ def multi_model_map_figure(
         path = diagtools.folder(cfg['plot_dir']+'/Maps_6panes')
         path += '_'.join(['maps', figure_style, region, time_str, single_model])
         path += diagtools.get_image_format(cfg)
-
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
         plt.close()
@@ -2943,6 +3018,11 @@ def main(cfg):
         #print(os.path.basename(fn),':',metadata['variable_group'])
         variable_group = metadata['variable_group']
 
+        dataset = metadata['dataset']
+        short_name = metadata['short_name']
+        if dataset in models_to_skip['all']: continue
+        if dataset in models_to_skip.get(short_name, {}): continue
+
         if metadata['dataset'] in models_to_skip:
             continue
         models[metadata['dataset']] = True
@@ -2967,7 +3047,7 @@ def main(cfg):
 
 
     # Individual plots - standalone
-    do_standalone = True
+    do_standalone = False
     if do_standalone:
 
         # plottings:
@@ -2998,8 +3078,7 @@ def main(cfg):
                     plotting = plotting,
                     single_model=single_model,
                 )
-        sys.exit()     
-        #assert 0
+
         # Climatology plot
         plottings =  [['OneModelOneVote',],['means', 'OneModelOneVote',], ['OMOC_modelmeans','OneModelOneVote','OMOC_modelranges'],] # ['all_models',],[ 'means',  '5-95'], ]#  ['means',],  ['5-95',], ['all_models', ]]
         for plotting in plottings:
@@ -3057,7 +3136,7 @@ def main(cfg):
     do_whole_plot = True
     for single_model in sorted(models.keys()): # ['all', 'only']:
         if not  do_whole_plot: continue
-        if single_model in models_to_skip: continue
+        if single_model in models_to_skip['all']: continue
 
         fig, subplots = do_gridspec(cfg, )
         hist_time_range = [2000., 2010.] #[1990., 2015.]
@@ -3167,6 +3246,10 @@ def main(cfg):
 
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
+        plt.savefig(path.replace('.png', '_300dpi.png'), dpi=300)
+        plt.savefig(path.replace('.png', '_300dpi_trans.png'), dpi=300, transparent=True)
+        plt.savefig(path.replace('.png', '.pdf'))
+        plt.savefig(path.replace('.png', '.svg'))
         plt.close()
 
     #moving_average_str = cfg.get('moving_average', None)

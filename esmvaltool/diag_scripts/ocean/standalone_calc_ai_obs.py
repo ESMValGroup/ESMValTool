@@ -662,7 +662,7 @@ def make_profile_figure(field):
 
 def main():
     twodfields = []#ld', ] #'intpp', 'chl', ]# 'mld' ]
-    threedfields = ['o2', ] #'no3','po4', ]#'tos',] #'o2',] #'no3', ] #'ph', ]#'so', ]# 'o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
+    threedfields = ['po4', ] #'no3','po4', ]#'tos',] #'o2',] #'no3', ] #'ph', ]#'so', ]# 'o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
     for field in twodfields:
 #        make_map_figure(field)
         make_ts_figure(field)
