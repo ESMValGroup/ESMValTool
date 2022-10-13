@@ -199,7 +199,7 @@ These are the detailed steps to take to make a release.
      but they are analogous to the ESMValTool instructions listed in :ref: `How to make a release`. 
    - Run all the recipes (optionally with a reduced amount of data) to check that they still work with the release candidate
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
-   - Make another release candidate with the discovered bugfixes and run again all recipes to check again for bugs.
+   - Make another release candidate including the bugfix(es) and run the affected recipes again to check for further bugs.
    - Make as many release candidates for ESMValCore as needed in order to fix all the detected bugs.
    - Make the official ESMValCore release with the last release candidate.
    - Ask the user engagement team to announce the release to the user mailing list, the development team mailing list, on twitter
