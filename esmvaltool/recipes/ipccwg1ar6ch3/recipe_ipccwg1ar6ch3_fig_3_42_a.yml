@@ -1,16 +1,23 @@
 # ESMValTool
-# recipe_ipccwg1ar6ch3_fig_3_42a.yml
+# recipe_ipccwg1ar6ch3_fig_3_42_a.yml
 ---
 documentation:
+
+  title: IPCC AR6 WG1 Chapter 3 Fig. 3.42a
+
   description: |
-    Producing Fig. 3.42a
+    Producing Fig. 3.42a in the IPCC Working Group I
+    Contribution to the Sixth Assessment Report: Chapter 3
 
   authors:
     - bock_lisa
-    - lauer_axel
+    - eyring_veronika
+
+  maintainer:
+    - bock_lisa
 
   references:
-    - gleckler08jgr
+    - eyring21ipcc
 
   projects:
     - ipcc_ar6
@@ -74,10 +81,9 @@ preprocessors:
 
 
 datasets:
-  #CMIP3
-  #- &cmip3 {dataset: bccr_bcm2_0,  institute: BCCR, project: CMIP3,  mip: A1,  modeling_realm: atm,  exp: 20c3m,  frequency: mo, ensemble: run1} #no rlutcs
-  - &cmip3 {dataset: cccma_cgcm3_1, institute: CCCMA, project: CMIP3,  mip: A1,  modeling_realm: atm,  exp: 20c3m,  frequency: mo, ensemble: run1}
-  #- {<<: *cmip3, dataset: cccma_cgcm3_1, institute: CCCMA}
+  # CMIP3
+  - &cmip3 {dataset: cccma_cgcm3_1, institute: CCCMA, project: CMIP3, mip: A1,
+            modeling_realm: atm, exp: 20c3m, frequency: mo, ensemble: run1}
   - {<<: *cmip3, dataset: cccma_cgcm3_1_t63, institute: CCCMA}
   - {<<: *cmip3, dataset: csiro_mk3_0, institute: CSIRO}
   - {<<: *cmip3, dataset: gfdl_cm2_0, institute: GFDL}
@@ -89,47 +95,30 @@ datasets:
   - {<<: *cmip3, dataset: ipsl_cm4, institute: IPSL}
   - {<<: *cmip3, dataset: miroc3_2_hires, institute: NIES}
   - {<<: *cmip3, dataset: miroc3_2_medres, institute: NIES}
-  #- {<<: *cmip3, dataset: miub_echo_g, institute: MIUB-KMA}
   - {<<: *cmip3, dataset: mpi_echam5, institute: MPIM}
   - {<<: *cmip3, dataset: mri_cgcm2_3_2a, institute: MRI}
   - {<<: *cmip3, dataset: ncar_ccsm3_0, institute: NCAR}
   - {<<: *cmip3, dataset: ncar_pcm1, institute: NCAR}
   - {<<: *cmip3, dataset: ukmo_hadcm3, institute: UKMO}
-  #- {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO} #zg, ua, hus: missing years
-
-  #CMIP5
+  # CMIP5
   - {dataset: ACCESS1-0}
   - {dataset: ACCESS1-3}
   - {dataset: bcc-csm1-1}
   - {dataset: bcc-csm1-1-m}
   - {dataset: BNU-ESM}
-  #- {dataset: CanCM4} #no hus, rsut, rlutcs, clt
-  #- {dataset: CanESM2} #no rsut
   - {dataset: CCSM4}
   - {dataset: CESM1-BGC}
   - {dataset: CESM1-CAM5}
-  #- {dataset: CESM1-CAM5-1-FV2} #no va
   - {dataset: CESM1-FASTCHEM}
   - {dataset: CESM1-WACCM}
-  #- {dataset: CMCC-CESM} #no psl
   - {dataset: CMCC-CM}
-  #- {dataset: CMCC-CMS} #no rsutcs
   - {dataset: CNRM-CM5}
-  #- {dataset: CNRM-CM5-2} #no psl
   - {dataset: CSIRO-Mk3-6-0}
-  #- {dataset: EC-EARTH, ensemble: r6i1p1} #no rsut, ts, hus, zg, rlutcs
   - {dataset: FGOALS-g2}
-  #- {dataset: FGOALS-s2} #no pr, ua, va
   - {dataset: FIO-ESM}
-  #- {dataset: GFDL-CM2p1} #no rlutcs, rsutcs, clt
   - {dataset: GFDL-CM3}
   - {dataset: GFDL-ESM2G}
   - {dataset: GFDL-ESM2M}
-  #- {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-  #- {dataset: GISS-E2-H-CC} #no psl
-  #- {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-  #- {dataset: GISS-E2-R-CC} #no psl
-  #- {dataset: HadCM3} #no hus
   - {dataset: HadGEM2-AO}
   - {dataset: HadGEM2-CC}
   - {dataset: HadGEM2-ES}
@@ -148,66 +137,53 @@ datasets:
   - {dataset: MRI-ESM1}
   - {dataset: NorESM1-M}
   - {dataset: NorESM1-ME}
-
-  #CMIP6
-  - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
-  - {dataset: ACCESS-ESM1-5, institute: CSIRO, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
-  - {dataset: AWI-CM-1-1-MR, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
-  - {dataset: AWI-ESM-1-1-LR, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
-  - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  #- {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #rlut time not monotonic
-  - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn, project: CMIP6}
-  - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: CESM2-WACCM-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: CIESM, grid: gr, ensemble: r1i1p1f1, project: CMIP6} 
-  - {dataset: CMCC-CM2-HR4, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  #- {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
-  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
-  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
-  #- {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange 
-  #- {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #850hPa strange
-  #- {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-  #- {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-  #- {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-  #- {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-  #- {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va, clt
-  - {dataset: EC-Earth3-Veg-LR, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
-  - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
-  - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6}
-  - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6}
-  - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  #- {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-  - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
-  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
-  - {dataset: IITM-ESM, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: INM-CM4-8, grid: gr1, ensemble: r1i1p1f1, project: CMIP6}
-  - {dataset: INM-CM5-0, grid: gr1, ensemble: r1i1p1f1, project: CMIP6}
-  #- {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg, clt
-  - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
-  - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
-  #- {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr, zg: strange values
-  #- {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut, rlutcs, clt
-  - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
-  - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: NorCPM1, grid: gn, institute: NCC, ensemble: r10i1p1f1, project: CMIP6}
-  - {dataset: NorESM2-LM, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
-  - {dataset: NorESM2-MM, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
-  - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: TaiESM1, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
-  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
+  # CMIP6
+  - &cmip6 {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn,
+            ensemble: r1i1p1f1, project: CMIP6}
+  - {dataset: ACCESS-ESM1-5, institute: CSIRO}
+  - {dataset: AWI-CM-1-1-MR}
+  - {dataset: AWI-ESM-1-1-LR}
+  - {dataset: BCC-CSM2-MR}
+  - {dataset: CAMS-CSM1-0}
+  - {dataset: CanESM5}
+  - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1}
+  - {dataset: CESM2}
+  - {dataset: CESM2-FV2, institute: NCAR}
+  - {dataset: CESM2-WACCM, institute: NCAR}
+  - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+  - {dataset: CIESM, grid: gr}
+  - {dataset: CMCC-CM2-HR4}
+  - {dataset: CMCC-CM2-SR5}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+  - {dataset: EC-Earth3-Veg-LR, grid: gr}
+  - {dataset: FGOALS-f3-L, grid: gr}
+  - {dataset: FGOALS-g3}
+  - {dataset: GFDL-CM4, grid: gr1}
+  - {dataset: GFDL-ESM4, grid: gr1}
+  - {dataset: GISS-E2-1-G}
+  - {dataset: GISS-E2-1-H}
+  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
+  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3}
+  - {dataset: IITM-ESM}
+  - {dataset: INM-CM4-8, grid: gr1}
+  - {dataset: INM-CM5-0, grid: gr1}
+  - {dataset: IPSL-CM6A-LR, grid: gr}
+  - {dataset: KACE-1-0-G, grid: gr}
+  - {dataset: MIROC6}
+  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2}
+  - {dataset: MPI-ESM-1-2-HAM}
+  - {dataset: MPI-ESM1-2-LR}
+  - {dataset: MPI-ESM1-2-HR}
+  - {dataset: MRI-ESM2-0}
+  - {dataset: NESM3}
+  - {dataset: NorCPM1, institute: NCC, ensemble: r10i1p1f1}
+  - {dataset: NorESM2-LM, institute: NCC}
+  - {dataset: NorESM2-MM, institute: NCC}
+  - {dataset: SAM0-UNICON}
+  - {dataset: TaiESM1}
+  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
 
 
 diagnostics:
@@ -224,46 +200,46 @@ diagnostics:
     description: Calculate space-time root mean square error
     variables:
       tas: &perf_var
-        preprocessor: ppNOLEV1x1 #ppNOLEV1
+        preprocessor: ppNOLEV1x1
         mip: Amon
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
         start_year: 1980
         end_year: 1999
-        reference_dataset: ERA5  #ERA-Interim
+        reference_dataset: ERA5
         alternative_dataset: NCEP
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO} #no hus, zg, ta, ua
-      - {dataset: CanCM4} #no hus
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: EC-EARTH, ensemble: r6i1p1} #no rsut, ts, hus, zg
-      - {dataset: FGOALS-s2} #no pr, ua, va
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #va850 strange
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: BCC-ESM1}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: EC-Earth3-Veg, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: MCM-UA-1-0}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}      
+      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading: &grading_settings
         script: perfmetrics/main.ncl
@@ -295,33 +271,33 @@ diagnostics:
         reference_dataset: ESACCI-SST
         alternative_dataset: HadISST
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO} #no hus, zg, ta, ua
-      - {dataset: CanCM4} #no hus
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: FGOALS-s2} #no pr, ua, va
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #va850 strange
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: BCC-ESM1}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: EC-Earth3-Veg, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: MCM-UA-1-0}
       - {dataset: ESACCI-SST, project: OBS, type: sat,
          version: L4-GHRSST-SSTdepth-OSTIA-GLOB, tier: 2, start_year: 1992}
       - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
@@ -335,32 +311,32 @@ diagnostics:
         reference_dataset: GPCP-SG
         alternative_dataset: GHCN
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO} #no hus, zg, ta, ua
-      - {dataset: CanCM4} #no hus
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: EC-EARTH, ensemble: r6i1p1} #no rsut, ts, hus, zg
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #va850 strange
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: BCC-ESM1}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: EC-Earth3-Veg, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: MCM-UA-1-0}
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1}
       - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
 
@@ -370,32 +346,31 @@ diagnostics:
       zg:
         <<: *perf_var
         preprocessor: pp500_1x1
-        reference_dataset: ERA5 #-Interim
+        reference_dataset: ERA5
         alternative_dataset: NCEP
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {dataset: CanCM4} #no hus
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: FGOALS-s2} #no pr, ua, va
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #va850 strange
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      #- {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: BCC-ESM1}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: MCM-UA-1-0}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
@@ -408,31 +383,31 @@ diagnostics:
         reference_dataset: JRA-55
         alternative_dataset: ERA5
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO} #no hus, zg, ta, ua
-      - {dataset: CanCM4} #no hus
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: EC-EARTH, ensemble: r6i1p1} #no rsut, ts, hus, zg
-      - {dataset: FGOALS-s2} #no pr, ua, va
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: HadCM3} #no hus
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #va850 strange
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CMS}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: HadCM3}
+      - {dataset: BCC-ESM1}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: EC-Earth3-Veg, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: MCM-UA-1-0}
       - {dataset: JRA-55, project: ana4mips, type: reanalysis, tier: 1}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: 1, tier: 3}
 
@@ -444,7 +419,6 @@ diagnostics:
         reference_dataset: CERES-EBAF
         derive: true
         force_derivation: false
-        preprocessor: ppNOLEV1
         mip: Amon
         project: CMIP5
         exp: historical
@@ -452,30 +426,29 @@ diagnostics:
         start_year: 1980
         end_year: 1999
     additional_datasets:
-      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO} #no hus, zg, ta, ua
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: FGOALS-s2} #no pr, ua, va
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #va850 strange
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      #- {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, 
-         tier: 1, start_year: 2001, end_year: 2015}      
+      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: FGOALS-s2}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+         tier: 1, start_year: 2001, end_year: 2015}
 
   swcre:
     <<: *perf_diag
@@ -492,29 +465,28 @@ diagnostics:
         start_year: 1980
         end_year: 1999
     additional_datasets:
-      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO} #no hus, zg, ta, ua
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: FGOALS-s2} #no pr, ua, va
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #va850 strange
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      #- {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, 
-         tier: 1, start_year: 2001, end_year: 2015}      
+      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CESM}
+      - {dataset: FGOALS-s2}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: BCC-ESM1}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+         tier: 1, start_year: 2001, end_year: 2015}
 
   rlut:
     <<: *perf_diag
@@ -529,35 +501,33 @@ diagnostics:
         start_year: 1980
         end_year: 1999
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO} #no hus, zg, ta, ua
-      - {dataset: CanCM4} #no hus
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: EC-EARTH, ensemble: r6i1p1} #no rsut, ts, hus, zg
-      - {dataset: FGOALS-s2} #no pr, ua, va
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #va850 strange
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      #- {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      #- {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, 
-         tier: 1, start_year: 2001, end_year: 2015}      
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: MCM-UA-1-0}
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+         tier: 1, start_year: 2001, end_year: 2015}
 
   hus400:
     <<: *perf_diag
@@ -566,23 +536,23 @@ diagnostics:
         <<: *perf_var
         preprocessor: pp400_1x1
         reference_dataset: AIRS
-        alternative_dataset: ERA5 #-Interim
+        alternative_dataset: ERA5
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: FGOALS-s2} #no pr, ua, va
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #va850 strange
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: BCC-ESM1}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: MCM-UA-1-0}
       - {dataset: AIRS, project: obs4mips, level: L3,
          version: RetStd-v5, tier: 1, start_year: 2003, end_year: 2010}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
@@ -600,32 +570,31 @@ diagnostics:
         start_year: 1980
         end_year: 1999
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO} #no hus, zg, ta, ua
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: FGOALS-s2} #no pr, ua, va
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #va850 strange
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      #- {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, 
-         tier: 1, start_year: 2001, end_year: 2015}      
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: BCC-ESM1}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+         tier: 1, start_year: 2001, end_year: 2015}
 
   ua200:
     <<: *perf_diag
@@ -633,35 +602,35 @@ diagnostics:
       ua:
         <<: *perf_var
         preprocessor: pp200_1x1
-        reference_dataset: ERA5 #-Interim
+        reference_dataset: ERA5
         alternative_dataset: NCEP
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {dataset: CanCM4} #no hus
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: EC-EARTH, ensemble: r6i1p1} #no rsut, ts, hus, zg
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #va850 strange
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: BCC-ESM1}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: EC-Earth3-Veg, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: MCM-UA-1-0}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
@@ -672,33 +641,32 @@ diagnostics:
       va:
         <<: *perf_var
         preprocessor: pp850_1x1
-        reference_dataset: ERA5 #-Interim
+        reference_dataset: ERA5
         alternative_dataset: NCEP
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {dataset: CanCM4} #no hus
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: EC-EARTH, ensemble: r6i1p1} #no rsut, ts, hus, zg
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      #- {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: BCC-ESM1}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: MCM-UA-1-0}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
@@ -708,34 +676,34 @@ diagnostics:
       ua:
         <<: *perf_var
         preprocessor: pp850_1x1
-        reference_dataset: ERA5 #-Interim
+        reference_dataset: ERA5
         alternative_dataset: NCEP
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {dataset: CanCM4} #no hus
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: EC-EARTH, ensemble: r6i1p1} #no rsut, ts, hus, zg
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: BCC-ESM1}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: EC-Earth3-Veg, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: MCM-UA-1-0}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
@@ -745,34 +713,33 @@ diagnostics:
       va:
         <<: *perf_var
         preprocessor: pp200_1x1
-        reference_dataset: ERA5 #-Interim
+        reference_dataset: ERA5
         alternative_dataset: NCEP
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {dataset: CanCM4} #no hus
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: EC-EARTH, ensemble: r6i1p1} #no rsut, ts, hus, zg
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #va850 strange
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      #- {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: BCC-ESM1}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: MCM-UA-1-0}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
@@ -782,33 +749,33 @@ diagnostics:
       ta:
         <<: *perf_var
         preprocessor: pp850_1x1
-        reference_dataset: ERA5 #-Interim
+        reference_dataset: ERA5
         alternative_dataset: NCEP
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {dataset: CanCM4} #no hus
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: EC-EARTH, ensemble: r6i1p1} #no rsut, ts, hus, zg
-      - {dataset: FGOALS-s2} #no pr, ua, va
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: BCC-ESM1}
+      - {dataset: CMCC-ESM2}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: EC-Earth3-Veg, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: MCM-UA-1-0}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
@@ -818,36 +785,36 @@ diagnostics:
       ta:
         <<: *perf_var
         preprocessor: pp200_1x1
-        reference_dataset: ERA5 #-Interim
+        reference_dataset: ERA5
         alternative_dataset: NCEP
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0,  institute: BCCR}
-      - {dataset: CanCM4} #no hus
-      - {dataset: CanESM2} #no rsut
-      - {dataset: CESM1-CAM5-1-FV2} #no va
-      - {dataset: CMCC-CESM} #no psl
-      - {dataset: CMCC-CMS} #no rsutcs
-      - {dataset: EC-EARTH, ensemble: r6i1p1} #no rsut, ts, hus, zg
-      - {dataset: FGOALS-s2} #no pr, ua, va
-      - {dataset: GFDL-CM2p1} #no rlutcs, clt
-      - {dataset: GISS-E2-H, ensemble: r1i1p2} #no hus
-      - {dataset: GISS-E2-H-CC} #no psl
-      - {dataset: GISS-E2-R, ensemble: r1i1p2} #no hus, zg
-      - {dataset: GISS-E2-R-CC} #no psl
-      - {dataset: HadCM3} #no hus
-      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-      - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #va850 strange
-      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #ta850 strange
-      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no hus
-      - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus
-      - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, project: CMIP6} # no rlut, rsut, hus, zg, va
-      - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6} #no hus
-      - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, project: CMIP6} #no hus, zg
-      - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6} #no pr
-      - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6} #no clt, rsut
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CMS}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: BCC-ESM1}
+      - {dataset: CMCC-ESM2}
+      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {dataset: E3SM-1-0, grid: gr}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {dataset: EC-Earth3, grid: gr}
+      - {dataset: EC-Earth3-AerChem, grid: gr}
+      - {dataset: EC-Earth3-CC, grid: gr}
+      - {dataset: EC-Earth3-Veg, grid: gr}
+      - {dataset: GISS-E2-1-G-CC}
+      - {dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {dataset: KIOST-ESM, grid: gr1}
+      - {dataset: MCM-UA-1-0}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
@@ -864,23 +831,29 @@ diagnostics:
         label_scale: 0.1
         disp_values: false
         cm_interval: [2, 241]
-        no_labelbar: True
-        # Sort dataset in alphabetic order (excluding MMM)
-        #sort: true
-        project_order: ['CMIP3', 'CMIP5', 'CMIP6'] 
-        caption: "                                            Relative model performance ~C~ ~Z75~ CMIP3                                                       CMIP5                                                                               CMIP6                         "
+        no_labelbar: true
+        project_order: ['CMIP3', 'CMIP5', 'CMIP6']
+        caption: |
+                 "                                            Relative model "
+                 "performance ~C~ ~Z75~ CMIP3                                "
+                 "CMIP5                                                      "
+                 "CMIP6                         "
         # Sort diagnostics in a specific order (name = 'diagnositic'-'region')
         diag_order: ['hus400-global', 'zg500-global',
-                     'va200-global', 'va850-global', 'ua200-global', 'ua850-global',
-                     'ta200-global', 'ta850-global', 
+                     'va200-global', 'va850-global',
+                     'ua200-global', 'ua850-global',
+                     'ta200-global', 'ta850-global',
                      'ts-global', 'psl-global',
-                     'lwcre-global', 'swcre-global', 'rlut-global', 'rsut-global',
+                     'lwcre-global', 'swcre-global',
+                     'rlut-global', 'rsut-global',
                      'pr-global', 'tas-global']
-        diag_label: ['Specific Humidity 400 hPa', 'Geopotential Height 500 hPa', 
+        diag_label: ['Specific Humidity 400 hPa', 'Geopotential Height 500 hPa',
                      'Northward Wind 200 hPa', 'Northward Wind 850 hPa',
                      'Eastward Wind 200 hPa', 'Eastward Wind 850 hPa',
                      'Temperature 200h Pa', 'Temperature 850h Pa',
                      'Surface Temperature', 'Sea Level Pressure',
-                     'TOA Longwave Cloud Radiative Effect', 'TOA Shortwave Cloud Radiative Effect',
-                     'TOA Outgoing Longwave Radiation', 'TOA Outgoing Shortwave Radiation', 
-                     'Precipitation', 'Near-Surface Temperature'] 
+                     'TOA Longwave Cloud Radiative Effect',
+                     'TOA Shortwave Cloud Radiative Effect',
+                     'TOA Outgoing Longwave Radiation',
+                     'TOA Outgoing Shortwave Radiation',
+                     'Precipitation', 'Near-Surface Temperature']
