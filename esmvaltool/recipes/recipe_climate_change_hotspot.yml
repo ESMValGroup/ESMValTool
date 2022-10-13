@@ -487,10 +487,6 @@ cmip6_26: &cmip6_26
 
   - {<<: *cmip6_h-ssp126, dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
 
-  - {<<: *cmip6_h-ssp126, dataset: INM-CM4-8, grid: gr1}
-
-  - {<<: *cmip6_h-ssp126, dataset: INM-CM5-0, grid: gr1}
-
   - {
     <<: *cmip6_h-ssp126,
     dataset: IPSL-CM6A-LR,
