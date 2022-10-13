@@ -8,9 +8,6 @@ from pathlib import Path
 
 from setuptools import Command, setup
 
-sys.path.insert(0, os.path.dirname(__file__))
-from esmvaltool import __version__  # noqa: E402
-
 PACKAGES = [
     'esmvaltool',
 ]
@@ -26,7 +23,9 @@ REQUIREMENTS = {
         'cartopy',
         'cdo',
         'cdsapi',
-        'cf-units',
+        # see https://github.com/SciTools/cf-units/issues/218
+        # see https://github.com/ESMValGroup/ESMValCore/issues/1655
+        'cf-units>=3.0.0,<3.1.0,!=3.0.1.post0',
         'cftime',
         'cmocean',
         'dask',
@@ -40,10 +39,10 @@ REQUIREMENTS = {
         'joblib',
         'lime',
         'mapgenerator>=1.0.5',
-        'matplotlib',
+        'matplotlib<3.6.0',  # github.com/ESMValGroup/ESMValTool/issues/2800
         'natsort',
         'nc-time-axis',
-        'netCDF4',
+        'netCDF4!=1.6.1',  # github.com/ESMValGroup/ESMValCore/pull/1724
         'numpy',
         'openpyxl',
         'pandas',
@@ -64,8 +63,8 @@ REQUIREMENTS = {
         'seawater',
         'shapely',
         'xarray',
-        'xesmf',
-        'xgboost',
+        'xesmf==0.3.0',
+        'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
     ],
     # Test dependencies
@@ -80,17 +79,20 @@ REQUIREMENTS = {
         'pytest-metadata>=1.5.1',
         'pytest-xdist',
     ],
+    # Documentation dependencies
+    'doc': [
+        'autodocsumm>=0.2.2',
+        'sphinx>=5',
+        'sphinx_rtd_theme',
+    ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
-        'autodocsumm>=0.2.2',
         'codespell',
         'docformatter',
         'isort',
         'pre-commit',
         'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
-        'sphinx>2',
-        'sphinx_rtd_theme',
         'vprof',
         'yamllint',
         'yapf',
@@ -192,7 +194,6 @@ def read_description(filename):
 
 setup(
     name='ESMValTool',
-    version=__version__,
     author=read_authors('.zenodo.json'),
     description=read_description('.zenodo.json'),
     long_description=Path('README.md').read_text(),
@@ -224,8 +225,10 @@ setup(
     install_requires=REQUIREMENTS['install'],
     tests_require=REQUIREMENTS['test'],
     extras_require={
-        'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test']) -
-                    {'pycodestyle'}),
+        'develop':
+        REQUIREMENTS['develop'] + REQUIREMENTS['test'] + REQUIREMENTS['doc'],
+        'doc':
+        REQUIREMENTS['doc'],
         'test':
         REQUIREMENTS['test'],
     },
