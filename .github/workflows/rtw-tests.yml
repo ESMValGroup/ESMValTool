@@ -1,6 +1,6 @@
 # This workflow creates the required Conda environment, performs various
 # validation steps for Cylc and Rose, and builds and checks the documentation.
-name: default
+name: rtw-tests
 
 # Controls when the action will run
 on:
