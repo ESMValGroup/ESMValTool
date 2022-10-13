@@ -350,7 +350,7 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MERRA2                       | sm (Lmon)                                                                                            |   3  | Python          |
 |                              | clt, pr, evspsbl, hfss, hfls, huss, prc, prsn, prw, ps, psl, rlds, rldscs, rlus, rlut, rlutcs, rsds, |      |                 |
-|                              | rsdscs, rsdt, tas, tasmin, tasmax, tauu, tauv, ts, uas, vas, rsus, rsuscs, rsut, rsutcs, ta, ua, uv, |      |                 |
+|                              | rsdscs, rsdt, tas, tasmin, tasmax, tauu, tauv, ts, uas, vas, rsus, rsuscs, rsut, rsutcs, ta, ua, va, |      |                 |
 |                              | tro3, zg, hus, wap, hur (Amon)                                                                       |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MLS-AURA                     | hur, hurStderr (day)                                                                                 |   3  | Python          |
