@@ -195,9 +195,8 @@ These are the detailed steps to take to make a release.
 #. ESMValCore feature freeze, testing, and release
 
    - A release branch is created and branch protection rules are set up so only the release manager (i.e. the person in charge of the release branch) can push commits to that branch.
-   - Make a release candidate with the release branch. Note that the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>` are currently outdated and pending to be modified,
-     but they are analogous to the ESMValTool instructions listed in :ref: `How to make a release`. 
-   - Run all the recipes (optionally with a reduced amount of data) to check that they still work with the release candidate
+   - Make a release candidate with the release branch following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>` .
+   - Run all the recipes (optionally with a reduced amount of data) to check that they still work with the release candidate.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
    - Make another release candidate including the bugfix(es) and run the affected recipes again to check for further bugs.
    - Make as many release candidates for ESMValCore as needed in order to fix all the detected bugs.
