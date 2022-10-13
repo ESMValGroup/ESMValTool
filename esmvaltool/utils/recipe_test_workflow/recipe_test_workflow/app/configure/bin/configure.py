@@ -25,7 +25,7 @@ USER_CONFIG_PATH = os.environ["USER_CONFIG_PATH"]
 def main():
     """Write the updated configuration values to the file defined by
     ``USER_CONFIG_PATH``."""
-    # Get the default configuration values from ESMValTool. A dictionary is
+    # Get the default configuration values from ESMValCore. A dictionary is
     # needed here to avoid the config object from converting paths to PosixPath
     # objects, which causes issues when writing the YAML file.
     # The dictionary is then updated with the path to the latest checked out
