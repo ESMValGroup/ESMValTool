@@ -43,7 +43,7 @@ jobs:
       - name: Run Cylc configuration linter
         run: |
           eval "$(conda shell.bash hook)"
-          conda activate caw
+          conda activate rtw
           cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
           cylc lint
 
