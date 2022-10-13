@@ -1526,8 +1526,8 @@ diagnostics:
       ua_monthly:
         short_name: ua
         mip: Amon
-      uv_monthly:
-        short_name: uv
+      va_monthly:
+        short_name: va
         mip: Amon
       tro3_monthly:
         short_name: tro3
