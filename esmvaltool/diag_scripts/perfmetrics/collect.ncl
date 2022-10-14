@@ -193,7 +193,8 @@ begin
               (/data_temp&models(imod2)/)
             data_all := data_new
             delete(data_new)
-            projectnames := array_append_record(projectnames, projects(imod2), 0)
+            projectnames := array_append_record(projectnames, \
+                                                projects(imod2), 0)
           else
             ; Loop over datasets of data
             do imod = 0, dimsizes(data_all&models) - 1
@@ -331,8 +332,10 @@ begin
       data_temp = data_all
       n_proj = dimsizes(diag_script_info@project_order)
       id1 = ind(projectnames.eq.diag_script_info@project_order(0))
-      id1_mm = (/ind(data_all&models(id1) .eq. diag_script_info@project_order(0)+"_mean"), \
-                 ind(data_all&models(id1) .eq. diag_script_info@project_order(0)+"_median") /)
+      id1_mm = (/ind(data_all&models(id1) .eq. \
+                diag_script_info@project_order(0) + "_mean"), \
+                ind(data_all&models(id1) .eq. \
+                diag_script_info@project_order(0) + "_median") /)
       if(any(ismissing(id1_mm))) then
         id1_mm = -1
       end if
@@ -346,8 +349,10 @@ begin
       end if
       if (n_proj .gt. 1) then
         id2 = ind(projectnames.eq.diag_script_info@project_order(1))
-        id2_mm = (/ind(data_all&models(id2) .eq. diag_script_info@project_order(1)+"_mean"), \
-                   ind(data_all&models(id2) .eq. diag_script_info@project_order(1)+"_median") /)
+        id2_mm = (/ind(data_all&models(id2) .eq. \
+                  diag_script_info@project_order(1) + "_mean"), \
+                  ind(data_all&models(id2) .eq. \
+                  diag_script_info@project_order(1) + "_median") /)
         if (any(ismissing(id2_mm))) then
           id2_mm = -1
         end if
@@ -361,15 +366,16 @@ begin
         end if
         if (n_proj .gt. 2) then
           id3 = ind(projectnames.eq.diag_script_info@project_order(2))
-          id3_mm = (/ind(data_all&models(id3) .eq. diag_script_info@project_order(2)+"_mean"), \
-                     ind(data_all&models(id3) .eq. diag_script_info@project_order(2)+"_median") /)
+          id3_mm = (/ind(data_all&models(id3) .eq. \
+                    diag_script_info@project_order(2) + "_mean"), \
+                    ind(data_all&models(id3) .eq. \
+                    diag_script_info@project_order(2) + "_median") /)
           if (any(ismissing(id3_mm))) then
             id3_mm = -1
           end if
           pid3 = sort_alphabetically(data_temp&models(id3), id3_mm, "begin")
           n3 = dimsizes(id3)
           breakpoints := array_append_record(breakpoints, n1+n2, 0)
-          ; breakpoints := array_append_record(breakpoints, n2, 0)
           if (dimsizes(dimsizes(data_all)).eq.3) then
             data_all(:, (n1+n2):(n1+n2+n3-1), :) = data_temp(:, id3(pid3), :)
           else

@@ -19,9 +19,6 @@ begin
     modidx := array_append_record(ref_ind, modidx(ind(modidx.ne.ref_ind)), 0)
   end if
 
-print("ref_ind = " + ref_ind)
-print(datasetnames(modidx))
-
   annots = project_style(info_items, diag_script_info, "annots")
 
   ; Loop over datasets
@@ -81,26 +78,20 @@ print(datasetnames(modidx))
     ; Store all models in one array
     if(ii_modidx .eq. 0) then
       var_all_mod = new(array_append_record(dimsizes(var_all), \
-                                            dimsizes(grading&models), 0), float)
+                        dimsizes(grading&models), 0), float)
       var_all_mod!4 = "models"
       var_all_mod&models = grading&models
-print(grading&models)
-printVarSummary(var_all_mod)
       copy_VarAtts(diag_script_info, var_all_mod)
     end if
     if (l_altern) then
       if (imod .ne. ref_ind .and. imod .ne. alt_ind) then
-        var_all_mod(:,:,:,:,imod) = var_all
+        var_all_mod(:, :, :, :, imod) = var_all
       end if
     else
-print("imod = " + imod)
       if (imod.ne.ref_ind) then
-        var_all_mod(:,:,:,:,imod) = var_all
+        var_all_mod(:, :, :, :, imod) = var_all
       end if
-    end if 
-    ;if ((imod.ne.ref_ind) .and. (.not. (l_altern .and. imod.eq.alt_ind))) then
-    ;    var_all_mod(:,:,:,:,imod) = var_all
-    ;end if
+    end if
 
     ; Store reference dataset
     if (imod.eq.ref_ind) then
@@ -168,7 +159,6 @@ print("imod = " + imod)
         grading(met, 0, imod, 0) = \
           calculate_metric(var_all(:, :, :, 0), var_ref(:, :, :, 0), \
                            diag_script_info@metric(met))
-print("grading = " + grading(met, 0, imod, 0))
         if (l_altern) then
           grading(met, 0, imod, 1) = \
             calculate_metric(var_all(:, :, :, 0), var_alt(:, :, :, 0), \
@@ -181,15 +171,11 @@ print("grading = " + grading(met, 0, imod, 0))
 
   end do
 
-print("grading&models = " + grading&models)
-print("grading = " + grading(0, 0, :, 0))
-
-
   if (any(diag_script_info@metric.eq."RMSD")) then
 
-    ;; *************************************
-    ;; calculate means over ensemble members
-    ;; *************************************
+    ; *************************************
+    ; calculate means over ensemble members
+    ; *************************************
 
     imet = ind(diag_script_info@metric.eq."RMSD")
 
@@ -197,57 +183,6 @@ print("grading = " + grading(0, 0, :, 0))
     projectnames := remove_index(projectnames, ref_inds)
 
     ndim := dimsizes(datasetnames)
-    ;ensemble_assign = new(ndim, integer)
-
-    ;enum = 1
-    ;temp = datasetnames(0)
-    ;do gg = 0, ndim - 1
-    ;  if (temp.eq.datasetnames(gg)) then ; does the model name match what's in temp?
-    ;    ensemble_assign(gg) = enum ; if so, assign it the same number
-    ;  else
-    ;    enum = enum + 1              ; if not, assign it the next number
-    ;    ensemble_assign(gg) = enum
-    ;    temp = datasetnames(gg)
-    ;  end if
-    ;end do
-    ;ensemble_assign@model = datasetnames
-    ;delete(temp)
-
-    ;grading_em = grading(:, :, :max(ensemble_assign)-1, :)
-    ;grading_em = grading_em@_FillValue
-    ;datasetnames_em = datasetnames(:max(ensemble_assign)-1)
-    ;projectnames_em = projectnames(:max(ensemble_assign)-1)
-
-    ;var_all_mod_em = var_all_mod(:, :, :, :, :max(ensemble_assign)-1)
-
-    ;do gg = 1,max(ensemble_assign)         ; calculate ensemble means
-    ;  wind := ind(ensemble_assign.eq.gg)
-    ;  if (dimsizes(wind).eq.1) then
-    ;    grading_em(imet, 0, gg-1, :) = (/ grading(imet, 0, wind, :) /)
-    ;    grading_em&models(gg-1) =  datasetnames(wind)
-    ;    datasetnames_em(gg-1) = datasetnames(wind)
-    ;    projectnames_em(gg-1) = projectnames(wind)
-    ;    var_all_mod_em(:, :, :, :, gg-1) = (/ var_all_mod(:, :, :, :, wind) /)
-    ;    var_all_mod_em&models = datasetnames(wind)
-    ;  else
-    ;    grading_em(imet, 0, gg-1, :) = (/ dim_avg_n(grading(imet, 0, wind, :), 0) /)
-    ;    grading_em&models(gg-1) =  datasetnames(wind(0))
-    ;    datasetnames_em(gg-1) = datasetnames(wind(0))
-    ;    projectnames_em(gg-1) = projectnames(wind(0))
-    ;    var_all_mod_em(:, :, :, :, gg-1) = (/ dim_avg_n(var_all_mod(:, :, :, :, wind), 4) /)
-    ;    var_all_mod_em&models = datasetnames(wind(0) )
-    ;  end if
-    ;end do
- 
-    ;delete(grading)
-    ;grading = grading_em
-    ;grading@projects = str_join(projectnames_em, " ")
-    ;delete(grading_em)
-
-    ;delete(var_all_mod)
-    ;var_all_mod = var_all_mod_em
-    ;delete(var_all_mod_em)
-
 
     ; ******************************************************
     ; calculate multi-model mean and median for each project
@@ -259,30 +194,25 @@ print("grading = " + grading(0, 0, :, 0))
     do iproj = 0, n_proj - 1
       ind_proj := ind(projectnames .eq. projects(iproj))
 
-print("project = " + projects(iproj))
-
       tmp := dim_avg_n_Wrap(var_all_mod(:, :, :, :, ind_proj), 4)
-print("mean_ref")
       mean_ref = calculate_metric(tmp(:, :, :, 0), var_ref(:, :, :, 0), \
-                             diag_script_info@metric(imet))
+                                  diag_script_info@metric(imet))
       if (l_altern) then
         mean_alt = calculate_metric(tmp(:, :, :, 0), var_alt(:, :, :, 0), \
-                               diag_script_info@metric(imet))
+                                    diag_script_info@metric(imet))
       end if
       tmp = dim_median_n(var_all_mod(:, :, :, :, ind_proj), 4)
-print("median_ref")
       median_ref = calculate_metric(tmp(:, :, :, 0), var_ref(:, :, :, 0), \
-                             diag_script_info@metric(imet))
+                                    diag_script_info@metric(imet))
       if (l_altern) then
         median_alt = calculate_metric(tmp(:, :, :, 0), var_alt(:, :, :, 0), \
-                               diag_script_info@metric(imet))
+                                      diag_script_info@metric(imet))
       end if
 
       dims = dimsizes(grading)
-      tmp := new((/dims(0), dims(1), dims(2) +2, dims(3)/), float)
+      tmp := new((/dims(0), dims(1), dims(2) + 2, dims(3)/), float)
       copy_VarAtts(grading, tmp)
       tmp(imet, 0, :dims(2)-1, :) = grading(imet, 0, :, :)
-      ;tmp(imet, 0, :dims(2)-1, :) = grading
       tmp(imet, 0, dims(2), 0) = (/mean_ref/)
       tmp(imet, 0, dims(2)+1, 0) = (/median_ref/)
       if (l_altern) then
@@ -293,14 +223,10 @@ print("median_ref")
       delete(grading)
       grading = tmp
       grading&models(dims(2)) = projects(iproj)+"_mean"
-      grading&models(dims(2)+1) = projects(iproj)+"_median" 
+      grading&models(dims(2)+1) = projects(iproj)+"_median"
       grading@projects = grading@projects + " " + projects(iproj) + \
-                         " " + projects(iproj)
-      ;grading&models(dims(2)+1) = projects(iproj)+"_median"
-      ;grading@projects = grading@projects + " " + projects(iproj) + \
-      ;                   " " + projects(iproj)
+                                            " " + projects(iproj)
       delete(tmp)
-      ;delete(ind_proj)
     end do
 
   end if
