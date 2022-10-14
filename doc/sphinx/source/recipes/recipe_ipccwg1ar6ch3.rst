@@ -26,12 +26,16 @@ following figures from Eyring et al. (2021) can currently be reproduced:
 
     * Figure 3.15: Precipitation Anomaly
 
+    * Figure 3.42: Relative Model Performance
+
 Available recipes and diagnostics
 ---------------------------------
 
 Recipes are stored in esmvaltool/recipes/ipccwg1ar6ch3/
 
     * recipe_ipccwg1ar6ch3_atmosphere.yml
+    * recipe_ipccwg1ar6ch3_fig_3_42_a.yml
+    * recipe_ipccwg1ar6ch3_fig_3_42_b.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
@@ -57,6 +61,11 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     Fig. 3.15:
 
     * ipcc_ar6/precip_anom.ncl
+
+    Fig. 3.42:
+
+    * perfmetrics/main.ncl
+    * perfmetrics/collect.ncl
 
 
 User settings in recipe
@@ -181,25 +190,53 @@ User settings in recipe
    * y_min: set min of y-axis
    * y_max: set max of y-axis
 
+#. Script perfmetrics/perfmetrics_main.ncl
+
+   See :ref:`here<perf-main.ncl>`.
+
+#. Script perfmetrics/perfmetrics_collect.ncl
+
+   See :ref:`here<perf-collect.ncl>`.
+
 
 Variables
 ---------
 
+* hus (atmos, monthly mean, longitude latitude level time)
+* lwcre (atmos, monthly mean, longitude latitude time)
 * pr (atmos, monthly mean, longitude latitude time)
+* psl (atmos, monthly mean, longitude latitude time)
+* rlut (atmos, monthly mean, longitude latitude time)
+* rsut (atmos, monthly mean, longitude latitude time)
+* swcre (atmos, monthly mean, longitude latitude time)
+* ta (atmos, monthly mean, longitude latitude level time)
+* ta (atmos, monthly mean, longitude latitude level time)
 * tas (atmos, monthly mean, longitude latitude time)
 * tasa (atmos, monthly mean, longitude latitude time)
+* ts (atmos, monthly mean, longitude latitude time)
+* ua (atmos, monthly mean, longitude latitude level time)
+* ua (atmos, monthly mean, longitude latitude level time)
+* va (atmos, monthly mean, longitude latitude level time)
+* va (atmos, monthly mean, longitude latitude level time)
+* zg (atmos, monthly mean, longitude latitude level time)
 
 
 Observations and reformat scripts
 ---------------------------------
 
+* AIRS (hus -obs4MIPs)
 * BerkeleyEarth (tasa - esmvaltool/cmorizers/data/formatters/datasets/berkeleyearth.py)
+* CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4MIPs)
 * CRU (pr - esmvaltool/cmorizers/data/formatters/datasets/cru.py)
-* ERA5 (tas - ERA5 data can be used via the native6 project)
+* ESACCI-SST (ts - esmvaltool/ucmorizers/data/formatters/datasets/esacci-sst.py)
+* ERA5 (hus, psl, ta, tas, ua, va, zg - ERA5 data can be used via the native6 project)
 * GHCN (pr - esmvaltool/cmorizers/data/formatters/datasets/ghcn.ncl)
 * GPCP-SG (pr - obs4MIPs)
 * HadCRUT5 (tasa - esmvaltool/cmorizers/data/formatters/datasets/hadcrut5.py)
+* HadISST (ts - esmvaltool/cmorizers/data/formatters/datasets/hadisst.ncl)
 * Kadow2020 (tasa - esmvaltool/cmorizers/data/formatters/datasets/kadow2020.py)
+* JRA-55 (psl - ana4MIPs)
+* NCEP (ta, tas, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep.ncl)
 * NOAAGlobalTemp (tasa - esmvaltool/cmorizers/data/formatters/datasets/noaaglobaltemp.py)
 
 
