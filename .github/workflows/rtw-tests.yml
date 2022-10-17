@@ -1,0 +1,80 @@
+# This workflow creates the required Conda environment, performs various
+# validation steps for Cylc and Rose, and builds and checks the documentation.
+name: rtw-tests
+
+# Controls when the action will run
+on:
+  # Triggers the workflow on push or pull request events
+  push:
+  pull_request:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run
+# sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part
+    # of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job
+      # can access it
+      - uses: actions/checkout@v2
+
+      - name: Create environment
+        run: |
+          conda update conda
+          conda create --name rtw --file .github/workflows/rtw.lock
+          eval "$(conda shell.bash hook)"
+          conda activate rtw
+
+      - name: Validate Cylc workflow
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate rtw
+          cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
+          cylc validate .
+
+      - name: Run Cylc configuration linter
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate rtw
+          cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
+          cylc lint
+
+      - name: Validate format of Rose configuration files
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate rtw
+          cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
+          output="$(rose config-dump)"
+          msg="Run 'rose config-dump' to re-dump the Rose configuration files"
+          msg="${msg} in the common format, then commit the changes."
+          # The '-z' option returns true if 'output' is empty.
+          if [[ -z "${output}" ]]; then exit 0; else echo "${msg}" && exit 1; fi
+
+      - name: Validate Rose configuration metadata
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate rtw
+          cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
+          rose metadata-check -C meta/
+
+      - name: Build documentation
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate rtw
+          cd esmvaltool/utils/recipe_test_workflow/doc
+          make html
+
+      - name: Check for broken links in the documentation
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate rtw
+          cd esmvaltool/utils/recipe_test_workflow/doc
+          make linkcheck
