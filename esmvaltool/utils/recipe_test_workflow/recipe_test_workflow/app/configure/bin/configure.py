@@ -13,26 +13,26 @@ with warnings.catch_warnings():
         category=UserWarning,
         module="esmvalcore.experimental._warnings",
     )
-    import esmvalcore.experimental as esmvaltool
+    from esmvalcore.experimental.config._config_object import Config
 import yaml
 
 ESMVALTOOL_DIR = os.environ["ESMVALTOOL_DIR"]
 LATEST_USER_CONFIG_FILE = os.path.join(ESMVALTOOL_DIR,
                                        "config-user-example.yml")
-USER_CONFIG_PATH = os.environ["USER_CONFIG_PATH"]
+USER_CONFIG_OUTPUT_PATH = os.environ["USER_CONFIG_PATH"]
 
 
 def main():
     """Write the updated configuration values to the file defined by
     ``USER_CONFIG_PATH``."""
-    # Get the default configuration values from ESMValTool. A dictionary is
+    # Get the latest configuration values from ESMValTool. A dictionary is
     # needed here to avoid the config object from converting paths to PosixPath
     # objects, which causes issues when writing the YAML file.
     # The dictionary is then updated with the path to the latest checked out
     # version of config-user-example.yml from the ESMValTool directory.
-    config_values = dict(esmvaltool.CFG)
-    latest_config_file = {'config_file': LATEST_USER_CONFIG_FILE}
-    config_values.update(latest_config_file)
+    config_values = dict(
+        Config._load_user_config(LATEST_USER_CONFIG_FILE,
+                                 raise_exception=True))
 
     # Get the configuration values defined in the environment for the
     # ``configure`` task.
@@ -43,7 +43,7 @@ def main():
 
     # Write the updated configuration values to the file defined by
     # 'USER_CONFIG_PATH'.
-    write_yaml(USER_CONFIG_PATH, config_values)
+    write_yaml(USER_CONFIG_OUTPUT_PATH, config_values)
 
 
 def get_config_values_from_task_env():
@@ -59,7 +59,7 @@ def get_config_values_from_task_env():
     # additional datasets, so may need to be configured in the future.
     config_values_from_task_env = {
         "auxiliary_data_dir": "",
-        "config_file": LATEST_USER_CONFIG_FILE,
+        "config_file": USER_CONFIG_OUTPUT_PATH,
         "download_dir": "",
         "drs": {
             "ana4mips": os.environ["DRS_ANA4MIPS"],
@@ -75,6 +75,7 @@ def get_config_values_from_task_env():
         "extra_facets_dir": [],
         "max_parallel_tasks": int(os.environ["MAX_PARALLEL_TASKS"]),
         "output_dir": os.environ["OUTPUT_DIR"],
+        "remove_preproc_dir": False,
         "rootpath": {
             "ana4mips": os.environ["ROOTPATH_ANA4MIPS"],
             "CMIP3": os.environ["ROOTPATH_CMIP3"],
