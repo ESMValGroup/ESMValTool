@@ -381,7 +381,7 @@ def make_transect_contours(
             linestyles=linestyles,
             rasterized=True)
 
-        # Determine y log scale.
+        # Determine y log scale. Use gca to set scale
         if determine_set_y_logscale(cfg, metadata):
             plt.gca().set_yscale('log')
 
