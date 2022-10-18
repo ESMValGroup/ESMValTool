@@ -21,5 +21,7 @@ recipe are scientifically valid and look as expected. Being a recipe maintainer 
 Ideally, a recipe maintainer is named when contributing a new recipe to the ESMValTool. Recipe maintainers are asked to inform
 the core development team (`@ESMValGroup/esmvaltool-coreteam`_) when they are no longer able to act as maintainer or when they would like to step down from this duty
 for any reason. The core development team will then try to find a successor. If no recipe maintainer can be found, the
+<!--
 :ref:`policy on unmaintained broken (non-working) recipe<Broken recipe policy>` might apply eventually leading to
+-->
 retirement of the affected recipe.
