@@ -200,7 +200,7 @@ Example plots
    indicates the number of models included in the ensemble mean.
 
 .. _fig_climate_change_hotspot_2:
-.. figure:: /recipes/figures/cos22esd/scenario_combination_tas:tas_jja.png
+.. figure:: /recipes/figures/cos22esd/scenario_combination_tas-tas_jja.png
    :align:   center
 
    Mediterranean region warming against global warming for the summer
