@@ -806,8 +806,8 @@ These files need to be reformatted using the `esmvaltool data format WOA` comman
 Landschuetzer 2016
 ------------------
 These data can be downloaded from:
-ftp://ftp.nodc.noaa.gov/nodc/archive/arc0105/0160558/1.1/data/0-data/spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc
-(last access 02/28/2019)
+https://www.nodc.noaa.gov/archive/arc0105/0160558/3.3/data/0-data/spco2_1982-2015_MPI_SOM-FFN_v2016.nc
+(last access 09/20/2022)
 
 The following variables are used by the ocean diagnostics:
  - fgco2, Surface Downward Flux of Total CO2

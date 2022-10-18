@@ -10,6 +10,9 @@ documentation:
   authors:
     - berg_peter
 
+  maintainer:
+    - unmaintained
+
   projects:
     - c3s-magic
 
