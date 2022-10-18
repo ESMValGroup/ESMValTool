@@ -13,6 +13,9 @@ documentation:
     - wenzel_sabrina
     - schlund_manuel
 
+  maintainer:
+    - unmaintained
+
   projects:
     - esmval
     - crescendo

@@ -13,6 +13,9 @@ documentation:
     - aerts_jerom
     - andela_bouwe
 
+  maintainer:
+    - unmaintained
+
   projects:
     - ewatercycle
 
