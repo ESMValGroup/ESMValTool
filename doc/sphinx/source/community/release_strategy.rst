@@ -1,3 +1,5 @@
+.. _preparation-new-release:
+
 Release schedule and procedure for ESMValCore and ESMValTool
 ============================================================
 
