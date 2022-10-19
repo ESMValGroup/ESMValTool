@@ -73,7 +73,7 @@ and ``opt`` directories within the workflow. The files required are:
 
 ``opt/rose-suite-<site>.conf``
   Contains configuration items specific to the ``SITE``, including ``SITE``
-  and paths specific to the ``SITE`` on where to find the required datasets
+  and where to find the required datasets
 
 Metadata
 ~~~~~~~~
