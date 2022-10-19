@@ -8,7 +8,7 @@ changes to Python or used dependencies such as library functions.
 In such cases, the :ref:`recipe maintainer<Maintaining a recipe>` is contacted by the technical core development team to find
 a solution, fixing the affected recipe and checking the scientific output after applying the fix. If no recipe maintainer is
 available, such recipes will be flagged by the release manager during the
-:ref:`preparation of a new release<Release schedule and procedure for ESMValCore and ESMValTool>` as "broken".
+:ref:`preparation of a new release<Release schedule and procedure>` as "broken".
 For this, the affected recipe will be listed under "broken recipes" in the :ref:`Changelog`, together with the version
 number of the last known release in which the recipe was still working.
 If a recipe continues to be broken for three releases of the ESMValTool (about one year) and no recipe maintainer could be found
