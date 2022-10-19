@@ -11,6 +11,9 @@ documentation:
     - kalverla_peter
     - andela_bouwe
 
+  maintainer:
+    - unmaintained
+
   projects:
     - ewatercycle
 

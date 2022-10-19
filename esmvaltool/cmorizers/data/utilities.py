@@ -42,6 +42,22 @@ def add_height2m(cube):
     add_scalar_height_coord(cube, height=2.)
 
 
+def add_height10m(cube):
+    """Add scalar coordinate 'height' with value of 10m.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        data cube to get the 10m height coordinate.
+
+    Returns
+    -------
+    iris.cube.Cube
+        Returns the cube with new 10m height coordinate.
+    """
+    add_scalar_height_coord(cube, height=10.)
+
+
 def add_scalar_height_coord(cube, height=2.):
     """Add scalar coordinate 'height' with value of `height`m.
 

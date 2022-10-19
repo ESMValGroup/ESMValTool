@@ -39,10 +39,10 @@ REQUIREMENTS = {
         'joblib',
         'lime',
         'mapgenerator>=1.0.5',
-        'matplotlib',
+        'matplotlib<3.6.0',  # github.com/ESMValGroup/ESMValTool/issues/2800
         'natsort',
         'nc-time-axis',
-        'netCDF4',
+        'netCDF4!=1.6.1',  # github.com/ESMValGroup/ESMValCore/pull/1724
         'numpy',
         'openpyxl',
         'pandas',
@@ -64,7 +64,7 @@ REQUIREMENTS = {
         'shapely',
         'xarray',
         'xesmf==0.3.0',
-        'xgboost',
+        'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
     ],
     # Test dependencies
