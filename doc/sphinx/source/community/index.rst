@@ -25,6 +25,7 @@ help, e.g. on our
 
 		Contributing code and documentation <code_documentation>
 		Contributing a diagnostic or recipe <diagnostic>
+		Broken recipe policy <broken_recipe_policy>
 		Contributing a dataset <dataset>
 		Supporting multiple dataset versions <multiple_dataset_versions>
 		Contributing a review <review>
