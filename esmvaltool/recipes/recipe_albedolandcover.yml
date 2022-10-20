@@ -11,6 +11,9 @@ documentation:
     - crezee_bas
     - lejeune_quentin
 
+  maintainer:
+    - unmaintained
+
 
 albedolandcover_parameters: &albedolandcover_parameters
   params:

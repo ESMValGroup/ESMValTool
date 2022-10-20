@@ -16,14 +16,28 @@ and the data is described in a
 `CMOR table <http://pcmdi.github.io/software/cmorTable/index.html>`__
 as used in the various
 `Climate Model Intercomparison Projects <http://pcmdi.github.io/mips/>`__.
-This section provides some guidelines for unfamiliar users.
+
+.. _cordex_note:
+
+.. note::
+
+    CORDEX support is still
+    `work in progress <https://github.com/orgs/ESMValGroup/projects/11>`__.
+    Contributions, in the form of
+    :ref:`pull request reviews <reviewing>` or
+    :ref:`pull requests <esmvalcore:contributing>`
+    are most welcome. We are particularly interested in contributions from
+    people with good understanding of the CORDEX project and its standards.
+
+This section provides an introduction to getting (access to) climate data
+for use with ESMValTool.
 
 Because the amount of data required by ESMValTool is typically large, it is
 recommended that you use the tool on a compute cluster where the data is
 already available, for example because it is connected to an
 `ESGF node <https://esgf.llnl.gov/index.html>`__.
 Examples of such compute clusters are
-`Mistral <https://www.dkrz.de/up/systems/mistral>`__
+`Levante <https://docs.dkrz.de/doc/levante/index.html>`__
 and
 `Jasmin <https://www.jasmin.ac.uk/>`__,
 but many more exist around the world.
@@ -36,24 +50,29 @@ or, if you need longer term access or more computational resources, the
 
 If the options above are not available to you, ESMValTool also offers a feature
 to make it easy to download CMIP6, CMIP5, CMIP3, CORDEX, and obs4MIPs from ESGF.
+ESMValTool also provides support to download some observational dataset from source.
 
 The chapter in the ESMValCore documentation on
 :ref:`finding data <esmvalcore:findingdata>` explains how to
-configure the ESMValTool so it can find locally available data and/or
+configure ESMValTool so it can find locally available data and/or
 download it from ESGF if it isn't available locally yet.
+
+
+.. _inputdata_models:
 
 Models
 ======
 
 If you do not have access to a compute cluster with the data already mounted,
-the ESMValTool can automatically download any required data that is available on ESGF.
+ESMValTool can automatically download any required data that is available on
+ESGF.
 This is the recommended approach for first-time users to obtain some data for
 running ESMValTool.
 For example, run
 
 .. code-block:: bash
 
-    esmvaltool run examples/recipe_python.yml --offline=False
+    esmvaltool run --offline=False examples/recipe_python.yml
 
 to run the default example recipe and automatically download the required data
 to the directory ``~/climate_data``.
@@ -66,47 +85,122 @@ Alternatively, you can use an external tool called
 `Synda <http://prodiguer.github.io/synda/index.html>`__
 to maintain your own collection of ESGF data.
 
+
+.. _inputdata_observations:
+
 Observations
 ============
 
-Observational and reanalysis products in the standard CF/CMOR format used in CMIP and required by the ESMValTool are available via the obs4MIPs and ana4mips projects at the ESGF (e.g., https://esgf-data.dkrz.de/projects/esgf-dkrz/). Their use is strongly recommended, when possible.
+Observational and reanalysis products in the standard CF/CMOR format used in
+CMIP and required by ESMValTool are available via the obs4MIPs and ana4mips
+projects at the ESGF (e.g., https://esgf-data.dkrz.de/projects/esgf-dkrz/).
+Their use is strongly recommended, when possible.
 
-Other datasets not available in these archives can be obtained by the user from the respective sources and reformatted to the CF/CMOR standard. ESMValTool currently support two ways to perform this reformatting (aka 'CMORization'). The first is to use a CMORizer script to generate a local pool of reformatted data that can readily be used by the ESMValTool. The second way is to implement specific 'fixes' for your dataset. In that case, the reformatting is performed 'on the fly' during the execution of an ESMValTool recipe (note that one of the first preprocessor tasks is 'CMOR checks and fixes'). Below, both methods are explained in more detail.
+Other datasets not available in these archives can be obtained by the user from
+the respective sources and reformatted to the CF/CMOR standard.
+ESMValTool currently supports two ways to perform this reformatting (aka
+'CMORization'):
+
+#. Using a CMORizer script: The first is to use a CMORizer script to generate a
+   local pool of reformatted data that can readily be used by ESMValTool.  This
+   method is described in detail below.
+
+#. Using fixes for on-the-fly CMORization: The second way is to implement
+   specific :ref:`'fixes' <esmvalcore:fixing_data>` for your dataset.  In that
+   case, the reformatting is performed 'on the fly' during the execution of an
+   ESMValTool recipe (note that one of the first preprocessor tasks is 'CMOR
+   checks and fixes').  Details on this second method are given at the
+   :ref:`end of this chapter <inputdata_native_datasets>`.
 
 Using a CMORizer script
 -----------------------
 
 ESMValTool comes with a set of CMORizers readily available.
-The CMORizers are dataset-specific scripts that can be run once to generate
-a local pool of CMOR-compliant data. The necessary information to download
-and process the data is provided in the header of each CMORizing script.
+The CMORizers are dataset-specific scripts that can be run once to generate a
+local pool of CMOR-compliant data.
+The necessary information to download and process the data is provided in the
+header of each CMORizing script.
 These scripts also serve as template to create new CMORizers for datasets not
 yet included.
 Note that datasets CMORized for ESMValTool v1 may not be working with v2, due
 to the much stronger constraints on metadata set by the iris library.
 
+ESMValTool provides the ``esmvaltool data`` command line tool, which can be
+used to download and format datasets.
+
+To list the available commands, run
+
+.. code-block:: bash
+
+    esmvaltool data --help
+
+It is also possible to get help on specific commands, e.g.
+
+.. code-block:: bash
+
+    esmvaltool data download --help
+
+The list of datasets supported by ESMValTool through a CMORizer script can be
+obtained with:
+
+.. code-block:: bash
+
+    esmvaltool data list
+
+Datasets for which auto-download is supported can be downloaded with:
+
+.. code-block:: bash
+
+    esmvaltool data download --config_file [CONFIG_FILE] [DATASET_LIST]
+
+Note that all Tier3 and some Tier2 datasets for which auto-download is supported
+will require an authentication. In such cases enter your credentials in your
+``~/.netrc`` file as explained
+`here <https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html>`_.
+
+An entry to the ``~/.netrc`` should look like:
+
+.. code-block:: bash
+
+    machine [server_name] login [user_name] password [password]
+
+Make sure that the permissions of the ``~/.netrc`` file are set so only you and administrators
+can read it, i.e.
+
+.. code-block:: bash
+
+    chmod 600 ~/.netrc
+    ls -l ~/.netrc
+
+The latter command should show ``-rw-------``.
+
+For other datasets, downloading instructions can be obtained with:
+
+.. code-block:: bash
+
+    esmvaltool data info [DATASET]
+
 To CMORize one or more datasets, run:
 
 .. code-block:: bash
 
-    cmorize_obs -c [CONFIG_FILE] -o [DATASET_LIST]
+    esmvaltool data format --config_file [CONFIG_FILE] [DATASET_LIST]
 
-The path to the raw data to be CMORized must be specified in the
-:ref:`user configuration file<config-user>` as RAWOBS.
+The path to the raw data to be CMORized must be specified in the :ref:`user
+configuration file<config-user>` as RAWOBS.
 Within this path, the data are expected to be organized in subdirectories
-corresponding to the data tier: Tier2 for freely-available datasets (other
-than obs4MIPs and ana4mips) and Tier3 for restricted datasets (i.e., dataset
-which requires a registration to be retrieved or provided upon request to
-the respective contact or PI).
-The CMORization follows the
-`CMIP5 CMOR tables <https://github.com/PCMDI/cmip5-cmor-tables>`_ or
-`CMIP6 CMOR tables <https://github.com/PCMDI/cmip6-cmor-tables>`_ for the
-OBS and OBS6 projects respectively.
+corresponding to the data tier: Tier2 for freely-available datasets (other than
+obs4MIPs and ana4mips) and Tier3 for restricted datasets (i.e., dataset which
+requires a registration to be retrieved or provided upon request to the
+respective contact or PI).
+The CMORization follows the `CMIP5 CMOR tables
+<https://github.com/PCMDI/cmip5-cmor-tables>`_ or `CMIP6 CMOR tables
+<https://github.com/PCMDI/cmip6-cmor-tables>`_ for the OBS and OBS6 projects
+respectively.
 The resulting output is saved in the output_dir, again following the Tier
 structure.
-The output file names follow the definition given in
-:ref:`config-developer file <esmvalcore:config-developer>` for the ``OBS``
-project:
+The output file names follow the definition given in :ref:`config-developer
+file <esmvalcore:config-developer>` for the ``OBS`` project:
 
 .. code-block::
 
@@ -117,41 +211,13 @@ may be ``sat`` (satellite data), ``reanaly`` (reanalysis data),
 ``ground`` (ground observations), ``clim`` (derived climatologies),
 ``campaign`` (aircraft campaign).
 
-At the moment, cmorize_obs supports Python and NCL scripts.
-
-.. _cmorization_as_fix:
-
-CMORization as a fix
---------------------
-ESMValCore also provides support for some datasets in their native format.
-In this case, the steps needed to reformat the data are executed as datasets
-fixes during the execution of an ESMValTool recipe, as one of the first
-preprocessor steps, see :ref:`fixing data <esmvalcore:fixing_data>`.
-Compared to the workflow described above, this has the advantage that the user
-does not need to store a duplicate (CMORized) copy of the data.
-Instead, the CMORization is performed 'on the fly' when running a recipe.
-The native6 project supports files named according to the format defined in
-the :ref:`config-developer file <esmvalcore:config-developer>`.
-Some of ERA5, ERA5-Land and MSWEP data are currently supported, see
-:ref:`supported datasets <supported_datasets>`.
-
-To use this functionality, users need to provide a path for the ``native6``
-project data in the :ref:`user configuration file<config-user>`.
-Then, in the recipe, they can refer to the native6 project.
-For example:
-
-.. code-block:: yaml
-
-    datasets:
-    - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1990}
-
-More examples can be found in the diagnostics ``ERA5_native6`` in the recipe
-`examples/recipe_check_obs.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_check_obs.yml>`_.
+At the moment, ``esmvaltool data format`` supports Python and NCL scripts.
 
 .. _supported_datasets:
 
-Supported datasets
-------------------
+Supported datasets for which a CMORizer script is available
+-----------------------------------------------------------
+
 A list of the datasets for which a CMORizers is available is provided in the following table.
 
 .. tabularcolumns:: |p{3cm}|p{6cm}|p{3cm}|p{3cm}|
@@ -166,6 +232,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | BerkelyEarth                 | tas, tasa (Amon), sftlf (fx)                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CALIPSO-GOCCP                | clcalipso (cfMon)                                                                                    |   2  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| CALIPSO-ICECLOUD             | cli (AMon)                                                                                           |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CDS-SATELLITE-ALBEDO         | bdalb (Lmon), bhalb (Lmon)                                                                           |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -185,6 +253,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 |                              | rlds, rldscs, rlus, rlut, rlutcs, rsds, rsdt, rsus, rsut, rsutcs (Amon)                              |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CLARA-AVHRR                  | clt, clivi, lwp (Amon)                                                                               |   3  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| CLOUDSAT-L2                  | clw, clivi, lwp (Amon)                                                                               |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CowtanWay                    | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -217,6 +287,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | ESACCI-FIRE                  | burntArea (Lmon)                                                                                     |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-LANDCOVER             | baresoilFrac, cropFrac, grassFrac, shrubFrac, treeFrac (Lmon)                                        |   2  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ESACCI-LST                   | ts (Amon)                                                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-OC                    | chl (Omon)                                                                                           |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -254,7 +326,7 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | HadCRUT4                     | tas, tasa (Amon), tasConf5, tasConf95                                                                |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| HadCRUT5                     | tas (Amon)                                                                                           |   2  | Python          |
+| HadCRUT5                     | tas, tasa (Amon)                                                                                     |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | HadISST                      | sic (OImon), tos (Omon), ts (Amon)                                                                   |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -266,6 +338,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | JMA-TRANSCOM                 | nbp (Lmon), fgco2 (Omon)                                                                             |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| Kadow2020                    | tasa (Amon)                                                                                          |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | LAI3g                        | lai (Lmon)                                                                                           |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | LandFlux-EVAL                | et, etStderr (Lmon)                                                                                  |   3  | Python          |
@@ -275,6 +349,9 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | MAC-LWP                      | lwp, lwpStderr (Amon)                                                                                |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MERRA2                       | sm (Lmon)                                                                                            |   3  | Python          |
+|                              | clt, pr, evspsbl, hfss, hfls, huss, prc, prsn, prw, ps, psl, rlds, rldscs, rlus, rlut, rlutcs, rsds, |      |                 |
+|                              | rsdscs, rsdt, tas, tasmin, tasmax, tauu, tauv, ts, uas, vas, rsus, rsuscs, rsut, rsutcs, ta, ua, va, |      |                 |
+|                              | tro3, zg, hus, wap, hur (Amon)                                                                       |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MLS-AURA                     | hur, hurStderr (day)                                                                                 |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -290,6 +367,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | NDP                          | cVeg (Lmon)                                                                                          |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NIWA-BS                      | toz, tozStderr (Amon)                                                                                |   3  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| NOAAGlobalTemp               | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NSIDC-0116-[nh|sh]           | usi, vsi (day)                                                                                       |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -318,3 +397,43 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 .. [#note1] CMORization is built into ESMValTool through the native6 project, so there is no separate CMORizer script.
 
 .. [#note2] Derived on the fly from down & net radiation.
+
+
+.. _inputdata_native_datasets:
+
+Datasets in native format
+=========================
+
+ESMValCore also provides support for some datasets in their native format.
+In this case, the steps needed to reformat the data are executed as dataset
+fixes during the execution of an ESMValTool recipe, as one of the first
+preprocessor steps, see :ref:`fixing data <esmvalcore:fixing_data>`.
+Compared to the workflow described above, this has the advantage that the user
+does not need to store a duplicate (CMORized) copy of the data.
+Instead, the CMORization is performed 'on the fly' when running a recipe.
+Native datasets can be hosted either under a dedicated project (usually done
+for native model output) or under project ``native6`` (usually done for native
+reanalysis/observational products).
+These projects are configured in the :ref:`config-developer file
+<esmvalcore:configure_native_models>`.
+
+A list of all currently supported native datasets is :ref:`provided here
+<esmvalcore:read_native_datasets>`.
+A detailed description of how to include new native datasets is given
+:ref:`here <esmvalcore:add_new_fix_native_datasets>`.
+
+To use this functionality, users need to provide a path in the
+:ref:`esmvalcore:user configuration file` for the ``native6`` project data
+and/or the dedicated project used for the native dataset, e.g., ``ICON``.
+Then, in the recipe, they can refer to those projects.
+For example:
+
+.. code-block:: yaml
+
+    datasets:
+    - {project: native6, dataset: ERA5, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1990}
+    - {project: ICON, dataset: ICON, version: 42-0, component: atm, exp: amip, grid: R2B5, ensemble: r1i1, var_type: 2d}
+
+For project ``native6``, more examples can be found in the diagnostics
+``ERA5_native6`` in the recipe `examples/recipe_check_obs.yml
+<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_check_obs.yml>`_.

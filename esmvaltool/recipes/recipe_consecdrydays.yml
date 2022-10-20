@@ -13,6 +13,9 @@ documentation:
   projects:
     - c3s-magic
 
+  maintainer:
+    - unmaintained
+
   references:
     - acknow_project
 
@@ -31,5 +34,5 @@ diagnostics:
         dryindex: 'cdd'
         plim: 1
         frlim: 5
-        quickplot:
-          plot_type: pcolormesh
+        plot:
+          cmap: rain

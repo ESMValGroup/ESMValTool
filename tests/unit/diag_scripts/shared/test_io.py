@@ -49,31 +49,31 @@ CFG = {
 ROOT_DIR = '/root/to/something'
 TEST_GET_ALL_ANCESTOR_FILES = [
     (None, [
-        os.path.join(ROOT_DIR, 'test.nc'),
         os.path.join(ROOT_DIR, 'egg.yml'),
         os.path.join(ROOT_DIR, 'root2', 'x.nc'),
         os.path.join(ROOT_DIR, 'root2', 'y.png'),
         os.path.join(ROOT_DIR, 'root3', 'egg.nc'),
+        os.path.join(ROOT_DIR, 'root4', 'egg.nc'),
+        os.path.join(ROOT_DIR, 'test.nc'),
         os.path.join(ROOT_DIR, 'test_1.nc'),
         os.path.join(ROOT_DIR, 'test_2.yml'),
-        os.path.join(ROOT_DIR, 'root4', 'egg.nc'),
     ]),
     ('*', [
-        os.path.join(ROOT_DIR, 'test.nc'),
         os.path.join(ROOT_DIR, 'egg.yml'),
         os.path.join(ROOT_DIR, 'root2', 'x.nc'),
         os.path.join(ROOT_DIR, 'root2', 'y.png'),
         os.path.join(ROOT_DIR, 'root3', 'egg.nc'),
+        os.path.join(ROOT_DIR, 'root4', 'egg.nc'),
+        os.path.join(ROOT_DIR, 'test.nc'),
         os.path.join(ROOT_DIR, 'test_1.nc'),
         os.path.join(ROOT_DIR, 'test_2.yml'),
-        os.path.join(ROOT_DIR, 'root4', 'egg.nc'),
     ]),
     ('*.nc', [
-        os.path.join(ROOT_DIR, 'test.nc'),
         os.path.join(ROOT_DIR, 'root2', 'x.nc'),
         os.path.join(ROOT_DIR, 'root3', 'egg.nc'),
-        os.path.join(ROOT_DIR, 'test_1.nc'),
         os.path.join(ROOT_DIR, 'root4', 'egg.nc'),
+        os.path.join(ROOT_DIR, 'test.nc'),
+        os.path.join(ROOT_DIR, 'test_1.nc'),
     ]),
     ('test*', [
         os.path.join(ROOT_DIR, 'test.nc'),

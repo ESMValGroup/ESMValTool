@@ -10,13 +10,13 @@ import iris
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
+from iris import NameConstraint
 
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
     save_figure,
 )
-from esmvalcore.iris_helpers import var_name_constraint
 
 CWD = os.path.abspath(os.path.dirname(__file__))
 STEPHENS_FILENAME = "Stephens_et_al_2012_obs_Energy_Budget.yml"
@@ -50,17 +50,17 @@ def derive_additional_variables(cubes):
     :class:`iris.cube.CubeList`
         The input ``cubes`` with the additional cubes.
     """
-    rss = cubes.extract_cube(var_name_constraint("rss"))
-    rsdt = cubes.extract_cube(var_name_constraint("rsdt"))
-    rsut = cubes.extract_cube(var_name_constraint("rsut"))
-    rsutcs = cubes.extract_cube(var_name_constraint("rsutcs"))
-    rsds = cubes.extract_cube(var_name_constraint("rsds"))
-    rls = cubes.extract_cube(var_name_constraint("rls"))
-    rlut = cubes.extract_cube(var_name_constraint("rlut"))
-    rlutcs = cubes.extract_cube(var_name_constraint("rlutcs"))
-    rlds = cubes.extract_cube(var_name_constraint("rlds"))
-    hfss = cubes.extract_cube(var_name_constraint("hfss"))
-    hfls = cubes.extract_cube(var_name_constraint("hfls"))
+    rss = cubes.extract_cube(NameConstraint(var_name="rss"))
+    rsdt = cubes.extract_cube(NameConstraint(var_name="rsdt"))
+    rsut = cubes.extract_cube(NameConstraint(var_name="rsut"))
+    rsutcs = cubes.extract_cube(NameConstraint(var_name="rsutcs"))
+    rsds = cubes.extract_cube(NameConstraint(var_name="rsds"))
+    rls = cubes.extract_cube(NameConstraint(var_name="rls"))
+    rlut = cubes.extract_cube(NameConstraint(var_name="rlut"))
+    rlutcs = cubes.extract_cube(NameConstraint(var_name="rlutcs"))
+    rlds = cubes.extract_cube(NameConstraint(var_name="rlds"))
+    hfss = cubes.extract_cube(NameConstraint(var_name="hfss"))
+    hfls = cubes.extract_cube(NameConstraint(var_name="hfls"))
 
     # Derivations for the following two cloud_forcing variables are
     # performed this way so that they match with the observational data

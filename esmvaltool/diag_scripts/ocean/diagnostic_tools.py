@@ -13,6 +13,7 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
+from pathlib import Path
 import iris
 
 import numpy as np
@@ -85,14 +86,14 @@ def get_input_files(cfg, index=''):
     Arguments
     ---------
     cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
+        the opened global config dictionary, passed by ESMValTool.
     index: int
         the index of the file in the cfg file.
 
     Returns
     ---------
     dict
-        A dictionairy of the input files and their linked details.
+        A dictionary of the input files and their linked details.
     """
     if isinstance(index, int):
         metadata_file = cfg['input_files'][index]
@@ -128,14 +129,14 @@ def bgc_units(cube, name):
     if name in ['sos', 'so']:
         cube.units = '0.001'
 
-    if name in ['no3', 'o2', 'po4', 'si']:
+    if name in ['no3', 'o2', 'po4', 'si', 'dissic', 'talk']:
         new_units = 'mmol m-3'
 
     if name in ['chl', ]:
         new_units = 'mg m-3'
 
     if name in ['intpp', ]:
-        new_units = 'mol m-2 d-1'
+        new_units = 'mol m-2 yr-1'
 
     if name in ['fgco2', ]:
         new_units = 'g m-2 d-1'
@@ -166,23 +167,23 @@ def match_model_to_key(
 
     This function checks that the control_model, exper_model and
     observational_dataset dictionairies from the recipe are matched with the
-    input file dictionairy in the cfg metadata.
+    input file dictionary in the cfg metadata.
 
     Arguments
     ---------
     model_type: str
         The string model_type to match (only used in debugging).
     cfg_dict: dict
-        the config dictionairy item for this model type, parsed directly from
+        the config dictionary item for this model type, parsed directly from
         the diagnostics/ scripts, part of the recipe.
     input_files_dict: dict
-        The input file dictionairy, loaded directly from the get_input_files()
+        The input file dictionary, loaded directly from the get_input_files()
          function, in diagnostics_tools.py.
 
     Returns
     ---------
     dict
-        A dictionairy of the input files and their linked details.
+        A dictionary of the input files and their linked details.
     """
     for input_file, intput_dict in input_files_dict.items():
         intersect_keys = intput_dict.keys() & cfg_dict.keys()
@@ -316,9 +317,9 @@ def load_thresholds(cfg, metadata):
     Parameters
     ----------
     cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
+        the opened global config dictionary, passed by ESMValTool.
     metadata: dict
-        the metadata dictionairy
+        the metadata dictionary
 
     Returns
     -------
@@ -362,8 +363,8 @@ def get_colour_from_cmap(number, total, cmap='jet'):
         cmap = plt.get_cmap(cmap)
 
     if number > total:
-        raise ValueError('The cannot be larger than the total length '
-                         'of the list ie: {} > {}'.format(number, total))
+        raise ValueError(f'The cannot be larger than the total length '
+                         f' of the list ie: {number} > {total}')
 
     if total > 1:
         colour = cmap(float(number) / float(total - 1.))
@@ -462,7 +463,7 @@ def get_image_format(cfg, default='png'):
     Arguments
     ---------
     cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
+        the opened global config dictionary, passed by ESMValTool.
 
     Returns
     ---------
@@ -502,14 +503,14 @@ def get_image_path(
     Produce a path to the final location of the image.
 
     The cfg is the opened global config,
-    metadata is the metadata dictionairy (for the individual dataset file)
+    metadata is the metadata dictionary (for the individual dataset file)
 
     Arguments
     ---------
     cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
+        the opened global config dictionary, passed by ESMValTool.
     metadata: dict
-        The metadata dictionairy for a specific model.
+        The metadata dictionary for a specific model.
     prefix: str
         A string to prepend to the image basename.
     suffix: str
@@ -561,7 +562,7 @@ def get_image_path(
 
 def make_cube_layer_dict(cube):
     """
-    Take a cube and return a dictionairy layer:cube
+    Take a cube and return a dictionary layer:cube
 
     Each item in the dict is a layer with a separate cube for each layer.
     ie: cubes[depth] = cube from specific layer
@@ -577,7 +578,7 @@ def make_cube_layer_dict(cube):
     Returns
     ---------
     dict
-        A dictionairy of layer name : layer cube.
+        A dictionary of layer name : layer cube.
     """
     #####
     # Check layering:
@@ -588,7 +589,7 @@ def make_cube_layer_dict(cube):
             layers.append(coord)
 
     cubes = {}
-    if layers == []:
+    if not layers:
         cubes[''] = cube
         return cubes
 
@@ -697,3 +698,36 @@ def get_array_range(arrays):
         np.min(mins),
         np.max(maxs),
     ]
+
+
+def prepare_provenance_record(cfg, **provenance_record):
+    """
+    Prepare informations to feed provenance
+
+    Arguments
+    ---------
+    cfg: dict
+        the opened global config dictionary, passed by ESMValTool.
+    provenance_record: dict
+        dictionary for a specific diagnostic provenance details.
+    """
+    recipe_path = Path(cfg['run_dir']).parents[1] / cfg['recipe']
+    with recipe_path.open() as recipe_file:
+        recipe = yaml.safe_load(recipe_file)
+
+    doc = recipe['documentation']
+    authors = doc.get('authors', [])
+    authors += [
+        maintainer for maintainer in doc.get('maintainer', [])
+        if maintainer not in authors
+    ]
+    provenance_record['authors'] = authors
+    for key in ['title', 'description', 'projects']:
+        val = doc[key]
+        if val:
+            provenance_record[key] = val
+    for key in ['realms', 'themes']:
+        val = cfg.get(key)
+        if val:
+            provenance_record[key] = val
+    return provenance_record

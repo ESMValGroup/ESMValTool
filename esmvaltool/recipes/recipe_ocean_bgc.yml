@@ -77,7 +77,7 @@ preprocessors:
     custom_order: true
     extract_levels:
       levels:  [0., ]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     area_statistics:
       operator: mean
     #multi_model_statistics:
@@ -98,7 +98,7 @@ preprocessors:
   prep_surface_map_3D:
     extract_levels:
       levels:  [0., ]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     climate_statistics:
       operator: mean
 
@@ -106,7 +106,7 @@ preprocessors:
     custom_order: true
     extract_levels:
       levels:  [0., ]
-      scheme: linear_horizontal_extrapolate_vertical
+      scheme: linear_extrapolate
     climate_statistics:
       operator: mean
     regrid:

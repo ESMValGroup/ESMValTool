@@ -56,8 +56,9 @@ diagnostics:
     variables:
       pr: &daily_var
         mip: day
-        start_year: 1986
-        end_year: 2016
+        # for 30 years, this calculation takes a very long time
+        # timerange: 1986/2016  # uncomment this line for the original settings
+        timerange: 19860101/19860110  # comment this line for the original settings
         # comment preprocessor to process data on the global scale
         preprocessor: area_selection
       tas: *daily_var
@@ -75,25 +76,26 @@ diagnostics:
         regrid_scheme: area_weighted
 
   diagnostic_monthly_GlobWat:
-      description: monthly precipitation and potential evaporation of ERA5 & ERA-Interim
-      additional_datasets:
-        - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-        - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
-      variables:
-        pr: &var_monthly
-          mip: Amon
-          start_year: 1986
-          end_year: 2016
-          # comment preprocessor to process data on the global scale
-          preprocessor: area_selection
-        tas: *var_monthly
-        # comment psl, rsds and rsdt if langbein_pet is True
-        psl: *var_monthly
-        rsds: *var_monthly
-        rsdt: *var_monthly
-      scripts:
-        script:
-          script: hydrology/globwat.py
-          target_grid_file: 'globwat/globwat_target_grid.nc'
-          evaporation_method: debruin # options: debruin or langbein
-          regrid_scheme: area_weighted
+    description: monthly precipitation and potential evaporation of ERA5 & ERA-Interim
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
+    variables:
+      pr: &var_monthly
+        mip: Amon
+        # for 30 years, this calculation takes a very long time
+        # timerange: 1986/2016  # uncomment this line for the original settings
+        timerange: 198601/198612  # comment this line for the original settings
+        # comment preprocessor to process data on the global scale
+        preprocessor: area_selection
+      tas: *var_monthly
+      # comment psl, rsds and rsdt if langbein_pet is True
+      psl: *var_monthly
+      rsds: *var_monthly
+      rsdt: *var_monthly
+    scripts:
+      script:
+        script: hydrology/globwat.py
+        target_grid_file: 'globwat/globwat_target_grid.nc'
+        evaporation_method: debruin # options: debruin or langbein
+        regrid_scheme: area_weighted
