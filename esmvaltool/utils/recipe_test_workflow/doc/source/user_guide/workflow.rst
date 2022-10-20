@@ -27,9 +27,10 @@ The |RTW| performs the following steps:
   :Executes:
      The ``configure.py`` script from the |Rose| app
   :Details:
-     Runs once at the beginning of the workflow, after the install_cold task,
-     and then at the start of each cycle, after the successful completion
-     of the previous cycle's compare job
+     Runs once at the beginning of the workflow, immediately after the
+     successful completion of the ``install_cold`` job, and then at the
+     start of each cycle, after the successful completion of the
+     previous cycle's compare jobs
 
 ``process``
   :Description:
