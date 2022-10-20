@@ -26,6 +26,7 @@ help, e.g. on our
 		Contributing code and documentation <code_documentation>
 		Contributing a diagnostic or recipe <diagnostic>
 		Contributing a dataset <dataset>
+		Supporting multiple dataset versions <multiple_dataset_versions>
 		Contributing a review <review>
 		Maintaining a recipe <maintainer>
 		Upgrading a namelist to a recipe <upgrading>
