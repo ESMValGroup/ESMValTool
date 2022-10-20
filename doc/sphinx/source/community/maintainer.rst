@@ -18,6 +18,7 @@ recipe are scientifically valid and look as expected. Being a recipe maintainer 
   (e.g. fixing a recipe might include updating the actual recipe, diagnostic code or documentation)
 * if needed, checking the output of the fixed recipe for scientific validity (asking science lead development team
   for advice if needed)
+* If needed, change the documentation to reflect that some differences from the original results might appear (for reproducibility reasons. e.g. some missing datasets in the fixed recipe produce slight differences in the results but do not modify the conclusions)
 * informing the core development team when no longer available as maintainer
 
 Ideally, a recipe maintainer is named when contributing a new recipe to the ESMValTool. Recipe maintainers are asked to inform
