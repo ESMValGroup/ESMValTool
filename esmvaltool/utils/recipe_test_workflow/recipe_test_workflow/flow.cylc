@@ -11,7 +11,7 @@
    initial cycle point = 1
    final cycle point = 5
     [[graph]]
-        R1 = """install_cold => configure => process<fast> => compare<fast>
+        R1 = """install_cold => get_esmvaltool => configure => process<fast> => compare<fast>
                 configure => process<medium> => compare<medium>"""
         3/P2 = compare<fast>[-P2] => configure => process<fast> => compare<fast>
         4/P3 = compare<medium>[-P3] => configure => process<medium> => compare<medium>
@@ -30,6 +30,11 @@
             PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
 
     [[install_cold]]
+        platform = localhost
+        [[[environment]]]
+            SITE = {{ SITE }}
+
+    [[get_esmvaltool]]
         platform = localhost
         [[[environment]]]
             SITE = {{ SITE }}
