@@ -36,6 +36,7 @@ documentation:
 
   authors:
     - bodas-salcedo_alejandro
+    - pearce_francesca
 
   maintainer:
     - bodas-salcedo_alejandro
@@ -108,7 +109,7 @@ diagnostics:
         end_year: 2014
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
-             start_year: 2001, end_year: 2014}
+             start_year: 2001, end_year: 2010}
       rlutcs:
         short_name: rlutcs
         mip: Amon
@@ -117,7 +118,7 @@ diagnostics:
         end_year: 2014
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
-             start_year: 2001, end_year: 2014}
+             start_year: 2001, end_year: 2010}
       rsutcs:
         short_name: rsutcs
         mip: Amon
@@ -126,7 +127,7 @@ diagnostics:
         end_year: 2014
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
-             start_year: 2001, end_year: 2014}
+             start_year: 2001, end_year: 2010}
       rsut:
         short_name: rsut
         mip: Amon
@@ -135,7 +136,7 @@ diagnostics:
         end_year: 2014
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
-             start_year: 2001, end_year: 2014}
+             start_year: 2001, end_year: 2010}
       rsdt:
         short_name: rsdt
         mip: Amon
@@ -144,30 +145,30 @@ diagnostics:
         end_year: 2014
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
-             start_year: 2001, end_year: 2014}
+             start_year: 2001, end_year: 2010}
       netcre:
         derive: true
         short_name: netcre
         mip: Amon
         preprocessor: climate_mean_global
         start_year: 2001
-        end_year: 2014
+        end_year: 2010
       swcre:
         derive: true
         short_name: swcre
         mip: Amon
         preprocessor: climate_mean_global
         start_year: 2001
-        end_year: 2014
+        end_year: 2010
       lwcre:
         derive: true
         short_name: lwcre
         mip: Amon
         preprocessor: climate_mean_global
         start_year: 2001
-        end_year: 2014
+        end_year: 2010
     scripts:
       single_model:
-        script: /data/users/fpearce/git_work/ESMValTool/esmvaltool/implied_heat_transport/single_model_diagnostics.py
+        script: toa_iht/single_model_diagnostics.py
       #multi_model:
       #  script: /data/users/fpearce/git_work/ESMValTool/esmvaltool/implied_heat_transport/multi_model_diagnostics.py
