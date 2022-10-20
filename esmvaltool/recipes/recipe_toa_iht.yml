@@ -35,18 +35,16 @@ documentation:
 
 
   authors:
-    - andela_bouwe
-    - righi_mattia
+    - bodas-salcedo_alejandro
 
   maintainer:
-    - schlund_manuel
+    - bodas-salcedo_alejandro
 
   references:
     - acknow_project
 
   projects:
     - esmval
-    - c3s-magic
 
 datasets:
   - {dataset: BCC-ESM1, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
@@ -169,7 +167,7 @@ diagnostics:
         start_year: 2001
         end_year: 2014
     scripts:
-      #single_model:
-      #  script: /data/users/fpearce/git_work/ESMValTool/esmvaltool/implied_heat_transport/single_model_diagnostics.py
-      multi_model:
-        script: /data/users/fpearce/git_work/ESMValTool/esmvaltool/implied_heat_transport/multi_model_diagnostics.py
+      single_model:
+        script: /data/users/fpearce/git_work/ESMValTool/esmvaltool/implied_heat_transport/single_model_diagnostics.py
+      #multi_model:
+      #  script: /data/users/fpearce/git_work/ESMValTool/esmvaltool/implied_heat_transport/multi_model_diagnostics.py
