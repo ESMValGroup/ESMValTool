@@ -26,3 +26,6 @@ the core development team (`@ESMValGroup/esmvaltool-coreteam`_) when they are no
 for any reason. The core development team will then try to find a successor. If no recipe maintainer can be found, the
 :ref:`policy on unmaintained broken (non-working) recipes<broken-recipe-policy>` might apply eventually leading to
 retirement of the affected recipe.
+
+.. _`@ESMValGroup/technical-lead-development-team`: https://github.com/orgs/ESMValGroup/teams/technical-lead-development-team
+.. _`@ESMValGroup/esmvaltool-coreteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-coreteam

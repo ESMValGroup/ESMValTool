@@ -18,3 +18,5 @@ during this time, the affected recipe and diagnostics will be retired. This mean
 removed from the ESMValTool main branch by the release manager and thus will not be included in future releases.
 Only the scientific documentation of the recipe (and diagnostics) will be kept in the user and developer guide with an
 additional note and link to the last release in which the recipe was still fully functional.
+
+.. _`@ESMValGroup/technical-lead-development-team`: https://github.com/orgs/ESMValGroup/teams/technical-lead-development-team
