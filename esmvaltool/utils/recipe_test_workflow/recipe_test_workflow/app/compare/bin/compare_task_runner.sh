@@ -10,4 +10,4 @@ KGO="${KGO_ROOT_PATH}/recipe_${KGO_METRIC}*"
 COMPARE_SCRIPT="${ESMVALTOOL_DIR}/esmvaltool/utils/testing/regression/compare.py"
 
 # Run the compare script.
-python "${COMPARE_SCRIPT}" ${FOLDER_NAME} ${KGO}
+python "${COMPARE_SCRIPT}" ${KGO} ${FOLDER_NAME}

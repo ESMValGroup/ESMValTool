@@ -3,11 +3,18 @@
     UTC mode = True
 
 [task parameters]
-    metric = radiation_budget
+    fast = radiation_budget
+    medium = ensclus, heatwaves_coldwaves
 
 [scheduling]
+   cycling mode = integer
+   initial cycle point = 1
+   final cycle point = 5
     [[graph]]
-        R1 = install_cold => configure => process<metric> => compare<metric>
+        R1 = """install_cold => configure => process<fast> => compare<fast>
+                configure => process<medium> => compare<medium>"""
+        3/P2 = compare<fast>[-P2] => configure => process<fast> => compare<fast>
+        4/P3 = compare<medium>[-P3] => configure => process<medium> => compare<medium>
 
 [runtime]
     [[root]]
@@ -53,17 +60,30 @@
             ROOTPATH_OBS4MIPS = {{ ROOTPATH_OBS4MIPS }}
             ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
 
-    [[process<metric>]]
+    [[process<fast>]]
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = process
-            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_metric}.yml"
+            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_fast}.yml"
 
-    [[compare<metric>]]
+    [[process<medium>]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = process
+            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_medium}.yml"
+
+    [[compare<fast>]]
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = compare
-            KGO_METRIC = "${CYLC_TASK_PARAM_metric}"
+            KGO_METRIC = "${CYLC_TASK_PARAM_fast}"
+            KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
+
+    [[compare<medium>]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = compare
+            KGO_METRIC = "${CYLC_TASK_PARAM_medium}"
             KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
 
 {% include 'site/' ~ SITE ~ '.cylc' %}
