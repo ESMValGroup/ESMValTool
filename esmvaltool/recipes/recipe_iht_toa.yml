@@ -169,6 +169,6 @@ diagnostics:
         end_year: 2005
     scripts:
       single_model:
-        script: toa_iht/single_model_diagnostics.py
+        script: iht_toa/single_model_diagnostics.py
       #multi_model:
-      #  script: /data/users/fpearce/git_work/ESMValTool/esmvaltool/implied_heat_transport/multi_model_diagnostics.py
+      #  script: iht_toa/multi_model_diagnostics.py
