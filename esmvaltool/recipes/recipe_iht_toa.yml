@@ -51,16 +51,16 @@ datasets:
   - {dataset: BCC-ESM1, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
   #- {dataset: FGOALS-g3, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
   #- {dataset: IITM-ESM, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
-#  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: amip, ensemble: r1i1p1f2, grid: gn, mip: Amon}
-#  - {dataset: CNRM-CM6-1, project: CMIP6, exp: amip, ensemble: r1i1p1f2, grid: gn, mip: Amon}
+  #- {dataset: CNRM-ESM2-1, project: CMIP6, exp: amip, ensemble: r1i1p1f2, grid: gn, mip: Amon}
+  #- {dataset: CNRM-CM6-1, project: CMIP6, exp: amip, ensemble: r1i1p1f2, grid: gn, mip: Amon}
   #- {dataset: ACCESS-ESM1-5, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
   #- {dataset: ACCESS-CM2, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
-#  - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
-#  - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+  #- {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+  #- {dataset: IPSL-CM6A-LR, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
   #- {dataset: MIROC6, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
   #- {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f3, grid: gn, mip: Amon}
-#  - {dataset: UKESM1-0-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f4, grid: gn, mip: Amon}
-#  - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
+  #- {dataset: UKESM1-0-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f4, grid: gn, mip: Amon}
+  #- {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
   #- {dataset: GISS-E2-1-G, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
   #- {dataset: CESM2-FV2,project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
   #- {dataset: NorCPM1, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
@@ -93,20 +93,20 @@ diagnostics:
         mip: Amon
         preprocessor: climate_mean_global
         start_year: 2001
-        end_year: 2014
+        end_year: 2005
       rsnt:
         derive: true
         short_name: rsnt
         mip: Amon
         preprocessor: climate_mean_global
         start_year: 2001
-        end_year: 2014
+        end_year: 2005
       rlut:
         short_name: rlut
         mip: Amon
         preprocessor: climate_mean_global
         start_year: 2001
-        end_year: 2014
+        end_year: 2005
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
              start_year: 2001, end_year: 2010}
@@ -115,7 +115,7 @@ diagnostics:
         mip: Amon
         preprocessor: climate_mean_global
         start_year: 2001
-        end_year: 2014
+        end_year: 2005
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
              start_year: 2001, end_year: 2010}
@@ -124,7 +124,7 @@ diagnostics:
         mip: Amon
         preprocessor: climate_mean_global
         start_year: 2001
-        end_year: 2014
+        end_year: 2005
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
              start_year: 2001, end_year: 2010}
@@ -133,7 +133,7 @@ diagnostics:
         mip: Amon
         preprocessor: climate_mean_global
         start_year: 2001
-        end_year: 2014
+        end_year: 2005
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
              start_year: 2001, end_year: 2010}
@@ -142,7 +142,7 @@ diagnostics:
         mip: Amon
         preprocessor: climate_mean_global
         start_year: 2001
-        end_year: 2014
+        end_year: 2005
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1,
              start_year: 2001, end_year: 2010}
@@ -152,21 +152,21 @@ diagnostics:
         mip: Amon
         preprocessor: climate_mean_global
         start_year: 2001
-        end_year: 2010
+        end_year: 2005
       swcre:
         derive: true
         short_name: swcre
         mip: Amon
         preprocessor: climate_mean_global
         start_year: 2001
-        end_year: 2010
+        end_year: 2005
       lwcre:
         derive: true
         short_name: lwcre
         mip: Amon
         preprocessor: climate_mean_global
         start_year: 2001
-        end_year: 2010
+        end_year: 2005
     scripts:
       single_model:
         script: toa_iht/single_model_diagnostics.py
