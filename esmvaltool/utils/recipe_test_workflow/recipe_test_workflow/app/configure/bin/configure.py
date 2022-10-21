@@ -25,10 +25,10 @@ USER_CONFIG_OUTPUT_PATH = os.environ["USER_CONFIG_PATH"]
 def main():
     """Write the updated configuration values to the file defined by
     ``USER_CONFIG_PATH``."""
-    # - Get the latest configuration values from ESMValTool
-    # - Write to a dictionary to avoid PosixPath type issues in the YAML file
-    # - Update with the path to the latest checked out version
-    #   of config-user-example.yml from the ESMValTool directory.
+    # Get the latest configuration values from ESMValTool
+    # Write to a dictionary to avoid PosixPath type issues in the YAML file
+    # Update with the path to the latest checked out version
+    # of config-user-example.yml from the ESMValTool directory.
 
     config_values = dict(
         Config._load_user_config(LATEST_USER_CONFIG_FILE,
