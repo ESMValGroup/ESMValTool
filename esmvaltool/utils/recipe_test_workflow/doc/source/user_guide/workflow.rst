@@ -8,16 +8,29 @@ An overview of the workflow
 
 The |RTW| performs the following steps:
 
-``install_cold``
+``install_env_file``
   :Description:
-     Activates the environment for |ESMValTool|, based on the ``SITE`` provided
+     Copies the environment file for |ESMValTool|, based on the ``SITE`` provided
+     and installs any required dependencies (currently imagehash)
      Checks out the latest versions of |ESMValTool| and |ESMValCore| from GitHub
   :Runs on:
      Localhost
   :Executes:
-     The ``install_cold.sh`` script from the |Rose| app
+     The ``install_env_file.sh`` script from the |Rose| app
   :Details:
      Runs once at the start of the workflow
+
+``clone_latest_esmval``
+  :Description:
+     Checks out the latest versions of |ESMValTool| and |ESMValCore| from GitHub
+  :Runs on:
+     Localhost
+  :Executes:
+     The ``clone_latest_esmval.sh`` script from the |Rose| app
+  :Details:
+     Runs once at the start of the workflow and then at the completion of a
+     full recipe test cycle to pull any changes to the repository ready for the
+     next test cycle.
 
 ``configure``
   :Description:
@@ -28,9 +41,9 @@ The |RTW| performs the following steps:
      The ``configure.py`` script from the |Rose| app
   :Details:
      Runs once at the beginning of the workflow, immediately after the
-     successful completion of the ``install_cold`` job, and then at the
-     start of each cycle, after the successful completion of the
-     previous cycle's compare jobs
+     successful completion of the ``clone_latest_esmval`` job, and then at the
+     end of each cycle, after the successful completion of the compare jobs
+     to prepare for the start of the next testing cycle.
 
 ``process``
   :Description:
