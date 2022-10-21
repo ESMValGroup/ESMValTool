@@ -43,6 +43,7 @@ REQUIREMENTS = {
         'natsort',
         'nc-time-axis',
         'netCDF4!=1.6.1',  # github.com/ESMValGroup/ESMValCore/pull/1724
+        'numba',
         'numpy',
         'openpyxl',
         'pandas',
