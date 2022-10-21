@@ -1,3 +1,8 @@
+#!/bin/bash
+# Send the output from 'set -x' to 'stdout' rather than 'stderr'.
+BASH_XTRACEFD=1
+set -eux
+
 # Remove the ESMValTool and ESMValCore directories, if they exist.
 if [[ -d ${ESMVALTOOL_DIR} ]]; then
     rm -rf "${ESMVALTOOL_DIR}"
