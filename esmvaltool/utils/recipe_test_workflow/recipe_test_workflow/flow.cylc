@@ -13,8 +13,8 @@
     [[graph]]
         R1 = """install_cold => get_esmvaltool => configure => process<fast> => compare<fast>
                 configure => process<medium> => compare<medium>"""
-        3/P2 = compare<fast>[-P2] => configure => process<fast> => compare<fast>
-        4/P3 = compare<medium>[-P3] => configure => process<medium> => compare<medium>
+        3/P2 = compare<fast>[-P2] => get_esmvaltool => configure => process<fast> => compare<fast>
+        4/P3 = compare<medium>[-P3] => get_esmvaltool => configure => process<medium> => compare<medium>
 
 [runtime]
     [[root]]
