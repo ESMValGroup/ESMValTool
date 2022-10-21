@@ -36,8 +36,6 @@
 
     [[clone_latest_esmval]]
         platform = localhost
-        [[[environment]]]
-            SITE = {{ SITE }}
 
     [[configure]]
         pre-script = "mkdir -p ${USER_CONFIG_DIR}"
