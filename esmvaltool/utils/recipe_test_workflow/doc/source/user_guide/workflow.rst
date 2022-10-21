@@ -12,7 +12,6 @@ The |RTW| performs the following steps:
   :Description:
      Copies the environment file for |ESMValTool|, based on the ``SITE`` provided
      and installs any required dependencies (currently imagehash)
-     Checks out the latest versions of |ESMValTool| and |ESMValCore| from GitHub
   :Runs on:
      Localhost
   :Executes:
