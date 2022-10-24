@@ -74,7 +74,7 @@ context, someone can be both a *recipe developer* and a *recipe user*,
 but they perform different activities in each capacity.
 
 **Recipe maintainer:**\ First contact point for *integrated recipes* in
-case of problems with that recipe.
+case of problems with that recipe. **TODO: add link to document**
 
 **Integrated recipes:** Recipes that are contained within the main
 branch of the ESMValTool repository, and can therefore be updated by any
@@ -103,7 +103,7 @@ Not within the scope of this policy are:
 
 -  Versioning scheme of ESMValTool
 -  Breakage of recipes due to changes in input data or dependencies.
-   This is covered by the broken recipe policy.
+   This is covered by the broken recipe policy. **TODO: Add link to broken recipe policy**
 
 Expectations of developers & users
 ----------------------------------
@@ -189,7 +189,7 @@ Helping developers to upgrade
 *integrated recipes* using a *release*, since all
 *backwards-incompatible changes* introduced between *releases* will have
 been fixed before the *release* is created. Please note the broken
-recipe policy:
+recipe policy:  **TODO: Add link to broken recipe policy**
 
 However, *recipe developers* working on *user recipes* must be provided
 with information to enable them to adapt their code to resolve issues
