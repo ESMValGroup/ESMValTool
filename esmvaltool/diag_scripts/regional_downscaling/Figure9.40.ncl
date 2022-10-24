@@ -226,7 +226,7 @@ begin
   lsm  = landsea_mask(lsdata1, lsdata&lat, lsdata&lon)
   ; *****************************************************************
 
-  map = new(dimsizes(region_label), "graphic")
+  map_r = new(1, "graphic")
   plot = new(dim_seas, "graphic")
   dum_ref = new(dim_seas, "graphic")
   dum1 = new((/dim_seas, dimsizes(project_MMM)/),\
@@ -241,17 +241,35 @@ begin
              "graphic")
   dum_lines = new((/dim_seas, 30/), "graphic")
   dum_txt = new((/dim_seas, 30/), "graphic")
-  mres = True
-  mres@gsnDraw = False
-  mres@gsnFrame = False
-  mres@cnInfoLabelOn = False
-  mres@lbLabelBarOn = False
-  mres@cnLevelSelectionMode = "ManualLevels"
-  mres@cnMinLevelValF = 0.
-  mres@cnMaxLevelValF = 27.
-  mres@cnLevelSpacingF = 1.
+  mres_r = True
+  mres_r@gsnDraw = False
+  mres_r@gsnFrame = False
+  mres_r@lbLabelBarOn = False
+  mres_r@cnLevelSelectionMode = "ManualLevels"
+  mres_r@cnMinLevelValF = 0.
+  mres_r@cnMaxLevelValF = 200.0
+  mres_r@cnLevelSpacingF = 0.1 * 200.0/tofloat(dim_reg)
+  mres_r@cnInfoLabelOn = False
+  mres_r@cnLineLabelsOn = False
+  mres_r@cnFillOn = True
+  mres_r@cnFillOpacityF = 0.5
+  cmap_r = read_colormap_file("GMT_wysiwygcont")
+  mres_r@cnFillPalette = cmap_r(::-1, :)
+  mres_r@mpFillOn = True
+  gsres                = True
+  gsres@gsFillOpacityF = 0.7
+  txres               = True
+  txres@txFontHeightF = 0.012
+  txres@txFont = 22
+  txres@txJust        = "CenterLeft"
+
+  random_setallseed(36484749, 9494848)
+  unf   = random_uniform(0, 1, (/dim_reg + 1/))
+  ip = dim_pqsort(unf, 1)
+
   do iseas = 0, dim_seas - 1
     do ir = 0, dim_reg - 1
+       
       case1 = region_label(ir)
       region_lab = str_get_field(case1, 1, "_")
       region_ch = str_get_field(case1, 2, "_")
@@ -269,11 +287,35 @@ begin
         cell_fill = mask(cell_fill, lsm.eq.1, False)  ; 1 = Land
         cell_fill = mask(cell_fill, lsm.eq.3, False)  ; 3 = Small Island
       end if
-      cell_fill = where(ismissing(cell_fill), -1., 1.)
-      mres@tiMainString = region_label(ir)
       if (iseas.eq.0) then
-        mres@tiMainString = region_label(ir)
-        map(ir) = gsn_csm_contour_map(wks_r, cell_fill, mres)
+        irc = (ip(ir + 1)) * 200.0/tofloat(dim_reg)
+        if (ir.eq.0) then
+          cell_fill2 = where(ismissing(cell_fill), -1., irc)
+          cell_fill2!0 = "lat"
+          cell_fill2!1 = "lon"
+          cell_fill2&lat = lsdata&lat
+          cell_fill2&lon = lsdata&lon
+        else
+          plot_on = True
+          if (region_label(ir).eq."World") then
+            plot_on = False
+          end if  
+          if (region_label(ir).eq."World_land") then
+            plot_on = False
+          end if  
+          if (region_label(ir).eq."World_sea") then
+            plot_on = False
+          end if
+          if (plot_on) then
+            cell_fill2 = where(ismissing(cell_fill), cell_fill2, irc)
+          end if
+        end if
+      end if
+      cell_fill = where(ismissing(cell_fill), -1., 1.)
+      mres_r@tiMainString = region_label(ir)
+      if (iseas.eq.0) then
+        mres_r@tiMainString = region_label(ir)
+        ; map(ir) = gsn_csm_contour_map(wks_r, cell_fill, mres)
       end if
       if (diag_script_info@fig940_MMM.eq."True")
         indic_s = where(indic_s.eq.idx_ref, indic_s@_FillValue, indic_s)
@@ -724,9 +766,55 @@ begin
   pan@gsnMaximize = True
   pan@gsnFrame = False
   pan@gsnPaperOrientation = "portrait"
+  map_r = gsn_csm_contour_map(wks_r, cell_fill2, mres_r)
+
   do ir = 0, dim_reg - 1
-    draw(map(ir))
+    txres@txFontColor   = "black"
+    print(region_label(ir))
+    region = region_label(ir)
+    add_r = 0.0
+    add_y = 0.0
+    plot_on = True
+    if (region_label(ir).eq."Arctic_land") then
+      region = "Arctic"
+      add_r = 5.0
+    end if  
+    if (region_label(ir).eq."Arctic_sea") then
+      region = "Arctic"
+      add_r = 60.0
+    end if  
+    if (region_label(ir).eq."Antarctic_land") then
+      region = "Antarctic"
+      add_r = 110.0
+    end if  
+    if (region_label(ir).eq."Antarctic_sea") then
+      region = "Antarctic"
+      add_y = 15.0
+    end if  
+    if (region_label(ir).eq."NorthernTropicalPacific") then
+      add_r = 10.0
+    end if  
+    if (region_label(ir).eq."World") then
+      plot_on = False
+    end if  
+    if (region_label(ir).eq."World_land") then
+      plot_on = False
+    end if  
+    if (region_label(ir).eq."World_sea") then
+      plot_on = False
+    end if  
+    if (plot_on) then
+      cregion_array = (/select_region_srex_poly(region)/)
+      dum = gsn_add_text(wks_r, map_r, region_label(ir),\
+                       cregion_array(0) + add_r, \
+                       cregion_array(1) + add_y, txres)
+      delete(cregion_array)
+    end if
   end do
+  draw(map_r)
+  ; do ir = 0, dim_reg - 1
+  ;   draw(map(ir))
+  ; end do
   frame(wks_r)
 ;  info_output("wrote " + output_dir + output_filename, verbosity, 1)
 ;  info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
