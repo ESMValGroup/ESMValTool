@@ -22,8 +22,6 @@ Highlights
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO: add examples of how to deal with these changes
-
 -  Remove installation of R dependencies from the help message (`#2761 <https://github.com/ESMValGroup/ESMValTool/pull/2761>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 
 Bug fixes
