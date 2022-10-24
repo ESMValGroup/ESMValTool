@@ -1,7 +1,7 @@
 # ESMValTool
 # recipe_flato13ipcc.yml
 ---
-documentation:   
+documentation:
   title: IPCC AR5, chap. 9 diagnostics
 
   description: |
@@ -842,7 +842,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}      
+      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       fig09-6_pattern_cor: &fig09_6_pattern_cor
         script: ipcc_ar5/ch09_fig09_6.ncl
@@ -927,7 +927,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}
     scripts:
       fig09-6_pattern_cor:
         <<: *fig09_6_pattern_cor
@@ -1095,7 +1095,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}
     scripts:
       fig09-6_pattern_cor:
         <<: *fig09_6_pattern_cor
@@ -1879,7 +1879,7 @@ diagnostics:
           # esmvalcore.cmor.check.CMORCheckError: There were errors in variable areacello:
           # There are multiple coordinates with standard_name "latitude": ['lat', 'latitude']
           # There are multiple coordinates with standard_name "longitude": ['lon', 'longitude']
-          # areacello: does not match coordinate rank 
+          # areacello: does not match coordinate rank
           # - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
           - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn,  start_year: 3030, end_year: 3169}
           - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
