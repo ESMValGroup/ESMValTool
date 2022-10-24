@@ -269,7 +269,7 @@ begin
 
   do iseas = 0, dim_seas - 1
     do ir = 0, dim_reg - 1
-       
+
       case1 = region_label(ir)
       region_lab = str_get_field(case1, 1, "_")
       region_ch = str_get_field(case1, 2, "_")
@@ -299,10 +299,10 @@ begin
           plot_on = True
           if (region_label(ir).eq."World") then
             plot_on = False
-          end if  
+          end if
           if (region_label(ir).eq."World_land") then
             plot_on = False
-          end if  
+          end if
           if (region_label(ir).eq."World_sea") then
             plot_on = False
           end if
@@ -778,36 +778,36 @@ begin
     if (region_label(ir).eq."Arctic_land") then
       region = "Arctic"
       add_r = 5.0
-    end if  
+    end if
     if (region_label(ir).eq."Arctic_sea") then
       region = "Arctic"
       add_r = 60.0
-    end if  
+    end if
     if (region_label(ir).eq."Antarctic_land") then
       region = "Antarctic"
       add_r = 110.0
-    end if  
+    end if
     if (region_label(ir).eq."Antarctic_sea") then
       region = "Antarctic"
       add_y = 15.0
-    end if  
+    end if
     if (region_label(ir).eq."NorthernTropicalPacific") then
       add_r = 10.0
-    end if  
+    end if
     if (region_label(ir).eq."World") then
       plot_on = False
-    end if  
+    end if
     if (region_label(ir).eq."World_land") then
       plot_on = False
-    end if  
+    end if
     if (region_label(ir).eq."World_sea") then
       plot_on = False
-    end if  
+    end if
     if (plot_on) then
       cregion_array = (/select_region_srex_poly(region)/)
       dum = gsn_add_text(wks_r, map_r, region_label(ir),\
-                       cregion_array(0) + add_r, \
-                       cregion_array(1) + add_y, txres)
+                         cregion_array(0) + add_r, \
+                         cregion_array(1) + add_y, txres)
       delete(cregion_array)
     end if
   end do
