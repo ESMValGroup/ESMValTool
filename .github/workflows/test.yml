@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - add-iris-esmf
   schedule:
     - cron: '0 0 * * *'
 
