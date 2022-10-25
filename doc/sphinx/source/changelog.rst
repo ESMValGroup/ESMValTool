@@ -13,7 +13,7 @@ Highlights
 ~~~~~~~~~~
 
 -  This release has seen the inclusion of the code for figures 3.3, 3.4, 3.5, 3,13 and 3.15 of the IPCC AR6 WG1 report, see them in the `new documentation <https://esmvaltool--2533.org.readthedocs.build/en/2533/recipes/recipe_ipccwg1ar6ch3.html>`__
--  We have also included new diagnostics and recipe necessary to produce the plots and tables for the journal article "Climate model projections from the Scenario Model Intercomparison Project (ScenarioMIP) of CMIP6" by `Tebaldi et al. <ESD. https://doi.org/10.5194/esd-2020-68>`__ from 2021
+-  We have also included new diagnostics and recipe necessary to produce the plots and tables for the journal article "Climate model projections from the Scenario Model Intercomparison Project (ScenarioMIP) of CMIP6" by `Tebaldi et al. in ESD 2020-68 <https://doi.org/10.5194/esd-2020-68>`__ from 2021; also see the `recipe entry <https://docs.esmvaltool.org/en/latest/recipes/recipe_tebaldi21esd.html>`__
 -  We have also extended the support for MERRA2 observational dataset, by adding support for a large number of variables, including 3D variables, see the `table of supported obs datasets <https://docs.esmvaltool.org/en/latest/input.html#supported-datasets-for-which-a-cmorizer-script-is-available>`__
 
 Backwards incompatible changes
@@ -62,6 +62,7 @@ Documentation
 -  Update release strategy notes (`#2734 <https://github.com/ESMValGroup/ESMValTool/pull/2734>`__) `sloosvel <https://github.com/sloosvel>`__
 -  Add documention on how to handle CMORizers for multiple dataset versions (`#2730 <https://github.com/ESMValGroup/ESMValTool/pull/2730>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Extending documentation: broken recipe policy (`#2720 <https://github.com/ESMValGroup/ESMValTool/pull/2720>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Extending documentation: recipe maintainer + broken recipe policy (`#2719 <https://github.com/ESMValGroup/ESMValTool/pull/2719>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 
 Diagnostics
 ~~~~~~~~~~~
@@ -86,6 +87,7 @@ Installation
 ~~~~~~~~~~~~
 
 -  Increase esmvalcore version to 2.7.0 in environment files (`#2860 <https://github.com/ESMValGroup/ESMValTool/pull/2860>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Add iris-esmf-regrid as a dependency (`#2880 <https://github.com/ESMValGroup/ESMValTool/pull/2880>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 
 Improvements
 ~~~~~~~~~~~~
