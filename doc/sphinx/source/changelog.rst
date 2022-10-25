@@ -28,6 +28,7 @@ Bug fixes
 -  Fix `esmvaltool.utils.testing.regression.compare` module to run with Python<3.10 too (`#2778 <https://github.com/ESMValGroup/ESMValTool/pull/2778>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Fixed small bug that could lead to wrong pr units in `monitor/multi_datasets.py` (`#2788 <https://github.com/ESMValGroup/ESMValTool/pull/2788>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Pin `xgboost>1.6.1` so we avert documentation failing to build with `1.6.1` (`#2780 <https://github.com/ESMValGroup/ESMValTool/pull/2780>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Pin `matplotlib-base<3.6.0` to avoid conflict from `mapgenerator` that fails doc builds (`#2830 <https://github.com/ESMValGroup/ESMValTool/pull/2830>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Fixed wrong latitudes in NDP CMORizer (`#2832 <https://github.com/ESMValGroup/ESMValTool/pull/2832>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Fix indexer in Autoassess supermeans module use a tuple of `(slice(), idx, idx)` (`#2838 <https://github.com/ESMValGroup/ESMValTool/pull/2838>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Replace xarray ufuncs with bogstandard numpy in weighting/climwip/calibrate_sigmas.py (`#2848 <https://github.com/ESMValGroup/ESMValTool/pull/2848>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
@@ -53,7 +54,6 @@ Documentation
 -  Made `maintainer` entry mandatory for published recipes (`#2703 <https://github.com/ESMValGroup/ESMValTool/pull/2703>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Use command with current command line opts for `cffconvert` in documentation (`#2791 <https://github.com/ESMValGroup/ESMValTool/pull/2791>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Update CMORizer documentation with command options (`#2795 <https://github.com/ESMValGroup/ESMValTool/pull/2795>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
--  Pin `matplotlib-base<3.6.0` to avoid conflict from `mapgenerator` that fails doc builds (`#2830 <https://github.com/ESMValGroup/ESMValTool/pull/2830>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Fixed broken link for monthly meetings (`#2806 <https://github.com/ESMValGroup/ESMValTool/pull/2806>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Update MO obs4MIPs paths in the user configuration file (`#2813 <https://github.com/ESMValGroup/ESMValTool/pull/2813>`__) `mo-tgeddes <https://github.com/mo-tgeddes>`__
 -  Fix Windows incompatible file names in documentation of recipe_climate_change_hotspot.yml (`#2823 <https://github.com/ESMValGroup/ESMValTool/pull/2823>`__) `Lee de Mora <https://github.com/ledm>`__
