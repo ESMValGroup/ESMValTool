@@ -27,6 +27,7 @@ dependencies:
   - fire
   - gdal
   - iris>=3.1.0
+  - iris-esmf-regrid
   - jinja2
   - joblib
   - lime
