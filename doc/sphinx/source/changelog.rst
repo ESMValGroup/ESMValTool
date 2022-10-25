@@ -93,14 +93,9 @@ Improvements
 ~~~~~~~~~~~~
 
 -  Fix tebaldi21esd (`#2749 <https://github.com/ESMValGroup/ESMValTool/pull/2749>`__) `Axel Lauer <https://github.com/axel-lauer>`__
--  Initial Commit for Recipe Test Workflow (`#2787 <https://github.com/ESMValGroup/ESMValTool/pull/2787>`__) `mo-tgeddes <https://github.com/mo-tgeddes>`__
 -  Added option to show basic statistics in plots of `monitor/multi_datasets.py` (`#2790 <https://github.com/ESMValGroup/ESMValTool/pull/2790>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Update configure task to use the correct paths (`#2815 <https://github.com/ESMValGroup/ESMValTool/pull/2815>`__) `Katherine Tomkins <https://github.com/KatherineTomkins>`__
--  Update the install_cold task to install the latest version of ESMValTool and ESMValCore (`#2803 <https://github.com/ESMValGroup/ESMValTool/pull/2803>`__) `Katherine Tomkins <https://github.com/KatherineTomkins>`__
--  Add compare task to recipe_test_workflow (`#2820 <https://github.com/ESMValGroup/ESMValTool/pull/2820>`__) `mo-tgeddes <https://github.com/mo-tgeddes>`__
 -  Remove retracted datasets from `recipe_climate_change_hotspot` (`#2854 <https://github.com/ESMValGroup/ESMValTool/pull/2854>`__) `sloosvel <https://github.com/sloosvel>`__
 -  Add workflow checks to rtw (`#2859 <https://github.com/ESMValGroup/ESMValTool/pull/2859>`__) `mo-tgeddes <https://github.com/mo-tgeddes>`__
--  Add two groups of test recipes (`#2822 <https://github.com/ESMValGroup/ESMValTool/pull/2822>`__) `Katherine Tomkins <https://github.com/KatherineTomkins>`__
 
 
 .. _changelog-v2-6-0:
