@@ -61,7 +61,6 @@ Documentation
 -  Fixed anaconda badge in README (`#2866 <https://github.com/ESMValGroup/ESMValTool/pull/2866>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Update release strategy notes (`#2734 <https://github.com/ESMValGroup/ESMValTool/pull/2734>`__) `sloosvel <https://github.com/sloosvel>`__
 -  Add documention on how to handle CMORizers for multiple dataset versions (`#2730 <https://github.com/ESMValGroup/ESMValTool/pull/2730>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
--  Extending documentation: broken recipe policy (`#2720 <https://github.com/ESMValGroup/ESMValTool/pull/2720>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Extending documentation: recipe maintainer + broken recipe policy (`#2719 <https://github.com/ESMValGroup/ESMValTool/pull/2719>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 
 Diagnostics
@@ -95,7 +94,6 @@ Improvements
 -  Fix tebaldi21esd (`#2749 <https://github.com/ESMValGroup/ESMValTool/pull/2749>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Added option to show basic statistics in plots of `monitor/multi_datasets.py` (`#2790 <https://github.com/ESMValGroup/ESMValTool/pull/2790>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Remove retracted datasets from `recipe_climate_change_hotspot` (`#2854 <https://github.com/ESMValGroup/ESMValTool/pull/2854>`__) `sloosvel <https://github.com/sloosvel>`__
--  Add workflow checks to rtw (`#2859 <https://github.com/ESMValGroup/ESMValTool/pull/2859>`__) `mo-tgeddes <https://github.com/mo-tgeddes>`__
 
 
 .. _changelog-v2-6-0:
