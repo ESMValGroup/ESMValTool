@@ -90,7 +90,7 @@ following figures from Flato et al. (2013) can currently be reproduced:
       1986–2005.
 
     * Figure 9.38: Seasonal cycle for the surface temperature over land within
-      defined regions multi-model mean and comparison to refefence data set
+      defined regions multi-model mean and comparison to reference dataset
       can be choosen.
 
     * Figure 9.39: Seasonal bias box plot within
@@ -140,10 +140,10 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     * ipcc_ar5/ch09_fig09_14.py: Zonally averaged and equatorial SST (Fig. 9.14)
     * seaice/seaice_tsline.ncl: Time series of sea ice extent (Fig. 9.24a/b)
     * seaice/seaice_trends.ncl: Trend distributions of sea ice extent (Fig 9.24c/d)
-    * regional_downscaling/Figure9.38.ncl (Fig 9.38a)
-    * regional_downscaling/Figure9.39.ncl (Fig 9.39a/c/e)
-    * regional_downscaling/Figure9.40.ncl (Fig 9.40b/d/f)
-    * regional_downscaling/Figure9.41.ncl (Fig 9.41b)
+    * regional_downscaling/Figure9_38.ncl (Fig 9.38a)
+    * regional_downscaling/Figure9_39.ncl (Fig 9.39a/c/e)
+    * regional_downscaling/Figure9_40.ncl (Fig 9.40b/d/f)
+    * regional_downscaling/Figure9_41.ncl (Fig 9.41b)
     * ipcc_ar5/ch09_fig09_42a.py: ECS vs. surface air temperature (Fig. 9.42a)
     * ipcc_ar5/ch09_fig09_42b.py: TCR vs. ECS (Fig. 9.42b)
     * emergent_constraints/snowalbedo.ncl: snow-albedo effect (Fig. 9.45a)
@@ -331,7 +331,11 @@ User settings in recipe
 
 #. Script regional_downscaling/Figure9.38.ncl
 
-   *Required settings (scripts)*
+   *Required settings for script*
+
+   none
+
+   *Optional settings (scripts)*
 
    * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
    * fig938_region_label: Labels for regions, which should be included
@@ -340,21 +344,23 @@ User settings in recipe
    * fig938_project_MMM: projects to average, default "CMIP5"
    * fig938_experiment_MMM: experiments to average, default "historical"
    * fig938_mip_MMM: mip to average, default "Amon"
+   * fig938_names_MMM: names in legend  i.e. (["CMIP5","CMIP3"]), default fig938_project_MMM
+   * fig938_colors_MMM: Color for multi-model mean (e.g. ["red"]), default "red"
+   * If set fig938_mip_MMM, fig938_experiment_MMM, fig938_project_MMM, fig938_names_MMM, and fig938_colors_MMM must 
+     have the same number of elements
+
    * fig938_refModel: Reference data set for differences default "ERA-Interim"
-   * fig938_names_MMM: names in legend  i.e. (["CMIP5","CMIP3"])
-   * fig938_colors_MMM: Color for multi-model mean (e.g. ["red"])
-   * fig938_MMM: Plot multi-model mean (true/false)
-
-   *Optional settings (scripts)*
-
-   * fig938_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
-   * fig938_colors_MMM  : colors (/"red","blue"/)
+   * fig938_MMM: Plot multi-model mean (true/false), default "true"
    * fig938_YMin: minimum Y Axis
    * fig938_YMax: maximum Y Axis
 
 #. Script regional_downscaling/Figure9.39.ncl
 
    *Required settings (scripts)*
+
+   * reference_dataset: reference dataset name (set fo variable)
+
+   *Optional settings (scripts)*
 
    * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
    * fig939_season : seasons i.e. (["DJF","JJA","ANN"]), default "DJF"
@@ -365,14 +371,8 @@ User settings in recipe
    * fig939_project_MMM: projects to average, default "CMIP5"
    * fig939_experiment_MMM: experiments to average, default "historical"
    * fig939_mip_MMM: mip to average, default "Amon"
-   * fig939_refModel: Reference data set for differences default "CRU"
-   * fig939_names_MMM: names in legend  i.e. (["CMIP5","CMIP3"])
-   * fig939_colors_MMM: Color for multi-model mean (e.g. ["red"])
    * fig939_MMM: Plot multi-model mean (true/false)
-
-   *Optional settings (scripts)*
-
-   * fig939_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
+   * fig939_names_MMM: names in legend  i.e. (["CMIP5","CMIP3"])
    * fig939_YMin: minimum Y Axis
    * fig939_YMax: maximum Y Axis
    * fig939_vert_line_pos: i.e. ([6,10,13,17,24,26])
@@ -383,6 +383,10 @@ User settings in recipe
 #. Script regional_downscaling/Figure9.40.ncl
 
    *Required settings (scripts)*
+
+   * reference_dataset: reference dataset name (set fo variable)
+
+   *Optional settings (scripts)*
 
    * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
    * fig940_season : seasons i.e. (["DJF","JJA","ANN"]), default "DJF"
@@ -395,12 +399,7 @@ User settings in recipe
    * fig940_project_MMM: projects to average, default "CMIP5"
    * fig940_experiment_MMM: experiments to average, default "historical"
    * fig940_mip_MMM: mip to average, default "Amon"
-   * fig940_refModel: Reference data set for differences default "CRU"
-   * fig940_colors_MMM: Color for multi-model mean (e.g. ["red"])
    * fig940_MMM: Plot multi-model mean (true/false)
-
-   *Optional settings (scripts)*
-
    * fig940_names_MMM: names in legend  i.e. (["CMIP5","CMIP3"])
    * fig940_YMin: minimum Y Axis
    * fig940_YMax: maximum Y Axis
@@ -413,15 +412,15 @@ User settings in recipe
 
    *Required settings (scripts)*
 
+   * reference_dataset: reference dataset name (set fo variable)
+
+   *Optional settings (scripts)*
+
    * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
    * fig941_region_label: Labels for regions, which should be included
      (["ALAs","CGIs","WNAs","CNAs","ENAs","CAMs","AMZs","NEBs","WSAs","SSAs",
      "NEUs","CEUs","MEDs","SAHs","WAFs","EAFs","SAFs","NASs","WASs","CASs",
      "TIBs","EASs","SASs","SEAs","NAUs","SAUs"]), default "MEDs"
-
-   *Optional settings (scripts)*
-
-   none
 
 #. Script ipcc_ar5/ch09_fig09_42a.py
 

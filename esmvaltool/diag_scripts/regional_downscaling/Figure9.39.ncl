@@ -1,5 +1,5 @@
-; ###########  ###############################################################
-; # SEASONAL OR ANNUAL BIAS                                                #
+; #############################################################################
+; # SEASONAL OR ANNUAL BIAS                                                   #
 ; #############################################################################
 ; # Author: Irene Cionni(ENEA, Italy)                                         #
 ; # CRESCENDO project
@@ -9,7 +9,7 @@
 ; #    * Create seasonal or annual bias box plots at selected regions         #
 ; #       - Read regions
 ; #        -create mask map using region poligons
-; #       - for all the models calculate the bias respect @refModel
+; #       - for all the models calculate the bias reference_dataset
 ; #       - sort biases for each selected project&experiment&mip
 ; #       - evaluate percentiles (5th 25th 50th 75th 95th)
 ; #       - plot the first selected project&experiment&mip as box-and-whisker
@@ -20,27 +20,29 @@
 ; #
 ; # Required variable_info attributes (variable specific):
 ; #
-; #    *  fig939_refModel: reference model name
+; #    *  reference_dataset: reference dataset name
+; #
+; # Optional diag_script_info attributes:
+; #
+; #    *  styleset, default "CMIP5"
 ; #    *  fig939_season : seasons i.e. (/"DJF","JJA","ANN"/)
 ; #    *  fig939_region_label :
 ; #      (/"ALA","CGI","WNA","CNA","ENA","CAM","AMZ","NEB","WSA","SSA","NEU",
 ; #       "CEU","MED","SAH","WAF","EAF","SAF","NAS","WAS","CAS","TIB","EAS",
 ; #       "SAS","SEA","NAU","SAU"/)
 ; #        these region are defined in Seneviratne et al., 2012: Appendix 3.A
-; #        – Notes and technical details on Chapter 3 figures.
+; #        Notes and technical details on Chapter 3 figures.
 ; #       In: Managing the Risks of Extreme Events and Disasters to Advance
 ; #          Climate Change Adaptation(IPCC). <www.ipcc.ch>.
-; #      * fig939_MMM  True
+; #      * fig939_MMM, default: True
 ; #      * fig939_project_MMM: projects to average
 ; #      * fig939_experiment_MMM: experiments to average
 ; #      * fig939_mip_MMM: mip to average
-; #      *Dimensions of fig939_project_MMM, fig939_experiment_MMM and
+; #      * Dimensions of fig939_project_MMM, fig939_experiment_MMM and
 ; #         fig939_mip_MMM must have the number of elements i.e.
 ; #         fig939_project_MMM=(/"CMIP5", "CMIP3"/)
 ; #         fig939_experiment_MMM=(/"historical", "historical"/)
 ; #         fig939_mip_MMM=(/"Amon", "Amon"/)
-; #
-; # Optional diag_script_info attributes
 ; #
 ; #      * Names for legend
 ; #          fig939_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/
@@ -49,16 +51,25 @@
 ; #          i.e. (/6,10,13,17,24,26/)
 ; #      * labels of vertical lines
 ; #        fig939_vert_line_label
-; # .e.(/"North America","South America","Europe","Africa","Asia","Australia"/)
+; #        e.g. (/"North America","South America","Europe","Africa",
+; #                "Asia","Australia"/)
 ; #        fig939_mode    : True= cumulative mode
 ; #        fig939_YMin        : minimum Y Axis
 ; #        fig939_YMax        : maximum Y Axis
 ; # Caveats:
 ; #      This script requires NCL version 6.40
+; #
+; # Comments:
 ; #      Regions borders are polygons defined in function select_region_srex
 ; #      in regional_function.ncl
 ; #
 ; # Modification history:
+; # 20221026-weigel_katja: header updated
+; # 20221026-weigel_katja: fixed calendar, time_operations expects
+; #                        "gregorian" instead of "Gregorian"
+; # 20221026-weigel_katja: removed unused variable fig939_colors_MMM
+; # 20221026-weigel_katja: removed unused variable refModel
+; #                        (reference_dataset instead)
 ; # 20220314-weigel_katja: header updated
 ; ###############################################################
 load "$diag_scripts/../interface_scripts/interface.ncl"
@@ -114,9 +125,7 @@ begin
   set_default_att(diag_script_info, "fig939_mip_MMM", "Amon")
   set_default_att(diag_script_info, "fig939_names_MMM", \
                   diag_script_info@fig939_project_MMM)
-  set_default_att(diag_script_info, "fig939_colors_MMM", "red")
   set_default_att(diag_script_info, "fig939_season", "DJF")
-  set_default_att(diag_script_info, "refModel", "CRU")
 
   colors = project_style(info0, diag_script_info, "colors")
   dashes = project_style(info0, diag_script_info, "dashes")
@@ -209,14 +218,13 @@ begin
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
-  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.39_" + var0)
-  wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.39_regions" + var0)
-  wks_l = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.39_legend" + var0)
+  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_39_" + var0)
+  wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_39_regions" + var0)
+  wks_l = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_39_legend" + var0)
   ; +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Amask = read_data(info0[idx_ref])
   lsdata = Amask(0, :, :)
   ; *****************************************************************
-  ; map = new(dimsizes(region_label), "graphic")
   map_r = new(1, "graphic")
   plot = new(dim_seas, "graphic")
   dum_ref = new(dim_seas, "graphic")
@@ -304,15 +312,13 @@ begin
       ; CASE 1 In this plot only case1 exsist!!!!!
       ; case1 = models@name(idx_ref) + " " + models@case_name(idx_ref)
       A0 = read_data(info0[idx_ref])
-      printVarSummary(A0)
       if (season(iseas).ne."ANN") then
-        print(mode)
         if (mode) then
           time1 = todouble(A0&time)
           time1!0 = "time"
           ; ys=input_file_info[idx_ref]@start_year
           time1@units = "months since 1-1-1"
-          time1@calendar = "Gregorian"
+          time1@calendar = "gregorian"
           delete(A0&time)
           A0&time = time1
           delete(time1)
@@ -337,7 +343,7 @@ begin
           time1!0 = "time"
           ; ys=input_file_info[idx_ref]@start_yea
           time1@units = "months since 1-1-1"
-          time1@calendar = "Gregorian"
+          time1@calendar = "gregorian"
           delete(A0&time)
           A0&time = time1
           Atmp1 = time_operations(A0, -1, -1, "average", season(iseas), True)
@@ -373,7 +379,7 @@ begin
           time1!0 = "time"
           ; ys=input_file_info[idx_ref]@start_year
           time1@units = "months since 1-1-1"
-          time1@calendar = "Gregorian"
+          time1@calendar = "gregorian"
           delete(A0&time)
           A0&time = time1
           Atmp1 = time_operations(A0, -1, -1, "average", "annualclim", True)
@@ -398,7 +404,7 @@ begin
               time1!0 = "time"
               ; ys = input_file_info[idx_ref]@start_year
               time1@units = "months since 1-1-1"
-              time1@calendar = "Gregorian"
+              time1@calendar = "gregorian"
               delete(B0&time)
               B0&time = time1
               Btmp3 = time_operations(B0, -1, -1, "extract",\
@@ -422,13 +428,9 @@ begin
               time1!0 = "time"
               ; ys=input_file_info[idx_ref]@start_year
               time1@units = "months since 1-1-1"
-              time1@calendar = "Gregorian"
+              time1@calendar = "gregorian"
               delete(B0&time)
               B0&time = time1
-              print("season")
-              print(season)
-              print("iseas")
-              print(iseas)
               Btmp1 = time_operations(B0, -1, -1, "average",\
                                       season(iseas), True)
             end if
@@ -454,7 +456,7 @@ begin
               time1!0 = "time"
               ; ys = input_file_info[idx_ref]@start_year
               time1@units = "months since 1-1-1"
-              time1@calendar = "Gregorian"
+              time1@calendar = "gregorian"
               delete(B0&time)
               B0&time = time1
               Btmp1 = time_operations(B0, -1, -1, "average", "annualclim",\
@@ -471,8 +473,6 @@ begin
           delete(Btmp1)
           ; --------------------------------------------------------
           ; Bias
-          print(jmod)
-          print(imod)
           printVarSummary(C)
           printVarSummary(D)
           if (mode) then
@@ -509,7 +509,6 @@ begin
         colori_def = (/"red", "orange", "green", "blue", "purple"/)
         scatters_def = (/0, 5, 16, 4, 7, 8, 12/)
         do iin = 0, dimsizes(diag_script_info@fig939_project_MMM) - 1
-          print(indic_s)
           if (.not.all(ismissing(indic_s(iin, :)))) then
             aa = indic_s(iin, ind(.not.ismissing(indic_s(iin, :))))
           end if
@@ -549,7 +548,6 @@ begin
                              " " + diag_script_info@fig939_mip_MMM(iin)
           end if
         end do
-        print(indic_not_sela)
         if (.not.ismissing(all(indic_not_sela))) then
           MMM(iseas, ir, dimsizes(diag_script_info@fig939_project_MMM):, 0) =\
            (/D(indic_not_sela)/)
@@ -558,7 +556,6 @@ begin
           thicks_MMM(dimsizes(diag_script_info@fig939_project_MMM):) = 3.
           markers_MMM(dimsizes(diag_script_info@fig939_project_MMM):) =\
             markers(indic_not_sela)
-          print(names)
           printVarSummary(names_MMM)
           names_MMM(dimsizes(diag_script_info@fig939_project_MMM):) =\
             names(indic_not_sela)

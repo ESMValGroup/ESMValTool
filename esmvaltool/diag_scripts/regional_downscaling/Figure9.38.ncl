@@ -15,35 +15,42 @@
 ; #       - plot the individual models annual cycle
 ; #       - plot the MMMs annual cycle and standard deviations
 ; #
-; # Required variable_info attributes (variable specific):
+; # Optional diag_script_info attributes:
 ; #
+; #     *  styleset, default "CMIP5"
 ; #     *  fig938_region_label:
 ; #       (/"WNA","ENA","CAM","TSA","SSA","EUM","NAF","CAF","SAF",
 ; #         "NAS","CAS","EAS","SAS","SEA","AUS"/)
 ; #        these reagions are defined in function select_region
-; #        (./diag_scripts/lib/ncl/latlon.ncl
-; #        according to a personal comunication of Sin Chan Chou
-; #     *  fig938_project_MMM: projects to average
-; #     *  fig938_experiment_MMM: experiments to average
-; #     *  fig938_mip_MMM: mip to average
+; #        (./diag_scripts/regional_downscaling/regional_function.ncl)
+; #        according to a personal comunication of Sin Chan Chou, default "WNA"
+; #     *  fig938_project_MMM: projects to average, default "CMIP5"
+; #     *  fig938_experiment_MMM: experiments to average, default "historical"
+; #     *  fig938_mip_MMM: mip to average, default "Amon"
+; #     *  fig938_names_MMM: names in legend, default "CMIP5"
+; #     *  fig938_colors_MMM: colors, default "red"
+; #     *  fig938_YMin        : minimum Y Axis
+; #     *  fig938_YMax        : maximum Y Axis
 ; #
-; #         fig938_mip_MMM must have the same number of elements i.e.
-; #         fig938_project_MMM=(/"CMIP5", "CMIP3"/)
-; #         fig938_experiment_MMM=(/"historical", "historical"/)
-; #         fig938_mip_MMM=(/"Amon", "Amon"/)
+; #        fig938_mip_MMM, fig938_experiment_MMM, fig938_project_MMM,
+; #        fig938_names_MMM, and fig938_colors_MMM
+; #        must have the same number of elements i.e.
+; #        fig938_project_MMM=(/"CMIP5", "CMIP3"/)
+; #        fig938_experiment_MMM=(/"historical", "historical"/)
+; #        fig938_mip_MMM=(/"Amon", "Amon"/)
+; #        fig938_names_MMM=(/"CMIP5","CMIP3"/)
+; #        fig938_colors_MMM:=(/"red","blue"/)
 ; #
-; # Optional diag_script_info attributes (diagnostics specific):
 ; #
-; #         fig938_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
-; #         fig938_colors_MMM  : colors (/"red","blue"/)
-; #         fig938_YMin        : minimum Y Axis
-; #         fig938_YMax        : maximum Y Axis
 ; #
 ; # Caveats:
+; # 
+; # Comments:
 ; #      Regions borders are polygons defined in function select_region_938
 ; #      in regional_function.ncl
 ; #
 ; # Modification history:
+; # 20221026-weigel_katja: header updated
 ; # 20220314-weigel_katja: header updated
 ; # original file anncycplot.ncl
 ; #                                                             #
@@ -157,11 +164,11 @@ begin
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
-  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.38_" + var0)
-  wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.38_regions" + var0)
-  wks_l = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.38_legend_" + var0)
+  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_38_" + var0)
+  wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_38_regions" + var0)
+  wks_l = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_38_legend_" + var0)
   if (diag_script_info@fig938_MMM.eq."True")
-    wks_MMM = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.38_MMM" + var0)
+    wks_MMM = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_38_MMM" + var0)
   end if
   ; ******************************************************************
   ; common resources for  plots

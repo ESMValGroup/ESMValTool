@@ -9,7 +9,7 @@
 ; #    * Create seasonal or annual bias box plots at selected regions
 ; #       - Read regions
 ; #        -create mask map using region poligons
-; #       - for all the models calculate the bias respect @refModel
+; #       - for all the models calculate the bias respect reference_dataset
 ; #       - sort biases for each selected project&experiment&mip
 ; #       - evaluate percentiles (5th 25th 50th 75th 95th)
 ; #       - plot the first selected project&experiment&mip as box-and-whisker
@@ -20,8 +20,12 @@
 ; #
 ; # Required variable_info attributes (variable specific):
 ; #
-; #    * refModel: reference model name
-; #    * fig940_season : seasons i.e. (/"DJF","JJA","ANN"/)
+; #    * reference_dataset: reference dataset name
+; #
+; # Optional diag_script_info attributes
+; #
+; #    *styleset, default "CMIP5"
+; #    * fig940_season : seasons i.e. (/"DJF","JJA","ANN"/), default "DJF"
 ; #    * fig940_region_label :(/(/"Arctic_land","Arctic_sea",\
 ; #                           "Antarctic_land",\
 ; #                           "Antarctic_sea","Caribbean",\
@@ -31,22 +35,21 @@
 ; #                           "SouthernTropicalPacific",\
 ; #                           "World_land","World_sea","World"/)
 ; #        these region are defined in Seneviratne et al., 2012: Appendix 3.A
-; #        – Notes and technical details on Chapter 3 figures.
-; #       In: Managing the Risks of Extreme Events and Disasters to Advance
-; #          Climate Change Adaptation(IPCC). <www.ipcc.ch>.
-; #      * fig940_MMM  True
-; #      * fig940_project_MMM: projects to average
-; #      * fig940_experiment_MMM: experiments to average
+; #        Notes and technical details on Chapter 3 figures.
+; #        In: Managing the Risks of Extreme Events and Disasters to Advance
+; #        Climate Change Adaptation(IPCC). <www.ipcc.ch>.
+; #        default "Arctic_land"
+; #      * fig940_MMM, default True
+; #      * fig940_project_MMM: projects to average, deafault "CMIP5"
+; #      * fig940_experiment_MMM: experiments to average, default "historical"
 ; #      * fig940_mip_MMM: mip to average
-; #      *Dimensions of fig940_project_MMM, fig940_experiment_MMM and
+; #      * Dimensions of fig940_project_MMM, fig940_experiment_MMM and
 ; #         fig940_mip_MMM must be the same i.e.
 ; #        fig940_project_MMM=(/"CMIP5", "CMIP3"/)
 ; #        fig940_experiment_MMM=(/"historical", "historical"/)
-; #        fig940_mip_MMM=(/"Amon", "Amon"/)
-; #
-; # Optional diag_script_info attributes
-; #
-; #      * fig940_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
+; #        fig940_mip_MMM=(/"Amon", "Amon"/), default "Amon"
+; #      * fig940_names_MMM:names in legend  i.e. (/"CMIP5","CMIP3"/)
+; #                         default fig940_project_MMM
 ; #      * Vertical lines divide groups of region
 ; #         fig940_vert_line_pos
 ; #          i.e. (/6,10,13,17,24,26/)
@@ -54,15 +57,25 @@
 ; #        fig940_vert_line_label
 ; #        e.g.(/"North America", "South America", "Europe", "Africa",
 ; #              "Asia", "Australia"/)
-; #       fig940_mode    : True= cumulative mode
-; #       fig940_YMin        : minimum Y Axis
-; #       fig940_YMax        : maximum Y Axis
+; #      * fig940_mode    : True= cumulative mode
+; #      * fig940_YMin        : minimum Y Axis
+; #      * fig940_YMax        : maximum Y Axis
+; #
 ; # Caveats:
 ; #      This script requires NCL version 6.40
+; #
+; # Comments:
 ; #      Regions borders are polygons defined in function select_region_srex
 ; #      in regional_function.ncl
 ; #
 ; # Modification history:
+; # 20221026-weigel_katja: header updated
+; # 20221026-weigel_katja: fixed calendar, time_operations expects
+; #                        "gregorian" instead of "Gregorian"
+; # 20221026-weigel_katja: removed unused variable fig940_colors_MMM
+; # 20221026-weigel_katja: removed unused variable refModel
+; #                        (reference_dataset instead)
+; # 20221024-weigel_katja: Figure9_40_regions fixed
 ; # 20220314-weigel_katja: header updated
 ; #
 ; #                                                             #
@@ -120,9 +133,7 @@ begin
   set_default_att(diag_script_info, "fig940_mip_MMM", "Amon")
   set_default_att(diag_script_info, "fig940_names_MMM", \
                   diag_script_info@fig940_project_MMM)
-  set_default_att(diag_script_info, "fig940_colors_MMM", "red")
   set_default_att(diag_script_info, "fig940_season", "DJF")
-  set_default_att(diag_script_info, "refModel", "CRU")
 
   colors = project_style(info0, diag_script_info, "colors")
   dashes = project_style(info0, diag_script_info, "dashes")
@@ -214,9 +225,9 @@ begin
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
-  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.40_" + var0)
-  wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.40_regions" + var0)
-  wks_l = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.40_legend" + var0)
+  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_40_" + var0)
+  wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_40_regions" + var0)
+  wks_l = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_40_legend" + var0)
 
   ; +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Amask = read_data(info0[idx_ref])
@@ -346,7 +357,7 @@ begin
           time1!0 = "time"
           ; ys=input_file_info[idx_ref]@start_year
           time1@units = "months since 1-1-1"
-          time1@calendar = "Gregorian"
+          time1@calendar = "gregorian"
           delete(A0&time)
           A0&time = time1
           delete(time1)
@@ -370,7 +381,7 @@ begin
           time1!0 = "time"
           ; ys=input_file_info[idx_ref]@start_yea
           time1@units = "months since 1-1-1"
-          time1@calendar = "Gregorian"
+          time1@calendar = "gregorian"
           delete(A0&time)
           A0&time = time1
           Atmp1 = time_operations(A0, -1, -1, "average", season(iseas), True)
@@ -382,7 +393,7 @@ begin
           time1!0 = "time"
           ; ys=input_file_info[idx_ref]@start_year
           time1@units = "months since 1-1-1"
-          time1@calendar = "Gregorian"
+          time1@calendar = "gregorian"
           delete(A0&time)
           A0&time = time1
           Atmp3 = A0
@@ -405,7 +416,7 @@ begin
           time1!0 = "time"
           ; ys=input_file_info[idx_ref]@start_year
           time1@units = "months since 1-1-1"
-          time1@calendar = "Gregorian"
+          time1@calendar = "gregorian"
           delete(A0&time)
           A0&time = time1
           Atmp1 = time_operations(A0, -1, -1, "average", "annualclim", True)
@@ -430,7 +441,7 @@ begin
               time1!0 = "time"
               ; ys = input_file_info[idx_ref]@start_year
               time1@units = "months since 1-1-1"
-              time1@calendar = "Gregorian"
+              time1@calendar = "gregorian"
               delete(B0&time)
               B0&time = time1
               Btmp3 = time_operations(B0, -1, -1, "extract",\
@@ -454,7 +465,7 @@ begin
               time1!0 = "time"
               ; ys=input_file_info[idx_ref]@start_year
               time1@units = "months since 1-1-1"
-              time1@calendar = "Gregorian"
+              time1@calendar = "gregorian"
               delete(B0&time)
               B0&time = time1
 
@@ -483,7 +494,7 @@ begin
               time1!0 = "time"
               ; ys = input_file_info[idx_ref]@start_year
               time1@units = "months since 1-1-1"
-              time1@calendar = "Gregorian"
+              time1@calendar = "gregorian"
               delete(B0&time)
               B0&time = time1
               Btmp1 = time_operations(B0, -1, -1, "average", "annualclim",\
@@ -770,7 +781,6 @@ begin
 
   do ir = 0, dim_reg - 1
     txres@txFontColor   = "black"
-    print(region_label(ir))
     region = region_label(ir)
     add_r = 0.0
     add_y = 0.0

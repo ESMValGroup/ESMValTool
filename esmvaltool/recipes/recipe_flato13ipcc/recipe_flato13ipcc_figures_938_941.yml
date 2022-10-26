@@ -1,11 +1,13 @@
 # ESMValTool
-# recipe_flato13ipcc_figures_938-941.yml
+# recipe_flato13ipcc_figures_938_941.yml
 ---
 documentation:
   title: IPCC AR5, chap. 9 diagnostics regional figures 9.38-9.41
   description: |
     Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
-    9.38, 9.39, 9.40, 9.41
+    9.38, 9.39, 9.40, 9.41.
+    Data sets taken out were part of the original publication but are
+    currently not available on DKRZ.
 
   authors:
     - cionni_irene
@@ -83,8 +85,10 @@ datasets:
      start_year: 1986, end_year: 2005}
   - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
      start_year: 1986, end_year: 2005}
-  - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1986, end_year: 2005}
+  # IPSL-CM5B-LR Seems to have issues with the calendar.
+  # Sometimes fails with invalid hour = 81 in regional_downscaling/Figure9.39.ncl.
+  # - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
   - {dataset: MIROC4h, project: CMIP5, exp: historical, ensemble: r1i1p1,
      start_year: 1986, end_year: 2005}
   - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1,
@@ -226,8 +230,6 @@ diagnostics:
         fig939_project_MMM: ["CMIP5"]
         fig939_experiment_MMM: ["historical"]
         fig939_mip_MMM: ["Amon"]
-        fig939_colors_MMM: ["red"]
-        fig939_refModel: ERA-Interim
         fig939_MMM: true
 
   # ==========================================================================
@@ -265,8 +267,6 @@ diagnostics:
         fig940_project_MMM: ["CMIP5"]
         fig940_experiment_MMM: ["historical"]
         fig940_mip_MMM: ["Amon"]
-        fig940_colors_MMM: ["red"]
-        fig940_refModel: CRU
         fig940_MMM: true
 
   # ==========================================================================

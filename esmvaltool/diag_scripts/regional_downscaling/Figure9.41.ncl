@@ -13,15 +13,18 @@
 ; # Required variable_info attributes (variable specific):
 ; #     *Reference Dataset
 ; #      variable_info[0]@reference_dataset
-; # Required diag_script_info attributes (diagnostics specific):
+; # Optional diag_script_info attributes (diagnostics specific):
 ; #     *Region Label
-; #      diag_script_info@Figure_9.41_region_label
+; #      diag_script_info@fig941_region_label, default "MEDs"
+; #     *styleset, default "CMIP5"
+; #
 ; #Optional diag_script_info attributes
 ; #                                                                           #
 ; #                                                                           #
 ; # Caveats:                                                                  #
 ; #                                                                           #
 ; # Modification history:
+; # 20221026-weigel_katja: header updated
 ; # 20220314-weigel_katja: header updated
 ; #############################################################################
 ; #############################################################################
@@ -100,9 +103,9 @@ begin
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
-  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.41_" + var0)
-  wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.41_raw_" + var0)
-  wks_l = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.41_legend_" + var0)
+  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_41_" + var0)
+  wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_41_raw_" + var0)
+  wks_l = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_41_legend_" + var0)
   ; +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Amask = read_data(info0[idx_ref])
   lsdata = Amask(0, :, :)
