@@ -44,7 +44,7 @@
 ; #
 ; #
 ; # Caveats:
-; # 
+; #
 ; # Comments:
 ; #      Regions borders are polygons defined in function select_region_938
 ; #      in regional_function.ncl
