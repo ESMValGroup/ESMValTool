@@ -87,14 +87,15 @@ ESMValTool package by running:
 
 .. code-block:: bash
 
-    mamba create --name esmvaltool esmvaltool 'python=3.10'
+    mamba create --name esmvaltool esmvaltool 'python=3.10' -c conda-forge
 
 Here ``mamba`` is the executable calling the mamba package manager to install
 ``esmvaltool``. The reason why we are also specifying ``'python=3.10'`` is that
 it will make it easier for mamba to find a working combination of all required
 packages, see `Mamba fails to solve the environment`_ in `common installation
 issues`_ for an in-depth explanation. Python 3.8 and 3.9 are also supported, in
-case you prefer to work with an older version of Python.
+case you prefer to work with an older version of Python. We also need to specify
+the channel where packages will be downloaded from, ``conda-forge``.
 
 This will create a new
 `conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`_
