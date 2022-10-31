@@ -979,7 +979,8 @@ class MLRModel():
                                   n_points)}
         )
         y_pred = self._clf.predict(x_lin)
-        axes.plot(x_lin, y_pred, color='k', linewidth=2,
+        x_lin_1d = x_lin.values[:, 0]
+        axes.plot(x_lin_1d, y_pred, color='k', linewidth=2,
                   label=self._cfg['mlr_model_name'])
 
         # Plot appearance
@@ -1001,7 +1002,7 @@ class MLRModel():
 
         # Save provenance
         cube = mlr.get_1d_cube(
-            x_lin,
+            x_lin_1d,
             y_pred,
             x_kwargs={'var_name': feature,
                       'long_name': feature,
