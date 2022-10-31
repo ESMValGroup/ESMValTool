@@ -1643,11 +1643,7 @@ class MLRModel():
 
         # Imputer
         if self._cfg['imputation_strategy'] != 'remove':
-            verbosity = self._get_verbosity_parameters(SimpleImputer)
-            imputer = SimpleImputer(
-                strategy=self._cfg['imputation_strategy'],
-                **verbosity,
-            )
+            imputer = SimpleImputer(strategy=self._cfg['imputation_strategy'])
             steps.append(('imputer', imputer))
 
         # Scaler for numerical features
