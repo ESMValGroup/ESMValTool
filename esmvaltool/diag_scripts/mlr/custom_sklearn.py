@@ -77,7 +77,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.utils import check_array, check_X_y, indexable, safe_sqr
 from sklearn.utils.fixes import np_version, parse_version
-from sklearn.utils.metaestimators import if_delegate_has_method
+from sklearn.utils.metaestimators import available_if
 from sklearn.utils.validation import check_is_fitted
 
 from esmvaltool.diag_scripts import mlr
@@ -105,6 +105,20 @@ _DEFAULT_TAGS = {
     'requires_y': False,
     'pairwise': False,
 }
+
+
+def _estimator_has(attr):
+    """Check if we can delegate a method to the underlying estimator.
+
+    First, we check the first fitted estimator if available, otherwise we
+    check the unfitted estimator.
+
+    """
+    return lambda self: (
+        hasattr(self.estimator_, attr)
+        if hasattr(self, "estimator_")
+        else hasattr(self.estimator, attr)
+    )
 
 
 def _determine_key_type(key, accept_slice=True):
@@ -785,7 +799,7 @@ class AdvancedRFE(RFE):
 
         return self
 
-    @if_delegate_has_method(delegate='estimator')
+    @available_if(_estimator_has("predict"))
     def predict(self, x_data, **predict_kwargs):
         """Expand :meth:`predict()` to accept kwargs."""
         check_is_fitted(self)
