@@ -2927,6 +2927,7 @@ class MLRModel():
             categorical_features=categorical_features_idx,
             discretize_continuous=False,
             sample_around_instance=True,
+            random_state=self.random_state,
             **verbosity,
         )
         logger.debug(
