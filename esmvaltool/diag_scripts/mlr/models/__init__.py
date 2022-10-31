@@ -2580,7 +2580,11 @@ class MLRModel():
         }
         parameters = {}
         for (param, log_levels) in verbosity_params.items():
-            if param in getfullargspec(function).args:
+            all_params = (
+                getfullargspec(function).args +
+                getfullargspec(function).kwonlyargs
+            )
+            if param in all_params:
                 parameters[param] = log_levels.get(self._cfg['log_level'],
                                                    log_levels['default'])
                 if boolean:
@@ -3293,7 +3297,10 @@ class MLRModel():
                     f"'{param_name}'")
 
         # Add sample weights if possible
-        allowed_fit_kwargs = getfullargspec(self._CLF_TYPE.fit).args
+        allowed_fit_kwargs = (
+            getfullargspec(self._CLF_TYPE.fit).args +
+            getfullargspec(self._CLF_TYPE.fit).kwonlyargs
+        )
         for kwarg in ('sample_weight', 'sample_weights'):
             if kwarg not in allowed_fit_kwargs:
                 continue
