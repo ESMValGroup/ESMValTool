@@ -363,8 +363,9 @@ class MLRModel():
                                       os.path.splitext(model_file)[0])
                 try:
                     importlib.import_module(
-                        'esmvaltool.diag_scripts.mlr.models.{}'.format(
-                            module.replace(os.sep, '.')))
+                        f"esmvaltool.diag_scripts.mlr.models."
+                        f"{module.replace(os.sep, '.')}"
+                    )
                 except ImportError:
                     pass
 
@@ -1930,10 +1931,11 @@ class MLRModel():
         x_dummy = np.ones((1, self.features.size), dtype=self._cfg['dtype'])
         try:
             self._clf.predict(x_dummy)
-        except NotFittedError:
+        except NotFittedError as exc:
             raise NotFittedError(
                 f"{text} not possible, MLR model {self._CLF_TYPE} is not "
-                f"fitted yet, call fit(), grid_search_cv() or rfecv() first")
+                f"fitted yet, call fit(), grid_search_cv() or rfecv() "
+                f"first") from exc
 
     def _estimate_mlr_model_error(self, target_length, strategy):
         """Estimate squared error of MLR model (using CV or test data)."""
@@ -2330,11 +2332,11 @@ class MLRModel():
         for coord_name in self._cfg.get('coords_as_features', []):
             try:
                 coord = ref_cube.coord(coord_name)
-            except iris.exceptions.CoordinateNotFoundError:
+            except iris.exceptions.CoordinateNotFoundError as exc:
                 raise iris.exceptions.CoordinateNotFoundError(
                     f"Coordinate '{coord_name}' given in 'coords_as_features' "
                     f"not found in '{var_type}' data for prediction "
-                    f"'{pred_name_str}'")
+                    f"'{pred_name_str}'") from exc
             units[coord_name] = coord.units
             types[coord_name] = 'coordinate'
 
@@ -2890,8 +2892,7 @@ class MLRModel():
         y_train = self.get_y_array('train', impute_nans=True)
         verbosity = self._get_verbosity_parameters(LimeTabularExplainer,
                                                    boolean=True)
-        for param in verbosity:
-            verbosity[param] = False
+        verbosity = {param: False for param in verbosity}
         categorical_features_idx = [
             int(np.where(self.features == tag)[0][0])
             for tag in self.categorical_features
@@ -3019,8 +3020,8 @@ class MLRModel():
         if pred_type is None:
             attributes['var_type'] = 'prediction_output'
         elif isinstance(pred_type, int):
-            var_name += '_{:d}'.format(pred_type)
-            long_name += ' {:d}'.format(pred_type)
+            var_name += f'_{pred_type:d}'
+            long_name += f' {pred_type:d}'
             logger.warning("Got unknown prediction type with index %i",
                            pred_type)
             attributes['var_type'] = 'prediction_output_misc'
@@ -3364,10 +3365,10 @@ class MLRModel():
                      new_units)
         try:
             cube.convert_units(new_units)
-        except ValueError:
+        except ValueError as exc:
             raise ValueError(
                 f"Cannot convert units{msg} from '{cube.units}' to "
-                f"'{new_units}'")
+                f"'{new_units}'") from exc
 
     @staticmethod
     def _convert_units_in_metadata(datasets):
@@ -3379,10 +3380,11 @@ class MLRModel():
             units_to = Unit(dataset['convert_units_to'])
             try:
                 units_from.convert(0.0, units_to)
-            except ValueError:
+            except ValueError as exc:
                 raise ValueError(
                     f"Cannot convert units of {dataset['var_type']} "
-                    f"'{dataset['tag']}' from '{units_from}' to '{units_to}'")
+                    f"'{dataset['tag']}' from '{units_from}' to "
+                    f"'{units_to}'") from exc
             dataset['units'] = dataset['convert_units_to']
 
     @staticmethod
@@ -3411,10 +3413,10 @@ class MLRModel():
             return 0.0
         try:
             coord = ref_cube.coord(tag)
-        except iris.exceptions.CoordinateNotFoundError:
+        except iris.exceptions.CoordinateNotFoundError as exc:
             raise iris.exceptions.CoordinateNotFoundError(
                 f"Coordinate '{tag}' given in 'coords_as_features' not found "
-                f"in reference cube for '{var_type}'{msg}")
+                f"in reference cube for '{var_type}'{msg}") from exc
         coord_array = np.ma.filled(coord.points, np.nan)
         coord_dims = ref_cube.coord_dims(coord)
         if coord_dims == ():
