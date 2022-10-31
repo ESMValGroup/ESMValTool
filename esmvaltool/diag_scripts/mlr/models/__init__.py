@@ -1037,22 +1037,32 @@ class MLRModel():
             filename = 'partial_dependece_{feature}'
 
         # Plot for every feature
+        # Note: Ignore warnings about missing feature names here because they
+        # are not used.
         x_train = self.get_x_array('train', impute_nans=True)
         verbosity = self._get_verbosity_parameters(
             PartialDependenceDisplay.from_estimator
         )
         for feature_name in self.features:
             logger.debug("Plotting partial dependence of '%s'", feature_name)
-            display = PartialDependenceDisplay.from_estimator(
-                self._clf,
-                x_train,
-                features=[feature_name],
-                feature_names=self.features,
-                method='brute',
-                line_kw={'color': 'b'},
-                random_state=self.random_state,
-                **verbosity,
-            )
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    'ignore',
+                    message=('X does not have valid feature names, but '
+                             'SimpleImputer was fitted with feature names'),
+                    category=UserWarning,
+                    module='sklearn',
+                )
+                display = PartialDependenceDisplay.from_estimator(
+                    self._clf,
+                    x_train,
+                    features=[feature_name],
+                    feature_names=self.features,
+                    method='brute',
+                    line_kw={'color': 'b'},
+                    random_state=self.random_state,
+                    **verbosity,
+                )
             title = (f"Partial dependence of {self.label} on {feature_name} "
                      f"for MLR model {self._cfg['mlr_model_name']}")
             plt.title(title)
