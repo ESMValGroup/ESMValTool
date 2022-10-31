@@ -176,10 +176,10 @@ def _convert_units(cfg, cube):
                      units_to)
         try:
             cube.convert_units(units_to)
-        except ValueError:
+        except ValueError as exc:
             raise ValueError(
                 f"Cannot convert units of cube {cube.summary(shorten=True)} "
-                f"from '{cube.units}' to '{units_to}'")
+                f"from '{cube.units}' to '{units_to}'") from exc
 
 
 def _collapse_covariance_cube(cfg, cov_cube, ref_cube):
@@ -304,7 +304,7 @@ def _estim_cov_identical_shape(squared_error_cube, cov_est_cube, weights):
     error_dim0 = np.ma.sqrt(np.ma.sum(cov_dim0, axis=(1, 2)))
     error_dim1 = np.ma.sqrt(np.ma.sum(cov_dim1, axis=(1, 2)))
 
-    # Collaps further (all weights are already included in first step)
+    # Collapse further (all weights are already included in first step)
     cov_order_0 = pearson_dim0 * np.ma.outer(error_dim0, error_dim0)
     cov_order_1 = pearson_dim1 * np.ma.outer(error_dim1, error_dim1)
     error_order_0 = np.ma.sqrt(np.ma.sum(cov_order_0))
@@ -567,7 +567,7 @@ def check_cfg(cfg):
     """Check options of configuration and catch errors."""
     for operation in ('sum', 'mean'):
         if operation in cfg:
-            cfg[operation] = list(set(cfg[operation]))
+            cfg[operation] = sorted(list(set(cfg[operation])))
     for coord in cfg.get('sum', []):
         if coord in cfg.get('mean', []):
             raise ValueError(f"Coordinate '{coord}' given in 'sum' and 'mean'")
