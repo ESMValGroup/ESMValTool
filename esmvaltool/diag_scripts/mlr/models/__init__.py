@@ -3361,9 +3361,10 @@ class MLRModel():
         if 'random_state' in all_params:
             if 'random_state' in parameters:
                 logger.warning(
-                    "Parameter 'random_state' is ignored for '%s', use the "
+                    "Parameter 'random_state=%s' is ignored for '%s', use the "
                     "'random_state' option to initialize the MLRModel class "
                     "instead",
+                    parameters['random_state'],
                     self._CLF_TYPE,
                 )
             parameters['random_state'] = self.random_state
