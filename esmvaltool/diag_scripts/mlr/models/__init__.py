@@ -246,12 +246,14 @@ output_file_type: str (default: 'png')
 parameters: dict
     Parameters used for the whole pipeline. Have to be given for each step of
     the pipeline separated by two underscores, i.e. ``s__p`` is the parameter
-    ``p`` for step ``s``.
+    ``p`` for step ``s``. ``random_state`` parameters are explicitly allowed
+    here (in contrast to ``parameters_final_regressor``).
 parameters_final_regressor: dict
     Parameters used for the **final** regressor. If these parameters are
     updated using the function :meth:`update_parameters`, the new names have to
     be given for each step of the pipeline separated by two underscores, i.e.
-    ``s__p`` is the parameter ``p`` for step ``s``.
+    ``s__p`` is the parameter ``p`` for step ``s``.  Note: to pass an argument
+    for ``random_state``, use the option ``random_state`` of this class.
 pca: bool (default: False)
     Preprocess numerical input features using PCA. Parameters for this pipeline
     step can be given via the ``parameters`` argument.
@@ -259,6 +261,13 @@ plot_dir: str (default: ~/plots)
     Root directory to save plots.
 plot_units: dict
     Replace specific units (keys) with other text (values) in plots.
+random_state: int or None (default: None)
+    Random seed for :class:`numpy.random.RandomState` that is used by all
+    functionalities of this class that require randomness (e.g., probabilistic
+    ML algorithms like Gradient Boosting Regression models, random train test
+    splits, etc.).  If ``None``, use a random seed. Use an :obj:`int` to get
+    reproducible results. See `<https://scikit-learn.org/stable/
+    common_pitfalls.html#controlling-randomness>`__ for more details.
 savefig_kwargs: dict
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict
@@ -306,7 +315,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.decomposition import PCA
 from sklearn.exceptions import NotFittedError
 from sklearn.impute import SimpleImputer
-from sklearn.inspection import plot_partial_dependence
+from sklearn.inspection import PartialDependenceDisplay
 from sklearn.model_selection import (
     GridSearchCV,
     LeaveOneGroupOut,
@@ -427,6 +436,9 @@ class MLRModel():
 
         # Set default settings
         self._set_default_settings()
+
+        # Random state
+        self._random_state = np.random.RandomState(self._cfg['random_state'])
 
         # Seaborn
         sns.set(**self._cfg.get('seaborn_settings', {}))
@@ -562,6 +574,11 @@ class MLRModel():
     def parameters(self):
         """dict: Parameters of the complete MLR model pipeline."""
         return self._parameters
+
+    @property
+    def random_state(self):
+        """numpy.random.RandomState: Random state instance."""
+        return self._random_state
 
     def efecv(self, **kwargs):
         """Perform exhaustive feature elimination using cross-validation.
@@ -1016,16 +1033,19 @@ class MLRModel():
 
         # Plot for every feature
         x_train = self.get_x_array('train', impute_nans=True)
-        verbosity = self._get_verbosity_parameters(plot_partial_dependence)
+        verbosity = self._get_verbosity_parameters(
+            PartialDependenceDisplay.from_estimator
+        )
         for feature_name in self.features:
             logger.debug("Plotting partial dependence of '%s'", feature_name)
-            display = plot_partial_dependence(
+            display = PartialDependenceDisplay.from_estimator(
                 self._clf,
                 x_train,
                 features=[feature_name],
                 feature_names=self.features,
                 method='brute',
                 line_kw={'color': 'b'},
+                random_state=self.random_state,
                 **verbosity,
             )
             title = (f"Partial dependence of {self.label} on {feature_name} "
@@ -1637,7 +1657,8 @@ class MLRModel():
         # PCA for numerical features
         if self._cfg.get('pca'):
             pca = ColumnTransformer(
-                [('', PCA(), numerical_features_idx)],
+                [('', PCA(random_state=self.random_state),
+                  numerical_features_idx)],
                 remainder='passthrough',
             )
             steps.append(('pca', pca))
@@ -2747,9 +2768,11 @@ class MLRModel():
         # Split train/test data if desired
         test_size = self._cfg['test_size']
         if test_size:
-            (self._data['train'],
-             self._data['test']) = train_test_split(self._data['all'].copy(),
-                                                    test_size=test_size)
+            (self._data['train'], self._data['test']) = train_test_split(
+                self._data['all'].copy(),
+                test_size=test_size,
+                random_state=self.random_state,
+            )
             self._data['train'] = self._data['train'].sort_index()
             self._data['test'] = self._data['test'].sort_index()
             for data_type in ('train', 'test'):
@@ -2770,10 +2793,14 @@ class MLRModel():
     def _load_final_parameters(self):
         """Load parameters for final regressor."""
         parameters = self._cfg.get('parameters_final_regressor', {})
-        logger.debug("Using parameter(s) for final regressor: %s", parameters)
+
+        # Update parameters
+        self._update_random_state_parameter(self._CLF_TYPE, parameters)
         verbosity_params = self._get_verbosity_parameters(self._CLF_TYPE)
         for (param, verbosity) in verbosity_params.items():
             parameters.setdefault(param, verbosity)
+
+        logger.debug("Using parameter(s) for final regressor: %s", parameters)
         return parameters
 
     def _load_input_datasets(self, input_datasets):
@@ -3200,6 +3227,7 @@ class MLRModel():
         self._cfg.setdefault('plot_dir',
                              os.path.expanduser(os.path.join('~', 'plots')))
         self._cfg.setdefault('plot_units', {})
+        self._cfg.setdefault('random_state', None)
         self._cfg.setdefault('savefig_kwargs', {
             'bbox_inches': 'tight',
             'dpi': 300,
@@ -3279,6 +3307,28 @@ class MLRModel():
             break
 
         return new_fit_kwargs
+
+    def _update_random_state_parameter(self, function, parameters):
+        """Update ``random_state`` parameter if necessary."""
+        all_params = (
+            getfullargspec(function).args +
+            getfullargspec(function).kwonlyargs
+        )
+        if 'random_state' in all_params:
+            if 'random_state' in parameters:
+                logger.warning(
+                    "Parameter 'random_state' is ignored for '%s', use the "
+                    "'random_state' option to initialize the MLRModel class "
+                    "instead",
+                    self._CLF_TYPE,
+                )
+            parameters['random_state'] = self.random_state
+            logger.debug(
+                "Updated 'random_state' parameter of '%s' to '%s'",
+                self._CLF_TYPE,
+                self.random_state,
+            )
+        return parameters
 
     def _write_plot_provenance(self, cube, plot_path, **additional_info):
         """Write provenance information for plots."""
