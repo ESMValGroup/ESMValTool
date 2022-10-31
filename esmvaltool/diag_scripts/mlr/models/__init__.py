@@ -296,6 +296,7 @@ work_dir: str (default: ~/work)
 import importlib
 import logging
 import os
+import warnings
 from copy import deepcopy
 from inspect import getfullargspec
 from pprint import pformat
@@ -491,7 +492,7 @@ class MLRModel():
     @property
     def features_after_preprocessing(self):
         """numpy.ndarray: Features of the input data after preprocessing."""
-        x_train = self.get_x_array('train')
+        x_train = self.data['train'].x
         y_train = self.get_y_array('train')
         try:
             self._check_fit_status('Calculating features after preprocessing')
@@ -972,10 +973,12 @@ class MLRModel():
                 **self._get_plot_kwargs(data_type, plot_type='scatter'))
 
         # Plot MLR model
-        x_lin = np.linspace(self.data['all'].x[feature].values.min(),
-                            self.data['all'].x[feature].values.max(),
-                            n_points)
-        y_pred = self._clf.predict(x_lin.reshape(-1, 1))
+        x_lin = pd.DataFrame.from_dict(
+            {feature: np.linspace(self.data['all'].x[feature].values.min(),
+                                  self.data['all'].x[feature].values.max(),
+                                  n_points)}
+        )
+        y_pred = self._clf.predict(x_lin)
         axes.plot(x_lin, y_pred, color='k', linewidth=2,
                   label=self._cfg['mlr_model_name'])
 
@@ -1928,7 +1931,10 @@ class MLRModel():
 
     def _check_fit_status(self, text):
         """Check if MLR model is fitted and raise exception otherwise."""
-        x_dummy = np.ones((1, self.features.size), dtype=self._cfg['dtype'])
+        x_dummy = pd.DataFrame(
+            np.ones((1, self.features.size), dtype=self._cfg['dtype']),
+            columns=self.features,
+        )
         try:
             self._clf.predict(x_dummy)
         except NotFittedError as exc:
@@ -2377,26 +2383,45 @@ class MLRModel():
     def _get_lime_feature_importance(self, x_pred):
         """Get most important feature given by LIME."""
         logger.info(
-            "Calculating global feature importance using LIME (this may take "
+            "Calculating local feature importance using LIME (this may take "
             "a while...)")
         x_pred = self._impute_nans(x_pred)
 
         # Most important feature for single input
         def _most_important_feature(x_single_pred, explainer, predict_fn):
-            """Get most important feature for single input."""
-            explanation = explainer.explain_instance(x_single_pred, predict_fn)
+            """Get most important feature for single input.
+
+            Note
+            ----
+            Ignore warnings about missing feature names here because they are
+            not used.
+
+            """
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    'ignore',
+                    message=('X does not have valid feature names, but '
+                             'SimpleImputer was fitted with feature names'),
+                    category=UserWarning,
+                    module='sklearn',
+                )
+                explanation = explainer.explain_instance(x_single_pred,
+                                                         predict_fn)
             local_exp = explanation.local_exp[1]
             sorted_exp = sorted(local_exp, key=lambda elem: elem[0])
-            norm = sum([abs(elem[1]) for elem in sorted_exp])
+            norm = sum(abs(elem[1]) for elem in sorted_exp)
             return [abs(elem[1]) / norm for elem in sorted_exp]
 
         # Apply on whole input (using multiple processes)
         parallel = Parallel(n_jobs=self._cfg['n_jobs'])
         lime_feature_importance = parallel(
-            [delayed(_most_important_feature)(x,
-                                              explainer=self._lime_explainer,
-                                              predict_fn=self._clf.predict)
-             for x in x_pred.values]
+            [
+                delayed(_most_important_feature)(
+                    x,
+                    explainer=self._lime_explainer,
+                    predict_fn=self._clf.predict,
+                ) for x in x_pred.values
+            ]
         )
         lime_feature_importance = np.array(lime_feature_importance,
                                            dtype=self._cfg['dtype'])
@@ -2514,9 +2539,9 @@ class MLRModel():
 
     def _get_prediction_dtype(self):
         """Get ``dtype`` of the output of final regressor's ``predict()``."""
-        x_data = self.get_x_array('train')[0].reshape(1, -1)
+        x_data = self.data['train'].x.iloc[:1]
         y_pred = self._clf.predict(x_data)
-        return y_pred.dtype
+        return y_pred.values.dtype
 
     def _get_prediction_properties(self):
         """Get important properties of prediction input."""
@@ -2691,17 +2716,17 @@ class MLRModel():
             if 'x' in data_frame.columns:
                 if support is not None:
                     data_frame.x.values[:, support] = transform(
-                        data_frame.x.values[:, support])
+                        data_frame.x.iloc[:, support])
                     data_frame = data_frame.fillna(data_frame.mean())
                 else:
-                    data_frame.x.values[:] = transform(data_frame.x.values)
+                    data_frame.x.values[:] = transform(data_frame.x)
             else:
                 if support is not None:
                     data_frame.values[:, support] = transform(
-                        data_frame.values[:, support])
+                        data_frame.iloc[:, support])
                     data_frame = data_frame.fillna(data_frame.mean())
                 else:
-                    data_frame.values[:] = transform(data_frame.values)
+                    data_frame.values[:] = transform(data_frame)
         return data_frame
 
     def _is_ready_for_plotting(self):
@@ -3097,8 +3122,23 @@ class MLRModel():
         # Propagated error for single input
         def _propagated_error(x_single_pred, x_single_err, explainer,
                               predict_fn, features, categorical_features):
-            """Get propagated prediction input error for single input."""
-            exp = explainer.explain_instance(x_single_pred, predict_fn)
+            """Get propagated prediction input error for single input.
+
+            Note
+            ----
+            Ignore warnings about missing feature names here because they are
+            not used.
+
+            """
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    'ignore',
+                    message=('X does not have valid feature names, but '
+                             'SimpleImputer was fitted with feature names'),
+                    category=UserWarning,
+                    module='sklearn',
+                )
+                exp = explainer.explain_instance(x_single_pred, predict_fn)
             x_single_err = np.nan_to_num(x_single_err)
             x_err_scaled = x_single_err / explainer.scaler.scale_
             squared_error = 0.0
