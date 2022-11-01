@@ -124,11 +124,11 @@ jobs:
             mkdir /logs
             conda activate esmvaltool
             pip install .[test] > /logs/install.txt 2>&1
+            # Update/install Julia dependencies
+            esmvaltool install Julia > /logs/install_julia.txt 2>&1
             # Run flake8 and pytest
             flake8 -j 4
             pytest -n 4
-            # Update/install Julia dependencies
-            esmvaltool install Julia > /logs/install_julia.txt 2>&1
             # Remove source to test installed software
             rm -r esmvaltool
       - test_and_report
