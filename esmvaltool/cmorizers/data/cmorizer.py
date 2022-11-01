@@ -14,9 +14,9 @@ from pathlib import Path
 
 import esmvalcore
 import yaml
-from esmvalcore._config import configure_logging
 from esmvalcore._task import write_ncl_settings
-from esmvalcore.experimental import CFG
+from esmvalcore.config import CFG
+from esmvalcore.config._logging import configure_logging
 
 from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
