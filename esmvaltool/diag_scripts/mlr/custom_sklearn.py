@@ -77,7 +77,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.utils import check_array, check_X_y, indexable, safe_sqr
 from sklearn.utils.fixes import np_version, parse_version
-from sklearn.utils.metaestimators import if_delegate_has_method
+from sklearn.utils.metaestimators import available_if
 from sklearn.utils.validation import check_is_fitted
 
 from esmvaltool.diag_scripts import mlr
@@ -107,6 +107,20 @@ _DEFAULT_TAGS = {
 }
 
 
+def _estimator_has(attr):
+    """Check if we can delegate a method to the underlying estimator.
+
+    First, we check the first fitted estimator if available, otherwise we
+    check the unfitted estimator.
+
+    """
+    return lambda self: (
+        hasattr(self.estimator_, attr)
+        if hasattr(self, "estimator_")
+        else hasattr(self.estimator, attr)
+    )
+
+
 def _determine_key_type(key, accept_slice=True):
     """Determine the data type of key."""
     err_msg = ("No valid specification of the columns. Only a scalar, list or "
@@ -122,8 +136,8 @@ def _determine_key_type(key, accept_slice=True):
     if isinstance(key, tuple(dtype_to_str.keys())):
         try:
             return dtype_to_str[type(key)]
-        except KeyError:
-            raise ValueError(err_msg)
+        except KeyError as exc:
+            raise ValueError(err_msg) from exc
     if isinstance(key, slice):
         if not accept_slice:
             raise TypeError(
@@ -151,8 +165,8 @@ def _determine_key_type(key, accept_slice=True):
     if hasattr(key, 'dtype'):
         try:
             return array_dtype_to_str[key.dtype.kind]
-        except KeyError:
-            raise ValueError(err_msg)
+        except KeyError as exc:
+            raise ValueError(err_msg) from exc
     raise ValueError(err_msg)
 
 
@@ -197,8 +211,8 @@ def _safe_indexing(x_data, indices, *_, axis=0):
 
     if axis not in (0, 1):
         raise ValueError(
-            "'axis' should be either 0 (to index rows) or 1 (to index "
-            "column). Got {} instead.".format(axis)
+            f"'axis' should be either 0 (to index rows) or 1 (to index "
+            f"column). Got {axis} instead."
         )
 
     indices_dtype = _determine_key_type(indices)
@@ -210,10 +224,9 @@ def _safe_indexing(x_data, indices, *_, axis=0):
 
     if axis == 1 and x_data.ndim != 2:
         raise ValueError(
-            "'x_data' should be a 2D NumPy array, 2D sparse matrix or pandas "
-            "dataframe when indexing the columns (i.e. 'axis=1'). "
-            "Got {} instead with {} dimension(s).".format(type(x_data),
-                                                          x_data.ndim)
+            f"'x_data' should be a 2D NumPy array, 2D sparse matrix or pandas "
+            f"dataframe when indexing the columns (i.e. 'axis=1'). "
+            f"Got {type(x_data)} instead with {x_data.ndim} dimension(s)."
         )
 
     if axis == 1 and indices_dtype == 'str' and not hasattr(x_data, 'loc'):
@@ -249,7 +262,7 @@ def _make_indexable(iterable):
 
 def _num_samples(x_data):
     """Return number of samples in array-like x_data."""
-    message = 'Expected sequence or array-like, got %s' % type(x_data)
+    message = f"Expected sequence or array-like, got {type(x_data)}"
     if hasattr(x_data, 'fit') and callable(x_data.fit):
         # Don't get num_samples from an ensembles length!
         raise TypeError(message)
@@ -262,8 +275,10 @@ def _num_samples(x_data):
 
     if hasattr(x_data, 'shape') and x_data.shape is not None:
         if len(x_data.shape) == 0:
-            raise TypeError("Singleton array %r cannot be considered a valid "
-                            "collection." % x_data)
+            raise TypeError(
+                f"Singleton array {x_data!r} cannot be considered a valid "
+                f"collection."
+            )
         # Check that shape is returning an integer or default to len
         # Dask dataframes may not return numeric shape[0] value
         if isinstance(x_data.shape[0], numbers.Integral):
@@ -391,19 +406,21 @@ def _fit_and_score_weighted(estimator, x_data, y_data, scorer, train, test,
             estimator.fit(x_train, **fit_params)
         else:
             estimator.fit(x_train, y_train, **fit_params)
-    except Exception:
+    except Exception as exc:
         if error_score == 'raise':
             raise
         if isinstance(error_score, numbers.Number):
             test_score = error_score
-            warnings.warn("Estimator fit failed. The score on this train-test "
-                          "partition for these parameters will be set to %f. "
-                          "Details: \n%s" % (error_score, format_exc()),
-                          FitFailedWarning)
+            warnings.warn(
+                f"Estimator fit failed. The score on this train-test "
+                f"partition for these parameters will be set to "
+                f"{error_score:f}. Details: \n{format_exc()}",
+                FitFailedWarning)
         else:
-            raise ValueError("error_score must be the string 'raise' or a "
-                             "numeric value. (Hint: if using 'raise', please "
-                             "make sure that it has been spelled correctly.)")
+            raise ValueError(
+                "error_score must be the string 'raise' or a "
+                "numeric value. (Hint: if using 'raise', please "
+                "make sure that it has been spelled correctly.)") from exc
     else:
         test_score = _score_weighted(estimator, x_test, y_test, scorer,
                                      sample_weights=sample_weights_test)
@@ -424,10 +441,10 @@ def _get_fit_parameters(fit_kwargs, steps, cls):
                 f"of the parameter, got '{param_name}'")
         try:
             params[param_split[0]][param_split[1]] = param_val
-        except KeyError:
+        except KeyError as exc:
             raise ValueError(
                 f"Expected one of {step_names} for step of fit parameter, got "
-                f"'{param_split[0]}' for parameter '{param_name}'")
+                f"'{param_split[0]}' for parameter '{param_name}'") from exc
     return params
 
 
@@ -558,10 +575,10 @@ def get_rfecv_transformer(rfecv_estimator):
     """Get transformer step of RFECV estimator."""
     try:
         check_is_fitted(rfecv_estimator)
-    except NotFittedError:
+    except NotFittedError as exc:
         raise NotFittedError(
             "RFECV instance used to initialize FeatureSelectionTransformer "
-            "must be fitted")
+            "must be fitted") from exc
     transformer = FeatureSelectionTransformer(
         grid_scores=rfecv_estimator.grid_scores_,
         n_features=rfecv_estimator.n_features_,
@@ -724,7 +741,7 @@ class AdvancedRFE(RFE):
             # Rank the remaining features
             estimator = clone(self.estimator)
             if self.verbose > 0:
-                print("Fitting estimator with %d features." % np.sum(support_))
+                print(f"Fitting estimator with {np.sum(support_):d} features.")
 
             _update_transformers_param(estimator, support_)
             estimator.fit(x_data[:, features], y_data, **fit_kwargs)
@@ -785,7 +802,7 @@ class AdvancedRFE(RFE):
 
         return self
 
-    @if_delegate_has_method(delegate='estimator')
+    @available_if(_estimator_has("predict"))
     def predict(self, x_data, **predict_kwargs):
         """Expand :meth:`predict()` to accept kwargs."""
         check_is_fitted(self)
