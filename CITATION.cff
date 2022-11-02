@@ -346,11 +346,11 @@ authors:
     given-names: Jerry
 
 cff-version: 1.2.0
-date-released: 2022-07-25
+date-released: 2022-10-28
 doi: "10.5281/zenodo.3401363"
 license: "Apache-2.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/ESMValGroup/ESMValTool/"
 title: ESMValTool
-version: "v2.6.0"
+version: "v2.7.0"
 ...
