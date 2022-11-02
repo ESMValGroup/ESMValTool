@@ -123,6 +123,7 @@ begin
   set_default_att(diag_script_info, "fig939_project_MMM", "CMIP5")
   set_default_att(diag_script_info, "fig939_experiment_MMM", "historical")
   set_default_att(diag_script_info, "fig939_mip_MMM", "Amon")
+  set_default_att(diag_script_info, "fig939_colors_MMM", "red")
   set_default_att(diag_script_info, "fig939_names_MMM", \
                   diag_script_info@fig939_project_MMM)
   set_default_att(diag_script_info, "fig939_season", "DJF")

@@ -81,10 +81,10 @@ datasets:
   #    start_year: 1986, end_year: 2005}
   # - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
   #    start_year: 1986, end_year: 2005}
-  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1986, end_year: 2005}
-  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1986, end_year: 2005}
+  # - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  # - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
   # IPSL-CM5B-LR Seems to have issues with the calendar.
   # Sometimes fails with invalid hour = 81 in regional_downscaling/Figure9.39.ncl.
   # - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
