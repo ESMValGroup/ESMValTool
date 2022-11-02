@@ -262,7 +262,7 @@ def _make_indexable(iterable):
 
 def _num_samples(x_data):
     """Return number of samples in array-like x_data."""
-    message = f"Expected sequence or array-like, got {x_data}"
+    message = f"Expected sequence or array-like, got {type(x_data)}"
     if hasattr(x_data, 'fit') and callable(x_data.fit):
         # Don't get num_samples from an ensembles length!
         raise TypeError(message)
