@@ -629,15 +629,18 @@ begin
     plot_sabp@$unique_string("errbar")$ = \
       gsn_add_polyline(wks, plot_sabp, (/imod, imod/), \
                        (/sa_Rates_sort(imod, 0) + sa_Rates_sort(imod, 1),  \
-                        sa_Rates_sort(imod, 0) - sa_Rates_sort(imod, 1)/), lres)
+                        sa_Rates_sort(imod, 0) - sa_Rates_sort(imod, 1)/), \
+                       lres)
     plot_sabp@$unique_string("errbar")$ = \
       gsn_add_polyline(wks, plot_sabp, (/imod + err_wdth, imod - err_wdth/), \
                        (/sa_Rates_sort(imod, 0) + sa_Rates_sort(imod, 1), \
-                        sa_Rates_sort(imod, 0) + sa_Rates_sort(imod, 1)/), lres)
+                        sa_Rates_sort(imod, 0) + sa_Rates_sort(imod, 1)/), \
+                       lres)
     plot_sabp@$unique_string("errbar")$ = \
       gsn_add_polyline(wks, plot_sabp, (/imod + err_wdth, imod - err_wdth/), \
                        (/sa_Rates_sort(imod, 0) - sa_Rates_sort(imod, 1), \
-                        sa_Rates_sort(imod, 0) - sa_Rates_sort(imod, 1)/), lres)
+                        sa_Rates_sort(imod, 0) - sa_Rates_sort(imod, 1)/), \
+                       lres)
   end do
 
   draw(plot_sabp)
