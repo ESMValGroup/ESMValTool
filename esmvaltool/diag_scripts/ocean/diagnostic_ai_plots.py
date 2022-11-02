@@ -60,9 +60,10 @@ import iris
 import iris.quickplot as qplt
 
 import matplotlib
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-
+from math import log10, floor
 import numpy as np
 
 import cartopy
@@ -98,6 +99,25 @@ ipcc_colours_dark={
     'ssp370': 'darkorange',
     'ssp585': 'red', } #'darkred',}
 
+# official 
+#colours2_rgb = [(23, 60, 102), (0, 173, 207), (247, 148, 32), (231, 29, 37), (149, 27, 30)]
+#colours2_rgb = [(a/256., b/256. ,c/256.) for (a, b, c) in colours2_rgb]
+#f = 0.75
+#coloursscatter_rgb = [(f*a, f*b, f*c) for (a, b, c) in colours2_rgb] # darker version
+
+ipcc_colours={
+#    'historical': (23, 60, 102), # a dark navy
+#    'hist': (23, 60, 102), # a dark navy
+    'historical': (35, 87, 145), # new darkish blue
+    'hist': (35, 87, 145), # new darkish blue
+    'ssp126': (0, 173, 207), # light sky 
+    'ssp245': (247, 148, 32), # orange
+    'ssp370': (231, 29, 37), # red
+    'ssp585': (149, 27, 30), } # dark maroon red
+ipcc_colours = {k: (v1/256., v2/256.,v3/256.) for k, (v1,v2,v3) in ipcc_colours.items()}
+color_factor = 0.75
+ipcc_colours_dark = {k: (color_factor*v1, color_factor*v2, color_factor* v3) for k, (v1,v2,v3) in ipcc_colours.items()}
+
 
 
 long_name_dict = {
@@ -116,14 +136,13 @@ long_name_dict = {
 
 #odels_to_skip = ['GISS-E2-1-G', ] #SST is strangely high and there are very few SSP ensembles.
 models_to_skip = {'all': ['GISS-E2-1-G', ],
-    'chl': ['MPI-ESM1-2-LR', ],
-	}
+    'chl': ['MPI-ESM1-2-LR', ],}
 # used to
 hard_wired_obs = {
     ('so', 'timeseries', 'min'): {1980:35.8812, 2010:35.8812}, # time range assumed from https://www.ncei.noaa.gov/sites/default/files/2020-04/woa18_vol2.pdf page 1
     ('so', 'timeseries', 'max'): {1980:36.50431, 2010:36.50431},
-    ('so', 'clim', 'min'): {1980:35.8812, 2010:35.8812},
-    ('so', 'clim', 'max'): {1980:36.50431, 2010:36.50431},
+#    ('so', 'clim', 'min'): {1980:35.8812, 2010:35.8812},
+#    ('so', 'clim', 'max'): {1980:36.50431, 2010:36.50431},
 
     ('ph', 'timeseries', 'min'): {1973:8.04368, 2013:8.04368}, # doi:10.5194/essd-8-325-2016
     ('ph', 'timeseries', 'max'): {1973:8.070894, 2013:8.070894},
@@ -157,8 +176,8 @@ hard_wired_obs = {
 
 
 #for key in ['sos', 'sal','psu']:
-for key, a,b in itertools.product(['sos', 'sal','psu'], ['timeseries', 'clim'],['min', 'max']):
-    hard_wired_obs[key, a, b] = hard_wired_obs['so', a, b]
+#for key, a,b in itertools.product(['sos', 'sal','psu'], ['timeseries', 'clim'],['min', 'max']):
+#    hard_wired_obs[key, a, b] = hard_wired_obs['so', a, b]
 
 for a,b in itertools.product(['timeseries', ],['min', 'max']): #'clim' #:
     hard_wired_obs['mlotst', a, b] = hard_wired_obs['mld', a, b]
@@ -185,6 +204,14 @@ def fix_chl(cube):
 
     print('post fix_chl:',cube.data.min(), cube.data.max())
     return cube
+
+
+def round_sig(x, sig=2):
+    """
+    round to x significant figures.
+    from https://stackoverflow.com/a/3413529
+    """
+    return round(x, sig-int(floor(log10(abs(x))))-1)
 
 
 def timeplot(cube, **kwargs):
@@ -620,9 +647,9 @@ def multi_model_time_series(
         header.append('\n')
         line.append('\n')
         header = ', '.join(header)
-        line   = ', '.join(line  )
-
-        csv_str = ''.join([header, line])
+        line1 = ', '.join(line  )
+        line2 = ' & '.join(line).replace('\pm', '$\pm$').replace('\n', '\\\\ \n')
+        csv_str = ''.join([header, line1, line2])
         csv_path  = diagtools.folder(cfg['work_dir']+'/model_table')
         csv_path += 'diff_table_'+short_name+'.csv'
         mp_fn = open(csv_path, 'w')
@@ -630,7 +657,6 @@ def multi_model_time_series(
         mp_fn.close()
         print('csv_str:',csv_str)
         print('saved to path:', csv_path)
-
 
         #anomaly table:
         # want a table that includes:
@@ -822,10 +848,12 @@ def multi_model_time_series(
         line2.append('\n')
 
         header = ', '.join(header)
-        line   = ', '.join(line)
+        line1   = ', '.join(line)
+        line1ltc   = ' & '.join(line).replace('\n', '\\\\ \n')
+
         line2  = ', '.join(line2)
 
-        csv_str = ''.join([header, line, line2])
+        csv_str = ''.join([header, line1, line1ltc, line2])
         csv_path  = diagtools.folder(cfg['work_dir']+'/model_table')
         csv_path += 'ensemble_count_table_'+short_name+'.csv'
         mp_fn = open(csv_path, 'w')
@@ -898,7 +926,7 @@ def multi_model_time_series(
 
         if colour_scheme in 'IPCC':
             color = ipcc_colours[scenario_x]
-
+            fill_color = ipcc_colours_dark[scenario_x]
         dat_scen_data = {}
         for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
             if dataset_x!= dataset: continue
@@ -950,7 +978,7 @@ def multi_model_time_series(
                 plt.plot(times, model_mins, ls='-', c=color, lw=2., alpha=alpha)
                 mm_data[(variable_group, short_name, dataset_x, scenario_x, 'ensemble_min_max')] = {t:d for t,d in zip(times, model_mins)}
             else:
-                plt.fill_between(times, model_mins, model_maxs, color= color, ec=None, alpha=alpha)
+                plt.fill_between(times, model_mins, model_maxs, color=fill_color, ec=None, alpha=alpha)
                 mm_data[(variable_group, short_name, dataset_x, scenario_x, 'ensemble_min')] = {t:d for t,d in zip(times, model_mins)}
                 mm_data[(variable_group, short_name, dataset_x, scenario_x, 'ensemble_max')] = {t:d for t,d in zip(times, model_maxs)}
 
@@ -966,7 +994,7 @@ def multi_model_time_series(
             if model_mins == model_maxs:
                 plt.plot(times, model_mins, ls=':', c=color, lw=2.)
             else:
-                plt.fill_between(times, model_mins, model_maxs, color = color, ec=None, alpha=0.3)
+                plt.fill_between(times, model_mins, model_maxs, color = fill_color, ec=None, alpha=0.3)
 
     # global model lines:
     for scenario_x in sorted(scenarios):
@@ -975,6 +1003,7 @@ def multi_model_time_series(
 
         if colour_scheme in 'IPCC':
             color = ipcc_colours[scenario_x]
+            fill_color = ipcc_colours_dark[scenario_x]
 
         global_model_means = {}
         for dataset_x in datasets:
@@ -1013,93 +1042,15 @@ def multi_model_time_series(
                 mm_data[(variable_group, short_name, 'Multimodel', scenario_x, 'minmax')] = {t:d for t,d in zip(times, model_mins)}
 
             else:
-                plt.fill_between(times, model_mins, model_maxs, color= color, ec=None, alpha=0.3)
+                plt.fill_between(times, model_mins, model_maxs, color= fill_color, ec=None, alpha=0.3)
                 mm_data[(variable_group, short_name, 'Multimodel', scenario_x, 'min')] = {t:d for t,d in zip(times, model_mins)}
                 mm_data[(variable_group, short_name, 'Multimodel', scenario_x, 'max')] = {t:d for t,d in zip(times, model_maxs)}
 
-            #assert 0
-        # means = {}
-        # if 'model_means' in plotting or 'global_model_means' in plotting:
-        #     for dataset in sorted(model_data_groups.keys()):
-        #         times = sorted(model_data_groups[dataset].keys())
-        #         mean = [np.mean(model_data_groups[dataset][t]) for t in times]
-        #         for t, m in zip(times, mean):
-        #             means = add_dict_list(means, t, d)
-        #
-        #         print('global_model_means',dataset, times, mean)
-        #         if 'model_means' in plotting:
-        #             plt.plot(times, mean, ls='-', c=color, lw=2., label=dataset)
-        #             plot_details[path] = {
-        #                 'c': color,
-        #                 'ls': '-',
-        #                 'lw': 1.4,
-        #                 'label':dataset}
-        #
-        # if 'global_model_means' in plotting:
-        #     times = sorted(means.keys())
-        #     mean = [np.mean(means[t]) for t in times]
-        #     plt.plot(times, mean, ls='-', c=color, lw=2.)
-        #     print('global_model_means - means:', label, times, mean)
-        #
-        #     plot_details[path] = {
-        #         'c': color,
-        #         'ls': '-',
-        #         'lw': 1.4,
-        #         'label': label,
-        #     }
-        #
-        # if 'means' in plotting:
-        #     times = sorted(data_values.keys())
-        #     mean = [np.mean(data_values[t]) for t in times]
-        #     plt.plot(times, mean, ls='-', c=color, lw=2.)
-        #     plot_details[path] = {
-        #         'c': color,
-        #         'ls': '-',
-        #         'lw': 1.4,
-        #         'label': label,
-        #     }
-        #
-        # if 'medians' in plotting:
-        #     times = sorted(data_values.keys())
-        #     mean = [np.median(data_values[t]) for t in times]
-        #     plt.plot(times, mean, ls='-', c=color, lw=2.)
-        #     plot_details[path] = {
-        #         'c': color,
-        #         'ls': '-',
-        #         'lw': 1.6,
-        #         'label': label,
-        #     }
-        #
-        # if 'range' in plotting:
-        #     times = sorted(data_values.keys())
-        #     mins = [np.min(data_values[t]) for t in times]
-        #     maxs = [np.max(data_values[t]) for t in times]
-        #     plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
-        #
-        # if '5-95' in plotting:
-        #     times = sorted(data_values.keys())
-        #     mins = [np.percentile(data_values[t], 5.) for t in times]
-        #     maxs = [np.percentile(data_values[t], 95.) for t in times]
-        #     plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], ec=None, alpha=0.3)
-
-    #x_lims = ax.get_xlim()
-    y_lims = ax.get_ylim()
-
+    ax.set_xlim(1849., 2101.)
     make_csvs_data = True
     if make_csvs_data :
         write_csv_ts(cfg,metadatas, mm_data, single_model, short_name)
         write_csv_ts(cfg,metadatas, data_values, single_model, short_name)
-        #assert 0
-
-    if hist_time_range:
-        plt.fill_betweenx(y_lims, hist_time_range[0], hist_time_range[1], color= 'k', alpha=0.4, label = 'Historical period')
-
-    if ssp_time_range:
-        plt.fill_betweenx(y_lims, ssp_time_range[0], ssp_time_range[1], color= 'purple', alpha=0.4, label = 'SSP period')
-
-    legd = plt.legend(loc='best')
-    legd.draw_frame(False)
-    legd.get_frame().set_alpha(0.)
 
     plot_obs = True
     if plot_obs:
@@ -1118,6 +1069,19 @@ def multi_model_time_series(
         # clim = sh['clim']
         sh.close()
 
+    y_lims = ax.get_ylim()
+    if hist_time_range:
+        plt.fill_betweenx(y_lims, hist_time_range[0], hist_time_range[1], color= 'k', alpha=0.4, label = 'Historical period')
+    if ssp_time_range:
+        plt.fill_betweenx(y_lims, ssp_time_range[0], ssp_time_range[1], color= 'purple', alpha=0.4, label = 'SSP period')
+
+    if short_name in ['ph', 'o2', 'mld', 'intpp', 'mlotst',]:
+        legd = plt.legend(loc='upper left')
+    else:
+        legd = plt.legend(loc='lower left')
+
+    legd.draw_frame(False)
+    legd.get_frame().set_alpha(0.)
 
     # Add title, legend to plots
     plt.title(title)
@@ -1466,7 +1430,6 @@ def multi_model_clim_figure(
             model = metadatas[fn]['dataset']
             models[model] = True
             short_names[metadatas[fn]['short_name']] = True
-
 
     if len(short_names.keys()) == 0:
         # no data in time series (ie, tos doesn't exist, but thetao does?)
@@ -2390,11 +2353,12 @@ def multi_model_map_figure(
         metadatas,
         maps_fns = {},
         figure_style = 'hist_and_ssp',
-        hist_time_range = [1990., 2000.],
+        hist_time_range = [2000., 2010.],
         ssp_time_range = [2040., 2050.],
         region='midatlantic',
         obs_metadata={},
         obs_filename='',
+        colour_scheme = 'IPCC',
         fig = None,
         ax = None,
         save = False,
@@ -2420,8 +2384,25 @@ def multi_model_map_figure(
         save = True
         fig.set_size_inches(11,5)
 
-    seq_cmap = 'viridis'
-    div_cmap ='BrBG'
+    if colour_scheme in ['standard', 'IPCC']:
+        seq_cmap = 'viridis'
+        div_cmap ='BrBG'
+    elif colour_scheme in ['temp', 'prec', 'wind', 'chem', 'cryo', 'slev', 'misc1', 'misc2', 'misc3', 'IPCC']:
+        if colour_scheme in ['misc1', 'misc2', 'misc3']:
+            key = colour_scheme[:4]
+            num = colour_scheme[-1]
+            rgb_data_seq = np.loadtxt('colormaps/continuous_colormaps_rgb_0-1/'+key+'_seq_'+num+'.txt')
+            seq_cmap = mcolors.LinearSegmentedColormap.from_list('colormap', rgb_data_seq)
+            rgb_data_div = np.loadtxt('colormaps/continuous_colormaps_rgb_0-1/misc_div.txt')
+            div_cmap = mcolors.LinearSegmentedColormap.from_list('colormap', rgb_data_div)
+
+        else: 
+            key = colour_scheme #'temp' # prec #wind #misc #slev  #chem  
+            rgb_data_seq = np.loadtxt('colormaps/continuous_colormaps_rgb_0-1/'+key+'_seq.txt')
+            seq_cmap = mcolors.LinearSegmentedColormap.from_list('colormap', rgb_data_seq)
+            rgb_data_div = np.loadtxt('colormaps/continuous_colormaps_rgb_0-1/'+key+'_div.txt')
+            div_cmap = mcolors.LinearSegmentedColormap.from_list('colormap', rgb_data_div)
+
     # if figure_style=='four_ssp':
     #     subplots = {221: 'ssp126', 222:'ssp245', 223:'ssp370', 224: 'ssp585'}
     #     subplot_style = {221: 'mean', 222: 'mean', 223: 'mean', 224: 'mean'}
@@ -2685,7 +2666,7 @@ def multi_model_map_figure(
     # Create the lin space for maps.
     for style, srange in style_range.items():
         if not len(srange): continue
-        style_range[style] = [np.array(srange).min(), np.array(srange).max()]
+        style_range[style] = [round_sig(np.array(srange).min(),2), round_sig(np.array(srange).max(),2)]
 
         # Symetric around zero:
         if style in ['diff', 'min_diff', 'max_diff']:
@@ -2718,7 +2699,7 @@ def multi_model_map_figure(
             nspaces[sbp_style],
             linewidth=0,
             cmap=cmaps[sbp],
-            extend='both', #,
+            extend='both', # was both
             zmin=style_range[sbp_style][0],
             zmax=style_range[sbp_style][1],
             )
@@ -2730,17 +2711,16 @@ def multi_model_map_figure(
             shared_cmap['ssp'].append(ax0)
             shaped_ims['ssp'].append(qplot)
 
-        if region in ['midatlantic', 'tightmidatlantic']:
-            lat_bnd = 20.
-            lon_bnd = 30.
-            if region == 'tightmidatlantic':
-                lat_bnd = 15.
-                lon_bnd = 25.
-
-            ax0.set_extent([central_longitude-lon_bnd,
-                           central_longitude+lon_bnd,
-                           central_latitude-lat_bnd,
-                           central_latitude+lat_bnd, ])
+#        if region in ['midatlantic', 'tightmidatlantic']:
+#            lat_bnd = 20.
+#            lon_bnd = 30.
+#            if region == 'tightmidatlantic':
+#                lat_bnd = 15.
+#                lon_bnd = 25.
+#            ax0.set_extent([central_longitude-lon_bnd,
+#                           central_longitude+lon_bnd,
+#                           central_latitude-lat_bnd,
+#                           central_latitude+lat_bnd, ])
 
         # Compute the required radius in projection native coordinates:
         #r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
@@ -2768,13 +2748,13 @@ def multi_model_map_figure(
         if region in ['midatlantic', ]:
             plt.text(0.95, 0.9, title,  ha='right', va='center',
                      transform=ax0.transAxes,
-                     color=ipcc_colours_dark[exp],fontweight='bold')
+                     color=ipcc_colours[exp],fontweight='bold')
             #plt.text(0.99, 0.94, title,  ha='right', va='center', transform=ax0.transAxes,color=ipcc_colours[exp],fontweight='bold')
 
         elif region in ['tightmidatlantic', 'verytightMPA',]:
             plt.text(0.95, 1.01, title,  ha='right', va='bottom',
                      transform=ax0.transAxes,
-                     color=ipcc_colours_dark[exp],fontweight='bold')
+                     color=ipcc_colours[exp],fontweight='bold')
 
         else:
             plt.title(title)
@@ -2807,10 +2787,22 @@ def multi_model_map_figure(
             nspaces[sbp_style],
             linewidth=0,
             cmap=cmaps[234],
-            extend='both' , #
+            extend='both' , # was both
             zmin=style_range[sbp_style][0],
             zmax=style_range[sbp_style][1],
             )
+#        if region in ['midatlantic', 'tightmidatlantic']:
+#            lat_bnd = 20.
+#            lon_bnd = 30.
+#            if region == 'tightmidatlantic':
+#                lat_bnd = 15.
+#                lon_bnd = 25.
+#
+#            ax0.set_extent([central_longitude-lon_bnd,
+#                           central_longitude+lon_bnd,
+#                           central_latitude-lat_bnd,
+#                           central_latitude+lat_bnd, ])
+
         print('obs:', obs_cube.data.min(),obs_cube.data.max())
         #plt.gca().coastlines()
         plt.gca().add_feature(cartopy.feature.LAND, zorder=2, facecolor='#D3D3D3')
@@ -2852,7 +2844,7 @@ def multi_model_map_figure(
 
     if save:
         path = diagtools.folder(cfg['plot_dir']+'/Maps_6panes')
-        path += '_'.join(['maps', figure_style, region, time_str, single_model])
+        path += '_'.join(['maps', figure_style, region, time_str, single_model, colour_scheme])
         path += diagtools.get_image_format(cfg)
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
@@ -3014,6 +3006,33 @@ def main(cfg):
     profile_fns = {}
     maps_fns = {}
     models = {'all': True}
+    model_scenarios = {}
+
+    # This should be the only time that it iterates over metadata.items
+    for fn, metadata in metadatas.items():
+        variable_group = metadata['variable_group']
+        dataset = metadata['dataset']
+        short_name = metadata['short_name']
+        if dataset in models_to_skip['all']: continue
+        if dataset in models_to_skip.get(short_name, {}): continue
+        if dataset in models_to_skip:
+            continue
+
+        scenario = metadata['exp']
+        if not model_scenarios.get(dataset, False):
+            model_scenarios[dataset] = {scenario: True}
+        else:
+            model_scenarios[dataset][scenario] = True
+
+
+    models_without_futures = []
+    for model, scenarios in model_scenarios.items():
+        if len(scenarios.keys()) < 2:
+            print(model, 'does not have enough scenarios:', scenarios)
+            models_without_futures.append(model)
+        else:
+            print(model, 'is fine: ', scenarios)
+
     for fn, metadata in metadatas.items():
         #print(os.path.basename(fn),':',metadata['variable_group'])
         variable_group = metadata['variable_group']
@@ -3023,15 +3042,21 @@ def main(cfg):
         if dataset in models_to_skip['all']: continue
         if dataset in models_to_skip.get(short_name, {}): continue
 
-        if metadata['dataset'] in models_to_skip:
+        if dataset in models_to_skip:
             continue
-        models[metadata['dataset']] = True
+
+        if dataset in models_without_futures: 
+            continue
+
+        models[dataset] = True
+
         if variable_group.find('_ts_')>-1:
             time_series_fns = add_dict_list(time_series_fns, variable_group, fn)
         if variable_group.find('_profile_')>-1:
             profile_fns = add_dict_list(profile_fns, variable_group, fn)
         if variable_group.find('_map_')>-1:
             maps_fns = add_dict_list(maps_fns, variable_group, fn)
+
 
 
     #jobs:
@@ -3066,7 +3091,7 @@ def main(cfg):
                      ['model_means', 'Global_range'],
                      ] #'medians', 'all_models', 'range',
         for plotting in plottings:
-            # continue
+            continue
             for single_model in ['all', ]: #'not', 'only', 'all']:
                 multi_model_time_series(
                     cfg,
@@ -3082,7 +3107,7 @@ def main(cfg):
         # Climatology plot
         plottings =  [['OneModelOneVote',],['means', 'OneModelOneVote',], ['OMOC_modelmeans','OneModelOneVote','OMOC_modelranges'],] # ['all_models',],[ 'means',  '5-95'], ]#  ['means',],  ['5-95',], ['all_models', ]]
         for plotting in plottings:
-            #continue
+            continue
             multi_model_clim_figure(
                 cfg,
                 metadatas,
@@ -3093,16 +3118,18 @@ def main(cfg):
                 single_model='all',
             )
         # maps:
-        for single_model in sorted(models.keys()): # ['all', 'only']:
-#            continue
-            for reg in ['tightmidatlantic', 'midatlantic', 'verytightMPA']:
+        for single_model in ['all', ]: #sorted(models.keys()): # ['all', 'only']:
+            continue
+            for reg in ['tightmidatlantic', ]: #'midatlantic', 'verytightMPA']:
+              for cmap in ['slev', ]:#'temp', 'prec', 'wind', 'chem', 'cryo', 'standard', 'slev', 'misc1', 'misc2', 'misc3']:
                 multi_model_map_figure(
                     cfg,
                     metadatas,
                     maps_fns = maps_fns,
                     figure_style = 'hist_and_ssp',
-                    hist_time_range = [1990., 2015.],
-                    ssp_time_range = [2015., 2050.],
+                    hist_time_range = [2000., 2010.],
+                    ssp_time_range = [2040., 2050.],
+                    colour_scheme = cmap,
                     region=reg,
                     single_model=single_model )
             #assert 0
@@ -3110,7 +3137,7 @@ def main(cfg):
         # Profile pair
         plottings =  [['all_models',], ['means_split',], ['5-95_split',], ['means_split', '5-95_split', ],  ]
         for plotting in plottings:
-#            continue
+            continue
             make_multi_model_profiles_plotpair(
                     cfg,
                     metadatas,
@@ -3137,6 +3164,8 @@ def main(cfg):
     for single_model in sorted(models.keys()): # ['all', 'only']:
         if not  do_whole_plot: continue
         if single_model in models_to_skip['all']: continue
+        if single_model in models_without_futures: continue 
+        if single_model != 'all':continue
 
         fig, subplots = do_gridspec(cfg, )
         hist_time_range = [2000., 2010.] #[1990., 2015.]
@@ -3185,6 +3214,22 @@ def main(cfg):
 
             )
 
+        # cmaps: 
+        # 'slev', 
+        # 'temp', 'prec', 'wind', 'chem', 'cryo', 'standard', 'slev', 'misc1', 'misc2', 'misc3']:
+        cmaps = {
+            'tos': 'temp', 'thetao': 'temp', # temperature
+            'sos': 'temp', 'so': 'temp', 
+            'mld': 'slev', 'mlotst': 'slev',
+            'ph': 'temp',
+            'o2' : 'chem',
+            'chl':'prec', 
+            'intpp': 'misc1',
+            'no3': 'chem',
+            'po4': 'chem',
+        }
+           
+
         fig, subplots['maps'] = multi_model_map_figure(
             cfg,
             metadatas,
@@ -3194,6 +3239,7 @@ def main(cfg):
             ssp_time_range = ssp_time_range,
             region='tightmidatlantic', #midatlantic',
             fig = fig,
+            colour_scheme = cmaps.get(short_name, 'temp'),
             ax =  subplots['maps'],
             single_model = single_model,
             )
@@ -3246,62 +3292,14 @@ def main(cfg):
 
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
+#        if single_model == 'all':
         plt.savefig(path.replace('.png', '_300dpi.png'), dpi=300)
         plt.savefig(path.replace('.png', '_300dpi_trans.png'), dpi=300, transparent=True)
         plt.savefig(path.replace('.png', '.pdf'))
         plt.savefig(path.replace('.png', '.svg'))
         plt.close()
 
-    #moving_average_str = cfg.get('moving_average', None)
-    # short_names = {}
-    # metadatas = diagtools.get_input_files(cfg, )
-    # for fn, metadata in metadatas.items():
-    #     short_names[metadata['short_name']] = True
-    #
-    # for short_name in short_names.keys():
-    #     hist_time_ranges = [[1850, 2015], [1850, 1900], [1950, 2000], [1990, 2000], [1990, 2000]]
-    #     ssp_time_ranges  = [[2015, 2100], [2050, 2100], [2050, 2100], [2040, 2050], [2090, 2100]]
-    #     for hist_time_range, ssp_time_range in zip(hist_time_ranges, ssp_time_ranges):
-    #
-    #         for figure_style in ['plot_all_years', 'mean_and_range']:
-    #
-    #             multi_model_clim_figure(
-    #                 cfg,
-    #                 metadatas,
-    #                 short_name,
-    #                 figure_style=figure_style,
-    #                 hist_time_range=hist_time_range,
-    #                 ssp_time_range=ssp_time_range,
-    #             )
-    # return
-    #
-    # moving_average_strs = ['', 'annual', '5 years', '10 years', '20 years']
-    # for moving_average_str in moving_average_strs:
-    #     for index, metadata_filename in enumerate(cfg['input_files']):
-    #         logger.info('metadata filename:\t%s', metadata_filename)
-    #
-    #         metadatas = diagtools.get_input_files(cfg, index=index)
-    #
-    #         #######
-    #         # Multi model time series
-    #         multi_model_time_series(
-    #             cfg,
-    #             metadatas,
-    #
-    #             moving_average_str=moving_average_str,
-    #             colour_scheme = 'IPCC',
-    #         )
-    #         continue
-    #         for filename in sorted(metadatas):
-    #             if metadatas[filename]['frequency'] != 'fx':
-    #                 logger.info('-----------------')
-    #                 logger.info(
-    #                     'model filenames:\t%s',
-    #                     filename,
-    #                 )
-
     logger.info('Success')
-
 
 
 if __name__ == '__main__':

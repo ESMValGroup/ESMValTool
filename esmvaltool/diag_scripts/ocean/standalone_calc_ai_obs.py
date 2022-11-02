@@ -258,7 +258,7 @@ def time_series(field='tos', pane='timeseries', overwrite=False):
             cube = diagtools.bgc_units(cube, field)
 
             nctimes = diagtools.cube_time_to_float(cube)
-        if field == 'chl':
+        if field in ['chl', ]: #'intpp']:
             cube.data = cube.data *1000.
         nc = Dataset(nc_path)
 
@@ -467,7 +467,9 @@ def load_map_netcdf(field='tos', pane='map'):
 #           if np.min(times) > 2010.: continue
 #           if np.max(times) < 2000.: continue
 #            cube = extract_time(cube, 2000, 1, 1, 2010, 1, 1)
-
+#        if field in ['intpp',]:
+#            cube.data = cube.data*1000.
+#            #print(cube.data.mean())
         print('loaded:', fn)
         new_cube = cube.collapsed('time', iris.analysis.MEAN)
         cube_list.append(new_cube.copy())
@@ -532,6 +534,7 @@ def make_map_figure(field):
     cube = load_map_netcdf(field=field, pane='map')
     if field == 'chl':
         cube.data = np.clip(cube.data, 0., 5.)
+    
 
     qplot = iris.plot.contourf(
         cube,
@@ -661,10 +664,10 @@ def make_profile_figure(field):
 #     sh.close()
 
 def main():
-    twodfields = []#ld', ] #'intpp', 'chl', ]# 'mld' ]
-    threedfields = ['po4', ] #'no3','po4', ]#'tos',] #'o2',] #'no3', ] #'ph', ]#'so', ]# 'o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
+    twodfields = ['intpp', ] #'chl', ]# 'mld' ]
+    threedfields = [] #'po4', ] #'no3','po4', ]#'tos',] #'o2',] #'no3', ] #'ph', ]#'so', ]# 'o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
     for field in twodfields:
-#        make_map_figure(field)
+        make_map_figure(field)
         make_ts_figure(field)
 
     for field in threedfields:
