@@ -91,12 +91,12 @@ def _fix_var_metadata(var_info, cmor_info, cube):
     if 'raw_units' in var_info:
         cube.units = var_info['raw_units']
 
-        # Special conversion for dissic (see Note above)
-        if cmor_info.short_name == 'dissic':
-            cube.data = cube.core_data() * 1032.0
-            cube.units *= 'kg m-3'
+    # Special conversion for dissic (see Note above)
+    if cmor_info.short_name == 'dissic':
+        cube.data = cube.core_data() * 1032.0
+        cube.units *= 'kg m-3'
 
-        cube.convert_units(cmor_info.units)
+    cube.convert_units(cmor_info.units)
 
     utils.fix_var_metadata(cube, cmor_info)
 
