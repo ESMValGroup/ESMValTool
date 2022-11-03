@@ -40,7 +40,6 @@ def _callback_fix_fillvalue(cube, field, _):
 
 def _fix_climatological_time(cube):
     """Fix climatology coordinate."""
-    time_coord = cube.coord('time')
     time_units = Unit('days since 1950-01-01 00:00:00', calendar='standard')
 
     # Following the doc the covered time period of the climatology is
