@@ -58,6 +58,22 @@ def add_height10m(cube):
     add_scalar_height_coord(cube, height=10.)
 
 
+def add_scalar_depth_coord(cube, depth=0.0):
+    """Add scalar coordinate 'depth' with value of `depth`m."""
+    logger.debug("Adding depth coordinate (%sm)", depth)
+    depth_coord = iris.coords.AuxCoord(depth,
+                                       var_name='depth',
+                                       standard_name='depth',
+                                       long_name='depth',
+                                       units=Unit('m'),
+                                       attributes={'positive': 'down'})
+    try:
+        cube.coord('depth')
+    except iris.exceptions.CoordinateNotFoundError:
+        cube.add_aux_coord(depth_coord, ())
+    return cube
+
+
 def add_scalar_height_coord(cube, height=2.):
     """Add scalar coordinate 'height' with value of `height`m.
 

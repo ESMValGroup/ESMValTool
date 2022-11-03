@@ -548,6 +548,19 @@ diagnostics:
     scripts: null
 
 
+  OceanSODA-ETHZ:
+    description: OceanSODA-ETHZ check
+    variables:
+      areacello:
+        mip: Ofx
+      fgco2:
+        mip: Omon
+    additional_datasets:
+      - {dataset: OceanSODA-ETHZ, project: OBS6, tier: 2, type: reanaly,
+         version: v2021e, start_year: 1982, end_year: 2020}
+    scripts: null
+
+
   OSI-450:
     description: OSI-450 check
     variables:
