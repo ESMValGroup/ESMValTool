@@ -58,6 +58,22 @@ def add_height10m(cube):
     add_scalar_height_coord(cube, height=10.)
 
 
+def add_scalar_depth_coord(cube, depth=0.0):
+    """Add scalar coordinate 'depth' with value of `depth`m."""
+    logger.debug("Adding depth coordinate (%sm)", depth)
+    depth_coord = iris.coords.AuxCoord(depth,
+                                       var_name='depth',
+                                       standard_name='depth',
+                                       long_name='depth',
+                                       units=Unit('m'),
+                                       attributes={'positive': 'down'})
+    try:
+        cube.coord('depth')
+    except iris.exceptions.CoordinateNotFoundError:
+        cube.add_aux_coord(depth_coord, ())
+    return cube
+
+
 def add_scalar_height_coord(cube, height=2.):
     """Add scalar coordinate 'height' with value of `height`m.
 
@@ -129,9 +145,9 @@ def convert_timeunits(cube, start_year):
         Returns the original iris cube with time coordinate reformatted.
     """
     if cube.coord('time').units == 'months since 0000-01-01 00:00:00':
-        real_unit = 'months since {}-01-01 00:00:00'.format(str(start_year))
+        real_unit = f'months since {str(start_year)}-01-01 00:00:00'
     elif cube.coord('time').units == 'days since 0000-01-01 00:00:00':
-        real_unit = 'days since {}-01-01 00:00:00'.format(str(start_year))
+        real_unit = f'days since {str(start_year)}-01-01 00:00:00'
     elif cube.coord('time').units == 'days since 1950-1-1':
         real_unit = 'days since 1950-1-1 00:00:00'
     else:
@@ -277,7 +293,7 @@ def read_cmor_config(dataset):
     """Read the associated dataset-specific config file."""
     reg_path = os.path.join(os.path.dirname(__file__), 'cmor_config',
                             dataset + '.yml')
-    with open(reg_path, 'r') as file:
+    with open(reg_path, 'r', encoding='utf-8') as file:
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
         CMOR_TABLES[cfg['attributes']['project_id']]
@@ -320,10 +336,12 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
             year = str(time.cell(0).point.year)
             time_suffix = '-'.join([year + '01', year + '12'])
         else:
-            date1 = str(time.cell(0).point.year) + '%02d' % \
-                time.cell(0).point.month
-            date2 = str(time.cell(-1).point.year) + '%02d' % \
-                time.cell(-1).point.month
+            date1 = (
+                f"{time.cell(0).point.year:2d}{time.cell(0).point.month:02d}"
+            )
+            date2 = (
+                f"{time.cell(-1).point.year:2d}{time.cell(-1).point.month:02d}"
+            )
             time_suffix = '-'.join([date1, date2])
 
     name_elements = [
@@ -538,7 +556,7 @@ def roll_cube_data(cube, shift, axis):
 def set_units(cube, units):
     """Set units in compliance with cf_unit."""
     special = {'psu': 1, 'Sv': '1e6 m3 s-1'}
-    if units in list(special.keys()):
+    if units in special:
         cube.units = special[units]
     else:
         cube.units = Unit(units)

@@ -497,6 +497,16 @@ diagnostics:
     scripts: null
 
 
+  Landschuetzer2020:
+    description: Landschuetzer2020 check
+    variables:
+      spco2:
+    additional_datasets:
+      - {dataset: Landschuetzer2020, project: OBS6, mip: Omon, tier: 2,
+         type: clim, version: '1.1', start_year: 2004, end_year: 2004}
+    scripts: null
+
+
   NCEP:
     description: NCEP check
     variables:
@@ -539,7 +549,7 @@ diagnostics:
 
 
   NOAAGlobalTemp:
-    decription: NOAAGlobalTemp check
+    description: NOAAGlobalTemp check
     variables:
       tasa:
     additional_datasets:
