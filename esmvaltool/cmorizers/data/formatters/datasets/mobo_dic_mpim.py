@@ -1,16 +1,16 @@
-"""ESMValTool CMORizer for Landschuetzer2020 data.
+"""ESMValTool CMORizer for MOBO-DIC_MPIM data.
 
 Tier
     Tier 2: other freely-available dataset.
 
 Source
-    https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0209633/
+    https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0221526/
 
 Last access
-    20221102
+    20221103
 
 Download and processing instructions
-    Download the file MPI-ULB-SOM_FFN_clim.nc
+    Download the file MOBO-DIC_MPIM_monthly_clim.nc
 
 """
 
