@@ -98,7 +98,7 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
     # Fix variable metadata
     if 'raw_units' in var_info:
         cube.units = var_info['raw_units']
-        cube.convert_units(cmor_info.units)
+    cube.convert_units(cmor_info.units)
     utils.fix_var_metadata(cube, cmor_info)
 
     # Fix coordinates
