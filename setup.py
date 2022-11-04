@@ -33,6 +33,7 @@ REQUIREMENTS = {
         'eofs',
         'ESMPy',
         'esmvalcore',
+        'esmf-regrid',
         'fiona',
         'GDAL',
         'jinja2',
