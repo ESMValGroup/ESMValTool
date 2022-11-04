@@ -40,7 +40,7 @@ branch. Release numbers are of the format x.y.z, where:
 -  y indicates a minor release
 -  z indicates a patch release
 
-**Backward-incompatible change:**\ An ESMValTool change that causes a
+**Backward-incompatible change:** An ESMValTool change that causes a
 recipe to no longer run successfully (a *breaking change*), or which
 results in scientifically significant changes in results (a *science
 change*).
@@ -48,13 +48,13 @@ change*).
 **Breaking change:** A change which causes a previously working recipe
 to no longer run successfully.
 
-**Science change**: A change that alters scientific results. We do not
+**Science change:** A change that alters scientific results. We do not
 formally distinguish between trivial science changes (e.g. from changes
 in the order of calculations) and more significant changes that would
 affect interpretation, although the detail that we communicate will
 share any understanding that we have regarding expected impact.
 
-**Benign third-party dependency changes:**\ A change over which we have
+**Benign third-party dependency changes:** A change over which we have
 no control, but which we believe will only have trivial technical
 impacts (such as a change in font). Such changes are outside of the
 scope of this policy, though we will communicate about those we are
@@ -68,13 +68,13 @@ cases this will be an ESMValCore development.
 **Recipe developer:** Someone who is developing a recipe that is not
 (yet) integrated into the repository.
 
-**Recipe user:**\ For the purpose of this policy, a *recipe user* is
+**Recipe user:** For the purpose of this policy, a *recipe user* is
 anyone who runs a recipe using a *release* of ESMValTool. In this
 context, someone can be both a *recipe developer* and a *recipe user*,
 but they perform different activities in each capacity.
 
-**Recipe maintainer:**\ First contact point for *integrated recipes* in
-case of problems with that recipe. **TODO: add link to document**
+**Recipe maintainer:** First contact point for *integrated recipes* in
+case of problems with that recipe (see also :ref:`Maintaining a recipe<recipe-maintainer>`).
 
 **Integrated recipes:** Recipes that are contained within the main
 branch of the ESMValTool repository, and can therefore be updated by any
@@ -103,7 +103,7 @@ Not within the scope of this policy are:
 
 -  Versioning scheme of ESMValTool
 -  Breakage of recipes due to changes in input data or dependencies.
-   This is covered by the broken recipe policy. **TODO: Add link to broken recipe policy**
+   This is covered by the :ref:`broken recipe policy<broken-recipe-policy>`.
 
 Expectations of developers & users
 ----------------------------------
@@ -188,8 +188,8 @@ Helping developers to upgrade
 *Recipe users* of ESMValTool will be able to successfully run
 *integrated recipes* using a *release*, since all
 *backwards-incompatible changes* introduced between *releases* will have
-been fixed before the *release* is created. Please note the broken
-recipe policy:  **TODO: Add link to broken recipe policy**
+been fixed before the *release* is created. Please note the
+:ref:`broken recipe policy<broken-recipe-policy>`.
 
 However, *recipe developers* working on *user recipes* must be provided
 with information to enable them to adapt their code to resolve issues
@@ -223,8 +223,8 @@ but components should include:
 -  The developer or reviewer must tag the core development team to
    notify them of the *backward-incompatible change*, and give at least
    2 weeks for objections to be raised before merging to the main
-   branch. If a strong objection is raised the \_backwards-incompatible
-   change \_should not be merged until the objection is resolved.
+   branch. If a strong objection is raised the backwards-incompatible
+   change should not be merged until the objection is resolved.
 
 During the *release* process, the following information must be
 provided:
@@ -253,7 +253,7 @@ provided:
       -  share details of the *backwards-incompatible change* at the
          next ESMValTool monthly meeting
 
-   -  **Communication:**\ The *release* notes must be shared with the
+   -  **Communication:** The *release* notes must be shared with the
       community (for example, via the mailing lists and the
       `Community <https://github.com/ESMValGroup/Community>`__
       repository) at the point the first *release* candidate is made,
