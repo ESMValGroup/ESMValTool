@@ -26,7 +26,7 @@ commands:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            pytest -n 4 -m 'not flake8' --junitxml=test-reports/report.xml
+            pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
             ncl -V
@@ -94,7 +94,7 @@ commands:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            pytest -n 4 -m flake8
+            flake8 -j 4
       - test_and_report
       - save_cache:
           key: install-<< parameters.extra >>-{{ .Branch }}-{{ checksum "cache_key.txt" }}
@@ -124,7 +124,7 @@ jobs:
             conda activate esmvaltool
             pip install .[test] > /logs/install.txt 2>&1
             # Run flake8 check with source code (it doesn't work without it)
-            pytest -n 4 -m flake8
+            flake8 -j 4
             # Update/install Julia dependencies
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             # Remove source to test installed software
