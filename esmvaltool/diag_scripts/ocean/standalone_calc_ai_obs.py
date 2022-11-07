@@ -264,8 +264,6 @@ def time_series(field='tos', pane='timeseries', overwrite=False):
 
         if field == 'o2':
             print('depth',  np.abs(cube.coord(axis='Z').points)*-1.)
-            #assert 0
-
             #cube = extract_levels(cube,
             #    scheme='linear',
             #    levels =  [550., 600., 650.,700., 750.,800.,850., 900., 950., ],
@@ -280,6 +278,8 @@ def time_series(field='tos', pane='timeseries', overwrite=False):
                 scheme='linear',
                 levels =  [500.,]
             )
+            print('o2 cube:', cube)
+            print('o2 coords:', cube.coords())
             print('ncdata 0b :range:  min', cube.data.min(), cube.data.mean(), cube.data.max())
 
             cube.data = np.ma.masked_where(cube.data.mask+(cube.data==0.)+(cube.data>1e10), cube.data)
@@ -290,7 +290,6 @@ def time_series(field='tos', pane='timeseries', overwrite=False):
             print('ncdata:range:  min', cube.data.min(), cube.data.mean(), cube.data.max())
             print('file:', nc_path)
 #            assertlater = True
-            #assert 0
 
             #cube = cube.collapsed(['depth',], iris.analysis.MEAN) # can do this as layers are equal.
 
@@ -310,7 +309,6 @@ def time_series(field='tos', pane='timeseries', overwrite=False):
         print('latsmin', lat_maxs, lats[lat_maxs[0]], lats[lat_maxs[1]])
 
         print('ncdata:1  range:  min', cube.data.min(), cube.data.mean(), cube.data.max())
-
  #       print(cube.dimensions)
         if cube.ndim == 3:
             latdim = 1
@@ -348,7 +346,7 @@ def time_series(field='tos', pane='timeseries', overwrite=False):
             print('ncdata 4b:range:  min', ncdata.data.min(), ncdata.data.mean(), ncdata.data.max())
             print('file:', nc_path)
 #            assertlater = True
-#            assert 0
+            assert 0
 
         try:
             ncdata = ncdata.collapsed(['lat', 'lon'], iris.analysis.MEAN).data
@@ -664,8 +662,8 @@ def make_profile_figure(field):
 #     sh.close()
 
 def main():
-    twodfields = ['intpp', ] #'chl', ]# 'mld' ]
-    threedfields = [] #'po4', ] #'no3','po4', ]#'tos',] #'o2',] #'no3', ] #'ph', ]#'so', ]# 'o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
+    twodfields = [] #tpp', ] #'chl', ]# 'mld' ]
+    threedfields = ['o2',] #'po4', ] #'no3','po4', ]#'tos',] #'o2',] #'no3', ] #'ph', ]#'so', ]# 'o2',] #'tos', ] #'o2', 'so','ph',  'tos',]#  'no3', 'si',]
     for field in twodfields:
         make_map_figure(field)
         make_ts_figure(field)

@@ -156,8 +156,11 @@ hard_wired_obs = {
 
 #   ('o2', 'timeseries', 'min'): {1961:93.3, 2017:93.3}, # 750m
 #   ('o2', 'timeseries', 'max'): {1961:123.1, 2017:123.1}, # 750m
-   ('o2', 'timeseries', 'min'): {1961:107.3, 2017:107.3}, # 500m
-   ('o2', 'timeseries', 'max'): {1961:123.5, 2017:123.5}, # 500m
+#   ('o2', 'timeseries', 'min'): {1961:107.3, 2017:107.3}, # 500m
+#   ('o2', 'timeseries', 'max'): {1961:123.5, 2017:123.5}, # 500m
+
+   ('o2', 'timeseries', 'min'): {1961:99.7 , 2017:99.7 }, # 500m
+   ('o2', 'timeseries', 'max'): {1961:121.1, 2017:121.1}, # 500m
 
 
 # [110.69357735770089, 108.27589634486607, 117.27530343191964, 119.49379185267857, 116.9248046875, 107.2939453125, 121.88762555803571, 107.13483537946429, 115.68745640345982, 123.4818115234375, 109.77983747209821, 113.68933977399554]
@@ -1608,7 +1611,6 @@ def multi_model_clim_figure(
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
 
-
             months =  cube['month_number']
             for t, d in zip(months, cube['data']):
                 data_values = add_dict_list(data_values, t, d)
@@ -1649,7 +1651,7 @@ def multi_model_clim_figure(
         plt.title('Climatology')
 
     plot_obs = True
-    if plot_obs:
+    if plot_obs and short_name not in ['o2', ]:
         if hard_wired_obs.get((short_name, 'clim', 'min'), False):
             ctimes = [t for t in hard_wired_obs[(short_name, 'clim', 'min')]]
             mins =  [hard_wired_obs[(short_name, 'clim', 'min')][t] for t in ctimes]
@@ -2299,7 +2301,7 @@ def single_map_figure(cfg, cube, variable_group, exp='', model='', ensemble='', 
                        central_latitude+lat_bnd, ])
         # Compute the required radius in projection native coordinates:
         #r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
-        ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=2.88, color='black', alpha=0.3, transform=proj, zorder=30))
+        ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=2.88, ec='black', fc=(1.,1.,1.,0.),transform=proj, zorder=30))
 
     try:
         plt.gca().coastlines()
@@ -2650,8 +2652,6 @@ def multi_model_map_figure(
     else:
         style_range['hist'].extend([hist_cube.data.min(), hist_cube.data.max()])
     style_range['historical'] =  style_range['hist']
-    #print('style_range', style_range)
-    #ssert 0
 
     # Calculate the diff cubes.
     for variable_group, cube in variablegroup_model_cubes.items():
@@ -2667,6 +2667,9 @@ def multi_model_map_figure(
     for style, srange in style_range.items():
         if not len(srange): continue
         style_range[style] = [round_sig(np.array(srange).min(),2), round_sig(np.array(srange).max(),2)]
+        nbins = (style_range[style][1] - style_range[style][0])
+        print(style_range[style], nbins)
+        assert 0
 
         # Symetric around zero:
         if style in ['diff', 'min_diff', 'max_diff']:
@@ -2675,9 +2678,6 @@ def multi_model_map_figure(
         else:
             nspaces[style] = np.linspace(style_range[style][0], style_range[style][1], 11)
 
-#   print('nspaces', nspaces)
-#   print('subplot_style', subplot_style)
-#   assert 0
     shared_cmap = {'hist':[], 'ssp':[]}
     shaped_ims = {'hist':[], 'ssp':[]}
     for sbp, exp in subplots_nums.items():
@@ -2693,7 +2693,6 @@ def multi_model_map_figure(
                 cube = diff_cubes[variable_group]
 
         print('plotting', exp, sbp, single_model)
-        #print(figure_style, sbp, exp, sbp_style, style_range[sbp_style])
         qplot = iris.plot.contourf(
             cube,
             nspaces[sbp_style],
@@ -2724,7 +2723,9 @@ def multi_model_map_figure(
 
         # Compute the required radius in projection native coordinates:
         #r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
-        ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=2.88, color='black', alpha=0.3, transform=proj, zorder=30))
+        #ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=2.88, color='black', alpha=0.3, transform=proj, zorder=30))
+        ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=2.88, ec='black', fc=(1.,1.,1.,0.), transform=proj, zorder=30))
+
         #plt.colorbar()
 
         try:
@@ -2811,7 +2812,7 @@ def multi_model_map_figure(
         # Compute the required radius in projection native coordinates:
         #r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
         ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude],
-             radius=2.88, color='black', alpha=0.3, transform=proj, zorder=30))
+             radius=2.88, ec='black', fc=(1.,1.,1.,0.), transform=proj, zorder=30))
 
         shared_cmap['hist'].append(ax0)
         shaped_ims['hist'].append(qplot)
