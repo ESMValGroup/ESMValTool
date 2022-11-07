@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - remove_pytest_flake8
   schedule:
     - cron: '0 0 * * *'
 
