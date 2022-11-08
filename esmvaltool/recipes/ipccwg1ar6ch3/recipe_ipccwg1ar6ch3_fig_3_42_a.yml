@@ -140,50 +140,50 @@ datasets:
   # CMIP6
   - &cmip6 {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn,
             ensemble: r1i1p1f1, project: CMIP6}
-  - {dataset: ACCESS-ESM1-5, institute: CSIRO}
-  - {dataset: AWI-CM-1-1-MR}
-  - {dataset: AWI-ESM-1-1-LR}
-  - {dataset: BCC-CSM2-MR}
-  - {dataset: CAMS-CSM1-0}
-  - {dataset: CanESM5}
-  - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1}
-  - {dataset: CESM2}
-  - {dataset: CESM2-FV2, institute: NCAR}
-  - {dataset: CESM2-WACCM, institute: NCAR}
-  - {dataset: CESM2-WACCM-FV2, institute: NCAR}
-  - {dataset: CIESM, grid: gr}
-  - {dataset: CMCC-CM2-HR4}
-  - {dataset: CMCC-CM2-SR5}
-  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
-  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
-  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
-  - {dataset: EC-Earth3-Veg-LR, grid: gr}
-  - {dataset: FGOALS-f3-L, grid: gr}
-  - {dataset: FGOALS-g3}
-  - {dataset: GFDL-CM4, grid: gr1}
-  - {dataset: GFDL-ESM4, grid: gr1}
-  - {dataset: GISS-E2-1-G}
-  - {dataset: GISS-E2-1-H}
-  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
-  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3}
-  - {dataset: IITM-ESM}
-  - {dataset: INM-CM4-8, grid: gr1}
-  - {dataset: INM-CM5-0, grid: gr1}
-  - {dataset: IPSL-CM6A-LR, grid: gr}
-  - {dataset: KACE-1-0-G, grid: gr}
-  - {dataset: MIROC6}
-  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2}
-  - {dataset: MPI-ESM-1-2-HAM}
-  - {dataset: MPI-ESM1-2-LR}
-  - {dataset: MPI-ESM1-2-HR}
-  - {dataset: MRI-ESM2-0}
-  - {dataset: NESM3}
-  - {dataset: NorCPM1, institute: NCC, ensemble: r10i1p1f1}
-  - {dataset: NorESM2-LM, institute: NCC}
-  - {dataset: NorESM2-MM, institute: NCC}
-  - {dataset: SAM0-UNICON}
-  - {dataset: TaiESM1}
-  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
+  - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
+  - {<<: *cmip6, dataset: AWI-CM-1-1-MR}
+  - {<<: *cmip6, dataset: AWI-ESM-1-1-LR}
+  - {<<: *cmip6, dataset: BCC-CSM2-MR}
+  - {<<: *cmip6, dataset: CAMS-CSM1-0}
+  - {<<: *cmip6, dataset: CanESM5}
+  - {<<: *cmip6, dataset: CanESM5-CanOE, ensemble: r1i1p2f1}
+  - {<<: *cmip6, dataset: CESM2}
+  - {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
+  - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
+  - {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
+  - {<<: *cmip6, dataset: CIESM, grid: gr}
+  - {<<: *cmip6, dataset: CMCC-CM2-HR4}
+  - {<<: *cmip6, dataset: CMCC-CM2-SR5}
+  - {<<: *cmip6, dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+  - {<<: *cmip6, dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+  - {<<: *cmip6, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+  - {<<: *cmip6, <<: *cmip6, dataset: EC-Earth3-Veg-LR, grid: gr}
+  - {<<: *cmip6, dataset: FGOALS-f3-L, grid: gr}
+  - {<<: *cmip6, dataset: FGOALS-g3}
+  - {<<: *cmip6, dataset: GFDL-CM4, grid: gr1}
+  - {<<: *cmip6, dataset: GFDL-ESM4, grid: gr1}
+  - {<<: *cmip6, dataset: GISS-E2-1-G}
+  - {<<: *cmip6, dataset: GISS-E2-1-H}
+  - {<<: *cmip6, dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
+  - {<<: *cmip6, dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3}
+  - {<<: *cmip6, dataset: IITM-ESM}
+  - {<<: *cmip6, dataset: INM-CM4-8, grid: gr1}
+  - {<<: *cmip6, dataset: INM-CM5-0, grid: gr1}
+  - {<<: *cmip6, dataset: IPSL-CM6A-LR, grid: gr}
+  - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
+  - {<<: *cmip6, dataset: MIROC6}
+  - {<<: *cmip6, dataset: MIROC-ES2L, ensemble: r1i1p1f2}
+  - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM}
+  - {<<: *cmip6, dataset: MPI-ESM1-2-LR}
+  - {<<: *cmip6, dataset: MPI-ESM1-2-HR}
+  - {<<: *cmip6, dataset: MRI-ESM2-0}
+  - {<<: *cmip6, dataset: NESM3}
+  - {<<: *cmip6, dataset: NorCPM1, institute: NCC, ensemble: r10i1p1f1}
+  - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+  - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+  - {<<: *cmip6, dataset: SAM0-UNICON}
+  - {<<: *cmip6, dataset: TaiESM1}
+  - {<<: *cmip6, dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
 
 
 diagnostics:
@@ -214,7 +214,6 @@ diagnostics:
       - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
       - {dataset: CanCM4}
       - {dataset: CanESM2}
-      - {dataset: CESM1-CAM5-1-FV2}
       - {dataset: CMCC-CESM}
       - {dataset: CMCC-CMS}
       - {dataset: EC-EARTH, ensemble: r6i1p1}
@@ -225,20 +224,20 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: BCC-ESM1}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: EC-Earth3-Veg, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: 1, tier: 3}
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {<<: *cmip6, dataset: MCM-UA-1-0}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading: &grading_settings
@@ -285,19 +284,19 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: BCC-ESM1}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: EC-Earth3-Veg, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: MCM-UA-1-0}
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {<<: *cmip6, dataset: MCM-UA-1-0}
       - {dataset: ESACCI-SST, project: OBS, type: sat,
          version: L4-GHRSST-SSTdepth-OSTIA-GLOB, tier: 2, start_year: 1992}
       - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
@@ -325,19 +324,19 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: BCC-ESM1}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: EC-Earth3-Veg, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: MCM-UA-1-0}
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1}
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: MCM-UA-1-0}
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3, tier: 1}
       - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
 
   zg500:
@@ -361,17 +360,17 @@ diagnostics:
       - {dataset: GISS-E2-H-CC}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: BCC-ESM1}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: MCM-UA-1-0}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
   psl:
@@ -387,7 +386,6 @@ diagnostics:
       - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
       - {dataset: CanCM4}
       - {dataset: CanESM2}
-      - {dataset: CESM1-CAM5-1-FV2}
       - {dataset: CMCC-CMS}
       - {dataset: EC-EARTH, ensemble: r6i1p1}
       - {dataset: FGOALS-s2}
@@ -395,21 +393,21 @@ diagnostics:
       - {dataset: GISS-E2-H, ensemble: r1i1p2}
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: HadCM3}
-      - {dataset: BCC-ESM1}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: EC-Earth3-Veg, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: MCM-UA-1-0}
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {<<: *cmip6, dataset: MCM-UA-1-0}
       - {dataset: JRA-55, project: ana4mips, type: reanalysis, tier: 1}
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
 
   lwcre:
     <<: *perf_diag
@@ -437,17 +435,17 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-8,
          tier: 1, start_year: 2001, end_year: 2015}
 
   swcre:
@@ -474,18 +472,18 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: BCC-ESM1}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-8,
          tier: 1, start_year: 2001, end_year: 2015}
 
   rlut:
@@ -516,17 +514,17 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: MCM-UA-1-0}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {<<: *cmip6, dataset: MCM-UA-1-0}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-8,
          tier: 1, start_year: 2001, end_year: 2015}
 
   hus400:
@@ -547,15 +545,15 @@ diagnostics:
       - {dataset: GFDL-CM2p1}
       - {dataset: GISS-E2-H-CC}
       - {dataset: GISS-E2-R-CC}
-      - {dataset: BCC-ESM1}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: MCM-UA-1-0}
-      - {dataset: AIRS, project: obs4mips, level: L3,
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {<<: *cmip6, dataset: MCM-UA-1-0}
+      - {dataset: AIRS, project: obs4MIPs, level: L3,
          version: RetStd-v5, tier: 1, start_year: 2003, end_year: 2010}
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
 
   rsut:
     <<: *perf_diag
@@ -582,18 +580,18 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: BCC-ESM1}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-8,
          tier: 1, start_year: 2001, end_year: 2015}
 
   ua200:
@@ -618,20 +616,20 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: BCC-ESM1}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: EC-Earth3-Veg, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: 1, tier: 3}
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {<<: *cmip6, dataset: MCM-UA-1-0}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
 
@@ -656,18 +654,18 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: BCC-ESM1}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {<<: *cmip6, dataset: MCM-UA-1-0}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
   ua850:
@@ -692,19 +690,19 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: BCC-ESM1}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: EC-Earth3-Veg, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: 1, tier: 3}
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {<<: *cmip6, dataset: MCM-UA-1-0}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
   va200:
@@ -728,19 +726,19 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: BCC-ESM1}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {<<: *cmip6, dataset: MCM-UA-1-0}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
   ta850:
@@ -766,17 +764,17 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: BCC-ESM1}
-      - {dataset: CMCC-ESM2}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: EC-Earth3-Veg, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {<<: *cmip6, dataset: MCM-UA-1-0}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
   ta200:
@@ -802,20 +800,20 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: BCC-ESM1}
-      - {dataset: CMCC-ESM2}
-      - {dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {dataset: E3SM-1-0, grid: gr}
-      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: EC-Earth3-AerChem, grid: gr}
-      - {dataset: EC-Earth3-CC, grid: gr}
-      - {dataset: EC-Earth3-Veg, grid: gr}
-      - {dataset: GISS-E2-1-G-CC}
-      - {dataset: IPSL-CM5A2-INCA, grid: gr}
-      - {dataset: KIOST-ESM, grid: gr1}
-      - {dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CMCC-ESM2}
+      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+      - {<<: *cmip6, dataset: MCM-UA-1-0}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
 
