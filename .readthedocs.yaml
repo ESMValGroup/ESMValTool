@@ -10,6 +10,9 @@ build:
   os: ubuntu-22.04
   tools:
     python: "mambaforge-4.10"
+  jobs:
+    post_create_environment:
+      - pip install -e .[develop]
 
 # Declare the requirements required to build your docs
 conda:
