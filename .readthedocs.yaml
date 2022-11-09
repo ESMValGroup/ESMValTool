@@ -16,13 +16,6 @@ conda:
   environment:
     environment.yml
 
-python:
-  install:
-    - method: setuptools
-      path: .
-      extra_requirements:
-        - doc
-
 # Build documentation in the doc directory with Sphinx
 sphinx:
   configuration: doc/sphinx/source/conf.py
