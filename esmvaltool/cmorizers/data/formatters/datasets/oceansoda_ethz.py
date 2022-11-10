@@ -15,6 +15,8 @@ Download and processing instructions
 """
 
 import logging
+import warnings
+from datetime import datetime
 from pathlib import Path
 
 import iris
@@ -32,6 +34,12 @@ def _fix_coords(cube, cmor_info):
     # Dimensional coordinates
     if 'time' in cmor_info.dimensions:
         unify_time_coord(cube, 'days since 1950-01-01 00:00:00')
+
+        # Move time points to center of month
+        time_coord = cube.coord('time')
+        old_dates = time_coord.units.num2date(time_coord.points)
+        new_dates = [datetime(t.year, t.month, 15) for t in old_dates]
+        time_coord.points = time_coord.units.date2num(new_dates)
     cube.coord('lat').standard_name = 'latitude'
     cube.coord('lon').standard_name = 'longitude'
     utils.fix_coords(cube)
@@ -61,16 +69,16 @@ def _fix_var_metadata(var_info, cmor_info, attrs, cube):
         cube.units *= 'g mol-1'
         attrs['positive'] = 'down'
 
-    # talkos:
-    # The original units of 'talkos' are mumol/kg. To convert to the CMOR units
-    # mol/m3, we assume a constant sea water density of 1028 kg/m3, which is
-    # approximately the sea water density for T=4°C, salinity=35PSU, and p=0bar
-    # according to the UNESCO formula (UNESCO, 1981, Tenth report of the joint
-    # panel on oceanographic tables and standards, UNESCO Technical Papers in
-    # Marine Science, see
+    # co3os, dissicos, talkos:
+    # The original units of these variables are mumol/kg. To convert to the
+    # CMOR units mol/m3, we assume a constant sea water density of 1028 kg/m3,
+    # which is approximately the sea water density for T=4°C, salinity=35PSU,
+    # and p=0bar according to the UNESCO formula (UNESCO, 1981, Tenth report of
+    # the joint panel on oceanographic tables and standards, UNESCO Technical
+    # Papers in Marine Science, see
     # https://www.wkcgroup.com/tools-room/seawater-density-calculator/ and
     # https://link.springer.com/content/pdf/bbm:978-3-319-18908-6/1.pdf).
-    if cmor_info.short_name == 'talkos':
+    if cmor_info.short_name in ('co3os', 'dissicos', 'talkos'):
         cube.data = cube.core_data() * 1028.0
         cube.units *= 'kg m-3'
 
@@ -85,7 +93,14 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
     raw_var = var_info.get('raw_name', var)
 
     # Load data
-    cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            action='ignore',
+            message='Ignoring netCDF variable .* invalid units .*',
+            category=UserWarning,
+            module='iris',
+        )
+        cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
     # Fix data
     _fix_data(cube, var)

@@ -553,7 +553,13 @@ diagnostics:
     variables:
       areacello:
         mip: Ofx
+      co3os:
+        mip: Omon
+      dissicos:
+        mip: Omon
       fgco2:
+        mip: Omon
+      phos:
         mip: Omon
       spco2:
         mip: Omon
