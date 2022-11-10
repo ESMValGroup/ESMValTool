@@ -171,11 +171,11 @@ begin
       plot_var@res_cnLevelSelectionMode = "ExplicitLevels"
       plot_var@res_cnLevels := diag_script_info@conf_level
       if (diag_script_info@stippling) then
-        plot_var@res_cnFillColors = (/"transparent", "black"/)
+        plot_var@res_cnFillColors = (/"black", "transparent"/)
         plot_var@res_cnFillPattern = 17
         caption = caption + " (non-significant points are stippled)"
       else
-        plot_var@res_cnFillColors = (/"transparent", "gray70"/)
+        plot_var@res_cnFillColors = (/"gray70", "transparent"/)
         caption = caption + " (non-significant points are masked out in gray)"
       end if
       plot_var@res_cnInfoLabelOn = False
