@@ -61,6 +61,19 @@ def _fix_var_metadata(var_info, cmor_info, cube):
         cube.units *= 'g mol-1'
         cube.attributes['positive'] = 'down'
 
+    # talkos:
+    # The original units of 'talkos' are mumol/kg. To convert to the CMOR units
+    # mol/m3, we assume a constant sea water density of 1028 kg/m3, which is
+    # approximately the sea water density for T=4°C, salinity=35PSU, and p=0bar
+    # according to the UNESCO formula (UNESCO, 1981, Tenth report of the joint
+    # panel on oceanographic tables and standards, UNESCO Technical Papers in
+    # Marine Science, see
+    # https://www.wkcgroup.com/tools-room/seawater-density-calculator/ and
+    # https://link.springer.com/content/pdf/bbm:978-3-319-18908-6/1.pdf).
+    if cmor_info.short_name == 'talkos':
+        cube.data = cube.core_data() * 1028.0
+        cube.units *= 'kg m-3'
+
     cube.convert_units(cmor_info.units)
 
     utils.fix_var_metadata(cube, cmor_info)
@@ -106,6 +119,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     for (var, var_info) in cfg['variables'].items():
         filepath = Path(in_dir) / var_info['filename']
         logger.info("CMORizing variable '%s' from file %s", var, filepath)
+        glob_attrs['comment'] = var_info.get('comment', '')
         glob_attrs['mip'] = var_info['mip']
         cmor_info = cmor_table.get_variable(var_info['mip'], var)
         _extract_variable(var_info, cmor_info, glob_attrs, filepath, out_dir)
