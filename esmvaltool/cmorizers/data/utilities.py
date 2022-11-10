@@ -334,10 +334,10 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
             time_suffix = '-'.join([year + '01', year + '12'])
         else:
             date1 = (
-                f"{time.cell(0).point.year:2d}{time.cell(0).point.month:02d}"
+                f"{time.cell(0).point.year:d}{time.cell(0).point.month:02d}"
             )
             date2 = (
-                f"{time.cell(-1).point.year:2d}{time.cell(-1).point.month:02d}"
+                f"{time.cell(-1).point.year:d}{time.cell(-1).point.month:02d}"
             )
             time_suffix = '-'.join([date1, date2])
 
