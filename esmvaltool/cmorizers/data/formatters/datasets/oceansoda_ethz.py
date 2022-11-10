@@ -37,7 +37,7 @@ def _fix_coords(cube, cmor_info):
     utils.fix_coords(cube)
 
     # Scalar coordinates
-    if cmor_info.short_name == 'fgco2':
+    if cmor_info.short_name in ('fgco2', 'spco2'):
         utils.add_scalar_depth_coord(cube)
 
 
@@ -47,7 +47,7 @@ def _fix_data(cube, var):
         cube.data = da.ma.masked_equal(cube.core_data(), 0.0)
 
 
-def _fix_var_metadata(var_info, cmor_info, cube):
+def _fix_var_metadata(var_info, cmor_info, attrs, cube):
     """Fix variable metadata."""
     if 'raw_units' in var_info:
         cube.units = var_info['raw_units']
@@ -59,7 +59,7 @@ def _fix_var_metadata(var_info, cmor_info, cube):
     if cmor_info.short_name == 'fgco2':
         cube.data = -cube.core_data() * 12.01  # molar mass of C [g/mol]
         cube.units *= 'g mol-1'
-        cube.attributes['positive'] = 'down'
+        attrs['positive'] = 'down'
 
     # talkos:
     # The original units of 'talkos' are mumol/kg. To convert to the CMOR units
@@ -91,7 +91,7 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
     _fix_data(cube, var)
 
     # Fix variable metadata
-    _fix_var_metadata(var_info, cmor_info, cube)
+    _fix_var_metadata(var_info, cmor_info, attrs, cube)
 
     # Fix coordinates
     _fix_coords(cube, cmor_info)

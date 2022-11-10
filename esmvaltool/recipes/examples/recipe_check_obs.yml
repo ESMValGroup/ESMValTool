@@ -555,6 +555,10 @@ diagnostics:
         mip: Ofx
       fgco2:
         mip: Omon
+      spco2:
+        mip: Omon
+      talkos:
+        mip: Omon
     additional_datasets:
       - {dataset: OceanSODA-ETHZ, project: OBS6, tier: 2, type: reanaly,
          version: v2021e, start_year: 1982, end_year: 2020}
