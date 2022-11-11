@@ -162,6 +162,14 @@ logger = logging.getLogger(os.path.basename(__file__))
     ('NorESM2-LM', 'ssp245', 'r2i1p1f1',): True, # no histroical run.
 
 """
+
+# Short name for datasets
+dataset_names = {
+'UKESM1-0-LL': 'UKESM1',
+}
+
+obs_line_styles = {'Raupach': 'dashed', 'Watson': 'dashdot'}
+
 mod_exp_ens_skips = {
 #    ('ACCESS-ESM1-5', 'historical-ssp126', 'r2i1p1f1') : True, # No historical run on jasmin
 #    ('ACCESS-ESM1-5', 'historical-ssp245', 'r2i1p1f1') : True, # No historical run on jasmin
@@ -4757,29 +4765,25 @@ def make_cumulative_timeseries(cfg, data_dict,
             ax.plot(# zero and blue line
                 ont,
                 ond_t, # zero and blue line
-                lw=1,
-                ls=':'
+                lw=1.7,
+                ls=':',
                 #label='Ocean',
-                color=colours['fgco2gt_cumul']*1.05)
+                color='k')#colours['fgco2gt_cumul'])
             # land:
             ax.plot( # blue line and land line
                 lat,
                 lad_t, # land + ocean
-                lw=1,
-                ls=':'
-                #label = 'Land'
-                color=colours['tls']*1.05,
-                )
-
+                lw=1.7,
+                ls=':',
+                color='k') #colours['tls'],
             # atmos
-            ax.fill_between( # atmos anthro stock
+            ax.plot( # atmos anthro stock
                 lat,
-                lad_t, # land + ocean
                 atd_t, # land ocean and air
-                lw=1,
-                ls=':'
+                lw=1.7,
+                ls=':',
                 #label = 'Atmosphere'
-                color=colours['atmos_carbon'],
+                color='k', #colours['atmos_carbon'],
                 )
         #ax.set_xlim([2010., 2100])
         ax.set_ylabel('Cumulative carbon, Pg')
@@ -4837,12 +4841,15 @@ def make_cumulative_timeseries(cfg, data_dict,
             ax.plot(# zero and blue line
                 att,
                 water_land_line,
-                color=colours['fgco2gt_cumul'])
+                lw=1.7,
+                ls=':',
+                color='k') #colours['fgco2gt_cumul'])
             ax.plot( # blue line and land line
                 att,
                 land_air_line,
-                lw=2,
-                color=colours['tls'])
+                lw=1.7,
+                ls=':',
+                color='k' ) #colours['tls'])
             # ax.plot( # atmos anthro stock
             #     att,
             #     land_air_line*0. +100.,
@@ -4875,13 +4882,12 @@ def make_cumulative_timeseries(cfg, data_dict,
         ax.set_ylim([0., 100.])
 
     if plot_type in ['pc', ]: # 'line_pc'
-
         if ssp in ['historical', ]:
-            plt.plot([1959.,1980., 2000., 2012.], [56., 56., 56., 56.,], c='k', ls=':', label = 'Raupach 2014' )
-            plt.plot([1959.,1980., 2000., 2012.], [25., 25., 25., 25.,], c='navy', ls='-.', label = 'Watson 2020')
+            plt.plot([1959.,1980., 2000., 2012.], [56., 56., 56., 56.,], c='k', ls=obs_line_styles['Raupach'], label = 'Raupach 2014' )
+            plt.plot([1992.,2000., 2005., 2018.], [25., 25., 25., 25.,], c='k', ls=obs_line_styles['Watson'], label = 'Watson 2020')
 
-            plt.plot([], [], c='k', ls=':', label = 'Raupach 2014' )
-            plt.plot([], [], c='navy', ls='-.', label = 'Watson 2020'  )
+            plt.plot([], [], c='k', ls=obs_line_styles['Raupach'], label = 'Raupach 2014' )
+            plt.plot([], [], c='k', ls=obs_line_styles['Watson'], label = 'Watson 2020'  )
         else:
             ipcc_data = {'ssp119': [70., 70.],
                          'ssp126': [65., 65. ],
@@ -4890,7 +4896,7 @@ def make_cumulative_timeseries(cfg, data_dict,
                          'ssp585': [38., 38.],}
             add_ipcc = True
             if add_ipcc:
-                plt.plot([2095.,2100., ], ipcc_data[ssp], c='k', ls='-', lw=2.1,  label = 'SPM.7',) # cmap_ssp_ocean[ssp.upper()]
+                plt.plot([2097.,2100., ], ipcc_data[ssp], c='k', ls='-', lw=2.1,  label = 'SPM.7',) # cmap_ssp_ocean[ssp.upper()]
 
 
     if do_leg:
@@ -4903,11 +4909,11 @@ def make_cumulative_timeseries(cfg, data_dict,
             if dt is None: continue
             print('adding threshold lineL', thres, dt)
             if thres not in plot_thresholds: continue
-
             plt.axvline(x=float(dt.year)+0.5, c='k', ls=':' )
             x = float(dt.year) +0.02 *(np.max(ax.get_xlim()) - np.min(ax.get_xlim()))
             y = np.max(ax.get_ylim())- 0.11 * (np.max(ax.get_ylim()) - np.min(ax.get_ylim()))
             plt.text(x, y, 'GWT: ' +str(thres), ha='right', va='top', rotation=90) #fontsize=8, fontweight='bold',rotation=90)
+
 
     if threshold_stlye=='new':
         print(thresholds)
@@ -4918,29 +4924,50 @@ def make_cumulative_timeseries(cfg, data_dict,
             index = np.argmin(np.abs(dt.year- att))
             #print(dt.year, emt, index, emt[index], atd[index], emd[index],lud[index])
             x=float(dt.year)+0.5
-            if plot_type == 'pc':
-                ymax=1.
-            elif plot_type == 'area_over_zero':
+            ymin=0. 
+            if plot_type in ['pc']:
+                ymin = 0. 
+                ymax = 0.70
+            elif plot_type in ['line_pc']:
+                ymin = 0. 
+                ymax = 0.70
+            elif plot_type in ['area_over_zero', 'line_over_zero']:
                  ymax = atd_t[index]/2000.
+            if plot_type in ['line_pc', 'line_over_zero']:
+                ls=':'
+            else:
+                ls='-'
             plt.axvline(
                 x=x,
-                ymin=0.,
+                ymin=ymin,
                 ymax = ymax,
                 c=threshold_colours[thres],
                 alpha=0.7,
                 lw=1.7,
-                ls='-',)
+                ls=ls)
 
-            if plot_type == 'pc':
-                if thres == 1.5:
-                    txt = ''.join(['1.5', r'$\degree$', 'C - ', str(int(dt.year))])
-                else: txt = str(int(thres)) + r'$\degree$'+'C - '+str(int(dt.year))
-                plt.text(x+2.4, 5, txt,
-                    c = threshold_colours[thres],
-                    ha='left', # Left puts txt on right of line. Right puts txt on left of line.
-                    va='bottom', # top puts txt below x axes.
-                    rotation=90)
-                   # fontsize=8, fontweight='bold',rotation=90)
+            if plot_type in [ 'line_pc', 'pc']:
+#                if thres == 1.5:
+#                    txt = ''.join([dataset_names.get(dataset, dataset), ' 1.5', r'$\degree$', 'C - ', str(int(dt.year))])
+#                else: 
+#                    txt = dataset_names.get(dataset, dataset)+' '+str(int(thres)) + r'$\degree$'+'C - '+str(int(dt.year))
+                txt=str(int(dt.year))
+                if plot_type == 'pc':
+                    plt.text(x, 72.,
+                        #x+2., 5,
+                        txt,
+                        c = threshold_colours[thres],
+                        ha='center', # Left puts txt on right of line. Right puts txt on left of line.
+                        va='bottom', # top puts txt below x axes.
+                        rotation=90)
+                else: # line_pc
+                    plt.text(x, 72,
+                        #x-2., 70, 
+                        txt,
+                        c = threshold_colours[thres],
+                        ha='center', # Left puts txt on right of line. Right puts txt on left of line.
+                        va='bottom', # top puts txt below x axes.
+                        rotation=90)
 
     plt.title(ssp_title_dict.get(ssp, None))
 
@@ -4964,6 +4991,7 @@ def make_cumulative_timeseries_megaplot(
        plot_types = ['pair', 'area_over_zero'],
        ensemble = 'ensemble_mean',
        dataset='CMIP6',
+       plot_thresholds = [2., 3., 4.],
        plot_MMM=False):
     """
     Single plot massive thing.
@@ -5000,7 +5028,7 @@ def make_cumulative_timeseries_megaplot(
                 ensemble = ensemble,
                 dataset = 'CMIP6',
                 plot_type = 'area_over_zero',
-                plot_thresholds = [2., 3., 4.],
+                plot_thresholds = plot_thresholds,
                 fig = fig,
                 ax= ax1,
                 do_leg=False,
@@ -5012,7 +5040,7 @@ def make_cumulative_timeseries_megaplot(
                 ensemble = ensemble,
                 dataset = 'CMIP6',
                 plot_type = 'pc',
-                plot_thresholds = [2., 3., 4.],
+                plot_thresholds = plot_thresholds,
                 fig = fig,
                 ax= ax2,
                 do_leg=False,
@@ -5024,9 +5052,9 @@ def make_cumulative_timeseries_megaplot(
                 thresholds_dict,
                 ssp=ssp,
                 ensemble = ensemble,
-                dataset = 'CMIP6',
+                dataset = dataset,
                 plot_type = 'line_over_zero',
-                plot_thresholds = [2., 3., 4.],
+                plot_thresholds = plot_thresholds,
                 fig = fig,
                 ax= ax1,
                 do_leg=False,
@@ -5036,9 +5064,9 @@ def make_cumulative_timeseries_megaplot(
                 thresholds_dict,
                 ssp=ssp,
                 ensemble = ensemble,
-                dataset = 'CMIP6',
+                dataset = dataset,
                 plot_type = 'line_pc',
-                plot_thresholds = [2., 3., 4.],
+                plot_thresholds = plot_thresholds,
                 fig = fig,
                 ax= ax2,
                 do_leg=False,
@@ -5078,12 +5106,17 @@ def make_cumulative_timeseries_megaplot(
     plt.plot([],[], c='silver', lw=8, ls='-', label = 'Atmosphere')
     plt.plot([],[], c='mediumseagreen', lw=8, ls='-', label = 'Land')
     plt.plot([],[], c='dodgerblue', lw=8, ls='-', label = 'Ocean')
+    if plot_MMM:
+        plt.plot([], [], c='k', ls=':', label=dataset_names.get(dataset, dataset))
+    for thresh in plot_thresholds:
+        plt.plot([], [], c=threshold_colours[thresh], ls='-',lw=3., label=''.join([str(int(thresh)), r'$\degree$', ' C']))
 
-    plt.plot([], [], c='k', ls=':', label = 'Raupach (2014)' )
-    plt.plot([], [], c='navy', ls='-.', label = 'Watson (2020)'  )
+
+    plt.plot([], [], c='k', ls=obs_line_styles['Raupach'], label = 'Raupach (2014)')
+    plt.plot([], [], c='k', ls=obs_line_styles['Watson'], label = 'Watson (2020)')
     add_ipcc = True
     if add_ipcc:
-        plt.plot([], [], c='k', ls='-', lw=2.8,  label = 'SPM.7')
+        plt.plot([], [], c='k', ls='-', lw=2.2,  label = 'SPM.7, 2100')
 
     legd = ax_leg.legend( #keys, labels,
         bbox_to_anchor=(1.7, 0.5),
@@ -5096,16 +5129,17 @@ def make_cumulative_timeseries_megaplot(
     ax_leg.get_yaxis().set_visible(False)
     plt.axis('off')
 
-    if dataset == 'CMIP6':
-        plt.suptitle('Anthropogenic Carbon Allocation Timeseries')
-    else:
-        plt.suptitle(dataset+' Anthropogenic Carbon Allocation Timeseries')
+#    if dataset == 'CMIP6':
+    plt.suptitle('Anthropogenic Carbon Allocation Timeseries')
+#    else:
+#        plt.suptitle(dataset+' Anthropogenic Carbon Allocation Timeseries')
 
     image_extention = diagtools.get_image_format(cfg)
     path = diagtools.folder([cfg['plot_dir'], 'allocation_timeseries_megaplot'])
     path += '_'.join(['allocation_timeseries', 'megaplot', dataset]) + image_extention
     print('saving figure:', path)
-    plt.savefig(path)
+    plt.savefig(path, dpi=300.)
+    plt.savefig(path.replace('.png', '.pdf'))
     plt.close()
 
 
