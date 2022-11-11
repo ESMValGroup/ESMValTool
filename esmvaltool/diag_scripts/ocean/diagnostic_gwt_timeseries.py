@@ -4662,57 +4662,12 @@ def make_cumulative_timeseries(cfg, data_dict,
     tmp_times, tmp_dat = unzip_time(data['atmos_carbon'])
     data['atmos_carbon'] = zip_time({'time':tmp_times, 'atmos_carbon':tmp_dat}, 'atmos_carbon')
 
-    # found=0
-    # for key in ['nbpgt_cumul', 'fgco2gt_cumul']:
-    #     print('adding atmospheric stock', key)
-    #     key_times, key_dat = unzip_time(data[key])
-    #     print(dataset, ssp, tmp_dat, key_dat, key_times, tmp_times)
-    #     if len(tmp_times) != len(key_times):
-    #         print('error:', len(tmp_times), '!=', len(key_times))
-    #         print('carbon_times:', tmp_times[0], tmp_times[-1])
-    #         print(key, 'times', key_times[0], key_times[-1])
-    #         assert 0
-    #         continue
-    #     tmp_dat = tmp_dat - key_dat
-    #     found+=1
-    # if found==0:return fig, ax
-
-    #data['atmos_carbon'] = zip_time({'time':tmp_times, 'atmos_carbon':tmp_dat}, 'atmos_carbon')
-    #colours['atmos_carbon'] = 'purple'
 
     thresholds = {}
     for ssp_it, ensemble, dset in product(exps, ensembles, datasets):
         dicts = thresholds_dict.get((dset, 'tas', ssp_it, ensemble), False)
         if not dicts:continue
         thresholds= thresholds|dicts
-
-    # plot simple time series:
-#    if plot_type == 'simple_ts':
-#        for key, dat in data.items():
-#            times, dat_list = unzip_time(dat)
-#            #if key == 'tls':
-#            #    times, dat = times[:-1], dat[:-1]
-#            plt.plot(times,
-#                dat_list,
-#                lw=2,
-#                color=colours[key],
-#                label = key)
-#        plt.axhline(y=0., c='k', ls='--')
-#        if do_leg: plt.legend()
-#
-#    # plot simple time series:
-#    if plot_type == 'sink_source':
-#        for key, dat in data.items():
-#            times, dat_list = unzip_time(dat)
-#            if key in ['fgco2gt_cumul', 'nbpgt_cumul', 'tls', 'luegt']:
-#                dat_list = -1*dat_list
-#            plt.plot(times,
-#                dat_list,
-#                lw=2,
-#                color=colours[key],
-#                label = key)
-#        plt.axhline(y=0., c='k', ls='--')
-#        if do_leg: plt.legend()
 
     lat, lad = unzip_time(data['tls'])
     ont, ond = unzip_time(data['fgco2gt_cumul'])
@@ -4750,35 +4705,27 @@ def make_cumulative_timeseries(cfg, data_dict,
 
         [[lat, lad], [ont, ond ], [nbt, nbd], [att, atd]] = align_times([[lat, lad], [ont, ond ], [nbt, nbd], [att, atd]])
 
+        save_csv=True 
+        if save_csv:
+            path = diagtools.folder([cfg['plot_dir'], 'allocation_timeseries_csv'])
+            path += '_'.join(['allocation_timeseries', plot_type, ssp, dataset, ensemble]) + '.csv'
+            txt = '# Allocation time series for '+plot_type+ ' '+ ssp+ ' ' + dataset +' ' + ensemble + '\n' 
+            txt += 'year, land, ocean, atmosphere\n'
+            for t1, la, oc, at in zip(lat, lad, ond, atd):
+               txt+= ', '.join([str(i) for i in  [t1, la, oc, at]])+'\n'
+            csv  = open(path,'w')
+            csv.write(txt)
+            csv.close()
+
 
         if plot_type in ['area',] :
             ond = -1.* ond
             lad = -1.*(lad + ond)
-        if plot_type in ['area_over_zero',] :
+        if plot_type in ['area_over_zero',] : # THIS IS APPEARS IJ THE PAPER
             atd_t = atd + lad + ond # air land sea.
             lad_t = lad + ond
             ond_t = ond
-#            lad = lad+ond
- #           atd = atd + lad# air land sea.
-
-            # print('emissions times:', emt[:5], emt[-5:])
-#            print('LUE times:', lut[:5], lut[-5:])
-            #print('emissions data:', emd[:5], emd[-5:])
-#            print('LUE data :', lud[:5], lud[-5:])
-            # print('sizes:', len(emt), len(emd), len(lut), len(lud))
-#            if np.max(lut) > np.max(att):
-#                lut = lut[:-1] # Remove 2015.5 (not in histor period)
-#                lud = lud[:-1]
-
-#            plt.plot(emt, emd+lud, 'k-', lw=1.3,label='Emissions+LUE')
-#            plt.plot(lat, lad, 'k--', lw=1.3, label='LUE')
-        # water:
-        # plt.plot(
-        #     ont,
-        #     ond,
-        #     lw=2,
-        #     color=colours['fgco2gt_cumul'],
-        #     label = )
+        # ocean
         ax.fill_between(# zero and blue line
             ont,
             np.zeros_like(ond_t),
@@ -4788,12 +4735,6 @@ def make_cumulative_timeseries(cfg, data_dict,
             color=colours['fgco2gt_cumul'])
 
         # land:
-        # plt.plot(
-        #     lat,
-        #     lad,
-        #     lw=2,
-        #     color=colours['tls'],
-        #     label = 'True Land Sink')
         ax.fill_between( # blue line and land line
             lat,
             ond_t, # ocean line
@@ -4803,12 +4744,6 @@ def make_cumulative_timeseries(cfg, data_dict,
             label = 'Land')
 
         # atmos
-        # plt.plot(
-        #     att,
-        #     atd,
-        #     lw=2,
-        #     color=colours['cumul_emissions'],
-        #     label = 'Atmosphere')
         ax.fill_between( # atmos anthro stock
             lat,
             lad_t, # land + ocean
@@ -4836,8 +4771,22 @@ def make_cumulative_timeseries(cfg, data_dict,
         water_land_line = (ond/total)*100.
         land_air_line = 100. *(ond + lad)/total
 
+        save_csv=True
+        if save_csv:
+            path = diagtools.folder([cfg['plot_dir'], 'allocation_timeseries_csv'])
+            path += '_'.join(['allocation_timeseries', plot_type, ssp, dataset, ensemble]) + '.csv'
+            txt = '# Allocation time series for '+plot_type+ ' '+ ssp+ ' ' + dataset +' ' + ensemble + '\n'
+            txt += 'year, land %, ocean %\n'
+            for t1, la, oc in zip(att, land_air_line, water_land_line): 
+               txt+= ', '.join([str(i) for i in [t1, la - oc, oc]])+'\n'
+            csv  = open(path, 'w')
+            csv.write(txt)
+            csv.close()
+
         water_land_line = np.ma.masked_invalid(water_land_line)
         land_air_line = np.ma.masked_invalid(land_air_line)
+
+
         # water:
         plt.plot(
             [], [],
@@ -4957,7 +4906,7 @@ def make_cumulative_timeseries(cfg, data_dict,
     if save:
         image_extention = diagtools.get_image_format(cfg)
         path = diagtools.folder([cfg['plot_dir'], 'allocation_timeseries'])
-        path += '_'.join(['allocation_timeseries', plot_type, ssp]) + image_extention
+        path += '_'.join(['allocation_timeseries', dataset, plot_type, ssp, ensemble]) + image_extention
         print('saving figure:', path)
         plt.savefig(path)
         plt.close()
@@ -5998,20 +5947,19 @@ def main(cfg):
                         make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'], plot_dataset=plotdataset, plot_pcs=plot_pcs)
 
 
-            do_cumulative_plot = True
+            do_cumulative_plot = False
             if do_cumulative_plot:
                    # doubke colourful bar chart
                     plot_styles = ['percentages', 'values']
                     group_bys = ['reverseECS', ] #'group_by_ssp', 'ecs'] # 'group_by_model'
                     for group_by in group_bys:
                         make_ensemble_barchart_both(cfg, data_dict, thresholds_dict, ensemble_key='ensemble_mean', group_by=group_by)
-            assert 0
 
-            do_count_and_sensitivity_table = True
+            do_count_and_sensitivity_table = False
             if do_count_and_sensitivity_table:
                 make_count_and_sensitivity_table(cfg, data_dict, thresholds_dict)
 
-            do_timeseries_megaplot = True
+            do_timeseries_megaplot = False
             if do_timeseries_megaplot:
                 # master
                 timeseries_megaplot(cfg, data_dict, thresholds_dict,plot_styles=['CMIP6_range', 'CMIP6_mean'],
@@ -6069,7 +6017,7 @@ def main(cfg):
 #                        panes = ['tas', 'atmos_carbon','tls', 'fgco2', 'lue', 'nbp'])
 
 
-            do_cumulative_plot = True
+            do_cumulative_plot = False
             if do_cumulative_plot:
                #vertical bar chart
                 plot_styles = ['percentages', 'values']
@@ -6094,7 +6042,7 @@ def main(cfg):
                         stacked_hists=False,
                         )
 
-            do_horizontal_plot = True
+            do_horizontal_plot = False
             if do_horizontal_plot:
                 # Horizontal bar charts with allocartions:
                 for plotdataset in sorted(datasets.keys()):
