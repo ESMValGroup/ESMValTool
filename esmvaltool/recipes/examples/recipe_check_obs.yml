@@ -497,6 +497,16 @@ diagnostics:
     scripts: null
 
 
+  MOBO-DIC_MPIM:
+    description: MOBO-DIC_MPIM check
+    variables:
+      dissic:
+    additional_datasets:
+      - {dataset: MOBO-DIC_MPIM, project: OBS6, mip: Omon, tier: 2,
+         type: clim, version: '1.1', start_year: 2011, end_year: 2011}
+    scripts: null
+
+
   NCEP:
     description: NCEP check
     variables:
