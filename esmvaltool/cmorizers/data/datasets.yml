@@ -814,6 +814,13 @@ datasets:
       information).
       A registration is required
 
+  MOBO-DIC_MPIM:
+    tier: 2
+    source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0221526/
+    last_access: 2022-11-03
+    info: |
+      Download the file MOBO-DIC_MPIM_monthly_clim.nc
+
   MODIS:
     tier: 3
     source: https://ladsweb.modaps.eosdis.nasa.gov/search/order
