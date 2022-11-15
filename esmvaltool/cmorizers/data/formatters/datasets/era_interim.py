@@ -109,7 +109,8 @@ def _fix_units(cube, definition):
         cube.units = 'm'  # fix invalid units
         cube.units = cube.units * 'kg m-3 day-1'
         cube.data = cube.core_data() * 1000.
-    if cube.var_name in {'hfds', 'rss', 'rsds', 'rsdt', 'rlds'}:
+    if cube.var_name in {'hfds', 'rss', 'rsds', 'rsdt', 'rlds', 'rlut',
+        'rlutcs', 'rsut', 'rsutcs'}:
         # Add missing 'per day'
         cube.units = cube.units * 'day-1'
         # Radiation fluxes are positive in downward direction
@@ -126,7 +127,7 @@ def _fix_units(cube, definition):
         # https://apps.ecmwf.int/codes/grib/param-db?id=129
         cube.units = cube.units / 'm s-2'
         cube.data = cube.core_data() / 9.80665
-    if cube.var_name in {'cli','clw'}:
+    if cube.var_name in {'cli', 'clw'}:
         cube.units = 'kg kg-1'
 
 
