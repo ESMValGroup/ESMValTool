@@ -157,6 +157,10 @@ MONTH_PARAMS = [
     ('135.128', 'w', '3d'),  # Vertical velocity
     ('133.128', 'q', '3d'),  # Specific humidity
     ('129.128', 'z', '3d'),  # Geopotential
+    ('178.128', 'tsr', 'accu'),  # net top solar radiation 
+    ('208.128', 'tsrc', 'accu'),  # net top solar radiation clear-sky 
+    ('179.128', 'ttr', 'accu'),  # top net thermal radiation 
+    ('209.128', 'ttrc', 'accu'),  # top net thermal radiation clear-sky 
 ]
 
 
