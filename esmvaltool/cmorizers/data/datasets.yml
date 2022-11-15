@@ -931,6 +931,13 @@ datasets:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
 
+  OceanSODA-ETHZ:
+    tier: 2
+    source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0220059/
+    last_access: 2022-11-03
+    info: |
+      Download the file OceanSODA-ETHZ_GRaCER_v2021a_1982-2020.nc
+
   OSI-450-nh:
     tier: 2
     source: http://osisaf.met.no/p/ice/
