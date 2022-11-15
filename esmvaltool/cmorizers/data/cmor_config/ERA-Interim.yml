@@ -2,7 +2,7 @@
 # Global attributes of NetCDF file
 attributes:
   dataset_id: ERA-Interim
-  project_id: OBS
+  project_id: OBS6
   tier: 3
   version: '1'
   modeling_realm: reanaly
@@ -137,21 +137,21 @@ variables:
     mip: Amon
     raw: tcc
     file: 'ERA-Interim_tcc_monthly_*.nc'
-  clt-low:
-    short_name: clt-low
-    mip: Amon
-    raw: lcc
-    file: 'ERA-Interim_lcc_monthly_*.nc'
-  clt-med:
-    short_name: clt-med
-    mip: Amon
-    raw: mcc
-    file: 'ERA-Interim_mcc_monthly_*.nc'
-  clt-high:
-    short_name: clt-high
-    mip: Amon
-    raw: hcc
-    file: 'ERA-Interim_hcc_monthly_*.nc'
+#  clt-low:
+#    short_name: clt-low
+#    mip: Amon
+#    raw: lcc
+#    file: 'ERA-Interim_lcc_monthly_*.nc'
+#  clt-med:
+#    short_name: clt-med
+#    mip: Amon
+#    raw: mcc
+#    file: 'ERA-Interim_mcc_monthly_*.nc'
+#  clt-high:
+#    short_name: clt-high
+#    mip: Amon
+#    raw: hcc
+#    file: 'ERA-Interim_hcc_monthly_*.nc'
   clwvi:
     mip: Amon
     raw:

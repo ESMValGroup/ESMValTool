@@ -929,6 +929,10 @@ diagnostics:
   ERA-Interim:
     description: ERA-Interim check
     variables:
+      cl:
+        mip: Amon
+      cli:
+        mip: Amon
       clivi:
         mip: Amon
       clt_day:
@@ -936,6 +940,8 @@ diagnostics:
         mip: day
       clt_month:
         short_name: clt
+        mip: Amon
+      clw:
         mip: Amon
       clwvi:
         mip: Amon
@@ -982,6 +988,12 @@ diagnostics:
       rlds_day:
         short_name: rlds
         mip: day
+      rlut_month:
+        short_name: rlut
+        mip: Amon
+      rlutcs_month:
+        short_name: rlutcs
+        mip: Amon
       rsds_day:
         short_name: rsds
         mip: day
@@ -993,6 +1005,12 @@ diagnostics:
         mip: CFday
       rsdt_month:
         short_name: rsdt
+        mip: Amon
+      rsut_month:
+        short_name: rsut
+        mip: Amon
+      rsutcs_month:
+        short_name: rsutcs
         mip: Amon
       rss_day:
         short_name: rss
