@@ -7,7 +7,7 @@ Source
     https://psl.noaa.gov/data/gridded/data.ncep.reanalysis.html
 
 Last access
-    20220908
+    20221116
 
 Download and processing instructions
     To facilitate the download, the links to the ftp server are provided.
@@ -36,7 +36,6 @@ Download and processing instructions
       ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/surface_gauss/
         air.2m.mon.mean.nc
         prate.sfc.mon.mean.nc
-        pevpr.sfc.mon.mean.nc (not included yet)
         tmax.2m.mon.mean.nc
         tmin.2m.mon.mean.nc
       ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/other_gauss/
@@ -51,8 +50,6 @@ Download and processing instructions
     #listed below. Since raw data on pressure levels and for surface have the
     #same file and variable name, save the data in two different subdirectories
     #"press" and "surf" in input_dir_path.
-    #Specify the time range of the data as YEAR1-YEAR2 below, considering only
-    #complete years (Jan to Dec).
 
 Caveats
 
@@ -82,22 +79,51 @@ logger = logging.getLogger(__name__)
 
 def _fix_units(cube, definition):
     """Fix issues with the units."""
-    if cube.var_name in {'clt'}:
+    if cube.var_name in ('clt',):
         # Change units from fraction to percentage
         cube.units = definition.units
         cube.data = cube.core_data() * 100.
 
 
-def _fix_coordinates(cube, definition):
+def _fix_coordinates(cube, definition, cmor_info):
     # fix flipped latitude
     utils.flip_dim_coord(cube, 'latitude')
-    utils.fix_dim_coordnames(cube)
-    cube_coord = cube.coord('latitude')
-    utils.fix_bounds(cube, cube_coord)
-    cube_coord = cube.coord('longitude')
-    utils.fix_bounds(cube, cube_coord)
+    #utils.fix_dim_coordnames(cube)
+    #cube_coord = cube.coord('latitude')
+    #utils.fix_bounds(cube, cube_coord)
+    #cube_coord = cube.coord('longitude')
+    #utils.fix_bounds(cube, cube_coord)
+    utils.fix_coords(cube)
+ 
+    if 'height2m' in cmor_info.dimensions:
+        utils.add_height2m(cube)
+    if 'height10m' in cmor_info.dimensions:
+        utils.add_scalar_height_coord(cube, height=10.)
+
+    for coord_def in definition.coordinates.values():
+        axis = coord_def.axis
+        coord = cube.coord(axis=axis)
+        if axis == 'Z':
+            coord.convert_units(coord_def.units)
+        coord.standard_name = coord_def.standard_name
+        coord.var_name = coord_def.out_name
+        coord.long_name = coord_def.long_name
+        coord.points = coord.core_points().astype('float64')
+        if coord.var_name == 'plev':
+            coord.attributes['positive'] = 'down'
 
     return cube
+
+#def _fix_add_coords(cube, definition):
+#    if cube.var_name in ('hurs','tas','ta','tasmax','tasmin'):
+#        # Add scalar coordinate 'height' with value of 2m
+#        utils.add_height2m(cube)
+#        
+#    if cube.var_name in ('sfcWind',):
+#        # Add scalar coordinate 'height' with value of 10m.
+#        utils.add_scalar_height_coord(cube, height=10.)#
+#
+#    return cube
 
 def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     attributes = deepcopy(cfg['attributes'])
@@ -105,7 +131,9 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     cmor_table = CMOR_TABLES[attributes['project_id']]
     definition = cmor_table.get_variable(var['mip'], short_name)
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
-
+    if cmor_info.positive != '':
+        attributes['positive'] = cmor_info.positive
+        
     #print(attributes)
     #print(cmor_table)
     #print(short_name)
@@ -130,9 +158,16 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     cube.coord('time').convert_units(
         Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
     
-    cube = _fix_coordinates(cube, definition)
+    cube = _fix_coordinates(cube, definition, cmor_info)
     #print("fourth stop")
 
+    # add additional and necessary coordinates
+    #cube = _fix_add_coords(cube, definition)
+    #if 'height2m' in cmor_info.dimensions:
+    #    utils.add_height2m(cube)
+    #if 'height10m' in cmor_info.dimensions:
+    #    utils.add_scalar_height_coord(cube, height=10.)
+    
     utils.save_variable(
         cube,
         short_name,

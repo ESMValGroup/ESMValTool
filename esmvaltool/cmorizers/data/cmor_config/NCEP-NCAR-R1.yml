@@ -104,17 +104,17 @@ variables:
   tas_month:
     short_name: tas
     mip: Amon
-    raw: air.2m
+    raw: air
     file: 'surface/air.2m.mon.mean.nc'  
   tasmax_month:
     short_name: tasmax
     mip: Amon
-    raw: tmax.2m
+    raw: tmax
     file: 'surface/tmax.2m.mon.mean.nc'  
   tasmin_month:
     short_name: tasmin
     mip: Amon
-    raw: tmin.2m
+    raw: tmin
     file: 'surface/tmin.2m.mon.mean.nc'  
   ts_month:
     short_name: ts
