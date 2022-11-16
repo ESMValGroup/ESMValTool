@@ -14,17 +14,38 @@ Download and processing instructions
     Since the filenames are sometimes identical across different
     save the data in two subdirectories in input_dir_path.
     Subdirectory pressure/:
-    
-    ftp://ftp.cdc.noaa.gov/Projects/Datasets/data.ncep.reanalysis/pressure/
-    
-    ftp://ftp.cdc.noaa.gov/Projects/Datasets/data.ncep.reanalysis/Dailies/pressure/
-        
-        
+      ftp://ftp.cdc.noaa.gov/Projects/Datasets/data.ncep.reanalysis/pressure/
+        air.mon.mean.nc
+        hgt.mon.mean.nc
+        rhum.mon.mean.nc
+        shum.mon.mean.nc
+        uwnd.mon.mean.nc
+        vwnd.mon.mean.nc
+        omega.mon.mean.nc    
+      ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/pressure/
+        uwnd.*?.nc
+        vwnd.*.nc
+
     Subdirectory surface/:
-      ftp://ftp.cdc.noaa.gov/Datasets/data.ncep.reanalysis/Monthlies/gaussian_grid
+      ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/surface/
+        air.mon.mean.nc
+        pr_wtr.mon.mean.nc
+        slp.mon.mean.nc
+        wspd.mon.mean.nc
+        rhum.mon.mean.nc
+      ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/surface_gauss/
         air.2m.mon.mean.nc
+        prate.sfc.mon.mean.nc
+        pevpr.sfc.mon.mean.nc (not included yet)
+        tmax.2m.mon.mean.nc
+        tmin.2m.mon.mean.nc
+      ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/other_gauss/
         tcdc.eatm.mon.mean.nc
-        pr_wtr.eatm.mon.mean.nc
+      ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/surface_gauss/
+        prate.sft.gauss.*.nc
+      ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/other_gauss/
+        ulwrf.ntat.gauss.*.nc
+       
 
     #Select the section "Pressure" and "Surface" and download the variables
     #listed below. Since raw data on pressure levels and for surface have the
@@ -85,23 +106,23 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     definition = cmor_table.get_variable(var['mip'], short_name)
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
 
-    print(attributes)
-    print(cmor_table)
-    print(short_name)
+    #print(attributes)
+    #print(cmor_table)
+    #print(short_name)
     
     # load data
     raw_var = var.get('raw', short_name)
-    cube = iris.load_cube(raw_filepath)
+    cube = iris.load_cube(str(raw_filepath), NameConstraint(var_name = raw_var))
 
     utils.set_global_atts(cube, attributes)
-    print("first stop")
+    #print("first stop")
     
     _fix_units(cube, definition)
-    print("third stop")
+    #print("third stop")
 
     #utils.fix_var_metadata(cube, definition)
-    print(cube)
-    print(definition)
+    #print(cube)
+    #print(definition)
     utils.fix_var_metadata(cube, cmor_info)
     
     
@@ -110,7 +131,7 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
         Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
     
     cube = _fix_coordinates(cube, definition)
-    print("fourth stop")
+    #print("fourth stop")
 
     utils.save_variable(
         cube,
@@ -129,7 +150,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         logger.info("CMORizing variable '%s'", short_name)
         short_name = var['short_name']
         print(short_name)
-        raw_filepath = os.path.join(in_dir, var['file'])
-        print(raw_filepath)
+        raw_filenames = sorted(Path(in_dir).rglob(var['file']))
+        #print(raw_filenames)
+        for raw_filename in raw_filenames:    
+            #filepath = Path(in_dir) / raw_filename
+            #print(raw_filename)
 
-        _extract_variable(short_name, var, cfg, raw_filepath, out_dir)
+            _extract_variable(short_name, var, cfg, raw_filename, out_dir)
