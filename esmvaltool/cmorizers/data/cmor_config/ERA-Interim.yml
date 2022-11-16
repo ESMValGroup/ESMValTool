@@ -169,12 +169,12 @@ variables:
   cli_month:
     short_name: cli
     mip: Amon
-    raw: tciw
+    raw: ciwc
     file: 'ERA-Interim_ciwc_monthly_*.nc'
   clw_month:
     short_name: clw
     mip: Amon
-    raw: tclw
+    raw: clwc
     file: 'ERA-Interim_clwc_monthly_*.nc'
   evspsbl_month:
     short_name: evspsbl

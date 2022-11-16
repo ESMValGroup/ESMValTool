@@ -63,6 +63,16 @@ and monthly data of:
         V component of wind
         Vertical velocity
         Specific humidity
+        net top solar radiation 
+        net top solar radiation clear-sky 
+        top net thermal radiation 
+        top net thermal radiation clear-sky 
+        fraction of cloud cover
+        vertical integral of cloud liquid water
+        vertical integral of cloud frozen water
+        total column water vapour
+        specific cloud liquid water content
+        specific cloud ice water content
 
 Caveats
     Make sure to select the right steps for accumulated fluxes, see:
@@ -146,8 +156,16 @@ def _fix_coordinates(cube, definition):
         utils.add_scalar_height_coord(cube, 2.)
     if 'height10m' in definition.dimensions:
         utils.add_scalar_height_coord(cube, 10.)
+
     for coord_def in definition.coordinates.values():
         axis = coord_def.axis
+
+        # ERA-Interim cloud parameters are downloaded on pressure levels
+        # (CMOR standard = generic (hybrid) levels, alevel)
+        if axis == "" and coord_def.name == "alevel":
+           axis = "Z"
+           coord_def = CMOR_TABLES['CMIP6'].coords['plev19']
+
         coord = cube.coord(axis=axis)
         if axis == 'T':
             coord.convert_units('days since 1850-1-1 00:00:00.0')
@@ -271,6 +289,10 @@ def _load_cube(in_files, var):
     """Load in_files into an iris cube."""
     ignore_warnings = (
         {
+            'raw': 'cc',
+            'units': '(0 - 1)',
+        },
+        {
             'raw': 'tcc',
             'units': '(0 - 1)',
         },
@@ -340,7 +362,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
     attributes['mip'] = var['mip']
     cmor_table = CMOR_TABLES[attributes['project_id']]
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
-
+    
     cube = _load_cube(in_files, var)
 
     utils.set_global_atts(cube, attributes)

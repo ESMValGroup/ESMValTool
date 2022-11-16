@@ -161,6 +161,7 @@ MONTH_PARAMS = [
     ('208.128', 'tsrc', 'accu'),  # net top solar radiation clear-sky 
     ('179.128', 'ttr', 'accu'),  # top net thermal radiation 
     ('209.128', 'ttrc', 'accu'),  # top net thermal radiation clear-sky 
+    ('248.128', 'cc', '3d'),  # fraction of cloud cover
 ]
 
 
