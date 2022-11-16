@@ -120,14 +120,15 @@ def _fix_units(cube, definition):
         cube.units = cube.units * 'kg m-3 day-1'
         cube.data = cube.core_data() * 1000.
     if cube.var_name in {'hfds', 'rss', 'rsds', 'rsdt', 'rlds', 'rlut',
-        'rlutcs', 'rsut', 'rsutcs'}:
+                         'rlutcs', 'rsut', 'rsutcs'}:
         # Add missing 'per day'
         cube.units = cube.units * 'day-1'
         # Radiation fluxes are positive in downward direction
         cube.attributes['positive'] = 'down'
     if cube.var_name in {'tauu', 'tauv'}:
         cube.attributes['positive'] = 'down'
-    if cube.var_name in {'sftlf', 'clt', 'cl', 'clt-low', 'clt-med', 'clt-high'}:
+    if cube.var_name in {'sftlf', 'clt', 'cl', 'clt-low', 'clt-med',
+                         'clt-high'}:
         # Change units from fraction to percentage
         cube.units = definition.units
         cube.data = cube.core_data() * 100.
