@@ -141,7 +141,7 @@ MONTH_PARAMS = [
     ('56.162', 'vilw', 'an'),  # Vertical integral of cloud liquid water
     ('57.162', 'viiw', 'an'),  # Vertical integral of cloud frozen water
     ('137.128', 'tcwv', 'an'),  # Total column water vapour
-    ('134.128', 'sp', 'an'),  # Surface pressure 
+    ('134.128', 'sp', 'an'),  # Surface pressure
     ('229.128', 'iews', 'fc'),  # Inst. eastward turbulent surface stress
     ('230.128', 'inss', 'fc'),  # Inst. northward turbulent surface stress
     ('34.128', 'sst', 'an'),  # Sea surface temperature
@@ -157,10 +157,10 @@ MONTH_PARAMS = [
     ('135.128', 'w', '3d'),  # Vertical velocity
     ('133.128', 'q', '3d'),  # Specific humidity
     ('129.128', 'z', '3d'),  # Geopotential
-    ('178.128', 'tsr', 'accu'),  # net top solar radiation 
-    ('208.128', 'tsrc', 'accu'),  # net top solar radiation clear-sky 
-    ('179.128', 'ttr', 'accu'),  # top net thermal radiation 
-    ('209.128', 'ttrc', 'accu'),  # top net thermal radiation clear-sky 
+    ('178.128', 'tsr', 'accu'),  # net top solar radiation
+    ('208.128', 'tsrc', 'accu'),  # net top solar radiation clear-sky
+    ('179.128', 'ttr', 'accu'),  # top net thermal radiation
+    ('209.128', 'ttrc', 'accu'),  # top net thermal radiation clear-sky
     ('248.128', 'cc', '3d'),  # fraction of cloud cover
 ]
 

@@ -63,10 +63,10 @@ and monthly data of:
         V component of wind
         Vertical velocity
         Specific humidity
-        net top solar radiation 
-        net top solar radiation clear-sky 
-        top net thermal radiation 
-        top net thermal radiation clear-sky 
+        net top solar radiation
+        net top solar radiation clear-sky
+        top net thermal radiation
+        top net thermal radiation clear-sky
         fraction of cloud cover
         vertical integral of cloud liquid water
         vertical integral of cloud frozen water
@@ -163,8 +163,8 @@ def _fix_coordinates(cube, definition):
         # ERA-Interim cloud parameters are downloaded on pressure levels
         # (CMOR standard = generic (hybrid) levels, alevel)
         if axis == "" and coord_def.name == "alevel":
-           axis = "Z"
-           coord_def = CMOR_TABLES['CMIP6'].coords['plev19']
+            axis = "Z"
+            coord_def = CMOR_TABLES['CMIP6'].coords['plev19']
 
         coord = cube.coord(axis=axis)
         if axis == 'T':
@@ -362,7 +362,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
     attributes['mip'] = var['mip']
     cmor_table = CMOR_TABLES[attributes['project_id']]
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
-    
+
     cube = _load_cube(in_files, var)
 
     utils.set_global_atts(cube, attributes)
