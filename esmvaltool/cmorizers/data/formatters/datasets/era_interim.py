@@ -364,10 +364,11 @@ def _load_cube(in_files, var):
             elements_var = len(var['raw'])
             elements_files = len(in_files)
             if (elements_var != 2) or (elements_files != 2):
-                raise ValueError(
-                    "operator 'diff' selected for variable '{}' expects "
-                    "exactly two input variables and input files"
-                    .format(var.get('short_name')))
+                shortname = var.get('short_name')
+                errmsg = (f'operator diff selected for variable {shortname} '
+                          f'expects exactly two input variables and two input '
+                          f'files')
+                raise ValueError(errmsg)
             cube = iris.load_cube(
                 in_files[0],
                 constraint=NameConstraint(var_name=var['raw'][0]),
