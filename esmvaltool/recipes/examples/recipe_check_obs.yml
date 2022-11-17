@@ -538,6 +538,27 @@ diagnostics:
     scripts: null
 
 
+  NOAA-CIRES-20CR:
+    description: NOAA-CIRES-20CR check
+    variables:
+      clt:
+        mip: Amon
+      clwvi:
+        mip: Amon
+      hus:
+        mip: Amon
+      prw:
+        mip: Amon
+      rsut:
+        mip: Amon
+      rlut:
+        mip: Amon
+    additional_datasets:
+      - {dataset: NOAA-CIRES-20CR, project: OBS6, tier: 2,
+         type: reanaly, version: v2, start_year: 1871, end_year: 2012}
+    scripts: null
+
+
   NOAAGlobalTemp:
     decription: NOAAGlobalTemp check
     variables:
