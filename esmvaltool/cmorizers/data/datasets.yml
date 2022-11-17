@@ -729,6 +729,15 @@ datasets:
       Meteorological Research Institute, Tsukuba City, Japan). See link above
       for more information.
 
+  JRA-25:
+    tier: 2
+    source: https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/reanalysis/JMA/JRA-25/JRA-25/
+    last_access: 2022-11-17
+    info: |
+      Download the following files:
+        mon/atmos/clt/clt_Amon_reanalysis_JRA-25_197901-201312.nc
+
+
   Kadow2020:
     tier: 2
     source: http://users.met.fu-berlin.de/~ChristopherKadow/
