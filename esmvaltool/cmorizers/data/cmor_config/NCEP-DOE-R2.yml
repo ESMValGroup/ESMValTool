@@ -18,13 +18,24 @@ variables:
     short_name: clt
     mip: Amon
     raw: tcdc
-    file: 'tcdc.eatm.mon.mean.nc'
-  # clwvi:
-    # mip: Amon
-    # raw: pr_wtr
-    # file: '*.eatm.mon.mean.nc'
-  # tas_month:
-    # short_name: tas
-    # mip: Amon
-    # raw: air.2m
-    # file: '*.mon.mean.nc'
+    file: 'surface\/tcdc\.eatm\.mon\.mean\.nc'
+  hur_month:
+    short_name: hur
+    mip: Amon
+    raw: rhum
+    file: 'pressure\/rhum\.mon\.mean\.nc'
+  hus_month:
+    short_name: hus
+    mip: Amon
+    raw: shum
+    file: 'pressure\/shum\.2m\.mon\.mean\.nc'
+  prw_month:
+    short_name: prw
+    mip: Amon
+    raw: pr_wtr
+    file: 'surface\/pr_wtr\.eatm\.mon\.mean\.nc'
+  tas_month:
+    short_name: tas
+    mip: Amon
+    raw: air
+    file: 'surface\/air\.2m\.mon\.mean\.nc'

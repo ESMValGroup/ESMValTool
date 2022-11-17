@@ -88,11 +88,7 @@ def _fix_units(cube, definition):
 def _fix_coordinates(cube, definition, cmor_info):
     # fix flipped latitude
     utils.flip_dim_coord(cube, 'latitude')
-    #utils.fix_dim_coordnames(cube)
-    #cube_coord = cube.coord('latitude')
-    #utils.fix_bounds(cube, cube_coord)
-    #cube_coord = cube.coord('longitude')
-    #utils.fix_bounds(cube, cube_coord)
+    # fix other coordinates
     utils.fix_coords(cube)
  
     if 'height2m' in cmor_info.dimensions:
@@ -114,16 +110,6 @@ def _fix_coordinates(cube, definition, cmor_info):
 
     return cube
 
-#def _fix_add_coords(cube, definition):
-#    if cube.var_name in ('hurs','tas','ta','tasmax','tasmin'):
-#        # Add scalar coordinate 'height' with value of 2m
-#        utils.add_height2m(cube)
-#        
-#    if cube.var_name in ('sfcWind',):
-#        # Add scalar coordinate 'height' with value of 10m.
-#        utils.add_scalar_height_coord(cube, height=10.)#
-#
-#    return cube
 
 def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     attributes = deepcopy(cfg['attributes'])
@@ -134,23 +120,17 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     if cmor_info.positive != '':
         attributes['positive'] = cmor_info.positive
         
-    #print(attributes)
-    #print(cmor_table)
-    #print(short_name)
-    
+ 
     # load data
     raw_var = var.get('raw', short_name)
-    cube = iris.load_cube(str(raw_filepath), NameConstraint(var_name = raw_var))
+    with catch_warnings(): 
+        filterwarnings('ignore', message='Ignoring netCDF variable .* invalid units .*', category=UserWarning, module='iris')
+        cube = iris.load_cube(str(raw_filepath), NameConstraint(var_name = raw_var))
 
     utils.set_global_atts(cube, attributes)
-    #print("first stop")
     
     _fix_units(cube, definition)
-    #print("third stop")
 
-    #utils.fix_var_metadata(cube, definition)
-    #print(cube)
-    #print(definition)
     utils.fix_var_metadata(cube, cmor_info)
     
     
@@ -159,14 +139,6 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
         Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
     
     cube = _fix_coordinates(cube, definition, cmor_info)
-    #print("fourth stop")
-
-    # add additional and necessary coordinates
-    #cube = _fix_add_coords(cube, definition)
-    #if 'height2m' in cmor_info.dimensions:
-    #    utils.add_height2m(cube)
-    #if 'height10m' in cmor_info.dimensions:
-    #    utils.add_scalar_height_coord(cube, height=10.)
     
     utils.save_variable(
         cube,
@@ -185,10 +157,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         logger.info("CMORizing variable '%s'", short_name)
         short_name = var['short_name']
         print(short_name)
-        raw_filenames = sorted(Path(in_dir).rglob(var['file']))
-        #print(raw_filenames)
-        for raw_filename in raw_filenames:    
-            #filepath = Path(in_dir) / raw_filename
-            #print(raw_filename)
+        raw_filenames = Path(in_dir).rglob('*.nc')
+        filenames = []
+        for raw_filename in raw_filenames:
+            if re.search(var['file'], str(raw_filename)) is not None:
+                filenames.append(raw_filename) 
+    
+        for filename in sorted(filenames):    
 
-            _extract_variable(short_name, var, cfg, raw_filename, out_dir)
+            _extract_variable(short_name, var, cfg, filename, out_dir)
