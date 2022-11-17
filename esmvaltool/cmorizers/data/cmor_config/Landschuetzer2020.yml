@@ -1,0 +1,19 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: Landschuetzer2020
+  version: '1.1'
+  tier: 2
+  modeling_realm: clim
+  project_id: OBS6
+  source: 'https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0209633/'
+  reference: 'landschuetzer2020'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  spco2:
+    filename: MPI-ULB-SOM_FFN_clim.nc
+    mip: Omon
+    raw_name: pco2
+    raw_units: '1e-6 atm'
