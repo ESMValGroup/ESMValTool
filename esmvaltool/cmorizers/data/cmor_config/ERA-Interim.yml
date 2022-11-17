@@ -205,8 +205,8 @@ variables:
   lwp_month:
     short_name: lwp
     mip: Amon
-    raw: p56.162
-    file: 'ERA-Interim_p56.162_monthly_*.nc'
+    raw: vilw
+    file: 'ERA-Interim_vilw_monthly_*.nc'
   pr_month:
     short_name: pr
     mip: Amon
@@ -259,13 +259,23 @@ variables:
   rsut_month:
     short_name: rsut
     mip: Amon
-    raw: tsr
-    file: 'ERA-Interim_tsr_monthly_*.nc'
+    raw:
+      - tisr
+      - tsr
+    operator: diff
+    files:
+      - 'ERA-Interim_tisr_monthly_*.nc'
+      - 'ERA-Interim_tsr_monthly_*.nc'
   rsutcs_month:
     short_name: rsutcs
     mip: Amon
-    raw: tsrc
-    file: 'ERA-Interim_tsrc_monthly_*.nc'
+    raw:
+      - tisr
+      - tsrc
+    operator: diff
+    files:
+      - 'ERA-Interim_tisr_monthly_*.nc'
+      - 'ERA-Interim_tsrc_monthly_*.nc'
   ta:
     mip: Amon
     raw: t

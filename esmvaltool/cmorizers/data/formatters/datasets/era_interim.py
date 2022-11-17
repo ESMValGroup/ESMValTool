@@ -119,12 +119,22 @@ def _fix_units(cube, definition):
         cube.units = 'm'  # fix invalid units
         cube.units = cube.units * 'kg m-3 day-1'
         cube.data = cube.core_data() * 1000.
-    if cube.var_name in {'hfds', 'rss', 'rsds', 'rsdt', 'rlds', 'rlut',
-                         'rlutcs', 'rsut', 'rsutcs'}:
+    if cube.var_name in {'hfds', 'rss', 'rsds', 'rsdt', 'rlds'}:
         # Add missing 'per day'
         cube.units = cube.units * 'day-1'
         # Radiation fluxes are positive in downward direction
         cube.attributes['positive'] = 'down'
+    if cube.var_name in {'rlut', 'rlutcs'}:
+        # Add missing 'per day'
+        cube.units = cube.units * 'day-1'
+        # Radiation fluxes are positive in upward direction
+        cube.attributes['positive'] = 'up'
+        cube.data = cube.core_data() * -1.
+    if cube.var_name in {'rsut', 'rsutcs'}:
+        # Add missing 'per day'
+        cube.units = cube.units * 'day-1'
+        # Radiation fluxes are positive in upward direction
+        cube.attributes['positive'] = 'up'
     if cube.var_name in {'tauu', 'tauv'}:
         cube.attributes['positive'] = 'down'
     if cube.var_name in {'sftlf', 'clt', 'cl', 'clt-low', 'clt-med',
@@ -348,6 +358,25 @@ def _load_cube(in_files, var):
                     cube = in_cube
                 else:
                     cube += in_cube
+        elif var.get('operator', '') == 'diff':
+            # two variables case using diff operation
+            cube = None
+            elements_var = len(var['raw'])
+            elements_files = len(in_files)
+            if (elements_var != 2) or (elements_files != 2):
+                raise ValueError(
+                    "operator 'diff' selected for variable '{}' expects "
+                    "exactly two input variables and input files"
+                    .format(var.get('short_name')))
+            cube = iris.load_cube(
+                in_files[0],
+                constraint=NameConstraint(var_name=var['raw'][0]),
+            )
+            cube2 = iris.load_cube(
+                in_files[1],
+                constraint=NameConstraint(var_name=var['raw'][1]),
+            )
+            cube -= cube2
         else:
             raise ValueError(
                 "Multiple input files found, with operator '{}' configured: {}"
