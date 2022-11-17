@@ -897,6 +897,19 @@ datasets:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
 
+  NOAA-CIRES-20CR:
+    tier: 2
+    source: https://downloads.psl.noaa.gov/Datasets/20thC_ReanV2/Monthlies/gaussian/monolevel/
+    last_access: 2022-11-17
+    info: |
+      Download the following files:
+        monolevel/cldwtr.eatm.mon.mean.nc
+        monolevel/pr_wtr.eatm.mon.mean.nc
+        pressure/shum.mon.mean.nc
+        gaussian/monolevel/tcdc.eatm.mon.mean.nc
+        gaussian/monolevel/ulwrf.ntat.mon.mean.nc  
+        gaussian/monolevel/uswrf.ntat.mon.mean.nc
+
   NOAAGlobalTemp:
     tier: 2
     source: https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/v5/access/
