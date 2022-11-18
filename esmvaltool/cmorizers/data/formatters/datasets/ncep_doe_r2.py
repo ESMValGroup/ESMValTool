@@ -14,14 +14,13 @@ Download and processing instructions
     Since the filenames are sometimes identical across different
     save the data in two subdirectories in input_dir_path.
     Subdirectory pressure/:
-      ftp://ftp.cdc.noaa.gov/Projects/Datasets/ncep.reanalysis2/pressure/
+      ftp://ftp.cdc.noaa.gov/Projects/Datasets/ncep.reanalysis2/Monthlies/pressure/
         rhum.mon.mean.nc
+        air.mon.mean.nc
         
     Subdirectory surface/:
       ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/gaussian_grid
-        air.2m.mon.mean.nc
         tcdc.eatm.mon.mean.nc
-        shum.2m.mon.mean.nc
       ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/surface
         pr_wtr.eatm.mon.mean.nc
 

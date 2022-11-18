@@ -497,10 +497,14 @@ diagnostics:
     scripts: null
 
 
-  NCEP:
-    description: NCEP check
+  NCEP-NCAR-R1:
+    description: NCEP-NCAR-R1 check
     variables:
+      clt:
+        mip: Amon
       hur:
+        mip: Amon
+      hurs:
         mip: Amon
       hus:
         mip: Amon
@@ -510,11 +514,33 @@ diagnostics:
       pr_day:
         short_name: pr
         mip: day
-      rlut:
+      prw:
+        mip: Amon
+      psl:
+        mip: Amon
+      rlut_day:
+        short_name: rlut
         mip: day
+      rlut_month:
+        short_name: rlut
+        mip: Amon
+      rlutcs:
+        mip: Amon
+      rsut:
+        mip: Amon
+      rsutcs:
+        mip: Amon
+      sfcWind:
+        mip: Amon
       ta:
         mip: Amon
       tas:
+        mip: Amon
+      tasmax:  
+        mip: Amon
+      tasmin:  
+        mip: Amon
+      ts:
         mip: Amon
       ua_month:
         short_name: ua
@@ -533,8 +559,25 @@ diagnostics:
       zg:
         mip: Amon
     additional_datasets:
-      - {dataset: NCEP, project: OBS, tier: 2,
-         type: reanaly, version: 1, start_year: 1948, end_year: 2018}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, tier: 2,
+         type: reanaly, version: 1, start_year: 1948, end_year: 2021}
+    scripts: null
+
+
+  NCEP-DOE-R2:
+    description: NCEP-DOE-R2 check
+    variables:
+      clt:
+        mip: Amon
+      hur:
+        mip: Amon
+      prw: 
+        mip: Amon
+      ta:
+        mip: Amon
+    additional_datasets:
+      - {dataset: NCEP-DOE-R2, project: OBS6, tier: 2,
+         type: reanaly, version: 2, start_year: 1979, end_year: 2021}
     scripts: null
 
 

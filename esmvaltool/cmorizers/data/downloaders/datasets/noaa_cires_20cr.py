@@ -1,4 +1,4 @@
-"""Script to download NCEP."""
+"""Script to download NOAA-CIRES-20CR."""
 import logging
 import os
 
