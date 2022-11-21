@@ -57,19 +57,13 @@ Caveats
 
 import logging
 import re
-import os
-from collections import defaultdict
-from concurrent.futures import ProcessPoolExecutor, as_completed
 from copy import deepcopy
-from datetime import datetime, timedelta
 from pathlib import Path
 from warnings import catch_warnings, filterwarnings
 from cf_units import Unit
 
 import iris
-import numpy as np
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvalcore.preprocessor import daily_statistics, monthly_statistics
 from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
@@ -124,8 +118,12 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     # load data
     raw_var = var.get('raw', short_name)
     with catch_warnings(): 
-        filterwarnings('ignore', message='Ignoring netCDF variable .* invalid units .*', category=UserWarning, module='iris')
-        cube = iris.load_cube(str(raw_filepath), NameConstraint(var_name = raw_var))
+        filterwarnings('ignore',
+                       message='Ignoring netCDF variable .* invalid units .*',
+                       category=UserWarning,
+                       module='iris')
+        cube = iris.load_cube(str(raw_filepath),
+                              NameConstraint(var_name = raw_var))
 
     utils.set_global_atts(cube, attributes)
     

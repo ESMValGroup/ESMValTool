@@ -1,6 +1,5 @@
 """Script to download NOAA-CIRES-20CR."""
 import logging
-import os
 
 from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
@@ -36,9 +35,15 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.connect()
 
     downloader.set_cwd("Datasets/20thC_ReanV2/Monthlies/")
-    downloader.download_file("monolevel/cldwtr.eatm.mon.mean.nc", sub_folder='surface')
-    downloader.download_file("monolevel/pr_wtr.eatm.mon.mean.nc", sub_folder='surface')
-    downloader.download_file("pressure/shum.mon.mean.nc", sub_folder='pressure')
-    downloader.download_file("gaussian/monolevel/tcdc.eatm.mon.mean.nc", sub_folder='surface_gauss')
-    downloader.download_file("gaussian/monolevel/ulwrf.ntat.mon.mean.nc", sub_folder='surface_gauss')
-    downloader.download_file("gaussian/monolevel/uswrf.ntat.mon.mean.nc", sub_folder='surface_gauss')
+    downloader.download_file("monolevel/cldwtr.eatm.mon.mean.nc",
+                             sub_folder='surface')
+    downloader.download_file("monolevel/pr_wtr.eatm.mon.mean.nc",
+                             sub_folder='surface')
+    downloader.download_file("pressure/shum.mon.mean.nc",
+                             sub_folder='pressure')
+    downloader.download_file("gaussian/monolevel/tcdc.eatm.mon.mean.nc",
+                             sub_folder='surface_gauss')
+    downloader.download_file("gaussian/monolevel/ulwrf.ntat.mon.mean.nc",
+                             sub_folder='surface_gauss')
+    downloader.download_file("gaussian/monolevel/uswrf.ntat.mon.mean.nc",
+                             sub_folder='surface_gauss')

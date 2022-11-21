@@ -14,7 +14,8 @@ Download and processing instructions
     Since the filenames are sometimes identical across different
     save the data in two subdirectories in input_dir_path.
     Subdirectory pressure/:
-      ftp://ftp.cdc.noaa.gov/Projects/Datasets/ncep.reanalysis2/Monthlies/pressure/
+      ftp://ftp.cdc.noaa.gov/Projects/Datasets/ncep.reanalysis2/Monthlies/
+      pressure/
         rhum.mon.mean.nc
         air.mon.mean.nc
         
