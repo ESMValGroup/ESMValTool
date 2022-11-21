@@ -497,6 +497,26 @@ diagnostics:
     scripts: null
 
 
+  Landschuetzer2020:
+    description: Landschuetzer2020 check
+    variables:
+      spco2:
+    additional_datasets:
+      - {dataset: Landschuetzer2020, project: OBS6, mip: Omon, tier: 2,
+         type: clim, version: '1.1', start_year: 2004, end_year: 2004}
+    scripts: null
+
+
+  MOBO-DIC_MPIM:
+    description: MOBO-DIC_MPIM check
+    variables:
+      dissic:
+    additional_datasets:
+      - {dataset: MOBO-DIC_MPIM, project: OBS6, mip: Omon, tier: 2,
+         type: clim, version: '1.1', start_year: 2011, end_year: 2011}
+    scripts: null
+
+
   NCEP:
     description: NCEP check
     variables:
@@ -539,12 +559,35 @@ diagnostics:
 
 
   NOAAGlobalTemp:
-    decription: NOAAGlobalTemp check
+    description: NOAAGlobalTemp check
     variables:
       tasa:
     additional_datasets:
       - {dataset: NOAAGlobalTemp, project: OBS, mip: Amon, tier: 2,
          type: ground, version: v5.0.0, start_year: 1880, end_year: 2021}
+    scripts: null
+
+
+  OceanSODA-ETHZ:
+    description: OceanSODA-ETHZ check
+    variables:
+      areacello:
+        mip: Ofx
+      co3os:
+        mip: Omon
+      dissicos:
+        mip: Omon
+      fgco2:
+        mip: Omon
+      phos:
+        mip: Omon
+      spco2:
+        mip: Omon
+      talkos:
+        mip: Omon
+    additional_datasets:
+      - {dataset: OceanSODA-ETHZ, project: OBS6, tier: 2, type: reanaly,
+         version: v2021e, start_year: 1982, end_year: 2020}
     scripts: null
 
 
