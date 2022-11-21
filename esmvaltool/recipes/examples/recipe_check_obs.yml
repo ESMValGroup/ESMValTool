@@ -517,47 +517,6 @@ diagnostics:
     scripts: null
 
 
-  NCEP:
-    description: NCEP check
-    variables:
-      hur:
-        mip: Amon
-      hus:
-        mip: Amon
-      pr_month:
-        short_name: pr
-        mip: Amon
-      pr_day:
-        short_name: pr
-        mip: day
-      rlut:
-        mip: day
-      ta:
-        mip: Amon
-      tas:
-        mip: Amon
-      ua_month:
-        short_name: ua
-        mip: Amon
-      ua_day:
-        short_name: ua
-        mip: day
-      va_month:
-        short_name: va
-        mip: Amon
-      va_day:
-        short_name: va
-        mip: day
-      wap:
-        mip: Amon
-      zg:
-        mip: Amon
-    additional_datasets:
-      - {dataset: NCEP, project: OBS, tier: 2,
-         type: reanaly, version: 1, start_year: 1948, end_year: 2018}
-    scripts: null
-
-
   NOAAGlobalTemp:
     description: NOAAGlobalTemp check
     variables:
