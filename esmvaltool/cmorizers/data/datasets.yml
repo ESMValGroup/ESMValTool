@@ -899,7 +899,7 @@ datasets:
 
   NOAA-CIRES-20CR:
     tier: 2
-    source: https://downloads.psl.noaa.gov/Datasets/20thC_ReanV2/Monthlies/gaussian/monolevel/
+    source: ftp.cdc.noaa.gov/Projects/20thC_ReanV2/Monthlies/
     last_access: 2022-11-17
     info: |
       Download the following files:

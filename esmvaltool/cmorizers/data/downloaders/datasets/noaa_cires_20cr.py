@@ -1,8 +1,8 @@
 """Script to download NOAA-CIRES-20CR."""
 import logging
-import os
+#import os
 
-from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
+from esmvaltool.cmorizers.data.downloaders.wget import FTPDownloader
 
 logger = logging.getLogger(__name__)
 
@@ -26,21 +26,30 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     overwrite : bool
         Overwrite already downloaded files
     """
-
-    downloader = WGetDownloader(
+    downloader = FTPDownloader(
         config=config,
+        server='ftp.cdc.noaa.gov',
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
+    downloader.connect()
 
-    os.makedirs(downloader.local_folder, exist_ok=True)
+    downloader.set_cwd("Datasets/20thC_ReanV2/Monthlies/")
+    downloader.download_file("monolevel/cldwtr.eatm.mon.mean.nc", sub_folder='surface')
+    downloader.download_file("monolevel/pr_wtr.eatm.mon.mean.nc", sub_folder='surface')
+    downloader.download_file("pressure/shum.mon.mean.nc", sub_folder='pressure')
+    downloader.download_file("gaussian/monolevel/tcdc.eatm.mon.mean.nc", sub_folder='surface_gauss')
+    downloader.download_file("gaussian/monolevel/ulwrf.ntat.mon.mean.nc", sub_folder='surface_gauss')
+    downloader.download_file("gaussian/monolevel/uswrf.ntat.mon.mean.nc", sub_folder='surface_gauss')
 
-    url = "https://downloads.psl.noaa.gov/Datasets/20thC_ReanV2/Monthlies/"
+    #os.makedirs(downloader.local_folder, exist_ok=True)
 
-    downloader.download_file(url + "monolevel/cldwtr.eatm.mon.mean.nc", wget_options=[])
-    downloader.download_file(url + "monolevel/pr_wtr.eatm.mon.mean.nc", wget_options=[])
-    downloader.download_file(url + "pressure/shum.mon.mean.nc", wget_options=[])
-    downloader.download_file(url + "gaussian/monolevel/tcdc.eatm.mon.mean.nc", wget_options=[])
-    downloader.download_file(url + "gaussian/monolevel/ulwrf.ntat.mon.mean.nc", wget_options=[])
-    downloader.download_file(url + "gaussian/monolevel/uswrf.ntat.mon.mean.nc", wget_options=[])
+    #url = "https://downloads.psl.noaa.gov/Datasets/20thC_ReanV2/Monthlies/"
+
+    #downloader.download_file(url + "monolevel/cldwtr.eatm.mon.mean.nc", wget_options=[])
+    #downloader.download_file(url + "monolevel/pr_wtr.eatm.mon.mean.nc", wget_options=[])
+    #downloader.download_file(url + "pressure/shum.mon.mean.nc", wget_options=[])
+    #downloader.download_file(url + "gaussian/monolevel/tcdc.eatm.mon.mean.nc", wget_options=[])
+    #downloader.download_file(url + "gaussian/monolevel/ulwrf.ntat.mon.mean.nc", wget_options=[])
+    #downloader.download_file(url + "gaussian/monolevel/uswrf.ntat.mon.mean.nc", wget_options=[])
