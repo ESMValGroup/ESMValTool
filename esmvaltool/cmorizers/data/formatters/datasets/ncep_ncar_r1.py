@@ -21,7 +21,7 @@ Download and processing instructions
         shum.mon.mean.nc
         uwnd.mon.mean.nc
         vwnd.mon.mean.nc
-        omega.mon.mean.nc    
+        omega.mon.mean.nc
       ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/pressure/
         uwnd.*?.nc
         vwnd.*.nc
@@ -44,7 +44,7 @@ Download and processing instructions
         prate.sft.gauss.*.nc
       ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/other_gauss/
         ulwrf.ntat.gauss.*.nc
-       
+
 
     #Select the section "Pressure" and "Surface" and download the variables
     #listed below. Since raw data on pressure levels and for surface have the
@@ -84,7 +84,7 @@ def _fix_coordinates(cube, definition, cmor_info):
     utils.flip_dim_coord(cube, 'latitude')
     # fix other coordinates
     utils.fix_coords(cube)
- 
+
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
     if 'height10m' in cmor_info.dimensions:
@@ -113,31 +113,29 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     if cmor_info.positive != '':
         attributes['positive'] = cmor_info.positive
-        
- 
+
     # load data
     raw_var = var.get('raw', short_name)
-    with catch_warnings(): 
+    with catch_warnings():
         filterwarnings('ignore',
                        message='Ignoring netCDF variable .* invalid units .*',
                        category=UserWarning,
                        module='iris')
         cube = iris.load_cube(str(raw_filepath),
-                              NameConstraint(var_name = raw_var))
+                              NameConstraint(var_name=raw_var))
 
     utils.set_global_atts(cube, attributes)
-    
+
     _fix_units(cube, definition)
 
     utils.fix_var_metadata(cube, cmor_info)
-    
-    
+
     # fix time units
     cube.coord('time').convert_units(
         Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
-    
+
     cube = _fix_coordinates(cube, definition, cmor_info)
-    
+
     utils.save_variable(
         cube,
         short_name,
@@ -147,7 +145,6 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     )
 
 
-   
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Run CMORizer for NCEP-NCAR-R1."""
     # Run the cmorization
@@ -159,8 +156,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         filenames = []
         for raw_filename in raw_filenames:
             if re.search(var['file'], str(raw_filename)) is not None:
-                filenames.append(raw_filename) 
-    
-        for filename in sorted(filenames):    
+                filenames.append(raw_filename)
+
+        for filename in sorted(filenames):
 
             _extract_variable(short_name, var, cfg, filename, out_dir)

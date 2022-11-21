@@ -18,7 +18,7 @@ Download and processing instructions
       pressure/
         rhum.mon.mean.nc
         air.mon.mean.nc
-        
+
     Subdirectory surface/:
       ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/gaussian_grid
         tcdc.eatm.mon.mean.nc

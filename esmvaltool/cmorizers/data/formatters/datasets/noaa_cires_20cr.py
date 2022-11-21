@@ -24,10 +24,10 @@ Download and processing instructions
         tcdc.eatm.mon.mean.nc
         ulwrf.ntat.mon.mean.nc
         uswrf.ntat.mon.mean.nc
-    
+
     Subdirectory pressure/:
         shum.mon.mean.nc
-    
+
 Caveats
 
 """
