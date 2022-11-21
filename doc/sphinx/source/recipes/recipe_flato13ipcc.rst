@@ -33,7 +33,7 @@ following figures from Flato et al. (2013) can currently be reproduced:
       CMIP5 multi-model mean and the climatology from the Global Precipitation
       Climatology Project (Adler et al., 2003), c) multi-model mean absolute
       error with respect to observations, and d) multi-model mean error
-      relative to the multi-model mean precipitation ifself.
+      relative to the multi-model mean precipitation itself.
 
     * Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative
       effects in Wm-2 for the CMIP5 models against CERES EBAF (2001-2011) in
@@ -43,7 +43,7 @@ following figures from Flato et al. (2013) can currently be reproduced:
       averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin
       gray lines), and the multi-model mean (thick red line).
 
-    * Figure 9.6: Centred pattern correlations between models and observations
+    * Figure 9.6: Centered pattern correlations between models and observations
       for the annual mean climatology over the period 1980–1999. Results are
       shown for individual CMIP3 (black) and CMIP5 (blue) models as thin
       dashes, along with the corresponding ensemble average (thick dash) and
@@ -177,7 +177,7 @@ User settings in recipe
 
    * Required settings (variables)*
 
-   * reference_dataset: name of reference datatset
+   * reference_dataset: name of reference dataset
 
    *Optional settings (variables)*
 
@@ -363,7 +363,7 @@ User settings in recipe
    *Optional settings (scripts)*
 
    * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
-   * fig939_season : seasons i.e. (["DJF","JJA","ANN"]), default "DJF"
+   * fig939_season: seasons i.e. (["DJF","JJA","ANN"]), default "DJF"
    * fig939_region_label: Labels for regions, which should be included
      (["ALAs","CGIs","WNAs","CNAs","ENAs","CAMs","AMZs","NEBs","WSAs","SSAs",
      "NEUs","CEUs","MEDs","SAHs","WAFs","EAFs","SAFs","NASs","WASs","CASs",
@@ -376,7 +376,7 @@ User settings in recipe
    * fig939_YMin: minimum Y Axis
    * fig939_YMax: maximum Y Axis
    * fig939_vert_line_pos: i.e. ([6,10,13,17,24,26])
-   * fig939_vert_line_label: labels of vertical lines, i.e.(["North America",
+   * fig939_vert_line_label: labels of vertical lines, i.e. (["North America",
      "South America","Europe","Africa","Asia","Australia"])
    * fig939_mode: True= cumulative mode
 
@@ -389,7 +389,7 @@ User settings in recipe
    *Optional settings (scripts)*
 
    * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
-   * fig940_season : seasons i.e. (["DJF","JJA","ANN"]), default "DJF"
+   * fig940_season: seasons i.e. (["DJF","JJA","ANN"]), default "DJF"
    * fig940_region_label: Labels for regions, which should be included
      (["Arctic_land","Arctic_sea","Antarctic_land","Antarctic_sea",
      "Caribbean","WesternIndianOcean","NorthernIndianOcean",
@@ -404,7 +404,7 @@ User settings in recipe
    * fig940_YMin: minimum Y Axis
    * fig940_YMax: maximum Y Axis
    * fig940_vert_line_pos: i.e. ([6,10,13,17,24,26])
-   * fig940_vert_line_label: labels of vertical lines, i.e.(["North America",
+   * fig940_vert_line_label: labels of vertical lines, i.e. (["North America",
      "South America","Europe","Africa","Asia","Australia"])
    * fig940_mode: True= cumulative mode
 
@@ -587,7 +587,7 @@ Example plots
    CMIP5 multi-model mean and the climatology from the Global Precipitation
    Climatology Project (Adler et al., 2003), c) multi-model mean absolute
    error with respect to observations, and d) multi-model mean error
-   relative to the multi-model mean precipitation ifself.
+   relative to the multi-model mean precipitation itself.
 
 .. figure::  /recipes/figures/flato13ipcc/fig-9-5.png
    :align:   center
@@ -603,7 +603,7 @@ Example plots
 .. figure::  /recipes/figures/flato13ipcc/fig-9-6.png
    :align:   center
 
-   Figure 9.6: Centred pattern correlations between models and observations
+   Figure 9.6: Centered pattern correlations between models and observations
    for the annual mean climatology over the period 1980–1999. Results are
    shown for individual CMIP3 (black) and CMIP5 (blue) models as thin
    dashes, along with the corresponding ensemble average (thick dash) and
