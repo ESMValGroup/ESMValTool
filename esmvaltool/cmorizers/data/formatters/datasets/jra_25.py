@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for "NOAAGlobalTemp data.
+"""ESMValTool CMORizer for NOAAGlobalTemp data.
 
 Tier
     Tier 2: other freely-available dataset.
