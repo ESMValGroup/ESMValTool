@@ -23,7 +23,7 @@ Download and processing instructions
         vwnd.mon.mean.nc
         omega.mon.mean.nc
       ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/pressure/
-        uwnd.*?.nc
+        uwnd.*.nc
         vwnd.*.nc
 
     Subdirectory surface/:
