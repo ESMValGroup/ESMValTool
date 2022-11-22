@@ -10,7 +10,7 @@
    "recipe_autoassess_radiation_rms_Amon_all.yml",
    "recipe_autoassess_radiation_rms_Amon_obs.yml",
    "recipe_autoassess_radiation_rms_cfMon_all.yml",
-   "recipe_autoassess_stratosphere.yml",
+   "recipe_stratosphere.yml",
    "recipe_bock20jgr.yml",
    "recipe_capacity_factor.yml",
    "recipe_carvalhais14nat.yml",

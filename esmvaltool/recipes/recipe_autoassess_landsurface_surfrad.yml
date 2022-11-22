@@ -24,8 +24,8 @@ documentation:
     - predoi_valeriu
 
 datasets:
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
-  - {dataset: MPI-ESM-MR,  project: CMIP5,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1992, end_year: 2002}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: amip, ensemble: r1i1p1, start_year: 1992, end_year: 2002}
 
 preprocessors:
   pp_aa_area:
@@ -37,25 +37,25 @@ diagnostics:
   aa_landsurf_surfrad:
     description: Autoassess test diag for Land-Surface Surfrad.
     variables:
-      rsns: # Surf SW net all sky
+      rsns:  # Surf SW net all sky
         derive: true
         force_derivation: false
         mip: Amon
         additional_datasets:
-          - {dataset: CERES-EBAF,  project: obs4MIPs,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, start_year: 2001, end_year: 2012,
+             tier: 1}
       sftlf:
         mip: fx
-      rlns: # Surf LW net all sky
+      rlns:  # Surf LW net all sky
         derive: true
         force_derivation: false
         mip: Amon
         additional_datasets:
-          - {dataset: CERES-EBAF,  project: obs4MIPs,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
-      sftlf:
-        mip: fx
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, start_year: 2001, end_year: 2012,
+             tier: 1}
     scripts:
       autoassess_landsurf_surfrad: &autoassess_landsurf_surfrad_settings
-        script: autoassess/autoassess_area_base.py
+        script: autoassess/area_base.py
         title: "Autoassess Land-Surface Diagnostic Surfrad Metric"
         area: land_surface_surfrad
         control_model: MPI-ESM-LR
@@ -73,7 +73,7 @@ diagnostics:
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: [CERES-EBAF]
-        script: autoassess/plot_autoassess_metrics.py
+        script: autoassess/plot_metrics.py
         ancestors: ['*/autoassess_landsurf_surfrad']
         title: "Plot Land-Surface Metrics Surfrad"
         plot_name: "Surfrad_Metrics"

@@ -1,5 +1,4 @@
-"""
-Plot tool for stratosphere.
+"""Plot tool for stratosphere.
 
 Module for functions useful for image manipulation and plotting.
 """
@@ -10,8 +9,7 @@ import scipy.interpolate as spint
 
 
 def segment2list(cmap, numcol, reverse=False):
-    """
-    Return a discrete colormap from the continuous colormap cmap.
+    """Return a discrete colormap from the continuous colormap cmap.
 
         cmap: colormap instance, eg. cm.jet.
         numcol: Number of colors.

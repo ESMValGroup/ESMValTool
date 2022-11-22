@@ -1,4 +1,4 @@
-.. _recipe_autoassess_stratosphere.rst:
+.. _recipe_stratosphere.rst:
 
 Stratosphere - Autoassess diagnostics
 =====================================
@@ -103,7 +103,7 @@ wrapper. This wrapper accepts a number of input arguments that are read through 
 
 This recipe is part of the larger group of Autoassess metrics ported to ESMValTool
 from the native Autoassess package from the UK's Met Office. The ``diagnostics`` settings
-are almost the same as for the other Atoassess metrics.
+are almost the same as for the other Autoassess metrics.
 
 .. note::
 
@@ -131,7 +131,7 @@ are almost the same as for the other Atoassess metrics.
 
    Polar Night Jets (PNJ) metrics require data available at very low air pressures
    ie very high altitudes; both Olar Night Jet and Easterly Jets computations should
-   be preformed using ``ta`` and ``ua`` data at ``<< 100 Pa``; the lowest air pressure
+   be performed using ``ta`` and ``ua`` data at ``<< 100 Pa``; the lowest air pressure
    found in atmospheric CMOR mip tables corresponds to ``plev39`` air pressure table,
    and is used in the ``AERmonZ`` mip. If the user requires correct calculations of these
    jets, it is highly advisable to use data from ``AERmonZ``. Note that standard QBO
@@ -144,10 +144,10 @@ over to the diagnostic/metric is listed below.
 .. code-block:: yaml
 
     scripts:
-      autoassess_strato_test_1: &autoassess_strato_test_1_settings
+      strato_test_1: &strato_test_1_settings
         script: autoassess/autoassess_area_base.py  # the base wrapper
-        title: "Autoassess Stratosphere Diagnostic Metric"  # title
-        area: stratosphere  # assesment area
+        title: "Stratosphere Diagnostic Metric"  # title
+        area: stratosphere  # assessment area
         control_model: UKESM1-0-LL-hist  # control dataset name
         exp_model: UKESM1-0-LL-piCont  # experiment dataset name
         obs_models: [ERA-Interim]  # list to hold models that are NOT for metrics but for obs operations

@@ -58,7 +58,7 @@ cd esmvaltool_rose
 cp $esmvaltool/utils/rose-cylc/esmvt_rose_wrapper.py .
 [get u-bd684 in $HOME, get your recipes and the config]
 python esmvt_rose_wrapper.py -c config-user.yml \
--r recipe_autoassess_stratosphere.yml recipe_OceanPhysics.yml \
+-r recipe_stratosphere.yml recipe_OceanPhysics.yml \
 -d $HOME/esmvaltool_rose
 
 Note that you need to pass FULL PATHS to cylc, no . or .. because all
@@ -78,11 +78,10 @@ import argparse
 import configparser
 import logging
 import os
-import subprocess
 import shutil
+import subprocess
 
 import yaml
-
 
 # set up logging
 logger = logging.getLogger(__name__)
@@ -103,17 +102,16 @@ def get_args():
     parser = argparse.ArgumentParser(
         description=HEADER,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument(
-        '-c',
-        '--config-file',
-        default=os.path.join(os.path.dirname(__file__), 'config-user.yml'),
-        help='Configuration file')
-    parser.add_argument(
-        '-r',
-        '--recipe-files',
-        type=str,
-        nargs='+',
-        help='Recipe files (list or single file)')
+    parser.add_argument('-c',
+                        '--config-file',
+                        default=os.path.join(os.path.dirname(__file__),
+                                             'config-user.yml'),
+                        help='Configuration file')
+    parser.add_argument('-r',
+                        '--recipe-files',
+                        type=str,
+                        nargs='+',
+                        help='Recipe files (list or single file)')
     parser.add_argument(
         '-d',
         '--main-dir',
@@ -124,16 +122,14 @@ def get_args():
         '--suite-dir',
         default=os.path.join(os.environ['HOME'], 'u-bd684'),
         help='u-bd684 suite directory; default to $HOME/u-bd684')
-    parser.add_argument(
-        '-n',
-        '--no-submit',
-        action='store_true',
-        help="Flag to NOT submit the Rose suite.")
-    parser.add_argument(
-        '-l',
-        '--log-level',
-        default='info',
-        choices=['debug', 'info', 'warning', 'error'])
+    parser.add_argument('-n',
+                        '--no-submit',
+                        action='store_true',
+                        help="Flag to NOT submit the Rose suite.")
+    parser.add_argument('-l',
+                        '--log-level',
+                        default='info',
+                        choices=['debug', 'info', 'warning', 'error'])
     args = parser.parse_args()
     return args
 
@@ -142,12 +138,11 @@ def _set_logger(logging, out_dir, log_file, log_level):
     # set logging for screen and file output
     root_logger = logging.getLogger()
     out_fmt = "%(asctime)s %(levelname)-8s %(name)s,%(lineno)s\t%(message)s"
-    logging.basicConfig(
-        filename=os.path.join(out_dir, log_file),
-        filemode='a',
-        format=out_fmt,
-        datefmt='%H:%M:%S',
-        level=logging.DEBUG)
+    logging.basicConfig(filename=os.path.join(out_dir, log_file),
+                        filemode='a',
+                        format=out_fmt,
+                        datefmt='%H:%M:%S',
+                        level=logging.DEBUG)
     root_logger.setLevel(log_level.upper())
     logfmt = logging.Formatter(out_fmt)
     console_handler = logging.StreamHandler()
@@ -162,8 +157,8 @@ def read_yaml_file(yaml_file):
     return loaded_file
 
 
-def _setup_work(rose_config_template, recipe_files,
-                config_file, main_dir, default_suite, log_level):
+def _setup_work(rose_config_template, recipe_files, config_file, main_dir,
+                default_suite, log_level):
     """Write the new rose conf file per suite."""
     # Build the ConfigParser object
     config = configparser.ConfigParser()
@@ -184,8 +179,8 @@ def _setup_work(rose_config_template, recipe_files,
         shutil.copy2(config_file, main_dir)
     recipes_field = []
     for recipe in recipe_files:
-        if not os.path.exists(os.path.join(main_dir, 'recipes',
-                                           os.path.basename(recipe))):
+        if not os.path.exists(
+                os.path.join(main_dir, 'recipes', os.path.basename(recipe))):
             shutil.copy2(recipe, os.path.join(main_dir, 'recipes'))
         recipes_field.append(os.path.basename(recipe).strip('.yml'))
     rose_suite = os.path.join(main_dir, 'u-bd684')
@@ -209,8 +204,7 @@ def _setup_work(rose_config_template, recipe_files,
     logger.info("Use user config file %s", config_file)
 
     # write the file
-    config.set('jinja2:suite.rc', 'INPUT_DIR',
-               '"' + main_dir + '"')
+    config.set('jinja2:suite.rc', 'INPUT_DIR', '"' + main_dir + '"')
     config.set('jinja2:suite.rc', 'OUTPUT_DIR', '"' + out_dir + '"')
     config.set('jinja2:suite.rc', 'RECIPES', str(recipes_field))
     with open(os.path.join(rose_suite, 'rose-suite.conf'), 'w') as r_c:
@@ -246,8 +240,8 @@ def main():
     log_level = args.log_level
 
     # setup rose suite
-    run_rose = _setup_work(rose_config_template, recipe_files,
-                           config_file, main_dir, default_suite, log_level)
+    run_rose = _setup_work(rose_config_template, recipe_files, config_file,
+                           main_dir, default_suite, log_level)
 
     # submit to cylc
     if not args.no_submit:

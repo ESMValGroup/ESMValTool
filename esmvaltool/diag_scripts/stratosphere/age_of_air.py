@@ -9,12 +9,11 @@ import iris.analysis as iai
 import matplotlib.pyplot as plt
 import numpy as np
 
-from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
+from esmvaltool.diag_scripts.stratosphere.loaddata import load_run_ss
 
 from .strat_metrics_1 import weight_lat_ave
 
 logger = logging.getLogger(__name__)
-
 
 # Constant for number of seconds in a 360 day calendar year
 # Wrong if gregorian calendar!
@@ -91,7 +90,7 @@ def calculate_analysis_years(run):
 
 def age_of_air(run):
     """Calculate the age of air metrics."""
-    # Create metrics dictionary with MDI incase age of air
+    # Create metrics dictionary with MDI in case age of air
     # diagnostics not available
     metrics = {
         'RMS error: tropical Age of Air': -10000.,
@@ -101,8 +100,9 @@ def age_of_air(run):
     try:
         # Set up to only run for 5 year period
         analysis_start_dt, analysis_end_dt = calculate_analysis_years(run)
-        constraint = dict(
-            from_dt=analysis_start_dt, to_dt=analysis_end_dt, lbproc=128)
+        constraint = dict(from_dt=analysis_start_dt,
+                          to_dt=analysis_end_dt,
+                          lbproc=128)
         # Calculate age of air metrics if appropriate diagnostic available
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore', '.*orography.*', UserWarning)
@@ -157,11 +157,10 @@ def age_of_air(run):
 
 
 def multi_age_plot(run):
-    """
-    Plot results.
+    """Plot results.
 
-    This function is plotting the results of the function age_of_air for each
-    run against observations.
+    This function is plotting the results of the function age_of_air for
+    each run against observations.
     """
     # Run age_of_air for each run.
     # Age_of_air returns metrics and writes results into an *.nc in the current
@@ -199,20 +198,18 @@ def multi_age_plot(run):
     fig = plt.figure()
     ax1 = plt.gca()
     # Plot OBS
-    plt.plot(
-        AGE_YRS,
-        ZSF6_KM,
-        linestyle='-',
-        marker='s',
-        color='black',
-        label='SF6 obs')
-    plt.plot(
-        AGE_YRS2,
-        ZCO2_KM,
-        linestyle='-',
-        marker='D',
-        color='black',
-        label='CO2 obs')
+    plt.plot(AGE_YRS,
+             ZSF6_KM,
+             linestyle='-',
+             marker='s',
+             color='black',
+             label='SF6 obs')
+    plt.plot(AGE_YRS2,
+             ZCO2_KM,
+             linestyle='-',
+             marker='D',
+             color='black',
+             label='CO2 obs')
     # Plot control
     diag = iris.load_cube(cntlfile, trop_cons)
     levs = diag.coord('level_height').points
@@ -234,20 +231,18 @@ def multi_age_plot(run):
     fig = plt.figure()
     ax1 = plt.gca()
     # Plot OBS
-    plt.plot(
-        AGE2_YRS,
-        Z2_KM,
-        linestyle='-',
-        marker='s',
-        color='black',
-        label='SF6 obs')
-    plt.plot(
-        AGE2_YRS2,
-        Z2_KM2,
-        linestyle='-',
-        marker='D',
-        color='black',
-        label='CO2 obs')
+    plt.plot(AGE2_YRS,
+             Z2_KM,
+             linestyle='-',
+             marker='s',
+             color='black',
+             label='SF6 obs')
+    plt.plot(AGE2_YRS2,
+             Z2_KM2,
+             linestyle='-',
+             marker='D',
+             color='black',
+             label='CO2 obs')
     # Plot control
     diag = iris.load_cube(cntlfile, midl_cons)
     levs = diag.coord('level_height').points
