@@ -848,16 +848,41 @@ datasets:
         EnsembleGPP_GL.nc
       A registration is required for
 
-  NCEP:
+  NCEP-DOE-R2:
     tier: 2
-    source: http://www.esrl.noaa.gov/psd/data/gridded/data.ncep.reanalysis.html
-    last_access: 2019-02-04
+    source: https://psl.noaa.gov/data/gridded/data.ncep.reanalysis2.html
+    last_access: 2022-09-06
     info: |
       To facilitate the download, the links to the ftp server are provided.
       Since the filenames are sometimes identical across different
       save the data in two subdirectories in input_dir_path.
       Subdirectory pressure/:
-        ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/pressure/
+        ftp://ftp.cdc.noaa.gov/Projects/Datasets/ncep.reanalysis2/Monthlies/
+        pressure/
+          rhum.mon.mean.nc
+          air.mon.mean.nc
+      Subdirectory surface/:
+        ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
+        gaussian_grid
+          tcdc.eatm.mon.mean.nc
+        ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/surface
+          pr_wtr.eatm.mon.mean.nc
+
+      Select the section "Pressure" and "Surface" and download the variables
+      listed below. Since raw data on pressure levels and for surface have the
+      same file and variable name, save the data in two different subdirectories
+      "press" and "surf" in input_dir_path.
+
+  NCEP-NCAR-R1:
+    tier: 2
+    source: https://psl.noaa.gov/data/gridded/data.ncep.reanalysis.html
+    last_access: 2022-11-22
+    info: |
+      To facilitate the download, the links to the ftp server are provided.
+      Since the filenames are sometimes identical across different
+      save the data in two subdirectories in input_dir_path.
+      Subdirectory pressure/:
+        ftp://ftp.cdc.noaa.gov/Projects/Datasets/data.ncep.reanalysis/pressure/
           air.mon.mean.nc
           hgt.mon.mean.nc
           rhum.mon.mean.nc
@@ -866,24 +891,31 @@ datasets:
           vwnd.mon.mean.nc
           omega.mon.mean.nc
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/pressure/
-          uwnd.YYYY.nc
-          vwnd.YYYY.nc
+          uwnd.*.nc
+          vwnd.*.nc
       Subdirectory surface/:
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/surface/
           air.mon.mean.nc
+          pr_wtr.mon.mean.nc
+          slp.mon.mean.nc
+          wspd.mon.mean.nc
+          rhum.mon.mean.nc
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/surface_gauss/
-          prate.mon.mean.nc
+          air.2m.mon.mean.nc
+          prate.sfc.mon.mean.nc
+          tmax.2m.mon.mean.nc
+          tmin.2m.mon.mean.nc
+        ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/other_gauss/
+          tcdc.eatm.mon.mean.nc
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/surface_gauss/
-          prate.sft.gauss.YYYY.nc
+          prate.sft.gauss.*.nc
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/other_gauss/
-          ulwrf.ntat.gauss.YYYY.nc
+          ulwrf.ntat.gauss.*.nc
 
       Select the section "Pressure" and "Surface" and download the variables
       listed below. Since raw data on pressure levels and for surface have the
       same file and variable name, save the data in two different subdirectories
       "press" and "surf" in input_dir_path.
-      Specify the time range of the data as YEAR1-YEAR2 below, considering only
-      complete years (Jan to Dec).
 
   NDP:
     tier: 3
