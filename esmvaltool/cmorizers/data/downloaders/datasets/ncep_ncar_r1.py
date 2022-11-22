@@ -62,7 +62,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.download_file("prate.mon.mean.nc", sub_folder='surface')
     downloader.download_file("tmax.2m.mon.mean.nc", sub_folder='surface')
     downloader.download_file("tmin.2m.mon.mean.nc", sub_folder='surface')
-    
+
     downloader.set_cwd("/Datasets/ncep.reanalysis.derived/other_gauss/")
     downloader.download_file("tcdc.eatm.mon.mean.nc", sub_folder='surface')
 
