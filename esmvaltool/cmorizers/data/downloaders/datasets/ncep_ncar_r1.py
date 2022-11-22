@@ -1,4 +1,4 @@
-"""Script to download NCEP."""
+"""Script to download NCEP-NCAR-R1."""
 
 from datetime import datetime
 
@@ -29,7 +29,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     if start_date is None:
         start_date = datetime(1948, 1, 1)
     if end_date is None:
-        end_date = datetime(2018, 1, 1)
+        end_date = datetime(2021, 1, 1)
     downloader = FTPDownloader(
         config=config,
         server='ftp.cdc.noaa.gov',
@@ -52,8 +52,19 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     downloader.set_cwd("/Datasets/ncep.reanalysis.derived/surface/")
     downloader.download_file("air.mon.mean.nc", sub_folder='surface')
+    downloader.download_file("pr_wtr.mon.mean.nc", sub_folder='surface')
+    downloader.download_file("slp.mon.mean.nc", sub_folder='surface')
+    downloader.download_file("wspd.mon.mean.nc", sub_folder='surface')
+    downloader.download_file("rhum.mon.mean.nc", sub_folder='surface')
+
     downloader.set_cwd("/Datasets/ncep.reanalysis.derived/surface_gauss/")
+    downloader.download_file("air.2m.mon.mean.nc", sub_folder='surface')
     downloader.download_file("prate.mon.mean.nc", sub_folder='surface')
+    downloader.download_file("tmax.2m.mon.mean.nc", sub_folder='surface')
+    downloader.download_file("tmin.2m.mon.mean.nc", sub_folder='surface')
+
+    downloader.set_cwd("/Datasets/ncep.reanalysis.derived/other_gauss/")
+    downloader.download_file("tcdc.eatm.mon.mean.nc", sub_folder='surface')
 
     while loop_date <= end_date:
         year = loop_date.year
@@ -68,3 +79,4 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                                  sub_folder='surface')
 
         loop_date += relativedelta.relativedelta(years=1)
+

@@ -125,6 +125,21 @@ yet included.
 Note that datasets CMORized for ESMValTool v1 may not be working with v2, due
 to the much stronger constraints on metadata set by the iris library.
 
+ESMValTool provides the ``esmvaltool data`` command line tool, which can be
+used to download and format datasets.
+
+To list the available commands, run
+
+.. code-block:: bash
+
+    esmvaltool data --help
+
+It is also possible to get help on specific commands, e.g.
+
+.. code-block:: bash
+
+    esmvaltool data download --help
+
 The list of datasets supported by ESMValTool through a CMORizer script can be
 obtained with:
 
@@ -331,20 +346,24 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Landschuetzer2016            | dpco2, fgco2, spco2 (Omon)                                                                           |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| Landschuetzer2020            | spco2 (Omon)                                                                                         |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MAC-LWP                      | lwp, lwpStderr (Amon)                                                                                |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MERRA2                       | sm (Lmon)                                                                                            |   3  | Python          |
+|                              | clt, pr, evspsbl, hfss, hfls, huss, prc, prsn, prw, ps, psl, rlds, rldscs, rlus, rlut, rlutcs, rsds, |      |                 |
+|                              | rsdscs, rsdt, tas, tasmin, tasmax, tauu, tauv, ts, uas, vas, rsus, rsuscs, rsut, rsutcs, ta, ua, va, |      |                 |
+|                              | tro3, zg, hus, wap, hur (Amon)                                                                       |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MLS-AURA                     | hur, hurStderr (day)                                                                                 |   3  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| MOBO-DIC_MPIM                | dissic (Omon)                                                                                        |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MODIS                        | cliwi, clt, clwvi, iwpStderr, lwpStderr (Amon), od550aer (aero)                                      |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MSWEP [#note1]_              | pr                                                                                                   |   3  | n/a             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MTE                          | gpp, gppStderr (Lmon)                                                                                |   3  | Python          |
-+------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| NCEP                         | hur, hus, pr, ta, tas, ua, va, wap, zg (Amon)                                                        |   2  | NCL             |
-|                              | pr, rlut, ua, va (day)                                                                               |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NCEP-NCAR-R1                 | clt, hur, hurs, hus, pr, prw, psl, rlut, rlutcs, rsut, rsutcs, sfcWind, ta, tas,                     |   2  | Python          |
 |                              | tasmax, tasmin, ts, ua, va, wap, zg (Amon)                                                           |      |                 |
@@ -361,6 +380,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | NOAAGlobalTemp               | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NSIDC-0116-[nh|sh]           | usi, vsi (day)                                                                                       |   3  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| OceanSODA-ETHZ               | areacello (Ofx), co3os, dissicos, fgco2, phos, spco2, talkos (Omon)                                  |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | OSI-450-[nh|sh]              | sic (OImon), sic (day)                                                                               |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
