@@ -648,9 +648,10 @@ estate, so there is no need to install ESMValTool if you are just running recipe
 
  - CEDA-JASMIN: `esmvaltool` is available on the scientific compute nodes (`sciX.jasmin.ac.uk` where
    `X = 1, 2, 3, 4, 5`) after login and module loading via `module load esmvaltool`; see the helper page at
-   `CEDA <https://help.jasmin.ac.uk/article/4955-community-software-esmvaltool>`__ ;
+   `CEDA <https://help.jasmin.ac.uk/article/4955-community-software-esmvaltool>`__ .
  - DKRZ-Levante: `esmvaltool` is available on login nodes (`levante.dkrz.de`) after login and module loading
    via `module load esmvaltool`; the command `module help esmvaltool` provides some information about the module.
+   A Jupyter kernel based on the latest module is available from `DKRZ-JupyterHub <https://jupyterhub.dkrz.de/hub/home>`__.
  - Met Office: `esmvaltool` is available on the Linux estate after login and module loading via `module load`;
    see the ESMValTool Community of Practice SharePoint site for more details.
 
