@@ -79,4 +79,3 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                                  sub_folder='surface')
 
         loop_date += relativedelta.relativedelta(years=1)
-
