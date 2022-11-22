@@ -1,18 +1,18 @@
-"""ESMValTool CMORizer for NOAAGlobalTemp data.
+"""ESMValTool CMORizer for JRA-25 data.
 
 Tier
     Tier 2: other freely-available dataset.
 
 Source
-    https://www.ncei.noaa.gov/products/land-based-station/noaa-global-temp
+    ESGF:
+    https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/
+        reanalysis/JMA/JRA-25/JRA-25/mon/atmos/
 
 Last access
-    20220628
+    20221122
 
 Download and processing instructions
-    Download the following files:
-        [SOURCE]/v5/access/gridded/
-          NOAAGlobalTemp_v5.0.0_gridded_s188001_e202205_c20220608T133245.nc
+    see download script cmorizers/data/downloaders/datasets/jra_25.py
 """
 
 import copy

@@ -1,4 +1,4 @@
-"""Script to download NOAAGlobalTemp from its webpage."""
+"""Script to download JRA-25 from ESGF."""
 import logging
 import os
 
