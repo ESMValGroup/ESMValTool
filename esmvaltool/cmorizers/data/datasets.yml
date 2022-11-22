@@ -773,6 +773,13 @@ datasets:
     info: |
       Download the file spco2_1982-2015_MPI_SOM-FFN_v2016.nc
 
+  Landschuetzer2020:
+    tier: 2
+    source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0209633/
+    last_access: 2022-11-02
+    info: |
+      Download the file MPI-ULB-SOM_FFN_clim.nc
+
   MAC-LWP:
     tier: 3
     source: https://search.earthdata.nasa.gov/search?q=MAC-LWP
@@ -786,9 +793,12 @@ datasets:
 
   MERRA2:
     tier: 3
-    source: https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
-    last_access: 2019-11-29
-    info: Use automatic download.
+    source: https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/ https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
+    last_access: 2022-09-13
+    info: |
+      Use automatic download. That will download monthly data but with
+      yearly granularity. Note that some (most) variables are on the goldsmr4 server,
+      whereas others are on the goldsmr5 server.
 
   MLS-AURA:
     tier: 3
@@ -803,6 +813,13 @@ datasets:
       control of the RHI data (see Data Quality Document for MLS-AURA for more
       information).
       A registration is required
+
+  MOBO-DIC_MPIM:
+    tier: 2
+    source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0221526/
+    last_access: 2022-11-03
+    info: |
+      Download the file MOBO-DIC_MPIM_monthly_clim.nc
 
   MODIS:
     tier: 3
@@ -926,6 +943,13 @@ datasets:
       Download daily data from:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
+
+  OceanSODA-ETHZ:
+    tier: 2
+    source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0220059/
+    last_access: 2022-11-03
+    info: |
+      Download the file OceanSODA-ETHZ_GRaCER_v2021a_1982-2020.nc
 
   OSI-450-nh:
     tier: 2

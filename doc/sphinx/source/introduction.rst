@@ -94,8 +94,8 @@ Monthly meetings
 We have monthly online meetings using `zoom <https://zoom.us/>`__, anyone with
 an interest in the ESMValTool is welcome to join these meetings to connect with
 the community.
-These meetings are always announced in an issue
-on the `ESMValTool <https://github.com/ESMValGroup/ESMValTool/issues>`_
+These meetings are always announced in a discussion
+on the `ESMValTool Community <https://github.com/ESMValGroup/Community/discussions>`_
 repository and on the mailing-list_.
 
 .. _core-team:
