@@ -1000,6 +1000,8 @@ diagnostics:
         mip: Amon
       hus:
         mip: Amon
+      lwp:
+        mip: Amon
       orog:
         mip: fx
       pr_day:
