@@ -34,7 +34,7 @@ def _extract_variable(short_name, var, filename, cfg, in_dir,
     raw_var = var.get('raw', short_name)
     cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
 
-    #Fix metadata
+    # Fix metadata
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     attrs = copy.deepcopy(cfg['attributes'])
     attrs['mip'] = var['mip']
