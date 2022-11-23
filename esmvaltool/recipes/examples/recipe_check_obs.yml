@@ -475,6 +475,21 @@ diagnostics:
          type: sat, version: v0, start_year: 1984, end_year: 2016}
     scripts: null
 
+  JRA-25:
+    description: JRA-25 check
+    variables:
+      clt:
+      hus:
+      prw:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+    additional_datasets:
+      - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 1, start_year: 1979, end_year: 2013} 
+    scripts: null
+
   Kadow2020:
     description: Kadow2020 check
     variables:
