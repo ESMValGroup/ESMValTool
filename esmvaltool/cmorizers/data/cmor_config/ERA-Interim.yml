@@ -205,8 +205,8 @@ variables:
   lwp_month:
     short_name: lwp
     mip: Amon
-    raw: vilw
-    file: 'ERA-Interim_vilw_monthly_*.nc'
+    raw: p56.162
+    file: 'ERA-Interim_p56.162_monthly_*.nc'
   pr_month:
     short_name: pr
     mip: Amon
