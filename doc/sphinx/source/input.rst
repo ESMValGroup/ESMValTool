@@ -274,8 +274,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | ERA5-Land [#note1]_          | pr                                                                                                   |   3  | n/a             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA-Interim                  | cl, cli, clivi, clt, clw, clwvi, evspsbl, hfds, hur, hus, orog, pr, prsn, prw, ps, psl, rlds, rlut,  |   3  | Python          |
-|                              | rlutcs, rsds, rsdt (Amon, CFday), rss, rsut, rsutcs, sftlf (fx), ta, tas, tasmax, tasmin, tauu,      |      |                 |
-|                              | tauv, tdps (Amon, Eday), tos (Omon), ts, tsn (LImon), ua, uas, va, vas, wap, zg (Amon, day)          |      |                 |
+|                              | rlutcs, rsds, rsdt, rss, rsut, rsutcs, sftlf, ta, tas, tasmax, tasmin, tauu, tauv, tdps, tos, ts,    |      |                 |
+|                              | tsn, ua, uas, va, vas, wap, zg                                                                       |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA-Interim-Land             | sm (Lmon)                                                                                            |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
