@@ -736,7 +736,12 @@ datasets:
     info: |
       Download the following files:
         mon/atmos/clt/clt_Amon_reanalysis_JRA-25_197901-201312.nc
-
+        mon/atmos/hus/hus_Amon_reanalysis_JRA-25_197901-201312.nc
+        mon/atmos/prw/prw_Amon_reanalysis_JRA-25_197901-201312.nc
+        mon/atmos/rlut/rlut_Amon_reanalysis_JRA-25_197901-201312.nc
+        mon/atmos/rlutcs/rlutcs_Amon_reanalysis_JRA-25_197901-201312.nc
+        mon/atmos/rsut/rsut_Amon_reanalysis_JRA-25_197901-201312.nc
+        mon/atmos/rsutcs/rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc
 
   Kadow2020:
     tier: 2
