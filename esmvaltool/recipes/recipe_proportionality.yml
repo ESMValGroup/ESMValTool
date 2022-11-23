@@ -69,11 +69,10 @@ diagnostics:
           - {dataset: CESM2, institute: NCAR, exp: piControl, ensemble: r1i1p1f1, start_year: 502, end_year: 651}
 #          - {dataset: CESM2-FV2, institute: NCAR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, start_year: 1, end_year: 150} #cat problem
 #          - {dataset: CESM2-FV2, institute: NCAR, exp: piControl, ensemble: r1i1p1f1, start_year: 321, end_year: 470}
-          - {dataset: CESM2-FV2, institute: NCAR, exp: piControl, ensemble: r1i1p1f1, start_year: 1, end_year: 150}
-          - {dataset: CESM2-WACCM, institute: NCAR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, start_year: 1, end_year: 150} #wrong number of yrs.
-          - {dataset: CESM2-WACCM, institute: NCAR, exp: piControl, ensemble: r1i1p1f1, start_year: 70, end_year: 219}
-          - {dataset: CESM2-WACCM-FV2, institute: NCAR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, start_year: 1, end_year: 150} #wrong number of yrs.
-          - {dataset: CESM2-WACCM-FV2, institute: NCAR, exp: piControl, ensemble: r1i1p1f1, start_year: 301, end_year: 450}
+#          - {dataset: CESM2-WACCM, institute: NCAR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, start_year: 1, end_year: 150} #too similar to cesm2.
+#          - {dataset: CESM2-WACCM, institute: NCAR, exp: piControl, ensemble: r1i1p1f1, start_year: 70, end_year: 219}
+#          - {dataset: CESM2-WACCM-FV2, institute: NCAR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, start_year: 1, end_year: 150} #too similar to cesm2.
+#          - {dataset: CESM2-WACCM-FV2, institute: NCAR, exp: piControl, ensemble: r1i1p1f1, start_year: 301, end_year: 450}
 #          - {dataset: NorESM2-LM, institute: NCC, exp: abrupt-4xCO2, ensemble: r1i1p1f1, start_year: 1, end_year: 150} #Missing years 121-150 nbp.
 #          - {dataset: NorESM2-LM, institute: NCC, exp: piControl, ensemble: r1i1p1f1, start_year: 1600, end_year: 1749}
           - {dataset: NorESM2-MM, institute: NCC, exp: abrupt-4xCO2, ensemble: r1i1p1f1, start_year: 1, end_year: 150}
