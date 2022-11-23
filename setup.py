@@ -23,9 +23,7 @@ REQUIREMENTS = {
         'cartopy',
         'cdo',
         'cdsapi',
-        # see https://github.com/SciTools/cf-units/issues/218
-        # see https://github.com/ESMValGroup/ESMValCore/issues/1655
-        'cf-units>=3.0.0,<3.1.0,!=3.0.1.post0',
+        'cf-units',
         'cftime',
         'cmocean',
         'dask',
@@ -71,7 +69,7 @@ REQUIREMENTS = {
     # Test dependencies
     # Execute `pip install .[test]` once and the use `pytest` to run tests
     'test': [
-        'flake8<5', # github.com/ESMValGroup/ESMValCore/issues/1696
+        'flake8',
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
         'pytest-cov>=2.10.1',
         'pytest-env',
