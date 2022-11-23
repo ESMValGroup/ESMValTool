@@ -34,8 +34,12 @@ def _extract_variable(short_name, var, filename, cfg, in_dir,
     raw_var = var.get('raw', short_name)
     cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
 
+    #Fix metadata
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     attrs = copy.deepcopy(cfg['attributes'])
     attrs['mip'] = var['mip']
+    utils.fix_var_metadata(cube, cmor_info)
+    utils.set_global_atts(cube, attrs)
 
     # Save variable
     utils.save_variable(cube,
@@ -49,6 +53,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
+        short_name = var['short_name']
         filename = var['file']
         logger.info("CMORizing variable '%s' from file '%s'", short_name,
                     filename)
