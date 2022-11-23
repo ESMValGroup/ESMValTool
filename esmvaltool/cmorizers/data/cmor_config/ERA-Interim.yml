@@ -130,8 +130,8 @@ variables:
   # monthly frequency
   clivi:
     mip: Amon
-    raw: viiw
-    file: 'ERA-Interim_viiw_monthly_*.nc'
+    raw: p57.162
+    file: 'ERA-Interim_p57.162_monthly_*.nc'
   clt_month:
     short_name: clt
     mip: Amon
@@ -155,12 +155,12 @@ variables:
   clwvi:
     mip: Amon
     raw:
-      - vilw
-      - viiw
+      - p56.162
+      - p57.162
     operator: sum
     files:
-      - 'ERA-Interim_vilw_monthly_*.nc'
-      - 'ERA-Interim_viiw_monthly_*.nc'
+      - 'ERA-Interim_p56.162_monthly_*.nc'
+      - 'ERA-Interim_p57.162_monthly_*.nc'
   cl_month:
     short_name: cl
     mip: Amon

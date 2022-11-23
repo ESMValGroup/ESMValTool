@@ -138,8 +138,8 @@ MONTH_PARAMS = [
     ('238.128', 'tsn', 'an'),  # Temperature of snow layer
     ('212.128', 'tisr', 'accu'),  # TOA incident solar radiation
     ('164.128', 'tcc', 'an'),  # Total cloud cover
-    ('56.162', 'vilw', 'an'),  # Vertical integral of cloud liquid water
-    ('57.162', 'viiw', 'an'),  # Vertical integral of cloud frozen water
+    ('56.162', 'p56.162', 'an'),  # Vertical integral of cloud liquid water
+    ('57.162', 'p57.162', 'an'),  # Vertical integral of cloud frozen water
     ('137.128', 'tcwv', 'an'),  # Total column water vapour
     ('134.128', 'sp', 'an'),  # Surface pressure
     ('229.128', 'iews', 'fc'),  # Inst. eastward turbulent surface stress
