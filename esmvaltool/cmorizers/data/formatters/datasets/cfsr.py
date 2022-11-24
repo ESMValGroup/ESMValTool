@@ -20,8 +20,8 @@ from cf_units import Unit
 
 import iris
 from iris.coords import CellMethod
-from esmvalcore.cmor.table import CMOR_TABLES
 from iris import NameConstraint
+from esmvalcore.cmor.table import CMOR_TABLES
 
 from esmvaltool.cmorizers.data import utilities as utils
 
