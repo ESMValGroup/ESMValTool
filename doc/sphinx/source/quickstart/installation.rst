@@ -180,12 +180,14 @@ There are three language specific packages available:
 * ``esmvaltool-python``
 * ``esmvaltool-r``
 
-The main ``esmvaltool`` package contains all four subpackages listed above. If
-you only need to run a recipe with diagnostics in some of these languages, it is
-possible to install only the dependencies needed to do just that. The diagnostic
-script(s) used in each recipe, are documented in :ref:`recipes`. The extension
-of the diagnostic script can be used to see in which language a diagnostic
-script is written.
+The main ``esmvaltool`` package contains all three subpackages listed above.
+For the Julia dependencies, there is no subpackage yet, but there are special
+:ref:`installation instructions <install_julia_dependencies>`.
+If you only need to run a recipe with diagnostics in some of these languages, it
+is possible to install only the dependencies needed to do just that.
+The diagnostic script(s) used in each recipe, are documented in :ref:`recipes`.
+The extension of the diagnostic script can be used to see in which language a
+diagnostic script is written.
 
 To install support for diagnostics written in Python and NCL into an existing
 environment, run
@@ -201,6 +203,8 @@ installed in order to be able to run all CMORization scripts.
 Note that the ESMValTool source code is contained in the ``esmvaltool-python``
 package, so this package will always be installed as a dependency if you install
 one or more of the packages for other languages.
+
+.. _install_julia_dependencies:
 
 Installation of Julia dependencies
 ----------------------------------
@@ -446,7 +450,8 @@ can install it from source into the same conda environment.
     if you are planning to develop new features for the ESMValCore, e.g.
     you want to implement a new preprocessor function.
 
-First follow all steps above.
+First follow the steps in the section above to
+:ref:`install ESMValTool from source <install_from_source>`.
 Next, go to the place where you would like to keep the source code and clone the
 ESMValCore github repository:
 
