@@ -63,7 +63,7 @@ dependencies:
   - xgboost>1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
   - xlsxwriter
   # Python packages needed for testing
-  - flake8 <5
+  - flake8
   - pytest >=3.9,!=6.0.0rc1,!=6.0.0
   - pytest-cov
   - pytest-env
