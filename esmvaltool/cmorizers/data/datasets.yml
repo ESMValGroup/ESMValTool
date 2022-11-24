@@ -154,6 +154,21 @@ datasets:
       Sensor and algorithm "MERGED and OBS4MIPS".
       A registration is required to download the data.
 
+  CFSR:
+    tier: 2
+    source: https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/reanalysis/NOAA-NCEP/CFSR/CFSR/
+    last_access: 2022-11-22
+    info: |
+      Download the following files:
+        mon/atmos/clt/clt_Amon_reanalysis_CFSR_197901-201912.nc
+        mon/atmos/hur/hur_Amon_reanalysis_CFSR_*01-*12.nc
+        mon/atmos/hus/hus_Amon_reanalysis_CFSR_*01-*12.nc
+        mon/atmos/prw/prw_Amon_reanalysis_CFSR_197901-201912.nc
+        mon/atmos/rlut/rlut_Amon_reanalysis_CFSR_197901-201912.nc
+        mon/atmos/rlutcs/rlutcs_Amon_reanalysis_CFSR_197901-201912.nc
+        mon/atmos/rsut/rsut_Amon_reanalysis_CFSR_197901-201912.nc
+        mon/atmos/rsutcs/rsutcs_Amon_reanalysis_CFSR_197901-201912.nc
+
   CERES-EBAF:
     tier: 2
     source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA41Selection.jsp
