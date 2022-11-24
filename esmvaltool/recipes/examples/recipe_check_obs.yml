@@ -51,6 +51,21 @@ diagnostics:
          type: sat, version: Ed4.1, start_year: 2001, end_year: 2021}
     scripts: null
 
+  CFSR:
+    description: CFSR
+    variables:
+      clt:
+      hur:
+      hus:
+      prw:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+    additional_datasets:
+      - {dataset: CFSR, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 1, start_year: 1979, end_year: 2019}
+    scripts: null
 
   CRU:
     description: CRU check

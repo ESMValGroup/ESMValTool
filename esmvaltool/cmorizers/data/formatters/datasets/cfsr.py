@@ -27,7 +27,34 @@ from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
 
+
 logger = logging.getLogger(__name__)
+
+
+def _fix_coordinates(cube, definition, cmor_info):
+    # fix flipped latitude
+    utils.flip_dim_coord(cube, 'latitude')
+    # fix other coordinates
+    utils.fix_coords(cube)
+
+    if 'height2m' in cmor_info.dimensions:
+        utils.add_height2m(cube)
+    if 'height10m' in cmor_info.dimensions:
+        utils.add_scalar_height_coord(cube, height=10.)
+
+    for coord_def in definition.coordinates.values():
+        axis = coord_def.axis
+        coord = cube.coord(axis=axis)
+        if axis == 'Z':
+            coord.convert_units(coord_def.units)
+        coord.standard_name = coord_def.standard_name
+        coord.var_name = coord_def.out_name
+        coord.long_name = coord_def.long_name
+        coord.points = coord.core_points().astype('float64')
+        if coord.var_name == 'plev':
+            coord.attributes['positive'] = 'down'
+
+    return cube
 
 
 def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
@@ -61,6 +88,8 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     # fix time units
     cube.coord('time').convert_units(
         Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
+
+    cube = _fix_coordinates(cube, definition, cmor_info)
 
     # Save variable
     utils.save_variable(
