@@ -11,11 +11,9 @@ Download and processing instructions
     see download script cmorizers/data/downloaders/datasets/cfsr.py
 """
 
-import copy
 import logging
 import re
 from copy import deepcopy
-import os
 from pathlib import Path
 from warnings import catch_warnings, filterwarnings
 from cf_units import Unit
