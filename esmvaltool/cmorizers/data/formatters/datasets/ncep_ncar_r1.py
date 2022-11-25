@@ -145,7 +145,7 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     )
 
 
-def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
+def cmorization(in_dir, out_dir, cfg, start_date, end_date):
     """Run CMORizer for NCEP-NCAR-R1."""
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
