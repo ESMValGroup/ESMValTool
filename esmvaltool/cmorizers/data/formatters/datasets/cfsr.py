@@ -11,19 +11,17 @@ Download and processing instructions
     see download script cmorizers/data/downloaders/datasets/cfsr.py
 """
 
-import copy
 import logging
 import re
 from copy import deepcopy
-import os
 from pathlib import Path
 from warnings import catch_warnings, filterwarnings
 from cf_units import Unit
 
 import iris
 from iris.coords import CellMethod
-from esmvalcore.cmor.table import CMOR_TABLES
 from iris import NameConstraint
+from esmvalcore.cmor.table import CMOR_TABLES
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -119,3 +117,4 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         for filename in sorted(filenames):
 
             _extract_variable(short_name, var, cfg, filename, out_dir)
+
