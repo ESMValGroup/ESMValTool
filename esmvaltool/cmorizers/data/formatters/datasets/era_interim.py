@@ -67,7 +67,8 @@ and monthly data of:
         net top solar radiation clear-sky
         top net thermal radiation
         top net thermal radiation clear-sky
-        fraction of cloud cover
+        fraction of cloud cover (3-dim)
+        vertical integral of condensed cloud water (ice and liquid)
         vertical integral of cloud liquid water
         vertical integral of cloud frozen water
         total column water vapour

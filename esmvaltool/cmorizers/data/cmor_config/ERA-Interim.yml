@@ -137,6 +137,7 @@ variables:
     mip: Amon
     raw: tcc
     file: 'ERA-Interim_tcc_monthly_*.nc'
+  # clt-low, clt-med, clt-high: support to be added in the future
 #  clt-low:
 #    short_name: clt-low
 #    mip: Amon
