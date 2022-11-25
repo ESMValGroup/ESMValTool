@@ -275,10 +275,9 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA5-Land [#note1]_          | pr                                                                                                   |   3  | n/a             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA-Interim                  | clivi, clt, clwvi, evspsbl, hur, hus, pr, prsn, prw, ps, psl, rlds, rsds, rsdt, ta, tas, tauu, tauv, |   3  | Python          |
-|                              | ts, ua, uas, va, vas, wap, zg (Amon), ps, rsdt (CFday), clt, pr, prsn, psl, rsds, rss, ta, tas,      |      |                 |
-|                              | tasmax, tasmin, uas, va, vas, zg (day), evspsbl, tdps, ts, tsn, rss, tdps (Eday), tsn (LImon), hfds, |      |                 |
-|                              | tos (Omon), orog, sftlf (fx)                                                                         |      |                 |
+| ERA-Interim                  | cl, cli, clivi, clt, clw, clwvi, evspsbl, hfds, hur, hus, lwp, orog, pr, prsn, prw, ps, psl, rlds,   |   3  | Python          |
+|                              | rlut, rlutcs, rsds, rsdt, rss, rsut, rsutcs, sftlf, ta, tas, tasmax, tasmin, tauu, tauv, tdps, tos,  |      |                 |
+|                              | ts, tsn, ua, uas, va, vas, wap, zg                                                                   |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA-Interim-Land             | sm (Lmon)                                                                                            |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
