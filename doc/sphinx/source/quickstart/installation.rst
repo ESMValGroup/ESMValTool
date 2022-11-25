@@ -49,7 +49,7 @@ See `common installation issues`_ if you run into trouble.
 Mamba/Conda installation
 ========================
 
-In order to install the ESMValTool and its dependencies from
+In order to install ESMValTool and its dependencies from
 `conda-forge <https://conda-forge.org/>`__, you will first need to install the
 `mamba package manager <https://mamba.readthedocs.io>`__.
 We recommend using `mamba <https://mamba.readthedocs.io>`__ as a package manager
@@ -88,7 +88,7 @@ and follow the instructions on your screen.
     Make sure to choose an installation location where you have at least 10 GB
     of disk space available.
 
-During the installation, mamba will ask you if you want ``mamba`` to be
+During installation, mamba will ask you if you want ``mamba`` to be
 automatically loaded from your ``.bashrc`` or ``.bash-profile`` files.
 It is recommended that you answer yes.
 If you answered no, you can load the correct paths and environment variables
@@ -156,7 +156,7 @@ First activate the environment with the command:
 
     conda activate esmvaltool
 
-and the run the tool with the command:
+and then run the tool with the command:
 
 .. code-block:: bash
 
@@ -187,7 +187,7 @@ If you only need to run a recipe with diagnostics in some of these languages, it
 is possible to install only the dependencies needed to do just that.
 The diagnostic script(s) used in each recipe, are documented in :ref:`recipes`.
 The extension of the diagnostic script can be used to see in which language a
-diagnostic script is written.
+diagnostic script is written (``.py`` for Python, ``.ncl`` for NCL, ``.R`` for R, and ``.jl`` for Julia diagnostics).
 
 To install support for diagnostics written in Python and NCL into an existing
 environment, run
@@ -211,7 +211,7 @@ Installation of Julia dependencies
 
 If you want to use the ESMValTool Julia functionality, you will also need to
 install Julia. If you are just getting started, we suggest that you
-come back to this step later when and if you need it.
+come back to this step later when, and if you need it.
 To perform the Julia installation, make sure that your conda
 environment is activated and then execute
 
@@ -232,7 +232,7 @@ container is advised.
 
 The ``esmvaltool-python`` diagnostics can be installed as follows:
 
-First, ensure mamba is pre-installed (see install_with_mamba_ for more details).
+First, ensure mamba is installed (see install_with_mamba_ for more details).
 
 Create a new environment with the ``esmvaltool-python`` package:
 
@@ -353,7 +353,7 @@ or (when on MacOS)
     mamba env create --name esmvaltool --file environment_osx.yml
 
 This will install all of the required development dependencies.
-Note that the MacOS environment file contains only the Python dependencies,
+Note that the MacOS environment file contains only Python dependencies,
 so you will not be able to run NCL, R, or Julia diagnostics with it.
 
 .. note::
