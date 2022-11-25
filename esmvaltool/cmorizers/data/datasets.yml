@@ -340,18 +340,28 @@ datasets:
             Geopotential
 
       and monthly data of:
+          Fraction of cloud cover (3-dim)
             Inst. eastward turbulent surface stress
             Inst. northward turbulent surface stress
+          Net top solar radiation
+          Net top solar radiation clear-sky
           Sea surface temperature
+          Specific cloud ice water content
+          Specific cloud liquid water content
+          Specific humidity
           Surface net thermal radiation
           Surface latent heat flux
           Surface sensible heat flux
           Relative humidity
           Temperature
+          Top net thermal radiation clear-sky
+          Total column water wapour
           U component of wind
           V component of wind
+          Vertical integral of cloud condensed water (ice and liquid)
+          Vertical integral of cloud liquid water
+          Vertical integral of cloud frozen water
           Vertical velocity
-          Specific humidity
 
       Caveats
         Make sure to select the right steps for accumulated fluxes, see:
