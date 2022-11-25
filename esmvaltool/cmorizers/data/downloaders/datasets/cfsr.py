@@ -84,4 +84,3 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                              "rsutcs/"
                              "rsutcs_Amon_reanalysis_CFSR_197901-201912.nc",
                              wget_options=[])
->>>>>>> e5051a48e182875d9ecbc33002a0977c0fd90855
