@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """Script to download CFSR from ESGF."""
 import logging
 import os
