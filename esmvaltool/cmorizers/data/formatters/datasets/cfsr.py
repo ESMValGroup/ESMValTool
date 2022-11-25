@@ -117,4 +117,3 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         for filename in sorted(filenames):
 
             _extract_variable(short_name, var, cfg, filename, out_dir)
-
