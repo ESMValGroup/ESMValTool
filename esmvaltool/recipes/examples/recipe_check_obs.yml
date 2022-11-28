@@ -475,6 +475,21 @@ diagnostics:
          type: sat, version: v0, start_year: 1984, end_year: 2016}
     scripts: null
 
+  JRA-25:
+    description: JRA-25 check
+    variables:
+      clt:
+      hus:
+      prw:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+    additional_datasets:
+      - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 1, start_year: 1979, end_year: 2013} 
+    scripts: null
+
   Kadow2020:
     description: Kadow2020 check
     variables:
@@ -494,6 +509,26 @@ diagnostics:
     additional_datasets:
       - {dataset: Landschuetzer2016, project: OBS, mip: Omon, tier: 2,
          type: clim, version: v2016, start_year: 1982, end_year: 2015}
+    scripts: null
+
+
+  Landschuetzer2020:
+    description: Landschuetzer2020 check
+    variables:
+      spco2:
+    additional_datasets:
+      - {dataset: Landschuetzer2020, project: OBS6, mip: Omon, tier: 2,
+         type: clim, version: '1.1', start_year: 2004, end_year: 2004}
+    scripts: null
+
+
+  MOBO-DIC_MPIM:
+    description: MOBO-DIC_MPIM check
+    variables:
+      dissic:
+    additional_datasets:
+      - {dataset: MOBO-DIC_MPIM, project: OBS6, mip: Omon, tier: 2,
+         type: clim, version: '1.1', start_year: 2011, end_year: 2011}
     scripts: null
 
 
@@ -539,12 +574,35 @@ diagnostics:
 
 
   NOAAGlobalTemp:
-    decription: NOAAGlobalTemp check
+    description: NOAAGlobalTemp check
     variables:
       tasa:
     additional_datasets:
       - {dataset: NOAAGlobalTemp, project: OBS, mip: Amon, tier: 2,
          type: ground, version: v5.0.0, start_year: 1880, end_year: 2021}
+    scripts: null
+
+
+  OceanSODA-ETHZ:
+    description: OceanSODA-ETHZ check
+    variables:
+      areacello:
+        mip: Ofx
+      co3os:
+        mip: Omon
+      dissicos:
+        mip: Omon
+      fgco2:
+        mip: Omon
+      phos:
+        mip: Omon
+      spco2:
+        mip: Omon
+      talkos:
+        mip: Omon
+    additional_datasets:
+      - {dataset: OceanSODA-ETHZ, project: OBS6, tier: 2, type: reanaly,
+         version: v2021e, start_year: 1982, end_year: 2020}
     scripts: null
 
 
@@ -929,6 +987,10 @@ diagnostics:
   ERA-Interim:
     description: ERA-Interim check
     variables:
+      cl:
+        mip: Amon
+      cli:
+        mip: Amon
       clivi:
         mip: Amon
       clt_day:
@@ -936,6 +998,8 @@ diagnostics:
         mip: day
       clt_month:
         short_name: clt
+        mip: Amon
+      clw:
         mip: Amon
       clwvi:
         mip: Amon
@@ -950,6 +1014,8 @@ diagnostics:
       hur:
         mip: Amon
       hus:
+        mip: Amon
+      lwp:
         mip: Amon
       orog:
         mip: fx
@@ -982,6 +1048,12 @@ diagnostics:
       rlds_day:
         short_name: rlds
         mip: day
+      rlut_month:
+        short_name: rlut
+        mip: Amon
+      rlutcs_month:
+        short_name: rlutcs
+        mip: Amon
       rsds_day:
         short_name: rsds
         mip: day
@@ -993,6 +1065,12 @@ diagnostics:
         mip: CFday
       rsdt_month:
         short_name: rsdt
+        mip: Amon
+      rsut_month:
+        short_name: rsut
+        mip: Amon
+      rsutcs_month:
+        short_name: rsutcs
         mip: Amon
       rss_day:
         short_name: rss

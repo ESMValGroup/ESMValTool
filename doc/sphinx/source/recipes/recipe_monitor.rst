@@ -183,6 +183,13 @@ Annual cycle of tas.
 
 Timeseries of tas including a reference dataset.
 
+.. _fig_annual_cycle_with_ref:
+.. figure::  /recipes/figures/monitor/annualcycle_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Annual cycle of tas including a reference dataset.
+
 .. _fig_map_with_ref:
 .. figure::  /recipes/figures/monitor/map_with_ref.png
    :align:   center
