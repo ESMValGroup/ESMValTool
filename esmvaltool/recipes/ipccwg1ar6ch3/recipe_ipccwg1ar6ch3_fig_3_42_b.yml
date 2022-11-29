@@ -29,6 +29,8 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
 
   ppNOLEV1:
     regrid:
@@ -75,6 +77,7 @@ diagnostics:
         start_year: 1980
         end_year: 2005
     additional_datasets:
+      # CMIP5
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
@@ -112,7 +115,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
+      # CMIP6
       - {dataset: ACCESS-CM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
@@ -148,7 +151,7 @@ diagnostics:
       - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, project: CMIP6}
-
+      # OBS
       - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat,
          version: L3S-SSMV-COMBINED-v4.2, tier: 2, start_year: 1980}
     scripts:
@@ -161,12 +164,6 @@ diagnostics:
         # Region ('global', 'trop', 'nhext', 'shext')
         region: global
         # Plot standard deviation ('all', 'none', 'ref_model' or dataset name)
-        plot_stddev: ref_model
-        # Plot legend in a separate file
-        legend_outside: true
-        # Plot style
-        styleset: CMIP5
-        # Calculate grading
         calc_grading: true
         # Metric ('RMSD', 'BIAS', taylor')
         metric: [RMSD]
@@ -194,6 +191,7 @@ diagnostics:
         start_year: 1986
         end_year: 2005
     additional_datasets:
+      # CMIP5
       - {dataset: BNU-ESM}
       - {dataset: CanESM2}
       - {dataset: CCSM4}
@@ -216,7 +214,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
+      # CMIP6
       - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: CanESM5, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1, project: CMIP6}
@@ -254,7 +252,7 @@ diagnostics:
       - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, project: CMIP6}
-
+      # OBS
       - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly,
          version: 2018, tier: 3, start_year: 1986}
     scripts:
@@ -281,6 +279,7 @@ diagnostics:
         start_year: 1982
         end_year: 2005
     additional_datasets:
+      # CMIP5
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
@@ -312,7 +311,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
+      # CMIP6
       - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
@@ -353,7 +352,7 @@ diagnostics:
       - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r2i1p1f2, project: CMIP6}
-
+      # OBS
       - {dataset: MTE, project: OBS, type: reanaly,
          version: May12, tier: 3, start_year: 1982}
       - {dataset: FLUXCOM, project: OBS, type: reanaly,
@@ -381,6 +380,7 @@ diagnostics:
         start_year: 1981
         end_year: 2005
     additional_datasets:
+      # CMIP5
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
@@ -413,7 +413,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
+      # CMIP6
       - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
@@ -462,7 +462,7 @@ diagnostics:
       - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, project: CMIP6}
-
+      # OBS
       - {dataset: LAI3g, project: OBS, type: reanaly,
          version: 1_regridded, tier: 3, start_year: 1981}
     scripts:
@@ -490,6 +490,7 @@ diagnostics:
         start_year: 1986
         end_year: 2005
     additional_datasets:
+      # CMIP5
       - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
       - {dataset: CMCC-CESM}
@@ -510,7 +511,7 @@ diagnostics:
       - {dataset: MPI-ESM-MR}
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-ME}
-
+      # CMIP6
       - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: CanESM5, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1, project: CMIP6}
@@ -540,7 +541,7 @@ diagnostics:
       - {dataset: NorESM2-LM, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: NorESM2-MM, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r2i1p1f2, project: CMIP6}
-
+      # OBS
       - {dataset: Landschuetzer2016, project: OBS, type: clim,
          version: v2016, tier: 2}
       - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 2018,
@@ -570,6 +571,7 @@ diagnostics:
         start_year: 1990
         end_year: 2005
     additional_datasets:
+      # CMIP5
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
@@ -617,7 +619,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
+      # CMIP6
       - {dataset: ACCESS-CM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
@@ -676,7 +678,7 @@ diagnostics:
       - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, project: CMIP6}
-
+      # OBS
       - {dataset: LandFlux-EVAL, project: OBS, type: reanaly,
          version: Oct13, tier: 3, start_year: 1990}
     scripts:
@@ -702,6 +704,7 @@ diagnostics:
         start_year: 2001
         end_year: 2005
     additional_datasets:
+      # CMIP5
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
@@ -747,7 +750,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
+      # CMIP6
       - {dataset: ACCESS-CM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
@@ -815,7 +818,7 @@ diagnostics:
       - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, project: CMIP6}
-
+      # OBS
       - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2005}
     scripts:
@@ -841,6 +844,7 @@ diagnostics:
         start_year: 2001
         end_year: 2005
     additional_datasets:
+      # CMIP5
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
@@ -887,7 +891,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
+      # CMIP6
       - {dataset: ACCESS-CM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
@@ -955,7 +959,7 @@ diagnostics:
       - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, project: CMIP6}
-
+      # OBS
       - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2005}
     scripts:
@@ -981,6 +985,7 @@ diagnostics:
         start_year: 2001
         end_year: 2005
     additional_datasets:
+      # CMIP5
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
@@ -1026,7 +1031,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
+      # CMIP6
       - {dataset: ACCESS-CM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
@@ -1094,7 +1099,7 @@ diagnostics:
       - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, project: CMIP6}
-
+      # OBS
       - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2005}
     scripts:
@@ -1120,6 +1125,7 @@ diagnostics:
         start_year: 2001
         end_year: 2005
     additional_datasets:
+      # CMIP5
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
@@ -1166,7 +1172,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
+      # CMIP6
       - {dataset: ACCESS-CM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
@@ -1234,7 +1240,7 @@ diagnostics:
       - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, project: CMIP6}
-
+      # OBS
       - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          version: Ed2-8, tier: 1, start_year: 2001, end_year: 2005}
     scripts:
@@ -1261,6 +1267,7 @@ diagnostics:
         end_year: 1999
         grid: gr
     additional_datasets:
+      # CMIP5
       - {dataset: CMCC-CM}
       - {dataset: CNRM-CM5}
       - {dataset: CSIRO-Mk3-6-0}
@@ -1279,7 +1286,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
+      # CMIP6
       - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn,
          ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: ACCESS-ESM1-5, institute: CSIRO, grid: gn,
@@ -1339,7 +1346,7 @@ diagnostics:
       - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: TaiESM1, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
-
+      # OBS
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
     scripts:
@@ -1363,6 +1370,7 @@ diagnostics:
         start_year: 1980
         end_year: 1999
         additional_datasets:
+          # CMIP5
           - &cmip5 {dataset: ACCESS1-0, mip: OImon, project: CMIP5}
           - {<<: *cmip5, dataset: ACCESS1-3}
           - {<<: *cmip5, dataset: BNU-ESM}
@@ -1422,6 +1430,7 @@ diagnostics:
         start_year: 1980
         end_year: 1999
         additional_datasets:
+          # CMIP6
           - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn,
              ensemble: r1i1p1f1, project: CMIP6}
           - {dataset: ACCESS-ESM1-5, institute: CSIRO, grid: gn,
@@ -1495,31 +1504,11 @@ diagnostics:
              project: CMIP6}
     scripts:
       grading_shpolar:
-        script: perfmetrics/main.ncl
-        plot_type: cycle_latlon
-        time_avg: monthlyclim
+        <<: *grading_settings
         region: shpolar
-        plot_stddev: ref_model
-        legend_outside: true
-        styleset: CMIP6
-        calc_grading: true
-        metric:
-          - RMSD
-        normalization:
-          - centered_median
       grading_nhpolar:
-        script: perfmetrics/main.ncl
-        plot_type: cycle_latlon
-        time_avg: monthlyclim
+        <<: *grading_settings
         region: nhpolar
-        plot_stddev: ref_model
-        legend_outside: true
-        styleset: CMIP6
-        calc_grading: true
-        metric:
-          - RMSD
-        normalization:
-          - centered_median
 
 
   tos:
@@ -1542,6 +1531,7 @@ diagnostics:
         start_year: 1980
         end_year: 1999
     additional_datasets:
+      # CMIP5
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
@@ -1588,7 +1578,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
+      # CMIP6
       - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn,
          ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: ACCESS-ESM1-5, institute: CSIRO, grid: gn,
@@ -1659,6 +1649,7 @@ diagnostics:
       - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
       - {dataset: TaiESM1, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
       - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
+      # OBS
       - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
       - {dataset: ATSR, project: obs4MIPs, level: L3,
          version: ARC-v1.1.1, tier: 1, start_year: 1997, end_year: 2011}
