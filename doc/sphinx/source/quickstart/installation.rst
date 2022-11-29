@@ -649,16 +649,24 @@ install the Julia dependencies:
 Installation from the conda lock file
 =====================================
 
-A fast conda environment creation is possible using the provided conda lock file. This is a secure alternative
-to the installation from source, whenever the conda environment can not be created for some reason. A conda lock file
-is an explicit environment file that contains pointers to dependency packages as they are hosted on the Anaconda cloud;
-these have frozen version numbers, build hashes, and channel names, parameters established at the time
-of the conda lock file creation, so may be obsolete after a while,
-but they allow for a robust environment creation while they're still up-to-date.
-We regenerate these lock files every 10 days through automatic Pull Requests
-(or more frequently, since the automatic generator runs on merges on the main branch too),
-so to minimize the risk of dependencies becoming obsolete. Conda environment creation from
-a lock file is done just like with any other environment file:
+The conda lock file is an alternative to the ``environment.yml`` file used in
+the :ref:`installation from source instructions <install_from_source>`.
+All other steps in those installation instructions are the same.
+
+The conda lock file can be used to install the dependencies of ESMValTool
+whenever the conda environment defined by ``environment.yml`` can not be solved
+for some reason.
+A conda lock file is a reproducible environment file that contains links to
+dependency packages as they are hosted on the Anaconda cloud;
+these have frozen version numbers, build hashes, and channel names.
+These parameters are established at the time of the conda lock file creation, so
+may be outdated after a while.
+Therefore, we regenerate these lock files every 10 days through automatic
+Pull Requests (or more frequently, since the automatic generator runs on merges
+on the ``main`` branch too), to minimize the risk of dependencies becoming
+outdated.
+
+Conda environment creation from a lock file is done with the following command:
 
 .. code-block:: bash
 
@@ -666,9 +674,6 @@ a lock file is done just like with any other environment file:
 
 The latest, most up-to-date file can always be downloaded directly from the source code
 repository, a direct download link can be found `here <https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/conda-linux-64.lock>`__.
-
-.. note::
-   `pip` and `conda` are NOT installed, so you will have to install them in the new environment: use conda-forge as channel): ``conda install -c conda-forge pip`` at the very minimum so we can install `esmvalcore` afterwards.
 
 .. note::
    For instructions on how to manually create the lock file, see
