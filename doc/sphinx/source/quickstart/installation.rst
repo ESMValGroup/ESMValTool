@@ -491,7 +491,7 @@ this should show the directory of the source code that you just downloaded.
 If the command above shows a directory inside your conda environment instead,
 e.g. ``~/mambaforge/envs/esmvaltool/lib/python3.8/site-packages/esmvalcore``,
 you may need to manually remove that directory and run
-``pip install -e '.[develop]'`` again.
+``pip install --editable '.[develop]'`` again.
 
 .. _install_on_hpc:
 
@@ -513,7 +513,7 @@ estate, so there is no need to install ESMValTool if you are just running recipe
 The ESMValTool Tutorial provides a `quickstart guide <https://esmvalgroup.github.io/ESMValTool_Tutorial/01-quickstart/index.html>`__
 that is particularly suited for new users that have an access to pre-installed version of ESMValTool.
 
-Information on how to request an account at CEDA-Jasmin and DKRZ-Levante and to get started with these HPC clusters
+Information on how to request an account at CEDA-JASMIN and DKRZ-Levante and to get started with these HPC clusters
 can be found on the setup page of the tutorial `here <https://esmvalgroup.github.io/ESMValTool_Tutorial/setup.html>`__.
 
 .. _install_with_docker:
