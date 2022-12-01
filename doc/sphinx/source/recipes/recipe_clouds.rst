@@ -71,7 +71,7 @@ Diagnostics are stored in diag_scripts/clouds/
 * clouds_interannual.ncl: global maps of the interannual variability
 * clouds_ipcc.ncl: global maps of multi-model mean minus observations + zonal
   averages of individual models, multi-model mean and observations
-* clouds_lifrac_scatter.ncl: cloud liquid water fraction as a function of temperaure
+* clouds_lifrac_scatter.ncl: cloud liquid water fraction as a function of temperature
 * clouds_lifrac_scatter_postproc.ncl: additional plots and diagnostics using
   the output of clouds_lifrac_scatter.ncl for given CMIP5/CMIP6 model pairs
 * clouds_pdf.ncl: pdf of cloud parameters
