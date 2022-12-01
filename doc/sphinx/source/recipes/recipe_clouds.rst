@@ -10,7 +10,7 @@ Four recipes are available to evaluate cloud climatologies from CMIP models.
 
 1) recipe_clouds_bias.yml computes climatologies and creates map plots of
    multi-model mean, mean bias, absolute bias and relative bias of a given
-   variable. Simular to IPCC AR5 (ch. 9) fig. 9.2 a/b/c (`Flato et al., 2013`_).
+   variable. Similar to IPCC AR5 (ch. 9) fig. 9.2 a/b/c (`Flato et al., 2013`_).
 
 2) recipe_clouds_ipcc.yml computes multi-model mean bias and zonal means of
    the clouds radiative effect (shortwave, longwave and net). Similar to
