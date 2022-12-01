@@ -221,8 +221,12 @@ def _extract_variable(in_files, var, cfg, out_dir):
     # cube.standard_name = definition.standard_name
     cube.long_name = definition.long_name
 
-    # Fix units
-    cube.units = definition.units
+    # Fix units (if needed)
+    # input variable reports m-3 m-3 instead of m3 m-3
+    if cube.var_name == "sm":
+        cube.units = definition.units
+    # Convert units to CMOR units
+    cube.convert_units(definition.units)
 
     # Add height2m or height10m if needed
     if 'height2m' in definition.dimensions:
