@@ -109,11 +109,11 @@ begin
   if (isatt(data, "add_tropopause")) then
     if data@add_tropopause then
       xyres = True
-      xyres@gsLineColor="brown"
+      xyres@gsLineColor = "brown"
       xyres@gsLineDashPattern = 1
-      xyres@gsLineThicknessF=3.
+      xyres@gsLineThicknessF = 3.
       lat = data&lat
-      tp := ( 300. - 215. * (cos(lat/180. * get_pi("f")))^2 )
+      tp := ( 300. - 215. * ( cos(lat / 180. * get_pi("f")) )^2 )
       str = unique_string("tropopause")
       plot@$str$ = gsn_add_polyline(wks, plot, lat, tp, xyres)
       delete(tp)
