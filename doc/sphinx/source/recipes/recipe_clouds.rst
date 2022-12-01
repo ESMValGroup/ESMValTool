@@ -36,7 +36,7 @@ Four recipes are available to evaluate cloud climatologies from CMIP models.
    (CRE), liquid water path (lwp), ice water path (clivi), total cloud amount (clt),
    cloud liquid water content (clw), cloud ice water content (cli), cloud fraction
    (cl) and water vapor path (prw) from CMIP6 models in comparison to CMIP5 results
-   and satellite observations. Whereever possible, the diagnostics use
+   and satellite observations. Wherever possible, the diagnostics use
    multi-observational products as reference datatsets. The recipe family
    reproduces all figures from `Lauer et al. (2022)`_: maps of the geographical
    distribution of multi-year averages, Taylor diagrams for multi-year annual
