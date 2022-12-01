@@ -864,7 +864,8 @@ diagnostics:
         caption: "                               Relative model performance \
                   ~C~ ~Z75~ CMIP3                                           \
                       CMIP5                                                 \
-                                        CMIP6                               "
+                                                                      CMIP6 \
+                                               "
         # Sort diagnostics in a specific order (name = 'diagnositic'-'region')
         diag_order: ['hus400-global', 'zg500-global',
                      'va200-global', 'va850-global',
