@@ -73,8 +73,24 @@ logger = logging.getLogger(__name__)
 
 def _fix_units(cube, definition):
     """Fix issues with the units."""
-    if cube.var_name in ('clt',):
+    logger.info(cube.var_name)
+    if cube.var_name in {'clt'}:
         # Change units from fraction to percentage
+        cube.units = definition.units
+        cube.data = cube.core_data() * 100.
+
+    if cube.var_name in {'tas', 'ta', 'ts'}:
+        # Change units degrees celcius to Kelvin
+        cube.units = definition.units
+        cube.data = cube.core_data() + 273.15
+
+    if cube.var_name in {'hus'}:
+        # Change units from grams/kg to kg/kg
+        cube.units = definition.units
+        cube.data = cube.core_data() / 1000.
+
+    if cube.var_name in {'psl'}:
+        # Change units from hPa to Pa
         cube.units = definition.units
         cube.data = cube.core_data() * 100.
 
@@ -126,7 +142,13 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
 
     utils.set_global_atts(cube, attributes)
 
-    _fix_units(cube, definition)
+    # Set correct names
+    cube.var_name = definition.short_name
+    if definition.standard_name:
+        cube.standard_name = definition.standard_name
+    cube.long_name = definition.long_name
+
+    #_fix_units(cube, definition)
 
     utils.fix_var_metadata(cube, cmor_info)
 
