@@ -528,7 +528,7 @@ Example plots
    The 20-yr average LWP (1986-2005) from the CMIP5 historical model runs and
    the multi-model mean in comparison with the UWisc satellite climatology
    (1988-2007) based on SSM/I, TMI, and AMSR-E (O'Dell et al. 2008). Produced
-   with recipe_lauer13jclim.yml.
+   with recipe_lauer13jclim.yml (diagnostic script clouds.ncl).
 
 .. _fig_cloud_2:
 .. figure::  /recipes/figures/clouds/liq_h2o_taylor.png
@@ -537,7 +537,7 @@ Example plots
 
    Taylor diagram showing the 20-yr annual average performance of CMIP5 models
    for total cloud fraction as compared to MODIS satellite observations. Produced
-   with recipe_lauer13jclim.yml.
+   with recipe_lauer13jclim.yml (diagnostic script clouds_taylor.ncl).
 
 .. _fig_cloud_3:
 .. figure::  /recipes/figures/clouds/cloud_sweffect.png
@@ -559,7 +559,7 @@ Example plots
    right panels show zonal averages from CERES-EBAF (thick black), the
    individual CMIP5 models (thin gray lines) and the multi-model mean (thick
    red line). Similar to Figure 9.5 of `Flato et al., 2013`_. Produced
-   with recipe_clouds_ipcc.yml.
+   with recipe_clouds_ipcc.yml (diagnostic script clouds_ipcc.ncl).
 
 .. _fig_cloud_4:
 .. figure::  /recipes/figures/clouds/cloud_var_multi.png
@@ -569,7 +569,7 @@ Example plots
    estimated as relative temporal standard deviation from 20 years (1986-2005)
    of data. The temporal standard devitions are calculated from monthly
    anomalies after subtracting the climatological mean seasonal cycle. Produced
-   with recipe_lauer13jclim.yml.
+   with recipe_lauer13jclim.yml (clouds_interannual.ncl).
 
 .. _fig_cloud_5:
 .. figure::  /recipes/figures/clouds/clouds_zonal_clcalipso_annual_cmip6.png
@@ -578,7 +578,7 @@ Example plots
 
    Zonal mean of the multi-year annual mean cloud fraction as seen from
    CALIPSO from CMIP6 models in comparison to CALIPSO-GOCCP data. Produced
-   with recipe_lauer22jclim_fig3-4_zonal.yml.
+   with recipe_lauer22jclim_fig3-4_zonal.yml (diagnostic script clouds_zonal.ncl).
 
 .. _fig_cloud_6:
 .. figure::  /recipes/figures/clouds/clouds_scatter_clt_swcre_so_cmip6.png
@@ -592,7 +592,7 @@ Example plots
    observational estimates from ESACCI-CLOUD (black circles and lines).
    The red shaded areas represent the range between the 10th and 90th percentiles
    of the results from all individual models. Produced with
-   recipe_lauer22jclim_fig9-11ab_scatter.yml.
+   recipe_lauer22jclim_fig9-11ab_scatter.yml (diagnostic script clouds_scatter.ncl).
 
 .. _fig_cloud_7:
 .. figure::  /recipes/figures/clouds/clouds_pdf_clt_so_cmip6_line.png
@@ -603,7 +603,7 @@ Example plots
    in comparison to ESACCI-CLOUD data. The red curve shows the multi-model average,
    the blue curve the ESACCI-CLOUD data and the thin gray lines the individual
    models. The red shading shows ±1 standard deviation of the inter-model spread.
-   Produced with recipe_lauer22jclim_fig9-11c_pdf.yml.
+   Produced with recipe_lauer22jclim_fig9-11c_pdf.yml (diagnostic script clouds_pdf.ncl).
 
 .. _fig_cloud_8:
 .. figure::  /recipes/figures/clouds/clouds_dyn_matrix_ts_wap_clt_cmip6_ocean.png
@@ -613,4 +613,4 @@ Example plots
    2-dimensional distribution of average total cloud cover (clt) binned by sea
    surface temperature (SST, x-axis) and vertical velocity at 500 hPa (ω\ :sub:`500`, y-axis)
    averaged over 20 years and all grid cells over the ocean. Produced with
-   recipe_lauer22jclim_fig8_dyn.yml.
+   recipe_lauer22jclim_fig8_dyn.yml (diagnostic script clouds_dyn_matrix.ncl).
