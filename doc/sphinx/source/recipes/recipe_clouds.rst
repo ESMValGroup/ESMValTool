@@ -522,7 +522,7 @@ Example plots
 -------------
 
 .. _fig_cloud_1:
-.. figure::  /recipes/figures/clouds/liq_h2o_path_multi.png
+.. figure::  /recipes/figures/clouds/clouds_lwp_annual.png
    :align:   center
 
    The 20-yr average LWP (1986-2005) from the CMIP5 historical model runs and
@@ -531,7 +531,7 @@ Example plots
    with recipe_lauer13jclim.yml (diagnostic script clouds.ncl).
 
 .. _fig_cloud_2:
-.. figure::  /recipes/figures/clouds/liq_h2o_taylor.png
+.. figure::  /recipes/figures/clouds/clouds_taylor_clt_annual.png
    :align:   center
    :width:   7cm
 
@@ -540,15 +540,15 @@ Example plots
    with recipe_lauer13jclim.yml (diagnostic script clouds_taylor.ncl).
 
 .. _fig_cloud_3:
-.. figure::  /recipes/figures/clouds/cloud_sweffect.png
+.. figure::  /recipes/figures/clouds/clouds_ipcc_swcre_annual.png
    :align:   center
    :width:   9cm
 
-.. figure::  /recipes/figures/clouds/cloud_lweffect.png
+.. figure::  /recipes/figures/clouds/clouds_ipcc_lwcre_annual.png
    :align:   center
    :width:   9cm
 
-.. figure::  /recipes/figures/clouds/cloud_neteffect.png
+.. figure::  /recipes/figures/clouds/clouds_ipcc_netcre_annual.png
    :align:   center
    :width:   9cm
 
@@ -562,7 +562,7 @@ Example plots
    with recipe_clouds_ipcc.yml (diagnostic script clouds_ipcc.ncl).
 
 .. _fig_cloud_4:
-.. figure::  /recipes/figures/clouds/cloud_var_multi.png
+.. figure::  /recipes/figures/clouds/clouds_interannual_pr.png
    :align:   center
 
    Interannual variability of modeled and observed (GPCP) precipitation rates
