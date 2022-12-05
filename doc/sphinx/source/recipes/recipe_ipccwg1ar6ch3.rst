@@ -389,3 +389,20 @@ Example plots
    observational product are shown as horizontal lines. Panel (b) shows annual
    mean precipitation rate (mm day–1) of GHCN version 2 for the years 1950–2014
    over land areas used to compute the plots. 
+
+.. figure::  /recipes/figures/ipccwg1ar6ch3/fig_3_42_a.png
+   :align:   center
+
+   Figure 3.42a: Relative space–time root-mean-square deviation (RMSD)
+   calculated from the climatological seasonal cycle of the CMIP simulations
+   (1980–1999) compared to observational datasets.A relative performane
+   measure is displayed, with blue shading indicating better and red shading
+   indicating worse performance than the median of all model results. A diagonal
+   split of a grid square shows the relative error with respect to the reference
+   data set (lower right triangle) and an additional data set (upper left
+   triangle). Reference/additional datasets are from top to bottom in (a):
+   ERA5/NCEP, GPCP-SG/GHCN, CERES-EBAF, CERES-EBAF, CERES-EBAF, CERES-EBAF,
+   JRA-55/ERA5, ESACCI-SST/HadISST, ERA5/NCEP, ERA5/NCEP, ERA5/NCEP, ERA5/NCEP,
+   ERA5/NCEP, ERA5/NCEP, AIRS/ERA5, ERA5/NCEP. White boxes are used when data
+   are not available for a given model and variable. Figure is updated and
+   expanded from Bock et al. (2020).
