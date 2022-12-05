@@ -76,10 +76,12 @@ begin
 
   do i = 0, dimsizes(test) - 1
     if (isStrSubset(test(i), "cmip5")) then
-      fname5 = test(i) + "/clouds_lifrac_scatter_ice_cmip5" + reg + ".nc"
+      fname5 = diag_script_info@input_files(i) + \
+               "/clouds_lifrac_scatter_ice_cmip5" + reg + ".nc"
     end if
     if (isStrSubset(test(i), "cmip6")) then
-      fname6 = test(i) + "/clouds_lifrac_scatter_ice_cmip6" + reg + ".nc"
+      fname6 = diag_script_info@input_files(i) + \
+               "/clouds_lifrac_scatter_ice_cmip6" + reg + ".nc"
     end if
   end do
 
