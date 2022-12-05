@@ -79,8 +79,8 @@ diagnostics:
         exp: historical
         reference_dataset: ERA5
         additional_datasets:
-          - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3,
-             start_year: 2007, end_year: 2015}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1',
+             tier: 3, start_year: 2007, end_year: 2015}
     additional_datasets:
       # concatenation error - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS,
       #                        ensemble: r1i1p1f1, grid: gn}
@@ -167,8 +167,8 @@ diagnostics:
         exp: historical
         reference_dataset: ERA5
         additional_datasets:
-          - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3,
-             start_year: 2007, end_year: 2015}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1',
+             tier: 3, start_year: 2007, end_year: 2015}
     additional_datasets:
       # concatenation error - {dataset: ACCESS1-0, ensemble: r1i1p1}
       # concatenation error - {dataset: ACCESS1-3, ensemble: r1i1p1}
