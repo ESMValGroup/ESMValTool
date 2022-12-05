@@ -175,6 +175,8 @@ def main(cfg):
         plt.plot(year[:],emiss[:],color="black",label='Cumulative CO2 emissions')
         plt.plot(year[:],emiss_est[:],color="gray",label='Cumulative CO2 emissions - analytical')
         plt.ylabel('Carbon (EgC)')
+        print ('atmos,ocean,land fractions:',atmos_co2[149]/emiss[149],ocean_cumflux[149]/emiss[149],land_cumflux[149]/emiss[149])
+        print ('emiss_est/ocean_cumflux',emiss_est/ocean_cumflux)
         if mod_index == 0:
           plt.title('Cumulative emissions')
         if mod_index == nmodel-1:
@@ -187,8 +189,8 @@ def main(cfg):
           plt.xticks([])
         plt.subplot(nmodel,3,mod_index*3+3)        
         plt.ylabel('Ratios (K/EgC)')
-        plt.plot(year[:],0.1*tas[:]/ocean_cumflux[:],linestyle='dashdot',color='black',label='0.1\u0394T/\u0394$C_O$')
-        plt.plot(year[:],tas[:]/(ocean_cumflux[:]+atmos_co2[:]),linestyle='dashed',color='black',label='\u0394T/(\u0394$C_O$+\u0394$C_A$)')
+        plt.plot(year[:],0.1*tas[:]/ocean_cumflux[:],color='blue',label='0.1\u0394T/\u0394$C_O$')
+        plt.plot(year[:],tas[:]/(ocean_cumflux[:]+atmos_co2[:]),color='red',label='\u0394T/(\u0394$C_O$+\u0394$C_A$)')
         plt.plot(year[:],tas[:]/emiss,color="black",label='\u0394T/E')
         plt.plot([0,1000],[TCRE[mod_index],TCRE[mod_index]],color="gray")#,label='TCRE')
         plt.axis([0,150,0,4])
