@@ -567,7 +567,7 @@ Example plots
 
    Interannual variability of modeled and observed (GPCP) precipitation rates
    estimated as relative temporal standard deviation from 20 years (1986-2005)
-   of data. The temporal standard devitions are calculated from monthly
+   of data. The temporal standard deviations are calculated from monthly
    anomalies after subtracting the climatological mean seasonal cycle. Produced
    with recipe_lauer13jclim.yml (clouds_interannual.ncl).
 
