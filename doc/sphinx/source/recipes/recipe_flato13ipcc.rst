@@ -91,7 +91,7 @@ following figures from Flato et al. (2013) can currently be reproduced:
 
     * Figure 9.38: Seasonal cycle for the surface temperature over land within
       defined regions multi-model mean and comparison to reference dataset
-      can be choosen.
+      can be chosen.
 
     * Figure 9.39: Seasonal bias box plot within
       SREX (IPCC Special Report on Managing the Risks of Extreme Events and
