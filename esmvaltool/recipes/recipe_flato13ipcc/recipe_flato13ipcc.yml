@@ -11,7 +11,7 @@ documentation:
     an issue in the input data still under investigation. This affects the
     diagnostics for Fig. 9.6 in this recipe.
     Data sets taken out were part of the original publication but are
-    currently not available on DKRZ.
+    currently not available on ESGF.
 
   authors:
     - bock_lisa
