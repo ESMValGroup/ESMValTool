@@ -384,7 +384,7 @@ User settings in recipe
 
    *Required settings (scripts)*
 
-   * reference_dataset: reference dataset name (set fo variable)
+   * reference_dataset: reference dataset name (set of variables)
 
    *Optional settings (scripts)*
 
