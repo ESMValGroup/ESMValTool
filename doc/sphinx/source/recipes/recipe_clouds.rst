@@ -102,7 +102,7 @@ User settings in recipe
    * multiobs_uncertainty: calculate uncertainty estimates from multiple
      observational datasets (true, false); by default, all "obs", "obs6",
      "obs4mips" and "native6" datasets are used; any of such datasets can be
-     explicitely excluded when also specifying "multiobs_exclude"
+     explicitly excluded when also specifying "multiobs_exclude"
    * panel_labels: label individual panels (true, false)
    * PanelTop: manual override for "@gnsPanelTop" used by panel plot(s)
    * projection: map projection for plotting (default =
