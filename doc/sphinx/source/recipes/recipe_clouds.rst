@@ -372,7 +372,7 @@ User settings in recipe
     * multiobs_uncertainty: calculate uncertainty estimates from multiple
       observational datasets (true, false); by default, all "obs", "obs6",
       "obs4mips" and "native6" datasets are used; any of such datasets can be
-      explicitely excluded when also specifying "multiobs_exclude"
+      explicitly excluded when also specifying "multiobs_exclude"
     * styleset: "CMIP5", "DEFAULT" (if not set, clouds_taylor.ncl will create a
       color table and symbols for plotting)
     * timemean: time averaging; annualclim (default) = 1 plot annual mean;
