@@ -711,7 +711,7 @@ Example plots
    Tibetan Plateau (TIBs), Eastern Asia (EASs), Southern Asia (SASs),
    Southeast Asia (SEAs), Northern Australia (NASs) and
    Southern Australia/New Zealand (SAUs).
-   The positions of these regions is defined following
+   The positions of these regions are defined following
    (Seneviratne et al., 2012) and differs from the ones in Fig. 9.38.
 
 
