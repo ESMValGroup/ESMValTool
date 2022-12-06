@@ -712,7 +712,7 @@ Example plots
    Southeast Asia (SEAs), Northern Australia (NASs) and
    Southern Australia/New Zealand (SAUs).
    The positions of these regions are defined following
-   (Seneviratne et al., 2012) and differs from the ones in Fig. 9.38.
+   (Seneviratne et al., 2012) and differ from the ones in Fig. 9.38.
 
 
 .. figure:: /recipes/figures/flato13ipcc/fig-9-39_regions.png
