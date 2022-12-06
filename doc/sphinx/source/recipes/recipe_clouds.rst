@@ -341,7 +341,7 @@ User settings in recipe
    *Optional settings (variables)*
 
    * long_name: description of variable
-   * reference_dataset: name of reference datatset
+   * reference_dataset: name of reference dataset
 
 10. Script clouds_taylor.ncl
 
