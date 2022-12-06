@@ -170,7 +170,7 @@ diagnostics:
   # ==========================================================================
   regional_downscaling_Fig938:
     description: Creates annual cycle regional plots for individual models
-                 and mumltimodel over the selected project&experiemnt&mip
+                 and multimodel over the selected project&experiemnt&mip.
     themes:
       - chem
     realms:
@@ -202,8 +202,7 @@ diagnostics:
   # ==========================================================================
   regional_downscaling_Fig939:
     description: Creates seasonal or annual bias box plots at selected
-                 regions over the selected project&experiemnt&mip over
-                 the selected project&experiemnt&mip
+                 regions over the selected project&experiemnt&mip.
     themes:
       - chem
     realms:
@@ -237,7 +236,7 @@ diagnostics:
   # ==========================================================================
   regional_downscaling_Fig940:
     description: Creates annual cycle regional plots for individual models
-                 and mumltimodel over the selected project&experiemnt&mip
+                 and multimodel over the selected project&experiemnt&mip.
     themes:
       - chem
     realms:
@@ -273,7 +272,8 @@ diagnostics:
   # Chapter 9  - Figure941
   # ==========================================================================
   regional_downscaling_Fig941:
-    description:
+    description: Creates ranked modelled versus reference data set 
+                 regional mean temperature plots.
     themes:
       - chem
     realms:
