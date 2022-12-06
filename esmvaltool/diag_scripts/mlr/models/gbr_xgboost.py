@@ -49,7 +49,7 @@ class XGBoostGBRModel(GBRModel):
         fit_kwargs = super()._update_fit_kwargs(fit_kwargs)
 
         # Fit all transformers
-        x_train = self.get_x_array('train')
+        x_train = self.data['train'].x
         y_train = self.get_y_array('train')
         self._clf.fit_transformers_only(x_train, y_train, **fit_kwargs)
         self._clf.fit_target_transformer_only(y_train, **fit_kwargs)
@@ -60,7 +60,7 @@ class XGBoostGBRModel(GBRModel):
         eval_set = [(x_train, y_train)]
         sample_weights = [self._get_sample_weights('train')]
         if 'test' in self.data:
-            x_test = self._clf.transform_only(self.get_x_array('test'))
+            x_test = self._clf.transform_only(self.data['test'].x)
             y_test = self._clf.transform_target_only(self.get_y_array('test'))
             eval_set.append((x_test, y_test))
             sample_weights.append(self._get_sample_weights('test'))

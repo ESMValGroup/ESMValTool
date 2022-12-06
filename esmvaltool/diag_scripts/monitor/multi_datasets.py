@@ -14,6 +14,9 @@ Currently supported plot types (use the option ``plots`` to specify them):
     - Time series (plot type ``timeseries``): for each variable separately, all
       datasets are plotted in one single figure. Input data needs to be 1D with
       single dimension `time`.
+    - Annual cycle (plot type ``annual_cycle``): for each variable separately,
+      all datasets are plotted in one single figure. Input data needs to be 1D
+      with single dimension `month_number`.
     - Maps (plot type ``map``): for each variable and dataset, an individual
       map is plotted. If a reference dataset is defined, also include this
       dataset and a bias plot into the figure. Note that if a reference dataset
@@ -48,9 +51,9 @@ figure_kwargs: dict, optional
     default, uses ``constrained_layout: true``.
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
-    must be ``timeseries``, ``map``, or ``profile``. Dictionary values are
-    dictionaries used as options for the corresponding plot. The allowed
-    options for the different plot types are given below.
+    must be ``timeseries``, ``annual_cycle``, ``map``, or ``profile``.
+    Dictionary values are dictionaries used as options for the corresponding
+    plot. The allowed options for the different plot types are given below.
 plot_filename: str, optional
     Filename pattern for the plots.
     Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
@@ -78,6 +81,31 @@ annual_mean_kwargs: dict, optional
     means. These keyword arguments update (and potentially overwrite) the
     ``plot_kwargs`` for the annual mean plots. Use ``annual_mean_kwargs`` to
     not show annual means.
+legend_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
+    ``legend_kwargs: false`` to not show legends.
+plot_kwargs: dict, optional
+    Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
+    elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
+    ``CMIP6`` if ``facet_used_for_labels: project`` or ``historical`` if
+    ``facet_used_for_labels: exp``. Dictionary values are dictionaries used as
+    keyword arguments for :func:`iris.plot.plot`. String arguments can include
+    facets in curly brackets which will be derived from the corresponding
+    dataset, e.g., ``{project}``, ``{short_name}``, ``{exp}``. Examples:
+    ``default: {linestyle: '-', label: '{project}'}, CMIP6: {color: red,
+    linestyle: '--'}, OBS: {color: black}``.
+pyplot_kwargs: dict, optional
+    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
+    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
+    single argument for these functions. String arguments can include facets in
+    curly brackets which will be derived from the datasets plotted in the
+    corresponding plot, e.g., ``{short_name}``, ``{exp}``. Facets like
+    ``{project}`` that vary between the different datasets will be transformed
+    to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
+    of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+
+Configuration options for plot type ``annual_cycle``
+----------------------------------------------------
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
@@ -177,6 +205,14 @@ rasterize: bool, optional (default: True)
     graphics (e.g., ``output_file_type=pdf,svg,ps``).
 show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
+x_pos_stats_avg: float, optional (default: 0.0)
+    Text x-position of average (shown on the left) in Axes coordinates. Can be
+    adjusted to avoid overlap with the figure. Only relevant if ``show_stats:
+    true``.
+x_pos_stats_bias: float, optional (default: 0.92)
+    Text x-position of bias statistics (shown on the right) in Axes
+    coordinates. Can be adjusted to avoid overlap with the figure. Only
+    relevant if ``show_stats: true``.
 
 Configuration options for plot type ``profile``
 -----------------------------------------------
@@ -247,6 +283,14 @@ show_y_minor_ticklabels: bool, optional (default: False)
     Show tick labels for the minor ticks on the Y axis.
 show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
+x_pos_stats_avg: float, optional (default: 0.01)
+    Text x-position of average (shown on the left) in Axes coordinates. Can be
+    adjusted to avoid overlap with the figure. Only relevant if ``show_stats:
+    true``.
+x_pos_stats_bias: float, optional (default: 0.7)
+    Text x-position of bias statistics (shown on the right) in Axes
+    coordinates. Can be adjusted to avoid overlap with the figure. Only
+    relevant if ``show_stats: true``.
 
 .. hint::
 
@@ -306,10 +350,19 @@ class MultiDatasets(MonitorBase):
 
         # Load input data
         self.input_data = self._load_and_preprocess_data()
-        self.grouped_input_data = group_metadata(self.input_data, 'short_name')
+        self.grouped_input_data = group_metadata(
+            self.input_data,
+            'short_name',
+            sort=self.cfg['facet_used_for_labels'],
+        )
 
         # Check given plot types and set default settings for them
-        self.supported_plot_types = ['timeseries', 'map', 'profile']
+        self.supported_plot_types = [
+            'timeseries',
+            'annual_cycle',
+            'map',
+            'profile',
+        ]
         for (plot_type, plot_options) in self.plots.items():
             if plot_type not in self.supported_plot_types:
                 raise ValueError(
@@ -330,11 +383,18 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('rasterize', True)
                 self.plots[plot_type].setdefault('show_stats', True)
 
-            # Defaults profile plots
+            # Defaults for map plots
+            if plot_type == 'map':
+                self.plots[plot_type].setdefault('x_pos_stats_avg', 0.0)
+                self.plots[plot_type].setdefault('x_pos_stats_bias', 0.92)
+
+            # Defaults for profile plots
             if plot_type == 'profile':
                 self.plots[plot_type].setdefault('log_y', True)
                 self.plots[plot_type].setdefault('show_y_minor_ticklabels',
                                                  False)
+                self.plots[plot_type].setdefault('x_pos_stats_avg', 0.01)
+                self.plots[plot_type].setdefault('x_pos_stats_bias', 0.7)
 
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
@@ -383,11 +443,11 @@ class MultiDatasets(MonitorBase):
         fontsize = 6.0
         y_pos = 0.95
         if plot_type == 'map':
-            x_pos_bias = 0.92
-            x_pos = 0.0
+            x_pos_bias = self.plots[plot_type]['x_pos_stats_bias']
+            x_pos = self.plots[plot_type]['x_pos_stats_avg']
         elif plot_type == 'profile':
-            x_pos_bias = 0.7
-            x_pos = 0.01
+            x_pos_bias = self.plots[plot_type]['x_pos_stats_bias']
+            x_pos = self.plots[plot_type]['x_pos_stats_avg']
         else:
             raise NotImplementedError(f"plot_type '{plot_type}' not supported")
 
@@ -543,7 +603,7 @@ class MultiDatasets(MonitorBase):
                 plot_kwargs[key] = val
 
         # Default settings for different plot types
-        if plot_type == 'timeseries':
+        if plot_type in ('timeseries', 'annual_cycle'):
             plot_kwargs.setdefault('label', label)
 
         return deepcopy(plot_kwargs)
@@ -880,6 +940,7 @@ class MultiDatasets(MonitorBase):
     def _check_cube_dimensions(cube, plot_type):
         """Check that cube has correct dimensional variables."""
         expected_dimensions_dict = {
+            'annual_cycle': (['month_number'],),
             'map': (['latitude', 'longitude'],),
             'profile': (['latitude', 'air_pressure'],
                         ['latitude', 'altitude']),
@@ -1002,6 +1063,64 @@ class MultiDatasets(MonitorBase):
             'authors': ['schlund_manuel'],
             'caption': caption,
             'plot_types': ['line'],
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+
+    def create_annual_cycle_plot(self, datasets, short_name):
+        """Create annual cycle plot."""
+        plot_type = 'annual_cycle'
+        if plot_type not in self.plots:
+            return
+
+        if not datasets:
+            raise ValueError(f"No input data to plot '{plot_type}' given")
+
+        logger.info("Plotting %s", plot_type)
+        fig = plt.figure(**self.cfg['figure_kwargs'])
+        axes = fig.add_subplot()
+
+        # Plot all datasets in one single figure
+        ancestors = []
+        for dataset in datasets:
+            ancestors.append(dataset['filename'])
+            cube = dataset['cube']
+            self._check_cube_dimensions(cube, plot_type)
+
+            # Plot annual cycle
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs['axes'] = axes
+            iris.plot.plot(cube, **plot_kwargs)
+
+        # Default plot appearance
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+        axes.set_title(multi_dataset_facets['long_name'])
+        axes.set_xlabel('Month')
+        axes.set_ylabel(f"{short_name} [{multi_dataset_facets['units']}]")
+        axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
+
+        # Legend
+        legend_kwargs = self.plots[plot_type].get('legend_kwargs', {})
+        if legend_kwargs is not False:
+            axes.legend(**legend_kwargs)
+
+        # Customize plot appearance
+        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+
+        # Save plot
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        fig.savefig(plot_path, **self.cfg['savefig_kwargs'])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+        # Provenance tracking
+        caption = (f"Annual cycle of {multi_dataset_facets['long_name']} for "
+                   f"various datasets.")
+        provenance_record = {
+            'ancestors': ancestors,
+            'authors': ['schlund_manuel'],
+            'caption': caption,
+            'plot_types': ['seas'],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
@@ -1143,6 +1262,7 @@ class MultiDatasets(MonitorBase):
         for (short_name, datasets) in self.grouped_input_data.items():
             logger.info("Processing variable %s", short_name)
             self.create_timeseries_plot(datasets, short_name)
+            self.create_annual_cycle_plot(datasets, short_name)
             self.create_map_plot(datasets, short_name)
             self.create_profile_plot(datasets, short_name)
 
