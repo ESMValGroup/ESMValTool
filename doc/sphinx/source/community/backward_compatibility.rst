@@ -172,9 +172,10 @@ are linked). It is highly recommended to communicate a relevant
 selection (e.g. important new, scheduled for removal, and removed
 features) also by other means, to ensure we reach as many people
 potentially affected as possible (see “Guidance on handling
-*backward-incompatible changes*” section below). We encourage
-involvement of *recipe developers* by organising monthly meetings where
-everyone is welcome to join, ask questions, and provide feedback.
+*backward-incompatible changes*” section below).
+We organize monthly community meetings where *recipe developers* can learn about
+the latest developments and everyone is welcome to join, ask questions, and
+provide feedback.
 
 To meet the needs of users and funders, we should take reproducibility
 of older results seriously, but this should not hold us back from
