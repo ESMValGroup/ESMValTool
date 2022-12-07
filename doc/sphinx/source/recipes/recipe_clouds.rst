@@ -48,7 +48,7 @@ Four recipes are available to evaluate cloud climatologies from CMIP models.
 
 .. _`Flato et al., 2013`: https://www.ipcc.ch/site/assets/uploads/2018/02/WG1AR5_Chapter09_FINAL.pdf
 .. _`Lauer and Hamilton (2013)`: https://journals.ametsoc.org/view/journals/clim/26/11/jcli-d-12-00451.1.xml
-.. _`Lauer et al. (2022)`: https://journals.ametsoc.org/view/journals/clim/
+.. _`Lauer et al. (2022)`: https://journals.ametsoc.org/view/journals/clim/aop/JCLI-D-22-0181.1/JCLI-D-22-0181.1.xml
 
 
 Available recipes and diagnostics
@@ -515,7 +515,7 @@ References
 
 * Lauer, A., L. Bock, B. Hassler, M. Schröder, and M. Stengel, Cloud climatologies
   from global climate models - a comparison of CMIP5 and CMIP6 models with satellite
-  data, J. Climate (in review).
+  data, J. Climate (published online 06 Oct 2022), doi: 10.1175/JCLI-D-22-0181.1.
 
 
 Example plots
