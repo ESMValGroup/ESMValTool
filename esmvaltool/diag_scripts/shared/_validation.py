@@ -50,7 +50,9 @@ logger = logging.getLogger(os.path.basename(__file__))
 #     return orig_ctrl, orig_exper
 
 # #nocmip
-#def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
+# def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
+
+
 def get_control_exper_obs(short_name, input_data, cfg, cmip_type=None):
     """
     Get control, exper and obs datasets.
@@ -91,7 +93,8 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type=None):
 
     # determine CONTROL and EXPERIMENT datasets
 
-    # corner case not necessary when using distinct dataset aliases #nocornercase
+    # #nocornercase
+    # corner case not necessary when using distinct dataset aliases
     # # corner case: they could be the same dataset name
     # if cfg['control_model'] == cfg['exper_model']:
     #     logger.info("Identical Control/Experiment dataset names: %s",
@@ -102,14 +105,15 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type=None):
     # if they're not the same dataset, fire away
 
     # make sure the chosen datasets for control and exper are available
-    alias_selection = [ model['alias'] for model in dataset_selection ]
-    print(alias_selection)
+    alias_selection = [model['alias'] for model in dataset_selection]
+
     if cfg['control_model'] not in alias_selection:
         logger.error(f"Control dataset {cfg['control_model']} not in datasets")
         sys.exit(1)
 
     if cfg['exper_model'] not in alias_selection:
-        logger.error(f"Experiment dataset {cfg['exper_model']} not in datasets")
+        logger.error(f"Experiment dataset {cfg['exper_model']}"
+                     " not in datasets")
         sys.exit(1)
 
     # pick control and experiment dataset
