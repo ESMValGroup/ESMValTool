@@ -82,12 +82,13 @@ User settings in recipe
      The following shows an example on customizing the latitude tickmarks so
      that a degree sign and and empty space is used for the labels:
 
-     ```
-     # copernicus style of latitude tickmarks
-     res_tmXBMode: "Explicit"
-     res_tmXBValues: [-60, -30, 0, 30, 60]
-     res_tmXBLabels: ["60~F35~J~F21~ S", "30~F35~J~F21~ S", "0~F35~J", "30~F35~J~F21~ N", "60~F35~J~F21~ N"]
-     ```
+  .. code-block:: yaml
+
+	# Define regions, as a list.
+        # copernicus style of latitude tickmarks
+        res_tmXBMode: "Explicit"
+        res_tmXBValues: [-60, -30, 0, 30, 60]
+        res_tmXBLabels: ["60~F35~J~F21~ S", "30~F35~J~F21~ S", "0~F35~J", "30~F35~J~F21~ N", "60~F35~J~F21~ N"]
 
 
    *Required settings (variables)*
