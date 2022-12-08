@@ -10,47 +10,48 @@ from esmvaltool.diag_scripts.shared import select_metadata
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+# #nocornercase
+# def _disentagle_iden_datasets(dat_selection):
+#     """
+#     Disentangle identical dataset names for CONTROL and EXPERIMENT.
 
-def _disentagle_iden_datasets(dat_selection):
-    """
-    Disentangle identical dataset names for CONTROL and EXPERIMENT.
+#     This func takes a list of exactly two dictionaries
+#     that have the same value for `dataset` key and returns a composite
+#     dataset name assembled from the actual dataset name + parameter that
+#     is different between the two dicts (e.g. mip or exp or grid etc.)
+#     """
+#     orig_ctrl, orig_exper = dat_selection
+#     dif_pars = [
+#         key for key in orig_ctrl.keys() & orig_exper
+#         if orig_ctrl[key] != orig_exper[key]
+#     ]
 
-    This func takes a list of exactly two dictionaries
-    that have the same value for `dataset` key and returns a composite
-    dataset name assembled from the actual dataset name + parameter that
-    is different between the two dicts (e.g. mip or exp or grid etc.)
-    """
-    orig_ctrl, orig_exper = dat_selection
-    dif_pars = [
-        key for key in orig_ctrl.keys() & orig_exper
-        if orig_ctrl[key] != orig_exper[key]
-    ]
+#     # do not populate dataset name with these (long) params
+#     unwanted_pars = ['filename', 'alias', 'recipe_dataset_index']
+#     dif_pars = [
+#         dif_par for dif_par in dif_pars if dif_par not in unwanted_pars
+#     ]
+#     if not dif_pars:
+#         logger.error("Your CONTROL and EXPERIMENT "
+#                      "datasets are completely identical, your analysis "
+#                      "will output garbage, exiting.")
+#         sys.exit(1)
 
-    # do not populate dataset name with these (long) params
-    unwanted_pars = ['filename', 'alias', 'recipe_dataset_index']
-    dif_pars = [
-        dif_par for dif_par in dif_pars if dif_par not in unwanted_pars
-    ]
-    if not dif_pars:
-        logger.error("Your CONTROL and EXPERIMENT "
-                     "datasets are completely identical, your analysis "
-                     "will output garbage, exiting.")
-        sys.exit(1)
+#     # assemble new dataset names
+#     new_ctrl = [str(orig_ctrl[k]) for k in dif_pars]
+#     new_ctrl = orig_ctrl['dataset'] + "-" + "-".join(new_ctrl)
+#     new_exper = [str(orig_exper[k]) for k in dif_pars]
+#     new_exper = orig_exper['dataset'] + "-" + "-".join(new_exper)
 
-    # assemble new dataset names
-    new_ctrl = [str(orig_ctrl[k]) for k in dif_pars]
-    new_ctrl = orig_ctrl['dataset'] + "-" + "-".join(new_ctrl)
-    new_exper = [str(orig_exper[k]) for k in dif_pars]
-    new_exper = orig_exper['dataset'] + "-" + "-".join(new_exper)
+#     # recast the new names in the old dicts
+#     orig_ctrl['dataset'] = new_ctrl
+#     orig_exper['dataset'] = new_exper
 
-    # recast the new names in the old dicts
-    orig_ctrl['dataset'] = new_ctrl
-    orig_exper['dataset'] = new_exper
+#     return orig_ctrl, orig_exper
 
-    return orig_ctrl, orig_exper
-
-
-def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
+# #nocmip
+#def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
+def get_control_exper_obs(short_name, input_data, cfg, cmip_type=None):
     """
     Get control, exper and obs datasets.
 
@@ -63,9 +64,15 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
     input_data: dict containing the input data info
     cfg: config file as used in this module
     """
-    # select data per short name and CMIP type
-    dataset_selection = select_metadata(
-        input_data, short_name=short_name, project=cmip_type)
+    # nocmip
+    # # select data per short name and CMIP type
+    # dataset_selection = select_metadata(
+    #     input_data, short_name=short_name, project=cmip_type)
+
+    # select data per short name and optional CMIP type
+    dataset_selection = (select_metadata(input_data, short_name=short_name,
+                                         project=cmip_type) if cmip_type else
+                         select_metadata(input_data, short_name=short_name))
 
     # get the obs datasets if specified in recipe
     if 'observational_datasets' in cfg:
@@ -84,20 +91,34 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
 
     # determine CONTROL and EXPERIMENT datasets
 
-    # corner case: they could be the same dataset name
-    if cfg['control_model'] == cfg['exper_model']:
-        logger.info("Identical Control/Experiment dataset names: %s",
-                    dataset_selection[0]['dataset'])
-        control, experiment = _disentagle_iden_datasets(dataset_selection)
-        return control, experiment, obs_selection
+    # corner case not necessary when using distinct dataset aliases #nocornercase
+    # # corner case: they could be the same dataset name
+    # if cfg['control_model'] == cfg['exper_model']:
+    #     logger.info("Identical Control/Experiment dataset names: %s",
+    #                 dataset_selection[0]['dataset'])
+    #     control, experiment = _disentagle_iden_datasets(dataset_selection)
+    #     return control, experiment, obs_selection
 
     # if they're not the same dataset, fire away
+
+    # make sure the chosen datasets for control and exper are available
+    alias_selection = [ model['alias'] for model in dataset_selection ]
+    print(alias_selection)
+    if cfg['control_model'] not in alias_selection:
+        logger.error(f"Control dataset {cfg['control_model']} not in datasets")
+        sys.exit(1)
+
+    if cfg['exper_model'] not in alias_selection:
+        logger.error(f"Experiment dataset {cfg['exper_model']} not in datasets")
+        sys.exit(1)
+
+    # pick control and experiment dataset
     for model in dataset_selection:
-        if model['dataset'] == cfg['control_model']:
-            logger.info("Control dataset %s", model['dataset'])
+        if model['alias'] == cfg['control_model']:
+            logger.info("Control dataset %s", model['alias'])
             control = model
-        elif model['dataset'] == cfg['exper_model']:
-            logger.info("Experiment dataset %s", model['dataset'])
+        elif model['alias'] == cfg['exper_model']:
+            logger.info("Experiment dataset %s", model['alias'])
             experiment = model
 
     return control, experiment, obs_selection
