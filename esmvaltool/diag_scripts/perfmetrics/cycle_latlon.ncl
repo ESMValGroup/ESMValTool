@@ -75,21 +75,25 @@ begin
     var_all@ref_model = variable_info[0]@reference_dataset
     delete(var_avg)
 
+    grading_models = remove_index(datasetnames, ref_inds)
+
     ; Store all models in one array
     if(ii_modidx .eq. 0) then
       var_all_mod = new(array_append_record(dimsizes(var_all), \
-                        dimsizes(grading&models), 0), float)
+                        dimsizes(grading_models), 0), float)
       var_all_mod!4 = "models"
-      var_all_mod&models = grading&models
+      var_all_mod&models = remove_index(datasetnames, ref_inds)
       copy_VarAtts(diag_script_info, var_all_mod)
     end if
     if (l_altern) then
       if (imod .ne. ref_ind .and. imod .ne. alt_ind) then
-        var_all_mod(:, :, :, :, imod) = var_all
+        igrad = ind(datasetnames(imod) .eq. grading_models)
+        var_all_mod(:, :, :, :, igrad) = var_all
       end if
     else
       if (imod.ne.ref_ind) then
-        var_all_mod(:, :, :, :, imod) = var_all
+        igrad = ind(datasetnames(imod) .eq. grading_models)
+        var_all_mod(:, :, :, :, igrad) = var_all
       end if
     end if
 
@@ -156,11 +160,11 @@ begin
         if (.not.any(datasetnames(imod).eq.grading&models)) then
           continue
         end if
-        grading(met, 0, imod, 0) = \
+        grading(met, 0, igrad, 0) = \
           calculate_metric(var_all(:, :, :, 0), var_ref(:, :, :, 0), \
                            diag_script_info@metric(met))
         if (l_altern) then
-          grading(met, 0, imod, 1) = \
+          grading(met, 0, igrad, 1) = \
             calculate_metric(var_all(:, :, :, 0), var_alt(:, :, :, 0), \
                              diag_script_info@metric(met))
         end if
@@ -171,7 +175,10 @@ begin
 
   end do
 
-  if (any(diag_script_info@metric.eq."RMSD")) then
+  if (diag_script_info@calc_grading .and. \
+      any(diag_script_info@metric.eq."RMSD") .and. \
+      all(grading_models.ne."MultiModelMean") .and. \
+      all(grading_models.ne."MultiModelMedian")) then
 
     ; *************************************
     ; calculate means over ensemble members
@@ -179,7 +186,7 @@ begin
 
     imet = ind(diag_script_info@metric.eq."RMSD")
 
-    datasetnames := grading&models
+    datasetnames := grading@models
     projectnames := remove_index(projectnames, ref_inds)
 
     ndim := dimsizes(datasetnames)
@@ -192,6 +199,9 @@ begin
     n_proj = dimsizes(projects)
 
     do iproj = 0, n_proj - 1
+
+      log_debug("Processing mean of " + projects(iproj))
+
       ind_proj := ind(projectnames .eq. projects(iproj))
 
       tmp := dim_avg_n_Wrap(var_all_mod(:, :, :, :, ind_proj), 4)

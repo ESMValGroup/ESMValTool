@@ -393,7 +393,7 @@ begin
     ; Sort diagnostics in the order specified in the settings
     if (isatt(diag_script_info, "diag_order")) then
       l_ok = True
-      if (dimsizes(data_all&diagnostics).ne. \
+      if (dimsizes(data_all&diagnostics).lt. \
           dimsizes(diag_script_info@diag_order)) then
         error_msg("w", DIAG_SCRIPT, "", "specified order of diagnostics " + \
                   "cannot be applied, number of diagnostics does not match")
