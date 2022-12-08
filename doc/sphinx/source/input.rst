@@ -268,7 +268,7 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Eppley-VGPM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA5 [#note1]_               | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rlns, rlus [#note2]_, rsds,     |   3  | n/a             |
+| ERA5 [#note1]_               | cl, clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rlns, rlus [#note2]_, rsds, |   3  | n/a             |
 |                              | rsns, rsus [#note2]_, rsdt, rss, uas, vas, tas, tasmax, tasmin, tdps, ts, tsn (E1hr/Amon), orog (fx) |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA5-Land [#note1]_          | pr                                                                                                   |   3  | n/a             |
