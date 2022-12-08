@@ -439,7 +439,7 @@ For example:
 
     datasets:
     - {project: native6, dataset: ERA5, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1990}
-    - {project: ICON, dataset: ICON, version: 42-0, component: atm, exp: amip, grid: R2B5, ensemble: r1i1, var_type: 2d}
+    - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1i1p1f1, mip: Amon, short_name: tas, start_year: 2000, end_year: 2014}
 
 For project ``native6``, more examples can be found in the diagnostics
 ``ERA5_native6`` in the recipe `examples/recipe_check_obs.yml
