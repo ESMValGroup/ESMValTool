@@ -69,6 +69,7 @@ dependencies:
   - pytest-env
   - pytest-html !=2.1.0
   - pytest-metadata >=1.5.1
+  - pytest-mock
   - pytest-xdist
   # Python packages needed for building docs
   - autodocsumm>=0.2.2
