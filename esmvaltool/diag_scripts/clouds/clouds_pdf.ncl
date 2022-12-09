@@ -227,11 +227,8 @@ begin
                          + filename_add + "_line")
     end if
 
-;    res@gsnDraw                  = False
-;    res@gsnFrame                 = False
     res@gsnHistogramComputePercentages = True
     res@gsnHistogramPercentSign = True
-;    res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
     res@tiXAxisString = data1@var + " (" + data1@units + ")"
     res@tmYLOn = False
     res@tiYAxisOn = False
@@ -469,6 +466,7 @@ begin
   end if
 
   draw(lineplot)
+  frame(wks_line)
 
 ;  delete(res)
 ;  res = True
