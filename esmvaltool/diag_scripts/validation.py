@@ -347,8 +347,7 @@ def main(cfg):
                                                  cmip_type=cfg["cmip_era"] if
                                                  "cmip_era" in cfg else None)
         # set a plot key holding info on var and data set names
-        plot_key = "{}_{}_vs_{}".format(short_name, ctrl['alias'],
-                                        exper['alias'])
+        plot_key = f"{short_name}_{ctrl['alias']}_vs_{exper['alias']}"
         control_dataset_name = ctrl['alias']
 
         # get seasons if needed then apply analysis
@@ -368,8 +367,8 @@ def main(cfg):
                     obs_seasons = [
                         coordinate_collapse(obss, cfg) for obss in obs_seasons
                     ]
-                    plot_key_obs = "{}_{}_vs_{}".format(
-                        short_name, ctrl['alias'], iobs['alias'])
+                    plot_key_obs = (f"{short_name}_{ctrl['alias']}" +
+                                    f"_vs_{iobs['alias']}")
                     plot_ctrl_exper_seasons(ctrl_seasons, obs_seasons, cfg,
                                             plot_key_obs)
 
@@ -384,8 +383,7 @@ def main(cfg):
             for obs_i, obsfile in zip(obs_list, obs):
                 obs_analyzed = coordinate_collapse(obs_i, cfg)
                 obs_name = obsfile['alias']
-                plot_key = "{}_{}_vs_{}".format(short_name,
-                                                control_dataset_name, obs_name)
+                plot_key = f"{short_name}_{control_dataset_name}_vs_{obs_name}"
                 if cfg['analysis_type'] == 'lat_lon':
                     plot_latlon_cubes(ctrl,
                                       obs_analyzed,

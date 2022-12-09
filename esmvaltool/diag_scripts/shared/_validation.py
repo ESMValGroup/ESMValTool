@@ -108,12 +108,13 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type=None):
     alias_selection = [model['alias'] for model in dataset_selection]
 
     if cfg['control_model'] not in alias_selection:
-        logger.error(f"Control dataset {cfg['control_model']} not in datasets")
+        logger.error("Control dataset %s not in datasets",
+                     cfg['control_model'])
         sys.exit(1)
 
     if cfg['exper_model'] not in alias_selection:
-        logger.error(f"Experiment dataset {cfg['exper_model']}"
-                     " not in datasets")
+        logger.error("Experiment dataset %s not in datasets",
+                     cfg['exper_model'])
         sys.exit(1)
 
     # pick control and experiment dataset
