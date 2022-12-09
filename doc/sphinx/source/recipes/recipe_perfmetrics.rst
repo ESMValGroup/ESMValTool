@@ -71,7 +71,7 @@ User settings in recipe
      This includes for example specific tickmark labels of the axes.
 
      Those special customizations can be done by adding ncl plotting resources
-     combined with prefix "res_" as optional settings of the main script in the
+     combined with prefix ``res_`` as optional settings of the main script in the
      recipe.
 
      Note that this requires to be familiar with the ncl plotting routines for
