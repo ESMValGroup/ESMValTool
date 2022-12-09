@@ -48,7 +48,7 @@ Four recipes are available to evaluate cloud climatologies from CMIP models.
 
 .. _`Flato et al., 2013`: https://www.ipcc.ch/site/assets/uploads/2018/02/WG1AR5_Chapter09_FINAL.pdf
 .. _`Lauer and Hamilton (2013)`: https://journals.ametsoc.org/view/journals/clim/26/11/jcli-d-12-00451.1.xml
-.. _`Lauer et al. (2022)`: https://journals.ametsoc.org/view/journals/clim/
+.. _`Lauer et al. (2022)`: https://journals.ametsoc.org/view/journals/clim/aop/JCLI-D-22-0181.1/JCLI-D-22-0181.1.xml
 
 
 Available recipes and diagnostics
@@ -102,7 +102,7 @@ User settings in recipe
    * multiobs_uncertainty: calculate uncertainty estimates from multiple
      observational datasets (true, false); by default, all "obs", "obs6",
      "obs4mips" and "native6" datasets are used; any of such datasets can be
-     explicitely excluded when also specifying "multiobs_exclude"
+     explicitly excluded when also specifying "multiobs_exclude"
    * panel_labels: label individual panels (true, false)
    * PanelTop: manual override for "@gnsPanelTop" used by panel plot(s)
    * projection: map projection for plotting (default =
@@ -341,7 +341,7 @@ User settings in recipe
    *Optional settings (variables)*
 
    * long_name: description of variable
-   * reference_dataset: name of reference datatset
+   * reference_dataset: name of reference dataset
 
 10. Script clouds_taylor.ncl
 
@@ -372,7 +372,7 @@ User settings in recipe
     * multiobs_uncertainty: calculate uncertainty estimates from multiple
       observational datasets (true, false); by default, all "obs", "obs6",
       "obs4mips" and "native6" datasets are used; any of such datasets can be
-      explicitely excluded when also specifying "multiobs_exclude"
+      explicitly excluded when also specifying "multiobs_exclude"
     * styleset: "CMIP5", "DEFAULT" (if not set, clouds_taylor.ncl will create a
       color table and symbols for plotting)
     * timemean: time averaging; annualclim (default) = 1 plot annual mean;
@@ -515,7 +515,7 @@ References
 
 * Lauer, A., L. Bock, B. Hassler, M. Schröder, and M. Stengel, Cloud climatologies
   from global climate models - a comparison of CMIP5 and CMIP6 models with satellite
-  data, J. Climate (in review).
+  data, J. Climate (published online 06 Oct 2022), doi: 10.1175/JCLI-D-22-0181.1.
 
 
 Example plots
@@ -567,7 +567,7 @@ Example plots
 
    Interannual variability of modeled and observed (GPCP) precipitation rates
    estimated as relative temporal standard deviation from 20 years (1986-2005)
-   of data. The temporal standard devitions are calculated from monthly
+   of data. The temporal standard deviations are calculated from monthly
    anomalies after subtracting the climatological mean seasonal cycle. Produced
    with recipe_lauer13jclim.yml (clouds_interannual.ncl).
 

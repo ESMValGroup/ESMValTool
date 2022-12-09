@@ -14,7 +14,7 @@ dependencies:
   - cartopy
   - cdo>=1.9.7
   - cdsapi
-  - cf-units >=3.0.0,<3.1.0,!=3.0.1.post0  # see https://github.com/ESMValGroup/ESMValCore/issues/1655
+  - cf-units
   - cftime
   - cmocean
   - cython
@@ -27,6 +27,7 @@ dependencies:
   - fire
   - gdal
   - iris>=3.1.0
+  - iris-esmf-regrid
   - jinja2
   - joblib
   - lime
@@ -34,7 +35,7 @@ dependencies:
   - matplotlib-base<3.6.0  # github.com/ESMValGroup/ESMValTool/issues/2800
   - natsort
   - nc-time-axis
-  - netCDF4!=1.6.1  # https://github.com/ESMValGroup/ESMValCore/pull/1724
+  - netCDF4
   - numpy
   - openpyxl
   - pandas
@@ -62,10 +63,10 @@ dependencies:
   - xgboost>1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
   - xlsxwriter
   # Python packages needed for testing
+  - flake8
   - pytest >=3.9,!=6.0.0rc1,!=6.0.0
   - pytest-cov
   - pytest-env
-  - pytest-flake8
   - pytest-html !=2.1.0
   - pytest-metadata >=1.5.1
   - pytest-xdist
