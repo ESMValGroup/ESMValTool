@@ -74,12 +74,7 @@ logger = logging.getLogger(__name__)
 def _fix_units(cube, definition):
     """Fix issues with the units."""
     logger.info(cube.var_name)
-    if cube.var_name in {'clt'}:
-        # Change units from fraction to percentage
-        cube.units = definition.units
-        cube.data = cube.core_data() * 100.
-
-    if cube.var_name in {'tas', 'ta', 'ts'}:
+    if cube.var_name in {'ta', 'ts'}:
         # Change units degrees celcius to Kelvin
         cube.units = definition.units
         cube.data = cube.core_data() + 273.15
@@ -148,7 +143,7 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
         cube.standard_name = definition.standard_name
     cube.long_name = definition.long_name
 
-    #_fix_units(cube, definition)
+    _fix_units(cube, definition)
 
     utils.fix_var_metadata(cube, cmor_info)
 
@@ -173,7 +168,6 @@ def cmorization(in_dir, out_dir, cfg, cmor_cfg, start_date, end_date):
     for (short_name, var) in cfg['variables'].items():
         logger.info("CMORizing variable '%s'", short_name)
         short_name = var['short_name']
-        print(short_name)
         raw_filenames = Path(in_dir).rglob('*.nc')
         filenames = []
         for raw_filename in raw_filenames:
