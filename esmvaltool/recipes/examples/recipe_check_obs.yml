@@ -1391,6 +1391,9 @@ diagnostics:
       clt_Amon:
         short_name: clt
         mip: Amon
+      cl_Amon:
+        short_name: cl
+        mip: Amon
       evspsbl_Amon:
         short_name: evspsbl
         mip: Amon
