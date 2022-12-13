@@ -268,15 +268,14 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Eppley-VGPM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA5 [#note1]_               | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rlns, rlus [#note2]_, rsds,     |   3  | n/a             |
+| ERA5 [#note1]_               | cl, clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rlns, rlus [#note2]_, rsds, |   3  | n/a             |
 |                              | rsns, rsus [#note2]_, rsdt, rss, uas, vas, tas, tasmax, tasmin, tdps, ts, tsn (E1hr/Amon), orog (fx) |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA5-Land [#note1]_          | pr                                                                                                   |   3  | n/a             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA-Interim                  | clivi, clt, clwvi, evspsbl, hur, hus, pr, prsn, prw, ps, psl, rlds, rsds, rsdt, ta, tas, tauu, tauv, |   3  | Python          |
-|                              | ts, ua, uas, va, vas, wap, zg (Amon), ps, rsdt (CFday), clt, pr, prsn, psl, rsds, rss, ta, tas,      |      |                 |
-|                              | tasmax, tasmin, uas, va, vas, zg (day), evspsbl, tdps, ts, tsn, rss, tdps (Eday), tsn (LImon), hfds, |      |                 |
-|                              | tos (Omon), orog, sftlf (fx)                                                                         |      |                 |
+| ERA-Interim                  | cl, cli, clivi, clt, clw, clwvi, evspsbl, hfds, hur, hus, lwp, orog, pr, prsn, prw, ps, psl, rlds,   |   3  | Python          |
+|                              | rlut, rlutcs, rsds, rsdt, rss, rsut, rsutcs, sftlf, ta, tas, tasmax, tasmin, tauu, tauv, tdps, tos,  |      |                 |
+|                              | ts, tsn, ua, uas, va, vas, wap, zg                                                                   |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA-Interim-Land             | sm (Lmon)                                                                                            |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -337,6 +336,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | ISCCP-FH                     | alb, prw, ps, rlds, rlus, rlut, rlutcs, rsds, rsdt, rsus, rsut, rsutcs, tas, ts (Amon)               |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | JMA-TRANSCOM                 | nbp (Lmon), fgco2 (Omon)                                                                             |   3  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| JRA-25                       | clt, hus, prw, rlut, rlutcs, rsut, rsutcs (Amon)                                                     |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Kadow2020                    | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -438,7 +439,7 @@ For example:
 
     datasets:
     - {project: native6, dataset: ERA5, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1990}
-    - {project: ICON, dataset: ICON, version: 42-0, component: atm, exp: amip, grid: R2B5, ensemble: r1i1, var_type: 2d}
+    - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1i1p1f1, mip: Amon, short_name: tas, start_year: 2000, end_year: 2014}
 
 For project ``native6``, more examples can be found in the diagnostics
 ``ERA5_native6`` in the recipe `examples/recipe_check_obs.yml

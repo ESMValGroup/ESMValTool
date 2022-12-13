@@ -295,8 +295,8 @@ begin
   else
 
     ; Create plot variables
-    wks_ext = gsn_open_wks(file_type, config_user_info@plot_dir + out_ext)
-    wks_area = gsn_open_wks(file_type, config_user_info@plot_dir + out_area)
+    wks_ext = gsn_open_wks(file_type, plot_dir + out_ext)
+    wks_area = gsn_open_wks(file_type, plot_dir + out_area)
 
     ; Define plot resources
     res                 = True
@@ -338,7 +338,7 @@ begin
       ; but is same for both area and extent anyway
       if (diag_script_info@legend_outside) then
         val_area@legend_outside = True
-        wks_area@legendfile = config_user_info@plot_dir + out_ext + "_legend"
+        wks_area@legendfile = plot_dir + out_ext + "_legend"
       end if
     else
       diag_script_info@legend_outside = False
@@ -361,7 +361,8 @@ begin
     nc_ext = \
       ncdf_write(val_ext, config_user_info@work_dir + out_ext + ".nc")
 
-    log_provenance(nc_ext, out_ext, caption_ext, \
+    fullname = plot_dir + out_ext + "." + file_type
+    log_provenance(nc_ext, fullname, caption_ext, \
                    (/"mean", "stddev", "clim"/), domain, "times", \
                    (/"senftleben_daniel", "gottschaldt_klaus-dirk"/), \
                    "stroeve07grl", infiles)
@@ -374,7 +375,8 @@ begin
     nc_area = \
       ncdf_write(val_area, config_user_info@work_dir + out_area + ".nc")
 
-    log_provenance(nc_area, out_area, caption_area, \
+    fullname = plot_dir + out_area + "." + file_type
+    log_provenance(nc_area, fullname, caption_area, \
                    (/"mean", "stddev", "clim"/), domain, "times", \
                    (/"senftleben_daniel", "gottschaldt_klaus-dirk"/), \
                    "stroeve07grl", infiles)

@@ -9,7 +9,6 @@ import numpy as np
 import pytest
 from cf_units import Unit
 
-from esmvaltool import ESMValToolDeprecationWarning
 from esmvaltool.diag_scripts.shared import iris_helpers as ih
 
 LONG_NAME = 'x'
@@ -501,20 +500,3 @@ def test_unify_time_coord_no_time(cube_with_time):
     cube_with_time.remove_coord('time')
     with pytest.raises(iris.exceptions.CoordinateNotFoundError):
         ih.unify_time_coord(cube_with_time)
-
-
-def test_var_name_constraint():
-    """Test var_name constraint."""
-    cubes_in = iris.cube.CubeList([
-        iris.cube.Cube(0, var_name='a', long_name='aaa'),
-        iris.cube.Cube(1, var_name='a', long_name='bbb'),
-        iris.cube.Cube(2, var_name='b', long_name='a'),
-        iris.cube.Cube(3, var_name='c', long_name='aaa'),
-    ])
-    cubes_out = cubes_in[:2].copy()
-    with pytest.warns(ESMValToolDeprecationWarning):
-        constraint = ih.var_name_constraint('a')
-    assert cubes_in is not cubes_out
-    result = cubes_in.extract(constraint)
-    assert cubes_in is not result
-    assert result == cubes_out
