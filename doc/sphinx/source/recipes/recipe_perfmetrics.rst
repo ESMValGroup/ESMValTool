@@ -61,6 +61,34 @@ User settings in recipe
    * zonal_ymin: for plot_type zonal only, minimum pressure level on the y-axis (default: 5. hPa)
    * latlon_cmap: for plot_type latlon only, chosen color table (default: "amwg_blueyellowred")
    * plot_units: plotting units (if different from standard CMOR units)
+   * add_tropopause: adds an outline of a climatological tropopause to the zonal plot (default: False)
+
+   *Special optional plot configurations*
+
+   It is possible to make some specific customizations to the plots (zonal
+   only).
+
+   This includes for example specific tickmark labels of the axes.
+
+   Those special customizations can be done by adding ncl plotting resources
+   combined with prefix ``res_`` as optional settings of the main script in the
+   recipe.
+
+   Note that this requires to be familiar with the ncl plotting routines for
+   pressure vs height plots
+   (https://www.ncl.ucar.edu/Document/Graphics/Interfaces/gsn_csm_pres_hgt.shtml)
+   and the corresponding resources.
+
+   The following shows an example on customizing the latitude tickmarks so
+   that a degree sign and and empty space is used for the labels:
+
+   .. code-block:: yaml
+
+	# copernicus style of latitude tickmarks
+        res_tmXBMode: "Explicit"
+        res_tmXBValues: [-60, -30, 0, 30, 60]
+        res_tmXBLabels: ["60~F35~J~F21~ S", "30~F35~J~F21~ S", "0~F35~J", "30~F35~J~F21~ N", "60~F35~J~F21~ N"]
+
 
    *Required settings (variables)*
 

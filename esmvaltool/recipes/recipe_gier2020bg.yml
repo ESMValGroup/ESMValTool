@@ -7,7 +7,8 @@
 # NOTE:
 # Commented out datasets and options reflect the exact settings used in the paper creation,
 # datasets commented out require additional preprocessing e.g. converting from hybrid coordinates to
-# pressure coordinates, or are otherwise currently not available on the DKRZ ESGF node, but may be available on other ESGF nodes, if the user turns on automatic download in the run configuration.
+# pressure coordinates, or are otherwise currently not available on the DKRZ ESGF node,
+# but may be available on other ESGF nodes, if the user turns on automatic download in the run configuration.
 ---
 documentation:
 
