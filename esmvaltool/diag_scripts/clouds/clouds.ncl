@@ -280,7 +280,7 @@ begin
       ref_tmp(i, :, :) = mean
     end do
     delete(mean)
-    ; note: we are using dim_avg_n_Warp so missing values are ignored
+    ; note: we are using dim_avg_n_Wrap so missing values are ignored
     ;       when averaging
     ref_avg = dim_avg_n_Wrap(ref_tmp, 0)
     delete(ref_tmp)
@@ -317,7 +317,7 @@ begin
       delete(ymean)
     end do
     delete(sigma2)
-    ; note: we are using dim_avg_n_Warp so missing values are ignored
+    ; note: we are using dim_avg_n so missing values are ignored
     ;       when averaging
     ref_std = sqrt(dim_avg_n(sig_tmp, 0))
     delete(sig_tmp)
