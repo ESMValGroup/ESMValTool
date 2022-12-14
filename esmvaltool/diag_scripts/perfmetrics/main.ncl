@@ -150,7 +150,7 @@ begin
   set_default_att(diag_script_info, "zonal_ymin", 5.)
   set_default_att(diag_script_info, "zonal_cmap", "amwg_blueyellowred")
   set_default_att(diag_script_info, "latlon_cmap", "amwg_blueyellowred")
-  set_defatul_att(diag_script_info, "add_tropopause", False)
+  set_default_att(diag_script_info, "add_tropopause", False)
 
   ; Check consistency of diff plots settings
   if (diag_script_info@t_test .and. .not.diag_script_info@plot_diff) then
