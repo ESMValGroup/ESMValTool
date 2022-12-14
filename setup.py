@@ -60,7 +60,7 @@ REQUIREMENTS = {
         'scitools-iris',
         'seaborn',
         'seawater',
-        'shapely',
+        'shapely<2.0.0',  # github.com/ESMValGroup/ESMValTool/issues/2965
         'xarray',
         'xesmf==0.3.0',
         'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
