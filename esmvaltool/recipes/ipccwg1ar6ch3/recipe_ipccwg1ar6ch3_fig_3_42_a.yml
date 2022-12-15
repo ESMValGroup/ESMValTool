@@ -138,7 +138,7 @@ datasets:
   - {dataset: NorESM1-M}
   - {dataset: NorESM1-ME}
   # CMIP6
-  - &cmip6 {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn,
+  - &cmip6 {dataset: ACCESS-CM2, grid: gn,
             ensemble: r1i1p1f1, project: CMIP6}
   - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
   - {<<: *cmip6, dataset: AWI-CM-1-1-MR}
