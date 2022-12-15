@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - main
+      - update-data-finder-imports
   schedule:
     - cron: '0 0 * * *'
 
