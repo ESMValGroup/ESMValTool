@@ -221,18 +221,18 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
-    zonal_statistics:
-      operator: mean
+      #zonal_statistics:
+      #  operator: mean
     climate_statistics:
       operator: mean
 
 
 diagnostics:
 
-  cl_height: &height_diag
-    description: comparison of height mean
+  zonal_height: &height_diag
+    description: mean zonal height plot
     variables:
-      ECS_high_hist: &var_cl
+      cl_ECS_high_hist: &var_cl
         short_name: cl
         preprocessor: height
         mip: Amon
@@ -242,24 +242,80 @@ diagnostics:
         grid: gr
         <<: *years
         additional_datasets: *datasets_ecs_high
-      ECS_med_hist:
+      cl_ECS_med_hist:
         <<: *var_cl
         additional_datasets: *datasets_ecs_med
-      ECS_low_hist:
+      cl_ECS_low_hist:
         <<: *var_cl
         additional_datasets: *datasets_ecs_low
-      ECS_high_scen:
+      cl_ECS_high_scen:
         <<: *var_cl
         <<: *years_ssp585
         exp: ssp585
         additional_datasets: *datasets_ecs_high_scenario
-      ECS_med_scen:
+      cl_ECS_med_scen:
         <<: *var_cl
         <<: *years_ssp585
         additional_datasets: *datasets_ecs_med_scenario
-      ECS_low_scen:
+      cl_ECS_low_scen:
         <<: *var_cl
         <<: *years_ssp585
+        additional_datasets: *datasets_ecs_low_scenario
+      cli_ECS_high_hist:
+        <<: *var_cl
+        short_name: cli
+        additional_datasets: *datasets_ecs_high
+      cli_ECS_med_hist:
+        <<: *var_cl
+        short_name: cli
+        additional_datasets: *datasets_ecs_med
+      cli_ECS_low_hist:
+        <<: *var_cl
+        short_name: cli
+        additional_datasets: *datasets_ecs_low
+      cli_ECS_high_scen:
+        <<: *var_cl
+        <<: *years_ssp585
+        short_name: cli
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      cli_ECS_med_scen:
+        <<: *var_cl
+        <<: *years_ssp585
+        short_name: cli
+        additional_datasets: *datasets_ecs_med_scenario
+      cli_ECS_low_scen:
+        <<: *var_cl
+        <<: *years_ssp585
+        short_name: cli
+        additional_datasets: *datasets_ecs_low_scenario
+      clw_ECS_high_hist:
+        <<: *var_cl
+        short_name: clw
+        additional_datasets: *datasets_ecs_high
+      clw_ECS_med_hist:
+        <<: *var_cl
+        short_name: clw
+        additional_datasets: *datasets_ecs_med
+      clw_ECS_low_hist:
+        <<: *var_cl
+        short_name: clw
+        additional_datasets: *datasets_ecs_low
+      clw_ECS_high_scen:
+        <<: *var_cl
+        <<: *years_ssp585
+        short_name: clw
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      clw_ECS_med_scen:
+        <<: *var_cl
+        <<: *years_ssp585
+        short_name: clw
+        additional_datasets: *datasets_ecs_med_scenario
+      clw_ECS_low_scen:
+        <<: *var_cl
+        <<: *years_ssp585
+        short_name: clw
         additional_datasets: *datasets_ecs_low_scenario
       ta_ECS_high_hist: &var_ta
         <<: *var_cl
@@ -293,116 +349,4 @@ diagnostics:
                    ['ECS_med_hist', 'ECS_med_scen'],
                    ['ECS_high_hist', 'ECS_high_scen']]
         filename_attach: ssp585
-        plot_each_model: true
-
-
-  cli_height:
-    <<: *height_diag
-    variables:
-      ECS_high_hist:
-        <<: *var_cl
-        short_name: cli
-        additional_datasets: *datasets_ecs_high
-      ECS_med_hist:
-        <<: *var_cl
-        short_name: cli
-        additional_datasets: *datasets_ecs_med
-      ECS_low_hist:
-        <<: *var_cl
-        short_name: cli
-        additional_datasets: *datasets_ecs_low
-      ECS_high_scen:
-        <<: *var_cl
-        <<: *years_ssp585
-        short_name: cli
-        exp: ssp585
-        additional_datasets: *datasets_ecs_high_scenario
-      ECS_med_scen:
-        <<: *var_cl
-        <<: *years_ssp585
-        short_name: cli
-        additional_datasets: *datasets_ecs_med_scenario
-      ECS_low_scen:
-        <<: *var_cl
-        <<: *years_ssp585
-        short_name: cli
-        additional_datasets: *datasets_ecs_low_scenario
-      ta_ECS_high_hist:
-        <<: *var_ta
-      ta_ECS_med_hist:
-        <<: *var_ta
-        additional_datasets: *datasets_ecs_med
-      ta_ECS_low_hist:
-        <<: *var_ta
-        additional_datasets: *datasets_ecs_low
-      ta_ECS_high_scen:
-        <<: *var_ta
-        <<: *years_ssp585
-        exp: ssp585
-        additional_datasets: *datasets_ecs_high_scenario
-      ta_ECS_med_scen:
-        <<: *var_ta
-        <<: *years_ssp585
-        exp: ssp585
-        additional_datasets: *datasets_ecs_med_scenario
-      ta_ECS_low_scen:
-        <<: *var_ta
-        <<: *years_ssp585
-        exp: ssp585
-        additional_datasets: *datasets_ecs_low_scenario
-
-
-  clw_height:
-    <<: *height_diag
-    variables:
-      ECS_high_hist:
-        <<: *var_cl
-        short_name: clw
-        additional_datasets: *datasets_ecs_high
-      ECS_med_hist:
-        <<: *var_cl
-        short_name: clw
-        additional_datasets: *datasets_ecs_med
-      ECS_low_hist:
-        <<: *var_cl
-        short_name: clw
-        additional_datasets: *datasets_ecs_low
-      ECS_high_scen:
-        <<: *var_cl
-        <<: *years_ssp585
-        short_name: clw
-        exp: ssp585
-        additional_datasets: *datasets_ecs_high_scenario
-      ECS_med_scen:
-        <<: *var_cl
-        <<: *years_ssp585
-        short_name: clw
-        additional_datasets: *datasets_ecs_med_scenario
-      ECS_low_scen:
-        <<: *var_cl
-        <<: *years_ssp585
-        short_name: clw
-        additional_datasets: *datasets_ecs_low_scenario
-      ta_ECS_high_hist:
-        <<: *var_ta
-      ta_ECS_med_hist:
-        <<: *var_ta
-        additional_datasets: *datasets_ecs_med
-      ta_ECS_low_hist:
-        <<: *var_ta
-        additional_datasets: *datasets_ecs_low
-      ta_ECS_high_scen:
-        <<: *var_ta
-        <<: *years_ssp585
-        exp: ssp585
-        additional_datasets: *datasets_ecs_high_scenario
-      ta_ECS_med_scen:
-        <<: *var_ta
-        <<: *years_ssp585
-        exp: ssp585
-        additional_datasets: *datasets_ecs_med_scenario
-      ta_ECS_low_scen:
-        <<: *var_ta
-        <<: *years_ssp585
-        exp: ssp585
-        additional_datasets: *datasets_ecs_low_scenario
+        #plot_each_model: true

@@ -77,7 +77,6 @@ FIGURE_NUMBER_DIFF = {
 
 def get_provenance_record(attributes, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-    #print(attributes)
     caption = ("Average {short_name} between {start_year} and {end_year} "
                "according to {dataset}.".format(**attributes))
 
@@ -133,11 +132,10 @@ def _get_multi_model_mean(cubes, var):
         'datasets': '|'.join(datasets),
     }
     mmm_cube.attributes = attributes
-    print(mmm_cube)
     return  mmm_cube
 
 
-def compute_diagnostic(filename):
+def read_data(filename):
     """Compute an example diagnostic."""
     logger.debug("Loading %s", filename)
     cube = iris.load_cube(filename)
@@ -169,7 +167,7 @@ def compute_diff(filename1, filename2):
     cube.metadata = cube1.metadata
     return cube
 
-def compute_diff_temp(input_data, group, dataset):
+def compute_diff_temp(input_data, group, var, dataset):
     """Compute relative change per temperture change."""
 
     dataset_name = dataset['dataset']
@@ -180,7 +178,7 @@ def compute_diff_temp(input_data, group, dataset):
     var_data_2 = select_metadata(input_data,
                                  short_name=var,
                                  dataset=dataset_name,
-                                 variable_group=group[1]) 
+                                 variable_group=var+"_"+group[1]) 
     if not var_data_2:
         raise ValueError(
             f"No '{var}' data for '{dataset_name}' in '{group[1]}' available")
@@ -204,19 +202,43 @@ def compute_diff_temp(input_data, group, dataset):
     input_file_ta_1 = ta_data_1[0]['filename']
     input_file_ta_2 = ta_data_2[0]['filename']
 
-    cube = compute_diagnostic(input_file_1)
+    if var != 'cl':
+        cl_data_1 = select_metadata(input_data,
+                                  short_name='cl',
+                                  dataset=dataset_name,
+                                  variable_group='cl_'+group[0]) 
+        cl_data_2 = select_metadata(input_data,
+                                  short_name='cl',
+                                  dataset=dataset_name,
+                                  variable_group='cl_'+group[1]) 
+        if not cl_data_1:
+            raise ValueError(
+                f"No 'cl' data for '{dataset_name}' in '{group[0]}' available")
+        if not cl_data_2:
+            raise ValueError(
+                f"No 'cl' data for '{dataset_name}' in '{group[1]}' available")
+        input_file_cl_1 = cl_data_1[0]['filename']
+        input_file_cl_2 = cl_data_2[0]['filename']
+    else:
+        input_file_cl_1 = input_file_1 
+        input_file_cl_2 = input_file_2 
+
+    cube = read_data(input_file_1)
     if var in ['clw', 'cli']:
         cube.data[cube.data < 0.001] = np.nan
     elif var in ['cl']:
-        cube.data[cube.data < 0.1] = np.nan
+        cube.data[cube.data < 0.01] = np.nan
 
     cube_diff = compute_diff(input_file_1, input_file_2)
     cube_ta_diff = compute_diff(input_file_ta_1, input_file_ta_2)
+    cube_cl = read_data(input_file_cl_2) 
 
     cube_ta_diff.data[cube_ta_diff.data < 0.1] = np.nan
 
     #cube_diff = cube_diff / cube_ta_diff
     cube_diff = 100. * (cube_diff / cube) / cube_ta_diff
+
+    cube_diff.data[cube_cl.data < 0.01] = np.nan
 
     #cube_diff.units = 'g/kg/K'
     cube_diff.units = '%/K'
@@ -227,7 +249,6 @@ def compute_diff_temp(input_data, group, dataset):
 def plot_model(cube, attributes, plot_type, cfg):
     """Plot each single model."""
 
-    #plt.figure(constrained_layout=True, figsize=(12, 8))
     plt.figure(figsize=(12, 8))
     plt.ylim(1000.,100.)
     plt.yscale('log')
@@ -263,7 +284,8 @@ def plot_diagnostic(cube, legend, plot_type, cfg):
         # Create the plot
         quickplot(cube, **cfg['quickplot'])
     else:
-        nplot = FIGURE_NUMBER.get(legend, legend)
+        leg = legend.split('_', 1)[1]
+        nplot = FIGURE_NUMBER.get(leg, leg)
 
         plt.subplot(nplot)
 
@@ -299,7 +321,9 @@ def plot_diagnostic_diff(cube, legend, plot_type, cfg):
         plt.yscale('log')
         plt.yticks([1000., 800., 600., 400., 300., 200., 100.], [1000, 800, 600, 400, 300, 200, 100])
         cube.coord('air_pressure').convert_units('hPa')
-        levels = np.linspace(-8., 8., 33)
+        #levels = np.linspace(-8., 8., 33)
+        levels = np.linspace(-10., 10., 41)
+        #levels = np.linspace(-15., 15., 31)
         if cube.var_name == 'cl':
             levels = np.linspace(-6., 6., 13)
         elif cube.var_name == 'cli':
@@ -309,11 +333,6 @@ def plot_diagnostic_diff(cube, legend, plot_type, cfg):
             levels = np.linspace(-0.01, 0.01, 11)
             cube.convert_units('g/kg')
         qplt.contourf(cube, levels=levels, extend='both', cmap='coolwarm')
-        #qplt.contourf(cube, extend='both', cmap='coolwarm')
-
-        #plt.colorbar(label = '%/K')
-        #cbar = plt.colorbar()
-        #cbar.set_label('%/K')
 
         logger.info("Plotting %s", legend)
 
@@ -330,85 +349,92 @@ def main(cfg):
     plot_type = cfg['plot_type']
 
     input_data = list(cfg['input_data'].values())
-    all_vars = list(group_metadata(input_data, 'short_name'))
+    all_vars = group_metadata(input_data, 'short_name')
 
-    groups = group_metadata(input_data, 'variable_group', sort='dataset')
+    for var in all_vars:
 
-    plt.figure(constrained_layout=True, figsize=(12, 8))
+        if var != 'ta':
 
-    ngroups = len(groups)
-    print("Number of variable groups: ", ngroups)
+            logger.info("Processing variable %s", var)
 
-    for group_name in groups:
-        if 'hist' in group_name:
-            if 'ta_' not in group_name:
-                logger.info("Processing variable %s", group_name)
+            groups = group_metadata(all_vars[var], 'variable_group', sort='dataset')
+
+            plt.figure(constrained_layout=True, figsize=(12, 8))
+
+            for group_name in groups:
+                if 'hist' in group_name:
+                    if 'ta_' not in group_name:
+                        logger.info("Processing group %s", group_name)
+
+                        dataset_names = []
+                        cubes = {}
+
+                        for dataset in groups[group_name]:
+
+                            dataset_name = dataset['dataset']
+                            var = dataset['short_name']
+
+                            if dataset_name != 'MultiModelMean':
+
+                                logger.info("Loop dataset %s", dataset_name)
+
+                                input_file = dataset['filename']
+                                cube = read_data(input_file)
+
+                                cube = cube.collapsed('longitude', iris.analysis.MEAN)
+
+                                if cfg['plot_each_model']:
+                                    plot_model(cube, dataset, plot_type, cfg)
+
+                                cubes[dataset_name] = cube
+
+                        cube_mmm = _get_multi_model_mean(cubes, var)
+
+                        plot_diagnostic(cube, group_name, plot_type, cfg)
+
+                        title = group_name.split('_',1)[1]
+                        plt.title(title, fontsize=10)
+
+
+            for group_name in cfg['group_by']:
+
+                logger.info("Processing group %s of variable %s", group_name[0], var)
 
                 dataset_names = []
-                cubes = {}
+                cubes_diff = {}
 
-                for dataset in groups[group_name]:
-
+                for dataset in groups[var + "_" + group_name[0]]:
                     dataset_name = dataset['dataset']
                     var = dataset['short_name']
 
                     if dataset_name != 'MultiModelMean':
-
                         logger.info("Loop dataset %s", dataset_name)
+                        dataset_names.append(dataset_name)
 
-                        input_file = dataset['filename']
-                        cube = compute_diagnostic(input_file)
+                        cube_diff = compute_diff_temp(input_data, group_name, var, dataset) 
 
-                        if cfg['plot_each_model']:
-                            plot_model(cube, dataset, plot_type, cfg)
+                        cube_diff = cube_diff.collapsed('longitude', iris.analysis.MEAN)
+                        
+                        cubes_diff[dataset_name] = cube_diff
 
-                        cubes[dataset_name] = cube
+                cube_mmm = _get_multi_model_mean(cubes_diff, var)
 
-                cube_mmm = _get_multi_model_mean(cubes, var)
+                plot_diagnostic_diff(cube_mmm, group_name[0], plot_type, cfg)
 
-                plot_diagnostic(cube, group_name, plot_type, cfg)
+                title = group_name[1] + " - " + group_name[0]
+                plt.title(title, fontsize=9)
 
-                title = group_name
-                plt.title(title, fontsize=10)
+            plt.suptitle(var)
 
+            provenance_record = get_provenance_record(
+                dataset, ancestor_files=cfg['input_files'])
 
-    for group_name in cfg['group_by']:
+            basename = 'diff_' + var + '_' + cfg['filename_attach']
+            # Save the data used for the plot
+            save_data(basename, provenance_record, cfg, cube_mmm)
 
-        logger.info("Processing group %s", group_name[0])
-
-        dataset_names = []
-        cubes_diff = {}
-
-        for dataset in groups[group_name[0]]:
-            dataset_name = dataset['dataset']
-            var = dataset['short_name']
-
-            if dataset_name != 'MultiModelMean':
-                logger.info("Loop dataset %s", dataset_name)
-                dataset_names.append(dataset_name)
-
-                cube_diff = compute_diff_temp(input_data, group_name, dataset) 
-                
-                cubes_diff[dataset_name] = cube_diff
-
-        cube_mmm = _get_multi_model_mean(cubes_diff, var)
-
-        plot_diagnostic_diff(cube_mmm, group_name[0], plot_type, cfg)
-
-        title = group_name[1] + " - " + group_name[0]
-        plt.title(title, fontsize=9)
-
-    plt.suptitle(var)
-
-    provenance_record = get_provenance_record(
-        dataset, ancestor_files=cfg['input_files'])
-
-    basename = 'diff_' + var + '_' + cfg['filename_attach']
-    # Save the data used for the plot
-    save_data(basename, provenance_record, cfg, cube_mmm)
-
-    # And save the plot
-    save_figure(basename, provenance_record, cfg)
+            # And save the plot
+            save_figure(basename, provenance_record, cfg)
 
 
 if __name__ == '__main__':
