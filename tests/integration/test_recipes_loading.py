@@ -7,7 +7,7 @@ import yaml
 
 import esmvalcore
 import esmvalcore._config
-import esmvalcore._data_finder
+import esmvalcore.local
 import esmvalcore._recipe
 import esmvalcore.cmor.check
 import esmvaltool
@@ -43,13 +43,13 @@ RECIPES, IDS = _get_recipes()
 def test_recipe_valid(recipe_file, config_user, monkeypatch):
     """Check that recipe files are valid ESMValTool recipes."""
     # Mock input files
-    find_files = create_autospec(esmvalcore._data_finder.find_files,
+    find_files = create_autospec(esmvalcore.local.find_files,
                                  spec_set=True)
     find_files.side_effect = lambda *_, **__: [
         'test_0001-1849.nc',
         'test_1850-9999.nc',
     ]
-    monkeypatch.setattr(esmvalcore._data_finder, 'find_files', find_files)
+    monkeypatch.setattr(esmvalcore.local, 'find_files', find_files)
 
     # Mock vertical levels
     levels = create_autospec(esmvalcore._recipe.get_reference_levels,
