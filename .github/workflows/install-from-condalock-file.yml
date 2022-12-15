@@ -11,6 +11,7 @@ on:
   push:
     branches:
       - main
+  #     - condalock-update
   # run the test only if the PR is to main
   # turn it on if required
   #pull_request:
@@ -24,11 +25,13 @@ jobs:
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10"]
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: esmvaltool-fromlock
@@ -46,8 +49,6 @@ jobs:
       - shell: bash -l {0}
         run: conda create --name esmvaltool-fromlock --file conda-linux-64.lock
       - shell: bash -l {0}
-        run: conda install pip
-      - shell: bash -l {0}
         run: which python
       - shell: bash -l {0}
         run: pip --version
@@ -57,6 +58,8 @@ jobs:
         run: esmvaltool --help
       - shell: bash -l {0}
         run: esmvaltool version 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
+      - shell: bash -l {0}
+        run: flake8
       - shell: bash -l {0}
         run: pytest -n 2 -m "not installation"
       - name: Upload artifacts
@@ -70,7 +73,7 @@ jobs:
 #    runs-on: "macos-latest"
 #    strategy:
 #      matrix:
-#        python-version: [3.7, 3.8, 3.9]
+#        python-version: ["3.8", "3.9", "3.10"]
 #      fail-fast: false
 #    name: OSX Python ${{ matrix.python-version }}
 #    steps:

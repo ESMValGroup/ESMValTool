@@ -308,7 +308,7 @@ diagnostics:
         start_year: 1980
         end_year: 1999
     additional_datasets:
-      - {dataset: BNU-ESM}
+      #- {dataset: BNU-ESM} # data is missing on ESGF
       - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
       - {dataset: CMCC-CESM}

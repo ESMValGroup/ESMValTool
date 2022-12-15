@@ -3,11 +3,10 @@ name: Conda lock file creation
 on:
   # Trigger on push on main or other branch for testing
   # NOTE that push: main will create the file very often
-  # and hence lots of automated PRs 
+  # and hence lots of automated PRs
   # push:
   #   branches:
-  #     - force_condalock_creation_forCoreRC
-  #     - condalock
+  #     - condalock-update
   schedule:
     - cron: '0 4 */10 * *'
 
@@ -16,7 +15,9 @@ jobs:
     name: Create conda lock file for latest Python
     runs-on: 'ubuntu-latest'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
@@ -41,7 +42,7 @@ jobs:
         run: conda install -y conda-lock
       - name: Create conda lock file for linux-64
         shell: bash -l {0}
-        run: conda-lock lock --platform linux-64 -f environment.yml --mamba
+        run: conda-lock lock --platform linux-64 -f environment.yml --mamba --kind explicit
       - shell: bash -l {0}
         run: conda --version
       - shell: bash -l {0}
@@ -51,7 +52,7 @@ jobs:
       - shell: bash -l {0}
         run: conda create --name esmvaltool-fromlock --file conda-linux-64.lock
       - shell: bash -l {0}
-        run: conda install pip
+        run: conda install -y -c conda-forge pip
       - shell: bash -l {0}
         run: which python
       - shell: bash -l {0}
@@ -62,6 +63,8 @@ jobs:
         run: esmvaltool --help
       - shell: bash -l {0}
         run: esmvaltool version
+      - shell: bash -l {0}
+        run: flake8
       - shell: bash -l {0}
         run: pytest -n 2 -m "not installation"
       # Automated PR

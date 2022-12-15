@@ -1153,6 +1153,14 @@ def plot_individual_scatterplots(training_data, pred_input_data, attributes,
             plt.close()
 
             # Provenance
+            provenance_record = get_provenance_record(
+                attributes, [feature, label],
+                caption=get_caption(attributes, feature, label, group=group),
+                plot_type='scatter')
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+
+            # Write netCDF file
             cubes = iris.cube.CubeList([
                 pandas_object_to_cube(
                     x_sub_data,
@@ -1169,11 +1177,6 @@ def plot_individual_scatterplots(training_data, pred_input_data, attributes,
             ])
             netcdf_path = get_diagnostic_filename(filename, cfg)
             io.iris_save(cubes, netcdf_path)
-            provenance_record = get_provenance_record(
-                attributes, [feature, label],
-                caption=get_caption(attributes, feature, label, group=group),
-                plot_type='scatter',
-                plot_file=plot_path)
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(netcdf_path, provenance_record)
 
@@ -1305,6 +1308,15 @@ def plot_merged_scatterplots(training_data, pred_input_data, attributes,
         plt.close()
 
         # Provenance
+        provenance_record = get_provenance_record(attributes, [feature, label],
+                                                  caption=get_caption(
+                                                      attributes, feature,
+                                                      label),
+                                                  plot_type='scatter')
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+
+        # Write netCDF file
         cubes = iris.cube.CubeList([
             pandas_object_to_cube(x_data,
                                   index_droplevel=[0, 2],
@@ -1319,12 +1331,6 @@ def plot_merged_scatterplots(training_data, pred_input_data, attributes,
         ])
         netcdf_path = get_diagnostic_filename(filename, cfg)
         io.iris_save(cubes, netcdf_path)
-        provenance_record = get_provenance_record(attributes, [feature, label],
-                                                  caption=get_caption(
-                                                      attributes, feature,
-                                                      label),
-                                                  plot_type='scatter',
-                                                  plot_file=plot_path)
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(netcdf_path, provenance_record)
 
@@ -1457,6 +1463,15 @@ def plot_target_distributions(training_data, pred_input_data, attributes,
                     **cfg['savefig_kwargs'])
         logger.info("Wrote %s", plot_path)
         plt.close()
+
+        # Provenance
+        provenance_record = get_provenance_record(
+            attributes, [feature, label],
+            caption=(f"{attributes[feature]['plot_title']}: Probability "
+                     f"densitiy of {label}."),
+            plot_type='probability')
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
 
     # Print mean results
     with pd.option_context(*PANDAS_PRINT_OPTIONS):
