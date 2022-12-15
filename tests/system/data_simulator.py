@@ -12,7 +12,7 @@ from esmvalcore._recipe import read_recipe_file
 
 def get_input_filename(variable, rootpath, drs):
     """Get a valid input filename."""
-    # TODO: implement this according to esmvalcore._data_finder.py
+    # TODO: implement this according to esmvalcore.local.py
     # or patch get_input_filelist there.
     return tempfile.NamedTemporaryFile().name + '.nc'
 
