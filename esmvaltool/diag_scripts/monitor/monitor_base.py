@@ -6,7 +6,7 @@ import os
 import cartopy
 import matplotlib.pyplot as plt
 import yaml
-from esmvalcore._data_finder import _replace_tags
+from esmvalcore.local import _replace_tags
 from iris.analysis import MEAN
 from mapgenerator.plotting.timeseries import PlotSeries
 
