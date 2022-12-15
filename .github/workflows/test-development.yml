@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - main
+      - replace_data_finder_module_with_local
   schedule:
     - cron: '0 0 * * *'
 
