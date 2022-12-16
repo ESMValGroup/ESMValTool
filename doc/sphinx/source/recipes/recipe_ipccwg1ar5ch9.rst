@@ -1,4 +1,4 @@
-.. _recipes_flato13ipcc:
+.. _recipes_ipccwg1ar5ch9:
 
 IPCC AR5 Chapter 9 (selected figures)
 =====================================
@@ -117,7 +117,7 @@ following figures from Flato et al. (2013) can currently be reproduced:
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in esmvaltool/recipes/recipe_flato13ipcc
+Recipes are stored in esmvaltool/recipes/recipe_ipccwg1ar5ch9
 
     * recipe_flato13ipcc.yml: Figures 9.2, 9.3, 9.4, 9.5, 9.6, 9.8, 9.14, 9.24, 9.26, 9.27, 9.42, 9.45a.
     * recipe_flato13ipcc_figures_938_941.yml: Figures 9.38, 9.39, 9.40, and 9.41
@@ -562,7 +562,7 @@ References
 Example plots
 -------------
 
-.. figure::  /recipes/figures/flato13ipcc/fig-9-2.png
+.. figure::  /recipes/figures/ipccwg1ar5ch9/fig-9-2.png
    :align:   center
 
    Figure 9.2 a,b,c: Annual-mean surface air temperature for the period
@@ -571,7 +571,7 @@ Example plots
    (Dee et al., 2011), c) mean absolute model error with respect to the
    climatology from ERA-Interim.
 
-.. figure::  /recipes/figures/flato13ipcc/fig-9-3.png
+.. figure::  /recipes/figures/ipccwg1ar5ch9/fig-9-3.png
    :align:   center
 
    Figure 9.3: Multi model values for seasonality of near-surface temperature,
@@ -579,7 +579,7 @@ Example plots
    in seasonality, mean bias in absolute seasonality. Reference dataset:
    ERA-Interim.
 
-.. figure::  /recipes/figures/flato13ipcc/fig-9-4.png
+.. figure::  /recipes/figures/ipccwg1ar5ch9/fig-9-4.png
    :align:   center
 
    Figure 9.4: Annual-mean precipitation rate (mm day-1) for the period
@@ -589,7 +589,7 @@ Example plots
    error with respect to observations, and d) multi-model mean error
    relative to the multi-model mean precipitation itself.
 
-.. figure::  /recipes/figures/flato13ipcc/fig-9-5.png
+.. figure::  /recipes/figures/ipccwg1ar5ch9/fig-9-5.png
    :align:   center
 
    Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative
@@ -600,7 +600,7 @@ Example plots
    averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin
    gray lines), and the multi-model mean (thick red line).
 
-.. figure::  /recipes/figures/flato13ipcc/fig-9-6.png
+.. figure::  /recipes/figures/ipccwg1ar5ch9/fig-9-6.png
    :align:   center
 
    Figure 9.6: Centered pattern correlations between models and observations
@@ -613,7 +613,7 @@ Example plots
    effect (SW CRE). The correlations between the reference and alternate
    observations are also shown (solid green circles).
 
-.. figure::  /recipes/figures/flato13ipcc/fig-9-8.png
+.. figure::  /recipes/figures/ipccwg1ar5ch9/fig-9-8.png
    :align:   center
 
    Figure 9.8: Observed and simulated time series of the anomalies in annual
@@ -625,7 +625,7 @@ Example plots
    different observations (thick black lines). Dataset pre-processing like
    described in Jones et al., 2013.
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-14.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-14.png
    :align: center
 
    Figure 9.14: (a) Zonally averaged sea surface temperature (SST) error
@@ -653,7 +653,7 @@ Example plots
    Figure 9.24a: Time series of total sea ice area and extent (accumulated) for the Arctic
    in September including multi-model mean and standard deviation.
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-26.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-26.png
    :align: center
 
    Figure 9.26 (bottom): Ensemble-mean global land carbon uptake in the CMIP5
@@ -664,7 +664,7 @@ Example plots
    grey areas show the range of annual mean fluxes simulated across the model
    ensemble.
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-27.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-27.png
    :align: center
 
    Figure 9.27 (top): Simulation of global mean atmosphere–ocean CO2 fluxes
@@ -674,7 +674,7 @@ Example plots
    variability in the fluxes, calculated as the standard deviation of the
    annual means over the period 1986–2005.
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-38.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-38.png
    :align: center
 
    Figure 9.38: Mean seasonal cycle for the surface temperature (tas)
@@ -688,12 +688,12 @@ Example plots
    South Asia (SAS), Southeast Asia (SEA), and Australia (AUS).
 
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-38_regions.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-38_regions.png
    :align: center
 
    Figure 9.38reg: Positions of the regions used in Figure 9.38.
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-39.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-39.png
    :align: center
 
    Figure 9.39: Box and whisker plots showing the 5th, 25th, 50th, 75th
@@ -715,13 +715,13 @@ Example plots
    (Seneviratne et al., 2012) and differ from the ones in Fig. 9.38.
 
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-39_regions.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-39_regions.png
    :align: center
 
    Figure 9.39reg: Positions of the regions used in Figure 9.39.
 
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-40.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-40.png
    :align: center
 
    Figure 9.40: Box and whisker plots showing the 5th, 25th, 50th, 75th
@@ -729,26 +729,26 @@ Example plots
    the precipitation (pr) for oceanic and polar regions between 38 CMIP5
    models and CRU data for 1979–2000.
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-41b.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-41b.png
    :align: center
 
    Figure 9.41b: Ranked modelled versus ERA-Interim mean temperature for
    38 CMIP5 models in the Mediterranean region for 1979–2000.
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-42a.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-42a.png
    :align: center
 
    Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global mean
    surface air temperature of CMIP5 models, both for the period 1961-1990
    (larger symbols) and for the pre-industrial control runs (smaller symbols).
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-42b.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-42b.png
    :align: center
 
    Figure 9.42b: Transient climate response (TCR) against equilibrium climate
    sensitivity (ECS) for CMIP5 models.
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-45a.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-45a.png
    :align: center
 
    Figure 9.45a: Scatterplot of springtime snow-albedo effect values in climate
