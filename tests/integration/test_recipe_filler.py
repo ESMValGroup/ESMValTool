@@ -141,6 +141,7 @@ def test_adding_datasets(tmp_path, root, cfg):
         autofilled_recipe = yaml.safe_load(file)
         diag = autofilled_recipe["diagnostics"]["test_diagnostic"]
         var = diag["variables"]["test_var"]
+        print("VAR", var)
         assert "additional_datasets" in var
 
 
