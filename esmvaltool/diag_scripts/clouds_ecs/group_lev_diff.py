@@ -118,18 +118,25 @@ def _get_multi_model_mean(cubes, var):
     """Compute multi-model mean."""
 
     logger.debug("Calculating multi-model mean")
-    datasets = []
-    mmm = []
-    for (dataset_name, cube) in cubes.items():
-        datasets.append(dataset_name)
-        mmm.append(cube.data)
-    mmm = np.ma.array(mmm)
-    dataset_0 = list(cubes.keys())[0]
-    mmm_cube = cubes[dataset_0].copy(data=np.ma.mean(mmm, axis=0))
+    dataset_names = []
+    #mmm = []
+    mmm = {}
+    for (dataset, cube) in cubes.items():
+        dataset_names.append(dataset)
+        #mmm.append(cube.data)
+        mmm['dataset'] = cube.data
+    #mmm = np.ma.array(mmm)
+    mmm = np.ma.masked_invalid(list(mmm.values()))
+    mmm_cube = cube.copy(data=np.ma.mean(mmm, axis=0))
+    #dataset_0 = list(cubes.keys())[0]
+    #print("dataset_0")
+    #print(dataset_0)
+    #mmm_cube = cubes[dataset_0].copy(data=np.ma.mean(mmm, axis=0))
+    #print(mmm_cube)
     attributes = {
         'dataset': 'MultiModelMean',
         'short_name': var,
-        'datasets': '|'.join(datasets),
+        'datasets': '|'.join(dataset_names),
     }
     mmm_cube.attributes = attributes
     return  mmm_cube
@@ -227,7 +234,7 @@ def compute_diff_temp(input_data, group, var, dataset):
     if var in ['clw', 'cli']:
         cube.data[cube.data < 0.001] = np.nan
     elif var in ['cl']:
-        cube.data[cube.data < 0.01] = np.nan
+        cube.data[cube.data < 0.1] = np.nan
 
     cube_diff = compute_diff(input_file_1, input_file_2)
     cube_ta_diff = compute_diff(input_file_ta_1, input_file_ta_2)
@@ -253,6 +260,7 @@ def plot_model(cube, attributes, plot_type, cfg):
     plt.ylim(1000.,100.)
     plt.yscale('log')
     plt.yticks([1000., 800., 600., 400., 300., 200., 100.], [1000, 800, 600, 400, 300, 200, 100])
+    plt.xticks([-60, -30, 0, 30, 60], [-60, -30, 0, 30, 60])
     cube.coord('air_pressure').convert_units('hPa')
     if cube.var_name == 'cl':
         levels = np.linspace(0., 50., 11)
@@ -292,6 +300,7 @@ def plot_diagnostic(cube, legend, plot_type, cfg):
         plt.ylim(1000.,100.)
         plt.yscale('log')
         plt.yticks([1000., 800., 600., 400., 300., 200., 100.], [1000, 800, 600, 400, 300, 200, 100])
+        plt.xticks([-60, -30, 0, 30, 60], [-60, -30, 0, 30, 60])
         cube.coord('air_pressure').convert_units('hPa')
         if cube.var_name == 'cl':
             levels = np.linspace(0., 50., 11)
@@ -320,6 +329,7 @@ def plot_diagnostic_diff(cube, legend, plot_type, cfg):
         plt.ylim(1000.,100.)
         plt.yscale('log')
         plt.yticks([1000., 800., 600., 400., 300., 200., 100.], [1000, 800, 600, 400, 300, 200, 100])
+        plt.xticks([-60, -30, 0, 30, 60], [-60, -30, 0, 30, 60])
         cube.coord('air_pressure').convert_units('hPa')
         #levels = np.linspace(-8., 8., 33)
         levels = np.linspace(-10., 10., 41)
@@ -376,12 +386,12 @@ def main(cfg):
 
                             if dataset_name != 'MultiModelMean':
 
-                                logger.info("Loop dataset %s", dataset_name)
+                                logger.info("Processing dataset %s", dataset_name)
 
                                 input_file = dataset['filename']
                                 cube = read_data(input_file)
 
-                                cube = cube.collapsed('longitude', iris.analysis.MEAN)
+                                #cube = cube.collapsed('longitude', iris.analysis.MEAN)
 
                                 if cfg['plot_each_model']:
                                     plot_model(cube, dataset, plot_type, cfg)
@@ -394,6 +404,12 @@ def main(cfg):
 
                         title = group_name.split('_',1)[1]
                         plt.title(title, fontsize=10)
+
+                        provenance_record = get_provenance_record(
+                            dataset, ancestor_files=cfg['input_files'])
+                        basename = 'mean_' + group_name + '_' + cfg['filename_attach']
+                        # Save the data used for the plot
+                        save_data(basename, provenance_record, cfg, cube_mmm)
 
 
             for group_name in cfg['group_by']:
@@ -413,7 +429,7 @@ def main(cfg):
 
                         cube_diff = compute_diff_temp(input_data, group_name, var, dataset) 
 
-                        cube_diff = cube_diff.collapsed('longitude', iris.analysis.MEAN)
+                        #cube_diff = cube_diff.collapsed('longitude', iris.analysis.MEAN)
                         
                         cubes_diff[dataset_name] = cube_diff
 
@@ -423,6 +439,13 @@ def main(cfg):
 
                 title = group_name[1] + " - " + group_name[0]
                 plt.title(title, fontsize=9)
+
+                provenance_record = get_provenance_record(
+                   dataset, ancestor_files=cfg['input_files'])
+                #basename = 'diff_' + var + '_' + group_name[0] + '_' + cfg['filename_attach']
+                basename = 'diff_' + var + '_' + group_name[0] + '_' + group_name[1] + '_' + cfg['filename_attach']
+                # Save the data used for the plot
+                save_data(basename, provenance_record, cfg, cube_mmm)
 
             plt.suptitle(var)
 

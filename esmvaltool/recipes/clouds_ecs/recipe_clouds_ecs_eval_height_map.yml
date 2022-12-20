@@ -25,7 +25,7 @@ YEARS_ssp585: &years_ssp585
 DATASETS_ECS_HIGH: &datasets_ecs_high
     # - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS} # no clwvi
   - {dataset: CanESM5, grid: gn}
-  - {dataset: CESM2, grid: gn, ensemble: r4i1p1f1}
+  - {dataset: CESM2, grid: gn} #, ensemble: r4i1p1f1}
     #- {dataset: CESM2-FV2, grid: gn, institute: NCAR} # no clt (ssp585)
   - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
     # - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR} # no clt (ssp585)
@@ -196,8 +196,7 @@ DATASETS_ECS_LOW_scenario: &datasets_ecs_low_scenario
 
 preprocessors:
 
-  height_mmm:
-    custom_order: true
+  height:
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev27}
       coordinate: air_pressure
@@ -207,22 +206,6 @@ preprocessors:
       scheme: linear
     zonal_statistics:
       operator: mean
-    multi_model_statistics:
-      span: full
-      statistics: [mean]
-    climate_statistics:
-      operator: mean
-
-  height:
-    extract_levels:
-      levels: {cmor_table: CMIP6, coordinate: plev27}
-      coordinate: air_pressure
-      scheme: linear
-    regrid:
-      target_grid: 2x2
-      scheme: linear
-      #zonal_statistics:
-      #  operator: mean
     climate_statistics:
       operator: mean
 
