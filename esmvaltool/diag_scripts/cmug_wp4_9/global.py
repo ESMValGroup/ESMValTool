@@ -161,7 +161,7 @@ def _diagnostic(config):
     # Assume the loaded data is all the same shape
     print('LOADED DATA:')
     print(f'{loaded_data=}')
-
+ 
     # work over france like wp4.8
     FRANCE = [41.,51.5,-5,9] # lat S, lat N, lon W, lon E
     france_lon = iris.Constraint(longitude = lambda cell: FRANCE[2] <= cell <= FRANCE[3])
