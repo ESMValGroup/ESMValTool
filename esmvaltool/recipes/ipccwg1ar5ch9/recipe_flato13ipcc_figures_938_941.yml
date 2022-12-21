@@ -18,6 +18,7 @@ documentation:
   references:
     - flato13ipcc
     - seneviratne12ipcc
+    - weigel2021gmd
 
   projects:
     - crescendo
@@ -122,21 +123,6 @@ preprocessors:
       mask_out: sea
     mask_fillvalues:
       threshold_fraction: 0.95
-  annual_cycle_mmm:
-    regrid:
-      target_grid: reference_dataset
-      scheme: linear
-    climate_statistics:
-      operator: mean
-      period: month
-    mask_landsea:
-      mask_out: sea
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
-      exclude: [reference_dataset]
 
   clima:
     regrid:
@@ -149,6 +135,7 @@ preprocessors:
       mask_out: sea
     mask_fillvalues:
       threshold_fraction: 0.95
+
   clima_nomask:
     regrid:
       target_grid: reference_dataset
@@ -158,6 +145,7 @@ preprocessors:
       period: month
     mask_fillvalues:
       threshold_fraction: 0.95
+
   regr:
     regrid:
       target_grid: reference_dataset
@@ -272,7 +260,7 @@ diagnostics:
   # Chapter 9  - Figure941
   # ==========================================================================
   regional_downscaling_Fig941:
-    description: Creates ranked modelled versus reference data set 
+    description: Creates ranked modelled versus reference data set
                  regional mean temperature plots.
     themes:
       - chem
