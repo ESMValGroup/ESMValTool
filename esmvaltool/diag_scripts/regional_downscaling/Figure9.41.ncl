@@ -265,8 +265,7 @@ begin
   ; Add provenance
   ; -------------------------------------------------------------
 
-  caption = "Modelled versus observed monthly mean temperature for " + \
-            "the Mediterranean region"
+  caption = "Modelled versus observed monthly mean temperature"
 
   log_provenance(nc_filename, \
                  wks@fullname, \
