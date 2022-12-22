@@ -38,7 +38,7 @@ Four recipes are available to evaluate cloud climatologies from CMIP models.
    (cl) and water vapor path (prw) from CMIP6 models in comparison to CMIP5 results
    and satellite observations. Wherever possible, the diagnostics use
    multi-observational products as reference datasets. The recipe family
-   reproduces all figures from `Lauer et al. (2022)`_: maps of the geographical
+   reproduces all figures from `Lauer et al. (2023)`_: maps of the geographical
    distribution of multi-year averages, Taylor diagrams for multi-year annual
    averages, temporal variability, seasonal cycle amplitude, cloud ice fraction
    as a function of temperature, zonal means of 3-dim cloud liquid/ice content and
@@ -48,7 +48,7 @@ Four recipes are available to evaluate cloud climatologies from CMIP models.
 
 .. _`Flato et al., 2013`: https://www.ipcc.ch/site/assets/uploads/2018/02/WG1AR5_Chapter09_FINAL.pdf
 .. _`Lauer and Hamilton (2013)`: https://journals.ametsoc.org/view/journals/clim/26/11/jcli-d-12-00451.1.xml
-.. _`Lauer et al. (2022)`: https://journals.ametsoc.org/view/journals/clim/aop/JCLI-D-22-0181.1/JCLI-D-22-0181.1.xml
+.. _`Lauer et al. (2023)`: https://journals.ametsoc.org/view/journals/clim/36/2/JCLI-D-22-0181.1.xml
 
 
 Available recipes and diagnostics
@@ -515,7 +515,7 @@ References
 
 * Lauer, A., L. Bock, B. Hassler, M. Schröder, and M. Stengel, Cloud climatologies
   from global climate models - a comparison of CMIP5 and CMIP6 models with satellite
-  data, J. Climate (published online 06 Oct 2022), doi: 10.1175/JCLI-D-22-0181.1.
+  data, J. Climate, 36(2), doi: 10.1175/JCLI-D-22-0181.1, 2023.
 
 
 Example plots
