@@ -28,8 +28,8 @@ following figures from `Eyring et al. (2021)`_ can currently be reproduced:
 
     * Figure 3.42: Relative Model Performance
 
-.._`Eyring et al., 2021`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
-.._`Eyring et al. (2021)`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
+.. _`Eyring et al., 2021`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
+.. _`Eyring et al. (2021)`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
 
 
 Available recipes and diagnostics
