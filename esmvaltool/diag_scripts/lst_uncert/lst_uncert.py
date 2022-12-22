@@ -1,5 +1,6 @@
 """
 ESMValTool diagnostic for ESA CCI LST data.
+
 The code uses the seperate Day and Night overpass monthly data.
 The diagnostic calculates the average CCI LST togive an 'all time' value,
 as well as propagating the gridbox uncertainity values to regional values.
@@ -12,8 +13,6 @@ import logging
 
 import iris
 import matplotlib.pyplot as plt
-from matplotlib.collections import PatchCollection
-from matplotlib.patches import Rectangle
 
 import numpy as np
 
@@ -30,6 +29,7 @@ scale_factor = 0.001 # cant find this in the files, * this by all CCI values to 
 
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
+
     Based on the hydrology diagnostic.
     Inputs:
     metadata = List of dictionaries made from the preprocessor config
@@ -39,7 +39,6 @@ def _get_input_cubes(metadata):
     """
     inputs = {}
     ancestors = {}
-    print(metadata)
     for attributes in metadata:
         print(attributes)
         short_name = attributes['short_name']
@@ -55,13 +54,14 @@ def _get_input_cubes(metadata):
 
         inputs[key_name] = cube
         ancestors[key_name] = [filename]
-        
+
         if 'CMIP5' in attributes['alias']:
             data_type = 'CMIP5'
         elif 'OBS' in attributes['alias']:
             data_type = 'OBS'
         else:
-            data_type = 'CMIP6' # this way meand CMIP5 doesnt get counted twice
+            data_type = 'CMIP6' 
+            # this way round means CMIP5 doesnt get counted twice
 
     return inputs, ancestors, data_type
 
@@ -149,14 +149,10 @@ def _diagnostic(config):
             
 
     # The Diagnostic uses CCI - MODEL
-
     # CMIP data had 360 day calendar, CCI data has 365 day calendar
     # Assume the loaded data is all the same shape
-    print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
-
-    #### Calc CCI LST uncertainty
-    #### REMEMBER TO APPLY FACTORS TO DATA, DO THIS IN CMORIZER?????
+    # Calc CCI LST uncertainty
     uncerts = {'Day' : iris.cube.CubeList(),
                'Night': iris.cube.CubeList()
                }
@@ -175,11 +171,6 @@ def _diagnostic(config):
     # sum in quadrature all region's total uncer to give regional day/night uncer
     # sum in quadrature the day and night regional total uncerts to give the value to use
 
-
-    print(np.shape(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'].data.mask))
-    print(np.sum(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'][0].data.mask))
-    print(np.shape(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'][0].data.mask))
-
     # this is gridbox total RANDOM uncert
     uncerts = {}
     for time in ['Day','Night']:
@@ -191,7 +182,6 @@ def _diagnostic(config):
                       for i in range(num_times)]
                      )
 
-        print(N)
         this_cube = (scale_factor * loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsUnCorErr{time}'])**2 + \
                     (scale_factor *loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsLocalAtmErr{time}'])**2 + \
                     (scale_factor *loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsLocalSfcErr{time}'])**2
@@ -260,25 +250,24 @@ def make_plots(cci_lst, data_means, total_uncert, config):#total_uncert, model_l
     and the mean CCI LST with +/- one total
     error
     Inputs:
-   
     config = The config dictionary from the preprocessor
     Outputs:
     Saved figure
     """
     num_times = len(cci_lst.coord('time').points)
 
-    tab_cols = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd',
-                '#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
-    colours = {'OBS'  : tab_cols[0],
+    tab_cols = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728','#9467bd',
+                '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+    colours = {'OBS': tab_cols[0],
                'CMIP5': tab_cols[1],
                'CMIP6': tab_cols[2],
                'high': 'red',
                'inside': 'grey',
-               'low':'blue',
+               'low': 'blue',
                }
 
     cci_high = (cci_lst + total_uncert).data
-    cci_low  = (cci_lst - total_uncert).data
+    cci_low = (cci_lst - total_uncert).data
 
     # calc overlaps
     overlaps5 = []
@@ -290,7 +279,7 @@ def make_plots(cci_lst, data_means, total_uncert, config):#total_uncert, model_l
             overlaps5.append(1)
         else:
             overlaps5.append(0)
-    
+
     for i in range(num_times):
         if data_means['CMIP6'][i].data < cci_low[i]:
             overlaps6.append(-1)
@@ -299,67 +288,76 @@ def make_plots(cci_lst, data_means, total_uncert, config):#total_uncert, model_l
         else:
             overlaps6.append(0)
 
- 
-
     # fig 1 = just timeseries
     # fig 2 = just overlaps
     # fig 3 = both on a shared x axis
-    FIGS = []
-    AXS = []
     fig1, ax1 = plt.subplots(nrows=1, ncols=1, sharex=True,
                              figsize=(20, 15))
     fig2, ax2 = plt.subplots(nrows=1, ncols=1, sharex=True,
                              figsize=(20, 15))
     fig3, ax3 = plt.subplots(nrows=2, ncols=1, sharex=True,
                              figsize=(20, 15))
- 
-    ax1.plot(range(num_times), cci_lst.data, label='OBS',
-            color=colours['OBS'],
-            linewidth=2
-    )
-    ax1.fill_between(range(num_times), cci_low, cci_high,
-                    color=colours['OBS'], alpha=0.5)
 
-    ax1.plot(range(num_times),data_means['CMIP5'].data,
-            label='CMIP5',
-            color=colours['CMIP5']
-    )
-    ax1.plot(range(num_times),data_means['CMIP6'].data,
-            label='CMIP6',
-            color=colours['CMIP6']
-    )
+    ax1.plot(range(num_times), cci_lst.data, label='OBS',
+             color=colours['OBS'],
+             linewidth=2
+             )
+    ax1.fill_between(range(num_times), cci_low, cci_high,
+                     color=colours['OBS'],
+                     alpha=0.5
+                     )
+
+    ax1.plot(range(num_times), data_means['CMIP5'].data,
+             label='CMIP5',
+             color=colours['CMIP5']
+             )
+    ax1.plot(range(num_times), data_means['CMIP6'].data,
+             label='CMIP6',
+             color=colours['CMIP6']
+             )
     ax1.legend(fontsize=18)
 
     # for figure 3
     ax3[0].plot(range(num_times), cci_lst.data, label='OBS',
-            color=colours['OBS'],
-            linewidth=2
-    )
+                color=colours['OBS'],
+                linewidth=2
+                )
     ax3[0].fill_between(range(num_times), cci_low, cci_high,
-                    color=colours['OBS'], alpha=0.5)
+                        color=colours['OBS'], alpha=0.5
+                        )
 
-    ax3[0].plot(range(num_times),data_means['CMIP5'].data,
-            label='CMIP5',
-            color=colours['CMIP5']
-    )
-    ax3[0].plot(range(num_times),data_means['CMIP6'].data,
-            label='CMIP6',
-            color=colours['CMIP6']
-    )
+    ax3[0].plot(range(num_times), data_means['CMIP5'].data,
+                label='CMIP5',
+                color=colours['CMIP5']
+                )
+    ax3[0].plot(range(num_times), data_means['CMIP6'].data,
+                label='CMIP6',
+                color=colours['CMIP6']
+                )
     ax3[0].legend(fontsize=18)
 
-    
-    MIN = np.min([cci_low, cci_high, data_means['CMIP5'].data,data_means['CMIP6'].data])
-    MAX = np.max([cci_low, cci_high, data_means['CMIP5'].data,data_means['CMIP6'].data])
+    min_point = np.min([cci_low, cci_high,
+                        data_means['CMIP5'].data, data_means['CMIP6'].data])
+    max_point = np.max([cci_low, cci_high,
+                        data_means['CMIP5'].data, data_means['CMIP6'].data])
 
-    ax1.set_yticks(np.arange(5*((MIN-5)//5), 5*((MAX+5)//5)+7,5))
-    ax1.set_yticklabels(np.arange(5*((MIN-5)//5), 5*((MAX+5+1)//5)+7,5), fontsize=18)
-    ax1.set_ylim((MIN-6,MAX+7))
+    ax1.set_yticks(np.arange(5 * ((min_point - 5) // 5),
+                             5 * ((max_point + 5) // 5) + 7,
+                             5))
+    ax1.set_yticklabels(np.arange(5 * ((min_point - 5) // 5),
+                                  5 * ((max_point + 5 + 1) // 5) + 7,
+                                  5),
+                        fontsize=18)
+    ax1.set_ylim((min_point - 6, max_point + 7))
 
-    ax3[0].set_yticks(np.arange(5*((MIN-5)//5), 5*((MAX+5)//5)+7,5))
-    ax3[0].set_yticklabels(np.arange(5*((MIN-5)//5), 5*((MAX+5+1)//5)+7,5), fontsize=18)
-    ax3[0].set_ylim((MIN-6,MAX+7))
-
+    ax3[0].set_yticks(np.arange(5 * ((min_point - 5) // 5),
+                                5 * ((max_point + 5) // 5) + 7,
+                                5))
+    ax3[0].set_yticklabels(np.arange(5 * ((min_point - 5) // 5),
+                                     5 * ((max_point + 5 + 1) // 5) + 7,
+                                     5),
+                           fontsize=18)
+    ax3[0].set_ylim((min_point - 6, max_point + 7))
 
     facecolor5 = []
     for i in range(num_times):
@@ -378,30 +376,40 @@ def make_plots(cci_lst, data_means, total_uncert, config):#total_uncert, model_l
             facecolor6.append(colours['high'])
         else:
             facecolor6.append(colours['inside'])
-      
-    S=150
-    M = 'o'
-      
+
+    marker_size = 150
+    marker_shape = 'o'
+
     ax2.scatter(range(num_times), [0 for i in range(num_times)],
                 c=facecolor5,
-                s=S, edgecolor='black', marker=M)
+                s=marker_size,
+                edgecolor='black',
+                marker=marker_shape
+                )
     ax2.scatter(range(num_times), [1 for i in range(num_times)],
                 c=facecolor6,
-                s=S, edgecolor='black', marker=M)
+                s=marker_size,
+                edgecolor='black',
+                marker=marker_shape
+                )
 
     ax3[1].scatter(range(num_times), [0 for i in range(num_times)],
-                c=facecolor5,
-                s=S, edgecolor='black', marker=M)
+                   c=facecolor5,
+                   s=marker_size,
+                   edgecolor='black',
+                   marker=marker_shape
+                   )
     ax3[1].scatter(range(num_times), [1 for i in range(num_times)],
-                c=facecolor6,
-                s=S, edgecolor='black', marker=M)
+                   c=facecolor6,
+                   s=marker_size,
+                   edgecolor='black',
+                   marker=marker_shape
+                   )
 
-
-
-    ax2.set_yticks([0,1])
-    ax2.set_yticklabels(['CMIP5','CMIP6'], fontsize=18)
-    ax3[1].set_yticks([0,1])
-    ax3[1].set_yticklabels(['CMIP5','CMIP6'], fontsize=18)
+    ax2.set_yticks([0, 1])
+    ax2.set_yticklabels(['CMIP5', 'CMIP6'], fontsize=18)
+    ax3[1].set_yticks([0, 1])
+    ax3[1].set_yticklabels(['CMIP5', 'CMIP6'], fontsize=18)
 
     # make X ticks
     x_tick_list = []
@@ -415,14 +423,12 @@ def make_plots(cci_lst, data_means, total_uncert, config):#total_uncert, model_l
         else:
             x_tick_list.append('')
 
-
     # common stuff for all three plots
-
-    ax1.set_xlim((-1,num_times+1))
-    ax2.set_xlim((-1,num_times+1))
-    ax2.set_ylim((-0.5,1.5))
-    ax3[1].set_xlim((-1, num_times+1))
-    ax3[1].set_ylim((-0.5,1.5))
+    ax1.set_xlim((-1, num_times + 1))
+    ax2.set_xlim((-1, num_times + 1))
+    ax2.set_ylim((-0.5, 1.5))
+    ax3[1].set_xlim((-1, num_times + 1))
+    ax3[1].set_ylim((-0.5, 1.5))
 
     ax1.set_xticks(range(num_times))
     ax1.set_xticklabels(x_tick_list, fontsize=18)
@@ -430,9 +436,9 @@ def make_plots(cci_lst, data_means, total_uncert, config):#total_uncert, model_l
     ax2.set_xticklabels(x_tick_list, fontsize=18)
     ax3[0].set_xticks(range(num_times))
     ax3[1].set_xticks(range(num_times))
-    ax3[0].set_xticklabels(['' for X in x_tick_list])
+    ax3[0].set_xticklabels(['' for x in x_tick_list])
     ax3[1].set_xticklabels(x_tick_list, fontsize=18)
-   
+
     ax1.set_xlabel('Date', fontsize=22)
     ax2.set_xlabel('Date', fontsize=22)
     ax3[1].set_xlabel('Date', fontsize=22)
@@ -448,34 +454,49 @@ def make_plots(cci_lst, data_means, total_uncert, config):#total_uncert, model_l
     ax3[0].grid()
     ax3[1].grid()
 
+    ax2.text(17, 0.60, 'Model cooler than Obs',
+             fontsize=20,
+             color=colours['low']
+             )
+    ax2.text(17, 0.50,
+             'Model inside Obs uncertainty',
+             fontsize=20,
+             color=colours['inside']
+             )
+    ax2.text(17, 0.40,
+             'Model warmer than Obs',
+             fontsize=20,
+             color=colours['high']
+             )
 
-    ax2.text(17,0.60,'Model cooler than Obs', fontsize=20, color=colours['low'])
-    ax2.text(17,0.50,'Model inside Obs uncertainty', fontsize=20, color=colours['inside'])
-    ax2.text(17,0.40,'Model warmer than Obs', fontsize=20, color=colours['high'])
-
-    ax3[1].text(17,0.60,'Model cooler than Obs', fontsize=20, color=colours['low'])
-    ax3[1].text(17,0.50,'Model inside Obs uncertainty', fontsize=20, color=colours['inside'])
-    ax3[1].text(17,0.40,'Model warmer than Obs', fontsize=20, color=colours['high'])    
-
-    lons = cci_lst.coord('longitude').bounds
-    lats = cci_lst.coord('latitude').bounds
-
-    #ax1.set_title('Area: lon %s lat %s' % (lons[0], lats[0]), fontsize=22)
+    ax3[1].text(17, 0.60, 'Model cooler than Obs',
+                fontsize=20,
+                color=colours['low']
+                )
+    ax3[1].text(17, 0.50, 'Model inside Obs uncertainty',
+                fontsize=20,
+                color=colours['inside']
+                )
+    ax3[1].text(17, 0.40, 'Model warmer than Obs',
+                fontsize=20,
+                color=colours['high']
+                )
 
     fig1.suptitle('ESACCI LST, CMIP5 and CMIP6 LST', fontsize=24)
     fig2.suptitle('ESACCI LST, CMIP5 and CMIP6 LST', fontsize=24)
     fig3.suptitle('ESACCI LST, CMIP5 and CMIP6 LST', fontsize=24)
 
-    outpath =  config['plot_dir']
+    outpath = config['plot_dir']
     plt.figure(1)
-    plt.savefig(f'{outpath}/timeseries_test1.png')
+    plt.savefig(f'{outpath}/timeseries_plot1.png')
     plt.close()
     plt.figure(2)
-    plt.savefig(f'{outpath}/timeseries_test2.png')
+    plt.savefig(f'{outpath}/timeseries_plot2.png')
     plt.close()
     plt.figure(3)
-    plt.savefig(f'{outpath}/timeseries_test3.png')
+    plt.savefig(f'{outpath}/timeseries_plot3.png')
     plt.close()
+
 
 if __name__ == '__main__':
     # always use run_diagnostic() to get the config (the preprocessor
