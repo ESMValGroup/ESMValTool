@@ -7,14 +7,14 @@ Overview
 --------
 
 This recipe collects selected diagnostics used in IPCC AR6 WGI Chapter 3: 
-Human influence on the climate system. Plots from IPCC AR6 can be readily
+Human influence on the climate system (`Eyring et al., 2021`_). Plots from IPCC AR6 can be readily
 reproduced and compared to previous versions. The aim is to be able to start
 with what was available now the next time allowing us to
 focus on developing more innovative analysis methods
 rather than constantly having to "re-invent the wheel".
 
 The plots are produced collecting the diagnostics from individual recipes. The
-following figures from Eyring et al. (2021) can currently be reproduced:
+following figures from `Eyring et al. (2021)`_ can currently be reproduced:
 
     * Figure 3.3 a,b,c,d: Surface Air Temperature - Model Bias
 
@@ -27,6 +27,10 @@ following figures from Eyring et al. (2021) can currently be reproduced:
     * Figure 3.15: Precipitation Anomaly
 
     * Figure 3.42: Relative Model Performance
+
+.._`Eyring et al., 2021`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
+.._`Eyring et al. (2021)`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
+
 
 Available recipes and diagnostics
 ---------------------------------
@@ -265,14 +269,16 @@ References
 ----------
 
 * Eyring, V., N.P. Gillett, K.M. Achuta Rao, R. Barimalala, M. Barreiro
-  Parrillo, N. Bellouin, C. Cassou, P.J. Durack, Y. Kosaka, S. McGregor, S. Min,
-  O. Morgenstern, and Y. Sun, 2021: Human Influence on the Climate System. In 
-  Climate Change 2021: The Physical Science Basis. Contribution of Working Group
-  I to the Sixth Assessment Report of the Intergovernmental Panel on Climate 
-  Change [Masson-Delmotte, V., P. Zhai, A. Pirani, S.L. Connors, C. Péan, S. 
-  Berger, N. Caud, Y. Chen, L. Goldfarb, M.I. Gomis, M. Huang, K. Leitzell, E. 
-  Lonnoy, J.B.R. Matthews, T.K.  Maycock, T. Waterfield, O. Yelekçi, R. Yu, and 
-  B. Zhou (eds.)]. Cambridge University Press. In Press.
+  Parrillo, N. Bellouin, C. Cassou, P.J. Durack, Y. Kosaka, S. McGregor,
+  S. Min, O. Morgenstern, and Y. Sun, 2021: Human Influence on the Climate
+  System. In Climate Change 2021: The Physical Science Basis. Contribution
+  of Working Group I to the Sixth Assessment Report of the Intergovernmental
+  Panel on Climate Change [Masson-Delmotte, V., P. Zhai, A. Pirani,
+  S.L. Connors, C. Péan, S. Berger, N. Caud, Y. Chen, L. Goldfarb, M.I. Gomis
+  , M. Huang, K. Leitzell, E. Lonnoy, J.B.R. Matthews, T.K. Maycock,
+  T. Waterfield, O. Yelekçi, R. Yu, and B. Zhou (eds.)]. Cambridge Universiy
+  Press, Cambridge, United Kingdom and New York, NY, USA, pp. 423-552,
+  doi: 10.1017/9781009157896.005.
 
 
 Example plots
