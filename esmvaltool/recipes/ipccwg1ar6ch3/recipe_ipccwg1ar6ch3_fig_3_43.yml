@@ -7,7 +7,7 @@ documentation:
 
   description: |
     Producing Fig. 3.43 in the IPCC Working Group I
-  Contribution to the Sixth Assessment Report: Chapter 3
+    Contribution to the Sixth Assessment Report: Chapter 3
 
   authors:
     - bock_lisa
@@ -121,8 +121,8 @@ datasets:
   - {dataset: NorESM1-M}
   - {dataset: NorESM1-ME}
   # CMIP6
-  - &cmip6 {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn,
-            ensemble: r1i1p1f1, project: CMIP6}
+  - &cmip6 {dataset: ACCESS-CM2, grid: gn, ensemble: r1i1p1f1,
+            project: CMIP6}
   - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
   - {<<: *cmip6, dataset: AWI-CM-1-1-MR}
   - {<<: *cmip6, dataset: AWI-ESM-1-1-LR}
@@ -227,6 +227,7 @@ diagnostics:
       pattern_cor: &fig_pattern_cor
         script: ipcc_ar6/corr_pattern.ncl
 
+
   pr:
     <<: *corr_diag
     variables:
@@ -264,6 +265,7 @@ diagnostics:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
       - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
 
+
   psl:
     <<: *corr_diag
     variables:
@@ -299,6 +301,7 @@ diagnostics:
       - {<<: *cmip6, dataset: MCM-UA-1-0}
       - {dataset: JRA-55, project: ana4mips, type: reanalysis, tier: 1}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: 1, tier: 3}
+
 
   rlut:
     <<: *corr_diag
@@ -336,6 +339,7 @@ diagnostics:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
          tier: 1, start_year: 2001, end_year: 2015}
 
+
   rsut:
     <<: *corr_diag
     variables:
@@ -368,6 +372,7 @@ diagnostics:
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
          tier: 1, start_year: 2001, end_year: 2015}
+
 
   lwcre:
     <<: *corr_diag
@@ -402,6 +407,7 @@ diagnostics:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
          tier: 1, start_year: 2001, end_year: 2015}
 
+
   swcre:
     <<: *corr_diag
     variables:
@@ -433,6 +439,7 @@ diagnostics:
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
          tier: 1, start_year: 2001, end_year: 2015}
+
 
   ts:
     <<: *corr_diag
@@ -502,6 +509,7 @@ diagnostics:
          version: RetStd-v5, tier: 1, start_year: 2003, end_year: 2010}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
 
+
   zg500:
     <<: *corr_diag
     variables:
@@ -536,6 +544,7 @@ diagnostics:
       - {<<: *cmip6, dataset: MCM-UA-1-0}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+
 
   ta200:
     <<: *corr_diag
@@ -573,6 +582,7 @@ diagnostics:
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
+
   ta850:
     <<: *corr_diag
     variables:
@@ -609,6 +619,7 @@ diagnostics:
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
+
   ua200:
     <<: *corr_diag
     variables:
@@ -642,6 +653,7 @@ diagnostics:
       - {<<: *cmip6, dataset: MCM-UA-1-0}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+
 
   ua850:
     <<: *corr_diag
@@ -677,6 +689,7 @@ diagnostics:
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
 
+
   va200:
     <<: *corr_diag
     variables:
@@ -710,6 +723,7 @@ diagnostics:
       - {<<: *cmip6, dataset: MCM-UA-1-0}
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+
 
   va850:
     <<: *corr_diag
