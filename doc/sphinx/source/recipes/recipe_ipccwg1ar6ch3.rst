@@ -26,12 +26,15 @@ following figures from Eyring et al. (2021) can currently be reproduced:
 
     * Figure 3.15: Precipitation Anomaly
 
+    * Figure 3.23: Sea surface Temperature and Salinity - Model Bias
+
 Available recipes and diagnostics
 ---------------------------------
 
 Recipes are stored in esmvaltool/recipes/ipccwg1ar6ch3/
 
     * recipe_ipccwg1ar6ch3_atmosphere.yml
+    * recipe_ipccwg1ar6ch3_ocean.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
@@ -57,6 +60,11 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     Fig. 3.15:
 
     * ipcc_ar6/precip_anom.ncl
+
+    Fig. 3.23:
+
+    * ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl: See :ref:`here:<ch12_calc_IAV_for_stippandhatch.ncl>`.
+    * ipcc_ar6/model_bias.ncl
 
 
 User settings in recipe
@@ -186,8 +194,10 @@ Variables
 ---------
 
 * pr (atmos, monthly mean, longitude latitude time)
+* sos (ocean, monthly mean, longitude latitude time)
 * tas (atmos, monthly mean, longitude latitude time)
 * tasa (atmos, monthly mean, longitude latitude time)
+* tos (ocean, monthly mean, longitude latitude time)
 
 
 Observations and reformat scripts
@@ -201,6 +211,7 @@ Observations and reformat scripts
 * HadCRUT5 (tasa - esmvaltool/cmorizers/data/formatters/datasets/hadcrut5.py)
 * Kadow2020 (tasa - esmvaltool/cmorizers/data/formatters/datasets/kadow2020.py)
 * NOAAGlobalTemp (tasa - esmvaltool/cmorizers/data/formatters/datasets/noaaglobaltemp.py)
+* WOA (sos, tos - esmvaltool/cmorizers/data/formatters/datasets/woa.py)
 
 
 References
