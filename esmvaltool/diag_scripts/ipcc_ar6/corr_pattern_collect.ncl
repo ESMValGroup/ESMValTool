@@ -28,7 +28,7 @@
 ;     Effect of different regridding methods not yet determined
 ;
 ; Modification history
-;    20210226-A_bock_lisa: Modified diagnostic based on 
+;    20210226-A_bock_lisa: Modified diagnostic based on
 ;                          ipcc_ar5/ch09_fig09_6_collect.ncl
 ;
 ; #############################################################################
