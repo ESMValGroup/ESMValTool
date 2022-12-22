@@ -111,6 +111,7 @@ begin
     plot_var@res_trYMinF = diag_script_info@zonal_ymin
     plot_var@res_gsnLeftString = \
       plot_var@long_name + " [" + format_units(plot_var@units) + "]"
+    copy_VarMeta(diag_script_info, plot_var)
     wks = gsn_open_wks(file_type, plotpath_abs)
     gsn_define_colormap(wks, diag_script_info@zonal_cmap)
     plot = zonalmean_profile(wks, plot_var, var0)
