@@ -1,12 +1,12 @@
 ; #############################################################################
-; DIAGNOSTIC SCRIPT for reproducing IPCC ch. 9 fig. 9.6
+; DIAGNOSTIC SCRIPT for pattern correlation figure
 ; Author: Bettina Gier (Uni Bremen & DLR, Germany)
-; CRESCENDO project
+; IPCC-AR6 project
 ; #############################################################################
 ;
 ; Description
 ;    Calculates centred pattern correlations for annual mean climatologies
-;    and plots them. Like IPCC ch. 9 fig 9.6
+;    and plots them. Like IPCC AR5 Ch. 9 Fig 9.6
 ;
 ; Required diag_script_info attributes (diagnostics specific)
 ;
@@ -22,10 +22,8 @@
 ;
 ;
 ; Modification history
-;    20190205-A_gier_be: Adapted to new ncl structure
-;    20181012-A_gier_be: Ported to v2
-;    20171020-A_laue_ax: added tags for reporting
-;    20170404-A_gier_be: written.
+;    20210226-A_bock_lisa: Modified diagnostic based on
+;                          ipcc_ar5/ch09_fig09_6.ncl
 ;
 ; #############################################################################
 

@@ -1,12 +1,12 @@
 ; #############################################################################
-; DIAGNOSTIC PLOT SCRIPT for extending IPCC ch. 9 fig. 9.6
+; DIAGNOSTIC PLOT SCRIPT for correlation pattern figure
 ; Author: Bettina Gier (DLR, Germany), Lisa Bock (DLR, Germany)
 ; IPCC-AR6 project
 ; #############################################################################
 ;
 ; Description
 ;    Calculated centred pattern correlations for annual mean climatologies
-;    and plots them. Like IPCC ch. 9 fig 9.6
+;    and plots them. Like IPCC AR5 Ch. 9 Fig 9.6
 ;
 ; Required diag_script_info attributes (diagnostics specific)
 ;
@@ -28,9 +28,8 @@
 ;     Effect of different regridding methods not yet determined
 ;
 ; Modification history
-;    20191011-A_bock_lisa: Add customizable order of variables
-;    20190205-A_gier_bettina: Adapted to new ncl structures
-;    20181101-A_gier_bettina: moved collect from main script
+;    20210226-A_bock_lisa: Modified diagnostic based on 
+;                          ipcc_ar5/ch09_fig09_6_collect.ncl
 ;
 ; #############################################################################
 load "$diag_scripts/../interface_scripts/interface.ncl"
