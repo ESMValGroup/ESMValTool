@@ -45,6 +45,8 @@ function portrait_plot(wks_in[1],
 ; Caveats
 ;
 ; Modification history
+;    20220609-bock_lisa: added gaps between project blocks and improved style
+;    20211014-bock_lisa: added sorting by project
 ;    20151027-righi_mattia: added option for displaying rankings.
 ;    20140605-righi_mattia: modified with flexible plot shapes.
 ;    20140204-frank_franziska: extended.

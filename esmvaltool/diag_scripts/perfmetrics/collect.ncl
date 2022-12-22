@@ -29,6 +29,8 @@
 ; Caveats
 ;
 ; Modification history
+;    20220609-bock_lisa: added gaps between project blocks and improved style
+;    20211014-bock_lisa: added sorting by project
 ;    20190315-hassler_birgit: added SMPI case
 ;    20180508-righi_mattia: renamed and generalized
 ;    20151027-lauer_axel: moved call to 'write_references' to the beginning

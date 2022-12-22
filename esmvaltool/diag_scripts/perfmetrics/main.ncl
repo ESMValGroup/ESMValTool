@@ -56,7 +56,9 @@
 ;
 ; Modification history
 ;    20221209-winterstein_franziska: added optional tropopause and plotting
-;                                    resources
+;    20220609-bock_lisa: added calculation of multi-model mean and median for
+                         each project
+;    20211014-bock_lisa: added sorting by project
 ;    20200506-gier_bettina: implemented support for multiple occurence of
 ;                           models with different experiments and ensembles
 ;    20190405-righi_mattia: added provenance logging
