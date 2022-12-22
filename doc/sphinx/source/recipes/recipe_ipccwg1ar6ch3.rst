@@ -223,14 +223,11 @@ Variables
 * siconc (atmos, monthly mean, longitude latitude time)
 * swcre (atmos, monthly mean, longitude latitude time)
 * ta (atmos, monthly mean, longitude latitude level time)
-* ta (atmos, monthly mean, longitude latitude level time)
 * tas (atmos, monthly mean, longitude latitude time)
 * tasa (atmos, monthly mean, longitude latitude time)
 * tos (atmos, monthly mean, longitude latitude time)
 * ts (atmos, monthly mean, longitude latitude time)
 * ua (atmos, monthly mean, longitude latitude level time)
-* ua (atmos, monthly mean, longitude latitude level time)
-* va (atmos, monthly mean, longitude latitude level time)
 * va (atmos, monthly mean, longitude latitude level time)
 * zg (atmos, monthly mean, longitude latitude level time)
 
@@ -243,8 +240,9 @@ Observations and reformat scripts
 * BerkeleyEarth (tasa - esmvaltool/cmorizers/data/formatters/datasets/berkeleyearth.py)
 * CERES-EBAF (rlds, rlus, rlut, rlutcs, rsds, rsus, rsut, rsutcs - obs4MIPs)
 * CRU (pr - esmvaltool/cmorizers/data/formatters/datasets/cru.py)
-* ESACCI-SOILMOISTURE (sm - esmvaltool/ucmorizers/data/formatters/datasets/esacci-soilmoisture.py)
-* ESACCI-SST (ts - esmvaltool/ucmorizers/data/formatters/datasets/esacci-sst.py)
+* ESACCI-SOILMOISTURE (sm - esmvaltool/ucmorizers/data/formatters/datasets
+  /esacci_soilmoisture.py)
+* ESACCI-SST (ts - esmvaltool/ucmorizers/data/formatters/datasets/esacci_sst.py)
 * ERA5 (hus, psl, ta, tas, ua, va, zg - ERA5 data can be used via the native6 project)
 * ERA-Interim (hfds - cmorizers/data/formatters/datasets/era_interim.py)
 * FLUXCOM (gpp - cmorizers/data/formatters/datasets/fluxcom.py)
@@ -395,12 +393,12 @@ Example plots
 
    Figure 3.42a: Relative space–time root-mean-square deviation (RMSD)
    calculated from the climatological seasonal cycle of the CMIP simulations
-   (1980–1999) compared to observational datasets.A relative performane
+   (1980–1999) compared to observational datasets A relative performance
    measure is displayed, with blue shading indicating better and red shading
-   indicating worse performance than the median of all model results. A diagonal
-   split of a grid square shows the relative error with respect to the reference
-   data set (lower right triangle) and an additional data set (upper left
-   triangle). Reference/additional datasets are from top to bottom in (a):
+   indicating worse performance than the median error of all model results. A
+   diagonal split of a grid square shows the relative error with respect to the
+   reference data set (lower right triangle) and an additional data set (upper
+   left triangle). Reference/additional datasets are from top to bottom in (a):
    ERA5/NCEP, GPCP-SG/GHCN, CERES-EBAF, CERES-EBAF, CERES-EBAF, CERES-EBAF,
    JRA-55/ERA5, ESACCI-SST/HadISST, ERA5/NCEP, ERA5/NCEP, ERA5/NCEP, ERA5/NCEP,
    ERA5/NCEP, ERA5/NCEP, AIRS/ERA5, ERA5/NCEP. White boxes are used when data
