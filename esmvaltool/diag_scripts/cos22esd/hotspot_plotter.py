@@ -194,8 +194,7 @@ class HotspotPlot:
 
     @staticmethod
     def _add_axes_attributes(axes, path_ext, plotextend):
-        axes.set_boundary(path_ext, transform=ccrs.PlateCarree(),
-                          use_as_clip_path=True)
+        axes.set_boundary(path_ext, transform=ccrs.PlateCarree())
         axes.set_facecolor("silver")
         axes.set_extent(plotextend, crs=ccrs.PlateCarree())
         axes.coastlines("50m", linewidth=0.8)
@@ -347,8 +346,9 @@ class HotspotPlot:
 
         provenance_record = self.get_rolling_mean_provenance(
             suptitle, ancestor_files)
-        save_figure(f"scenario_combination_{var_combination}_{season}",
-                    provenance_record, self.cfg)
+        basename = ("scenario_combination_"
+                    f"{var_combination.replace(':', '-')}_{season}")
+        save_figure(basename, provenance_record, self.cfg)
 
     @staticmethod
     def _timeseries_scatter_plot_data(results_dict, large_scale_key,

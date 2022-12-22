@@ -43,6 +43,8 @@
 ;    zonal_ymin (for zonal): minimum pressure on the plots (default: 5. hPa)
 ;    latlon_cmap (for latlon): color table (default: "amwg_blueyellowred")
 ;    plot_units: plotting units (if different from standard CMOR units)
+;    add_tropopause: add an optional tropopause outline to the zonal plots
+;    res_*: any resource as applied to ncl gsn_csm_press_hgt plots
 ;
 ; Required variable_info attributes:
 ;    reference_dataset: reference dataset to compare with (usualy observations)
@@ -53,6 +55,8 @@
 ; Caveats
 ;
 ; Modification history
+;    20221209-winterstein_franziska: added optional tropopause and plotting
+;                                    resources
 ;    20200506-gier_bettina: implemented support for multiple occurence of
 ;                           models with different experiments and ensembles
 ;    20190405-righi_mattia: added provenance logging
@@ -146,6 +150,7 @@ begin
   set_default_att(diag_script_info, "zonal_ymin", 5.)
   set_default_att(diag_script_info, "zonal_cmap", "amwg_blueyellowred")
   set_default_att(diag_script_info, "latlon_cmap", "amwg_blueyellowred")
+  set_default_att(diag_script_info, "add_tropopause", False)
 
   ; Check consistency of diff plots settings
   if (diag_script_info@t_test .and. .not.diag_script_info@plot_diff) then

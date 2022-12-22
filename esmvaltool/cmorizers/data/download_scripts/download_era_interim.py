@@ -149,12 +149,19 @@ MONTH_PARAMS = [
     ('147.128', 'slhf', 'accu'),  # Surface latent heat flux
     ('146.128', 'sshf', 'accu'),  # Surface sensible heat flux
     ('157.128', 'r', '3d'),  # Relative humidity
+    ('246.128', 'clwc', '3d'),  # Specific cloud liquid water content
+    ('247.128', 'ciwc', '3d'),  # Specific cloud ice water content
     ('130.128', 't', '3d'),  # Temperature
     ('131.128', 'u', '3d'),  # U component of wind
     ('132.128', 'v', '3d'),  # V component of wind
     ('135.128', 'w', '3d'),  # Vertical velocity
     ('133.128', 'q', '3d'),  # Specific humidity
     ('129.128', 'z', '3d'),  # Geopotential
+    ('178.128', 'tsr', 'accu'),  # net top solar radiation
+    ('208.128', 'tsrc', 'accu'),  # net top solar radiation clear-sky
+    ('179.128', 'ttr', 'accu'),  # top net thermal radiation
+    ('209.128', 'ttrc', 'accu'),  # top net thermal radiation clear-sky
+    ('248.128', 'cc', '3d'),  # fraction of cloud cover
 ]
 
 
