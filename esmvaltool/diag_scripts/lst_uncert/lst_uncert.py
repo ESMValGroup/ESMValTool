@@ -17,15 +17,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger,
     group_metadata,
     run_diagnostic,
 )
 
 logger = logging.getLogger(__name__)
 
+scalefactor = 0.001
+# cant find this in the files, * this by all CCI values to get actual value
 
-scale_factor = 0.001 # cant find this in the files, * this by all CCI values to get actual value
 
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
@@ -46,7 +46,7 @@ def _get_input_cubes(metadata):
         logger.info("Loading variable %s", short_name)
         cube = iris.load_cube(filename)
         cube.attributes.clear()
-        
+
         try:
             key_name = f"{short_name}_{attributes['ensemble']}"
         except:
@@ -60,13 +60,15 @@ def _get_input_cubes(metadata):
         elif 'OBS' in attributes['alias']:
             data_type = 'OBS'
         else:
-            data_type = 'CMIP6' 
+            data_type = 'CMIP6'
             # this way round means CMIP5 doesnt get counted twice
 
     return inputs, ancestors, data_type
 
+
 def _get_provenance_record(attributes, ancestor_files):
     """Create the provenance record dictionary.
+
     Inputs:
     attributes = dictionary of ensembles/models used, the region bounds
                  and years of data used.
@@ -94,16 +96,17 @@ def _get_provenance_record(attributes, ancestor_files):
 
 
 def _diagnostic(config):
-    """Perform the control for the ESA CCI LST diagnostic
-       with uncertainities included
+    """ESA CCI LST diagnostic with uncertainities included.
+
     Parameters
     ----------
     config: dict
         the preprocessor nested dictionary holding
         all the needed information.
+
     Returns
     -------
-    figures made by make_plots.
+    Figures made by make_plots.
     """
     # this loading function is based on the hydrology diagnostic
     input_metadata = config['input_data'].values()
@@ -113,142 +116,138 @@ def _diagnostic(config):
     data_ready = {'OBS': {},
                   'CMIP5': [],
                   'CMIP6': []
-              }
-    ancestor_list = []
+                  }
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         cubes, ancestors, data_type = _get_input_cubes(metadata)
         loaded_data[f'{data_type}_{dataset}'] = cubes
 
     # sort data into ensemble aves if needed
-    for KEY in loaded_data.keys():
-        if 'OBS' in KEY: continue
-        if 'CMIP5' in KEY: model='CMIP5'
-        if 'CMIP6' in KEY: model='CMIP6'
+    for key in loaded_data.keys():
+        if 'OBS' in key:
+            continue
+        if 'CMIP5' in key:
+            model = 'CMIP5'
+        if 'CMIP6' in key:
+            model = 'CMIP6'
 
         cubes = iris.cube.CubeList()
-        for i,ITEM in enumerate(loaded_data[KEY].keys()):
+        for i, item in enumerate(loaded_data[key].keys()):
             ensemble_coord = iris.coords.AuxCoord(i, var_name='realisation')
-            loaded_data[KEY][ITEM].add_aux_coord(ensemble_coord)
-            cubes.append(loaded_data[KEY][ITEM])
+            loaded_data[key][item].add_aux_coord(ensemble_coord)
+            cubes.append(loaded_data[key][item])
         data_ready[model] = cubes.merge_cube()
 
     # make model means if necessary
-    data_means = {'CMIP5' : [],
-                  'CMIP6' : [],
+    data_means = {'CMIP5': [],
+                  'CMIP6': [],
                   }
 
-    for KEY in data_means.keys():
-        if data_ready[KEY].ndim == 3:
+    for key in data_means.keys():
+        if data_ready[key].ndim == 3:
             # no need to average
-            data_means[KEY] = data_ready[KEY].collapsed(['latitude','longitude'], iris.analysis.MEAN)
-            
-
+            data_means[key] = data_ready[key].collapsed(['latitude',
+                                                         'longitude'],
+                                                         iris.analysis.MEAN
+                                                        )
         else:
-            data_means[KEY] = data_ready[KEY].collapsed('realisation', iris.analysis.MEAN)
-            data_means[KEY] = data_means[KEY].collapsed(['latitude','longitude'], iris.analysis.MEAN)
-            
+            data_means[key] = data_ready[key].collapsed('realisation',
+                                                        iris.analysis.MEAN
+                                                        )
+            data_means[key] = data_means[key].collapsed(['latitude',
+                                                         'longitude'],
+                                                         iris.analysis.MEAN
+                                                        )
 
     # The Diagnostic uses CCI - MODEL
     # CMIP data had 360 day calendar, CCI data has 365 day calendar
     # Assume the loaded data is all the same shape
 
     # Calc CCI LST uncertainty
-    uncerts = {'Day' : iris.cube.CubeList(),
+    uncerts = {'Day': iris.cube.CubeList(),
                'Night': iris.cube.CubeList()
                }
 
     # make the 'all time' LST average
-    cci_lst = (loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'] + \
-               loaded_data['OBS_ESACCI_LST_UNCERTS']['tsNight'])/2
-    cci_lst_area_ave = cci_lst.collapsed(['latitude','longitude'], iris.analysis.MEAN)
-    
-    
+    cci_lst = (loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'] +
+               loaded_data['OBS_ESACCI_LST_UNCERTS']['tsNight']) / 2
+    cci_lst_area_ave = cci_lst.collapsed(['latitude', 'longitude'],
+                                         iris.analysis.MEAN
+                                         )
+
     # make the gridbox total uncertainity
     # following conversation with Lizzie
 
-    # make random uncert for gridbox from tsUnCorErr, tsLocalAtmErr and tsLocalSfcErr
-    # then use tsLSSysErr with the random uncert to give a gridbox total uncer
-    # sum in quadrature all region's total uncer to give regional day/night uncer
-    # sum in quadrature the day and night regional total uncerts to give the value to use
+    # make random uncert for gridbox from:
+    # tsUnCorErr, tsLocalAtmErr and tsLocalSfcErr
+    # then use tsLSSysErr with the random uncert to give
+    # a gridbox total uncertanty.
+    # sum in quadrature all region's total uncer to give
+    # regional day/night uncertanty.
+    # sum in quadrature the day and night regional total uncerts
+    # to give the value to use.
 
     # this is gridbox total RANDOM uncert
     uncerts = {}
-    for time in ['Day','Night']:
+    for time in ['Day', 'Night']:
         num_times = len(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'].coord('time').points)
-        print(num_times)
         shape_2d = np.product(np.shape(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'][0].data))
-        N = np.array([shape_2d - \
-                      np.sum(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'][i].data.mask) \
-                      for i in range(num_times)]
-                     )
+        n_array = np.array([shape_2d -
+                            np.sum(loaded_data['OBS_ESACCI_LST_UNCERTS']['tsDay'][i].data.mask)
+                            for i in range(num_times)]
+                       )
 
-        this_cube = (scale_factor * loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsUnCorErr{time}'])**2 + \
-                    (scale_factor *loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsLocalAtmErr{time}'])**2 + \
-                    (scale_factor *loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsLocalSfcErr{time}'])**2
+        this_cube = (scalefactor * \
+                     loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsUnCorErr{time}'])**2 + \
+                    (scalefactor * \
+                     loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsLocalAtmErr{time}'])**2 + \
+                    (scalefactor * \
+                     loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsLocalSfcErr{time}'])**2
 
         iris.analysis.maths.exponentiate(this_cube, 0.5, in_place=True)
         # this_cube is now the random uncert for each grid box
 
         # now get area random uncert
-        this_cube = (this_cube**2).collapsed(['latitude','longitude'], iris.analysis.SUM)
+        this_cube = (this_cube**2).collapsed(['latitude', 'longitude'],
+                                             iris.analysis.SUM
+                                             )
         for i in range(num_times):
-            this_cube[i].data = (1/N[i]**2)*this_cube[i].data
-        #iris.analysis.maths.multiply(this_cube, N, dim=0, in_place=True)
+            this_cube[i].data = (1 / n_array[i]**2) * this_cube[i].data
         iris.analysis.maths.exponentiate(this_cube, 0.5, in_place=True)
 
         # this_cube is now the area random uncert
 
-        # sum in quadrature to get area total uncert using the 'constant' tsLSSysErr
-        this_cube = this_cube**2 + loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsLSSysErr{time}']**2
-        this_cube = iris.analysis.maths.exponentiate(this_cube, 0.5, in_place=True)
+        # sum in quadrature to get area total uncert using 
+        # the 'constant' tsLSSysErr
+        this_cube = this_cube**2 + \
+                  loaded_data['OBS_ESACCI_LST_UNCERTS'][f'tsLSSysErr{time}']**2
+        this_cube = iris.analysis.maths.exponentiate(this_cube,
+                                                     0.5,
+                                                     in_place=True
+                                                     )
 
         uncerts[time] = this_cube
-        
+
     # now sum in quadrature day and night values to give total all time uncert
     total_uncert = uncerts['Day']**2 + uncerts['Night']**2
     iris.analysis.maths.exponentiate(total_uncert, 0.5, in_place=True)
 
-    print(total_uncert.data)
-
-    make_plots(cci_lst_area_ave, data_means, total_uncert, config)#total_uncert, model_lst, model_std, ensemble_ts, config)
-
-#     # Provenance
-#     # Get this information form the data cubes
-#     # data_attributes = {}
-#     # data_attributes['start_year'] = lst_diff_cube.coord('time').units.num2date(
-#     #     lst_diff_cube.coord('time').points)[0].year
-#     # data_attributes['end_year'] = lst_diff_cube.coord('time').units.num2date(
-#     #     lst_diff_cube.coord('time').points)[-1].year
-#     # data_attributes['lat_south'] = lst_diff_cube.coord('latitude').bounds[0][0]
-#     # data_attributes['lat_north'] = lst_diff_cube.coord('latitude').bounds[0][1]
-#     # data_attributes['lon_west'] = lst_diff_cube.coord('longitude').bounds[0][0]
-#     # data_attributes['lon_east'] = lst_diff_cube.coord('longitude').bounds[0][1]
-#     # data_attributes['ensembles'] = ''
-
-#     # for item in input_metadata:
-#     #     if 'ESACCI' in item['alias'] or 'MultiModel' in item[
-#     #             'alias'] or 'OBS' in item['alias']:
-#     #         continue
-#     #     data_attributes['ensembles'] += "%s " % item['alias']
-
-#     # record = _get_provenance_record(data_attributes, ancestor_list)
-#     # for file in ['%s/timeseries.png' % config['plot_dir']]:
-#     #     with ProvenanceLogger(config) as provenance_logger:
-#     #         provenance_logger.log(file, record)
+    make_plots(cci_lst_area_ave, data_means, total_uncert, config)
 
 
-
-def make_plots(cci_lst, data_means, total_uncert, config):#total_uncert, model_lst, model_std, ensemble_ts, config):
+def make_plots(cci_lst, data_means, total_uncert, config):
     """Create and save the output figure.
+
     PLOT 1
-    The plot is CMIP model LST  with +/- one standard deviation
-    of the model spread, and the mean CCI LST with +/- one total
-    error
+    The plot both CMIP5 and CMIP6 model LST and the CCI LST with
+    +/- one total  error.
 
     PLOT 2
-    The plot is all CMIP model LST  ensembles
-    and the mean CCI LST with +/- one total
-    error
+    This is schematic of whether the CMIP5 and CMIP6 model LST is warmer,
+    cooler, or within the CCI error.
+
+    PLOT 3
+    Combines plot 1 and plot2 in a single figure.
+
     Inputs:
     config = The config dictionary from the preprocessor
     Outputs:
@@ -256,7 +255,7 @@ def make_plots(cci_lst, data_means, total_uncert, config):#total_uncert, model_l
     """
     num_times = len(cci_lst.coord('time').points)
 
-    tab_cols = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728','#9467bd',
+    tab_cols = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
                 '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
     colours = {'OBS': tab_cols[0],
                'CMIP5': tab_cols[1],
