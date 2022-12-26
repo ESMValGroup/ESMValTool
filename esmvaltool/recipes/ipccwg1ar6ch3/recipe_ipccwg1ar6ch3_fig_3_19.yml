@@ -13,6 +13,9 @@ documentation:
     - bock_lisa
     - eyring_veronika
 
+  maintainer:
+    - bock_lisa
+
   references:
     - eyring13jgr
 
