@@ -80,11 +80,6 @@ begin
   flag_mod = where(projects.ne."OBS6" .and. projects.ne."OBS" .and.\
                    projects.ne."obs4mips", 1, 0)
 
-  exp_MMM = diag_script_info@e13fig12_exp_MMM
-  flag_exp = new((/dimsizes(projects), dimsizes(exp_MMM)/), "integer")
-  do id = 0, dimsizes(exp_MMM) - 1
-    flag_exp(:, id) = where(projects.eq.exp_MMM(id), 0, 1)
-  end do
   index_mod = ind(flag_mod.gt.0)
   index_obs = ind(flag_mod.eq.0)
   dim_MOD = dimsizes(index_mod)
@@ -95,10 +90,14 @@ begin
     list_obs_mod = names(index_obs)
   end if
 
-  exp_MMM = diag_script_info@e13fig12_exp_MMM
   multimean = diag_script_info@e13fig12_multimean
   season = diag_script_info@e13fig12_season
   if (multimean) then
+    exp_MMM = diag_script_info@e13fig12_exp_MMM
+    flag_exp = new((/dimsizes(projects), dimsizes(exp_MMM)/), "integer")
+    do id = 0, dimsizes(exp_MMM) - 1
+      flag_exp(:, id) = where(projects.eq.exp_MMM(id), 0, 1)
+    end do
     dimTot = dim_MOD + dim_OBS + 1
     if (dimsizes(exp_MMM).gt.1) then
       dimTot = dim_MOD + dim_OBS + dimsizes(exp_MMM)
