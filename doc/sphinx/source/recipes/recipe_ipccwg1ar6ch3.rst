@@ -26,12 +26,15 @@ following figures from Eyring et al. (2021) can currently be reproduced:
 
     * Figure 3.15: Precipitation Anomaly
 
+    * Figure 3.19: Speed-Up Of Zonal Mean Wind
+
 Available recipes and diagnostics
 ---------------------------------
 
 Recipes are stored in esmvaltool/recipes/ipccwg1ar6ch3/
 
     * recipe_ipccwg1ar6ch3_atmosphere.yml
+    * recipe_ipccwg1ar6ch3_fig_3_19.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
@@ -57,6 +60,10 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     Fig. 3.15:
 
     * ipcc_ar6/precip_anom.ncl
+
+    Fig. 3.19:
+
+    * ipcc_ar6/zonal_westerly_winds.ncl
 
 
 User settings in recipe
@@ -181,6 +188,23 @@ User settings in recipe
    * y_min: set min of y-axis
    * y_max: set max of y-axis
 
+ #. Script ipcc_ar6/zonal_westerly_winds.ncl
+
+   *Optional settings for variables*
+
+   * reference_dataset: reference dataset; REQUIRED when calculating
+     anomalies
+
+   *Optional settings for script*
+
+   * @e13fig12_start_year: year when start the climatology calculation
+                           (default: start_year of var)
+   * @e13fig12_end_year: year when end the climatology calculation
+                         (default: end_year of var)
+   * @e13fig12_multimean: multimodel mean (default: False)
+   * @e13fig12_exp_MMM: name of the experiments for the MMM
+                       (required if @e13fig12_multimean = True)
+   * @e13fig12_season: season (default: ANN)
 
 Variables
 ---------
@@ -188,6 +212,7 @@ Variables
 * pr (atmos, monthly mean, longitude latitude time)
 * tas (atmos, monthly mean, longitude latitude time)
 * tasa (atmos, monthly mean, longitude latitude time)
+* ua (atmos, monthly mean, level longitude latitude time)
 
 
 Observations and reformat scripts
@@ -195,7 +220,7 @@ Observations and reformat scripts
 
 * BerkeleyEarth (tasa - esmvaltool/cmorizers/data/formatters/datasets/berkeleyearth.py)
 * CRU (pr - esmvaltool/cmorizers/data/formatters/datasets/cru.py)
-* ERA5 (tas - ERA5 data can be used via the native6 project)
+* ERA5 (tas, ua - ERA5 data can be used via the native6 project)
 * GHCN (pr - esmvaltool/cmorizers/data/formatters/datasets/ghcn.ncl)
 * GPCP-SG (pr - obs4MIPs)
 * HadCRUT5 (tasa - esmvaltool/cmorizers/data/formatters/datasets/hadcrut5.py)
