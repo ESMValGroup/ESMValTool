@@ -124,7 +124,7 @@ diagnostics:
         start_year: 1985
         end_year: 2014
     additional_datasets:
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: 1, tier: 3}
+            - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
     scripts:
       clim: &clim_settings
         script:  ipcc_ar6/zonal_westerly_winds.ncl
