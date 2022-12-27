@@ -87,8 +87,8 @@ models_cmip6_historical_woa: &models_cmip6_historical_woa
   - {dataset: NorESM2-MM, institute: NCC}
   - {dataset: SAM0-UNICON, grid: gn}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
-  - {dataset: WOA, project: OBS, type: clim, version: 2018, tier: 2,
-     start_year: 2315, end_year: 2315}
+  - {dataset: WOA, project: OBS6, type: clim, version: 2018, tier: 2,
+     start_year: 2000, end_year: 2000}
 
 
 models_cmip6_piControl: &models_cmip6_piControl
