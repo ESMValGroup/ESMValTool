@@ -12,7 +12,7 @@ documentation:
   authors:
     - bock_lisa
     - davini_paolo
-    - kazeroni_remi
+      #- kazeroni_remi
 
   maintainer:
     - bock_lisa
@@ -62,37 +62,37 @@ diagnostics:
     additional_datasets:
       - &cmip6 {dataset: ACCESS-CM2, project: CMIP6, mip: day, exp: historical,
                 ensemble: r1i1p1f1, grid: gn}
-      - {dataset: AWI-ESM-1-1-LR}
-      - {dataset: BCC-ESM1}
-      - {dataset: CanESM5}
-      - {dataset: CESM2-FV2}
-      - {dataset: CESM2}
-      - {dataset: CESM2-WACCM-FV2}
-      - {dataset: CESM2-WACCM}
-      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
-      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
-      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
-      - {dataset: EC-Earth3, grid: gr}
-      - {dataset: FGOALS-f3-L, grid: gr}
-      - {dataset: FGOALS-g3}
-      - {dataset: GFDL-CM4, grid: gr2}
-      - {dataset: GISS-E2-1-G}
-      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
-      - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3}
-      - {dataset: IITM-ESM}
-      - {dataset: INM-CM4-8, grid: gr1}
-      - {dataset: INM-CM5-0, grid: gr1}
-      - {dataset: IPSL-CM6A-LR, grid: gr}
-      - {dataset: KACE-1-0-G, grid: gr}
-      - {dataset: MIROC6}
-      - {dataset: MPI-ESM-1-2-HAM}
-      - {dataset: MPI-ESM1-2-HR}
-      - {dataset: MPI-ESM1-2-LR}
-      - {dataset: MRI-ESM2-0}
-      - {dataset: NorESM2-LM}
-      - {dataset: NorESM2-MM}
-      - {dataset: TaiESM1}
-      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
+      - {<<: *cmip6, dataset: AWI-ESM-1-1-LR}
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CanESM5}
+      - {<<: *cmip6, dataset: CESM2-FV2}
+      - {<<: *cmip6, dataset: CESM2}
+      - {<<: *cmip6, dataset: CESM2-WACCM-FV2}
+      - {<<: *cmip6, dataset: CESM2-WACCM}
+      - {<<: *cmip6, dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+      - {<<: *cmip6, dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+      - {<<: *cmip6, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: FGOALS-f3-L, grid: gr}
+      - {<<: *cmip6, dataset: FGOALS-g3}
+      - {<<: *cmip6, dataset: GFDL-CM4, grid: gr2}
+      - {<<: *cmip6, dataset: GISS-E2-1-G}
+      - {<<: *cmip6, dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
+      - {<<: *cmip6, dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3}
+      - {<<: *cmip6, dataset: IITM-ESM}
+      - {<<: *cmip6, dataset: INM-CM4-8, grid: gr1}
+      - {<<: *cmip6, dataset: INM-CM5-0, grid: gr1}
+      - {<<: *cmip6, dataset: IPSL-CM6A-LR, grid: gr}
+      - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
+      - {<<: *cmip6, dataset: MIROC6}
+      - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-HR}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-LR}
+      - {<<: *cmip6, dataset: MRI-ESM2-0}
+      - {<<: *cmip6, dataset: NorESM2-LM}
+      - {<<: *cmip6, dataset: NorESM2-MM}
+      - {<<: *cmip6, dataset: TaiESM1}
+      - {<<: *cmip6, dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
       - &cmip5 {dataset: ACCESS1-0, project: CMIP5, mip: day, exp: historical,
                 ensemble: r1i1p1}
       - {<<: *cmip5, dataset: ACCESS1-3}
@@ -123,7 +123,7 @@ diagnostics:
       - {<<: *cmip5, dataset: MRI-CGCM3}
       - {<<: *cmip5, dataset: MRI-ESM1}
       - {<<: *cmip5, dataset: NorESM1-M}
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: '1', tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
     scripts:
       miles_block:
         script: miles/miles_block_groupby_projects.R
