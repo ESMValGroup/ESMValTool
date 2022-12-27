@@ -197,14 +197,14 @@ User settings in recipe
 
    *Optional settings for script*
 
-   * @e13fig12_start_year: year when start the climatology calculation
+   * e13fig12_start_year: year when start the climatology calculation
                            (default: start_year of var)
-   * @e13fig12_end_year: year when end the climatology calculation
+   * e13fig12_end_year: year when end the climatology calculation
                          (default: end_year of var)
-   * @e13fig12_multimean: multimodel mean (default: False)
-   * @e13fig12_exp_MMM: name of the experiments for the MMM
+   * e13fig12_multimean: multimodel mean (default: False)
+   * e13fig12_exp_MMM: name of the experiments for the MMM
                        (required if @e13fig12_multimean = True)
-   * @e13fig12_season: season (default: ANN)
+   * e13fig12_season: season (default: ANN)
 
 Variables
 ---------
