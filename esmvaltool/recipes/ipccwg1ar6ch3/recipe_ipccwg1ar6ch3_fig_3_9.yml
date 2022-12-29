@@ -478,7 +478,6 @@ diagnostics:
         y_min: -3.5
         y_max: 4.0
         ref_mask: true
-        experiments: ["historical", "hist-nat", "hist-GHG", "hist-aer"]
         header: ["Global Ocean", "Global", "Global Land"]
         title: "global"
         panels: [["tas_historical_ocean", "tas_hist-nat_ocean",

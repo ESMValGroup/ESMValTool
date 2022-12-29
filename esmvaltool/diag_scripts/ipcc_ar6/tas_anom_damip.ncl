@@ -7,18 +7,19 @@
 ;    This script is for plotting a time series of the global mean (anomaly).
 ;
 ; Required diag_script_info attributes (diagnostic specific)
+;    start_year: start year in figure
+;    end_year: end year in figure
+;    panels: list of variable blocks for each panel
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
 ;    ref_start: start year of reference period for anomalies
 ;    ref_end: end year of reference period for anomalies
 ;    ref_mask: if true, model fields will be masked by reference fields
-;    region: name of domain
 ;    plot_units: variable unit for plotting
 ;    y-min: set min of y-axis
 ;    y-max: set max of y-axis
-;    run_ave: if not equal 0 than calculate running mean over this number
-;             of years
-;    header: if true, region name as header
+;    header: title for each panel
+;    title: name of region as part of filename
 ;
 ; Caveats
 ;
@@ -46,7 +47,6 @@ begin
   ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "anomaly", True)
   set_default_att(diag_script_info, "ref_mask", False)
-  set_default_att(diag_script_info, "region", "Global")
 
   if (isatt(diag_script_info, "title")) then
     header = diag_script_info@title
