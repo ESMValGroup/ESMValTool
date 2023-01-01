@@ -388,7 +388,7 @@ https://conda.anaconda.org/conda-forge/linux-64/py-xgboost-1.7.1-cpu_py310hd1aba
 https://conda.anaconda.org/conda-forge/noarch/pylint-2.15.9-pyhd8ed1ab_0.conda#5bfc68e1b8f0883f793ae0acedc88770
 https://conda.anaconda.org/conda-forge/noarch/pyopenssl-22.1.0-pyhd8ed1ab_0.tar.bz2#fbfa0a180d48c800f922a10a114a8632
 https://conda.anaconda.org/conda-forge/noarch/pytest-html-3.2.0-pyhd8ed1ab_1.tar.bz2#d5c7a941dfbceaab4b172a56d7918eb0
-https://conda.anaconda.org/conda-forge/noarch/seaborn-base-0.12.1-pyhd8ed1ab_0.tar.bz2#f87b94dc53178574eedd09c317c2318f
+https://conda.anaconda.org/conda-forge/noarch/seaborn-base-0.12.2-pyhd8ed1ab_0.conda#cf88f3a1c11536bc3c10c14ad00ccc42
 https://conda.anaconda.org/conda-forge/linux-64/statsmodels-0.13.5-py310hde88566_2.tar.bz2#521b762fdb5e47915251d460a8fc5814
 https://conda.anaconda.org/conda-forge/linux-64/tempest-remap-2.1.6-hf6b5aa3_1.conda#2a4aee55361a45fd1d7318090c54137f
 https://conda.anaconda.org/conda-forge/noarch/tifffile-2022.10.10-pyhd8ed1ab_0.tar.bz2#1c126ff5b4643785bbc16e44e6327e41
@@ -408,7 +408,7 @@ https://conda.anaconda.org/conda-forge/noarch/pylint-plugin-utils-0.7-pyhd8ed1ab
 https://conda.anaconda.org/conda-forge/linux-64/r-base-4.1.3-hb87df5d_4.conda#5f774a156ed3bea11994da08a95e41eb
 https://conda.anaconda.org/conda-forge/linux-64/rasterio-1.3.4-py310hfc14bbd_0.tar.bz2#e7d96b020ff846c1658afa1a08cee7bc
 https://conda.anaconda.org/conda-forge/linux-64/scikit-image-0.19.3-py310h769672d_2.tar.bz2#c0391107b0cd0010708d6969ed759e8b
-https://conda.anaconda.org/conda-forge/noarch/seaborn-0.12.1-hd8ed1ab_0.tar.bz2#b7e4c670752726d4991298fa0c581e97
+https://conda.anaconda.org/conda-forge/noarch/seaborn-0.12.2-hd8ed1ab_0.conda#50847a47c07812f88581081c620f5160
 https://conda.anaconda.org/conda-forge/noarch/urllib3-1.26.13-pyhd8ed1ab_0.conda#3078ef2359efd6ecadbc7e085c5e0592
 https://conda.anaconda.org/conda-forge/linux-64/xgboost-1.7.1-cpu_py310hd1aba9c_0.tar.bz2#d3c4153da9842c9ee1319ae2af86dc45
 https://conda.anaconda.org/conda-forge/noarch/distributed-2022.12.1-pyhd8ed1ab_0.conda#63cf20ed7b5205cf4c31aadee4c7fd2e
