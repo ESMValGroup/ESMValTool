@@ -464,72 +464,70 @@ begin
   ; Plots
   ; ---------------------------------------------------------------------------
 
-  if (diag_script_info@write_plots) then
-    ; Set plot output file
-    outfile = plot_dir + var0 + "_" + DOMAIN
-    wks = gsn_open_wks(file_type, outfile)
-    gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
-    gsn_reverse_colormap(wks)
+  ; Set plot output file
+  outfile = plot_dir + var0 + "_" + DOMAIN
+  wks = gsn_open_wks(file_type, outfile)
+  gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
+  gsn_reverse_colormap(wks)
 
-    ; Axis labels
-    if (custom_mean_time_range) then
-      mean_label = mean_time_range(0) + "-" + mean_time_range(1) + " Mean"
-    else
-      mean_label = start_year + "-" + end_year + " Mean"
-    end if
-    if (custom_trend_time_range) then
-      trend_label = trend_time_range(0) + "-" + trend_time_range(1) + \
-        " Linear trend"
-    else
-      trend_label = start_year + "-" + end_year + " Linear trend"
-    end if
-    if (custom_mvi_time_range) then
-      mvi_label = mvi_time_range(0) + "-" + mvi_time_range(1) + "~C~MVI"
-    else
-      mvi_label = start_year + "-" + end_year + "~C~MVI"
-    end if
-
-    ; Pack data
-    data_arr = new((/3, dimsizes(regional_mean)/), float)
-    data_arr(0, :) = (/regional_mean/)
-    data_arr(1, :) = (/regional_trend/)
-    data_arr(2, :) = (/regional_mvi/)
-    data_arr!0 = "statistic"
-    data_arr!1 = "datasets"
-    data_arr&statistic = (/mean_label, trend_label, mvi_label/)
-    data_arr&datasets = DATASETS
-    data_arr@units = (/regional_mean@units, regional_trend@units, "1"/)
-
-    ; Set levels for the color coding
-    tmp = regional_mvi
-    tmp(ref_idx) = tmp@_FillValue
-    nlevs = 11
-    tmp := nice_mnmxintvl(min(tmp) - 0.01, max(tmp) + 0.01, nlevs, True)
-    levs = decimalPlaces(fspan(tmp(0), tmp(1), 11), 2, True)
-    delete(tmp)
-
-    ; Draw a 3D scatterplot
-    data_arr@res_tiMainString = var0 + " - " + region@name
-    plot = scatterplot3D(wks, data_arr, var0, levs)
-    plot_path = outfile + "." + file_type
-    log_info("Wrote " + plot_path)
-    draw(plot)
-    frame(wks)
-
-    ; Provenance tracking
-    caption =  ("Scatterplot for multiyear average " + var0 + " in x " + \
-                "axis, its linear trend in y axis, and MVI. Similar to " + \
-                "Anav et al. (2013) Figure 1 (bottom).")
-    statistics = (/"mean", "trend", "mvi"/)
-    authors = (/"anav_alessandro", "wenzel_sabrina", "righi_mattia", \
-                "schlund_manuel"/)
-    plot_type = "scatter"
-    references = (/"anav13jclim"/)
-    ancestors = metadata_att_as_array(INFO0, "filename")
-    log_provenance(ncdf_outfile_mvi, plot_path, caption, statistics, \
-                   DOMAIN, plot_type, authors, references, ancestors)
-    delete(data_arr)
+  ; Axis labels
+  if (custom_mean_time_range) then
+    mean_label = mean_time_range(0) + "-" + mean_time_range(1) + " Mean"
+  else
+    mean_label = start_year + "-" + end_year + " Mean"
   end if
+  if (custom_trend_time_range) then
+    trend_label = trend_time_range(0) + "-" + trend_time_range(1) + \
+      " Linear trend"
+  else
+    trend_label = start_year + "-" + end_year + " Linear trend"
+  end if
+  if (custom_mvi_time_range) then
+    mvi_label = mvi_time_range(0) + "-" + mvi_time_range(1) + "~C~MVI"
+  else
+    mvi_label = start_year + "-" + end_year + "~C~MVI"
+  end if
+
+  ; Pack data
+  data_arr = new((/3, dimsizes(regional_mean)/), float)
+  data_arr(0, :) = (/regional_mean/)
+  data_arr(1, :) = (/regional_trend/)
+  data_arr(2, :) = (/regional_mvi/)
+  data_arr!0 = "statistic"
+  data_arr!1 = "datasets"
+  data_arr&statistic = (/mean_label, trend_label, mvi_label/)
+  data_arr&datasets = DATASETS
+  data_arr@units = (/regional_mean@units, regional_trend@units, "1"/)
+
+  ; Set levels for the color coding
+  tmp = regional_mvi
+  tmp(ref_idx) = tmp@_FillValue
+  nlevs = 11
+  tmp := nice_mnmxintvl(min(tmp) - 0.01, max(tmp) + 0.01, nlevs, True)
+  levs = decimalPlaces(fspan(tmp(0), tmp(1), 11), 2, True)
+  delete(tmp)
+
+  ; Draw a 3D scatterplot
+  data_arr@res_tiMainString = var0 + " - " + region@name
+  plot = scatterplot3D(wks, data_arr, var0, levs)
+  plot_path = outfile + "." + file_type
+  log_info("Wrote " + plot_path)
+  draw(plot)
+  frame(wks)
+
+  ; Provenance tracking
+  caption =  ("Scatterplot for multiyear average " + var0 + " in x " + \
+              "axis, its linear trend in y axis, and MVI. Similar to " + \
+              "Anav et al. (2013) Figure 1 (bottom).")
+  statistics = (/"mean", "trend", "mvi"/)
+  authors = (/"anav_alessandro", "wenzel_sabrina", "righi_mattia", \
+              "schlund_manuel"/)
+  plot_type = "scatter"
+  references = (/"anav13jclim"/)
+  ancestors = metadata_att_as_array(INFO0, "filename")
+  log_provenance(ncdf_outfile_mvi, plot_path, caption, statistics, \
+                 DOMAIN, plot_type, authors, references, ancestors)
+  delete(data_arr)
 
   leave_msg(DIAG_SCRIPT, "")
 

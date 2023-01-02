@@ -2,6 +2,7 @@
 # recipe_climwip.yml
 ---
 documentation:
+  title: Recipe to test ClimWIP performance sigma calibration
   description: >
     Calculate weights for CMIP type models based on performance and independence.
     Developed based on the ClimWIP method in the frame of EUCP and CRESCENDO.

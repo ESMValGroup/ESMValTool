@@ -2,6 +2,9 @@
 # recipe_seaice_feedback.yml
 ---
 documentation:
+  title: |
+    Ice Formation Efficiency (IFE).
+
   description: |
     This recipe is related to the negative sea-ice growth–thickness feedback
     In this recipe, one process-based diagnostic named the
@@ -24,7 +27,7 @@ documentation:
   authors:
     - massonnet_francois
 
-  mantainer:
+  maintainer:
     - vegas-regidor_javier
 
   references:
@@ -35,7 +38,7 @@ documentation:
     - primavera
 
 datasets:
-  - &cmip5 {project: CMIP5, exp: historical, dataset: ACCESS1-0,  ensemble: r1i1p1, start_year: 1979, end_year: 2004}
+  - &cmip5 {project: CMIP5, exp: historical, dataset: ACCESS1-0, ensemble: r1i1p1, start_year: 1979, end_year: 2004}
   - {<<: *cmip5, dataset: ACCESS1-3}
   - {<<: *cmip5, dataset: bcc-csm1-1}
   - {<<: *cmip5, dataset: BNU-ESM}
@@ -95,4 +98,4 @@ diagnostics:
         plot:
           point_color: black
           point_size: 10
-          show_values: False
+          show_values: false

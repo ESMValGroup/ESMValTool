@@ -2,6 +2,10 @@
 # recipe_modes_of_variability.yml
 ---
 documentation:
+  title: |
+    Root Mean Square Error (RMSE) between observed and modelled patterns of
+    variability.
+
   description: |
     Tool to compute the RMSE between the observed and modelled patterns of
     variability obtained through classification and their relative relative
@@ -16,6 +20,9 @@ documentation:
     - hunter_alasdair
     - perez-zanon_nuria
     - manubens_nicolau
+
+  maintainer:
+    - unmaintained
 
   projects:
     - c3s-magic

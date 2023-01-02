@@ -131,6 +131,7 @@ User settings in recipe
   *Required settings for script*
     * ``ancestors``: must include weights from previous diagnostic
     * ``weights``: the filename of the weights: 'weights.nc'
+    * ``settings``: a list of plot settings: ``start_year`` (integer), ``end_year`` (integer), ``central_estimate`` ('mean' or integer between 0 and 100 giving the percentile), ``lower_bound`` (integer between 0 and 100), ``upper_bound`` (integer between 0 and 100)
 
   *Required settings for variables*
    * This script only takes temperature (tas) as input

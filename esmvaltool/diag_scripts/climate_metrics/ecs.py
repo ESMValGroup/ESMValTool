@@ -71,6 +71,7 @@ from esmvaltool.diag_scripts.shared import (
     io,
     run_diagnostic,
     select_metadata,
+    sorted_metadata,
     variables_available,
 )
 
@@ -309,6 +310,7 @@ def check_input_data(cfg):
 def preprocess_data(cfg):
     """Extract input data."""
     input_data = deepcopy(list(cfg['input_data'].values()))
+    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
     if not input_data:
         return ([], [])
 
@@ -428,11 +430,10 @@ def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
         f"including linear regression to calculate ECS for {dataset_name} "
         f"({project}).")
     provenance_record.update({
-        'plot_file': plot_path,
         'plot_types': ['scatter'],
     })
 
-    return (netcdf_path, provenance_record)
+    return (netcdf_path, plot_path, provenance_record)
 
 
 def set_default_cfg(cfg):
@@ -472,8 +473,9 @@ def write_data(cfg, ecs_data, feedback_parameter_data, ancestor_files):
     else:
         attrs = {}
     if RTMT_DATASETS:
+        rtmt_datasets = sorted(list(RTMT_DATASETS))
         attrs['net_toa_radiation'] = (
-            f"For datasets {RTMT_DATASETS}, 'rtmt' (net top of model "
+            f"For datasets {rtmt_datasets}, 'rtmt' (net top of model "
             f"radiation) instead of 'rtnt' (net top of atmosphere radiation) "
             f"is used due to lack of data. These two variables might differ.")
     attrs.update(cfg.get('output_attributes', {}))
@@ -529,13 +531,14 @@ def main(cfg):
         reg = stats.linregress(tas_cube.data, rtnt_cube.data)
 
         # Plot Gregory plots
-        (path, provenance_record) = plot_gregory_plot(cfg, dataset_name,
-                                                      tas_cube, rtnt_cube, reg)
+        (path, plot_path, provenance_record) = plot_gregory_plot(
+            cfg, dataset_name, tas_cube, rtnt_cube, reg)
 
         # Provenance
         provenance_record['ancestors'] = ancestor_files
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(path, provenance_record)
+            provenance_logger.log(plot_path, provenance_record)
 
         # Save data
         if cfg.get('read_external_file') and dataset_name in ecs:

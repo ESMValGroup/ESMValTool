@@ -110,6 +110,10 @@ In the recipe
 Fill in the ``documentation`` section of the recipe as described in
 :ref:`esmvalcore:recipe_documentation` and add a ``description`` to each
 diagnostic entry.
+Please note that the ``maintainer`` entry is per se not necessary to run a
+recipe, but mandatory for recipes within the ESMValTool repository (enforced by
+a unit test).
+If no maintainer is available, use the single entry ``unmaintained``.
 When reviewing a recipe, check that these entries have been filled with
 descriptive content.
 
@@ -180,6 +184,14 @@ and that no warnings related to provenance are generated when running the recipe
 To allow the ESMValCore to keep track of provenance (e.g. which input files
 were used to create what plots by the diagnostic script), it needs the
 :ref:`esmvalcore:interface_diagnostic_esmvalcore`.
+
+.. note::
+
+    Provenance is recorded by the ``esmvaltool`` command provided by the
+    ESMValCore package.
+    No ``*_provenance.xml`` files will be generated when re-running just
+    the diagnostic script with the command that is displayed on the screen
+    during a recipe run, because that will only run the diagnostic script.
 
 Provenance items provided by the recipe
 ---------------------------------------

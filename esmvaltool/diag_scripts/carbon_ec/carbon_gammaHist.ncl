@@ -166,7 +166,7 @@ begin
       A1 := convert_units(A1_co2flux, diag_script_info@plot_units_y)
     end if
 
-    ; Copute time average
+    ; Compute time average
     tmp_A0 := time_operations(A0, -1, -1, "average", "yearly", True)
     tmp_A1 := time_operations(A1, -1, -1, "average", "yearly", False)
     delete([/A0, A1, A2, A1_co2flux/])
@@ -315,26 +315,24 @@ begin
   delete([/plot, pan/])
 
   ; Save data for later use
-  if (diag_script_info@write_netcdf) then
-    new_path = config_user_info@run_dir
-    new_path = new_path + "gIAV_" \
-                        + diag_script_info@start_year + "-" \
-                        + diag_script_info@end_year + ".nc"
+  new_path = config_user_info@run_dir
+  new_path = new_path + "gIAV_" \
+                      + diag_script_info@start_year + "-" \
+                      + diag_script_info@end_year + ".nc"
 
-    ; Attach attributes to the results
-    arc!0        = "case"
-    arc&case     = (/"mean", "stddev"/)
-    arc!1        = "model"
-    arc&model    = datasetnames0
-    arc@ncdf     = new_path
-    arc@var      = "gIAV"
-    arc@diag_script = (/DIAG_SCRIPT/)
-    arc@varIAV   = (/var/)
-    arc@rIAV     = (/ccr/)
+  ; Attach attributes to the results
+  arc!0        = "case"
+  arc&case     = (/"mean", "stddev"/)
+  arc!1        = "model"
+  arc&model    = datasetnames0
+  arc@ncdf     = new_path
+  arc@var      = "gIAV"
+  arc@diag_script = (/DIAG_SCRIPT/)
+  arc@varIAV   = (/var/)
+  arc@rIAV     = (/ccr/)
 
-    ; Write NetCDF output
-    ncdf_outfile = ncdf_write(arc, new_path)
-  end if
+  ; Write NetCDF output
+  ncdf_outfile = ncdf_write(arc, new_path)
 
   ; Call provenance logger
   log_provenance(ncdf_outfile, \

@@ -2,6 +2,7 @@
 # recipe_hype.yml
 ---
 documentation:
+  title: Generate forcing for the Hype hydrological model
   description: |
     Recipe pre-processes ERA5 and ERA-Interim reanalyses files
     for use in the Hype hydrological model.
@@ -9,6 +10,9 @@ documentation:
   authors:
     - pelupessy_inti
     - kalverla_peter
+
+  maintainer:
+    - unmaintained
 
   projects:
     - ewatercycle

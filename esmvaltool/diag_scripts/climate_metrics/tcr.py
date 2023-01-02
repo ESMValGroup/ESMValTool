@@ -52,6 +52,7 @@ from esmvaltool.diag_scripts.shared import (
     io,
     run_diagnostic,
     select_metadata,
+    sorted_metadata,
     variables_available,
 )
 
@@ -108,6 +109,7 @@ def _get_anomaly_cubes(cfg):
     cubes = {}
     ancestors = {}
     input_data = cfg['input_data'].values()
+    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
     onepct_data = select_metadata(input_data, short_name='tas', exp='1pctCO2')
 
     # Process data
@@ -170,7 +172,7 @@ def _get_mmm_anomaly(cubes, ancestors, cfg):
 def _plot(cfg, cube, dataset_name, tcr):
     """Create scatterplot of temperature anomaly vs. time."""
     if not cfg.get('plot', True):
-        return (None, None)
+        return (None, None, None)
     logger.debug("Plotting temperature anomaly vs. time for '%s'",
                  dataset_name)
     (_, axes) = plt.subplots()
@@ -215,11 +217,10 @@ def _plot(cfg, cube, dataset_name, tcr):
         f"(TCR) defined as the 20 year average temperature anomaly centered "
         f"at the time of CO2 doubling (vertical dashed lines).")
     provenance_record.update({
-        'plot_file': plot_path,
         'plot_types': ['times'],
     })
 
-    return (netcdf_path, provenance_record)
+    return (netcdf_path, plot_path, provenance_record)
 
 
 def calculate_tcr(cfg):
@@ -239,12 +240,13 @@ def calculate_tcr(cfg):
                     anomaly_cube.units)
 
         # Plot
-        (path, provenance_record) = _plot(cfg, anomaly_cube, dataset_name,
-                                          new_tcr)
+        (path, plot_path, provenance_record) = _plot(cfg, anomaly_cube,
+                                                     dataset_name, new_tcr)
         if path is not None:
             provenance_record['ancestors'] = ancestors[dataset_name]
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(path, provenance_record)
+                provenance_logger.log(plot_path, provenance_record)
 
     return tcr
 
@@ -329,7 +331,7 @@ def write_data(cfg, tcr, external_file=None):
     for dataset_name in tcr.keys():
         datasets = select_metadata(cfg['input_data'].values(),
                                    dataset=dataset_name)
-        ancestor_files.extend([d['filename'] for d in datasets])
+        ancestor_files.extend(sorted([d['filename'] for d in datasets]))
     if external_file is not None:
         ancestor_files.append(external_file)
     provenance_record['ancestors'] = ancestor_files

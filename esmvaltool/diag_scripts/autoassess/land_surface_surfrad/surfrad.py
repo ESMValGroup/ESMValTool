@@ -11,7 +11,7 @@ from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 from esmvaltool.diag_scripts.shared._supermeans import get_supermean
 
 
-def get_provenance_record(plot_file, caption, run):
+def get_provenance_record(caption, run):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption': caption,
@@ -26,7 +26,6 @@ def get_provenance_record(plot_file, caption, run):
             'loeb19jclim',
             'kato18ebaf',
         ],
-        'plot_file': plot_file,
         'ancestors': run,
     }
 
@@ -111,7 +110,7 @@ def land_surf_rad(run):
     # record provenance
     plot_file = "Autoassess Surface Radiation metrics"
     caption = '{} MedAbsErr for {}'.format(str(rad_fld), str(rad_seasons))
-    provenance_record = get_provenance_record(plot_file, caption, run)
+    provenance_record = get_provenance_record(caption, run)
     cfg = {}
     cfg['run_dir'] = run['out_dir']
     # avoid rewriting provenance when running the plot diag

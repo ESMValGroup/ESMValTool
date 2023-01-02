@@ -2,14 +2,20 @@
 # recipe_combined_indices.yml
 ---
 documentation:
+  title: |
+    Indices and area weighted averages.
+
   description: |
-    Recipe for for computing seasonal means or running avergaes,
+    Recipe for for computing seasonal means or running averages,
     combining indices from multiple models and computing area averages
 
   authors:
     - hunter_alasdair
     - perez-zanon_nuria
     - manubens_nicolau
+
+  maintainer:
+    - unmaintained
 
   projects:
     - c3s-magic

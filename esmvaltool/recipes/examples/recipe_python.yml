@@ -5,6 +5,8 @@ documentation:
   description: |
     Example recipe that plots a map and timeseries of temperature.
 
+  title: Recipe that runs an example diagnostic written in Python.
+
   authors:
     - andela_bouwe
     - righi_mattia
@@ -44,6 +46,8 @@ preprocessors:
   annual_mean_global:
     area_statistics:
       operator: mean
+      fx_variables:
+        areacella:
     annual_statistics:
       operator: mean
 

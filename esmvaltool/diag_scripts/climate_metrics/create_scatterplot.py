@@ -148,11 +148,11 @@ def main(cfg):
         cube.long_name, '' if project is None else f' for {project}')
     provenance_record = get_provenance_record(caption, [input_file])
     provenance_record.update({
-        'plot_file': plot_path,
         'plot_types': ['scatter'],
     })
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 if __name__ == '__main__':

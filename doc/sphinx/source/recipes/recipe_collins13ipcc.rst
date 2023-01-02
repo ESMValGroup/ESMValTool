@@ -141,6 +141,8 @@ User settings
    * ymax: maximum value on y-axis
    * colormap: alternative colormap, path to rgb file or ncl name
 
+.. _ch12_calc_IAV_for_stippandhatch.ncl: 
+
 #. Script ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl:
 
    *Required settings (script)*
@@ -392,7 +394,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* HadISST (sic - esmvaltool/utils/cmorizers/obs/cmorize_obs_HadISST.ncl)
+* HadISST (sic - esmvaltool/cmorizers/data/formatters/datasets/hadisst.ncl)
 
 Reference
 ---------

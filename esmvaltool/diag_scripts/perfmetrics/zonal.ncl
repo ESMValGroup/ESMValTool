@@ -88,18 +88,11 @@ begin
     end if
 
     ; Write output
-    if (diag_script_info@write_netcdf) then
-      var_all@ncdf = workpath_abs
-      ncdf_abs = ncdf_write(var_all, workpath_abs)
-      if (l_diff) then
-        var_diff@ncdf = workpath_diff
-        ncdf_diff = ncdf_write(var_diff, workpath_diff)
-      end if
-    end if
-
-    ; Plotting
-    if (.not.diag_script_info@write_plots) then
-      continue
+    var_all@ncdf = workpath_abs
+    ncdf_abs = ncdf_write(var_all, workpath_abs)
+    if (l_diff) then
+      var_diff@ncdf = workpath_diff
+      ncdf_diff = ncdf_write(var_diff, workpath_diff)
     end if
 
     ; Convert units for plotting (if required)
@@ -118,6 +111,7 @@ begin
     plot_var@res_trYMinF = diag_script_info@zonal_ymin
     plot_var@res_gsnLeftString = \
       plot_var@long_name + " [" + format_units(plot_var@units) + "]"
+    copy_VarMeta(diag_script_info, plot_var)
     wks = gsn_open_wks(file_type, plotpath_abs)
     gsn_define_colormap(wks, diag_script_info@zonal_cmap)
     plot = zonalmean_profile(wks, plot_var, var0)
@@ -178,11 +172,11 @@ begin
       plot_var@res_cnLevelSelectionMode = "ExplicitLevels"
       plot_var@res_cnLevels := diag_script_info@conf_level
       if (diag_script_info@stippling) then
-        plot_var@res_cnFillColors = (/"transparent", "black"/)
+        plot_var@res_cnFillColors = (/"black", "transparent"/)
         plot_var@res_cnFillPattern = 17
         caption = caption + " (non-significant points are stippled)"
       else
-        plot_var@res_cnFillColors = (/"transparent", "gray70"/)
+        plot_var@res_cnFillColors = (/"gray70", "transparent"/)
         caption = caption + " (non-significant points are masked out in gray)"
       end if
       plot_var@res_cnInfoLabelOn = False

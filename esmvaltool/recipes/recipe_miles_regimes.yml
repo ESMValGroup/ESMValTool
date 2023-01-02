@@ -2,6 +2,7 @@
 # recipe_miles_regimes.yml
 ---
 documentation:
+  title: Weather Regimes by MiLES
   description: |
     Recipe for computing and plotting weather regimes using
     the MiLES (Mid-Latitude Evaluation System) package
@@ -10,6 +11,9 @@ documentation:
     - vonhardenberg_jost
     - davini_paolo
     - arnone_enrico
+
+  maintainer:
+    - unmaintained
 
   references:
     - davini18

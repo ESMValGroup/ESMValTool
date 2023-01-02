@@ -2,6 +2,8 @@
 # recipe_perfmetrics_CMIP5_4cds.yml
 ---
 documentation:
+  title: Performance metrics for essential climate variables in CMIP5
+
   description: |
     Recipe for plotting the performance metrics for the CMIP5 datasets,
     including the standard ECVs as in Gleckler et al., and some additional
@@ -1062,7 +1064,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
+      - {dataset: AIRS, project: obs4MIPs, level: L3, version: RetStd-v5, tier: 1}
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
     scripts:
@@ -1103,7 +1105,7 @@ diagnostics:
       - {dataset: CCSM4}
       - {dataset: CESM1-BGC}
       - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-CAM5-1-FV2}
+      # - {dataset: CESM1-CAM5-1-FV2}  # data is missing on ESGF
       - {dataset: CESM1-FASTCHEM}
       - {dataset: CESM1-WACCM}
       - {dataset: CMCC-CESM}
@@ -1315,7 +1317,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
+      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2, tier: 1}
     scripts:
       grading:
         <<: *grading_settings
@@ -1464,7 +1466,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
     scripts:
       grading:
         <<: *grading_settings
@@ -1531,7 +1533,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
     scripts:
       grading:
         <<: *grading_settings
@@ -1600,7 +1602,7 @@ diagnostics:
   #    - {dataset: MRI-CGCM3}
   #    - {dataset: NorESM1-M}
   #    - {dataset: NorESM1-ME}
-  #    - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+  #    - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
   #  scripts:
   #    latlon:
   #      <<: *latlon_settings
@@ -1669,7 +1671,7 @@ diagnostics:
   #    - {dataset: MRI-CGCM3}
   #    - {dataset: NorESM1-M}
   #    - {dataset: NorESM1-ME}
-  #    - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+  #    - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
   #  scripts:
   #    latlon:
   #      <<: *latlon_settings

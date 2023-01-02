@@ -293,7 +293,7 @@ procedure log_provenance(nc_file:string,
 ;    domains: of the data displayed
 ;    plot_types: plot type of the figure
 ;    diag_authors: authors related to the diagnostic
-;    diag_refs: references related to the diagnotic
+;    diag_refs: references related to the diagnostic
 ;    infiles: input files (from preproc) used to generate the plot
 ;
 ; Description
@@ -317,21 +317,27 @@ begin
   enter_msg(scriptname, funcname)
 
   ; Define output
-  outstring = new(9, string)
+  outstring = new(8, string)
 
   ; Set yaml file path
   yaml_file = config_user_info@run_dir + "diagnostic_provenance.yml"
 
-  ; Save entries
+  ; Save entries for NetCDF file
   outstring(0) = "? " + nc_file
   outstring(1) = ": ancestors: [" + str_join(infiles, ", ") + "]"
   outstring(2) = "  authors: [" + str_join(diag_authors, ", ") + "]"
   outstring(3) = "  caption: '" + caption + "'"
   outstring(4) = "  domains: [" + str_join(domains, ", ") + "]"
-  outstring(5) = "  plot_file: " + outfile
-  outstring(6) = "  plot_types: [" + str_join(plot_types, ", ") + "]"
-  outstring(7) = "  references: [" + str_join(diag_refs, ", ") + "]"
-  outstring(8) = "  statistics: [" + str_join(statistics, ", ") + "]"
+  outstring(5) = "  plot_types: [" + str_join(plot_types, ", ") + "]"
+  outstring(6) = "  references: [" + str_join(diag_refs, ", ") + "]"
+  outstring(7) = "  statistics: [" + str_join(statistics, ", ") + "]"
+
+  ; Save entries for outfile if not "n/a"
+  if (outfile .ne. "n/a") then
+    outstring2 = outstring
+    outstring2(0) = "? " + outfile
+    outstring := array_append_record(outstring, outstring2, 0)
+  end if
 
   ; Save existing information to avoid overwriting
   if (fileexists(yaml_file)) then

@@ -2,6 +2,7 @@
 # recipe_lisflood.yml
 ---
 documentation:
+  title: Generate forcing for the Lisflood hydrological model
   description: |
     Recipe pre-process files for use in the LISFLOOD hydrological model.
 
@@ -9,6 +10,9 @@ documentation:
     - verhoeven_stefan
     - kalverla_peter
     - andela_bouwe
+
+  maintainer:
+    - unmaintained
 
   projects:
     - ewatercycle
@@ -22,16 +26,14 @@ datasets:
 
 preprocessors:
   general: &general
-    custom_order: true
-    extract_region:  # bounding box values depend on catchment
-      start_longitude: 0
-      end_longitude: 9
-      start_latitude: 45
-      end_latitude: 54
     regrid:
-      target_grid: 0.1x0.1  # We're using the lisflood01degree version
-      lon_offset: true
-      lat_offset: true
+      target_grid:
+        step_longitude: 0.1
+        start_longitude: 0.05
+        end_longitude: 9.05
+        step_latitude: 0.1
+        start_latitude: 45.05
+        end_latitude: 54.05
       scheme: linear
     extract_shape:
       # Perhaps a single shapefile needs to be created covering multiple basins

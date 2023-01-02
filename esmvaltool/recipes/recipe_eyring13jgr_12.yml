@@ -2,6 +2,8 @@
 # recipe_eyring13jgr.yml
 ---
 documentation:
+  title: Diagnostics of stratospheric dynamics and chemistry
+
   description: |
     Diagnostics of stratospheric dynamics and chemistry reproducing selected
     figures from Eyring et al. JGR (2013).

@@ -2,6 +2,7 @@
 # recipe_runoff_et.yml
 ---
 documentation:
+  title: Runoff and Evapotranspiration Diagnostics
   description: |
     Recipe for plotting runoff and ET diagnostics. The diagnostics calculates
     water balance components for different catchments and compares the results

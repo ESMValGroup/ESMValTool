@@ -2,6 +2,7 @@
 # recipe_hydro_forcing.yml
 ---
 documentation:
+  title: Compare hydrological forcing between climate datasets
   description: |
     This recipe can be used to assess the agreement between forcing datasets
     (i.e. MSWEP, ERA5, ERA-Interim) for a certain catchment. The recipe can be
@@ -14,6 +15,9 @@ documentation:
   authors:
     - smeets_stef
     - aerts_jerom
+
+  maintainer:
+    - unmaintained
 
   projects:
     - ewatercycle

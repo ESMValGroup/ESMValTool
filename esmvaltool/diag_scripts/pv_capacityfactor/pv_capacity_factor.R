@@ -36,11 +36,11 @@ library(yaml)
 # Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
-initial.options <- commandArgs(trailingOnly = FALSE)
+initial_options <- commandArgs(trailingOnly = FALSE)
 file_arg_name <- "--file="
 script_name <- sub(
   file_arg_name, "",
-  initial.options[grep(file_arg_name, initial.options)]
+  initial_options[grep(file_arg_name, initial_options)]
 )
 script_dirname <- dirname(script_name)
 
@@ -74,7 +74,6 @@ start_years <- unname(start_years)
 end_years <- lapply(input_files_per_var, function(x) x$end_year)
 end_years <- unname(end_years)
 seasons <- toupper(params$season)
-#power_curves <- params$power_curves
 
 var0 <- unlist(var0)
 for (i in seq(1, length(model_names))) {
@@ -95,8 +94,10 @@ for (i in seq(1, length(model_names))) {
     "units"
   )$value, 11, 29))
   nc_close(data_nc)
-  time <- as.Date(time, origin = substr(start_date, 1, 10),
-                  calendar = calendar)
+  time <- as.Date(time,
+    origin = substr(start_date, 1, 10),
+    calendar = calendar
+  )
   time <- as.POSIXct(time, format = "%Y-%m-%d")
   time_dim <- which(names(dim(data)) == "time")
   time <- as.PCICt(time, cal = calendar)
@@ -122,7 +123,7 @@ for (i in seq(1, length(model_names))) {
   dim(data) <- dims
   data <- aperm(data, c(3, 4, 2, 1))
   names(dim(data)) <- c("year", "day", "lat", "lon")
-########var1#########################################
+  ######## var1#########################################
   var1 <- unlist(var1)
   data_nc1 <- nc_open(fullpath_filenames1[i])
   data1 <- ncvar_get(data_nc1, var1)
@@ -139,8 +140,10 @@ for (i in seq(1, length(model_names))) {
     "units"
   )$value, 11, 29))
   nc_close(data_nc1)
-  time <- as.Date(time, origin = substr(start_date, 1, 10),
-                  calendar = calendar)
+  time <- as.Date(time,
+    origin = substr(start_date, 1, 10),
+    calendar = calendar
+  )
   time <- as.POSIXct(time, format = "%Y-%m-%d")
   time_dim <- which(names(dim(data1)) == "time")
   time <- as.PCICt(time, cal = calendar)
@@ -164,10 +167,10 @@ for (i in seq(1, length(model_names))) {
   dims1 <- append(dims1[-time_dim], c(no_of_years, dims1[time_dim] /
     no_of_years), after = 2)
   dim(data1) <- dims1
- data1 <- aperm(data1, c(3, 4, 2, 1))
+  data1 <- aperm(data1, c(3, 4, 2, 1))
   names(dim(data1)) <- c("year", "day", "lat", "lon")
 
- #####################################
+  #####################################
   # CF modelC
   ####################################
 
@@ -212,12 +215,10 @@ for (i in seq(1, length(model_names))) {
     " (", start_year, "-", end_year, ")"
   )
 
-  PW_names <- "PV_CF"
-
   # Optional upper limit for the color bar set in recipe
-  if (length(params$maxval_colorbar) == 1){
+  if (length(params$maxval_colorbar) == 1) {
     maxval_colorbar <- params$maxval_colorbar
-  }else{
+  } else {
     maxval_colorbar <- max(seas_data_cf_all, na.rm = TRUE)
   }
 
@@ -226,11 +227,12 @@ for (i in seq(1, length(model_names))) {
     brks = seq(
       from = 0, to = maxval_colorbar,
       length.out = 11
-      ),
+    ),
     color_fun = clim.palette("yellowred"),
     toptitle = title,
     height = 6,
-    fileout = filepng)
+    fileout = filepng
+  )
   filencdf <- paste0(
     work_dir, "/", "capacity_factor_", model_names[i], "_",
     start_year, "-", end_year, ".nc"
@@ -252,11 +254,12 @@ for (i in seq(1, length(model_names))) {
     name = "curve", units = "name", vals = seq(1, 5, 1),
     longname = "Power curves of considered turbines"
   )
-  names(dim(seas_data_cf_all)) <- c( "time", "lat", "lon")
+  names(dim(seas_data_cf_all)) <- c("time", "lat", "lon")
   defdata <- ncvar_def(
     name = "CapacityFactor", units = "%",
     dim = list(
-      dimtime, lat = dimlat,
+      dimtime,
+      lat = dimlat,
       lon = dimlon
     ),
     longname = paste(
@@ -280,10 +283,9 @@ for (i in seq(1, length(model_names))) {
     caption = title,
     statistics = list("other"),
     realms = list("atmos"),
-    themes = list("phys"),
-    plot_file = filepng
+    themes = list("phys")
   )
-
+  provenance[[filepng]] <- xprov
   provenance[[filencdf]] <- xprov
 }
 

@@ -2,6 +2,10 @@
 
 ---
 documentation:
+  title: |
+        Diagnostic tool for several thermodynamic aspects of
+        the atmosphere and oceans.
+
   description: |
         Recipe for the computation of various aspects associated with
         the thermodynamics of the climate system, such as energy and
@@ -11,6 +15,9 @@ documentation:
   authors:
     - lembo_valerio
     - koldunov_nikolay
+
+  maintainer:
+    - unmaintained
 
   references:
     - lembo16climdyn

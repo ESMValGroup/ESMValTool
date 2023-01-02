@@ -29,6 +29,7 @@
 ;   none
 ;
 ; Modification history
+;   20211006-lauer_axel: removed write_plots
 ;   20190220-lauer_axel: added provenance to output (v2.0)
 ;   20181120-lauer_axel: adapted code to multi-variable capable framework
 ;   20180923-lauer_axel: added writing of results to netcdf
@@ -82,12 +83,6 @@ begin
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
-
-  if (diag_script_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
 
   ; get multi-model mean index (if present)
 
@@ -327,19 +322,15 @@ begin
     maps(ii) = contour_map(wks, data1, var0)
 
     if (extrafiles) then
-      if (write_plots) then  ; add labels
-        txres = True
-        txres@txFontHeightF = 0.03
-        txres@txJust = "BottomRight"
-        txres@txPerimOn = True
-        txres@txBackgroundFillColor = "white"
-        text = gsn_add_text(wks, maps(ii), annots(imod), 170, -80, txres)
-        draw(maps(ii))
-        frame(wks)
-        plotfile = maps@outfile
-      else
-        plotfile = ""
-      end if
+      txres = True
+      txres@txFontHeightF = 0.03
+      txres@txJust = "BottomRight"
+      txres@txPerimOn = True
+      txres@txBackgroundFillColor = "white"
+      text = gsn_add_text(wks, maps(ii), annots(imod), 170, -80, txres)
+      draw(maps(ii))
+      frame(wks)
+      plotfile = maps@outfile
 
       ; ##########################################
       ; # output each dataset to separate netCDF #
@@ -377,51 +368,47 @@ begin
     end if  ; if extrafiles
   end do  ; ii-loop (datasets)
 
-  if (write_plots) then
-    pres                            = True    ; needed to override
-                                              ; panelling defaults
-    pres@gsnPanelLabelBar           = True    ; add common colorbar
-    ; print dataset name on each panel
-    pres@gsnPanelFigureStrings      = annots(ind_all_sorted)
-    pres@gsnPanelFigureStringsFontHeightF = 0.007
-    pres@lbLabelFontHeightF         = 0.01
-    pres@lbAutoManage               = False
-    pres@lbTopMarginF               = 0.1
-    pres@lbTitleOn                  = True
-    pres@lbTitleFontHeightF         = 0.009
-    pres@lbTitlePosition            = "Bottom"
-    pres@lbTitleString              = "~F8~s~F21~" + var0 + " (%)"
-    pres@lbPerimOn                  = False     ; draw line around label
-                                                ; bar area
-    pres@gsnPanelCenter             = False
-    pres@pmLabelBarOrthogonalPosF   = -0.01     ; shift label bar a bit to
-                                                ; the bottom
-;    pres@gsnPanelDebug              = True
+  pres                            = True    ; needed to override
+                                            ; panelling defaults
+  pres@gsnPanelLabelBar           = True    ; add common colorbar
+  ; print dataset name on each panel
+  pres@gsnPanelFigureStrings      = annots(ind_all_sorted)
+  pres@gsnPanelFigureStringsFontHeightF = 0.007
+  pres@lbLabelFontHeightF         = 0.01
+  pres@lbAutoManage               = False
+  pres@lbTopMarginF               = 0.1
+  pres@lbTitleOn                  = True
+  pres@lbTitleFontHeightF         = 0.009
+  pres@lbTitlePosition            = "Bottom"
+  pres@lbTitleString              = "~F8~s~F21~" + var0 + " (%)"
+  pres@lbPerimOn                  = False     ; draw line around label
+                                              ; bar area
+  pres@gsnPanelCenter             = False
+  pres@pmLabelBarOrthogonalPosF   = -0.01     ; shift label bar a bit to
+                                              ; the bottom
+;  pres@gsnPanelDebug              = True
 
-    if (extrafiles) then
-      if (isvar("wks")) then
-        delete(wks)
-      end if
-      ; plot legend
-      wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
-                    + var0 + "_legend")
-      pres@lbMonoFillPattern = True
-      pres@lbOrientation = "Horizontal"
-      pres@vpWidthF = 0.7
-      pres@vpHeightF = 0.1
-      pres@lbLabelFontHeightF = 0.015
-      pres@lbLabelAlignment = "InteriorEdges"
-      pres@lbTitleFontHeightF = 0.015
-      labels = tostring(data1@res_cnLevels)
-      pres@lbFillColors = fill_colors
-      gsn_labelbar_ndc(wks, nboxes, labels, 0.1, 0.9, pres)
-    else
-      outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
-      log_info(" Wrote " + outfile)
+  if (extrafiles) then
+    if (isvar("wks")) then
+      delete(wks)
     end if
+    ; plot legend
+    wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
+                  + var0 + "_legend")
+    pres@lbMonoFillPattern = True
+    pres@lbOrientation = "Horizontal"
+    pres@vpWidthF = 0.7
+    pres@vpHeightF = 0.1
+    pres@lbLabelFontHeightF = 0.015
+    pres@lbLabelAlignment = "InteriorEdges"
+    pres@lbTitleFontHeightF = 0.015
+    labels = tostring(data1@res_cnLevels)
+    pres@lbFillColors = fill_colors
+    gsn_labelbar_ndc(wks, nboxes, labels, 0.1, 0.9, pres)
   else
-    outfile = ""
-  end if  ; if write_plots
+    outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
+    log_info(" Wrote " + outfile)
+  end if
 
   ; ------------------------------------------------------------------------
   ; write provenance to common netcdf and plot file

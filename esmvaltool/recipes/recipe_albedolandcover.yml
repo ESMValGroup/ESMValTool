@@ -2,6 +2,7 @@
 # recipe_albedolandcover.yml
 ---
 documentation:
+  title: Landcover Albedo Relationship
   description: |
     This recipe analyzes the relationship between landcover and albedo
     in CMIP models
@@ -9,6 +10,9 @@ documentation:
   authors:
     - crezee_bas
     - lejeune_quentin
+
+  maintainer:
+    - unmaintained
 
 
 albedolandcover_parameters: &albedolandcover_parameters
@@ -21,7 +25,7 @@ albedolandcover_parameters: &albedolandcover_parameters
     # size of the big box in the longitudinal direction.
     # Recommended value: 5
     lonsize_BB: 5
-    # 
+    #
     # minimum grid cell area fraction that must be
     # covered by the sum of the area fractions of all
     # land cover classes included in the local
@@ -29,7 +33,7 @@ albedolandcover_parameters: &albedolandcover_parameters
     # to be included in the regression.
     # Recommended value: 90
     threshold_sumpred: 90
-    # 
+    #
     # minimum number of grid cells with non-zero area fraction
     # covered by one land cover class within a big box, for this
     # land cover class to be included as a predictor in the local
