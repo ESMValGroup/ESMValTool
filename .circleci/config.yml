@@ -200,6 +200,8 @@ jobs:
       - run:
           name: Run recipes
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
+            conda activate esmvaltool
             mkdir -p ~/climate_data
             esmvaltool config get_config_user
             cat ~/.esmvaltool/config-user.yml
