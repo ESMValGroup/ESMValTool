@@ -5,6 +5,7 @@ orbs:
   coverage-reporter: codacy/coverage-reporter@11.9.2
 
 commands:
+
   check_changes:
     steps:
       - run:
@@ -19,6 +20,18 @@ commands:
               echo Skipping installation tests
               circleci step halt
             fi
+
+  log_versions:
+    steps:
+      - run:
+          name: Log versions
+          command: |
+            . /opt/conda/etc/profile.d/conda.sh
+            conda activate esmvaltool
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
+
   test_and_report:
     steps:
       - run:
@@ -47,6 +60,7 @@ commands:
           when: always
       - store_artifacts:
           path: test-reports.tar.gz
+
   test_installation_from_source:
     parameters:
       extra:
@@ -81,14 +95,7 @@ commands:
             then
               rm -r esmvaltool
             fi
-      - run:
-          name: Log versions
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            conda activate esmvaltool
-            dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
-            pip freeze > /logs/requirements.txt
+      - log_versions
       - run:
           name: Lint source code
           command: |
@@ -159,6 +166,44 @@ jobs:
           extra: develop
           flags: "--editable"
 
+  test_upstream_development:
+    # Test with the development version of ESMValCore
+    docker:
+      - image: condaforge/mambaforge
+    resource_class: large
+    steps:
+      - run:
+          name: Install git+ssh
+          environment:
+            DEBIAN_FRONTEND: noninteractive  # needed to install tzdata
+          command: apt update && apt install -y git ssh
+      - checkout
+      - run:
+          name: Generate cache key
+          command: date '+%Y-%V' | tee cache_key.txt
+      - restore_cache:
+          key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+      - run:
+          name: Install dependencies
+          command: |
+            # Install
+            . /opt/conda/etc/profile.d/conda.sh
+            mkdir /logs
+            mamba env create >> /logs/conda.txt 2>&1
+            conda activate esmvaltool
+            pip install --no-deps . > /logs/install.txt 2>&1
+            pip install --upgrade git+https://github.com/ESMValGroup/ESMValCore
+            esmvaltool install Julia > /logs/install_julia.txt 2>&1
+            rm -r esmvaltool
+      - log_versions
+      - test_and_report
+      # - save_cache:
+      #     key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+      #     paths:
+      #       - /opt/conda/pkgs
+      #       - /root/.cache/pip
+      #       - .pytest_cache
+
   build_documentation:
     # Test building documentation
     docker:
@@ -217,6 +262,7 @@ workflows:
       - run_tests
       - test_installation_from_source_test_mode
       - test_installation_from_source_develop_mode
+      - test_upstream_development
   nightly:
     triggers:
       - schedule:
@@ -229,5 +275,6 @@ workflows:
       - run_tests
       - test_installation_from_source_test_mode
       - test_installation_from_source_develop_mode
+      - test_upstream_development
       - build_documentation
       - test_installation_from_conda
