@@ -195,7 +195,7 @@ jobs:
             pip install --no-deps . > /logs/install.txt 2>&1
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
       - log_versions
-      # - test_and_report
+      - test_and_report
       - run:
           name: Run recipes
           command: |
@@ -209,6 +209,8 @@ jobs:
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
               esmvaltool run "$recipe"
             done
+      - store_artifacts:
+          path: /root/esmvaltool_output
       - save_cache:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
@@ -272,9 +274,9 @@ jobs:
 workflows:
   commit:
     jobs:
-      # - run_tests
-      # - test_installation_from_source_test_mode
-      # - test_installation_from_source_develop_mode
+      - run_tests
+      - test_installation_from_source_test_mode
+      - test_installation_from_source_develop_mode
       - test_upstream_development
   nightly:
     triggers:
