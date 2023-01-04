@@ -1,4 +1,11 @@
 """
+
+################## WARNING #####################
+The recipe filler is currently NOT fully working
+with ESMValCore=2.8.x development branch, and will be
+retired once ESMValCore=2.8 stable will be released.
+################################################
+
 Fill in a blank recipe with additional datasets.
 
 Tool to obtain a set of additional datasets when given a blank recipe.
