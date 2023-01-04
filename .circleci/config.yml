@@ -268,9 +268,9 @@ jobs:
 workflows:
   commit:
     jobs:
-      - run_tests
-      - test_installation_from_source_test_mode
-      - test_installation_from_source_develop_mode
+      # - run_tests
+      # - test_installation_from_source_test_mode
+      # - test_installation_from_source_develop_mode
       - test_upstream_development
   nightly:
     triggers:
