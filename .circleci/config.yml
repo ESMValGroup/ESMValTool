@@ -201,7 +201,9 @@ jobs:
           name: Run recipes
           command: |
             mkdir -p ~/climate_data
-            esmvaltool run examples/recipe_python.yml
+            esmvaltool config get_config_user
+            cat ~/.esmvaltool/config-user.yml
+            esmvaltool run --offline=False examples/recipe_python.yml
 
       # - save_cache:
       #     key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
