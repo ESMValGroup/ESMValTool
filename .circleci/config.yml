@@ -194,7 +194,6 @@ jobs:
             pip install --upgrade git+https://github.com/ESMValGroup/ESMValCore
             pip install --no-deps . > /logs/install.txt 2>&1
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
-            rm -r esmvaltool
       - log_versions
       # - test_and_report
       - run:
@@ -204,16 +203,19 @@ jobs:
             conda activate esmvaltool
             mkdir -p ~/climate_data
             esmvaltool config get_config_user
+            echo "offline: false" >> ~/.esmvaltool/config-user.yml
             cat ~/.esmvaltool/config-user.yml
-            esmvaltool run --offline=False examples/recipe_python.yml
-
-      # - save_cache:
-      #     key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      #     paths:
-      #       - /opt/conda/pkgs
-      #       - /root/.cache/pip
-      #       - .pytest_cache
-      #        - /root/climate_data
+            esmvaltool run examples/recipe_python.yml
+            for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
+              esmvaltool run "$recipe"
+            done
+      - save_cache:
+          key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+          paths:
+            - /opt/conda/pkgs
+            - /root/.cache/pip
+            - .pytest_cache
+            - /root/climate_data
 
   build_documentation:
     # Test building documentation
