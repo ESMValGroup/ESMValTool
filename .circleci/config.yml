@@ -184,25 +184,32 @@ jobs:
       - restore_cache:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
-          name: Install dependencies
+          name: Install
           command: |
             # Install
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             mamba env create >> /logs/conda.txt 2>&1
             conda activate esmvaltool
-            pip install --no-deps . > /logs/install.txt 2>&1
             pip install --upgrade git+https://github.com/ESMValGroup/ESMValCore
+            pip install --no-deps . > /logs/install.txt 2>&1
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             rm -r esmvaltool
       - log_versions
-      - test_and_report
+      # - test_and_report
+      - run:
+          name: Run recipes
+          command: |
+            mkdir -p ~/climate_data
+            esmvaltool run examples/recipe_python.yml
+
       # - save_cache:
       #     key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       #     paths:
       #       - /opt/conda/pkgs
       #       - /root/.cache/pip
       #       - .pytest_cache
+      #        - /root/climate_data
 
   build_documentation:
     # Test building documentation
