@@ -14,15 +14,15 @@
 # Submit job with: sbatch job_DKRZ-MISTRAL.sh
 
 # Input arguments
-RECIPE=/work/bd0854/b380971/v2_copied/ESMValTool-private/esmvaltool/recipes/galytska22/recipe_Arctic_telecon_hist.yml
-CONFIG=/work/bd0854/b380971/v2_copied/ESMValTool-private/config-user_EG_levante.yml
+RECIPE=/work/bd0854/b380971/Arctic-midlat/end_2022/ESMValTool-private/esmvaltool/recipes/galytska22/recipe_Arctic_telecon.yml
+CONFIG=/work/bd0854/b380971/Arctic-midlat/end_2022/ESMValTool-private/config-user_EG_levante.yml
 
 # Set environment
 CONDAPATH=/home/b/b380971/mambaforge
 
 # Changes below this line should not be required
 source $CONDAPATH/etc/profile.d/conda.sh
-conda activate esmval_aug
+conda activate esmvaltool_downiris
 conda info --envs
 
 esmvaltool run --config-file $CONFIG $RECIPE
