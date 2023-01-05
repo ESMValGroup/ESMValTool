@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - main
+      - fix-upstream-recipe-filler
   schedule:
     - cron: '0 0 * * *'
 
