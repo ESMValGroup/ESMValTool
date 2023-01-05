@@ -46,15 +46,9 @@ diagnostics:
         <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
         derive: false
     additional_datasets:
-      - {dataset: GFDL-CM3, exp: piControl, start_year: 1,
-         end_year: 1}
-      - {dataset: GFDL-CM3, exp: rcp85, start_year: 2091,
-         end_year: 2091}
+      - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 1}
+      - {dataset: GFDL-CM3, exp: rcp85, start_year: 2091, end_year: 2091}
       - {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 141, end_year: 141}
-      # This dataset requires about 7GB of data
-      # - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 300}
-      # - {dataset: ACCESS1-0, exp: rcp85, start_year: 2091, end_year: 2091}
-      # - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 300}
 
     scripts:
       deangelisf1b:
