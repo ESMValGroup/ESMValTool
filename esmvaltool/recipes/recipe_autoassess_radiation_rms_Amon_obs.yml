@@ -43,34 +43,51 @@ diagnostics:
         preprocessor: pp_rad_derive_var
         derive: true
         force_derivation: false
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, mip: Amon, start_year: 2001, end_year: 2012, tier: 1}
       rsnt: # TOA SW net
         preprocessor: pp_rad_derive_var
         derive: true
         force_derivation: false
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, mip: Amon, start_year: 2001, end_year: 2012, tier: 1}
       swcre: # TOA SW Cloud Radiative Effect
         preprocessor: pp_rad_derive_var
         derive: true
         force_derivation: false
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, mip: Amon, start_year: 2001, end_year: 2012, tier: 1}
       lwcre: # TOA LW Cloud Radiative Effect
         preprocessor: pp_rad_derive_var
         derive: true
         force_derivation: false
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, mip: Amon, start_year: 2001, end_year: 2012, tier: 1}
       rsns: # Surf SW net all sky
         preprocessor: pp_rad_derive_var
         derive: true
         force_derivation: false
+        additional_datasets:
+          - {dataset: CERES-EBAF_Surface, project: obs4MIPs, mip: Amon, start_year: 2001, end_year: 2012, tier: 1}
       rlns: # Surf LW net all sky
         preprocessor: pp_rad_derive_var
         derive: true
         force_derivation: false
+        additional_datasets:
+          - {dataset: CERES-EBAF_Surface, project: obs4MIPs, mip: Amon, start_year: 2001, end_year: 2012, tier: 1}
       rsut: # TOA SW up all sky
         preprocessor: pp_rad
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, mip: Amon, start_year: 2001, end_year: 2012, tier: 1}
       rlut: # TOA LW up all sky
         preprocessor: pp_rad
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, mip: Amon, start_year: 2001, end_year: 2012, tier: 1}
       rsutcs: # TOA SW up clear sky
         preprocessor: pp_rad
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, mip: Amon, start_year: 2001, end_year: 2012, tier: 1}
     additional_datasets:
-      - {dataset: CERES-EBAF,    project: obs4MIPs, mip: Amon, start_year: 2001,  end_year: 2012, tier: 1}
       - {dataset: CERES-SYN1deg, project: OBS, mip: Amon, type: sat,  version: Ed3A,   start_year: 2001,  end_year: 2015, tier: 3}
     scripts:
       autoassess_Radiation_rms_Amon_obs:
