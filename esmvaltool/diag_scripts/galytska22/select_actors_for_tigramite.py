@@ -3,10 +3,7 @@ Personal diagnostics for Arctic-midlatitude
 research.
 
 """
-# place your module imports here:
 
-# operating system manipulations (e.g. path constructions)
-#import os
 
 # to manipulate iris cubes
 import iris
