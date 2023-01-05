@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  coverage-reporter: codacy/coverage-reporter@11.9.2
+  coverage-reporter: codacy/coverage-reporter@13.11.16
 
 commands:
 
@@ -150,7 +150,7 @@ jobs:
   test_installation_from_source_test_mode:
     # Test installation from source
     docker:
-      - image: condaforge/mambaforge
+      - image: condaforge/mambaforge:latest
     resource_class: large
     steps:
       - test_installation_from_source:
@@ -159,7 +159,7 @@ jobs:
   test_installation_from_source_develop_mode:
     # Test development installation
     docker:
-      - image: condaforge/mambaforge
+      - image: condaforge/mambaforge:latest
     resource_class: large
     steps:
       - test_installation_from_source:
@@ -169,7 +169,7 @@ jobs:
   test_upstream_development:
     # Test with the development version of ESMValCore
     docker:
-      - image: condaforge/mambaforge
+      - image: condaforge/mambaforge:latest
     resource_class: large
     steps:
       - run:
@@ -180,7 +180,7 @@ jobs:
       - checkout
       - run:
           name: Generate cache key
-          command: date '+%Y-%V' | tee cache_key.txt
+          command: echo $(date '+%Y')-$(expr $(date '+%V') / 2) | tee cache_key.txt
       - restore_cache:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
@@ -216,13 +216,12 @@ jobs:
           paths:
             - /opt/conda/pkgs
             - /root/.cache/pip
-            - .pytest_cache
             - /root/climate_data
 
   build_documentation:
     # Test building documentation
     docker:
-      - image: condaforge/mambaforge
+      - image: condaforge/mambaforge:latest
     resource_class: small
     steps:
       - checkout
@@ -246,7 +245,7 @@ jobs:
   test_installation_from_conda:
     # Test conda package installation
     docker:
-      - image: condaforge/mambaforge
+      - image: condaforge/mambaforge:latest
     resource_class: medium
     steps:
       - run:
