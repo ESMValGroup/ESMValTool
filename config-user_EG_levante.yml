@@ -49,7 +49,7 @@ drs:
 max_parallel_tasks: null
 
 # Destination directory
-output_dir: /work/bd0854/b380971/output/
+output_dir: /work/bd0854/b380971/output/revision/
 
 # Directory for storing downloaded climate data
 download_dir: ~/climate_data
