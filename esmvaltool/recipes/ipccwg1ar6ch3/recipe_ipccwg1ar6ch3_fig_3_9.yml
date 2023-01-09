@@ -74,9 +74,16 @@ preprocessors:
 
   regrid_5_5_mmm_north_america:
     extract_shape:
-      shapefile: north_america.shp
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
+      ids:
+        - Greenland/Iceland
+        - N.W.North-America
+        - N.E.North-America
+        - W.North-America
+        - C.North-America
+        - E.North-America
     regrid:
       target_grid: 5x5
       scheme: linear
@@ -86,18 +93,36 @@ preprocessors:
 
   regrid_5_5_north_america:
     extract_shape:
-      shapefile: north_america.shp
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
+      ids:
+        - Greenland/Iceland
+        - N.W.North-America
+        - N.E.North-America
+        - W.North-America
+        - C.North-America
+        - E.North-America
     regrid:
       target_grid: 5x5
       scheme: linear
 
   regrid_5_5_mmm_south_america:
     extract_shape:
-      shapefile: south_america.shp
-      method: contains
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      method:  contains
       crop: false
+      ids:
+        - N.Central-America
+        - S.Central-America
+        - Caribbean
+        - N.W.South-America
+        - N.South-America
+        - N.E.South-America
+        - South-American-Monsoon
+        - S.W.South-America
+        - S.E.South-America
+        - S.South-America
     regrid:
       target_grid: 5x5
       scheme: linear
@@ -107,18 +132,34 @@ preprocessors:
 
   regrid_5_5_south_america:
     extract_shape:
-      shapefile: south_america.shp
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
+      ids:
+        - N.Central-America
+        - S.Central-America
+        - Caribbean
+        - N.W.South-America
+        - N.South-America
+        - N.E.South-America
+        - South-American-Monsoon
+        - S.W.South-America
+        - S.E.South-America
+        - S.South-America
     regrid:
       target_grid: 5x5
       scheme: linear
 
   regrid_5_5_mmm_europe:
     extract_shape:
-      shapefile: europe.shp
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
+      ids:
+        - N.Europe
+        - West&Central-Europe
+        - E.Europe
+        - Mediterranean
     regrid:
       target_grid: 5x5
       scheme: linear
@@ -128,18 +169,32 @@ preprocessors:
 
   regrid_5_5_europe:
     extract_shape:
-      shapefile: europe.shp
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
+      ids:
+        - N.Europe
+        - West&Central-Europe
+        - E.Europe
+        - Mediterranean
     regrid:
       target_grid: 5x5
       scheme: linear
 
   regrid_5_5_mmm_africa:
     extract_shape:
-      shapefile: africa.shp
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
+      ids:
+        - Sahara
+        - Western-Africa
+        - Central-Africa
+        - N.Eastern-Africa
+        - S.Eastern-Africa
+        - W.Southern-Africa
+        - E.Southern-Africa
+        - Madagascar
     regrid:
       target_grid: 5x5
       scheme: linear
@@ -149,18 +204,39 @@ preprocessors:
 
   regrid_5_5_africa:
     extract_shape:
-      shapefile: africa.shp
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
+      ids:
+        - Sahara
+        - Western-Africa
+        - Central-Africa
+        - N.Eastern-Africa
+        - S.Eastern-Africa
+        - W.Southern-Africa
+        - E.Southern-Africa
+        - Madagascar
     regrid:
       target_grid: 5x5
       scheme: linear
 
   regrid_5_5_mmm_asia:
     extract_shape:
-      shapefile: asia.shp
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
+      ids:
+        - Russian-Arctic
+        - W.Siberia
+        - E.Siberia
+        - Russian-Far-East
+        - W.C.Asia
+        - E.C.Asia
+        - Tibetan-Plateau
+        - E.Asia
+        - Arabian-Peninsula
+        - S.Asia
+        - S.E.Asia
     regrid:
       target_grid: 5x5
       scheme: linear
@@ -170,18 +246,36 @@ preprocessors:
 
   regrid_5_5_asia:
     extract_shape:
-      shapefile: asia.shp
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
+      ids:
+        - Russian-Arctic
+        - W.Siberia
+        - E.Siberia
+        - Russian-Far-East
+        - W.C.Asia
+        - E.C.Asia
+        - Tibetan-Plateau
+        - E.Asia
+        - Arabian-Peninsula
+        - S.Asia
+        - S.E.Asia
     regrid:
       target_grid: 5x5
       scheme: linear
 
   regrid_5_5_mmm_australasia:
     extract_shape:
-      shapefile: australasia.shp
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
+      ids:
+        - N.Australia
+        - C.Australia
+        - E.Australia
+        - S.Australia
+        - New-Zealand
     regrid:
       target_grid: 5x5
       scheme: linear
@@ -191,18 +285,27 @@ preprocessors:
 
   regrid_5_5_australasia:
     extract_shape:
-      shapefile: australasia.shp
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
+      ids:
+        - N.Australia
+        - C.Australia
+        - E.Australia
+        - S.Australia
+        - New-Zealand
     regrid:
       target_grid: 5x5
       scheme: linear
 
   regrid_5_5_mmm_antarctica:
     extract_shape:
-      shapefile: antarctica.shp
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
+      ids:
+        - E.Antarctica
+        - W.Antarctica
     regrid:
       target_grid: 5x5
       scheme: linear
@@ -212,9 +315,12 @@ preprocessors:
 
   regrid_5_5_antarctica:
     extract_shape:
-      shapefile: antarctica.shp
+      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
+      ids:
+        - E.Antarctica
+        - W.Antarctica
     regrid:
       target_grid: 5x5
       scheme: linear
