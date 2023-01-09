@@ -30,7 +30,7 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        'esmvalcore>=2.7,<2.8',
+        'esmvalcore>=2.7,<=2.8.dev',
         'esmf-regrid',
         'fiona',
         'GDAL',
