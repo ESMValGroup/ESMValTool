@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - main
+      - change_esmvalcore_pin_env_files
   schedule:
     - cron: '0 0 * * *'
 
