@@ -26,7 +26,7 @@ def _create_sample_cube():
     zcoord = iris.coords.DimCoord([0.5, 5., 50.],
                                   long_name='vertical level',
                                   var_name='lev',
-                                  units='m',
+                                  units='hPa',
                                   attributes={'positive': 'down'})
     lons = iris.coords.DimCoord([1.5, 2.5],
                                 standard_name='longitude',
@@ -265,7 +265,11 @@ def test_vertical_levels(tmp_path):
     cube_3 = _create_sample_cube()
     cube_3.var_name = "T2M"
     cube_3.units = Unit('K')
-    cubes = iris.cube.CubeList([cube_1, cube_2, cube_3])
+    cube_4 = _create_sample_cube()
+    cube_4.var_name = "H"
+    cube_4.units = Unit('m')
+    cube_4.coord("vertical level").units = "m"
+    cubes = iris.cube.CubeList([cube_1, cube_2, cube_3, cube_4])
     iris.save(cubes, str(path_cubes))
     var_1 = {
         'short_name': 'va',
@@ -282,6 +286,11 @@ def test_vertical_levels(tmp_path):
         'mip': 'Amon', 'raw': 'T2M',
         'file': 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'
     }
+    var_4 = {
+        'short_name': 'zg',
+        'mip': 'Amon', 'raw': 'H',
+        'file': 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+    }
     in_files = str(tmp_path / "cubes.nc")
     cfg = read_cmor_config("MERRA2")
 
@@ -293,8 +302,9 @@ def test_vertical_levels(tmp_path):
     print(cmorized_cube,
           cmorized_cube.coord("air_pressure"))
     assert cmorized_cube.coord("air_pressure").has_bounds()
+    assert cmorized_cube.coord("air_pressure").units == "Pa"
     np.testing.assert_array_equal(cmorized_cube.coord("air_pressure").points,
-                                  [0.5, 5., 50.])
+                                  [50., 500., 5000.])
 
     # extract uas
     _extract_variable(in_files, var_2, cfg, tmp_path)
@@ -313,3 +323,9 @@ def test_vertical_levels(tmp_path):
     print(cmorized_cube)
     np.testing.assert_array_equal(cmorized_cube.coord("height").points,
                                   [2.])
+
+    # extract zg failed
+    with pytest.raises(ValueError) as exc:
+        _extract_variable(in_files, var_4, cfg, tmp_path)
+    expected_exc = "Unable to convert from 'Unit('m')' to 'Unit('Pa')'"
+    assert expected_exc in str(exc)
