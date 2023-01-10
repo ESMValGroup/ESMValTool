@@ -23,6 +23,7 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type=None):
     short_name: variable short name
     input_data: dict containing the input data info
     cfg: config file as used in this module
+    cmip_type: optional, CMIP project type (CMIP5 or CMIP6)
     """
     # select data per short name and optional CMIP type
     if not cmip_type:
@@ -47,7 +48,13 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type=None):
                     [obs['dataset'] for obs in obs_selection])
 
     # make sure the chosen datasets for control and exper are available
-    alias_selection = [model['alias'] for model in dataset_selection]
+    alias_selection = []
+    for model in dataset_selection:
+        try:
+            dataset_name = model['alias'].split("_")[1]
+        except IndexError:
+            dataset_name = model['alias']
+        alias_selection.append(dataset_name)
 
     if cfg['control_model'] not in alias_selection:
         raise ValueError(f"Control dataset {cfg['control_model']} "
@@ -59,10 +66,10 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type=None):
 
     # pick control and experiment dataset
     for model in dataset_selection:
-        if model['alias'] == cfg['control_model']:
+        if cfg['control_model'] in model['alias'].split("_"):
             logger.info("Control dataset %s", model['alias'])
             control = model
-        elif model['alias'] == cfg['exper_model']:
+        elif cfg['exper_model'] in model['alias'].split("_"):
             logger.info("Experiment dataset %s", model['alias'])
             experiment = model
 
