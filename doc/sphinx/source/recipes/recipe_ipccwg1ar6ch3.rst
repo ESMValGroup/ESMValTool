@@ -28,7 +28,7 @@ following figures from Eyring et al. (2021) can currently be reproduced:
 
     * Figure 3.15: Precipitation Anomaly
 
-To reproduce Fig. 3.9 please upload the shapefile of the [AR6 reference regions](https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions) ([IPCC-WGI-reference-regions-v4_shapefile.zip](https://github.com/SantanderMetGroup/ATLAS/blob/v1.6/reference-regions/IPCC-WGI-reference-regions-v4_shapefile.zip)) and store it in `<auxiliary_data_dir>/shapefiles` (the `auxiliary_data_dir` is defined in the `config-user.yml` file).
+To reproduce Fig. 3.9 please upload the shapefile of the [AR6 reference regions](https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions) ([IPCC-WGI-reference-regions-v4_shapefile.zip](https://github.com/SantanderMetGroup/ATLAS/blob/v1.6/reference-regions/IPCC-WGI-reference-regions-v4_shapefile.zip)) and store it in `<auxiliary_data_dir>/IPCC-regions/` (the `auxiliary_data_dir` is defined in the `config-user.yml` file).
 
 Available recipes and diagnostics
 ---------------------------------
