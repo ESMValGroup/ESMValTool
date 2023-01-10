@@ -410,7 +410,7 @@ begin
               B0&time = time1
               Btmp3 = time_operations(B0, -1, -1, "extract",\
                                       season(iseas), True)
-              
+
               timetmp = Btmp3&time
               date3 = cd_calendar(timetmp, 0)
               year3 = date3(:, 0)
