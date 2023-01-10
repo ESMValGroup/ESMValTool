@@ -340,12 +340,10 @@ def main(cfg):
     for short_name in grouped_input_data:
         logger.info("Processing variable %s", short_name)
 
-        # cmip era does not have to be required here #nocmip
-        # cmip_era = cfg["cmip_era"]
         # get the control, experiment and obs dicts
+        cmip_type = cfg["cmip_era"] if "cmip_era" in cfg else None
         ctrl, exper, obs = get_control_exper_obs(short_name, input_data, cfg,
-                                                 cmip_type=cfg["cmip_era"] if
-                                                 "cmip_era" in cfg else None)
+                                                 cmip_type=cmip_type)
         # set a plot key holding info on var and data set names
         plot_key = f"{short_name}_{ctrl['alias']}_vs_{exper['alias']}"
         control_dataset_name = ctrl['alias']
