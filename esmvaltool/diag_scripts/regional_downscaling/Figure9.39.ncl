@@ -315,23 +315,23 @@ begin
       A0 = read_data(info0[idx_ref])
       if (season(iseas).ne."ANN") then
         if (mode) then
-          time1 = todouble(A0&time)
+          time1 = todouble(A0&time - 1.0)
           time1!0 = "time"
           ; ys=input_file_info[idx_ref]@start_year
-          time1@units = "months since 1-1-1"
+          time1@units = "months since 1-1-1 00:00:00"
           time1@calendar = "gregorian"
           delete(A0&time)
           A0&time = time1
           delete(time1)
           Atmp3 = time_operations(A0, -1, -1, "extract", season(iseas), True)
-          date3 = cd_calendar(Atmp3&time, 0)
+          timetmp = Atmp3&time
+          date3 = cd_calendar(timetmp, 0)
           year3 = date3(:, 0)
           month3 = date3(:, 1)
           weights3 = days_in_month(toint(year3), toint(month3))
           Atmp4 = Atmp3
           Atmp4 = (/Atmp3 * conform(Atmp3, weights3, 0)/)
           Atmp1 = dim_sum_n_Wrap(Atmp4, 0)
-          printVarSummary(Atmp1)
           delete(Atmp3)
           delete(Atmp4)
           delete(date3)
@@ -340,10 +340,10 @@ begin
           delete(weights3)
         else
           A0!0 = "time"
-          time1 = todouble(A0&time)
+          time1 = todouble(A0&time - 1.0)
           time1!0 = "time"
           ; ys=input_file_info[idx_ref]@start_yea
-          time1@units = "months since 1-1-1"
+          time1@units = "months since 1-1-1 00:00:00"
           time1@calendar = "gregorian"
           delete(A0&time)
           A0&time = time1
@@ -352,16 +352,16 @@ begin
       else
         if (mode) then
           A0!0 = "time"
-          time1 = todouble(A0&time)
+          time1 = todouble(A0&time - 1.0)
           time1!0 = "time"
           ; ys=input_file_info[idx_ref]@start_year
-          time1@units = "months since 1-1-1"
-          time1@calendar = "Gregorian"
+          time1@units = "months since 1-1-1 00:00:00"
+          time1@calendar = "gregorian"
           delete(A0&time)
           A0&time = time1
           Atmp3 = A0
-          printVarSummary(Atmp3)
-          date3 = cd_calendar(Atmp3&time, 0)
+          timetmp = Atmp3&time
+          date3 = cd_calendar(timetmp, 0)
           year3 = date3(:, 0)
           month3 = date3(:, 1)
           weights3 = days_in_month(toint(year3), toint(month3))
@@ -376,10 +376,10 @@ begin
           delete(weights3)
         else
           A0!0 = "time"
-          time1 = todouble(A0&time)
+          time1 = todouble(A0&time - 1.0)
           time1!0 = "time"
           ; ys=input_file_info[idx_ref]@start_year
-          time1@units = "months since 1-1-1"
+          time1@units = "months since 1-1-1 00:00:00"
           time1@calendar = "gregorian"
           delete(A0&time)
           A0&time = time1
@@ -401,16 +401,18 @@ begin
           if (season(iseas).ne."ANN") then
             if (mode) then
               B0!0 = "time"
-              time1 = todouble(B0&time)
+              time1 = todouble(B0&time - 1.0)
               time1!0 = "time"
               ; ys = input_file_info[idx_ref]@start_year
-              time1@units = "months since 1-1-1"
+              time1@units = "months since 1-1-1 00:00:00"
               time1@calendar = "gregorian"
               delete(B0&time)
               B0&time = time1
               Btmp3 = time_operations(B0, -1, -1, "extract",\
                                       season(iseas), True)
-              date3 = cd_calendar(Btmp3&time, 0)
+              
+              timetmp = Btmp3&time
+              date3 = cd_calendar(timetmp, 0)
               year3 = date3(:, 0)
               month3 = date3(:, 1)
               weights3 = days_in_month(toint(year3), toint(month3))
@@ -425,11 +427,11 @@ begin
               delete(weights3)
             else
               B0!0 = "time"
-              time1 = todouble(B0&time)
+              time1 = todouble(B0&time - 1.0)
               time1!0 = "time"
               ; ys=input_file_info[idx_ref]@start_year
-              time1@units = "months since 1-1-1"
-              time1@calendar = "gregorian"
+              time1@units = "months since 1-1-1 00:00:00"
+              time1@calendar = "standard"
               delete(B0&time)
               B0&time = time1
               Btmp1 = time_operations(B0, -1, -1, "average",\
@@ -438,7 +440,8 @@ begin
           else
             if (mode) then
               Btmp3 = B0
-              date3 = cd_calendar(Btmp3&time, 0)
+              timetmp = todouble(Btmp3&time - 1.0)
+              date3 = cd_calendar(timetmp, 0)
               year3 = date3(:, 0)
               month3 = date3(:, 1)
               weights3 = days_in_month(toint(year3), toint(month3))
@@ -453,10 +456,10 @@ begin
               delete(weights3)
             else
               B0!0 = "time"
-              time1 = todouble(B0&time)
+              time1 = todouble(B0&time - 1.0)
               time1!0 = "time"
               ; ys = input_file_info[idx_ref]@start_year
-              time1@units = "months since 1-1-1"
+              time1@units = "months since 1-1-1 00:00:00"
               time1@calendar = "gregorian"
               delete(B0&time)
               B0&time = time1
@@ -474,8 +477,6 @@ begin
           delete(Btmp1)
           ; --------------------------------------------------------
           ; Bias
-          printVarSummary(C)
-          printVarSummary(D)
           if (mode) then
             print("cumulative mode")
             C(jmod) = (/ 100 * (avg(B) - avg(A)) / avg(A)/)
@@ -557,7 +558,6 @@ begin
           thicks_MMM(dimsizes(diag_script_info@fig939_project_MMM):) = 3.
           markers_MMM(dimsizes(diag_script_info@fig939_project_MMM):) =\
             markers(indic_not_sela)
-          printVarSummary(names_MMM)
           names_MMM(dimsizes(diag_script_info@fig939_project_MMM):) =\
             names(indic_not_sela)
         end if
