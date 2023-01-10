@@ -348,6 +348,7 @@ authors:
     affiliation: "DLR, Germany"
     family-names: Winterstein
     given-names: Franziska
+    orcid: "https://orcid.org/0000-0002-2406-4936"
 
 cff-version: 1.2.0
 date-released: 2022-10-28
