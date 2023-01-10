@@ -74,7 +74,7 @@ preprocessors:
 
   regrid_5_5_mmm_north_america:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
       ids:
@@ -93,7 +93,7 @@ preprocessors:
 
   regrid_5_5_north_america:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
       ids:
@@ -109,7 +109,7 @@ preprocessors:
 
   regrid_5_5_mmm_south_america:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method:  contains
       crop: false
       ids:
@@ -132,7 +132,7 @@ preprocessors:
 
   regrid_5_5_south_america:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
       ids:
@@ -152,7 +152,7 @@ preprocessors:
 
   regrid_5_5_mmm_europe:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
       ids:
@@ -169,7 +169,7 @@ preprocessors:
 
   regrid_5_5_europe:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
       ids:
@@ -183,7 +183,7 @@ preprocessors:
 
   regrid_5_5_mmm_africa:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
       ids:
@@ -204,7 +204,7 @@ preprocessors:
 
   regrid_5_5_africa:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
       ids:
@@ -222,7 +222,7 @@ preprocessors:
 
   regrid_5_5_mmm_asia:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
       ids:
@@ -246,7 +246,7 @@ preprocessors:
 
   regrid_5_5_asia:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
       ids:
@@ -267,7 +267,7 @@ preprocessors:
 
   regrid_5_5_mmm_australasia:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
       ids:
@@ -285,7 +285,7 @@ preprocessors:
 
   regrid_5_5_australasia:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
       ids:
@@ -300,7 +300,7 @@ preprocessors:
 
   regrid_5_5_mmm_antarctica:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
       ids:
@@ -315,7 +315,7 @@ preprocessors:
 
   regrid_5_5_antarctica:
     extract_shape:
-      shapefile: shapefiles/IPCC-WGI-reference-regions-v4.shp
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
       method: contains
       crop: false
       ids:
