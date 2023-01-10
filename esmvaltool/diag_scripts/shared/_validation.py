@@ -1,14 +1,15 @@
 """Load functions needed by diags with CONTROL and EXPERIMENT."""
 import logging
 import os
-import sys
 
 import iris
 from esmvalcore.preprocessor import climate_statistics
 
 from esmvaltool.diag_scripts.shared import select_metadata
 
+
 logger = logging.getLogger(os.path.basename(__file__))
+
 
 def get_control_exper_obs(short_name, input_data, cfg, cmip_type=None):
     """
@@ -23,7 +24,6 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type=None):
     input_data: dict containing the input data info
     cfg: config file as used in this module
     """
-
     # select data per short name and optional CMIP type
     if not cmip_type:
         dataset_selection = select_metadata(input_data, short_name=short_name)
@@ -50,10 +50,12 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type=None):
     alias_selection = [model['alias'] for model in dataset_selection]
 
     if cfg['control_model'] not in alias_selection:
-        raise ValueError(f"Control dataset {cfg['control_model']} not in datasets")
+        raise ValueError(f"Control dataset {cfg['control_model']} "
+                         "not in datasets")
 
     if cfg['exper_model'] not in alias_selection:
-        raise ValueError(f"Experiment dataset {cfg['exper_model']} not in datasets")
+        raise ValueError(f"Experiment dataset {cfg['exper_model']} "
+                         "not in datasets")
 
     # pick control and experiment dataset
     for model in dataset_selection:
