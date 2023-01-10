@@ -344,6 +344,10 @@ authors:
     affiliation: "NASA, USA"
     family-names: Potter
     given-names: Jerry
+  -
+    affiliation: "DLR, Germany"
+    family-names: Winterstein
+    given-names: Franziska
 
 cff-version: 1.2.0
 date-released: 2022-10-28
