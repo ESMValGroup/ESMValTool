@@ -808,8 +808,13 @@ begin
     attv = new(n, string)
     do i = 0, n - 1
       substr = str_split(data(idxu + i), ":")
+      m = dimsizes(substr)
       attn(i) = str_squeeze(substr(0))
-      attv(i) = str_squeeze(str_join(substr(1:), ":"))
+      if (m .gt. 1) then
+        attv(i) = str_squeeze(str_join(substr(1:), ":"))
+      else
+        attv(i) = ""
+      end if
       delete(substr)
     end do
 
