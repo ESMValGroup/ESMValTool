@@ -354,3 +354,16 @@ Example plots
    observational product are shown as horizontal lines. Panel (b) shows annual
    mean precipitation rate (mm day–1) of GHCN version 2 for the years 1950–2014
    over land areas used to compute the plots. 
+
+.. figure::  /recipes/figures/ipccwg1ar6ch3/zonal_westerly_winds.png
+   :align:   center
+
+   Figure 3.19: Long-term mean (thin black contours) and linear trend (colour)
+   of zonal mean December–January–February zonal winds from 1985 to 20
+   in the Southern Hemisphere. The figure shows (a) ERA5 and (b) the CMIP6
+   multi-model mean (58 CMIP6 models). The solid contours show positive
+   (westerly) and zero long-term mean zonal wind, and the dashed contours show
+   negative (easterly) long-term mean zonal wind. Only one ensemble member per
+   model is included. Figure is modified from Eyring et al. (2013), their
+   Figure 12.
+
