@@ -803,8 +803,15 @@ begin
     idxu = ind(str_get_field(data, 1, ":").eq."! Variable attributes") + 2
     idxd = ind(str_get_field(data, 1, ":").eq. \
                "! Additional variable information") - 2
-    attn = str_squeeze(str_get_field(data(idxu:idxd), 1, ":"))
-    attv = str_squeeze(str_get_field(data(idxu:idxd), 2, ":"))
+    n = idxd - idxu + 1
+    attn = new(n, string)
+    attv = new(n, string)
+    do i = 0, n - 1
+      substr = str_split(data(idxu + i), ":")
+      attn(i) = str_squeeze(substr(0))
+      attv(i) = str_squeeze(str_join(substr(1:), ":"))
+      delete(substr)
+    end do
 
   end if
 
