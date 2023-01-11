@@ -295,6 +295,7 @@ begin
   res@tiMainFontHeightF = 0.01
   if (isatt(data, "metric")) then
     if (isatt(data, "caption")) then
+      res@tiMainOffsetYF    = 0.01
       res@tiMainString = data@caption
     else
       res@tiMainString = data@metric
@@ -546,10 +547,24 @@ begin
   step = res@vpWidthF / nmod
   resTxt@txJust = "CenterRight"
   xposs = 0.2 + (x_space+.5)*(res@vpWidthF/(nmod+2.*nbreak))
-  ypos = 0.19
+  yposs = 0.19
   do imod = 0, nmod - 1
-    gsn_text_ndc(wks, data&models(imod), xposs(imod), ypos, resTxt)
+    gsn_text_ndc(wks, data&models(imod), xposs(imod), yposs, resTxt)
   end do
+
+  ; Add subtitles
+  if (isatt(diag_script_info, "project_order")) then
+    titles = diag_script_info@project_order
+    resTxt@txAngleF = 0.
+    resTxt@txFontHeightF = 0.008
+    resTxt@txJust = "CenterLeft"
+    ypos = ypos + 0.005
+    gsn_text_ndc(wks, titles(0), xposs(0), ypos, resTxt)
+    do ititle = 1, dimsizes(titles) - 1
+      gsn_text_ndc(wks, titles(ititle), xposs(data@breakpoints(ititle-1)+1), \
+                   ypos, resTxt)
+    end do
+  end if
 
   ; Draw a labelbar
   if (.not.isatt(data, "no_labelbar") .or. \
