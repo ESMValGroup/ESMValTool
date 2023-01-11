@@ -13,7 +13,8 @@ p-field output of the Poisson solver.
 """
 
 import numpy as np
-from numba import jit
+
+# from numba import jit
 
 
 def set_metrics():
@@ -134,7 +135,7 @@ def precon(x, M_e, M_w, M_s, M_n, M_p):
     return Cx
 
 
-@jit
+# @jit
 def precon_a(x, M_w, M_s, M_p, Cx):
     for j in range(1, M + 1):
         for i in range(1, N + 1):
@@ -142,7 +143,7 @@ def precon_a(x, M_w, M_s, M_p, Cx):
                                     M_w[j, i] * Cx[j, i - 1])
 
 
-@jit
+# @jit
 def precon_b(M_e, M_n, Cx):
     for j in range(M, 0, -1):
         for i in range(N, 0, -1):
