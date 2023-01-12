@@ -244,7 +244,7 @@ Observations and reformat scripts
 * BerkeleyEarth (tasa - esmvaltool/cmorizers/data/formatters/datasets/berkeleyearth.py)
 * CERES-EBAF (rlds, rlus, rlut, rlutcs, rsds, rsus, rsut, rsutcs - obs4MIPs)
 * CRU (pr - esmvaltool/cmorizers/data/formatters/datasets/cru.py)
-* ESACCI-SOILMOISTURE (sm - esmvaltool/ucmorizers/data/formatters/datasets
+* ESACCI-SOILMOISTURE (sm - esmvaltool/cmorizers/data/formatters/datasets
   /esacci_soilmoisture.py)
 * ESACCI-SST (ts - esmvaltool/ucmorizers/data/formatters/datasets/esacci_sst.py)
 * ERA5 (hus, psl, ta, tas, ua, va, zg - ERA5 data can be used via the native6 project)
