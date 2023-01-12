@@ -32,7 +32,7 @@ def _apply_common_mask(*args):
     mask_where = np.ma.getmask(np.ma.masked_less(dat_mask, 1.))
     odat = []
     for arg_ in range(nargs):
-        _dat = args[arg_].astype(np.float)
+        _dat = args[arg_].astype(float)
         _dat[mask_where] = np.nan
         odat = np.append(odat, np.ma.masked_invalid(_dat))
     odat = odat.reshape(nargs, _dat.shape[0], _dat.shape[1])
