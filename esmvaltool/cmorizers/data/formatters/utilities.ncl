@@ -822,7 +822,7 @@ begin
 
   out = True
   do ii = 0, dimsizes(attn) - 1
-    ; If present, do not copy the attribute 'cell_mesures' to comply with the
+    ; If present, do not copy the attribute 'cell_measures' to comply with the
     ; CF conventions:
     ;
     ; "A variable referenced by cell_measures is not required to be present in
