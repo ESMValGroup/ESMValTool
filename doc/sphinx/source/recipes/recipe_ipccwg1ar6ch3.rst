@@ -246,7 +246,7 @@ Observations and reformat scripts
 * CRU (pr - esmvaltool/cmorizers/data/formatters/datasets/cru.py)
 * ESACCI-SOILMOISTURE (sm - esmvaltool/cmorizers/data/formatters/datasets
   /esacci_soilmoisture.py)
-* ESACCI-SST (ts - esmvaltool/ucmorizers/data/formatters/datasets/esacci_sst.py)
+* ESACCI-SST (ts - esmvaltool/cmorizers/data/formatters/datasets/esacci_sst.py)
 * ERA5 (hus, psl, ta, tas, ua, va, zg - ERA5 data can be used via the native6 project)
 * ERA-Interim (hfds - cmorizers/data/formatters/datasets/era_interim.py)
 * FLUXCOM (gpp - cmorizers/data/formatters/datasets/fluxcom.py)
