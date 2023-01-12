@@ -14,7 +14,7 @@ on developing more innovative analysis methods rather than constantly having to
 "re-invent the wheel".
 
 Processing of CMIP3 models currently works only in serial mode, due to an issue
-in the input data still under investigation. To run the recipe for Fig 3.43 set
+in the input data still under investigation. To run the recipe for Fig 3.42a set
 "max_parallel_tasks: 1" in the config-user.yml file.
 
 The plots are produced collecting the diagnostics from individual recipes. The
