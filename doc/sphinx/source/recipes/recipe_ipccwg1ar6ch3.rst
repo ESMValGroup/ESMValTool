@@ -7,11 +7,15 @@ Overview
 --------
 
 This recipe collects selected diagnostics used in IPCC AR6 WGI Chapter 3: 
-Human influence on the climate system (`Eyring et al., 2021`_). Plots from IPCC AR6 can be readily
-reproduced and compared to previous versions. The aim is to be able to start
-with what was available now the next time allowing us to
-focus on developing more innovative analysis methods
-rather than constantly having to "re-invent the wheel".
+Human influence on the climate system (`Eyring et al., 2021`_). Plots from IPCC
+AR6 can be readily reproduced and compared to previous versions. The aim is to
+be able to start with what was available now the next time allowing us to focus
+on developing more innovative analysis methods rather than constantly having to
+"re-invent the wheel".
+
+Processing of CMIP3 models currently works only in serial mode, due to an issue
+in the input data still under investigation. To run the recipe for Fig 3.43 set
+"max_parallel_tasks: 1" in the config-user.yml file.
 
 The plots are produced collecting the diagnostics from individual recipes. The
 following figures from `Eyring et al. (2021)`_ can currently be reproduced:
