@@ -822,8 +822,8 @@ begin
 
   out = True
   do ii = 0, dimsizes(attn) - 1
-    ; If present, do not copy the attribute "cell_mesures" to be able to comply
-    ; with the CF conventions:
+    ; If present, do not copy the attribute 'cell_mesures' to comply with the
+    ; CF conventions:
     ;
     ; "A variable referenced by cell_measures is not required to be present in
     ; the file containing the data variable. If the cell_measures variable is
@@ -832,8 +832,7 @@ begin
     ; attribute of the referencing file (Section 2.6.3)."
     ;
     ; ---> As we do not have such a variable (e.g. areacella), we remove
-    ;      the attribute 'cell_measures' (if present) to comply with the CF
-    ;      conventions.
+    ;      the attribute 'cell_measures' (if present).
     if (attn(ii) .ne. "cell_measures") then
       out@$attn(ii)$ = attv(ii)
     end if
