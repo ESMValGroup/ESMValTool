@@ -399,7 +399,7 @@ Example plots
 
    Figure 3.42a: Relative space–time root-mean-square deviation (RMSD)
    calculated from the climatological seasonal cycle of the CMIP simulations
-   (1980–1999) compared to observational datasets A relative performance
+   (1980–1999) compared to observational datasets. A relative performance
    measure is displayed, with blue shading indicating better and red shading
    indicating worse performance than the median error of all model results. A
    diagonal split of a grid square shows the relative error with respect to the
