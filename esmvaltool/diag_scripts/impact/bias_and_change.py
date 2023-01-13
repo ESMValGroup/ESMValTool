@@ -179,7 +179,7 @@ def plot_htmltable(dataframe, ancestors, cfg):
     log_provenance(filename, ancestors, caption, cfg)
 
 
-def make_tidy(dataset, ancestors, cfg):
+def make_tidy(dataset):
     """Convert xarray data to tidy dataframe."""
     dataframe = dataset.rename(
         tas='Temperature (K)',
@@ -188,13 +188,29 @@ def make_tidy(dataset, ancestors, cfg):
     dataframe.columns.name = 'variable'
     tidy_df = dataframe.stack('variable').unstack('metric')
 
-    # Save intermediate output (used for result-viewer front-end)
-    filename = get_diagnostic_filename('bias_vs_change', cfg, extension='csv')
-    tidy_df.to_csv(filename)
+    return tidy_df
+
+
+def save_csv(dataframe, ancestors, cfg):
+    """Save output for use in Climate4Impact preview page."""
+
+    # modify dataframe columns
+    dataframe = dataframe.unstack('variable')
+    dataframe.columns = ['tas_bias', 'pr_bias', 'tas_change', 'pr_change']
+    project_model_member = np.array([x.split('_') for x in dataframe.index.values])
+
+    # metadata in separate columns
+    dataframe[['project', 'member', 'model']] = project_model_member[:, [0, -1, 1]]
+
+    # kg/m2/s to mm/day
+    dataframe[['pr_bias', 'pr_change']] *= 24 * 60 * 60
+
+    # save
+    filename = get_diagnostic_filename('recipe_output', cfg, extension='csv')
     caption = "Bias and change for each variable"
+    dataframe.to_csv(filename)
     log_provenance(filename, ancestors, caption, cfg)
 
-    return tidy_df
 
 
 def main(cfg):
@@ -237,11 +253,11 @@ def main(cfg):
         'Bias (RMSD of all gridpoints)', 'Mean change (Future - Reference)'
     ]
 
-    tidy_df = make_tidy(combined, ancestors, cfg)
+    tidy_df = make_tidy(combined)
     plot_scatter(tidy_df, ancestors, cfg)
     plot_table(tidy_df, ancestors, cfg)
     plot_htmltable(tidy_df, ancestors, cfg)
-
+    save_csv(tidy_df, ancestors, cfg)
     return
 
 
