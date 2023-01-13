@@ -48,7 +48,7 @@ def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
     climcenter = (climend - climstart) // 2
 
     times = iris.coords.DimCoord(
-        np.arange(int(n_days), dtype=float),
+        np.arange(int(n_days), dtype=np.float64),
         var_name='time',
         standard_name='time',
         long_name='time',
