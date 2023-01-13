@@ -35,7 +35,7 @@ def _extract_variable(cmor_info, attrs, var_file, out_dir, cfg):
     array = grid_file.ReadAsArray()
     for missing_value in cfg['missing_values']:
         array = np.ma.masked_equal(array, missing_value)
-    array = array.astype(float)
+    array = array.astype(np.float64)
     np.ma.set_fill_value(array, 1e20)
     array = np.ma.expand_dims(array, 0)
     time = iris.coords.DimCoord([183.0],

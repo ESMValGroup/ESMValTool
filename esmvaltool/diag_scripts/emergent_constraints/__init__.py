@@ -71,7 +71,7 @@ def _add_column(data_frame, series, column_name):
     for row in series.index.difference(data_frame.index):
         data_frame = pd.concat([
             data_frame,
-            pd.Series(name=row, dtype=float).to_frame().T,
+            pd.Series(name=row, dtype=np.float64).to_frame().T,
         ])
     if column_name in data_frame.columns:
         for row in series.index:
@@ -810,11 +810,11 @@ def get_input_data(cfg):
     # Unify indices of features and label
     for row in features.index.difference(label.index):
         label = pd.concat(
-            [label, pd.Series(name=row, dtype=float).to_frame().T]
+            [label, pd.Series(name=row, dtype=np.float64).to_frame().T]
         )
     for row in label.index.difference(features.index):
         features = pd.concat(
-            [features, pd.Series(name=row, dtype=float).to_frame().T]
+            [features, pd.Series(name=row, dtype=np.float64).to_frame().T]
         )
 
     # Sort data frames
@@ -1394,7 +1394,7 @@ def plot_target_distributions(training_data, pred_input_data, attributes,
                         add_combined_group=cfg['combine_groups'])
     summary_columns = pd.MultiIndex.from_product(
         [groups, ['best estimate', 'range', 'min', 'max']])
-    summary = pd.DataFrame(columns=summary_columns, dtype=float)
+    summary = pd.DataFrame(columns=summary_columns, dtype=np.float64)
 
     # Iterate over features
     for feature in training_data.x.columns:
@@ -1402,7 +1402,7 @@ def plot_target_distributions(training_data, pred_input_data, attributes,
                                                     label)
         colors = get_colors(cfg, groups=groups)
         summary_for_feature = pd.Series(
-            index=summary_columns, name=feature, dtype=float
+            index=summary_columns, name=feature, dtype=np.float64
         )
 
         # Iterate over groups
