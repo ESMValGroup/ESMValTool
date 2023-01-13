@@ -1,0 +1,140 @@
+# ESMValTool
+# recipe_miles_block.yml
+---
+documentation:
+
+  title: IPCC AR6 WG1 Chapter 3 Fig. 3.18
+
+  description: |
+    Producing Fig. 3.18 in the IPCC Working Group I
+    Contribution to the Sixth Assessment Report: Chapter 3
+
+  authors:
+    - bock_lisa
+    - davini_paolo
+      #- kazeroni_remi
+
+  maintainer:
+    - bock_lisa
+
+  references:
+    - eyring21ipcc
+
+  projects:
+    - ipcc_ar6
+
+
+preprocessors:
+  preproc1:
+    extract_levels:
+      levels: 50000
+      scheme: linear
+    regrid:
+      target_grid: 2.5x2.5
+      lat_offset: false
+      scheme: linear_extrapolate
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -1.25
+      end_latitude: 90.
+
+
+diagnostics:
+
+  # **********************************************************************
+  # IPCC WGI AR6, chap. 3
+  # Sect. 3.3
+  # Fig. 3.18
+  # **********************************************************************
+  # Computing and plotting blocking statistics using the MiLES (Mid-Latitude
+  # Evaluation System) package (geographical distributions) for CMIP6 and CMIP5
+  # **********************************************************************
+
+  miles_diagnostics:
+    description: MiLES Blocking Diagnostics
+    variables:
+      zg:
+        preprocessor: preproc1
+        mip: day
+        start_year: 1979
+        end_year: 2000
+    additional_datasets:
+      - &cmip6 {dataset: ACCESS-CM2, project: CMIP6, mip: day, exp: historical,
+                ensemble: r1i1p1f1, grid: gn}
+      - {<<: *cmip6, dataset: AWI-ESM-1-1-LR}
+      - {<<: *cmip6, dataset: BCC-ESM1}
+      - {<<: *cmip6, dataset: CanESM5}
+      - {<<: *cmip6, dataset: CESM2-FV2}
+      - {<<: *cmip6, dataset: CESM2}
+      - {<<: *cmip6, dataset: CESM2-WACCM-FV2}
+      - {<<: *cmip6, dataset: CESM2-WACCM}
+      - {<<: *cmip6, dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+      - {<<: *cmip6, dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+      - {<<: *cmip6, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: FGOALS-f3-L, grid: gr}
+      - {<<: *cmip6, dataset: FGOALS-g3}
+      - {<<: *cmip6, dataset: GFDL-CM4, grid: gr2}
+      - {<<: *cmip6, dataset: GISS-E2-1-G}
+      - {<<: *cmip6, dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
+      - {<<: *cmip6, dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3}
+      - {<<: *cmip6, dataset: IITM-ESM}
+      - {<<: *cmip6, dataset: INM-CM4-8, grid: gr1}
+      - {<<: *cmip6, dataset: INM-CM5-0, grid: gr1}
+      - {<<: *cmip6, dataset: IPSL-CM6A-LR, grid: gr}
+      - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
+      - {<<: *cmip6, dataset: MIROC6}
+      - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-HR}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-LR}
+      - {<<: *cmip6, dataset: MRI-ESM2-0}
+      - {<<: *cmip6, dataset: NorESM2-LM}
+      - {<<: *cmip6, dataset: NorESM2-MM}
+      - {<<: *cmip6, dataset: TaiESM1}
+      - {<<: *cmip6, dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
+      - &cmip5 {dataset: ACCESS1-0, project: CMIP5, mip: day, exp: historical,
+                ensemble: r1i1p1}
+      - {<<: *cmip5, dataset: ACCESS1-3}
+      - {<<: *cmip5, dataset: bcc-csm1-1-m}
+      - {<<: *cmip5, dataset: bcc-csm1-1}
+      - {<<: *cmip5, dataset: BNU-ESM}
+      - {<<: *cmip5, dataset: CanESM2}
+      - {<<: *cmip5, dataset: CCSM4, ensemble: r6i1p1}
+      - {<<: *cmip5, dataset: CMCC-CESM}
+      - {<<: *cmip5, dataset: CMCC-CM}
+      - {<<: *cmip5, dataset: CMCC-CMS}
+      - {<<: *cmip5, dataset: CNRM-CM5}
+      - {<<: *cmip5, dataset: EC-EARTH, ensemble: r12i1p1}
+      - {<<: *cmip5, dataset: FGOALS-g2}
+      - {<<: *cmip5, dataset: GFDL-CM3}
+      - {<<: *cmip5, dataset: GFDL-ESM2G}
+      - {<<: *cmip5, dataset: GFDL-ESM2M}
+      - {<<: *cmip5, dataset: HadGEM2-CC}
+      - {<<: *cmip5, dataset: IPSL-CM5A-LR}
+      - {<<: *cmip5, dataset: IPSL-CM5A-MR}
+      - {<<: *cmip5, dataset: IPSL-CM5B-LR}
+      - {<<: *cmip5, dataset: MIROC5}
+      - {<<: *cmip5, dataset: MIROC-ESM-CHEM}
+      - {<<: *cmip5, dataset: MIROC-ESM}
+      - {<<: *cmip5, dataset: MPI-ESM-LR}
+      - {<<: *cmip5, dataset: MPI-ESM-MR}
+      - {<<: *cmip5, dataset: MPI-ESM-P}
+      - {<<: *cmip5, dataset: MRI-CGCM3}
+      - {<<: *cmip5, dataset: MRI-ESM1}
+      - {<<: *cmip5, dataset: NorESM1-M}
+      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+    scripts:
+      miles_block:
+        script: miles/miles_block_groupby_projects.R
+        seasons: DJFM  # Select season ('DJF','MAM','JJA','SON', 'DJFM')
+        indice: 'DA98'  # 'TM90'
+        color_lines: ['black', 'dodgerblue', 'darkred', 'orange', 'green']
+        legend_loc: [-90, 35]
+        linewidth: 4
+        obs_legend: ['ERA5']
+        plot_title: 'Instantaneous Blocking: DJFM 1979 - 2000'
+        transparency: 0.15  # in [0, 1]
+        xlabel: 'Longitude'
+        ylabel: 'Blocked Days (%)'
+        yrange: [0, 35]

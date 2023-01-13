@@ -30,6 +30,8 @@ following figures from `Eyring et al. (2021)`_ can currently be reproduced:
 
     * Figure 3.15: Precipitation Anomaly
 
+    * Figure 3.18: Blocking
+
     * Figure 3.42: Relative Model Performance
 
 .. _`Eyring et al., 2021`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
@@ -42,6 +44,7 @@ Available recipes and diagnostics
 Recipes are stored in esmvaltool/recipes/ipccwg1ar6ch3/
 
     * recipe_ipccwg1ar6ch3_atmosphere.yml
+    * recipe_ipccwg1ar6ch3_blocking.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_a.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_b.yml
 
@@ -69,6 +72,10 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     Fig. 3.15:
 
     * ipcc_ar6/precip_anom.ncl
+
+    Fig. 3.18:
+
+    * miles/miles_block_groupby_projects.R
 
     Fig. 3.42:
 
@@ -198,6 +205,35 @@ User settings in recipe
    * y_min: set min of y-axis
    * y_max: set max of y-axis
 
+#. Script miles/miles_block_groupby_projects.R
+
+   *Required settings for variables*
+
+   * reference_dataset: reference dataset for comparison
+   * reference_exp: optional reference experiment for comparison (to use when
+     comparing two experiments of the same dataset)
+
+   *Required settings for script*
+
+   * seasons: Selected season('DJF','MAM','JJA','SON','ALL') or your period as
+     e.g. 'Jan_Feb_Mar'
+
+   *Optional setting for script*
+
+   * color_lines: color of lines, default: ['dodgerblue', 'darkred', 'black',
+     'green', 'orange']
+   * indice: method for indice ('DA98' or 'TM90'), default: 'DA98'
+   * legend_loc: location of legend in the plot, default: [-90, 35]
+   * linewidth: default: 4
+   * obs_legend: name of observations, default: ['OBS', 'OBS2', 'OBS3', 'OBS4',
+     'OBS5']
+   * plot_title: title of plot, default: 'Instantaneous Blocking: DJFM 1979
+     - 2000'
+   * transparency: in [0, 1], default: 0.15
+   * xlabel: label on x-axis, default: 'Longitude'
+   * ylabel: label on y-axis, default: 'Blocked Days (%)'
+   * yrange: range of y-axis, default: [0, 35]
+
 #. Script perfmetrics/perfmetrics_main.ncl
 
    See :ref:`here<perf-main.ncl>`.
@@ -238,6 +274,7 @@ Variables
 * ua (atmos, monthly mean, longitude latitude level time)
 * va (atmos, monthly mean, longitude latitude level time)
 * zg (atmos, monthly mean, longitude latitude level time)
+* zg (atmos, daily, level longitude latitude time)
 
 
 Observations and reformat scripts
