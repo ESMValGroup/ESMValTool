@@ -197,10 +197,12 @@ def save_csv(dataframe, ancestors, cfg):
     # modify dataframe columns
     dataframe = dataframe.unstack('variable')
     dataframe.columns = ['tas_bias', 'pr_bias', 'tas_change', 'pr_change']
-    project_model_member = np.array([x.split('_') for x in dataframe.index.values])
+    project_model_member = np.array(
+        [x.split('_') for x in dataframe.index.values])
 
     # metadata in separate columns
-    dataframe[['project', 'member', 'model']] = project_model_member[:, [0, -1, 1]]
+    dataframe[['project', 'member',
+               'model']] = project_model_member[:, [0, -1, 1]]
 
     # kg/m2/s to mm/day
     dataframe[['pr_bias', 'pr_change']] *= 24 * 60 * 60
@@ -210,7 +212,6 @@ def save_csv(dataframe, ancestors, cfg):
     caption = "Bias and change for each variable"
     dataframe.to_csv(filename)
     log_provenance(filename, ancestors, caption, cfg)
-
 
 
 def main(cfg):
