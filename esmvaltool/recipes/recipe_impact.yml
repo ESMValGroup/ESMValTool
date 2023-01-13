@@ -13,6 +13,16 @@ documentation:
     temperature, one can select a run with a high change and one with a low
     change of annual temperature, preferably both with a low bias.
 
+    Results of this recipe can be viewed interactively at
+    https://esmvaltool.dkrz.de/shared/esmvaltool/climate4impact/.
+
+    Notes:
+
+    - Bias is calcated with respect to the ERA5 reanalysis dataset over the period 1981-2015.
+    - Future change is calculated for 2036-2065 as compared to 1986-2015.
+    - Area is set to Europe (lon 0-39; lat 30-76.25)
+    - All data are taken from the RCP/SSP 8.5 scenario
+
   authors:
     - kalverla_peter
     - andela_bouwe
