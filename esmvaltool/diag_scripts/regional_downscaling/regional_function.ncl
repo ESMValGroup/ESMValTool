@@ -552,12 +552,10 @@ begin
 
   if (plotres) then
     print("Plot resources detected, accepting")
-    print(plotres)
     fsatts = getvaratts(plotres)
     do ty = 0, dimsizes(fsatts) - 1
       if (fsatts(ty).eq."tmXTLabels") then
         print(plotres@tmXTLabels)
-        print(numbox)
         if (dimsizes(plotres@tmXTLabels).ne.numbox) then
           delete(labarr)
           labarr = new(dimsizes(plotres@tmXTLabels) + 2, "string")

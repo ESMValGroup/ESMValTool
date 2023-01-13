@@ -69,6 +69,10 @@
 ; #      in regional_function.ncl
 ; #
 ; # Modification history:
+; # 20230110-weigel_katja: fixed calendar, calendar starting point needs to
+; #                        including time: "months since 1-1-1 00:00:00"
+; #                        and converting month number to time Axis
+; #                        with -1.0
 ; # 20221026-weigel_katja: header updated
 ; # 20221026-weigel_katja: fixed calendar, time_operations expects
 ; #                        "gregorian" instead of "Gregorian"
@@ -353,6 +357,7 @@ begin
       A0 = read_data(info0[idx_ref])
       if (season(iseas).ne."ANN") then
         if (mode) then
+          A0!0 = "time"
           time1 = todouble(A0&time - 1.0)
           time1!0 = "time"
           ; ys=input_file_info[idx_ref]@start_year
@@ -474,8 +479,14 @@ begin
           else
             if (mode) then
               Btmp3 = B0
-              timetmp = todouble(Btmp3&time - 1.0)
-              date3 = cd_calendar(timetmp, 0)
+              Btmp3!0 = "time"
+              time1 = todouble(Btmp3&time - 1.0)
+              time1!0 = "time"
+              time1@units = "months since 1-1-1 00:00:00"
+              time1@calendar = "gregorian"
+              delete(Btmp3&time)
+              Btmp3&time = time1
+              date3 = cd_calendar(Btmp3&time, 0)
               year3 = date3(:, 0)
               month3 = date3(:, 1)
               weights3 = days_in_month(toint(year3), toint(month3))

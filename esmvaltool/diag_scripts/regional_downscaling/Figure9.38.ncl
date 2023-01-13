@@ -115,6 +115,7 @@ begin
                   diag_script_info@fig938_project_MMM)
   set_default_att(diag_script_info, "fig938_colors_MMM", "red")
   set_default_att(diag_script_info, "refModel", "ERA-Interim")
+  set_default_att(diag_script_info, "fig938_diff", "True")
   colors = project_style(info0, diag_script_info, "colors")
   dashes = project_style(info0, diag_script_info, "dashes")
   thicks = tofloat(project_style(info0, diag_script_info, "thicks"))
@@ -298,6 +299,7 @@ begin
 
       pan@txString = LONG_NAME + " bias vs. " + names(idx_ref)
       D = new((/dim_MOD1, 13/), "double")
+      models = new((/dim_MOD1/), "string")
       C = new((/dim_MOD1 - 1, 13/), "double")
       models1 = new((/dim_MOD1 - 1/), "string")
       colors1 = new((/dim_MOD1 - 1/), typeof(colors))
@@ -333,12 +335,21 @@ begin
                              lonrange(ir, 0), lonrange(ir, 1), "average",\
                              True)
       delete(A0)
-      A = Atmp
+      if (diag_script_info@fig938_diff.eq."True") then
+        A = (/Atmp/)
+      else
+        if (units.eq."K") then
+          A = (/Atmp - 273.15/)   ; get Celsius
+        else
+          A = (/Atmp/)
+        end if
+      end if
       delete(Atmp)
       delete(Atmp1)
 
       jmod = 0
-      do imod = 0, dim_MOD - 1
+      do imod = 0, dim_MOD1 - 1
+        models(imod) = names(imod)
         if (imod .ne. idx_ref) then
           ; CASE 2
           ; case2 = models@name(imod) + " " + models@case_name(imod)
@@ -373,14 +384,28 @@ begin
           ; ---------------------------------------------------------
           ; difference plot of time(x) vs. latitude(y)
 
-          ; C = A  ; copy dims, coords
-          C(jmod, 0:11) = (/A - B/)  ; get diff values
-          C(jmod, 12) = (/A(0) - B(0)/)
-          D(imod, 0:11) = (/A - B/)
-          D(imod, 12) = (/A(0) - B(0)/)
+          if (diag_script_info@fig938_diff.eq."True") then
+            C(jmod, 0:11) = (/A - B/)  ; get diff values
+            C(jmod, 12) = (/A(0) - B(0)/)
+            D(imod, 0:11) = (/A - B/)
+            D(imod, 12) = (/A(0) - B(0)/)
+          else
+            C(jmod, 0:11) = (/B/)
+            C(jmod, 12) = (/B(0)/)
+            D(imod, 0:11) = (/B/)
+            D(imod, 12) = (/B(0)/)
+          end if
 
-          if (UNITS.eq."K") then
+          if (units.eq."K") then
             UNITS = "~S~o~N~C"
+            if (diag_script_info@fig938_diff.ne."True") then
+              C(jmod, 0:11) = (/B - 273.15/)   ; get Celsius
+              C(jmod, 12) = (/B(0) - 273.15/)
+              D(imod, 0:11) = (/B - 273.15/)
+              D(imod, 12) = (/B(0) - 273.15/)
+            end if
+          else
+            UNITS = units
           end if
 
           delete(B)
@@ -393,7 +418,9 @@ begin
           jmod = jmod + 1
         end if
       end do  ; imod
-      delete(A)
+      if (diag_script_info@fig938_diff.eq."True") then
+        delete(A)
+      end if
     else
       if (diag_script_info@fig938_MMM.eq."True")
         indic_s = where(indic_s.eq.idx_ref, indic_s@_FillValue, indic_s)
@@ -407,8 +434,8 @@ begin
         end if
       end if
       lin_mar_mod1 = lin_mar_mod
-      C = new((/dim_MOD, 13/), "double")
-      do imod = 0, dim_MOD - 1
+      C = new((/dim_MOD1, 13/), "double")
+      do imod = 0, dim_MOD1 - 1
         ; CASE 1
         pan@txString = variable_info@long_name
         A0 = read_data(info0[imod])
@@ -441,8 +468,15 @@ begin
     ; case contour plots of time(x) vs. latitude(y)
 
     ; res@tiMainString =variable_info@long_name
-    min1 = min(C)
-    max1 = max(C)
+    if (diag_script_info@fig938_diff.eq."True") then
+      E = C
+    else
+      E = D
+      E(idx_ref, 0:11) = (/A/)
+      E(idx_ref, 12) = (/A(0)/)
+    end if
+    min1 = min(E)
+    max1 = max(E)
     if (isatt(diag_script_info, "fig938_YMin")) then
       res@trYMinF = diag_script_info@Figure_938_YMin
     else
@@ -454,44 +488,66 @@ begin
       res@trYMaxF = max1
     end if
 
-    res@xyLineColors = colors1  ; line colors
-    res@xyLineThicknesses = thicks1        ; line thicknesses
-    res@xyDashPatterns = dashes1       ; line patterns
+    if (diag_script_info@fig938_diff.eq."True") then
+      res@xyLineColors = colors1  ; line colors
+      res@xyLineThicknesses = thicks1        ; line thicknesses
+      res@xyDashPatterns = dashes1       ; line patterns
+    else
+      res@xyLineColors = colors  ; line colors
+      res@xyLineThicknesses = thicks        ; line thicknesses
+      res@xyDashPatterns = dashes       ; line patterns
+    end if
+
     res@gsnLeftString = case1
     res@gsnLeftStringFontHeightF = 0.04
     res@gsnRightString = UNITS
     res@gsnRightStringFontHeightF = 0.04
     res@tfPolyDrawOrder = "Draw"
-    plot(ir) = gsn_csm_xy(wks, months, C, res)
+
+    plot(ir) = gsn_csm_xy(wks, months, E, res)
 
     ; ******************single region  output file**************************
 
     nc_filename = work_dir + "fig938_" + var0 + ".nc"
-    C@var = var0 + "_" + case1
-    C@diag_script = "fig938"
-    C!0 = "line"
-    C!1 = "month"
+    E@var = var0 + "_" + case1
+    E@diag_script = "fig938"
+    E!0 = "line"
+    E!1 = "month"
     month_n = (/"J", "F", "M", "A", "M", "J", "J", "A", "S", \
                "O", "N", "D", "J"/)
-    C&line = models1
-    C&month = month_n
+
+    if (diag_script_info@fig938_diff.eq."True") then
+      E&line = models1
+    else
+      E&line = models
+    end if
+    E&month = month_n
 
     if (ir .eq. 0) then
-      C@existing = "overwrite"
+      E@existing = "overwrite"
     else
-      C@existing = "append"
+      E@existing = "append"
     end if
 
-    nc_outfile = ncdf_write(C, nc_filename)
+    nc_outfile = ncdf_write(E, nc_filename)
 
     ; ******************single region  output file**************************
 
     if (diag_script_info@fig938_MMM.eq."True")
-      if(.not.all(ismissing(indic_not_sel))) then
-        dim_extr = dimsizes(indic_not_sel)
+      if ((diag_script_info@fig938_diff.eq."True").and.(idx_ref .ne. -1)) then
+        if(.not.all(ismissing(indic_not_sel))) then
+          dim_extr = dimsizes(indic_not_sel) + 1
+        else
+          dim_extr = 1
+        end if
       else
-        dim_extr = 0
+        if(.not.all(ismissing(indic_not_sel))) then
+          dim_extr = dimsizes(indic_not_sel)
+        else
+          dim_extr = 0
+        end if
       end if
+
       MMM = new((/dimsizes(diag_script_info@fig938_project_MMM) +\
                 dim_extr, 13/), typeof(C))
       STD = new((/dimsizes(diag_script_info@fig938_project_MMM) + \
@@ -583,7 +639,6 @@ begin
     res1@gsnLeftStringFontHeightF = 0.04
     res1@gsnRightStringFontHeightF = 0.04
     res1@tfPolyDrawOrder = "Draw"
-    print("ci sono")
     plot_MMM(ir) = gsn_csm_xy(wks_MMM, months, MMM, res1)
     xp = new((/2 * 13/), typeof(MMM))
     yp = new((/2 * 13, dimsizes(diag_script_info@fig938_project_MMM)/), \
@@ -655,7 +710,8 @@ begin
     delete(xp)
     delete(yp)
     delete(indic_not_sel)
-
+    delete(A)
+    delete(E)
   end do  ; region
 
   ; Panel plots
@@ -671,8 +727,13 @@ begin
   frame(wks)
 
   ; ***********add legend****************************
-  add_legenda_page(wks_l, models1, colors1, dashes1, lin_mar_mod1,\
-                   thicks1, "0.9")
+  if (diag_script_info@fig938_diff.eq."True") then
+    add_legenda_page(wks_l, models1, colors1, dashes1, lin_mar_mod1,\
+                     thicks1, "0.9")
+  else
+    add_legenda_page(wks_l, models, colors, dashes, lin_mar_mod,\
+                     thicks, "0.9")
+  end if
   frame(wks_l)
 
   if (diag_script_info@fig938_MMM.eq."True")

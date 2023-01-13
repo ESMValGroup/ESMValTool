@@ -56,6 +56,7 @@
 ; #        fig939_mode    : True= cumulative mode
 ; #        fig939_YMin        : minimum Y Axis
 ; #        fig939_YMax        : maximum Y Axis
+; #        fig939_percentage  : default: False
 ; # Caveats:
 ; #      This script requires NCL version 6.40
 ; #
@@ -64,6 +65,11 @@
 ; #      in regional_function.ncl
 ; #
 ; # Modification history:
+; # 20230111-weigel_katja: added option for percentage difference
+; # 20230110-weigel_katja: fixed calendar, calendar starting point needs to
+; #                        including time: "months since 1-1-1 00:00:00"
+; #                        and converting month number to time Axis
+; #                        with -1.0
 ; # 20221026-weigel_katja: header updated
 ; # 20221026-weigel_katja: fixed calendar, time_operations expects
 ; #                        "gregorian" instead of "Gregorian"
@@ -127,6 +133,7 @@ begin
   set_default_att(diag_script_info, "fig939_names_MMM", \
                   diag_script_info@fig939_project_MMM)
   set_default_att(diag_script_info, "fig939_season", "DJF")
+  set_default_att(diag_script_info, "fig939_percentage", "False")
 
   colors = project_style(info0, diag_script_info, "colors")
   dashes = project_style(info0, diag_script_info, "dashes")
@@ -315,6 +322,7 @@ begin
       A0 = read_data(info0[idx_ref])
       if (season(iseas).ne."ANN") then
         if (mode) then
+          A0!0 = "time"
           time1 = todouble(A0&time - 1.0)
           time1!0 = "time"
           ; ys=input_file_info[idx_ref]@start_year
@@ -324,8 +332,7 @@ begin
           A0&time = time1
           delete(time1)
           Atmp3 = time_operations(A0, -1, -1, "extract", season(iseas), True)
-          timetmp = Atmp3&time
-          date3 = cd_calendar(timetmp, 0)
+          date3 = cd_calendar(Atmp3&time, 0)
           year3 = date3(:, 0)
           month3 = date3(:, 1)
           weights3 = days_in_month(toint(year3), toint(month3))
@@ -360,8 +367,7 @@ begin
           delete(A0&time)
           A0&time = time1
           Atmp3 = A0
-          timetmp = Atmp3&time
-          date3 = cd_calendar(timetmp, 0)
+          date3 = cd_calendar(Atmp3&time, 0)
           year3 = date3(:, 0)
           month3 = date3(:, 1)
           weights3 = days_in_month(toint(year3), toint(month3))
@@ -411,8 +417,7 @@ begin
               Btmp3 = time_operations(B0, -1, -1, "extract",\
                                       season(iseas), True)
 
-              timetmp = Btmp3&time
-              date3 = cd_calendar(timetmp, 0)
+              date3 = cd_calendar(Btmp3&time, 0)
               year3 = date3(:, 0)
               month3 = date3(:, 1)
               weights3 = days_in_month(toint(year3), toint(month3))
@@ -440,8 +445,14 @@ begin
           else
             if (mode) then
               Btmp3 = B0
-              timetmp = todouble(Btmp3&time - 1.0)
-              date3 = cd_calendar(timetmp, 0)
+              Btmp3!0 = "time"
+              time1 = todouble(Btmp3&time - 1.0)
+              time1!0 = "time"
+              time1@units = "months since 1-1-1 00:00:00"
+              time1@calendar = "gregorian"
+              delete(Btmp3&time)
+              Btmp3&time = time1
+              date3 = cd_calendar(Btmp3&time, 0)
               year3 = date3(:, 0)
               month3 = date3(:, 1)
               weights3 = days_in_month(toint(year3), toint(month3))
