@@ -233,8 +233,8 @@ def main(cfg):
 
     data_var_sum = {}
     for iexp in available_exp:
-        data_var_sum[iexp] = np.fromiter(data_var[iexp].values(),
-                                         dtype=np.float64) / float(len(pathlist))
+        data_var_sum[iexp] = np.fromiter(
+            data_var[iexp].values(), dtype=np.float64) / float(len(pathlist))
 
     # Plot ECS regression if desired
     plot_bar_deangelis(cfg, data_var_sum, available_exp, available_vars)
