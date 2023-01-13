@@ -56,7 +56,7 @@ def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
                             calendar=cf_units.CALENDAR_STANDARD))
 
     # init a dummy cube to enable coord_categorisation
-    dummycube = iris.cube.Cube(np.zeros(int(n_days), int),
+    dummycube = iris.cube.Cube(np.zeros(int(n_days), np.int64),
                                dim_coords_and_dims=[(times, 0)])
     coord_categorisation.add_year(dummycube, 'time', name='year')
     coord_categorisation.add_month_number(dummycube, 'time', name='month')
