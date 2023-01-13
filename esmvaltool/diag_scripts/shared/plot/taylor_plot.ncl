@@ -498,8 +498,8 @@ begin
   if (rmax.lt.1.5) then
     rmax = 1.5
   end if
-  if (rmax.gt.3.0) then
-    rmax = 3.0
+  if (rmax.gt.3.5) then
+    rmax = 3.5
   end if
   xyMax = rmax + 0.1
   xyMax_Panel = xyMax + 0.10
@@ -822,11 +822,21 @@ begin
       respl@gsLineColor =  rOpts@centerDiffRMS_color
     end if
 
+    respl2 = True
+    respl2@txFontHeightF = 0.015
+    respl2@txFontColor = respl@gsLineColor
+    respl2@txBackgroundFillColor = "White"
+
     dx   = delta
-    ncon = 4
+    ncon = toint(rmax * 2)
     npts = 100  ; arbitrary
+    n10  = toint(npts * 0.1)
+    n90  = toint(npts * 0.9)
     ang  = fspan(180, 360, npts) * rad
     dum9 = new(ncon, graphic)
+    dum9a = new(ncon, graphic)
+
+    pi = 3.1415927
 
     do n = 1, ncon
       rr = n * dx            ; radius from 1.0 [OBS] abscissa
@@ -840,22 +850,45 @@ begin
         if (xtmp.eq.0.0) then
           phitmp = 3.1415927
         else if (xtmp.gt.0.0) then
-          phitmp = 2.0 * 3.1415927 - atan(ytmp / xtmp)
+          phitmp = 2.0 * pi - atan(ytmp / xtmp)
         else
-          phitmp = 3.1415927 + atan(ytmp / xtmp)
+          phitmp = pi + atan(ytmp / xtmp)
         end if
         end if
-        ang2  = fspan(3.1415927, phitmp, npts)
+
+        ang2  = fspan(pi, phitmp, npts)
         xx2  = 1.0 + rr * cos(ang2)
         yy2  = fabs(rr * sin(ang2))
+
+        if (phitmp .lt. pi) then
+          tmpang = ang2(n10) + pi / 2.0
+        else
+          tmpang = ang2(n90)
+        end if
+
         dum9(n - 1) = gsn_add_polyline(wks, taylor, xx2, yy2, respl)
+        xl = xx2(n90)
+        yl = yy2(n90)
+        respl2@txAngleF = 630.0 - tmpang / pi * 180.0
+        if (respl2@txAngleF .gt. 360.0) then
+          respl2@txAngleF = respl2@txAngleF - 360.0
+        end if
         delete(ang2)
         delete(xx2)
         delete(yy2)
       else
         dum9(n - 1) = gsn_add_polyline(wks, taylor, xx, yy, respl)
+        xl = xx(n90)
+        yl = yy(n90)
+        respl2@txAngleF = 630.0 - ang(n90) / pi * 180.0
+        if (respl2@txAngleF .gt. 360.0) then
+          respl2@txAngleF = respl2@txAngleF - 360.0
+        end if
       end if
       delete(dist_n)
+
+      dum9a(n - 1) = gsn_add_text(wks, taylor, sprintf("%3.1f", n * 0.5), \
+                                  xl, yl, respl2)
 
     end do
     delete(ang)

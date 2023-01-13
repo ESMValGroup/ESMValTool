@@ -19,6 +19,9 @@
 ;   clevels: explicit values for probability labelbar (array)
 ;   filename_add: optionally add this string to plot filesnames
 ;   nbins: number of equally spaced bins (var_x), default = 100
+;   sidepanels: show/hide side panels
+;   xlabel: label overriding variable name for x-axis (e.g. SST)
+;   ylabel: label overriding variable name for y-axis (e.g. omega500)
 ;   zdmin:  min z value for labelbar (difference plots)
 ;   zdmax:  max z value for labelbar (difference plots)
 ;   zmin:  min z value for labelbar
@@ -34,6 +37,7 @@
 ;   none
 ;
 ; Modification history
+;   20220126-lauer_axel: added optional variable labels for x- and y-axes
 ;   20211118-lauer_axel: added output of frequency distributions
 ;   20210607-lauer_axel: added multi-model-average (= average over all models)
 ;                        as an individual plot
@@ -185,6 +189,9 @@ begin
 
   set_default_att(diag_script_info, "filename_add", "")
   set_default_att(diag_script_info, "nbins", 100)
+  set_default_att(diag_script_info, "sidepanels", False)
+  set_default_att(diag_script_info, "xlabel", var_x)
+  set_default_att(diag_script_info, "ylabel", var_y)
 
   if (diag_script_info@filename_add .ne. "") then
     filename_add = "_" + diag_script_info@filename_add
@@ -192,11 +199,17 @@ begin
     filename_add = ""
   end if
 
+  if (diag_script_info@sidepanels) then
+    flag_sidepanels = True
+  else
+    flag_sidepanels = False
+  end if
+
   nbins = toint(diag_script_info@nbins)
 
   ; make sure path for (mandatory) netcdf output exists
 
-  work_dir = config_user_info@work_dir + "/"
+  work_dir = config_user_info@work_dir
   ; Create work dir
   system("mkdir -p " + work_dir)
 
@@ -494,7 +507,7 @@ begin
     ; This approach to grid the data is significantly slower than
     ; using "bin_avg" but still fine for moderate grids (e.g. 100x100 grid
     ; cells). In NCL 6.6.2, the function bin_avg crashes after being
-    ; called several times (segmentation violation, etc.). This is the reason
+    ; called several times (segmentation violation). This is the reason
     ; for choosing this "manual" approach.
 
     do n = 0, nbins - 1
@@ -593,16 +606,23 @@ begin
   res@cnFillOn       = True               ; color Fill
   res@cnFillMode     = "RasterFill"       ; Raster Mode
   res@cnLinesOn      =  False             ; Turn off contour lines
-  res@tiXAxisString  = var_x + " (" + xunits + ")"
-  res@tiYAxisString  = var_y + " (" + yunits + ")"
+  res@tiXAxisString  = diag_script_info@xlabel + " (" + xunits + ")"
+  res@tiYAxisString  = diag_script_info@ylabel + " (" + yunits + ")"
   res@lbOrientation  = "Vertical"
   res@lbTitleString      = zunits
   res@lbTitlePosition    = "Right"
-  res@lbTitleFontHeightF = 0.015
+  res@lbTitleFontHeightF = 0.0275
+  res@lbLabelFontHeightF = 0.0275
+  res@tmXMajorGrid = True
+  res@tmXMinorGrid = True
+  res@tmYMajorGrid = True
+  res@tmYMinorGrid = True
 
   dres = res
 
-  res@pmLabelBarOrthogonalPosF = 0.35
+  if (flag_sidepanels) then
+    res@pmLabelBarOrthogonalPosF = 0.35
+  end if
 
   cres = res
   cres@lbTitleString = count@var_units
@@ -643,13 +663,15 @@ begin
   xyres1@gsnDraw         = False        ; don't draw yet
   xyres1@gsnFrame        = False        ; don't advance frame yet
   xyres1@xyLineThicknessF = 2.0
+  xyres1@tmEqualizeXYSizes = True
+  xyres1@tmXBLabelFontHeightF = 0.0275
 
   xyres2 = xyres1
 
   xyres1@vpHeightF = .20          ; set width of second plot
   xyres1@trXMinF = xmin
   xyres1@trXMaxF = xmax
-  xyres1@tiXAxisString = var_x + " (" + xunits + ")"
+  xyres1@tiXAxisString = diag_script_info@xlabel + " (" + xunits + ")"
 
   xyres2@vpWidthF = .20          ; set width of second plot
   xyres2@trYMinF = ymin
@@ -657,6 +679,8 @@ begin
   xyres2@tiXAxisSide = "Top"
   xyres2@tmXTLabelsOn = True
   xyres2@tmXBLabelsOn = False
+
+  nframe = 0
 
   do ii = 0, nplots - 1
     if (ii .lt. dim_MOD) then
@@ -672,6 +696,7 @@ begin
     countdata = countdata * 1.0e3
 
     res@tiMainString = plotname
+    res@tiMainFontHeightF = 0.03
 
     if (ii .eq. ref_ind) then
       if (refname(varstart(0)) .eq. refname(varstart(1))) then
@@ -687,17 +712,21 @@ begin
 
     baseplots(ii) = gsn_csm_contour(wks, plotdata, res)
 
-    xyres1@tiYAxisString = zunits
-    xyres2@tiXAxisString = zunits
+    if (flag_sidepanels) then
+      xyres1@tiYAxisString = zunits
+      xyres2@tiXAxisString = zunits
 
-    xaddplots(ii) = gsn_csm_xy(wks, result&bin_x, \
-                               dim_avg_n(plotdata, 0), xyres1)
-    yaddplots(ii) = gsn_csm_xy(wks, dim_avg_n(plotdata, 1), \
-                               result&bin_y, xyres2)
-    xyres1@gsnAttachPlotsXAxis = True
-    plots(ii, 0) = gsn_attach_plots(baseplots(ii), xaddplots(ii), res, xyres1)
-    delete(xyres1@gsnAttachPlotsXAxis)
-    plots(ii, 1) = gsn_attach_plots(baseplots(ii), yaddplots(ii), res, xyres2)
+      xaddplots(ii) = gsn_csm_xy(wks, result&bin_x, \
+                                 dim_avg_n(plotdata, 0), xyres1)
+      yaddplots(ii) = gsn_csm_xy(wks, dim_avg_n(plotdata, 1), \
+                                 result&bin_y, xyres2)
+      xyres1@gsnAttachPlotsXAxis = True
+      plots(ii, 0) = gsn_attach_plots(baseplots(ii), xaddplots(ii), \
+                                      res, xyres1)
+      delete(xyres1@gsnAttachPlotsXAxis)
+      plots(ii, 1) = gsn_attach_plots(baseplots(ii), yaddplots(ii), \
+                                      res, xyres2)
+    end if
 
     draw(baseplots(ii))
     frame(wks)
@@ -726,23 +755,27 @@ begin
 
     baseplots_c(ii) = gsn_csm_contour(cwks, countdata, cres)
 
-    xaddplots_c(ii) = gsn_csm_xy(cwks, count&bin_x, \
-                                 dim_avg_n(countdata, 0), xyres1)
-    yaddplots_c(ii) = gsn_csm_xy(cwks, dim_avg_n(countdata, 1), \
-                                 count&bin_y, xyres2)
+    if (flag_sidepanels) then
+      xaddplots_c(ii) = gsn_csm_xy(cwks, count&bin_x, \
+                                   dim_avg_n(countdata, 0), xyres1)
+      yaddplots_c(ii) = gsn_csm_xy(cwks, dim_avg_n(countdata, 1), \
+                                   count&bin_y, xyres2)
 
-    xyres1@gsnAttachPlotsXAxis = True
-    plots_c(ii, 0) = gsn_attach_plots(baseplots_c(ii), \
-                                      xaddplots_c(ii), cres, xyres1)
-    delete(xyres1@gsnAttachPlotsXAxis)
-    plots_c(ii, 1) = gsn_attach_plots(baseplots_c(ii), \
-                                      yaddplots_c(ii), cres, xyres2)
+      xyres1@gsnAttachPlotsXAxis = True
+      plots_c(ii, 0) = gsn_attach_plots(baseplots_c(ii), \
+                                        xaddplots_c(ii), cres, xyres1)
+      delete(xyres1@gsnAttachPlotsXAxis)
+      plots_c(ii, 1) = gsn_attach_plots(baseplots_c(ii), \
+                                        yaddplots_c(ii), cres, xyres2)
+    end if
 
     draw(baseplots_c(ii))
     frame(cwks)
 
     delete(plotdata)
     delete(countdata)
+
+    nframe = nframe + 1
   end do
 
 ;  pres                      = True    ; needed to override
@@ -765,6 +798,11 @@ begin
   log_info("Wrote " + doutfile)
   log_info("Wrote " + coutfile)
 
+  suffix = get_file_suffix(outfile, 0)
+  if (suffix .eq. ".png") then
+    outfile = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
+  end if
+
   ; ==========================================================================
 
   ; ----------------------------------------------------------------------
@@ -777,6 +815,26 @@ begin
   caption = "Scatterplot of " + var_x + " (x) vs. " + var_y + " (y)."
   log_provenance(nc_outfile, outfile, caption, statistics, \
                  domain, plottype, "", "", infiles)
+
+  ; ----------------------------------------------------------------------
+  ; write relative differences of the probabilities (count) to netcdf
+  ; ----------------------------------------------------------------------
+
+  ref = where(count(ref_ind, :, :) .gt. 1.0e-3, count(ref_ind, :, :), \
+              count@_FillValue)
+  modavg = dim_avg_n_Wrap(count(idxmod, :, :), 0)
+  modavg = where(modavg .gt. 1.0e-3, modavg, modavg@_FillValue)
+
+  diff = modavg
+  diff = (diff - ref) / ref * 100.0
+
+  nc_filename3 = work_dir + "clouds_scatter_prob_" + var_x + "_" + var_y + \
+    "_mmm-ref-reldiff" + filename_add + ".nc"
+
+  diff@var_long_name = "(count(MMM) - count(REF)) / count(REF) * 100%"
+  diff@var_units = "%"
+
+  nc_outfile3 = ncdf_write(diff, nc_filename3)
 
   leave_msg(DIAG_SCRIPT, "")
 

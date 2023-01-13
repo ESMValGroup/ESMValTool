@@ -36,8 +36,7 @@
 ;   rel_diff:           if showdiff = True, then plot relative differences (%)
 ;                       (default = False)
 ;   rel_diff_min:       lower cutoff value in case of calculating relative
-;                       differences
-;                       (in units of input variable)
+;                       differences (in units of input variable)
 ;   region:             show only selected geographic region given as latmin,
 ;                       latmax, lonmin, lonmax
 ;   timemean:           time averaging - "seasonal" = DJF, MAM, JJA, SON),
@@ -62,6 +61,7 @@
 ;
 ; Modification history
 ;   20211021-lauer_axel: added output of basic statistics as ascii files
+;   20211006-lauer_axel: removed write_plots
 ;   20210325-lauer_axel: added option to estimate observational uncertainty
 ;                        from multiple observational datasets
 ;   20210318-lauer_axel: added option to speficfy variable if more than one
@@ -191,6 +191,7 @@ begin
     end if
   else
     ref_ind = -1  ; set to invalid value
+    idxobs = -1
     ; if attribute is present, use it so correlations can be calculated
     if (isvar("refname")) then
       ; set reference model
@@ -282,7 +283,7 @@ begin
       ref_tmp(i, :, :) = mean
     end do
     delete(mean)
-    ; note: we are using dim_avg_n_Warp so missing values are ignored
+    ; note: we are using dim_avg_n_Wrap so missing values are ignored
     ;       when averaging
     ref_avg = dim_avg_n_Wrap(ref_tmp, 0)
     delete(ref_tmp)
@@ -319,7 +320,7 @@ begin
       delete(ymean)
     end do
     delete(sigma2)
-    ; note: we are using dim_avg_n_Warp so missing values are ignored
+    ; note: we are using dim_avg_n so missing values are ignored
     ;       when averaging
     ref_std = sqrt(dim_avg_n(sig_tmp, 0))
     delete(sig_tmp)
@@ -469,6 +470,7 @@ begin
 
 ;    res@tiMainOn             = False
     res@tiMainString = names(imod) + years_str
+    res@tiMainFontHeightF = 0.025
 
     res@cnLevelSelectionMode = "ExplicitLevels"
     res@cnLinesOn            = False
@@ -556,6 +558,8 @@ begin
     res@cnInfoLabelOn      = False    ; turn off cn info label
     res@mpPerimOn          = perim    ; draw line around map
 
+    res@gsnStringFontHeightF = 0.02
+
     ; specified in namelist
 
     res@mpProjection       = projection
@@ -626,29 +630,56 @@ begin
       if (numseas.gt.1) then
         do is = 0, numseas - 1
           if (same_grid .and. (ref_ind .ge. 0)) then
-            corr(imod, is) = calculate_metric(ref_data(is, :, :), \
-                                              data1(is, :, :), "correlation")
+            mask1 = ref_data(is, :, :)
+            mask2 = data1(is, :, :)
+            mask1 = where(.not.ismissing(mask1), 0., mask1@_FillValue)
+            mask2 = where(.not.ismissing(mask2), 0., mask2@_FillValue)
+            amask = mask1 + mask2
+            delete(mask1)
+            delete(mask2)
+            refmasked = ref_data(is, :, :)
+            refmasked = refmasked + amask
+            datmasked = data1(is, :, :)
+            datmasked = datmasked + amask
+            corr(imod, is) = calculate_metric(refmasked, datmasked, \
+                                              "correlation")
+;            corr(imod, is) = calculate_metric(ref_data(is, :, :), \
+;                                              data1(is, :, :), "correlation")
+            delete(amask)
+            delete(refmasked)
+            delete(datmasked)
           end if
           gavg(imod, is) = area_operations(data1(is, :, :), -90., 90., \
                                            0., 360., "average", True)
         end do
       else
         if (same_grid .and. (ref_ind .ge. 0)) then
-          corr(imod, 0) = calculate_metric(ref_data, data1, "correlation")
+          mask1 = ref_data
+          mask2 = data1
+          mask1 = where(.not.ismissing(mask1), 0., mask1@_FillValue)
+          mask2 = where(.not.ismissing(mask2), 0., mask2@_FillValue)
+          amask = mask1 + mask2
+          delete(mask1)
+          delete(mask2)
+          refmasked = ref_data
+          refmasked = refmasked + amask
+          datmasked = data1
+          datmasked = datmasked + amask
+          corr(imod, 0) = calculate_metric(refmasked, datmasked, "correlation")
+;          corr(imod, 0) = calculate_metric(ref_data, data1, "correlation")
+          delete(amask)
+          delete(refmasked)
+          delete(datmasked)
         end if
         gavg(imod, 0) = area_operations(data1, -90., 90., 0., 360., \
                                         "average", True)
       end if
     end if
 
-;    res@gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
-;                                              / tofloat((dim_MOD + 1) / 2)/))
-;    res@gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
-;                                              / tofloat((dim_MOD + 1) / 2)/))
-
     res@lbTitleString      = data1@units
     res@lbTitlePosition    = "Bottom"
-    res@lbTitleFontHeightF = 0.015
+    res@lbTitleFontHeightF = 0.02
+    res@lbLabelFontHeightF = 0.02
 
     ; ###########################################
     ; # create the plot                         #
@@ -657,6 +688,8 @@ begin
     ; function in aux_plotting.ncl
 
     if (ii.eq.0) then
+      nframe = 0
+      ndframe = 0
       ; note: an array of workspaces (i.e. wks(numseas)) does not work as
       ;       attributes cannot be assigned to each array element
       ;       individually
@@ -735,6 +768,8 @@ begin
       maps(imod, 0) = gsn_csm_contour_map(wks0, data1, res)
     end if
 
+    nframe = nframe + 1
+
     ; mandatory netcdf output
 
     data1@var = var0 + "_mean_" + names(imod)
@@ -760,9 +795,12 @@ begin
 
         dres@gsnLeftString  = ""
         dres@gsnRightString = ""
+        dres@gsnCenterString = ""
         dres@mpPerimOn      = perim    ; draw line around map
+        dres@gsnStringFontHeightF = 0.02
 
         dres@tiMainString =  names(imod) + " - " + refname + years_str
+        dres@tiMainFontHeightF = 0.025
 
         rmsd(imod, :) = rmsd@_FillValue
         bias(imod, :) = bias@_FillValue
@@ -795,6 +833,7 @@ begin
         dres@gsnLeftString  = ""
         dres@gsnRightString = ""
         dres@tiMainString =  refname + " uncertainty" + years_str
+        dres@gsnCenterString = ""
         rmsd(imod, :) = rmsd@_FillValue
         bias(imod, :) = bias@_FillValue
       else
@@ -808,20 +847,14 @@ begin
       ; # plot ressources                         #
       ; ###########################################
 
-;      dres@gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
-;                                           / tofloat((dim_MOD + 1) / 2)/))
-;      dres@gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
-;                                           / tofloat((dim_MOD + 1) / 2)/))
-
-;      dres@tiMainOn       = False
-
       dres@cnFillOn       = True      ; color plot desired
       dres@cnLineLabelsOn = False     ; contour lines
       dres@cnLinesOn      = False
 
       dres@lbTitleString      = diff@units
       dres@lbTitlePosition    = "Bottom"
-      dres@lbTitleFontHeightF = 0.015
+      dres@lbTitleFontHeightF = 0.02
+      dres@lbLabelFontHeightF = 0.02
 
       ; colors
       ; http://www.ncl.ucar.edu/Document/Graphics/color_table_gallery.shtml
@@ -1023,6 +1056,11 @@ begin
           else
             dres@gsnLeftString = ""
           end if
+          if (.not.ismissing(corr(imod, is))) then
+            dres@gsnCenterString = "corr = " + sprintf("%6.3f", corr(imod, is))
+          else
+            dres@gsnCenterString = ""
+          end if
 
           if (is.eq.0) then
             maps_d(imod, is) = gsn_csm_contour_map(wks0d, diff(is, :, :), dres)
@@ -1048,6 +1086,12 @@ begin
         else
           dres@gsnLeftString = ""
         end if
+        if (.not.ismissing(corr(imod, 0))) then
+          dres@gsnCenterString = "corr = " + sprintf("%6.3f", corr(imod, 0))
+        else
+          dres@gsnCenterString = ""
+        end if
+
         maps_d(imod, 0) = gsn_csm_contour_map(wks0d, diff, dres)
 
         ; obs uncertainty
@@ -1082,6 +1126,7 @@ begin
           xres@gsnRightString   = ""
           xres@gsnLeftString    = ""
           xres@gsnCenterString  = ""
+          xres@gsnCenterString  = ""
           xres@tiYAxisOn = False
           xres@tmXBBorderOn = False
           xres@tmXTBorderOn = False
@@ -1105,6 +1150,8 @@ begin
           frame(wks0d)
         end if  ; if flag_multiobs_unc
       end if  ; if numseas .gt. 1
+
+      ndframe = ndframe + 1
 
       ; mandatory netcdf output
 
@@ -1263,8 +1310,17 @@ begin
     end if
   end if  ; if embracesetup
 
+  nframe = nframe + 1
+
   do is = 0, numseas - 1
     log_info("Wrote " + outfile(is))
+  end do
+
+  do is = 0, numseas - 1
+    suffix = get_file_suffix(outfile(is), 0)
+    if (suffix .eq. ".png") then
+      outfile(is) = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
+    end if
   end do
 
   ; ------------------------------------------------------------------------
@@ -1425,6 +1481,13 @@ begin
                                  (dim_MOD + 3) / 4, 4, pres)
       end if
     end if  ; end if embracesetup
+
+    do is = 0, numseas - 1
+      suffix = get_file_suffix(outfile_d(is), 0)
+      if (suffix .eq. ".png") then
+        outfile_d(is) = suffix@fBase + "." + sprinti("%0.6i", ndframe) + suffix
+      end if
+    end do
 
     do is = 0, numseas - 1
       log_info(" Wrote " + outfile(is))

@@ -45,12 +45,12 @@ def _extract_variable(cmor_info, attrs, var_file, out_dir, cfg):
                                 var_name='time',
                                 long_name='time')
     lats = iris.coords.DimCoord(
-        90.0 - np.arange(array.shape[1]) * cfg['delta_degrees'],
+        83.65972 - np.arange(array.shape[1]) * cfg['delta_degrees'],
         standard_name='latitude',
         var_name='lat',
         long_name='latitude')
     lons = iris.coords.DimCoord(
-        180.0 + np.arange(array.shape[2]) * cfg['delta_degrees'],
+        -180.0 + np.arange(array.shape[2]) * cfg['delta_degrees'],
         standard_name='longitude',
         var_name='lon',
         long_name='longitude')

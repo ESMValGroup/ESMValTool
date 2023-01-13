@@ -12,6 +12,7 @@
 ;   filename_add:       optionally add this string to plot filesnames
 ;   min_mass:           minimum cloud condensate (same units as clw, cli)
 ;   mm_mean_median:     calculate multi-model mean and meadian
+;   nbins: number of equally spaced bins (ta (x-axis)), default = 20
 ;   panel_labels:       label individual panels (true, false)
 ;   PanelTop:           manual override for "@gnsPanelTop" used by panel
 ;                       plot(s)
@@ -20,7 +21,6 @@
 ;   none
 ;
 ; Optional variable_info attributes (variable specific)
-;   nbins: number of equally spaced bins (ta (x-axis)), default = 20
 ;   reference_dataset: reference dataset
 ;
 ; Caveats
@@ -185,7 +185,19 @@ begin
 
   ; -------------------------------------------------------------------------
 
+  ; create index vector with reference dataset as first entry (index 0)
+  ; so reference icefrac is calculated first
+
+  idataset = ispan(0,  dim_MOD - 1, 1)
+  idataset0 = idataset(0)
+  i1 = ind(idataset .eq. refidx_clw)
+  idataset(0) = idataset(i1)
+  idataset(i1) = idataset0
+
   do ii = 0, dim_MOD - 1
+
+    i = idataset(ii)
+
     atts_cli = True
     atts_cli@short_name = "cli"
 
@@ -196,15 +208,15 @@ begin
     atts_ta@short_name = "ta"
 
     ; reference datasets may have different names
-    if (ii .eq. refidx_clw) then
+    if (i .eq. refidx_clw) then
       atts_clw@dataset = refname(0)
       atts_cli@dataset = refname(1)
       atts_ta@dataset = refname(2)
     ; all other datasets: force same dataset name for clw, cli and ta
     else
-      atts_clw@dataset = names_clw(ii)
-      atts_cli@dataset = names_clw(ii)
-      atts_ta@dataset = names_clw(ii)
+      atts_clw@dataset = names_clw(i)
+      atts_cli@dataset = names_clw(i)
+      atts_ta@dataset = names_clw(i)
     end if
 
     ; read cli
@@ -275,7 +287,43 @@ begin
     icefrac = 100.0 * cli / mass
     liqfrac = 100.0 * clw / mass
 
-    delete(cli)
+    ; ========================================================================
+
+    ; output zonal means of cli with max icefrac limited to observed icefrac
+    ; ----------------------------------------------------------------------
+    ; as modeled and observed timeseries of icefrac may differ in length and
+    ; years covered, we use average seasonal cycles instead of the full time
+    ; series
+
+    copy_VarMeta(cli, icefrac)
+    icedims = dimsizes(cli)
+    icedimnames = getvardims(cli)
+    lonidx = ind(icedimnames .eq. "lon")
+    if (ismissing(lonidx)) then
+      error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
+    end if
+
+    if (ii .eq. 0) then
+      system("rm " + config_user_info@work_dir + "zonal.nc")
+      zonalfile = addfile(config_user_info@work_dir + "zonal.nc", "c")
+    end if
+
+    cli_avg = time_operations(cli, -1, -1, "average", "monthlyclim", True)
+    zcli = dim_avg_n_Wrap(cli_avg, lonidx)
+    delete(zcli&month)
+    zcli!0 = "time"
+    zcli&time = ispan(0, 11, 1)
+
+    var = "f_" + tostring(atts_cli@dataset)
+    zonalfile->$var$ = zcli
+
+    delete(cli_avg)
+    delete(zcli)
+
+    ; ========================================================================
+
+    cli1d = ndtooned(cli)
+
     delete(clw)
     delete(mass)
 
@@ -315,28 +363,68 @@ begin
     resulti@_FillValue = ice1d@_FillValue
     resultl@_FillValue = ice1d@_FillValue
 
+    cli_limited1d = cli1d
+
     do n = 0, nbins - 1
-      resulti(ii, n) = 0.0
-      resultl(ii, n) = resultl@_FillValue
+      resulti(i, n) = 0.0
+      resultl(i, n) = resultl@_FillValue
       x0 = xmin + n * binsize
       x1 = x0 + binsize
       idx0 = ind((ta1d .gt. x0) .and. (ta1d .le. x1))
       if (.not.all(ismissing(idx0))) then
         nv = num(.not.ismissing(ice1d(idx0)))
         if (nv .gt. 0) then
-          resulti(ii, n) = avg(ice1d(idx0))
+          resulti(i, n) = avg(ice1d(idx0))
+          ; ------------------------------------------------------------------
+
+          iref = idataset(0)
+          ifrac_ref = resulti(iref, n)
+          ifrac_mod = resulti(i, n)
+
+          if (.not.ismissing(ifrac_ref) .and. .not.ismissing(ifrac_mod)) then
+            if (ifrac_mod .gt. 0.0) then
+              corr_fac = ifrac_ref / ifrac_mod
+              if (corr_fac .lt. 1.0) then
+                cli_limited1d(idx0) = cli1d(idx0) * corr_fac
+              end if
+            end if
+          end if
+          ; ------------------------------------------------------------------
         end if
         nv = num(.not.ismissing(liq1d(idx0)))
         if (nv .gt. 0) then
-          resultl(ii, n) = avg(liq1d(idx0))
+          resultl(i, n) = avg(liq1d(idx0))
         end if
       end if
       delete(idx0)
     end do
 
+    cli_limited = onedtond(cli_limited1d, icedims)
+    copy_VarMeta(cli, cli_limited)
+
+    cli_avg = time_operations(cli_limited, -1, -1, "average", \
+                              "monthlyclim", True)
+    zcli = dim_avg_n_Wrap(cli_avg, lonidx)
+    delete(zcli&month)
+    zcli!0 = "time"
+    zcli&time = ispan(0, 11, 1)
+
+    var = "l_" + tostring(atts_cli@dataset)
+    zonalfile->$var$ = zcli
+
+    delete(cli_avg)
+    delete(zcli)
+    delete(cli_limited)
+    delete(cli_limited1d)
+
     delete(ice1d)
     delete(liq1d)
     delete(ta1d)
+    delete(cli1d)
+    delete(icedims)
+    delete(icedimnames)
+
+    delete(cli)
 
   ; ==========================================================================
 
@@ -411,7 +499,9 @@ begin
       end do
     end if
 
-    delete(stat)
+    if (isdefined("stat")) then
+      delete(stat)
+    end if
     delete(idx0)
     delete(imod)
   end if
@@ -526,6 +616,8 @@ begin
     data_l(0, :) = data@_FillValue
   end if
 
+  nframe = 0
+
   do ii = 0, dim_MOD + add_dim_MOD - 1
     if (ii .eq. refidx_ta) then
       continue
@@ -597,6 +689,7 @@ begin
     draw(plots_l(ii))
     frame(wks_l)
 
+    nframe = nframe + 1
   end do
 
   pres                      = True    ; needed to override
@@ -617,6 +710,17 @@ begin
   outfile_l = panelling(wks_l, plots_l(idx0), (n + 3) / 4, 4, pres)
   log_info("Wrote " + outfile_l)
   delete(idx0)
+
+  nframe = nframe + 1
+
+  suffix = get_file_suffix(outfile_i, 0)
+  if (suffix .eq. ".png") then
+    outfile_i = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
+  end if
+  suffix = get_file_suffix(outfile_l, 0)
+  if (suffix .eq. ".png") then
+    outfile_l = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
+  end if
 
   ; ==========================================================================
 

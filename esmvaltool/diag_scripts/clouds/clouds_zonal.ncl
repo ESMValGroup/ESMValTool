@@ -483,10 +483,12 @@ begin
       ;       individually
       wks0 = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + var0 + \
                      "_" + season(0) + filename_add)
+      nframe = 0
       ; difference plots will be saved to a different file
       if (flag_diff) then
         wks0d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + \
                         var0 + "_bias_" + season(0) + filename_add)
+        ndframe = 0
       end if
       if (numseas.gt.1) then
         wks1 = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + var0 + \
@@ -573,6 +575,7 @@ begin
         maps(imod, 0) = gsn_csm_contour(wks0, data1, res)
       end if
     end if
+    nframe = nframe + 1
 
     ; mandatory netcdf output
 
@@ -831,6 +834,7 @@ begin
           maps_d(imod, 0) = gsn_csm_contour(wks0d, diff, dres)
         end if
       end if
+      ndframe = ndframe + 1
 
       ; mandatory netcdf output
 
@@ -1117,9 +1121,17 @@ begin
                              4, pres)
     end if
   end if  ; if embracesetup
+  nframe = nframe + 1
 
   do is = 0, numseas - 1
     log_info("Wrote " + outfile(is))
+  end do
+
+  do is = 0, numseas - 1
+    suffix = get_file_suffix(outfile(is), 0)
+    if (suffix .eq. ".png") then
+      outfile(is) = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
+    end if
   end do
 
   ; ------------------------------------------------------------------------
@@ -1276,6 +1288,14 @@ begin
                                  (dim_MOD + 3) / 4, 4, pres)
       end if
     end if  ; end if embracesetup
+    ndframe = ndframe + 1
+
+    do is = 0, numseas - 1
+      suffix = get_file_suffix(outfile_d(is), 0)
+      if (suffix .eq. ".png") then
+        outfile_d(is) = suffix@fBase + "." + sprinti("%0.6i", ndframe) + suffix
+      end if
+    end do
 
     do is = 0, numseas - 1
       log_info(" Wrote " + outfile(is))

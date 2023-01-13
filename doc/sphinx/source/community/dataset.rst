@@ -3,9 +3,14 @@
 Making a new dataset
 ********************
 
-If you are contributing a new dataset, please have a look at :ref:`new-cmorizer` for how to do so.
-If you need the new dataset for a new recipe, please make a separate pull
-for the CMORizer script.
+If you are contributing a new dataset, please have a look at
+:ref:`new-cmorizer` for how to do so.
+Please always create separate pull requests for CMORizer scripts, even when
+introducing a new dataset or updating an existing dataset with a new recipe.
+
+If you are updating a CMORizer script to support a different dataset version,
+please have a look at :ref:`dataset-versions` for how to handle multiple
+dataset versions.
 
 .. _dataset-documentation:
 
@@ -16,7 +21,7 @@ The documentation required for a CMORizer script is the following:
 
 - Make sure that the new dataset is added to the list of
   :ref:`supported_datasets` and to the file datasets.yml_.
-- The in code documentation should contain clear instructions on how to obtain
+- The code documentation should contain clear instructions on how to obtain
   the data.
 - A BibTeX file named ``<dataset>.bibtex`` defining the reference for the new
   dataset should be placed in the directory ``esmvaltool/references/``, see
@@ -53,7 +58,8 @@ To test a pull request for a new CMORizer script:
 Scientific sanity check
 =======================
 
-When contributing a new dataset, we expect that the numbers and units of the dataset look physically meaningful.
+When contributing a new dataset, we expect that the numbers and units of the
+dataset look physically meaningful.
 The scientific reviewer needs to check this.
 
 Data availability
@@ -69,8 +75,8 @@ He is also the person in charge of merging CMORizer pull requests.
 Detailed checklist for reviews
 ==============================
 
-This (non-exhaustive) checklist provides ideas for things to check when reviewing
-pull requests for new or updated CMORizer scripts.
+This (non-exhaustive) checklist provides ideas for things to check when
+reviewing pull requests for new or updated CMORizer scripts.
 
 Dataset description
 -------------------

@@ -11,6 +11,7 @@
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
 ;   colormap:        e.g., WhiteBlueGreenYellowRed, rainbow
+;   epsilon:         "epsilon" value to be replaced with missing values
 ;   explicit_cn_levels: use these contour levels for plotting
 ;   filename_add:    optionally add this string to plot filesnames
 ;   projection:      map projection, e.g., Mollweide, Mercator
@@ -50,8 +51,8 @@ load "$diag_scripts/shared/dataset_selection.ncl"
 begin
   enter_msg(DIAG_SCRIPT, "")
 
-;  set_default_att(diag_script_info, "colormap", "WhiteBlueGreenYellowRed")
   set_default_att(diag_script_info, "colormap", "BkBlAqGrYeOrReViWh200")
+  set_default_att(diag_script_info, "epsilon", 1.0e-4)
   set_default_att(diag_script_info, "filename_add", "")
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
   set_default_att(diag_script_info, "var", "")
@@ -184,7 +185,8 @@ begin
     ; calculate amplitude at each grid cell
 
     monmean = dim_avg_n_Wrap(timeseries, 0)
-    monmean = where(abs(monmean) .le. 1.0e-6, monmean@_FillValue, monmean)
+    monmean = where(abs(monmean) .le. diag_script_info@epsilon, \
+                    monmean@_FillValue, monmean)
 
     monmin = monmean
     monmax = monmin
@@ -216,6 +218,8 @@ begin
       end if
     end if
 
+    same_grid = False
+
     ; calculate multi-obs and multi-model averages (if requested)
 
     if (flag_multiobs) then
@@ -236,6 +240,7 @@ begin
                     + "common grid.")
         end if
         multiobs_all(iidx, :, :) = data1
+        same_grid = True
       end if
     end if
 
@@ -257,6 +262,7 @@ begin
                     + "common grid.")
         end if
         multimod_all(iidx, :, :) = data1
+        same_grid = True
       end if
     end if
 
@@ -289,7 +295,8 @@ begin
     ; annotation
 
     res@tiMainString = names(imod)
-    res@gsnLeftStringFontHeightF = 0.015
+    res@tiMainFontHeightF = 0.025
+    res@gsnStringFontHeightF = 0.02
     res@cnLevelSelectionMode = "ExplicitLevels"
 
     if (diag_script_info@projection.eq."Robinson") then
@@ -315,9 +322,12 @@ begin
     fill_colors = ispan(1, clen(0) - 1, stride)
     res@cnFillColors = pal(fill_colors, :)
 
-    res@gsnRightString       = ""
+    res@gsnRightString  = ""
+    res@gsnLeftString   = ""
+    res@gsnCenterString = ""
 
     gavg = area_operations(data1, -90., 90., 0., 360., "average", True)
+
     if (.not.ismissing(gavg)) then
       res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
     else
@@ -383,16 +393,19 @@ begin
 
     res@lbTitleString      = data1@units
     res@lbTitlePosition    = "Bottom"
-    res@lbTitleFontHeightF = 0.015
+    res@lbTitleFontHeightF = 0.02
+    res@lbLabelFontHeightF = 0.02
 
     ; function in aux_plotting.ncl
 
     if (ii.eq.0) then
       wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_seasonal_cycle_" \
                     + var0 + filename_add)
+      nframe = 0
     end if
 
     maps(ii) = gsn_csm_contour_map(wks, data1, res)
+    nframe = nframe + 1
 
     ; #########################################
     ; # output all datasets to common netCDF  #
@@ -421,6 +434,12 @@ begin
   pres@pmLabelBarOrthogonalPosF   = -0.01     ; shift label bar a bit to
                                               ; the bottom
   outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
+  nframe = nframe + 1
+
+  suffix = get_file_suffix(outfile, 0)
+  if (suffix .eq. ".png") then
+    outfile = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
+  end if
 
   ; plot multi-obs and multi-model average (if requested)
 
@@ -432,16 +451,40 @@ begin
     res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
     res@tiMainString = "Multi-obs average"
     map_multiobs = gsn_csm_contour_map(wks, multiobs, res)
+    nframe = nframe + 1
   end if
 
   if (flag_multimod) then
     multimod = dim_avg_n(multimod_all, 0)
     delete(multimod_all)
     copy_VarMeta(data1, multimod)
-    gavg = area_operations(multimod, -90., 90., 0., 360., "average", True)
+
+    mask1 = multiobs
+    mask2 = multimod
+    mask1 = where(.not.ismissing(mask1), 0., mask1@_FillValue)
+    mask2 = where(.not.ismissing(mask2), 0., mask2@_FillValue)
+    amask = mask1 + mask2
+    delete(mask1)
+    delete(mask2)
+    refmasked = multiobs
+    refmasked = refmasked + amask
+    datmasked = multimod
+    datmasked = datmasked + amask
+    delete(amask)
+    corr = calculate_metric(refmasked, datmasked, "correlation")
+    gavg = area_operations(datmasked, -90., 90., 0., 360., "average", True)
+    rmsd = calculate_metric(refmasked, datmasked, "RMSD")
+
+    delete(refmasked)
+    delete(datmasked)
+
+;    gavg = area_operations(multimod, -90., 90., 0., 360., "average", True)
     res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
+    res@gsnCenterString = "corr = " + sprintf("%6.3f", corr)
+    res@gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd)
     res@tiMainString = "Multi-model average"
     map_multimod = gsn_csm_contour_map(wks, multimod, res)
+    nframe = nframe + 1
   end if
 
   log_info(" Wrote " + outfile)

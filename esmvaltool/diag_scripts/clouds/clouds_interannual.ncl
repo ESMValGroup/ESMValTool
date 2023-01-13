@@ -13,6 +13,7 @@
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
 ;   colormap:        e.g., WhiteBlueGreenYellowRed, rainbow
+;   epsilon:         "epsilon" value to be replaced with missing values
 ;   explicit_cn_levels: use these contour levels for plotting
 ;   filename_add:    optionally add this string to plot filesnames
 ;   projection:      map projection, e.g., Mollweide, Mercator
@@ -30,6 +31,7 @@
 ;   none
 ;
 ; Modification history
+;   20211006-lauer_axel: removed write_plots
 ;   20210413-lauer_axel: added multi-obs mean and average over all models
 ;                        as individual plots
 ;   20210407-lauer_axel: added option to speficfy variable if more than one
@@ -65,6 +67,7 @@ begin
   enter_msg(DIAG_SCRIPT, "")
 
   set_default_att(diag_script_info, "colormap", "WhiteBlueGreenYellowRed")
+  set_default_att(diag_script_info, "epsilon", 1.0e-4)
   set_default_att(diag_script_info, "filename_add", "")
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
   set_default_att(diag_script_info, "var", "")
@@ -247,7 +250,7 @@ begin
     end if
     mean = time_operations(A0, -1, -1, "average", "annualclim", True)
     ; replace "epsilon" values with missing value
-    mean = where(abs(mean).lt.1.0e-4, mean@_FillValue, mean)
+    mean = where(abs(mean).lt.diag_script_info@epsilon, mean@_FillValue, mean)
     data1 = 100.0 * data1 / abs(mean)
 
     ; create arrays for multi-obs and multi-model averages (if requested)
@@ -337,7 +340,8 @@ begin
     ; annotation
 
     res@tiMainString = names(imod)
-    res@gsnLeftStringFontHeightF = 0.015
+    res@tiMainFontHeightF = 0.025
+    res@gsnStringFontHeightF = 0.02
     res@cnLevelSelectionMode = "ExplicitLevels"
 
     if (diag_script_info@projection.eq."Robinson") then
@@ -429,16 +433,19 @@ begin
 
     res@lbTitleString      = data1@units
     res@lbTitlePosition    = "Bottom"
-    res@lbTitleFontHeightF = 0.015
+    res@lbTitleFontHeightF = 0.02
+    res@lbLabelFontHeightF = 0.02
 
     ; function in aux_plotting.ncl
 
     if (ii.eq.0) then
       wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
                     + var0 + filename_add)
+      nframe = 0
     end if
 
     maps(ii) = gsn_csm_contour_map(wks, data1, res)
+    nframe = nframe + 1
 
     ; #########################################
     ; # output all datasets to common netCDF  #
@@ -467,6 +474,7 @@ begin
   pres@pmLabelBarOrthogonalPosF   = -0.01     ; shift label bar a bit to
                                               ; the bottom
   outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
+  nframe = nframe + 1
 
   ; plot multi-obs and multi-model average (if requested)
 
@@ -484,13 +492,49 @@ begin
     multimod = dim_avg_n(multimod_all, 0)
     delete(multimod_all)
     copy_VarMeta(data1, multimod)
-    gavg = area_operations(multimod, -90., 90., 0., 360., "average", True)
+
+    mask1 = multiobs
+    mask2 = multimod
+    mask1 = where(.not.ismissing(mask1), 0., mask1@_FillValue)
+    mask2 = where(.not.ismissing(mask2), 0., mask2@_FillValue)
+    amask = mask1 + mask2
+    delete(mask1)
+    delete(mask2)
+    refmasked = multiobs
+    refmasked = refmasked + amask
+    datmasked = multimod
+    datmasked = datmasked + amask
+    delete(amask)
+    corr = calculate_metric(refmasked, datmasked, "correlation")
+    gavg = area_operations(datmasked, -90., 90., 0., 360., \
+                           "average", True)
+    rmsd = calculate_metric(refmasked, datmasked, "RMSD")
+
+;    system("rm debug.nc")
+;    debugfile = addfile("debug.nc", "c")
+;    debugfile->refmasked = refmasked
+;    debugfile->datmasked = datmasked
+
+    delete(refmasked)
+    delete(datmasked)
+
     res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
+    res@gsnCenterString = "corr = " + sprintf("%6.3f", corr)
+    res@gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd)
+
+;    gavg = area_operations(multimod, -90., 90., 0., 360., "average", True)
+;    res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
     res@tiMainString = "Multi-model average"
     map_multimod = gsn_csm_contour_map(wks, multimod, res)
+
   end if
 
   log_info(" Wrote " + outfile)
+
+  suffix = get_file_suffix(outfile, 0)
+  if (suffix .eq. ".png") then
+    outfile = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
+  end if
 
   ; ------------------------------------------------------------------------
   ; write provenance to common netcdf and plot file
@@ -502,6 +546,30 @@ begin
   caption = "Interannual variability of variable " + var0 + "."
   log_provenance(nc_outfile, outfile, caption, statistics, domain, \
                  plottype, "", "", infiles)
+
+  ; ----------------------------------------------------------------------
+  ; write differences of the multi-model and multi-obs means to netcdf
+  ; ----------------------------------------------------------------------
+
+  if (flag_multimod .and. flag_multiobs) then
+    diff = multimod
+    diff = diff - multiobs
+    diff@var = "MMM-MOBSMEAN"
+
+    nc_filename2 = work_dir + "clouds_interannual_" + var0 + \
+      "_mmm-mobsmean-absdiff.nc"
+    nc_filename2@existing = "append"
+
+    diff@var_long_name = "MMM - MOBSMEAN"
+    multimod@var = "MMM"
+    multimod@var_long_name = "multi-model mean (MMM)"
+    multiobs@var = "MOBSMEAN"
+    multiobs@var_long_name = "multi-obs mean (MOBSMEAN)"
+
+    nc_outfile2 = ncdf_write(diff, nc_filename2)
+    nc_outfile2 = ncdf_write(multimod, nc_filename2)
+    nc_outfile2 = ncdf_write(multiobs, nc_filename2)
+  end if
 
   leave_msg(DIAG_SCRIPT, "")
 

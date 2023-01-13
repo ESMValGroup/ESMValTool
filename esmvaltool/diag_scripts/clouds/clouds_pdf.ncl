@@ -220,22 +220,22 @@ begin
     ; function in aux_plotting.ncl
 
     if (ii.eq.0) then
+      nframe = 0
       wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_pdf_" + var0 \
                     + filename_add)
       wks_line = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_pdf_" + var0 \
                          + filename_add + "_line")
     end if
 
-;    res@gsnDraw                  = False
-;    res@gsnFrame                 = False
     res@gsnHistogramComputePercentages = True
     res@gsnHistogramPercentSign = True
-    res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
+    res@tiXAxisString = data1@var + " (" + data1@units + ")"
     res@tmYLOn = False
     res@tiYAxisOn = False
     res@tiMainString             = names(imod)
 
     plot(ii) = gsn_histogram(wks, ndtooned(data1), res)
+    nframe = nframe + 1
 
     ; mandatory netcdf output
 
@@ -364,6 +364,12 @@ begin
 
   gsn_panel(wks, plot(plotind), plotsperline, pres)
   outfile = wks@fullname
+  nframe = nframe + 1
+
+  suffix = get_file_suffix(outfile, 0)
+  if (suffix .eq. ".png") then
+    outfile = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
+  end if
 
   ; ========================================================================
 
@@ -397,7 +403,8 @@ begin
   else
     res@trYMaxF  = max(data_all)
   end if
-  res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
+;  res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
+  res@tiXAxisString = data1@var + " (" + data1@units + ")"
   res@tiYAxisString = "Frequency (" + data_all@units + ")"
 
   lineplot = gsn_csm_xy(wks_line, data_all&$var0$, data_all, res)
@@ -459,6 +466,7 @@ begin
   end if
 
   draw(lineplot)
+  frame(wks_line)
 
 ;  delete(res)
 ;  res = True
@@ -495,6 +503,46 @@ begin
   caption = "Pdf of variable " + var0 + ")."
   log_provenance(nc_outfile, outfile, caption, statistics, \
                  domain, plottype, "", "", climofiles)
+
+  ; ----------------------------------------------------------------------
+  ; write mmm and ref to additional netcdf
+  ; ----------------------------------------------------------------------
+
+  if (isvar("idxmod")) then
+    delete(idxmod)
+  end if
+  idxmod = get_mod(names, projects)
+  ; calculate mmm
+  mmmpdf = dim_avg_n_Wrap(data_all(idxmod, :), 0)
+
+  mmmpdf@diag_script = (/DIAG_SCRIPT/)
+  mmmpdf@var = var0 + "_pdf_mmm"
+  mmmpdf@datasets = str_join(names(idxmod), ", ")
+
+  if (var0 .eq. "clt") then
+    x = mmmpdf&$var0$
+    idx60 = ind(x .ge. 60.)
+    idx80 = ind(x .ge. 80.)
+    mmmpdf@cummulative_freq_ge_60 = sum(mmmpdf(idx60))
+    mmmpdf@cummulative_freq_ge_80 = sum(mmmpdf(idx80))
+  end if
+
+  nc_filename2 = work_dir + "clouds_pdf_" + var0 + filename_add + "_mmm_ref.nc"
+
+  if (ref_ind .ge. 0) then
+    refpdf = data_all(ref_ind, :)
+    refpdf@diag_script = (/DIAG_SCRIPT/)
+    refpdf@var = var0 + "_pdf_ref"
+    refpdf@datasets = names(ref_ind)
+    if (var0 .eq. "clt") then
+      refpdf@cummulative_freq_ge_60 = sum(refpdf(idx60))
+      refpdf@cummulative_freq_ge_80 = sum(refpdf(idx80))
+    end if
+    nc_outfile2 = ncdf_write(refpdf, nc_filename2)
+    nc_filename2@existing = "append"
+  end if
+
+  nc_outfile2 = ncdf_write(mmmpdf, nc_filename2)
 
   ; ========================================================================
 

@@ -6,49 +6,104 @@
 ;   Read ice fraction from clouds_lifrac_scatter.ncl and plot results for
 ;   cmip5/cmip6 model pairs defined below.
 ;
+; Required diag_script_info attributes (diagnostic specific)
+;   models: array of CMIP5/CMIP6 model pairs to be compared
+;   refname: name of reference dataset
+;
+; Optional diag_script_info attributes (diagnostic specific)
+;   nbins: number of bins used by clouds_lifrac_scatter.ncl (default = 20)
+;   reg: region (string) (default = "")
+;   t_int: array of temperatures for printing additional diagnostics
+;
+; Required variable attributes (variable specific)
+;   none
+;
+; Optional variable_info attributes (variable specific)
+;   none
+;
+; Caveats
+;   none
+;
 ; Modification history
 ;   20211113-lauer_axel: written.
 ;
 ; ############################################################################
 
+load "$diag_scripts/../interface_scripts/interface.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
+
 begin
 
-  inpath = "/pf/b/b380103/workesm/esmvaltool_output/" \
-           + "recipe_clouds_lifrac_scatter_20211110_123241/work"
+  enter_msg(DIAG_SCRIPT, "")
 
-  diag = "clouds_lifrac_scatter_postproc.ncl"
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info(DIAG_SCRIPT)
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  models = (/(/"bcc-csm1-1", "BCC-CSM2-MR"/), \
-             (/"CESM1-WACCM", "CESM2-WACCM"/), \
-             (/"GFDL-CM3", "GFDL-CM4"/), \
-             (/"GISS-E2-H", "GISS-E2-1-H"/), \
-             (/"HadGEM2-CC", "HadGEM3-GC31-LL"/), \
-             (/"MIROC-ESM", "MIROC-ES2L"/), \
-             (/"MPI-ESM-LR", "MPI-ESM1-2-LR"/), \
-             (/"MRI-ESM1", "MRI-ESM2-0"/), \
-             (/"NorESM1-M", "NorESM2-LM"/)/)
+  set_default_att(diag_script_info, "nbins", 20)
+  set_default_att(diag_script_info, "reg", "")
+  set_default_att(diag_script_info, "t_int", (/240.0, 250.0, 260.0, 270.0/))
 
-  refname = "CLOUDSAT-L2-CALIPSO-ICECLOUD-ERA5"
+  models = diag_script_info@models
+  t_int = diag_script_info@t_int
+
+  if (isatt(diag_script_info, "refname")) then
+    refname = diag_script_info@refname
+  else
+    error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined (refname).")
+  end if
 
   dims = dimsizes(models)
   nmod = dims(0)
 
-  nbins = 20
+  nbins = diag_script_info@nbins
+  reg = diag_script_info@reg
+
+  test = str_lower(diag_script_info@input_files)
+
+  i = dimsizes(test)
+  if (i .ne. 2) then
+    error_msg("f", DIAG_SCRIPT, "", "number of datasets (ancestors) is " \
+              + tostring(i) + ", expected 2")
+  end if
+
+  if (reg .ne. "") then
+    reg = "_" + reg
+  end if
+
+  fname5 = ""
+  fname6 = ""
+
+  do i = 0, dimsizes(test) - 1
+    if (isStrSubset(test(i), "cmip5")) then
+      fname5 = diag_script_info@input_files(i) + \
+               "/clouds_lifrac_scatter_ice_cmip5" + reg + ".nc"
+    end if
+    if (isStrSubset(test(i), "cmip6")) then
+      fname6 = diag_script_info@input_files(i) + \
+               "/clouds_lifrac_scatter_ice_cmip6" + reg + ".nc"
+    end if
+  end do
+
+  if (fname5 .eq. "") then
+    error_msg("f", DIAG_SCRIPT, "", "no dataset (ancestor) for CMIP5 found.")
+  end if
+  if (fname6 .eq. "") then
+    error_msg("f", DIAG_SCRIPT, "", "no dataset (ancestor) for CMIP6 found.")
+  end if
 
   results = new((/nmod, nbins, 2/), float)
   refdata = new(nbins, float)
   mmmedian = new((/nbins, 2/), float)
+  mmmean = new((/nbins, 2/), float)
   mmp10 = new((/nbins, 2/), float)
   mmp90 = new((/nbins, 2/), float)
+  mmstd = new((/nbins, 2/), float)
 
   ; CMIP5
-  fname5 = inpath + "/lifrac_scatter_cmip5/lifrac_scatter/" \
-    + "clouds_lifrac_scatter_ice_cmip5.nc"
   infile5 = addfile(fname5, "r")
   icefrac5 = infile5->icefrac
   ; CMIP6
-  fname6 = inpath + "/lifrac_scatter_cmip6/lifrac_scatter/" \
-    + "clouds_lifrac_scatter_ice_cmip6.nc"
   infile6 = addfile(fname6, "r")
   icefrac6 = infile6->icefrac
 
@@ -93,22 +148,43 @@ begin
   idx6 = ind(idxtmp .ge. 0)
   delete(idxtmp)
 
+  model_ok = new((/nmod, 2/), logical)
+  model_ok = False
+  ref_ok = False
+
   do imod = 0, nmod - 1
     idx = ind(models5 .eq. models(imod, 0))
     if (.not. ismissing(idx)) then
       results(imod, :, 0) = icefrac5(idx, :)
+      model_ok(imod, 0) = True
     end if
     idx = ind(models6 .eq. models(imod, 1))
     if (.not. ismissing(idx)) then
       results(imod, :, 1) = icefrac6(idx, :)
+      model_ok(imod, 1) = True
     end if
     idx = ind(models6 .eq. refname)
     if (.not. ismissing(idx)) then
       refdata(:) = icefrac6(idx, :)
+      ref_ok = True
     end if
   end do
 
-  ; calculate multi-model median and p10 and p90
+  if (any(.not. model_ok(:, 0))) then
+    inotok = ind(.not. model_ok(:, 0))
+    log_info("warning: could not find data for the following CMIP5 model(s) " \
+             + str_join(models(inotok, 0), ","))
+  end if
+  if (any(.not. model_ok(:, 1))) then
+    inotok = ind(.not. model_ok(:, 1))
+    log_info("warning: could not find data for the following CMIP6 model(s) " \
+             + str_join(models(inotok, 1), ","))
+  end if
+
+  ; calculate multi-model, p10 and p90, mean and standard deviation
+
+  print("T (K), CMIP5-CMIP6 (abs), CMIP5-CMIP6 (rel), CMIP5, CMIP6, ref")
+  print("--------------------------------------------------------------")
 
   do n = 0, nbins - 1
     selection = icefrac5(idx5, n)
@@ -123,11 +199,16 @@ begin
       mmmedian(n, 0) = sorted(i50)
       mmp90(n, 0) = sorted(i90)
       delete(sorted)
+      mmmean(n, 0) = avg(selection)
+      mmstd(n, 0) = stddev(selection)
     else
       mmp10(n, 0) = mmp10@_FillValue
       mmedian(n, 0) = mmmedian@_FillValue
       mmp90(n, 0) = mmp90@_FillValue
+      mmmean(n, 0) = mmmean@_FillValue
+      mmstd(n, 0) = mmstd@_FillValue
     end if
+
     delete(selection)
     delete(itmp)
 
@@ -143,20 +224,52 @@ begin
       mmmedian(n, 1) = sorted(i50)
       mmp90(n, 1) = sorted(i90)
       delete(sorted)
+      mmmean(n, 1) = avg(selection)
+      mmstd(n, 1) = stddev(selection)
     else
       mmp10(n, 1) = mmp10@_FillValue
       mmedian(n, 0) = mmmedian@_FillValue
       mmp90(n, 1) = mmp90@_FillValue
+      mmmean(n, 1) = mmmean@_FillValue
+      mmstd(n, 1) = mmstd@_FillValue
     end if
+
     delete(selection)
     delete(itmp)
+
+    delta = mmmean(n, 0) - mmmean(n, 1)
+
+    if (n .ge. 1) then
+      do it = 0, dimsizes(t_int) - 1
+        if ((results&bin(n - 1) .lt. t_int(it)) .and. \
+            (results&bin(n) .gt. t_int(it))) then
+          dx = results&bin(n) - results&bin(n - 1)
+          dy5 = mmmean(n, 0) - mmmean(n - 1, 0)
+          dy6 = mmmean(n, 1) - mmmean(n - 1, 1)
+          dyr = refdata(n) - refdata(n - 1)
+          r5 = mmmean(n - 1, 0) + dy5 / dx * (t_int(it) - results&bin(n - 1))
+          r6 = mmmean(n - 1, 1) + dy6 / dx * (t_int(it) - results&bin(n - 1))
+          rr = refdata(n - 1) + dyr / dx * (t_int(it) - results&bin(n - 1))
+
+          print(tostring(t_int(it)) + ", " + tostring(r5) + ", " \
+                + tostring(r6) + ", " + tostring(rr))
+        end if
+      end do
+    end if
+
+    mmmean = where(mmmean .eq. 0, mmmean@_FillValue, mmmean)
+
+    print(tostring(results&bin(n)) + ", " + tostring(delta) + " (" \
+          + tostring(delta / mmmean(n, 0) * 100.0 + "%)") \
+          + ", " + tostring(mmmean(n, 0)) + ", " + tostring(mmmean(n, 1)) \
+          + ", " + tostring(refdata(n)))
   end do
 
   ; ###########################################
   ; # create the plots                        #
   ; ###########################################
 
-  plots = new(nmod + 1, graphic)
+  plots = new(nmod + 2, graphic)
 
   res = True
   res@gsnDraw        = False  ; do not draw yet
@@ -191,41 +304,61 @@ begin
   lgres@lgLineLabelsOn     = False
   lgres@lgMarkerSizeF      = 0.01
 
-  wks = gsn_open_wks("pdf", "clouds_lifrac_scatter_post_ice")
+  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, \
+                "clouds_lifrac_scatter_post_ice" + reg)
 
   data = new((/3, nbins/), float)
 
-  do ii = 0, nmod
+  do ii = 0, nmod + 1
     if (ii .lt. nmod) then
       data(0, :) = results(ii, :, 0)
       data(1, :) = results(ii, :, 1)
       data(2, :) = refdata(:)
       labels = (/models(ii, 0), models(ii, 1), "observations"/)
-    else
+    else if (ii .eq. nmod) then
       data(0, :) = (/mmmedian(:, 0)/)
       data(1, :) = (/mmmedian(:, 1)/)
       data(2, :) = refdata(:)
       labels = (/"CMIP5 MMMedian", "CMIP6 MMMedian", "observations"/)
+    else if (ii .eq. nmod + 1) then
+      data(0, :) = (/mmmean(:, 0)/)
+      data(1, :) = (/mmmean(:, 1)/)
+      data(2, :) = refdata(:)
+      labels = (/"CMIP5 MMMean", "CMIP6 MMMean", "observations"/)
+    end if
+    end if
     end if
 
     plots(ii) = gsn_csm_xy(wks, results&bin, data, res)
 
     gsn_legend_ndc(wks, 3, labels, 0.58, 0.78, lgres)
 
-    if (ii .eq. nmod) then
+    if (ii .ge. nmod) then
       res2 = True
       res2@gsnDraw         = False   ; do not draw yet
       res2@gsnFrame        = False  ; don't advance frame
       res2@xyLineColor     = -1  ; Make lines transparent
       mmvar = new((/2, nbins/), float)
-      mmvar(0, :) = mmp10(:, 0)
-      mmvar(1, :) = mmp90(:, 0)
-      res2@gsnXYFillColors = (/1.0, 0.9, 0.9, 1.0/)  ; "lightpink"
+      if (ii .eq. nmod) then  ; median + percentiles
+        mmvar(0, :) = mmp10(:, 0)
+        mmvar(1, :) = mmp90(:, 0)
+      else if (ii .eq. nmod + 1) then  ; mean + stddev
+        mmvar(0, :) = mmmean(:, 0) - mmstd(:, 0)
+        mmvar(1, :) = mmmean(:, 0) + mmstd(:, 0)
+      end if
+      end if
+      res2@gsnXYFillColors = (/0.9, 0.9, 1.0, 1.0/)  ; "lightblue"
       plotvar5 = gsn_csm_xy(wks, results&bin, mmvar, res2)
       overlay(plots(ii), plotvar5)
-      mmvar(0, :) = mmp10(:, 1)
-      mmvar(1, :) = mmp90(:, 1)
-      res2@gsnXYFillColors = (/0.9, 0.9, 1.0, 0.3/)  ; "lightpink"
+      if (ii .eq. nmod) then  ; median + percentiles
+        mmvar(0, :) = mmp10(:, 1)
+        mmvar(1, :) = mmp90(:, 1)
+      else if (ii .eq. nmod + 1) then
+        mmvar(0, :) = mmmean(:, 1) - mmstd(:, 1)
+        mmvar(1, :) = mmmean(:, 1) + mmstd(:, 1)
+      end if
+      end if
+      res2@gsnXYFillColors = (/1.0, 0.9, 0.9, 0.3/)  ; "lightpink"
       plotvar6 = gsn_csm_xy(wks, results&bin, mmvar, res2)
       overlay(plots(ii), plotvar6)
       delete(mmvar)
