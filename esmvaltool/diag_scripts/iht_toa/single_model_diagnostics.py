@@ -10,7 +10,7 @@ import cartopy.crs as ccrs
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import gridspec
+from matplotlib import gridspec, rcParams
 from poisson_solver import spherical_poisson
 
 from esmvaltool.diag_scripts.shared import (
@@ -21,6 +21,20 @@ from esmvaltool.diag_scripts.shared import (
 
 # Initialise logger
 logger = logging.getLogger(Path(__file__).stem)
+
+rcParams.update({
+    'font.size': 14,
+    'text.latex.preamble': [r"\usepackage{amsmath}"],
+    'xtick.major.pad': 10,
+    'ytick.major.pad': 10,
+    'xtick.major.size': 10,
+    'ytick.major.size': 10,
+    'xtick.minor.size': 5,
+    'ytick.minor.size': 5,
+    'axes.linewidth': 2,
+    'lines.markersize': 8,
+    'lines.linewidth': 2
+})
 
 
 def get_provenance_record(plot_type, ancestor_files):
@@ -139,7 +153,19 @@ class implied_heat_transport:
         self.lat = flux.coord('latitude').points
         self.lon = flux.coord('longitude').points
         del flux
+
+        # Compute derived fields
+        self.derived_fields()
         return
+
+    def derived_fields(self):
+        for cube in self.mht_clim:
+            if cube.var_name == "rlut_mht":
+                dcube = cube.copy()
+                dcube.data = -dcube.data
+                dcube.var_name = "rlnt_mht"
+                dcube.long_name = "rlnt_mht"
+                self.mht_clim.append(dcube)
 
     def print(self):
         print("=== implied_heat_transport object ===")
@@ -394,7 +420,7 @@ def efp_maps(iht, model, experiment, cfg):
                ['$P_{TOA}^{LW}$', "$Delta F_{TOA}^{LW}$"]])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
-    figname = "efp_and_flux_toa_net_{}_{}.png".format(model, experiment)
+    figname = "efp_and_flux_toa_net_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
     # Figure 4
     iht.quiver_subplot(
@@ -411,7 +437,7 @@ def efp_maps(iht, model, experiment, cfg):
                ['$P_{TOA}^{LWCRE}$', '$Delta CRE_{TOA}^{LW}$']])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
-    figname = "efp_and_flux_toa_cre_{}_{}.png".format(model, experiment)
+    figname = "efp_and_flux_toa_cre_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
     # Figure 5
     iht.quiver_subplot(
@@ -426,13 +452,13 @@ def efp_maps(iht, model, experiment, cfg):
                ['$P_{TOA}^{SWup, all}$', '$Delta CRE_{TOA}^{SWup, all}$']])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
-    figname = "efp_and_flux_toa_rsut_{}_{}.png".format(model, experiment)
+    figname = "efp_and_flux_toa_rsut_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
 
 
 def mht_plots(iht, model, experiment, cfg):
     # Figure 1
-    iht.mht_plot(["rtnt_mht", "rsnt_mht", "rlut_mht"], ['Net', 'SW', 'LW'])
+    iht.mht_plot(["rtnt_mht", "rsnt_mht", "rlnt_mht"], ['Net', 'SW', 'LW'])
     provenance_record = get_provenance_record(plot_type='zonal',
                                               ancestor_files=iht.flx_files)
     figname = "mht_toa_net_{}_{}.png".format(model, experiment)
@@ -442,7 +468,7 @@ def mht_plots(iht, model, experiment, cfg):
                      ['Net CRE', 'SW CRE', 'LW CRE'],
                      ['rsut_mht', 'rsutcs_mht'],
                      ['-1 x OSR (all-sky)', '-1 x OSR (clear-sky)'])
-    figname = "mht_toa_cre_and_osr_{}_{}.png".format(model, experiment)
+    figname = "mht_toa_cre_and_osr_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
     return
 
