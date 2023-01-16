@@ -77,7 +77,7 @@ Diagnostics are stored in diag_scripts/clouds/
 * clouds_pdf.ncl: pdf of cloud parameters
 * clouds_seasonal_cycle.ncl: seasonal cycle amplitude
 * clouds_taylor.ncl: Taylor diagrams as in `Lauer and Hamilton (2013)`_
-* clouds_taylor_double.ncl: Taylor diagrams as in `Lauer et al. (2022)`_
+* clouds_taylor_double.ncl: Taylor diagrams as in `Lauer et al. (2023)`_
 * clouds_zonal.ncl: zonal means of 3-dim variables
 
 
