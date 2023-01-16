@@ -640,7 +640,7 @@ def test_fit_and_score_weighted_no_weights(scorer, output):
     clf = LinearRegression()
     fit_and_score_weighted_args = [clf, X_DATA, Y_DATA, scorer, TRAIN, TEST]
     fit_and_score_weighted_kwargs = {
-        'parameters': {'normalize': False},
+        'parameters': {'copy_X': True},
         'fit_params': None,
     }
 
@@ -666,7 +666,7 @@ def test_fit_and_score_weighted_weights(scorer, output):
     clf = LinearRegression()
     fit_and_score_weighted_args = [clf, X_DATA, Y_DATA, scorer, TRAIN, TEST]
     fit_and_score_weighted_kwargs = {
-        'parameters': {'normalize': False},
+        'parameters': {'copy_X': True},
         'fit_params': {'sample_weight': SAMPLE_WEIGHTS},
         'sample_weights': SAMPLE_WEIGHTS,
     }
