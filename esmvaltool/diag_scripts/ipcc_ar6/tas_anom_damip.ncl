@@ -562,10 +562,14 @@ begin
   if isatt(diag_script_info, "legend") then
 
     labels = diag_script_info@legend
-    labels = ListAppend(labels, "Observations")
-    cmap = ListAppend(cmap, "black")
+    print(labels)
+    labels := array_append_record(labels, "Observations", 0)
+    print(labels)
+    print(cmap)
+    cmap := array_append_record(cmap, (/0, 0, 0, 1/), 0)  ; add black
+    print(cmap)
 
-    wks = gsn_open_wks(file_type, "legend")
+    wks = gsn_open_wks(file_type, config_user_info@plot_dir + "legend")
 
     lgres = True
 
