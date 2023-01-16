@@ -556,6 +556,37 @@ begin
   log_info(" wrote " + outfile + "." + file_type)
 
   ; ***************************************
+  ; add file with legend
+  ; ***************************************
+
+  if isatt(diag_script_info, "legend") then
+
+    labels = diag_script_info@legend
+    labels = ListAppend(labels, "Observations")
+    cmap = ListAppend(cmap, "black")
+
+    wks = gsn_open_wks(file_type, "legend")
+
+    lgres = True
+
+    lgres@vpWidthF           = 0.7                   ; width of legend (NDC)
+    lgres@vpHeightF          = 0.4                   ; height of legend (NDC)
+
+    lgres@lgTitleString      = "Legend with four items"
+    lgres@lgTitleFontHeightF = 0.03
+    lgres@lgAutoManage       = False
+
+    lgres@lgLineColors = cmap
+    lgres@lgLineThicknessF = 3.
+    lgres@lgLineLabelStrings = labels
+
+    gsn_legend_ndc(wks, 5, labels, 0.1, 0.95, lgres)
+
+    frame(wks)
+
+  end if
+
+  ; ***************************************
   ; add meta data to plot (for reporting)
   ; ***************************************
 
@@ -567,7 +598,8 @@ begin
     statistics = "mean"
   end if
 
-  caption = "Time series of the " + statistics + " for " + info_items[0]@long_name
+  caption = "Time series of the " + statistics + " for " \
+            + info_items[0]@long_name
   contrib_authors = (/"bock_lisa"/)
 
   ; Call provenance logger
