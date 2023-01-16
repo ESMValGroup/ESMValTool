@@ -34,15 +34,17 @@ following figures from `Eyring et al. (2021)`_ can currently be reproduced:
 
     * Figure 3.42: Relative Model Performance
 
+To reproduce Fig. 3.9 please upload the shapefile of the `AR6 reference regions
+<https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions>`_
+(`IPCC-WGI-reference-regions-v4_shapefile.zip
+<https://github.com/SantanderMetGroup/ATLAS/blob/v1.6/reference-regions/IPCC-WGI-reference-regions-v4_shapefile.zip>`_)
+and store it in `<auxiliary_data_dir>/IPCC-regions/` (the `auxiliary_data_dir`
+is defined in the `config-user.yml
+<https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#user-configuration-file>`_
+file).
+
 .. _`Eyring et al., 2021`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
 .. _`Eyring et al. (2021)`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
-
-To reproduce Fig. 3.9 please upload the shapefile of the [AR6 reference regions]
-(https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions)
-([IPCC-WGI-reference-regions-v4_shapefile.zip]
-(https://github.com/SantanderMetGroup/ATLAS/blob/v1.6/reference-regions/IPCC-WGI-reference-regions-v4_shapefile.zip))
-and store it in `<auxiliary_data_dir>/IPCC-regions/` (the `auxiliary_data_dir`
-is defined in the `config-user.yml` file).
 
 
 Available recipes and diagnostics
@@ -392,14 +394,14 @@ Example plots
    :align:   center
 
    Figure 3.9: Global, land and ocean annual mean near-surface air
-   temperatures anomalies in CMIP6 models and observations. Timeseries are
+   temperature anomalies in CMIP6 models and observations. Timeseries are
    shown for CMIP6 historical anthropogenic and natural (brown) natural-only
    (green), greenhouse gas only (grey) and aerosol only (blue) simulations
    (multi-model means shown as thick lines, and shaded ranges between the 5th
    and 95th percentiles) and for HadCRUT5 (black). All models have been
-   subsampled using the HadCRUT5 observational data mask. Temperatures
+   subsampled using the HadCRUT5 observational data mask. Temperature
    anomalies are shown relative to 1950-2010 for Antarctica and relative to
-   1850-1900 for other continents. CMIP6 historical simulations are expand by
+   1850-1900 for other continents. CMIP6 historical simulations are expanded by
    the SSP2-4.5 scenario simulations. All available ensemble members were used.
    Regions are defined by Iturbide et al. (2020). 
 
