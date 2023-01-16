@@ -8,6 +8,8 @@ documentation:
   description: |
     Producing Fig. 3.9 in the IPCC Working Group I Contribution to the Sixth
     Assessment Report: Chapter 3
+    To run the recipe please upload the shapefile of the AR6 reference regions
+    (see detailed information in the documentation of this recipe).
 
   authors:
     - bock_lisa
@@ -21,6 +23,7 @@ documentation:
 
   references:
     - eyring21ipcc
+    - iturbide20essd
 
 
 preprocessors:

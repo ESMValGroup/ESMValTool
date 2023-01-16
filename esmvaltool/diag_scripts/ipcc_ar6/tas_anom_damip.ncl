@@ -567,8 +567,7 @@ begin
     statistics = "mean"
   end if
 
-  caption = "Time series of the " + statistics + " for near-surface " \
-    + "air temperature."
+  caption = "Time series of the " + statistics + " for " + info_items[0]@long_name
   contrib_authors = (/"bock_lisa"/)
 
   ; Call provenance logger
@@ -579,7 +578,7 @@ begin
                  domain, \
                  "times", \
                  contrib_authors, \
-                 (/"flato13ipcc", "jones13jgr"/), \
+                 (/"eyring21ipcc"/), \
                  metadata_att_as_array(input_file_info, "filename"))
 
   leave_msg(DIAG_SCRIPT, "")

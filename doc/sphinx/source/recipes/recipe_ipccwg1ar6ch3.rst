@@ -34,11 +34,12 @@ following figures from `Eyring et al. (2021)`_ can currently be reproduced:
 
     * Figure 3.42: Relative Model Performance
 
-To reproduce Fig. 3.9 please upload the shapefile of the `AR6 reference regions
+To reproduce Fig. 3.9 you need the shapefile of the `AR6 reference regions
 <https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions>`_
-(`IPCC-WGI-reference-regions-v4_shapefile.zip
-<https://github.com/SantanderMetGroup/ATLAS/blob/v1.6/reference-regions/IPCC-WGI-reference-regions-v4_shapefile.zip>`_)
-and store it in `<auxiliary_data_dir>/IPCC-regions/` (the `auxiliary_data_dir`
+(`Iturbide et al., 2020 <https://doi.org/10.5194/essd-12-2959-2020>`_).
+Please upload the file `IPCC-WGI-reference-regions-v4_shapefile.zip
+<https://github.com/SantanderMetGroup/ATLAS/blob/v1.6/reference-regions/IPCC-WGI-reference-regions-v4_shapefile.zip>`,_
+unzip and store it in `<auxiliary_data_dir>/IPCC-regions/` (the `auxiliary_data_dir`
 is defined in the `config-user.yml
 <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#user-configuration-file>`_
 file).
