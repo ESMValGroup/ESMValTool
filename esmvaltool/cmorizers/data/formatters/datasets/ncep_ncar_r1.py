@@ -73,21 +73,27 @@ logger = logging.getLogger(__name__)
 
 def _fix_units(cube, definition):
     """Fix issues with the units."""
-    logger.info(cube.var_name)
-    if cube.var_name in {'ta', 'ts'}:
-        # Change units degrees celcius to Kelvin
-        cube.units = definition.units
-        cube.data = cube.core_data() + 273.15
+    """Exception is 'pr' since the units in the"""
+    """raw file are not recoginzed correctly."""
+    
+    if cube.var_name not in {'pr'}:
+        cube.convert_units(definition.units)
 
-    if cube.var_name in {'hus'}:
-        # Change units from grams/kg to kg/kg
-        cube.units = definition.units
-        cube.data = cube.core_data() / 1000.
+#    logger.info(cube.var_name)
+#    if cube.var_name in {'ta', 'ts'}:
+#        # Change units degrees celcius to Kelvin
+#        cube.units = definition.units
+#        cube.data = cube.core_data() + 273.15
 
-    if cube.var_name in {'psl'}:
-        # Change units from hPa to Pa
-        cube.units = definition.units
-        cube.data = cube.core_data() * 100.
+#    if cube.var_name in {'hus'}:
+#        # Change units from grams/kg to kg/kg
+#        cube.units = definition.units
+#        cube.data = cube.core_data() / 1000.
+
+#    if cube.var_name in {'psl'}:
+#        # Change units from hPa to Pa
+#        cube.units = definition.units
+#        cube.data = cube.core_data() * 100.
 
 
 def _fix_coordinates(cube, definition, cmor_info):

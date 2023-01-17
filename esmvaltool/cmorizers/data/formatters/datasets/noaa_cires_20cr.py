@@ -11,21 +11,14 @@ Last access
 
 Download and processing instructions
     To facilitate the download, the links to the ftp server are provided.
-    Since the filenames are sometimes identical across different
-    save the data in three subdirectories in input_dir_path.
 
     ftp://ftp.cdc.noaa.gov/Projects/20thC_ReanV2/Monthlies/
 
-    Subdirectory surface/:
         pr_wtr.eatm.mon.mean.nc
         cldwtr.eatm.mon.mean.nc
-
-    Subdirectory surface_gauss/:
         tcdc.eatm.mon.mean.nc
         ulwrf.ntat.mon.mean.nc
         uswrf.ntat.mon.mean.nc
-
-    Subdirectory pressure/:
         shum.mon.mean.nc
 
 Caveats
