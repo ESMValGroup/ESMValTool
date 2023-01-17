@@ -109,6 +109,8 @@ User settings in recipe
      "CylindricalEquidistant")
    * showdiff: calculate and plot differences model - reference
      (default = false)
+   * showyears: add start and end years to the plot titles
+     (default = false)
    * rel_diff: if showdiff = true, then plot relative differences (%)
      (default = False)
    * ref_diff_min: lower cutoff value in case of calculating relative
@@ -297,7 +299,7 @@ User settings in recipe
 
    none
 
-8. Script clouds_lifrac_pdf.ncl
+8. Script clouds_pdf.ncl
 
    *Required settings (scripts)*
 
@@ -333,6 +335,8 @@ User settings in recipe
    * explicit_cn_levels: use these contour levels for plotting
    * filename_add: optionally add this string to plot filesnames
    * projection: map projection, e.g., Mollweide, Mercator
+   * showyears: add start and end years to the plot titles
+     (default = false)
    * var: short_name of variable to process (default = "" i.e. use
      first variable in variable list)
 
