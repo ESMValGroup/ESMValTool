@@ -448,8 +448,8 @@ def efp_maps(iht, model, experiment, cfg):
         wlevstep=3,
         vmin=-0.3,
         vmax=0.3,
-        title=[['$P_{TOA}^{SWup, clr}$', '$Delta CRE_{TOA}^{SWup, clr}$'],
-               ['$P_{TOA}^{SWup, all}$', '$Delta CRE_{TOA}^{SWup, all}$']])
+        title=[['$P_{TOA}^{SWup, clr}$', r'$\Delta CRE_{TOA}^{SWup, clr}$'],
+               ['$P_{TOA}^{SWup, all}$', r'$\Delta CRE_{TOA}^{SWup, all}$']])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
     figname = "efp_and_flux_toa_rsut_{}_{}".format(model, experiment)
@@ -496,9 +496,6 @@ def main(cfg):
 
     # Solve Poisson equation for each dataset
     for model_name in model_dataset:
-        if model_name == 'CERES-EBAF':
-            # Ignore any observational data
-            continue
         logger.info("Processing model data: %s", model_name)
         iht[model_name] = compute_efp_and_mht(model_dataset[model_name])
 
