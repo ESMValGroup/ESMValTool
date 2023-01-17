@@ -164,8 +164,23 @@ class implied_heat_transport:
                 dcube = cube.copy()
                 dcube.data = -dcube.data
                 dcube.var_name = "rlnt_mht"
-                dcube.long_name = "rlnt_mht"
+                dcube.long_name = "meridional_heat_transport_of_rlnt"
                 self.mht_clim.append(dcube)
+        for cube in self.efp_clim:
+            if cube.var_name == "rlut_efp":
+                dcube = cube.copy()
+                dcube.data = -dcube.data
+                dcube.var_name = "rlnt_efp"
+                dcube.long_name = "energy_flux_potential_of_rlnt"
+                self.efp_clim.append(dcube)
+        for cube in self.flx_clim:
+            if cube.var_name == "rlut":
+                dcube = cube.copy()
+                dcube.data = -dcube.data
+                dcube.var_name = "rlnt"
+                dcube.long_name = "radiative_flux_of_rlnt"
+                self.flx_clim.append(dcube)
+        self.print()
 
     def print(self):
         print("=== implied_heat_transport object ===")
@@ -250,7 +265,7 @@ class implied_heat_transport:
         for i in range(len(var_names_r)):
             mht = self.mht_clim.extract_cube(
                 var_name_constraint(var_names_r[i])).data / 1e15
-            ax2.plot(self.lat, mht, label=legend_r[i], color=col[i])
+            ax2.plot(self.lat, -mht, label=legend_r[i], color=col[i])
         ax2.axhline(0, color='k', ls=':')
         ax2.axvline(0, color='k', ls=':')
         ax2.set_xlim(-90, 90)
@@ -279,19 +294,22 @@ class implied_heat_transport:
                        wlevstep,
                        vmin,
                        vmax,
+                       nlevs,
                        label=[['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
                        xy_label=(0, 1.05),
-                       title=[['', ''], ['', ''], ['', '']]):
-        x, y = np.meshgrid(self.lon, self.lat)
+                       title=[['', ''], ['', ''], ['', '']],
+                       change_sign=[[False, False], [False, False],
+                                    [False, False]]):
 
-        levels1 = np.linspace(vmin, vmax, 11)
+        x, y = np.meshgrid(self.lon, self.lat)
+        levels1 = np.linspace(vmin, vmax, nlevs)
         levels2 = np.linspace(wmin, wmax, nwlevs)
         nrows = len(var_name)
         # Calculate sampling for vector plot
         nlon = len(self.lon)
         nlat = len(self.lat)
-        stepx = 20
-        stepy = 20
+        stepx = nlon // 20
+        stepy = nlat // 10
         startx = self.quiver_steps(nlon, stepx)
         starty = self.quiver_steps(nlat, stepy)
 
@@ -315,6 +333,10 @@ class implied_heat_transport:
                 var_name_constraint(var_name[i][1])).data
             efp -= np.average(efp)  # Arbitrary choice of origin
             flx -= np.average(flx)
+            if change_sign[i][0]:
+                efp = -efp
+            if change_sign[i][1]:
+                flx = -flx
             v, u = np.gradient(efp, 1e14, 1e14)
             u = u[1:-1, 1:-1]
             v = v[1:-1, 1:-1]
@@ -408,16 +430,17 @@ class implied_heat_transport:
 def efp_maps(iht, model, experiment, cfg):
     # Figure 2
     iht.quiver_subplot(
-        [['rtnt_efp', 'rtnt'], ['rsnt_efp', 'rsnt'], ['rlut_efp', 'rlut']],
+        [['rtnt_efp', 'rtnt'], ['rsnt_efp', 'rsnt'], ['rlnt_efp', 'rlnt']],
         wmin=-180,
         wmax=180,
         nwlevs=19,
         wlevstep=4,
         vmin=-1.2,
         vmax=1.2,
-        title=[['$P_{TOA}^{TOT}$', "$Delta F_{TOA}^{TOT}$"],
-               ['$P_{TOA}^{SW}$', "$Delta F_{TOA}^{SW}$"],
-               ['$P_{TOA}^{LW}$', "$Delta F_{TOA}^{LW}$"]])
+        nlevs=11,
+        title=[['$P_{TOA}^{TOT}$', r'$\Delta F_{TOA}^{TOT}$'],
+               ['$P_{TOA}^{SW}$', r'$\Delta F_{TOA}^{SW}$'],
+               ['$P_{TOA}^{LW}$', r'$\Delta F_{TOA}^{LW}$']])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
     figname = "efp_and_flux_toa_net_{}_{}".format(model, experiment)
@@ -432,9 +455,10 @@ def efp_maps(iht, model, experiment, cfg):
         wlevstep=2,
         vmin=-0.3,
         vmax=0.3,
-        title=[['$P_{TOA}^{TOTCRE}$', '$Delta CRE_{TOA}^{TOT}$'],
-               ['$P_{TOA}^{SWCRE}$', '$Delta CRE_{TOA}^{SW}$'],
-               ['$P_{TOA}^{LWCRE}$', '$Delta CRE_{TOA}^{LW}$']])
+        nlevs=11,
+        title=[['$P_{TOA}^{TOTCRE}$', r'$\Delta CRE_{TOA}^{TOT}$'],
+               ['$P_{TOA}^{SWCRE}$', r'$\Delta CRE_{TOA}^{SW}$'],
+               ['$P_{TOA}^{LWCRE}$', r'$\Delta CRE_{TOA}^{LW}$']])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
     figname = "efp_and_flux_toa_cre_{}_{}".format(model, experiment)
@@ -446,10 +470,12 @@ def efp_maps(iht, model, experiment, cfg):
         wmax=100,
         nwlevs=21,
         wlevstep=3,
-        vmin=-0.3,
-        vmax=0.3,
+        vmin=-0.35,
+        vmax=0.35,
+        nlevs=11,
         title=[['$P_{TOA}^{SWup, clr}$', r'$\Delta CRE_{TOA}^{SWup, clr}$'],
-               ['$P_{TOA}^{SWup, all}$', r'$\Delta CRE_{TOA}^{SWup, all}$']])
+               ['$P_{TOA}^{SWup, all}$', r'$\Delta CRE_{TOA}^{SWup, all}$']],
+        change_sign=[[True, True], [True, True]])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
     figname = "efp_and_flux_toa_rsut_{}_{}".format(model, experiment)
