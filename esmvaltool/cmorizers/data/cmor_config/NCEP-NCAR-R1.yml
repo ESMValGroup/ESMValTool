@@ -14,26 +14,26 @@ attributes:
 # Variables to CMORize
 variables:
 # daily frequency
-#  pr_day:
-#    short_name: pr
-#    mip: day
-#    raw: prate
-#    file: 'surface\/prate\.sfc\.gauss\.[0-9]{4}\.nc'
-#  rlut_day:
-#    short_name: rlut
-#    mip: day
-#    raw: ulwrf
-#    file: 'surface\/ulwrf\.ntat\.gauss\.[0-9]{4}\.nc'
-#  ua_day:
-#    short_name: ua
-#    mip: day
-#    raw: uwnd
-#    file: 'pressure\/uwnd\.[0-9]{4}\.nc'
-#  va_day:
-#    short_name: va
-#    mip: day
-#    raw: vwnd
-#    file: 'pressure\/vwnd\.[0-9]{4}\.nc' 
+  pr_day:
+    short_name: pr
+    mip: day
+    raw: prate
+    file: 'surface\/prate\.sfc\.gauss\.[0-9]{4}\.nc'
+  rlut_day:
+    short_name: rlut
+    mip: day
+    raw: ulwrf
+    file: 'surface\/ulwrf\.ntat\.gauss\.[0-9]{4}\.nc'
+  ua_day:
+    short_name: ua
+    mip: day
+    raw: uwnd
+    file: 'pressure\/uwnd\.[0-9]{4}\.nc'
+  va_day:
+    short_name: va
+    mip: day
+    raw: vwnd
+    file: 'pressure\/vwnd\.[0-9]{4}\.nc' 
 
 # monthly frequency
   clt_month:

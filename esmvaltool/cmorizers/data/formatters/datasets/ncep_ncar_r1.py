@@ -79,22 +79,6 @@ def _fix_units(cube, definition):
     if cube.var_name not in {'pr'}:
         cube.convert_units(definition.units)
 
-#    logger.info(cube.var_name)
-#    if cube.var_name in {'ta', 'ts'}:
-#        # Change units degrees celcius to Kelvin
-#        cube.units = definition.units
-#        cube.data = cube.core_data() + 273.15
-
-#    if cube.var_name in {'hus'}:
-#        # Change units from grams/kg to kg/kg
-#        cube.units = definition.units
-#        cube.data = cube.core_data() / 1000.
-
-#    if cube.var_name in {'psl'}:
-#        # Change units from hPa to Pa
-#        cube.units = definition.units
-#        cube.data = cube.core_data() * 100.
-
 
 def _fix_coordinates(cube, definition, cmor_info):
     # fix flipped latitude
