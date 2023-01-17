@@ -835,4 +835,5 @@ statistics:
   smpi: single metric performance index statistics
   mder: multiple diagnostic ensemble regression
   mvi: model variability index
+  pdf: probability density function (PDF)
   other: other statistics

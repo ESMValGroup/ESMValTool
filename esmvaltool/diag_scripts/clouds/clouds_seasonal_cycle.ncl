@@ -1,11 +1,9 @@
-; CLOUDS_INTERANNUAL
+; CLOUDS_SEASONAL_CYCLE
 ; ############################################################################
 ; Author: Axel Lauer (DLR, Germany)
-; PROJECT-NAME EMBRACE
 ; ############################################################################
 ; Description
-;   Calculates the interannual variability estimated as the temporal standard
-;   deviation calculated from monthly mean anomalies after subtracting the
+;   Calculates the amplitude and month of maximum values from the
 ;   climatological mean seasonal cycle.
 ;
 ; Required diag_script_info attributes (diagnostic specific)
@@ -17,7 +15,7 @@
 ;   explicit_cn_levels: use these contour levels for plotting
 ;   filename_add:    optionally add this string to plot filesnames
 ;   projection:      map projection, e.g., Mollweide, Mercator
-;   var:             short_name of variable to process (default = "" - use
+;   var:             short_name of variable to process (default = "" i.e. use
 ;                    first variable in variable list)
 ;
 ; Required variable_info attributes (variable specific)
@@ -31,20 +29,7 @@
 ;   none
 ;
 ; Modification history
-;   20211006-lauer_axel: removed write_plots
-;   20210413-lauer_axel: added multi-obs mean and average over all models
-;                        as individual plots
-;   20210407-lauer_axel: added option to speficfy variable if more than one
-;                        variable is present
-;   20190220-lauer_axel: added provenance to output (v2.0)
-;   20181120-lauer_axel: adapted code to multi-variable capable framework
-;   20180923-lauer_axel: added writing of results to netcdf
-;   20180611-lauer_axel: code rewritten for ESMValTool v2.0
-;   20170620-lauer_axel: added tags for reporting
-;   20160901-lauer_axel: added regridding option 1 deg x 1 deg
-;   20151027-lauer_axel: moved call to 'write_references' to the beginning
-;                        of the code
-;   20150415-lauer_axel: written.
+;   20210415-lauer_axel: written.
 ;
 ; ############################################################################
 
@@ -66,7 +51,7 @@ load "$diag_scripts/shared/dataset_selection.ncl"
 begin
   enter_msg(DIAG_SCRIPT, "")
 
-  set_default_att(diag_script_info, "colormap", "WhiteBlueGreenYellowRed")
+  set_default_att(diag_script_info, "colormap", "BkBlAqGrYeOrReViWh200")
   set_default_att(diag_script_info, "epsilon", 1.0e-4)
   set_default_att(diag_script_info, "filename_add", "")
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
@@ -106,17 +91,10 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
-  ; get multi-model mean index (if present)
-
-  mm_ind = ind(names .eq. "MultiModelMean")
-
-  if (ismissing(mm_ind)) then
-    mm_ind = -1
-  end if
-
   ref_ind = -1  ; set to invalid value
 
   ; if reference dataset has been defined, use it so plots can be sorted
+
   if (isvar("refname")) then
     ref_ind = ind(names .eq. refname)
   end if
@@ -196,62 +174,35 @@ begin
       error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
     end if
 
-    if (var0.eq."pr") then
-      ; convert from kg m-2 s-1 to mm day-1
-      A0 = A0 * 86400.0
-      A0@units = "mm day-1"
-    end if
-
-    ; check if time dimension is a multiple of 12
-    ; if not, use only complete years
-
-    idx = ind(dims .eq. "time")
-    if (.not.ismissing(idx)) then
-      dimsize = dimsizes(A0)
-      nt = dimsize(idx)
-      if (mod(nt, 12) .ne. 0) then
-        if (nt .lt. 12) then
-          error_msg("f", DIAG_SCRIPT, "", "time dimension < 12 (" \
-                    + names(imod) + ")")
-        else
-          tfull = nt - mod(nt, 12)
-          log_info("warning, using only first " + tostring(tfull) \
-                   + " time steps (" + names(imod) + ")")
-          if (dimsizes(dims) .eq. 2) then
-            A0 := A0(0:tfull - 1, :)
-          else if (dimsizes(dims) .eq. 3) then
-            A0 := A0(0:tfull - 1, :, :)
-          else
-            error_msg("f", DIAG_SCRIPT, "", "number of dimensions " \
-                      + "must be 2 or 3 (" + names(imod) + ")")
-          end if
-          end if
-        end if
-      end if
-    end if
-
-    ; subtract climatological seasonal cycle from time series
+    ; calculate climatological seasonal cycle from time series
 
     if (isvar("timeseries")) then
       delete(timeseries)
     end if
 
-    timeseries = calcMonAnomTLL(A0, time_operations(A0, -1, -1, \
-                                "average", "monthlyclim", True))
+    timeseries = time_operations(A0, -1, -1, "average", "monthlyclim", True)
 
-    ; calculate temporal standard deviation for each grid cell
+    ; calculate amplitude at each grid cell
 
-    data1 = dim_stddev_n_Wrap(timeseries, 0)
+    monmean = dim_avg_n_Wrap(timeseries, 0)
+    monmean = where(abs(monmean) .le. diag_script_info@epsilon, \
+                    monmean@_FillValue, monmean)
 
-    ; normalize standard deviation and convert to percent
+    monmin = monmean
+    monmax = monmin
 
-    if (isvar("mean")) then
-      delete(mean)
-    end if
-    mean = time_operations(A0, -1, -1, "average", "annualclim", True)
-    ; replace "epsilon" values with missing value
-    mean = where(abs(mean).lt.diag_script_info@epsilon, mean@_FillValue, mean)
-    data1 = 100.0 * data1 / abs(mean)
+    do i = 0, 11
+      monmin = where(timeseries(i, :, :) .lt. monmin, timeseries(i, :, :), \
+                     monmin)
+      monmax = where(timeseries(i, :, :) .gt. monmax, timeseries(i, :, :), \
+                     monmax)
+    end do
+
+;    monind = dim_maxind(timeseries, 0)
+
+;    data1 = 1.0 + monind
+    data1 = 100.0 * abs((monmax - monmin) / monmean)
+    copy_VarMeta(monmin, data1)
 
     ; create arrays for multi-obs and multi-model averages (if requested)
 
@@ -266,6 +217,8 @@ begin
         multimod_all = new(newdims, float)
       end if
     end if
+
+    same_grid = False
 
     ; calculate multi-obs and multi-model averages (if requested)
 
@@ -287,6 +240,7 @@ begin
                     + "common grid.")
         end if
         multiobs_all(iidx, :, :) = data1
+        same_grid = True
       end if
     end if
 
@@ -308,6 +262,7 @@ begin
                     + "common grid.")
         end if
         multimod_all(iidx, :, :) = data1
+        same_grid = True
       end if
     end if
 
@@ -336,7 +291,7 @@ begin
       delete(pal)
     end if
     pal = read_colormap_file(diag_script_info@colormap)
-
+;    pal = read_colormap_file("Cat12")
     ; annotation
 
     res@tiMainString = names(imod)
@@ -355,21 +310,24 @@ begin
 
     ; variable specific plotting settings
 
-    if (any((/"clt", "prw"/).eq.var0)) then
-      res@cnLevels            = ispan(5, 50, 5)
-    else
-      res@cnLevels            = ispan(5, 100, 5)
-    end if
+    res@cnLevels            = ispan(10, 200, 10)
+;    res@cnLevels            = ispan(2, 12, 1)
+;    res@lbLabelStrings = (/"J", "F", "M", "A", "M", "J", "J", "A", "S", \
+;                           "O", "N", "D"/)
+;    res@lbLabelAlignment = "BoxCenters"
 
     nboxes = dimsizes(res@cnLevels)
     clen = dimsizes(pal)
-    stride = max((/1, ((clen(0)-1) - 2) / nboxes /))
-    fill_colors = ispan(2, clen(0) - 1, stride)
-    res@cnFillColors = fill_colors
+    stride = max((/1, ((clen(0) - 1) - 2) / nboxes /))
+    fill_colors = ispan(1, clen(0) - 1, stride)
+    res@cnFillColors = pal(fill_colors, :)
 
-    res@gsnRightString       = ""
+    res@gsnRightString  = ""
+    res@gsnLeftString   = ""
+    res@gsnCenterString = ""
 
     gavg = area_operations(data1, -90., 90., 0., 360., "average", True)
+
     if (.not.ismissing(gavg)) then
       res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
     else
@@ -380,6 +338,7 @@ begin
 
     res@mpFillDrawOrder         = "PostDraw"    ; draw map last
     res@cnMissingValFillColor   = "Gray"
+;    res@cnFillMode     = "RasterFill"       ; Raster Mode
 
     ; no tickmarks and no labels
 
@@ -422,6 +381,7 @@ begin
       data1@long_name = var0
     end if
     data1@units    = "%"
+;    data1@units    = "month"
 
     ; copy attributes for netCDF output
 
@@ -439,7 +399,7 @@ begin
     ; function in aux_plotting.ncl
 
     if (ii.eq.0) then
-      wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
+      wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_seasonal_cycle_" \
                     + var0 + filename_add)
       nframe = 0
     end if
@@ -451,7 +411,7 @@ begin
     ; # output all datasets to common netCDF  #
     ; #########################################
 
-    nc_filename = work_dir + "clouds_interannual_" + var0 + ".nc"
+    nc_filename = work_dir + "clouds_seasonal_cycle_" + var0 + ".nc"
     nc_filename@existing = "append"
     data1@var = var0 + "_var_" + annots(imod)
     nc_outfile = ncdf_write(data1, nc_filename)
@@ -476,6 +436,11 @@ begin
   outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
   nframe = nframe + 1
 
+  suffix = get_file_suffix(outfile, 0)
+  if (suffix .eq. ".png") then
+    outfile = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
+  end if
+
   ; plot multi-obs and multi-model average (if requested)
 
   if (flag_multiobs) then
@@ -486,6 +451,7 @@ begin
     res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
     res@tiMainString = "Multi-obs average"
     map_multiobs = gsn_csm_contour_map(wks, multiobs, res)
+    nframe = nframe + 1
   end if
 
   if (flag_multimod) then
@@ -506,35 +472,22 @@ begin
     datmasked = datmasked + amask
     delete(amask)
     corr = calculate_metric(refmasked, datmasked, "correlation")
-    gavg = area_operations(datmasked, -90., 90., 0., 360., \
-                           "average", True)
+    gavg = area_operations(datmasked, -90., 90., 0., 360., "average", True)
     rmsd = calculate_metric(refmasked, datmasked, "RMSD")
-
-;    system("rm debug.nc")
-;    debugfile = addfile("debug.nc", "c")
-;    debugfile->refmasked = refmasked
-;    debugfile->datmasked = datmasked
 
     delete(refmasked)
     delete(datmasked)
 
+;    gavg = area_operations(multimod, -90., 90., 0., 360., "average", True)
     res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
     res@gsnCenterString = "corr = " + sprintf("%6.3f", corr)
     res@gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd)
-
-;    gavg = area_operations(multimod, -90., 90., 0., 360., "average", True)
-;    res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
     res@tiMainString = "Multi-model average"
     map_multimod = gsn_csm_contour_map(wks, multimod, res)
-
+    nframe = nframe + 1
   end if
 
   log_info(" Wrote " + outfile)
-
-  suffix = get_file_suffix(outfile, 0)
-  if (suffix .eq. ".png") then
-    outfile = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
-  end if
 
   ; ------------------------------------------------------------------------
   ; write provenance to common netcdf and plot file
@@ -543,33 +496,10 @@ begin
   statistics = (/"clim", "var"/)
   domain = "global"
   plottype = "geo"
-  caption = "Interannual variability of variable " + var0 + "."
+  caption = "Relative amplitude of the climatological mean seasonal cycle " \
+            + "of variable " + var0 + "."
   log_provenance(nc_outfile, outfile, caption, statistics, domain, \
                  plottype, "", "", infiles)
-
-  ; ----------------------------------------------------------------------
-  ; write differences of the multi-model and multi-obs means to netcdf
-  ; ----------------------------------------------------------------------
-
-  if (flag_multimod .and. flag_multiobs) then
-    diff = multimod
-    diff = diff - multiobs
-    diff@var = "MMM-MOBSMEAN"
-
-    nc_filename2 = work_dir + "clouds_interannual_" + var0 + \
-      "_mmm-mobsmean-absdiff.nc"
-    nc_filename2@existing = "append"
-
-    diff@var_long_name = "MMM - MOBSMEAN"
-    multimod@var = "MMM"
-    multimod@var_long_name = "multi-model mean (MMM)"
-    multiobs@var = "MOBSMEAN"
-    multiobs@var_long_name = "multi-obs mean (MOBSMEAN)"
-
-    nc_outfile2 = ncdf_write(diff, nc_filename2)
-    nc_outfile2 = ncdf_write(multimod, nc_filename2)
-    nc_outfile2 = ncdf_write(multiobs, nc_filename2)
-  end if
 
   leave_msg(DIAG_SCRIPT, "")
 
