@@ -562,12 +562,12 @@ begin
   if isatt(diag_script_info, "legend") then
 
     labels = diag_script_info@legend
-    print(labels)
     labels := array_append_record(labels, "Observations", 0)
-    print(labels)
-    print(cmap)
-    cmap := array_append_record(cmap, (/0, 0, 0, 1/), 0)  ; add black
-    print(cmap)
+    cmap = read_colormap_file("$diag_scripts/shared/plot/rgb/" + \
+                              "ipcc-ar6_damip_line.rgb")
+    cmap_l := new((/5, 4/), float)
+    cmap_l(0:3, :) = cmap
+    cmap_l(4, :) = (/0., 0., 0., 1/)
 
     wks = gsn_open_wks(file_type, config_user_info@plot_dir + "legend")
 
@@ -576,15 +576,16 @@ begin
     lgres@vpWidthF           = 0.7                   ; width of legend (NDC)
     lgres@vpHeightF          = 0.4                   ; height of legend (NDC)
 
-    lgres@lgTitleString      = "Legend with four items"
+    lgres@lgTitleString      = "Legend"
     lgres@lgTitleFontHeightF = 0.03
-    lgres@lgAutoManage       = False
+    lgres@lgAutoManage       = True
 
-    lgres@lgLineColors = cmap
-    lgres@lgLineThicknessF = 3.
-    lgres@lgLineLabelStrings = labels
+    lgres@lgLineColors = cmap_l(::-1, :)
+    lgres@lgLineThicknessF = 4.
+    lgres@lgLineLabelsOn = False
+    lgres@lgMonoDashIndex = True
 
-    gsn_legend_ndc(wks, 5, labels, 0.1, 0.95, lgres)
+    gsn_legend_ndc(wks, 5, labels(::-1), 0.1, 0.95, lgres)
 
     frame(wks)
 
