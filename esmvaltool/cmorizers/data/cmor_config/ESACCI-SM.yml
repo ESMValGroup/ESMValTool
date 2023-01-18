@@ -1,4 +1,3 @@
----
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: ESACCI-SM
@@ -16,3 +15,5 @@ variables:
     mip: Lmon
     raw: sm
     file: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-
+    start_year: 2010
+    end_year: 2011
