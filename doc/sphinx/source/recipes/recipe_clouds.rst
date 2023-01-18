@@ -235,6 +235,7 @@ User settings in recipe
    *Optional settings (scripts)*
 
    * explicit_cn_levels: contour levels
+   * highlight_dataset: name of dataset to highlight (default = "MultiModelMean")
    * mask_ts_sea_ice: true = mask T < 272 K as sea ice (only for variable "ts");
      false = no additional grid cells masked for variable "ts"
    * projection: map projection, e.g., Mollweide, Mercator
