@@ -130,11 +130,11 @@ begin
     mod_ind = ind(names .ne. ref_ind)
     if (all(ismissing(mod_ind))) then
       error_msg("f", DIAG_SCRIPT, "", "no dataset besides reference " \
-        + "dataset found. Cannot continue.")
+                + "dataset found. Cannot continue.")
     end if
     mm_ind = mod_ind(0)
     log_info("multi-model mean is missing, using first dataset (" \
-      + names(mm_ind) + ") instead")
+             + names(mm_ind) + ") instead")
     delete(mod_ind)
   end if
 
@@ -394,7 +394,7 @@ begin
     ; add meta data to plot (for reporting)
 
     caption = names(mm_ind) + " values, from top left to bottom right: " \
-              + "mean, bias"
+      + "mean, bias"
     if (plot_abs_diff) then
       caption = caption + ", absolute error"
     end if

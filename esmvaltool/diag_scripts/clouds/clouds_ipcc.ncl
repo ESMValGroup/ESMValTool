@@ -202,11 +202,12 @@ begin
     mod_ind = ind(names .ne. ref_ind)
     if (all(ismissing(mod_ind))) then
       error_msg("f", DIAG_SCRIPT, "", "no dataset besides reference " \
-        + "dataset found. Cannot continue.")
+                + "dataset found. Cannot continue.")
     end if
     mm_ind = mod_ind(0)
     log_info("highlight_dataset (" + diag_script_info@highlight_dataset \
-      + " ) not found, using first dataset (" + names(mm_ind) + ") instead.")
+             + " ) not found, using first dataset (" + names(mm_ind) \
+             + \") instead.")
     delete(mod_ind)
   end if
 
@@ -764,8 +765,8 @@ begin
   domain = "global"
   plottype = (/"geo", "zonal"/)
   caption = names(mm_ind) + " bias (left) and zonal averages (right) " \
-            + "for variable " + var0 + " (" + allseas \
-            + "), reference = " + names(ref_ind) + "."
+    + "for variable " + var0 + " (" + allseas \
+    + "), reference = " + names(ref_ind) + "."
 
   do is = 0, numseas - 1
     log_provenance(nc_outfile_bias, plotfile(is), caption, statistics, \

@@ -180,10 +180,11 @@ begin
     ; find all indices of models w/o MultiModelMean/MultiModelMedian
     ; (if present)
     idxmod = get_mod(names_clw, projects_clw)
-  
+
     if ((idxmod(0) .eq. -1) .or. (dimsizes(idxmod) .le. 2)) then
       log_info("Not enough model datasets to calculate multi-model " \
-        + "mean and median. Setting of 'mm_mean_median' will be ignored.")
+               + "mean and median. Setting of 'mm_mean_median' will" \
+               + " be ignored.")
       mm_mean_median = False
     else  ; more than one model found
       add_dim_MOD = 2
