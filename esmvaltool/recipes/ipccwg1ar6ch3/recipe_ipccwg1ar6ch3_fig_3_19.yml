@@ -3,11 +3,11 @@
 ---
 documentation:
 
-  title: IPCC AR6 WG1 Chapter 3 Figure 3.19
+  title: IPCC AR6 WG1 Chapter 3 Fig. 3.19
 
   description: |
-    Producing Fig. 3.19 in the IPCC Working Group I
-    Contribution to the Sixth Assessment Report: Chapter 3
+    Producing Fig. 3.19 in the IPCC Working Group I Contribution to the Sixth
+    Assessment Report: Chapter 3
 
   authors:
     - bock_lisa
@@ -16,11 +16,11 @@ documentation:
   maintainer:
     - bock_lisa
 
-  references:
-    - eyring13jgr
-
   projects:
     - ipcc_ar6
+
+  references:
+    - eyring21ipcc
 
 
 datasets:
@@ -112,7 +112,7 @@ diagnostics:
   fig_3_19:
     description: Longterm mean and trend zonal wind
     themes:
-      - chem
+      - atmDyn
     realms:
       - atmos
     variables:
@@ -129,7 +129,7 @@ diagnostics:
     additional_datasets:
             - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
     scripts:
-      clim: &clim_settings
+      clim:
         script:  ipcc_ar6/zonal_westerly_winds.ncl
         e13fig12_exp_MMM: "historical"
         e13fig12_season: "DJF"
