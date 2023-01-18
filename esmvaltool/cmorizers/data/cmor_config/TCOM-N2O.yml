@@ -15,4 +15,4 @@ variables:
     filename: zmn2o_TCOM_plev_T2Dz_1991_2021.nc
     mip: Amon
     raw_name: zmn2o
-    raw_units: 'mol mol-1'
+    raw_units: '1e-3 mol mol-1'  # Note: the netcdf attribute wrongly says "mol/mol". This has been confirmed by the author of the dataset.
