@@ -54,16 +54,16 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.10.0 (Release Manager: TBA)
+- 2.8.0 (Release Manager: `Rémi Kazeroni`_)
 
 +------------+--------------------------+
-| 2023-10-02 |ESMValCore feature freeze |
+| 2023-02-20 |ESMValCore feature freeze |
 +------------+--------------------------+
-| 2023-10-09 |ESMValCore release        |
+| 2023-02-27 |ESMValCore release        |
 +------------+--------------------------+
-| 2023-10-16 |ESMValTool feature freeze |
+| 2023-03-06 |ESMValTool feature freeze |
 +------------+--------------------------+
-| 2023-10-23 |ESMValTool release        |
+| 2023-03-13 |ESMValTool release        |
 +------------+--------------------------+
 
 - 2.9.0 (Release Manager: TBA)
@@ -78,16 +78,16 @@ Upcoming releases
 | 2023-06-26 |ESMValTool release        |
 +------------+--------------------------+
 
-- 2.8.0 (Release Manager: `Rémi Kazeroni`_)
+- 2.10.0 (Release Manager: TBA)
 
 +------------+--------------------------+
-| 2023-02-20 |ESMValCore feature freeze |
+| 2023-10-02 |ESMValCore feature freeze |
 +------------+--------------------------+
-| 2023-02-27 |ESMValCore release        |
+| 2023-10-09 |ESMValCore release        |
 +------------+--------------------------+
-| 2023-03-06 |ESMValTool feature freeze |
+| 2023-10-16 |ESMValTool feature freeze |
 +------------+--------------------------+
-| 2023-03-13 |ESMValTool release        |
+| 2023-10-23 |ESMValTool release        |
 +------------+--------------------------+
 
 Past releases
