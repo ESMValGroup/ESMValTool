@@ -12,7 +12,6 @@ on:
   push:
     branches:
       - main
-      - fix_tests_with_core_dev_2
   schedule:
     - cron: '0 0 * * *'
 
