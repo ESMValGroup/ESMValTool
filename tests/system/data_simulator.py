@@ -6,8 +6,12 @@ import time
 
 import numpy as np
 
+from esmvalcore import __version__ as core_ver
 from esmvalcore._config import read_config_user_file
-from esmvalcore._recipe import read_recipe_file
+if core_ver.split(".")[0] == "2" and int(core_ver.split(".")[1]) < 8:
+    from esmvalcore._recipe import read_recipe_file
+else:
+    from esmvalcore._recipe.recipe import read_recipe_file
 
 
 def get_input_filename(variable, rootpath, drs):
