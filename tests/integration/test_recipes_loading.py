@@ -3,13 +3,13 @@ from pathlib import Path
 
 import esmvalcore
 import esmvalcore._config
-import esmvalcore._recipe
 import esmvalcore.cmor.check
 import pytest
 import yaml
 
 import esmvaltool
 
+from esmvalcore import __version__ as core_ver
 from .test_diagnostic_run import write_config_user_file
 
 
@@ -69,13 +69,24 @@ def test_recipe_valid(recipe_file, config_user, mocker):
     )
 
     # Mock vertical levels
-    mocker.patch.object(
-        esmvalcore._recipe,
-        'get_reference_levels',
-        autospec=True,
-        spec_set=True,
-        side_effect=lambda *_, **__: [1, 2],
-    )
+    if core_ver.split(".")[0] == "2" and core_ver.split(".")[1] == "8":
+        import esmvalcore._recipe.recipe
+        mocker.patch.object(
+            esmvalcore._recipe.recipe,
+            'get_reference_levels',
+            autospec=True,
+            spec_set=True,
+            side_effect=lambda *_, **__: [1, 2],
+        )
+    else:
+        import esmvalcore._recipe
+        mocker.patch.object(
+            esmvalcore._recipe,
+            'get_reference_levels',
+            autospec=True,
+            spec_set=True,
+            side_effect=lambda *_, **__: [1, 2],
+        )
 
     # Mock valid NCL version
     mocker.patch.object(
