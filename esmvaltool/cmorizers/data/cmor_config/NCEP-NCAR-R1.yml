@@ -60,7 +60,7 @@ variables:
     short_name: pr
     mip: Amon
     raw: prate
-    file: 'surface\/prate\.sfc\.mon\.mean\.nc'
+    file: 'surface\/prate\.mon\.mean\.nc'
   prw_month:
     short_name: prw
     mip: Amon

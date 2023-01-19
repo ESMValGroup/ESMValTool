@@ -65,6 +65,10 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     downloader.set_cwd("/Datasets/ncep.reanalysis.derived/other_gauss/")
     downloader.download_file("tcdc.eatm.mon.mean.nc", sub_folder='surface')
+    downloader.download_file("ulwrf.ntat.mon.mean.nc", sub_folder='surface')
+    downloader.download_file("csulf.ntat.mon.mean.nc", sub_folder='surface')
+    downloader.download_file("uswrf.ntat.mon.mean.nc", sub_folder='surface')
+    downloader.download_file("csusf.ntat.mon.mean.nc", sub_folder='surface')
 
     while loop_date <= end_date:
         year = loop_date.year
