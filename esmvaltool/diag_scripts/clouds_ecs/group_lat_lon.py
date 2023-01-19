@@ -39,6 +39,12 @@ PANEL = {
     'ECS_low':  224, # (1, 1),
     'OBS':      221  # (0, 0)
 }
+PANEL_LABELS = {
+    'ECS_high': 'b)', # (0, 1),
+    'ECS_med':  'c)', # (1, 0),
+    'ECS_low':  'd)', # (1, 1),
+    'OBS':      'a)'  # (0, 0)
+}
 
 def get_provenance_record(attributes, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
@@ -216,9 +222,12 @@ def plot_diagnostic(cube, mean, fig, attributes, legend, cfg):
         plt.gca().coastlines()
         plt.title(legend, fontsize=18)
         if attributes['short_name'] in ['clivi', 'lwp']:
-            plt.title('mean = {:.3f}'.format(mean.data), fontsize = 14, loc='right')
+            plt.title('mean = {:.3f}      '.format(mean.data), fontsize = 14, loc='right')
         else:
-            plt.title('mean = {:.1f}'.format(mean.data), fontsize = 14, loc='right')
+            plt.title('mean = {:.1f}      '.format(mean.data), fontsize = 14, loc='right')
+        ipanel_label = PANEL_LABELS.get(legend, None)
+        plt.title(ipanel_label, fontsize = 22, loc='left')
+        #plt.title(ipanel_label, fontfamily='serif', fontsize = 20, loc='left')
 
         return im
 
@@ -252,7 +261,7 @@ def main(cfg):
     #fig.tight_layout()
     fig.set_figheight(10)
     fig.set_figwidth(14)
-    plt.subplots_adjust(left=0.05, bottom=0.22, right=0.95, top=0.95, wspace=0.02, hspace=0.02)
+    plt.subplots_adjust(left=0.05, bottom=0.21, right=0.95, top=0.94, wspace=0.02, hspace=0.02)
     #plt.subplots_adjust(left=0.11, bottom=0.2, right=0.90, top=0.95, wspace=0.05, hspace=0.05)
     #plt.subplots_adjust(hspace=0.)
 
@@ -291,9 +300,9 @@ def main(cfg):
 
     title = attributes['long_name']
     fig.suptitle(title, fontsize = 22)
-    cbar_ax = fig.add_axes([0.2, 0.2, 0.6, 0.03])
+    cbar_ax = fig.add_axes([0.2, 0.18, 0.6, 0.03])
     colorbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal')
-    colorbar.set_label( cube.var_name + '/' + cube.units.origin)
+    colorbar.set_label( cube.var_name + '/' + cube.units.origin, fontsize = 16)
     if attributes['short_name'] == 'clt':
         ticks = [10, 20, 30, 40, 50, 60, 70, 80, 90]
     elif attributes['short_name'] == 'clivi':
@@ -308,7 +317,7 @@ def main(cfg):
         ticks = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0]
 
     colorbar.set_ticks(ticks)
-    colorbar.set_ticklabels([str(tick) for tick in ticks])
+    colorbar.set_ticklabels([str(tick) for tick in ticks], fontsize = 16)
 
     # And save the plot
     save_figure(basename, provenance_record, cfg, fig)
