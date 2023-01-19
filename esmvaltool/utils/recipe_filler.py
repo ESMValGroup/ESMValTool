@@ -451,11 +451,14 @@ def filter_years(files, start_year, end_year, overlap=False):
 
 def _resolve_latestversion(dirname_template):
     """Resolve the 'latestversion' tag."""
-    if '{latestversion}' not in dirname_template:
+    for version_separator in ['{latestversion}', '{version}']:
+        if version_separator in dirname_template:
+            break
+    else:
         return dirname_template
 
     # Find latest version
-    part1, part2 = dirname_template.split('{latestversion}')
+    part1, part2 = dirname_template.split(version_separator)
     part2 = part2.lstrip(os.sep)
     part1_contents = glob(part1)
     if part1_contents:
