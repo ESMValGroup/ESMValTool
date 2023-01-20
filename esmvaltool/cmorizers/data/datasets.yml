@@ -494,6 +494,15 @@ datasets:
         ancillary/v04.2/
       Put all files under a single directory (no subdirectories with years).
 
+ESACCI-SM:
+    tier: 2
+    source: ftp.geo.tuwien.ac.at
+    last_access: 2023-01-16
+    info: |
+      Download the data from:
+        daily_files/COMBINED/v07.1/
+      Put all files under a single directory (no subdirectories with years).
+
   ESACCI-SEA-SURFACE-SALINITY:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sea_surface_salinity/data
