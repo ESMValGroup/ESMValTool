@@ -3207,7 +3207,7 @@ class MLRModel():
         logger.debug("Creating output cubes")
         for (pred_type, y_pred) in pred_dict.items():
             y_pred = self._mask_prediction_array(y_pred, x_cube)
-            if y_pred.size == np.prod(x_cube.shape, dtype=np.int):
+            if y_pred.size == np.prod(x_cube.shape, dtype=np.int64):
                 pred_cube = x_cube.copy(y_pred.reshape(x_cube.shape))
             else:
                 dim_coords = []
