@@ -10,9 +10,10 @@ attributes:
   comment: ""
 
 # Variables to cmorize (here use only filename prefix)
+# Needs frequency: 24hr adding to CMOR_sm.py in ESMValCore
 variables:
-  mrsos:
-    mip: Lmon
+  sm:
+    mip: custom
     raw: sm
     file: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-
     start_year: 2010
