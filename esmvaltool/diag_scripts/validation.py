@@ -340,14 +340,13 @@ def main(cfg):
     for short_name in grouped_input_data:
         logger.info("Processing variable %s", short_name)
 
-        cmip_era = cfg["cmip_era"]
         # get the control, experiment and obs dicts
+        cmip_type = cfg["cmip_era"] if "cmip_era" in cfg else None
         ctrl, exper, obs = get_control_exper_obs(short_name, input_data, cfg,
-                                                 cmip_era)
+                                                 cmip_type=cmip_type)
         # set a plot key holding info on var and data set names
-        plot_key = "{}_{}_vs_{}".format(short_name, ctrl['dataset'],
-                                        exper['dataset'])
-        control_dataset_name = ctrl['dataset']
+        plot_key = f"{short_name}_{ctrl['alias']}_vs_{exper['alias']}"
+        control_dataset_name = ctrl['alias']
 
         # get seasons if needed then apply analysis
         if cfg['seasonal_analysis']:
@@ -366,8 +365,8 @@ def main(cfg):
                     obs_seasons = [
                         coordinate_collapse(obss, cfg) for obss in obs_seasons
                     ]
-                    plot_key_obs = "{}_{}_vs_{}".format(
-                        short_name, ctrl['dataset'], iobs['dataset'])
+                    plot_key_obs = (f"{short_name}_{ctrl['alias']}" +
+                                    f"_vs_{iobs['alias']}")
                     plot_ctrl_exper_seasons(ctrl_seasons, obs_seasons, cfg,
                                             plot_key_obs)
 
@@ -381,9 +380,8 @@ def main(cfg):
         if obs_list:
             for obs_i, obsfile in zip(obs_list, obs):
                 obs_analyzed = coordinate_collapse(obs_i, cfg)
-                obs_name = obsfile['dataset']
-                plot_key = "{}_{}_vs_{}".format(short_name,
-                                                control_dataset_name, obs_name)
+                obs_name = obsfile['alias']
+                plot_key = f"{short_name}_{control_dataset_name}_vs_{obs_name}"
                 if cfg['analysis_type'] == 'lat_lon':
                     plot_latlon_cubes(ctrl,
                                       obs_analyzed,
