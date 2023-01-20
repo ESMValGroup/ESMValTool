@@ -207,7 +207,7 @@ begin
     mm_ind = mod_ind(0)
     log_info("highlight_dataset (" + diag_script_info@highlight_dataset \
              + " ) not found, using first dataset (" + names(mm_ind) \
-             + \") instead.")
+             + ") instead.")
     delete(mod_ind)
   end if
 
