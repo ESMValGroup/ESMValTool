@@ -74,7 +74,7 @@ logger = logging.getLogger(__name__)
 def _fix_units(cube, definition):
     """
     Fix issues with the units.
-    
+
     Exception is `pr` since the units in the
     raw file are not recognized correctly.
     """
