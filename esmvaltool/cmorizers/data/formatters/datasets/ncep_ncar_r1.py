@@ -76,7 +76,7 @@ def _fix_units(cube, definition):
     """Exception is 'pr' since the units in the
        raw file are not recoginzed correctly."""
 
-    if cube.var_name not in {'pr'}:
+    if cube.var_name != 'pr':
         cube.convert_units(definition.units)
 
 
