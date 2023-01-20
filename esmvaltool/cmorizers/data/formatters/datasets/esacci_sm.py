@@ -54,12 +54,22 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         for year in range(vals['start_year'], vals['end_year'] + 1):
             print(year)
             print(in_dir)
-            cube = load_cubes(in_dir,
+            cubes = load_cubes(in_dir,
                               vals['file'],
                               year,
                               variable
                               )
 
+            # now sort things
+            cubes = fix_coords(cubes)
+
+            # save this year's data
+            save_variable(
+                cubes,
+                var,
+                out_dir,
+                glob_attrs,
+            )
 
 def attribute_callback(cube, field, filename):
     cube.attributes = None
@@ -76,7 +86,7 @@ def load_cubes(in_dir, filepath, year, variable):
     """Need to write description.
     """
     logger.info('Loading %s/%s%s*.nc', in_dir, filepath, year)
-    cube = iris.load(f'{in_dir}/{filepath}{year}01*.nc',
+    cube = iris.load(f'{in_dir}/{filepath}{year}*.nc',
                           variable,
                           callback = attribute_callback
                       )

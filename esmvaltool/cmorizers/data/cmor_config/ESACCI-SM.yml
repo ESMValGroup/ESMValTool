@@ -16,4 +16,4 @@ variables:
     raw: sm
     file: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-
     start_year: 2010
-    end_year: 2011
+    end_year: 2015
