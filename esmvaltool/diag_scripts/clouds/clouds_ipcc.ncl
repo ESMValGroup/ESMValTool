@@ -425,17 +425,21 @@ begin
   modelsonly_ind = ind(model_ind.ge.0)
   delete(model_ind)
 
-  n = dimsizes(modelsonly_ind) - 1
+  if (.not.all(ismissing(modelsonly_ind))) then
+    n = dimsizes(modelsonly_ind) - 1
 
-  ; first entries in "zonalmean" = individual models
+    ; first entries in "zonalmean" = individual models
 
-  if (numseas.gt.1) then
-    zonalmean(0:n, :, :) = zm(modelsonly_ind, :, :)
+    if (numseas.gt.1) then
+      zonalmean(0:n, :, :) = zm(modelsonly_ind, :, :)
+    else
+      zonalmean(0:n, :) = zm(modelsonly_ind, :)
+    end if
+
+    zonalmean&model(0:n) = zm&model(modelsonly_ind)
   else
-    zonalmean(0:n, :) = zm(modelsonly_ind, :)
+    n = -1
   end if
-
-  zonalmean&model(0:n) = zm&model(modelsonly_ind)
 
   ; observation(s)
 
