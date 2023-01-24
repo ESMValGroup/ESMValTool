@@ -279,7 +279,11 @@ begin
   create_legend_lines(leg@annots, leg, plot_dir + \
                       DIAG_SCRIPT + "_legend", "markers")
 
-  plotname = plot_dir + plot_file + "." + file_type
+  if (file_type .ne. "png") then
+    plotname = plot_dir + plot_file + "." + file_type
+  else
+    plotname = plot_dir + plot_file + ".000001.png"
+  end if
 
   ; Call provenance logger
   log_provenance(ncdf_outfile, \
