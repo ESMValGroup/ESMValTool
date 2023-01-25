@@ -109,6 +109,8 @@ User settings in recipe
      "CylindricalEquidistant")
    * showdiff: calculate and plot differences model - reference
      (default = false)
+   * showyears: add start and end years to the plot titles
+     (default = false)
    * rel_diff: if showdiff = true, then plot relative differences (%)
      (default = False)
    * ref_diff_min: lower cutoff value in case of calculating relative
@@ -233,6 +235,7 @@ User settings in recipe
    *Optional settings (scripts)*
 
    * explicit_cn_levels: contour levels
+   * highlight_dataset: name of dataset to highlight (default = "MultiModelMean")
    * mask_ts_sea_ice: true = mask T < 272 K as sea ice (only for variable "ts");
      false = no additional grid cells masked for variable "ts"
    * projection: map projection, e.g., Mollweide, Mercator
@@ -297,7 +300,7 @@ User settings in recipe
 
    none
 
-8. Script clouds_lifrac_pdf.ncl
+8. Script clouds_pdf.ncl
 
    *Required settings (scripts)*
 
@@ -333,6 +336,8 @@ User settings in recipe
    * explicit_cn_levels: use these contour levels for plotting
    * filename_add: optionally add this string to plot filesnames
    * projection: map projection, e.g., Mollweide, Mercator
+   * showyears: add start and end years to the plot titles
+     (default = false)
    * var: short_name of variable to process (default = "" i.e. use
      first variable in variable list)
 
