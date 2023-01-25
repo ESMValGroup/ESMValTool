@@ -8,7 +8,8 @@ import numpy as np
 
 from esmvalcore import __version__ as core_ver
 from esmvalcore._config import read_config_user_file
-if core_ver.split(".")[0] == "2" and int(core_ver.split(".")[1]) < 8:
+from packaging import version
+if version.parse(core_ver) < version.parse('2.8.0'):
     from esmvalcore._recipe import read_recipe_file
 else:
     from esmvalcore._recipe.recipe import read_recipe_file
