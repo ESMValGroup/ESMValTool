@@ -4,7 +4,7 @@
 ; PROJECT-NAME EMBRACE
 ; ############################################################################
 ; Description
-;   Calculates the multi-model mean bias, absolute difference and relative
+;   Calculates the (multi-model mean) bias, absolute difference and relative
 ;   difference of annual mean 2-d cloud variables compared with a
 ;   reference dataset (observations).
 ;
@@ -28,6 +28,7 @@
 ;   none
 ;
 ; Modification history
+;   20230118-lauer_axel: added support to plot just 1 model
 ;   20211006-lauer_axel: removed write_plots
 ;   20190222-lauer_axel: added output of provenance (v2.0)
 ;   20181119-lauer_axel: adapted code to multi-variable capable framework
@@ -126,7 +127,15 @@ begin
   mm_ind = ind(names .eq. "MultiModelMean")
 
   if (ismissing(mm_ind)) then
-    error_msg("f", DIAG_SCRIPT, "", "multi-model mean is missing (required)")
+    mod_ind = ind(names .ne. ref_ind)
+    if (all(ismissing(mod_ind))) then
+      error_msg("f", DIAG_SCRIPT, "", "no dataset besides reference " \
+                + "dataset found. Cannot continue.")
+    end if
+    mm_ind = mod_ind(0)
+    log_info("multi-model mean is missing, using first dataset (" \
+             + names(mm_ind) + ") instead")
+    delete(mod_ind)
   end if
 
   ; basename of diag_script
@@ -233,7 +242,7 @@ begin
 
   diff@res_tiMainFontHeightF  = 0.016
 
-  diff@res_tiMainString = "Multi Model Mean Bias"
+  diff@res_tiMainString = names(mm_ind) + " Bias"
 
   copy_VarMeta(diff, mmdata)
   delete(mmdata@res_cnLevels)
@@ -272,7 +281,7 @@ begin
     end if
   end if
 
-  mmdata@res_tiMainString = "Multi Model Mean"
+  mmdata@res_tiMainString = names(mm_ind)
 
   plotsperline = (/2, 0/)
   plotind = (/0, 1/)  ; mmm and mean bias are always plotted
@@ -298,7 +307,7 @@ begin
     absdiff@res_cnLevels = tmp(1:dimsizes(tmp)-1)
     delete(tmp)
 
-    absdiff@res_tiMainString = "Multi Model Mean of Absolute Error"
+    absdiff@res_tiMainString = names(mm_ind) + " Absolute Error"
 
     iadd = 2
     itmp = array_append_record(plotind, iadd, 0)
@@ -319,7 +328,7 @@ begin
     copy_VarMeta(diff, reldiff)
     delete(reldiff@res_cnLevels)
     reldiff@res_cnLevels = fspan(-90.0, 90.0, 13)
-    reldiff@res_tiMainString = "Multi Model Mean of Relative Error"
+    reldiff@res_tiMainString = names(mm_ind) + " Relative Error"
     reldiff@units = "%"
     reldiff@res_lbTitleString = "(" + reldiff@units + ")"
     if (isvar("pal4")) then
@@ -384,8 +393,8 @@ begin
 
     ; add meta data to plot (for reporting)
 
-    caption = "Multi model values, from top left to bottom right: " \
-              + "mean, bias"
+    caption = names(mm_ind) + " values, from top left to bottom right: " \
+      + "mean, bias"
     if (plot_abs_diff) then
       caption = caption + ", absolute error"
     end if
@@ -403,22 +412,22 @@ begin
   nc_filename@existing = "append"
 
   mmdata@var = var0 + "_mean"
-  mmdata@long_name = var0 + " (multi-model mean)"
+  mmdata@long_name = var0 + " " + names(mm_ind) + " (mean)"
   nc_outfile = ncdf_write(mmdata, nc_filename)
 
   diff@var = var0 + "_bias"
-  diff@long_name = var0 + " (multi-model bias)"
+  diff@long_name = var0 + " " + names(mm_ind) + " (bias)"
   nc_outfile = ncdf_write(diff, nc_filename)
 
   if (isvar("absdiff")) then
     absdiff@var = var0 + "_abs_bias"
-    absdiff@long_name = var0 + " (multi-model absolute bias)"
+    absdiff@long_name = var0 + " " + names(mm_ind) + " (absolute bias)"
     nc_outfile = ncdf_write(absdiff, nc_filename)
   end if
 
   if (isvar("reldiff")) then
     reldiff@var = var0 + "_rel_bias"
-    reldiff@long_name = var0 + " (multi-model relative bias)"
+    reldiff@long_name = var0 + " " + names(mm_ind) + " (relative bias)"
     reldiff@units = reldiff@units
     nc_outfile = ncdf_write(reldiff, nc_filename)
   end if

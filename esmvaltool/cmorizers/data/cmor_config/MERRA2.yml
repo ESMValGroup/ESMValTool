@@ -186,8 +186,8 @@ variables:
     mip: Amon
     raw: "U"
     file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
-  uv_monthly:
-    short_name: uv
+  va_monthly:
+    short_name: va
     mip: Amon
     raw: "V"
     file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'

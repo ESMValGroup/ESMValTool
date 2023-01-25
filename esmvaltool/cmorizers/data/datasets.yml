@@ -340,18 +340,28 @@ datasets:
             Geopotential
 
       and monthly data of:
+          Fraction of cloud cover (3-dim)
             Inst. eastward turbulent surface stress
             Inst. northward turbulent surface stress
+          Net top solar radiation
+          Net top solar radiation clear-sky
           Sea surface temperature
+          Specific cloud ice water content
+          Specific cloud liquid water content
+          Specific humidity
           Surface net thermal radiation
           Surface latent heat flux
           Surface sensible heat flux
           Relative humidity
           Temperature
+          Top net thermal radiation clear-sky
+          Total column water wapour
           U component of wind
           V component of wind
+          Vertical integral of cloud condensed water (ice and liquid)
+          Vertical integral of cloud liquid water
+          Vertical integral of cloud frozen water
           Vertical velocity
-          Specific humidity
 
       Caveats
         Make sure to select the right steps for accumulated fluxes, see:
@@ -736,6 +746,20 @@ datasets:
       Meteorological Research Institute, Tsukuba City, Japan). See link above
       for more information.
 
+  JRA-25:
+    tier: 2
+    source: https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/reanalysis/JMA/JRA-25/JRA-25/
+    last_access: 2022-11-17
+    info: |
+      Download the following files:
+        mon/atmos/clt/clt_Amon_reanalysis_JRA-25_197901-201312.nc
+        mon/atmos/hus/hus_Amon_reanalysis_JRA-25_197901-201312.nc
+        mon/atmos/prw/prw_Amon_reanalysis_JRA-25_197901-201312.nc
+        mon/atmos/rlut/rlut_Amon_reanalysis_JRA-25_197901-201312.nc
+        mon/atmos/rlutcs/rlutcs_Amon_reanalysis_JRA-25_197901-201312.nc
+        mon/atmos/rsut/rsut_Amon_reanalysis_JRA-25_197901-201312.nc
+        mon/atmos/rsutcs/rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc
+
   Kadow2020:
     tier: 2
     source: http://users.met.fu-berlin.de/~ChristopherKadow/
@@ -780,6 +804,13 @@ datasets:
     info: |
       Download the file spco2_1982-2015_MPI_SOM-FFN_v2016.nc
 
+  Landschuetzer2020:
+    tier: 2
+    source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0209633/
+    last_access: 2022-11-02
+    info: |
+      Download the file MPI-ULB-SOM_FFN_clim.nc
+
   MAC-LWP:
     tier: 3
     source: https://search.earthdata.nasa.gov/search?q=MAC-LWP
@@ -813,6 +844,13 @@ datasets:
       control of the RHI data (see Data Quality Document for MLS-AURA for more
       information).
       A registration is required
+
+  MOBO-DIC_MPIM:
+    tier: 2
+    source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0221526/
+    last_access: 2022-11-03
+    info: |
+      Download the file MOBO-DIC_MPIM_monthly_clim.nc
 
   MODIS:
     tier: 3
@@ -923,6 +961,13 @@ datasets:
       Download daily data from:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
+
+  OceanSODA-ETHZ:
+    tier: 2
+    source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0220059/
+    last_access: 2022-11-03
+    info: |
+      Download the file OceanSODA-ETHZ_GRaCER_v2021a_1982-2020.nc
 
   OSI-450-nh:
     tier: 2

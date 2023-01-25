@@ -1,3 +1,5 @@
+.. _preparation-new-release:
+
 Release schedule and procedure for ESMValCore and ESMValTool
 ============================================================
 
@@ -52,16 +54,16 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.10.0 (Release Manager: TBA)
+- 2.8.0 (Release Manager: `Rémi Kazeroni`_)
 
 +------------+--------------------------+
-| 2023-10-02 |ESMValCore feature freeze |
+| 2023-02-20 |ESMValCore feature freeze |
 +------------+--------------------------+
-| 2023-10-09 |ESMValCore release        |
+| 2023-02-27 |ESMValCore release        |
 +------------+--------------------------+
-| 2023-10-16 |ESMValTool feature freeze |
+| 2023-03-06 |ESMValTool feature freeze |
 +------------+--------------------------+
-| 2023-10-23 |ESMValTool release        |
+| 2023-03-13 |ESMValTool release        |
 +------------+--------------------------+
 
 - 2.9.0 (Release Manager: TBA)
@@ -76,32 +78,34 @@ Upcoming releases
 | 2023-06-26 |ESMValTool release        |
 +------------+--------------------------+
 
-- 2.8.0 (Release Manager: TBA)
+- 2.10.0 (Release Manager: TBA)
 
 +------------+--------------------------+
-| 2023-02-06 |ESMValCore feature freeze |
+| 2023-10-02 |ESMValCore feature freeze |
 +------------+--------------------------+
-| 2023-02-13 |ESMValCore release        |
+| 2023-10-09 |ESMValCore release        |
 +------------+--------------------------+
-| 2023-02-20 |ESMValTool feature freeze |
+| 2023-10-16 |ESMValTool feature freeze |
 +------------+--------------------------+
-| 2023-02-27 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.7.0 (Release Manager: `Valeriu Predoi`_)
-
-+------------+--------------------------+
-| 2022-10-03 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2022-10-10 |ESMValCore release        |
-+------------+--------------------------+
-| 2022-10-17 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2022-10-24 |ESMValTool release        |
+| 2023-10-23 |ESMValTool release        |
 +------------+--------------------------+
 
 Past releases
 ^^^^^^^^^^^^^
+
+- 2.7.0 (Release Manager: `Valeriu Predoi`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2022-10-03 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2022-10-10 | 2022-10-13 | `ESMValCore Release 2.7.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.7.0>`_ | :ref:`esmvalcore:changelog-v2-7-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2022-10-17 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2022-10-24 | 2022-10-28 | `ESMValTool Release 2.7.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.7.0>`_ |      :ref:`changelog-v2-7-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
 
 - 2.6.0 (Release Manager: `Saskia Loosveldt Tomas`_)
 
@@ -230,21 +234,15 @@ These are the detailed steps to take to make a release.
    - Any contributor is welcome to add issues or pull requests that they intend to work on themselves to a milestone.
 
 
-#. ESMValCore feature freeze
+#. ESMValCore feature freeze, testing, and release
 
    - A release branch is created and branch protection rules are set up so only the release manager (i.e. the person in charge of the release branch) can push commits to that branch.
-   - The creation of the release branch is announced to the ESMValTool development team along with the procedures to use the branch for testing and making last-minute changes (see next step)
-
-
-#. Some additional testing of ESMValCore
-
-   - Run all the recipes (optionally with a reduced amount of data) to check that they still work
+   - Make a release candidate with the release branch following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>` .
+   - Run all the recipes (optionally with a reduced amount of data) to check that they still work with the release candidate.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
-
-
-#. ESMValCore release
-
-   - Make the release by following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>`.
+   - Make another release candidate including the bugfix(es) and run the affected recipes again to check for further bugs.
+   - Make as many release candidates for ESMValCore as needed in order to fix all the detected bugs.
+   - Make the official ESMValCore release with the last release candidate.
    - Ask the user engagement team to announce the release to the user mailing list, the development team mailing list, on twitter
 
 
@@ -341,6 +339,7 @@ error.
    `PyPI <https://pypi.org/project/ESMValTool/>`__, and
    `readthedocs <https://readthedocs.org/dashboard/esmvaltool/users/>`__.
 
+The release of ESMValTool should come after the release of ESMValCore.
 To make a new release of the package, follow these steps:
 
 1. Check that all tests and builds work
@@ -368,17 +367,28 @@ git using [setuptools-scm](https://pypi.org/project/setuptools-scm/), but a
 static version number is stored in ``CITATION.cff``.
 Make sure to update the version number and release date in ``CITATION.cff``.
 See https://semver.org for more information on choosing a version number.
+Make sure that the ESMValCore version that is being used is set to the latest version.
+See the :ref:`dependencies <dependencies>` section in order to find more details on how update the ESMValCore version.
 Make a pull request and get it merged into ``main``.
 
 3. Add release notes
 ~~~~~~~~~~~~~~~~~~~~
 Use the script :ref:`draft_release_notes.py` to create create a draft of the
-release notes.
+release notes. 
 This script uses the titles and labels of merged pull requests since the
 previous release.
+Open a discussion to allow members of the development team to nominate pull requests 
+as highlights. Add the most voted pull requests as highlights at the beginning of 
+changelog. 
+After the highlights section, list any backwards incompatible changes that the 
+release may include.
+Make sure to also list any deprecations that the release may include, as well
+as a brief description on how to upgrade a deprecated feature.
 Review the results, and if anything needs changing, change it on GitHub and
 re-run the script until the changelog looks acceptable.
 Copy the result to the file ``doc/sphinx/source/changelog.rst``.
+If possible, try to set the script dates to the date of the release
+you are managing.
 Make a pull request and get it merged into ``main``.
 
 4. Create a release branch
@@ -390,21 +400,7 @@ Announce the name of the branch in an issue and ask the members of the
 `ESMValTool development team <https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam>`__
 to run their favourite recipe using this branch.
 
-5. Cherry pick bugfixes into the release branch
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If a bug is found and fixed (i.e. pull request merged into the
-``main`` branch) during the period of testing, use the command
-``git cherry-pick COMMIT_HASH``, where ``COMMIT_HASH`` is the commit hash of the
-commit that needs to be cherry-picked, to include the commit for this bugfix
-into the release branch.
-Cherry-pick any new contributions in the order they were merged, to avoid
-conflicts.
-When the testing period is over, make a pull request to update
-the release notes with the latest changes (do not forget to include the pull
-request itself into the changelog), get it merged into ``main`` and
-cherry-pick it into the release branch.
-
-6. Make the release on GitHub
+5. Make the release on GitHub
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Do a final check that all tests on CircleCI and GitHub Actions completed
@@ -415,7 +411,7 @@ and create the new release from the release branch (i.e. not from ``main``).
 The release tag always starts with the letter ``v`` followed by the version
 number, e.g. ``v2.1.0``.
 
-7. Create and upload the PyPI package
+6. Create and upload the PyPI package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The package is automatically uploaded to the
@@ -446,7 +442,7 @@ Follow these steps to create a new Python package:
 You can read more about this in
 `Packaging Python Projects <https://packaging.python.org/tutorials/packaging-projects/>`__.
 
-8. Create the Conda package
+7. Create the Conda package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ``esmvaltool`` package is published on the `conda-forge conda channel
@@ -467,7 +463,7 @@ they will merge the pull request, which will in turn publish the package on
 conda-forge some time later.
 Contact the feedstock maintainers if you want to become a maintainer yourself.
 
-9. Check the Docker images
+8. Check the Docker images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There are three main Docker container images available for ESMValTool on
@@ -546,7 +542,6 @@ by the actual ID.
 
 Changelog
 ---------
-
 - 2020-09-09 Converted to rst and added to repository (future changes tracked by git)
 - 2020-09-03 Update during video conference (present: Bouwe Andela, Niels Drost, Javier Vegas, Valeriu Predoi, Klaus Zimmermann)
 - 2020-07-27 Update including tidying up and Glossary by Klaus Zimmermann and Bouwe Andela
