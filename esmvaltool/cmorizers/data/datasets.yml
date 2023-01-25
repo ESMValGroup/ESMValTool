@@ -494,7 +494,7 @@ datasets:
         ancillary/v04.2/
       Put all files under a single directory (no subdirectories with years).
 
-ESACCI-SM:
+  ESACCI-SM:
     tier: 2
     source: ftp.geo.tuwien.ac.at
     last_access: 2023-01-16
