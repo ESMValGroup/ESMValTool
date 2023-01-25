@@ -69,7 +69,10 @@ def _check_x_y_arrays(x_array, y_array):
 def _add_column(data_frame, series, column_name):
     """Add column to :class:`pandas.DataFrame` (expands index if necessary)."""
     for row in series.index.difference(data_frame.index):
-        data_frame = data_frame.append(pd.Series(name=row))
+        data_frame = pd.concat([
+            data_frame,
+            pd.Series(name=row, dtype=np.float64).to_frame().T,
+        ])
     if column_name in data_frame.columns:
         for row in series.index:
             if np.isnan(data_frame.loc[row, column_name]):
@@ -486,6 +489,8 @@ def _create_pred_input_plot(x_pred,
         vline_kwargs = {'color': 'k', 'linestyle': ':', 'label': 'Observation'}
     if vspan_kwargs is None:
         vspan_kwargs = {'color': 'k', 'alpha': 0.1}
+    x_pred = x_pred[0]
+    x_pred_error = x_pred_error[0]
     axes.axvline(x_pred, **vline_kwargs)
     axes.axvspan(x_pred - x_pred_error, x_pred + x_pred_error, **vspan_kwargs)
     return axes
@@ -804,9 +809,13 @@ def get_input_data(cfg):
 
     # Unify indices of features and label
     for row in features.index.difference(label.index):
-        label = label.append(pd.Series(name=row))
+        label = pd.concat(
+            [label, pd.Series(name=row, dtype=np.float64).to_frame().T]
+        )
     for row in label.index.difference(features.index):
-        features = features.append(pd.Series(name=row))
+        features = pd.concat(
+            [features, pd.Series(name=row, dtype=np.float64).to_frame().T]
+        )
 
     # Sort data frames
     for data_frame in (features, label, pred_input, pred_input_err):
@@ -1385,14 +1394,16 @@ def plot_target_distributions(training_data, pred_input_data, attributes,
                         add_combined_group=cfg['combine_groups'])
     summary_columns = pd.MultiIndex.from_product(
         [groups, ['best estimate', 'range', 'min', 'max']])
-    summary = pd.DataFrame(columns=summary_columns)
+    summary = pd.DataFrame(columns=summary_columns, dtype=np.float64)
 
     # Iterate over features
     for feature in training_data.x.columns:
         (x_data, y_data) = get_xy_data_without_nans(training_data, feature,
                                                     label)
         colors = get_colors(cfg, groups=groups)
-        summary_for_feature = pd.Series(index=summary_columns, name=feature)
+        summary_for_feature = pd.Series(
+            index=summary_columns, name=feature, dtype=np.float64
+        )
 
         # Iterate over groups
         for (idx, group) in enumerate(groups):
@@ -1445,7 +1456,7 @@ def plot_target_distributions(training_data, pred_input_data, attributes,
             summary_for_feature[(group, 'max')] = y_max
 
         # Save results to feature
-        summary = summary.append(summary_for_feature)
+        summary = pd.concat([summary, summary_for_feature.to_frame().T])
 
         # Plot appearance
         set_plot_appearance(axes, attributes, plot_title=feature)
