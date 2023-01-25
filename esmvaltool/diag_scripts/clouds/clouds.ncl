@@ -461,11 +461,31 @@ begin
     ; if desired, add years to plot title
     years_str = ""
     if (diag_script_info@showyears) then
-      years_str = " (" + var0_info@start_year
-      if (var0_info@start_year .ne. var0_info@end_year) then
-        years_str = years_str + "-" + var0_info@end_year
+      year0 = "-1"
+      if (isatt(var0_info, "start_year") .and.  \
+          isatt(var0_info, "end_year")) then
+        year0 = var0_info@start_year
+        year1 = var0_info@end_year
+      else
+        ; try attribute timerange
+        if (isatt(var0_info, "timerange")) then
+          years = tostring(str_split(var0_info@timerange, "/"))
+          year0 = years(0)
+          if (dimsizes(years) .gt. 1) then
+            year1 = years(1)
+          else
+            year1 = year0
+          end if
+        end if
       end if
-      years_str = years_str + ")"
+
+      if (year0 .ne. "-1") then
+        years_str = " (" + year0
+        if (year0 .ne. year1) then
+          years_str = years_str + "-" + year1
+        end if
+        years_str = years_str + ")"
+      end if
     end if
 
 ;    res@tiMainOn             = False
@@ -836,6 +856,7 @@ begin
         dres@tiMainString =  refname + " uncertainty" + years_str
         rmsd(imod, :) = rmsd@_FillValue
         bias(imod, :) = bias@_FillValue
+        corr(imod, :) = corr@_FillValue
       else
         continue
       end if
