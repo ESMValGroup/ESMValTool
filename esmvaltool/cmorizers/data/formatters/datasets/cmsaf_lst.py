@@ -54,7 +54,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         for year in range(vals['start_year'], vals['end_year'] + 1):
             for month in range(1,3):
                 # do this montnthly due to data size
-                cubes = load_cubes(in_dir,
+                loaded_cubes = load_cubes(in_dir,
                                    vals['file'],
                                    year,
                                    month,
@@ -62,10 +62,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                )
 
                 # now sort coordinates
-                cubes = fix_coords(cubes)
+                print(loaded_cubes)
+                print(loaded_cubes.coords())
+                fixed_cubes = fix_coords(loaded_cubes)
 
                 # save this year's data
-                save_variable(cubes,
+                save_variable(fixed_cubes,
                               var,
                               out_dir,
                               glob_attrs
@@ -92,8 +94,7 @@ def load_cubes(in_dir, filepath, year, month, variable):
                      variable,
                      callback=attr_ancil_callback
                      )
-    print(cube[0])
-    print(cube[1])
+    
     cube = cube.concatenate_cube()
-    print(cube)
-    return 
+    
+    return cube
