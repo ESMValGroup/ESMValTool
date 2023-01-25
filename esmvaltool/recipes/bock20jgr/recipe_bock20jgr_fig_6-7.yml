@@ -264,7 +264,7 @@ diagnostics:
       tas:
         preprocessor: ppNOLEV1
         reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
+        alternative_dataset: NCEP-NCAR-R1
         mip: Amon
         project: CMIP5
         exp: historical
@@ -297,7 +297,7 @@ diagnostics:
 
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
