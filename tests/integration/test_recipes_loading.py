@@ -10,6 +10,7 @@ import yaml
 import esmvaltool
 
 from esmvalcore import __version__ as core_ver
+from packaging import version
 from .test_diagnostic_run import write_config_user_file
 
 
@@ -70,7 +71,7 @@ def test_recipe_valid(recipe_file, config_user, mocker):
 
     # Mock vertical levels
     # Account for module change after esmvalcore=2.7
-    if core_ver.split(".")[0] == "2" and int(core_ver.split(".")[1]) < 8:
+    if version.parse(core_ver) < version.parse('2.8.0'):
         import esmvalcore._recipe
         mocker.patch.object(
             esmvalcore._recipe,
@@ -91,7 +92,7 @@ def test_recipe_valid(recipe_file, config_user, mocker):
 
     # Mock valid NCL version
     # Account for module change after esmvalcore=2.7
-    if core_ver.split(".")[0] == "2" and int(core_ver.split(".")[1]) < 8:
+    if version.parse(core_ver) < version.parse('2.8.0'):
         import esmvalcore._recipe_checks
         mocker.patch.object(
             esmvalcore._recipe_checks,
@@ -134,7 +135,7 @@ def test_recipe_valid(recipe_file, config_user, mocker):
             filename.touch()
 
     # Account for module change after esmvalcore=2.7
-    if core_ver.split(".")[0] == "2" and int(core_ver.split(".")[1]) < 8:
+    if version.parse(core_ver) < version.parse('2.8.0'):
         esmvalcore._recipe.read_recipe_file(recipe_file, config_user)
     else:
         esmvalcore._recipe.recipe.read_recipe_file(recipe_file, config_user)
