@@ -18,12 +18,12 @@ Download and processing instructions
         ```wget -m -nH http://url/to/dataset```
 """
 import logging
-from pathlib import Path
 from copy import deepcopy
+from pathlib import Path
 
-import xarray as xr
 import cf_units
 import iris.std_names
+import xarray as xr
 from esmvalcore.preprocessor import monthly_statistics
 
 from esmvaltool.cmorizers.data import utilities as utils
@@ -52,17 +52,18 @@ def fix_cube(var, cube, cfg):
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
     cube = monthly_statistics(cube, operator="mean")  # Fix frequency
-    
+
     # Fix metadata
     attrs = cfg['attributes']
     attrs['mip'] = var['mip']
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
-    
+
     return cube
 
 
 def open_zarr(path):
+    """Open zarr dataset."""
     logger.info('Opening zarr in "%s"', path)
     try:
         zarr_dataset = xr.open_dataset(path, engine='zarr')
@@ -70,12 +71,14 @@ def open_zarr(path):
     except KeyError as exception:
         # Happens when the zarr folder is missing metadata, e.g. when
         # it is a zarr array instead of a zarr dataset.
-        logger.info('Could not open zarr dataset "%s": "KeyError: %s"',
-                    path, exception)
+        logger.info('Could not open zarr dataset "%s": "KeyError: %s"', path,
+                    exception)
         logger.info('Skipping path')
+        return None
 
 
 def extract_variable(in_files, var, cfg, out_dir):
+    """Open and cmorize cube."""
     attributes = deepcopy(cfg['attributes'])
     all_attributes = {
         **attributes,
@@ -90,7 +93,8 @@ def extract_variable(in_files, var, cfg, out_dir):
 
         # Invalid standard names must be removed before converting to iris
         standard_name = cube_xr.attrs.get('standard_name', None)
-        if standard_name is not None and standard_name not in iris.std_names.STD_NAMES:
+        if (standard_name is not None
+                and standard_name not in iris.std_names.STD_NAMES):
             del cube_xr.attrs['standard_name']
             logger.info('Removed invalid standard name "%s".', standard_name)
 
@@ -132,7 +136,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             logger.warning(
                 'Detected a wildcard character in path (*), '
                 'online connection to \"%s\" may not work', filename_pattern)
-        in_files.append(f'{attributes["source"]}/v{version}/{filename_pattern}')
+        in_files.append(
+            f'{attributes["source"]}/v{version}/{filename_pattern}')
 
     for short_name, var in variables.items():
         if 'short_name' not in var:
