@@ -147,7 +147,7 @@ def _fix_coordinates(cube, definition):
                         coord.convert_units('Pa')
                     except ValueError as exc:
                         logger.error("Attempting to convert units for "
-                                     "coordinate %s to hPa", coord)
+                                     "coordinate %s to Pa", coord)
                         raise exc
             coord.standard_name = coord_def.standard_name
             coord.var_name = coord_def.out_name
