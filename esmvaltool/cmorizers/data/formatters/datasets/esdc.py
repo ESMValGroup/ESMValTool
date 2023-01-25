@@ -21,6 +21,8 @@ import logging
 from pathlib import Path
 
 import xarray as xr
+import cf_units
+import iris.std_names
 from esmvalcore.preprocessor import monthly_statistics
 
 from esmvaltool.cmorizers.data import utilities as utils
@@ -31,6 +33,16 @@ logger = logging.getLogger(__name__)
 def fix_cube(short_name, var, cube, cfg):
     """General fixes for all cubes."""
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    # TODO DELETE
+    # import pdb
+    # pdb.set_trace()
+    # END TODO
+    # Set calendar to gregorian instead of proleptic gregorian
+    old_unit = cube.coord('time').units
+    if old_unit.calendar == 'proleptic_gregorian':
+        logger.info("Converting time units to gregorian")
+        new_unit = cf_units.Unit(old_unit.origin, calendar='gregorian')
+        cube.coord('time').units = new_unit
     utils.fix_coords(cube)
     cube.convert_units(cmor_info.units)
     if 'height2m' in cmor_info.dimensions:
@@ -39,8 +51,19 @@ def fix_cube(short_name, var, cube, cfg):
     # Fix metadata
     attrs = cfg['attributes']
     attrs['mip'] = var['mip']
+    # TODO DELETE
+    logger.info("CMOR standard name: %s", cmor_info.standard_name)
+    logger.info(cmor_info)
+    # if 'standard_name' in attrs.keys():
+    #     logger.info(attrs['standard_name'])
+    # END TODO
+    # attrs['standard_name'] = cmor_info.standard_name
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
+    # TODO DELETE
+    if 'standard_name' in attrs.keys():
+        logger.info(f"Has standard_name = {attrs['standard_name']}")
+    # END TODO
     return cube
 
 
@@ -85,6 +108,14 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             }  # add the mip to the other attributes
             raw_name = var['raw']
             cube_xr = dataset[raw_name]
+
+            # TODO DELETE
+            # logger.info(cube_xr)
+            # logger.info(cube_xr.attrs)
+            if 'standard_name' in cube_xr.attrs and cube_xr.attrs['standard_name'] not in iris.std_names.STD_NAMES:
+                logger.info("Standard name '%s' incompatible. Removing...", cube_xr.attrs['standard_name'])
+                del cube_xr.attrs['standard_name']
+            # END TODO
 
             cube_iris = cube_xr.to_iris()
 
