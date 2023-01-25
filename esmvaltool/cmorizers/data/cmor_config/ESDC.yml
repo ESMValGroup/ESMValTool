@@ -8,7 +8,7 @@ attributes:
   tier: 2  # TODO Double check
   grid: 0.25deg
   chunking: 1x720x1440
-  # chunking: 184x90x90
+  # chunking: 256x128x128
   modeling_realm: reanaly
   source: http://data.rsc4earth.de/EarthSystemDataCube/
   reference: 'esdc'
