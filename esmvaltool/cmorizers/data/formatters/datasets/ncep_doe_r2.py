@@ -11,7 +11,7 @@ Last access
 
 Download and processing instructions
     To facilitate the download, the links to the https server are provided.
-    
+
       https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
       pressure/
         rhum.mon.mean.nc
@@ -22,7 +22,6 @@ Download and processing instructions
       https://downlooads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
       surface/
         pr_wtr.eatm.mon.mean.nc
-
 
 Caveats
 
