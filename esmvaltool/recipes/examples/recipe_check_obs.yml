@@ -452,7 +452,7 @@ diagnostics:
         mip: OImon
     additional_datasets:
       - {dataset: HadISST, project: OBS, tier: 2,
-         type: reanaly, version: 1, start_year: 1870, end_year: 2021}
+         type: reanaly, version: 1, start_year: 1870, end_year: 2017}
     scripts: null
 
 
@@ -473,21 +473,6 @@ diagnostics:
     additional_datasets:
       - {dataset: ISCCP-FH, project: OBS, mip: Amon, tier: 2,
          type: sat, version: v0, start_year: 1984, end_year: 2016}
-    scripts: null
-
-  JRA-25:
-    description: JRA-25 check
-    variables:
-      clt:
-      hus:
-      prw:
-      rlut:
-      rlutcs:
-      rsut:
-      rsutcs:
-    additional_datasets:
-      - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
-         type: reanaly, version: 1, start_year: 1979, end_year: 2013} 
     scripts: null
 
   Kadow2020:
@@ -529,6 +514,47 @@ diagnostics:
     additional_datasets:
       - {dataset: MOBO-DIC_MPIM, project: OBS6, mip: Omon, tier: 2,
          type: clim, version: '1.1', start_year: 2011, end_year: 2011}
+    scripts: null
+
+
+  NCEP:
+    description: NCEP check
+    variables:
+      hur:
+        mip: Amon
+      hus:
+        mip: Amon
+      pr_month:
+        short_name: pr
+        mip: Amon
+      pr_day:
+        short_name: pr
+        mip: day
+      rlut:
+        mip: day
+      ta:
+        mip: Amon
+      tas:
+        mip: Amon
+      ua_month:
+        short_name: ua
+        mip: Amon
+      ua_day:
+        short_name: ua
+        mip: day
+      va_month:
+        short_name: va
+        mip: Amon
+      va_day:
+        short_name: va
+        mip: day
+      wap:
+        mip: Amon
+      zg:
+        mip: Amon
+    additional_datasets:
+      - {dataset: NCEP, project: OBS, tier: 2,
+         type: reanaly, version: 1, start_year: 1948, end_year: 2018}
     scripts: null
 
 
@@ -946,10 +972,6 @@ diagnostics:
   ERA-Interim:
     description: ERA-Interim check
     variables:
-      cl:
-        mip: Amon
-      cli:
-        mip: Amon
       clivi:
         mip: Amon
       clt_day:
@@ -957,8 +979,6 @@ diagnostics:
         mip: day
       clt_month:
         short_name: clt
-        mip: Amon
-      clw:
         mip: Amon
       clwvi:
         mip: Amon
@@ -973,8 +993,6 @@ diagnostics:
       hur:
         mip: Amon
       hus:
-        mip: Amon
-      lwp:
         mip: Amon
       orog:
         mip: fx
@@ -1007,12 +1025,6 @@ diagnostics:
       rlds_day:
         short_name: rlds
         mip: day
-      rlut_month:
-        short_name: rlut
-        mip: Amon
-      rlutcs_month:
-        short_name: rlutcs
-        mip: Amon
       rsds_day:
         short_name: rsds
         mip: day
@@ -1024,12 +1036,6 @@ diagnostics:
         mip: CFday
       rsdt_month:
         short_name: rsdt
-        mip: Amon
-      rsut_month:
-        short_name: rsut
-        mip: Amon
-      rsutcs_month:
-        short_name: rsutcs
         mip: Amon
       rss_day:
         short_name: rss
@@ -1285,9 +1291,6 @@ diagnostics:
         mip: E1hr
       clt_Amon:
         short_name: clt
-        mip: Amon
-      cl_Amon:
-        short_name: cl
         mip: Amon
       evspsbl_Amon:
         short_name: evspsbl
