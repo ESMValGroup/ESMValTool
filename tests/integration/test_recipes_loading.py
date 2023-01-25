@@ -71,7 +71,7 @@ def test_recipe_valid(recipe_file, config_user, mocker):
 
     # Mock vertical levels
     # Account for module change after esmvalcore=2.7
-    if version.parse(core_ver) <= version.parse('2.7.0'):
+    if version.parse(core_ver) <= version.parse('2.7.1'):
         import esmvalcore._recipe
         mocker.patch.object(
             esmvalcore._recipe,
@@ -92,7 +92,7 @@ def test_recipe_valid(recipe_file, config_user, mocker):
 
     # Mock valid NCL version
     # Account for module change after esmvalcore=2.7
-    if version.parse(core_ver) <= version.parse('2.7.0'):
+    if version.parse(core_ver) <= version.parse('2.7.1'):
         import esmvalcore._recipe_checks
         mocker.patch.object(
             esmvalcore._recipe_checks,
@@ -135,7 +135,7 @@ def test_recipe_valid(recipe_file, config_user, mocker):
             filename.touch()
 
     # Account for module change after esmvalcore=2.7
-    if version.parse(core_ver) <= version.parse('2.7.0'):
+    if version.parse(core_ver) <= version.parse('2.7.1'):
         esmvalcore._recipe.read_recipe_file(recipe_file, config_user)
     else:
         esmvalcore._recipe.recipe.read_recipe_file(recipe_file, config_user)
