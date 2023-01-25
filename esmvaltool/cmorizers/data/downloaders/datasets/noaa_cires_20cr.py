@@ -34,7 +34,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     )
     downloader.connect()
 
-    downloader.set_cwd("Datasets/20thC_ReanV2/Monthlies/")
+    downloader.set_cwd("Projects/20thC_ReanV2/Monthlies/")
     downloader.download_file("monolevel/cldwtr.eatm.mon.mean.nc",
                              sub_folder='surface')
     downloader.download_file("monolevel/pr_wtr.eatm.mon.mean.nc",
