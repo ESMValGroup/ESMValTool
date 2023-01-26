@@ -214,9 +214,9 @@ User settings in recipe
 
    *Optional settings for script*
 
-   * e13fig12_start_year: year when start the climatology calculation
+   * e13fig12_start_year: year when the climatology calculation starts
                            (default: start_year of var)
-   * e13fig12_end_year: year when end the climatology calculation
+   * e13fig12_end_year: year when the climatology calculation ends
                          (default: end_year of var)
    * e13fig12_multimean: multimodel mean (default: False)
    * e13fig12_exp_MMM: name of the experiments for the MMM
@@ -427,7 +427,7 @@ Example plots
    :align:   center
 
    Figure 3.19: Long-term mean (thin black contours) and linear trend (colour)
-   of zonal mean December–January–February zonal winds from 1985 to 20
+   of zonal mean December-January-February zonal winds from 1985 to 2014
    in the Southern Hemisphere. The figure shows (a) ERA5 and (b) the CMIP6
    multi-model mean (58 CMIP6 models). The solid contours show positive
    (westerly) and zero long-term mean zonal wind, and the dashed contours show

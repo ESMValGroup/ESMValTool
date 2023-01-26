@@ -7,8 +7,8 @@
 ;
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
-;    @e13fig12_start_year: year when start the climatology calculation
-;    @e13fig12_end_year: year when end the climatology calculation
+;    @e13fig12_start_year: year when the climatology calculation starts
+;    @e13fig12_end_year: year when the climatology calculation ends
 ;    @e13fig12_multimean: multimodel mean
 ;    @e13fig12_season: season
 ;    @e13fig12_exp_MMM: name of the experiments dor the MMM
