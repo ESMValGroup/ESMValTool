@@ -116,6 +116,7 @@ User settings in recipe
    * variable "sos": diag_scripts/shared/plot/rgb/ipcc-ar6_misc_seq_1.rgb,
      diag_scripts/shared/plot/rgb/ipcc-ar6_misc_div.rgb
 
+
 #. Script ipcc_ar6/tas_anom.ncl
 
    *Required settings for script*
@@ -146,6 +147,7 @@ User settings in recipe
 
    * e.g. diag_scripts/shared/plot/styles/cmip5.style
 
+
 #. Script ipcc_ar6/tsline_collect.ncl
 
    *Optional settings for script*
@@ -166,6 +168,7 @@ User settings in recipe
    * reference_dataset: reference dataset; REQUIRED when calculating
      anomalies
 
+
 #. Script ipcc_ar6/zonal_st_dev.ncl
 
    *Required settings for script*
@@ -183,6 +186,7 @@ User settings in recipe
 
    * reference_dataset: reference dataset; REQUIRED when calculating
      anomalies
+
 
 #. Script ipcc_ar6/precip_anom.ncl
 
@@ -205,6 +209,8 @@ User settings in recipe
    * y_min: set min of y-axis
    * y_max: set max of y-axis
 
+
+
 #. Script ipcc_ar6/zonal_westerly_winds.ncl
 
    *Optional settings for variables*
@@ -215,17 +221,20 @@ User settings in recipe
    *Optional settings for script*
 
    * e13fig12_start_year: year when the climatology calculation starts
-                           (default: start_year of var)
+     (default: start_year of var)
    * e13fig12_end_year: year when the climatology calculation ends
-                         (default: end_year of var)
+     (default: end_year of var)
    * e13fig12_multimean: multimodel mean (default: False)
    * e13fig12_exp_MMM: name of the experiments for the MMM
-                       (required if @e13fig12_multimean = True)
+     (required if @e13fig12_multimean = True)
    * e13fig12_season: season (default: ANN)
+
+
 
 #. Script perfmetrics/perfmetrics_main.ncl
 
    See :ref:`here<perf-main.ncl>`.
+
 
 #. Script perfmetrics/perfmetrics_collect.ncl
 
