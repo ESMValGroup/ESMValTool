@@ -6,14 +6,17 @@ from pathlib import Path
 from pprint import pformat
 
 import iris
+from iris.analysis.stats import pearsonr
 import iris.plot as iplt
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
+    get_diagnostic_filename,
     get_plot_filename,
     save_data,
     save_figure,
@@ -45,6 +48,8 @@ PANEL_LABELS = {
     'ECS_low':  'd)', # (1, 1),
     'OBS':      'a)'  # (0, 0)
 }
+PANDAS_PRINT_OPTIONS = ['display.max_rows', None, 'display.max_colwidth', -1]
+
 
 def get_provenance_record(attributes, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
@@ -109,6 +114,14 @@ def calculate_rmsd(model_cube, obs_cube):
     rmsd = area_weighted_mean(diff**2)**0.5
     rmsd.attributes = model_cube.attributes
     return rmsd
+
+
+def calculate_corr(model_cube, obs_cube):
+    logger.debug("Computing Correlation")
+    #grid_areas = iris.analysis.cartography.area_weights(model_cube)
+    #corr = pearsonr(model_cube, obs_cube, weights=grid_areas)
+    corr = pearsonr(model_cube, obs_cube)
+    return corr
 
 
 def compute_diagnostic(filename):
@@ -257,39 +270,77 @@ def main(cfg):
 
     cubes = iris.cube.CubeList()
 
+    df = pd.DataFrame(columns=['Dataset', 'Group', 'Statistic', 'Value'])
+    idf = 0
+
     fig = plt.figure(constrained_layout=True)
-    #fig.tight_layout()
     fig.set_figheight(10)
     fig.set_figwidth(14)
     plt.subplots_adjust(left=0.05, bottom=0.21, right=0.95, top=0.94, wspace=0.02, hspace=0.02)
-    #plt.subplots_adjust(left=0.11, bottom=0.2, right=0.90, top=0.95, wspace=0.05, hspace=0.05)
-    #plt.subplots_adjust(hspace=0.)
 
     for group_name in groups:
         logger.info("Processing variable %s", group_name)
 
         for attributes in groups[group_name]:
             logger.info("Processing dataset %s", attributes['dataset'])
+            input_file = attributes['filename']
+            cube = compute_diagnostic(input_file)
+            cube.attributes['variable_group'] = group_name
+            cube.attributes['dataset'] = attributes['dataset']
+
+            cubes.append(cube)
+
             if attributes['dataset'] == 'MultiModelMean' or group_name == 'OBS':
-                input_file = attributes['filename']
-                cube = compute_diagnostic(input_file)
-                cube.attributes['variable_group'] = group_name
-                #print(cube)
-                cubes.append(cube)
 
                 mean = area_weighted_mean(cube)
-
                 im = plot_diagnostic(cube, mean, fig, attributes, group_name, cfg)
 
-    #print(cubes)
-    #for group in cubes.attributes['variable_group']:
-    cubes.extract_cube(iris.Constraint(cube_func=lambda cube: cube.attributes['variable_group']=='OBS'))
+    #cubes.extract_cube(iris.Constraint(cube_func=lambda cube: cube.attributes['variable_group']=='OBS'))
     for cube in cubes:
-        #print(cube.attributes['variable_group'])
         if cube.attributes['variable_group'] != 'OBS':
-            bias = calculate_bias(cube, cubes.extract_cube(iris.Constraint(cube_func=lambda cube: cube.attributes['variable_group']=='OBS')))
-            rmsd = calculate_rmsd(cube, cubes.extract_cube(iris.Constraint(cube_func=lambda cube: cube.attributes['variable_group']=='OBS')))
-            print('{0} : bias = {1}, rmsd = {2}'.format(cube.attributes['variable_group'], bias.data, rmsd.data))
+            dataset = cube.attributes['dataset']
+            group = cube.attributes['variable_group']
+
+            mean = area_weighted_mean(cube)
+            bias = calculate_bias(cube, cubes.extract_cube(iris.Constraint
+                    (cube_func=lambda cube: cube.attributes['variable_group']=='OBS')))
+            rmsd = calculate_rmsd(cube, cubes.extract_cube(iris.Constraint
+                    (cube_func=lambda cube: cube.attributes['variable_group']=='OBS')))
+            corr = calculate_corr(cube, cubes.extract_cube(iris.Constraint
+                    (cube_func=lambda cube: cube.attributes['variable_group']=='OBS')))
+
+            if cube.attributes['variable_group'] != 'MultiModelMean':
+                df.loc[idf] = [dataset, group, 'Mean', mean.data]
+                idf = idf + 1
+                df.loc[idf] = [dataset, group, 'Bias', bias.data]
+                idf = idf + 1
+                df.loc[idf] = [dataset, group, 'RMSD', rmsd.data]
+                idf = idf + 1
+                df.loc[idf] = [dataset, group, 'Corr', corr.data]
+                idf = idf + 1
+            else:
+                print('{0} : bias = {1}, rmsd = {2}, corr = {3}'
+                      .format(cube.attributes['variable_group'], bias.data, rmsd.data, corr.data))
+
+    df['Value'] = df['Value'].astype(str).astype(float)
+     
+    basename = "statistic_all_" + attributes['short_name']
+    csv_path = get_diagnostic_filename(basename, cfg).replace('.nc', '.csv')
+    df.to_csv(csv_path)
+    logger.info("Wrote %s", csv_path)
+    with pd.option_context(*PANDAS_PRINT_OPTIONS):
+        logger.info("Data:\n%s", df)
+
+    print("Result")
+    stat = df.groupby(['Statistic', 'Group'])['Value'].describe()
+    #print(df.groupby(['Statistic', 'Group'])['Value'].describe())
+    print(stat)
+    basename = "statistic_" + attributes['short_name']
+    csv_path = get_diagnostic_filename(basename, cfg).replace('.nc', '.csv')
+    stat.to_csv(csv_path)
+    logger.info("Wrote %s", csv_path)
+    with pd.option_context(*PANDAS_PRINT_OPTIONS):
+        logger.info("Data:\n%s", df)
 
     provenance_record = get_provenance_record(
         attributes, ancestor_files=cfg['input_files'])
