@@ -20,6 +20,7 @@
 ;    y-max: set max of y-axis
 ;    header: title for each panel
 ;    title: name of region as part of filename
+;    label: set label as ouptu in an extra file
 ;
 ; Caveats
 ;
