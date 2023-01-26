@@ -296,7 +296,7 @@ diagnostics:
       tasmax:
     additional_datasets:
       - {dataset: ESDC, project: OBS6, mip: Amon, tier: 2,
-         type: reanaly, version: 2.1.1,
+         type: reanaly, version: 3.0.1,
          start_year: 1979, end_year: 2018}
     scripts: null
 
