@@ -437,7 +437,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
-      - {dataset: NCEP-NCAR-R1, project: OBS, type: reanaly,
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
          version: 1, tier: 2}
     scripts:
       cycle:
