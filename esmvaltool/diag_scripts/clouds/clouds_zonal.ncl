@@ -47,6 +47,7 @@
 ;   none
 ;
 ; Modification history
+;   20230126-lauer_axel: fixed problem with option showyears
 ;   20230117-lauer_axel: added support for ICON (code from Manuel)
 ;   20200211-lauer_axel: written.
 ;
@@ -334,27 +335,28 @@ begin
     ; if desired, add years to plot title
     years_str = ""
     if (diag_script_info@showyears) then
-      year0 = "-1"
-      if (isatt(var0_info, "start_year") .and.  \
-          isatt(var0_info, "end_year")) then
+      year0 = ""
+      year1 = ""
+      if (isatt(var0_info, "start_year"))
         year0 = var0_info@start_year
+      end if
+      if (isatt(var0_info, "end_year"))
         year1 = var0_info@end_year
-      else
-        ; try attribute timerange
+      end if
+
+      if (year0 .eq. "") then  ; try attribute timerange
         if (isatt(var0_info, "timerange")) then
-          years = tostring(str_split(var0_info@timerange, "/"))
+          years = str_split(tostring(var0_info@timerange), "/")
           year0 = years(0)
           if (dimsizes(years) .gt. 1) then
             year1 = years(1)
-          else
-            year1 = year0
           end if
         end if
       end if
 
-      if (year0 .ne. "-1") then
+      if (year0 .ne. "") then
         years_str = " (" + year0
-        if (year0 .ne. year1) then
+        if ((year1 .ne. "") .and. (year1 .ne. year0)) then
           years_str = years_str + "-" + year1
         end if
         years_str = years_str + ")"
