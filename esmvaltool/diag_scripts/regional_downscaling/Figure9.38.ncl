@@ -265,7 +265,8 @@ begin
   mres_r@cnLevelSelectionMode = "ManualLevels"
   mres_r@cnMinLevelValF = 0.
   mres_r@cnMaxLevelValF = 200.0
-  mres_r@cnLevelSpacingF = 0.1 * 200.0/tofloat(dim_reg)
+  mres_r@cnMaxLevelCount = 42.0
+  mres_r@cnLevelSpacingF = max((/5.0, 200.0/tofloat(dim_reg + 2.0)/))
   mres_r@cnInfoLabelOn = False
   mres_r@cnLineLabelsOn = False
   mres_r@cnFillOn = True
@@ -279,25 +280,33 @@ begin
   txres@txJust        = "CenterLeft"
 
   random_setallseed(36484749, 9494848)
-  unf   = random_uniform(0, 1, (/dim_reg + 1/))
+  unf   = random_uniform(0, 1, (/dim_reg + 2/))
   ip = dim_pqsort(unf, 1)
 
   do ir = 0, dim_reg - 1
     case1 = region_label(ir)
     if(idx_ref.ne.-1) then
       if (diag_script_info@fig938_MMM.eq."True")
-        indic_s = where(indic_s.eq.idx_ref, indic_s@_FillValue, indic_s)
-        indic_not_sel = where(indic_not_sela.eq.idx_ref,\
-                              indic_not_sela@_FillValue, indic_not_sela)
-        if(.not.(any(ismissing(indic_not_sel)))) then
-          indic_not_sel1 = indic_not_sel(ind(.not.ismissing(indic_not_sel)))
-          delete(indic_not_sel)
-          indic_not_sel = indic_not_sel1
-          delete(indic_not_sel1)
-        end if
+        if ((diag_script_info@fig938_diff.eq."True").and.(idx_ref .ne. -1)) then
+          indic_s = where(indic_s.eq.idx_ref, indic_s@_FillValue, indic_s)
+          indic_not_sel = where(indic_not_sela.eq.idx_ref,\
+                                indic_not_sela@_FillValue, indic_not_sela)
+          if(.not.(any(ismissing(indic_not_sel)))) then
+            indic_not_sel1 = indic_not_sel(ind(.not.ismissing(indic_not_sel)))
+            delete(indic_not_sel)
+            indic_not_sel = indic_not_sel1
+            delete(indic_not_sel1)
+          end if
+        else
+          indic_not_sel = indic_not_sela
+        end if  
       end if
 
-      pan@txString = LONG_NAME + " bias vs. " + names(idx_ref)
+      if (diag_script_info@fig938_diff.eq."True") then
+        pan@txString = LONG_NAME + " bias vs. " + names(idx_ref)
+      else
+        pan@txString = LONG_NAME
+      end if
       D = new((/dim_MOD1, 13/), "double")
       models = new((/dim_MOD1/), "string")
       C = new((/dim_MOD1 - 1, 13/), "double")
@@ -318,7 +327,7 @@ begin
       cell_fill!1 = "lon"
       cell_fill&lat = lsdata&lat
       cell_fill&lon = lsdata&lon
-      irc = (ip(ir + 1)) * 200.0/tofloat(dim_reg)
+      irc = (ip(ir + 1)) * 200.0/tofloat(dim_reg + 2)
 
       if (ir.eq.0) then
         cell_fill2 = where(ismissing(cell_fill), -1., irc)
@@ -372,7 +381,7 @@ begin
           ; Btmp1 = mask(Btmp1,lsm.eq.2,False)
           ; Btmp1 = mask(Btmp1,lsm.eq.4,False)
           ; delete(lsm)
-          Btmp1 = B0
+          Btmp1 = B0      
           Btmp = area_operations(Btmp1, latrange(ir, 0), latrange(ir, 1), \
                                  lonrange(ir, 0), lonrange(ir, 1), "average",\
                                  True)
@@ -418,26 +427,27 @@ begin
           jmod = jmod + 1
         end if
       end do  ; imod
-      if (diag_script_info@fig938_diff.eq."True") then
-        delete(A)
-      end if
     else
       if (diag_script_info@fig938_MMM.eq."True")
-        indic_s = where(indic_s.eq.idx_ref, indic_s@_FillValue, indic_s)
-        indic_not_sel = where(indic_not_sela.eq.idx_ref,\
-                              indic_not_sela@_FillValue, indic_not_sela)
-        if(.not.(any(ismissing(indic_not_sel)))) then
-          indic_not_sel1 = indic_not_sel(ind(.not.ismissing(indic_not_sel)))
-          delete(indic_not_sel)
-          indic_not_sel = indic_not_sel1
-          delete(indic_not_sel1)
+        if ((diag_script_info@fig938_diff.eq."True").and.(idx_ref .ne. -1)) then
+          indic_s = where(indic_s.eq.idx_ref, indic_s@_FillValue, indic_s)
+          indic_not_sel = where(indic_not_sela.eq.idx_ref,\
+                                indic_not_sela@_FillValue, indic_not_sela)
+          if(.not.(any(ismissing(indic_not_sel)))) then
+            indic_not_sel1 = indic_not_sel(ind(.not.ismissing(indic_not_sel)))
+            delete(indic_not_sel)
+            indic_not_sel = indic_not_sel1
+            delete(indic_not_sel1)
+          end if
+        else
+          indic_not_sel = indic_not_sela
         end if
       end if
       lin_mar_mod1 = lin_mar_mod
       C = new((/dim_MOD1, 13/), "double")
       do imod = 0, dim_MOD1 - 1
         ; CASE 1
-        pan@txString = variable_info@long_name
+        pan@txString = LONG_NAME
         A0 = read_data(info0[imod])
         Atmp1 = A0
         Atmp = area_operations(Atmp1, latrange(ir, 0), latrange(ir, 1), \
@@ -475,8 +485,18 @@ begin
       E(idx_ref, 0:11) = (/A/)
       E(idx_ref, 12) = (/A(0)/)
     end if
-    min1 = min(E)
-    max1 = max(E)
+    if (diag_script_info@fig938_diff.eq."True") then
+      Ehlp = reshape(E, (/13*(dim_MOD1 - 1)/))
+    else
+      Ehlp = reshape(E, (/13*dim_MOD1/))
+    end if
+    if (any(.not.ismissing(Ehlp))) then
+      min1 = min(Ehlp(ind(.not.ismissing(Ehlp))))
+      max1 = max(Ehlp(ind(.not.ismissing(Ehlp))))
+    else
+      min1 = 0.0
+      max1 = 1.0
+    end if 
     if (isatt(diag_script_info, "fig938_YMin")) then
       res@trYMinF = diag_script_info@Figure_938_YMin
     else
@@ -487,7 +507,6 @@ begin
     else
       res@trYMaxF = max1
     end if
-
     if (diag_script_info@fig938_diff.eq."True") then
       res@xyLineColors = colors1  ; line colors
       res@xyLineThicknesses = thicks1        ; line thicknesses
@@ -534,9 +553,13 @@ begin
     ; ******************single region  output file**************************
 
     if (diag_script_info@fig938_MMM.eq."True")
-      if ((diag_script_info@fig938_diff.eq."True").and.(idx_ref .ne. -1)) then
+      if ((diag_script_info@fig938_diff.ne."True").and.(idx_ref .ne. -1)) then
         if(.not.all(ismissing(indic_not_sel))) then
-          dim_extr = dimsizes(indic_not_sel) + 1
+          if (any(indic_not_sel.eq.idx_ref)) then
+            dim_extr = dimsizes(indic_not_sel)
+          else
+            dim_extr = dimsizes(indic_not_sel) + 1
+          end if 
         else
           dim_extr = 1
         end if
@@ -594,16 +617,16 @@ begin
       if(.not.all(ismissing(indic_not_sel))) then
         if (idx_ref .ne. -1)
           MMM(dimsizes(diag_script_info@fig938_project_MMM):, :) = \
-            (/D(indic_not_sel, :)/)
+            (/E(indic_not_sel(ind(.not.ismissing(indic_not_sel))), :)/)
           colors_MMM(dimsizes(diag_script_info@fig938_project_MMM):) = \
-            colors(indic_not_sel)
+            colors(indic_not_sel(ind(.not.ismissing(indic_not_sel))))
           thicks_MMM(dimsizes(diag_script_info@fig938_project_MMM):) = 3.
-          dashes_MMM(dimsizes(diag_script_info@fig38_project_MMM):) = \
-            dashes(indic_not_sel)
+          dashes_MMM(dimsizes(diag_script_info@fig938_project_MMM):) = \
+            dashes(indic_not_sel(ind(.not.ismissing(indic_not_sel))))
           lin_mar_mod_MMM(dimsizes(diag_script_info@fig938_project_MMM):) = \
-            lin_mar_mod(indic_not_sel)
+            lin_mar_mod(indic_not_sel(ind(.not.ismissing(indic_not_sel))))
           names_MMM(dimsizes(diag_script_info@fig938_project_MMM):) = \
-            modelli(indic_not_sel)
+            models(indic_not_sel(ind(.not.ismissing(indic_not_sel))))
         else
           MMM(dimsizes(diag_script_info@fig938_project_MMM):, :) = \
             (/C(indic_not_sel, :)/)
@@ -712,6 +735,7 @@ begin
     delete(indic_not_sel)
     delete(A)
     delete(E)
+    delete(Ehlp)
   end do  ; region
 
   ; Panel plots

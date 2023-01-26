@@ -232,6 +232,9 @@ begin
   ; +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Amask = read_data(info0[idx_ref])
   lsdata = Amask(0, :, :)
+  lsdata = where(ismissing(lsdata), 1., lsdata)
+  ; poisson_grid_fill( lsdata, True, 1, 20, 2.0, 0.6, 0) ; where(ismissing(lsdata), 0., lsdata)
+  ; print(lsdata)
   ; *****************************************************************
   map_r = new(1, "graphic")
   plot = new(dim_seas, "graphic")
@@ -255,7 +258,8 @@ begin
   mres_r@cnLevelSelectionMode = "ManualLevels"
   mres_r@cnMinLevelValF = 0.
   mres_r@cnMaxLevelValF = 200.0
-  mres_r@cnLevelSpacingF = 0.1 * 200.0/tofloat(dim_reg)
+  mres_r@cnMaxLevelCount = 42.0
+  mres_r@cnLevelSpacingF = max((/5.0, 200.0/tofloat(dim_reg + 2.0)/))
   mres_r@cnInfoLabelOn = False
   mres_r@cnLineLabelsOn = False
   mres_r@cnFillOn = True
@@ -271,7 +275,7 @@ begin
   txres@txJust        = "CenterLeft"
 
   random_setallseed(36484749, 9494848)
-  unf   = random_uniform(0, 1, (/dim_reg + 1/))
+  unf   = random_uniform(0, 1, (/dim_reg + 2/))
   ip = dim_pqsort(unf, 1)
 
   do iseas = 0, dim_seas - 1
@@ -284,7 +288,7 @@ begin
       cell_fill&lon = lsdata&lon
 
       if (iseas.eq.0) then
-        irc = (ip(ir + 1)) * 200.0/tofloat(dim_reg)
+        irc = (ip(ir + 1)) * 200.0/tofloat(dim_reg + 2.0)
 
         if (ir.eq.0) then
           cell_fill2 = where(ismissing(cell_fill), -1., irc)
