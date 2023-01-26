@@ -321,7 +321,9 @@ import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
+    get_diagnostic_filename,
     group_metadata,
+    io,
     run_diagnostic,
 )
 
@@ -434,10 +436,21 @@ class MultiDatasets(MonitorBase):
             cbar_right.set_label(cbar_label_right, fontsize=fontsize)
             cbar_right.ax.tick_params(labelsize=fontsize)
 
-    def _add_stats(self, plot_type, axes, dim_coords, cube, ref_cube=None):
+    def _add_stats(self, plot_type, axes, dim_coords, dataset,
+                   ref_dataset=None):
         """Add text to plot that describes basic statistics."""
         if not self.plots[plot_type]['show_stats']:
             return
+
+        # Extract cube(s)
+        cube = dataset['cube']
+        if ref_dataset is None:
+            ref_cube = None
+            label = self._get_label(dataset)
+        else:
+            ref_cube = ref_dataset['cube']
+            label = (f'{self._get_label(dataset)} vs. '
+                     f'{self._get_label(ref_dataset)}')
 
         # Different options for the different plots types
         fontsize = 6.0
@@ -470,9 +483,23 @@ class MultiDatasets(MonitorBase):
         if ref_cube is None:
             mean = cube.collapsed(dim_coords, iris.analysis.MEAN,
                                   weights=weights)
+            logger.info(
+                "Area-weighted mean of %s for %s = %f%s",
+                dataset['short_name'],
+                label,
+                mean.data,
+                dataset['units'],
+            )
         else:
             mean = (cube - ref_cube).collapsed(dim_coords, iris.analysis.MEAN,
                                                weights=weights)
+            logger.info(
+                "Area-weighted bias of %s for %s = %f%s",
+                dataset['short_name'],
+                label,
+                mean.data,
+                dataset['units'],
+            )
         axes.text(x_pos, y_pos, f"{mean.data:.2f}{cube.units}",
                   fontsize=fontsize, transform=axes.transAxes)
         if ref_cube is None:
@@ -483,6 +510,13 @@ class MultiDatasets(MonitorBase):
                                            weights=weights)
         axes.text(x_pos_bias, y_pos, f"RMSE={rmse.data:.2f}{cube.units}",
                   fontsize=fontsize, transform=axes.transAxes)
+        logger.info(
+            "Area-weighted RMSE of %s for %s = %f%s",
+            dataset['short_name'],
+            label,
+            rmse.data,
+            dataset['units'],
+        )
 
         # Weighted R2
         mask = np.ma.getmaskarray(cube.data).ravel()
@@ -493,6 +527,12 @@ class MultiDatasets(MonitorBase):
         r2_val = r2_score(cube_data, ref_cube_data, sample_weight=weights)
         axes.text(x_pos_bias, y_pos - 0.1, rf"R$^2$={r2_val:.2f}",
                   fontsize=fontsize, transform=axes.transAxes)
+        logger.info(
+            "Area-weighted R2 of %s for %s = %f",
+            dataset['short_name'],
+            label,
+            r2_val,
+        )
 
     def _get_custom_mpl_rc_params(self, plot_type):
         """Get custom matplotlib rcParams."""
@@ -643,8 +683,8 @@ class MultiDatasets(MonitorBase):
     def _plot_map_with_ref(self, plot_func, dataset, ref_dataset):
         """Plot map plot for single dataset with a reference dataset."""
         plot_type = 'map'
-        logger.debug("Plotting map with reference dataset '%s' for '%s'",
-                     self._get_label(ref_dataset), self._get_label(dataset))
+        logger.info("Plotting map with reference dataset '%s' for '%s'",
+                    self._get_label(ref_dataset), self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
@@ -673,7 +713,7 @@ class MultiDatasets(MonitorBase):
             if gridline_kwargs is not False:
                 axes_data.gridlines(**gridline_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
-            self._add_stats(plot_type, axes_data, dim_coords_dat, cube)
+            self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -689,7 +729,7 @@ class MultiDatasets(MonitorBase):
             if gridline_kwargs is not False:
                 axes_ref.gridlines(**gridline_kwargs)
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
-            self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_cube)
+            self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
 
             # Add colorbar(s)
             self._add_colorbar(plot_type, plot_data, plot_ref, axes_data,
@@ -718,8 +758,8 @@ class MultiDatasets(MonitorBase):
                 fontsize=fontsize,
             )
             cbar_bias.ax.tick_params(labelsize=fontsize)
-            self._add_stats(plot_type, axes_bias, dim_coords_dat, cube,
-                            ref_cube)
+            self._add_stats(plot_type, axes_bias, dim_coords_dat, dataset,
+                            ref_dataset)
 
             # Customize plot
             fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
@@ -730,13 +770,24 @@ class MultiDatasets(MonitorBase):
             if self.plots[plot_type]['rasterize']:
                 self._set_rasterized([axes_data, axes_ref, axes_bias])
 
-        return self.get_plot_path(plot_type, dataset)
+        # File paths
+        plot_path = self.get_plot_path(plot_type, dataset)
+        netcdf_path = (
+            get_diagnostic_filename(Path(plot_path).stem + "_{pos}", self.cfg)
+        )
+        netcdf_paths = {
+            netcdf_path.format(pos='top_left'): cube,
+            netcdf_path.format(pos='top_right'): ref_cube,
+            netcdf_path.format(pos='bottom'): bias_cube,
+        }
+
+        return (plot_path, netcdf_paths)
 
     def _plot_map_without_ref(self, plot_func, dataset):
         """Plot map plot for single dataset without a reference dataset."""
         plot_type = 'map'
-        logger.debug("Plotting map without reference dataset for '%s'",
-                     self._get_label(dataset))
+        logger.info("Plotting map without reference dataset for '%s'",
+                    self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
@@ -755,7 +806,7 @@ class MultiDatasets(MonitorBase):
                 axes.gridlines(**gridline_kwargs)
 
             # Print statistics if desired
-            self._add_stats(plot_type, axes, dim_coords_dat, cube)
+            self._add_stats(plot_type, axes, dim_coords_dat, dataset)
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']
@@ -775,13 +826,17 @@ class MultiDatasets(MonitorBase):
             if self.plots[plot_type]['rasterize']:
                 self._set_rasterized([axes])
 
-        return self.get_plot_path(plot_type, dataset)
+        # File paths
+        plot_path = self.get_plot_path(plot_type, dataset)
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+
+        return (plot_path, {netcdf_path: cube})
 
     def _plot_profile_with_ref(self, plot_func, dataset, ref_dataset):
         """Plot profile plot for single dataset with a reference dataset."""
         plot_type = 'profile'
-        logger.debug("Plotting profile with reference dataset '%s' for '%s'",
-                     self._get_label(ref_dataset), self._get_label(dataset))
+        logger.info("Plotting profile with reference dataset '%s' for '%s'",
+                    self._get_label(ref_dataset), self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
@@ -815,7 +870,7 @@ class MultiDatasets(MonitorBase):
                     FormatStrFormatter('%.1f'))
             else:
                 axes_data.get_yaxis().set_minor_formatter(NullFormatter())
-            self._add_stats(plot_type, axes_data, dim_coords_dat, cube)
+            self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -829,7 +884,7 @@ class MultiDatasets(MonitorBase):
             plot_ref = plot_func(ref_cube, **plot_kwargs)
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
             plt.setp(axes_ref.get_yticklabels(), visible=False)
-            self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_cube)
+            self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
 
             # Add colorbar(s)
             self._add_colorbar(plot_type, plot_data, plot_ref, axes_data,
@@ -857,8 +912,8 @@ class MultiDatasets(MonitorBase):
                 fontsize=fontsize,
             )
             cbar_bias.ax.tick_params(labelsize=fontsize)
-            self._add_stats(plot_type, axes_bias, dim_coords_dat, cube,
-                            ref_cube)
+            self._add_stats(plot_type, axes_bias, dim_coords_dat, dataset,
+                            ref_dataset)
 
             # Customize plot
             fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
@@ -869,13 +924,24 @@ class MultiDatasets(MonitorBase):
             if self.plots[plot_type]['rasterize']:
                 self._set_rasterized([axes_data, axes_ref, axes_bias])
 
-        return self.get_plot_path(plot_type, dataset)
+        # File paths
+        plot_path = self.get_plot_path(plot_type, dataset)
+        netcdf_path = (
+            get_diagnostic_filename(Path(plot_path).stem + "_{pos}", self.cfg)
+        )
+        netcdf_paths = {
+            netcdf_path.format(pos='top_left'): cube,
+            netcdf_path.format(pos='top_right'): ref_cube,
+            netcdf_path.format(pos='bottom'): bias_cube,
+        }
+
+        return (plot_path, netcdf_paths)
 
     def _plot_profile_without_ref(self, plot_func, dataset):
         """Plot profile plot for single dataset without a reference dataset."""
         plot_type = 'profile'
-        logger.debug("Plotting profile without reference dataset for '%s'",
-                     self._get_label(dataset))
+        logger.info("Plotting profile without reference dataset for '%s'",
+                    self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
@@ -890,7 +956,7 @@ class MultiDatasets(MonitorBase):
             plot_profile = plot_func(cube, **plot_kwargs)
 
             # Print statistics if desired
-            self._add_stats(plot_type, axes, dim_coords_dat, cube)
+            self._add_stats(plot_type, axes, dim_coords_dat, dataset)
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']
@@ -922,7 +988,11 @@ class MultiDatasets(MonitorBase):
             if self.plots[plot_type]['rasterize']:
                 self._set_rasterized([axes])
 
-        return self.get_plot_path(plot_type, dataset)
+        # File paths
+        plot_path = self.get_plot_path(plot_type, dataset)
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+
+        return (plot_path, {netcdf_path: cube})
 
     def _process_pyplot_kwargs(self, plot_type, dataset):
         """Process functions for :mod:`matplotlib.pyplot`."""
@@ -1012,9 +1082,11 @@ class MultiDatasets(MonitorBase):
 
         # Plot all datasets in one single figure
         ancestors = []
+        cubes = {}
         for dataset in datasets:
             ancestors.append(dataset['filename'])
             cube = dataset['cube']
+            cubes[self._get_label(dataset)] = cube
             self._check_cube_dimensions(cube, plot_type)
 
             # Plot original time series
@@ -1055,6 +1127,13 @@ class MultiDatasets(MonitorBase):
         logger.info("Wrote %s", plot_path)
         plt.close()
 
+        # Save netCDF file
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        var_attrs = {
+            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
+        }
+        io.save_1d_data(cubes, netcdf_path, 'time', var_attrs)
+
         # Provenance tracking
         caption = (f"Time series of {multi_dataset_facets['long_name']} for "
                    f"various datasets.")
@@ -1066,6 +1145,7 @@ class MultiDatasets(MonitorBase):
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
 
     def create_annual_cycle_plot(self, datasets, short_name):
         """Create annual cycle plot."""
@@ -1082,9 +1162,11 @@ class MultiDatasets(MonitorBase):
 
         # Plot all datasets in one single figure
         ancestors = []
+        cubes = {}
         for dataset in datasets:
             ancestors.append(dataset['filename'])
             cube = dataset['cube']
+            cubes[self._get_label(dataset)] = cube
             self._check_cube_dimensions(cube, plot_type)
 
             # Plot annual cycle
@@ -1113,6 +1195,13 @@ class MultiDatasets(MonitorBase):
         logger.info("Wrote %s", plot_path)
         plt.close()
 
+        # Save netCDF file
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        var_attrs = {
+            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
+        }
+        io.save_1d_data(cubes, netcdf_path, 'month_number', var_attrs)
+
         # Provenance tracking
         caption = (f"Annual cycle of {multi_dataset_facets['long_name']} for "
                    f"various datasets.")
@@ -1124,6 +1213,7 @@ class MultiDatasets(MonitorBase):
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
 
     def create_map_plot(self, datasets, short_name):
         """Create map plot."""
@@ -1152,15 +1242,18 @@ class MultiDatasets(MonitorBase):
                 continue
             ancestors = [dataset['filename']]
             if ref_dataset is None:
-                plot_path = self._plot_map_without_ref(plot_func, dataset)
+                (plot_path, netcdf_paths) = (
+                    self._plot_map_without_ref(plot_func, dataset)
+                )
                 caption = (
                     f"Map plot of {dataset['long_name']} of dataset "
                     f"{dataset['dataset']} (project {dataset['project']}) "
                     f"from {dataset['start_year']} to {dataset['end_year']}."
                 )
             else:
-                plot_path = self._plot_map_with_ref(plot_func, dataset,
-                                                    ref_dataset)
+                (plot_path, netcdf_paths) = (
+                    self._plot_map_with_ref(plot_func, dataset, ref_dataset)
+                )
                 caption = (
                     f"Map plot of {dataset['long_name']} of dataset "
                     f"{dataset['dataset']} (project {dataset['project']}) "
@@ -1181,6 +1274,10 @@ class MultiDatasets(MonitorBase):
             logger.info("Wrote %s", plot_path)
             plt.close()
 
+            # Save netCDFs
+            for (netcdf_path, cube) in netcdf_paths.items():
+                io.iris_save(cube, netcdf_path)
+
             # Provenance tracking
             provenance_record = {
                 'ancestors': ancestors,
@@ -1190,6 +1287,8 @@ class MultiDatasets(MonitorBase):
             }
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
+                for netcdf_path in netcdf_paths:
+                    provenance_logger.log(netcdf_path, provenance_record)
 
     def create_profile_plot(self, datasets, short_name):
         """Create profile plot."""
@@ -1218,15 +1317,19 @@ class MultiDatasets(MonitorBase):
                 continue
             ancestors = [dataset['filename']]
             if ref_dataset is None:
-                plot_path = self._plot_profile_without_ref(plot_func, dataset)
+                (plot_path, netcdf_paths) = (
+                    self._plot_profile_without_ref(plot_func, dataset)
+                )
                 caption = (
                     f"Vertical profile of {dataset['long_name']} of dataset "
                     f"{dataset['dataset']} (project {dataset['project']}) "
                     f"from {dataset['start_year']} to {dataset['end_year']}."
                 )
             else:
-                plot_path = self._plot_profile_with_ref(plot_func, dataset,
-                                                        ref_dataset)
+                (plot_path, netcdf_paths) = (
+                    self._plot_profile_with_ref(plot_func, dataset,
+                                                ref_dataset)
+                )
                 caption = (
                     f"Vertical profile of {dataset['long_name']} of dataset "
                     f"{dataset['dataset']} (project {dataset['project']}) "
@@ -1247,6 +1350,10 @@ class MultiDatasets(MonitorBase):
             logger.info("Wrote %s", plot_path)
             plt.close()
 
+            # Save netCDFs
+            for (netcdf_path, cube) in netcdf_paths.items():
+                io.iris_save(cube, netcdf_path)
+
             # Provenance tracking
             provenance_record = {
                 'ancestors': ancestors,
@@ -1256,6 +1363,8 @@ class MultiDatasets(MonitorBase):
             }
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
+                for netcdf_path in netcdf_paths:
+                    provenance_logger.log(netcdf_path, provenance_record)
 
     def compute(self):
         """Plot preprocessed data."""
