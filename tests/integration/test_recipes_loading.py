@@ -3,13 +3,14 @@ from pathlib import Path
 
 import esmvalcore
 import esmvalcore._config
-import esmvalcore._recipe
 import esmvalcore.cmor.check
 import pytest
 import yaml
 
 import esmvaltool
 
+from esmvalcore import __version__ as core_ver
+from packaging import version
 from .test_diagnostic_run import write_config_user_file
 
 
@@ -69,21 +70,44 @@ def test_recipe_valid(recipe_file, config_user, mocker):
     )
 
     # Mock vertical levels
-    mocker.patch.object(
-        esmvalcore._recipe,
-        'get_reference_levels',
-        autospec=True,
-        spec_set=True,
-        side_effect=lambda *_, **__: [1, 2],
-    )
+    # Account for module change after esmvalcore=2.7
+    if version.parse(core_ver) <= version.parse('2.7.1'):
+        import esmvalcore._recipe
+        mocker.patch.object(
+            esmvalcore._recipe,
+            'get_reference_levels',
+            autospec=True,
+            spec_set=True,
+            side_effect=lambda *_, **__: [1, 2],
+        )
+    else:
+        import esmvalcore._recipe.recipe
+        mocker.patch.object(
+            esmvalcore._recipe.recipe,
+            'get_reference_levels',
+            autospec=True,
+            spec_set=True,
+            side_effect=lambda *_, **__: [1, 2],
+        )
 
     # Mock valid NCL version
-    mocker.patch.object(
-        esmvalcore._recipe_checks,
-        'ncl_version',
-        autospec=True,
-        spec_set=True,
-    )
+    # Account for module change after esmvalcore=2.7
+    if version.parse(core_ver) <= version.parse('2.7.1'):
+        import esmvalcore._recipe_checks
+        mocker.patch.object(
+            esmvalcore._recipe_checks,
+            'ncl_version',
+            autospec=True,
+            spec_set=True,
+        )
+    else:
+        import esmvalcore._recipe.check
+        mocker.patch.object(
+            esmvalcore._recipe.check,
+            'ncl_version',
+            autospec=True,
+            spec_set=True,
+        )
 
     # Mock interpreters installed
     def which(executable):
@@ -110,4 +134,8 @@ def test_recipe_valid(recipe_file, config_user, mocker):
             filename.parent.mkdir(parents=True, exist_ok=True)
             filename.touch()
 
-    esmvalcore._recipe.read_recipe_file(recipe_file, config_user)
+    # Account for module change after esmvalcore=2.7
+    if version.parse(core_ver) <= version.parse('2.7.1'):
+        esmvalcore._recipe.read_recipe_file(recipe_file, config_user)
+    else:
+        esmvalcore._recipe.recipe.read_recipe_file(recipe_file, config_user)
