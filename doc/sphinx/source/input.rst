@@ -411,8 +411,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 .. [#note2] Derived on the fly from down & net radiation.
 
 .. [#note3] The frequency of this variable differs from the one specified in
-            the table. The correct entry can be found in the corresponding
-            section of `recipe_check_obs.yml
+            the table. The correct entry that needs to be used in the recipe
+            can be found in the corresponding section of `recipe_check_obs.yml
             <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_check_obs.yml>`__.
 
 
