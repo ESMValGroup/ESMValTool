@@ -3,16 +3,14 @@
 ---
 documentation:
   title: IPCC AR5, chap. 9 diagnostics to reproduce regional figures 9.38-9.41
+         unsing CMIP6 data
   description: |
     Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
     9.38, 9.39, 9.40, 9.41.
     Differences to the IPCC version:
-    - No CMIP3  A1B runs included, therefore the time series stops in 1999
+    - CMIP6 instead of CMIP3 data
     - CRU data version 4.02 instead of 3.10
-    - Not exactly the same CMIP3 and CMIP5 models and version.
-    Processing of CMIP3 models currently works only in serial mode, due to
-    an issue in the input data still under investigation.
-    Data sets comented out are currently not available on DKRZ.
+    - Not exactly the same CMIP5 models and version.
 
   authors:
     - cionni_irene
@@ -28,24 +26,6 @@ documentation:
     - crescendo
 
 datasets:
-  - &cmip3 {dataset: bccr_bcm2_0,  institute: BCCR, project: CMIP3,  mip: A1,  modeling_realm: atm,  exp: 20c3m,  frequency: mo, ensemble: run1}
-  - {<<: *cmip3, dataset: cccma_cgcm3_1, institute: CCCMA}
-  - {<<: *cmip3, dataset: cccma_cgcm3_1_t63, institute: CCCMA}
-  - {<<: *cmip3, dataset: csiro_mk3_0, institute: CSIRO}
-  - {<<: *cmip3, dataset: giss_aom, institute: NASA}
-  - {<<: *cmip3, dataset: giss_model_e_h, institute: NASA}
-  - {<<: *cmip3, dataset: giss_model_e_r, institute: NASA}
-  - {<<: *cmip3, dataset: iap_fgoals1_0_g, institute: LASG}
-  - {<<: *cmip3, dataset: ingv_echam4, institute: INGV}
-  - {<<: *cmip3, dataset: inmcm3_0, institute: INM}
-  - {<<: *cmip3, dataset: ipsl_cm4, institute: IPSL}
-  - {<<: *cmip3, dataset: miroc3_2_hires, institute: NIES}
-  - {<<: *cmip3, dataset: miroc3_2_medres, institute: NIES}
-  - {<<: *cmip3, dataset: mpi_echam5, institute: MPIM}
-  - {<<: *cmip3, dataset: ncar_ccsm3_0, institute: NCAR}
-  - {<<: *cmip3, dataset: ncar_pcm1, institute: NCAR}
-  - {<<: *cmip3, dataset: ukmo_hadcm3, institute: UKMO}
-  - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
   - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
   - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1}
   - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1}
@@ -54,7 +34,6 @@ datasets:
   - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
   - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1}
   - {dataset: CESM1-BGC, project: CMIP5, exp: historical, ensemble: r1i1p1}
-  # - {dataset: CESM1-CAM5-1-FV, project: CMIP5, exp: historical}
   - {dataset: CESM1-CAM5, project: CMIP5, exp: historical, ensemble: r1i1p1}
   - {dataset: CESM1-FASTCHEM, project: CMIP5, exp: historical}
   - {dataset: CESM1-WACCM, project: CMIP5, exp: historical, ensemble: r1i1p1}
@@ -75,9 +54,6 @@ datasets:
   - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1}
   - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1}
   - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1}
-  # - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-  # - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-  # - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
   - {dataset: MIROC4h, project: CMIP5, exp: historical, ensemble: r1i1p1}
   - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1}
   - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
@@ -88,6 +64,28 @@ datasets:
   - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1}
   - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1}
   - {dataset: NorESM1-ME, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: BCC-CSM2-MR, project: CMIP6,     exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: BCC-ESM1, project: CMIP6,        exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CAMS-CSM1-0, project: CMIP6,     exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM5, project: CMIP6,         exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CESM2, project: CMIP6,           exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CESM2-WACCM, project: CMIP6,     exp: historical,   ensemble: r1i1p1f1, grid: gn, institute: NCAR}
+  - {dataset: CNRM-CM6-1, project: CMIP6,      exp: historical,   ensemble: r1i1p1f2, grid: gr}
+  - {dataset: CNRM-ESM2-1, project: CMIP6,     exp: historical,   ensemble: r1i1p1f2, grid: gr}
+  - {dataset: E3SM-1-0, project: CMIP6,        exp: historical,   ensemble: r1i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-Veg, project: CMIP6,   exp: historical,   ensemble: r1i1p1f1, grid: gr}
+  - {dataset: GFDL-CM4, project: CMIP6,        exp: historical,   ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: GFDL-ESM4, project: CMIP6,       exp: historical,   ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: GISS-E2-1-G, project: CMIP6,     exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: GISS-E2-1-H, project: CMIP6,     exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical,   ensemble: r1i1p1f3, grid: gn}
+  - {dataset: IPSL-CM6A-LR, project: CMIP6,    exp: historical,   ensemble: r1i1p1f1, grid: gr}
+  - {dataset: MIROC6, project: CMIP6,          exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MIROC-ES2L, project: CMIP6,      exp: historical,   ensemble: r1i1p1f2, grid: gn}
+  - {dataset: MPI-ESM1-2-HR, project: CMIP6,   exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MRI-ESM2-0, project: CMIP6,      exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: NESM3, project: CMIP6,           exp: historical,   ensemble: r1i1p1f1, grid: gn}
+  - {dataset: SAM0-UNICON, project: CMIP6,     exp: historical,   ensemble: r1i1p1f1, grid: gn}
 
 
 preprocessors:
@@ -169,13 +167,15 @@ diagnostics:
         fig938_region_label: ["WNA", "ENA", "CAM", "TSA", "SSA", "EUM", "NAF",
                               "CAF", "SAF", "NAS", "CAS", "EAS", "SAS", "SEA",
                               "AUS"]
-        fig938_project_MMM: ["CMIP5", "CMIP3"]
-        fig938_experiment_MMM: ["historical", "20c3m"]
-        fig938_mip_MMM: ["Amon", "A1"]
+        fig938_project_MMM: ["CMIP5", "CMIP6"]
+        fig938_experiment_MMM: ["historical", "historical"]
+        fig938_mip_MMM: ["Amon", "Amon"]
         fig938_colors_MMM: ["red", "blue"]
         fig938_refModel: ERA-Interim
         fig938_MMM: true
         fig938_diff: false
+
+
   regional_downscaling_Fig938pr:
     description: Creates annual cycle regional plots for individual models
                  and mumltimodel over the selected project&experiemnt&mip
@@ -195,7 +195,7 @@ diagnostics:
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
       - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
     scripts:
-      clim:
+      clim: 
         <<: *Fig938_settings
 
   # ==========================================================================
@@ -215,8 +215,8 @@ diagnostics:
         reference_dataset: CRU
         mip: Amon
         ensemble: r1i1p1
-        start_year: 1986
-        end_year: 1999
+        start_year: 1980
+        end_year: 2005
     additional_datasets:
       - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
 
@@ -230,9 +230,9 @@ diagnostics:
                               "MEDs", "SAHs", "WAFs", "EAFs", "SAFs", "NASs",
                               "WASs", "CASs", "TIBs", "EASs", "SASs", "SEAs",
                               "NAUs", "SAUs"]
-        fig939_project_MMM:  ["CMIP5", "CMIP3"]
-        fig939_experiment_MMM: ["historical", "20c3m"]
-        fig939_mip_MMM: ["Amon", "A1"]
+        fig939_project_MMM:  ["CMIP5", "CMIP6"]
+        fig939_experiment_MMM: ["historical", "historical"]
+        fig939_mip_MMM: ["Amon", "Amon"]
         fig939_MMM: true
         fig939_YMin: -11
         fig939_YMax: 8
@@ -251,13 +251,13 @@ diagnostics:
         reference_dataset: CRU
         mip: Amon
         ensemble: r1i1p1
-        start_year: 1986
-        end_year: 1999
+        start_year: 1980
+        end_year: 2005
     additional_datasets:
       - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
 
     scripts:
-      clim:
+      clim: 
         script: regional_downscaling/Figure9.39.ncl
         styleset: CMIP5
         fig939_season: ["ONDJFM", "AMJJAS", "ANN"]
@@ -266,14 +266,13 @@ diagnostics:
                               "MEDs", "SAHs", "WAFs", "EAFs", "SAFs", "NASs",
                               "WASs", "CASs", "TIBs", "EASs", "SASs", "SEAs",
                               "NAUs", "SAUs"]
-        fig939_project_MMM:  ["CMIP5", "CMIP3"]
-        fig939_experiment_MMM: ["historical", "20c3m"]
-        fig939_mip_MMM: ["Amon", "A1"]
+        fig939_project_MMM:  ["CMIP5", "CMIP6"]
+        fig939_experiment_MMM: ["historical", "historical"]
+        fig939_mip_MMM: ["Amon", "Amon"]
         fig939_MMM: true
         fig939_mode: true
         fig939_YMin: -100
         fig939_YMax: 300
-
 
   # ==========================================================================
   # Chapter 9  - Figure940
@@ -291,8 +290,8 @@ diagnostics:
         reference_dataset: CRU
         mip: Amon
         ensemble: r1i1p1
-        start_year: 1986
-        end_year: 1999
+        start_year: 1980
+        end_year: 2005
     additional_datasets:
       - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
     scripts:
@@ -307,9 +306,9 @@ diagnostics:
                               "EquatorialTropicalPacific",
                               "SouthernTropicalPacific", "World_land",
                               "World_sea", "World"]
-        fig940_project_MMM:  ["CMIP5", "CMIP3"]
-        fig940_experiment_MMM: ["historical", "20c3m"]
-        fig940_mip_MMM: ["Amon", "A1"]
+        fig940_project_MMM:  ["CMIP5", "CMIP6"]
+        fig940_experiment_MMM: ["historical", "historical"]
+        fig940_mip_MMM: ["Amon", "Amon"]
         fig940_MMM: true
         fig940_mode: true
         fig940_YMin: -12
@@ -328,17 +327,16 @@ diagnostics:
         reference_dataset: CRU
         mip: Amon
         ensemble: r1i1p1
-        start_year: 1986
-        end_year: 1999
+        start_year: 1980
+        end_year: 2005
     additional_datasets:
       - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
     scripts:
-      clim:
+      clim: 
         <<: *Fig940_settings
         fig940_season: ["ONDJFM", "AMJJAS", "ANN"]
         fig940_YMin: -100
         fig940_YMax: 150
-
 
 
   # ==========================================================================
@@ -357,7 +355,7 @@ diagnostics:
         mip: Amon
         ensemble: r1i1p1
         start_year: 1961
-        end_year: 1999
+        end_year: 2000
     additional_datasets:
       - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
     scripts:
