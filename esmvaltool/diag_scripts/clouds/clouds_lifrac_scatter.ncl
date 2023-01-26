@@ -27,6 +27,7 @@
 ;   none
 ;
 ; Modification history
+;   20230117-lauer_axel: added support for ICON (code from Manuel)
 ;   20210302-lauer_axel: written.
 ;
 ; ############################################################################
@@ -36,13 +37,15 @@ load "$diag_scripts/../interface_scripts/interface.ncl"
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/dataset_selection.ncl"
 
 begin
 
   enter_msg(DIAG_SCRIPT, "")
 
   diag = "clouds_lifrac_scatter.ncl"
-  variables = metadata_att_as_array(variable_info, "short_name")
+  variables = get_unique_values(metadata_att_as_array(variable_info, \
+                                                      "short_name"))
   dim_VAR = dimsizes(variables)
   refname = new(dim_VAR, string)
 
@@ -73,10 +76,13 @@ begin
   ; is equal for each variable
 
   do i = 0, dim_VAR - 1
-    if (isatt(variable_info[idx(i)], "reference_dataset")) then
-      refname(i) = variable_info[idx(i)]@reference_dataset
+    var = variables(idx(i))
+    var_info = select_metadata_by_name(variable_info, var)
+    var_info := var_info[0]
+    if (isatt(var_info, "reference_dataset")) then
+      refname(i) = var_info@reference_dataset
     end if
-    info = select_metadata_by_name(input_file_info, variables(idx(i)))
+    info = select_metadata_by_name(input_file_info, var)
     if (i .eq. 0) then
       dim_MOD = ListCount(info)
     else
@@ -88,6 +94,8 @@ begin
       end if
     end if
     delete(info)
+    delete(var)
+    delete(var_info)
   end do
 
   delete(idx)
@@ -163,10 +171,25 @@ begin
               + "are not available: " + str)
   end if
 
+  add_dim_MOD = 0
+
   if (mm_mean_median) then
-    add_dim_MOD = 2
-  else
-    add_dim_MOD = 0
+    ; check if enough model datasets are available to calculate multi-model
+    ; mean and median ice/liquid fractions
+
+    ; find all indices of models w/o MultiModelMean/MultiModelMedian
+    ; (if present)
+    idxmod = get_mod(names_clw, projects_clw)
+
+    if ((idxmod(0) .eq. -1) .or. (dimsizes(idxmod) .le. 2)) then
+      log_info("Not enough model datasets to calculate multi-model " \
+               + "mean and median. Setting of 'mm_mean_median' will" \
+               + " be ignored.")
+      mm_mean_median = False
+    else  ; more than one model found
+      add_dim_MOD = 2
+    end if
+    delete(idxmod)
   end if
 
   resulti = new((/dim_MOD + add_dim_MOD, nbins/), float)
@@ -474,6 +497,11 @@ begin
           mmed25i(n) = stat(6)                ; lower quartile
           resulti(index_my_med, n) = stat(8)  ; median
           mmed75i(n) = stat(10)               ; upper quartile
+          ; if number of datasets < 4, quartiles cannot be calculated
+          if (ismissing(mmed25i(n)) .or. ismissing(mmed75i(n))) then
+            mmed25i(n) = 0.0
+            mmed75i(n) = 0.0
+          end if
         else
           resulti(index_my_mm, n) = 0.0
           mmstdi(n) = 0.0
@@ -489,6 +517,11 @@ begin
           mmed25l(n) = stat(6)                ; lower quartile
           resultl(index_my_med, n) = stat(8)  ; median
           mmed75l(n) = stat(10)               ; upper quartile
+          ; if number of datasets < 4, quartiles cannot be calculated
+          if (ismissing(mmed25l(n)) .or. ismissing(mmed75l(n))) then
+            mmed25l(n) = 0.0
+            mmed75l(n) = 0.0
+          end if
         else
           resultl(index_my_mm, n) = 0.0
           mmstdl(n) = 0.0
@@ -504,6 +537,9 @@ begin
     end if
     delete(idx0)
     delete(imod)
+  else
+    index_my_mm = -1
+    index_my_med = -1
   end if
 
 ;  if (mm_ind .ge. 0) then
