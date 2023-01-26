@@ -71,13 +71,12 @@ def open_zarr(path):
     except KeyError as exception:
         # Happens when the zarr folder is missing metadata, e.g. when
         # it is a zarr array instead of a zarr dataset.
-        logger.info('Could not open zarr dataset "%s": "KeyError: %s"', path,
-                    exception)
-        logger.info('Skipping path')
-        return None
+        logger.error('Could not open zarr dataset "%s": "KeyError: %s"', path,
+                     exception)
+        raise exception
 
 
-def extract_variable(in_files, var, cfg, out_dir):
+def extract_variable(zarr_path, var, cfg, out_dir):
     """Open and cmorize cube."""
     attributes = deepcopy(cfg['attributes'])
     all_attributes = {
@@ -85,26 +84,23 @@ def extract_variable(in_files, var, cfg, out_dir):
         **var
     }  # add the mip to the other attributes
     raw_name = var['raw']
-    for path in in_files:
-        zarr_dataset = open_zarr(path)
-        if zarr_dataset is None:
-            continue
-        cube_xr = zarr_dataset[raw_name]
+    zarr_dataset = open_zarr(zarr_path)
+    cube_xr = zarr_dataset[raw_name]
 
-        # Invalid standard names must be removed before converting to iris
-        standard_name = cube_xr.attrs.get('standard_name', None)
-        if (standard_name is not None
-                and standard_name not in iris.std_names.STD_NAMES):
-            del cube_xr.attrs['standard_name']
-            logger.info('Removed invalid standard name "%s".', standard_name)
+    # Invalid standard names must be removed before converting to iris
+    standard_name = cube_xr.attrs.get('standard_name', None)
+    if (standard_name is not None
+            and standard_name not in iris.std_names.STD_NAMES):
+        del cube_xr.attrs['standard_name']
+        logger.info('Removed invalid standard name "%s".', standard_name)
 
-        cube_iris = cube_xr.to_iris()
-        cube = fix_cube(var, cube_iris, cfg)
+    cube_iris = cube_xr.to_iris()
+    cube = fix_cube(var, cube_iris, cfg)
 
-        utils.save_variable(cube=cube,
-                            var=var['short_name'],
-                            outdir=out_dir,
-                            attrs=all_attributes)
+    utils.save_variable(cube=cube,
+                        var=var['short_name'],
+                        outdir=out_dir,
+                        attrs=all_attributes)
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
@@ -127,7 +123,14 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     logger.debug('Pattern %s matched: %s', Path(local_path, filename_pattern),
                  in_files)
 
-    if len(in_files) == 0:
+    if len(in_files) > 1:
+        logger.warning(
+            'Pattern has matched "%i" files, '
+            'but only the first one will be used.', len(in_files))
+        logger.warning('The following files will be ignored.: "%s"',
+                       in_files[1:])
+        zarr_path = in_files[0]
+    elif len(in_files) == 0:
         logger.info(
             'No local matches for pattern "%s", '
             'attempting connection to the cloud.',
@@ -136,10 +139,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             logger.warning(
                 'Detected a wildcard character in path (*), '
                 'online connection to \"%s\" may not work', filename_pattern)
-        in_files.append(
-            f'{attributes["source"]}/v{version}/{filename_pattern}')
+        zarr_path = f'{attributes["source"]}/v{version}/{filename_pattern}'
 
     for short_name, var in variables.items():
         if 'short_name' not in var:
             var['short_name'] = short_name
-        extract_variable(in_files, var, cfg, out_dir)
+        extract_variable(zarr_path, var, cfg, out_dir)
