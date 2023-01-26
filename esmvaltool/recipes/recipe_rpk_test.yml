@@ -1,0 +1,28 @@
+# Recipe to test data.
+---
+documentation:
+  title: test recipe
+  description: |
+    Please add description here
+  authors:
+    - king_robert
+
+  maintainer:
+    - king_robert
+
+  references:
+    - esacci_lst
+
+  projects:
+    - cmug
+
+diagnostics:
+   RPK_TEST:
+     description: cmsaf ucs check
+     variables:
+       ts:
+     additional_datasets:
+       - {dataset: CMSAF_LST, project: OBS, type: sat, tier: 2, mip: custom,
+          start_year: 2010, end_year: 2010, version: ''}
+
+     scripts: null

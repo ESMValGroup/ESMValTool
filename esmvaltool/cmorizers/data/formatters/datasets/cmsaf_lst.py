@@ -1,4 +1,5 @@
 """ESMValTool CMORizer for ESACCI-LST data.
+
 Tier
    Tier 2: other freely-available dataset.
 Source
@@ -8,7 +9,7 @@ Download and processing instructions
    Untar to get netcdf files, one for each hour of every day
    To fix non-CF complient naming of semiminor and semimajor axes in the
    netcdf files run this shell script in the directory:
-   for file in ls *.nc; 
+   for file in ls *.nc;
    do
    ncrename -O -h -a grid_mapping@semiminoraxis,semi_minor_axis \
                   -a grid_mapping@semimajoraxis,semi_major_axis ${file};
@@ -18,9 +19,9 @@ Download and processing instructions
    will raise ValueError: No ellipsoid specified
 """
 
-import datetime
 import logging
-#from calendar import monthrange
+
+##### NOTE esmvalcore custom ts 1hr .dat file added
 
 import iris
 
@@ -30,15 +31,15 @@ logger = logging.getLogger(__name__)
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
-    """Cmorization func call."""
-
+    """Cmorization func call.
+    """
 
     glob_attrs = cfg['attributes']
 
     # Run the cmorization
     # vals has the info from the yml file
     # var is set up in the yml file
-
+    print(cfg)  # while testing
     for var, vals in cfg['variables'].items():
         # leave this loop in as might be useful in the future for getting
         # other info like uncertainty information from the original files
@@ -48,22 +49,18 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             logger.info("%s %s", key, vals[key])
 
         variable = vals['raw']
-        print(in_dir)
-        print(vals['file'])
         # loop over years
         for year in range(vals['start_year'], vals['end_year'] + 1):
-            for month in range(1,3):
+            for month in range(1, 3):  # just a couple of months while testing
                 # do this montnthly due to data size
                 loaded_cubes = load_cubes(in_dir,
-                                   vals['file'],
-                                   year,
-                                   month,
-                                   variable
-                               )
+                                          vals['file'],
+                                          year,
+                                          month,
+                                          variable
+                                          )
 
                 # now sort coordinates
-                print(loaded_cubes)
-                print(loaded_cubes.coords())
                 fixed_cubes = fix_coords(loaded_cubes)
 
                 # save this year's data
@@ -71,21 +68,20 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                               var,
                               out_dir,
                               glob_attrs
-                          )
+                              )
 
 
 def attr_ancil_callback(cube, field, filename):
     """Callback function for loading cubes.
+
     Removes cube attributes and unwanted ancillary variables.
     """
     cube.attributes = None
 
-    #for coord in cube.ancillary_variables():
-    #    cube.remove_ancillary_variable(coord)
-
 
 def load_cubes(in_dir, filepath, year, month, variable):
     """Load ESA CCI SM netcdf files.
+
     Also remove attributes and ancillary variables to allow all of the
     year's data to concatenate into a single cube.
     """
@@ -94,7 +90,7 @@ def load_cubes(in_dir, filepath, year, month, variable):
                      variable,
                      callback=attr_ancil_callback
                      )
-    
+
     cube = cube.concatenate_cube()
-    
+
     return cube

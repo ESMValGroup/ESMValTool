@@ -10,7 +10,7 @@ attributes:
   comment: ""
 
 # Variables to cmorize (here use only filename prefix)
-### check this, might need new cmor entry???  Needs frequency: 24hr adding to CMOR_sm.py in ESMValCore
+### check this, might need new cmor entry???  Needs frequency: 1hr adding to CMOR_ts.py in ESMValCore???
 variables:
   ts:
     mip: custom
