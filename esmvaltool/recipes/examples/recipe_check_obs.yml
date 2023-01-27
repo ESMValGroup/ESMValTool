@@ -452,7 +452,7 @@ diagnostics:
         mip: OImon
     additional_datasets:
       - {dataset: HadISST, project: OBS, tier: 2,
-         type: reanaly, version: 1, start_year: 1870, end_year: 2017}
+         type: reanaly, version: 1, start_year: 1870, end_year: 2021}
     scripts: null
 
 
