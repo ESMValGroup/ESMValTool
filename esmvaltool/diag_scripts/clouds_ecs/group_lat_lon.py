@@ -207,9 +207,8 @@ def plot_diagnostic(cube, mean, fig, attributes, legend, cfg):
         save_figure(basename, provenance_record, cfg)
     else:
         ipanel = PANEL.get(legend, None)
-        print('ipanel = {}'.format(ipanel))
         plt.subplot(ipanel, projection=ccrs.Robinson())
-        levels = [10,20,30,40,50,60,70,80,90]
+        cmap = 'bwr' 
         if attributes['short_name'] == 'clt':
             levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
             cmap = 'viridis'
@@ -223,24 +222,35 @@ def plot_diagnostic(cube, mean, fig, attributes, legend, cfg):
             levels = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
             cmap = 'bwr' 
         elif attributes['short_name'] == 'lwcre':
-            #levels = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
             levels = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
             cmap = 'Reds' 
         elif attributes['short_name'] == 'swcre':
             levels = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0]
             cmap = 'Blues_r' 
+        elif attributes['short_name'] == 'clt_diff':
+            levels = list(np.arange(-30, 31, 2.5))
+        elif attributes['short_name'] == 'clivi_diff':
+            levels = list(np.arange(-0.1, 0.105, 0.01))
+        elif attributes['short_name'] == 'lwp_diff':
+            levels = list(np.arange(-0.1, 0.105, 0.01))
+        elif attributes['short_name'] in ['netcre_diff', 'lwcre_diff', 'swcre_diff']:
+            levels = list(np.arange(-30, 31, 2.5))
         im = iplt.contourf(cube, levels=levels, cmap=cmap, extend ='both')
-        #im = iplt.contourf(cube, extend ='both')
-        #plt.clim(0., 100.)
+
         plt.gca().coastlines()
         plt.title(legend, fontsize=18)
-        if attributes['short_name'] in ['clivi', 'lwp']:
-            plt.title('mean = {:.3f}      '.format(mean.data), fontsize = 14, loc='right')
-        else:
+        if attributes['short_name'] in ['clt', 'netcre']:
             plt.title('mean = {:.1f}      '.format(mean.data), fontsize = 14, loc='right')
+        elif attributes['short_name'] in ['clivi', 'lwp']:
+            plt.title('mean = {:.3f}      '.format(mean.data), fontsize = 14, loc='right')
+        elif attributes['short_name'] in ['clivi_diff', 'lwp_diff']:
+            plt.title('bias = {:.3f}      '.format(mean.data), fontsize = 14, loc='right')
+        elif attributes['short_name'] in ['clt_diff', 'netcre_diff']:
+            plt.title('bias = {:.1f}      '.format(mean.data), fontsize = 14, loc='right')
+        else:
+            plt.title('{:.1f}      '.format(mean.data), fontsize = 14, loc='right')
         ipanel_label = PANEL_LABELS.get(legend, None)
         plt.title(ipanel_label, fontsize = 22, loc='left')
-        #plt.title(ipanel_label, fontfamily='serif', fontsize = 20, loc='left')
 
         return im
 
@@ -269,6 +279,8 @@ def main(cfg):
     groups = group_metadata(input_data, 'variable_group', sort='dataset')
 
     cubes = iris.cube.CubeList()
+    cubes_out = iris.cube.CubeList()
+    cubes_out_diff = iris.cube.CubeList()
 
     df = pd.DataFrame(columns=['Dataset', 'Group', 'Statistic', 'Value'])
     idf = 0
@@ -294,60 +306,13 @@ def main(cfg):
 
                 mean = area_weighted_mean(cube)
                 im = plot_diagnostic(cube, mean, fig, attributes, group_name, cfg)
+                cubes_out.append(cube)
 
-    #cubes.extract_cube(iris.Constraint(cube_func=lambda cube: cube.attributes['variable_group']=='OBS'))
-    for cube in cubes:
-        if cube.attributes['variable_group'] != 'OBS':
-            dataset = cube.attributes['dataset']
-            group = cube.attributes['variable_group']
-
-            mean = area_weighted_mean(cube)
-            bias = calculate_bias(cube, cubes.extract_cube(iris.Constraint
-                    (cube_func=lambda cube: cube.attributes['variable_group']=='OBS')))
-            rmsd = calculate_rmsd(cube, cubes.extract_cube(iris.Constraint
-                    (cube_func=lambda cube: cube.attributes['variable_group']=='OBS')))
-            corr = calculate_corr(cube, cubes.extract_cube(iris.Constraint
-                    (cube_func=lambda cube: cube.attributes['variable_group']=='OBS')))
-
-            if cube.attributes['variable_group'] != 'MultiModelMean':
-                df.loc[idf] = [dataset, group, 'Mean', mean.data]
-                idf = idf + 1
-                df.loc[idf] = [dataset, group, 'Bias', bias.data]
-                idf = idf + 1
-                df.loc[idf] = [dataset, group, 'RMSD', rmsd.data]
-                idf = idf + 1
-                df.loc[idf] = [dataset, group, 'Corr', corr.data]
-                idf = idf + 1
-            else:
-                print('{0} : bias = {1}, rmsd = {2}, corr = {3}'
-                      .format(cube.attributes['variable_group'], bias.data, rmsd.data, corr.data))
-
-    df['Value'] = df['Value'].astype(str).astype(float)
-     
-    basename = "statistic_all_" + attributes['short_name']
-    csv_path = get_diagnostic_filename(basename, cfg).replace('.nc', '.csv')
-    df.to_csv(csv_path)
-    logger.info("Wrote %s", csv_path)
-    with pd.option_context(*PANDAS_PRINT_OPTIONS):
-        logger.info("Data:\n%s", df)
-
-    print("Result")
-    stat = df.groupby(['Statistic', 'Group'])['Value'].describe()
-    #print(df.groupby(['Statistic', 'Group'])['Value'].describe())
-    print(stat)
-    basename = "statistic_" + attributes['short_name']
-    csv_path = get_diagnostic_filename(basename, cfg).replace('.nc', '.csv')
-    stat.to_csv(csv_path)
-    logger.info("Wrote %s", csv_path)
-    with pd.option_context(*PANDAS_PRINT_OPTIONS):
-        logger.info("Data:\n%s", df)
-
+    # finalize figure
     provenance_record = get_provenance_record(
         attributes, ancestor_files=cfg['input_files'])
 
     basename = 'map_' + attributes['short_name']
-    # Save the data used for the plot
-    save_data(basename, provenance_record, cfg, cubes)
 
     title = attributes['long_name']
     fig.suptitle(title, fontsize = 22)
@@ -373,7 +338,93 @@ def main(cfg):
     # And save the plot
     save_figure(basename, provenance_record, cfg, fig)
 
+    # Compute statistics
+    cube_obs = cubes.extract_cube(iris.Constraint
+               (cube_func=lambda cube: cube.attributes['variable_group']=='OBS'))
 
+    figb = plt.figure(constrained_layout=True)
+    figb.set_figheight(10)
+    figb.set_figwidth(14)
+    plt.subplots_adjust(left=0.05, bottom=0.21, right=0.95, top=0.94, wspace=0.02, hspace=0.02)
+
+    for cube in cubes:
+        if cube.attributes['variable_group'] != 'OBS':
+            dataset = cube.attributes['dataset']
+            group = cube.attributes['variable_group']
+            logger.info("Processing dataset %s", dataset)
+
+            mean = area_weighted_mean(cube)
+            bias = calculate_bias(cube, cube_obs)
+            rmsd = calculate_rmsd(cube, cube_obs)
+            corr = calculate_corr(cube, cube_obs)
+
+            if dataset != 'MultiModelMean':
+                df.loc[idf] = [dataset, group, 'Mean', mean.data]
+                idf = idf + 1
+                df.loc[idf] = [dataset, group, 'Bias', bias.data]
+                idf = idf + 1
+                df.loc[idf] = [dataset, group, 'RMSD', rmsd.data]
+                idf = idf + 1
+                df.loc[idf] = [dataset, group, 'Corr', corr.data]
+                idf = idf + 1
+            else:
+                cube_diff = cube - cube_obs
+                cube_diff.attributes = cube.attributes
+                cube_diff.attributes['short_name'] = attributes['short_name'] + "_diff"
+                cube_diff.var_name = attributes['short_name'] + "_diff"
+                imb = plot_diagnostic(cube_diff, bias, figb, cube_diff.attributes, group, cfg)
+                cubes_out.append(cube_diff)
+                print('{0} : bias = {1}, rmsd = {2}, corr = {3}'
+                      .format(cube.attributes['variable_group'], bias.data, rmsd.data, corr.data))
+
+    # Save the data used for the plot
+    save_data(basename, provenance_record, cfg, cubes_out)
+
+    # write statistics
+    df['Value'] = df['Value'].astype(str).astype(float)
+     
+    basename = "statistic_all_" + attributes['short_name']
+    csv_path = get_diagnostic_filename(basename, cfg).replace('.nc', '.csv')
+    df.to_csv(csv_path)
+    logger.info("Wrote %s", csv_path)
+    with pd.option_context(*PANDAS_PRINT_OPTIONS):
+        logger.info("Data:\n%s", df)
+
+    stat = df.groupby(['Statistic', 'Group'])['Value'].describe()
+    basename = "statistic_" + attributes['short_name']
+    csv_path = get_diagnostic_filename(basename, cfg).replace('.nc', '.csv')
+    stat.to_csv(csv_path)
+    logger.info("Wrote %s", csv_path)
+    with pd.option_context(*PANDAS_PRINT_OPTIONS):
+        logger.info("Data:\n%s", df)
+
+    # create diff figure
+    basename = 'map_diff_' + attributes['short_name']
+    title = attributes['long_name']
+    figb.suptitle(title, fontsize = 22)
+    cbar_ax = figb.add_axes([0.2, 0.18, 0.6, 0.03])
+    colorbar = figb.colorbar(imb, cax=cbar_ax, orientation='horizontal')
+    colorbar.set_label( cube.var_name + '/' + cube.units.origin, fontsize = 16)
+    if attributes['short_name'] == 'clt':
+        ticks = list(np.arange(-30,31,5))
+    elif attributes['short_name'] == 'clivi':
+        ticks = [-0.1, -0.08, -0.06, -0.04, -0.02, 0., 0.02, 0.04, 0.06, 0.08, 0.1]
+    elif attributes['short_name'] == 'lwp':
+        ticks = [-0.1, -0.08, -0.06, -0.04, -0.02, 0., 0.02, 0.04, 0.06, 0.08, 0.1]
+        #ticks = list(np.arange(-0.1, 0.12, 0.02))
+    elif attributes['short_name'] in ['netcre', 'lwcre', 'swcre']:
+        #ticks = [-40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
+        ticks = list(np.arange(-30,31,5))
+    #elif attributes['short_name'] == 'lwcre':
+    #    ticks = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+    #elif attributes['short_name'] == 'swcre':
+    #    ticks = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0]
+
+    colorbar.set_ticks(ticks)
+    colorbar.set_ticklabels([str(tick) for tick in ticks], fontsize = 16)
+
+    # And save the plot
+    save_figure(basename, provenance_record, cfg, figb)
 
 if __name__ == '__main__':
 
