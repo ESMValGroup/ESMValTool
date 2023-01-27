@@ -118,8 +118,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                               chunking=attributes['chunking'],
                                               version=version)
 
-    local_path = Path(in_dir, f'v{version}')
-    in_files = list(local_path.glob(filename_pattern))
+    in_files = list(Path(in_dir).glob(filename_pattern))
     logger.debug('Pattern %s matched: %s', Path(local_path, filename_pattern),
                  in_files)
 
