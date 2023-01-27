@@ -1,1 +1,21 @@
 # CMORiser for GLOBMAP LAI data
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: GLOBMAP_LAI
+  version: '3'
+  tier: 2
+  modeling_realm: sat
+  project_id: OBS
+  source: 'https://zenodo.org/record/4700264'
+  reference: "globmap-lai"
+  comment: ""
+
+# Variables to cmorize (here use only filename prefix)
+# Needs frequency: frequency changes within the timeseries
+variables:
+  lai:
+    mip: custom
+    raw: LAI
+    file: GlobMapLAIV3.A
+    start_year: 2010
+    end_year: 2011
