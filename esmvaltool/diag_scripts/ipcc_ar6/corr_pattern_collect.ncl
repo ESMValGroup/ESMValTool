@@ -11,9 +11,10 @@
 ; Required diag_script_info attributes (diagnostics specific)
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
+;     diag_order: give order of plotting variables on the x-axis
+;     labels: List of labels for each variable on the x-axis
+;     model_spread: if True, model spread is shaded
 ;     plot_median: if True, median is plotted
-;     diag_script_info@diag_order: give order of plotting variables on the
-;                                  x-axis
 ;
 ; Required variable_info attributes (variable specific)
 ;     none

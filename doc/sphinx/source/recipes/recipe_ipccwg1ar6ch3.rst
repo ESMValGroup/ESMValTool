@@ -228,9 +228,10 @@ User settings in recipe
 
    *Optional settings for script*
 
-   * diag_order: List of diagnostic names in the order variables
-     should appear on x-axis
+   * diag_order: give order of plotting variables on the x-axis
    * labels: List of labels for each variable on the x-axis
+   * model_spread: if True, model spread is shaded
+   * plot_median: if True, median is plotted
 
 
 Variables
@@ -445,7 +446,7 @@ Example plots
    :align:   center
 
    Figure 3.43 | Centred pattern correlations between models and observations
-   for the annual mean climatology over the period 1980-1999. Results ar
+   for the annual mean climatology over the period 1980-1999. Results are
    shown for individual CMIP3 (green), CMIP5 (blue) and CMIP6 (red) models (one
    ensemble member from each model is used) as short lines, along with the
    corresponding multi-model ensemble averages (long lines). Correlations are

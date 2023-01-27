@@ -9,14 +9,16 @@
 ;    and plots them. Like IPCC AR5 Ch. 9 Fig 9.6
 ;
 ; Required diag_script_info attributes (diagnostics specific)
+;     none
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
+;     none
 ;
 ; Required variable_info attributes (variable specific)
-;     none
+;     reference_dataset: name of reference observation
 ;
 ; Optional variable_info attributes (variable specific)
-;     none
+;     alternative_dataset: name of alternative observations
 ;
 ; Caveats
 ;
