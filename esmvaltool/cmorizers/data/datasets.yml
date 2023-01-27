@@ -529,7 +529,8 @@ datasets:
     source: http://data.rsc4earth.de/EarthSystemDataCube/
     last_access: 2023-01-26
     info: |
-      TODO
+      Data can be automatically downloaded by running the cmorizer.
+      Manual downloads have to preserve directory structure.
 
   ESRL:
     tier: 2
