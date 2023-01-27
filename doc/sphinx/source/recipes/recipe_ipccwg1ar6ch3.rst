@@ -299,7 +299,7 @@ Observations and reformat scripts
 * Landschuetzer2016 (fgco2 - esmvaltool/cmorizers/data/formatters/datasets/landschuetzer2016.py)
 * LAI3g (lai - esmvaltool/cmorizers/data/formatters/datasets/lai3g.py)
 * MTE (gpp - esmvaltool/cmorizers/data/formatters/datasets/mte.py)
-* NCEP (ta, tas, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep.ncl)
+* NCEP-NCAR-R1 (ta, tas, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep_ncar_r1.py)
 * NOAAGlobalTemp (tasa - esmvaltool/cmorizers/data/formatters/datasets/noaaglobaltemp.py)
 
 
@@ -455,8 +455,9 @@ Example plots
    diagonal split of a grid square shows the relative error with respect to the
    reference data set (lower right triangle) and an additional data set (upper
    left triangle). Reference/additional datasets are from top to bottom in (a):
-   ERA5/NCEP, GPCP-SG/GHCN, CERES-EBAF, CERES-EBAF, CERES-EBAF, CERES-EBAF,
-   JRA-55/ERA5, ESACCI-SST/HadISST, ERA5/NCEP, ERA5/NCEP, ERA5/NCEP, ERA5/NCEP,
-   ERA5/NCEP, ERA5/NCEP, AIRS/ERA5, ERA5/NCEP. White boxes are used when data
-   are not available for a given model and variable. Figure is updated and
-   expanded from Bock et al. (2020).
+   ERA5/NCEP-NCAR-R1, GPCP-SG/GHCN, CERES-EBAF, CERES-EBAF, CERES-EBAF,
+   CERES-EBAF, JRA-55/ERA5, ESACCI-SST/HadISST, ERA5/NCEP-NCAR-R1,
+   ERA5/NCEP-NCAR-R1, ERA5/NCEP-NCAR-R1, ERA5/NCEP-NCAR-R1, ERA5/NCEP-NCAR-R1,
+   ERA5/NCEP-NCAR-R1, AIRS/ERA5, ERA5/NCEP-NCAR-R1. White boxes are used when
+   data are not available for a given model and variable. Figure is updated 
+   and expanded from Bock et al. (2020).
