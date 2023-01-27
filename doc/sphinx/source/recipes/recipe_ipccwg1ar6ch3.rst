@@ -30,6 +30,8 @@ following figures from `Eyring et al. (2021)`_ can currently be reproduced:
 
     * Figure 3.15: Precipitation Anomaly
 
+    * Figure 3.19: Speed-Up Of Zonal Mean Wind
+
     * Figure 3.42: Relative Model Performance
 
 .. _`Eyring et al., 2021`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
@@ -42,6 +44,7 @@ Available recipes and diagnostics
 Recipes are stored in esmvaltool/recipes/ipccwg1ar6ch3/
 
     * recipe_ipccwg1ar6ch3_atmosphere.yml
+    * recipe_ipccwg1ar6ch3_fig_3_19.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_a.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_b.yml
 
@@ -69,6 +72,10 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     Fig. 3.15:
 
     * ipcc_ar6/precip_anom.ncl
+
+    Fig. 3.19:
+
+    * ipcc_ar6/zonal_westerly_winds.ncl
 
     Fig. 3.42:
 
@@ -109,6 +116,7 @@ User settings in recipe
    * variable "sos": diag_scripts/shared/plot/rgb/ipcc-ar6_misc_seq_1.rgb,
      diag_scripts/shared/plot/rgb/ipcc-ar6_misc_div.rgb
 
+
 #. Script ipcc_ar6/tas_anom.ncl
 
    *Required settings for script*
@@ -139,6 +147,7 @@ User settings in recipe
 
    * e.g. diag_scripts/shared/plot/styles/cmip5.style
 
+
 #. Script ipcc_ar6/tsline_collect.ncl
 
    *Optional settings for script*
@@ -159,6 +168,7 @@ User settings in recipe
    * reference_dataset: reference dataset; REQUIRED when calculating
      anomalies
 
+
 #. Script ipcc_ar6/zonal_st_dev.ncl
 
    *Required settings for script*
@@ -176,6 +186,7 @@ User settings in recipe
 
    * reference_dataset: reference dataset; REQUIRED when calculating
      anomalies
+
 
 #. Script ipcc_ar6/precip_anom.ncl
 
@@ -198,9 +209,32 @@ User settings in recipe
    * y_min: set min of y-axis
    * y_max: set max of y-axis
 
+
+
+#. Script ipcc_ar6/zonal_westerly_winds.ncl
+
+   *Optional settings for variables*
+
+   * reference_dataset: reference dataset; REQUIRED when calculating
+     anomalies
+
+   *Optional settings for script*
+
+   * e13fig12_start_year: year when the climatology calculation starts
+     (default: start_year of var)
+   * e13fig12_end_year: year when the climatology calculation ends
+     (default: end_year of var)
+   * e13fig12_multimean: multimodel mean (default: False)
+   * e13fig12_exp_MMM: name of the experiments for the MMM
+     (required if @e13fig12_multimean = True)
+   * e13fig12_season: season (default: ANN)
+
+
+
 #. Script perfmetrics/perfmetrics_main.ncl
 
    See :ref:`here<perf-main.ncl>`.
+
 
 #. Script perfmetrics/perfmetrics_collect.ncl
 
@@ -397,6 +431,18 @@ Example plots
    observational product are shown as horizontal lines. Panel (b) shows annual
    mean precipitation rate (mm day–1) of GHCN version 2 for the years 1950–2014
    over land areas used to compute the plots. 
+
+.. figure::  /recipes/figures/ipccwg1ar6ch3/zonal_westerly_winds.png
+   :align:   center
+
+   Figure 3.19: Long-term mean (thin black contours) and linear trend (colour)
+   of zonal mean December-January-February zonal winds from 1985 to 2014
+   in the Southern Hemisphere. The figure shows (a) ERA5 and (b) the CMIP6
+   multi-model mean (58 CMIP6 models). The solid contours show positive
+   (westerly) and zero long-term mean zonal wind, and the dashed contours show
+   negative (easterly) long-term mean zonal wind. Only one ensemble member per
+   model is included. Figure is modified from Eyring et al. (2013), their
+   Figure 12.
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/fig_3_42_a.png
    :align:   center
