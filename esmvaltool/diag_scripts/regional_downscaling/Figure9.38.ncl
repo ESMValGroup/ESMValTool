@@ -31,6 +31,8 @@
 ; #     *  fig938_colors_MMM: colors, default "red"
 ; #     *  fig938_YMin        : minimum Y Axis
 ; #     *  fig938_YMax        : maximum Y Axis
+; #     *  fig938_diff: difference to reference data (true) or
+; #                     absolute annual cycle (false), default: true
 ; #
 ; #        fig938_mip_MMM, fig938_experiment_MMM, fig938_project_MMM,
 ; #        fig938_names_MMM, and fig938_colors_MMM
@@ -50,6 +52,10 @@
 ; #      in regional_function.ncl
 ; #
 ; # Modification history:
+; # 20230127-weigel_katja: Update for absolute annual cycle including
+; #                        new fig938_diff attribute
+; #                        and bug fixes in index of data sets/models and
+; #                        color for regions
 ; # 20221026-weigel_katja: header updated
 ; # 20220314-weigel_katja: header updated
 ; # original file anncycplot.ncl
@@ -287,7 +293,7 @@ begin
     case1 = region_label(ir)
     if(idx_ref.ne.-1) then
       if (diag_script_info@fig938_MMM.eq."True")
-        if ((diag_script_info@fig938_diff.eq."True").and.(idx_ref .ne. -1)) then
+        if ((diag_script_info@fig938_diff.eq."True").and.(idx_ref.ne.-1)) then
           indic_s = where(indic_s.eq.idx_ref, indic_s@_FillValue, indic_s)
           indic_not_sel = where(indic_not_sela.eq.idx_ref,\
                                 indic_not_sela@_FillValue, indic_not_sela)
@@ -299,7 +305,7 @@ begin
           end if
         else
           indic_not_sel = indic_not_sela
-        end if  
+        end if
       end if
 
       if (diag_script_info@fig938_diff.eq."True") then
@@ -381,7 +387,7 @@ begin
           ; Btmp1 = mask(Btmp1,lsm.eq.2,False)
           ; Btmp1 = mask(Btmp1,lsm.eq.4,False)
           ; delete(lsm)
-          Btmp1 = B0      
+          Btmp1 = B0
           Btmp = area_operations(Btmp1, latrange(ir, 0), latrange(ir, 1), \
                                  lonrange(ir, 0), lonrange(ir, 1), "average",\
                                  True)
@@ -429,7 +435,7 @@ begin
       end do  ; imod
     else
       if (diag_script_info@fig938_MMM.eq."True")
-        if ((diag_script_info@fig938_diff.eq."True").and.(idx_ref .ne. -1)) then
+        if ((diag_script_info@fig938_diff.eq."True").and.(idx_ref.ne.-1)) then
           indic_s = where(indic_s.eq.idx_ref, indic_s@_FillValue, indic_s)
           indic_not_sel = where(indic_not_sela.eq.idx_ref,\
                                 indic_not_sela@_FillValue, indic_not_sela)
@@ -496,7 +502,7 @@ begin
     else
       min1 = 0.0
       max1 = 1.0
-    end if 
+    end if
     if (isatt(diag_script_info, "fig938_YMin")) then
       res@trYMinF = diag_script_info@Figure_938_YMin
     else
@@ -559,7 +565,7 @@ begin
             dim_extr = dimsizes(indic_not_sel)
           else
             dim_extr = dimsizes(indic_not_sel) + 1
-          end if 
+          end if
         else
           dim_extr = 1
         end if

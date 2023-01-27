@@ -65,6 +65,10 @@
 ; #      in regional_function.ncl
 ; #
 ; # Modification history:
+; # 20230110-weigel_katja: fixed calendar, calendar starting point needs to
+; #                        including time: "months since 1-1-1 00:00:00"
+; #                        and converting month number to time Axis
+; #                        with -1.0
 ; # 20230111-weigel_katja: added option for percentage difference
 ; # 20230110-weigel_katja: fixed calendar, calendar starting point needs to
 ; #                        including time: "months since 1-1-1 00:00:00"
@@ -233,8 +237,6 @@ begin
   Amask = read_data(info0[idx_ref])
   lsdata = Amask(0, :, :)
   lsdata = where(ismissing(lsdata), 1., lsdata)
-  ; poisson_grid_fill( lsdata, True, 1, 20, 2.0, 0.6, 0) ; where(ismissing(lsdata), 0., lsdata)
-  ; print(lsdata)
   ; *****************************************************************
   map_r = new(1, "graphic")
   plot = new(dim_seas, "graphic")
