@@ -597,7 +597,7 @@ diagnostics:
                   "tas_hist-GHG_land", "tas_hist-aer_land"]]
         reference: ["tasa_ocean", "tasa_global", "tasa_land"]
         panel_figure_strings: ["a)", "b)", "c)"]
-        label: ["Anthropogenic + Natural", "Natural",
+        legend: ["Anthropogenic + Natural", "Natural",
                 "Greenhouse Gases", "Aerosols"]
 
 
@@ -692,7 +692,7 @@ diagnostics:
                   "tas_hist-GHG_europe", "tas_hist-aer_europe"]]
         reference: ["tasa_north_america", "tasa_south_america", "tasa_europe"]
         panel_figure_strings: ["d)", "e)", "f)"]
-        label: ["Anthropogenic + Natural", "Natural",
+        legend: ["Anthropogenic + Natural", "Natural",
                 "Greenhouse Gases", "Aerosols"]
 
 
@@ -786,7 +786,7 @@ diagnostics:
                   "tas_hist-GHG_australasia", "tas_hist-aer_australasia"]]
         reference: ["tasa_africa", "tasa_asia", "tasa_australasia"]
         panel_figure_strings: ["g)", "h)", "i)"]
-        label: ["Anthropogenic + Natural", "Natural",
+        legend: ["Anthropogenic + Natural", "Natural",
                 "Greenhouse Gases", "Aerosols"]
 
 
@@ -832,5 +832,5 @@ diagnostics:
                   "tas_hist-GHG_antarctica", "tas_hist-aer_antarctica"]]
         reference: ["tasa_antarctica"]
         panel_figure_strings: ["j)"]
-        label: ["Anthropogenic + Natural", "Natural",
+        legend: ["Anthropogenic + Natural", "Natural",
                 "Greenhouse Gases", "Aerosols"]

@@ -174,7 +174,7 @@ User settings in recipe
    * y-max: set max of y-axis
    * header: title for each panel
    * title: name of region as part of filename
-   * label: set label as output in an extra file
+   * legend: set labels for optional output of a legend in an extra file
 
 #. Script ipcc_ar6/tsline_collect.ncl
 
