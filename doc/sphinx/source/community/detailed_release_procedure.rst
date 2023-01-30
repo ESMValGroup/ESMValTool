@@ -13,14 +13,15 @@ and deployed on conda-forge and PyPI; it also assumes the release manager has ac
 Procedural workflow
 ===================
 
-1. Open an issue on GitHub
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Open an issue on GitHub
+-----------------------
 
 First, open an issue on GitHub where the release workflow is documented. Name it something relevant like
 "Recipe testing and comparison for release 2.x.x", and populate the isue description with information
 about where the testing is taking place, what tools are used, and what versions, here is a template in Markdown:
 
-# System parameters
+Documenting system parameters
+-----------------------------
 
 Work done on DKRZ/Levante:
 
@@ -29,51 +30,45 @@ Work done on DKRZ/Levante:
 
 # System and Settings
 
-## `conda`/`mamba`
+We should document various versions so that the work can be reproduced in case there
+is an issue, or release work needs to be picked up mid-release by another release manager:
 
-```
-(base) mamba --version
-mamba 0.27.0
-conda 22.9.0
-```
+- documentic `conda`/`mamba` versions:
 
-## Git branch and state
+.. code-block:: bash
+  mamba --version
 
-Date: 25 October 2022 14:22 BST
+- documentic the `git` branch and its state:
 
-```
-(base) git status
-On branch v2.7.x
-Your branch is up to date with 'origin/v2.7.x'.
-```
+.. code-block:: bash
+  git status
 
-## Environment
+Creating and documenting the runtime environment
+------------------------------------------------
 
 On Levante:
 
-```
-mamba env create -n tool270Test -f environment.yml
-conda activate tool270Test
-```
+.. code-block:: bash
+  mamba env create -n tool270Test -f environment.yml
+  conda activate tool270Test
 
-## Environment file
+Make a copy of the environment file, and attach it in the release testing issue; to
+record the environment in a yaml file use e.g. `conda env export > ToolEnv270Test.txt`.
 
-Upload the full environment file here (use e.g. `conda env export > ToolEnv270Test.txt`).
-
-[ToolEnv270Test.yml](https://github.com/ESMValGroup/ESMValTool/files/9860830/ToolEnv270Test.txt)
-
-## Extraneous file movements
+Extraneous file movements
+-------------------------
 
 Mention any special data movement one needs to perfom to run the tests e.g.:
+for v2.7.0 the release manager moved the autoassess-specific files to
+`/home/b/$USER/autoassess_files` on DKRZ/Levante.
 
-I moved the autoassess-specific files to `/home/b/b382109/autoassess_files` - run was succesful for AA recipes then :+1: 
+List modifications to configuration files
+-----------------------------------------
 
-## Modifications to configuration files
+Example - for v2.7.0 the release manager had to modify `config-user.yml` file by
+adding a number of extra paths for DKRZ-specific data pools:
 
-Example - I had to modify the `config-user.yml` file:
-
-Added DKRZ downloaded data pool as:
-```
+.. code-block:: yaml
   CMIP6:
     - /work/bd0854/DATA/ESMValTool2/CMIP6_DKRZ
     - /work/bd0854/DATA/ESMValTool2/download/CMIP6
@@ -82,74 +77,58 @@ Added DKRZ downloaded data pool as:
     - /work/bd0854/b309141/additional_CMIP5
     - /work/bd0854/DATA/ESMValTool2/download/cmip5/output1
     - /work/bd0854/DATA/ESMValTool2/download/cmip5
-```
 
-as @schlunma and @remi-kazeroni have suggested :beer: 
+Test recipe runs
+----------------
 
-# Recipe runs
+Submit the batch scripts that will run all recipes. Assemble some statistics so that issues with certain recipes
+can be followed-up:
 
-Recipe runs results (as of **final** on 27 October 2022) are listed in https://github.com/ESMValGroup/ESMValTool/issues/2881#issuecomment-1291878142 (with very many thanks to @remi-kazeroni for running the impossible to run ones!) and are as follows:
+- number of successfully run recipes
+- number of failed recipes with Diagnostic error (can they be fixed? Can the fixes be included in the release?)
+- number of recipes that are missing data
+- number of recipes that have various other issues (and document them)
 
-- 122(121)*/127 successfully run recipes
-- 0(1)*/127 failed with Diagnostic error, but fixed and rerun, but not yet PR-ed with the fix
-- 2/127 that are missing data (for reals)
-- 3/127 that have various issues (not missing data and not DiagnosticError)
+Running the comparison
+======================
 
-`(*)` means not counting/counting the one that had a DiagnosticError but was fixed but not PR-ed
+Login and access to the DKRZ esmvaltool VM - results from recipe runs are stored on the VM; login with:
 
-# Running the comparison
+.. code-block:: bash
+  ssh user@esmvaltool.dkrz.de
 
-### Login and access to the DKRZ esmvaltool VM
+where `user` is your DKRZ/Levante user name; then get and install miniconda on VM, and
+if you already have a Miniconda installer already downloaded in your Levante $HOME
 
-Results from recipe runs are stored on the VM; login with:
+.. code-block:: bash
+  scp Miniconda3-py39_4.12.0-Linux-x86_64.sh user@esmvaltool.dkrz.de:~
 
-```
-ssh youraccount@esmvaltool.dkrz.de
-```
+Next, we need to set up the input files
 
-### Get and install miniconda on VM
+.. note::
+  If you wrote recipe runs output to Levante's `/scratch` partition, be aware that
+  the data will be removed after two weeks, so you will have to move the output data
+  to the `/work` partition, via e.g. a `nohup` job:
 
-E.g. `scp Miniconda3-py39_4.12.0-Linux-x86_64.sh b382109@esmvaltool.dkrz.de:~` from a file already on Levante.
+  .. code-block:: bash
+    nohup cp -r /scratch/b/$USER/esmvaltool_output/* /work/bd0854/b382109/v2xx
 
-## Setting up the input files
+  where `bd0854/b382109` is the project location in `work`
 
-If you wrote recipe runs output to Levante `/scratch` partition be aware that
-the data will be removed after two weeks, so you will have to move the output data
-to the `/work` partition, via e.g. a `nohup` job:
 
-```
-nohup cp -r /scratch/b/b382109/esmvaltool_output/* /work/bd0854/b382109/v270
-```
+The `/work` partition is visible by the VM so you can run the compare tool straight on the VM.
 
-`/work` is visible by the VM so you can run the compare tool straight on the VM.
-
-**NOTE** do not store final release results on the VM including `/preproc/` dirs, the total
+Do not store final release results on the VM including `/preproc/` dirs, the total
 size for all the recipes output, including `/preproc/` dirs is in the 4.5TB ballpark,
-much too high for the VM storage capacity
+much too high for the VM storage capacity!
 
-## Running compare tool at VM
+The steps to running the compare tool at VM are the following:
 
-- run date: 28 October 2022 (1st run)
-- conda env: `tool270Compare`
-- ESMValTool branch: `release270stable`
-- prerquisite: `pip install imagehash`
+- run date: log the run date here
+- conda env: log the name of the conda environment you are using
+- ESMValTool branch: log the name of the code branch you are using (e.g. `v2.8.x`)
+- prerquisite - install `imagehash`: `pip install imagehash`
+- reference run (v2.7.0): `export reference_dir=/work/bd0854/b382109/v270` (contains `preproc/` dirs too, 122 recipes)
+- current run (v2.8.0): `export current_dir=path_to_current_run`
+- command to run: `nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py reference_dir current_dir > compare_v280_output.txt`
 
-### Input/output/run
-
-- current: `/work/bd0854/b382109/v270` (contains `preproc/` dirs too, 122 recipes)
-- reference: `/mnt/esmvaltool_disk2/shared/esmvaltool/v2.6.0rc4` (does not contain `preproc/` dirs)
-- cmd: `nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py /mnt/esmvaltool_disk2/shared/esmvaltool/v2.6.0rc4 /work/bd0854/b382109/v270 > compare270output.txt`
-
-Sanity check, as outputted by `compare.py`
-```
-Comparing recipe run(s) in:
-/work/bd0854/b382109/v270
-to reference in /mnt/esmvaltool_disk2/shared/esmvaltool/v2.6.0rc4
-```
-### First pass result
-
-Running the `compare.py` results in a few recipes not-OK (NOK) wrt plots differing from previous release v2.6.0, summary in https://github.com/ESMValGroup/ESMValTool/issues/2881#issuecomment-1294735465
-
-### Detailed plots inspection
-
-Plots that differ for the 34 recipes that have them different is happening in https://github.com/ESMValGroup/ESMValTool/issues/2881#issuecomment-1295001054
