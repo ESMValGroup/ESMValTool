@@ -154,6 +154,7 @@ The steps to running the compare tool at VM are the following:
 Appendix
 ========
 
-Formatted list of current recipes (as of v2.7.0) to be used with Markdown entries:
+Here you can find a list of useful files:
+- Formatted list of current recipes (as of v2.7.0) to be used with Markdown entries (on DKRZ/Lvante) at `/home/b/b382109/Tool_Release_270_Scripts/all_recipes.md` or in the draft Pull Request
 
 
