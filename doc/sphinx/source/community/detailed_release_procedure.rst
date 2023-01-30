@@ -89,7 +89,15 @@ can be followed-up:
 - number of recipes that are missing data
 - number of recipes that have various other issues (and document them)
 
-To submit the scripts use the `sbatch` submit scripts (that make use of the SLURM scheduler)
+Generate the submission scripts using the `generate.py` Python script; you can find a copy of the script either in `/home/b/b382109/Tool_Release_270_Scripts` or in the draft Pull Request https://github.com/ESMValGroup/ESMValTool/pull/2883.
+
+You will have to set the name of your environment, your email address (if you want to get email notifications for successful/failed jobs) and the name of the directory you want to store the job outputs. The name of the account is the same (`bk1088`), and the default partition is set to `compute`.
+
+Some recipes need other job requirements, you can add their headers in the `SPECIAL_RECIPES` dictionary. Otherwise the header will be written following the template that is written in the lines below. If you want to exclude recipes, you can do so by uncommenting the exclude lines.
+
+The launch scripts will be saved in the same directory you execute the script from. You can find the ones used for the v2.7.0 release in `/home/b/b382109/submit`
+
+To submit the scripts use the `sbatch` submit scripts (that make use of the SLURM scheduler) produced by `generate.py`,
 and execute them like any other shell script. You can check the status of your BATCH queue by invoking:
 
 .. code-block:: bash
@@ -106,6 +114,9 @@ Also, for computationally-heavy recipes, you can require more memory and/or time
 .. note::
   On DKRZ/Levante, a user can't have more than 20 SLURM jobs running at a time.
   As soon as a job is finished, the next one should start
+
+To parse the output of all these runs use the `parse_recipes_output.py` Python script, included at the
+same locations where the generation script is.
 
 Running the comparison
 ======================
@@ -148,13 +159,14 @@ The steps to running the compare tool at VM are the following:
 - prerquisite - install `imagehash`: `pip install imagehash`
 - reference run (v2.7.0): `export reference_dir=/work/bd0854/b382109/v270` (contains `preproc/` dirs too, 122 recipes)
 - current run (v2.8.0): `export current_dir=path_to_current_run`
-- command to run: `nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py reference_dir current_dir > compare_v280_output.txt`
-
+- command to run: `nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt`
 
 Appendix
 ========
 
-Here you can find a list of useful files:
-- Formatted list of current recipes (as of v2.7.0) to be used with Markdown entries (on DKRZ/Lvante) at `/home/b/b382109/Tool_Release_270_Scripts/all_recipes.md` or in the draft Pull Request
+Here you can find a list of useful files and directories:
 
-
+- Formatted list of current recipes (as of v2.7.0) to be used with Markdown entries (on DKRZ/Lvante) at `/home/b/b382109/Tool_Release_270_Scripts/all_recipes.md` or in the draft Pull Request https://github.com/ESMValGroup/ESMValTool/pull/2883
+- last release (v2.7.0) submit scripts on DKRZ/Levante `/home/b/b382109/submit`
+- Miniconda3 installer file on DKRZ/Levante `/home/b/b382109/Miniconda3-py39_4.12.0-Linux-x86_64.sh` (remember to immediately update conda after using it, it is fairly old, from May 2022)
+- list of Autoassess reference files and masks on DKRZ/Levante `/home/b/b382109/autoassess_files`
