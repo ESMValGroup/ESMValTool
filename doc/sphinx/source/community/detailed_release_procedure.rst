@@ -16,8 +16,8 @@ Procedural workflow
 Open an issue on GitHub
 -----------------------
 
-First, open an issue on GitHub where the release workflow is documented. Name it something relevant like
-"Recipe testing and comparison for release 2.x.x", and populate the isue description with information
+First, open an issue on GitHub where the release workflow is documented (see example https://github.com/ESMValGroup/ESMValTool/issues/2881).
+Name it something relevant like "Recipe testing and comparison for release 2.x.x", and populate the isue description with information
 about where the testing is taking place, what tools are used, and what versions, here is a template in Markdown:
 
 Documenting system parameters
@@ -78,8 +78,8 @@ adding a number of extra paths for DKRZ-specific data pools:
     - /work/bd0854/DATA/ESMValTool2/download/cmip5/output1
     - /work/bd0854/DATA/ESMValTool2/download/cmip5
 
-Test recipe runs
-----------------
+Submit run scripts - test recipe runs
+-------------------------------------
 
 Submit the batch scripts that will run all recipes. Assemble some statistics so that issues with certain recipes
 can be followed-up:
@@ -88,6 +88,24 @@ can be followed-up:
 - number of failed recipes with Diagnostic error (can they be fixed? Can the fixes be included in the release?)
 - number of recipes that are missing data
 - number of recipes that have various other issues (and document them)
+
+To submit the scripts use the `sbatch` submit scripts (that make use of the SLURM scheduler)
+and execute them like any other shell script. You can check the status of your BATCH queue by invoking:
+
+.. code-block:: bash
+  squeue -u b382109
+
+Also, for computationally-heavy recipes, you can require more memory and/or time, see e.g. edited batch header below
+(note the `compute` partition which is used for such heavy runs):
+
+.. code-block:: bash
+  #SBATCH --partition=compute
+  #SBATCH --time=08:00:00
+  #SBATCH --constraint=512G
+
+.. note::
+  On DKRZ/Levante, a user can't have more than 20 SLURM jobs running at a time.
+  As soon as a job is finished, the next one should start
 
 Running the comparison
 ======================
@@ -131,4 +149,11 @@ The steps to running the compare tool at VM are the following:
 - reference run (v2.7.0): `export reference_dir=/work/bd0854/b382109/v270` (contains `preproc/` dirs too, 122 recipes)
 - current run (v2.8.0): `export current_dir=path_to_current_run`
 - command to run: `nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py reference_dir current_dir > compare_v280_output.txt`
+
+
+Appendix
+========
+
+Formatted list of current recipes (as of v2.7.0) to be used with Markdown entries:
+
 
