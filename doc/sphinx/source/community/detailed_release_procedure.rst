@@ -36,11 +36,13 @@ is an issue, or release work needs to be picked up mid-release by another releas
 - documentic `conda`/`mamba` versions:
 
 .. code-block:: bash
+
   mamba --version
 
 - documentic the `git` branch and its state:
 
 .. code-block:: bash
+
   git status
 
 Creating and documenting the runtime environment
@@ -49,6 +51,7 @@ Creating and documenting the runtime environment
 On Levante:
 
 .. code-block:: bash
+
   mamba env create -n tool270Test -f environment.yml
   conda activate tool270Test
 
@@ -69,6 +72,7 @@ Example - for v2.7.0 the release manager had to modify `config-user.yml` file by
 adding a number of extra paths for DKRZ-specific data pools:
 
 .. code-block:: yaml
+
   CMIP6:
     - /work/bd0854/DATA/ESMValTool2/CMIP6_DKRZ
     - /work/bd0854/DATA/ESMValTool2/download/CMIP6
@@ -101,17 +105,20 @@ To submit the scripts use the `sbatch` submit scripts (that make use of the SLUR
 and execute them like any other shell script. You can check the status of your BATCH queue by invoking:
 
 .. code-block:: bash
+
   squeue -u b382109
 
 Also, for computationally-heavy recipes, you can require more memory and/or time, see e.g. edited batch header below
 (note the `compute` partition which is used for such heavy runs):
 
 .. code-block:: bash
+
   #SBATCH --partition=compute
   #SBATCH --time=08:00:00
   #SBATCH --constraint=512G
 
 .. note::
+
   On DKRZ/Levante, a user can't have more than 20 SLURM jobs running at a time.
   As soon as a job is finished, the next one should start
 
@@ -124,22 +131,26 @@ Running the comparison
 Login and access to the DKRZ esmvaltool VM - results from recipe runs are stored on the VM; login with:
 
 .. code-block:: bash
+
   ssh user@esmvaltool.dkrz.de
 
 where `user` is your DKRZ/Levante user name; then get and install miniconda on VM, and
 if you already have a Miniconda installer already downloaded in your Levante $HOME
 
 .. code-block:: bash
+
   scp Miniconda3-py39_4.12.0-Linux-x86_64.sh user@esmvaltool.dkrz.de:~
 
 Next, we need to set up the input files
 
 .. note::
+
   If you wrote recipe runs output to Levante's `/scratch` partition, be aware that
   the data will be removed after two weeks, so you will have to move the output data
   to the `/work` partition, via e.g. a `nohup` job:
 
   .. code-block:: bash
+
     nohup cp -r /scratch/b/$USER/esmvaltool_output/* /work/bd0854/b382109/v2xx
 
   where `bd0854/b382109` is the project location in `work`
