@@ -194,8 +194,7 @@ class HotspotPlot:
 
     @staticmethod
     def _add_axes_attributes(axes, path_ext, plotextend):
-        axes.set_boundary(path_ext, transform=ccrs.PlateCarree(),
-                          use_as_clip_path=True)
+        axes.set_boundary(path_ext, transform=ccrs.PlateCarree())
         axes.set_facecolor("silver")
         axes.set_extent(plotextend, crs=ccrs.PlateCarree())
         axes.coastlines("50m", linewidth=0.8)
