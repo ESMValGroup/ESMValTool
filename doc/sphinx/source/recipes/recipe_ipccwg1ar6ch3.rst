@@ -260,13 +260,10 @@ User settings in recipe
 
 #. Script ipcc_ar6/corr_pattern_collect.ncl
 
-   *Required settings for script*
-
-   * labels: List of labels for each variable on the x-axis
-
    *Optional settings for script*
 
    * diag_order: give order of plotting variables on the x-axis
+   * labels: List of labels for each variable on the x-axis
    * model_spread: if True, model spread is shaded
    * plot_median: if True, median is plotted
 
