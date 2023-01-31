@@ -311,9 +311,10 @@ end if
 
   res@tmXBValues = x_val
   res@tmXBMode = "Explicit"
-  res@tmXBLabelFontHeightF = font_height
   if (n_var .gt. 3) then
     res@tmXBLabelFontHeightF = font_height * 0.6
+  else    
+    res@tmXBLabelFontHeightF = font_height
   end if
   ; Set Marker Size to be half of line_length
   marker_size = res@vpWidthF * 3 * l_length / (res@trXMaxF - res@trXMinF)
