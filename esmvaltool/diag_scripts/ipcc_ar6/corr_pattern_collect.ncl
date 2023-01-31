@@ -304,7 +304,12 @@ begin
   yspan = res@trYMaxF - res@trYMinF
   res@trXMinF = 0
   res@trXMaxF = x_max
+if (isatt(diag_script_info, "labels")) then
   res@tmXBLabels = diag_script_info@labels
+else 
+  res@tmXBLabels = data_all&vars
+end if
+
   res@tmXBValues = x_val
   res@tmXBMode = "Explicit"
   res@tmXBLabelFontHeightF = font_height
