@@ -1,75 +1,64 @@
 .. _detailed-release-procedure:
 
-Overview
-========
+Release: recipes runs and comparison
+====================================
 
 The release procedure for ESMValTool is a fairly involved process (at the moment), so it
 is important to be very well organized and to have documented each procedural steps, so that
 the next release manager can follow said steps, and finalize the release without any delays.
 
 The workflow below assumes an ESMValCore release candidate, or a completed stable release, have been released
-and deployed on conda-forge and PyPI; it also assumes the release manager has access to accounts on LEVANTE [TODO insert info]
+and deployed on conda-forge and PyPI; it also assumes the release manager has access to accounts on DKRZ/Levante.
 
-Procedural workflow
-===================
+Below is a list of steps that the release manager, together with the previous release manager, should go through before the actual release;
+these include testing the new code by running all available recipes in yhe `main` branch, and comparing the output against
+the previous release.
 
 Open an issue on GitHub
 -----------------------
 
-First, open an issue on GitHub where the release workflow is documented (see example https://github.com/ESMValGroup/ESMValTool/issues/2881).
-Name it something relevant like "Recipe testing and comparison for release 2.x.x", and populate the isue description with information
-about where the testing is taking place, what tools are used, and what versions, here is a template in Markdown:
+First, open an issue on GitHub where the testing workflow before the release is documented (see example https://github.com/ESMValGroup/ESMValTool/issues/2881).
+Name it something relevant like "Recipe testing and comparison for release 2.x.x", and populate the issue description with information
+about where the testing is taking place, what tools are used, and what versions, here are some suggestions:
 
-Documenting system parameters
------------------------------
 
-Work done on DKRZ/Levante:
+Where the work is done e.g. work done on DKRZ/Levante:
 
-- submit files in `/home/b/b382109/submit`
-- output in `/scratch/b/b382109/esmvaltool_output`
+- submit files in `/home/b/b382109/submit` (for v2.7.0)
+- output in `/scratch/b/b382109/esmvaltool_output` (for v2.7.0)
 
-# System and Settings
-
-We should document various versions so that the work can be reproduced in case there
+We should document various utilities' versions so that the work can be reproduced in case there
 is an issue, or release work needs to be picked up mid-release by another release manager:
 
-- documentic `conda`/`mamba` versions:
+- documenting `conda`/`mamba` versions:
 
 .. code-block:: bash
 
   mamba --version
 
-- documentic the `git` branch and its state:
+- documenting `git` branch and its state:
 
 .. code-block:: bash
 
   git status
 
-Creating and documenting the runtime environment
-------------------------------------------------
-
-On Levante:
+Furthermore, the runtime environment needs to be documented:
 
 .. code-block:: bash
 
-  mamba env create -n tool270Test -f environment.yml
-  conda activate tool270Test
+  mamba env create -n tool2xxTest -f environment.yml
+  conda activate tool2xxTest
 
 Make a copy of the environment file, and attach it in the release testing issue; to
 record the environment in a yaml file use e.g. `conda env export > ToolEnv270Test.txt`.
-
-Extraneous file movements
--------------------------
 
 Mention any special data movement one needs to perfom to run the tests e.g.:
 for v2.7.0 the release manager moved the autoassess-specific files to
 `/home/b/$USER/autoassess_files` on DKRZ/Levante.
 
-List modifications to configuration files
------------------------------------------
-
-Example - for v2.7.0 the release manager had to modify `config-user.yml` file by
-adding a number of extra paths for DKRZ-specific data pools:
+Modifications to configuration files need to be documented as well: for example,
+for v2.7.0 the release manager had to modify `config-user.yml` file by
+adding a number of extra paths for DKRZ/Levante-specific data pools:
 
 .. code-block:: yaml
 
@@ -85,15 +74,10 @@ adding a number of extra paths for DKRZ-specific data pools:
 Submit run scripts - test recipe runs
 -------------------------------------
 
-Submit the batch scripts that will run all recipes. Assemble some statistics so that issues with certain recipes
-can be followed-up:
-
-- number of successfully run recipes
-- number of failed recipes with Diagnostic error (can they be fixed? Can the fixes be included in the release?)
-- number of recipes that are missing data
-- number of recipes that have various other issues (and document them)
-
-Generate the submission scripts using the `generate.py` Python script; you can find a copy of the script either in `/home/b/b382109/Tool_Release_270_Scripts` or in the draft Pull Request https://github.com/ESMValGroup/ESMValTool/pull/2883.
+We are now ready to start running all the available recipes, to compare output against previous release. Running is currently done
+via batch scripts submitted to a schedulers (SLURM). Generate the submission scripts using the `generate.py` Python script;
+you can find a copy of the script either in `/home/b/b382109/Tool_Release_270_Scripts` or
+in the draft Pull Request https://github.com/ESMValGroup/ESMValTool/pull/2883.
 
 You will have to set the name of your environment, your email address (if you want to get email notifications for successful/failed jobs) and the name of the directory you want to store the job outputs. The name of the account is the same (`bk1088`), and the default partition is set to `compute`.
 
@@ -122,20 +106,31 @@ Also, for computationally-heavy recipes, you can require more memory and/or time
   On DKRZ/Levante, a user can't have more than 20 SLURM jobs running at a time.
   As soon as a job is finished, the next one should start
 
+Submit the batch scripts that will run all recipes. Assemble some statistics so that issues with certain recipes
+can be followed-up, and document this information in the release issue, examples:
+
+- number of successfully run recipes
+- number of failed recipes with Diagnostic error (can they be fixed? Can the fixes be included in the release?)
+- number of recipes that are missing data
+- number of recipes that have various other issues (and document them)
+
 To parse the output of all these runs use the `parse_recipes_output.py` Python script, included at the
 same locations where the generation script is.
 
 Running the comparison
-======================
+----------------------
 
-Login and access to the DKRZ esmvaltool VM - results from recipe runs are stored on the VM; login with:
+To compare the newly produced output from running all recipes, follow these steps below.
+
+Login and access to the DKRZ esmvaltool virtual machine (VM) - results from recipe runs
+are stored on the VM; login with:
 
 .. code-block:: bash
 
   ssh user@esmvaltool.dkrz.de
 
-where `user` is your DKRZ/Levante user name; then get and install miniconda on VM, and
-if you already have a Miniconda installer already downloaded in your Levante $HOME
+where `user` is your DKRZ/Levante user name; then get and install miniconda on the VM, and
+if you have a Miniconda installer already downloaded in your Levante $HOME
 
 .. code-block:: bash
 
@@ -162,7 +157,7 @@ Do not store final release results on the VM including `/preproc/` dirs, the tot
 size for all the recipes output, including `/preproc/` dirs is in the 4.5TB ballpark,
 much too high for the VM storage capacity!
 
-The steps to running the compare tool at VM are the following:
+The steps to running the compare tool on the VM are the following:
 
 - run date: log the run date here
 - conda env: log the name of the conda environment you are using
@@ -172,8 +167,20 @@ The steps to running the compare tool at VM are the following:
 - current run (v2.8.0): `export current_dir=path_to_current_run`
 - command to run: `nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt`
 
+Some of the recipes will appear as having identical output to the one from previous release. However, others
+will need human inspection; here are some guidelines on how to perform the human inspection:
+
+- look at plots from current run vs previous release run: most of them will be identical, but if Matplotlib
+  has changed some plotting feature, images will have slightly different metadata so the comparison script will report them
+  as different - but Mark I eyeball inspection will show they are identical
+- other plots will differ due to changes in plot settings (different colours, axes etc) due to updated settings from the
+  diagnostic developers: if they look similar enough, then it's fine
+- report (and subsequently open issues) if you notice major differences in plots; most times a simple comment on the
+  release issue, whereby you tag the diagnostic developers leads to them having a look at the plots and OK-ing them; if that's
+  not the case, then open a separate issue
+
 Appendix
-========
+--------
 
 Here you can find a list of useful files and directories:
 
