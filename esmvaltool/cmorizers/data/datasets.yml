@@ -1098,6 +1098,20 @@ datasets:
       Download the following file:
         monthly_flask_co2_kum.csv
 
+  TCOM-CH4:
+    tier: 2
+    source: https://zenodo.org/record/7293740
+    last_access: 2023-01-17
+    info: |
+      Download the file zmch4_TCOM_plev_T2Dz_1991_2021.nc
+
+  TCOM-N2O:
+    tier: 2
+    source: https://zenodo.org/record/7386001
+    last_access: 2023-01-17
+    info: |
+      Download the file zmn2o_TCOM_plev_T2Dz_1991_2021.nc.
+
   UWisc:
     tier: 3
     source: Data provided by Ralf Bennartz.
