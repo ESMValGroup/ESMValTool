@@ -272,7 +272,7 @@ Variables
 ---------
 
 * et (land, monthly mean, longitude latitude time)
-* fgco2 (land, monthly mean, longitude latitude time)
+* fgco2 (ocean, monthly mean, longitude latitude time)
 * gpp (land, monthly mean, longitude latitude time)
 * hfds (land, monthly mean, longitude latitude time)
 * hus (land, monthly mean, longitude latitude level time)
@@ -474,9 +474,9 @@ Example plots
 .. figure::  /recipes/figures/ipccwg1ar6ch3/fig_3_42_a.png
    :align:   center
 
-   Figure 3.42a: Relative space–time root-mean-square deviation (RMSD)
+   Figure 3.42a: Relative space-time root-mean-square deviation (RMSD)
    calculated from the climatological seasonal cycle of the CMIP simulations
-   (1980–1999) compared to observational datasets. A relative performance
+   (1980-1999) compared to observational datasets. A relative performance
    measure is displayed, with blue shading indicating better and red shading
    indicating worse performance than the median error of all model results. A
    diagonal split of a grid square shows the relative error with respect to the
@@ -501,7 +501,7 @@ Example plots
    CERES-EBAF, JRA-55, ESACCI-SST, ERA5, ERA5, ERA5, ERA5, ERA5, ERA5, AIRS,
    ERA5). In addition, the correlation between the primary reference and
    additional observational datasets (from left to right: NCEP, GHCN, -, -, -,
-   -, ERA5, HadISST, NCEP, NCEP, NCEP, NCEP, NCEP, NCEP, ERA5, NCEP) are shown
+   -, ERA5, HadISST, NCEP, NCEP, NCEP, NCEP, NCEP, NCEP, NCEP, ERA5) are shown
    (solid grey circles) if available. To ensure a fair comparison across a
    range of model resolutions, the pattern correlations are computed after
    regridding all datasets to a resolution of 4° in longitude and 5°
