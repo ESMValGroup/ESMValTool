@@ -326,7 +326,7 @@ Observations and reformat scripts
 * Landschuetzer2016 (fgco2 - esmvaltool/cmorizers/data/formatters/datasets/landschuetzer2016.py)
 * LAI3g (lai - esmvaltool/cmorizers/data/formatters/datasets/lai3g.py)
 * MTE (gpp - esmvaltool/cmorizers/data/formatters/datasets/mte.py)
-* NCEP (ta, tas, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep.ncl)
+* NCEP-NCAR-R1 (ta, tas, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep_ncar_r1.py)
 * NOAAGlobalTemp (tasa - esmvaltool/cmorizers/data/formatters/datasets/noaaglobaltemp.py)
 
 
