@@ -360,11 +360,7 @@ end if
   ; New x_val according to median!
   x_val_proj = new((/nr_projects, n_var/), float)
   ; space between projects in graph
-  if (nr_projects.eq.1) then
-    d_proj = 1.  ; offset
-  else
-    d_proj = 1    ; (nr_projects - 1.)/nr_projects
-  end if
+d_proj = 1.   ; offset
   do iproj = 0, nr_projects - 1
     do ivar = 0, n_var - 1
       x_val_proj(iproj, ivar) = ivar*(1 + nr_projects) - 0.5 \
