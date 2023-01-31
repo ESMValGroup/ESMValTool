@@ -30,7 +30,9 @@
 ;                       plot(s)
 ;   projection:         map projection for plotting (default =
 ;                       "CylindricalEquidistant")
-;   showdiff            calculate and plot differences (default = False)
+;   showdiff:           calculate and plot differences (default = False)
+;   showyears:          add start and end years to the plot titles (default =
+;                       false)
 ;   rel_diff:           if showdiff = True, then plot relative differences (%)
 ;                       (default = False)
 ;   rel_diff_min:       lower cutoff value in case of calculating relative
@@ -58,6 +60,7 @@
 ;   none
 ;
 ; Modification history
+;   20230117-lauer_axel: added support for ICON (code from Manuel)
 ;   20211021-lauer_axel: added output of basic statistics as ascii files
 ;   20211006-lauer_axel: removed write_plots
 ;   20210325-lauer_axel: added option to estimate observational uncertainty
@@ -98,6 +101,7 @@ begin
   set_default_att(diag_script_info, "rel_diff", False)
   set_default_att(diag_script_info, "rel_diff_min", -1.0e19)
   set_default_att(diag_script_info, "showdiff", False)
+  set_default_att(diag_script_info, "showyears", False)
   set_default_att(diag_script_info, "timemean", "annualclim")
   set_default_att(diag_script_info, "treat_var_as_error", False)
   set_default_att(diag_script_info, "var", "")
@@ -109,17 +113,18 @@ begin
   end if
 
   variables = metadata_att_as_array(variable_info, "short_name")
-  varidx = ind(variables .eq. var0)
-  if (ismissing(varidx)) then
-    errstr = "diagnostic " + diag + " requires the following variable: var0"
+  if (.not. any(variables .eq. var0)) then
+    errstr = "diagnostic " + diag + " requires the following variable: " + var0
     error_msg("f", DIAG_SCRIPT, "", errstr)
   end if
 
+  var0_info = select_metadata_by_name(variable_info, var0)
+  var0_info := var0_info[0]
   info0 = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info0)
 
-  if (isatt(variable_info[varidx], "reference_dataset")) then
-    refname = variable_info[varidx]@reference_dataset
+  if (isatt(var0_info, "reference_dataset")) then
+    refname = var0_info@reference_dataset
   end if
   names = metadata_att_as_array(info0, "dataset")
   projects = metadata_att_as_array(info0, "project")
@@ -453,8 +458,18 @@ begin
 
     ; annotation
 
+    ; if desired, add years to plot title
+    years_str = ""
+    if (diag_script_info@showyears) then
+      years_str = " (" + var0_info@start_year
+      if (var0_info@start_year .ne. var0_info@end_year) then
+        years_str = years_str + "-" + var0_info@end_year
+      end if
+      years_str = years_str + ")"
+    end if
+
 ;    res@tiMainOn             = False
-    res@tiMainString = names(imod)
+    res@tiMainString = names(imod) + years_str
     res@tiMainFontHeightF = 0.025
 
     res@cnLevelSelectionMode = "ExplicitLevels"
@@ -465,8 +480,8 @@ begin
 
     ; variable specific plotting settings
 
-    if (isatt(variable_info[varidx], "units")) then
-      data1@units = variable_info[varidx]@units
+    if (isatt(var0_info, "units")) then
+      data1@units = var0_info@units
     else
       data1@units = ""
     end if
@@ -576,8 +591,8 @@ begin
       data1@diag_script = (/DIAG_SCRIPT/)
     end if
 
-    if (isatt(variable_info[varidx], "long_name")) then
-      data1@long_name = variable_info[varidx]@long_name
+    if (isatt(var0_info, "long_name")) then
+      data1@long_name = var0_info@long_name
     end if
 
     data1@var = var0
@@ -784,7 +799,7 @@ begin
         dres@mpPerimOn      = perim    ; draw line around map
         dres@gsnStringFontHeightF = 0.02
 
-        dres@tiMainString =  names(imod) + " - " + refname
+        dres@tiMainString =  names(imod) + " - " + refname + years_str
         dres@tiMainFontHeightF = 0.025
 
         rmsd(imod, :) = rmsd@_FillValue
@@ -818,7 +833,7 @@ begin
         dres@gsnLeftString  = ""
         dres@gsnRightString = ""
         dres@gsnCenterString = ""
-        dres@tiMainString =  refname + " uncertainty"
+        dres@tiMainString =  refname + " uncertainty" + years_str
         rmsd(imod, :) = rmsd@_FillValue
         bias(imod, :) = bias@_FillValue
       else

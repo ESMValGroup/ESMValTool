@@ -37,6 +37,7 @@
 ;   none
 ;
 ; Modification history
+;   20230117-lauer_axel: added support for ICON (code from Manuel)
 ;   20220126-lauer_axel: added optional variable labels for x- and y-axes
 ;   20211118-lauer_axel: added output of frequency distributions
 ;   20210607-lauer_axel: added multi-model-average (= average over all models)
@@ -57,7 +58,8 @@ begin
   enter_msg(DIAG_SCRIPT, "")
 
   diag = "clouds_dyn_matrix.ncl"
-  variables = metadata_att_as_array(variable_info, "short_name")
+  variables = get_unique_values(metadata_att_as_array(variable_info, \
+                                                      "short_name"))
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"var_x", "var_y", "var_z", \
@@ -162,21 +164,26 @@ begin
   ; is equal for each variable
 
   do i = 0, nVAR - 1
-    if (isatt(variable_info[idx(i)], "reference_dataset")) then
-      refname(i) = variable_info[idx(i)]@reference_dataset
+    var = variables(idx(i))
+    var_info = select_metadata_by_name(variable_info, var)
+    var_info := var_info[0]
+    if (isatt(var_info, "reference_dataset")) then
+      refname(i) = var_info@reference_dataset
     end if
-    info = select_metadata_by_name(input_file_info, variables(idx(i)))
+    info = select_metadata_by_name(input_file_info, var)
     if (i .eq. 0) then
       dim_MOD = ListCount(info)
     else
       dim_test = ListCount(info)
       if (dim_test .ne. dim_MOD) then
         error_msg("f", DIAG_SCRIPT, "", "number of datasets for variable " \
-                  + variables(i) + " does not match number of datasets for " \
-                  + variables(0))
+                  + var + " does not match number of datasets for " \
+                  + variables(idx(0)))
       end if
     end if
     delete(info)
+    delete(var)
+    delete(var_info)
   end do
 
   ; Set default values for non-required diag_script_info attributes
@@ -251,9 +258,11 @@ begin
 
   idxmod = get_mod(names_x, projects_x)
 
-  if (idxmod(0) .eq. -1) then
+  if (idxmod(0) .eq. -1) then  ; no model found
     flag_multimod = False
-  else
+  elseif (dimsizes(idxmod) .eq. 1) then  ; one model found
+    flag_multimod = False
+  else  ; more than one model found
     flag_multimod = True
   end if
 
@@ -814,7 +823,11 @@ begin
 
   ref = where(count(ref_ind, :, :) .gt. 1.0e-3, count(ref_ind, :, :), \
               count@_FillValue)
-  modavg = dim_avg_n_Wrap(count(idxmod, :, :), 0)
+  if (dimsizes(idxmod) .gt. 1) then
+    modavg = dim_avg_n_Wrap(count(idxmod, :, :), 0)
+  else
+    modavg = count(idxmod, :, :)
+  end if
   modavg = where(modavg .gt. 1.0e-3, modavg, modavg@_FillValue)
 
   diff = modavg

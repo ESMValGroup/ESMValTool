@@ -6,8 +6,13 @@ import time
 
 import numpy as np
 
+from esmvalcore import __version__ as core_ver
 from esmvalcore._config import read_config_user_file
-from esmvalcore._recipe import read_recipe_file
+from packaging import version
+if version.parse(core_ver) <= version.parse('2.7.1'):
+    from esmvalcore._recipe import read_recipe_file
+else:
+    from esmvalcore._recipe.recipe import read_recipe_file
 
 
 def get_input_filename(variable, rootpath, drs):
