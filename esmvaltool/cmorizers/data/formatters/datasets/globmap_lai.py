@@ -118,6 +118,7 @@ def load_and_make_cubes(in_dir, filepath, year, variable):
                           )
 
         cube.add_aux_coord(time_coord)
+        cube.units = 1
 
         data_from_file.endaccess()
         hdf_data.end()

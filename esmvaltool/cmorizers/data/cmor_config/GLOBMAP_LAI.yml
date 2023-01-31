@@ -14,7 +14,7 @@ attributes:
 # Needs frequency: frequency changes within the timeseries
 variables:
   lai:
-    mip: custom
+    mip: Eday
     raw: LAI
     file: GlobMapLAIV3.A
     start_year: 2010
