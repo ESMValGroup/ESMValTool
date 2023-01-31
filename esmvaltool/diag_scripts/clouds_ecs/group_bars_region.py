@@ -176,47 +176,14 @@ def compute_diff_temp(input_data, group, var, dataset):
     input_file_tas_1 = tas_data_1[0]['filename']
     input_file_tas_2 = tas_data_2[0]['filename']
 
-    #if var != 'cl':
-    #    cl_data_1 = select_metadata(input_data,
-    #                              short_name='cl',
-    #                              dataset=dataset_name,
-    #                              variable_group='cl_'+group[0]) 
-    #    cl_data_2 = select_metadata(input_data,
-    #                              short_name='cl',
-    #                              dataset=dataset_name,
-    #                              variable_group='cl_'+group[1]) 
-    #    if not cl_data_1:
-    #        raise ValueError(
-    #            f"No 'cl' data for '{dataset_name}' in '{group[0]}' available")
-    #    if not cl_data_2:
-    #        raise ValueError(
-    #            f"No 'cl' data for '{dataset_name}' in '{group[1]}' available")
-    #    input_file_cl_1 = cl_data_1[0]['filename']
-    #    input_file_cl_2 = cl_data_2[0]['filename']
-    #else:
-    #    input_file_cl_1 = input_file_1 
-    #    input_file_cl_2 = input_file_2 
-
     cube = read_data(input_file_1)
-    #if var in ['clw', 'cli']:
-    #    cube.data[cube.data < 0.001] = np.nan
-    #elif var in ['cl']:
-    #    cube.data[cube.data < 0.1] = np.nan
 
     cube_diff = compute_diff(input_file_1, input_file_2)
     cube_tas_diff = compute_diff(input_file_tas_1, input_file_tas_2)
-    #cube_cl = read_data(input_file_cl_2) 
-
-    #cube_ta_diff.data[cube_ta_diff.data < 0.1] = np.nan
 
     #cube_diff = 100. * (cube_diff / cube)
-    #cube_diff = 100. * (cube_diff / cube) / cube_tas_diff
+    cube_diff = 100. * (cube_diff / cube) / cube_tas_diff
 
-    #cube_diff.data[cube_cl.data < 0.01] = np.nan
-
-    #cube_diff.units = 'g/kg/K'
-    #cube_diff.units = '%/K'
-    
     return cube_diff
 
 
@@ -242,27 +209,27 @@ def create_data_frame(input_data, cfg):
     groups = group_metadata(input_data, 'variable_group', sort='dataset')
 
     for var in all_vars:
-        #if var != 'tas':
-        logger.info("Processing variable %s", var)
+        if var != 'tas':
+            logger.info("Processing variable %s", var)
 
-        for group_names in cfg['group_by']:
-            logger.info("Processing group %s of variable %s", group_names[0], var)
+            for group_names in cfg['group_by']:
+                logger.info("Processing group %s of variable %s", group_names[0], var)
 
-            for dataset in groups[var + "_" + group_names[0]]:
-                dataset_name = dataset['dataset']
-                #logger.info("Loop dataset %s", dataset_name)
+                for dataset in groups[var + "_" + group_names[0]]:
+                    dataset_name = dataset['dataset']
+                    #logger.info("Loop dataset %s", dataset_name)
 
-                if dataset_name not in cfg['exclude_datasets']:
-                    cube_diff = compute_diff_temp(input_data, group_names, var, dataset)
+                    if dataset_name not in cfg['exclude_datasets']:
+                        cube_diff = compute_diff_temp(input_data, group_names, var, dataset)
 
-                    if var in ['clivi', 'lwp']:
-                        cube_diff = 1000 * cube_diff
+                        #if var in ['clivi', 'lwp']:
+                        #    cube_diff = 1000 * cube_diff
 
-                    group_name = group_names[0].split('_')[1] + " ECS"
+                        group_name = group_names[0].split('_')[1] + " ECS"
 
-                    data_frame.loc[ifile] = [var, group_name, dataset_name, cube_diff.data]
-                    #data_frame.loc[dataset_name] = [var, group_name, cube_diff.data]
-                    ifile = ifile + 1
+                        data_frame.loc[ifile] = [var, group_name, dataset_name, cube_diff.data]
+                        #data_frame.loc[dataset_name] = [var, group_name, cube_diff.data]
+                        ifile = ifile + 1
 
 
     data_frame['Data'] = data_frame['Data'].astype(str).astype(float)
@@ -280,16 +247,16 @@ def plot_boxplot(data_frame, cfg):
     sns.set_style('darkgrid')
     sns.set(font_scale=2)
     sns.boxplot(data=data_frame, x='Variable', y='Data', hue='Group', palette=PALETTE)
-    #plt.ylabel('Relative change (%/K)')
+    plt.ylabel('Relative change (%/K)')
     #plt.ylabel('Relative change (%)')
-    plt.ylabel('Absolute change')
+    #plt.ylabel('Absolute change')
     #if data_frame['Variable'] == 'clt':
     #    plt.ylabel('Absolute change (%)')
     #if data_frame['Variable'] in ['clivi', 'lwp']:
     #    plt.ylabel('Absolute change (kg m-3)')
     #if data_frame['Variable'] == 'netcre':
     #    plt.ylabel('Absolute change (W m-2)')
-    plt.ylim([-30., 30.])
+    plt.ylim([-15., 40.])
     plt.title(cfg['title'])
 
     # Save plot

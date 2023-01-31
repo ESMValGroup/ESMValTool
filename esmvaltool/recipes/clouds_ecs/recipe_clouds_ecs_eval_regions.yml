@@ -12,6 +12,9 @@ documentation:
   authors:
     - bock_lisa
 
+  maintainer:
+    - bock_lisa
+
   references:
     - acknow_project
 
@@ -23,6 +26,21 @@ YEARS_hist: &years_hist
 YEARS_scen: &years_scen
   start_year: 2081
   end_year: 2100
+
+VARIABLE_SETTINGS: &var_settings
+  short_name: clt
+  mip: Amon
+  project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gr
+  <<: *years_hist
+
+BOXPLOT_SETTINGS: &boxplot_settings
+  script: clouds_ecs/group_bars_region.py
+  group_by: [['ECS_low_hist', 'ECS_low_scen'],
+             ['ECS_med_hist', 'ECS_med_scen'],
+             ['ECS_high_hist', 'ECS_high_scen']]
 
 
 DATASETS_ECS_HIGH: &datasets_ecs_high
@@ -203,11 +221,11 @@ preprocessors:
       end_latitude: 30.
       start_longitude: 0. 
       end_longitude: 360.
-    mask_landsea:
+    mask_landsea: &mask_land
       mask_out: land
-    area_statistics:
+    area_statistics: &area_mean
       operator: mean
-    climate_statistics:
+    climate_statistics: &clim_mean
       operator: mean
 
   southern_ocean:
@@ -217,12 +235,9 @@ preprocessors:
       end_latitude: -30.
       start_longitude: 0. 
       end_longitude: 360.
-    mask_landsea:
-      mask_out: land
-    area_statistics:
-      operator: mean
-    climate_statistics:
-      operator: mean
+    mask_landsea: *mask_land
+    area_statistics: *area_mean
+    climate_statistics: *clim_mean
 
   pacific_itcz:
     custom_order: true
@@ -231,26 +246,66 @@ preprocessors:
       end_latitude: 12.
       start_longitude: 135.
       end_longitude: 275.
-    mask_landsea:
-      mask_out: land
-    area_statistics:
-      operator: mean
-    climate_statistics:
-      operator: mean
+    mask_landsea: *mask_land
+    area_statistics: *area_mean
+    climate_statistics: *clim_mean
 
   south_east_pacific:
     custom_order: true
     extract_region:
-      start_latitude: -25.
-      end_latitude: -5.
+      start_latitude: -30.
+      end_latitude: -10.
       start_longitude: 265.
-      end_longitude: 275.
+      end_longitude: 285.
+    mask_landsea: *mask_land
+    area_statistics: *area_mean
+    climate_statistics: *clim_mean
+
+  north_east_pacific:
+    custom_order: true
+    extract_region:
+      start_latitude: 15.
+      end_latitude: 35.
+      start_longitude: 220.
+      end_longitude: 240.
+    mask_landsea: *mask_land
+    area_statistics: *area_mean
+    climate_statistics: *clim_mean
+
+  south_east_atlantic:
+    custom_order: true
+    extract_region:
+      start_latitude: -30.
+      end_latitude: -10.
+      start_longitude: -10.
+      end_longitude: 10.
+    mask_landsea: *mask_land
+    area_statistics: *area_mean
+    climate_statistics: *clim_mean
+
+  arctic:
+    custom_order: true
+    extract_region:
+      start_latitude: 70.
+      end_latitude: 90.
+      start_longitude: 0.
+      end_longitude: 360.
+    mask_landsea: *mask_land
+    area_statistics: *area_mean
+    climate_statistics: *clim_mean
+
+  global_land:
+    custom_order: true
     mask_landsea:
-      mask_out: land
-    area_statistics:
-      operator: mean
-    climate_statistics:
-      operator: mean
+      mask_out: sea
+    area_statistics: *area_mean
+    climate_statistics: *clim_mean
+
+  global_ocean:
+    custom_order: true
+    mask_landsea: *mask_land
+    area_statistics: *area_mean
+    climate_statistics: *clim_mean
 
 
 diagnostics:
@@ -259,14 +314,8 @@ diagnostics:
     description: compare field means
     variables:
       clt_ECS_high_hist: &var_clt_1
-        short_name: clt
+        <<: *var_settings
         preprocessor: tropical_ocean
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        <<: *years_hist
         additional_datasets: *datasets_ecs_high
       clt_ECS_med_hist:
         <<: *var_clt_1
@@ -408,25 +457,17 @@ diagnostics:
         additional_datasets: *datasets_ecs_low_scenario
     scripts:
       barplot:
-        script: clouds_ecs/group_bars_region.py
-        group_by: [['ECS_low_hist', 'ECS_low_scen'],
-                   ['ECS_med_hist', 'ECS_med_scen'],
-                   ['ECS_high_hist', 'ECS_high_scen']]
+        <<: *boxplot_settings
         filename_attach: 'ssp585_tropoc'
         title: 'Tropical Ocean'
+
 
   diag_southern_ocean:
     description: compare field means
     variables:
       clt_ECS_high_hist: &var_clt_2
-        short_name: clt
+        <<: *var_settings
         preprocessor: southern_ocean
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        <<: *years_hist
         additional_datasets: *datasets_ecs_high
       clt_ECS_med_hist:
         <<: *var_clt_2
@@ -568,25 +609,17 @@ diagnostics:
         additional_datasets: *datasets_ecs_low_scenario
     scripts:
       barplot:
-        script: clouds_ecs/group_bars_region.py
-        group_by: [['ECS_low_hist', 'ECS_low_scen'],
-                   ['ECS_med_hist', 'ECS_med_scen'],
-                   ['ECS_high_hist', 'ECS_high_scen']]
+        <<: *boxplot_settings
         filename_attach: 'ssp585_south_oc'
         title: 'Southern Ocean'
+
 
   diag_pacific_itcz:
     description: compare field means
     variables:
       clt_ECS_high_hist: &var_clt_3
-        short_name: clt
+        <<: *var_settings
         preprocessor: pacific_itcz
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        <<: *years_hist
         additional_datasets: *datasets_ecs_high
       clt_ECS_med_hist:
         <<: *var_clt_3
@@ -728,25 +761,17 @@ diagnostics:
         additional_datasets: *datasets_ecs_low_scenario
     scripts:
       barplot:
-        script: clouds_ecs/group_bars_region.py
-        group_by: [['ECS_low_hist', 'ECS_low_scen'],
-                   ['ECS_med_hist', 'ECS_med_scen'],
-                   ['ECS_high_hist', 'ECS_high_scen']]
+        <<: *boxplot_settings
         filename_attach: 'ssp585_paitcz'
         title: 'Pacific ITCZ'
+
 
   diag_south_east_pacific:
     description: compare field means
     variables:
       clt_ECS_high_hist: &var_clt_4
-        short_name: clt
+        <<: *var_settings
         preprocessor: south_east_pacific
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        <<: *years_hist
         additional_datasets: *datasets_ecs_high
       clt_ECS_med_hist:
         <<: *var_clt_4
@@ -888,10 +913,766 @@ diagnostics:
         additional_datasets: *datasets_ecs_low_scenario
     scripts:
       barplot:
-        script: clouds_ecs/group_bars_region.py
-        group_by: [['ECS_low_hist', 'ECS_low_scen'],
-                   ['ECS_med_hist', 'ECS_med_scen'],
-                   ['ECS_high_hist', 'ECS_high_scen']]
+        <<: *boxplot_settings
         filename_attach: 'ssp585_sep'
         title: 'South East Pacific'
 
+
+  diag_north_east_pacific:
+    description: compare field means
+    variables:
+      clt_ECS_high_hist: &var_clt_8
+        <<: *var_settings
+        preprocessor: north_east_pacific
+        additional_datasets: *datasets_ecs_high
+      clt_ECS_med_hist:
+        <<: *var_clt_8
+        additional_datasets: *datasets_ecs_med
+      clt_ECS_low_hist:
+        <<: *var_clt_8
+        additional_datasets: *datasets_ecs_low
+      clt_ECS_high_scen:
+        <<: *var_clt_8
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_high_scenario
+      clt_ECS_med_scen:
+        <<: *var_clt_8
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_med_scenario
+      clt_ECS_low_scen:
+        <<: *var_clt_8
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_low_scenario
+      clivi_ECS_high_hist:
+        <<: *var_clt_8
+        short_name: clivi
+        additional_datasets: *datasets_ecs_high
+      clivi_ECS_med_hist:
+        <<: *var_clt_8
+        short_name: clivi
+        additional_datasets: *datasets_ecs_med
+      clivi_ECS_low_hist:
+        <<: *var_clt_8
+        short_name: clivi
+        additional_datasets: *datasets_ecs_low
+      clivi_ECS_high_scen:
+        <<: *var_clt_8
+        <<: *years_scen
+        short_name: clivi
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      clivi_ECS_med_scen:
+        <<: *var_clt_8
+        <<: *years_scen
+        short_name: clivi
+        additional_datasets: *datasets_ecs_med_scenario
+      clivi_ECS_low_scen:
+        <<: *var_clt_8
+        <<: *years_scen
+        short_name: clivi
+        additional_datasets: *datasets_ecs_low_scenario
+      lwp_ECS_high_hist:
+        <<: *var_clt_8
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_high
+      lwp_ECS_med_hist:
+        <<: *var_clt_8
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_med
+      lwp_ECS_low_hist:
+        <<: *var_clt_8
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_low
+      lwp_ECS_high_scen:
+        <<: *var_clt_8
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      lwp_ECS_med_scen:
+        <<: *var_clt_8
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_med_scenario
+      lwp_ECS_low_scen:
+        <<: *var_clt_8
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_low_scenario
+      netcre_ECS_high_hist:
+        <<: *var_clt_8
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_high
+      netcre_ECS_med_hist:
+        <<: *var_clt_8
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_med
+      netcre_ECS_low_hist:
+        <<: *var_clt_8
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_low
+      netcre_ECS_high_scen:
+        <<: *var_clt_8
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      netcre_ECS_med_scen:
+        <<: *var_clt_8
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_med_scenario
+      netcre_ECS_low_scen:
+        <<: *var_clt_8
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_low_scenario
+      tas_ECS_high_hist: &var_tas_8
+        <<: *var_clt_8
+        short_name: tas
+      tas_ECS_med_hist:
+        <<: *var_tas_8
+        additional_datasets: *datasets_ecs_med
+      tas_ECS_low_hist:
+        <<: *var_tas_8
+        additional_datasets: *datasets_ecs_low
+      tas_ECS_high_scen:
+        <<: *var_tas_8
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      tas_ECS_med_scen:
+        <<: *var_tas_8
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_med_scenario
+      tas_ECS_low_scen:
+        <<: *var_tas_8
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_low_scenario
+    scripts:
+      barplot:
+        <<: *boxplot_settings
+        filename_attach: 'ssp585_nep'
+        title: 'North East Pacific'
+
+
+  diag_south_east_atlantic:
+    description: compare field means
+    variables:
+      clt_ECS_high_hist: &var_clt_9
+        <<: *var_settings
+        preprocessor: south_east_atlantic
+        additional_datasets: *datasets_ecs_high
+      clt_ECS_med_hist:
+        <<: *var_clt_9
+        additional_datasets: *datasets_ecs_med
+      clt_ECS_low_hist:
+        <<: *var_clt_9
+        additional_datasets: *datasets_ecs_low
+      clt_ECS_high_scen:
+        <<: *var_clt_9
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_high_scenario
+      clt_ECS_med_scen:
+        <<: *var_clt_9
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_med_scenario
+      clt_ECS_low_scen:
+        <<: *var_clt_9
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_low_scenario
+      clivi_ECS_high_hist:
+        <<: *var_clt_9
+        short_name: clivi
+        additional_datasets: *datasets_ecs_high
+      clivi_ECS_med_hist:
+        <<: *var_clt_9
+        short_name: clivi
+        additional_datasets: *datasets_ecs_med
+      clivi_ECS_low_hist:
+        <<: *var_clt_9
+        short_name: clivi
+        additional_datasets: *datasets_ecs_low
+      clivi_ECS_high_scen:
+        <<: *var_clt_9
+        <<: *years_scen
+        short_name: clivi
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      clivi_ECS_med_scen:
+        <<: *var_clt_9
+        <<: *years_scen
+        short_name: clivi
+        additional_datasets: *datasets_ecs_med_scenario
+      clivi_ECS_low_scen:
+        <<: *var_clt_9
+        <<: *years_scen
+        short_name: clivi
+        additional_datasets: *datasets_ecs_low_scenario
+      lwp_ECS_high_hist:
+        <<: *var_clt_9
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_high
+      lwp_ECS_med_hist:
+        <<: *var_clt_9
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_med
+      lwp_ECS_low_hist:
+        <<: *var_clt_9
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_low
+      lwp_ECS_high_scen:
+        <<: *var_clt_9
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      lwp_ECS_med_scen:
+        <<: *var_clt_9
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_med_scenario
+      lwp_ECS_low_scen:
+        <<: *var_clt_9
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_low_scenario
+      netcre_ECS_high_hist:
+        <<: *var_clt_9
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_high
+      netcre_ECS_med_hist:
+        <<: *var_clt_9
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_med
+      netcre_ECS_low_hist:
+        <<: *var_clt_9
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_low
+      netcre_ECS_high_scen:
+        <<: *var_clt_9
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      netcre_ECS_med_scen:
+        <<: *var_clt_9
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_med_scenario
+      netcre_ECS_low_scen:
+        <<: *var_clt_9
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_low_scenario
+      tas_ECS_high_hist: &var_tas_9
+        <<: *var_clt_9
+        short_name: tas
+      tas_ECS_med_hist:
+        <<: *var_tas_9
+        additional_datasets: *datasets_ecs_med
+      tas_ECS_low_hist:
+        <<: *var_tas_9
+        additional_datasets: *datasets_ecs_low
+      tas_ECS_high_scen:
+        <<: *var_tas_9
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      tas_ECS_med_scen:
+        <<: *var_tas_9
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_med_scenario
+      tas_ECS_low_scen:
+        <<: *var_tas_9
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_low_scenario
+    scripts:
+      barplot:
+        <<: *boxplot_settings
+        filename_attach: 'ssp585_sea'
+        title: 'South East Atlantic'
+
+
+  diag_arctic:
+    description: compare field means
+    variables:
+      clt_ECS_high_hist: &var_clt_5
+        <<: *var_settings
+        preprocessor: arctic
+        additional_datasets: *datasets_ecs_high
+      clt_ECS_med_hist:
+        <<: *var_clt_5
+        additional_datasets: *datasets_ecs_med
+      clt_ECS_low_hist:
+        <<: *var_clt_5
+        additional_datasets: *datasets_ecs_low
+      clt_ECS_high_scen:
+        <<: *var_clt_5
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_high_scenario
+      clt_ECS_med_scen:
+        <<: *var_clt_5
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_med_scenario
+      clt_ECS_low_scen:
+        <<: *var_clt_5
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_low_scenario
+      clivi_ECS_high_hist:
+        <<: *var_clt_5
+        short_name: clivi
+        additional_datasets: *datasets_ecs_high
+      clivi_ECS_med_hist:
+        <<: *var_clt_5
+        short_name: clivi
+        additional_datasets: *datasets_ecs_med
+      clivi_ECS_low_hist:
+        <<: *var_clt_5
+        short_name: clivi
+        additional_datasets: *datasets_ecs_low
+      clivi_ECS_high_scen:
+        <<: *var_clt_5
+        <<: *years_scen
+        short_name: clivi
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      clivi_ECS_med_scen:
+        <<: *var_clt_5
+        <<: *years_scen
+        short_name: clivi
+        additional_datasets: *datasets_ecs_med_scenario
+      clivi_ECS_low_scen:
+        <<: *var_clt_5
+        <<: *years_scen
+        short_name: clivi
+        additional_datasets: *datasets_ecs_low_scenario
+      lwp_ECS_high_hist:
+        <<: *var_clt_5
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_high
+      lwp_ECS_med_hist:
+        <<: *var_clt_5
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_med
+      lwp_ECS_low_hist:
+        <<: *var_clt_5
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_low
+      lwp_ECS_high_scen:
+        <<: *var_clt_5
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      lwp_ECS_med_scen:
+        <<: *var_clt_5
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_med_scenario
+      lwp_ECS_low_scen:
+        <<: *var_clt_5
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_low_scenario
+      netcre_ECS_high_hist:
+        <<: *var_clt_5
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_high
+      netcre_ECS_med_hist:
+        <<: *var_clt_5
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_med
+      netcre_ECS_low_hist:
+        <<: *var_clt_5
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_low
+      netcre_ECS_high_scen:
+        <<: *var_clt_5
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      netcre_ECS_med_scen:
+        <<: *var_clt_5
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_med_scenario
+      netcre_ECS_low_scen:
+        <<: *var_clt_5
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_low_scenario
+      tas_ECS_high_hist: &var_tas_5
+        <<: *var_clt_5
+        short_name: tas
+      tas_ECS_med_hist:
+        <<: *var_tas_5
+        additional_datasets: *datasets_ecs_med
+      tas_ECS_low_hist:
+        <<: *var_tas_5
+        additional_datasets: *datasets_ecs_low
+      tas_ECS_high_scen:
+        <<: *var_tas_5
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      tas_ECS_med_scen:
+        <<: *var_tas_5
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_med_scenario
+      tas_ECS_low_scen:
+        <<: *var_tas_5
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_low_scenario
+    scripts:
+      barplot:
+        <<: *boxplot_settings
+        filename_attach: 'ssp585_pol'
+        title: 'Arctic'
+
+
+  diag_global_land:
+    description: compare field means
+    variables:
+      clt_ECS_high_hist: &var_clt_6
+        <<: *var_settings
+        preprocessor: global_land
+        additional_datasets: *datasets_ecs_high
+      clt_ECS_med_hist:
+        <<: *var_clt_6
+        additional_datasets: *datasets_ecs_med
+      clt_ECS_low_hist:
+        <<: *var_clt_6
+        additional_datasets: *datasets_ecs_low
+      clt_ECS_high_scen:
+        <<: *var_clt_6
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_high_scenario
+      clt_ECS_med_scen:
+        <<: *var_clt_6
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_med_scenario
+      clt_ECS_low_scen:
+        <<: *var_clt_6
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_low_scenario
+      clivi_ECS_high_hist:
+        <<: *var_clt_6
+        short_name: clivi
+        additional_datasets: *datasets_ecs_high
+      clivi_ECS_med_hist:
+        <<: *var_clt_6
+        short_name: clivi
+        additional_datasets: *datasets_ecs_med
+      clivi_ECS_low_hist:
+        <<: *var_clt_6
+        short_name: clivi
+        additional_datasets: *datasets_ecs_low
+      clivi_ECS_high_scen:
+        <<: *var_clt_6
+        <<: *years_scen
+        short_name: clivi
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      clivi_ECS_med_scen:
+        <<: *var_clt_6
+        <<: *years_scen
+        short_name: clivi
+        additional_datasets: *datasets_ecs_med_scenario
+      clivi_ECS_low_scen:
+        <<: *var_clt_6
+        <<: *years_scen
+        short_name: clivi
+        additional_datasets: *datasets_ecs_low_scenario
+      lwp_ECS_high_hist:
+        <<: *var_clt_6
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_high
+      lwp_ECS_med_hist:
+        <<: *var_clt_6
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_med
+      lwp_ECS_low_hist:
+        <<: *var_clt_6
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_low
+      lwp_ECS_high_scen:
+        <<: *var_clt_6
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      lwp_ECS_med_scen:
+        <<: *var_clt_6
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_med_scenario
+      lwp_ECS_low_scen:
+        <<: *var_clt_6
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_low_scenario
+      netcre_ECS_high_hist:
+        <<: *var_clt_6
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_high
+      netcre_ECS_med_hist:
+        <<: *var_clt_6
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_med
+      netcre_ECS_low_hist:
+        <<: *var_clt_6
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_low
+      netcre_ECS_high_scen:
+        <<: *var_clt_6
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      netcre_ECS_med_scen:
+        <<: *var_clt_6
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_med_scenario
+      netcre_ECS_low_scen:
+        <<: *var_clt_6
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_low_scenario
+      tas_ECS_high_hist: &var_tas_6
+        <<: *var_clt_6
+        short_name: tas
+      tas_ECS_med_hist:
+        <<: *var_tas_6
+        additional_datasets: *datasets_ecs_med
+      tas_ECS_low_hist:
+        <<: *var_tas_6
+        additional_datasets: *datasets_ecs_low
+      tas_ECS_high_scen:
+        <<: *var_tas_6
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      tas_ECS_med_scen:
+        <<: *var_tas_6
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_med_scenario
+      tas_ECS_low_scen:
+        <<: *var_tas_6
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_low_scenario
+    scripts:
+      barplot:
+        <<: *boxplot_settings
+        filename_attach: 'ssp585_glob_land'
+        title: 'Global Land'
+
+
+  diag_global_ocean:
+    description: compare field means
+    variables:
+      clt_ECS_high_hist: &var_clt_7
+        <<: *var_settings
+        preprocessor: global_ocean
+        additional_datasets: *datasets_ecs_high
+      clt_ECS_med_hist:
+        <<: *var_clt_7
+        additional_datasets: *datasets_ecs_med
+      clt_ECS_low_hist:
+        <<: *var_clt_7
+        additional_datasets: *datasets_ecs_low
+      clt_ECS_high_scen:
+        <<: *var_clt_7
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_high_scenario
+      clt_ECS_med_scen:
+        <<: *var_clt_7
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_med_scenario
+      clt_ECS_low_scen:
+        <<: *var_clt_7
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_low_scenario
+      clivi_ECS_high_hist:
+        <<: *var_clt_7
+        short_name: clivi
+        additional_datasets: *datasets_ecs_high
+      clivi_ECS_med_hist:
+        <<: *var_clt_7
+        short_name: clivi
+        additional_datasets: *datasets_ecs_med
+      clivi_ECS_low_hist:
+        <<: *var_clt_7
+        short_name: clivi
+        additional_datasets: *datasets_ecs_low
+      clivi_ECS_high_scen:
+        <<: *var_clt_7
+        <<: *years_scen
+        short_name: clivi
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      clivi_ECS_med_scen:
+        <<: *var_clt_7
+        <<: *years_scen
+        short_name: clivi
+        additional_datasets: *datasets_ecs_med_scenario
+      clivi_ECS_low_scen:
+        <<: *var_clt_7
+        <<: *years_scen
+        short_name: clivi
+        additional_datasets: *datasets_ecs_low_scenario
+      lwp_ECS_high_hist:
+        <<: *var_clt_7
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_high
+      lwp_ECS_med_hist:
+        <<: *var_clt_7
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_med
+      lwp_ECS_low_hist:
+        <<: *var_clt_7
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_low
+      lwp_ECS_high_scen:
+        <<: *var_clt_7
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      lwp_ECS_med_scen:
+        <<: *var_clt_7
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_med_scenario
+      lwp_ECS_low_scen:
+        <<: *var_clt_7
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_low_scenario
+      netcre_ECS_high_hist:
+        <<: *var_clt_7
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_high
+      netcre_ECS_med_hist:
+        <<: *var_clt_7
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_med
+      netcre_ECS_low_hist:
+        <<: *var_clt_7
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_low
+      netcre_ECS_high_scen:
+        <<: *var_clt_7
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      netcre_ECS_med_scen:
+        <<: *var_clt_7
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_med_scenario
+      netcre_ECS_low_scen:
+        <<: *var_clt_7
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_low_scenario
+      tas_ECS_high_hist: &var_tas_7
+        <<: *var_clt_7
+        short_name: tas
+      tas_ECS_med_hist:
+        <<: *var_tas_7
+        additional_datasets: *datasets_ecs_med
+      tas_ECS_low_hist:
+        <<: *var_tas_7
+        additional_datasets: *datasets_ecs_low
+      tas_ECS_high_scen:
+        <<: *var_tas_7
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      tas_ECS_med_scen:
+        <<: *var_tas_7
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_med_scenario
+      tas_ECS_low_scen:
+        <<: *var_tas_7
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_low_scenario
+    scripts:
+      barplot:
+        <<: *boxplot_settings
+        filename_attach: 'ssp585_glob_ocean'
+        title: 'Global Ocean'
