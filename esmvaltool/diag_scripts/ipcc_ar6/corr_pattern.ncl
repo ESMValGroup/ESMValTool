@@ -132,19 +132,11 @@ begin
   ndim := dimsizes(datasetnames)
   ensemble_assign = new(ndim, integer)
 
-  enum = 1
-  temp = datasetnames(0)
-  do gg = 0, ndim - 1
-    if (temp.eq.datasetnames(gg)) then
-      ensemble_assign(gg) = enum
-    else
-      enum = enum + 1
-      ensemble_assign(gg) = enum
-      temp = datasetnames(gg)
-    end if
+  unique_models = get_unique_values(datasetnames)
+  do gg = 0, dimsizes(unique_models) - 1
+    ensemble_assign = where(datasetnames.eq.unique_models(gg), gg + 1, ensemble_assign)
   end do
   ensemble_assign@model = datasetnames
-  delete(temp)
 
   all_cor_em = all_cor(:max(ensemble_assign)-1)
   all_cor_em = all_cor_em@_FillValue
