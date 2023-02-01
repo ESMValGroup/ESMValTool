@@ -1,8 +1,6 @@
 ESMValTool policy on backward compatibility
 ===========================================
 
-V1.0. Agreed with ESMValTool community during October 2022 workshop.
-
 Motivation
 ----------
 
