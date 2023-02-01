@@ -7,7 +7,7 @@ Source
     http://data.rsc4earth.de/EarthSystemDataCube/
 
 Last access
-    20220927
+    20230126
 
 Download and processing instructions
     It is not necessary to download the data, as the cmorizer script can access
