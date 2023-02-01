@@ -210,10 +210,8 @@ but components should include:
    *backward-incompatible changes* and how to use deprecation warnings
    when needed (see `developer
    guidance <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/contributing.html#backward-compatibility>`__).
--  Instructions on how to provide the information that *recipe
-   developers* need to adapt to the *backward-incompatible change*,
-   e.g. the text that will go into *release* notes if we follow the
-   proposal above.
+-  Instructions on how to provide text for the release notes to assist *recipe
+   developers* to adapt their recipe in light of the *backward-incompatible change*
 -  General instructions for *recipe developers* working on *user
    recipes* to enable them to adapt their code related to
    *backwards-incompatible changes* (see `ESMValTool_Tutorial: issue
