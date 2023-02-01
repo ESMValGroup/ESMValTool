@@ -38,7 +38,7 @@ branch. Release numbers are of the format x.y.z, where:
 -  y indicates a minor release
 -  z indicates a patch release
 
-**Backward-incompatible change:** An ESMValTool change that causes a
+**Backward-incompatible change:** A change in ESMValCore or ESMValTool that causes a
 recipe to no longer run successfully (a *breaking change*), or which
 results in scientifically significant changes in results (a *science
 change*).
@@ -60,8 +60,7 @@ aware of.
 
 **Developer of backward-incompatible change:** For the purpose of this
 policy, developer is the individual that is responsible for the pull
-request (PR) that is not backward compatible. In the vast majority of
-cases this will be an ESMValCore development.
+request (PR) that is not backward compatible.
 
 **Recipe developer:** Someone who is developing a recipe that is not
 (yet) integrated into the repository.
@@ -86,7 +85,7 @@ repository completely), and therefore cannot be updated by anyone else.
 Scope
 -----
 
-The ESMValTool policy on backward compatibility aims at balancing two
+The ESMValTool and ESMValCore policy on backward compatibility aims at balancing two
 competing needs: the occasional need of improvements or maintenance to
 break backward compatibility and the need for stability for existing
 users and developers. The following aspects are covered by this policy:
@@ -103,7 +102,7 @@ Not within the scope of this policy are:
 -  Breakage of recipes due to changes in input data or dependencies.
    This is covered by the :ref:`broken recipe policy<broken-recipe-policy>`.
 
-Expectations of developers & users
+Expectations of developers, users & funders
 ----------------------------------
 
 Stakeholders and their expectations and aims:
@@ -201,7 +200,7 @@ Guidance on handling *backward-incompatible changes*
 
 As well as helping users to handle *backward-incompatible changes*, the
 policy and surrounding tools must help developers avoid making
-*backwards-incompatible changes*. Not many ideas developed on this yet,
+*backwards-incompatible changes*. Not many ideas are developed on this yet,
 but components should include:
 
 -  Testing; *backwards-incompatible changes* should be discovered as
@@ -229,7 +228,7 @@ During the *release* process, the following information must be
 provided:
 
 -  **Release notes:** The *release* notes are already documented at
-   https://docs.esmvaltool.org/en/latest/changelog.html, and
+   :ref:`changelog` and :ref:`esmvalcore:changelog` for ESMValTool and ESMValCore respectively, and
    “*Backwards-incompatible changes*” is the first section after
    “Highlights”.
 
@@ -250,7 +249,7 @@ provided:
          guidance related to this needs to be provided in the developer
          documentation]
       -  share details of the *backwards-incompatible change* at the
-         next ESMValTool monthly meeting
+         next monthly ESMValTool community meeting
 
    -  **Communication:** The *release* notes must be shared with the
       community (for example, via the mailing lists and the
