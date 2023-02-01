@@ -16,7 +16,7 @@ Download and processing instructions
     To download a dataset, the dataset folder can be explored on the source
     website, and downloaded using wget:
         ```wget -m -nH -np -R "index.html*" http://data.rsc4earth.de/EarthSystemDataCube/v3.0.1/```
-""" # noqa: E501
+"""  # noqa: E501
 import logging
 from copy import deepcopy
 from pathlib import Path
