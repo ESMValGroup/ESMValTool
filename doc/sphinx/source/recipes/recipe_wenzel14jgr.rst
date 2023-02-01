@@ -105,7 +105,7 @@ Observations and reformat scripts
 ---------------------------------
 
 * GCP2018: Global Carbon Budget including land (nbp) and ocean (fgco2) carbon fluxes
-* NCEP: National Centers for Environmental Prediction reanalysis data for near surface temperature
+* NCEP-NCAR-R1: National Centers for Environmental Prediction reanalysis data for near surface temperature
 
 
 References
