@@ -100,7 +100,8 @@ def extract_variable(zarr_path, var, cfg, out_dir):
     utils.save_variable(cube=cube,
                         var=var['short_name'],
                         outdir=out_dir,
-                        attrs=all_attributes)
+                        attrs=all_attributes,
+                        unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
