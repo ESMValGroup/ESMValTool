@@ -85,3 +85,6 @@ dependencies:
   # - vprof not on conda-forge
   - yamllint
   - yapf
+  # Zarr
+  - zarr
+  - aiohttp

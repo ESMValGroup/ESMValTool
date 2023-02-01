@@ -65,6 +65,8 @@ REQUIREMENTS = {
         'xesmf==0.3.0',
         'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
+        'zarr',
+        'aiohttp',
     ],
     # Test dependencies
     # Execute `pip install .[test]` once and the use `pytest` to run tests
