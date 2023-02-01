@@ -23,8 +23,8 @@ this cannot always be guaranteed. A very restrictive policy might delay
 the ESMValTool development and make it more complex for developers to
 contribute.
 
-This document outlines the key principles and proposals of an updated
-ESMValTool policy on backward compatbility.
+This document outlines the key principles of an updated ESMValTool policy 
+on backward compatibility.
 
 Definitions
 -----------
