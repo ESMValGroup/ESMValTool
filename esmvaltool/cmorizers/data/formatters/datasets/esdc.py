@@ -31,7 +31,7 @@ from esmvaltool.cmorizers.data import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def fix_cube(var, cube, cfg):
+def _fix_cube(var, cube, cfg):
     """General fixes for all cubes."""
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], var['short_name'])
 
@@ -63,7 +63,7 @@ def fix_cube(var, cube, cfg):
     return cube
 
 
-def open_zarr(path):
+def _open_zarr(path):
     """Open zarr dataset."""
     logger.info('Opening zarr in "%s"', path)
     try:
@@ -77,7 +77,7 @@ def open_zarr(path):
         raise exception
 
 
-def extract_variable(zarr_path, var, cfg, out_dir):
+def _extract_variable(zarr_path, var, cfg, out_dir):
     """Open and cmorize cube."""
     attributes = deepcopy(cfg['attributes'])
     all_attributes = {
@@ -85,7 +85,7 @@ def extract_variable(zarr_path, var, cfg, out_dir):
         **var
     }  # add the mip to the other attributes
     raw_name = var['raw']
-    zarr_dataset = open_zarr(zarr_path)
+    zarr_dataset = _open_zarr(zarr_path)
     cube_xr = zarr_dataset[raw_name]
 
     # Invalid standard names must be removed before converting to iris
@@ -96,7 +96,7 @@ def extract_variable(zarr_path, var, cfg, out_dir):
         logger.info('Removed invalid standard name "%s".', standard_name)
 
     cube_iris = cube_xr.to_iris()
-    cube = fix_cube(var, cube_iris, cfg)
+    cube = _fix_cube(var, cube_iris, cfg)
 
     utils.save_variable(cube=cube,
                         var=var['short_name'],
@@ -146,4 +146,4 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     for short_name, var in variables.items():
         if 'short_name' not in var:
             var['short_name'] = short_name
-        extract_variable(zarr_path, var, cfg, out_dir)
+        _extract_variable(zarr_path, var, cfg, out_dir)
