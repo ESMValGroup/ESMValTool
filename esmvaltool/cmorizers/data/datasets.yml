@@ -529,8 +529,12 @@ datasets:
     source: http://data.rsc4earth.de/EarthSystemDataCube/
     last_access: 2023-01-26
     info: |
-      Data can be automatically downloaded by running the cmorizer.
-      Manual downloads have to preserve directory structure.
+      It is not necessary to download the data, as the cmorizer script can access
+      it directly from the cloud if it is not available locally.
+
+      To download a dataset, the dataset folder can be explored on the source
+      website, and downloaded using wget:
+        ```wget -m -nH -np -R "index.html*" http://data.rsc4earth.de/EarthSystemDataCube/v3.0.1/```
 
   ESRL:
     tier: 2
