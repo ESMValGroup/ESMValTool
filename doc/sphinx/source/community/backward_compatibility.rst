@@ -183,7 +183,7 @@ instructions on how to use such containers.
 Helping developers to upgrade
 -----------------------------
 
-*Recipe users* of ESMValTool will be able to successfully run
+*Recipe users* of ESMValTool should be able to successfully run
 *integrated recipes* using a *release*, since all
 *backwards-incompatible changes* introduced between *releases* will have
 been fixed before the *release* is created. Please note the
