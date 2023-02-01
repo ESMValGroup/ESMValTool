@@ -51,7 +51,8 @@ def fix_cube(var, cube, cfg):
     cube.convert_units(cmor_info.units)
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
-    cube = monthly_statistics(cube, operator="mean")  # Fix frequency
+    # Conversion from 8-d to monthly frequency
+    cube = monthly_statistics(cube, operator="mean")
 
     # Fix metadata
     attrs = cfg['attributes']
@@ -100,7 +101,8 @@ def extract_variable(zarr_path, var, cfg, out_dir):
     utils.save_variable(cube=cube,
                         var=var['short_name'],
                         outdir=out_dir,
-                        attrs=all_attributes)
+                        attrs=all_attributes,
+                        unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
