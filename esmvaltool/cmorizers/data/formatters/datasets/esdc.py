@@ -51,7 +51,8 @@ def fix_cube(var, cube, cfg):
     cube.convert_units(cmor_info.units)
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
-    cube = monthly_statistics(cube, operator="mean")  # Fix frequency
+    # Conversion from 8-d to monthly frequency
+    cube = monthly_statistics(cube, operator="mean")
 
     # Fix metadata
     attrs = cfg['attributes']
