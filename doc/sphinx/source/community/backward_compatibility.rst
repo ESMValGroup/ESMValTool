@@ -185,13 +185,13 @@ Helping developers to upgrade
 
 *Recipe users* of ESMValTool should be able to successfully run
 *integrated recipes* using a *release*, since all
-*backwards-incompatible changes* introduced between *releases* will have
+*backward-incompatible changes* introduced between *releases* will have
 been fixed before the *release* is created. Please note the
 :ref:`broken recipe policy<broken-recipe-policy>`.
 
 However, *recipe developers* working on *user recipes* must be provided
 with information to enable them to adapt their code to resolve issues
-related to *backwards-incompatible changes* when *backwards-incompatible
+related to *backward-incompatible changes* when *backward-incompatible
 changes* are introduced to the main branch / when a *release* of
 ESMValTool is created.
 
@@ -200,10 +200,10 @@ Guidance on handling *backward-incompatible changes*
 
 As well as helping users to handle *backward-incompatible changes*, the
 policy and surrounding tools must help developers avoid making
-*backwards-incompatible changes*. Not many ideas are developed on this yet,
+*backward-incompatible changes*. Not many ideas are developed on this yet,
 but components should include:
 
--  Testing; *backwards-incompatible changes* should be discovered as
+-  Testing; *backward-incompatible changes* should be discovered as
    early in the development process as possible. This motivates
    continued investment in automated testing.
 -  Guidance on how to minimise the likelihood of introducing
@@ -214,12 +214,12 @@ but components should include:
    developers* to adapt their recipe in light of the *backward-incompatible change*
 -  General instructions for *recipe developers* working on *user
    recipes* to enable them to adapt their code related to
-   *backwards-incompatible changes* (see `ESMValTool_Tutorial: issue
+   *backward-incompatible changes* (see `ESMValTool_Tutorial: issue
    #263 <https://github.com/ESMValGroup/ESMValTool_Tutorial/issues/263>`__).
 -  The developer or reviewer must tag the core development team to
    notify them of the *backward-incompatible change*, and give at least
    2 weeks for objections to be raised before merging to the main
-   branch. If a strong objection is raised the backwards-incompatible
+   branch. If a strong objection is raised the backward-incompatible
    change should not be merged until the objection is resolved.
 
 During the *release* process, the following information must be
@@ -227,32 +227,32 @@ provided:
 
 -  **Release notes:** The *release* notes are already documented at
    :ref:`changelog` and :ref:`esmvalcore:changelog` for ESMValTool and ESMValCore respectively, and
-   “*Backwards-incompatible changes*” is the first section after
+   “*backward-incompatible changes*” is the first section after
    “Highlights”.
 
-   -  **Backwards-incompatible changes:** This section must include
+   -  **backward-incompatible changes:** This section must include
       clear instructions detailing how a *recipe developer* should adapt
       their code for each item in this section, whether the adapted code
       would introduce a *science change*, and the list of affected or
       fixed *integrated recipes* that had to be updated due to the
-      *backwards-incompatible changes*, if applicable (to provide
+      *backward-incompatible changes*, if applicable (to provide
       further examples to *recipe developers* working on *user recipes*
       of how to adapt code).
-   -  **Developer guidance:** *Developers* *of backwards-incompatible
+   -  **Developer guidance:** *Developers* *of backward-incompatible
       changes* must:
 
       -  write and include the information required for the
-         “*Backwards-incompatible changes*” section in the PR that
-         introduces the *backwards-incompatible change* [action:
+         “*backward-incompatible changes*” section in the PR that
+         introduces the *backward-incompatible change* [action:
          guidance related to this needs to be provided in the developer
          documentation]
-      -  share details of the *backwards-incompatible change* at the
+      -  share details of the *backward-incompatible change* at the
          next monthly ESMValTool community meeting
 
    -  **Communication:** The *release* notes must be shared with the
       community (for example, via the mailing lists and the
       `Community <https://github.com/ESMValGroup/Community>`__
       repository) at the point the first *release* candidate is made,
-      highlighting the “*Backwards-incompatible changes*” section. The
+      highlighting the “*backward-incompatible changes*” section. The
       User Engagement Team should organise the communication of new
       *releases* together with the *release* manager.
