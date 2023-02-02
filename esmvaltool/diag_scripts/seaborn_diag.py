@@ -74,7 +74,8 @@ set_kwargs: dict, optional
     :func:`~seaborn.lineplot`), :meth:`seaborn.FacetGrid.set` (e.g.,
     :func:`~seaborn.relplot`, :func:`~seaborn.displot`),
     :meth:`seaborn.JointGrid.set` (e.g., :func:`~seaborn.jointplot`), or
-    :meth:`seaborn.PairGrid.set` (e.g., :func:`~seaborn.pairplot`).
+    :meth:`seaborn.PairGrid.set` (e.g., :func:`~seaborn.pairplot`). Example:
+    ``{'xlabel': 'X [km]', 'xlim': [0, 20]}``.
 suptitle: str or None, optional (default: None)
     Suptitle for the plot (see :func:`matplotlib.pyplot.suptitle`). If
     ``None``, do not create a suptitle.
