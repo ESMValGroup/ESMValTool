@@ -10,7 +10,6 @@ documentation:
   authors:
     - hogan_emma
     - lillis_jon
-#    - hardacre_catherine
 
   maintainer:
     - hogan_emma
@@ -33,7 +32,7 @@ preprocessors:
 
 diagnostics:
   od440aer_climatologies:
-    description: Visualise spatial multiannual seasonal means AOD at 440nm.
+    description: Visualise spatial multi-annual seasonal means AOD at 440nm.
     variables:
       od440aer_season:
         mip: AERmon
@@ -44,6 +43,6 @@ diagnostics:
 
     scripts:
       script1:
-        script: /home/h04/chardacr/.esmvaltool/ESMValTool/esmvaltool/diag_scripts/aerosols/aod_aeronet_assess.py
+        script: /home/users/chardacr/esmvaltool_aod/diag_scripts/aod_aeronet_assess.py
         quickplot:
           plot_type: plot
