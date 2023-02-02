@@ -20,6 +20,7 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
+        'aiohttp',
         'cartopy',
         'cdo',
         'cdsapi',
@@ -66,7 +67,6 @@ REQUIREMENTS = {
         'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
         'zarr',
-        'aiohttp',
     ],
     # Test dependencies
     # Execute `pip install .[test]` once and the use `pytest` to run tests
