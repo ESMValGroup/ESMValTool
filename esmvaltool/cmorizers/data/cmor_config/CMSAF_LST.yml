@@ -12,11 +12,11 @@ attributes:
 # Variables to cmorize (here use only filename prefix)
 ### check this, might need new cmor entry???  Needs frequency: 1hr adding to CMOR_ts.py in ESMValCore???
 variables:
-  ts:
+  tsrpk:
     mip: custom
     raw: Land Surface Temperature (PMW)
     file: LTPin
     start_year: 2010
-    end_year: 2010
+    end_year: 2015
 
 # LTPin201003050100001231000101MA.nc

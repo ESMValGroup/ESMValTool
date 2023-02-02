@@ -51,7 +51,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         variable = vals['raw']
         # loop over years
         for year in range(vals['start_year'], vals['end_year'] + 1):
-            for month in range(1, 3):  # just a couple of months while testing
+            for month in range(1, 13):  # just a couple of months while testing
                 # do this montnthly due to data size
                 loaded_cubes = load_cubes(in_dir,
                                           vals['file'],
