@@ -378,8 +378,10 @@ previous release.
 Open a discussion to allow members of the development team to nominate pull requests 
 as highlights. Add the most voted pull requests as highlights at the beginning of 
 changelog. 
-After the highlights section, list any backwards incompatible changes that the 
-release may include.
+After the highlights section, list any backward incompatible changes that the 
+release may include. The :ref:`backward compatibility policy <backward_compatibility>` 
+lists the information that should be provided by the developer of any backward 
+incompatible change.
 Make sure to also list any deprecations that the release may include, as well
 as a brief description on how to upgrade a deprecated feature.
 Review the results, and if anything needs changing, change it on GitHub and
