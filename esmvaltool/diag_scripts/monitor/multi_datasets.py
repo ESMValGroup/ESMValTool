@@ -71,7 +71,7 @@ savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
     default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
 seaborn_settings: dict, optional
-    Options for :func:`seaborn.set` (affects all plots). By default, uses
+    Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
     ``style: ticks``.
 
 Configuration options for plot type ``timeseries``
@@ -407,7 +407,7 @@ class MultiDatasets(MonitorBase):
                     f"the following dataset:\n{pformat(dataset)}")
 
         # Load seaborn settings
-        sns.set(**self.cfg['seaborn_settings'])
+        sns.set_theme(**self.cfg['seaborn_settings'])
 
     def _add_colorbar(self, plot_type, plot_left, plot_right, axes_left,
                       axes_right, dataset_left, dataset_right):

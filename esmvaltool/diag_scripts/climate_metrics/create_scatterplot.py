@@ -23,7 +23,7 @@ dataset_style : str, optional
 pattern : str, optional
     Pattern to filter list of input data.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 y_range : list of float, optional
     Range for the y axis in the plot.
 
@@ -118,7 +118,7 @@ def write_data(cfg, cube):
 
 def main(cfg):
     """Run the diagnostic."""
-    sns.set(**cfg.get('seaborn_settings', {}))
+    sns.set_theme(**cfg.get('seaborn_settings', {}))
     input_files = io.get_all_ancestor_files(cfg, pattern=cfg.get('pattern'))
     if len(input_files) != 1:
         raise ValueError(f"Expected exactly 1 file, got {len(input_files)}")
