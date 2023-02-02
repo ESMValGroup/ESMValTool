@@ -1575,6 +1575,60 @@ diagnostics:
          type: sat, version: v1, start_year: 1988, end_year: 2016}
     scripts: null
 
+  MERRA:
+    description: MERRA check
+    variables:
+      cli:
+        mip: Amon
+      clivi:
+        mip: Amon
+      clt:
+        mip: Amon
+      clw:
+        mip: Amon
+      hur:
+        mip: Amon
+      hus:
+        mip: Amon
+      lwp:
+        mip: Amon
+      pr:
+        mip: Amon
+      prw:
+        mip: Amon
+      ps:
+        mip: Amon
+      psl:
+        mip: Amon
+      rlut:
+        mip: Amon
+      rlutcs:
+        mip: Amon
+      rsdt:
+        mip: Amon
+      rsut:
+        mip: Amon
+      rsutcs:
+        mip: Amon
+      ta:
+        mip: Amon
+      tas:
+        mip: Amon
+      ts:
+        mip: Amon
+      ua:
+        mip: Amon
+      va:
+        mip: Amon
+      wap:
+        mip: Amon
+      zg:
+        mip: Amon
+    additional_datasets:
+      - {dataset: MERRA, project: OBS, tier: 3,
+         type: reanaly, version: 5.2.0, start_year: 1979, end_year: 2015}
+    scripts: null
+
 
   MERRA2:
     description: MERRA2 check
