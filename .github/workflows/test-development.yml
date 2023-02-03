@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - main
+      - test_Core_PR1609
   schedule:
     - cron: '0 0 * * *'
 
@@ -54,6 +55,7 @@ jobs:
           cd ..
           git clone https://github.com/ESMValGroup/ESMValCore.git
           cd ESMValCore
+          git checkout split-recipe
           pip install -e .[develop]
       - name: Run flake8
         shell: bash -l {0}
