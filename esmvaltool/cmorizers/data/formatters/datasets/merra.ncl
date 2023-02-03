@@ -55,35 +55,25 @@ begin
 
   ; unit conversion factor
   CONVFAC = (/1.0, 1.0, 1.0, 1.0, 1.0, 100.0, 1.0, 1.0, 1.0,  \  ; 3d asm
-              1.0, 1.0,                                       \
-              1.0, 1.0, 1.0,                                  \  ; 2d int
-              100.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,            \  ; 2d rad
-              1.0, 1.0/)                                         ; 2d chm
+             1.0, 1.0,                                        \
+             1.0, 1.0, 1.0,                                   \  ; 2d int
+             100.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,             \  ; 2d rad
+             1.0, 1.0/)                                          ; 2d chm
 
   ; names source files
-  SOURCEFILE = (/"MERRA100.prod.assim.instM_3d_asm_Cp.", \  ; 3d asm
-                 "MERRA100.prod.assim.instM_3d_asm_Cp.", \
-                 "MERRA100.prod.assim.instM_3d_asm_Cp.", \
-                 "MERRA100.prod.assim.instM_3d_asm_Cp.", \
-                 "MERRA100.prod.assim.instM_3d_asm_Cp.", \
-                 "MERRA100.prod.assim.instM_3d_asm_Cp.", \
-                 "MERRA100.prod.assim.instM_3d_asm_Cp.", \
-                 "MERRA100.prod.assim.instM_3d_asm_Cp.", \
-                 "MERRA100.prod.assim.instM_3d_asm_Cp.", \
-                 "MERRA100.prod.assim.instM_3d_asm_Cp.", \
-                 "MERRA100.prod.assim.instM_3d_asm_Cp.", \
-                 "MERRA100.prod.assim.instM_2d_int_Nx.", \  ; 2d int
-                 "MERRA100.prod.assim.instM_2d_int_Nx.", \
-                 "MERRA100.prod.assim.instM_2d_int_Nx.", \
-                 "MERRA101.prod.assim.tavgM_2d_rad_Nx.", \  ; 2d rad
-                 "MERRA101.prod.assim.tavgM_2d_rad_Nx.", \
-                 "MERRA101.prod.assim.tavgM_2d_rad_Nx.", \
-                 "MERRA101.prod.assim.tavgM_2d_rad_Nx.", \
-                 "MERRA101.prod.assim.tavgM_2d_rad_Nx.", \
-                 "MERRA101.prod.assim.tavgM_2d_rad_Nx.", \
-                 "MERRA101.prod.assim.tavgM_2d_rad_Nx.", \
-                 "MERRA100.prod.assim.tavgM_2d_chm_Fx.", \  ; 2d chm
-                 "MERRA100.prod.assim.tavgM_2d_chm_Fx."/)
+  SOURCEFILE = (/"instM_3d_asm_Cp.", "instM_3d_asm_Cp.", \  ; 3d asm
+                 "instM_3d_asm_Cp.", "instM_3d_asm_Cp.", \
+                 "instM_3d_asm_Cp.", "instM_3d_asm_Cp.", \
+                 "instM_3d_asm_Cp.", "instM_3d_asm_Cp.", \
+                 "instM_3d_asm_Cp.", "instM_3d_asm_Cp.", \
+                 "instM_3d_asm_Cp.",                     \
+                 "instM_2d_int_Nx.", "instM_2d_int_Nx.", \  ; 2d int
+                 "instM_2d_int_Nx.",                     \
+                 "tavgM_2d_rad_Nx.", "tavgM_2d_rad_Nx.", \  ; 2d rad
+                 "tavgM_2d_rad_Nx.", "tavgM_2d_rad_Nx.", \
+                 "tavgM_2d_rad_Nx.", "tavgM_2d_rad_Nx.", \
+                 "tavgM_2d_rad_Nx.",                     \
+                 "tavgM_2d_chm_Fx.", "tavgM_2d_chm_Fx."/)   ; 2d chm
 
   ; dataset doi numbers
   DOI = (/"10.5067/YX0AVASQRTNW", "10.5067/YX0AVASQRTNW",  \  ; 3d asm
@@ -110,19 +100,19 @@ begin
   base = getenv("cmor_tables")
 
   CMOR_TABLE = getenv("cmor_tables") + \
-      (/"/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \  ; 3d asm
-        "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
-        "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
-        "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
-        "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
-        "/cmip5/Tables/CMIP5_" + MIP,                                \
-        "/cmip5/Tables/CMIP5_" + MIP, "/custom/CMOR_lwp.dat",        \  ; 2d int
-        "/cmip5/Tables/CMIP5_" + MIP,                                \
-        "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \  ; 2d rad
-        "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
-        "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
-        "/cmip5/Tables/CMIP5_" + MIP,                                \
-        "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP/)    ; 2d chm
+    (/"/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \  ; 3d asm
+      "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
+      "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
+      "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
+      "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
+      "/cmip5/Tables/CMIP5_" + MIP,                                \
+      "/cmip5/Tables/CMIP5_" + MIP, "/custom/CMOR_lwp.dat",        \  ; 2d int
+      "/cmip5/Tables/CMIP5_" + MIP,                                \
+      "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \  ; 2d rad
+      "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
+      "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
+      "/cmip5/Tables/CMIP5_" + MIP,                                \
+      "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP/)    ; 2d chm
 
   ; Type
   TYPE = "reanaly"
@@ -157,9 +147,8 @@ begin
         end if
         datestr = datestr + tostring(mm)
 
-        fname = input_dir_path + SOURCEFILE(vv) + datestr + ".hdf"
-
-        ; ---------------------------------------------------------------------
+        fname = systemfunc("ls " + input_dir_path + "MERRA???.prod.assim." + \
+                           SOURCEFILE(vv) + datestr + ".hdf")
 
         f = addfile(fname, "r")
         tmp = f->$NAME(vv)$
@@ -204,8 +193,7 @@ begin
         end if
 
         ; Unpack variable according to metadata information
-        if (isatt(tmp, "scale_factor") .or. \
-          isatt(tmp, "add_offset")) then
+        if (isatt(tmp, "scale_factor") .or. isatt(tmp, "add_offset")) then
           tmp = tmp * tmp@scale_factor + tmp@add_offset
         end if
 
@@ -220,8 +208,7 @@ begin
         ; calcuation of outgoing fluxes: out = in - net
         if ((VAR(vv) .eq. "rsut") .or. (VAR(vv) .eq. "rsutcs")) then
           tmp = f->SWTDN
-          if (isatt(tmp, "scale_factor") .or. \
-            isatt(tmp, "add_offset")) then
+          if (isatt(tmp, "scale_factor") .or. isatt(tmp, "add_offset")) then
             tmp = tmp * tmp@scale_factor + tmp@add_offset
           end if
           output(mm - 1, :, :) = (/ tmp(0, :, :) /) - output(mm - 1, :, :)
@@ -232,15 +219,13 @@ begin
         ; calcuation of total precipitation flux = large-scale+convective+anvil
         if (VAR(vv) .eq. "pr") then
           tmp = f->PRECCON  ; surface precipitation flux from convection
-          if (isatt(tmp, "scale_factor") .or. \
-            isatt(tmp, "add_offset")) then
+          if (isatt(tmp, "scale_factor") .or. isatt(tmp, "add_offset")) then
             tmp = tmp * tmp@scale_factor + tmp@add_offset
           end if
           output(mm - 1, :, :) = output(mm - 1, :, :) + tmp(0, :, :)
           delete(tmp)
           tmp = f->PRECANV  ; surface precipitation flux from anvils
-          if (isatt(tmp, "scale_factor") .or. \
-            isatt(tmp, "add_offset")) then
+          if (isatt(tmp, "scale_factor") .or. isatt(tmp, "add_offset")) then
             tmp = tmp * tmp@scale_factor + tmp@add_offset
           end if
           output(mm - 1, :, :) = output(mm - 1, :, :) + tmp(0, :, :)
@@ -249,7 +234,7 @@ begin
 
         delete(f)
 
-      end do  ;; loop over months (mm)
+      end do  ; loop over months (mm)
 
       ; Convert units
       if (CONVFAC(vv) .ne. 1.0) then
@@ -304,7 +289,7 @@ begin
 
         ; ---------------------------------------------------------------------
 
-    end do  ;; loop over years (yy)
-  end do  ;; loop over variables (vv)
+    end do  ; loop over years (yy)
+  end do  ; loop over variables (vv)
 
 end
