@@ -11,11 +11,11 @@ attributes:
   comment: ""
 
 # Variables to cmorize (here use only filename prefix)
-# Needs frequency: frequency changes within the timeseries
+# uses frequency fx in custom table
 variables:
-  lai:
-    mip: Eday
+  lairpk:
+    mip: custom
     raw: LAI
     file: GlobMapLAIV3.A
-    start_year: 2010
-    end_year: 2011
+    start_year: 1991
+    end_year: 2020
