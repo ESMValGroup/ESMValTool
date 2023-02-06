@@ -60,6 +60,12 @@ begin
              100.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,             \  ; 2d rad
              1.0, 1.0/)                                          ; 2d chm
 
+  ; additional attribute "positive" (for radiative fluxes)
+  POSITIVE = (/"", "", "", "", "", "", "", "", "", "", "",    \  ; 3d asm
+               "", "", "",                                    \  ; 2d int
+               "", "up", "up", "down", "up", "up", "",        \  ; 2d rad
+               "", ""/)                                          ; 2d chm
+
   ; names source files
   SOURCEFILE = (/"instM_3d_asm_Cp.", "instM_3d_asm_Cp.", \  ; 3d asm
                  "instM_3d_asm_Cp.", "instM_3d_asm_Cp.", \
@@ -249,6 +255,11 @@ begin
       delete(output)
       output = tmp
       delete(tmp)
+
+      ; set additional attribute "positive" for radiative fluxes
+      if (POSITIVE(vv) .ne. "") then
+        output@positive = POSITIVE(vv)
+      end if
 
       ; Calculate coordinate bounds
       bounds = guess_coord_bounds(output, FREQ)
