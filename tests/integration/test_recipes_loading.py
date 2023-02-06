@@ -31,10 +31,11 @@ except ImportError:
 def session(mocker, tmp_path):
     mocker.patch.dict(
         CFG,
-        drs={},
-        offline=True,
         auxiliary_data_dir=str(tmp_path / 'auxiliary_data_dir'),
         check_level=esmvalcore.cmor.check.CheckLevels['DEFAULT'],
+        drs={},
+        offline=True,
+        rootpath={'default': str(tmp_path)},
     )
     session = CFG.start_session('test')
 
@@ -42,7 +43,6 @@ def session(mocker, tmp_path):
     # directory structure, so make sure it is set to flat for every project
     for project in _config.CFG:
         mocker.patch.dict(_config.CFG[project]['input_dir'], default='/')
-        print(_config.CFG[project]['input_dir'])
 
     return session
 
