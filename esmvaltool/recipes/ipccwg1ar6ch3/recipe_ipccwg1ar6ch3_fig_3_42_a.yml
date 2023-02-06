@@ -240,7 +240,7 @@ diagnostics:
       - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
     scripts:
       grading: &grading_settings
@@ -381,7 +381,7 @@ diagnostics:
       - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
       - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
 
 
@@ -421,7 +421,7 @@ diagnostics:
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
       - {dataset: JRA-55, project: ana4mips, type: reanalysis, tier: 1}
-      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
 
 
   lwcre:
@@ -579,7 +579,7 @@ diagnostics:
       - {<<: *cmip6, dataset: MCM-UA-1-0}
       - {dataset: AIRS, project: obs4MIPs, level: L3,
          version: RetStd-v5, tier: 1, start_year: 2003, end_year: 2010}
-      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
 
 
   rsut:
@@ -661,7 +661,7 @@ diagnostics:
       - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
 
 
@@ -699,7 +699,7 @@ diagnostics:
       - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
 
 
@@ -739,7 +739,7 @@ diagnostics:
       - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
 
 
@@ -778,7 +778,7 @@ diagnostics:
       - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
 
 
@@ -811,7 +811,7 @@ diagnostics:
       - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
       - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
 
 
@@ -846,7 +846,7 @@ diagnostics:
       - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
       - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
 
 
