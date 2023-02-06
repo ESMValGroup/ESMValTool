@@ -1,3 +1,5 @@
+.. _backward-compatibility-policy:
+
 ESMValTool policy on backward compatibility
 ===========================================
 

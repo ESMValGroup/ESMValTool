@@ -87,6 +87,29 @@ All pull requests
 - 🛠 Changed dependencies are :ref:`added or removed correctly <dependencies>`
 - 🛠 The :ref:`checks shown below the pull request <pull_request_checks>` are successful
 
+If a pull request introduces a change that causes a recipe to
+no longer run successfully (*breaking change*), or which results in scientifically
+significant changes in results (*science change*), additional requirements
+defined in the :ref:`backward compatibility policy<backward-compatibility-policy>` apply.
+These include in particular:
+
+- 🛠 Instructions for the release notes to assist *recipe
+  developers* to adapt their recipe in light of the *backward-incompatible change*
+  available.
+- 🛠 General instructions for *recipe developers* working on *user
+  recipes* to enable them to adapt their code related to
+  *backward-incompatible changes* available (see `ESMValTool_Tutorial: issue
+  #263 <https://github.com/ESMValGroup/ESMValTool_Tutorial/issues/263>`__)
+  available.
+- 🛠 Core development team tagged to notify them of the
+  *backward-incompatible change*, and give at least
+  2 weeks for objections to be raised before merging to the main
+  branch. If a strong objection is raised the backward-incompatible
+  change should not be merged until the objection is resolved.
+- 🛠 Information required for the “*backward-incompatible changes*”
+  section in the PR  that introduces the *backward-incompatible change*
+  available.
+
 New or updated recipe and/or diagnostic
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
