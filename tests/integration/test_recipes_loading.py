@@ -11,24 +11,24 @@ from packaging import version
 
 import esmvaltool
 
+try:
+    # Since ESValCore v2.8.0
+    from esmvalcore.config import CFG, _config
+except ImportError:
+    # Prior to ESMValCore v2.8.0
+    from esmvalcore._config import _config
+    from esmvalcore.experimental.config import CFG
+
+    # Work around
+    # https://github.com/ESMValGroup/ESMValCore/issues/1579
+    def clear(self):
+        self._mapping.clear()
+
+    esmvalcore.experimental.config.Config.clear = clear
+
 
 @pytest.fixture
 def session(mocker, tmp_path):
-    try:
-        # Since ESValCore v2.8.0
-        from esmvalcore.config import CFG, _config
-    except ImportError:
-        # Prior to ESMValCore v2.8.0
-        from esmvalcore._config import _config
-        from esmvalcore.experimental.config import CFG
-
-        # Work around
-        # https://github.com/ESMValGroup/ESMValCore/issues/1579
-        def clear(self):
-            self._mapping.clear()
-
-        esmvalcore.experimental.config.Config.clear = clear
-
     mocker.patch.dict(
         CFG,
         drs={},
@@ -43,9 +43,7 @@ def session(mocker, tmp_path):
     for project in _config.CFG:
         mocker.patch.dict(_config.CFG[project]['input_dir'], default='/')
         print(_config.CFG[project]['input_dir'])
-    print(CFG)
-    from pprint import pformat
-    print(pformat(_config.CFG))
+
     return session
 
 
