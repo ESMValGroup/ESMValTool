@@ -139,6 +139,16 @@ def _fix_coordinates(cube, definition):
             coord = cube.coord(axis=axis)
             if axis == 'T':
                 coord.convert_units('days since 1850-1-1 00:00:00.0')
+            elif axis == 'Z':
+                if coord.units == "hPa":
+                    coord.convert_units('Pa')
+                else:
+                    try:
+                        coord.convert_units('Pa')
+                    except ValueError as exc:
+                        logger.error("Attempting to convert units for "
+                                     "coordinate %s to Pa", coord)
+                        raise exc
             coord.standard_name = coord_def.standard_name
             coord.var_name = coord_def.out_name
             coord.long_name = coord_def.long_name
