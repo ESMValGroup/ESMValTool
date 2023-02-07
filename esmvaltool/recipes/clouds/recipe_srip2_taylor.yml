@@ -1,10 +1,10 @@
-# recipe_srip2_clim.yml
+# recipe_srip2_taylor.yml
 ---
 documentation:
-  title: S-RIP2 cloud climatologies
+  title: S-RIP2 Tylor diagrams
 
   description: |
-    Multi-year annual means of cloud properties.
+    Taylor diagrams of clouds properties.
 
   authors:
     - lauer_axel
@@ -16,7 +16,7 @@ documentation:
     - lauer22jclim
 
   projects:
-    - mabak
+    - cmug
 
 
 preprocessors:
@@ -30,17 +30,15 @@ preprocessors:
       exclude: [CERES-EBAF, CLARA-AVHRR, CLOUDSAT-L2,
                 ESACCI-CLOUD, ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP,
                 MODIS, PATMOS-x, SSMI-MERIS]
-#    annual_statistics:
-#      operator: mean
 
 
 diagnostics:
 
   # ==========================================================================
-  # Geographical distribution of multi-year annual/seasonal means (panel plot)
+  # Taylor plots of multi-year mean quantities
   # ==========================================================================
 
-  clouds_clim_cmip5:
+  clouds_tay:
     description: climatological annual means
     themes:
       - clouds
@@ -181,23 +179,23 @@ diagnostics:
 #          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
 #          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
     scripts:
-      avgclt: &settings
-        script: clouds/clouds.ncl
-        projection: Robinson
-        timemean: annualclim
-        showdiff: true
+      tayclt: &settings
+        script: clouds/clouds_taylor.ncl
         multiobs_uncertainty: true
         multiobs_exclude: ["CFSR", "ERA-Interim", "ERA5", "JRA-25", "JRA-55", "MERRA","MERRA2", "NCEP-DOE-R2", "NCEP-NCAR-R1", "NOAA-CIRES-20CR"]
+        styleset: srip2
+        timemean: annualclim
+        valid_fraction: 0.5
         var: clt
-      avgclivi:
+      tayclivi:
         <<: *settings
         var: clivi
-      avglwp:
+      taylwp:
         <<: *settings
         var: lwp
-      avgswcre:
+      tayswcre:
         <<: *settings
         var: swcre
-      avglwcre:
+      taylwcre:
         <<: *settings
         var: lwcre
