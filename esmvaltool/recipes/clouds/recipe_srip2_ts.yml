@@ -1,0 +1,134 @@
+# recipe_srip2_ts.yml
+---
+documentation:
+  title: S-RIP2 cloud diagnostics (time series)
+
+  description: |
+    Time series of area averaged cloud properties.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+
+preprocessors:
+
+  global_mon:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    area_statistics:
+      operator: mean
+      fx_variables:
+        areacella:
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [CERES-EBAF, CLARA-AVHRR, CLOUDSAT-L2,
+                ESACCI-CLOUD, ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP,
+                MODIS, PATMOS-x, SSMI-MERIS]
+
+
+diagnostics:
+
+  timeseries:
+    description: lineplot monthly means
+    variables:
+      clt:
+        preprocessor: global_mon
+        mip: Amon
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+          - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01,
+             tier: 3, start_year: 1982, end_year: 2018}
+          - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA,
+             tier: 2, start_year: 1982, end_year: 2016}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+             tier: 3, start_year: 2003, end_year: 2018}
+          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2019}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+             start_year: 1979, end_year: 2018}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             start_year: 1979, end_year: 2021}
+          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2013}
+          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1,
+             start_year: 1979, end_year: 2019}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
+             start_year: 1979, end_year: 2015}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2021}
+          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
+             start_year: 1979, end_year: 2021}
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2021}
+          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2,
+             start_year: 1979, end_year: 2012}
+    scripts:
+      ts_clt:
+        script: mpqb/mpqb_lineplot.py
+#        script: monitor/multi_datasets.py
+#        plot_folder: '{plot_dir}'
+#        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+#        plots:
+#          timeseries:
+#            annual_mean_kwargs: false
+#            plot_kwargs:
+#              CERES-EBAF:
+#                color: '#64c8c8'
+#                linestyle: '--'
+#              CFSR:
+#                color: '#ff0000'
+#              CLARA-AVHRR:
+#                color: '#96c8fa'
+#                linestyle: '--'
+#              CLOUDSAT-L2:
+#                color: '#32c864'
+#                linestyle: '--'
+#              ERA5:
+#                color: '#ffc800'
+#              ERA-Interim:
+#                color: '#ff9600'
+#              ESACCI-CLOUD:
+#                color: '#0032c8'
+#                linestyle: '--'
+#              ESACCI-WATERVAPOUR:
+#                color: '#0032c8'
+#                linestyle: '--'
+#              ISCCP-FH:
+#                color: '#fa0064'
+#                linestyle: '--'
+#              JRA-25:
+#                color: '#0096c8'
+#              JRA-55:
+#                color: '#0000c8'
+#              MAC-LWP:
+#                color: '#96c832'
+#                linestyle: '--'
+#              MERRA:
+#                color: '#00c896'
+#              MERRA2:
+#                color: '#00c800'
+#              MODIS:
+#                color: '#960096'
+#                linestyle: '--'
+#              NCEP-DOE-R2:
+#                color: '#960096'
+#              NCEP-NCAR-R1:
+#                color: '#fa00fa'
+#              NOAA-CIRES-20CR:
+#                color: '#969696'
+#              SSMI-MERIS:
+#                color: '#00fa00'
+#                linestyle: '--'
+#              PATMOS-x:
+#                color: '#009600'
+#                linestyle: '--'
+#              MultiModelMean:
+#                color: '#000000'
