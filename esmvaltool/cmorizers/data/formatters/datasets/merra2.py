@@ -251,7 +251,10 @@ def _extract_variable(in_files, var, cfg, out_dir):
     cube = _fix_time_monthly(cube)
 
     logger.debug("Saving cube\n%s", cube)
-    utils.save_variable(cube, cube.var_name, out_dir, attributes)
+    logger.debug("Setting time dimension to UNLIMITED while saving!")
+    utils.save_variable(cube, cube.var_name,
+                        out_dir, attributes,
+                        unlimited_dimensions=['time'])
     logger.info("Finished CMORizing %s", ', '.join(in_files))
 
 

@@ -1,6 +1,7 @@
 import iris
 import iris.coord_systems
 import iris.fileformats
+import netCDF4
 import numpy as np
 import pytest
 from cf_units import Unit
@@ -295,6 +296,9 @@ def test_vertical_levels(tmp_path):
     assert cmorized_cube.coord("air_pressure").has_bounds()
     np.testing.assert_array_equal(cmorized_cube.coord("air_pressure").points,
                                   [0.5, 5., 50.])
+    # test unlimited time dim
+    with netCDF4.Dataset(str(cmorized_data), 'r') as handler:
+        assert handler["va"].get_dims()[0].isunlimited()
 
     # extract uas
     _extract_variable(in_files, var_2, cfg, tmp_path)
@@ -304,6 +308,9 @@ def test_vertical_levels(tmp_path):
     print(cmorized_cube)
     np.testing.assert_array_equal(cmorized_cube.coord("height").points,
                                   [10.])
+    # test unlimited time dim
+    with netCDF4.Dataset(str(cmorized_data), 'r') as handler:
+        assert handler["uas"].get_dims()[0].isunlimited()
 
     # extract tas
     _extract_variable(in_files, var_3, cfg, tmp_path)
