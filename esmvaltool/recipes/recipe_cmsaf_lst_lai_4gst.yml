@@ -1,0 +1,40 @@
+# Recipe for usign GLOBMAP LAI to get 4GST classification
+---
+documentation:
+  title: GLOBMAP LAI 4GST
+  description: |
+    xxxxxxx
+  authors:
+    - king_robert
+
+  maintainer:
+    - king_robert
+
+  references:
+    - esacci_lst
+
+  projects:
+    - cmsaf
+
+preprocessors:
+   test:
+      extract_region:
+         start_latitude: 4
+         end_latitude: 6
+         start_longitude: 10
+         end_longitude: 12
+
+
+diagnostics:
+
+   LAI_4GST:
+    description: 4GST
+    variables:
+      lairpk:
+         preprocessor: test
+    additional_datasets:
+      - {dataset: GLOBMAP_LAI, project: OBS, mip: custom, tier: 2,
+         type: sat, version: 3, start_year: 2018, end_year: 2020}
+    scripts:
+       script1:
+          script: cmsaf/lai_4gst.py
