@@ -31,6 +31,7 @@
 ;   none
 ;
 ; Modification history
+;   20230117-lauer_axel: added support for ICON (code from Manuel)
 ;   20211006-lauer_axel: removed write_plots
 ;   20210413-lauer_axel: added multi-obs mean and average over all models
 ;                        as individual plots
@@ -79,17 +80,18 @@ begin
   end if
 
   variables = metadata_att_as_array(variable_info, "short_name")
-  varidx = ind(variables .eq. var0)
-  if (ismissing(varidx)) then
-    errstr = "diagnostic " + diag + " requires the following variable: var0"
+  if (.not. any(variables .eq. var0)) then
+    errstr = "diagnostic " + diag + " requires the following variable: " + var0
     error_msg("f", DIAG_SCRIPT, "", errstr)
   end if
 
+  var0_info = select_metadata_by_name(variable_info, var0)
+  var0_info := var0_info[0]
   info0 = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info0)
 
-  if (isatt(variable_info[varidx], "reference_dataset")) then
-    refname = variable_info[varidx]@reference_dataset
+  if (isatt(var0_info, "reference_dataset")) then
+    refname = var0_info@reference_dataset
   end if
 
   names = metadata_att_as_array(info0, "dataset")
@@ -141,9 +143,11 @@ begin
 
   idxmod = get_mod(names, projects)
 
-  if (idxmod(0) .eq. -1) then
+  if (idxmod(0) .eq. -1) then  ; no model found
     flag_multimod = False
-  else
+  elseif (dimsizes(idxmod) .eq. 1) then  ; one model found
+    flag_multimod = False
+  else  ; more than one model found
     flag_multimod = True
   end if
 
@@ -416,8 +420,8 @@ begin
       data1@diag_script = (/DIAG_SCRIPT/)
     end if
     data1@var = var0  ; Overwrite existing entry
-    if (isatt(variable_info[varidx], "long_name")) then
-      data1@long_name = variable_info[varidx]@long_name
+    if (isatt(var0_info, "long_name")) then
+      data1@long_name = var0_info@long_name
     else
       data1@long_name = var0
     end if

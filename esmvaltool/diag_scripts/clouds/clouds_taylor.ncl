@@ -79,6 +79,7 @@
 ;        variable has been calculated from) the *second* (third, ...)
 ;
 ; Modification history
+;   20230117-lauer_axel: added support for ICON (code from Manuel)
 ;   20211028-lauer_axel: added option to calculate tcwp as lwp + iwp
 ;   20211018-lauer_axel: added option to remove individual models from legend
 ;   20211006-lauer_axel: removed write_plots
@@ -128,7 +129,8 @@ begin
 
   estimate_obs_uncertainty = diag_script_info@estimate_obs_uncertainty
 
-  variables = metadata_att_as_array(variable_info, "short_name")
+  variables = get_unique_values(metadata_att_as_array(variable_info, \
+                                                      "short_name"))
   numvars = dimsizes(variables)
 
   ; find "main" variable and if present uncertainty estimates or auxiliary
@@ -159,16 +161,19 @@ begin
         end if
       end do
     end do
-    var0 = variable_info[mainvarind]@short_name
+    var0 = variables(mainvarind)
   else
     mainvarind = ind(variables .eq. diag_script_info@var)
     var0 = diag_script_info@var
   end if
 
   if (ismissing(mainvarind)) then
-    errstr = "diagnostic " + diag + " requires the following variable: var0"
+    errstr = "diagnostic " + diag + " requires the following variable: " + var0
     error_msg("f", DIAG_SCRIPT, "", errstr)
   end if
+
+  var0_info = select_metadata_by_name(variable_info, var0)
+  var0_info := var0_info[0]
 
   flag_multiobs_unc = diag_script_info@multiobs_uncertainty
   multiobs_exclude = diag_script_info@multiobs_exclude
@@ -197,11 +202,11 @@ begin
 
   info0 = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info0)
-  if (isatt(variable_info[mainvarind], "reference_dataset")) then
-    refname = variable_info[mainvarind]@reference_dataset
+  if (isatt(var0_info, "reference_dataset")) then
+    refname = var0_info@reference_dataset
   end if
-  if (isatt(variable_info[mainvarind], "alternative_dataset")) then
-    refname2 = variable_info[mainvarind]@alternative_dataset
+  if (isatt(var0_info, "alternative_dataset")) then
+    refname2 = var0_info@alternative_dataset
   end if
   names = metadata_att_as_array(info0, "dataset")
   projects = metadata_att_as_array(info0, "project")
