@@ -1,0 +1,18 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: TCOM-CH4
+  version: '1.0'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'https://zenodo.org/record/7293740'
+  reference: 'tcom_ch4'
+
+# Variables to cmorize
+variables:
+  ch4:
+    filename: zmch4_TCOM_plev_T2Dz_1991_2021.nc
+    mip: Amon
+    raw_name: zmch4
+    raw_units: 'mol mol-1'
