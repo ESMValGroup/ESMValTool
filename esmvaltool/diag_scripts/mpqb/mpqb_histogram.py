@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-"""Python example diagnostic."""
+"""MPQB histograms."""
 import logging
 import os
-from pprint import pformat
 
 import dask.array as da
 import iris
@@ -48,16 +47,11 @@ def _get_lower_upper(input_data):
 
 def _plot_histograms(hists, cfg, grouped_input_data):
     histtype = cfg.pop('histtype', 'bar')  # default type is 'bar'
-    dataset = None  # needed to avoid pylint error
 
     plt.clf()
     fig, ax1 = plt.subplots(1, 1)
 
     for alias, hist in hists.items():
-        dataset_cfg = grouped_input_data[alias][0]
-        dataset = dataset_cfg['dataset']
-
-
         width = np.diff(hist["bins"]) / len(hists)
         xvals = hist["bins"][:-1] + width * (
             list(hists.keys()).index(alias) + 0.5)
@@ -83,7 +77,8 @@ def _plot_histograms(hists, cfg, grouped_input_data):
                      color=color,
                      linewidth=2)
             handles, labels = ax1.get_legend_handles_labels()
-            handles = [Line2D([], [], c=h.get_edgecolor(), lw=2.0) for h in handles]
+            handles = [Line2D([], [], c=h.get_edgecolor(), lw=2.0)
+                       for h in handles]
             plt.legend(handles=handles, labels=labels)
         else:
             logger.warning("Unsupported argument for histtype: %s", histtype)
@@ -125,8 +120,6 @@ def main(cfg):
     hists = dict()
     logger.info("Calculating the histograms.")
     for alias in grouped_input_data:
-        dataset_cfg = grouped_input_data[alias][0]
-
         logger.info("Opening dataset: %s", alias)
         cube = iris.load_cube(grouped_input_data[alias][0]['filename'])
         hists.update(
