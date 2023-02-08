@@ -1,10 +1,10 @@
-# recipe_srip2_ts.yml
+# recipe_srip2_hist.yml
 ---
 documentation:
-  title: S-RIP2 cloud diagnostics (time series)
+  title: S-RIP2 cloud diagnostics (histograms)
 
   description: |
-    Time series of area averaged cloud properties.
+    Histograms of cloud properties.
 
   authors:
     - lauer_axel
@@ -19,10 +19,6 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    area_statistics:
-      operator: mean
-      fx_variables:
-        areacella:
     multi_model_statistics:
       span: overlap
       statistics: [mean]
@@ -33,7 +29,7 @@ preprocessors:
 
 diagnostics:
 
-  timeseries:
+  histograms:
     description: lineplot monthly means
     variables:
       clt:
@@ -71,8 +67,12 @@ diagnostics:
           - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2,
              start_year: 1979, end_year: 2012, alias: r10_NOAA-CIRES-20CR}
     scripts:
-      ts_clt:
-        script: mpqb/mpqb_lineplot.py
+      hist_clt:
+        script: mpqb/mpqb_histogram.py
+        vmin: 0
+        vmax: 100
+        number_of_bars: 10
+        logarithmic: False
 #        script: monitor/multi_datasets.py
 #        plot_folder: '{plot_dir}'
 #        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
