@@ -288,6 +288,18 @@ diagnostics:
     scripts: null
 
 
+  ESDC:
+    description: ESDC check
+    variables:
+      tas:
+      tasmin:
+      tasmax:
+    additional_datasets:
+      - {dataset: ESDC, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 3.0.1,
+         start_year: 1979, end_year: 2021}
+    scripts: null
+
   ESRL:
     description: ESRL check
     variables:
@@ -769,6 +781,26 @@ diagnostics:
              type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
           - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
              type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
+    scripts: null
+
+
+  TCOM-CH4:
+    description: TCOM-CH4 check
+    variables:
+      ch4:
+    additional_datasets:
+      - {dataset: TCOM-CH4, project: OBS6, mip: Amon, frequency: day, tier: 2,
+         type: reanaly, version: '1.0', start_year: 1991, end_year: 2021}
+    scripts: null
+
+
+  TCOM-N2O:
+    description: TCOM-N2O check
+    variables:
+      n2o:
+    additional_datasets:
+      - {dataset: TCOM-N2O, project: OBS6, mip: Amon, frequency: day, tier: 2,
+         type: reanaly, version: '1.0', start_year: 1991, end_year: 2021}
     scripts: null
 
 
