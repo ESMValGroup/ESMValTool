@@ -8,9 +8,12 @@ import logging
 
 import iris
 import iris.coord_categorisation as icc
+import iris.quickplot as qplt
 
 import matplotlib.pyplot as plt
 import numpy as np
+import datetime
+from scipy.stats import linregress
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -91,16 +94,100 @@ def calc_4gst(obs_mean):
     data_dict : the loaded_data dictionary
     """
 
-    for this_year in [1992]: # make this cover all years
+    list_of_years = obs_mean.coord('year').points
+    list_of_times = obs_mean.coord('time').points
+    # use this to be able to index the whole timeseries
 
-        this_year_cube = obs_mean.extract(iris.Constraint(year=this_year))
+    times_of_year_max = obs_mean.aggregated_by('year', iris.analysis.MAX)
+    # print(times_of_year_max)
+    # print(times_of_year_max.coord('time').points)
+    # print(times_of_year_max.coord('time').units)
+    # print(times_of_year_max.coord('time'))
+    
+    print('************************')
+    # print(list_of_years)
+    # print(np.unique(list_of_years))
 
-        print(this_year_cube)
-        max_loc = this_year_cube.collapsed('time', ARGMAX)
-        print('###############')
-        print(max_loc.data)
-        print(len(this_year_cube.coord('time').points))
-        print(0/0)
+    qplt.plot(obs_mean)
+    plt.savefig('1_obs_mean.png')
+    plt.close()
+
+    for i, this_year in enumerate(np.unique(list_of_years)):
+        print(i, this_year)
+        if i == 0: continue
+        # this skips the first year as we dont have lai data from before to shift
+        #times_wanted = iris.Constraint(time
+        print('/\/\/\/\/')
+        central_time = times_of_year_max[i].coord('time').points[0]
+        print(central_time)
+        early = central_time - 182
+        late = central_time + 182
+        print(early)
+        print(late)
+        point_list_1 = np.where(list_of_times<late)[0]
+        point_list_2 = np.where(list_of_times>early)[0]
+        wanted = np.intersect1d(point_list_1, point_list_2)
+        
+        print(wanted)
+        X = obs_mean[wanted]
+
+
+        #print(X)
+        #print(X.coord('time'))
+        qplt.plot(X, linewidth=4, color='k')
+
+        cols = ['red','green','blue','magenta']
+
+        this_year_points = X.coord('time').points
+        print(this_year_points)
+        this_regress = []
+
+        # check for EVG first
+        evgt = (np.max(X.data) - np.min(X.data))/np.mean(X.data)
+        
+
+        for j in range(4):
+            print(j)
+            
+            this_quarter_1 = np.where(this_year_points >= this_year_points[0] + j* 92)
+            this_quarter_2 = np.where(this_year_points <= this_year_points[0] + (j+1)* 92)
+            print(this_quarter_1)
+            print(this_quarter_2)
+            quarter_points = np.intersect1d(this_quarter_1, this_quarter_2)
+            print(quarter_points)
+            data = X[quarter_points].data
+            days = X[quarter_points].coord('day_of_year').points
+            print(data)
+            #print(days)
+            qplt.plot(X[quarter_points], '--', linewidth=2, color=cols[j])
+
+            regress = linregress(days, data)
+
+            if regress.slope <=0:
+                C = 'red'
+            else:
+                C='blue'
+
+            qplt.plot(X[quarter_points]*0, linewidth=10, color=C)
+
+            if evgt < 0.25:
+                C = 'green'
+            else:
+                C = 'black'
+
+            qplt.plot(X*0 + 10, linewidth=10, color=C)
+
+            this_regress.append(np.sign(regress.slope))
+
+    
+
+
+        plt.title(f'{this_year} {this_regress}')# {regress_type}')
+
+        plt.savefig(f'2_{this_year}.png')
+        plt.close()
+
+
     return None
 
 def _diagnostic(config):
@@ -139,9 +226,9 @@ def _diagnostic(config):
     icc.add_day_of_year(obs_lai, 'time')
     icc.add_year(obs_lai, 'time')
     obs_lai_mean = obs_lai.collapsed(['latitude','longitude'], iris.analysis.MEAN)
-    print(obs_lai_mean)
-    print(obs_lai_mean.data)
-    print(obs_lai_mean.coord('day_of_year'))
+    # print(obs_lai_mean)
+    # print(obs_lai_mean.data)
+    # print(obs_lai_mean.coord('day_of_year'))
     
 
     calc_4gst(obs_lai_mean)
