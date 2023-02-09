@@ -357,6 +357,13 @@ def main(config):
 
     Parameters
     ----------
+    wavel : String.
+        User defined. Default is "440".
+    aeronet_dir : String.
+        The directory containing the Aeronet observational climatology
+        This is currently set by the user because the Aeronet climatologies
+        are not yet CMORized or ready for use with the ESMValTool
+        pre-processors.
     config : dict
         The ESMValTool configuration.
     """
@@ -366,9 +373,11 @@ def main(config):
     input_data = config["input_data"]
     datasets = group_metadata(input_data.values(), "dataset")
 
-    # Settings
+    # Default wavelength
     wavel = "440"
-    aeronet_dir = "/home/users/chardacr/AeronetAOD/"
+
+    # Path to Aeronet climatologies
+    aeronet_dir = ""
 
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.
