@@ -77,7 +77,9 @@ def main(cfg):
         # iris.quickplot.plot(cube, label=label, color=color,
         #                     linestyle='dashed')
         iris.quickplot.plot(cube, label=label, color=color)
-    plt.legend()
+#    plt.legend()
+    ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),
+               ncol=3, fancybox=True, fontsize="medium")
     plt.tight_layout()
     # Time axis formatting
     ax1 = plt.gca()

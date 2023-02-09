@@ -1,0 +1,78 @@
+# recipe_srip2_anncyc.yml
+---
+documentation:
+  title: S-RIP2 cloud diagnostics (annual cycle)
+
+  description: |
+    Annual cycle of area averaged cloud properties.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+
+preprocessors:
+
+  global_mon:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    area_statistics:
+      operator: mean
+      fx_variables:
+        areacella:
+    climate_statistics:
+      operator: mean
+      period: month
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [CERES-EBAF, CLARA-AVHRR, CLOUDSAT-L2,
+                ESACCI-CLOUD, ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP,
+                MODIS, PATMOS-x, SSMI-MERIS]
+
+
+diagnostics:
+
+  anncycle:
+    description: lineplot monthly means
+    variables:
+      clt:
+        preprocessor: global_mon
+        mip: Amon
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01,
+             tier: 3, start_year: 1982, end_year: 2018, alias: a02_CLARA-AVHRR}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016, alias: a04_ESACCI-CLOUD}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+             tier: 3, start_year: 2003, end_year: 2018, alias: a08_MODIS}
+          - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA,
+             tier: 2, start_year: 1982, end_year: 2016, alias: a09_PATMOS-x}
+          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2019, alias: r01_CFSR}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             start_year: 1979, end_year: 2021, alias: r02_ERA5}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+             start_year: 1979, end_year: 2018, alias: r03_ERA-Interim}
+          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2013, alias: r04_JRA-25}
+          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1,
+             start_year: 1979, end_year: 2019, alias: r05_JRA-55}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
+             start_year: 1979, end_year: 2015, alias: r06_MERRA}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2021, alias: r07_MERRA2}
+          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
+             start_year: 1979, end_year: 2021, alias: r08_NCEP-DOE-R2}
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2021, alias: r09_NCEP-NCAR-R1}
+          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2,
+             start_year: 1979, end_year: 2012, alias: r10_NOAA-CIRES-20CR}
+    scripts:
+      anncyc_clt:
+        script: mpqb/mpqb_lineplot_anncyc.py
