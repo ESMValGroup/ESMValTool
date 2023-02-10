@@ -24,7 +24,9 @@ from esmvaltool.diag_scripts.shared import (
 
 logger = logging.getLogger(__name__)
 
-ARGMAX = iris.analysis.Aggregator("argmax", np.argmax, units_func=lambda units: 1)
+ARGMAX = iris.analysis.Aggregator("argmax",
+                                  np.argmax,
+                                  units_func=lambda units: 1)
 
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
@@ -52,12 +54,9 @@ def _get_input_cubes(metadata):
     return inputs, ancestors
 
 
-def _make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config):
-    """Create and save the output figure.
-
-    
-    """
-     
+# def _make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config):
+#    """Create and save the output figure.
+#    """
 
 
 def _get_provenance_record(attributes, ancestor_files):
@@ -99,14 +98,6 @@ def calc_4gst(obs_mean):
     # use this to be able to index the whole timeseries
 
     times_of_year_max = obs_mean.aggregated_by('year', iris.analysis.MAX)
-    # print(times_of_year_max)
-    # print(times_of_year_max.coord('time').points)
-    # print(times_of_year_max.coord('time').units)
-    # print(times_of_year_max.coord('time'))
-    
-    print('************************')
-    # print(list_of_years)
-    # print(np.unique(list_of_years))
 
     qplt.plot(obs_mean)
     plt.savefig('1_obs_mean.png')
@@ -117,76 +108,64 @@ def calc_4gst(obs_mean):
         if i == 0: continue
         # this skips the first year as we dont have lai data from before to shift
         #times_wanted = iris.Constraint(time
-        print('/\/\/\/\/')
+
         central_time = times_of_year_max[i].coord('time').points[0]
-        print(central_time)
+
         early = central_time - 182
         late = central_time + 182
-        print(early)
-        print(late)
-        point_list_1 = np.where(list_of_times<late)[0]
-        point_list_2 = np.where(list_of_times>early)[0]
+
+        point_list_1 = np.where(list_of_times < late)[0]
+        point_list_2 = np.where(list_of_times > early)[0]
         wanted = np.intersect1d(point_list_1, point_list_2)
         
-        print(wanted)
+
         X = obs_mean[wanted]
 
-
-        #print(X)
-        #print(X.coord('time'))
         qplt.plot(X, linewidth=4, color='k')
 
-        cols = ['red','green','blue','magenta']
+        cols = ['red', 'green', 'blue', 'magenta']
 
         this_year_points = X.coord('time').points
         print(this_year_points)
         this_regress = []
 
         # check for EVG first
-        evgt = (np.max(X.data) - np.min(X.data))/np.mean(X.data)
-        
+        evgt = (np.max(X.data) - np.min(X.data)) / np.mean(X.data)
 
         for j in range(4):
-            print(j)
-            
-            this_quarter_1 = np.where(this_year_points >= this_year_points[0] + j* 92)
-            this_quarter_2 = np.where(this_year_points <= this_year_points[0] + (j+1)* 92)
-            print(this_quarter_1)
+
+            this_quarter_1 = np.where(this_year_points >= this_year_points[0] + j * 92)
+            this_quarter_2 = np.where(this_year_points <= this_year_points[0] + (j + 1)* 92)
             print(this_quarter_2)
             quarter_points = np.intersect1d(this_quarter_1, this_quarter_2)
             print(quarter_points)
             data = X[quarter_points].data
             days = X[quarter_points].coord('day_of_year').points
-            print(data)
-            #print(days)
+
             qplt.plot(X[quarter_points], '--', linewidth=2, color=cols[j])
 
             regress = linregress(days, data)
 
             if regress.slope <=0:
-                C = 'red'
+                col = 'red'
             else:
-                C='blue'
+                col ='blue'
 
-            qplt.plot(X[quarter_points]*0, linewidth=10, color=C)
+            qplt.plot(X[quarter_points] * 0, linewidth=10, color=col)
 
             if evgt < 0.25:
-                C = 'green'
+                col = 'green'
             else:
-                C = 'black'
+                col = 'black'
 
-            qplt.plot(X*0 + 10, linewidth=10, color=C)
+            qplt.plot(X * 0 + 10, linewidth=10, color=col)
 
             this_regress.append(np.sign(regress.slope))
 
-    
-
-
-        plt.title(f'{this_year} {this_regress}')# {regress_type}')
+        plt.title(f'{this_year} {this_regress}')
 
         plt.savefig(f'2_{this_year}.png')
         plt.close()
-
 
     return None
 
@@ -216,26 +195,17 @@ def _diagnostic(config):
     print(loaded_data)
     # OBS loaded_data['GLOBMAP_LAI']['lairpk']
 
-
     # note LST data needed some time coords changing
     # CMIP data had 360 day calendar, CCI data has 365 day calendar
 
-    
     # obs lai, becareful with hard coded names here!!!11
     obs_lai = loaded_data['GLOBMAP_LAI']['lairpk']
     icc.add_day_of_year(obs_lai, 'time')
     icc.add_year(obs_lai, 'time')
-    obs_lai_mean = obs_lai.collapsed(['latitude','longitude'], iris.analysis.MEAN)
-    # print(obs_lai_mean)
-    # print(obs_lai_mean.data)
-    # print(obs_lai_mean.coord('day_of_year'))
-    
+    obs_lai_mean = obs_lai.collapsed(['latitude','longitude'],
+                                     iris.analysis.MEAN)
 
     calc_4gst(obs_lai_mean)
-
-
-    # Plotting
-    # _make_plots(lst_diff_cube, lst_diff_cube_low, lst_diff_cube_high, config)
 
     # Provenance
     # Get this information form the data cubes
