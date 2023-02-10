@@ -16,6 +16,9 @@
 ;   epsilon:         "epsilon" value to be replaced with missing values
 ;   explicit_cn_levels: use these contour levels for plotting
 ;   filename_add:    optionally add this string to plot filesnames
+;   multiobs_exclude: list of *observational* datasets to be excluded when
+;                    calculating uncertainty estimates from multiple
+;                    observational datasets
 ;   projection:      map projection, e.g., Mollweide, Mercator
 ;   var:             short_name of variable to process (default = "" - use
 ;                    first variable in variable list)
@@ -31,6 +34,7 @@
 ;   none
 ;
 ; Modification history
+;   20230210-lauer_axel: added option to exclude datasets from multi-obs mean
 ;   20230117-lauer_axel: added support for ICON (code from Manuel)
 ;   20211006-lauer_axel: removed write_plots
 ;   20210413-lauer_axel: added multi-obs mean and average over all models
@@ -70,6 +74,7 @@ begin
   set_default_att(diag_script_info, "colormap", "WhiteBlueGreenYellowRed")
   set_default_att(diag_script_info, "epsilon", 1.0e-4)
   set_default_att(diag_script_info, "filename_add", "")
+  set_default_att(diag_script_info, "multiobs_exclude", "")
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
   set_default_att(diag_script_info, "var", "")
 
@@ -131,7 +136,7 @@ begin
 
   ; find indices of all OBS and obs4mips datasets (including "native6" ERA5)
 
-  idxobs = get_obs(names, projects, "")
+  idxobs = get_obs(names, projects, diag_script_info@multiobs_exclude)
 
   if (idxobs(0) .eq. -1) then
     flag_multiobs = False

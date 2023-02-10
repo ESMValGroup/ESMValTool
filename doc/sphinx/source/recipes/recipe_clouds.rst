@@ -211,6 +211,8 @@ User settings in recipe
    * epsilon: "epsilon" value to be replaced with missing values
    * explicit_cn_levels: use these contour levels for plotting
    * filename_add: optionally add this string to plot filesnames
+   * multiobs_exclude: list of *observational* datasets to be excluded when
+     calculating uncertainty estimates from multiple observational datasets
    * projection: map projection, e.g., Mollweide, Mercator
    * var: short_name of variable to process (default = "" - use first
      variable in variable list)
