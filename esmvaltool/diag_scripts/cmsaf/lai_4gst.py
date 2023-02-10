@@ -9,6 +9,7 @@ import logging
 import iris
 import iris.coord_categorisation as icc
 import iris.quickplot as qplt
+import iris.plot as iplt
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,6 +28,15 @@ logger = logging.getLogger(__name__)
 ARGMAX = iris.analysis.Aggregator("argmax",
                                   np.argmax,
                                   units_func=lambda units: 1)
+
+# [regression pattern], id number
+grow_season_types = {'EVG': [[0,0,0,0], 0],
+                     'TGS': [[1,-1,1,-1], 1],
+                     'SGS-S': [[1,1,-1,-1], 2],
+                     'SGS-D': [[-1,-1,1,1], 3],
+                     }
+# EVG is defined differently
+
 
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
@@ -99,9 +109,7 @@ def calc_4gst(obs_mean):
 
     times_of_year_max = obs_mean.aggregated_by('year', iris.analysis.MAX)
 
-    qplt.plot(obs_mean)
-    plt.savefig('1_obs_mean.png')
-    plt.close()
+    output = []
 
     for i, this_year in enumerate(np.unique(list_of_years)):
         print(i, this_year)
@@ -126,48 +134,77 @@ def calc_4gst(obs_mean):
         cols = ['red', 'green', 'blue', 'magenta']
 
         this_year_points = X.coord('time').points
-        print(this_year_points)
+        # print(this_year_points)
         this_regress = []
 
         # check for EVG first
         evgt = (np.max(X.data) - np.min(X.data)) / np.mean(X.data)
+        print(f'evgt test {evgt}')
+        if evgt < 0.25:
+            output.append([this_year, grow_season_types['EVG'][1]])
+            continue
 
         for j in range(4):
 
             this_quarter_1 = np.where(this_year_points >= this_year_points[0] + j * 92)
             this_quarter_2 = np.where(this_year_points <= this_year_points[0] + (j + 1)* 92)
-            print(this_quarter_2)
+            # print(this_quarter_2)
             quarter_points = np.intersect1d(this_quarter_1, this_quarter_2)
-            print(quarter_points)
+            # print(quarter_points)
             data = X[quarter_points].data
             days = X[quarter_points].coord('day_of_year').points
 
-            qplt.plot(X[quarter_points], '--', linewidth=2, color=cols[j])
+            # qplt.plot(X[quarter_points], '--', linewidth=2, color=cols[j])
 
             regress = linregress(days, data)
 
-            if regress.slope <=0:
-                col = 'red'
-            else:
-                col ='blue'
+            # if regress.slope <=0:
+            #     col = 'red'
+            # else:
+            #     col ='blue'
 
-            qplt.plot(X[quarter_points] * 0, linewidth=10, color=col)
-
-            if evgt < 0.25:
-                col = 'green'
-            else:
-                col = 'black'
-
-            qplt.plot(X * 0 + 10, linewidth=10, color=col)
+            # qplt.plot(X[quarter_points] * 0, linewidth=10, color=col)
 
             this_regress.append(np.sign(regress.slope))
 
-        plt.title(f'{this_year} {this_regress}')
+        for item in grow_season_types.keys():
+            if this_regress==grow_season_types[item][0]:
+                output.append([this_year, grow_season_types[item][1]])
+        print('*****')
 
-        plt.savefig(f'2_{this_year}.png')
-        plt.close()
 
-    return None
+    return np.array(output).transpose()
+
+def plot_lai_gst(obs_data, gst_data):
+    """
+    Takes the lai data and plots, coloured 4GST
+    """
+
+    gst_colours = ['red','green','blue','magenta','black']
+    # 0-3 as per dictionary, 4 is for no info
+
+    list_of_years = obs_data.coord('year').points
+
+
+    plt.figure()
+    for this_year in np.unique(list_of_years):
+
+        print(f'xxxxxxxxxxxxx {this_year}')
+    
+        if this_year in gst_data[0]:
+            # we have a GST
+            colour_index = gst_data[1][np.where(gst_data[0]==this_year)[0][0]]
+        else:
+            colour_index = 4
+
+        iplt.plot(obs_data.extract(iris.Constraint(year=this_year)),
+                  linewidth = 3,
+                  color = gst_colours[colour_index]
+                  )
+
+
+    plt.savefig(f'lai.png')
+    plt.close()
 
 def _diagnostic(config):
     """Perform the .......
@@ -205,8 +242,10 @@ def _diagnostic(config):
     obs_lai_mean = obs_lai.collapsed(['latitude','longitude'],
                                      iris.analysis.MEAN)
 
-    calc_4gst(obs_lai_mean)
-
+    gst = calc_4gst(obs_lai_mean)
+    print(gst)
+    plot_lai_gst(obs_lai_mean, gst)
+    
     # Provenance
     # Get this information form the data cubes
     # add this back in using LST diagnostic as template
