@@ -228,7 +228,7 @@ During the *release* process, the following information must be
 provided:
 
 -  **Release notes:** The *release* notes are already documented at
-   :ref:`changelog` and :ref:`esmvalcore:changelog` for ESMValTool and ESMValCore respectively, and
+   :ref:`changelog` and :ref:`esmvalcore:changelog-v2-7-1` for ESMValTool and ESMValCore respectively, and
    “*backward-incompatible changes*” is the first section after
    “Highlights”.
 
