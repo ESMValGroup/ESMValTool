@@ -134,7 +134,8 @@ begin
 
   unique_models = get_unique_values(datasetnames)
   do gg = 0, dimsizes(unique_models) - 1
-    ensemble_assign = where(datasetnames.eq.unique_models(gg), gg + 1, ensemble_assign)
+    ensemble_assign = where(datasetnames.eq.unique_models(gg), gg + 1,
+                            ensemble_assign)
   end do
   ensemble_assign@model = datasetnames
 

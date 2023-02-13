@@ -305,7 +305,7 @@ begin
   res@trXMaxF = x_max
 if (isatt(diag_script_info, "labels")) then
   res@tmXBLabels = diag_script_info@labels
-else 
+else
   res@tmXBLabels = data_all&vars
 end if
 
@@ -313,7 +313,7 @@ end if
   res@tmXBMode = "Explicit"
   if (n_var .gt. 3) then
     res@tmXBLabelFontHeightF = font_height * 0.6
-  else    
+  else
     res@tmXBLabelFontHeightF = font_height
   end if
   ; Set Marker Size to be half of line_length
