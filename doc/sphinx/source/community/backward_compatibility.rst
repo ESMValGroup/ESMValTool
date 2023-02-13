@@ -105,7 +105,7 @@ Not within the scope of this policy are:
    This is covered by the :ref:`broken recipe policy<broken-recipe-policy>`.
 
 Expectations of developers, users & funders
-----------------------------------
+-------------------------------------------
 
 Stakeholders and their expectations and aims:
 
