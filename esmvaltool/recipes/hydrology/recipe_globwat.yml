@@ -79,7 +79,7 @@ diagnostics:
     description: monthly precipitation and potential evaporation of ERA5 & ERA-Interim
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
     variables:
       pr: &var_monthly
         mip: Amon
