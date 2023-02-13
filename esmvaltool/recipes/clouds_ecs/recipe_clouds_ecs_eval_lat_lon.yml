@@ -386,3 +386,14 @@ diagnostics:
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
              tier: 1, start_year: 2000, end_year: 2013}
+
+
+  plot_correlation:
+    title: Collection of correlation values
+    description: Collect and plot correlations
+    scripts:
+      plot_corr:
+        script: clouds_ecs/plot_pattern_corr.py
+        ancestors: ['*_lat_lon/lat_lon']
+        patterns: 'statistic_all_'
+        diag_order: ['clt', 'clivi', 'lwp', 'netcre', 'swcre', 'lwcre']

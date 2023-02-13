@@ -121,9 +121,9 @@ def calculate_rmsd(model_cube, obs_cube):
 
 def calculate_corr(model_cube, obs_cube):
     logger.debug("Computing Correlation")
-    #grid_areas = iris.analysis.cartography.area_weights(model_cube)
-    #corr = pearsonr(model_cube, obs_cube, weights=grid_areas)
-    corr = pearsonr(model_cube, obs_cube)
+    grid_areas = iris.analysis.cartography.area_weights(model_cube)
+    corr = pearsonr(model_cube, obs_cube, weights=grid_areas)
+    #corr = pearsonr(model_cube, obs_cube)
     return corr
 
 
@@ -210,10 +210,11 @@ def read_data(groups, cfg):
             cube.attributes['variable_group'] = group_name
             cube.attributes['dataset'] = attributes['dataset']
 
+            cubes.append(cube)
+
             if attributes['dataset'] == 'MultiModelMean' or group_name == 'OBS':
                 cubes_out.append(cube)
             else:
-                cubes.append(cube)
                 if cfg['plot_each_model']:
                     plot_model(cube, attributes, cfg)
 
@@ -328,6 +329,8 @@ def get_dataframe(cubes, cube_obs):
 
     df = pd.DataFrame(columns=['Dataset', 'Group', 'Statistic', 'Value'])
     idf = 0
+    
+    print(cubes)
 
     for cube in cubes:
         dataset = cube.attributes['dataset']
@@ -384,7 +387,7 @@ def bootstrapping(cubes, cube_obs, all_groups, attributes, cfg):
                     cubes_part[dataset] = cube
                     datasets.append(dataset)
 
-            nsample = 1000
+            nsample = 10
             sample_stat = pd.DataFrame(columns=['Mean', 'Bias', 'RMSD', 'Corr'])
 
             ncubes = len(cubes_part)
@@ -415,7 +418,7 @@ def main(cfg):
     """Run diagnostic."""
     cfg = deepcopy(cfg)
     cfg.setdefault('title_key', 'dataset')
-    cfg.setdefault('plot_each_model', True)
+    cfg.setdefault('plot_each_model', False)
     logger.info("Using key '%s' to create titles for datasets",
                 cfg['title_key'])
 
@@ -452,7 +455,7 @@ def main(cfg):
     attributes['short_name'] = attributes['short_name'] + "_diff"
 
     for cube in cubes_out:
-        if cube.attributes['variable_group'] != 'OBS':
+        if cube.attributes['variable_group'] != 'OBS' or cube.attributes['dataset'] != 'MultiModelMean':
             logger.info("Processing %s of group %s", cube.attributes['dataset'], cube.attributes['variable_group'])
             mean = area_weighted_mean(cube)
             bias = calculate_bias(cube, cube_obs)
