@@ -139,6 +139,16 @@ def _fix_coordinates(cube, definition):
             coord = cube.coord(axis=axis)
             if axis == 'T':
                 coord.convert_units('days since 1850-1-1 00:00:00.0')
+            elif axis == 'Z':
+                if coord.units == "hPa":
+                    coord.convert_units('Pa')
+                else:
+                    try:
+                        coord.convert_units('Pa')
+                    except ValueError as exc:
+                        logger.error("Attempting to convert units for "
+                                     "coordinate %s to Pa", coord)
+                        raise exc
             coord.standard_name = coord_def.standard_name
             coord.var_name = coord_def.out_name
             coord.long_name = coord_def.long_name
@@ -251,7 +261,10 @@ def _extract_variable(in_files, var, cfg, out_dir):
     cube = _fix_time_monthly(cube)
 
     logger.debug("Saving cube\n%s", cube)
-    utils.save_variable(cube, cube.var_name, out_dir, attributes)
+    logger.debug("Setting time dimension to UNLIMITED while saving!")
+    utils.save_variable(cube, cube.var_name,
+                        out_dir, attributes,
+                        unlimited_dimensions=['time'])
     logger.info("Finished CMORizing %s", ', '.join(in_files))
 
 
