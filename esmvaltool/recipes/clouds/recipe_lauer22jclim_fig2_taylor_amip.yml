@@ -54,7 +54,7 @@ diagnostics:
              tier: 2, start_year: 1982, end_year: 2016}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
              tier: 3, start_year: 2003, end_year: 2018}
-          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1',
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, start_year: 1986, end_year: 2014}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1',
              tier: 3, start_year: 1986, end_year: 2014}
@@ -74,7 +74,7 @@ diagnostics:
              tier: 3, start_year: 1982, end_year: 2018}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
              tier: 3, start_year: 2003, end_year: 2018}
-          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1',
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, start_year: 1986, end_year: 2014}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1',
              tier: 3, start_year: 1986, end_year: 2014}
@@ -97,7 +97,7 @@ diagnostics:
              start_year: 1988, end_year: 2016}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
              tier: 3, start_year: 2003, end_year: 2018}
-          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1',
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, start_year: 1986, end_year: 2014}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1',
              tier: 3, start_year: 1986, end_year: 2014}
