@@ -142,7 +142,7 @@ datasets:
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: UKESM1-0-LL, ensemble: r8i1p1f2, grid: gn, tag: model}
 
 observations: &observations
-  - {mip: Amon, dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, tag: observations}
+  - {mip: Amon, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, tag: observations}
 
 preprocessors:
 
