@@ -4,25 +4,23 @@ ESMValTool diagnostic for GLOBMAP LAI 4GST.
 xxxxxxxxxxxxx add text here
 """
 
+import datetime
 import logging
+import numpy as np
+from scipy.stats import linregress
 
 import iris
 import iris.coord_categorisation as icc
-import iris.quickplot as qplt
+#  import iris.quickplot as qplt
 import iris.plot as iplt
 
 import matplotlib.pyplot as plt
-from matplotlib.dates import DateFormatter
+#  from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
 from matplotlib.patches import Patch
-from matplotlib.lines import Line2D
-
-import numpy as np
-import datetime
-from scipy.stats import linregress
 
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger,
+    #  ProvenanceLogger,
     get_plot_filename,
     group_metadata,
     run_diagnostic,
@@ -35,18 +33,17 @@ ARGMAX = iris.analysis.Aggregator("argmax",
                                   units_func=lambda units: 1)
 
 # [regression pattern], id number
-grow_season_types = {'EVG': [[0,0,0,0], 0],
-                     'TGS': [[1,-1,1,-1], 1],
-                     'SGS-S': [[1,1,-1,-1], 2],
-                     'SGS-D': [[-1,-1,1,1], 3],
+grow_season_types = {'EVG': [[0, 0, 0, 0], 0],
+                     'TGS': [[1, -1, 1, -1], 1],
+                     'SGS-S': [[1, 1, -1, -1], 2],
+                     'SGS-D': [[-1, -1, 1, 1], 3],
                      }
-# EVG is defined differently
-
+# EVG is defined differently hence 0 0 0 0 placeholder
 
 fig_fontsizes = {'title': 30,
-                'labels': 24,
-                'ticks': 20,
-                }
+                 'labels': 24,
+                 'ticks': 20,
+                 }
 
 # https://davidmathlogic.com/colorblind 'Wong' colour map
 # from https://www.nature.com/articles/nmeth.1618
@@ -54,10 +51,9 @@ colour_list = ['#000000', '#E69F00', '#56B4E9', '#009E73',
                '#F0E442', '#0072B2', '#D55E00', '#CC79A7'
                ]
 
+
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
-
-    Based on the hydrology diagnostic.
 
     Inputs:
     metadata = List of dictionaries made from the preprocessor config
@@ -80,13 +76,9 @@ def _get_input_cubes(metadata):
     return inputs, ancestors
 
 
-# def _make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config):
-#    """Create and save the output figure.
-#    """
-
-
 def _get_provenance_record(attributes, ancestor_files):
     """Create the provenance record dictionary.
+
     xxxxxxxxxxxxxxxxxx update this to GLOBMAP LAI stuff
     Inputs:
     attributes = xxxxxxx
@@ -99,37 +91,47 @@ def _get_provenance_record(attributes, ancestor_files):
 
     record = {
         'caption': caption,
-        'statistics': ['mean', 'stddev'], # this will need changing
+        'statistics': ['mean', 'stddev'],  # this will need changing
         'domains': ['reg'],
         'plot_types': ['times'],
         'authors': ['king_robert'],
-        # 'references': [],
+        #  'references': [],
         'ancestors': ancestor_files
     }
 
     return record
 
+
 def calc_4gst(obs_mean):
     """
-    data_dict : the loaded_data dictionary
+    Calculate the growing season type.
+
+    Uses the method of Peano to calcuate which of the four growing
+    season types each year is based on the LAI data.
+
+    Inputs:
+    obs_mean = cube of area mean of LAI timeseries
+
+    Outputs:
+    output = 2D array of years & GSTs [[year1, year2, ...], [gst1, gst2, ...]]
     """
 
     list_of_years = obs_mean.coord('year').points
     list_of_times = obs_mean.coord('time').points
-    # use this to be able to index the whole timeseries
+    #  use this to be able to index the whole timeseries
 
     times_of_year_max = obs_mean.aggregated_by('year', iris.analysis.MAX)
 
     output = []
-
     for i, this_year in enumerate(np.unique(list_of_years)):
-        print(i, this_year)
-        if i == 0: continue
-        # this skips the first year as we dont have lai data from before to shift
-        #times_wanted = iris.Constraint(time
+        if i == 0:
+            continue
+        # this skips the first year as we dont have lai data
+        # from before to shift
 
         central_time = times_of_year_max[i].coord('time').points[0]
 
+        # check if need to add extra days to the 182 to make sure
         early = central_time - 182
         late = central_time + 182
 
@@ -137,83 +139,94 @@ def calc_4gst(obs_mean):
         point_list_2 = np.where(list_of_times > early)[0]
         wanted = np.intersect1d(point_list_1, point_list_2)
 
-        X = obs_mean[wanted]
+        obs_wanted = obs_mean[wanted]
+        this_year_points = obs_wanted.coord('time').points
 
-        this_year_points = X.coord('time').points
-        # print(this_year_points)
         this_regress = []
 
         # check for EVG first
-        evgt = (np.max(X.data) - np.min(X.data)) / np.mean(X.data)
-        print(f'evgt test {evgt}')
-        if evgt < 0.25:
+        evgt = ((np.max(obs_wanted.data) - np.min(obs_wanted.data)) / 
+               np.mean(obs_wanted.data))
+        if evgt < 0.25:  # threshold from Peano's paper
             output.append([this_year, grow_season_types['EVG'][1]])
             continue
 
         for j in range(4):
 
-            this_quarter_1 = np.where(this_year_points >= this_year_points[0] + j * 92)
-            this_quarter_2 = np.where(this_year_points <= this_year_points[0] + (j + 1)* 92)
-            # print(this_quarter_2)
+            this_quarter_1 = np.where(this_year_points >= this_year_points[0] +
+                                      j * 92)
+            this_quarter_2 = np.where(this_year_points <= this_year_points[0] +
+                                      (j + 1) * 92)
+
             quarter_points = np.intersect1d(this_quarter_1, this_quarter_2)
-            # print(quarter_points)
-            data = X[quarter_points].data
-            days = X[quarter_points].coord('day_of_year').points
+
+            data = obs_wanted[quarter_points].data
+            days = obs_wanted[quarter_points].coord('day_of_year').points
 
             regress = linregress(days, data)
 
             this_regress.append(np.sign(regress.slope))
 
         for item in grow_season_types.keys():
-            if this_regress==grow_season_types[item][0]:
+            if this_regress == grow_season_types[item][0]:
                 output.append([this_year, grow_season_types[item][1]])
 
-    return np.array(output).transpose()
+    output = np.array(output).transpose()
+
+    return output
 
 
 def plot_lai_gst(obs_data, gst_data):
     """
-    Takes the LAI data and plots the L coloured 4GST
+    Take the LAI data and plot with the coloured 4GST.
+
+    Creates a plot of the whole LAI timeseries.
+    The background shading for each year represents the growing season type.
+
+    Inputs:
+    obs_data = cube of the LAI timeseries
+    gst_data = array of years and GWT numbers
     """
     list_of_years = obs_data.coord('year').points
 
-    fig = plt.figure(figsize=[30,20], dpi=200)
+    fig = plt.figure(figsize=[30, 20], dpi=200)
     ax = fig.add_subplot(111)
 
     iplt.plot(obs_data,
-                  linewidth = 3,
-                  color = 'black',
-                  )
+              linewidth=3,
+              color='black',
+              )
 
     for this_year in np.unique(list_of_years):
         if this_year in gst_data[0]:
             # we have a GST
-            colour_index = gst_data[1][np.where(gst_data[0]==this_year)[0][0]]
+            colour_index = gst_data[1][np.where(gst_data[0] == this_year)[0][0]
+                                       ]
         else:
             # no GST was able to be computed, no reason given
             colour_index = 4
 
-        start = datetime.datetime(this_year,1,1)
+        start = datetime.datetime(this_year, 1, 1)
         end = datetime.datetime(this_year + 1, 1, 1)
 
-        plt.fill_between([start,end],[500,500],
-                         color = colour_list[3 + colour_index],
+        plt.fill_between([start, end], [500, 500],
+                         color=colour_list[3 + colour_index],
                          # want to use the last 5 colours in the list
-                         alpha = 0.4
+                         alpha=0.4
                          )
-        
+
     ax.xaxis.set_major_locator(mdates.YearLocator(base=1))
     ax.xaxis.set_minor_locator(mdates.MonthLocator(interval=6))
 
-    ax.yaxis.set_ticks(range(0,501,50))
+    ax.yaxis.set_ticks(range(0, 501, 50))
 
     ax.tick_params(axis='both',
                    which='major',
                    labelsize=fig_fontsizes['ticks'],
                    rotation=45)
 
-    ax.set_xlim((datetime.datetime(list_of_years[0],1,1),
-                 datetime.datetime(list_of_years[-1]+1,1,1)
+    ax.set_xlim((datetime.datetime(list_of_years[0], 1, 1),
+                 datetime.datetime(list_of_years[-1] + 1, 1, 1)
                  ))
 
     ax.grid(linestyle='--', linewidth=2, color='black')
@@ -223,25 +236,26 @@ def plot_lai_gst(obs_data, gst_data):
 
     fig.suptitle('LAI and 4GST', fontsize=fig_fontsizes['title'])
 
-    legend_elements = [Patch(facecolor=colour_list[3 + 0], edgecolor=None,
-                             label='EVG'),
-                       Patch(facecolor=colour_list[3 + 1], edgecolor=None,
-                             label='TGS'),
-                       Patch(facecolor=colour_list[3 + 2], edgecolor=None,
-                             label='SGS-S'),
-                       Patch(facecolor=colour_list[3 + 3], edgecolor=None,
-                             label='SGS-D'),
-                       Patch(facecolor=colour_list[3 + 4], edgecolor=None,
-                             label='Undef'),
-                   ]
+    legend_elements = [Patch(facecolor=colour_list[3 + 0], edgecolor='black',
+                             label='EVG', alpha=0.4),
+                       Patch(facecolor=colour_list[3 + 1], edgecolor='black',
+                             label='TGS', alpha=0.4),
+                       Patch(facecolor=colour_list[3 + 2], edgecolor='black',
+                             label='SGS-S', alpha=0.4),
+                       Patch(facecolor=colour_list[3 + 3], edgecolor='black',
+                             label='SGS-D', alpha=0.4),
+                       Patch(facecolor=colour_list[3 + 4], edgecolor='black',
+                             label='Undef', alpha=0.4),
+                       ]
 
     ax.legend(handles=legend_elements,
-              bbox_to_anchor=(1.01,1),
-              prop={'size': fig_fontsizes['labels'],}
+              bbox_to_anchor=(1.01, 1),
+              prop={'size': fig_fontsizes['labels']}
               )
 
     plt.savefig(f'lai.png')
     plt.close()
+
 
 def _diagnostic(config):
     """Perform the .......
@@ -260,7 +274,7 @@ def _diagnostic(config):
     input_metadata = config['input_data'].values()
 
     loaded_data = {}
-    ancestor_list = [] # what is this actually used for?
+    ancestor_list = []  # what is this actually used for?
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         cubes, ancestors = _get_input_cubes(metadata)
         loaded_data[dataset] = cubes
@@ -276,16 +290,16 @@ def _diagnostic(config):
     obs_lai = loaded_data['GLOBMAP_LAI']['lairpk']
     icc.add_day_of_year(obs_lai, 'time')
     icc.add_year(obs_lai, 'time')
-    obs_lai_mean = obs_lai.collapsed(['latitude','longitude'],
+    obs_lai_mean = obs_lai.collapsed(['latitude', 'longitude'],
                                      iris.analysis.MEAN)
 
     gst = calc_4gst(obs_lai_mean)
-    print(gst)
     plot_lai_gst(obs_lai_mean, gst)
-    
+
     # Provenance
     # Get this information form the data cubes
     # add this back in using LST diagnostic as template
+
 
 if __name__ == '__main__':
     # always use run_diagnostic() to get the config (the preprocessor
