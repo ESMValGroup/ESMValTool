@@ -12,6 +12,11 @@ import iris.quickplot as qplt
 import iris.plot as iplt
 
 import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter
+import matplotlib.dates as mdates
+from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
+
 import numpy as np
 import datetime
 from scipy.stats import linregress
@@ -37,6 +42,17 @@ grow_season_types = {'EVG': [[0,0,0,0], 0],
                      }
 # EVG is defined differently
 
+
+fig_fontsizes = {'title': 30,
+                'labels': 24,
+                'ticks': 20,
+                }
+
+# https://davidmathlogic.com/colorblind 'Wong' colour map
+# from https://www.nature.com/articles/nmeth.1618
+colour_list = ['#000000', '#E69F00', '#56B4E9', '#009E73',
+               '#F0E442', '#0072B2', '#D55E00', '#CC79A7'
+               ]
 
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
@@ -73,22 +89,17 @@ def _get_provenance_record(attributes, ancestor_files):
     """Create the provenance record dictionary.
     xxxxxxxxxxxxxxxxxx update this to GLOBMAP LAI stuff
     Inputs:
-    attributes = dictionary of ensembles/models used, the region bounds
-                 and years of data used.
+    attributes = xxxxxxx
     ancestor_files = list of data files used by the diagnostic.
 
     Outputs:
     record = dictionary of provenance records.
     """
-    caption = "Timeseries of ESA CCI LST difference to mean of "\
-        + "model ensembles calculated over region bounded by latitude "\
-        + "{lat_south} to {lat_north}, longitude {lon_west} to {lon_east} "\
-        + "and for model/ensembles {ensembles}. "\
-        + "Shown for years {start_year} to {end_year}.".format(**attributes)
+    caption = "xxxxxxx do this"
 
     record = {
         'caption': caption,
-        'statistics': ['mean', 'stddev'],
+        'statistics': ['mean', 'stddev'], # this will need changing
         'domains': ['reg'],
         'plot_types': ['times'],
         'authors': ['king_robert'],
@@ -125,13 +136,8 @@ def calc_4gst(obs_mean):
         point_list_1 = np.where(list_of_times < late)[0]
         point_list_2 = np.where(list_of_times > early)[0]
         wanted = np.intersect1d(point_list_1, point_list_2)
-        
 
         X = obs_mean[wanted]
-
-        qplt.plot(X, linewidth=4, color='k')
-
-        cols = ['red', 'green', 'blue', 'magenta']
 
         this_year_points = X.coord('time').points
         # print(this_year_points)
@@ -154,54 +160,85 @@ def calc_4gst(obs_mean):
             data = X[quarter_points].data
             days = X[quarter_points].coord('day_of_year').points
 
-            # qplt.plot(X[quarter_points], '--', linewidth=2, color=cols[j])
-
             regress = linregress(days, data)
-
-            # if regress.slope <=0:
-            #     col = 'red'
-            # else:
-            #     col ='blue'
-
-            # qplt.plot(X[quarter_points] * 0, linewidth=10, color=col)
 
             this_regress.append(np.sign(regress.slope))
 
         for item in grow_season_types.keys():
             if this_regress==grow_season_types[item][0]:
                 output.append([this_year, grow_season_types[item][1]])
-        print('*****')
-
 
     return np.array(output).transpose()
 
+
 def plot_lai_gst(obs_data, gst_data):
     """
-    Takes the lai data and plots, coloured 4GST
+    Takes the LAI data and plots the L coloured 4GST
     """
-
-    gst_colours = ['red','green','blue','magenta','black']
-    # 0-3 as per dictionary, 4 is for no info
-
     list_of_years = obs_data.coord('year').points
 
+    fig = plt.figure(figsize=[30,20], dpi=200)
+    ax = fig.add_subplot(111)
 
-    plt.figure()
+    iplt.plot(obs_data,
+                  linewidth = 3,
+                  color = 'black',
+                  )
+
     for this_year in np.unique(list_of_years):
-
-        print(f'xxxxxxxxxxxxx {this_year}')
-    
         if this_year in gst_data[0]:
             # we have a GST
             colour_index = gst_data[1][np.where(gst_data[0]==this_year)[0][0]]
         else:
+            # no GST was able to be computed, no reason given
             colour_index = 4
 
-        iplt.plot(obs_data.extract(iris.Constraint(year=this_year)),
-                  linewidth = 3,
-                  color = gst_colours[colour_index]
-                  )
+        start = datetime.datetime(this_year,1,1)
+        end = datetime.datetime(this_year + 1, 1, 1)
 
+        plt.fill_between([start,end],[500,500],
+                         color = colour_list[3 + colour_index],
+                         # want to use the last 5 colours in the list
+                         alpha = 0.4
+                         )
+        
+    ax.xaxis.set_major_locator(mdates.YearLocator(base=1))
+    ax.xaxis.set_minor_locator(mdates.MonthLocator(interval=6))
+
+    ax.yaxis.set_ticks(range(0,501,50))
+
+    ax.tick_params(axis='both',
+                   which='major',
+                   labelsize=fig_fontsizes['ticks'],
+                   rotation=45)
+
+    ax.set_xlim((datetime.datetime(list_of_years[0],1,1),
+                 datetime.datetime(list_of_years[-1]+1,1,1)
+                 ))
+
+    ax.grid(linestyle='--', linewidth=2, color='black')
+
+    ax.set_xlabel('Date', fontsize=fig_fontsizes['labels'])
+    ax.set_ylabel('LAI', fontsize=fig_fontsizes['labels'])
+
+    fig.suptitle('LAI and 4GST', fontsize=fig_fontsizes['title'])
+
+    legend_elements = [Patch(facecolor=colour_list[3 + 0], edgecolor=None,
+                             label='EVG'),
+                       Patch(facecolor=colour_list[3 + 1], edgecolor=None,
+                             label='TGS'),
+                       Patch(facecolor=colour_list[3 + 2], edgecolor=None,
+                             label='SGS-S'),
+                       Patch(facecolor=colour_list[3 + 3], edgecolor=None,
+                             label='SGS-D'),
+                       Patch(facecolor=colour_list[3 + 4], edgecolor=None,
+                             label='Undef'),
+                   ]
+
+    ax.legend(handles=legend_elements,
+              bbox_to_anchor=(1.01,1),
+              prop={'size': fig_fontsizes['labels'],}
+              )
 
     plt.savefig(f'lai.png')
     plt.close()
