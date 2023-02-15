@@ -99,7 +99,7 @@ def run_my_diagnostic(cfg):
             ])
             iris.save(cube_list, diagnostic_file)
         elif key == "HadISST":
-            cube_list = iris.cube.CubeList([sic_bK, sic_ok])
+            cube_list = iris.cube.CubeList([sic_bk, sic_ok])
             iris.save(cube_list, diagnostic_file)
         else:
             cube_list = iris.cube.CubeList([
