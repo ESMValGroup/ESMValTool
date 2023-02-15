@@ -304,6 +304,7 @@ User settings in recipe
    * labels: List of labels for each variable on the x-axis
    * model_spread: if True, model spread is shaded
    * plot_median: if True, median is plotted
+   * project_order: give order of projects 
 
 
 Variables
