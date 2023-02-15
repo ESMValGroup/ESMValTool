@@ -763,6 +763,7 @@ diagnostics:
       cor_collect:
         script: ipcc_ar6/corr_pattern_collect.ncl
         ancestors: ['*/pattern_cor']
+        project_order: ['CMIP3', 'CMIP5', 'CMIP6']
         diag_order: ['tas', 'pr', 'rsut', 'rlut', 'swcre',
                      'lwcre', 'psl', 'ts', 'ta850', 'ta200',
                      'ua850', 'ua200', 'va850', 'va200', 'zg500', 'hus400']

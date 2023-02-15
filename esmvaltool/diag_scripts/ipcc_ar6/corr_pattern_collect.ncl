@@ -217,6 +217,15 @@ begin
   ; For now just CMIP projects
   c_projects = str_match_ic(data_all&models@project, "CMIP")
   projects = get_unique_entries(c_projects)
+  if (isatt(diag_script_info, "project_order")) then
+    project_order = diag_script_info@project_order
+    if (dimsizes(project_order) .eq. dimsizes(projects)) then
+      projects := project_order
+    else
+      error_msg("w", DIAG_SCRIPT, "", "specified order of projects " + \ 
+                "cannot be applied, invalid number of projects")
+    end if
+  end if
   n_var = dimsizes(data_all&vars)
 
   nr_projects = dimsizes(projects)
