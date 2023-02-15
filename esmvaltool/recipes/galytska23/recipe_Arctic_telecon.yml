@@ -331,4 +331,4 @@ diagnostics:
           - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly,  version: 1, tier: 2}
     scripts:
       output:
-        script: galytska22/select_actors_for_tigramite.py
+        script: galytska23/select_actors_for_tigramite.py
