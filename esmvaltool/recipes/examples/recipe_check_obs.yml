@@ -303,6 +303,18 @@ diagnostics:
     scripts: null
 
 
+  ESDC:
+    description: ESDC check
+    variables:
+      tas:
+      tasmin:
+      tasmax:
+    additional_datasets:
+      - {dataset: ESDC, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 3.0.1,
+         start_year: 1979, end_year: 2021}
+    scripts: null
+
   ESRL:
     description: ESRL check
     variables:
@@ -467,7 +479,7 @@ diagnostics:
         mip: OImon
     additional_datasets:
       - {dataset: HadISST, project: OBS, tier: 2,
-         type: reanaly, version: 1, start_year: 1870, end_year: 2017}
+         type: reanaly, version: 1, start_year: 1870, end_year: 2021}
     scripts: null
 
 
@@ -547,10 +559,14 @@ diagnostics:
     scripts: null
 
 
-  NCEP:
-    description: NCEP check
+  NCEP-NCAR-R1:
+    description: NCEP-NCAR-R1 check
     variables:
+      clt:
+        mip: Amon
       hur:
+        mip: Amon
+      hurs:
         mip: Amon
       hus:
         mip: Amon
@@ -560,11 +576,33 @@ diagnostics:
       pr_day:
         short_name: pr
         mip: day
-      rlut:
+      prw:
+        mip: Amon
+      psl:
+        mip: Amon
+      rlut_day:
+        short_name: rlut
         mip: day
+      rlut_month:
+        short_name: rlut
+        mip: Amon
+      rlutcs:
+        mip: Amon
+      rsut:
+        mip: Amon
+      rsutcs:
+        mip: Amon
+      sfcWind:
+        mip: Amon
       ta:
         mip: Amon
       tas:
+        mip: Amon
+      tasmax:  
+        mip: Amon
+      tasmin:  
+        mip: Amon
+      ts:
         mip: Amon
       ua_month:
         short_name: ua
@@ -583,8 +621,36 @@ diagnostics:
       zg:
         mip: Amon
     additional_datasets:
-      - {dataset: NCEP, project: OBS, tier: 2,
-         type: reanaly, version: 1, start_year: 1948, end_year: 2018}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, tier: 2,
+         type: reanaly, version: 1, start_year: 1948, end_year: 2021}
+    scripts: null
+
+
+  NCEP-DOE-R2:
+    description: NCEP-DOE-R2 check
+    variables:
+      clt:
+      hur:
+      prw: 
+      ta:
+    additional_datasets:
+      - {dataset: NCEP-DOE-R2, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 2, start_year: 1979, end_year: 2021}
+    scripts: null
+
+
+  NOAA-CIRES-20CR:
+    description: NOAA-CIRES-20CR check
+    variables:
+      clt:
+      clwvi:
+      hus:
+      prw:
+      rsut:
+      rlut:
+    additional_datasets:
+      - {dataset: NOAA-CIRES-20CR, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: v2, start_year: 1871, end_year: 2012}
     scripts: null
 
 
@@ -730,6 +796,26 @@ diagnostics:
              type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
           - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
              type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
+    scripts: null
+
+
+  TCOM-CH4:
+    description: TCOM-CH4 check
+    variables:
+      ch4:
+    additional_datasets:
+      - {dataset: TCOM-CH4, project: OBS6, mip: Amon, frequency: day, tier: 2,
+         type: reanaly, version: '1.0', start_year: 1991, end_year: 2021}
+    scripts: null
+
+
+  TCOM-N2O:
+    description: TCOM-N2O check
+    variables:
+      n2o:
+    additional_datasets:
+      - {dataset: TCOM-N2O, project: OBS6, mip: Amon, frequency: day, tier: 2,
+         type: reanaly, version: '1.0', start_year: 1991, end_year: 2021}
     scripts: null
 
 
@@ -1421,7 +1507,7 @@ diagnostics:
         mip: fx
     additional_datasets:
       - {dataset: ERA5, project: native6, tier: 3, type: reanaly,
-         version: 1, start_year: 1990, end_year: 1990}
+         version: v1, start_year: 1990, end_year: 1990}
     scripts: null
 
 

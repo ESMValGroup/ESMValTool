@@ -26,11 +26,25 @@ following figures from `Eyring et al. (2021)`_ can currently be reproduced:
 
     * Figure 3.5: Temporal Variability Of Near-Surface Air Temperature
 
+    * Figure 3.9: Anomaly Of Near-Surface Air Temperature - Attribution
+
     * Figure 3.13: Precipitation - Model Bias
 
     * Figure 3.15: Precipitation Anomaly
 
+    * Figure 3.19: Speed-Up Of Zonal Mean Wind
+
     * Figure 3.42: Relative Model Performance
+
+To reproduce Fig. 3.9 you need the shapefile of the `AR6 reference regions
+<https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions>`_
+(`Iturbide et al., 2020 <https://doi.org/10.5194/essd-12-2959-2020>`_).
+Please download the file `IPCC-WGI-reference-regions-v4_shapefile.zip
+<https://github.com/SantanderMetGroup/ATLAS/blob/v1.6/reference-regions/IPCC-WGI-reference-regions-v4_shapefile.zip>`_,
+unzip and store it in `<auxiliary_data_dir>/IPCC-regions/` (the `auxiliary_data_dir`
+is defined in the `config-user.yml
+<https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#user-configuration-file>`_
+file).
 
 .. _`Eyring et al., 2021`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
 .. _`Eyring et al. (2021)`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
@@ -42,6 +56,8 @@ Available recipes and diagnostics
 Recipes are stored in esmvaltool/recipes/ipccwg1ar6ch3/
 
     * recipe_ipccwg1ar6ch3_atmosphere.yml
+    * recipe_ipccwg1ar6ch3_fig_3_9.yml
+    * recipe_ipccwg1ar6ch3_fig_3_19.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_a.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_b.yml
 
@@ -61,6 +77,10 @@ Diagnostics are stored in esmvaltool/diag_scripts/
 
     * ipcc_ar6/zonal_st_dev.ncl
 
+    Fig. 3.9:
+
+    * ipcc_ar6/tas_anom_damip.ncl
+
     Fig. 3.13:
 
     * ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl: See :ref:`here:<ch12_calc_IAV_for_stippandhatch.ncl>`.
@@ -69,6 +89,10 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     Fig. 3.15:
 
     * ipcc_ar6/precip_anom.ncl
+
+    Fig. 3.19:
+
+    * ipcc_ar6/zonal_westerly_winds.ncl
 
     Fig. 3.42:
 
@@ -109,6 +133,7 @@ User settings in recipe
    * variable "sos": diag_scripts/shared/plot/rgb/ipcc-ar6_misc_seq_1.rgb,
      diag_scripts/shared/plot/rgb/ipcc-ar6_misc_div.rgb
 
+
 #. Script ipcc_ar6/tas_anom.ncl
 
    *Required settings for script*
@@ -139,6 +164,28 @@ User settings in recipe
 
    * e.g. diag_scripts/shared/plot/styles/cmip5.style
 
+
+#. Script ipcc_ar6/tas_anom_damip.ncl
+
+   *Required settings for script*
+
+   * start_year: start year in figure
+   * end_year: end year in figure
+   * panels: list of variable blocks for each panel 
+
+   *Optional settings for script*
+
+   * ref_start: start year of reference period for anomalies
+   * ref_end: end year of reference period for anomalies
+   * ref_mask: if true, model fields will be masked by reference fields
+   * plot_units: variable unit for plotting
+   * y-min: set min of y-axis
+   * y-max: set max of y-axis
+   * header: title for each panel
+   * title: name of region as part of filename
+   * legend: set labels for optional output of a legend in an extra file
+
+
 #. Script ipcc_ar6/tsline_collect.ncl
 
    *Optional settings for script*
@@ -159,6 +206,7 @@ User settings in recipe
    * reference_dataset: reference dataset; REQUIRED when calculating
      anomalies
 
+
 #. Script ipcc_ar6/zonal_st_dev.ncl
 
    *Required settings for script*
@@ -176,6 +224,7 @@ User settings in recipe
 
    * reference_dataset: reference dataset; REQUIRED when calculating
      anomalies
+
 
 #. Script ipcc_ar6/precip_anom.ncl
 
@@ -198,9 +247,32 @@ User settings in recipe
    * y_min: set min of y-axis
    * y_max: set max of y-axis
 
+
+
+#. Script ipcc_ar6/zonal_westerly_winds.ncl
+
+   *Optional settings for variables*
+
+   * reference_dataset: reference dataset; REQUIRED when calculating
+     anomalies
+
+   *Optional settings for script*
+
+   * e13fig12_start_year: year when the climatology calculation starts
+     (default: start_year of var)
+   * e13fig12_end_year: year when the climatology calculation ends
+     (default: end_year of var)
+   * e13fig12_multimean: multimodel mean (default: False)
+   * e13fig12_exp_MMM: name of the experiments for the MMM
+     (required if @e13fig12_multimean = True)
+   * e13fig12_season: season (default: ANN)
+
+
+
 #. Script perfmetrics/perfmetrics_main.ncl
 
    See :ref:`here<perf-main.ncl>`.
+
 
 #. Script perfmetrics/perfmetrics_collect.ncl
 
@@ -265,7 +337,7 @@ Observations and reformat scripts
 * Landschuetzer2016 (fgco2 - esmvaltool/cmorizers/data/formatters/datasets/landschuetzer2016.py)
 * LAI3g (lai - esmvaltool/cmorizers/data/formatters/datasets/lai3g.py)
 * MTE (gpp - esmvaltool/cmorizers/data/formatters/datasets/mte.py)
-* NCEP (ta, tas, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep.ncl)
+* NCEP-NCAR-R1 (ta, tas, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep_ncar_r1.py)
 * NOAAGlobalTemp (tasa - esmvaltool/cmorizers/data/formatters/datasets/noaaglobaltemp.py)
 
 
@@ -354,6 +426,21 @@ Example plots
    Observational and model datasets were detrended by removing the
    least-squares quadratic trend. 
 
+.. figure::  /recipes/figures/ipccwg1ar6ch3/tas_anom_damip_global_1850-2020.png
+   :align:   center
+
+   Figure 3.9: Global, land and ocean annual mean near-surface air
+   temperature anomalies in CMIP6 models and observations. Timeseries are
+   shown for CMIP6 historical anthropogenic and natural (brown) natural-only
+   (green), greenhouse gas only (grey) and aerosol only (blue) simulations
+   (multi-model means shown as thick lines, and shaded ranges between the 5th
+   and 95th percentiles) and for HadCRUT5 (black). All models have been
+   subsampled using the HadCRUT5 observational data mask. Temperature
+   anomalies are shown relative to 1950-2010 for Antarctica and relative to
+   1850-1900 for other continents. CMIP6 historical simulations are expanded by
+   the SSP2-4.5 scenario simulations. All available ensemble members were used.
+   Regions are defined by Iturbide et al. (2020). 
+
 .. figure::  /recipes/figures/ipccwg1ar6ch3/model_bias_pr_annualclim_CMIP6.png
    :align:   center
 
@@ -398,6 +485,18 @@ Example plots
    mean precipitation rate (mm day–1) of GHCN version 2 for the years 1950–2014
    over land areas used to compute the plots. 
 
+.. figure::  /recipes/figures/ipccwg1ar6ch3/zonal_westerly_winds.png
+   :align:   center
+
+   Figure 3.19: Long-term mean (thin black contours) and linear trend (colour)
+   of zonal mean December-January-February zonal winds from 1985 to 2014
+   in the Southern Hemisphere. The figure shows (a) ERA5 and (b) the CMIP6
+   multi-model mean (58 CMIP6 models). The solid contours show positive
+   (westerly) and zero long-term mean zonal wind, and the dashed contours show
+   negative (easterly) long-term mean zonal wind. Only one ensemble member per
+   model is included. Figure is modified from Eyring et al. (2013), their
+   Figure 12.
+
 .. figure::  /recipes/figures/ipccwg1ar6ch3/fig_3_42_a.png
    :align:   center
 
@@ -409,8 +508,9 @@ Example plots
    diagonal split of a grid square shows the relative error with respect to the
    reference data set (lower right triangle) and an additional data set (upper
    left triangle). Reference/additional datasets are from top to bottom in (a):
-   ERA5/NCEP, GPCP-SG/GHCN, CERES-EBAF, CERES-EBAF, CERES-EBAF, CERES-EBAF,
-   JRA-55/ERA5, ESACCI-SST/HadISST, ERA5/NCEP, ERA5/NCEP, ERA5/NCEP, ERA5/NCEP,
-   ERA5/NCEP, ERA5/NCEP, AIRS/ERA5, ERA5/NCEP. White boxes are used when data
-   are not available for a given model and variable. Figure is updated and
-   expanded from Bock et al. (2020).
+   ERA5/NCEP-NCAR-R1, GPCP-SG/GHCN, CERES-EBAF, CERES-EBAF, CERES-EBAF,
+   CERES-EBAF, JRA-55/ERA5, ESACCI-SST/HadISST, ERA5/NCEP-NCAR-R1,
+   ERA5/NCEP-NCAR-R1, ERA5/NCEP-NCAR-R1, ERA5/NCEP-NCAR-R1, ERA5/NCEP-NCAR-R1,
+   ERA5/NCEP-NCAR-R1, AIRS/ERA5, ERA5/NCEP-NCAR-R1. White boxes are used when
+   data are not available for a given model and variable. Figure is updated 
+   and expanded from Bock et al. (2020).
