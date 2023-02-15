@@ -223,7 +223,7 @@ begin
     if (dimsizes(project_order) .eq. dimsizes(projects)) then
       projects := project_order
     else
-      error_msg("w", DIAG_SCRIPT, "", "specified order of projects " + \ 
+      error_msg("w", DIAG_SCRIPT, "", "specified order of projects " + \
                 "cannot be applied, invalid number of projects")
     end if
   end if
