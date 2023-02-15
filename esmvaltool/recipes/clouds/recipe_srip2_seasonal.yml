@@ -1,4 +1,4 @@
-# recipe_srip2_interann.yml
+# recipe_srip2_seasonal.yml
 ---
 documentation:
   title: S-RIP2 cloud climatologies
@@ -198,8 +198,4 @@ diagnostics:
       seasswcre:
         <<: *settings5
         var: swcre
-        epsilon: 1.0
-      seasprw:
-        <<: *settings5
-        var: prw
         epsilon: 1.0
