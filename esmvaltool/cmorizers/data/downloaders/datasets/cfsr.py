@@ -60,6 +60,11 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                                  "hur_Amon_reanalysis_CFSR_"
                                  f"{year}01-{year}12.nc",
                                  wget_options=[])
+        downloader.download_file(url +
+                                 "wap/"
+                                 "wap_Amon_reanalysis_CFSR_"
+                                 f"{year}01-{year}12.nc",
+                                 wget_options=[])
         loop_date += relativedelta.relativedelta(years=1)
 
     downloader.download_file(url +
@@ -83,4 +88,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.download_file(url +
                              "rsutcs/"
                              "rsutcs_Amon_reanalysis_CFSR_197901-201912.nc",
+                             wget_options=[])
+    downloader.download_file(url +
+                             "ts/"
+                             "ts_Amon_reanalysis_CFSR_197901-201912.nc",
                              wget_options=[])

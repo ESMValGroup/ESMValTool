@@ -62,6 +62,8 @@ diagnostics:
       rlutcs:
       rsut:
       rsutcs:
+      ts:
+      wap:
     additional_datasets:
       - {dataset: CFSR, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: 1, start_year: 1979, end_year: 2019}

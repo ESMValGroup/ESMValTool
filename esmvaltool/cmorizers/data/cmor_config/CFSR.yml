@@ -12,43 +12,54 @@ attributes:
     '' 
 # Variables to cmorize
 variables:
-  clt_month:
-    short_name: clt
+  # clt_month:
+    # short_name: clt
+    # mip: Amon
+    # raw: clt
+    # file: 'clt_Amon_reanalysis_CFSR_197901-201912.nc'
+  # hus_month:
+    # short_name: hus
+    # mip: Amon
+    # raw: hus
+    # file: 'hus_Amon_reanalysis_CFSR_[0-9]{4}01\-[0-9]{4}12.nc'
+  # hur_month:
+    # short_name: hur
+    # mip: Amon
+    # raw: hur
+    # file: 'hur_Amon_reanalysis_CFSR_[0-9]{4}01\-[0-9]{4}12.nc'
+  # prw_month:
+    # short_name: prw
+    # mip: Amon
+    # raw: prw
+    # file: 'prw_Amon_reanalysis_CFSR_197901-201912.nc'
+  # rlut_month:
+    # short_name: rlut
+    # mip: Amon
+    # raw: rlut
+    # file: 'rlut_Amon_reanalysis_CFSR_197901-201912.nc'
+  # rlutcs_month:
+    # short_name: rlutcs
+    # mip: Amon
+    # raw: rlutcs
+    # file: 'rlutcs_Amon_reanalysis_CFSR_197901-201912.nc'
+  # rsut_month:
+    # short_name: rsut
+    # mip: Amon
+    # raw: rsut
+    # file: 'rsut_Amon_reanalysis_CFSR_197901-201912.nc'
+  # rsutcs_month:
+    # short_name: rsutcs
+    # mip: Amon
+    # raw: rsutcs
+    # file: 'rsutcs_Amon_reanalysis_CFSR_197901-201912.nc'
+  ts_month:
+    short_name: ts
     mip: Amon
-    raw: clt
-    file: 'clt_Amon_reanalysis_CFSR_197901-201912.nc'
-  hus_month:
-    short_name: hus
+    raw: ts
+    file: 'ts_Amon_reanalysis_CFSR_197901-201912.nc'
+  wap_month:
+    short_name: wap
     mip: Amon
-    raw: hus
-    file: 'hus_Amon_reanalysis_CFSR_[0-9]{4}01\-[0-9]{4}12.nc'
-  hur_month:
-    short_name: hur
-    mip: Amon
-    raw: hur
-    file: 'hur_Amon_reanalysis_CFSR_[0-9]{4}01\-[0-9]{4}12.nc'
-  prw_month:
-    short_name: prw
-    mip: Amon
-    raw: prw
-    file: 'prw_Amon_reanalysis_CFSR_197901-201912.nc'
-  rlut_month:
-    short_name: rlut
-    mip: Amon
-    raw: rlut
-    file: 'rlut_Amon_reanalysis_CFSR_197901-201912.nc'
-  rlutcs_month:
-    short_name: rlutcs
-    mip: Amon
-    raw: rlutcs
-    file: 'rlutcs_Amon_reanalysis_CFSR_197901-201912.nc'
-  rsut_month:
-    short_name: rsut
-    mip: Amon
-    raw: rsut
-    file: 'rsut_Amon_reanalysis_CFSR_197901-201912.nc'
-  rsutcs_month:
-    short_name: rsutcs
-    mip: Amon
-    raw: rsutcs
-    file: 'rsutcs_Amon_reanalysis_CFSR_197901-201912.nc'
+    raw: wap
+    file: 'wap_Amon_reanalysis_CFSR_[0-9]{4}01\-[0-9]{4}12.nc'
+
