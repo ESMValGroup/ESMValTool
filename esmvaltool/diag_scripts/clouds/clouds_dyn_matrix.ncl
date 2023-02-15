@@ -821,25 +821,27 @@ begin
   ; write relative differences of the probabilities (count) to netcdf
   ; ----------------------------------------------------------------------
 
-  ref = where(count(ref_ind, :, :) .gt. 1.0e-3, count(ref_ind, :, :), \
-              count@_FillValue)
-  if (dimsizes(idxmod) .gt. 1) then
-    modavg = dim_avg_n_Wrap(count(idxmod, :, :), 0)
-  else
-    modavg = count(idxmod, :, :)
+  if (idxmod(0) .ge. 0) then
+    ref = where(count(ref_ind, :, :) .gt. 1.0e-3, count(ref_ind, :, :), \
+                count@_FillValue)
+    if (dimsizes(idxmod) .gt. 1) then
+      modavg = dim_avg_n_Wrap(count(idxmod, :, :), 0)
+    else
+      modavg = count(idxmod, :, :)
+    end if
+    modavg = where(modavg .gt. 1.0e-3, modavg, modavg@_FillValue)
+
+    diff = modavg
+    diff = (diff - ref) / ref * 100.0
+
+    nc_filename3 = work_dir + "clouds_scatter_prob_" + var_x + "_" + var_y + \
+      "_mmm-ref-reldiff" + filename_add + ".nc"
+
+    diff@var_long_name = "(count(MMM) - count(REF)) / count(REF) * 100%"
+    diff@var_units = "%"
+
+    nc_outfile3 = ncdf_write(diff, nc_filename3)
   end if
-  modavg = where(modavg .gt. 1.0e-3, modavg, modavg@_FillValue)
-
-  diff = modavg
-  diff = (diff - ref) / ref * 100.0
-
-  nc_filename3 = work_dir + "clouds_scatter_prob_" + var_x + "_" + var_y + \
-    "_mmm-ref-reldiff" + filename_add + ".nc"
-
-  diff@var_long_name = "(count(MMM) - count(REF)) / count(REF) * 100%"
-  diff@var_units = "%"
-
-  nc_outfile3 = ncdf_write(diff, nc_filename3)
 
   leave_msg(DIAG_SCRIPT, "")
 
