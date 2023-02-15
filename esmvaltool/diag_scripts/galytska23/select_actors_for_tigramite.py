@@ -2,7 +2,6 @@
 
 # to manipulate iris cubes
 import iris
-import numpy as np
 from esmvalcore.preprocessor import (
     anomalies,
     area_statistics,
@@ -14,7 +13,6 @@ from esmvalcore.preprocessor import (
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
-    save_data,
 )
 from esmvaltool.diag_scripts.shared._base import get_diagnostic_filename
 
@@ -70,23 +68,23 @@ def run_my_diagnostic(cfg):
                 tas_sib = iris.load_cube(item['filename'])
                 tas_sib.var_name = 'Temperature_Sib'
             elif item['preprocessor'] == 'pressure_ural':
-                psl_Ural = slp(item)
-                psl_Ural.var_name = 'Psl_Ural'
+                psl_ural = slp(item)
+                psl_ural.var_name = 'Psl_Ural'
             elif item['preprocessor'] == 'pressure_sib':
-                psl_Sib = slp(item)
-                psl_Sib.var_name = 'Psl_Sib'
+                psl_sib = slp(item)
+                psl_sib.var_name = 'Psl_Sib'
             elif item['preprocessor'] == 'pressure_aleut':
-                psl_Aleut = slp(item)
-                psl_Aleut.var_name = 'Psl_Aleut'
+                psl_aleut = slp(item)
+                psl_aleut.var_name = 'Psl_Aleut'
             elif item['preprocessor'] == 'zonal_wind':
                 zon_wind = iris.load_cube(item['filename'])
                 zon_wind.var_name = 'zonal_wind'
             elif item['preprocessor'] == 'bk_ice':
-                sic_BK = iris.load_cube(item['filename'])
-                sic_BK.var_name = 'BK_sic'
+                sic_bk = iris.load_cube(item['filename'])
+                sic_bk.var_name = 'BK_sic'
             elif item['preprocessor'] == 'ok_ice':
-                sic_Ok = iris.load_cube(item['filename'])
-                sic_Ok.var_name = 'Ok_sic'
+                sic_ok = iris.load_cube(item['filename'])
+                sic_ok.var_name = 'Ok_sic'
             elif item['preprocessor'] == 'heat_flux':
                 var = iris.load_cube(item['filename'])
                 var_avg = area_statistics(var, operator='mean')
@@ -96,17 +94,17 @@ def run_my_diagnostic(cfg):
         hf = calculate_heat_flux(tmp_list)
         if key == "ERA5":
             cube_list = iris.cube.CubeList([
-                pv, tas, tas_baffin, tas_sib, psl_Ural, psl_Sib, psl_Aleut,
+                pv, tas, tas_baffin, tas_sib, psl_ural, psl_sib, psl_aleut,
                 zon_wind, hf
             ])
             iris.save(cube_list, diagnostic_file)
         elif key == "HadISST":
-            cube_list = iris.cube.CubeList([sic_BK, sic_Ok])
+            cube_list = iris.cube.CubeList([sic_bK, sic_ok])
             iris.save(cube_list, diagnostic_file)
         else:
             cube_list = iris.cube.CubeList([
-                pv, tas, tas_baffin, tas_sib, psl_Ural, psl_Sib, psl_Aleut,
-                zon_wind, hf, sic_BK, sic_Ok
+                pv, tas, tas_baffin, tas_sib, psl_ural, psl_sib, psl_aleut,
+                zon_wind, hf, sic_bk, sic_ok
             ])
             iris.save(cube_list, diagnostic_file)
 
