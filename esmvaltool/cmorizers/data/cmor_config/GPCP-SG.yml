@@ -1,0 +1,18 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: GPCP-SG
+  version: '2.3'
+  tier: 2
+  modeling_realm: atmos
+  project_id: OBS
+  source: 'https://psl.noaa.gov/data/gridded/data.gpcp.html'
+  reference: 'gpcp-sg'
+
+# Variables to cmorize
+variables:
+  pr:
+    filename: precip.mon.mean.nc
+    mip: Amon
+    raw_name: precip
+    raw_units: 'mm/day'
