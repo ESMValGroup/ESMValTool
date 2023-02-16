@@ -2,20 +2,22 @@
 import logging
 from copy import deepcopy
 from pathlib import Path
+from pprint import pformat
 
 import iris
 import matplotlib.pyplot as plt
+from matplotlib import colors
+from matplotlib.ticker import FormatStrFormatter, NullFormatter
 
-from esmvaltool.diag_scripts.mlr.plot import unify_time_coord
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     get_plot_filename,
     group_metadata,
     run_diagnostic,
+    select_metadata,
 )
 
 logger = logging.getLogger(Path(__file__).stem)
-
 
 def get_plot_kwargs(cfg, dataset, **kwargs):
     """Get plot kwargs for different datasets."""
