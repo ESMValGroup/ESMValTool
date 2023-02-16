@@ -111,10 +111,10 @@ def main(cfg):
 
     # Plot all datasets in single figure
     (fig, basename) = plot_dataset_without_ref(cfg, dataset)
-            caption = (f"timeseries {dataset['long_name']} of dataset "
-                       f"{dataset['dataset']} (project {dataset['project']}) "
-                       f"from {dataset['start_year']} to "
-                       f"{dataset['end_year']}.")
+    caption = (f"timeseries {dataset['long_name']} of dataset "
+               f"{dataset['dataset']} (project {dataset['project']}) "
+               f"from {dataset['start_year']} to "
+               f"{dataset['end_year']}.")
 
     # Plot appearance
     long_name = input_data[0]['long_name']
