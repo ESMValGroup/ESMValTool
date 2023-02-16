@@ -112,6 +112,7 @@ def main(cfg):
     plt.figure(figsize=(8, 4), dpi=150)
 
     # Plot all datasets in single figure
+    dataset=input_data
     (fig, basename) = plot_dataset_without_ref(cfg, dataset)
     caption = (f"timeseries {dataset['long_name']} of dataset "
                f"{dataset['dataset']} (project {dataset['project']}) "
