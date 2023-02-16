@@ -7,6 +7,9 @@ from pprint import pformat
 import iris
 import matplotlib.pyplot as plt
 from matplotlib import colors
+
+from esmvaltool.diag_scripts.mlr.plot import unify_time_coord
+
 from matplotlib.ticker import FormatStrFormatter, NullFormatter
 
 from esmvaltool.diag_scripts.shared import (
