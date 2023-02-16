@@ -45,22 +45,15 @@ def _fix_coords(cube, filepath):
     """Fix coordinates."""
     utils.fix_dim_coordnames(cube)
 
-    # Time
-    cube.coord('time').guess_bounds()
-
-    # Latitude
-    #utils.flip_dim_coord(cube, 'latitude')
-    cube.coord('latitude').guess_bounds()
-
-    # Longitude
-    #cube.coord('longitude').points = [180.0]
-    #cube.coord('longitude').bounds = [[0.0, 360]]
-
     # Bounds
+
+    # Time
     time_bnds = iris.load_cube(filepath, NameConstraint(var_name='time_bnds'))
     cube.coord('time').bounds = time_bnds.core_data()
+    # Latitude
     lat_bnds = iris.load_cube(filepath, NameConstraint(var_name='lat_bnds'))
     cube.coord('latitude').bounds = lat_bnds.core_data()
+    # Longitude
     lon_bnds = iris.load_cube(filepath, NameConstraint(var_name='lon_bnds'))
     cube.coord('longitude').bounds = lon_bnds.core_data()
 
