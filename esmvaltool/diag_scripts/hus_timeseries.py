@@ -47,9 +47,16 @@ def load_and_preprocess(dataset):
     if all([cube.coords('latitude', dim_coords=True),
             cube.coords('longitude', dim_coords=True)]):
         area_weights = iris.analysis.cartography.area_weights(cube)
-        cube = cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN,
+        cube = cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN, 
                               weights=area_weights)
-
+        
+    # Fix pressure level coordinate
+    if cube.coords('air_pressure'):
+        cube.coord('air_pressure').attributes['positive'] = 'down'
+        cube.coord('air_pressure').convert_units('hPa')
+    elif cube.coords('altitude'):
+        cube.coord('altitude').attributes['positive'] = 'up'
+        
     # Convert units of some variables
     if cube.var_name == 'tas':
         cube.convert_units('celsius')
@@ -59,6 +66,30 @@ def load_and_preprocess(dataset):
     if cube.var_name == 'hus':
         cube.convert_units('g kg-1')
     return cube
+
+def plot_dataset_without_ref(cfg, dataset):
+    """Plot single dataset without using a reference dataset."""
+    logger.info("Plotting %s", dataset[cfg['title_key']])
+    cube = load_and_preprocess(dataset)
+    plot_kwargs = dict(levels=10)
+    # cbar_label=f"{cube.var_name} [{cube.units}]")
+    timeseries_plot = iris.plot.contourf(cube, **plot_kwargs)
+
+    # Colorbar
+    plt.colorbar(timeseries_plot, orientation='vertical',
+                 label=f"{cube.var_name} [{cube.units}]")
+
+    # Plot appearance
+    plt.semilogy()
+    plt.gca().get_yaxis().set_major_formatter(FormatStrFormatter('%.1f'))
+    plt.title(dataset[cfg['title_key']])
+    plt.xlabel('time [month]')
+    z_coord = cube.coord(axis='Z')
+    plt.ylabel(f'{z_coord.long_name} [{z_coord.units}]')
+
+    # Return figure and basename for plot
+    basename = dataset[cfg['title_key']].replace(' ', '_')
+    return (plt.gcf(), basename)
 
 
 def main(cfg):
@@ -79,26 +110,17 @@ def main(cfg):
     plt.figure(figsize=(8, 4), dpi=150)
 
     # Plot all datasets in single figure
-    ancestors = []
-    for dataset in input_data:
-        ancestors.append(dataset['filename'])
-        cube = load_and_preprocess(dataset)
-
-        # Plot monthly means
-        plot_kwargs = get_plot_kwargs(cfg, dataset)
-        iris.plot.plot(cube, label=dataset[cfg['title_key']], **plot_kwargs)
-
-        # Plot annual means
-        iris.coord_categorisation.add_year(cube, 'time')
-        cube = cube.aggregated_by('year', iris.analysis.MEAN)
-        plot_kwargs['linestyle'] = ':'
-        iris.plot.plot(cube, **plot_kwargs)
+    (fig, basename) = plot_dataset_without_ref(cfg, dataset)
+            caption = (f"timeseries {dataset['long_name']} of dataset "
+                       f"{dataset['dataset']} (project {dataset['project']}) "
+                       f"from {dataset['start_year']} to "
+                       f"{dataset['end_year']}.")
 
     # Plot appearance
     long_name = input_data[0]['long_name']
     short_name = input_data[0]['short_name']
     units = cube.units
-    plt.title(f"Global Mean {long_name}")
+    plt.title(f"timeseries {long_name}")
     plt.xlabel("Year")
     plt.ylabel(f"{short_name} [{units}]")
     plt.legend()
@@ -110,7 +132,7 @@ def main(cfg):
     plt.close()
 
     # Provenance tracking
-    caption = (f"Monthly mean (solid lines) and annual mean (dashed lines) "
+    caption = (f"Monthly mean (solid lines) "
                f"time series of {input_data[0]['long_name']} for various "
                f"datasets.")
     provenance_record = {
