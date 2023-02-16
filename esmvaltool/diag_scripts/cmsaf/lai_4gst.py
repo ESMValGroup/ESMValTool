@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 #  from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
 from matplotlib.patches import Patch
+from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 
 from esmvaltool.diag_scripts.shared import (
     #  ProvenanceLogger,
@@ -290,27 +291,45 @@ def plot_all_gst(all_gst):
             
             colours = [colour_list[3 + j] for j in all_gst[dataset][1]]
 
-            ax.broken_barh([(X,1) for X in all_gst[dataset][0]], (i-0.1,0.8),
+            ax.broken_barh([(X,1) for X in all_gst[dataset][0]], (i-0.5,1),
                            facecolors=colours)
             y_lables.append(dataset)
             
         except IndexError:
             continue
+
+    #ax.xaxis.set_minor_locator(MultipleLocator(0.5))
     
-    
-    ax.set_xlim((1991,2015))
+    ax.set_xlim((1990,2015))
 
     ax.set_yticks(np.arange(0, len(y_lables), 1))
+
     ax.set_yticklabels(y_lables)
+    ax.yaxis.set_minor_locator(MultipleLocator(0.5))
+    ax.xaxis.set_minor_locator(MultipleLocator(1))
+
+    ax.grid(which='major', axis='x', color='black', linestyle='--', linewidth=2)
+    ax.grid(which='minor', axis='x', color='gray', linestyle='--', linewidth=1)
+
+    ax.grid(which='minor', axis='y', color='black', linestyle='--', linewidth=2)
     
-    ax.grid()
+    ax.tick_params(axis='both',
+                   which='major',
+                   labelsize=fig_fontsizes['ticks'],
+                   #rotation=45
+    )
+
+    ax.set_xlabel('Date', fontsize=fig_fontsizes['labels'])
+    ax.set_ylabel('Model / Obs', fontsize=fig_fontsizes['labels'])
 
     ax.legend(handles=legend_elements,
               bbox_to_anchor=(1.01, 1),
               prop={'size': fig_fontsizes['labels']}
               )
 
-    plt.legend()
+   
+    fig.suptitle(f'LAI and 4GST', fontsize=fig_fontsizes['title'])
+
     plt.savefig('lai_4gst_bar.png')
 
 def _diagnostic(config):
