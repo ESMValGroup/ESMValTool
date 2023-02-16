@@ -112,12 +112,13 @@ def main(cfg):
     plt.figure(figsize=(8, 4), dpi=150)
 
     # Plot all datasets in single figure
-    dataset=input_data
-    (fig, basename) = plot_dataset_without_ref(cfg, dataset)
-    caption = (f"timeseries {dataset['long_name']} of dataset "
-               f"{dataset['dataset']} (project {dataset['project']}) "
-               f"from {dataset['start_year']} to "
-               f"{dataset['end_year']}.")
+    for dataset in input_data:
+         ancestors = [dataset['filename']]
+         (fig, basename) = plot_dataset_without_ref(cfg, dataset)
+         caption = (f"timeseries {dataset['long_name']} of dataset "
+                    f"{dataset['dataset']} (project {dataset['project']}) "
+                    f"from {dataset['start_year']} to "
+                    f"{dataset['end_year']}.")
 
     # Plot appearance
     long_name = input_data[0]['long_name']
