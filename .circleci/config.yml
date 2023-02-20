@@ -193,6 +193,7 @@ jobs:
             conda activate esmvaltool
             pip install --upgrade git+https://github.com/ESMValGroup/ESMValCore
             pip install --no-deps . > /logs/install.txt 2>&1
+            JULIA_LOAD_PATH="/root/project/esmvaltool/install/Julia:@:@esmvaltool:@stdlib"
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             # what's Julia up to
             which julia
@@ -200,7 +201,6 @@ jobs:
             julia --help
             echo $JULIA_LOAD_PATH
             ls -la /root/project/esmvaltool/install/Julia
-            JULIA_LOAD_PATH="/root/project/esmvaltool/install/Julia:@:@esmvaltool:@stdlib"
             julia esmvaltool/diag_scripts/examples/diagnostic.jl 
             # test here instead of via test_and_report instance
             pytest -n 4
