@@ -14,7 +14,7 @@ version if and how their work might be affected (backward
 compatibility). This includes, for instance, information about changes
 to technical features such as syntax of recipes and configuration files,
 and interfaces of shared functions, but also changes that affect the
-results of an ESMValTool run, e.g. modification of algorithms or changes
+results of an ESMValTool run, e.g. modification of algorithms or changes
 to the order of operators. It is therefore essential that users and
 developers have the best advice on how and when to upgrade to new
 versions.
@@ -25,14 +25,14 @@ this cannot always be guaranteed. A very restrictive policy might delay
 the ESMValTool development and make it more complex for developers to
 contribute.
 
-This document outlines the key principles of an updated ESMValTool policy 
+This document outlines the key principles of an updated ESMValTool policy
 on backward compatibility.
 
 Definitions
 -----------
 
 **Release:** A numbered version of ESMValCore / ESMValTool that has been
-released to the community, e.g. 2.4.0. This policy relates only to
+released to the community, e.g. 2.4.0. This policy relates only to
 backward compatibility of releases, not to interim revisions of the main
 branch. Release numbers are of the format x.y.z, where:
 
@@ -49,7 +49,7 @@ change*).
 to no longer run successfully.
 
 **Science change:** A change that alters scientific results. We do not
-formally distinguish between trivial science changes (e.g. from changes
+formally distinguish between trivial science changes (e.g. from changes
 in the order of calculations) and more significant changes that would
 affect interpretation, although the detail that we communicate will
 share any understanding that we have regarding expected impact.
@@ -81,7 +81,7 @@ developer in line with the above guidance. Note that the recipe can be
 updated by someone other than the original author.
 
 **User recipes:** Recipes developed by any developer outside of the main
-branch of the repository (i.e. on a dev/feature branch or outside the
+branch of the repository (i.e. on a dev/feature branch or outside the
 repository completely), and therefore cannot be updated by anyone else.
 
 Scope
@@ -112,7 +112,7 @@ Stakeholders and their expectations and aims:
 Projects / Funders
 
 -  Aim to facilitate scientific discovery
--  Expect deliverables, e.g. new features/recipes
+-  Expect deliverables, e.g. new features/recipes
 -  Expect reproducible results
 
 *Recipe users*
@@ -146,7 +146,7 @@ Core developers and *recipe maintainers*
 
 There is a tension between making new features available and keeping
 everything as is. New features facilitate scientific discovery because
-they enable *recipe developers* to do new research (e.g. analyse more
+they enable *recipe developers* to do new research (e.g. analyse more
 data, new data, or perform a different analysis). Ensuring that every
 recipe ever made works with every new feature is technically a lot of
 work, more than we have funding for. Therefore we need to make sure that
@@ -168,13 +168,14 @@ communicate changes. In the first place, this is done by writing good
 descriptions in issues and pull requests on GitHub, but some of this
 material also makes it to the changelog (where the GitHub pull requests
 are linked). It is highly recommended to communicate a relevant
-selection (e.g. important new, scheduled for removal, and removed
+selection (e.g. important new, scheduled for removal, and removed
 features) also by other means, to ensure we reach as many people
-potentially affected as possible (see “Guidance on handling
-*backward-incompatible changes*” section below).
-We organize monthly community meetings where *recipe developers* can learn about
-the latest developments and everyone is welcome to join, ask questions, and
-provide feedback.
+potentially affected as possible (see :ref:`Guidance on handling
+*backward-incompatible changes*<guidance-on-backward-incompatiable-changes>`
+section below).
+We organize :ref:`monthly community <monthly-meetings>` meetings where
+*recipe developers* can learn about the latest developments and everyone is
+welcome to join, ask questions, and provide feedback.
 
 To meet the needs of users and funders, we should take reproducibility
 of older results seriously, but this should not hold us back from
@@ -197,6 +198,8 @@ related to *backward-incompatible changes* when *backward-incompatible
 changes* are introduced to the main branch / when a *release* of
 ESMValTool is created.
 
+.. _guidance-on-backward-incompatiable-changes:
+
 Guidance on handling *backward-incompatible changes*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -210,10 +213,10 @@ but components should include:
    continued investment in automated testing.
 -  Guidance on how to minimise the likelihood of introducing
    *backward-incompatible changes* and how to use deprecation warnings
-   when needed (see `developer
-   guidance <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/contributing.html#backward-compatibility>`__).
--  Instructions on how to provide text for the release notes to assist *recipe
-   developers* to adapt their recipe in light of the *backward-incompatible change*
+   when needed (see :ref:`developer guidance <esmvalcore:backward_compatibility>`).
+-  :ref:`Instructions on how to provide text for the release notes <add-release-notes>`
+   to assist *recipe developers* to adapt their recipe in light of the
+   *backward-incompatible change*
 -  General instructions for *recipe developers* working on *user
    recipes* to enable them to adapt their code related to
    *backward-incompatible changes* (see `ESMValTool_Tutorial: issue
@@ -224,11 +227,17 @@ but components should include:
    branch. If a strong objection is raised the backward-incompatible
    change should not be merged until the objection is resolved.
 
+
+.. _guidance-on-releasing-backward-incompatible-changes:
+
+Guidance on releasing *backward-incompatible changes*
+
 During the *release* process, the following information must be
 provided:
 
--  **Release notes:** The *release* notes are already documented at
-   :ref:`changelog` and :ref:`esmvalcore:changelog-v2-7-1` for ESMValTool and ESMValCore respectively, and
+-  **Release notes:** The *release* notes are already documented in the
+   :ref:`ESMValTool Changelog <changelog>` and
+   :ref:`ESMValCore Changelog <esmvalcore:changelog-v2-7-1>`, and
    “*backward-incompatible changes*” is the first section after
    “Highlights”.
 
@@ -245,16 +254,14 @@ provided:
 
       -  write and include the information required for the
          “*backward-incompatible changes*” section in the PR that
-         introduces the *backward-incompatible change* [action:
-         guidance related to this needs to be provided in the developer
-         documentation]
+         introduces the *backward-incompatible change*
       -  share details of the *backward-incompatible change* at the
          next monthly ESMValTool community meeting
 
    -  **Communication:** The *release* notes must be shared with the
-      community (for example, via the mailing lists and the
+      community (for example, via the :ref:`mailing-list` and the
       `Community <https://github.com/ESMValGroup/Community>`__
       repository) at the point the first *release* candidate is made,
       highlighting the “*backward-incompatible changes*” section. The
       User Engagement Team should organise the communication of new
-      *releases* together with the *release* manager.
+      *releases* together with the :ref:`release_manager`.

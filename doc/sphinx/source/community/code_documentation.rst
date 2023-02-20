@@ -96,7 +96,7 @@ These include in particular:
 - 🛠 Instructions for the release notes to assist *recipe
   developers* to adapt their recipe in light of the *backward-incompatible change*
   available.
-- 🛠 General instructions for *recipe developers* working on *user
+- 🛠 If applicable, instructions for *recipe developers* working on *user
   recipes* to enable them to adapt their code related to
   *backward-incompatible changes* available (see `ESMValTool_Tutorial: issue
   #263 <https://github.com/ESMValGroup/ESMValTool_Tutorial/issues/263>`__)
