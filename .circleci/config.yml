@@ -193,7 +193,7 @@ jobs:
             conda activate esmvaltool
             pip install --upgrade git+https://github.com/ESMValGroup/ESMValCore
             pip install --no-deps . > /logs/install.txt 2>&1
-            JULIA_LOAD_PATH="/root/project/esmvaltool/install/Julia:@:@esmvaltool:@stdlib"
+            JULIA_LOAD_PATH="/root/project/esmvaltool/install/Julia"  # :@:@esmvaltool:@stdlib"
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             # what's Julia up to
             which julia
