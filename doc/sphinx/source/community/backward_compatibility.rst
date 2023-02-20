@@ -231,6 +231,7 @@ but components should include:
 .. _guidance-on-releasing-backward-incompatible-changes:
 
 Guidance on releasing *backward-incompatible changes*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 During the *release* process, the following information must be
 provided:
