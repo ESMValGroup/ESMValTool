@@ -198,6 +198,7 @@ jobs:
             which julia
             julia --version
             julia --help
+            echo $JULIA_LOAD_PATH
             ls -la /root/project/esmvaltool/install/Julia
             JULIA_LOAD_PATH="/root/project/esmvaltool/install/Julia:@:@esmvaltool:@stdlib"
             julia esmvaltool/diag_scripts/examples/diagnostic.jl 
