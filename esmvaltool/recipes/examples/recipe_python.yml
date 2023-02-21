@@ -23,7 +23,8 @@ documentation:
 
 datasets:
   - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  # - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-LR, project: CMIP5,  exp: historical, ensemble: r1i1p1}
 
 preprocessors:
 
