@@ -35,12 +35,12 @@ diagnostics:
     variables:
       lai:
        mip: Lmon
-       preprocessor: test
+       #preprocessor: test
        additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical,
             ensemble: r1i1p1f2, start_year: 1991, end_year: 2014, grid: gn}
          - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1991, end_year: 2014, grid: gn}
-         - {dataset: TaiESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1991, end_year: 2014, grid: gn}
+#         - {dataset: TaiESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1991, end_year: 2014, grid: gn}
 ##         - {dataset: AWI-ESM-1-1-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1991, end_year: 2014, grid: gn}
 ##         - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1991, end_year: 2014, grid: gn}
 #         - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1991, end_year: 2014, grid: gn}
@@ -49,10 +49,13 @@ diagnostics:
 
       lairpk:
          mip: custom
-         preprocessor: test
+         #preprocessor: test
          additional_datasets:
             - {dataset: GLOBMAP_LAI, project: OBS, mip: custom, tier: 2,
-               type: sat, version: 3, start_year: 1991, end_year: 2020}
+              type: sat, version: 3, start_year: 1991, end_year: 2020}
     scripts:
-       script1:
-          script: cmsaf/lai_4gst.py
+       #script1:
+       #   script: cmsaf/lai_4gst.py
+
+       script2:
+          script: cmsaf/lai_phenology.py
