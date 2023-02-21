@@ -196,12 +196,12 @@ jobs:
             ls -la /root/project/esmvaltool/install/Julia
             pip install --upgrade git+https://github.com/ESMValGroup/ESMValCore
             pip install --no-deps . > /logs/install.txt 2>&1
-            ls -la /root/project/esmvaltool/install/Julia
-            julia esmvaltool/diag_scripts/examples/diagnostic.jl 
-            # test here instead of via test_and_report instance
-            pytest -n 4
+            # force feed Julia path since Core dev install messed it up
+            JULIA_LOAD_PATH="/root/project/esmvaltool/install/Julia:@:@esmvaltool:@stdlib"
+            # temporary: run a Julia diag
+            julia esmvaltool/diag_scripts/examples/diagnostic.jl
       - log_versions
-      # - test_and_report
+      - test_and_report
       - run:
           name: Run recipes
           command: |
