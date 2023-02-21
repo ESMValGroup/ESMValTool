@@ -207,8 +207,7 @@ jobs:
             conda activate esmvaltool
             mkdir -p ~/climate_data
             esmvaltool config get_config_user
-            echo "offline: false" >> ~/.esmvaltool/config-user.yml
-            echo "always_search_esgf: true" >> ~/.esmvaltool/config-user.yml
+            sed -i 's/offline: true/offline: false/g' ~/.esmvaltool/config-user.yml
             cat ~/.esmvaltool/config-user.yml
             esmvaltool run examples/recipe_python.yml
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
