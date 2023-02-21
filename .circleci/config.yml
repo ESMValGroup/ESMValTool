@@ -191,15 +191,13 @@ jobs:
             mkdir /logs
             mamba env create >> /logs/conda.txt 2>&1
             conda activate esmvaltool
-            pip install -e .[develop]
+            pip install -e .[develop] > /logs/install_esmvaltool.txt 2>&1
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
-            ls -la /root/project/esmvaltool/install/Julia
+            ls -la /root/project/esmvaltool/install/Julia > /logs/list_julia_dir.txt 2>&1
             pip install --upgrade git+https://github.com/ESMValGroup/ESMValCore
             pip install --no-deps . > /logs/install.txt 2>&1
-            # force feed Julia path since Core dev install messed it up
+            # reset Julia path since Core dev-install messes it up
             JULIA_LOAD_PATH="/root/project/esmvaltool/install/Julia:@:@esmvaltool:@stdlib"
-            # temporary: run a Julia diag
-            julia esmvaltool/diag_scripts/examples/diagnostic.jl
       - log_versions
       - test_and_report
       - run:
