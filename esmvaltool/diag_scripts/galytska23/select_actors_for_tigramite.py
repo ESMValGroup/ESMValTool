@@ -47,8 +47,6 @@ def calculate_heat_flux(list_va_ta):
 def run_my_diagnostic(cfg):
     """Save variables into .nc files.
 
-    Returns:
-     string; runs the user diagnostic
     """
     # assemble the data dictionary keyed by dataset name
     # via usage of group_metadata function
