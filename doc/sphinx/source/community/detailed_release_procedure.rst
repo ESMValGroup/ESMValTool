@@ -75,7 +75,7 @@ Submit run scripts - test recipe runs
 -------------------------------------
 
 We are now ready to start running all the available recipes, to compare output against previous release. Running is currently done
-via batch scripts submitted to a schedulers (SLURM). Generate the submission scripts using the `generate.py` Python script;
+via batch scripts submitted to a schedulers (SLURM). Generate the submission scripts using the ``generate.py`` Python script;
 you can find a copy of the script either in `/home/b/b382109/Tool_Release_270_Scripts` or
 in the draft Pull Request https://github.com/ESMValGroup/ESMValTool/pull/2883.
 
