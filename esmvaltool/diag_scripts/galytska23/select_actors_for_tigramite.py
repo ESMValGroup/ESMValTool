@@ -18,7 +18,7 @@ from esmvaltool.diag_scripts.shared._base import get_diagnostic_filename
 
 
 def polar_vortex(dict_item):
-    """Calculate polar vortex"""
+    """Calculate polar vortex."""
     var = iris.load_cube(dict_item['filename'])
     var = var.collapsed('air_pressure', iris.analysis.MEAN)
     var.data *= -1
@@ -27,25 +27,24 @@ def polar_vortex(dict_item):
 
 
 def slp(dict_item):
-    """Get surface pressre and calculate hPa from Pa"""
+    """Get surface pressre and calculate hPa from Pa."""
     var = iris.load_cube(dict_item['filename'])
     var.data /= 100
     return var
 
 
 def calculate_heat_flux(list_va_ta):
+    """Calculate eddy poleward heat flux."""
     for i in range(0, len(list_va_ta)):
-        hf = list_va_ta[0] * list_va_ta[1]
-        hf_anom = anomalies(hf, period='monthly')
+        heat_flux = list_va_ta[0] * list_va_ta[1]
+        hf_anom = anomalies(heat_flux, period='monthly')
         hf_anom_zm = zonal_statistics(hf_anom, operator='mean')
         hf_anom_zm.var_name = 'heat_flux'
         return hf_anom_zm
 
 
 def run_my_diagnostic(cfg):
-    """Save variables into .nc files.
-
-    """
+    """Save variables into .nc files."""
     # assemble the data dictionary keyed by dataset name
     # via usage of group_metadata function
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
@@ -54,7 +53,7 @@ def run_my_diagnostic(cfg):
     for key, value in my_files_dict.items():
         diagnostic_file = get_diagnostic_filename(key, cfg)
         #        print (diagnostic_file)
-        tmp_list = list()
+        tmp_list = []
         for item in value:
             if item['preprocessor'] == 'pv':
                 pv = polar_vortex(item)
@@ -91,11 +90,11 @@ def run_my_diagnostic(cfg):
                 var_mermean = meridional_statistics(var, operator='mean')
                 deviation = var_mermean - var_avg
                 tmp_list.append(deviation)
-        hf = calculate_heat_flux(tmp_list)
+        heat_flux = calculate_heat_flux(tmp_list)
         if key == "ERA5":
             cube_list = iris.cube.CubeList([
                 pv, tas, tas_baffin, tas_sib, psl_ural, psl_sib, psl_aleut,
-                zon_wind, hf
+                zon_wind, heat_flux
             ])
             iris.save(cube_list, diagnostic_file)
         elif key == "HadISST":
@@ -104,7 +103,7 @@ def run_my_diagnostic(cfg):
         else:
             cube_list = iris.cube.CubeList([
                 pv, tas, tas_baffin, tas_sib, psl_ural, psl_sib, psl_aleut,
-                zon_wind, hf, sic_bk, sic_ok
+                zon_wind, heat_flux, sic_bk, sic_ok
             ])
             iris.save(cube_list, diagnostic_file)
 
