@@ -11,7 +11,7 @@ The workflow below assumes an ESMValCore release candidate, or a completed stabl
 and deployed on conda-forge and PyPI; it also assumes the release manager has access to accounts on DKRZ/Levante.
 
 Below is a list of steps that the release manager, together with the previous release manager, should go through before the actual release;
-these include testing the new code by running all available recipes in yhe `main` branch, and comparing the output against
+these include testing the new code by running all available recipes in the ``main`` branch, and comparing the output against
 the previous release.
 
 Open an issue on GitHub
