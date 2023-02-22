@@ -162,7 +162,7 @@ The steps to running the compare tool on the VM are the following:
 - run date: log the run date here
 - conda env: log the name of the conda environment you are using
 - ESMValTool branch: log the name of the code branch you are using (e.g. `v2.8.x`)
-- prerquisite - install `imagehash`: `pip install imagehash`
+- prerequisite - install `imagehash`: `pip install imagehash`
 - reference run (v2.7.0): `export reference_dir=/work/bd0854/b382109/v270` (contains `preproc/` dirs too, 122 recipes)
 - current run (v2.8.0): `export current_dir=path_to_current_run`
 - command to run: `nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt`
