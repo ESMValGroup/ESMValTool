@@ -75,6 +75,11 @@ in the draft Pull Request https://github.com/ESMValGroup/ESMValTool/pull/2883.
 
 You will have to set the name of your environment, your email address (if you want to get email notifications for successful/failed jobs) and the name of the directory you want to store the job outputs. The name of the account is the same (`bk1088`), and the default partition is set to `compute`.
 
+.. note::
+
+  It remains to be checked see if the project name `bk1088` will still
+  be active after the termination of IS-ENES3
+
 Some recipes need other job requirements, you can add their headers in the `SPECIAL_RECIPES` dictionary. Otherwise the header will be written following the template that is written in the lines below. If you want to exclude recipes, you can do so by uncommenting the exclude lines.
 
 The launch scripts will be saved in the same directory you execute the script from. You can find the ones used for the v2.7.0 release in `/home/b/b382109/submit`
