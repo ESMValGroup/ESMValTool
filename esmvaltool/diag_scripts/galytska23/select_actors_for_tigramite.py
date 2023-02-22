@@ -89,8 +89,8 @@ def run_my_diagnostic(cfg):
         heat_flux = calculate_heat_flux(tmp_list)
         if key == "ERA5":
             cube_list = iris.cube.CubeList([
-                polar_vortex, tas, tas_baffin, tas_sib, psl_ural, psl_sib, psl_aleut,
-                zon_wind, heat_flux
+                polar_vortex, tas, tas_baffin, tas_sib, psl_ural, psl_sib,
+                psl_aleut,zon_wind, heat_flux
             ])
             iris.save(cube_list, diagnostic_file)
         elif key == "HadISST":
@@ -98,8 +98,8 @@ def run_my_diagnostic(cfg):
             iris.save(cube_list, diagnostic_file)
         else:
             cube_list = iris.cube.CubeList([
-                polar_vortex, tas, tas_baffin, tas_sib, psl_ural, psl_sib, psl_aleut,
-                zon_wind, heat_flux, sic_bk, sic_ok
+                polar_vortex, tas, tas_baffin, tas_sib, psl_ural, psl_sib,
+                psl_aleut, zon_wind, heat_flux, sic_bk, sic_ok
             ])
             iris.save(cube_list, diagnostic_file)
 
