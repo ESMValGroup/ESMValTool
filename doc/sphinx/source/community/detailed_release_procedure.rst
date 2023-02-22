@@ -90,7 +90,7 @@ and execute them like any other shell script. You can check the status of your B
 
 .. code-block:: bash
 
-  squeue -u b382109
+  squeue -u $USER
 
 Also, for computationally-heavy recipes, you can require more memory and/or time, see e.g. edited batch header below
 (note the `compute` partition which is used for such heavy runs):
