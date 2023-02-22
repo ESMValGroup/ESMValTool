@@ -17,7 +17,7 @@ from esmvaltool.diag_scripts.shared import (
 from esmvaltool.diag_scripts.shared._base import get_diagnostic_filename
 
 
-def polar_vortex(dict_item):
+def calculate_polar_vortex(dict_item):
     """Calculate polar vortex."""
     var = iris.load_cube(dict_item['filename'])
     var = var.collapsed('air_pressure', iris.analysis.MEAN)
@@ -26,7 +26,7 @@ def polar_vortex(dict_item):
     return var
 
 
-def slp(dict_item):
+def calculate_slp(dict_item):
     """Get surface pressre and calculate hPa from Pa."""
     var = iris.load_cube(dict_item['filename'])
     var.data /= 100
@@ -35,12 +35,11 @@ def slp(dict_item):
 
 def calculate_heat_flux(list_va_ta):
     """Calculate eddy poleward heat flux."""
-    for i in range(0, len(list_va_ta)):
-        heat_flux = list_va_ta[0] * list_va_ta[1]
-        hf_anom = anomalies(heat_flux, period='monthly')
-        hf_anom_zm = zonal_statistics(hf_anom, operator='mean')
-        hf_anom_zm.var_name = 'heat_flux'
-        return hf_anom_zm
+    heat_flux = list_va_ta[0] * list_va_ta[1]
+    hf_anom = anomalies(heat_flux, period='monthly')
+    hf_anom_zm = zonal_statistics(hf_anom, operator='mean')
+    hf_anom_zm.var_name = 'heat_flux'
+    return hf_anom_zm
 
 
 def run_my_diagnostic(cfg):
@@ -48,15 +47,12 @@ def run_my_diagnostic(cfg):
     # assemble the data dictionary keyed by dataset name
     # via usage of group_metadata function
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
-    #    print ("DICTIONARY", my_files_dict)
-
     for key, value in my_files_dict.items():
         diagnostic_file = get_diagnostic_filename(key, cfg)
-        #        print (diagnostic_file)
         tmp_list = []
         for item in value:
             if item['preprocessor'] == 'pv':
-                pv = polar_vortex(item)
+                polar_vortex = calculate_polar_vortex(item)
             elif item['preprocessor'] == 'pre_tas':
                 tas = iris.load_cube(item['filename'])
                 tas.var_name = 'Arctic_temperature'
@@ -67,13 +63,13 @@ def run_my_diagnostic(cfg):
                 tas_sib = iris.load_cube(item['filename'])
                 tas_sib.var_name = 'Temperature_Sib'
             elif item['preprocessor'] == 'pressure_ural':
-                psl_ural = slp(item)
+                psl_ural = calculate_slp(item)
                 psl_ural.var_name = 'Psl_Ural'
             elif item['preprocessor'] == 'pressure_sib':
-                psl_sib = slp(item)
+                psl_sib = calculate_slp(item)
                 psl_sib.var_name = 'Psl_Sib'
             elif item['preprocessor'] == 'pressure_aleut':
-                psl_aleut = slp(item)
+                psl_aleut = calculate_slp(item)
                 psl_aleut.var_name = 'Psl_Aleut'
             elif item['preprocessor'] == 'zonal_wind':
                 zon_wind = iris.load_cube(item['filename'])
@@ -93,7 +89,7 @@ def run_my_diagnostic(cfg):
         heat_flux = calculate_heat_flux(tmp_list)
         if key == "ERA5":
             cube_list = iris.cube.CubeList([
-                pv, tas, tas_baffin, tas_sib, psl_ural, psl_sib, psl_aleut,
+                polar_vortex, tas, tas_baffin, tas_sib, psl_ural, psl_sib, psl_aleut,
                 zon_wind, heat_flux
             ])
             iris.save(cube_list, diagnostic_file)
@@ -102,12 +98,12 @@ def run_my_diagnostic(cfg):
             iris.save(cube_list, diagnostic_file)
         else:
             cube_list = iris.cube.CubeList([
-                pv, tas, tas_baffin, tas_sib, psl_ural, psl_sib, psl_aleut,
+                polar_vortex, tas, tas_baffin, tas_sib, psl_ural, psl_sib, psl_aleut,
                 zon_wind, heat_flux, sic_bk, sic_ok
             ])
             iris.save(cube_list, diagnostic_file)
 
-    return 'Done with saving .nc files'
+    return '.nc files are saved'
 
 
 if __name__ == '__main__':
