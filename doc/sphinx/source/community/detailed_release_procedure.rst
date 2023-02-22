@@ -146,11 +146,13 @@ Next, we need to set up the input files
 
   If you wrote recipe runs output to Levante's `/scratch` partition, be aware that
   the data will be removed after two weeks, so you will have to move the output data
-  to the `/work` partition, via e.g. a `nohup` job:
+  to the VM, using a process that's not killed by a logoff e.g. a `nohup` job. Also add
+  the link to the issue/discussion so anyone can see the results.
+  This makes it much easier to ask for feedback from recipe developers.
 
   .. code-block:: bash
 
-    nohup cp -r /scratch/b/$USER/esmvaltool_output/* /work/bd0854/b382109/v2xx
+    nohup cp -r /scratch/b/$USER/esmvaltool_output/* /shared/esmvaltool/v2.x.x/
 
   where `bd0854/b382109` is the project location in `work`
 
