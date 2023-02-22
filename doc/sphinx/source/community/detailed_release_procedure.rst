@@ -156,7 +156,7 @@ Do not store final release results on the VM including `/preproc/` dirs, the tot
 size for all the recipes output, including `/preproc/` dirs is in the 4.5TB ballpark,
 much too high for the VM storage capacity! Therefore we would recommend using the option
 to remove preprocessing directories upon recipe running successfully `--remove-preproc-dir=True`
-at runtime, or set `remove_preproc_dir: false` in the configuration file.
+at runtime, or set `remove_preproc_dir: true` in the configuration file.
 
 The steps to running the compare tool on the VM are the following:
 
