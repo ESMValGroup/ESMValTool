@@ -18,9 +18,7 @@ from esmvaltool.diag_scripts.shared._base import get_diagnostic_filename
 
 
 def polar_vortex(dict_item):
-    """Calculate average over specific altitudes and multiply 
-    by -1 so negative values stand for the weakening and positive
-    for the strengthening of the polar vortex."""
+    """Calculate polar vortex"""
     var = iris.load_cube(dict_item['filename'])
     var = var.collapsed('air_pressure', iris.analysis.MEAN)
     var.data *= -1
