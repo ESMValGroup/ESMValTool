@@ -135,6 +135,11 @@ if you have a Miniconda installer already downloaded in your Levante $HOME
 
   scp Miniconda3-py39_4.12.0-Linux-x86_64.sh user@esmvaltool.dkrz.de:~
 
+.. warning::
+
+  conda environments should not be created in the home directory because it is on a very small disk,
+  but rather in a directory with your username under `/mnt/esmvaltool_disk2/work/`
+
 Next, we need to set up the input files
 
 .. note::
