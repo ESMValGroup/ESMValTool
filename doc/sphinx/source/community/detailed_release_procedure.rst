@@ -42,15 +42,9 @@ is an issue, or release work needs to be picked up mid-release by another releas
 
   git status
 
-Furthermore, the runtime environment needs to be documented:
-
-.. code-block:: bash
-
-  mamba env create -n tool2xxTest -f environment.yml
-  conda activate tool2xxTest
-
-Make a copy of the environment file, and attach it in the release testing issue; to
-record the environment in a yaml file use e.g. `conda env export > ToolEnv270Test.txt`.
+Furthermore, the runtime environment needs to be documented: make a copy of the environment file,
+and attach it in the release testing issue; to record the environment in a yaml file use e.g.
+`conda env export > ToolEnv270Test.txt`.
 
 Mention any special data movement one needs to perfom to run the tests e.g.:
 for v2.7.0 the release manager moved the autoassess-specific files to
