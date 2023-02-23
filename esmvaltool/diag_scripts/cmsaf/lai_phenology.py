@@ -136,7 +136,7 @@ def _get_provenance_record(attributes, ancestor_files):
 
     return record
 
-def calc_ave_month(cube):
+def calc_ave_month(cube, collapse_coord = 'year'):
     """
     Calculate the average month, respecting the year boundary
     
@@ -154,8 +154,8 @@ def calc_ave_month(cube):
                                                in_place=False)
 
     # Find mean of each component
-    data_cos_mean = data_cos.collapsed('year',iris.analysis.MEAN)
-    data_sin_mean = data_sin.collapsed('year',iris.analysis.MEAN)
+    data_cos_mean = data_cos.collapsed(collapse_coord,iris.analysis.MEAN)
+    data_sin_mean = data_sin.collapsed(collapse_coord,iris.analysis.MEAN)
 
     # Wanted angle is arctan of Y_mean and X_mean
     # use acrtan2 to get sector correct
@@ -315,23 +315,74 @@ def plot_zonal(ave_month, ave_value):
 
     fig, ax = plt.subplots(1, 2, figsize=(20, 20))
 
+    count = 0
     for dataset in ave_month.keys():
+        count += 1
+        colour = colour_list[count%8]
+        
+        months_working =  ave_value[dataset].copy()
+        mask_use = np.ma.masked_less(ave_value[dataset].data, 0.1)
+        months_working.data = np.ma.array(ave_value[dataset].data,
+                                          mask = mask_use.mask)
 
-        this_month = ave_month[dataset].collapsed('longitude', iris.analysis.MEAN)
+
+
+
+        this_month = calc_ave_month(months_working, collapse_coord = 'longitude')
         this_value = ave_value[dataset].collapsed('longitude', iris.analysis.MEAN)
-
-        print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        print(this_month)
+        # note month number plot will still jump about dec - jan -dec 
 
         plt.sca(ax[0])
         plt.plot(this_month.data,
                  this_month.coord('latitude').points,
-                 label=dataset)
+                 label=dataset,
+                 color=colour,
+                 linewidth=3
+                 )
 
         plt.sca(ax[1])
         plt.plot(this_value.data,
-                  this_value.coord('latitude').points,
-                  label=dataset)
+                 this_value.coord('latitude').points,
+                 label=dataset,
+                 color=colour,
+                 linewidth=3
+                 )
+
+
+    ax[0].set_title('Ave. Month of Max', fontsize=fig_fontsizes['labels'])
+    ax[1].set_title('Ave. Value of Max', fontsize=fig_fontsizes['labels'])
+
+    
+    ax[0].set_xticks(np.arange(0,12),
+                     ['Jan','Feb','Mar','Apr','May','Jun',
+                      'Jul','Aug','Sep','Oct','Nov','Dec'],
+                     fontsize=fig_fontsizes['ticks']
+                     )
+    ax[0].set_xlim((-0.5,12.5))
+
+    ax[1].set_xticks(np.arange(0,9),np.arange(0,9),
+                     fontsize=fig_fontsizes['ticks']
+                 )
+    ax[1].set_xlim((0,8))
+
+    ax[0].set_yticks(np.arange(-60,76,5),np.arange(-60,76,5),
+                     fontsize=fig_fontsizes['ticks']
+                 )
+
+    ax[1].set_yticks(np.arange(-60,76,5),
+                     ['' for item in np.arange(-60,76,5)],
+                     fontsize=fig_fontsizes['ticks']
+                 )
+
+    ax[0].set_ylim((-60,75))
+    ax[1].set_ylim((-60,75))
+
+    ax[0].grid()
+    ax[1].grid()
+
+    ax[0].set_xlabel('Month', fontsize=fig_fontsizes['labels'])
+    ax[1].set_xlabel('LAI', fontsize=fig_fontsizes['labels'])
+
 
     plt.legend()
 
