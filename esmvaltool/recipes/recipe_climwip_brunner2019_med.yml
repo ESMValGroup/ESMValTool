@@ -144,7 +144,7 @@ datasets: &model_data
 
 
 obs_data: &obs_data  # for climwip performance metrics
-  - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
 
 preprocessors:
   climwip_general: &general

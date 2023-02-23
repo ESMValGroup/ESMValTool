@@ -317,6 +317,8 @@ Milestone
 ~~~~~~~~~
 A milestone is a list of issues and pull-request on GitHub. It has a due date, this date is the date of the feature freeze. Adding an issue or pull request indicates the intent to finish the work on this issue before the due date of the milestone. If the due date is missed, the issue can be included in the next milestone.
 
+.. _release_manager:
+
 Release manager
 ~~~~~~~~~~~~~~~
 The person in charge of making the release, both technically and organizationally. Appointed for a single release.
@@ -382,17 +384,22 @@ Make sure that the ESMValCore version that is being used is set to the latest ve
 See the :ref:`dependencies <dependencies>` section in order to find more details on how update the ESMValCore version.
 Make a pull request and get it merged into ``main``.
 
+.. _add-release-notes:
+
 3. Add release notes
 ~~~~~~~~~~~~~~~~~~~~
 Use the script :ref:`draft_release_notes.py` to create create a draft of the
-release notes. 
+release notes.
 This script uses the titles and labels of merged pull requests since the
 previous release.
-Open a discussion to allow members of the development team to nominate pull requests 
-as highlights. Add the most voted pull requests as highlights at the beginning of 
-changelog. 
-After the highlights section, list any backwards incompatible changes that the 
+Open a discussion to allow members of the development team to nominate pull requests
+as highlights. Add the most voted pull requests as highlights at the beginning of
+changelog.
+After the highlights section, list any backward incompatible changes that the
 release may include.
+The :ref:`backward compatibility policy <guidance-on-releasing-backward-incompatible-changes>`
+lists the information that should be provided by the developer of any backward
+incompatible change.
 Make sure to also list any deprecations that the release may include, as well
 as a brief description on how to upgrade a deprecated feature.
 Review the results, and if anything needs changing, change it on GitHub and
