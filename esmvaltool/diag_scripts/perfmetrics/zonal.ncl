@@ -17,9 +17,9 @@ begin
   annots = project_style(info_items, diag_script_info, "annots")
 
   ; Loop over datasets
-  do ii = 0, dimsizes(modidx) - 1
-
-    imod = modidx(ii)
+  do modid = 0, dimsizes(modidx) - 1
+    print(modid)
+    imod = modidx(modid)
 
     log_debug("Processing " + datasetnames(imod))
 
