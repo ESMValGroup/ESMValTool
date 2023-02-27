@@ -1,0 +1,836 @@
+# ESMValTool
+# recipe_ipccwg1ar6ch3_fig_3_9.yml
+---
+documentation:
+
+  title: IPCC AR6 WG1 Chapter 3 Fig. 3.9
+
+  description: |
+    Producing Fig. 3.9 in the IPCC Working Group I Contribution to the Sixth
+    Assessment Report: Chapter 3
+    To run the recipe please upload the shapefile of the AR6 reference regions
+    (see detailed information in the documentation of this recipe).
+
+  authors:
+    - bock_lisa
+    - eyring_veronika
+
+  maintainer:
+    - bock_lisa
+
+  projects:
+    - ipcc_ar6
+
+  references:
+    - eyring21ipcc
+    - iturbide20essd
+
+
+preprocessors:
+
+  regrid_5_5:
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+
+  regrid_5_5_mmm:
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+
+  regrid_5_5_mmm_land:
+    mask_landsea:
+      mask_out: sea
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+
+  regrid_5_5_land:
+    mask_landsea:
+      mask_out: sea
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+
+  regrid_5_5_mmm_ocean:
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+
+  regrid_5_5_ocean:
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+
+  regrid_5_5_mmm_north_america:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method: contains
+      crop: false
+      ids:
+        - Greenland/Iceland
+        - N.W.North-America
+        - N.E.North-America
+        - W.North-America
+        - C.North-America
+        - E.North-America
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+
+  regrid_5_5_north_america:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method: contains
+      crop: false
+      ids:
+        - Greenland/Iceland
+        - N.W.North-America
+        - N.E.North-America
+        - W.North-America
+        - C.North-America
+        - E.North-America
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+
+  regrid_5_5_mmm_south_america:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method:  contains
+      crop: false
+      ids:
+        - N.Central-America
+        - S.Central-America
+        - Caribbean
+        - N.W.South-America
+        - N.South-America
+        - N.E.South-America
+        - South-American-Monsoon
+        - S.W.South-America
+        - S.E.South-America
+        - S.South-America
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+
+  regrid_5_5_south_america:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method: contains
+      crop: false
+      ids:
+        - N.Central-America
+        - S.Central-America
+        - Caribbean
+        - N.W.South-America
+        - N.South-America
+        - N.E.South-America
+        - South-American-Monsoon
+        - S.W.South-America
+        - S.E.South-America
+        - S.South-America
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+
+  regrid_5_5_mmm_europe:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method: contains
+      crop: false
+      ids:
+        - N.Europe
+        - West&Central-Europe
+        - E.Europe
+        - Mediterranean
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+
+  regrid_5_5_europe:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method: contains
+      crop: false
+      ids:
+        - N.Europe
+        - West&Central-Europe
+        - E.Europe
+        - Mediterranean
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+
+  regrid_5_5_mmm_africa:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method: contains
+      crop: false
+      ids:
+        - Sahara
+        - Western-Africa
+        - Central-Africa
+        - N.Eastern-Africa
+        - S.Eastern-Africa
+        - W.Southern-Africa
+        - E.Southern-Africa
+        - Madagascar
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+
+  regrid_5_5_africa:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method: contains
+      crop: false
+      ids:
+        - Sahara
+        - Western-Africa
+        - Central-Africa
+        - N.Eastern-Africa
+        - S.Eastern-Africa
+        - W.Southern-Africa
+        - E.Southern-Africa
+        - Madagascar
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+
+  regrid_5_5_mmm_asia:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method: contains
+      crop: false
+      ids:
+        - Russian-Arctic
+        - W.Siberia
+        - E.Siberia
+        - Russian-Far-East
+        - W.C.Asia
+        - E.C.Asia
+        - Tibetan-Plateau
+        - E.Asia
+        - Arabian-Peninsula
+        - S.Asia
+        - S.E.Asia
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+
+  regrid_5_5_asia:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method: contains
+      crop: false
+      ids:
+        - Russian-Arctic
+        - W.Siberia
+        - E.Siberia
+        - Russian-Far-East
+        - W.C.Asia
+        - E.C.Asia
+        - Tibetan-Plateau
+        - E.Asia
+        - Arabian-Peninsula
+        - S.Asia
+        - S.E.Asia
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+
+  regrid_5_5_mmm_australasia:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method: contains
+      crop: false
+      ids:
+        - N.Australia
+        - C.Australia
+        - E.Australia
+        - S.Australia
+        - New-Zealand
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+
+  regrid_5_5_australasia:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method: contains
+      crop: false
+      ids:
+        - N.Australia
+        - C.Australia
+        - E.Australia
+        - S.Australia
+        - New-Zealand
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+
+  regrid_5_5_mmm_antarctica:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method: contains
+      crop: false
+      ids:
+        - E.Antarctica
+        - W.Antarctica
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+
+  regrid_5_5_antarctica:
+    extract_shape:
+      shapefile: IPCC-Regions/IPCC-WGI-reference-regions-v4.shp
+      method: contains
+      crop: false
+      ids:
+        - E.Antarctica
+        - W.Antarctica
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+
+
+datasets_cmip6: &cmip6_models  # historical+ssp245, all ensemble members, Amon
+  - {dataset: ACCESS-CM2, ensemble: r(1:3)i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, ensemble: r(1:11)i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, ensemble: r19i1p1f1, grid: gn}
+  - {dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn, end_year: 2014}
+  - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: BCC-ESM1, ensemble: r(1:3)i1p1f1, grid: gn, end_year: 2014}
+  - {dataset: CAMS-CSM1-0, ensemble: r(1:2)i1p1f1, grid: gn}
+  - {dataset: CanESM5-CanOE, ensemble: r(1:3)i1p2f1, grid: gn}
+  - {dataset: CanESM5, ensemble: r(1:25)i1p1f1, grid: gn}
+  - {dataset: CanESM5, ensemble: r(1:25)i1p2f1, grid: gn}
+  - {dataset: CESM2, ensemble: r4i1p1f1, grid: gn}
+  - {dataset: CESM2, ensemble: r(10:11)i1p1f1, grid: gn}
+  - {dataset: CESM2-FV2, ensemble: r(1:3)i1p1f1, grid: gn, end_year: 2014}
+  - {dataset: CESM2-WACCM, ensemble: r(1:3)i1p1f1, grid: gn}
+  - {dataset: CESM2-WACCM-FV2, ensemble: r(1:3)i1p1f1, grid: gn,
+     end_year: 2014}
+  - {dataset: CIESM, ensemble: r1i1p1f1, grid: gr}
+  - {dataset: CMCC-CM2-HR4, ensemble: r1i1p1f1, grid: gn, end_year: 2014}
+  - {dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CNRM-CM6-1, ensemble: r(1:10)i1p1f2, grid: gr}
+  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+  - {dataset: CNRM-ESM2-1, ensemble: r(1:5)i1p1f2, grid: gr}
+  - {dataset: CNRM-ESM2-1, ensemble: r(7:10)i1p1f2, grid: gr}
+  - {dataset: E3SM-1-0, ensemble: r(1:5)i1p1f1, grid: gr, end_year: 2014}
+  - {dataset: E3SM-1-1-ECA, ensemble: r1i1p1f1, grid: gr, end_year: 2014}
+  - {dataset: E3SM-1-1, ensemble: r1i1p1f1, grid: gr, end_year: 2014}
+  - {dataset: EC-Earth3, ensemble: r(1:2)i1p1f1, grid: gr}
+  - {dataset: EC-Earth3, ensemble: r4i1p1f1, grid: gr}
+  - {dataset: EC-Earth3, ensemble: r(6:7)i1p1f1, grid: gr}
+  - {dataset: EC-Earth3, ensemble: r(9:10)i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gr, end_year: 2014}
+  - {dataset: EC-Earth3-AerChem, ensemble: r4i1p1f1, grid: gr, end_year: 2014}
+  - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-Veg, ensemble: r(1:6)i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-Veg, ensemble: r12i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-Veg, ensemble: r14i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-Veg-LR, ensemble: r(1:3)i1p1f1, grid: gr}
+  - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr}
+  - {dataset: FGOALS-g3, ensemble: r(1:4)i1p1f1, grid: gn}
+  - {dataset: FIO-ESM-2-0, ensemble: r(1:3)i1p1f1, grid: gn}
+  - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: GFDL-ESM4, ensemble: r(1:3)i1p1f1, grid: gr1}
+  - {dataset: GISS-E2-1-G, ensemble: r(1:10)i1p1f2, grid: gn}
+  - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p3f1, grid: gn}
+  - {dataset: GISS-E2-1-G, ensemble: r(1:4)i1p5f1, grid: gn}
+  - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, end_year: 2014}
+  - {dataset: GISS-E2-1-H, ensemble: r(1:10)i1p1f1, grid: gn, end_year: 2014}
+  - {dataset: GISS-E2-1-H, ensemble: r(1:5)i1p1f2, grid: gn, end_year: 2014}
+  - {dataset: GISS-E2-1-H, ensemble: r(1:5)i1p3f1, grid: gn, end_year: 2014}
+  - {dataset: GISS-E2-1-H, ensemble: r(1:5)i1p5f1, grid: gn, end_year: 2014}
+  - {dataset: HadGEM3-GC31-LL, ensemble: r(1:4)i1p1f3, grid: gn}
+  - {dataset: HadGEM3-GC31-MM, ensemble: r(1:4)i1p1f3, grid: gn,
+     end_year: 2014}
+  - {dataset: IITM-ESM, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: INM-CM4-8, ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: INM-CM5-0, ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, end_year: 2014}
+  - {dataset: IPSL-CM6A-LR, ensemble: r(1:6)i1p1f1, grid: gr}
+  - {dataset: IPSL-CM6A-LR, ensemble: r(10:11)i1p1f1, grid: gr}
+  - {dataset: IPSL-CM6A-LR, ensemble: r14i1p1f1, grid: gr}
+  - {dataset: IPSL-CM6A-LR, ensemble: r22i1p1f1, grid: gr}
+  - {dataset: IPSL-CM6A-LR, ensemble: r25i1p1f1, grid: gr}
+  - {dataset: KACE-1-0-G, ensemble: r(1:3)i1p1f1, grid: gr}
+  - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: MCM-UA-1-0, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: MIROC6, ensemble: r(1:50)i1p1f1, grid: gn}
+  - {dataset: MIROC-ES2L, ensemble: r(1:2)i1p1f2, grid: gn}
+  - {dataset: MIROC-ES2L, ensemble: r4i1p1f2, grid: gn}
+  - {dataset: MIROC-ES2L, ensemble: r(6:9)i1p1f2, grid: gn}
+  - {dataset: MPI-ESM-1-2-HAM, ensemble: r(1:3)i1p1f1, grid: gn,
+     end_year: 2014}
+  - {dataset: MPI-ESM1-2-HR, ensemble: r(1:10)i1p1f1, grid: gn, end_year: 2014}
+  - {dataset: MPI-ESM1-2-LR, ensemble: r(1:10)i1p1f1, grid: gn}
+  - {dataset: MRI-ESM2-0, ensemble: r(1:5)i1p1f1, grid: gn}
+  - {dataset: NESM3, ensemble: r(1:2)i1p1f1, grid: gn}
+  - {dataset: NorCPM1, ensemble: r(1:30)i1p1f1, grid: gn, end_year: 2014}
+  - {dataset: NorESM2-LM, ensemble: r(1:3)i1p1f1, grid: gn}
+  - {dataset: NorESM2-MM, ensemble: r(1:2)i1p1f1, grid: gn}
+  - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, end_year: 2014}
+  - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: UKESM1-0-LL, ensemble: r(1:2)i1p1f2, grid: gn}
+  - {dataset: UKESM1-0-LL, ensemble: r4i1p1f2, grid: gn}
+  - {dataset: UKESM1-0-LL, ensemble: r8i1p1f2, grid: gn}
+  - {dataset: UKESM1-0-LL, ensemble: r13i1p1f2, grid: gn}
+
+
+models_cmip6_hist-nat: &models_cmip6_hist-nat  # hist-nat, Amon, tas
+  - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO,
+     ensemble: r(1:3)i1p1f1}
+  - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r(1:3)i1p1f1}
+  - {dataset: CanESM5, ensemble: r(1:15)i1p1f1, grid: gn}
+  - {dataset: CanESM5, ensemble: r(20:25)i1p1f1, grid: gn}
+  - {dataset: CanESM5, ensemble: r(1:15)i1p2f1, grid: gn}
+  - {dataset: CanESM5, ensemble: r17i1p2f1, grid: gn}
+  - {dataset: CanESM5, ensemble: r(19:25)i1p2f1, grid: gn}
+  - {dataset: CESM2, grid: gn, ensemble: r(1:3)i1p1f1, end_year: 2014}
+  - {dataset: CNRM-CM6-1, ensemble: r(1:10)i1p1f2}
+  - {dataset: FGOALS-g3, grid: gn, ensemble: r(1:3)i1p1f1}
+  - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1, end_year: 2014}
+  - {dataset: GFDL-ESM4, grid: gr1, ensemble: r(1:3)i1p1f1}
+  - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f2, grid: gn, end_year: 2014}
+  - {dataset: GISS-E2-1-G, ensemble: r(1:9)i1p1f3, grid: gn, end_year: 2014}
+  - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f4, grid: gn, end_year: 2014}
+  - {dataset: HadGEM3-GC31-LL, ensemble: r(1:4)i1p1f3, grid: gn}
+  - {dataset: IPSL-CM6A-LR, ensemble: r(1:10)i1p1f1}
+  - {dataset: MIROC6, ensemble: r(1:4)i1p1f1, grid: gn}
+  - {dataset: MIROC6, ensemble: r37i1p1f1, grid: gn}
+  - {dataset: MRI-ESM2-0, grid: gn, ensemble: r(1:5)i1p1f1}
+  - {dataset: NorESM2-LM, grid: gn, institute: NCC, ensemble: r(1:3)i1p1f1}
+
+
+models_cmip6_hist-GHG: &models_cmip6_hist-GHG  # hist-GHG, Amon, tas
+  - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO,
+     ensemble: r(1:3)i1p1f1}
+  - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r(1:3)i1p1f1}
+  - {dataset: CanESM5, grid: gn, ensemble: r(1:25)i1p1f1}
+  - {dataset: CanESM5, grid: gn, ensemble: r(1:25)i1p2f1}
+  - {dataset: CESM2, grid: gn, ensemble: r(1:3)i1p1f1, end_year: 2014}
+  - {dataset: CNRM-CM6-1, ensemble: r(1:10)i1p1f2}
+  - {dataset: FGOALS-g3, grid: gn, ensemble: r(1:3)i1p1f1}
+  - {dataset: GFDL-ESM4, grid: gr1, ensemble: r1i1p1f1}
+  - {dataset: GISS-E2-1-G, grid: gn, ensemble: r(1:5)i1p1f1, end_year: 2014}
+  - {dataset: GISS-E2-1-G, grid: gn, ensemble: r(1:5)i1p1f2, end_year: 2014}
+  - {dataset: HadGEM3-GC31-LL, ensemble: r(1:4)i1p1f3, grid: gn}
+  - {dataset: IPSL-CM6A-LR, ensemble: r(1:10)i1p1f1}
+  - {dataset: MIROC6, grid: gn, ensemble: r(1:3)i1p1f1}
+  - {dataset: MRI-ESM2-0, grid: gn, ensemble: r(1:5)i1p1f1}
+  - {dataset: NorESM2-LM, grid: gn, institute: NCC, ensemble: r(2:3)i1p1f1}
+
+models_cmip6_hist-aer: &models_cmip6_hist-aer  # hist-aer, Amon, tas
+  - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO,
+     ensemble: r(1:3)i1p1f1}
+  - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r(1:2)i1p1f1}
+  - {dataset: CanESM5, grid: gn, ensemble: r(1:15)i1p1f1}
+  - {dataset: CanESM5, grid: gn, ensemble: r(1:15)i1p2f1}
+  - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1, end_year: 2014}
+  - {dataset: CESM2, grid: gn, ensemble: r3i1p1f1, end_year: 2014}
+  - {dataset: CNRM-CM6-1, ensemble: r(1:10)i1p1f2}
+  - {dataset: FGOALS-g3, grid: gn, ensemble: r(1:3)i1p1f1}
+  - {dataset: GFDL-ESM4, grid: gr1, ensemble: r1i1p1f1}
+  - {dataset: GISS-E2-1-G, grid: gn, ensemble: r(1:5)i1p1f1, end_year: 2014}
+  - {dataset: GISS-E2-1-G, grid: gn, ensemble: r(1:5)i1p3f1, end_year: 2014}
+  - {dataset: HadGEM3-GC31-LL, ensemble: r(1:4)i1p1f3, grid: gn}
+  - {dataset: IPSL-CM6A-LR, ensemble: r(1:10)i1p1f1}
+  - {dataset: MIROC6, grid: gn, ensemble: r(1:4)i1p1f1}
+  - {dataset: MIROC6, grid: gn, ensemble: r8i1p1f1}
+  - {dataset: MRI-ESM2-0, grid: gn, ensemble: r(1:5)i1p1f1}
+  - {dataset: NorESM2-LM, grid: gn, institute: NCC, ensemble: r(1:3)i1p1f1}
+
+hadcrut5: &hadcrut5
+  - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis,
+     tier: 2}
+
+
+diagnostics:
+
+  # **********************************************************************
+  # IPCC WGI AR6, chap. 3
+  # Sect. 3.3
+  # Fig 3.9
+  # **********************************************************************
+  # Global and continental anomalies in annual mean near-surface temperature
+  # **********************************************************************
+
+  fig_3_9_tas_anom_damip_1: &diag_tas_anom
+    description: Anomaly of surface temperature.
+    variables:
+      tas_historical_global: &var_tas
+        short_name: tas
+        preprocessor: regrid_5_5_mmm
+        mip: Amon
+        project: CMIP6
+        exp: [historical, ssp245]
+        grid: gr
+        ensemble: r1i1p1f1
+        start_year: 1850
+        end_year: 2020
+        additional_datasets: *cmip6_models
+      tas_hist-nat_global:
+        <<: *var_tas
+        exp: hist-nat
+        additional_datasets: *models_cmip6_hist-nat
+      tas_hist-GHG_global:
+        <<: *var_tas
+        exp: hist-GHG
+        additional_datasets: *models_cmip6_hist-GHG
+      tas_hist-aer_global:
+        <<: *var_tas
+        exp: hist-aer
+        additional_datasets: *models_cmip6_hist-aer
+      tasa_global:
+        <<: *var_tas
+        short_name: tasa
+        preprocessor: regrid_5_5
+        additional_datasets: *hadcrut5
+
+      tas_historical_land:
+        <<: *var_tas
+        preprocessor: regrid_5_5_mmm_land
+        additional_datasets: *cmip6_models
+      tas_hist-nat_land:
+        <<: *var_tas
+        exp: hist-nat
+        preprocessor: regrid_5_5_mmm_land
+        additional_datasets: *models_cmip6_hist-nat
+      tas_hist-GHG_land:
+        <<: *var_tas
+        exp: hist-GHG
+        preprocessor: regrid_5_5_mmm_land
+        additional_datasets: *models_cmip6_hist-GHG
+      tas_hist-aer_land:
+        <<: *var_tas
+        exp: hist-aer
+        preprocessor: regrid_5_5_mmm_land
+        additional_datasets: *models_cmip6_hist-aer
+      tasa_land:
+        <<: *var_tas
+        short_name: tasa
+        preprocessor: regrid_5_5_land
+        additional_datasets: *hadcrut5
+
+      tas_historical_ocean:
+        <<: *var_tas
+        preprocessor: regrid_5_5_mmm_ocean
+        additional_datasets: *cmip6_models
+      tas_hist-nat_ocean:
+        <<: *var_tas
+        exp: hist-nat
+        additional_datasets: *models_cmip6_hist-nat
+      tas_hist-GHG_ocean:
+        <<: *var_tas
+        exp: hist-GHG
+        preprocessor: regrid_5_5_mmm_ocean
+        additional_datasets: *models_cmip6_hist-GHG
+      tas_hist-aer_ocean:
+        <<: *var_tas
+        exp: hist-aer
+        preprocessor: regrid_5_5_mmm_ocean
+        additional_datasets: *models_cmip6_hist-aer
+      tasa_ocean:
+        <<: *var_tas
+        short_name: tasa
+        preprocessor: regrid_5_5_ocean
+        additional_datasets: *hadcrut5
+    scripts:
+      tsline: &tsline_amon
+        script: ipcc_ar6/tas_anom_damip.ncl
+        ref_start: 1850
+        ref_end: 1900
+        start_year: 1850
+        end_year: 2020
+        plot_units: "degC"
+        y_min: -3.5
+        y_max: 4.0
+        ref_mask: true
+        header: ["Global Ocean", "Global", "Global Land"]
+        title: "global"
+        panels: [["tas_historical_ocean", "tas_hist-nat_ocean",
+                  "tas_hist-GHG_ocean", "tas_hist-aer_ocean"],
+                 ["tas_historical_global", "tas_hist-nat_global",
+                  "tas_hist-GHG_global", "tas_hist-aer_global"],
+                 ["tas_historical_land", "tas_hist-nat_land",
+                  "tas_hist-GHG_land", "tas_hist-aer_land"]]
+        reference: ["tasa_ocean", "tasa_global", "tasa_land"]
+        panel_figure_strings: ["a)", "b)", "c)"]
+        legend: ["Anthropogenic + Natural", "Natural",
+                "Greenhouse Gases", "Aerosols"]
+
+
+  fig_3_9_tas_anom_damip_2:
+    <<: *diag_tas_anom
+    variables:
+      tas_historical_north_america:
+        <<: *var_tas
+        preprocessor: regrid_5_5_mmm_north_america
+        additional_datasets: *cmip6_models
+      tas_hist-nat_north_america:
+        <<: *var_tas
+        exp: hist-nat
+        preprocessor: regrid_5_5_mmm_north_america
+        additional_datasets: *models_cmip6_hist-nat
+      tas_hist-GHG_north_america:
+        <<: *var_tas
+        exp: hist-GHG
+        preprocessor: regrid_5_5_mmm_north_america
+        additional_datasets: *models_cmip6_hist-GHG
+      tas_hist-aer_north_america:
+        <<: *var_tas
+        exp: hist-aer
+        preprocessor: regrid_5_5_mmm_north_america
+        additional_datasets: *models_cmip6_hist-aer
+      tasa_north_america:
+        <<: *var_tas
+        short_name: tasa
+        preprocessor: regrid_5_5_north_america
+        additional_datasets: *hadcrut5
+
+      tas_historical_south_america:
+        <<: *var_tas
+        preprocessor: regrid_5_5_mmm_south_america
+        additional_datasets: *cmip6_models
+      tas_hist-nat_south_america:
+        <<: *var_tas
+        exp: hist-nat
+        preprocessor: regrid_5_5_mmm_south_america
+        additional_datasets: *models_cmip6_hist-nat
+      tas_hist-GHG_south_america:
+        <<: *var_tas
+        exp: hist-GHG
+        preprocessor: regrid_5_5_mmm_south_america
+        additional_datasets: *models_cmip6_hist-GHG
+      tas_hist-aer_south_america:
+        <<: *var_tas
+        exp: hist-aer
+        preprocessor: regrid_5_5_mmm_south_america
+        additional_datasets: *models_cmip6_hist-aer
+      tasa_south_america:
+        <<: *var_tas
+        short_name: tasa
+        preprocessor: regrid_5_5_south_america
+        additional_datasets: *hadcrut5
+
+      tas_historical_europe:
+        <<: *var_tas
+        preprocessor: regrid_5_5_mmm_europe
+        additional_datasets: *cmip6_models
+      tas_hist-nat_europe:
+        <<: *var_tas
+        exp: hist-nat
+        preprocessor: regrid_5_5_mmm_europe
+        additional_datasets: *models_cmip6_hist-nat
+      tas_hist-GHG_europe:
+        <<: *var_tas
+        exp: hist-GHG
+        preprocessor: regrid_5_5_mmm_europe
+        additional_datasets: *models_cmip6_hist-GHG
+      tas_hist-aer_europe:
+        <<: *var_tas
+        exp: hist-aer
+        preprocessor: regrid_5_5_mmm_europe
+        additional_datasets: *models_cmip6_hist-aer
+      tasa_europe:
+        <<: *var_tas
+        short_name: tasa
+        preprocessor: regrid_5_5_europe
+        additional_datasets: *hadcrut5
+    scripts:
+      tsline:
+        <<: *tsline_amon
+        header: ["North America", "Central and South America",
+                 "Europe and North Africa"]
+        title: "america_europe"
+        panels: [["tas_historical_north_america", "tas_hist-nat_north_america",
+                  "tas_hist-GHG_north_america", "tas_hist-aer_north_america"],
+                 ["tas_historical_south_america", "tas_hist-nat_south_america",
+                  "tas_hist-GHG_south_america", "tas_hist-aer_south_america"],
+                 ["tas_historical_europe", "tas_hist-nat_europe",
+                  "tas_hist-GHG_europe", "tas_hist-aer_europe"]]
+        reference: ["tasa_north_america", "tasa_south_america", "tasa_europe"]
+        panel_figure_strings: ["d)", "e)", "f)"]
+        legend: ["Anthropogenic + Natural", "Natural",
+                "Greenhouse Gases", "Aerosols"]
+
+
+  fig_3_9_tas_anom_damip_3:
+    <<: *diag_tas_anom
+    variables:
+      tas_historical_africa:
+        <<: *var_tas
+        preprocessor: regrid_5_5_mmm_africa
+        additional_datasets: *cmip6_models
+      tas_hist-nat_africa:
+        <<: *var_tas
+        exp: hist-nat
+        preprocessor: regrid_5_5_mmm_africa
+        additional_datasets: *models_cmip6_hist-nat
+      tas_hist-GHG_africa:
+        <<: *var_tas
+        exp: hist-GHG
+        preprocessor: regrid_5_5_mmm_africa
+        additional_datasets: *models_cmip6_hist-GHG
+      tas_hist-aer_africa:
+        <<: *var_tas
+        exp: hist-aer
+        preprocessor: regrid_5_5_mmm_africa
+        additional_datasets: *models_cmip6_hist-aer
+      tasa_africa:
+        <<: *var_tas
+        short_name: tasa
+        preprocessor: regrid_5_5_africa
+        additional_datasets: *hadcrut5
+
+      tas_historical_asia:
+        <<: *var_tas
+        preprocessor: regrid_5_5_mmm_asia
+        additional_datasets: *cmip6_models
+      tas_hist-nat_asia:
+        <<: *var_tas
+        exp: hist-nat
+        preprocessor: regrid_5_5_mmm_asia
+        additional_datasets: *models_cmip6_hist-nat
+      tas_hist-GHG_asia:
+        <<: *var_tas
+        exp: hist-GHG
+        preprocessor: regrid_5_5_mmm_asia
+        additional_datasets: *models_cmip6_hist-GHG
+      tas_hist-aer_asia:
+        <<: *var_tas
+        exp: hist-aer
+        preprocessor: regrid_5_5_mmm_asia
+        additional_datasets: *models_cmip6_hist-aer
+      tasa_asia:
+        <<: *var_tas
+        short_name: tasa
+        preprocessor: regrid_5_5_asia
+        additional_datasets: *hadcrut5
+
+      tas_historical_australasia:
+        <<: *var_tas
+        preprocessor: regrid_5_5_mmm_australasia
+        additional_datasets: *cmip6_models
+      tas_hist-nat_australasia:
+        <<: *var_tas
+        exp: hist-nat
+        preprocessor: regrid_5_5_mmm_australasia
+        additional_datasets: *models_cmip6_hist-nat
+      tas_hist-GHG_australasia:
+        <<: *var_tas
+        exp: hist-GHG
+        preprocessor: regrid_5_5_mmm_australasia
+        additional_datasets: *models_cmip6_hist-GHG
+      tas_hist-aer_australasia:
+        <<: *var_tas
+        exp: hist-aer
+        preprocessor: regrid_5_5_mmm_australasia
+        additional_datasets: *models_cmip6_hist-aer
+      tasa_australasia:
+        <<: *var_tas
+        short_name: tasa
+        preprocessor: regrid_5_5_australasia
+        additional_datasets: *hadcrut5
+    scripts:
+      tsline:
+        <<: *tsline_amon
+        header: ["Africa", "Asia", "Australasia"]
+        title: "africa_asia"
+        panels: [["tas_historical_africa", "tas_hist-nat_africa",
+                  "tas_hist-GHG_africa", "tas_hist-aer_africa"],
+                 ["tas_historical_asia", "tas_hist-nat_asia",
+                  "tas_hist-GHG_asia", "tas_hist-aer_asia"],
+                 ["tas_historical_australasia", "tas_hist-nat_australasia",
+                  "tas_hist-GHG_australasia", "tas_hist-aer_australasia"]]
+        reference: ["tasa_africa", "tasa_asia", "tasa_australasia"]
+        panel_figure_strings: ["g)", "h)", "i)"]
+        legend: ["Anthropogenic + Natural", "Natural",
+                "Greenhouse Gases", "Aerosols"]
+
+
+  fig_3_9_tas_anom_damip_4:
+    variables:
+      tas_historical_antarctica:
+        <<: *var_tas
+        start_year: 1950
+        preprocessor: regrid_5_5_mmm_antarctica
+        additional_datasets: *cmip6_models
+      tas_hist-nat_antarctica:
+        <<: *var_tas
+        start_year: 1950
+        exp: hist-nat
+        preprocessor: regrid_5_5_mmm_antarctica
+        additional_datasets: *models_cmip6_hist-nat
+      tas_hist-GHG_antarctica:
+        <<: *var_tas
+        start_year: 1950
+        exp: hist-GHG
+        preprocessor: regrid_5_5_mmm_antarctica
+        additional_datasets: *models_cmip6_hist-GHG
+      tas_hist-aer_antarctica:
+        <<: *var_tas
+        start_year: 1950
+        exp: hist-aer
+        preprocessor: regrid_5_5_mmm_antarctica
+        additional_datasets: *models_cmip6_hist-aer
+      tasa_antarctica:
+        <<: *var_tas
+        start_year: 1950
+        short_name: tasa
+        preprocessor: regrid_5_5_antarctica
+        additional_datasets: *hadcrut5
+    scripts:
+      tsline:
+        <<: *tsline_amon
+        ref_start: 1950
+        ref_end: 2010
+        header: ["Antarctica"]
+        title: "antarctica"
+        panels: [["tas_historical_antarctica", "tas_hist-nat_antarctica",
+                  "tas_hist-GHG_antarctica", "tas_hist-aer_antarctica"]]
+        reference: ["tasa_antarctica"]
+        panel_figure_strings: ["j)"]
+        legend: ["Anthropogenic + Natural", "Natural",
+                "Greenhouse Gases", "Aerosols"]

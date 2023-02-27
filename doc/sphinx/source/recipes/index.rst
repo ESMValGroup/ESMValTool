@@ -15,12 +15,12 @@ Atmosphere
    recipe_clouds
    recipe_cmug_h2o
    recipe_crem
-   recipe_combined_climate_extreme_index
    recipe_consecdrydays
    recipe_deangelis15nat
    recipe_diurnal_temperature_index
    recipe_eady_growth_rate
    recipe_extreme_events
+   recipe_extreme_index
    recipe_eyring06jgr
    recipe_eyring13jgr
    recipe_gier20bg
@@ -78,6 +78,7 @@ IPCC
 .. toctree::
    :maxdepth: 1
 
+   recipe_ipccwg1ar6ch3
    recipe_flato13ipcc
    recipe_collins13ipcc
 
