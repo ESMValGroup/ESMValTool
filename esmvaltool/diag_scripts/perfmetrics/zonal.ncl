@@ -18,7 +18,7 @@ begin
 
   ; Loop over datasets
   do modid = 0, dimsizes(modidx) - 1
-    print(modid)
+
     imod = modidx(modid)
 
     log_debug("Processing " + datasetnames(imod))
