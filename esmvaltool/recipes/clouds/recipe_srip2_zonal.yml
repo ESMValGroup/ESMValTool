@@ -93,8 +93,8 @@ diagnostics:
       cli:
         preprocessor: pp27
         mip: Amon
-        start_year: 2000
-        end_year: 2001
+        start_year: 1980
+        end_year: 2009
         reference_dataset: CALIPSO-ICECLOUD
         mip: Amon
         additional_datasets:

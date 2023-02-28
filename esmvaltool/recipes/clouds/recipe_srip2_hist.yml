@@ -30,11 +30,13 @@ preprocessors:
 diagnostics:
 
   histograms:
-    description: lineplot monthly means
+    description: histograms of monthly means
     variables:
       clt:
         preprocessor: global_mon
         mip: Amon
+        start_year: 1980
+        end_year: 2009
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01,
@@ -47,25 +49,25 @@ diagnostics:
           - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA,
              tier: 2, start_year: 1982, end_year: 2016, alias: a09_PATMOS-x}
           - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
-             start_year: 1979, end_year: 2019, alias: r01_CFSR}
+             alias: r01_CFSR}
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
-             start_year: 1979, end_year: 2021, alias: r02_ERA5}
+             alias: r02_ERA5}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
-             start_year: 1979, end_year: 2018, alias: r03_ERA-Interim}
+             alias: r03_ERA-Interim}
           - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
-             start_year: 1979, end_year: 2013, alias: r04_JRA-25}
+             alias: r04_JRA-25}
           - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1,
-             start_year: 1979, end_year: 2019, alias: r05_JRA-55}
+             alias: r05_JRA-55}
           - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
-             start_year: 1979, end_year: 2015, alias: r06_MERRA}
+             alias: r06_MERRA}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
-             start_year: 1980, end_year: 2021, alias: r07_MERRA2}
+             alias: r07_MERRA2}
           - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
-             start_year: 1979, end_year: 2021, alias: r08_NCEP-DOE-R2}
+             alias: r08_NCEP-DOE-R2}
           - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
-             start_year: 1979, end_year: 2021, alias: r09_NCEP-NCAR-R1}
+             alias: r09_NCEP-NCAR-R1}
           - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2,
-             start_year: 1979, end_year: 2012, alias: r10_NOAA-CIRES-20CR}
+             alias: r10_NOAA-CIRES-20CR}
     scripts:
       hist_clt:
         script: mpqb/mpqb_histogram.py

@@ -8,7 +8,8 @@ import iris
 import matplotlib.pyplot as plt
 from mpqb_utils import get_mpqb_cfg
 
-from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
+from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
+    select_metadata)
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger,
     get_plot_filename,
@@ -44,7 +45,12 @@ def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
-    grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
+    vargroup = cfg.pop('variable_group', None)
+    if vargroup is not None: 
+        selection = select_metadata(input_data, variable_group='clt_global')
+        grouped_input_data = group_metadata(selection, 'alias', sort='alias')
+    else:
+        grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
 
     logger.info(
         "Example of how to group and sort input data by standard_name:"

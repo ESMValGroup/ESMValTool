@@ -15,7 +15,7 @@ documentation:
 
 preprocessors:
 
-  global_mon:
+  pp_global: &global_settings
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -33,16 +33,64 @@ preprocessors:
                 ESACCI-CLOUD, ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP,
                 MODIS, PATMOS-x, SSMI-MERIS]
 
+  pp_ITCZPacific:
+    <<: *global_settings 
+    extract_region:
+      start_longitude: 135
+      end_longitude: 275
+      start_latitude: 0
+      end_latitude: 12
+    mask_landsea:
+      mask_out: land
+
+  pp_SEPacific:
+    <<: *global_settings 
+    extract_region:
+      start_longitude: 265
+      end_longitude: 275
+      start_latitude: -25
+      end_latitude: -5
+    mask_landsea:
+      mask_out: land
+
+  pp_SouthernOcean:
+    <<: *global_settings 
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -65
+      end_latitude: -30
+    mask_landsea:
+      mask_out: land
+
+  pp_Tropics:
+    <<: *global_settings 
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
+
+  pp_StormTracks:
+    <<: *global_settings 
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 45
+      end_latitude: 60
+
 
 diagnostics:
 
   anncycle:
-    description: lineplot monthly means
+    description: lineplot annual cycle (monthly means)
     variables:
-      clt:
-        preprocessor: global_mon
+      clt_global: &clt_settings
+        preprocessor: pp_global
         mip: Amon
-        reference_dataset: ESACCI-CLOUD
+        start_year: 1980
+        end_year: 2009
+        short_name: clt
         additional_datasets:
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01,
              tier: 3, start_year: 1982, end_year: 2018, alias: a02_CLARA-AVHRR}
@@ -54,25 +102,56 @@ diagnostics:
           - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA,
              tier: 2, start_year: 1982, end_year: 2016, alias: a09_PATMOS-x}
           - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
-             start_year: 1979, end_year: 2019, alias: r01_CFSR}
+             alias: r01_CFSR}
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
-             start_year: 1979, end_year: 2021, alias: r02_ERA5}
+             alias: r02_ERA5}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
-             start_year: 1979, end_year: 2018, alias: r03_ERA-Interim}
+             alias: r03_ERA-Interim}
           - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
-             start_year: 1979, end_year: 2013, alias: r04_JRA-25}
+             alias: r04_JRA-25}
           - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1,
-             start_year: 1979, end_year: 2019, alias: r05_JRA-55}
+             alias: r05_JRA-55}
           - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
-             start_year: 1979, end_year: 2015, alias: r06_MERRA}
+             alias: r06_MERRA}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
-             start_year: 1980, end_year: 2021, alias: r07_MERRA2}
+             alias: r07_MERRA2}
           - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
-             start_year: 1979, end_year: 2021, alias: r08_NCEP-DOE-R2}
+             alias: r08_NCEP-DOE-R2}
           - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
-             start_year: 1979, end_year: 2021, alias: r09_NCEP-NCAR-R1}
+             alias: r09_NCEP-NCAR-R1}
           - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2,
-             start_year: 1979, end_year: 2012, alias: r10_NOAA-CIRES-20CR}
+             alias: r10_NOAA-CIRES-20CR}
+      clt_itcz:
+        <<: *clt_settings
+        preprocessor: pp_ITCZPacific
+      clt_sep:
+        <<: *clt_settings
+        preprocessor: pp_SEPacific
+      clt_so:
+        <<: *clt_settings
+        preprocessor: pp_SouthernOcean
+      clt_tropics:
+        <<: *clt_settings
+        preprocessor: pp_Tropics
+      clt_stormtracks:
+        <<: *clt_settings
+        preprocessor: pp_StormTracks
     scripts:
-      anncyc_clt:
+      ac_clt_global:
+        variable_group: clt_global
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clt_itcz:
+        variable_group: clt_itcz
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clt_sep:
+        variable_group: clt_sep
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clt_so:
+        variable_group: clt_so
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clt_tropics:
+        variable_group: clt_tropics
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clt_stormtracks:
+        variable_group: clt_stormtracks
         script: mpqb/mpqb_lineplot_anncyc.py

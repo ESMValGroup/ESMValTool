@@ -46,8 +46,8 @@ diagnostics:
       clt:
         preprocessor: clim
         mip: Amon
-        start_year: 2000
-        end_year: 2001
+        start_year: 1980
+        end_year: 2009
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
@@ -72,8 +72,8 @@ diagnostics:
       clivi:
         preprocessor: clim
         mip: Amon
-        start_year: 2000
-        end_year: 2001
+        start_year: 1980
+        end_year: 2009
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
@@ -98,8 +98,8 @@ diagnostics:
 #          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
       lwp:
         preprocessor: clim
-        start_year: 2000
-        end_year: 2001
+        start_year: 1980
+        end_year: 2009
         mip: Amon
         derive: true
         reference_dataset: ESACCI-CLOUD
@@ -128,8 +128,8 @@ diagnostics:
 #          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
       swcre:
         preprocessor: clim
-        start_year: 2000
-        end_year: 2001
+        start_year: 1980
+        end_year: 2009
         mip: Amon
         derive: true
         reference_dataset: CERES-EBAF
@@ -153,8 +153,8 @@ diagnostics:
 #          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
       lwcre:
         preprocessor: clim
-        start_year: 2000
-        end_year: 2001
+        start_year: 1980
+        end_year: 2009
         mip: Amon
         derive: true
         reference_dataset: CERES-EBAF

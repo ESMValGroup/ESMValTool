@@ -10,7 +10,8 @@ import matplotlib.pyplot as plt
 from mpqb_utils import get_mpqb_cfg
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
-from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
+from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
+    select_metadata)
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger,
     get_plot_filename,
@@ -46,17 +47,22 @@ def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
-    grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
+    vargroup = cfg.pop('variable_group', None)
+    if vargroup is not None: 
+        selection = select_metadata(input_data, variable_group='clt_global')
+        grouped_input_data = group_metadata(selection, 'alias', sort='alias')
+    else:
+        grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
 
     logger.info(
-        "Example of how to group and sort input data by standard_name:"
+        "Input datasets:"
         "\n%s", pformat(grouped_input_data))
 
     # In order to get the right line colors for MPQB soil moisture
     # here we put ERA-Interim-Land at the end of the dictionary if
     # it is included.
-    if 'ERA-Interim-Land' in grouped_input_data.keys():
-        grouped_input_data.move_to_end('ERA-Interim-Land')
+    #if 'ERA-Interim-Land' in grouped_input_data.keys():
+    #    grouped_input_data.move_to_end('ERA-Interim-Land')
 
     plt.clf()
     fig, (ax1, lax) = plt.subplots(nrows=2,
@@ -81,7 +87,7 @@ def main(cfg):
         #                     linestyle='dotted')
         # iris.quickplot.plot(cube, label=label, color=color,
         #                     linestyle='dashed')
-        iris.quickplot.plot(cube, label=label, color=color)
+        iris.quickplot.plot(cube, label=label, color=color, linewidth=0.5)
     plt.xticks(rotation=90)
     # Add the zero line when plotting anomalies
     if 'ano' in dataset_cfg['preprocessor']:

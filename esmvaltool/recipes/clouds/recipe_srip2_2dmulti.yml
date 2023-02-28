@@ -1,0 +1,359 @@
+# recipe_srip2_2dmulti.yml
+---
+documentation:
+  title: S-RIP2 cloud climatologies
+
+  description: |
+    Multi-year cloud properties.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - lauer22jclim
+
+  projects:
+    - mabak
+
+
+preprocessors:
+  clim:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [CERES-EBAF, CLARA-AVHRR, CLOUDSAT-L2,
+                ESACCI-CLOUD, ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP,
+                MODIS, PATMOS-x, SSMI-MERIS]
+
+
+diagnostics:
+
+  srip2_clt_multi:
+    description: 2d cloud diagnostics
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: clim
+        mip: Amon
+        start_year: 1980
+        end_year: 2009
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01,
+             tier: 3, start_year: 1982, end_year: 2018, alias: a02_CLARA-AVHRR}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016, alias: a04_ESACCI-CLOUD}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+             tier: 3, start_year: 2003, end_year: 2018, alias: a08_MODIS}
+          - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA,
+             tier: 2, start_year: 1982, end_year: 2016, alias: a09_PATMOS-x}
+          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
+             alias: r01_CFSR}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             alias: r02_ERA5}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+             alias: r03_ERA-Interim}
+          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
+             alias: r04_JRA-25}
+          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1,
+             alias: r05_JRA-55}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
+             alias: r06_MERRA}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             alias: r07_MERRA2}
+          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
+             alias: r08_NCEP-DOE-R2}
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
+             alias: r09_NCEP-NCAR-R1}
+          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2,
+             alias: r10_NOAA-CIRES-20CR}
+    scripts:
+      clim: &climsettings
+        script: clouds/clouds.ncl
+        projection: Robinson
+        timemean: annualclim
+        showdiff: true
+        multiobs_uncertainty: true
+        multiobs_exclude: ["CFSR", "ERA-Interim", "ERA5", "JRA-25", "JRA-55", "MERRA","MERRA2", "NCEP-DOE-R2", "NCEP-NCAR-R1", "NOAA-CIRES-20CR"]
+        var: clt
+      hist: &histsettings
+        script: mpqb/mpqb_histogram.py
+        vmin: 0
+        vmax: 100
+        number_of_bars: 10
+        logarithmic: False
+      interannual: &interannualsettings
+        script: clouds/clouds_interannual.ncl
+        colormap: WhiteBlueGreenYellowRed
+        projection: Robinson
+        timemean: annualclim
+        multiobs_exclude: ["CFSR", "ERA-Interim", "ERA5", "JRA-25", "JRA-55", "MERRA","MERRA2", "NCEP-DOE-R2", "NCEP-NCAR-R1", "NOAA-CIRES-20CR"]
+        var: clt
+        epsilon: 1.0
+      seas: &seassettings
+        script: clouds/clouds_seasonal_cycle.ncl
+        projection: Robinson
+        multiobs_exclude: ["CFSR", "ERA-Interim", "ERA5", "JRA-25", "JRA-55", "MERRA","MERRA2", "NCEP-DOE-R2", "NCEP-NCAR-R1", "NOAA-CIRES-20CR"]
+        var: clt
+        epsilon: 1.0
+      taylor: &taylorsettings
+        script: clouds/clouds_taylor.ncl
+        multiobs_uncertainty: true
+        multiobs_exclude: ["CFSR", "ERA-Interim", "ERA5", "JRA-25", "JRA-55", "MERRA","MERRA2", "NCEP-DOE-R2", "NCEP-NCAR-R1", "NOAA-CIRES-20CR"]
+        styleset: srip2
+        timemean: annualclim
+        valid_fraction: 0.5
+        var: clt
+
+
+  srip2_clivi_multi:
+    description: 2d cloud diagnostics
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clivi:
+        preprocessor: clim
+        mip: Amon
+        start_year: 1980
+        end_year: 2009
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01,
+             tier: 3, start_year: 1982, end_year: 2018, alias: a02_CLARA-AVHRR}
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+             version: P1-R05-gridbox-average-noprecip, tier: 3,
+             start_year: 2006, end_year: 2017, alias: a03_CLOUDSAT-L2}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016, alias: a04_ESACCI-CLOUD}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+             tier: 3, start_year: 2003, end_year: 2018, alias: a08_MODIS}
+#          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             alias: r01_CFSR}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             alias: r02_ERA5}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+             alias: r03_ERA-Interim}
+#          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             alias: r04_JRA-25}
+#          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1,
+#             alias: r05_JRA-55}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
+             alias: r06_MERRA}
+#          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+#             alias: r07_MERRA2}
+#          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
+#             alias: r08_NCEP-DOE-R2}
+#          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             alias: r09_NCEP-NCAR-R1}
+#          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2,
+#             alias: r10_NOAA-CIRES-20CR}
+    scripts:
+      clim:
+        <<: *climsettings
+        var: clivi
+      interannual:
+        <<: *interannualsettings
+        var: clivi
+        epsilon: 0.001
+      seas:
+        <<: *seassettings
+        var: clivi
+        epsilon: 0.001
+      taylor:
+        <<: *taylorsettings
+        var: clivi
+
+
+  srip2_lwp_multi:
+    description: 2d cloud diagnostics
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      lwp:
+        preprocessor: clim
+        start_year: 1980
+        end_year: 2009
+        mip: Amon
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01,
+             tier: 3, start_year: 1982, end_year: 2018, alias: a02_CLARA-AVHRR}
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+             version: P1-R05-gridbox-average-noprecip, tier: 3,
+             start_year: 2006, end_year: 2017, alias: a03_CLOUDSAT-L2}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016, alias: a04_ESACCI-CLOUD}
+          - {dataset: MAC-LWP, project: OBS, type: sat, version: v1, tier: 3,
+             start_year: 1988, end_year: 2016, alias: a07_MAC-LWP}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+             tier: 3, start_year: 2003, end_year: 2018, alias: a08_MODIS}
+#          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             alias: r01_CFSR}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             alias: r02_ERA5}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+             alias: r03_ERA-Interim}
+#          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             alias: r04_JRA-25}
+#          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1,
+#             alias: r05_JRA-55}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
+             alias: r06_MERRA}
+#          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+#             alias: r07_MERRA2}
+#          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
+#             alias: r08_NCEP-DOE-R2}
+#          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             alias: r09_NCEP-NCAR-R1}
+#          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2,
+#             alias: r10_NOAA-CIRES-20CR}
+    scripts:
+      clim:
+        <<: *climsettings
+        var: lwp
+      interannual:
+        <<: *interannualsettings
+        var: lwp
+        epsilon: 0.001
+      seas:
+        <<: *seassettings
+        var: lwp
+        epsilon: 0.001
+      taylor:
+        <<: *taylorsettings
+        var: lwp
+
+
+  srip2_swcre_multi:
+    description: 2d cloud diagnostics
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      swcre:
+        preprocessor: clim
+        start_year: 1980
+        end_year: 2009
+        mip: Amon
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1,
+             tier: 2, start_year: 2001, end_year: 2021, alias: a01_CERES-EBAF}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016, alias: a04_ESACCI-CLOUD}
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
+             start_year: 1984, end_year: 2016, alias: a06_ISCCP-FH}
+          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
+             alias: r01_CFSR}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             alias: r02_ERA5}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+             alias: r03_ERA-Interim}
+          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
+             alias: r04_JRA-25}
+          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1,
+             alias: r05_JRA-55}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
+             alias: r06_MERRA}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             alias: r07_MERRA2}
+#          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
+#             alias: r08_NCEP-DOE-R2}
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
+             alias: r09_NCEP-NCAR-R1}
+#          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2,
+#             alias: r10_NOAA-CIRES-20CR}
+    scripts:
+      clim:
+        <<: *climsettings
+        var: swcre
+      interannual:
+        <<: *interannualsettings
+        var: swcre
+        epsilon: 1.0
+      seas:
+        <<: *seassettings
+        var: swcre
+        epsilon: 1.0
+      taylor:
+        <<: *taylorsettings
+        var: swcre
+
+
+  srip2_lwcre_multi:
+    description: 2d cloud diagnostics
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      lwcre:
+        preprocessor: clim
+        start_year: 1980
+        end_year: 2009
+        mip: Amon
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1,
+             tier: 2, start_year: 2001, end_year: 2021, alias: a01_CERES-EBAF}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016, alias: a04_ESACCI-CLOUD}
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
+             tier: 2, start_year: 1984, end_year: 2016, alias: a06_ISCCP-FH}
+          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
+             alias: r01_CFSR}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             alias: r02_ERA5}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+             alias: r03_ERA-Interim}
+          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
+             alias: r04_JRA-25}
+          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1,
+             alias: r05_JRA-55}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
+             alias: r06_MERRA}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             alias: r07_MERRA2}
+#          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
+#             alias: r08_NCEP-DOE-R2}
+#          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             alias: r09_NCEP-NCAR-R1}
+#          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2,
+#             alias: r10_NOAA-CIRES-20CR}
+    scripts:
+      clim:
+        <<: *climsettings
+        var: lwcre
+      interannual:
+        <<: *interannualsettings
+        var: lwcre
+        epsilon: 1.0
+      seas:
+        <<: *seassettings
+        var: lwcre
+        epsilon: 1.0
+      taylor:
+        <<: *taylorsettings
+        var: lwcre
