@@ -49,7 +49,7 @@ def main(cfg):
 
     vargroup = cfg.pop('variable_group', None)
     if vargroup is not None: 
-        selection = select_metadata(input_data, variable_group='clt_global')
+        selection = select_metadata(input_data, variable_group=vargroup)
         grouped_input_data = group_metadata(selection, 'alias', sort='alias')
     else:
         grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
