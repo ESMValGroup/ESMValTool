@@ -64,6 +64,8 @@ jobs:
       - shell: bash -l {0}
         run: esmvaltool version
       - shell: bash -l {0}
+        run: flake8
+      - shell: bash -l {0}
         run: pytest -n 2 -m "not installation"
       # Automated PR
       # see https://github.com/marketplace/actions/create-pull-request

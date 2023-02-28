@@ -261,7 +261,7 @@ def make_transects_plots(
         qplt.contourf(cube, 15, linewidth=0, rasterized=True)
 
         if set_y_logscale:
-            plt.axes().set_yscale('log')
+            plt.gca().set_yscale('log')
 
         if region:
             region_title = region
@@ -381,9 +381,9 @@ def make_transect_contours(
             linestyles=linestyles,
             rasterized=True)
 
-        # Determine y log scale.
+        # Determine y log scale. Use gca to set scale
         if determine_set_y_logscale(cfg, metadata):
-            plt.axes().set_yscale('log')
+            plt.gca().set_yscale('log')
 
         add_sea_floor(cube)
 
@@ -517,7 +517,7 @@ def multi_model_contours(
             }
 
             if set_y_logscale:
-                plt.axes().set_yscale('log')
+                plt.gca().set_yscale('log')
 
             title = metadatas[filename]['long_name']
             units = str(model_cubes[filename][region].units)
