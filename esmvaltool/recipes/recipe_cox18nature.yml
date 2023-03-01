@@ -29,8 +29,6 @@ preprocessors:
   spatial_mean:
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
 
 
 diagnostics:
