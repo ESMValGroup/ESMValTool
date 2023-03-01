@@ -94,11 +94,12 @@ Also, for computationally-heavy recipes, you can require more memory and/or time
   As soon as a job is finished, the next one should start. More information on the job handling at DKRZ `here
   <https://docs.dkrz.de/doc/levante/running-jobs/partitions-and-limits.html#levante-partitions-and-limits>`_.
 
-Submit the batch scripts that will run all recipes. Assemble some statistics so that issues with certain recipes
-can be followed-up, and document this information in the release issue, examples:
+Once all jobs are completed, assemble some statistics so that issues with certain recipes
+can be followed-up, and document this information in the release issue, such as:
 
 - number of successfully run recipes
-- number of failed recipes with Diagnostic error (can they be fixed? Can the fixes be included in the release?)
+- number of failed recipes with preprocessor errors (can they be fixed? Can the fixes be included in the release?)
+- number of failed recipes with diagnostic errors (can they be fixed? Can the fixes be included in the release?)
 - number of recipes that are missing data
 - number of recipes that have various other issues (and document them)
 
