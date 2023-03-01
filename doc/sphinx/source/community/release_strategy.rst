@@ -231,6 +231,8 @@ Past releases
 
 
 
+.. _release_steps:
+
 Detailed timeline steps
 ~~~~~~~~~~~~~~~~~~~~~~~
 
