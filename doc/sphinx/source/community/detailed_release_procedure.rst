@@ -166,7 +166,8 @@ The steps to running the compare tool on the VM are the following:
 - command to run: `nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt`
 
 Some of the recipes will appear as having identical output to the one from previous release. However, others
-will need human inspection; here are some guidelines on how to perform the human inspection:
+will need human inspection. Ask the recipe maintainers (`@ESMValGroup/esmvaltool-recipe-maintainers`_) and ESMValTool Development Team (`@ESMValGroup/esmvaltool-developmentteam`_) to provide assistance in checking the results.
+Here are some guidelines on how to perform the human inspection:
 
 - look at plots from current run vs previous release run: most of them will be identical, but if Matplotlib
   has changed some plotting feature, images will have slightly different metadata so the comparison script will report them
