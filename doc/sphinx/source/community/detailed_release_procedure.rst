@@ -60,7 +60,7 @@ you can find a copy of the script either in `/home/b/b382109/Tool_Release_270_Sc
 in the draft Pull Request https://github.com/ESMValGroup/ESMValTool/pull/2883.
 
 You will have to set the name of your environment, your email address (if you want to get email notifications for successful/failed jobs) and the name of the directory you want to store the job outputs. The name of the account is the same (`bk1088`), and the default partition is set to `compute`.
-More information on running jobs with SLURM on DKRZ/Levante can be found `here
+More information on running jobs with SLURM on DKRZ/Levante can be found in the DKRZ `documentation
 <https://docs.dkrz.de/doc/levante/running-jobs/index.html>`_.
 
 .. note::
