@@ -257,7 +257,7 @@ These are the detailed steps to take to make a release.
 #. ESMValTool feature freeze
 
    - A release branch is created and branch protection rules are set up so only the release manager (i.e. the person in charge of the release branch) can push commits to that branch.
-   - The creation of the release branch is announced to the ESMValTool development team along with the procedures to use the branch for testing and making last-minute changes (see next step)
+   - The creation of the release branch is announced to the ESMValTool development team along with the procedures to use the branch for testing and making last-minute changes (see next step).
 
 
 #. Some additional testing of ESMValTool
@@ -276,17 +276,17 @@ These are the detailed steps to take to make a release.
 
 #. ESMValCore release
 
-   - Make the official ESMValCore release with the last release candidate by following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>` .
+   - Make the official ESMValCore release with the last release candidate by following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>`.
 
 
 #. ESMValTool release
 
-   - Make the release by following :ref:`How to make a release`
+   - Make the release by following :ref:`How to make a release`.
 
 
 #. Announce the releases
 
-   - Ask the user engagement team to announce the releases to the user mailing list, the development team mailing list, and on twitter
+   - Ask the user engagement team to announce the releases to the user mailing list, the development team mailing list, and on twitter.
 
 
 #. Core development team meets to coordinate the content of next milestone
@@ -320,9 +320,10 @@ Glossary
 
 Feature freeze
 ~~~~~~~~~~~~~~
-The date on which no new features may be submitted for the upcoming release. After this date, only critical bug fixes can still be included.
-After that, development work continues in the main branch, see :ref:`release_branch`.
-If you are unsure the continued development could interfere with the release, you can tag the :ref:`release_manager` in your pull request.
+The date on which no new features may be submitted for the upcoming release. 
+After this date, only critical bug fixes can still be included to the :ref:`release_branch`.
+Development work can continue in the main branch.
+If you are unsure whether new developments could interfere with the release, check with the :ref:`release_manager`.
 
 
 Milestone
@@ -334,7 +335,7 @@ A milestone is a list of issues and pull-request on GitHub. It has a due date, t
 Release manager
 ~~~~~~~~~~~~~~~
 The person in charge of making the release, both technically and organizationally. Appointed for a single release.
-Check the :ref:`release_schedule` to see who is the release manager of the next release.
+Check the :ref:`release_schedule` to see who is the manager of the next release.
 
 .. _release_branch:
 
