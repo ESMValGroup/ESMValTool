@@ -321,6 +321,9 @@ Glossary
 Feature freeze
 ~~~~~~~~~~~~~~
 The date on which no new features may be submitted for the upcoming release. After this date, only critical bug fixes can still be included.
+After that, development work continues in the main branch, see :ref:`release_branch`.
+If you are unsure the continued development could interfere with the release, you can tag the :ref:`release_manager` in your pull request.
+
 
 Milestone
 ~~~~~~~~~
@@ -331,6 +334,9 @@ A milestone is a list of issues and pull-request on GitHub. It has a due date, t
 Release manager
 ~~~~~~~~~~~~~~~
 The person in charge of making the release, both technically and organizationally. Appointed for a single release.
+Check the :ref:`release_schedule` to see who is the release manager of the next release.
+
+.. _release_branch:
 
 Release branch
 ~~~~~~~~~~~~~~
