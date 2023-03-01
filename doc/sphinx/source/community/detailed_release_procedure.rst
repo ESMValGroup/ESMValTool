@@ -46,10 +46,6 @@ Furthermore, the runtime environment needs to be documented: make a copy of the 
 and attach it in the release testing issue; to record the environment in a yaml file use e.g.
 `conda env export > ToolEnv270Test.txt`.
 
-Mention any special data movement one needs to perfom to run the tests e.g.:
-for v2.7.0 the release manager moved the autoassess-specific files to
-`/home/b/$USER/autoassess_files` on DKRZ/Levante.
-
 Modifications to configuration files need to be documented as well: for example,
 for v2.7.0 the release manager had to modify `config-user.yml` file by
 adding a number of extra paths for DKRZ/Levante-specific data pools:
