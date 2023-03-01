@@ -184,6 +184,7 @@ def _get_pull_requests(project):
         state='closed',
         sort='updated',
         direction='desc',
+        base='main',
     )
     return pulls
 
