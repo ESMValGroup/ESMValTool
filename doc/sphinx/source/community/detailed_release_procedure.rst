@@ -46,20 +46,9 @@ Furthermore, the runtime environment needs to be documented: make a copy of the 
 and attach it in the release testing issue; to record the environment in a yaml file use e.g.
 `conda env export > ToolEnv270Test.txt`.
 
-Modifications to configuration files need to be documented as well: for example,
-for v2.7.0 the release manager had to modify `config-user.yml` file by
-adding a number of extra paths for DKRZ/Levante-specific data pools:
-
-.. code-block:: yaml
-
-  CMIP6:
-    - /work/bd0854/DATA/ESMValTool2/CMIP6_DKRZ
-    - /work/bd0854/DATA/ESMValTool2/download/CMIP6
-  CMIP5:
-    - /work/bd0854/DATA/ESMValTool2/CMIP5_DKRZ
-    - /work/bd0854/b309141/additional_CMIP5
-    - /work/bd0854/DATA/ESMValTool2/download/cmip5/output1
-    - /work/bd0854/DATA/ESMValTool2/download/cmip5
+Modifications to configuration files need to be documented as well.
+To test recipes, it is recommended to only use the default DKRZ data directories, simply by uncommenting
+the DKRZ-Levante block of the default ``config-user.yml`` file.
 
 Submit run scripts - test recipe runs
 -------------------------------------
