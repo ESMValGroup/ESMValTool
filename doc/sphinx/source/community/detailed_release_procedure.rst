@@ -8,7 +8,8 @@ is important to be very well organized and to have documented each procedural st
 the next release manager can follow said steps, and finalize the release without any delays.
 
 The workflow below assumes an ESMValCore release candidate, or a completed stable release, have been released
-and deployed on conda-forge and PyPI; it also assumes the release manager has access to accounts on DKRZ/Levante.
+and deployed on conda-forge and PyPI; it also assumes the release manager has access to accounts on `DKRZ/Levante
+<https://docs.dkrz.de/>`_.
 
 Below is a list of steps that the release manager, together with the previous release manager, should go through before the actual release;
 these include testing the new code by running all available recipes in the ``main`` branch, and comparing the output against
@@ -59,6 +60,8 @@ you can find a copy of the script either in `/home/b/b382109/Tool_Release_270_Sc
 in the draft Pull Request https://github.com/ESMValGroup/ESMValTool/pull/2883.
 
 You will have to set the name of your environment, your email address (if you want to get email notifications for successful/failed jobs) and the name of the directory you want to store the job outputs. The name of the account is the same (`bk1088`), and the default partition is set to `compute`.
+More information on running jobs with SLURM on DKRZ/Levante can be found `here
+<https://docs.dkrz.de/doc/levante/running-jobs/index.html>`_.
 
 .. note::
 
@@ -88,7 +91,8 @@ Also, for computationally-heavy recipes, you can require more memory and/or time
 .. note::
 
   On DKRZ/Levante, a user can't have more than 20 SLURM jobs running at a time.
-  As soon as a job is finished, the next one should start
+  As soon as a job is finished, the next one should start. More information on the job handling at DKRZ `here
+  <https://docs.dkrz.de/doc/levante/running-jobs/partitions-and-limits.html#levante-partitions-and-limits>`_.
 
 Submit the batch scripts that will run all recipes. Assemble some statistics so that issues with certain recipes
 can be followed-up, and document this information in the release issue, examples:
