@@ -186,3 +186,6 @@ Here you can find a list of useful files and directories:
 - Formatted list of current recipes (as of v2.7.0) to be used with Markdown entries (on DKRZ/Lvante) at `/home/b/b382109/Tool_Release_270_Scripts/all_recipes.md` or in the draft Pull Request https://github.com/ESMValGroup/ESMValTool/pull/2883
 - last release (v2.7.0) submit scripts on DKRZ/Levante `/home/b/b382109/submit`
 - Miniconda3 installer file on DKRZ/Levante `/home/b/b382109/Miniconda3-py39_4.12.0-Linux-x86_64.sh` (remember to immediately update conda after using it, it is fairly old, from May 2022).
+
+.. _`@ESMValGroup/esmvaltool-recipe-maintainers`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-recipe-maintainers
+.. _`@ESMValGroup/esmvaltool-developmentteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam
