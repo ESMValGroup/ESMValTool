@@ -34,7 +34,7 @@ def session(mocker, tmp_path):
         auxiliary_data_dir=str(tmp_path / 'auxiliary_data_dir'),
         check_level=esmvalcore.cmor.check.CheckLevels['DEFAULT'],
         drs={},
-        offline=True,
+        search_esgf='never',
         rootpath={'default': str(tmp_path)},
     )
     session = CFG.start_session('test')

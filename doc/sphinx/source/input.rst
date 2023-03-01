@@ -72,7 +72,7 @@ For example, run
 
 .. code-block:: bash
 
-    esmvaltool run --offline=False examples/recipe_python.yml
+    esmvaltool run --search_esgf=when_missing examples/recipe_python.yml
 
 to run the default example recipe and automatically download the required data
 to the directory ``~/climate_data``.
