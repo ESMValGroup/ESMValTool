@@ -238,7 +238,7 @@ provided:
 
 -  **Release notes:** The *release* notes are already documented in the
    :ref:`ESMValTool Changelog <changelog>` and
-   :ref:`ESMValCore Changelog <esmvalcore:changelog-v2-7-1>`, and
+   :ref:`ESMValCore Changelog <esmvalcore:changelog>`, and
    “*backward-incompatible changes*” is the first section after
    “Highlights”.
 
