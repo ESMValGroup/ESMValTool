@@ -50,7 +50,7 @@ def display_in_md():
     """Print out recipes in Markdown list."""
     todaynow = datetime.datetime.now()
     print(f"## Recipe running session {todaynow}\n")
-    with open("all_recipes.txt", "r") as allrecs:
+    with open("all_recipes.txt", "r", encoding='utf-8') as allrecs:
         all_recs = [rec.strip() for rec in allrecs.readlines()]
 
     # parse different types of recipe outcomes
