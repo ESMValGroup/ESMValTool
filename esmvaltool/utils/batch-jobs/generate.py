@@ -1,3 +1,4 @@
+"""Generate SLURM run scripts to run recipes."""
 import os
 from pathlib import Path
 
@@ -14,7 +15,7 @@ SPECIAL_RECIPES = {
         'partition': '#SBATCH --partition=shared \n',
         'time': '#SBATCH --time=48:00:00 \n',
         'memory': '#SBATCH --mem=50000 \n',
-        },
+    },
     'recipe_bock20jgr_fig_8-10': {
         'partition': '#SBATCH --partition=shared \n',
         'time': '#SBATCH --time=48:00:00 \n',
@@ -56,7 +57,7 @@ for recipe in Path(dir_recipes).rglob('*.yml'):
     filename = f'launch_{recipe.stem}.sh'
     # if recipe.stem in exclude:
     #    continue
-    with open(f'{filename}', 'w') as file:
+    with open(f'{filename}', 'w', encoding='utf-8') as file:
         file.write('#!/bin/bash -l \n')
         file.write('\n')
         file.write(f'#SBATCH --job-name={recipe.stem}.%J\n')
