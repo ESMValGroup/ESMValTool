@@ -54,7 +54,7 @@ home = os.path.expanduser('~')
 
 for recipe in Path(dir_recipes).rglob('*.yml'):
     filename = f'launch_{recipe.stem}.sh'
-    #if recipe.stem in exclude:
+    # if recipe.stem in exclude:
     #    continue
     with open(f'{filename}', 'w') as file:
         file.write('#!/bin/bash -l \n')
