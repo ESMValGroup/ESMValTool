@@ -281,6 +281,9 @@ These are the detailed steps to take to make a release.
 
 #. ESMValTool release
 
+   - Pin ESMValCore to the same version as ESMValTool in the ``environment.yml`` and on `conda-forge
+     <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__.
+     This way, we make sure that ESMValTool uses the ESMValCore version with which it has been tested.
    - Make the release by following :ref:`How to make a release`.
 
 
@@ -401,7 +404,7 @@ Make a pull request and get it merged into ``main``.
 
 3. Add release notes
 ~~~~~~~~~~~~~~~~~~~~
-Use the script :ref:`draft_release_notes.py` to create create a draft of the
+Use the script :ref:`draft_release_notes.py` to create a draft of the
 release notes.
 This script uses the titles and labels of merged pull requests since the
 previous release.
