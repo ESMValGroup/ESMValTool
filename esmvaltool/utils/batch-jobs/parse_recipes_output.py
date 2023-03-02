@@ -1,3 +1,4 @@
+"""Parse recipes output after a mega run."""
 import datetime
 import os
 
@@ -14,7 +15,7 @@ def parse_slurm_output(dirname, pattern):
 
 def parse_output_file():
     """Parse .out files in a given dir."""
-    dirname = "/home/b/b382109/output_v270" 
+    dirname = "/home/b/b382109/output_v270"
     pattern = "*.out*"
     files = parse_slurm_output(dirname, pattern)
     success_rec = []
@@ -39,7 +40,7 @@ def parse_output_file():
     df_recipe_outs = [f.split(".")[0] + ".yml" for f in df_recipe_outs]
     md_recipe_outs = [os.path.basename(ofile) for ofile in missing_data]
     md_recipe_outs = [f.split(".")[0] + ".yml" for f in md_recipe_outs]
- 
+
     return (sorted(set(ok_recipe_outs)),
             sorted(set(df_recipe_outs)),
             sorted(set(md_recipe_outs)))
@@ -50,7 +51,7 @@ def display_in_md():
     todaynow = datetime.datetime.now()
     print(f"## Recipe running session {todaynow}\n")
     with open("all_recipes.txt", "r") as allrecs:
-        all_recs = [l.strip() for l in allrecs.readlines()]
+        all_recs = [rec.strip() for rec in allrecs.readlines()]
 
     # parse different types of recipe outcomes
     recipe_list, failed, missing_dat = parse_output_file()
@@ -73,9 +74,9 @@ def display_in_md():
 
     # look at other fails or still running
     bad_recs = [
-        l for l in all_recs
-        if l not in recipe_list and l not in failed
-        and l not in missing_dat
+        rec for rec in all_recs
+        if rec not in recipe_list and rec not in failed
+        and rec not in missing_dat
     ]
     bad_recs = sorted(bad_recs)
     print("\n### Recipes that failed of other reasons  or are still running\n")
@@ -84,5 +85,5 @@ def display_in_md():
         print("- " + rec)
 
 
-display_in_md()
-
+if __name__ == '__main__':
+    display_in_md()
