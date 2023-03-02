@@ -59,7 +59,7 @@ Support for ESMValTool can be found in `ESMValTool Discussions page
 <https://github.com/ESMValGroup/ESMValTool/discussions>`__
 where users can open an issue and a member of the `User Engagement Team
 <mailto:esmvaltool_user_engagement_team@listserv.dfn.de>`_ of ESMValTool
-will reply as soon as possible. 
+will reply as soon as possible.
 This is open for all general and technical questions on the ESMValTool:
 installation, application, development, or any other question or comment
 you may have.
@@ -85,8 +85,7 @@ or
 
 The mailing list also has a `public archive <https://www.listserv.dfn.de/sympa/arc/esmvaltool>`_ online.
 
-
-
+.. _monthly-meetings:
 
 Monthly meetings
 ----------------
