@@ -4,7 +4,7 @@ from pathlib import Path
 import esmvaltool
 
 env = 'coretool26rc4'
-mail = None
+mail = False
 account = 'bk1088'
 outputs = 'output_rc4'
 partition = 'compute'
@@ -23,7 +23,7 @@ SPECIAL_RECIPES = {
     'recipe_schlund20esd': {
         'partition': '#SBATCH --partition=compute \n',
         'time': '#SBATCH --time=08:00:00 \n',
-        'memory': '#SBATCH --constraint=512G \n',        
+        'memory': '#SBATCH --constraint=512G \n',
     },
     'recipe_collins13ipcc': {
         'partition': '#SBATCH --partition=compute \n',
@@ -42,7 +42,7 @@ SPECIAL_RECIPES = {
     },
 }
 
-#exclude = [
+# exclude = [
 #    'recipe_smpi_4cds', 'recipe_smpi', 'recipe_miles_eof',
 #    'recipe_collins13ipcc', 'recipe_schlund20esd', 'recipe_bock20jgr_fig_1-4',
 #    'recipe_bock20jgr_fig_6-7', 'recipe_bock20jgr_fig_8_10',
@@ -72,8 +72,7 @@ for recipe in Path(dir_recipes).rglob('*.yml'):
             file.write(SPECIAL_RECIPES[recipe.stem]['time'])
             file.write(SPECIAL_RECIPES[recipe.stem]['memory'])
         if mail:
-            file.write(f'#SBATCH --mail-user={mail} \n')
-            file.write(f'#SBATCH --mail-type=FAIL,END \n')
+            file.write('#SBATCH --mail-type=FAIL,END \n')
         file.write('\n')
         file.write('set -eo pipefail \n')
         file.write('unset PYTHONPATH \n')
