@@ -64,7 +64,7 @@ for recipe in Path(dir_recipes).rglob('*.yml'):
         file.write(f'#SBATCH --error={home}/{outputs}/{recipe.stem}.%J.err\n')
         file.write(f'#SBATCH --account={account}\n')
         if not SPECIAL_RECIPES.get(recipe.stem, None):
-        #    continue
+            # continue
             file.write(f'#SBATCH --partition={partition}\n')
             file.write('#SBATCH --time=08:00:00\n')
         else:
