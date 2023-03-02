@@ -83,5 +83,5 @@ for recipe in Path(dir_recipes).rglob('*.yml'):
         file.write('\n')
         file.write(f'esmvaltool run {str(recipe)}')
 
-    if SPECIAL_RECIPES.get(recipe.stem, None):
-        os.system(f'sbatch {filename}')
+    # if SPECIAL_RECIPES.get(recipe.stem, None):
+    os.system(f'sbatch {filename}')
