@@ -22,7 +22,7 @@ def parse_output_file():
     diag_fail_rec = []
     missing_data = []
     for fil in files:
-        with open(fil, "r") as outfile:
+        with open(fil, "r", encoding='utf-8') as outfile:
             lines = outfile.readlines()
             for line in lines:
                 if "Run was successful\n" in line:
@@ -33,7 +33,7 @@ def parse_output_file():
                     missing_data.append(fil)
 
     # typical list elem
-    # /home/b/b382109/output_v270/recipe_schlund20jgr_gpp_change_1pct.2378956.out
+    # /home/b/b382109/output_v270/recipe_zmnam.2378956.out
     ok_recipe_outs = [os.path.basename(ofile) for ofile in success_rec]
     ok_recipe_outs = [f.split(".")[0] + ".yml" for f in ok_recipe_outs]
     df_recipe_outs = [os.path.basename(ofile) for ofile in diag_fail_rec]
@@ -79,7 +79,9 @@ def display_in_md():
         and rec not in missing_dat
     ]
     bad_recs = sorted(bad_recs)
-    print("\n### Recipes that failed of other reasons  or are still running\n")
+    print(
+        "\n### Recipes that failed of other reasons  or are still running\n"
+    )
     print(f"{len(bad_recs)} out of {len(all_recs)} so far\n")
     for rec in bad_recs:
         print("- " + rec)
