@@ -178,8 +178,9 @@ def _xy_plot(x_data, y_data, reg_line=False, **plot_kwargs):
 
     # Pearson correlation with SciPy:
     corr = pearsonr(x_data, y_data)
-    corr = [np.round(c, 2) for c in corr]
+    print("Pearson correlation: r = ", corr[0], "p = ", corr[1])
     # Extracting the r-value and the p-value:
+    corr = [np.round(c, 2) for c in corr]
     title = 'r=%s, p=%s' % (corr[0], corr[1])
     # Adding the text to the Seaborn plot:
     plt.title(title, loc='right')
@@ -280,8 +281,9 @@ def read_data_and_preprocess(cfg):
     y_data = []
     for idx, dataset in enumerate(datasets1):
         if dataset in datasets2:
-            x_data.append(data1[idx])
-            y_data.append(data2[datasets2.index(dataset)])
+            if not np.isnan(data2[datasets2.index(dataset)]):
+                x_data.append(data1[idx])
+                y_data.append(data2[datasets2.index(dataset)])
         else:
             logger.debug("Dataset %s is not part of file2", dataset)
     for idx, dataset in enumerate(datasets2):
