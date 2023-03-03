@@ -47,9 +47,14 @@ groupby_facet: str, optional (default: 'alias')
     Facet which is used to group input datasets when creating the main data
     frame. All datasets within a group are expected to have the same index
     after calling :func:`iris.pandas.as_data_frame` on them. These datasets
-    within a group will then get merged into a single data frame per group.
-    Finally, the data frames for all groups are concatenated into one main data
-    frame. `groupby_facet` is also added as a column to this main data frame.
+    within a group will then get merged (combined along axis 1, i.e., columns)
+    into a single data frame per group.  Finally, the data frames for all
+    groups are concatenated (combined along axis 0, i.e., rows) into one main
+    data frame. `groupby_facet` is also added as a column to this main data
+    frame.
+legend_title: str, optional (default: None)
+    Title for legend. If ``None``, Seaborn will determine the legend title (if
+    possible).
 reset_index: bool, optional (default: False)
     Put coordinate information of datasets into columns instead of (multi-)
     indices. This avoids the deletion of coordinate information if different
@@ -64,7 +69,8 @@ seaborn_func: str
     <https://seaborn.pydata.org/tutorial/function_overview.html>`__.
 seaborn_kwargs: dict, optional
     Optional keyword arguments for the plotting function given by
-    `seaborn_func`. Must not be include an argument called `data`.
+    `seaborn_func`. Must not include an argument called `data`. Example:
+    ``{'x': 'variable_1', 'y': 'variable_2', 'hue': 'coord_1'}``.
 seaborn_settings: dict, optional
     Options for :func:`seaborn.set_theme` (affects all plots).
 set_kwargs: dict, optional
@@ -78,7 +84,8 @@ set_kwargs: dict, optional
     ``{'xlabel': 'X [km]', 'xlim': [0, 20]}``.
 suptitle: str or None, optional (default: None)
     Suptitle for the plot (see :func:`matplotlib.pyplot.suptitle`). If
-    ``None``, do not create a suptitle.
+    ``None``, do not create a suptitle. If the plot shows only a single panel,
+    use `set_kwargs` with ``{'title': 'TITLE'}`` instead.
 
 """
 from __future__ import annotations
@@ -93,6 +100,7 @@ import iris.pandas
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+from matplotlib.colors import LogNorm, Normalize
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -129,14 +137,23 @@ def _create_plot(
     logger.info(
         "Creating plot with\nseaborn.%s(\n    data=main_data_frame,\n%s\n)",
         plot_func_str,
-        "\n".join(f"    {k}={v!r}," for (k, v) in plot_kwargs.items()),
+        _get_str_from_kwargs(plot_kwargs),
     )
     plot_obj = plot_func(data=data_frame, **plot_kwargs)
 
     # Adjust plot appearance
-    plot_obj.set(**cfg['set_kwargs'])
+    if cfg['set_kwargs']:
+        logger.debug(
+            "Running\n%s.set(\n%s\n)",
+            type(plot_obj).__name__,
+            _get_str_from_kwargs(cfg['set_kwargs']),
+        )
+        plot_obj.set(**cfg['set_kwargs'])
     if cfg['suptitle'] is not None:
-        plt.suptitle(cfg['suptitle'])
+        logger.debug("Setting `suptitle='%s'`", cfg['suptitle'])
+        plt.suptitle(cfg['suptitle'], y=1.05)
+    if cfg['legend_title'] is not None:
+        _set_legend_title(plot_obj, cfg['legend_title'])
 
     # Save plot
     plot_path = get_plot_filename(f"seaborn_{plot_func_str}", cfg)
@@ -195,7 +212,8 @@ def _get_dataframe(cfg: dict) -> pd.DataFrame:
     """
     logger.info(
         "Grouping datasets by '%s' to create main data frame (data frames "
-        "are merged within groups, then concatenated across groups)",
+        "are merged [combined along axis 1, i.e., columns] within groups, "
+        "then concatenated [combined along axis 0, i.e., rows] across groups)",
         cfg['groupby_facet'],
     )
     if cfg['add_aux_coords']:
@@ -236,7 +254,8 @@ def _get_df_for_group(
 ) -> pd.DataFrame:
     """Extract :class:`pandas.DataFrame` for a single group of datasets.
 
-    This merges all data frames of individual datasets of a group.
+    This merges (i.e., combines along axis 1 = columns) all data frames of
+    individual datasets of a group.
 
     """
     df_group = pd.DataFrame()
@@ -333,6 +352,7 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg.setdefault('data_frame_ops', {})
     cfg.setdefault('facets_as_columns', [])
     cfg.setdefault('groupby_facet', 'alias')
+    cfg.setdefault('legend_title', None)
     cfg.setdefault('reset_index', False)
     cfg.setdefault('savefig_kwargs', {
         'bbox_inches': 'tight',
@@ -347,7 +367,12 @@ def _get_default_cfg(cfg: dict) -> dict:
     return cfg
 
 
-def _get_plot_func(cfg):
+def _get_str_from_kwargs(kwargs, separator='\n', prefix='    '):
+    """Get overview string for kwargs."""
+    return separator.join(f"{prefix}{k}={v!r}," for (k, v) in kwargs.items())
+
+
+def _get_plot_func(cfg: dict) -> callable:
     """Get seaborn plot function."""
     if 'seaborn_func' not in cfg:
         raise ValueError("Necessary option 'seaborn_func' missing")
@@ -380,9 +405,55 @@ def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     return data_frame
 
 
+def _set_legend_title(plot_obj, legend_title: str) -> None:
+    """Set legend title."""
+    if hasattr(plot_obj, 'get_legend'):  # Axes
+        legend = plot_obj.get_legend()
+    elif hasattr(plot_obj, 'legend'):  # FacetGrid, PairGrid
+        legend = plot_obj.legend
+    else:
+        raise ValueError(
+            f"Cannot set legend title, `{type(plot_obj).__name__}` does not "
+            f"support legends"
+        )
+    if legend is None:
+        raise ValueError(
+            "Cannot set legend title, plot does not contain legend"
+        )
+    logger.debug("Setting `legend_title='%s'`", legend_title)
+    legend.set_title(legend_title)
+
+
+def _validate_config(cfg: dict) -> dict:
+    """Validate configuration dictionary."""
+    cfg = deepcopy(cfg)
+
+    # seaborn_kwargs: hue_norm
+    if 'hue_norm' in cfg['seaborn_kwargs']:
+        hue_norm = cfg['seaborn_kwargs']['hue_norm']
+        if isinstance(hue_norm, str):
+            vmin = cfg['seaborn_kwargs'].pop('vmin', None)
+            vmax = cfg['seaborn_kwargs'].pop('vmax', None)
+            if hue_norm == 'linear':
+                hue_norm = Normalize(vmin=vmin, vmax=vmax)
+            elif hue_norm == 'log':
+                hue_norm = LogNorm(vmin=vmin, vmax=vmax)
+            else:
+                raise ValueError(
+                    f"String value for `hue_norm` can only be `linear` or "
+                    f"`log`, got `{hue_norm}`"
+                )
+            cfg['seaborn_kwargs']['hue_norm'] = hue_norm
+        if isinstance(hue_norm, list):
+            cfg['seaborn_kwargs']['hue_norm'] = tuple(hue_norm)
+
+    return cfg
+
+
 def main(cfg: dict) -> None:
     """Run diagnostic."""
     cfg = _get_default_cfg(cfg)
+    cfg = _validate_config(cfg)
 
     sns.set_theme(**cfg['seaborn_settings'])
     plot_func = _get_plot_func(cfg)
