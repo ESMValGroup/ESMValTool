@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_flato13ipcc_figures_938_941_cmip3.yml
+# recipe_flato13ipcc_figures_938_941_cmip6.yml
 ---
 documentation:
   title: IPCC AR5, chap. 9 diagnostics to reproduce regional figures 9.38-9.41
@@ -163,7 +163,7 @@ diagnostics:
     scripts:
       clim: &Fig938_settings
         script: regional_downscaling/Figure9.38.ncl
-        styleset: CMIP5
+        styleset: CMIP356
         fig938_region_label: ["WNA", "ENA", "CAM", "TSA", "SSA", "EUM", "NAF",
                               "CAF", "SAF", "NAS", "CAS", "EAS", "SAS", "SEA",
                               "AUS"]
@@ -195,7 +195,7 @@ diagnostics:
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
       - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
     scripts:
-      clim: 
+      clim:
         <<: *Fig938_settings
 
   # ==========================================================================
@@ -223,7 +223,7 @@ diagnostics:
     scripts:
       clim: &Fig939_settings
         script: regional_downscaling/Figure9.39.ncl
-        styleset: CMIP5
+        styleset: CMIP356
         fig939_season: ["DJF", "JJA", "ANN"]
         fig939_region_label: ["ALAs", "CGIs", "WNAs", "CNAs", "ENAs", "CAMs",
                               "AMZs", "NEBs", "WSAs", "SSAs", "NEUs", "CEUs",
@@ -257,9 +257,9 @@ diagnostics:
       - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
 
     scripts:
-      clim: 
+      clim:
         script: regional_downscaling/Figure9.39.ncl
-        styleset: CMIP5
+        styleset: CMIP356
         fig939_season: ["ONDJFM", "AMJJAS", "ANN"]
         fig939_region_label: ["ALAs", "CGIs", "WNAs", "CNAs", "ENAs", "CAMs",
                               "AMZs", "NEBs", "WSAs", "SSAs", "NEUs", "CEUs",
@@ -297,7 +297,7 @@ diagnostics:
     scripts:
       clim: &Fig940_settings
         script: regional_downscaling/Figure9.40.ncl
-        styleset: CMIP5
+        styleset: CMIP356
         fig940_season: ["DJF", "JJA", "ANN"]
         fig940_region_label: ["Arctic_land", "Arctic_sea", "Antarctic_land",
                               "Antarctic_sea", "Caribbean",
@@ -332,7 +332,7 @@ diagnostics:
     additional_datasets:
       - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
     scripts:
-      clim: 
+      clim:
         <<: *Fig940_settings
         fig940_season: ["ONDJFM", "AMJJAS", "ANN"]
         fig940_YMin: -100
@@ -362,4 +362,4 @@ diagnostics:
       clim: &Fig941_settings
         script: regional_downscaling/Figure9.41.ncl
         fig941_region_label: ["MEDs"]
-        styleset: CMIP5
+        styleset: CMIP356
