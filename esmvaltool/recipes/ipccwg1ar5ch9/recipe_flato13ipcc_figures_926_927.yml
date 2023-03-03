@@ -76,7 +76,7 @@ diagnostics:
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
         additional_datasets:
-          # - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 2018, tier: 3, start_year: 1986, end_year: 2005}
+          - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 2018, tier: 3, start_year: 1986, end_year: 2005}
           # - {dataset: CanESM2}
           # - {dataset: CESM1-BGC}
           # - {dataset: GFDL-ESM2G}
@@ -87,11 +87,11 @@ diagnostics:
           # - {dataset: IPSL-CM5A-LR}
           # - {dataset: IPSL-CM5A-MR}
           # - {dataset: IPSL-CM5B-LR}
-          # - {dataset: MIROC-ESM}
-          # - {dataset: MIROC-ESM-CHEM}
+          - {dataset: MIROC-ESM}
+          - {dataset: MIROC-ESM-CHEM}
           - {dataset: MPI-ESM-LR}
           - {dataset: MPI-ESM-MR}
-          # - {dataset: NorESM1-ME}
+          - {dataset: NorESM1-ME}
       fgco2_GCP2018:
         <<: *fgco2_settings
         preprocessor: default
