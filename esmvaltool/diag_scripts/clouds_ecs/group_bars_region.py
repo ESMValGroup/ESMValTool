@@ -182,7 +182,7 @@ def compute_diff_temp(input_data, group, var, dataset):
     cube_tas_diff = compute_diff(input_file_tas_1, input_file_tas_2)
 
     #cube_diff = 100. * (cube_diff / cube)
-    cube_diff = 100. * (cube_diff / cube) / cube_tas_diff
+    cube_diff = 100. * (cube_diff / iris.analysis.maths.abs(cube)) / cube_tas_diff
 
     return cube_diff
 

@@ -242,6 +242,7 @@ diagnostics:
         preprocessor: lat_lon
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             start_year: 1992, end_year: 2016,
              version: AVHRR-AMPM-fv3.0, tier: 2}
     scripts:
       lat_lon:
@@ -276,6 +277,7 @@ diagnostics:
         preprocessor: lat_lon
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             start_year: 1992, end_year: 2016,
              version: AVHRR-AMPM-fv3.0, tier: 2}
 
 
@@ -301,6 +303,7 @@ diagnostics:
         preprocessor: lat_lon
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             start_year: 1992, end_year: 2016,
              version: AVHRR-AMPM-fv3.0, tier: 2}
 
 

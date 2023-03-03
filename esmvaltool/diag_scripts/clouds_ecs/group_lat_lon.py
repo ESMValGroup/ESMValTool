@@ -387,7 +387,7 @@ def bootstrapping(cubes, cube_obs, all_groups, attributes, cfg):
                     cubes_part[dataset] = cube
                     datasets.append(dataset)
 
-            nsample = 10
+            nsample = 1000
             sample_stat = pd.DataFrame(columns=['Mean', 'Bias', 'RMSD', 'Corr'])
 
             ncubes = len(cubes_part)
