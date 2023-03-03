@@ -301,6 +301,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-WATERVAPOUR           | prw (Amon)                                                                                           |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ESDC                         | tas, tasmax, tasmin (Amon)                                                                           |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESRL                         | co2s (Amon)                                                                                          |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | FLUXCOM                      | gpp (Lmon)                                                                                           |   3  | Python          |
@@ -453,7 +455,7 @@ For example:
 .. code-block:: yaml
 
     datasets:
-    - {project: native6, dataset: ERA5, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1990}
+    - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 1990, end_year: 1990}
     - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1i1p1f1, mip: Amon, short_name: tas, start_year: 2000, end_year: 2014}
 
 For project ``native6``, more examples can be found in the diagnostics
