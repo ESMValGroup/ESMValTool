@@ -193,7 +193,6 @@ def make_tidy(dataset):
 
 def save_csv(dataframe, ancestors, cfg):
     """Save output for use in Climate4Impact preview page."""
-
     # modify dataframe columns
     dataframe = dataframe.unstack('variable')
     dataframe.columns = ['tas_bias', 'pr_bias', 'tas_change', 'pr_change']
