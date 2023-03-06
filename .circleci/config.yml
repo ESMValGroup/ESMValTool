@@ -186,16 +186,17 @@ jobs:
       - run:
           name: Install
           command: |
-            # Install
+            # Install according to instructions on readthedocs with the
+            # development version of ESMValTool and ESMValCore:
+            # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             mamba env create >> /logs/conda.txt 2>&1
             conda activate esmvaltool
-            pip install -e .[develop]
-            esmvaltool install Julia > /logs/install_julia.txt 2>&1            
+            pip install --editable .[develop]
+            esmvaltool install Julia > /logs/install_julia.txt 2>&1
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
             pip install --editable $HOME/ESMValCore[develop]
-            pip install --no-deps . > /logs/install.txt 2>&1
       - log_versions
       - test_and_report
       - run:
