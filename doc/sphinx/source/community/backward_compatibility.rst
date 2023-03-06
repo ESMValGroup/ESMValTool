@@ -216,6 +216,8 @@ but components should include:
    `CircleCI <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool?branch=main>`__.
    A recipe can be added to the test suite by adding it to the directory
    `esmvaltool/recipes/testing <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/recipes/testing>`__.
+   Only add recipes that require a small amount of data, i.e. considerably less
+   than a gigabyte.
 -  Guidance on how to minimise the likelihood of introducing
    *backward-incompatible changes* and how to use deprecation warnings
    when needed (see :ref:`developer guidance <esmvalcore:backward_compatibility>`).
