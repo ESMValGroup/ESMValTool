@@ -46,7 +46,7 @@ commands:
             ncl -V
             cdo --version
       - store_test_results:
-          path: test-reports/
+          path: test-reports/report.xml
       - store_artifacts:
           path: /logs
       - run:
