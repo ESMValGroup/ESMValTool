@@ -168,7 +168,9 @@ jobs:
           flags: "--editable"
 
   test_upstream_development:
-    # Test with the development version of ESMValCore
+    # Test running recipes with the development version of ESMValCore. The
+    # purpose of this test to signal backward-incompatible changes early on in
+    # the development cycle.
     docker:
       - image: condaforge/mambaforge:latest
     resource_class: large
