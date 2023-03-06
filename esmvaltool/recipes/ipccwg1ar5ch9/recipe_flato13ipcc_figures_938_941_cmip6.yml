@@ -311,7 +311,6 @@ diagnostics:
         fig940_experiment_MMM: ["historical", "historical"]
         fig940_mip_MMM: ["Amon", "Amon"]
         fig940_MMM: true
-        fig940_mode: true
         fig940_YMin: -12
         fig940_YMax: 6
 
@@ -336,6 +335,7 @@ diagnostics:
     scripts:
       clim:
         <<: *Fig940_settings
+        fig940_mode: true
         fig940_season: ["ONDJFM", "AMJJAS", "ANN"]
         fig940_YMin: -100
         fig940_YMax: 150

@@ -517,6 +517,7 @@ begin
             print("cumulative mode")
             C(jmod) = (/ 100 * (avg(B) - avg(A)) / avg(A)/)
             D(imod) = (/100 * (avg(B) - avg(A)) / avg(A)/)
+            UNITS = "%"
           else
             C(jmod) = (/avg(B) - avg(A)/)  ; get diff values
             D(imod) = (/avg(B) - avg(A)/)
