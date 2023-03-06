@@ -211,7 +211,7 @@ but components should include:
 -  Testing; *backward-incompatible changes* should be discovered as
    early in the development process as possible. This motivates
    continued investment in automated testing.
-   To signal *backward-incompatible changes* early on in the development cycle,
+   To discover *backward-incompatible changes* early on in the development cycle,
    every night a selection of recipes is run on
    `CircleCI <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool?branch=main>`__.
    A recipe can be added to the test suite by adding it to the directory
