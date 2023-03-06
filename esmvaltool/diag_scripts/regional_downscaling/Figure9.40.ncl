@@ -218,12 +218,6 @@ begin
             dimsizes(indic_not_sela), 6/), "double")
   names_MMM = new((/dimsizes(project_MMM)/), "string")
   MMM_rmse = new((/dim_seas, dim_reg, dimsizes(project_MMM)/), "double")
-  ; colors_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-  ;                  typeof(colors))
-  ; thicks_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-  ;                  typeof(thicks))
-  ; markers_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-  ;                   typeof(markers))
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
@@ -350,9 +344,7 @@ begin
       thicks1 = new((/dim_MOD/), typeof(thicks))
       markers1 = new((/dim_MOD/), typeof(markers))
       lin_mar_mod1 = new((/dim_MOD/), "string")
-      ; (b) difference of each model from 'reference'
-      ; CASE 1 In this plot only case1 exsist!!!!!
-      ; case1 = models@name(idx_ref) + " " + models@case_name(idx_ref)
+
       A0 = read_data(info0[idx_ref])
       if (season(iseas).ne."ANN") then
         if (mode) then
@@ -578,14 +570,6 @@ begin
           delete(F)
           delete(dimt)
 
-          ; if(isatt(diag_script_info, "fig940_markers_MMM")) then
-          ;   markers_MMM(iin) = diag_script_info@fig940_markers_MMM(iin)
-          ; else
-          ;   markers_MMM(iin) = scatters_def(iin)
-          ; end if
-
-          ; markers_MMM(iin) = 0
-
           if(isatt(diag_script_info, "fig940_names_MMM")) then
             names_MMM(iin) = diag_script_info@fig940_names_MMM(iin)
           else
@@ -597,13 +581,6 @@ begin
         if (.not.ismissing(all(indic_not_sela))) then
           MMM(iseas, ir, dimsizes(diag_script_info@fig940_project_MMM):, 0) =\
            (/D(indic_not_sela)/)
-          ; colors_MMM(dimsizes(diag_script_info@fig940_project_MMM):) =\
-          ;   colors(indic_not_sela)
-          ; thicks_MMM(dimsizes(diag_script_info@fig940_project_MMM):) = 3.
-          ; markers_MMM(dimsizes(diag_script_info@fig940_project_MMM):) =\
-          ;   markers(indic_not_sela)
-          ; names_MMM(dimsizes(diag_script_info@fig940_project_MMM):) =\
-          ;   names(indic_not_sela)
         end if
       end if
       delete(C)
@@ -649,9 +626,6 @@ begin
     res@tmXBLabelAngleF = 90.
     res@vpHeightF = 0.5
     res@vpWidthF = 0.9
-    ; res@gsnYRefLine=0.0
-    ; res@gsnYRefLineColor="gray11"
-    ; res@gsnYRefLineDashPattern=1.
     plot(iseas) = box_plot_cr(wks, ispan(1, dim_reg, 1),\
                               MMM(iseas, :, 0, :), False, res, False)
     if (isatt(diag_script_info, "fig940_vert_line_pos")) then
@@ -832,13 +806,7 @@ begin
     end if
   end do
   draw(map_r)
-  ; do ir = 0, dim_reg - 1
-  ;   draw(map(ir))
-  ; end do
   frame(wks_r)
-;  info_output("wrote " + output_dir + output_filename, verbosity, 1)
-;  info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
-
   ; -------------------------------------------------------------
   ; Add provenance
   ; -------------------------------------------------------------

@@ -351,11 +351,8 @@ begin
                              lonrange(ir, 0), lonrange(ir, 1), "average",\
                              True)
       delete(A0)
-      ; if (diag_script_info@fig938_diff.eq."True") then
-      ;   A = (/Atmp/)
-      ; else
       if (Atmp@units.eq."K") then
-        A = convert_units(Atmp, "degC") ; get Celsius
+        A = convert_units(Atmp, "degC")  ; get Celsius
         UNITS = "~S~o~N~C"
       else
         if (Atmp@units.eq."kg m-2 s-1") then
@@ -374,34 +371,14 @@ begin
       do imod = 0, dim_MOD1 - 1
         models(imod) = names(imod)
         if (imod .ne. idx_ref) then
-          ; CASE 2
-          ; case2 = models@name(imod) + " " + models@case_name(imod)
           B0 = read_data(info0[imod])
-          ; uniform_coordinates(B0, field_type0)
-
-          ; convert to T2Ms, C2Ms
-          ; if ((field_type0 .eq. "T2Ds") .or. \
-          ;   (field_type0 .eq. "C2Ds")) then
-          ;    tmp = day_to_month(B0, field_type0)
-          ;    delete(B0)
-          ;    B0 = tmp
-          ;    delete(tmp)
-          ; end if
-
-          ; Btmp1=calc_cycle_lon(B0)
-          ; lsm  = landsea_mask(lsdata,Btmp1&lat,Btmp1&lon)
-
-          ; Btmp1 = mask(Btmp1,lsm.eq.0,False)
-          ; Btmp1 = mask(Btmp1,lsm.eq.2,False)
-          ; Btmp1 = mask(Btmp1,lsm.eq.4,False)
-          ; delete(lsm)
           Btmp1 = B0
           Btmp = area_operations(Btmp1, latrange(ir, 0), latrange(ir, 1), \
                                  lonrange(ir, 0), lonrange(ir, 1), "average",\
                                  True)
           delete(B0)
           if (Btmp@units.eq."K") then
-            B = convert_units(Btmp, "degC") ; get Celsius
+            B = convert_units(Btmp, "degC")  ; get Celsius
             UNITS = "~S~o~N~C"
           else
             if (Btmp@units.eq."kg m-2 s-1") then
@@ -429,18 +406,6 @@ begin
             D(imod, 0:11) = (/B/)
             D(imod, 12) = (/B(0)/)
           end if
-
-          ; if (units.eq."K") then
-          ;   UNITS = "~S~o~N~C"
-          ;   if (diag_script_info@fig938_diff.ne."True") then
-          ;     C(jmod, 0:11) = (/B - 273.15/)   ; get Celsius
-          ;     C(jmod, 12) = (/B(0) - 273.15/)
-          ;     D(imod, 0:11) = (/B - 273.15/)
-          ;     D(imod, 12) = (/B(0) - 273.15/)
-          ;  end if
-          ; else
-          ;   UNITS = units
-          ; end if
 
           delete(B)
           colors1(jmod) = colors(imod)
@@ -480,7 +445,7 @@ begin
                                True)
         delete(A0)
         if (Atmp@units.eq."K") then
-          A = convert_units(Atmp, "degC") ; get Celsius
+          A = convert_units(Atmp, "degC")  ; get Celsius
           UNITS = "~S~o~N~C"
         else
           if (Atmp@units.eq."kg m-2 s-1") then

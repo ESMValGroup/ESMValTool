@@ -219,12 +219,6 @@ begin
             dimsizes(indic_not_sela), 6/), "double")
   names_MMM = new((/dimsizes(project_MMM)/), "string")
   MMM_rmse = new((/dim_seas, dim_reg, dimsizes(project_MMM)/), "double")
-  ; colors_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-  ;                  typeof(colors))
-  ; thicks_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-  ;                  typeof(thicks))
-  ; markers_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-  ;                   typeof(markers))
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
@@ -568,13 +562,6 @@ begin
         if (.not.ismissing(all(indic_not_sela))) then
           MMM(iseas, ir, dimsizes(diag_script_info@fig939_project_MMM):, 0) =\
            (/D(indic_not_sela)/)
-          ; colors_MMM(dimsizes(diag_script_info@fig939_project_MMM):) =\
-          ;   colors(indic_not_sela)
-          ; thicks_MMM(dimsizes(diag_script_info@fig939_project_MMM):) = 3.
-          ; markers_MMM(dimsizes(diag_script_info@fig939_project_MMM):) =\
-          ;   markers(indic_not_sela)
-          ; names_MMM(dimsizes(diag_script_info@fig939_project_MMM):) =\
-          ;  names(indic_not_sela)
         end if
       end if
       delete(C)
@@ -704,7 +691,7 @@ begin
   MMM!1 = "region"
   MMM!2 = "line"
   MMM!3 = "stat"
-  MMM&line = (/"None", "None", "None"/) ; names_MMM
+  MMM&line = (/"None", "None", "None"/)  ; names_MMM
   MMM&season = season
   MMM&region = region_label
   MMM&stat = (/"x5", "x25", "x50", "x75", "x95", "stddev"/)
