@@ -64,6 +64,7 @@
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/scaling.ncl"
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/regional_downscaling/regional_function.ncl"
@@ -95,9 +96,9 @@ begin
               "(variable_info[0]@reference_dataset) needs to be defined.")
   end if
   if(isatt(variable_info, "units")) then
-    UNITS = variable_info@units
+    units = variable_info@units
   else
-    UNITS = "K"
+    units = "K"
   end if
   if(isatt(variable_info, "long_name")) then
     LONG_NAME = variable_info@long_name
@@ -350,15 +351,22 @@ begin
                              lonrange(ir, 0), lonrange(ir, 1), "average",\
                              True)
       delete(A0)
-      if (diag_script_info@fig938_diff.eq."True") then
-        A = (/Atmp/)
+      ; if (diag_script_info@fig938_diff.eq."True") then
+      ;   A = (/Atmp/)
+      ; else
+      if (Atmp@units.eq."K") then
+        A = convert_units(Atmp, "degC") ; get Celsius
+        UNITS = "~S~o~N~C"
       else
-        if (units.eq."K") then
-          A = (/Atmp - 273.15/)   ; get Celsius
+        if (Atmp@units.eq."kg m-2 s-1") then
+          A = convert_units(Atmp, "mm/day")
+          UNITS = "mm/day"
         else
           A = (/Atmp/)
+          UNITS = units
         end if
       end if
+      ; end if
       delete(Atmp)
       delete(Atmp1)
 
@@ -392,7 +400,18 @@ begin
                                  lonrange(ir, 0), lonrange(ir, 1), "average",\
                                  True)
           delete(B0)
-          B = Btmp
+          if (Btmp@units.eq."K") then
+            B = convert_units(Btmp, "degC") ; get Celsius
+            UNITS = "~S~o~N~C"
+          else
+            if (Btmp@units.eq."kg m-2 s-1") then
+              B = convert_units(Btmp, "mm/day")
+              UNITS = "mm/day"
+            else
+              B = (/Btmp/)
+              UNITS = units
+            end if
+          end if
           delete(Btmp)
           delete(Btmp1)
 
@@ -411,17 +430,17 @@ begin
             D(imod, 12) = (/B(0)/)
           end if
 
-          if (units.eq."K") then
-            UNITS = "~S~o~N~C"
-            if (diag_script_info@fig938_diff.ne."True") then
-              C(jmod, 0:11) = (/B - 273.15/)   ; get Celsius
-              C(jmod, 12) = (/B(0) - 273.15/)
-              D(imod, 0:11) = (/B - 273.15/)
-              D(imod, 12) = (/B(0) - 273.15/)
-            end if
-          else
-            UNITS = units
-          end if
+          ; if (units.eq."K") then
+          ;   UNITS = "~S~o~N~C"
+          ;   if (diag_script_info@fig938_diff.ne."True") then
+          ;     C(jmod, 0:11) = (/B - 273.15/)   ; get Celsius
+          ;     C(jmod, 12) = (/B(0) - 273.15/)
+          ;     D(imod, 0:11) = (/B - 273.15/)
+          ;     D(imod, 12) = (/B(0) - 273.15/)
+          ;  end if
+          ; else
+          ;   UNITS = units
+          ; end if
 
           delete(B)
           colors1(jmod) = colors(imod)
@@ -460,15 +479,20 @@ begin
                                lonrange(ir, 0), lonrange(ir, 1), "average",\
                                True)
         delete(A0)
-        A = Atmp
+        if (Atmp@units.eq."K") then
+          A = convert_units(Atmp, "degC") ; get Celsius
+          UNITS = "~S~o~N~C"
+        else
+          if (Atmp@units.eq."kg m-2 s-1") then
+            A = convert_units(Atmp, "mm/day")
+            UNITS = "mm/day"
+          else
+            A = (/Atmp/)
+            UNITS = units
+          end if
+        end if
         delete(Atmp)
         delete(Atmp1)
-        if (units.eq."K") then
-          UNITS = "~S~o~N~C"
-          A = (/A - 273.15/)
-        else
-          UNITS = units
-        end if
         C(imod, 0:11) = A
         C(imod, 12) = A(0)
         lin_mar_mod1(imod) = "Lines"

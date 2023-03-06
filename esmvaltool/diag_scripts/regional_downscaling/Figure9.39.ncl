@@ -133,7 +133,7 @@ begin
   set_default_att(diag_script_info, "fig939_project_MMM", "CMIP5")
   set_default_att(diag_script_info, "fig939_experiment_MMM", "historical")
   set_default_att(diag_script_info, "fig939_mip_MMM", "Amon")
-  set_default_att(diag_script_info, "fig939_colors_MMM", "red")
+  ; set_default_att(diag_script_info, "fig939_colors_MMM", "red")
   set_default_att(diag_script_info, "fig939_names_MMM", \
                   diag_script_info@fig939_project_MMM)
   set_default_att(diag_script_info, "fig939_season", "DJF")
@@ -217,16 +217,14 @@ begin
   end if
   MMM = new((/dim_seas, dim_reg, dimsizes(project_MMM) +\
             dimsizes(indic_not_sela), 6/), "double")
-  names_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-                  "string")
-  MMM_rmse = new((/dim_seas, dim_reg, dimsizes(project_MMM) +\
-                 dimsizes(indic_not_sela)/), "double")
-  colors_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-                   typeof(colors))
-  thicks_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-                   typeof(thicks))
-  markers_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-                    typeof(markers))
+  names_MMM = new((/dimsizes(project_MMM)/), "string")
+  MMM_rmse = new((/dim_seas, dim_reg, dimsizes(project_MMM)/), "double")
+  ; colors_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
+  ;                  typeof(colors))
+  ; thicks_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
+  ;                  typeof(thicks))
+  ; markers_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
+  ;                   typeof(markers))
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
@@ -442,7 +440,7 @@ begin
               time1!0 = "time"
               ; ys=input_file_info[idx_ref]@start_year
               time1@units = "months since 1-1-1 00:00:00"
-              time1@calendar = "standard"
+              time1@calendar = "gregorian"
               delete(B0&time)
               B0&time = time1
               Btmp1 = time_operations(B0, -1, -1, "average",\
@@ -551,13 +549,13 @@ begin
           delete(F)
           delete(dimt)
 
-          if(isatt(diag_script_info, "fig939_markers_MMM")) then
-            markers_MMM(iin) = diag_script_info@fig939_markers_MMM(iin)
-          else
-            markers_MMM(iin) = scatters_def(iin)
-          end if
+          ; if(isatt(diag_script_info, "fig939_markers_MMM")) then
+          ;   markers_MMM(iin) = diag_script_info@fig939_markers_MMM(iin)
+          ; else
+          ;   markers_MMM(iin) = scatters_def(iin)
+          ; end if
 
-          markers_MMM(iin) = 0
+          ; markers_MMM(iin) = 0
 
           if(isatt(diag_script_info, "fig939_names_MMM")) then
             names_MMM(iin) = diag_script_info@fig939_names_MMM(iin)
@@ -570,13 +568,13 @@ begin
         if (.not.ismissing(all(indic_not_sela))) then
           MMM(iseas, ir, dimsizes(diag_script_info@fig939_project_MMM):, 0) =\
            (/D(indic_not_sela)/)
-          colors_MMM(dimsizes(diag_script_info@fig939_project_MMM):) =\
-            colors(indic_not_sela)
-          thicks_MMM(dimsizes(diag_script_info@fig939_project_MMM):) = 3.
-          markers_MMM(dimsizes(diag_script_info@fig939_project_MMM):) =\
-            markers(indic_not_sela)
-          names_MMM(dimsizes(diag_script_info@fig939_project_MMM):) =\
-            names(indic_not_sela)
+          ; colors_MMM(dimsizes(diag_script_info@fig939_project_MMM):) =\
+          ;   colors(indic_not_sela)
+          ; thicks_MMM(dimsizes(diag_script_info@fig939_project_MMM):) = 3.
+          ; markers_MMM(dimsizes(diag_script_info@fig939_project_MMM):) =\
+          ;   markers(indic_not_sela)
+          ; names_MMM(dimsizes(diag_script_info@fig939_project_MMM):) =\
+          ;  names(indic_not_sela)
         end if
       end if
       delete(C)
@@ -706,7 +704,7 @@ begin
   MMM!1 = "region"
   MMM!2 = "line"
   MMM!3 = "stat"
-  MMM&line = names_MMM
+  MMM&line = (/"None", "None", "None"/) ; names_MMM
   MMM&season = season
   MMM&region = region_label
   MMM&stat = (/"x5", "x25", "x50", "x75", "x95", "stddev"/)

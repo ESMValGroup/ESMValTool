@@ -216,16 +216,14 @@ begin
   end if
   MMM = new((/dim_seas, dim_reg, dimsizes(project_MMM) +\
             dimsizes(indic_not_sela), 6/), "double")
-  names_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-                  "string")
-  MMM_rmse = new((/dim_seas, dim_reg, dimsizes(project_MMM) +\
-                 dimsizes(indic_not_sela)/), "double")
-  colors_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-                   typeof(colors))
-  thicks_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-                   typeof(thicks))
-  markers_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
-                    typeof(markers))
+  names_MMM = new((/dimsizes(project_MMM)/), "string")
+  MMM_rmse = new((/dim_seas, dim_reg, dimsizes(project_MMM)/), "double")
+  ; colors_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
+  ;                  typeof(colors))
+  ; thicks_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
+  ;                  typeof(thicks))
+  ; markers_MMM = new((/dimsizes(project_MMM) + dimsizes(indic_not_sela)/),\
+  ;                   typeof(markers))
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
@@ -263,7 +261,8 @@ begin
   mres_r@cnLevelSelectionMode = "ManualLevels"
   mres_r@cnMinLevelValF = 0.
   mres_r@cnMaxLevelValF = 200.0
-  mres_r@cnLevelSpacingF = 0.1 * 200.0/tofloat(dim_reg)
+  ; mres_r@cnLevelSpacingF = 0.1 * 200.0/tofloat(dim_reg)
+  mres_r@cnLevelSpacingF = max((/5.0, 200.0/tofloat(dim_reg + 2.0)/))
   mres_r@cnInfoLabelOn = False
   mres_r@cnLineLabelsOn = False
   mres_r@cnFillOn = True
@@ -279,7 +278,7 @@ begin
   txres@txJust        = "CenterLeft"
 
   random_setallseed(36484749, 9494848)
-  unf   = random_uniform(0, 1, (/dim_reg + 1/))
+  unf   = random_uniform(0, 1, (/dim_reg + 2/))
   ip = dim_pqsort(unf, 1)
 
   do iseas = 0, dim_seas - 1
@@ -579,13 +578,13 @@ begin
           delete(F)
           delete(dimt)
 
-          if(isatt(diag_script_info, "fig940_markers_MMM")) then
-            markers_MMM(iin) = diag_script_info@fig940_markers_MMM(iin)
-          else
-            markers_MMM(iin) = scatters_def(iin)
-          end if
+          ; if(isatt(diag_script_info, "fig940_markers_MMM")) then
+          ;   markers_MMM(iin) = diag_script_info@fig940_markers_MMM(iin)
+          ; else
+          ;   markers_MMM(iin) = scatters_def(iin)
+          ; end if
 
-          markers_MMM(iin) = 0
+          ; markers_MMM(iin) = 0
 
           if(isatt(diag_script_info, "fig940_names_MMM")) then
             names_MMM(iin) = diag_script_info@fig940_names_MMM(iin)
@@ -598,13 +597,13 @@ begin
         if (.not.ismissing(all(indic_not_sela))) then
           MMM(iseas, ir, dimsizes(diag_script_info@fig940_project_MMM):, 0) =\
            (/D(indic_not_sela)/)
-          colors_MMM(dimsizes(diag_script_info@fig940_project_MMM):) =\
-            colors(indic_not_sela)
-          thicks_MMM(dimsizes(diag_script_info@fig940_project_MMM):) = 3.
-          markers_MMM(dimsizes(diag_script_info@fig940_project_MMM):) =\
-            markers(indic_not_sela)
-          names_MMM(dimsizes(diag_script_info@fig940_project_MMM):) =\
-            names(indic_not_sela)
+          ; colors_MMM(dimsizes(diag_script_info@fig940_project_MMM):) =\
+          ;   colors(indic_not_sela)
+          ; thicks_MMM(dimsizes(diag_script_info@fig940_project_MMM):) = 3.
+          ; markers_MMM(dimsizes(diag_script_info@fig940_project_MMM):) =\
+          ;   markers(indic_not_sela)
+          ; names_MMM(dimsizes(diag_script_info@fig940_project_MMM):) =\
+          ;   names(indic_not_sela)
         end if
       end if
       delete(C)
@@ -733,7 +732,7 @@ begin
   MMM!1 = "region"
   MMM!2 = "line"
   MMM!3 = "stat"
-  MMM&line = names_MMM
+  MMM&line = (/"None", "None", "None"/)
   MMM&season = season
   MMM&region = region_label
   MMM&stat = (/"x5", "x25", "x50", "x75", "x95", "stddev"/)

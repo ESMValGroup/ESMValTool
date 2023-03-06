@@ -223,6 +223,9 @@ begin
     res@xyDashPatterns = dashes1       ; line patterns
     res@gsnLeftString = case1
     res@gsnRightString = UNITS
+    res@vpHeightF = 0.4
+    res@vpWidthF = 0.6
+    res@tiMainFontHeightF      = 0.022
     ; res@tfPolyDrawOrder = "Draw"
     plot(ir) = gsn_csm_xy(wks_r, A, C, res)
     lnres = True
