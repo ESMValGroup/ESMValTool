@@ -6,7 +6,7 @@ import esmvaltool
 
 env = 'coretool26rc4'
 mail = False
-account = 'bk1088'
+account = '' # select a compute project to be billed
 outputs = 'output_rc4'
 partition = 'compute'
 
