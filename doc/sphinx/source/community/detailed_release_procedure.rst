@@ -23,10 +23,7 @@ Name it something relevant like "Recipe testing and comparison for release 2.x.x
 about where the testing is taking place, what tools are used, and what versions, here are some suggestions:
 
 
-Where the work is done e.g. work done on DKRZ/Levante:
-
-- submit files in `/home/b/b382109/submit` (for v2.7.0)
-- output in `/scratch/b/b382109/esmvaltool_output` (for v2.7.0)
+Where the work is on DKRZ/Levante (e.g. submit files and output directories)
 
 We should document various utilities' versions so that the work can be reproduced in case there
 is an issue, or release work needs to be picked up mid-release by another release manager:
@@ -56,8 +53,7 @@ Submit run scripts - test recipe runs
 
 We are now ready to start running all the available recipes, to compare output against previous release. Running is currently done
 via batch scripts submitted to a schedulers (SLURM). Generate the submission scripts using the ``generate.py`` Python script;
-you can find a copy of the script either in `/home/b/b382109/Tool_Release_270_Scripts` or
-in the draft Pull Request https://github.com/ESMValGroup/ESMValTool/pull/2883.
+you can find a copy of the script in the draft Pull Request https://github.com/ESMValGroup/ESMValTool/pull/2883.
 
 You will have to set the name of your environment, your email address (if you want to get email notifications for successful/failed jobs) and the name of the directory you want to store the job outputs. The name of the account is the same (`bk1088`), and the default partition is set to `compute`.
 More information on running jobs with SLURM on DKRZ/Levante can be found in the DKRZ `documentation
