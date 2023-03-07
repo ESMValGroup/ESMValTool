@@ -419,9 +419,10 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
     legend = _process_axes_functions(axes, kwargs.get('axes_functions'))
 
     # Save plot
-    fig.savefig(filepath,
-                bbox_extra_artists=[legend],
-                **kwargs.get('save_kwargs', {}))
+    savefig_kwargs = dict(kwargs.get('save_kwargs', {}))
+    if legend is not None:
+        savefig_kwargs['bbox_extra_artists'] = [legend]
+    fig.savefig(filepath, **savefig_kwargs)
     logger.info("Wrote %s", filepath)
     plt.close()
 

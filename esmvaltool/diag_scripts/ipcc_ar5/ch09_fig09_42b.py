@@ -217,9 +217,10 @@ def plot_data(cfg, ecs_cube, tcr_cube):
 
     # Save plot
     plot_path = get_plot_filename(f'{project}_ch09_fig09_42b', cfg)
-    plt.savefig(plot_path,
-                bbox_extra_artists=[legend],
-                **cfg['savefig_kwargs'])
+    savefig_kwargs = dict(cfg['savefig_kwargs'])
+    if legend is not None:
+        savefig_kwargs['bbox_extra_artists'] = [legend]
+    plt.savefig(plot_path, **savefig_kwargs)
     logger.info("Wrote %s", plot_path)
     plt.close()
     return plot_path
