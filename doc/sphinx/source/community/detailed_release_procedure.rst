@@ -90,6 +90,9 @@ Also, for computationally-heavy recipes, you can require more memory and/or time
   As soon as a job is finished, the next one should start. More information on the job handling at DKRZ `here
   <https://docs.dkrz.de/doc/levante/running-jobs/partitions-and-limits.html#levante-partitions-and-limits>`_.
 
+Analyse the results
+-------------------
+
 Once all jobs are completed, assemble some statistics so that issues with certain recipes
 can be followed-up, and document this information in the release issue, such as:
 
@@ -99,8 +102,9 @@ can be followed-up, and document this information in the release issue, such as:
 - number of recipes that are missing data
 - number of recipes that have various other issues (and document them)
 
-To parse the output of all these runs use the `parse_recipes_output.py` Python script, included at the
+To parse the output of all these runs use the ``parse_recipes_output.py`` Python script, included at the
 same locations where the generation script is.
+It is recommended to use `log_level: info` to enable the parsing script to run faster.
 
 Running the comparison
 ----------------------
