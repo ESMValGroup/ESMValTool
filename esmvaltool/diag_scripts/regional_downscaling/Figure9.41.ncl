@@ -223,9 +223,12 @@ begin
     res@xyDashPatterns = dashes1       ; line patterns
     res@gsnLeftString = case1
     res@gsnRightString = UNITS
-    res@vpHeightF = 0.3
-    res@vpWidthF = 0.4
-    res@tiMainFontHeightF      = 0.022
+    res@vpHeightF = 0.4
+    res@vpWidthF = 0.8
+    res@tiMainFontHeightF      = 0.004
+    res@txFontHeightF = 0.004
+    res@tmXBLabelFontHeightF = 0.004
+    res@tmYLLabelFontHeightF = 0.004
     ; res@tfPolyDrawOrder = "Draw"
     plot(ir) = gsn_csm_xy(wks_r, A, C, res)
     lnres = True
@@ -261,7 +264,7 @@ begin
   gsn_panel(wks_r, plot, (/3, n_p/), pan)
   frame(wks_r)
   add_legenda_page(wks_l, models1, colors1, dashes1, lin_mar_mod1,\
-                   thicks1, "0.9")
+                   thicks1, "0.99")
   frame(wks_l)
 
   ; -------------------------------------------------------------
