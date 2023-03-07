@@ -186,6 +186,15 @@ def calc_4gst(obs_mean):
         for item in grow_season_types.keys():
             if this_regress == grow_season_types[item][0]:
                 season = [this_year, grow_season_types[item][1]]
+
+        # check onset/offset to determin SGS-S vs SGS-D
+        if season[1]==2 or season[2]==3:
+            ct = np.min(obs_wanted.data) + 0.2 * (np.max(obs_wanted.data)
+                                                  - np.min(obs_wanted.data))
+            
+            if obs_wanted.data[0] < ct and obs_wanted.data[-1] > ct:
+                
+
         output.append(season)
 
     output = np.array(output).transpose()
