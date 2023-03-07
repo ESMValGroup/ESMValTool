@@ -238,7 +238,7 @@ The following parameters have to be set in the script in order to make it run:
 The script will generate a submission script for all recipes using by default the ``compute`` queue and with a time limit of 8h. In case a recipe
 may require of additional resources, they can be defined in the ``SPECIAL_RECIPES`` dictionary. The recipe name has to be given as a ``key`` in which the
 values are another dictionary in order to specify the ``partition`` in which to submit the recipe, the new ``time`` limit and other ``memory`` requirements
-given by the slurm flags ``--mem``, ``--constraint`` or ``--ntasks``. In general, an entry in SPECIAL_RECIPES should be set as:
+given by the slurm flags ``--mem``, ``--constraint`` or ``--ntasks``. In general, an entry in ``SPECIAL_RECIPES`` should be set as:
 
 .. code-block:: python
 
