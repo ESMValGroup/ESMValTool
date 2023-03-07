@@ -7,7 +7,7 @@ import esmvaltool
 env = 'coretool26rc4'
 mail = False
 submit = False
-account = '' # select a compute project to be billed
+account = ''  # Select a compute project to be billed
 outputs = 'output_rc4'
 partition = 'compute'
 
@@ -46,11 +46,12 @@ SPECIAL_RECIPES = {
 
 home = os.path.expanduser('~')
 
-exclude = [] # Fill the list with the names of the recipes to be excluded
+exclude = []  # Fill the list with the names of the recipes to be excluded
 
 dir_recipes = Path('/'.join((esmvaltool.__path__[0], 'recipes')))
 
-conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh' # set the path to conda
+# Set the path to conda
+conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh'
 
 for recipe in Path(dir_recipes).rglob('*.yml'):
     filename = f'launch_{recipe.stem}.sh'
