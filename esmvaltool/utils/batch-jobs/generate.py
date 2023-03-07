@@ -6,6 +6,7 @@ import esmvaltool
 
 env = 'coretool26rc4'
 mail = False
+submit = False
 account = '' # select a compute project to be billed
 outputs = 'output_rc4'
 partition = 'compute'
@@ -43,11 +44,7 @@ SPECIAL_RECIPES = {
     },
 }
 
-# exclude = [
-#    'recipe_smpi_4cds', 'recipe_smpi', 'recipe_miles_eof',
-#    'recipe_collins13ipcc', 'recipe_schlund20esd', 'recipe_bock20jgr_fig_1-4',
-#    'recipe_bock20jgr_fig_6-7', 'recipe_bock20jgr_fig_8_10',
-#    'recipe_wenzel14jgr', 'recipe_wenzel16nat']
+exclude = [] # Fill the list with the names of the recipes to be excluded
 
 dir_recipes = Path('/'.join((esmvaltool.__path__[0], 'recipes')))
 
@@ -55,8 +52,8 @@ home = os.path.expanduser('~')
 
 for recipe in Path(dir_recipes).rglob('*.yml'):
     filename = f'launch_{recipe.stem}.sh'
-    # if recipe.stem in exclude:
-    #    continue
+    if recipe.stem in exclude:
+        continue
     with open(f'{filename}', 'w', encoding='utf-8') as file:
         file.write('#!/bin/bash -l \n')
         file.write('\n')
@@ -83,5 +80,5 @@ for recipe in Path(dir_recipes).rglob('*.yml'):
         file.write('\n')
         file.write(f'esmvaltool run {str(recipe)}')
 
-    # if SPECIAL_RECIPES.get(recipe.stem, None):
-    os.system(f'sbatch {filename}')
+    if submit:
+        os.system(f'sbatch {filename}')
