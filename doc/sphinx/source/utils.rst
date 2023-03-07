@@ -116,24 +116,31 @@ Running multiple recipes
 ========================
 
 It is possible to run more than one recipe in one go.
+
 This can for example be achieved by using ``rose`` and/or ``cylc``, tools
-that may be available at your local HPC cluster.
+that may be available at your local HPC cluster. 
+
+In the case in which neither ``rose`` nor ``cylc`` are available at your HPC cluster,
+it is possible to automatically generate job submission scripts, as well as a summary of the
+job outputs using the scripts available in 
+`esmvaltool/utils/batch-jobs <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs>`__.
 
 Using cylc
 ----------
 
 A cylc suite for running all recipes is available in
-`esmvaltool/utils/testing/regression <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/testing/regression>`__
+`esmvaltool/utils/testing/regression <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/testing/regression>`__.
+This suite is configured to work with versions of cylc older than 8.0.0 .
 
 To prepare for using this tool:
 
-#. Log in to Mistral or another system that uses `slurm <https://slurm.schedmd.com/quickstart.html>`_
+#. Log in to a system that uses `slurm <https://slurm.schedmd.com/quickstart.html>`_
 #. Make sure the required CMIP and observational datasets are available and configured in config-user.yml
 #. Make sure the required auxiliary data is available (see :ref:`recipe documentation <recipes>`)
 #. Install ESMValTool
 #. Update config-user.yml so it points to the right data locations
 
-Next, get started with `cylc <https://cylc.github.io/cylc-doc/stable/html/tutorial.html>`_:
+Next, get started with `cylc <https://cylc.github.io/cylc-doc/7.9.3/html/index.html>`_:
 
 #. Run ``module load cylc``
 #. Register the suite with cylc ``cylc register run-esmvaltool-recipes ~/ESMValTool/esmvaltool/utils/testing/regression``
@@ -204,6 +211,54 @@ A practical actual example of running the tool can be found on JASMIN:
 There you will find the run shell: ``run_example``, as well as an example
 how to set the configuration file. If you don't have Met Office credentials,
 a copy of `u-bd684` is always located in ``/home/users/valeriu/roses/u-bd684`` on Jasmin.
+
+Using the scripts in `utils/batch-jobs`
+--------------------------------------
+
+In `utils/batch-jobs <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs>`, 
+you can find a script to generate slurm submission scripts for all available recipes in ESMValTool,
+as well as a script to parse the job outputs.
+
+Using `generate.py`
+===================
+
+The script `generate.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs/generate.py>`, 
+is a simple python script that creates slurm submission scripts, and
+if configured, submits them to the HPC cluster. It has been tested in `DKRZ's Levante cluster <https://docs.dkrz.de/doc/levante/index.html>`.
+
+The following parameters have to be set in the script in order to make it run:
+
+* ``env``, *str*: Name of the conda environment in which `esmvaltool` is installed.
+* ``mail``, *bool*: Whether or not to recieve mail notifications when a submitted job fails or finishes successfully. Default is `False`.
+* ``submit``, *bool*: Wheter or not to automatically submit the job after creating the launch script. Default value is `False`.
+* ``account``, *str*: Name of the DKRZ account in which the job will be billed.
+* ``outputs``, *str*: Name of the directory in which the job outputs (.out and .err files) are going to be saved. The outputs will be saved in `/home/user/<outputs>`.
+* ``conda_path``, *str*: Full path to the `mambaforge/etc/profile.d/conda.sh` executable.
+
+The script will generate a submission script for all recipes using by default the `compute` queue and with a time limit of 8h. In case a recipe
+may require of additional resources, they can be defined in the `SPECIAL_RECIPES` dictionary. The recipe name has to be given as a `key` in which the
+values are another dictionary in order to specify the `partition` in which to submit the recipe, the new `time` limit and other `memory` requirements
+given by the slurm flags `--mem`, `--constraint` or `--ntasks`. In general, an entry in SPECIAL_RECIPES should be set as:
+
+.. code-block:: python
+
+   SPECIAL_RECIPES = {
+    'recipe_name': {
+        'partition': '#SBATCH --partition=<name_of_the_partition>',
+        'time': '#SBATCH --time=<custom_time_limit>',
+        'memory': '#SBATCH --mem=<custom_memory_requirement>' # --constraint or --nstasks can be used instead.
+        },
+   }
+
+In the case in which ``submit`` is set to `True`, but you want to exclude certain recipes from being submitted, their name can be added in the `exclude` list:
+
+.. code-block:: python
+
+   exclude = ['recipe_to_be_excluded_1', 'recipe_to_be_excluded_2']
+
+Using `parse_recipes_outputs`
+=============================
+
 
 .. _compare_recipe_runs:
 
