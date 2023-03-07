@@ -691,7 +691,9 @@ begin
   MMM!1 = "region"
   MMM!2 = "line"
   MMM!3 = "stat"
-  MMM&line = (/"None", "None", "None"/)  ; names_MMM
+  dsizes_x = dimsizes(MMM)
+  nline     = dsizes_x(2)
+  MMM&line = new((/nline/), "string")  ; (/"None", "None", "None"/)
   MMM&season = season
   MMM&region = region_label
   MMM&stat = (/"x5", "x25", "x50", "x75", "x95", "stddev"/)
