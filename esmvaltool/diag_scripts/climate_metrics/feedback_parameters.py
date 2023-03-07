@@ -311,7 +311,7 @@ def _create_feedback_plot(tas_cube, cube, dataset_name, cfg, description=None):
     plt.savefig(plot_path,
                 bbox_inches='tight',
                 orientation='landscape',
-                additional_artists=[colorbar])
+                bbox_extra_artists=[colorbar])
     logger.info("Wrote %s", plot_path)
     plt.close()
 

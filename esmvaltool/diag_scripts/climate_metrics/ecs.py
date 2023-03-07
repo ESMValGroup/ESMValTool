@@ -414,7 +414,7 @@ def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
     # Save plot
     plot_path = get_plot_filename(dataset_name, cfg)
     plt.savefig(plot_path,
-                additional_artists=[legend],
+                bbox_extra_artists=[legend],
                 **cfg['savefig_kwargs'])
     logger.info("Wrote %s", plot_path)
     plt.close()

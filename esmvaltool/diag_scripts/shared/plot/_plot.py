@@ -415,12 +415,12 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
                   marker=style['mark'],
                   **(kwargs.get('plot_kwargs', empty_dict)[idx]))
 
-    # Costumize plot
+    # Customize plot
     legend = _process_axes_functions(axes, kwargs.get('axes_functions'))
 
     # Save plot
     fig.savefig(filepath,
-                additional_artists=[legend],
+                bbox_extra_artists=[legend],
                 **kwargs.get('save_kwargs', {}))
     logger.info("Wrote %s", filepath)
     plt.close()
@@ -494,12 +494,12 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
         axes.plot(x_vals, y_data[idx],
                   **(kwargs.get('plot_kwargs', empty_dict)[idx]))
 
-    # Costumize plot
+    # Customize plot
     legend = _process_axes_functions(axes, kwargs.get('axes_functions'))
 
     # Save plot
     fig.savefig(filepath,
-                additional_artists=[legend],
+                bbox_extra_artists=[legend],
                 **kwargs.get('save_kwargs', {}))
     logger.info("Wrote %s", filepath)
     plt.close()

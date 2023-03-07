@@ -145,7 +145,7 @@ def _save_fig(cfg, basename, legend=None):
     else:
         legend = [legend]
     FIG.savefig(path,
-                additional_artists=legend,
+                bbox_extra_artists=[legend],
                 bbox_inches='tight',
                 orientation='landscape')
     logger.info("Wrote %s", path)
