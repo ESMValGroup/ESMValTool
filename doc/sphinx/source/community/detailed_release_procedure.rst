@@ -141,7 +141,7 @@ becomes available online, for `example
 <https://esmvaltool.dkrz.de/shared/esmvaltool/v2.7.0>`_.
 
 Link the overview webpage to the issue and the path to your recipe runs on Levante.
-This makes it much easier to ask for feedback from recipe developers.
+This makes it much easier to ask for feedback from recipe developers and analyse failures.
 
 .. note::
 
