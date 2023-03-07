@@ -41,8 +41,8 @@ GITHUB_REPO = {
 }
 
 PREVIOUS_RELEASE = {
-    'esmvalcore': datetime.datetime(2022, 7, 15, 18),
-    'esmvaltool': datetime.datetime(2022, 7, 25, 18),
+    'esmvalcore': datetime.datetime(2022, 10, 13, 18),
+    'esmvaltool': datetime.datetime(2022, 10, 28, 18),
 }
 
 
@@ -184,6 +184,7 @@ def _get_pull_requests(project):
         state='closed',
         sort='updated',
         direction='desc',
+        base='main',
     )
     return pulls
 

@@ -231,6 +231,8 @@ Past releases
 
 
 
+.. _release_steps:
+
 Detailed timeline steps
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -242,22 +244,20 @@ These are the detailed steps to take to make a release.
    - Any contributor is welcome to add issues or pull requests that they intend to work on themselves to a milestone.
 
 
-#. ESMValCore feature freeze, testing, and release
+#. ESMValCore feature freeze, testing, and release candidates
 
    - A release branch is created and branch protection rules are set up so only the release manager (i.e. the person in charge of the release branch) can push commits to that branch.
-   - Make a release candidate with the release branch following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>` .
+   - Make a release candidate with the release branch following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>`.
    - Run all the recipes (optionally with a reduced amount of data) to check that they still work with the release candidate.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
    - Make another release candidate including the bugfix(es) and run the affected recipes again to check for further bugs.
    - Make as many release candidates for ESMValCore as needed in order to fix all the detected bugs.
-   - Make the official ESMValCore release with the last release candidate.
-   - Ask the user engagement team to announce the release to the user mailing list, the development team mailing list, on twitter
 
 
 #. ESMValTool feature freeze
 
    - A release branch is created and branch protection rules are set up so only the release manager (i.e. the person in charge of the release branch) can push commits to that branch.
-   - The creation of the release branch is announced to the ESMValTool development team along with the procedures to use the branch for testing and making last-minute changes (see next step)
+   - The creation of the release branch is announced to the ESMValTool development team along with the procedures to use the branch for testing and making last-minute changes (see next step).
 
 
 #. Some additional testing of ESMValTool
@@ -274,10 +274,22 @@ These are the detailed steps to take to make a release.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
 
 
+#. ESMValCore release
+
+   - Make the official ESMValCore release with the last release candidate by following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>`.
+
+
 #. ESMValTool release
 
-   - Make the release by following :ref:`How to make a release`
-   - Ask the user engagement team to announce the release to the user mailing list, the development team mailing list, and on twitter
+   - Pin ESMValCore to the same version as ESMValTool in the ``environment.yml`` and on `conda-forge
+     <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__.
+     This way, we make sure that ESMValTool uses the ESMValCore version with which it has been tested.
+   - Make the release by following :ref:`How to make a release`.
+
+
+#. Announce the releases
+
+   - Ask the user engagement team to announce the releases to the user mailing list, the development team mailing list, and on twitter.
 
 
 #. Core development team meets to coordinate the content of next milestone
@@ -311,7 +323,11 @@ Glossary
 
 Feature freeze
 ~~~~~~~~~~~~~~
-The date on which no new features may be submitted for the upcoming release. After this date, only critical bug fixes can still be included.
+The date on which no new features may be submitted for the upcoming release. 
+After this date, only critical bug fixes can still be included to the :ref:`release_branch`.
+Development work can continue in the main branch.
+If you are unsure whether new developments could interfere with the release, check with the :ref:`release_manager`.
+
 
 Milestone
 ~~~~~~~~~
@@ -322,6 +338,9 @@ A milestone is a list of issues and pull-request on GitHub. It has a due date, t
 Release manager
 ~~~~~~~~~~~~~~~
 The person in charge of making the release, both technically and organizationally. Appointed for a single release.
+Check the :ref:`release_schedule` to see who is the manager of the next release.
+
+.. _release_branch:
 
 Release branch
 ~~~~~~~~~~~~~~
@@ -388,7 +407,7 @@ Make a pull request and get it merged into ``main``.
 
 3. Add release notes
 ~~~~~~~~~~~~~~~~~~~~
-Use the script :ref:`draft_release_notes.py` to create create a draft of the
+Use the script :ref:`draft_release_notes.py` to create a draft of the
 release notes.
 This script uses the titles and labels of merged pull requests since the
 previous release.
