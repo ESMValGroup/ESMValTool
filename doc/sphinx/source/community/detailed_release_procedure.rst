@@ -106,19 +106,55 @@ To parse the output of all these runs use the ``parse_recipes_output.py`` Python
 same locations where the generation script is.
 It is recommended to use `log_level: info` to enable the parsing script to run faster.
 
-Running the comparison
-----------------------
+Share the results with the community
+------------------------------------
 
-To compare the newly produced output from running all recipes, follow these steps below.
+Create the debug.html and index.html overview webpages by running
+``python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/``.
+These files, together with the recipe output need to be copied to the disk of a virtual machine (VM)
+used to display recipe output in `webpages
+<https://esmvaltool.dkrz.de/shared/esmvaltool/>`_.
+Do not store final release results on the VM including `/preproc/` dirs, the total
+size for all the recipes output, including `/preproc/` dirs is in the 4.5TB ballpark,
+much too high for the VM storage capacity! Therefore we would recommend using the option
+to remove preprocessing directories upon recipe running successfully `--remove-preproc-dir=True`
+at runtime, or set `remove_preproc_dir: true` in the configuration file.
 
-Login and access to the DKRZ esmvaltool virtual machine (VM) - results from recipe runs
+Login and access to the DKRZ esmvaltool VM - results from recipe runs
 are stored on the VM; login with:
 
 .. code-block:: bash
 
   ssh user@esmvaltool.dkrz.de
 
-where `user` is your DKRZ/Levante user name; then get and install miniconda on the VM, and
+where `user` is your DKRZ/Levante user name.
+Then create a new subdirectory in ``/shared/esmvaltool/`` that will contain recipe output.
+This should be named like the ESMValCore version used for the testing, e.g. ``v2.8.0rc1``.
+Recipe output can be copied by doing from the VM:
+
+.. code-block:: bash
+
+  nohup cp -r /path_to_testing/esmvaltool_output/* /shared/esmvaltool/v2.x.x/
+  
+By copying the debug.html and index.html files into /shared/esmvaltool/v2.x.x/, the output
+becomes available online, for `example
+<https://esmvaltool.dkrz.de/shared/esmvaltool/v2.7.0>`_.
+
+Link the overview webpage to the issue and the path to your recipe runs on Levante.
+This makes it much easier to ask for feedback from recipe developers.
+
+.. note::
+
+  If you wrote recipe runs output to Levante's `/scratch` partition, be aware that
+  the data will be removed after two weeks, so you will have to move the output data
+  to the VM, using the `nohup` command above.
+
+Running the comparison
+----------------------
+
+To compare the newly produced output from running all recipes, follow these steps below.
+
+Access to the DKRZ esmvaltool VM, then install miniconda on the VM, and
 if you have a Miniconda installer already downloaded in your Levante $HOME
 
 .. code-block:: bash
@@ -131,21 +167,6 @@ if you have a Miniconda installer already downloaded in your Levante $HOME
   but rather in a directory with your username under `/mnt/esmvaltool_disk2/work/`
 
 Next, we need to set up the input files
-
-.. note::
-
-  If you wrote recipe runs output to Levante's `/scratch` partition, be aware that
-  the data will be removed after two weeks, so you will have to move the output data
-  to the VM, using a process that's not killed by a logoff e.g. a `nohup` job. Also add
-  the link to the issue/discussion so anyone can see the results.
-  This makes it much easier to ask for feedback from recipe developers.
-
-  .. code-block:: bash
-
-    nohup cp -r /scratch/b/$USER/esmvaltool_output/* /shared/esmvaltool/v2.x.x/
-
-  where `bd0854/b382109` is the project location in `work`
-
 
 The `/work` partition is visible by the VM so you can run the compare tool straight on the VM.
 
