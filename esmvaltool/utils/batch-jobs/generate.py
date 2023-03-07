@@ -48,7 +48,7 @@ exclude = [] # Fill the list with the names of the recipes to be excluded
 
 dir_recipes = Path('/'.join((esmvaltool.__path__[0], 'recipes')))
 
-home = os.path.expanduser('~')
+conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh' # set the path to conda
 
 for recipe in Path(dir_recipes).rglob('*.yml'):
     filename = f'launch_{recipe.stem}.sh'
@@ -75,7 +75,7 @@ for recipe in Path(dir_recipes).rglob('*.yml'):
         file.write('set -eo pipefail \n')
         file.write('unset PYTHONPATH \n')
         file.write('\n')
-        file.write(f'. {home}/mambaforge/etc/profile.d/conda.sh\n')
+        file.write(f'. {conda_path}\n')
         file.write(f'conda activate {env}\n')
         file.write('\n')
         file.write(f'esmvaltool run {str(recipe)}')
