@@ -213,18 +213,18 @@ how to set the configuration file. If you don't have Met Office credentials,
 a copy of `u-bd684` is always located in ``/home/users/valeriu/roses/u-bd684`` on Jasmin.
 
 Using the scripts in `utils/batch-jobs`
---------------------------------------
+---------------------------------------
 
-In `utils/batch-jobs <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs>`, 
+In `utils/batch-jobs <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs>`_, 
 you can find a script to generate slurm submission scripts for all available recipes in ESMValTool,
 as well as a script to parse the job outputs.
 
 Using `generate.py`
-===================
+...................
 
-The script `generate.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs/generate.py>`, 
+The script `generate.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs/generate.py>`_, 
 is a simple python script that creates slurm submission scripts, and
-if configured, submits them to the HPC cluster. It has been tested in `DKRZ's Levante cluster <https://docs.dkrz.de/doc/levante/index.html>`.
+if configured, submits them to the HPC cluster. It has been tested in `DKRZ's Levante cluster <https://docs.dkrz.de/doc/levante/index.html>`_.
 
 The following parameters have to be set in the script in order to make it run:
 
@@ -257,7 +257,7 @@ In the case in which ``submit`` is set to `True`, but you want to exclude certai
    exclude = ['recipe_to_be_excluded_1', 'recipe_to_be_excluded_2']
 
 Using `parse_recipes_outputs`
-=============================
+.............................
 
 
 .. _compare_recipe_runs:
