@@ -695,24 +695,24 @@ Example plots
    :align: center
 
    Figure 9.38tas: Mean seasonal cycle for surface temperature (tas)
-   as multi model mean of 38 CMIP 5 and 18 CMIP3 models as well as 
+   as multi model mean of 38 CMIP5 and 22 CMIP6 models as well as 
    CRU and ERA-Interim reanalysis data averaged
-   for 1980-1999 over land in different regions:
+   for 1980-2005 over land in different regions:
    Western North America (WNA), Eastern North America (ENA),
    Central America (CAM), Tropical South America (TSA),
    Southern South America (SSA), Europe and Mediterranean (EUM),
    North Africa (NAF), Central Africa (CAF), South Africa (SAF),
    North Asia (NAS), Central Asia (CAS), East Asia (EAS),
    South Asia (SAS), Southeast Asia (SEA), and Australia (AUS).
-   Similar to Fig. 9.38a from Flato et al. (2013), time period and 
-   exact choice of models different.
+   Similar to Fig. 9.38a from Flato et al. (2013), CMIP6 instead of CMIP3 and 
+   set of CMIP5 models used different.
 
 
 .. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-38-pr.png
    :align: center
 
    Figure 9.38pr: Mean seasonal cycle for precipitation (pr)
-   as multi model mean of 38 CMIP 5 and 18 CMIP3 models as well as 
+   as multi model mean of 38 CMIP5 and 22 CMIP6 models as well as 
    CRU and ERA-Interim reanalysis data averaged
    for 1980-1999 over land in different regions:
    Western North America (WNA), Eastern North America (ENA),
@@ -721,9 +721,8 @@ Example plots
    North Africa (NAF), Central Africa (CAF), South Africa (SAF),
    North Asia (NAS), Central Asia (CAS), East Asia (EAS),
    South Asia (SAS), Southeast Asia (SEA), and Australia (AUS).
-   Similar to Fig. 9.38b from Flato et al. (2013), unit, time period and 
-   exact choice of models different.
-
+   Similar to Fig. 9.38b from Flato et al. (2013), CMIP6 instead of CMIP3 and 
+   set of CMIP5 models used different.
 
 .. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-38_regions.png
    :align: center
@@ -735,8 +734,8 @@ Example plots
 
    Figure 9.39tas: Box and whisker plots showing the 5th, 25th, 50th, 75th
    and 95th percentiles of the seasonal- and annual mean biases for
-   surface temperature (tas) for 1980-1999 between 38 CMIP5 models 
-   (box and whiskers) or 18 CMIP3 models (crosses) and CRU data.
+   surface temperature (tas) for 1980-2005 between 38 CMIP5 models 
+   (box and whiskers) or 22 CMIP6 models (crosses) and CRU data.
    The regions are: Alaska/NW Canada (ALAs),
    Eastern Canada/Greenland/Iceland (CGIs), Western North America(WNAs),
    Central North America (CNAs), Eastern North America (ENAs),
@@ -751,16 +750,16 @@ Example plots
    Southern Australia/New Zealand (SAUs).
    The positions of these regions are defined following
    (Seneviratne et al., 2012) and differ from the ones in Fig. 9.38.
-   Similar to Fig. 9.39 a,c,e from Flato et al. (2013), time period and 
-   exact choice of models different.
+   Similar to Fig. 9.39 a,c,e from Flato et al. (2013), CMIP6 instead of CMIP3 and 
+   set of CMIP5 models used different.
 
 .. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-39-pr.png
    :align: center
 
    Figure 9.39pr: Box and whisker plots showing the 5th, 25th, 50th, 75th
    and 95th percentiles of the seasonal- and annual mean biases for
-   precipitation (pr) for 1980-1999 between 38 CMIP5 models 
-   (box and whiskers) or 18 CMIP3 models (crosses) and CRU data.
+   precipitation (pr) for 1980-2005 between 38 CMIP5 models 
+   (box and whiskers) or 22 CMIP6 models (crosses) and CRU data.
    The regions are: Alaska/NW Canada (ALAs),
    Eastern Canada/Greenland/Iceland (CGIs), Western North America(WNAs),
    Central North America (CNAs), Eastern North America (ENAs),
@@ -775,8 +774,8 @@ Example plots
    Southern Australia/New Zealand (SAUs).
    The positions of these regions are defined following
    (Seneviratne et al., 2012) and differ from the ones in Fig. 9.38.
-   Similar to Fig. 9.39 b,d,f from Flato et al. (2013), time period and 
-   exact choice of models different.
+   Similar to Fig. 9.39 b,d,f from Flato et al. (2013), CMIP6 instead of CMIP3 and 
+   set of CMIP5 models used different.
 
 .. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-39_regions.png
    :align: center
@@ -788,16 +787,16 @@ Example plots
 
    Figure 9.40tas: Box and whisker plots showing the 5th, 25th, 50th, 75th
    and 95th percentiles of the seasonal- and annual mean biases for
-   surface temperature (tas) for oceanic and polar regions between 38 CMIP5 (box and whiskers) or 18 CMIP3 (crosses)
-   models and CRU data for 1980–1999.
+   surface temperature (tas) for oceanic and polar regions between 38 CMIP5 (box and whiskers) or 22 CMIP6 (crosses)
+   models and ERA-Interim data for 1980–2005.
 
 .. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-40-pr.png
    :align: center
 
    Figure 9.40pr: Box and whisker plots showing the 5th, 25th, 50th, 75th
    and 95th percentiles of the seasonal- and annual mean biases for
-   precipitation (pr) for oceanic and polar regions between 38 CMIP5 (box and whiskers) or 18 CMIP3 (crosses)
-   models and CRU data for 1980–1999.
+   precipitation (pr) for oceanic and polar regions between 38 CMIP5 (box and whiskers) or 22 CMIP6 (crosses)
+   models and Global Precipitation Climatology Project - Satellite-Gauge (GPCP-SG) data for 1980–2005.
 
 .. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-40_regions.png
    :align: center
