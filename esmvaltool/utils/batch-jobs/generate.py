@@ -44,6 +44,8 @@ SPECIAL_RECIPES = {
     },
 }
 
+home = os.path.expanduser('~')
+
 exclude = [] # Fill the list with the names of the recipes to be excluded
 
 dir_recipes = Path('/'.join((esmvaltool.__path__[0], 'recipes')))
