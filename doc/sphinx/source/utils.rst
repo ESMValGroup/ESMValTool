@@ -229,16 +229,16 @@ if configured, submits them to the HPC cluster. It has been tested in `DKRZ's Le
 The following parameters have to be set in the script in order to make it run:
 
 * ``env``, *str*: Name of the conda environment in which `esmvaltool` is installed.
-* ``mail``, *bool*: Whether or not to recieve mail notifications when a submitted job fails or finishes successfully. Default is `False`.
-* ``submit``, *bool*: Wheter or not to automatically submit the job after creating the launch script. Default value is `False`.
+* ``mail``, *bool*: Whether or not to recieve mail notifications when a submitted job fails or finishes successfully. Default is ``False``.
+* ``submit``, *bool*: Wheter or not to automatically submit the job after creating the launch script. Default value is ``False``.
 * ``account``, *str*: Name of the DKRZ account in which the job will be billed.
 * ``outputs``, *str*: Name of the directory in which the job outputs (.out and .err files) are going to be saved. The outputs will be saved in `/home/user/<outputs>`.
 * ``conda_path``, *str*: Full path to the `mambaforge/etc/profile.d/conda.sh` executable.
 
-The script will generate a submission script for all recipes using by default the `compute` queue and with a time limit of 8h. In case a recipe
-may require of additional resources, they can be defined in the `SPECIAL_RECIPES` dictionary. The recipe name has to be given as a `key` in which the
-values are another dictionary in order to specify the `partition` in which to submit the recipe, the new `time` limit and other `memory` requirements
-given by the slurm flags `--mem`, `--constraint` or `--ntasks`. In general, an entry in SPECIAL_RECIPES should be set as:
+The script will generate a submission script for all recipes using by default the ``compute`` queue and with a time limit of 8h. In case a recipe
+may require of additional resources, they can be defined in the ``SPECIAL_RECIPES`` dictionary. The recipe name has to be given as a ``key`` in which the
+values are another dictionary in order to specify the ``partition`` in which to submit the recipe, the new ``time`` limit and other ``memory`` requirements
+given by the slurm flags ``--mem``, ``--constraint`` or ``--ntasks``. In general, an entry in SPECIAL_RECIPES should be set as:
 
 .. code-block:: python
 
@@ -250,7 +250,7 @@ given by the slurm flags `--mem`, `--constraint` or `--ntasks`. In general, an e
         },
    }
 
-In the case in which ``submit`` is set to `True`, but you want to exclude certain recipes from being submitted, their name can be added in the `exclude` list:
+In the case in which ``submit`` is set to ``True``, but you want to exclude certain recipes from being submitted, their name can be added in the ``exclude`` list:
 
 .. code-block:: python
 
