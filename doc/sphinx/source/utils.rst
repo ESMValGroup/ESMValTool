@@ -264,10 +264,16 @@ You can run this script (simply as a standalone Python script) after all recipes
 of the run status for each recipe; running the script provides you with a Markdown-formatted list of recipes that succeeded,
 recipes that failed due to a diagnostic error, and recipes that failed due to missing data (the two most common causes for
 recipe run failure). You should add a ``SLURM_OUT_DIR`` e.g. ``SLURM_OUT_DIR = "/home/b/b382109/output_v270"`` - this is the
-physical location of your SLURM output, after all recipes have finished running (this directory contains one ``.out`` and
-one ``.err`` file for each recipe, with recipe run standard output being stored in ``.out`` files, containing the
-information about what the recipe run did) and a ``SLURM_OUT_DIR``, a glob pattern, which is reccommended to be set to the
-``*.out`` extension, so that the script finds all the ``.out`` files.
+physical location of your SLURM output, after all recipes have finished running and a ``GLOB_PATTERN``, a glob pattern, 
+which is reccommended to be set to the ``*.out`` extension, so that the script finds all the ``.out`` files.
+
+To keep the script execution fast, it is recommended to use ``log_level: info`` in your config-user.yml file so that SLURM
+output files are rather small. This script also requires a list of recipes stored in a ``all_recipes.txt`` file, which can
+be obtained by running:
+
+.. code-block:: bash
+
+   for recipe in $(esmvaltool recipes list | grep '\.yml$'); do echo "$recipe"; done > all_recipes.txt
 
 .. _compare_recipe_runs:
 
