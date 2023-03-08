@@ -256,7 +256,8 @@ def plot_boxplot(data_frame, cfg):
     #    plt.ylabel('Absolute change (kg m-3)')
     #if data_frame['Variable'] == 'netcre':
     #    plt.ylabel('Absolute change (W m-2)')
-    plt.ylim([-15., 40.])
+    if 'y_range' in cfg:
+        plt.ylim(cfg.get('y_range'))
     plt.title(cfg['title'])
 
     # Save plot

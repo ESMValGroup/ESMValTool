@@ -24,90 +24,87 @@ YEARS_hist: &years_hist
   end_year: 2004
 
 
-DATASETS_ECS_HIGH: &datasets_ecs_high
+DATASETS: &datasets
     # - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS} # no clwvi
-  - {dataset: CanESM5, grid: gn}
-  - {dataset: CESM2, grid: gn, ensemble: r4i1p1f1}
+  - {dataset: CanESM5, grid: gn, tag: ECS_high}
+  - {dataset: CESM2, grid: gn, ensemble: r4i1p1f1, tag: ECS_high}
     #- {dataset: CESM2-FV2, grid: gn, institute: NCAR} # no clt (ssp585)
-  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR, tag: ECS_high}
     # - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR} # no clt (ssp585)
     # - {dataset: CIESM} # no rsutcs scenario data
-  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
-  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, tag: ECS_high}
+  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, tag: ECS_high}
     # - {dataset: EC-Earth3-CC} # no cl, cli, clw
     # - {dataset: FIO-ESM-2-0, grid: gn} # no rsutcs
-  - {dataset: HadGEM3-GC31-LL, grid: gn, ensemble: r1i1p1f3}
-  - {dataset: HadGEM3-GC31-MM, grid: gn, ensemble: r1i1p1f3}
-  - {dataset: IPSL-CM6A-LR}
-  - {dataset: KACE-1-0-G}
-  - {dataset: NESM3, grid: gn}
-  - {dataset: TaiESM1, grid: gn}
-  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn} 
+  - {dataset: HadGEM3-GC31-LL, grid: gn, ensemble: r1i1p1f3, tag: ECS_high}
+  - {dataset: HadGEM3-GC31-MM, grid: gn, ensemble: r1i1p1f3, tag: ECS_high}
+  - {dataset: IPSL-CM6A-LR, tag: ECS_high}
+  - {dataset: KACE-1-0-G, tag: ECS_high}
+  - {dataset: NESM3, grid: gn, tag: ECS_high}
+  - {dataset: TaiESM1, grid: gn, tag: ECS_high}
+  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, tag: ECS_high} 
 
-  - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: HadGEM2-ES, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: MIROC-ESM, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1, project: CMIP5, tag: ECS_high}
+  - {dataset: HadGEM2-ES, ensemble: r1i1p1, project: CMIP5, tag: ECS_high}
+  - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1, project: CMIP5, tag: ECS_high}
+  - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1, project: CMIP5, tag: ECS_high}
+  - {dataset: MIROC-ESM, ensemble: r1i1p1, project: CMIP5, tag: ECS_high}
 
-DATASETS_ECS_MED: &datasets_ecs_med
     # - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO} # no clwvi
     # - {dataset: AWI-CM-1-1-MR, grid: gn}  # no cl, cli, clw
-  - {dataset: BCC-CSM2-MR, grid: gn}
+  - {dataset: BCC-CSM2-MR, grid: gn, tag: ECS_med}
     # - {dataset: BCC-ESM1, grid: gn} # no scenario data
     # - {dataset: CAS-ESM2-0, grid: gn} # download failed
     # - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2} # no cl, cli, clw scenario data
-  - {dataset: CMCC-CM2-SR5, grid: gn}
-  - {dataset: CMCC-ESM2, grid: gn}
+  - {dataset: CMCC-CM2-SR5, grid: gn, tag: ECS_med}
+  - {dataset: CMCC-ESM2, grid: gn, tag: ECS_med}
     # - {dataset: EC-Earth3-Veg} # no cl, cli, clw
-  - {dataset: FGOALS-f3-L}
-  - {dataset: FGOALS-g3, grid: gn}
-  - {dataset: GISS-E2-1-H, grid: gn}
+  - {dataset: FGOALS-f3-L, tag: ECS_med}
+  - {dataset: FGOALS-g3, grid: gn, tag: ECS_med}
+  - {dataset: GISS-E2-1-H, grid: gn, tag: ECS_med}
     # - {dataset: KIOST-ESM, grid: gr1} # no cl
     # - {dataset: MCM-UA-1-0, grid: gn} # no clt
-  - {dataset: MPI-ESM1-2-HR, grid: gn}
-  - {dataset: MPI-ESM1-2-LR, grid: gn}
-  - {dataset: MRI-ESM2-0, grid: gn}
+  - {dataset: MPI-ESM1-2-HR, grid: gn, tag: ECS_med}
+  - {dataset: MPI-ESM1-2-LR, grid: gn, tag: ECS_med}
+  - {dataset: MRI-ESM2-0, grid: gn, tag: ECS_med}
     # - {dataset: SAM0-UNICON, grid: gn} # no scenario data
 
-  - {dataset: ACCESS1-0, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: ACCESS1-3, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: BNU-ESM, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: CanESM2, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: CCSM4, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: ACCESS1-0, ensemble: r1i1p1, project: CMIP5, tag: ECS_med}
+  - {dataset: ACCESS1-3, ensemble: r1i1p1, project: CMIP5, tag: ECS_med}
+  - {dataset: BNU-ESM, ensemble: r1i1p1, project: CMIP5, tag: ECS_med}
+  - {dataset: CanESM2, ensemble: r1i1p1, project: CMIP5, tag: ECS_med}
+  - {dataset: CCSM4, ensemble: r1i1p1, project: CMIP5, tag: ECS_med}
     # - {dataset: CNRM-CM5-2, ensemble: r1i1p1, project: CMIP5} # no scenario data
     # - {dataset: CNRM-CM5, ensemble: r1i1p1, project: CMIP5} # no cl, cli, clw
-  - {dataset: FGOALS-g2, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: GFDL-CM3, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: MPI-ESM-LR, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: MPI-ESM-MR, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: FGOALS-g2, ensemble: r1i1p1, project: CMIP5, tag: ECS_med}
+  - {dataset: GFDL-CM3, ensemble: r1i1p1, project: CMIP5, tag: ECS_med}
+  - {dataset: MPI-ESM-LR, ensemble: r1i1p1, project: CMIP5, tag: ECS_med}
+  - {dataset: MPI-ESM-MR, ensemble: r1i1p1, project: CMIP5, tag: ECS_med}
     # - {dataset: MPI-ESM-P, ensemble: r1i1p1, project: CMIP5} # no scenario data
 
-
-DATASETS_ECS_LOW: &datasets_ecs_low
-  - {dataset: CAMS-CSM1-0, grid: gn}
-  - {dataset: GISS-E2-1-G, grid: gn}
+  - {dataset: CAMS-CSM1-0, grid: gn, tag: ECS_low}
+  - {dataset: GISS-E2-1-G, grid: gn, tag: ECS_low}
     # - {dataset: IITM-ESM, grid: gn} # no cli, clw
     # - {dataset: INM-CM4-8, grid: gr1} # no cl, cli, clw
     # - {dataset: INM-CM5-0, grid: gr1} # no cl, cli, clw
-  - {dataset: MIROC6, grid: gn}
-  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: MIROC6, grid: gn, tag: ECS_low}
+  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, tag: ECS_low}
     # - {dataset: MPI-ESM-1-2-HAM, grid: gn} # no scenario data
     # - {dataset: NorCPM1, grid: gn} # no clwvi, clivi
-  - {dataset: NorESM2-LM, grid: gn, institute: NCC}
-  - {dataset: NorESM2-MM, grid: gn, institute: NCC}
+  - {dataset: NorESM2-LM, grid: gn, institute: NCC, tag: ECS_low}
+  - {dataset: NorESM2-MM, grid: gn, institute: NCC, tag: ECS_low}
 
-  - {dataset: bcc-csm1-1, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: bcc-csm1-1-m, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: GFDL-ESM2G, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: GFDL-ESM2M, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: GISS-E2-H, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: GISS-E2-R, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: inmcm4, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: MIROC5, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: MRI-CGCM3, ensemble: r1i1p1, project: CMIP5}
-  - {dataset: NorESM1-M, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: bcc-csm1-1, ensemble: r1i1p1, project: CMIP5, tag: ECS_low}
+  - {dataset: bcc-csm1-1-m, ensemble: r1i1p1, project: CMIP5, tag: ECS_low}
+  - {dataset: GFDL-ESM2G, ensemble: r1i1p1, project: CMIP5, tag: ECS_low}
+  - {dataset: GFDL-ESM2M, ensemble: r1i1p1, project: CMIP5, tag: ECS_low}
+  - {dataset: GISS-E2-H, ensemble: r1i1p1, project: CMIP5, tag: ECS_low}
+  - {dataset: GISS-E2-R, ensemble: r1i1p1, project: CMIP5, tag: ECS_low}
+  - {dataset: inmcm4, ensemble: r1i1p1, project: CMIP5, tag: ECS_low}
+  - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1, project: CMIP5, tag: ECS_low}
+  - {dataset: MIROC5, ensemble: r1i1p1, project: CMIP5, tag: ECS_low}
+  - {dataset: MRI-CGCM3, ensemble: r1i1p1, project: CMIP5, tag: ECS_low}
+  - {dataset: NorESM1-M, ensemble: r1i1p1, project: CMIP5, tag: ECS_low}
 
 
 diagnostics:
@@ -119,8 +116,7 @@ diagnostics:
   tas: &corr_diag
     description: Calculate pattern correlation value
     variables:
-      ECS_high: &tas_settings
-        short_name: tas
+      tas: &tas_settings
         preprocessor: regrid_2_2
         reference_dataset: ERA5
         alternative_dataset: NCEP
@@ -130,38 +126,25 @@ diagnostics:
         grid: gr
         mip: Amon
         <<: *years_hist
-        additional_datasets: *datasets_ecs_high
-      ECS_med:
-        <<: *tas_settings
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *tas_settings
-        additional_datasets: *datasets_ecs_low
+        additional_datasets: *datasets
     additional_datasets:
       - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}      
     scripts:
       pattern_cor: &fig_pattern_cor
         script: ipcc_ar6/corr_pattern.ncl
+        group_by: tag
 
   clt:
     <<: *corr_diag
     variables:
-      ECS_high: &clt_settings
+      clt: &clt_settings
         <<: *tas_settings
-        short_name: clt
         reference_dataset: ESACCI-CLOUD
         alternative_dataset: MODIS
-      ECS_med:
-        <<: *clt_settings
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *clt_settings
-        additional_datasets: *datasets_ecs_low
     additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
-         #- {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-         #start_year: 1992, end_year: 2016}
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+         start_year: 1992, end_year: 2016}
       - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
          start_year: 2003, end_year: 2018}
 
@@ -169,21 +152,14 @@ diagnostics:
   clivi:
     <<: *corr_diag
     variables:
-      ECS_high: &clivi_settings
+      clivi: &clivi_settings
         <<: *tas_settings
-        short_name: clivi
         reference_dataset: ESACCI-CLOUD
         alternative_dataset: MODIS
-      ECS_med:
-        <<: *clivi_settings
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *clivi_settings
-        additional_datasets: *datasets_ecs_low
     additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
-        #- {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-        # start_year: 1992, end_year: 2016}
+            #- {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+         start_year: 1992, end_year: 2016}
       - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
          start_year: 2003, end_year: 2018}
 
@@ -191,23 +167,15 @@ diagnostics:
   lwp:
     <<: *corr_diag
     variables:
-      ECS_high: &lwp_settings
+      lwp: &lwp_settings
         <<: *tas_settings
-        short_name: lwp
         derive: true
         force_derivation: false
         reference_dataset: ESACCI-CLOUD
         alternative_dataset: MODIS
-      ECS_med:
-        <<: *lwp_settings
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *lwp_settings
-        additional_datasets: *datasets_ecs_low
     additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
-        #- {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
-        # start_year: 1992, end_year: 2016}
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+         start_year: 1992, end_year: 2016}
       - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
          start_year: 2003, end_year: 2018}
 
@@ -215,17 +183,10 @@ diagnostics:
   pr:
     <<: *corr_diag
     variables:
-      ECS_high: &pr_settings
+      pr: &pr_settings
         <<: *tas_settings
-        short_name: pr
         reference_dataset: GPCP-SG
         alternative_dataset: GHCN
-      ECS_med:
-        <<: *pr_settings
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *pr_settings
-        additional_datasets: *datasets_ecs_low
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
       - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
@@ -234,17 +195,10 @@ diagnostics:
   rlut:
     <<: *corr_diag
     variables:
-      ECS_high: &rlut_settings
+      rlut: &rlut_settings
         <<: *tas_settings
-        short_name: rlut
         reference_dataset: CERES-EBAF
         alternative_dataset: ESACCI-CLOUD
-      ECS_med:
-        <<: *rlut_settings
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *rlut_settings
-        additional_datasets: *datasets_ecs_low
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, 
          tier: 1, start_year: 2000, end_year: 2013}      
@@ -255,17 +209,10 @@ diagnostics:
   rsut:
     <<: *corr_diag
     variables:
-      ECS_high: &rsut_settings
+      rsut: &rsut_settings
         <<: *tas_settings
-        short_name: rsut
         reference_dataset: CERES-EBAF
         alternative_dataset: ESACCI-CLOUD
-      ECS_med:
-        <<: *rsut_settings
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *rsut_settings
-        additional_datasets: *datasets_ecs_low
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, 
          tier: 1, start_year: 2000, end_year: 2013}      
@@ -276,19 +223,12 @@ diagnostics:
   lwcre:
     <<: *corr_diag
     variables:
-      ECS_high: &lwcre_settings
+      lwcre: &lwcre_settings
         <<: *tas_settings
-        short_name: lwcre
         reference_dataset: CERES-EBAF
         alternative_dataset: ESACCI-CLOUD
         derive: true
         force_derivation: false
-      ECS_med:
-        <<: *lwcre_settings
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *lwcre_settings
-        additional_datasets: *datasets_ecs_low
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, 
          tier: 1, start_year: 2000, end_year: 2013}      
@@ -300,19 +240,12 @@ diagnostics:
   swcre:
     <<: *corr_diag
     variables:
-      ECS_high: &swcre_settings
+      swcre: &swcre_settings
         <<: *tas_settings
-        short_name: swcre
         reference_dataset: CERES-EBAF
         alternative_dataset: ESACCI-CLOUD
         derive: true
         force_derivation: false
-      ECS_med:
-        <<: *swcre_settings
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *swcre_settings
-        additional_datasets: *datasets_ecs_low
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, 
          tier: 1, start_year: 2000, end_year: 2013}      
@@ -324,19 +257,12 @@ diagnostics:
   netcre:
     <<: *corr_diag
     variables:
-      ECS_high: &netcre_settings
+      netcre: &netcre_settings
         <<: *tas_settings
-        short_name: netcre
         reference_dataset: CERES-EBAF
         alternative_dataset: ESACCI-CLOUD
         derive: true
         force_derivation: false
-      ECS_med:
-        <<: *netcre_settings
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *netcre_settings
-        additional_datasets: *datasets_ecs_low
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, 
          tier: 1, start_year: 2000, end_year: 2013}      
