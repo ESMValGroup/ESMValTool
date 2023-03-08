@@ -33,9 +33,9 @@
             batch system = slurm
             execution time limit = PT15M
         [[[directives]]]
-            -q = short-serial
-            -W = 5:00
-            -n = 1
+            --qos=short-serial
+            --time=05:00
+            --ntasks=1
 {% endif %}
 
     [[install_cold]]
