@@ -39,17 +39,11 @@
 {% endif %}
 
     [[install_cold]]
-{% if SITE == "jasmin" %}
-        platform = localhost
-{% endif %}
         [[[environment]]]
             SITE = {{ SITE }}
 
     [[configure]]
         pre-script = "mkdir -p ${USER_CONFIG_DIR}"
-{% if SITE == "jasmin" %}
-        platform = localhost
-{% endif %}
         [[[environment]]]
             ROSE_TASK_APP = configure
             DRS_CMIP3 = {{ DRS_CMIP3 }}
