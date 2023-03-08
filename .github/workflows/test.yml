@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - pytest_ignore_dotgit_dir
   schedule:
     - cron: '0 0 * * *'
 
