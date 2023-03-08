@@ -140,14 +140,10 @@ def _get_project(cfg):
 def _save_fig(cfg, basename, legend=None):
     """Save matplotlib figure."""
     path = get_plot_filename(basename, cfg)
-    if legend is None:
-        legend = []
-    else:
-        legend = [legend]
-    FIG.savefig(path,
-                additional_artists=legend,
-                bbox_inches='tight',
-                orientation='landscape')
+    savefig_kwargs = dict(bbox_inches='tight', orientation='landscape')
+    if legend is not None:
+        savefig_kwargs['bbox_extra_artists'] = [legend]
+    FIG.savefig(path, **savefig_kwargs)
     logger.info("Wrote %s", path)
     AXES.cla()
     return path
