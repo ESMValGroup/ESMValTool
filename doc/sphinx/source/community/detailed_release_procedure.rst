@@ -55,7 +55,7 @@ We are now ready to start running all the available recipes, to compare output a
 via batch scripts submitted to a schedulers (SLURM). Generate the submission scripts using the ``generate.py`` Python script;
 you can find a copy of the script in the draft Pull Request https://github.com/ESMValGroup/ESMValTool/pull/2883.
 
-You will have to set the name of your environment, your email address (if you want to get email notifications for successful/failed jobs) and the name of the directory you want to store the job outputs. The name of the account is the same (`bk1088`), and the default partition is set to `compute`.
+You will have to set the name of your environment, your email address (if you want to get email notifications for successful/failed jobs) and the name of the directory you want to store the job outputs. A compute project from which resources are billed needs to be set, and the default partition is set to `compute`.
 More information on running jobs with SLURM on DKRZ/Levante can be found in the DKRZ `documentation
 <https://docs.dkrz.de/doc/levante/running-jobs/index.html>`_.
 
@@ -66,9 +66,9 @@ More information on running jobs with SLURM on DKRZ/Levante can be found in the 
 
 Some recipes need other job requirements, you can add their headers in the `SPECIAL_RECIPES` dictionary. Otherwise the header will be written following the template that is written in the lines below. If you want to exclude recipes, you can do so by uncommenting the exclude lines.
 
-The launch scripts will be saved in the same directory you execute the script from. You can find the ones used for the v2.7.0 release in `/home/b/b382109/submit`
+The launch scripts will be saved in the same directory you execute the script from. These are names like ``launch_recipe_<name>.sh``.
 
-To submit the scripts use the `sbatch` submit scripts (that make use of the SLURM scheduler) produced by `generate.py`,
+To submit the scripts use the `sbatch` submit scripts (that make use of the SLURM scheduler) produced by ``generate.py``,
 and execute them like any other shell script. You can check the status of your BATCH queue by invoking:
 
 .. code-block:: bash
@@ -109,9 +109,9 @@ It is recommended to use `log_level: info` to enable the parsing script to run f
 Share the results with the community
 ------------------------------------
 
-Create the debug.html and index.html overview webpages by running
+Create the debug.html and index.html overview webpages by running the utiliy script
 ``python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/``.
-These files, together with the recipe output need to be copied to the disk of a virtual machine (VM)
+These files, together with the recipe output, need to be copied to the disk of a virtual machine (VM)
 used to display recipe output in `webpages
 <https://esmvaltool.dkrz.de/shared/esmvaltool/>`_.
 Do not store final release results on the VM including `/preproc/` dirs, the total
@@ -137,7 +137,7 @@ Recipe output can be copied by doing from the VM:
   nohup cp -r /path_to_testing/esmvaltool_output/* /shared/esmvaltool/v2.x.x/
   
 By copying the debug.html and index.html files into /shared/esmvaltool/v2.x.x/, the output
-becomes available online, for `example
+becomes available online, see for `example
 <https://esmvaltool.dkrz.de/shared/esmvaltool/v2.7.0>`_.
 
 Link the overview webpage to the issue and the path to your recipe runs on Levante.
