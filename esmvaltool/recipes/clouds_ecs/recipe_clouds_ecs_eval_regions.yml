@@ -41,6 +41,7 @@ BOXPLOT_SETTINGS: &boxplot_settings
   group_by: [['ECS_low_hist', 'ECS_low_scen'],
              ['ECS_med_hist', 'ECS_med_scen'],
              ['ECS_high_hist', 'ECS_high_scen']]
+  y_range: [-25., 22.]
 
 
 DATASETS_ECS_HIGH: &datasets_ecs_high
