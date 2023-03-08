@@ -68,7 +68,7 @@ Some recipes need other job requirements, you can add their headers in the `SPEC
 
 The launch scripts will be saved in the same directory you execute the script from. These are names like ``launch_recipe_<name>.sh``.
 
-To submit the scripts use the `sbatch` submit scripts (that make use of the SLURM scheduler) produced by ``generate.py``,
+To submit the scripts, use the `sbatch` submit scripts (that make use of the SLURM scheduler) produced by ``generate.py``,
 and execute them like any other shell script. You can check the status of your BATCH queue by invoking:
 
 .. code-block:: bash
@@ -102,7 +102,7 @@ can be followed-up, and document this information in the release issue, such as:
 - number of recipes that are missing data
 - number of recipes that have various other issues (and document them)
 
-To parse the output of all these runs use the ``parse_recipes_output.py`` Python script, included at the
+To parse the output of all these runs, use the ``parse_recipes_output.py`` Python script, included at the
 same locations where the generation script is.
 It is recommended to use `log_level: info` to enable the parsing script to run faster.
 
@@ -116,7 +116,7 @@ used to display recipe output in `webpages
 <https://esmvaltool.dkrz.de/shared/esmvaltool/>`_.
 Do not store final release results on the VM including `/preproc/` dirs, the total
 size for all the recipes output, including `/preproc/` dirs is in the 4.5TB ballpark,
-much too high for the VM storage capacity! Therefore we would recommend using the option
+much too high for the VM storage capacity! Therefore, we would recommend using the option
 to remove preprocessing directories upon recipe running successfully `--remove-preproc-dir=True`
 at runtime, or set `remove_preproc_dir: true` in the configuration file.
 
@@ -139,9 +139,17 @@ Recipe output can be copied by doing from the VM:
 By copying the debug.html and index.html files into /shared/esmvaltool/v2.x.x/, the output
 becomes available online, see for `example
 <https://esmvaltool.dkrz.de/shared/esmvaltool/v2.7.0>`_.
+Before copying the recipe output to the VM, you may want to clean up your directory containing
+the results and only keep the last run for each recipe.
+This will help generating a clearer overview webpage.
+Note that the ```summarize.py`` script needs to be rerun if recipe runs were added or deleted
+from your testing directory.
 
 Link the overview webpage to the issue and the path to your recipe runs on Levante.
 This makes it much easier to ask for feedback from recipe developers and analyse failures.
+
+Results produced with the final ESMValCore release candidate should be put in a VM directory
+named after the version number, e.g. ``v2.8.0``. 
 
 .. note::
 
