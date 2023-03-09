@@ -22,8 +22,8 @@ documentation:
 
 
 DATASET_ANCHOR: &datasets
-  - {dataset: ACCESS1-0,      ensemble: r1i1p1}
-  - {dataset: ACCESS1-3,      ensemble: r1i1p1}
+  j {dataset: ACCESS1-0,      ensemble: r1i1p1, supplementary_variables: [{short_name: areacella, skip: true}]}
+  - {dataset: ACCESS1-3,      ensemble: r1i1p1, supplementary_variables: [{short_name: areacella, skip: true}]}
   - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
   - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
   - {dataset: BNU-ESM,        ensemble: r1i1p1}
