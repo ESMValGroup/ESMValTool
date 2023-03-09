@@ -5,33 +5,18 @@ documentation:
   title: Implied heat transport
 
   description: |
-    This recipe solves the spherical Poisson equation for a number of
-    top-of-the-atmosphere (TOA) radiative fluxes:
-      - net toa
-      - net sw
-      - net lw
-      - outgoing sw
-      - incoming sw
-    From the scalar p-field output of the Poisson solver the implied heat
-    transport of the full atmosphere-ocean column can be estimates, with the
-    contribution from each flux quantified.
+    Horizontal impied heat transport of the entire column derived from
+    TOA radiative fluxes.
 
-    The implied heat transport due to clouds is also estimated using both the clear
-    and all-sky versions of the radiative fluxes.
+#    The 'single_model' script focuses on a single simulation and produces a number
+#    of plots comparing the results of the Poisson solver output of different radiative
+#    fluxes. If multiple datasets are chosen, the plots will be produced for each
+#    dataset.
 
-    A caveat of this recipe is that the pattern of ocean heat content (OHC) is
-    not considered. Instead the OHC term is assumed to have no spatial variability
-    and the storage term is taken to be the global-mean of the given flux.
-
-    The 'single_model' script focuses on a single simulation and produces a number
-    of plots comparing the results of the Poisson solver output of different radiative
-    fluxes. If multiple datasets are chosen, the plots will be produced for each
-    dataset.
-
-    The 'multi-model' script directly compares the chosen models to the
-    CERES-EBAF results for the same time period. Only one set of plots are produced
-    regardless of the number of datasets. Requires the 'additional_datasets' field
-    to be included and filled in with the CERES-EBAF details from obs4MIPS.
+#    The 'multi-model' script directly compares the chosen models to the
+#    CERES-EBAF results for the same time period. Only one set of plots are produced
+#    regardless of the number of datasets. Requires the 'additional_datasets' field
+#    to be included and filled in with the CERES-EBAF details from obs4MIPS.
 
 
   authors:
@@ -42,35 +27,50 @@ documentation:
     - bodas-salcedo_alejandro
 
   references:
-    - acknow_project
-
-  projects:
-    - esmval
+    - pearce23jclim
 
 datasets:
+  # The CERES-EBAF observations reproduce the results of Pearce and Bodas-Salcedo (2023),
+  # but it can be applied to model data.
+  - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2001, end_year: 2005}
   # - {dataset: BCC-ESM1, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
-  - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2001, end_year: 2010}
+  # - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f3, grid: gn, mip: Amon}
+  # - {dataset: UKESM1-0-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f4, grid: gn, mip: Amon}
   # - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
   # - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
   # - {dataset: MIROC6, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
-  # - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f3, grid: gn, mip: Amon}
-  # - {dataset: UKESM1-0-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f4, grid: gn, mip: Amon}
 
 preprocessors:
 
   climate_mean_global:
     regrid:
-      # Use the lowest resolution grid of your chosen data for the target
-      target_grid: 1.875x1.25
+      # Use the lowest resolution grid of your chosen data for the target 1.875x1.25
+      target_grid: 5.0x5.0
       scheme: area_weighted
     climate_statistics:
       operator: mean
 
+  annual_filter:
+    regrid:
+      # It is recommended to use a low resolution grid, otherwise the process is
+      # very expensive computationally
+      target_grid: 5.0x5.0
+      scheme: area_weighted
+    timeseries_filter:
+      window: 365
+      span: 1850
+      filter_type: lowpass  # low-pass filter
+      filter_stats: mean
+#    rolling_window_statistics:
+#      coordinate: time
+#      operator: mean
+#      window_length: 12
 
 diagnostics:
 
   implied_heat_transport:
-    description: Solves the Poisson solver and produces a number of comparison plots.
+    title: TOA implied heat transports
+    description: Energy flux potential and implied heat transports for TOA radiative fluxes.
     themes:
       - phys
     realms:
@@ -81,6 +81,13 @@ diagnostics:
         short_name: rtnt
         mip: Amon
         preprocessor: climate_mean_global
+        start_year: 2001
+        end_year: 2005
+      rtnt_filter:
+        derive: true
+        short_name: rtnt
+        mip: Amon
+        preprocessor: annual_filter
         start_year: 2001
         end_year: 2005
       rsnt:
@@ -102,10 +109,22 @@ diagnostics:
         preprocessor: climate_mean_global
         start_year: 2001
         end_year: 2005
+      rlutcs_filter:
+        short_name: rlutcs
+        mip: Amon
+        preprocessor: annual_filter
+        start_year: 2001
+        end_year: 2005
       rsutcs:
         short_name: rsutcs
         mip: Amon
         preprocessor: climate_mean_global
+        start_year: 2001
+        end_year: 2005
+      rsutcs_filter:
+        short_name: rsutcs
+        mip: Amon
+        preprocessor: annual_filter
         start_year: 2001
         end_year: 2005
       rsut:
@@ -118,6 +137,12 @@ diagnostics:
         short_name: rsdt
         mip: Amon
         preprocessor: climate_mean_global
+        start_year: 2001
+        end_year: 2005
+      rsdt_filter:
+        short_name: rsdt
+        mip: Amon
+        preprocessor: annual_filter
         start_year: 2001
         end_year: 2005
       netcre:

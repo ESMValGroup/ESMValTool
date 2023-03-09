@@ -4,6 +4,7 @@
 """
 
 import logging
+from copy import deepcopy
 from pathlib import Path
 
 import cartopy.crs as ccrs
@@ -112,37 +113,74 @@ def compute_efp_and_mht(model_dict):
     # Loop over experiments
     for exp_nme in exp_dataset:
         logger.info("Experiment: %s", exp_nme)
-        p_cube = iris.cube.CubeList()
-        mht_cube = iris.cube.CubeList()
-        flux_cube = iris.cube.CubeList()
+        efp_clim = iris.cube.CubeList()
+        mht_clim = iris.cube.CubeList()
+        flx_clim = iris.cube.CubeList()
+        mht_annual = iris.cube.CubeList()
         files_dict = {}
-        # Loop over variables
+        # Loop over variables and do the relevant calculations
         for attributes in exp_dataset[exp_nme]:
             input_file = attributes['filename']
             variable_name = attributes['short_name']
             logger.info("Loading %s", input_file)
             cube = iris.load_cube(input_file)
             files_dict[variable_name] = input_file
-            # Call the Poisson solver
-            efp, mht = call_poisson(cube)
-            p_cube.append(efp)
-            mht_cube.append(mht)
-            flux_cube.append(cube)
+            if len(cube.shape) == 3:
+                mht_exp = iris.cube.CubeList()
+                # Iterate over time dimension and calculate EFP
+                for flx in cube.slices_over('time'):
+                    efp, mht = call_poisson(flx)
+                    mht_exp.append(mht)
+                mht_annual.append(mht_exp.merge_cube())
+            else:
+                # Call the Poisson solver
+                efp, mht = call_poisson(cube)
+                efp_clim.append(efp)
+                mht_clim.append(mht)
+                flx_clim.append(cube)
             del efp, mht, cube
 
         # Add iris cubelist to dictionary
-        iht_dict[exp_nme] = implied_heat_transport(mht_cube, p_cube, flux_cube,
+        iht_dict[exp_nme] = implied_heat_transport(mht_clim, efp_clim,
+                                                   flx_clim, mht_annual,
                                                    files_dict)
-        del p_cube, mht_cube, flux_cube
+        del mht_clim, efp_clim, flx_clim, mht_annual
 
     return iht_dict
 
 
+def symmetry_metric(data, grid):
+    """Calculates hemispheric symmetry value.
+
+    :param data: zonal mean of the input variable
+    :param grid: grid weights
+    :return:
+    """
+    # S = 0 is perfectly symmetrical.
+    # As coded, the calculation of the symmetry metrics needs the number of
+    # latitude points to be multiple of 6, i.e. it needs 30 deg bands.
+    Nlat = data.shape[0]
+    if (Nlat // 6) != 0:
+        logger.error("Grid not compatible with symmetry metric calculation.")
+    Nlat_hem = Nlat // 2
+    Nlat_trop = Nlat_hem // 3
+    nh = data[Nlat_hem:]
+    sh = data[:Nlat_hem]
+    sh = sh[::-1]
+
+    diff = np.abs((nh + sh) * grid)
+    hem = np.sum(diff)
+    trop = np.sum(diff[:Nlat_trop])
+    extratrop = np.sum(diff[Nlat_trop:Nlat_hem])
+    return hem, trop, extratrop
+
+
 class implied_heat_transport:
-    def __init__(self, mht_clim, efp_clim, flx_clim, flx_files):
+    def __init__(self, mht_clim, efp_clim, flx_clim, mht_annual, flx_files):
         self.mht_clim = mht_clim
         self.efp_clim = efp_clim
         self.flx_clim = flx_clim
+        self.mht_annual = mht_annual
         self.flx_files = flx_files
 
         # Grid
@@ -159,6 +197,7 @@ class implied_heat_transport:
         return
 
     def derived_fields(self):
+        # Create net LW variables (change sign to the upwelling fluxes)
         for cube in self.mht_clim:
             if cube.var_name == "rlut_mht":
                 dcube = cube.copy()
@@ -180,6 +219,22 @@ class implied_heat_transport:
                 dcube.var_name = "rlnt"
                 dcube.long_name = "radiative_flux_of_rlnt"
                 self.flx_clim.append(dcube)
+        # Annual MHT of clear-sky net flux
+        for cube in self.mht_annual:
+            if cube.var_name == "rsdt_mht":
+                rsdt_mht_annual = cube.copy()
+            if cube.var_name == "rsutcs_mht":
+                rsutcs_mht_annual = cube.copy()
+            if cube.var_name == "rlutcs_mht":
+                rlutcs_mht_annual = cube.copy()
+        rtntcs_mht_annual = rsdt_mht_annual - rsutcs_mht_annual + \
+            rlutcs_mht_annual
+        rtntcs_mht_annual.var_name = "rtntcs_mht"
+        rtntcs_mht_annual.long_name = "meridional_heat_transport_of_rtntcs"
+        self.mht_annual.append(rtntcs_mht_annual)
+        # Times series of MHT symmetry metric
+        self.mht_symmetry_annual()
+        # Print contents of IHT object
         self.print()
 
     def print(self):
@@ -187,30 +242,70 @@ class implied_heat_transport:
         print(self.mht_clim)
         for x in self.mht_clim:
             print(x.long_name, x.var_name)
+
         print(self.efp_clim)
         for x in self.efp_clim:
             print(x.long_name, x.var_name)
+
         print(self.flx_clim)
         for x in self.flx_clim:
             print(x.long_name, x.var_name)
+
+        print(self.mht_annual)
+        for x in self.mht_annual:
+            print(x.long_name, x.var_name)
+
+        print(self.symmetry_metric)
+        for x in self.symmetry_metric:
+            print(x.long_name, x.var_name)
+
         print(self.flx_files)
 
-    def hemispheric_symmetry(self, data):
-        # Calculates hemispheric symmetry value
-        # S = 0 is perfectly symmetrical
-
-        nh = data[90:]
-        sh = data[:90]
-        sh = sh[::-1]
-        grid = np.sum(self.grid, axis=1)[90:]
-
-        diff = np.abs((nh + sh) * grid)
-        hem = np.sum(diff)
-        trop = np.sum(diff[:30])
-        mid = np.sum(diff[30:60])
-        high = np.sum(diff[60:])
-        extratrop = np.sum(diff[30:90])
-        return hem, trop, mid, high, extratrop
+    def mht_symmetry_annual(self):
+        # As coded, the calculation of the symmetry metrics needs the number of
+        # latitude points to be multiple of 6, i.e. it needs 30 deg bands.
+        if (self.grid.shape[0] // 6) != 0:
+            logger.error(
+                "Grid not compatible with symmetry metric calculation.")
+        Nlat_2 = self.grid.shape[0] // 2
+        grid = np.sum(self.grid, axis=1)[Nlat_2:]
+        self.symmetry_metric = iris.cube.CubeList()
+        for mht_series in self.mht_annual:
+            time_coord = mht_series.coord('time')
+            Ntime = time_coord.shape[0]
+            hem = np.zeros(Ntime)
+            trop = np.zeros(Ntime)
+            extratrop = np.zeros(Ntime)
+            for i in np.arange(Ntime):
+                hem[i], trop[i], extratrop[i] = symmetry_metric(
+                    mht_series.data[i], grid)
+            # Create the cubes for each metric
+            long_name = "symmetry_hemisphere_of_{}".format(
+                mht_series.long_name)
+            var_name = "s_hem_{}".format(mht_series.var_name)
+            cube_h = iris.cube.Cube(hem,
+                                    long_name=long_name,
+                                    var_name=var_name,
+                                    units="PW",
+                                    dim_coords_and_dims=[(time_coord, 0)])
+            long_name = "symmetry_tropics_of_{}".format(mht_series.long_name)
+            var_name = "s_tro_{}".format(mht_series.var_name)
+            cube_t = iris.cube.Cube(trop,
+                                    long_name=long_name,
+                                    var_name=var_name,
+                                    units="PW",
+                                    dim_coords_and_dims=[(time_coord, 0)])
+            long_name = "symmetry_extratropics_of_{}".format(
+                mht_series.long_name)
+            var_name = "s_ext_{}".format(mht_series.var_name)
+            cube_e = iris.cube.Cube(extratrop,
+                                    long_name=long_name,
+                                    var_name=var_name,
+                                    units="PW",
+                                    dim_coords_and_dims=[(time_coord, 0)])
+            self.symmetry_metric.append(cube_h)
+            self.symmetry_metric.append(cube_t)
+            self.symmetry_metric.append(cube_e)
 
     def mht_plot(self, var_names, legend_label, ylim=(-10, 10)):
         """MHT plot Produces a single plot comparing the estimated MHT due to
@@ -426,6 +521,41 @@ class implied_heat_transport:
 
         return
 
+    def plot_symmetry_time_series(self):
+        var_list = [["s_hem_rtnt_mht", "s_hem_rtntcs_mht"],
+                    ["s_tro_rtnt_mht", "s_tro_rtntcs_mht"],
+                    ["s_ext_rtnt_mht", "s_ext_rtntcs_mht"]]
+        col = ['C0', 'C1']
+
+        plt.figure(figsize=(6, 12))
+        iplot = 1
+        for var_name in var_list:
+            print("Extracting " + var_name[0])
+            y0 = self.symmetry_metric.extract_cube(
+                var_name_constraint(var_name[0]))
+            print("Extracting " + var_name[1])
+            y1 = self.symmetry_metric.extract_cube(
+                var_name_constraint(var_name[1]))
+            ax = plt.subplot(3, 1, iplot)
+            ax.plot(y0.coord('time').points,
+                    y0.data,
+                    lw=4,
+                    linestyle='-',
+                    label=var_name[0])
+            ax.plot(y1.coord('time').points,
+                    y1.data,
+                    lw=4,
+                    linestyle='-',
+                    label=var_name[1])
+            ax.annotate(r'$\sigma$: {0}'.format(np.round(np.std(y0.data), 3)),
+                        (0.05, 0.4 - (0.1 * 0)),
+                        xycoords='axes fraction',
+                        color=col[0])
+            ax.set_ylabel(r'$S$ (PW)')
+            iplot += 1
+        plt.tight_layout()
+        return
+
 
 def efp_maps(iht, model, experiment, cfg):
     # Figure 2
@@ -444,6 +574,7 @@ def efp_maps(iht, model, experiment, cfg):
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
     figname = "efp_and_flux_toa_net_{}_{}".format(model, experiment)
+    figname = "figure3_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
     # Figure 4
     iht.quiver_subplot(
@@ -462,6 +593,7 @@ def efp_maps(iht, model, experiment, cfg):
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
     figname = "efp_and_flux_toa_cre_{}_{}".format(model, experiment)
+    figname = "figure4_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
     # Figure 5
     iht.quiver_subplot(
@@ -473,12 +605,13 @@ def efp_maps(iht, model, experiment, cfg):
         vmin=-0.35,
         vmax=0.35,
         nlevs=11,
-        title=[['$P_{TOA}^{SWup, clr}$', r'$\Delta CRE_{TOA}^{SWup, clr}$'],
-               ['$P_{TOA}^{SWup, all}$', r'$\Delta CRE_{TOA}^{SWup, all}$']],
+        title=[['$P_{TOA}^{SWup, clr}$', r'$\Delta F_{TOA}^{SWup, clr}$'],
+               ['$P_{TOA}^{SWup, all}$', r'$\Delta F_{TOA}^{SWup, all}$']],
         change_sign=[[True, True], [True, True]])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
     figname = "efp_and_flux_toa_rsut_{}_{}".format(model, experiment)
+    figname = "figure5_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
 
 
@@ -487,7 +620,8 @@ def mht_plots(iht, model, experiment, cfg):
     iht.mht_plot(["rtnt_mht", "rsnt_mht", "rlnt_mht"], ['Net', 'SW', 'LW'])
     provenance_record = get_provenance_record(plot_type='zonal',
                                               ancestor_files=iht.flx_files)
-    figname = "mht_toa_net_{}_{}.png".format(model, experiment)
+    figname = "mht_toa_net_{}_{}".format(model, experiment)
+    figname = "figure1_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
     # Figure 3
     iht.cre_mht_plot(['netcre_mht', 'swcre_mht', 'lwcre_mht'],
@@ -495,6 +629,17 @@ def mht_plots(iht, model, experiment, cfg):
                      ['rsut_mht', 'rsutcs_mht'],
                      ['-1 x OSR (all-sky)', '-1 x OSR (clear-sky)'])
     figname = "mht_toa_cre_and_osr_{}_{}".format(model, experiment)
+    figname = "figure2_{}_{}".format(model, experiment)
+    save_figure(figname, provenance_record, cfg)
+    return
+
+
+def symmetry_plots(iht, model, experiment, cfg):
+    # Figure 6
+    iht.plot_symmetry_time_series()
+    provenance_record = get_provenance_record(plot_type='times',
+                                              ancestor_files=iht.flx_files)
+    figname = "figure6_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
     return
 
@@ -502,15 +647,19 @@ def mht_plots(iht, model, experiment, cfg):
 def plot_single_model_diagnostics(iht_dict, cfg):
     # iht_dict is a two-level dictionary: iht_dict[model][experiment]
     for model, iht_model in iht_dict.items():
+        logger.info("Plotting model: %s", model)
         for experiment, iht_experiment in iht_model.items():
+            logger.info("Plotting experiment: %s", experiment)
             mht_plots(iht_experiment, model, experiment, cfg)
             efp_maps(iht_experiment, model, experiment, cfg)
+            symmetry_plots(iht_experiment, model, experiment, cfg)
+    return
 
 
 def main(cfg):
     """Solve the Poisson equation and estimate the meridional heat
     transport."""
-    input_data = cfg['input_data'].values()
+    input_data = deepcopy(list(cfg['input_data'].values()))
 
     # Dictionary of iht objects. Each entry of the dictionary
     # contains the iht object of a single model/dataset.
