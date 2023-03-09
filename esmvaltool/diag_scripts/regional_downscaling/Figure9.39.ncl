@@ -223,7 +223,7 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
   wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_39_" + var0)
-  wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_39_regions" + var0)
+  wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_39_regions_" + var0)
   wks_l = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_39_legend" + var0)
   ; +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Amask = read_data(info0[idx_ref])
