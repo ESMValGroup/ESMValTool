@@ -6,8 +6,8 @@
 ;
 ; Contents:
 ;
-;    procedure create_legend_lines
 ;    function output_type
+;    procedure create_legend_lines
 ;    procedure copy_VarAtt_sel
 ;    function panelling
 ;    function get_plot_dir
