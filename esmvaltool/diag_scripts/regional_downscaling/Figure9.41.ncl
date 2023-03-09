@@ -225,10 +225,10 @@ begin
     res@gsnRightString = UNITS
     res@vpHeightF = 0.4
     res@vpWidthF = 0.8
-    res@tiMainFontHeightF      = 0.004
-    res@txFontHeightF = 0.004
-    res@tmXBLabelFontHeightF = 0.004
-    res@tmYLLabelFontHeightF = 0.004
+    res@tiMainFontHeightF      = 0.02
+    res@txFontHeightF = 0.02
+    res@tmXBLabelFontHeightF = 0.02
+    res@tmYLLabelFontHeightF = 0.02
     ; res@tfPolyDrawOrder = "Draw"
     plot(ir) = gsn_csm_xy(wks_r, A, C, res)
     lnres = True
