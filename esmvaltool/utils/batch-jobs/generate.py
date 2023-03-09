@@ -44,44 +44,53 @@ SPECIAL_RECIPES = {
     },
 }
 
-home = os.path.expanduser('~')
 
-exclude = []  # Fill the list with the names of the recipes to be excluded
+def generate_submit():
+    """Generate and submit scripts."""
+    home = os.path.expanduser('~')
+    exclude = []  # Fill the list with the names of the recipes to be excluded
+    dir_recipes = Path('/'.join((esmvaltool.__path__[0], 'recipes')))
 
-dir_recipes = Path('/'.join((esmvaltool.__path__[0], 'recipes')))
+    # Set the path to conda
+    conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh'
 
-# Set the path to conda
-conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh'
+    for recipe in Path(dir_recipes).rglob('*.yml'):
+        filename = f'launch_{recipe.stem}.sh'
+        if recipe.stem in exclude:
+            continue
+        with open(f'{filename}', 'w', encoding='utf-8') as file:
+            file.write('#!/bin/bash -l \n')
+            file.write('\n')
+            file.write(f'#SBATCH --job-name={recipe.stem}.%J\n')
+            file.write(
+                f'#SBATCH --output={home}/{outputs}/{recipe.stem}.%J.out\n'
+            )
+            file.write(
+                f'#SBATCH --error={home}/{outputs}/{recipe.stem}.%J.err\n'
+            )
+            file.write(f'#SBATCH --account={account}\n')
+            if not SPECIAL_RECIPES.get(recipe.stem, None):
+                # continue
+                file.write(f'#SBATCH --partition={partition}\n')
+                file.write('#SBATCH --time=08:00:00\n')
+            else:
+                file.write(SPECIAL_RECIPES[recipe.stem]['partition'])
+                file.write(SPECIAL_RECIPES[recipe.stem]['time'])
+                file.write(SPECIAL_RECIPES[recipe.stem]['memory'])
+            if mail:
+                file.write('#SBATCH --mail-type=FAIL,END \n')
+            file.write('\n')
+            file.write('set -eo pipefail \n')
+            file.write('unset PYTHONPATH \n')
+            file.write('\n')
+            file.write(f'. {conda_path}\n')
+            file.write(f'conda activate {env}\n')
+            file.write('\n')
+            file.write(f'esmvaltool run {str(recipe)}')
 
-for recipe in Path(dir_recipes).rglob('*.yml'):
-    filename = f'launch_{recipe.stem}.sh'
-    if recipe.stem in exclude:
-        continue
-    with open(f'{filename}', 'w', encoding='utf-8') as file:
-        file.write('#!/bin/bash -l \n')
-        file.write('\n')
-        file.write(f'#SBATCH --job-name={recipe.stem}.%J\n')
-        file.write(f'#SBATCH --output={home}/{outputs}/{recipe.stem}.%J.out\n')
-        file.write(f'#SBATCH --error={home}/{outputs}/{recipe.stem}.%J.err\n')
-        file.write(f'#SBATCH --account={account}\n')
-        if not SPECIAL_RECIPES.get(recipe.stem, None):
-            # continue
-            file.write(f'#SBATCH --partition={partition}\n')
-            file.write('#SBATCH --time=08:00:00\n')
-        else:
-            file.write(SPECIAL_RECIPES[recipe.stem]['partition'])
-            file.write(SPECIAL_RECIPES[recipe.stem]['time'])
-            file.write(SPECIAL_RECIPES[recipe.stem]['memory'])
-        if mail:
-            file.write('#SBATCH --mail-type=FAIL,END \n')
-        file.write('\n')
-        file.write('set -eo pipefail \n')
-        file.write('unset PYTHONPATH \n')
-        file.write('\n')
-        file.write(f'. {conda_path}\n')
-        file.write(f'conda activate {env}\n')
-        file.write('\n')
-        file.write(f'esmvaltool run {str(recipe)}')
+        if submit:
+            os.system(f'sbatch {filename}')
 
-    if submit:
-        os.system(f'sbatch {filename}')
+
+if __name__ == '__main__':
+    generate_submit()
