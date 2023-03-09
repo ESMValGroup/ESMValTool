@@ -21,6 +21,10 @@ If you are a regular contributor, please try to review a bit more than two
 other pull requests for every pull request you create yourself, to make sure
 that each pull request gets the attention it deserves.
 
+If a pull request contains backward-incompatible changes, the developer or
+reviewer must tag the `@ESMValGroup/esmvaltool-coreteam`_ team to notify them
+of the :ref:`backward-incompatible change <guidance-on-backward-incompatiable-changes>`.
+
 .. _technical_review:
 
 1. Technical review
@@ -82,6 +86,13 @@ Any issues that were solved by the pull request can be closed after merging.
 It is always a good idea to check with the author of an issue and ask if it is
 completely solved by the related pull request before closing the issue.
 
+If a pull request contains
+:ref:`backward-incompatible changes <guidance-on-backward-incompatiable-changes>`,
+the person in charge of merging must give the core development team at least 2
+weeks for objections to be raised before merging to the main branch.
+If a strong objection is raised the backward-incompatible change should not be
+merged until the objection is resolved.
+
 The core development team can be contacted by writing `@ESMValGroup/esmvaltool-coreteam`_
 in a comment on an issue or pull request on GitHub.
 
@@ -101,8 +112,9 @@ An easy way to find out who previously worked on a particular piece of code is
 to use `git blame`_.
 GitHub will also suggest reviewers based on who previously worked on the files
 changed in a pull request.
-Every recipe has a maintainer and authors listed in the recipe, it is a good
-idea to ask these people for a review.
+All recipes contain a list of the recipe authors (and some of them in addition
+a list of recipe maintainers).
+It is a good idea to ask these people for a review.
 
 If there is no obvious reviewer, you can attract the attention of the relevant
 team of reviewers by writing to `@ESMValGroup/tech-reviewers`_ or

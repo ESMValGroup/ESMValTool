@@ -66,7 +66,7 @@ def get_all_ancestor_files(cfg, pattern=None):
                 files = fnmatch.filter(files, pattern)
             files = [os.path.join(root, f) for f in files]
             ancestor_files.extend(files)
-    return ancestor_files
+    return sorted(ancestor_files)
 
 
 def get_ancestor_file(cfg, pattern):
@@ -131,6 +131,7 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
             files = [os.path.join(base, f) for f in files]
             all_files.extend(files)
     all_files = fnmatch.filter(all_files, '*.nc')
+    all_files = sorted(all_files)
 
     # Iterate over netcdf files
     metadata = []

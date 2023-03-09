@@ -8,9 +8,6 @@ from pathlib import Path
 
 from setuptools import Command, setup
 
-sys.path.insert(0, os.path.dirname(__file__))
-from esmvaltool import __version__  # noqa: E402
-
 PACKAGES = [
     'esmvaltool',
 ]
@@ -23,6 +20,7 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
+        'aiohttp',
         'cartopy',
         'cdo',
         'cdsapi',
@@ -34,6 +32,7 @@ REQUIREMENTS = {
         'eofs',
         'ESMPy',
         'esmvalcore',
+        'esmf-regrid',
         'fiona',
         'GDAL',
         'jinja2',
@@ -50,6 +49,10 @@ REQUIREMENTS = {
         'pyproj',
         'pyyaml',
         'progressbar2',
+        'psyplot',
+        'psy-maps',
+        'psy-reg',
+        'psy-simple',
         'rasterio',
         'ruamel.yaml',
         'scikit-image',
@@ -58,35 +61,39 @@ REQUIREMENTS = {
         'scitools-iris',
         'seaborn',
         'seawater',
-        'shapely',
+        'shapely<2.0.0',  # github.com/ESMValGroup/ESMValTool/issues/2965
         'xarray',
-        'xesmf',
-        'xgboost',
+        'xesmf==0.3.0',
+        'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
+        'zarr',
     ],
     # Test dependencies
     # Execute `pip install .[test]` once and the use `pytest` to run tests
     'test': [
-        'flake8<4',
+        'flake8',
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
         'pytest-cov>=2.10.1',
         'pytest-env',
-        'pytest-flake8>=1.0.6',
         'pytest-html!=2.1.0',
         'pytest-metadata>=1.5.1',
+        'pytest-mock',
         'pytest-xdist',
+    ],
+    # Documentation dependencies
+    'doc': [
+        'autodocsumm>=0.2.2',
+        'sphinx>=5',
+        'sphinx_rtd_theme',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
-        'autodocsumm>=0.2.2',
         'codespell',
         'docformatter',
         'isort',
         'pre-commit',
         'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
-        'sphinx>2',
-        'sphinx_rtd_theme',
         'vprof',
         'yamllint',
         'yapf',
@@ -188,7 +195,6 @@ def read_description(filename):
 
 setup(
     name='ESMValTool',
-    version=__version__,
     author=read_authors('.zenodo.json'),
     description=read_description('.zenodo.json'),
     long_description=Path('README.md').read_text(),
@@ -220,8 +226,10 @@ setup(
     install_requires=REQUIREMENTS['install'],
     tests_require=REQUIREMENTS['test'],
     extras_require={
-        'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test']) -
-                    {'pycodestyle'}),
+        'develop':
+        REQUIREMENTS['develop'] + REQUIREMENTS['test'] + REQUIREMENTS['doc'],
+        'doc':
+        REQUIREMENTS['doc'],
         'test':
         REQUIREMENTS['test'],
     },

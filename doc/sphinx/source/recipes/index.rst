@@ -15,12 +15,12 @@ Atmosphere
    recipe_clouds
    recipe_cmug_h2o
    recipe_crem
-   recipe_combined_climate_extreme_index
    recipe_consecdrydays
    recipe_deangelis15nat
    recipe_diurnal_temperature_index
    recipe_eady_growth_rate
    recipe_extreme_events
+   recipe_extreme_index
    recipe_eyring06jgr
    recipe_eyring13jgr
    recipe_gier20bg
@@ -69,12 +69,15 @@ Future projections
    recipe_wenzel16jclim
    recipe_wenzel16nat
    recipe_tcr
+   recipe_tebaldi21esd
+   recipe_climate_change_hotspot
 
 IPCC
 ^^^^
 .. toctree::
    :maxdepth: 1
 
+   recipe_ipccwg1ar6ch3
    recipe_flato13ipcc
    recipe_collins13ipcc
 
@@ -109,17 +112,19 @@ Other
 .. toctree::
    :maxdepth: 1
 
-   recipe_examples
    recipe_capacity_factor
    recipe_cmorizers
    recipe_ensclus
    recipe_esacci_lst
+   recipe_examples
    recipe_monitor
    recipe_multimodel_products
-   recipe_rainfarm
+   recipe_psyplot
    recipe_pv_capacity_factor
-   recipe_seaice_feedback
+   recipe_rainfarm
    recipe_seaice
    recipe_seaice_drift
+   recipe_seaice_feedback
    recipe_shapeselect
+   recipes_testing
    recipe_toymodel

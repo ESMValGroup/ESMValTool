@@ -295,9 +295,9 @@ Observations and reformat scripts
 
 * JRA-55 (ana4mips) - reanalysis of sea surface pressure
 
-* NCEP - reanalysis of surface temperature
+* NCEP-NCAR-R1 - reanalysis of surface temperature
 
-  *Reformat script:* cmorizers/data/formatters/datasets/ncep.ncl
+  *Reformat script:* cmorizers/data/formatters/datasets/ncep_ncar_r1.py
 
 * PATMOS-x - total cloud cover
 

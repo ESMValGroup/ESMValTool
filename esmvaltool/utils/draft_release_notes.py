@@ -41,26 +41,36 @@ GITHUB_REPO = {
 }
 
 PREVIOUS_RELEASE = {
-    'esmvalcore': datetime.datetime(2021, 11, 8, 00),
-    'esmvaltool': datetime.datetime(2021, 11, 9, 00),
+    'esmvalcore': datetime.datetime(2022, 10, 13, 18),
+    'esmvaltool': datetime.datetime(2022, 10, 28, 18),
 }
+
+
 LABELS = {
     'esmvalcore': (
+        'api',
         'backwards incompatible change',
         'bug',
+        'cmor',
+        'containerization',
+        'community',
+        'deployment',
         'deprecated feature',
         'documentation',
-        'fix for dataset',
-        'cmor',
-        'preprocessor',
-        'api',
-        'testing',
-        'installation',
         'enhancement',
+        'fix for dataset',
+        'installation',
+        'iris',
+        'preprocessor',
+        'release',
+        'testing',
+        'UX',
+        'variable derivation'
     ),
     'esmvaltool': (
         'backwards incompatible change',
         'bug',
+        'community',
         'deprecated feature',
         'documentation',
         'diagnostic',
@@ -122,6 +132,8 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
             continue
         print(pull.updated_at, pull.merged_at, pull.number, pull.title)
         pr_labels = {label.name for label in pull.labels}
+        if 'automatedPR' in pr_labels:
+            continue
         for label in labels:
             if label in pr_labels:
                 break
@@ -172,6 +184,7 @@ def _get_pull_requests(project):
         state='closed',
         sort='updated',
         direction='desc',
+        base='main',
     )
     return pulls
 

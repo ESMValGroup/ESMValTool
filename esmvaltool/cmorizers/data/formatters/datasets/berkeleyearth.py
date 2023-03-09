@@ -26,7 +26,7 @@ from warnings import catch_warnings, filterwarnings
 import cf_units
 import iris
 import numpy as np
-from iris import coord_categorisation
+from iris import NameConstraint, coord_categorisation
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -48,7 +48,7 @@ def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
     climcenter = (climend - climstart) // 2
 
     times = iris.coords.DimCoord(
-        np.arange(int(n_days), dtype=float),
+        np.arange(int(n_days), dtype=np.float64),
         var_name='time',
         standard_name='time',
         long_name='time',
@@ -56,7 +56,7 @@ def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
                             calendar=cf_units.CALENDAR_STANDARD))
 
     # init a dummy cube to enable coord_categorisation
-    dummycube = iris.cube.Cube(np.zeros(int(n_days), np.int),
+    dummycube = iris.cube.Cube(np.zeros(int(n_days), np.int64),
                                dim_coords_and_dims=[(times, 0)])
     coord_categorisation.add_year(dummycube, 'time', name='year')
     coord_categorisation.add_month_number(dummycube, 'time', name='month')
@@ -147,11 +147,11 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
 
     # tas anomaly
     raw_var = var.get('raw', short_name)
-    cube_anom = cubes.extract(utils.var_name_constraint(raw_var))[0]
+    cube_anom = cubes.extract(NameConstraint(var_name=raw_var))[0]
 
     # tas climatology
     raw_var_clim = var.get('rawclim', short_name)
-    cube_clim = cubes.extract(utils.var_name_constraint(raw_var_clim))[0]
+    cube_clim = cubes.extract(NameConstraint(var_name=raw_var_clim))[0]
     # information on time for the climatology are only present in the long_name
     climstart, climend = [
         int(x) for x in re.findall(r"\d{4}", cube_clim.long_name)
@@ -206,7 +206,7 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
     # sftlf
     # extract sftlf
     raw_var_sftlf = var.get('rawsftlf', short_name)
-    cube_sftlf = cubes.extract(utils.var_name_constraint(raw_var_sftlf))[0]
+    cube_sftlf = cubes.extract(NameConstraint(var_name=raw_var_sftlf))[0]
 
     # fix coordinates
     utils.fix_coords(cube_sftlf)

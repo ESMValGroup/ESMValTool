@@ -766,7 +766,7 @@ diagnostics:
       tas:
         preprocessor: regrid_4_5
         reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
+        alternative_dataset: NCEP-NCAR-R1
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -840,7 +840,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}      
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}      
     scripts:
       fig09-6_pattern_cor: &fig09_6_pattern_cor
         script: ipcc_ar5/ch09_fig09_6.ncl

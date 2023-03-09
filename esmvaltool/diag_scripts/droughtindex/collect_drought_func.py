@@ -96,6 +96,10 @@ def _provenance_map_spei(cfg, name_dict, spei, dataset_name):
                                               name_dict['add_to_filename'] +
                                               '_' +
                                               dataset_name, cfg)
+    plot_file = get_plot_filename(cfg['indexname'] + '_map' +
+                                  name_dict['add_to_filename'] +
+                                  '_' +
+                                  dataset_name, cfg)
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
@@ -105,6 +109,7 @@ def _provenance_map_spei(cfg, name_dict, spei, dataset_name):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
@@ -129,6 +134,9 @@ def _provenance_map_spei_multi(cfg, data_dict, spei, input_filenames):
     diagnostic_file = get_diagnostic_filename(cfg['indexname'] + '_map' +
                                               data_dict['filename'] + '_' +
                                               data_dict['datasetname'], cfg)
+    plot_file = get_plot_filename(cfg['indexname'] + '_map' +
+                                  data_dict['filename'] + '_' +
+                                  data_dict['datasetname'], cfg)
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
@@ -137,6 +145,7 @@ def _provenance_map_spei_multi(cfg, data_dict, spei, input_filenames):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
@@ -163,7 +172,11 @@ def _provenance_time_series_spei(cfg, data_dict):
                                               data_dict['area'] +
                                               '_' +
                                               data_dict['dataset_name'], cfg)
-
+    plot_file = get_plot_filename(cfg['indexname'] +
+                                  '_time_series_' +
+                                  data_dict['area'] +
+                                  '_' +
+                                  data_dict['dataset_name'], cfg)
     logger.info("Saving analysis results to %s", diagnostic_file)
 
     cubesave = cube_to_save_ploted_ts(data_dict)
@@ -172,6 +185,7 @@ def _provenance_time_series_spei(cfg, data_dict):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
@@ -441,30 +455,21 @@ def get_latlon_index(coords, lim1, lim2):
 
 def plot_map_spei_multi(cfg, data_dict, input_filenames, colormap='jet'):
     """Plot contour maps for multi model mean."""
-    print("data_dict['data']")
-    print(data_dict['data'])
-    # mask = np.isnan(data_dict['data'])
     spei = np.ma.array(data_dict['data'], mask=np.isnan(data_dict['data']))
-    # np.ma.masked_less_equal(spei, 0)
-    print("spei")
-    print(spei)
 
     # Get latitudes and longitudes from cube
-    # lats = data_dict['latitude']
     lons = data_dict['longitude']
-    lons = np.where(lons > 180, lons - 360, lons)
-    # sort the array
-    index = np.argsort(lons)
-    lons = lons[index]
-    data_dict.update({'longitude': lons})
-    # mesh_ind = np.ix_(range(360), index)
-    spei = spei[np.ix_(range(len(data_dict['latitude'])), index)]
+    if max(lons) > 180.0:
+        lons = np.where(lons > 180, lons - 360, lons)
+        # sort the array
+        index = np.argsort(lons)
+        lons = lons[index]
+        spei = spei[np.ix_(range(data_dict['latitude'].size), index)]
 
     # Plot data
     # Create figure and axes instances
-    fig, axx = plt.subplots(figsize=(8, 4))
-
-    axx = plt.axes(projection=cart.PlateCarree(central_longitude=0.0))
+    subplot_kw = {'projection': cart.PlateCarree(central_longitude=0.0)}
+    fig, axx = plt.subplots(figsize=(6.5, 4), subplot_kw=subplot_kw)
     axx.set_extent([-180.0, 180.0, -90.0, 90.0],
                    cart.PlateCarree(central_longitude=0.0))
 
@@ -516,11 +521,6 @@ def plot_map_spei_multi(cfg, data_dict, input_filenames, colormap='jet'):
 
 def plot_map_spei(cfg, cube, levels, name_dict):
     """Plot contour map."""
-    print("hello map 1")
-    # SPEI array to plot
-    # spei = cube.data
-    print("hello map 2")
-
     mask = np.isnan(cube.data)
     spei = np.ma.array(cube.data, mask=mask)
     np.ma.masked_less_equal(spei, 0)
@@ -533,16 +533,7 @@ def plot_map_spei(cfg, cube, levels, name_dict):
     index = np.argsort(lons)
     lons = lons[index]
     name_dict.update({'longitude': lons})
-    # mesh_ind = np.ix_(range(360), index)
     spei = spei[np.ix_(range(len(cube.coord('latitude').points)), index)]
-
-    # arr1inds = lons.argsort()
-    # lons = lons[arr1inds]
-    # spei = spei[:,arr1inds,:]
-
-    # Get data set name from cube
-    print("cube.metadata.attributes")
-    print(cube.metadata.attributes)
 
     # Get data set name from cube
     try:
@@ -552,13 +543,11 @@ def plot_map_spei(cfg, cube, levels, name_dict):
             dataset_name = cube.metadata.attributes['source_id']
         except KeyError:
             dataset_name = 'Observations'
-    print(dataset_name)
 
     # Plot data
     # Create figure and axes instances
-    fig, axx = plt.subplots(figsize=(8, 4))
-
-    axx = plt.axes(projection=cart.PlateCarree(central_longitude=0.0))
+    subplot_kw = {'projection': cart.PlateCarree(central_longitude=0.0)}
+    fig, axx = plt.subplots(figsize=(8, 4), subplot_kw=subplot_kw)
     axx.set_extent([-180.0, 180.0, -90.0, 90.0],
                    cart.PlateCarree(central_longitude=0.0))
 
@@ -610,8 +599,6 @@ def plot_time_series_spei(cfg, cube, filename, add_to_filename=''):
     # SPEI vector to plot
     spei = cube.data
     # Get time from cube
-    print("cube.coord(time)")
-    print(cube.coord('time'))
     time = cube.coord('time').points
     # Adjust (ncdf) time to the format matplotlib expects
     add_m_delta = mda.datestr2num('1850-01-01 00:00:00')

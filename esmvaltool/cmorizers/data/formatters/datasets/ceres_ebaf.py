@@ -4,14 +4,15 @@ Tier
     Tier 2: other freely-available dataset.
 
 Source
-    https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAF4Selection.jsp
+    https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAFTOA41Selection.jsp
 
 Last access
-    20191126
+    20220701
 
 Download and processing instructions
-    Select: "TOA Fluxes" ("Shortwave Flux" and "Longwave Flux", "All Sky"
-    and "Clear Sky"), "Monthly Mean", "Regional 1x1 global grid".
+    Select: "TOA Fluxes" (all), "Monthly", "Regional" (0-360, -90-90)
+    Enter "Email Address" and click on "Get Data"
+    Wait for the processing to be finished and click on "Download"
 """
 
 import logging
@@ -19,6 +20,7 @@ import os
 import warnings
 
 import iris
+from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -41,7 +43,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     raw_var = var.get('raw', short_name)
     with warnings.catch_warnings():
         filter_warnings()
-        cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
+        cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
     # Fix units
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)

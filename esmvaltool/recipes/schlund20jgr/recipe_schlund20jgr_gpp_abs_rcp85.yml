@@ -73,7 +73,7 @@ SEABORN_SETTINGS: &seaborn_settings
 
 WEIGHTED_SAMPLES: &weighted_samples
   area_weighted: true
-  time_weighted: true
+  time_weighted: false
 
 VARIABLE_SETTINGS_FEATURES: &variable_settings_features
   project: CMIP5
@@ -117,6 +117,7 @@ GBRT_SCRIPT: &gbrt_script
     max_depth: 6
     n_estimators: 400
     subsample: 0.5
+  random_state: 31415
   save_mlr_model_error: test
   save_propagated_errors: true
   seaborn_settings: *seaborn_settings
@@ -138,6 +139,7 @@ LASSO_SCRIPT: &lasso_script
   imputation_strategy: constant
   mlr_model_type: lasso_cv
   n_jobs: -1
+  random_state: 31415
   save_mlr_model_error: test
   save_propagated_errors: true
   seaborn_settings: *seaborn_settings

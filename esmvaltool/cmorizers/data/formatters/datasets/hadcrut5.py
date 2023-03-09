@@ -7,14 +7,14 @@ Source
     https://crudata.uea.ac.uk/cru/data/temperature
 
 Last access
-    20210113
+    20220328
 
 Download and processing instructions
     Download the following files:
         infilling
-            [Source]/HadCRUT.5.0.0.0.analysis.anomalies.ensemble_mean.nc
+            [Source]/HadCRUT.5.0.1.0.analysis.anomalies.ensemble_mean.nc
         no-infilling
-            [Source]/HadCRUT.5.0.0.0.anomalies.ensemble_mean.nc
+            [Source]/HadCRUT.5.0.1.0.anomalies.ensemble_mean.nc
         climatology
             [Source]/absolute_v5.nc
 """
@@ -26,6 +26,7 @@ import os
 import iris
 import numpy as np
 from cf_units import Unit
+from iris import NameConstraint
 
 from ... import utilities as utils
 
@@ -38,28 +39,35 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
     # load data
     filepath = os.path.join(in_dir, filename)
     raw_var = var.get('raw', short_name)
-    cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
+    cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
-    # load climatology
-    filepath_clim = os.path.join(in_dir, cfg['climatology']['filename'])
-    raw_var = var.get('raw_clim', short_name)
-    clim_cube = iris.load_cube(filepath_clim,
-                               utils.var_name_constraint(raw_var))
+    if short_name == 'tas':
+        # load climatology
+        filepath_clim = os.path.join(in_dir, cfg['climatology']['filename'])
+        raw_var = var.get('raw_clim', short_name)
+        clim_cube = iris.load_cube(filepath_clim,
+                                   NameConstraint(var_name=raw_var))
 
-    # fix units
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
-    for cub in [cube, clim_cube]:
-        if cub.units != cmor_info.units:
-            cub.convert_units(cmor_info.units)
+        # fix units
+        cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+        for cub in [cube, clim_cube]:
+            if cub.units != cmor_info.units:
+                cub.convert_units(cmor_info.units)
 
-    # derive absolute temperatures
-    clim_data = clim_cube.data
-    clim_data = np.tile(clim_data, [cube.shape[0] // 12, 1, 1])
-    if cube.shape[0] % 12 != 0:
-        for i in range(cube.shape[0] % 12):
-            clim_data = np.vstack([clim_data, clim_data[i:i + 1]])
+        # derive absolute temperatures
+        clim_data = clim_cube.data
+        clim_data = np.tile(clim_data, [cube.shape[0] // 12, 1, 1])
+        if cube.shape[0] % 12 != 0:
+            for i in range(cube.shape[0] % 12):
+                clim_data = np.vstack([clim_data, clim_data[i:i + 1]])
 
-    cube.data = cube.data + clim_data
+        cube.data = cube.data + clim_data
+
+    if short_name == 'tasa':
+        # fix units
+        cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+        if cube.units != cmor_info.units:
+            cube.convert_units(cmor_info.units)
 
     # fix time units
     cube.coord('time').convert_units(
@@ -83,7 +91,7 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
     # Fix metadata and  update version information
     attrs = copy.deepcopy(cfg['attributes'])
     attrs['mip'] = var['mip']
-    attrs['version'] = version
+    attrs['version'] += '-' + version
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
 

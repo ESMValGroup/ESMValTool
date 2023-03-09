@@ -24,7 +24,9 @@ jobs:
         python-version: ["3.8", "3.9", "3.10"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: esmvaltool
@@ -43,9 +45,6 @@ jobs:
       - name: Install ESMValTool
         shell: bash -l {0}
         run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
-      - name: Install R dependencies
-        shell: bash -l {0}
-        run: esmvaltool install R
       - name: Install Julia dependencies
         shell: bash -l {0}
         run: esmvaltool install Julia
@@ -56,6 +55,9 @@ jobs:
           git clone https://github.com/ESMValGroup/ESMValCore.git
           cd ESMValCore
           pip install -e .[develop]
+      - name: Run flake8
+        shell: bash -l {0}
+        run: flake8
       - name: Run tests
         shell: bash -l {0}
         run: pytest -n 2 -m "not installation" 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt

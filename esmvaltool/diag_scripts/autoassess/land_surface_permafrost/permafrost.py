@@ -230,7 +230,7 @@ def num_frozen(data, threshold, axis, frozen_length):
     # Find the windows "full of True-s" (along the added 'window axis').
     full_windows = np.all(hit_windows, axis=axis + 1)
     # Count points fulfilling the condition (along the time axis).
-    frozen_point_counts = np.sum(full_windows, axis=axis, dtype=int)
+    frozen_point_counts = np.sum(full_windows, axis=axis, dtype=np.int64)
 
     return frozen_point_counts
 
