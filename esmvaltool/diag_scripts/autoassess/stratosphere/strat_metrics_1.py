@@ -95,7 +95,10 @@ def plot_timehgt(cube, levels, title, log=False, ax1=None):
     new_epoch = time_coord.points[0]
     new_unit_str = 'hours since {}'
     new_unit = new_unit_str.format(time_coord.units.num2date(new_epoch))
-    ax1.xaxis.axis_date()
+    # github.com/ESMValGroup/ESMValTool/issues/3088 linking to
+    # github.com/matplotlib/matplotlib/issues/25419
+    # problem in matplotlib=3.7.1
+    # ax1.xaxis.axis_date()
     ax1.xaxis.set_label(new_unit)
     ax1.xaxis.set_major_locator(mdates.YearLocator(4))
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
