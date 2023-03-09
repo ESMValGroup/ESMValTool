@@ -1,0 +1,31 @@
+
+# CMORIZE CLS LAI
+
+---
+
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: CLS_LAI
+  version: '1.00'
+  tier: 2
+  project_id: OBS
+  source: 'ESA'
+  modeling_realm: sat
+  reference: ''
+  comment: ''
+  start_year: 2010
+  end_year: 2012
+
+# Variables to cmorize
+# These go into the vals dictionary in the python script
+variables:
+  lai: 
+    mip: Lmon
+    raw: leaf_area_index
+    raw_units:
+    file: 'c_gls_LAI'
+    start_year: 2010
+    end_year: 2012
+
+ 
