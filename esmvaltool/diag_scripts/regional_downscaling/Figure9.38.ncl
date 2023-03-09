@@ -173,7 +173,7 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
   wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_38_" + var0)
-  wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_38_regions" + var0)
+  wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_38_regions_" + var0)
   wks_l = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_38_legend_" + var0)
   if (diag_script_info@fig938_MMM.eq."True")
     wks_MMM = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9_38_MMM_" + var0)
