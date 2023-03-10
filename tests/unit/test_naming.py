@@ -32,9 +32,11 @@ class TestNaming(unittest.TestCase):
             'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'
         }
 
-        for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder,
-                                                    topdown=True):
+        for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
+            # we need to modify in-place dirnames so that we don't walk
+            # over the contents of the dirs that need be ignored
             dirnames[:] = [dirn for dirn in dirnames if dirn not in IGNORE]
+            print(dirnames)
             error_msg = 'Reserved windows name found at {}.' \
                         ' Please rename it ' \
                         '(Windows reserved names are: {})' \
@@ -52,10 +54,10 @@ class TestNaming(unittest.TestCase):
 
         This includes folders differing from files
         """
-        for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder,
-                                                    topdown=True):
-            to_remove = [dirn for dirn in dirnames if dirn in IGNORE]
-            dirnames[:] = [dirn for dirn in dirnames if dirn not in to_remove]
+        for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
+            # we need to modify in-place dirnames so that we don't walk
+            # over the contents of the dirs that need be ignored
+            dirnames[:] = [dirn for dirn in dirnames if dirn not in IGNORE]
             print(dirnames)
             self.assertEqual(
                 len(filenames) + len(dirnames),
@@ -73,10 +75,11 @@ class TestNaming(unittest.TestCase):
         """
         exclude_paths = ['esmvaltool/diag_scripts/cvdp/cvdp']
 
-        for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder,
-                                                    topdown=True):
-            to_remove = [dirn for dirn in dirnames if dirn in IGNORE]
-            dirnames[:] = [dirn for dirn in dirnames if dirn not in to_remove]
+        for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
+            # we need to modify in-place dirnames so that we don't walk
+            # over the contents of the dirs that need be ignored
+            dirnames[:] = [dirn for dirn in dirnames if dirn not in IGNORE]
+            print(dirnames)
             if any([item in dirpath for item in exclude_paths]):
                 continue
             self.assertFalse(
