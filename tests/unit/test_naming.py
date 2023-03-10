@@ -33,9 +33,8 @@ class TestNaming(unittest.TestCase):
         }
 
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
-            for dirname in dirnames:
-                if dirname in IGNORE:
-                    dirnames.remove(dirname)
+            to_remove = [dirn for dirn in dirnames if dirn in IGNORE]
+            dirnames = [dirn for dirn in dirnames if dirn not in to_remove]
             error_msg = 'Reserved windows name found at {}.' \
                         ' Please rename it ' \
                         '(Windows reserved names are: {})' \
@@ -56,6 +55,7 @@ class TestNaming(unittest.TestCase):
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
             to_remove = [dirn for dirn in dirnames if dirn in IGNORE]
             dirnames = [dirn for dirn in dirnames if dirn not in to_remove]
+            print(dirnames)
             self.assertEqual(
                 len(filenames) + len(dirnames),
                 len({name.lower()
@@ -73,9 +73,8 @@ class TestNaming(unittest.TestCase):
         exclude_paths = ['esmvaltool/diag_scripts/cvdp/cvdp']
 
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
-            for dirname in dirnames:
-                if dirname in IGNORE:
-                    dirnames.remove(dirname)
+            to_remove = [dirn for dirn in dirnames if dirn in IGNORE]
+            dirnames = [dirn for dirn in dirnames if dirn not in to_remove]
             if any([item in dirpath for item in exclude_paths]):
                 continue
             self.assertFalse(
