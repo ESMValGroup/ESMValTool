@@ -34,8 +34,7 @@ class TestNaming(unittest.TestCase):
 
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder,
                                                     topdown=True):
-            to_remove = [dirn for dirn in dirnames if dirn in IGNORE]
-            dirnames[:] = [dirn for dirn in dirnames if dirn not in to_remove]
+            dirnames[:] = [dirn for dirn in dirnames if dirn not in IGNORE]
             error_msg = 'Reserved windows name found at {}.' \
                         ' Please rename it ' \
                         '(Windows reserved names are: {})' \
