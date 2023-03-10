@@ -12,10 +12,11 @@ versions. In this way we can next time start with what was available in the
 previous round and can focus on developing more innovative methods of analysis
 rather than constantly having to "re-invent the wheel".
 
-.. note:: 
-Please note that most recipes have been modified to include only models that are 
-(still) readily available via ESGF. Plots produced may therefore look different 
-than the original figures from IPCC AR5.
+.. note::
+
+    Please note that most recipes have been modified to include only models that are 
+    (still) readily available via ESGF. Plots produced may therefore look different 
+    than the original figures from IPCC AR5.
 
 The plots are produced collecting the diagnostics from individual recipes. The
 following figures from Flato et al. (2013) can currently be reproduced:
