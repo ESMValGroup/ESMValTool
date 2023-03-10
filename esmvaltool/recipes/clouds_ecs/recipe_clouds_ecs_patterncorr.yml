@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_ipccwg1ar6ch3_fig3_43.yml
+# recipe_clouds_ecs_patterncorr.yml
 ---
 documentation:
 
@@ -186,10 +186,11 @@ diagnostics:
       pr: &pr_settings
         <<: *tas_settings
         reference_dataset: GPCP-SG
-        alternative_dataset: GHCN
+        alternative_dataset: ERA5
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
-      - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
+      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+        #- {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
 
 
   rlut:
