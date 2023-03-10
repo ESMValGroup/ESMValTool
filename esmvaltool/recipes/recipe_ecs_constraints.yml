@@ -74,8 +74,6 @@ preprocessors:
   spatial_mean:
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
 
   tropical_mean:
     extract_region:
@@ -85,8 +83,6 @@ preprocessors:
       end_longitude: 360
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
     climate_statistics:
       operator: mean
 
@@ -98,8 +94,6 @@ preprocessors:
       end_longitude: 360
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
     climate_statistics:
       operator: mean
 

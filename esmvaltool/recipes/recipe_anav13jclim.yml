@@ -548,7 +548,8 @@ diagnostics:
         reference_dataset: HWSD
         plot_units: PgC
         additional_datasets:
-          - {dataset: HWSD, project: OBS, type: reanaly, version: 1.2, tier: 3, start_year: 2000, end_year: 2000}
+          - {dataset: HWSD, project: OBS, type: reanaly, version: 1.2, tier: 3, start_year: 2000, end_year: 2000,
+             supplementary_variables: [{short_name: sftlf, mip: fx}]}
     additional_datasets:
       - {dataset: BNU-ESM}
       - {dataset: CanESM2}
@@ -611,8 +612,8 @@ diagnostics:
           - {dataset: IPSL-CM5A-LR}
           - {dataset: IPSL-CM5A-MR}
           - {dataset: IPSL-CM5B-LR}
-          - {dataset: MIROC-ESM}
-          - {dataset: MIROC-ESM-CHEM}
+          - {dataset: MIROC-ESM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}
+          - {dataset: MIROC-ESM-CHEM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}
           - {dataset: MPI-ESM-LR}
           - {dataset: MPI-ESM-MR}
           - {dataset: NorESM1-ME}

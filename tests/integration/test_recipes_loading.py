@@ -82,6 +82,20 @@ def test_recipe_valid(recipe_file, session, mocker):
         ],
     )
 
+    # Do not remove unexpanded supplementaries. These cannot be expanded
+    # because the mocked file finding above does not produce facets.
+    try:
+        import esmvalcore.dataset
+    except ImportError:
+        pass
+    else:
+        mocker.patch.object(
+            esmvalcore.dataset.Dataset,
+            '_remove_unexpanded_supplementaries',
+            autospec=True,
+            spec_set=True,
+        )
+
     # Mock vertical levels
     # Account for module change after esmvalcore=2.7
     if version.parse(core_ver) <= version.parse('2.7.1'):
