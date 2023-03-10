@@ -270,6 +270,7 @@ diagnostics:
         fig939_experiment_MMM: ["historical", "20c3m"]
         fig939_mip_MMM: ["Amon", "A1"]
         fig939_MMM: true
+        fig939_mode: true
         fig939_YMin: -100
         fig939_YMax: 300
 
