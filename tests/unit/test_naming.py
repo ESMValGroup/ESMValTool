@@ -7,6 +7,7 @@ IGNORE = {
     '.git',
     '.github',
     '.eggs',
+    'ESMValTool.egg-info',
     '__pycache__',
     'test-reports',
 }
@@ -53,9 +54,8 @@ class TestNaming(unittest.TestCase):
         This includes folders differing from files
         """
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
-            for dirname in dirnames:
-                if dirname in IGNORE:
-                    dirnames.remove(dirname)
+            to_remove = [dirn for dirn in dirnames if dirn in IGNORE]
+            dirnames = [dirn for dirn in dirnames if dirn not in to_remove]
             self.assertEqual(
                 len(filenames) + len(dirnames),
                 len({name.lower()
