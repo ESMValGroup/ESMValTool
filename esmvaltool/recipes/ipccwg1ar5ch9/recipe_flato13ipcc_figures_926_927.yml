@@ -87,8 +87,8 @@ diagnostics:
           # - {dataset: IPSL-CM5A-LR}
           # - {dataset: IPSL-CM5A-MR}
           # - {dataset: IPSL-CM5B-LR}
-          - {dataset: MIROC-ESM}
-          - {dataset: MIROC-ESM-CHEM}
+          - {dataset: MIROC-ESM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}
+          - {dataset: MIROC-ESM-CHEM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}
           - {dataset: MPI-ESM-LR}
           - {dataset: MPI-ESM-MR}
           - {dataset: NorESM1-ME}
