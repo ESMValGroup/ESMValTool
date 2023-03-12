@@ -705,6 +705,10 @@ authors:
     name: Tilmes, Simone
     institute: NCAR, US
     orcid:
+  tommi_bergman:
+    name: Bergman, Tommi
+    institute: FMI, Finland
+    orcid: https://orcid.org/0000-0002-6133-2231
   # If no maintainer is available for a recipe, the following entry is used
   unmaintained:
     name: No maintainer available
