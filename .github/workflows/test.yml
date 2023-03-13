@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - install_Core280rc1
   schedule:
     - cron: '0 0 * * *'
 
