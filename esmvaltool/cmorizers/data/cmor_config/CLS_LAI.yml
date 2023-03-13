@@ -14,8 +14,8 @@ attributes:
   modeling_realm: sat
   reference: ''
   comment: ''
-  start_year: 2010
-  end_year: 2012
+  start_year: 1999
+  end_year: 2014
 
 # Variables to cmorize
 # These go into the vals dictionary in the python script
@@ -25,7 +25,7 @@ variables:
     raw: leaf_area_index
     raw_units:
     file: 'c_gls_LAI'
-    start_year: 2010
-    end_year: 2012
+    start_year: 1999
+    end_year: 2014
 
  
