@@ -286,6 +286,7 @@ These are the detailed steps to take to make a release.
    - Pin ESMValCore to the same version as ESMValTool in the ``environment.yml`` and on `conda-forge
      <https://github.com/conda-forge/esmvaltool-suite-feedstock>`__.
      This way, we make sure that ESMValTool uses the ESMValCore version with which it has been tested.
+     Make sure to deactivate the release candidate channel once ESMValCore has been released.
    - Make the release by following :ref:`How to make a release`.
 
 
