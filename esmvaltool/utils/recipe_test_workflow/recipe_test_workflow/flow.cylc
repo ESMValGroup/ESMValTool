@@ -40,6 +40,8 @@
 
     [[install_cold]]
         [[[environment]]]
+            ESMVALCORE_URL = {{ ESMVALCORE_URL }}
+            ESMVALTOOL_URL = {{ ESMVALTOOL_URL }}
             SITE = {{ SITE }}
 
     [[configure]]
