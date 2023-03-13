@@ -29,10 +29,10 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
 
     # ____________Load labels
     namef = os.path.join(dir_output, 'labels_{0}.txt'.format(name_outputs))
-    labels = np.loadtxt(namef, dtype=int)
+    labels = np.loadtxt(namef, dtype=np.int64)
 
     namef = os.path.join(dir_output, 'repr_ens_{0}.txt'.format(name_outputs))
-    reprens = np.loadtxt(namef, dtype=int)
+    reprens = np.loadtxt(namef, dtype=np.int64)
 
     namef = os.path.join(dir_output, 'legend_{0}.txt'.format(name_outputs))
     legends = np.loadtxt(namef, dtype=str)

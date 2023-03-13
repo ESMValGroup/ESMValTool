@@ -129,8 +129,8 @@ def _calc_zonal_correlation(dat_tau, dat_pr, dat_tas, dat_lats, fig_config):
     # minimum 1/8 of the given window has valid data points
     min_points = np.shape(dat_tau)[1] * fig_config['min_points_frac']
     for lat_index in range(len(corr_dat)):
-        istart = np.int(max(0, lat_index - window_size))
-        iend = np.int(min(np.size(dat_lats), lat_index + window_size + 1))
+        istart = int(max(0, lat_index - window_size))
+        iend = int(min(np.size(dat_lats), lat_index + window_size + 1))
         dat_tau_zone = dat_tau[istart:iend, :]
         dat_pr_zone = dat_pr[istart:iend, :]
         dat_tas_zone = dat_tas[istart:iend, :]

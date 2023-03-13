@@ -26,8 +26,6 @@ preprocessors:
   spatial_mean:
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
 
 
 ECS_CMIP5_RTNT: &ecs_cmip5_rtnt

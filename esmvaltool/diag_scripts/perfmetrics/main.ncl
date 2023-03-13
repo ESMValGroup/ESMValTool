@@ -56,7 +56,9 @@
 ;
 ; Modification history
 ;    20221209-winterstein_franziska: added optional tropopause and plotting
-;                                    resources
+;    20220609-bock_lisa: added calculation of multi-model mean and median for
+;                        each project
+;    20211014-bock_lisa: added sorting by project
 ;    20200506-gier_bettina: implemented support for multiple occurence of
 ;                           models with different experiments and ensembles
 ;    20190405-righi_mattia: added provenance logging
@@ -108,10 +110,22 @@ begin
 
   enter_msg(DIAG_SCRIPT, "")
 
+  vars = metadata_att_as_array(variable_info, "short_name")
+
   ; Get variables and datasets
   var0 = variable_info[0]@short_name
   info_items = select_metadata_by_name(input_file_info, var0)
   nDatasets = ListCount(info_items)
+
+  if (dimsizes(vars) .gt. 1) then
+    var1 = variable_info[1]@short_name
+    info_items_1 = select_metadata_by_name(input_file_info, var1)
+    cnt = ListCount(info_items_1)
+    do ii = 0, cnt - 1
+      ListAppend(info_items, info_items_1[ii])
+    end do
+    nDatasets = ListCount(info_items)
+  end if
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"plot_type", "time_avg", "region"/))
@@ -446,23 +460,19 @@ begin
         diag_script_info@metric(met) + ".nc"
 
       if (fileexists(temp_dir)) then
-        temp_file = addfile(temp_dir, "r")
-        temp_list = temp_file->temp_list
-        temp_list := tostring(temp_list)
-        temp_list := array_append_record(temp_list, ncdf_dir(met), 0)
-        temp_list := tochar(temp_list)
         system("rm -f " + temp_dir)
-      else
-        ncdf_char = tochar(ncdf_dir(met))
-        temp_list = new((/1, dimsizes(ncdf_char)/), character)
-        temp_list(0, :) = ncdf_char
       end if
+
+      ncdf_char = tochar(ncdf_dir(met))
+      temp_list = new((/1, dimsizes(ncdf_char)/), character)
+      temp_list(0, :) = ncdf_char
+      delete(ncdf_char)
 
       ; Create new file and add list
       temp = addfile(temp_dir, "c")
       temp->temp_list = temp_list
 
-      delete([/metric, temp_dir, temp_list, ncdf_char/])
+      delete([/metric, temp_dir, temp_list/])
 
     end do
 
