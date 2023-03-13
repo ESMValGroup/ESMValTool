@@ -381,6 +381,17 @@ diagnostics:
     scripts: null
 
 
+  GLASS:
+    description: GLASS check
+    variables:
+      lai:
+      gpp:
+    additional_datasets:
+      - {dataset: GLASS, project: OBS6, mip: Lmon, tier: 2,
+         type: reanaly, version: V40, start_year: 2000, end_year: 2001}
+    scripts: null
+
+
   GLODAP:
     description: GLODAP check
     variables:
