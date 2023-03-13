@@ -38,6 +38,7 @@ dependencies:
   - nc-time-axis
   - netCDF4
   - numpy
+  - packaging
   - openpyxl
   - pandas
   - progressbar2
