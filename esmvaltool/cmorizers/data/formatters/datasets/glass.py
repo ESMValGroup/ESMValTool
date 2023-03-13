@@ -250,7 +250,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if start_date is None:
         start_date = datetime(1981, 1, 1)
     if end_date is None:
-        end_date = datetime(1921, 12, 31)
+        end_date = datetime(2023, 12, 31)
     logger.info("Considering years %i--%i", start_date.year, end_date.year)
 
     # Run the cmorization
