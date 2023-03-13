@@ -27,14 +27,14 @@ from calendar import monthrange
 
 import iris
 
-from ...utilities import fix_coords, save_variable
+from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    # cmor_table = cfg['cmor_table']
+    cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
 
     # run the cmorization
@@ -47,6 +47,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         # like uncertainty information from the original files
 
         glob_attrs['mip'] = vals['mip']
+        cmor_info = cmor_table.get_variable(vals['mip'], var)
+        var_name = cmor_info.short_name
 
         for key in vals.keys():
             logger.info("%s %s", key, vals[key])
@@ -58,7 +60,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         # loop over years and months
         # get years from start_year and end_year
         # note 2003 doesn't start until July so not included at this stage
-        for year in range(vals['start_year'], vals['end_year'] + 1):
+        for year in range(glob_attrs['start_year'], glob_attrs['end_year'] + 1):
             this_years_cubes = iris.cube.CubeList()
             for month0 in range(12):  # Change this in final version
                 month = month0 + 1
@@ -71,7 +73,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                                     month)
 
                 # use CMORizer utils
-                monthly_cube = fix_coords(monthly_cube)
+                monthly_cube = utils.fix_coords(monthly_cube)
 
                 this_years_cubes.append(monthly_cube)
 
@@ -82,11 +84,18 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             this_years_cubes.long_name = 'Surface Temperature'
             this_years_cubes.standard_name = 'surface_temperature'
 
-            save_variable(
+            # Fix variable metadata
+            utils.fix_var_metadata(this_years_cubes, cmor_info)
+
+            # Fix global metadata
+            utils.set_global_atts(this_years_cubes, glob_attrs)
+
+            utils.save_variable(
                 this_years_cubes,
-                var,
+                var_name,
                 out_dir,
                 glob_attrs,
+                unlimited_dimensions=['time'],
             )
 
 
