@@ -60,7 +60,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         # loop over years and months
         # get years from start_year and end_year
         # note 2003 doesn't start until July so not included at this stage
-        for year in range(glob_attrs['start_year'], glob_attrs['end_year'] + 1):
+        for year in range(glob_attrs['start_year'],
+                          glob_attrs['end_year'] + 1):
             this_years_cubes = iris.cube.CubeList()
             for month0 in range(12):  # Change this in final version
                 month = month0 + 1
