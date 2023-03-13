@@ -1,0 +1,896 @@
+diagnostics:
+  diag_timeseries_3:
+    scripts:
+      Model_range_polots: {script: ocean/diagnostic_ai_plots.py}
+    variables:
+      chl_map_hist:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2010, ensemble: r10i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r10i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r11i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r12i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r13i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r14i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r15i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r16i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r17i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r18i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r19i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r1i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r20i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r21i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r22i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r23i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r24i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r25i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r2i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r2i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r3i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r3i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r4i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r4i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r5i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r5i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r6i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r6i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r7i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r7i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r8i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r8i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r9i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r9i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r1i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r2i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r3i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r4i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r5i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r2i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r3i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r4i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r5i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r6i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r7i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r8i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r9i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r10i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r11i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r12i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r16i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r17i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r18i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r19i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r1i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r2i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r3i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r4i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r5i1p1f3, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r6i1p1f3, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r7i1p1f3, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r8i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r9i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+#        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r13i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r10i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r11i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r2i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r3i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r4i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r5i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r6i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r7i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r8i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r9i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        end_year: 2010
+        exp: historical
+        grid: gn
+        mip: Omon
+        preprocessor: prep_map_surf
+        project: CMIP6
+        short_name: chl
+        start_year: 2000
+      chl_map_ssp126:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r1i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r2i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r3i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r4i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r5i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r2i1p1f1, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r3i1p1f1, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r10i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r11i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r12i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r16i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r17i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r18i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r19i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r1i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r2i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r3i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r4i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r5i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r6i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r7i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r8i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r9i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        end_year: 2050
+        exp: ssp126
+        grid: gn
+        mip: Omon
+        preprocessor: prep_map_surf
+        project: CMIP6
+        short_name: chl
+        start_year: 2040
+      chl_map_ssp245:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r1i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r2i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r3i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r4i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r5i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r2i1p1f1, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r1i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r2i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r3i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r4i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r8i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        end_year: 2050
+        exp: ssp245
+        grid: gn
+        mip: Omon
+        preprocessor: prep_map_surf
+        project: CMIP6
+        short_name: chl
+        start_year: 2040
+      chl_map_ssp370:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r2i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r3i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r4i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r5i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r10i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r2i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r3i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r4i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r5i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r6i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r7i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r8i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r9i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r10i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r11i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r12i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r16i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r17i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r18i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r19i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r1i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r2i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r3i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r4i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r5i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r6i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r7i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r8i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r9i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        end_year: 2050
+        exp: ssp370
+        grid: gn
+        mip: Omon
+        preprocessor: prep_map_surf
+        project: CMIP6
+        short_name: chl
+        start_year: 2040
+      chl_map_ssp585:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r2i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r3i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r4i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r5i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r1i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r2i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r3i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r4i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r8i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        end_year: 2050
+        exp: ssp585
+        grid: gn
+        mip: Omon
+        preprocessor: prep_map_surf
+        project: CMIP6
+        short_name: chl
+        start_year: 2040
+      chl_profile_hist:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2010, ensemble: r10i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r10i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r11i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r12i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r13i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r14i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r15i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r16i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r17i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r18i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r19i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r1i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r20i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r21i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r22i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r23i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r24i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r25i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r2i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r2i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r3i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r3i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r4i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r4i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r5i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r5i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r6i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r6i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r7i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r7i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r8i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r8i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r9i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CanESM5, end_year: 2010, ensemble: r9i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r1i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r2i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r3i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r4i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r5i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r2i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r3i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r4i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r5i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r6i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r7i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r8i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r9i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r10i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r11i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r12i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r16i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r17i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r18i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r19i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r1i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r2i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r3i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r4i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r5i1p1f3, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r6i1p1f3, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r7i1p1f3, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r8i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r9i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+#        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r13i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r10i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r11i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r2i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r3i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r4i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r5i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r6i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r7i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r8i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CESM2, end_year: 2010, ensemble: r9i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+        end_year: 2010
+        exp: historical
+        grid: gn
+        mip: Omon
+        preprocessor: prep_profile_2
+        project: CMIP6
+        short_name: chl
+        start_year: 2000
+      chl_profile_ssp126:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r1i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r2i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r3i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r4i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r5i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r2i1p1f1, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r3i1p1f1, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r10i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r11i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r12i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r16i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r17i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r18i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r19i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r1i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r2i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r3i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r4i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r5i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r6i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r7i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r8i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r9i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        end_year: 2050
+        exp: ssp126
+        grid: gn
+        mip: Omon
+        preprocessor: prep_profile_2
+        project: CMIP6
+        short_name: chl
+        start_year: 2040
+      chl_profile_ssp245:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r1i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r2i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r3i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r4i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r5i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r2i1p1f1, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r1i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r2i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r3i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r4i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r8i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        end_year: 2050
+        exp: ssp245
+        grid: gn
+        mip: Omon
+        preprocessor: prep_profile_2
+        project: CMIP6
+        short_name: chl
+        start_year: 2040
+      chl_profile_ssp370:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r2i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r3i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r4i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r5i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r10i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r2i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r3i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r4i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r5i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r6i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r7i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r8i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r9i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r10i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r11i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r12i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r16i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r17i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r18i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r19i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r1i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r2i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r3i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r4i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r5i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r6i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r7i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r8i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r9i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        end_year: 2050
+        exp: ssp370
+        grid: gn
+        mip: Omon
+        preprocessor: prep_profile_2
+        project: CMIP6
+        short_name: chl
+        start_year: 2040
+      chl_profile_ssp585:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r2i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r3i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r4i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r5i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r6i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r7i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r8i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CanESM5, end_year: 2050, ensemble: r9i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r2i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r3i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r4i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: CNRM-ESM2-1, end_year: 2050, ensemble: r5i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r1i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r2i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r3i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r4i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: UKESM1-0-LL, end_year: 2050, ensemble: r8i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        end_year: 2050
+        exp: ssp585
+        grid: gn
+        mip: Omon
+        preprocessor: prep_profile_2
+        project: CMIP6
+        short_name: chl
+        start_year: 2040
+      chl_ts_hist:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2014, ensemble: r10i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r10i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r11i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r12i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r13i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r14i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r15i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r16i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r17i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r18i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r19i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r1i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r20i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r21i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r22i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r23i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r24i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r25i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r2i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r2i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r3i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r3i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r4i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r4i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r5i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r5i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r6i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r6i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r7i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r7i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r8i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r8i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r9i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CanESM5, end_year: 2014, ensemble: r9i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CNRM-ESM2-1, end_year: 2014, ensemble: r1i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CNRM-ESM2-1, end_year: 2014, ensemble: r2i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CNRM-ESM2-1, end_year: 2014, ensemble: r3i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CNRM-ESM2-1, end_year: 2014, ensemble: r4i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CNRM-ESM2-1, end_year: 2014, ensemble: r5i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: IPSL-CM6A-LR, end_year: 2014, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: IPSL-CM6A-LR, end_year: 2014, ensemble: r2i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: IPSL-CM6A-LR, end_year: 2014, ensemble: r3i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: IPSL-CM6A-LR, end_year: 2014, ensemble: r4i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: IPSL-CM6A-LR, end_year: 2014, ensemble: r5i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: IPSL-CM6A-LR, end_year: 2014, ensemble: r6i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: IPSL-CM6A-LR, end_year: 2014, ensemble: r7i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: IPSL-CM6A-LR, end_year: 2014, ensemble: r8i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: IPSL-CM6A-LR, end_year: 2014, ensemble: r9i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r10i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r11i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r12i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r16i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r17i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r18i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r19i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r1i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r2i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r3i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r4i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r5i1p1f3, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r6i1p1f3, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r7i1p1f3, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r8i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r9i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+#        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r13i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CESM2, end_year: 2014, ensemble: r10i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CESM2, end_year: 2014, ensemble: r11i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CESM2, end_year: 2014, ensemble: r1i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CESM2, end_year: 2014, ensemble: r2i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CESM2, end_year: 2014, ensemble: r3i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CESM2, end_year: 2014, ensemble: r4i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CESM2, end_year: 2014, ensemble: r5i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CESM2, end_year: 2014, ensemble: r6i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CESM2, end_year: 2014, ensemble: r7i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CESM2, end_year: 2014, ensemble: r8i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: CESM2, end_year: 2014, ensemble: r9i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 1850}
+        end_year: 2014
+        exp: historical
+        grid: gn
+        mip: Omon
+        preprocessor: prep_regional_ts_3d_surface
+        project: CMIP6
+        short_name: chl
+        start_year: 1850
+      chl_ts_ssp126:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2100, ensemble: r10i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r10i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r2i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r2i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r3i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r3i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r4i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r4i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r5i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r5i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r6i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r6i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r7i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r7i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r8i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r8i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r9i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r9i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r1i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r2i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r3i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r4i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r5i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r2i1p1f1, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r3i1p1f1, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r10i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r11i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r12i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r16i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r17i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r18i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r19i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r1i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r2i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r3i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r4i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r5i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r6i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r7i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r8i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r9i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        end_year: 2100
+        exp: ssp126
+        grid: gn
+        mip: Omon
+        preprocessor: prep_regional_ts_3d_surface
+        project: CMIP6
+        short_name: chl
+        start_year: 2015
+      chl_ts_ssp245:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2100, ensemble: r10i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r10i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r2i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r2i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r3i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r3i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r4i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r4i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r5i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r5i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r6i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r6i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r7i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r7i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r8i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r8i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r9i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r9i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r1i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r2i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r3i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r4i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r5i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r2i1p1f1, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r1i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r2i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r3i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r4i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r8i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        end_year: 2100
+        exp: ssp245
+        grid: gn
+        mip: Omon
+        preprocessor: prep_regional_ts_3d_surface
+        project: CMIP6
+        short_name: chl
+        start_year: 2015
+      chl_ts_ssp370:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2100, ensemble: r10i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r10i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r2i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r2i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r3i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r3i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r4i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r4i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r5i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r5i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r6i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r6i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r7i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r7i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r8i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r8i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r9i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r9i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r2i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r3i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r4i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r5i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r10i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r2i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r3i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r4i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r5i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r6i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r7i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r8i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: IPSL-CM6A-LR, end_year: 2100, ensemble: r9i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r10i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r11i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r12i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r16i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r17i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r18i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r19i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r1i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r2i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r3i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r4i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r5i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r6i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r7i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r8i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r9i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        end_year: 2100
+        exp: ssp370
+        grid: gn
+        mip: Omon
+        preprocessor: prep_regional_ts_3d_surface
+        project: CMIP6
+        short_name: chl
+        start_year: 2015
+      chl_ts_ssp585:
+        additional_datasets:
+        - {dataset: CanESM5, end_year: 2100, ensemble: r10i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r10i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r2i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r2i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r3i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r3i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r4i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r4i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r5i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r5i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r6i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r6i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r7i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r7i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r8i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r8i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r9i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CanESM5, end_year: 2100, ensemble: r9i1p2f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r2i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r3i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r4i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: CNRM-ESM2-1, end_year: 2100, ensemble: r5i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r1i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r2i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r3i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r4i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r8i1p1f2, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
+        end_year: 2100
+        exp: ssp585
+        grid: gn
+        mip: Omon
+        preprocessor: prep_regional_ts_3d_surface
+        project: CMIP6
+        short_name: chl
+        start_year: 2015
+documentation:
+  authors: [demora_lee]
+  description: "Template recipe to produce a generic plot of temperature for the Ascension\
+    \ Islands.\n"
+  maintainer: [demora_lee]
+  projects: [ukesm]
+  references: [demora2018gmd]
+  title: CRACAB chl analysis
+preprocessors:
+  prep_map_1:
+    climate_statistics: {operator: mean}
+    regrid: {scheme: linear, target_grid: 1x1}
+  prep_map_surf:
+    climate_statistics: {operator: mean}
+    custom_order: true
+    extract_levels:
+      levels: [0.1]
+      scheme: linear
+    regrid: {scheme: linear, target_grid: 1x1}
+  prep_profile_2:
+    area_statistics:
+      fx_variables:
+      - {activity: CMIP, ensemble: '*', exp: '*', grid: gn, mip: Ofx, short_name: areacello}
+      operator: mean
+    custom_order: true
+    extract_levels:
+      levels: [0.5, 1.0, 5.0, 10.0, 50.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0,
+        700.0, 800.0, 900.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0, 3500.0, 4000.0,
+        4500.0, 5000.0]
+      scheme: linear
+    extract_region: &id001 {end_latitude: -4.56, end_longitude: -11.25, start_latitude: -10.56,
+      start_longitude: -17.25}
+  prep_regional_ts_2d:
+    area_statistics:
+      fx_variables:
+      - {activity: CMIP, ensemble: '*', exp: '*', grid: gn, mip: Ofx, short_name: areacello}
+      operator: mean
+    extract_region: *id001
+  prep_regional_ts_3d_surface:
+    area_statistics:
+      fx_variables:
+      - {activity: CMIP, ensemble: '*', exp: '*', grid: gn, mip: Ofx, short_name: areacello}
+      operator: mean
+    custom_order: true
+    extract_levels:
+      levels: [0.1]
+      scheme: linear
+    extract_region: *id001

@@ -26,6 +26,20 @@ from esmvaltool.diag_scripts.shared._base import _get_input_data_files
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+logging.getLogger('matplotlib.font_manager').disabled = True
+
+
+ipcc_colours={
+    'historical':'blue',
+    'ssp126': 'green',
+    'ssp245': 'gold',
+    'ssp370': 'orange',
+    'ssp585': 'red',}
+CMIP5_blue = '#2551cc'
+CMIP6_red = '#cc2323' # (204, 35, 35)
+histnat_green= '#004F00' # 0,79,0
+historical_beige = '#c47900' #
+
 
 
 def get_obs_projects():
@@ -148,6 +162,9 @@ def bgc_units(cube, name):
         # sverdrup are 1000000 m3.s-1, but mfo is kg s-1.
         new_units = 'Tg s-1'
 
+    if name in ['zos', 'zostoga']:
+        new_units = 'mm'
+
     if new_units != '':
         logger.info(' '.join(
             ["Changing units from",
@@ -196,6 +213,43 @@ def match_model_to_key(
             return input_file
     logger.warning("Unable to match model: %s", model_type)
     return ''
+def make_depth_safe(cube):
+    """
+    Make the depth coordinate safe.
+
+    If the depth coordinate has a value of zero or above, we replace the
+    zero with the average point of the first depth layer.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Input cube to make the depth coordinate safe
+
+    Returns
+    ----------
+    iris.cube.Cube:
+        Output cube with a safe depth coordinate
+
+    """
+    depth = cube.coord('depth')
+
+    # it's fine
+    if depth.points.min() * depth.points.max() > 0.:
+        return cube
+
+    if depth.attributes['positive'] != 'down':
+        raise Exception('The depth field is not set up correctly')
+
+    depth_points = []
+    bad_points = depth.points <= 0.
+    for itr, point in enumerate(depth.points):
+        if bad_points[itr]:
+            depth_points.append(depth.bounds[itr, :].mean())
+        else:
+            depth_points.append(point)
+
+    cube.coord('depth').points = depth_points
+    return cube
 
 
 def cube_time_to_float(cube):
@@ -694,10 +748,103 @@ def get_array_range(arrays):
         mins.append(arr.min())
         maxs.append(arr.max())
     logger.info('get_array_range: %s, %s', np.min(mins), np.max(maxs))
-    return [
-        np.min(mins),
-        np.max(maxs),
-    ]
+    return [np.min(mins), np.max(maxs), ]
+
+
+def make_mean_of_cube_list(cube_list, operation='mean'):
+    """
+    Takes the mean of a list of cubes (not an iris.cube.CubeList).
+    Assumes all the cubes are the same shape.
+    """
+    # Fix empty times
+    full_times = {}
+    times = []
+    for cube in cube_list:
+        # make time coords uniform:
+
+        cube.coord('time').long_name='Time axis'
+        cube.coord('time').attributes={'time_origin': '1950-01-01 00:00:00'}
+        times.append(cube.coord('time').points)
+
+        for time in cube.coord('time').points:
+            print(cube.name, time, cube.coord('time').units)
+            try:
+                full_times[time] += 1
+            except:
+                full_times[time] = 1
+
+    for t, v in sorted(full_times.items()):
+        if v != len(cube_list):
+            print('FAIL', t, v, '!=', len(cube_list),'\nfull times:',  full_times)
+            assert 0
+
+    cube_mean=cube_list[0]
+    #try: iris.coord_categorisation.add_year(cube_mean, 'time')
+    #except: pass
+    #try: iris.coord_categorisation.add_month(cube_mean, 'time')
+    #except: pass
+
+    try: cube_mean.remove_coord('year')
+    except: pass
+    #cube.remove_coord('Year')
+    try: model_name = cube_mean.metadata[4]['source_id']
+    except: model_name = ''
+    print(model_name,  cube_mean.coord('time'))
+
+    for i, cube in enumerate(cube_list[1:]):
+        #try: iris.coord_categorisation.add_year(cube, 'time')
+        #except: pass
+        #try: iris.coord_categorisation.add_month(cube, 'time')
+        #except: pass
+        try: cube.remove_coord('year')
+        except: pass
+        #cube.remove_coord('Year')
+        try: model_name = cube_mean.metadata[4]['source_id']
+        except: model_name = ''
+        print(i, model_name, cube.coord('time'))
+        cube_mean+=cube
+        #print(cube_mean.coord('time'), cube.coord('time'))
+    cube_mean = cube_mean/ float(len(cube_list))
+    return cube_mean
+
+
+def make_mean_of_cube_list_notime(cube_list):
+    """
+    Takes the mean of a list of cubes (not an iris.cube.CubeList).
+    Assumes all the cubes are the same shape.
+    """
+    # Fix empty times
+    cube_mean=cube_list[0]
+    #try: iris.coord_categorisation.add_year(cube_mean, 'time')
+    #except: pass
+    #try: iris.coord_categorisation.add_month(cube_mean, 'time')
+    #except: pass
+
+    try: cube_mean.remove_coord('year')
+    except: pass
+    #cube.remove_coord('Year')
+    try: model_name = cube_mean.metadata[4]['source_id']
+    except: model_name = ''
+
+    #cube_mean = fix_depth(cube_mean)
+
+    for i, cube in enumerate(cube_list[1:]):
+        #try: iris.coord_categorisation.add_year(cube, 'time')
+        #except: pass
+        #try: iris.coord_categorisation.add_month(cube, 'time')
+        #except: pass
+        #cube = fix_depth(cube)
+
+        try: cube.remove_coord('year')
+        except: pass
+        #cube.remove_coord('Year')
+        try: model_name = cube_mean.metadata[4]['source_id']
+        except: model_name = ''
+        print(i, model_name)
+        cube_mean+=cube
+        #print(cube_mean.coord('time'), cube.coord('time'))
+    cube_mean = cube_mean/ float(len(cube_list))
+    return cube_mean
 
 
 def prepare_provenance_record(cfg, **provenance_record):

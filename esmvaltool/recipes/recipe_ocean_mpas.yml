@@ -1,0 +1,235 @@
+# ESMValTool
+# recipe_ocean_example.yml
+---
+documentation:
+  description: |
+    Recipe to demonstrate several simple plots based on the monthly ocean
+    temperature. Please use this file as a template for adding additional
+    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
+
+  authors:
+    - demora_lee
+
+  maintainer:
+    - demora_lee
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+
+#datasets:
+#   - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014}
+#   - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp126, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+#   - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp245, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+#   - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp370, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+#   - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp585, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+
+preprocessors:
+  # --------------------------------------------------
+  # Time series preprocessors
+  # --------------------------------------------------
+
+  prep_regional_ts_2d: # For regional 2d fields
+    custom_order: true
+    extract_region: &mpa_region
+      start_longitude: -17.25 #14.25W
+      end_longitude: -11.25 #
+      start_latitude: -10.56 # -7.56
+      end_latitude: -4.56 #
+    area_statistics:
+      operator: mean
+      fx_variables: [{short_name: areacello, mip: Ofx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
+
+
+  prep_regional_ts_3d_surface: # For regional fields
+    custom_order: true
+    extract_surface:
+#    extract_levels:
+#      levels: [0.5, ]
+#      scheme: nearest
+    extract_region: *mpa_region
+    area_statistics:
+      operator: mean
+      fx_variables: [{short_name: areacello, mip: Ofx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
+
+  prep_regional_ts_3d_top:
+    custom_order: true
+    extract_region: *mpa_region
+    extract_volume:
+      z_min: 0.
+      z_max: 1000.
+    volume_statistics:
+      operator: mean
+      fx_variables: [volcello, ]
+
+  # --------------------------------------------------
+  # Map preprocessors
+  # --------------------------------------------------
+  prep_map_1: # For Global 2D fields
+#    extract_region:
+#      start_longitude: -40.
+#      end_longitude: 40.
+#      start_latitude: -40.
+#      end_latitude: 40.
+    climate_statistics:
+      operator: mean
+
+  prep_map_surf: # For Global 2D fields
+    extract_surface:
+    climate_statistics:
+       operator: mean
+
+  prep_map_2: # For Global 2D fields with regridding
+    custom_order: true
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+  # --------------------------------------------------
+  # Depth-profile preprocessors
+  # --------------------------------------------------
+  prep_profile_2: # For a regional profile
+    extract_region: *mpa_region
+    area_statistics:
+      operator: mean
+      fx_variables: [{short_name: areacello, mip: Ofx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
+
+
+diagnostics:
+  # --------------------------------------------------
+  # Time series diagnostics
+  # --------------------------------------------------
+
+  diag_timeseries_3:
+    variables:
+      tos:
+        preprocessor: prep_regional_ts_2d
+        additional_datasets: &additional_datasets
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp126, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp245, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp370, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp585, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+
+         #- {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, start_year: 2004, end_year: 2014}
+         #- {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp126, ensemble: r1i1p1f2, start_year: 2015, end_year: 2025}
+         #- {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp245, ensemble: r1i1p1f2, start_year: 2015, end_year: 2025}
+         #- {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp370, ensemble: r1i1p1f2, start_year: 2015, end_year: 2025}
+         #- {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp585, ensemble: r1i1p1f2, start_year: 2015, end_year: 2025}
+
+      tob:
+        preprocessor: prep_regional_ts_2d
+        additional_datasets: *additional_datasets
+      zos:
+        preprocessor: prep_regional_ts_2d
+        additional_datasets: *additional_datasets
+      sos:
+        preprocessor: prep_regional_ts_2d
+        additional_datasets: *additional_datasets
+      chl:
+        preprocessor: prep_regional_ts_3d_surface
+#        additional_datasets: &additional_datasets
+#         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014}
+#         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp126, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+#         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp245, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+#         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp370, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+#         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp585, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+        additional_datasets: *additional_datasets
+      ph:
+        preprocessor: prep_regional_ts_3d_surface
+        additional_datasets: *additional_datasets
+      intpp:
+        preprocessor: prep_regional_ts_2d
+        additional_datasets: *additional_datasets
+      no3:
+        preprocessor: prep_regional_ts_3d_surface
+        additional_datasets: *additional_datasets
+#      vo:
+#        preprocessor: prep_regional_ts_3d_top
+#        additional_datasets: *additional_datasets
+#      uo:
+#        preprocessor: prep_regional_ts_3d_top
+#        additional_datasets: *additional_datasets
+    scripts:
+      Regional_Ocean_Surface_mean_timeseries:
+        script: ocean/diagnostic_timeseries_mpas.py
+
+  # --------------------------------------------------
+  # Depth-profile diagnostics
+  # --------------------------------------------------
+  diag_timeseries_mpa_hovmoller:
+    variables:
+      thetao:
+        preprocessor: prep_profile_2
+        additional_datasets: *additional_datasets
+      o2:
+        preprocessor: prep_profile_2
+        additional_datasets: *additional_datasets
+      vo:
+        preprocessor: prep_profile_2
+        additional_datasets: *additional_datasets
+      uo:
+        preprocessor: prep_profile_2
+        additional_datasets: *additional_datasets
+
+      no3:
+        preprocessor: prep_profile_2
+        additional_datasets: *additional_datasets
+
+    scripts:
+      Regional_Ocean_Surface_mean_profiles:
+        script:
+        script: ocean/diagnostic_profiles_mpas.py
+
+  # --------------------------------------------------
+  # Regional maps
+  # --------------------------------------------------
+  diag_decadal_maps:
+    variables:
+      tos_full:
+        short_name: tos
+        preprocessor: prep_map_1
+        additional_datasets: &decadal_datasets
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, start_year: 2004, end_year: 2014}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp126, ensemble: r1i1p1f2, start_year: 2040, end_year: 2050}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp245, ensemble: r1i1p1f2, start_year: 2040, end_year: 2050}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp370, ensemble: r1i1p1f2, start_year: 2040, end_year: 2050}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp585, ensemble: r1i1p1f2, start_year: 2040, end_year: 2050}
+#      tos_mpa:
+#        short_name: tos
+#        preprocessor: prep_map_2
+#        additional_datasets: *decadal_datasets
+
+      tob_full:
+        short_name: tob
+        preprocessor: prep_map_1
+        additional_datasets: *decadal_datasets
+
+      intpp_full:
+        short_name: intpp
+        preprocessor: prep_map_1
+        additional_datasets: *decadal_datasets
+
+      chl_full:
+        short_name: chl
+        preprocessor: prep_map_surf
+        additional_datasets: *decadal_datasets
+
+      ph_full:
+        short_name: ph
+        preprocessor: prep_map_surf
+        additional_datasets: *decadal_datasets
+
+      no3_full:
+        short_name: no3
+        preprocessor: prep_map_surf
+        additional_datasets: *decadal_datasets
+
+    scripts:
+      Regional_Ocean_Surface_decadal_maps:
+        script: ocean/diagnostic_maps.py
