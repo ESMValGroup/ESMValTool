@@ -52,5 +52,5 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                 continue
             server_path = root + dir.format(year=year)
             downloader.download_folder(
-                server_path, wget_options=['-np', '-A', '*.hdf']
+                server_path, wget_options=['-np', '-A', '*.hdf,*.hdf.xml']
             )
