@@ -1,5 +1,5 @@
 """Generate SLURM run scripts to run recipes."""
-import os
+import subprocess
 from pathlib import Path
 
 import esmvaltool
@@ -89,7 +89,7 @@ def generate_submit():
             file.write(f'esmvaltool run {str(recipe)}')
 
         if submit:
-            os.system(f'sbatch {filename}')
+            subprocess.check_call(f'sbatch {filename}')
 
 
 if __name__ == '__main__':
