@@ -309,8 +309,6 @@ def _create_feedback_plot(tas_cube, cube, dataset_name, cfg, description=None):
     plt.title(title)
     plot_path = get_plot_filename(filename, cfg)
     savefig_kwargs = dict(bbox_inches='tight', orientation='landscape')
-    if colorbar is not None:
-        savefig_kwargs['bbox_extra_artists'] = [colorbar]
     plt.savefig(plot_path, **savefig_kwargs)
     logger.info("Wrote %s", plot_path)
     plt.close()
