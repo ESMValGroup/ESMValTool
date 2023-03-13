@@ -134,6 +134,9 @@ This recipe is part of the larger group of Autoassess metrics ported to ESMValTo
 from the native Autoassess package from the UK's Met Office. The ``diagnostics`` settings
 are almost the same as for the other Autoassess metrics.
 
+Currently this recipe is marked as broken, because it only runs on Jasmin due to a dependency on some 
+external climatology files. 
+
 .. note::
 
    **Time gating for autoassess metrics.**
