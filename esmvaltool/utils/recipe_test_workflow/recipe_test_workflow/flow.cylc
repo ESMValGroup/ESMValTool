@@ -18,6 +18,7 @@
 
 [runtime]
     [[root]]
+        platform = localhost
         script = rose task-run
         env-script = "eval $(rose task-env)"
         [[[environment]]]
@@ -30,7 +31,6 @@
             PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
 {% if SITE == "jasmin" %}
         [[[job]]]
-            batch system = slurm
             execution time limit = PT15M
         [[[directives]]]
             --qos=short-serial
