@@ -13,7 +13,7 @@ with warnings.catch_warnings():
         category=UserWarning,
         module="esmvalcore.experimental._warnings",
     )
-    import esmvalcore.config
+    import esmvalcore.experimental as esmvaltool
 import yaml
 
 USER_CONFIG_PATH = os.environ["USER_CONFIG_PATH"]
@@ -25,7 +25,7 @@ def main():
     # Get the default configuration values from ESMValTool. A dictionary is
     # needed here to avoid the config object from converting paths to PosixPath
     # objects, which causes issues when writing the YAML file.
-    config_values = dict(esmvalcore.config.CFG)
+    config_values = dict(esmvaltool.CFG)
 
     # Get the configuration values defined in the environment for the
     # ``configure`` task.
