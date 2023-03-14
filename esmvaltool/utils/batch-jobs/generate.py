@@ -89,7 +89,7 @@ def generate_submit():
             file.write(f'esmvaltool run {str(recipe)}')
 
         if submit:
-            subprocess.check_call(f'sbatch {filename}')
+            subprocess.check_call(['sbatch', filename])
 
 
 if __name__ == '__main__':
