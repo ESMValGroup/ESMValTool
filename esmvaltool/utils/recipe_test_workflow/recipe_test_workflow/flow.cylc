@@ -18,11 +18,6 @@
 
 [runtime]
     [[root]]
-{% if SITE == "jasmin" %}
-        platform = lotus
-{% else %}
-        platform = localhost
-{% endif %}
         script = rose task-run
         env-script = "eval $(rose task-env)"
         [[[environment]]]
