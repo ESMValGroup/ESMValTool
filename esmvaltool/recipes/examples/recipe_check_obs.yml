@@ -385,10 +385,13 @@ diagnostics:
     description: GLASS check
     variables:
       lai:
+        start_year: 1981
+        end_year: 2018
       gpp:
+        start_year: 1982
+        end_year: 2018
     additional_datasets:
-      - {dataset: GLASS, project: OBS6, mip: Lmon, tier: 2,
-         type: reanaly, version: V40, start_year: 2000, end_year: 2001}
+      - {dataset: GLASS, project: OBS6, mip: Lmon, tier: 2, type: reanaly, version: V40}
     scripts: null
 
 
