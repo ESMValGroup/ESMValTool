@@ -128,13 +128,16 @@ jobs:
           name: Install dependencies
           command: |
             . /opt/conda/etc/profile.d/conda.sh
-            mkdir /logs
             conda activate esmvaltool
+            mkdir /logs
             pip install .[test] > /logs/install.txt 2>&1
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
       - run:
           name: Check Python code style and mistakes
-          command: flake8 -j 4
+          command: |
+            . /opt/conda/etc/profile.d/conda.sh
+            conda activate esmvaltool
+            flake8 -j 4
       - run:
           name: Remove source code to test the installed software
           command: rm -r esmvaltool
