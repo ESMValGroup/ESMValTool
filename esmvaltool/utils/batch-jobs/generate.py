@@ -11,6 +11,7 @@ submit = False
 account = ''  # Select a compute project to be billed
 outputs = 'output_rc4'
 partition = 'compute'
+conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh' # Set the path to conda
 
 SPECIAL_RECIPES = {
     'recipe_bock20jgr_fig_6-7': {
@@ -51,9 +52,6 @@ def generate_submit():
     home = os.path.expanduser('~')
     exclude = []  # Fill the list with the names of the recipes to be excluded
     dir_recipes = Path('/'.join((esmvaltool.__path__[0], 'recipes')))
-
-    # Set the path to conda
-    conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh'
 
     for recipe in Path(dir_recipes).rglob('*.yml'):
         filename = f'launch_{recipe.stem}.sh'
