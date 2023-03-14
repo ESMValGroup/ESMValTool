@@ -11,7 +11,8 @@ on:
   push:
     branches:
       - main
-  #     - condalock-update
+      - recreate_lockfile_CoreRC1
+  #    - condalock-update
   # run the test only if the PR is to main
   # turn it on if required
   #pull_request:
