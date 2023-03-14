@@ -78,7 +78,7 @@ IPCC
    :maxdepth: 1
 
    recipe_ipccwg1ar6ch3
-   recipe_flato13ipcc
+   recipe_ipccwg1ar5ch9
    recipe_collins13ipcc
 
 Land
