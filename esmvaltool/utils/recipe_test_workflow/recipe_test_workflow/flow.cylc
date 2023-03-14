@@ -34,7 +34,7 @@
             ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValTool
             PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
 {% if SITE == "jasmin" %}
-        [[[job]]]
+        [[[job submission]]]
             method = slurm
             execution time limit = PT15M
         [[[directives]]]
