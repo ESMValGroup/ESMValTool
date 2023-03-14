@@ -6,8 +6,8 @@
 ;
 ; Contents:
 ;
-;    procedure create_legend_lines
 ;    function output_type
+;    procedure create_legend_lines
 ;    procedure copy_VarAtt_sel
 ;    function panelling
 ;    function get_plot_dir
@@ -36,6 +36,41 @@
 
 load "$diag_scripts/../interface_scripts/auxiliary.ncl"
 load "$diag_scripts/../interface_scripts/logging.ncl"
+
+; #############################################################################
+undef("output_type")
+function output_type()
+;
+; Arguments
+;
+; Return value
+;    A string with the output file type
+;
+; Description
+;    Provides a default, if file type is not explicitly specified
+;
+; Caveats
+;
+; Modification history
+;    20131028-gottschaldt_klaus-dirk: written.
+;
+local funcname, scriptname, file_type
+begin
+
+  funcname = "output_type"
+  scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
+  enter_msg(scriptname, funcname)
+
+  file_type = config_user_info@output_file_type
+  if (ismissing(file_type)) then
+    file_type = "ps"
+  end if
+  file_type = str_lower(file_type)
+
+  leave_msg(scriptname, funcname)
+  return(file_type)
+
+end
 
 ; #############################################################################
 undef("create_legend_lines")
@@ -75,7 +110,8 @@ begin
   enter_msg(scriptname, funcname)
 
   ; Open workstation
-  wks_legend = gsn_open_wks(output_type, outfile)
+  file_type = output_type()
+  wks_legend = gsn_open_wks(file_type, outfile)
 
   ; General resources
   res = True
@@ -175,41 +211,6 @@ begin
   frame(wks_legend)
 
   leave_msg(scriptname, funcname)
-
-end
-
-; #############################################################################
-undef("output_type")
-function output_type()
-;
-; Arguments
-;
-; Return value
-;    A string with the output file type
-;
-; Description
-;    Provides a default, if file type is not explicitly specified
-;
-; Caveats
-;
-; Modification history
-;    20131028-gottschaldt_klaus-dirk: written.
-;
-local funcname, scriptname, file_type
-begin
-
-  funcname = "output_type"
-  scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
-  enter_msg(scriptname, funcname)
-
-  file_type = config_user_info@output_file_type
-  if (ismissing(file_type)) then
-    file_type = "ps"
-  end if
-  file_type = str_lower(file_type)
-
-  leave_msg(scriptname, funcname)
-  return(file_type)
 
 end
 
