@@ -1,4 +1,5 @@
 """Generate SLURM run scripts to run recipes."""
+import os
 import subprocess
 from pathlib import Path
 
