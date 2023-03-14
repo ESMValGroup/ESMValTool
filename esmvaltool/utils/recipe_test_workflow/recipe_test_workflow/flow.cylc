@@ -38,8 +38,8 @@
             execution time limit = PT15M
         [[[directives]]]
             --qos=short-serial
-            --time=05:00
-            --ntasks=1
+            --time=15:00
+            --ntasks={{ MAX_PARALLEL_TASKS}}
 {% endif %}
 
     [[install_cold]]
