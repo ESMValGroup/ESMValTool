@@ -34,8 +34,8 @@
             ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValTool
             PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
 {% if SITE == "jasmin" %}
-        [[[job submission]]]
-            method = slurm
+        [[[job]]]
+            batch system = slurm
             execution time limit = PT15M
         [[[directives]]]
             --qos=short-serial

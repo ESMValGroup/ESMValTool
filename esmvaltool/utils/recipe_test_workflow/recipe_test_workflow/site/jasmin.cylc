@@ -1,7 +1,6 @@
 #!jinja2
 [runtime]
     [[COMPUTE]]
-        platform = lotus
         [[[directives]]]
             --wckey = RTW
             --ntasks = {{ MAX_PARALLEL_TASKS }}
