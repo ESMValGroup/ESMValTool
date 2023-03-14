@@ -11,7 +11,8 @@ submit = False
 account = ''  # Select a compute project to be billed
 outputs = 'output_rc4'
 partition = 'compute'
-conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh' # Set the path to conda
+# Set the path to conda
+conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh'
 
 SPECIAL_RECIPES = {
     'recipe_bock20jgr_fig_6-7': {
