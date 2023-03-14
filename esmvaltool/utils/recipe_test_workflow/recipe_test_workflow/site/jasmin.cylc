@@ -4,7 +4,7 @@
         platform = lotus
         [[[directives]]]
             --wckey = RTW
-            --ntasks = {{ MAX_PARALLEL_TASKS }}
+            --ntasks = 1
 
     [[process<fast>]]
         [[[directives]]]
