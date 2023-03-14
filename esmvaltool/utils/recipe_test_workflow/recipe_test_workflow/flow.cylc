@@ -29,14 +29,6 @@
             ESMVALCORE_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValCore
             ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValTool
             PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
-{% if SITE == "jasmin" %}
-        [[[job]]]
-            execution time limit = PT15M
-        [[[directives]]]
-            --qos=short-serial
-            --time=05:00
-            --ntasks=1
-{% endif %}
 
     [[install_cold]]
         [[[environment]]]
