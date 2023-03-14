@@ -156,6 +156,35 @@ def _get_dim_coords_and_dims(file, n_lat, n_lon):
     return [(daily_time_coord, 0), (lat_coord, 1), (lon_coord, 2)]
 
 
+def _get_horizontal_dimsizes(variable, file):
+    """Get dimension sizes of latitude and longitude."""
+    # Latitude dim is called 'YDim...', longitude dim 'XDim...', which differs
+    # across files of the same variable
+    n_lat = None
+    n_lon = None
+    for dim in variable.get_dims():
+        if 'YDim' in dim.name:
+            n_lat = dim.size
+        elif 'XDim' in dim.name:
+            n_lon = dim.size
+        else:
+            raise ValueError(
+                f"Found invalid dimension name '{dim}' in file {file}, "
+                f"expected 'XDim...' or 'YDim...'"
+            )
+    if n_lat is None:
+        raise ValueError(
+            f"Cannot determine latitude dimension size from file {file}, "
+            f"dimension 'YDim...' not found"
+        )
+    if n_lon is None:
+        raise ValueError(
+            f"Cannot determine longitude dimension size from file {file}, "
+            f"dimension 'XDim...' not found"
+        )
+    return (n_lat, n_lon)
+
+
 def _fix_var_metadata(var_info, cmor_info, cube):
     """Fix variable metadata."""
     cube.convert_units(cmor_info.units)
@@ -184,10 +213,10 @@ def _extract_variable(var_info, cmor_info, attrs, all_files, out_dir):
         for file in files:
             logger.debug("Reading file %s", file)
             dataset = Dataset(file, 'r')
+            nc_var = dataset.variables[raw_var]
 
             # Coordinates (daily time, lat, lon)
-            n_lat = dataset.dimensions[var_info['raw_lat_name']].size
-            n_lon = dataset.dimensions[var_info['raw_lon_name']].size
+            (n_lat, n_lon) = _get_horizontal_dimsizes(nc_var, file)
             dim_coords_and_dims = _get_dim_coords_and_dims(file, n_lat, n_lon)
             n_time = dim_coords_and_dims[0][0].shape[0]
 
@@ -196,7 +225,6 @@ def _extract_variable(var_info, cmor_info, attrs, all_files, out_dir):
             # means later (necessary since original 8-day intervals may spread
             # over two months, so a simple mean aggregated_by using
             # month_number would be wrong.
-            nc_var = dataset.variables[raw_var]
             cube_data = np.ma.array(
                 np.broadcast_to(nc_var[:], (n_time, n_lat, n_lon)),
                 mask=np.broadcast_to(nc_var[:].mask, (n_time, n_lat, n_lon)),

@@ -15,8 +15,6 @@ variables:
     filename: GLASS01B02.*.hdf
     mip: Lmon
     raw_name: LAI
-    raw_lat_name: YDim:GLASS01B01
-    raw_lon_name: XDim:GLASS01B01
     regrid:  # remove to disable regridding
       target_grid: 0.5x0.5
       scheme: linear
@@ -24,8 +22,6 @@ variables:
     filename: GLASS12B02.*.hdf
     mip: Lmon
     raw_name: GPP
-    raw_lat_name: YDim:GLASS12B02
-    raw_lon_name: XDim:GLASS12B02
     raw_units: g m-2 day-1
     regrid:  # remove to disable regridding
       target_grid: 0.5x0.5
