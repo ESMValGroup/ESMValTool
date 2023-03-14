@@ -35,7 +35,7 @@
             PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
 {% if SITE == "jasmin" %}
         [[[job]]]
-            batch system = slurm
+            method = slurm
             execution time limit = PT15M
         [[[directives]]]
             --qos=short-serial
