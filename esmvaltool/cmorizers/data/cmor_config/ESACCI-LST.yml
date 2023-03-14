@@ -12,7 +12,7 @@ attributes:
   project_id: OBS
   source: 'ESA CCI'
   modeling_realm: sat
-  reference: 'esacci-lst'
+  reference: 'esacci_lst'
   comment: ''
   start_year: 2003
   end_year: 2018
