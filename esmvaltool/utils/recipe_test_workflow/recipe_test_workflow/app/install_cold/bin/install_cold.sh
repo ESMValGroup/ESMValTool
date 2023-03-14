@@ -32,6 +32,8 @@ fi
 # (which is done via done via 'stderr').
 git clone -q -b "${BRANCH}" "${ESMVALTOOL_URL}" "${ESMVALTOOL_DIR}"
 git clone -q -b "${BRANCH}" "${ESMVALCORE_URL}" "${ESMVALCORE_DIR}"
+cd "${ESMVALCORE_DIR}"
+git checkout 4527173
 
 # Manually and temporarily install imagehash (it will be included in the
 # next ESMValTool community environment).
