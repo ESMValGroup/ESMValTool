@@ -1,7 +1,17 @@
 #!jinja2
 [runtime]
     [[COMPUTE]]
-        platform = lotus
+        batch system = slurm
         [[[directives]]]
             --wckey = RTW
             --ntasks = {{ MAX_PARALLEL_TASKS }}
+
+    [[process<fast>]]
+        [[[directives]]]
+            --time = 2
+            --mem = 2G
+
+    [[process<medium>]]
+        [[[directives]]]
+            --time = 6
+            --mem = 2G
