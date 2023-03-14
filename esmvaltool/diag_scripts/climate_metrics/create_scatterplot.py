@@ -102,7 +102,7 @@ def plot_data(cfg, cube):
     plt.savefig(plot_path,
                 orientation='landscape',
                 bbox_inches='tight',
-                additional_artists=[legend])
+                bbox_extra_artists=[legend])
     logger.info("Wrote %s", plot_path)
     plt.close()
     return plot_path
