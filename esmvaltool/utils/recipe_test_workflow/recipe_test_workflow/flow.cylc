@@ -18,6 +18,11 @@
 
 [runtime]
     [[root]]
+{% if SITE == "jasmin" %}
+        platform = lotus
+{% else %}
+        platform = localhost
+{% endif %}
         script = rose task-run
         env-script = "eval $(rose task-env)"
         [[[environment]]]
@@ -30,7 +35,6 @@
             PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
 {% if SITE == "jasmin" %}
         [[[job]]]
-            platform = lotus
             execution time limit = PT15M
         [[[directives]]]
             --qos=short-serial
