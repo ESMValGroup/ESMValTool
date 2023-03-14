@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  coverage-reporter: codacy/coverage-reporter@13.11.16
+  coverage-reporter: codacy/coverage-reporter@13.13.0
 
 commands:
 
@@ -131,12 +131,13 @@ jobs:
             mkdir /logs
             conda activate esmvaltool
             pip install .[test] > /logs/install.txt 2>&1
-            # Run flake8 check with source code (it doesn't work without it)
-            flake8 -j 4
-            # Update/install Julia dependencies
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
-            # Remove source to test installed software
-            rm -r esmvaltool
+      - run:
+          name: Check Python code style and mistakes
+          command: flake8 -j 4
+      - run:
+          name: Remove source code to test the installed software
+          command: rm -r esmvaltool
       - test_and_report
       - save_cache:
           key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
