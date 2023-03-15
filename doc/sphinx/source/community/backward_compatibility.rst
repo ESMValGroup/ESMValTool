@@ -211,6 +211,13 @@ but components should include:
 -  Testing; *backward-incompatible changes* should be discovered as
    early in the development process as possible. This motivates
    continued investment in automated testing.
+   To discover *backward-incompatible changes* early on in the development cycle,
+   every night a selection of recipes is run on
+   `CircleCI <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool?branch=main>`__.
+   A recipe can be added to the test suite by adding it to the directory
+   `esmvaltool/recipes/testing <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/recipes/testing>`__.
+   Only add recipes that require a small amount of data, i.e. considerably less
+   than a gigabyte.
 -  Guidance on how to minimise the likelihood of introducing
    *backward-incompatible changes* and how to use deprecation warnings
    when needed (see :ref:`developer guidance <esmvalcore:backward_compatibility>`).
@@ -238,7 +245,7 @@ provided:
 
 -  **Release notes:** The *release* notes are already documented in the
    :ref:`ESMValTool Changelog <changelog>` and
-   :ref:`ESMValCore Changelog <esmvalcore:changelog-v2-7-1>`, and
+   :ref:`ESMValCore Changelog <esmvalcore:changelog>`, and
    “*backward-incompatible changes*” is the first section after
    “Highlights”.
 

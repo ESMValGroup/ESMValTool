@@ -237,7 +237,6 @@ preprocessors:
       target_grid: 2x2
     mask_landsea: &mask_sea_NE_mask
       mask_out: sea
-      fx_variables: null
     extract_region: &extract_region
       start_latitude: -60.0
       end_latitude: 90.0

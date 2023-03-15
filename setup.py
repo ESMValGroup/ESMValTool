@@ -39,11 +39,12 @@ REQUIREMENTS = {
         'joblib',
         'lime',
         'mapgenerator>=1.0.5',
-        'matplotlib<3.6.0',  # github.com/ESMValGroup/ESMValTool/issues/2800
+        'matplotlib',
         'natsort',
         'nc-time-axis',
         'netCDF4',
         'numpy',
+        'packaging',
         'openpyxl',
         'pandas',
         'pyproj',

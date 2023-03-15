@@ -20,8 +20,6 @@ preprocessors:
   timeseries_regular:
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
 
   annual_cycle_nh:
     extract_region:
@@ -31,8 +29,6 @@ preprocessors:
       end_longitude: 360
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
     climate_statistics:
       period: monthly
 
