@@ -212,6 +212,8 @@ There you will find the run shell: ``run_example``, as well as an example
 how to set the configuration file. If you don't have Met Office credentials,
 a copy of `u-bd684` is always located in ``/home/users/valeriu/roses/u-bd684`` on Jasmin.
 
+.. _utils_batch_jobs:
+
 Using the scripts in `utils/batch-jobs`
 ---------------------------------------
 
