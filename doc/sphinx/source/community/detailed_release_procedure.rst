@@ -23,7 +23,7 @@ Name it something relevant like "Recipe testing and comparison for release 2.x.x
 about where the testing is taking place, what tools are used, and what versions, here are some suggestions:
 
 
-Where the work is on DKRZ/Levante (e.g. submit files and output directories)
+- path to the output directories on DKRZ/Levante
 
 We should document various utilities' versions so that the work can be reproduced in case there
 is an issue, or release work needs to be picked up mid-release by another release manager:
@@ -42,11 +42,14 @@ is an issue, or release work needs to be picked up mid-release by another releas
 
 Furthermore, the runtime environment needs to be documented: make a copy of the environment file,
 and attach it in the release testing issue; to record the environment in a yaml file use e.g.
-`conda env export > ToolEnv270Test.txt`.
+
+.. code-block:: bash
+
+  conda env export > ToolEnv_v2xx_Test.txt
 
 Modifications to configuration files need to be documented as well.
-To test recipes, it is recommended to only use the default DKRZ data directories, simply by uncommenting
-the DKRZ-Levante block of the default ``config-user.yml`` file.
+To test recipes, it is recommended to only use the default options and DKRZ data directories, simply by uncommenting
+the DKRZ-Levante block of a newly generated ``config-user.yml`` file.
 
 Submit run scripts - test recipe runs
 -------------------------------------
