@@ -100,14 +100,14 @@ can be followed-up, and document this information in the release issue, such as:
 
 To parse the output of all these runs, use the ``parse_recipes_output.py`` Python script, included at the
 same locations where the generation script is.
-It is recommended to use `log_level: info` to enable the parsing script to run faster.
+It is recommended to run the recipes with `log_level: info` in your config file to enable the parsing script to run fast.
 
 Share the results with the community
 ------------------------------------
 
 Create the debug.html and index.html overview webpages by running the utiliy script
-``python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/``.
-These files, together with the recipe output, need to be copied to the disk of a virtual machine (VM)
+``python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/`` in the directory containing the recipe runs.
+These two files, together with the recipe output, need to be copied to the disk of a virtual machine (VM)
 used to display recipe output in `webpages
 <https://esmvaltool.dkrz.de/shared/esmvaltool/>`_.
 Do not store final release results on the VM including `/preproc/` dirs, the total
@@ -125,7 +125,7 @@ are stored on the VM; login with:
 
 where `user` is your DKRZ/Levante user name.
 Then create a new subdirectory in ``/shared/esmvaltool/`` that will contain recipe output.
-This should be named like the ESMValCore version used for the testing, e.g. ``v2.8.0rc1``.
+This should be named like the ESMValCore version used for the testing, e.g. ``v2.x.xrcx`` or  ``v2.x.x``.
 Recipe output can be copied by doing from the VM:
 
 .. code-block:: bash
@@ -138,20 +138,21 @@ becomes available online, see for `example
 Before copying the recipe output to the VM, you may want to clean up your directory containing
 the results and only keep the last run for each recipe.
 This will help generating a clearer overview webpage.
-Note that the ```summarize.py`` script needs to be rerun if recipe runs were added or deleted
+Note that the ``summarize.py`` script needs to be rerun if recipe runs were added or deleted
 from your testing directory.
 
-Link the overview webpage to the issue and the path to your recipe runs on Levante.
+Link the overview webpage to the release issue.
 This makes it much easier to ask for feedback from recipe developers and analyse failures.
 
 Results produced with the final ESMValCore release candidate should be put in a VM directory
-named after the version number, e.g. ``v2.8.0``. 
+named after the version number, e.g. ``v2.x.x``. 
+Once the release process is over, test results produced with previous release candidates can be deleted to save space on the VM.
 
 .. note::
 
   If you wrote recipe runs output to Levante's `/scratch` partition, be aware that
-  the data will be removed after two weeks, so you will have to move the output data
-  to the VM, using the `nohup` command above.
+  the data will be removed after two weeks, so you will have to quickly move the 
+  output data to the VM, using the `nohup` command above.
 
 Running the comparison
 ----------------------
