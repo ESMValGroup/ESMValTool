@@ -183,7 +183,11 @@ The steps to running the compare tool on the VM are the following:
 - prerequisite - install `imagehash`: `pip install imagehash`
 - reference run (v2.7.0; previous stable release): `export reference_dir=/work/bd0854/b382109/v270` (contains `preproc/` dirs too, 122 recipes)
 - current run (v2.8.0): `export current_dir=path_to_current_run`
-- command to run: `nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt`
+- command to run: 
+
+. code-block:: python
+
+  nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt
 
 Copy the comparison txt file to the release issue.
 Some of the recipes will appear as having identical output to the one from previous release. However, others
@@ -202,11 +206,11 @@ Here are some guidelines on how to perform the human inspection:
 Appendix
 --------
 
-Here you can find a list of useful files and directories:
+Here you can find a list of utility scripts used to run recipes and analyse the results:
 
-- Formatted list of current recipes (as of v2.7.0) to be used with Markdown entries (on DKRZ/Lvante) at `/home/b/b382109/Tool_Release_270_Scripts/all_recipes.md` or in the draft Pull Request https://github.com/ESMValGroup/ESMValTool/pull/2883
-- last release (v2.7.0) submit scripts on DKRZ/Levante `/home/b/b382109/submit`
-- Miniconda3 installer file on DKRZ/Levante `/home/b/b382109/Miniconda3-py39_4.12.0-Linux-x86_64.sh` (remember to immediately update conda after using it, it is fairly old, from May 2022).
+- :ref:`Python scripts<utils_batch_jobs>` that create slurm submission scripts and parse slurm log files.
+- :ref:`Python script<compare_recipe_runs>` that compares one or more recipe runs to known good previous run(s).
+- `Python script<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/testing/regression/summarize.py>` that create the index.html overview page.
 
 .. _`@ESMValGroup/esmvaltool-recipe-maintainers`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-recipe-maintainers
 .. _`@ESMValGroup/esmvaltool-developmentteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam
