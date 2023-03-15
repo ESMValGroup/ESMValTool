@@ -1,11 +1,13 @@
 # ESMValTool
-# recipe_Arctic_telecon.yml
+# recipe_galytska23jgr.yml
 ---
 documentation:
+  title: Arctic-Midlatitude Teleconnections Recipe
+  
   description: |
-    Recipe of EG in Arctic-midlatitude teleconnections.
-
-  title: Recipe that runs an diagnostic that prepares actors for Causal Discovery.
+    Recipe to select variables that reproduce Arctic-midlatitude
+    teleconnections for further application of 
+    Causal Model Evaluation (CME) described in Galytska et al. (2023).
 
   authors:
     - galytska_evgenia
@@ -14,10 +16,10 @@ documentation:
     - galytska_evgenia
 
   references:
-    - acknow_project
+    - galytska23jgr
 
   projects:
-    - esmval
+    - usmile
 
 preprocessors:
 
@@ -183,8 +185,10 @@ diagnostics:
     description: Get most of Arctic_midlat actors
     themes:
        - phys
+       - seaIce
     realms:
       - atmos
+      - seaIce
     variables:
       pv: &my_settings
         short_name: zg
@@ -315,7 +319,6 @@ diagnostics:
           - {dataset: MIROC6, grid: gn}
           - {dataset: MRI-ESM2-0, grid: gn}
 
-
       sic_BK:
         <<: *my_settings
         short_name: sic
@@ -329,6 +332,7 @@ diagnostics:
         preprocessor: ok_ice
         additional_datasets:
           - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly,  version: 1, tier: 2}
+
     scripts:
       output:
         script: galytska23/select_actors_for_tigramite.py
