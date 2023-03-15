@@ -169,7 +169,7 @@ if you have a Miniconda installer already downloaded in your Levante $HOME
 .. warning::
 
   conda environments should not be created in the home directory because it is on a very small disk,
-  but rather in a directory with your username under `/mnt/esmvaltool_disk2/work/`
+  but rather in a directory with your username under `/mnt/esmvaltool_disk2/work/<username>`
 
 Next, we need to set up the input files
 
@@ -181,10 +181,11 @@ The steps to running the compare tool on the VM are the following:
 - conda env: log the name of the conda environment you are using
 - ESMValTool branch: log the name of the code branch you are using (e.g. `v2.8.x`)
 - prerequisite - install `imagehash`: `pip install imagehash`
-- reference run (v2.7.0): `export reference_dir=/work/bd0854/b382109/v270` (contains `preproc/` dirs too, 122 recipes)
+- reference run (v2.7.0; previous stable release): `export reference_dir=/work/bd0854/b382109/v270` (contains `preproc/` dirs too, 122 recipes)
 - current run (v2.8.0): `export current_dir=path_to_current_run`
 - command to run: `nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt`
 
+Copy the comparison txt file to the release issue.
 Some of the recipes will appear as having identical output to the one from previous release. However, others
 will need human inspection. Ask the recipe maintainers (`@ESMValGroup/esmvaltool-recipe-maintainers`_) and ESMValTool Development Team (`@ESMValGroup/esmvaltool-developmentteam`_) to provide assistance in checking the results.
 Here are some guidelines on how to perform the human inspection:
