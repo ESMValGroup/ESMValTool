@@ -44,6 +44,7 @@ REQUIREMENTS = {
         'nc-time-axis',
         'netCDF4',
         'numpy',
+        'packaging',
         'openpyxl',
         'pandas',
         'pyproj',
