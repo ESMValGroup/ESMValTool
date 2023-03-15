@@ -98,8 +98,8 @@ can be followed-up, and document this information in the release issue, such as:
 - number of recipes that are missing data
 - number of recipes that have various other issues (and document them)
 
-To parse the output of all these runs, use the ``parse_recipes_output.py`` Python script, included at the
-same locations where the generation script is.
+To parse the output of all these runs, use the ``parse_recipes_output.py`` `Python script
+<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs/parse_recipes_output.py>`_.
 It is recommended to run the recipes with `log_level: info` in your config file to enable the parsing script to run fast.
 
 Share the results with the community
@@ -164,7 +164,7 @@ if you have a Miniconda installer already downloaded in your Levante $HOME
 
 .. code-block:: bash
 
-  scp Miniconda3-py39_4.12.0-Linux-x86_64.sh user@esmvaltool.dkrz.de:~
+  scp Miniconda3-py39_4.12.0-Linux-x86_64.sh user@esmvaltool.dkrz.de:/mnt/esmvaltool_disk2/work/<username>
 
 .. warning::
 
@@ -210,7 +210,7 @@ Here you can find a list of utility scripts used to run recipes and analyse the 
 
 - :ref:`Python scripts<utils_batch_jobs>` that create slurm submission scripts and parse slurm log files.
 - :ref:`Python script<compare_recipe_runs>` that compares one or more recipe runs to known good previous run(s).
-- `Python script<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/testing/regression/summarize.py>` that create the index.html overview page.
+- `Python script<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/testing/regression/summarize.py>`_ that create the index.html overview page.
 
 .. _`@ESMValGroup/esmvaltool-recipe-maintainers`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-recipe-maintainers
 .. _`@ESMValGroup/esmvaltool-developmentteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam
