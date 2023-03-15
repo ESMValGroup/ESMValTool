@@ -98,7 +98,7 @@ can be followed-up, and document this information in the release issue, such as:
 - number of recipes that are missing data
 - number of recipes that have various other issues (and document them)
 
-To parse the output of all these runs, use the ``parse_recipes_output.py`` `Python script
+To parse the output of all these runs, use the ``parse_recipes_output.py`` `utility Python script
 <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs/parse_recipes_output.py>`_.
 It is recommended to run the recipes with `log_level: info` in your config file to enable the parsing script to run fast.
 
