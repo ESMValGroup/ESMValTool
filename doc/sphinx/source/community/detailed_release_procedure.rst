@@ -210,7 +210,7 @@ Here you can find a list of utility scripts used to run recipes and analyse the 
 
 - :ref:`Python scripts<utils_batch_jobs>` that create slurm submission scripts and parse slurm log files.
 - :ref:`Python script<compare_recipe_runs>` that compares one or more recipe runs to known good previous run(s).
-- `Python script<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/testing/regression/summarize.py>`_ that create the index.html overview page.
+- `Python summarize script <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/testing/regression/summarize.py>`_ that create the index.html overview page.
 
 .. _`@ESMValGroup/esmvaltool-recipe-maintainers`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-recipe-maintainers
 .. _`@ESMValGroup/esmvaltool-developmentteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam
