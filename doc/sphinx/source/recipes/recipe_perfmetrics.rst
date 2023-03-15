@@ -171,7 +171,7 @@ The following list shows the currently used observational data sets for this rec
     * GPCP-SG (pr - obs4MIPs)
     * HadISST (ts - esmvaltool/cmorizers/data/formatters/datasets/hadisst.ncl)
     * MODIS (od550aer - esmvaltool/cmorizers/data/formatters/datasets/modis.ncl)
-    * NCEP (tas, ta, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep.ncl)
+    * NCEP-NCAR-R1 (tas, ta, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep_ncar_r1.py)
     * NIWA-BS (toz - esmvaltool/cmorizers/data/formatters/datasets/niwa_bs.ncl)
     * PATMOS-x (clt - esmvaltool/cmorizers/data/formatters/datasets/patmos_x.ncl)
 
@@ -199,7 +199,7 @@ Example plots
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_1.png
    :width: 90%
 
-   Annual cycle of globally averaged temperature at 850 hPa (time period 1980-2005) for different CMIP5 models (historical simulation) (thin colored lines) in comparison to ERA-Interim (thick yellow line) and NCEP (thick black dashed line) reanalysis data.
+   Annual cycle of globally averaged temperature at 850 hPa (time period 1980-2005) for different CMIP5 models (historical simulation) (thin colored lines) in comparison to ERA-Interim (thick yellow line) and NCEP-NCAR-R1 (thick black dashed line) reanalysis data.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_2.png
    :width: 90%

@@ -27,6 +27,5 @@ variables:
     file_day: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
     file_night: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
     # plan to make it possible to change MODISA here but only placeholders in the python there for now
-    start_year: 2003
+    # Period covered: 2003-2018
     # 2003 Only has data from July onwards for Aqua MODIS
-    end_year: 2018
