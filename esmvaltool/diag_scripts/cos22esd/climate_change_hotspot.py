@@ -94,7 +94,7 @@ class HotspotDiag:
             self.cfg["region"][2],  # start_lat
             self.cfg["region"][3],  # end_lat
         )
-        regional_cube = mask_landsea(regional_cube, "sea", True)
+        regional_cube = mask_landsea(regional_cube, "sea")
 
         return regional_cube
 
