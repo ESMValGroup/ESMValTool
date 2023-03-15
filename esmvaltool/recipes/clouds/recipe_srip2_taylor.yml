@@ -24,12 +24,12 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
-      exclude: [CERES-EBAF, CLARA-AVHRR, CLOUDSAT-L2,
-                ESACCI-CLOUD, ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP,
-                MODIS, PATMOS-x, SSMI-MERIS]
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean]
+#      exclude: [CERES-EBAF, CLARA-AVHRR, CLOUDSAT-L2,
+#                ESACCI-CLOUD, ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP,
+#                MODIS, PATMOS-x, SSMI-MERIS]
 
 
 diagnostics:
@@ -48,6 +48,7 @@ diagnostics:
       clt:
         preprocessor: clim
         mip: Amon
+        exp: historical
         start_year: 1980
         end_year: 2009
         reference_dataset: ESACCI-CLOUD
@@ -74,6 +75,7 @@ diagnostics:
       clivi:
         preprocessor: clim
         mip: Amon
+        exp: historical
         start_year: 1980
         end_year: 2009
         reference_dataset: ESACCI-CLOUD
@@ -102,6 +104,7 @@ diagnostics:
         preprocessor: clim
         start_year: 1980
         end_year: 2009
+        exp: historical
         mip: Amon
         derive: true
         reference_dataset: ESACCI-CLOUD
@@ -133,6 +136,7 @@ diagnostics:
         start_year: 1980
         end_year: 2009
         mip: Amon
+        exp: historical
         derive: true
         reference_dataset: CERES-EBAF
         additional_datasets:
@@ -158,6 +162,7 @@ diagnostics:
         start_year: 1980
         end_year: 2009
         mip: Amon
+        exp: historical
         derive: true
         reference_dataset: CERES-EBAF
         additional_datasets:
@@ -178,14 +183,89 @@ diagnostics:
 #          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2}
 #          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
 #          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
+    additional_datasets:
+      - {dataset: ACCESS1-0, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: ACCESS1-3, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: bcc-csm1-1, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: BNU-ESM, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: CanESM2, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: CCSM4, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: CESM1-BGC, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: CESM1-CAM5, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: CESM1-WACCM, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: CMCC-CESM, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: CMCC-CM, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      # missing_data - {dataset: CMCC-CMS, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: FGOALS-g2, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: FIO-ESM, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: GFDL-CM3, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: GFDL-ESM2G, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: GFDL-ESM2M, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: GISS-E2-H, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: GISS-E2-R, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: HadGEM2-CC, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: HadGEM2-ES, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: inmcm4, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: MIROC4h, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: MIROC5, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: MIROC-ESM, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: MPI-ESM-LR, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: MPI-ESM-MR, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: MPI-ESM-P, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: MRI-CGCM3, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: MRI-ESM1, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: NorESM1-ME, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: NorESM1-M, ensemble: r1i1p1, project: CMIP5, end_year: 2005}
+      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      # time_coord_problem_rlut - {dataset: BCC-ESM1, ensemble: r1i1p1f1,
+      #                            grid: gn, project: CMIP6}
+      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
+      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
+      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
+      # no_prw - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr, project: CMIP6}
+      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6}
+      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, project: CMIP6}
+      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
+      - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr, project: CMIP6}
+      - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
+      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
     scripts:
       tayclt: &settings
-        script: clouds/clouds_taylor.ncl
+        script: clouds/clouds_taylor_double.ncl
         multiobs_uncertainty: true
         multiobs_exclude: ["CFSR", "ERA-Interim", "ERA5", "JRA-25", "JRA-55", "MERRA","MERRA2", "NCEP-DOE-R2", "NCEP-NCAR-R1", "NOAA-CIRES-20CR"]
         styleset: srip2
         timemean: annualclim
         valid_fraction: 0.5
+        projectcolors: ["(/0.7, 0.7, 0.85/)", "(/0.85, 0.7, 0.7/)"]
+        projectgroups: ["CMIP5", "CMIP6"]
         var: clt
       tayclivi:
         <<: *settings
