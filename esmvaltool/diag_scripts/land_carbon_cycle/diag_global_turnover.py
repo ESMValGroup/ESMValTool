@@ -275,7 +275,7 @@ def _fix_map(axis_obj):
     """
     axis_obj.set_global()
     axis_obj.coastlines(linewidth=0.4, color='grey')
-    plt.gca().outline_patch.set_visible(False)
+    plt.gca().spines["geo"].set_visible(False)
     return axis_obj
 
 
