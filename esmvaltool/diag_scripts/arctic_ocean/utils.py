@@ -220,9 +220,12 @@ def get_cmap(cmap_name):
     Additional custom colormap for salinity is provided:
     - "custom_salinity1"
     """
-    mpl.colormaps.register(cmap=LinearSegmentedColormap(
-        'cubehelix3', mpl._cm.cubehelix(gamma=1.0, s=2.0, r=1.0, h=3)),
-                           name="new_cubehelix3", force=False)
+    try:
+        mpl.colormaps.register(cmap=LinearSegmentedColormap(
+            'cubehelix3', mpl._cm.cubehelix(gamma=1.0, s=2.0, r=1.0, h=3)),
+                               name="new_cubehelix3", force=False)
+    except:
+        # colormap "new_cubehelix3" is already registered.
 
     if cmap_name in cmo.cmapnames:
         colormap = cmo.cmap_d[cmap_name]
