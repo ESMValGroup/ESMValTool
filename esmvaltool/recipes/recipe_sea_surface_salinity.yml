@@ -39,8 +39,6 @@ preprocessors:
         - Indian Ocean
     area_statistics:
       operator: mean
-      fx_variables:
-        areacello:
 
 datasets:
   - &cmip6 {project: CMIP6, exp: historical, dataset: ACCESS-CM2, ensemble: r1i1p1f1,
