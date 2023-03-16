@@ -13,7 +13,6 @@ import pyproj
 import seawater as sw
 from cdo import Cdo
 from cmocean import cm as cmo
-from matplotlib import cm
 from matplotlib import pylab as plt
 from matplotlib.colors import LinearSegmentedColormap
 
@@ -193,8 +192,11 @@ def shiftedcolormap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
         cdict['blue'].append((shii, blue, blue))
         cdict['alpha'].append((shii, alpha, alpha))
 
-    newcmap = mpl.colors.LinearSegmentedColormap(name, cdict)
-    mpl.colormaps.register(cmap=newcmap)
+    try:
+        newcmap = mpl.colors.LinearSegmentedColormap(name, cdict)
+        mpl.colormaps.register(cmap=newcmap)
+    except ValueError:
+        logger.info(f"A colormap named {name} is already registered.")
 
     return newcmap
 
@@ -223,9 +225,9 @@ def get_cmap(cmap_name):
     try:
         mpl.colormaps.register(cmap=LinearSegmentedColormap(
             'cubehelix3', mpl._cm.cubehelix(gamma=1.0, s=2.0, r=1.0, h=3)),
-                               name="new_cubehelix3", force=False)
-    except:
-        logger.info('Colormap new_cubehelix3 already registered')
+            name="new_cubehelix3", force=False)
+    except ValueError:
+        logger.info('Colormap new_cubehelix3 is already registered.')
 
     if cmap_name in cmo.cmapnames:
         colormap = cmo.cmap_d[cmap_name]
