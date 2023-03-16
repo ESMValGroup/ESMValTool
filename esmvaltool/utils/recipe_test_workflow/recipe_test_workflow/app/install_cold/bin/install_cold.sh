@@ -31,6 +31,8 @@ fi
 # quiet ('-q') option to prevent the progress status from being reported
 # (which is done via done via 'stderr').
 git clone -q -b "${BRANCH}" "${ESMVALTOOL_URL}" "${ESMVALTOOL_DIR}"
+cd "${ESMVALTOOL_DIR}"
+git checkout 146c92b
 git clone -q -b "${BRANCH}" "${ESMVALCORE_URL}" "${ESMVALCORE_DIR}"
 cd "${ESMVALCORE_DIR}"
 git checkout 4527173
