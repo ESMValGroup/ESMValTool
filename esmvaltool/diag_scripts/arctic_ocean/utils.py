@@ -225,7 +225,7 @@ def get_cmap(cmap_name):
             'cubehelix3', mpl._cm.cubehelix(gamma=1.0, s=2.0, r=1.0, h=3)),
                                name="new_cubehelix3", force=False)
     except:
-        # colormap "new_cubehelix3" is already registered.
+        logger.info('Colormap new_cubehelix3 already registered')
 
     if cmap_name in cmo.cmapnames:
         colormap = cmo.cmap_d[cmap_name]
