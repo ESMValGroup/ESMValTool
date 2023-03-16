@@ -39,4 +39,4 @@ git checkout 4527173
 
 # Manually and temporarily install imagehash (it will be included in the
 # next ESMValTool community environment).
-#rtw-env pip install imagehash -t "${CYLC_WORKFLOW_RUN_DIR}/lib/python"
+rtw-env pip install imagehash -t "${CYLC_WORKFLOW_RUN_DIR}/lib/python"
