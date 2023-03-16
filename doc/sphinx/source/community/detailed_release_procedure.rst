@@ -114,10 +114,10 @@ Do not store final release results on the VM including `/preproc/` dirs, the tot
 size for all the recipes output, including `/preproc/` dirs is in the 4.5TB ballpark,
 much too high for the VM storage capacity! Therefore, we would recommend using the option
 to remove preprocessing directories upon recipe running successfully ``--remove-preproc-dir=True``
-at runtime, or set `remove_preproc_dir: true` in the configuration file.
+at runtime, or set ``remove_preproc_dir: true`` in the configuration file.
 
 Login and access to the DKRZ esmvaltool VM - results from recipe runs
-are stored on the VM; login with:
+are stored on the VM; log in to the Levante head node and then continue to the VM with:
 
 .. code-block:: bash
 
@@ -130,13 +130,13 @@ Recipe output can be copied by doing from the VM:
 
 .. code-block:: bash
 
-  nohup cp -r /path_to_testing/esmvaltool_output/* /shared/esmvaltool/v2.x.x/
+  nohup rsync -rlt /path_to_testing/esmvaltool_output/* /shared/esmvaltool/v2.x.x/
   
 By copying the debug.html and index.html files into /shared/esmvaltool/v2.x.x/, the output
 becomes available online, see for `example
 <https://esmvaltool.dkrz.de/shared/esmvaltool/v2.7.0>`_.
 Before copying the recipe output to the VM, you may want to clean up your directory containing
-the results and only keep the last run for each recipe.
+the results by removing any large ``preproc`` directories of failed runs and only keeping the last run for each recipe.
 This will help generating a clearer overview webpage.
 Note that the ``summarize.py`` script needs to be rerun if recipe runs were added or deleted
 from your testing directory.
@@ -152,7 +152,7 @@ Once the release process is over, test results produced with previous release ca
 
   If you wrote recipe runs output to Levante's `/scratch` partition, be aware that
   the data will be removed after two weeks, so you will have to quickly move the 
-  output data to the VM, using the `nohup` command above.
+  output data to the VM, using the ``nohup`` command above.
 
 Running the comparison
 ----------------------
@@ -173,7 +173,7 @@ if you have a Miniconda installer already downloaded in your Levante $HOME
 
 Next, we need to set up the input files
 
-The `/work` partition is visible by the VM so you can run the compare tool straight on the VM.
+The ``/work`` partition is visible from the VM so you can run the compare tool straight on the VM.
 
 The steps to running the compare tool on the VM are the following:
 
@@ -185,7 +185,7 @@ The steps to running the compare tool on the VM are the following:
 - current run (v2.8.0): `export current_dir=path_to_current_run`
 - command to run: 
 
-. code-block:: python
+.. code-block:: python
 
   nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt
 
