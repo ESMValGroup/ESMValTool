@@ -221,6 +221,8 @@ In `utils/batch-jobs <https://github.com/ESMValGroup/ESMValTool/blob/main/esmval
 you can find a script to generate slurm submission scripts for all available recipes in ESMValTool,
 as well as a script to parse the job outputs.
 
+.. _utils_generate:
+
 Using `generate.py`
 ...................
 
@@ -258,6 +260,8 @@ In the case in which ``submit`` is set to ``True``, but you want to exclude cert
 .. code-block:: python
 
    exclude = ['recipe_to_be_excluded_1', 'recipe_to_be_excluded_2']
+
+.. _utils_parse:
 
 Using `parse_recipes_outputs`
 .............................
