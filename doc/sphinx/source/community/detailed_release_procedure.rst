@@ -55,8 +55,7 @@ Submit run scripts - test recipe runs
 -------------------------------------
 
 We are now ready to start running all the available recipes, to compare output against previous release. Running is currently done
-via batch scripts submitted to a schedulers (SLURM). Generate the submission scripts using the ``generate.py`` `Python script
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs/generate.py>`_. 
+via batch scripts submitted to a schedulers (SLURM). Generate the submission scripts using the ``generate.py`` :ref:`utility Python script <utils_generate>`.
 
 You will have to set the name of your environment, your email address (if you want to get email notifications for successful/failed jobs) and the name of the directory you want to store the log files of the jobs. A compute project from which resources are billed needs to be set, and the default partition is set to `compute`.
 More information on running jobs with SLURM on DKRZ/Levante can be found in the DKRZ `documentation
@@ -98,8 +97,7 @@ can be followed-up, and document this information in the release issue, such as:
 - number of recipes that are missing data
 - number of recipes that have various other issues (and document them)
 
-To parse the output of all these runs, use the ``parse_recipes_output.py`` `utility Python script
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs/parse_recipes_output.py>`_.
+To parse the output of all these runs, use the ``parse_recipes_output.py`` :ref:`utility Python script <utils_parse>`.
 It is recommended to run the recipes with `log_level: info` in your config file to enable the parsing script to run fast.
 
 Share the results with the community
