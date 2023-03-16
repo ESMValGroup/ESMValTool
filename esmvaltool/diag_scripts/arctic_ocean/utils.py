@@ -196,7 +196,7 @@ def shiftedcolormap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
         newcmap = mpl.colors.LinearSegmentedColormap(name, cdict)
         mpl.colormaps.register(cmap=newcmap)
     except ValueError:
-        logger.info(f"A colormap named {name} is already registered.")
+        logger.info("A colormap named %s is already registered.", name)
 
     return newcmap
 
