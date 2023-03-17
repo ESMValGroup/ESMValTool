@@ -181,7 +181,7 @@ References
 Observations Data sets
 ----------------------
 
-ERA-Interim data (Dee et al., 2011)
+ERA-Interim (hus - cmorizers/data/formatters/datasets/era_interim.py)
 
 
 Sample Plots and metrics
