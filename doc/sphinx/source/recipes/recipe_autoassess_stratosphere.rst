@@ -178,7 +178,7 @@ References
 * Dee, D. P., and Coauthors, 2011: The ERA-Interim reanalysis: configuration and performance of the data assimilation system. Q. J. R. Meteorol.  Soc, 137, 553-597, doi:10.1002/qj.828.
 * Engel, A., and Coauthors, 2009: Age of stratospheric air unchanged within uncertainties over the past 30 years. Nat. Geosci., 2, 28-31, doi:10  .1038/NGEO388.
 
-Observations Data sets
+Observations and reformat scripts
 ----------------------
 
 ERA-Interim (hus - cmorizers/data/formatters/datasets/era_interim.py)
