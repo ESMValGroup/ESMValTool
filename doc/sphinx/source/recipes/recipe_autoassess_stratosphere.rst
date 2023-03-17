@@ -23,6 +23,22 @@ determining the stratospheric water vapour concentrations at entry point (70hPa,
 and this in turn is important for the accurate simulation of stratospheric chemistry and
 radiative balance.
 
+Available recipes and diagnostics
+---------------------------------
+
+Recipes are stored in esmvaltool/recipes/
+
+* recipe_autoassess_stratosphere.yml
+
+Diagnostics are stored in esmvaltool/diag_scripts/autoassess/
+
+* autoassess_area_base.py: wrapper for autoassess scripts
+* stratosphere/strat_metrics_1.py: calculation of metrics
+* stratosphere/age_of_air.py: calculate age of stratospheric air
+* stratosphere/plotting.py: zonal mean wind and QBO plots
+* plot_autoassess_metrics.py: plot normalised assessment metrics
+
+
 Prior and current contributors
 ------------------------------
 Met Office:
