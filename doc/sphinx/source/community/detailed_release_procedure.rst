@@ -181,7 +181,7 @@ The steps to running the compare tool on the VM are the following:
 - prerequisite - install `imagehash`: `pip install imagehash`
 - reference run (v2.7.0; previous stable release): `export reference_dir=/work/bd0854/b382109/v270` (contains `preproc/` dirs too, 122 recipes)
 - current run (v2.8.0): `export current_dir=path_to_current_run`
-- command to run: 
+- run the :ref:`comparison script<compare_recipe_runs>` with: 
 
 .. code-block:: bash
 
@@ -193,8 +193,8 @@ will need human inspection. Ask the recipe maintainers (`@ESMValGroup/esmvaltool
 Here are some guidelines on how to perform the human inspection:
 
 - look at plots from current run vs previous release run: most of them will be identical, but if Matplotlib
-  has changed some plotting feature, images will have slightly different metadata so the comparison script will report them
-  as different - but Mark I eyeball inspection will show they are identical
+  has changed some plotting feature, images may look slightly different so the comparison script may report them
+  if the difference is larger than the threshold - but Mark I eyeball inspection will show they are identical
 - other plots will differ due to changes in plot settings (different colours, axes etc) due to updated settings from the
   diagnostic developers: if they look similar enough, then it's fine
 - report (and subsequently open issues) if you notice major differences in plots; most times a simple comment on the
