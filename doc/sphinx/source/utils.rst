@@ -149,7 +149,8 @@ Next, get started with `cylc <https://cylc.github.io/cylc-doc/7.9.3/html/index.h
 #. Run all recipes ``cylc run run-esmvaltool-recipes``
 #. View progress ``cylc log run-esmvaltool-recipes``, use e.g. ``cylc log run-all-esmvaltool-recipes examples-recipe_python_yml.1 --stdout`` to see the log of an individual esmvaltool run. Once the suite has finished running, you will see the message "WARNING - suite stalled" in the log.
 #. Stop the cylc run once everything is done ``cylc stop run-esmvaltool-recipes``.
-#. Create the index.html overview page by running ``python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/``
+
+To generate an overview page of the recipe runs, use the ``summarize.py`` :ref:`utility script <overview_page>`.
 
 Using Rose and cylc
 -------------------
@@ -280,6 +281,25 @@ be obtained by running:
 .. code-block:: bash
 
    for recipe in $(esmvaltool recipes list | grep '\.yml$'); do echo "$recipe"; done > all_recipes.txt
+
+.. _overview_page:
+
+Overview of recipe runs
+=======================
+
+To create overview webpages of a set of recipe runs, run:
+
+.. code-block:: python
+
+   python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/
+
+This will generate 2 html files:
+
+-  ``index.html`` that displays a summary of each recipe run, with a title and
+   a representative plot, a short description of the aim of the recipe, and
+   links to each individual run.
+-  ``debug.html`` that provides an overview table of successful and failed runs
+   with links to each individual run, and computing resources used for each run.
 
 .. _compare_recipe_runs:
 

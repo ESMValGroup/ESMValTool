@@ -103,8 +103,8 @@ It is recommended to run the recipes with `log_level: info` in your config file 
 Share the results with the community
 ------------------------------------
 
-Create the debug.html and index.html overview webpages by running the utiliy script
-``python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/`` in the directory containing the recipe runs.
+Create the debug.html and index.html overview webpages by running the :ref:`utiliy script <overview_page>`
+in the directory containing the recipe runs.
 These two files, together with the recipe output, need to be copied to the disk of a virtual machine (VM)
 used to display recipe output in `webpages
 <https://esmvaltool.dkrz.de/shared/esmvaltool/>`_.
@@ -208,7 +208,7 @@ Here you can find a list of utility scripts used to run recipes and analyse the 
 
 - :ref:`Python scripts<utils_batch_jobs>` that create slurm submission scripts and parse slurm log files.
 - :ref:`Python script<compare_recipe_runs>` that compares one or more recipe runs to known good previous run(s).
-- `Python summarize script <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/testing/regression/summarize.py>`_ that create the index.html overview page.
+- :ref:`Python script<overview_page>`  that creates the ``index.html`` and ``debug.html`` overview pages.
 
 .. _`@ESMValGroup/esmvaltool-recipe-maintainers`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-recipe-maintainers
 .. _`@ESMValGroup/esmvaltool-developmentteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam
