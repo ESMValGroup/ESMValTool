@@ -199,7 +199,9 @@ Here are some guidelines on how to perform the human inspection:
   diagnostic developers: if they look similar enough, then it's fine
 - report (and subsequently open issues) if you notice major differences in plots; most times a simple comment on the
   release issue, whereby you tag the diagnostic developers leads to them having a look at the plots and OK-ing them; if that's
-  not the case, then open a separate issue
+  not the case, then open a separate issue. You can example of release issues containing overview lists and tables
+  of failures and problems in `2881 <https://github.com/ESMValGroup/ESMValTool/issues/2881>`_
+  and `3076 <https://github.com/ESMValGroup/ESMValTool/issues/3076>`_.
 
 Appendix
 --------
