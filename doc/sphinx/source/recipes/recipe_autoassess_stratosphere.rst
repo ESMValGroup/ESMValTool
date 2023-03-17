@@ -181,7 +181,8 @@ References
 Observations Data sets
 ----------------------
 
-ERA-Interim data (Dee et al., 2011) data can be obtained online from ECMWF and NASA respectively.  Monthly mean zonal mean U and T data are required. CMORized that exists on CEDA-Jasmin or DKRZ (contact Valeriu Predoi (`<valeriu.predoi@ncas.ac.uk>`_) for Jasmin or Mattia Righi (`<mattia.righi@dlr.de>`_ )for DKRZ).
+ERA-Interim data (Dee et al., 2011)
+
 
 Sample Plots and metrics
 ------------------------
