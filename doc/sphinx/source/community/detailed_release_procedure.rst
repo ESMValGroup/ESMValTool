@@ -183,7 +183,7 @@ The steps to running the compare tool on the VM are the following:
 - current run (v2.8.0): `export current_dir=path_to_current_run`
 - command to run: 
 
-.. code-block:: python
+.. code-block:: bash
 
   nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt
 
