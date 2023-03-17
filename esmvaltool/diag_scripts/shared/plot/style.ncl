@@ -73,7 +73,7 @@ begin
   enter_msg(scriptname, funcname)
 
   ; Check for the available dictonary keys to be used for the annotations
-  dkeys = (/"alias", "dataset", "ensemble", "exp", "mip"/)
+  dkeys = (/"dataset", "ensemble", "exp", "mip"/)
 
   ; Style information for this flag available as diag_script_info@$flag$
   if (isatt(info, flag)) then
