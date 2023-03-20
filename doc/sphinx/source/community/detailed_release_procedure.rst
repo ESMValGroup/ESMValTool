@@ -103,7 +103,7 @@ It is recommended to run the recipes with `log_level: info` in your config file 
 Share the results with the community
 ------------------------------------
 
-Create the debug.html and index.html overview webpages by running the :ref:`utiliy script <overview_page>`
+Create the debug.html and index.html overview webpages by running the :ref:`utility script <overview_page>`
 in the directory containing the recipe runs.
 These two files, together with the recipe output, need to be copied to the disk of a virtual machine (VM)
 used to display recipe output in `webpages
