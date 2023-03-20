@@ -56,7 +56,6 @@ User settings in recipe
    * exp_model: name of model to be used as experiment
    * start: date (YYYY/MM/DD) at which period begins (see note on time gating)
    * end: date (YYYY/MM/DD) at which period ends (see note on time gating)
-   * climfiles_root: path to observation climatologies
 
    *Optional settings for script*
 
