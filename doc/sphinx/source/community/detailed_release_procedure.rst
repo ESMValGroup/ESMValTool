@@ -1,4 +1,4 @@
-.. _detailed-release-procedure:
+.. _detailed_release_procedure:
 
 Release: recipes runs and comparison
 ====================================
