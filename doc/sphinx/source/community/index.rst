@@ -34,5 +34,4 @@ help, e.g. on our
 		Upgrading a namelist to a recipe <upgrading>
 		GitHub workflow <repository>
 		Moving work from the private to the public repository <private_repository>
-		Release schedule and procedure <release_strategy>
-                Detailed testing before release <detailed_release_procedure>
+		Release strategy and procedures <release_strategy/index>
