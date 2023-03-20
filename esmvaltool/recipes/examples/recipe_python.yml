@@ -46,8 +46,6 @@ preprocessors:
   annual_mean_global:
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
     annual_statistics:
       operator: mean
 
@@ -91,6 +89,17 @@ diagnostics:
         preprocessor: annual_mean_global
         start_year: 1850
         end_year: 2000
+    # Specify supplementary variables (needed by preprocessor
+    # `annual_mean_global` to calculate global mean with `area_statistics`).
+    # Notes:
+    # - In simple cases (like this), this could be omitted since
+    #   `area_statistics` automatically requests `areacella`.
+    # - In more complex cases, this can be specified for each dataset
+    #   separately.
+    # See https://docs.esmvaltool.org/projects/esmvalcore/en/latest/recipe/preprocessor.html#preprocessors-using-supplementary-variables
+    # for details.
+    supplementary_variables:
+      - {short_name: areacella, mip: fx}
     scripts:
       script1:
         script: examples/diagnostic.py
