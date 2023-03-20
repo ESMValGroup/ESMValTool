@@ -125,7 +125,7 @@ class CompareSalinity(object):
                        letters,
                        color='grey',
                        size=8,
-                       rotation=angles[:-1])
+                       rotation=45)
 
             # Draw ylabels
             ax.set_rlabel_position(0)
