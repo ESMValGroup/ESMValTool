@@ -3,7 +3,7 @@
 Recipes
 -------
 
-A portal displaying results produced with the latest release of
+A website displaying results produced with the latest release of
 ESMValTool for all available recipes can be accessed `here
 <https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/>`_.
 
