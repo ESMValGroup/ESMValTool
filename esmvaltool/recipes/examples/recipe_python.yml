@@ -1,5 +1,11 @@
 # ESMValTool
 # recipe_python.yml
+#
+# See https://docs.esmvaltool.org/en/latest/recipes/recipe_examples.html
+# for a description of this recipe.
+#
+# See https://docs.esmvaltool.org/projects/esmvalcore/en/latest/recipe/overview.html
+# for a description of the recipe format.
 ---
 documentation:
   description: |
@@ -26,6 +32,8 @@ datasets:
   - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1}
 
 preprocessors:
+  # See https://docs.esmvaltool.org/projects/esmvalcore/en/latest/recipe/preprocessor.html
+  # for a description of the preprocessor functions.
 
   to_degrees_c:
     convert_units:
