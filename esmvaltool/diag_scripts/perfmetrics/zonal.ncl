@@ -23,9 +23,9 @@ begin
   print(annots)
 
   ; Loop over datasets
-  do modid = 0, dimsizes(modidx) - 1
+  do ii = 0, dimsizes(modidx) - 1
 
-    imod = modidx(modid)
+    imod = modidx(ii)
 
     log_debug("Processing " + datasetnames(imod))
 
