@@ -1,4 +1,4 @@
-.. _detailed-release-procedure:
+.. _detailed_release_procedure:
 
 Release: recipes runs and comparison
 ====================================
@@ -55,8 +55,7 @@ Submit run scripts - test recipe runs
 -------------------------------------
 
 We are now ready to start running all the available recipes, to compare output against previous release. Running is currently done
-via batch scripts submitted to a schedulers (SLURM). Generate the submission scripts using the ``generate.py`` `Python script
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs/generate.py>`_. 
+via batch scripts submitted to a schedulers (SLURM). Generate the submission scripts using the ``generate.py`` :ref:`utility Python script <utils_generate>`.
 
 You will have to set the name of your environment, your email address (if you want to get email notifications for successful/failed jobs) and the name of the directory you want to store the log files of the jobs. A compute project from which resources are billed needs to be set, and the default partition is set to `compute`.
 More information on running jobs with SLURM on DKRZ/Levante can be found in the DKRZ `documentation
@@ -98,26 +97,25 @@ can be followed-up, and document this information in the release issue, such as:
 - number of recipes that are missing data
 - number of recipes that have various other issues (and document them)
 
-To parse the output of all these runs, use the ``parse_recipes_output.py`` `utility Python script
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs/parse_recipes_output.py>`_.
+To parse the output of all these runs, use the ``parse_recipes_output.py`` :ref:`utility Python script <utils_parse>`.
 It is recommended to run the recipes with `log_level: info` in your config file to enable the parsing script to run fast.
 
 Share the results with the community
 ------------------------------------
 
-Create the debug.html and index.html overview webpages by running the utiliy script
-``python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/`` in the directory containing the recipe runs.
+Create the debug.html and index.html overview webpages by running the :ref:`utility script <overview_page>`
+in the directory containing the recipe runs.
 These two files, together with the recipe output, need to be copied to the disk of a virtual machine (VM)
 used to display recipe output in `webpages
 <https://esmvaltool.dkrz.de/shared/esmvaltool/>`_.
 Do not store final release results on the VM including `/preproc/` dirs, the total
 size for all the recipes output, including `/preproc/` dirs is in the 4.5TB ballpark,
 much too high for the VM storage capacity! Therefore, we would recommend using the option
-to remove preprocessing directories upon recipe running successfully `--remove-preproc-dir=True`
-at runtime, or set `remove_preproc_dir: true` in the configuration file.
+to remove preprocessing directories upon recipe running successfully ``--remove-preproc-dir=True``
+at runtime, or set ``remove_preproc_dir: true`` in the configuration file.
 
 Login and access to the DKRZ esmvaltool VM - results from recipe runs
-are stored on the VM; login with:
+are stored on the VM; log in to the Levante head node and then continue to the VM with:
 
 .. code-block:: bash
 
@@ -130,13 +128,13 @@ Recipe output can be copied by doing from the VM:
 
 .. code-block:: bash
 
-  nohup cp -r /path_to_testing/esmvaltool_output/* /shared/esmvaltool/v2.x.x/
+  nohup rsync -rlt /path_to_testing/esmvaltool_output/* /shared/esmvaltool/v2.x.x/
   
 By copying the debug.html and index.html files into /shared/esmvaltool/v2.x.x/, the output
 becomes available online, see for `example
 <https://esmvaltool.dkrz.de/shared/esmvaltool/v2.7.0>`_.
 Before copying the recipe output to the VM, you may want to clean up your directory containing
-the results and only keep the last run for each recipe.
+the results by removing any large ``preproc`` directories of failed runs and only keeping the last run for each recipe.
 This will help generating a clearer overview webpage.
 Note that the ``summarize.py`` script needs to be rerun if recipe runs were added or deleted
 from your testing directory.
@@ -152,7 +150,7 @@ Once the release process is over, test results produced with previous release ca
 
   If you wrote recipe runs output to Levante's `/scratch` partition, be aware that
   the data will be removed after two weeks, so you will have to quickly move the 
-  output data to the VM, using the `nohup` command above.
+  output data to the VM, using the ``nohup`` command above.
 
 Running the comparison
 ----------------------
@@ -173,7 +171,7 @@ if you have a Miniconda installer already downloaded in your Levante $HOME
 
 Next, we need to set up the input files
 
-The `/work` partition is visible by the VM so you can run the compare tool straight on the VM.
+The ``/work`` partition is visible from the VM so you can run the compare tool straight on the VM.
 
 The steps to running the compare tool on the VM are the following:
 
@@ -183,25 +181,28 @@ The steps to running the compare tool on the VM are the following:
 - prerequisite - install `imagehash`: `pip install imagehash`
 - reference run (v2.7.0; previous stable release): `export reference_dir=/work/bd0854/b382109/v270` (contains `preproc/` dirs too, 122 recipes)
 - current run (v2.8.0): `export current_dir=path_to_current_run`
-- command to run: 
+- run the :ref:`comparison script<compare_recipe_runs>` with: 
 
-. code-block:: python
+.. code-block:: bash
 
   nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt
 
 Copy the comparison txt file to the release issue.
-Some of the recipes will appear as having identical output to the one from previous release. However, others
-will need human inspection. Ask the recipe maintainers (`@ESMValGroup/esmvaltool-recipe-maintainers`_) and ESMValTool Development Team (`@ESMValGroup/esmvaltool-developmentteam`_) to provide assistance in checking the results.
+Some of the recipes will appear as having identical output to the one from previous release. 
+However, others will need human inspection. 
+Ask the recipe maintainers (`@ESMValGroup/esmvaltool-recipe-maintainers`_) and ESMValTool Development Team (`@ESMValGroup/esmvaltool-developmentteam`_) to provide assistance in checking the results.
 Here are some guidelines on how to perform the human inspection:
 
 - look at plots from current run vs previous release run: most of them will be identical, but if Matplotlib
-  has changed some plotting feature, images will have slightly different metadata so the comparison script will report them
-  as different - but Mark I eyeball inspection will show they are identical
+  has changed some plotting feature, images may look slightly different so the comparison script may report them
+  if the difference is larger than the threshold - but Mark I eyeball inspection will show they are identical
 - other plots will differ due to changes in plot settings (different colours, axes etc) due to updated settings from the
   diagnostic developers: if they look similar enough, then it's fine
 - report (and subsequently open issues) if you notice major differences in plots; most times a simple comment on the
   release issue, whereby you tag the diagnostic developers leads to them having a look at the plots and OK-ing them; if that's
-  not the case, then open a separate issue
+  not the case, then open a separate issue. You can example of release issues containing overview lists and tables
+  of failures and problems in `2881 <https://github.com/ESMValGroup/ESMValTool/issues/2881>`_
+  and `3076 <https://github.com/ESMValGroup/ESMValTool/issues/3076>`_.
 
 Appendix
 --------
@@ -210,7 +211,7 @@ Here you can find a list of utility scripts used to run recipes and analyse the 
 
 - :ref:`Python scripts<utils_batch_jobs>` that create slurm submission scripts and parse slurm log files.
 - :ref:`Python script<compare_recipe_runs>` that compares one or more recipe runs to known good previous run(s).
-- `Python summarize script <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/testing/regression/summarize.py>`_ that create the index.html overview page.
+- :ref:`Python script<overview_page>`  that creates the ``index.html`` and ``debug.html`` overview pages.
 
 .. _`@ESMValGroup/esmvaltool-recipe-maintainers`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-recipe-maintainers
 .. _`@ESMValGroup/esmvaltool-developmentteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam
