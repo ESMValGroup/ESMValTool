@@ -30,8 +30,6 @@ preprocessors:
       units: "Pa min-1"
     mask_landsea:
       mask_out: land
-      fx_variables:
-        sftlf:
     extract_levels:
       levels: 50000
       scheme: linear
@@ -51,8 +49,6 @@ preprocessors:
     #   end_latitude: 30
     mask_landsea:
       mask_out: land
-      fx_variables:
-        sftlf:
     regrid:
       target_grid: 2x2
       scheme: linear
