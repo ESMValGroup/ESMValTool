@@ -14,7 +14,13 @@ begin
   modidx = ispan(0, nDatasets - 1, 1)
   modidx := array_append_record(ref_ind, modidx(ind(modidx.ne.ref_ind)), 0)
 
-  annots = project_style(info_items, diag_script_info, "annots")
+  if (isatt(diag_script_info, "annots")) then
+    annots = metadata_att_as_array(info_items, diag_script_info@annots)
+  else
+    annots = project_style(info_items, diag_script_info, "annots")
+  end if
+
+  print(annots)
 
   ; Loop over datasets
   do ii = 0, dimsizes(modidx) - 1

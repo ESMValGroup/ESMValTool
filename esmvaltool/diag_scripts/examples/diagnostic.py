@@ -20,8 +20,7 @@ logger = logging.getLogger(Path(__file__).stem)
 
 def get_provenance_record(attributes, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-    caption = ("Average {long_name} between {start_year} and {end_year} "
-               "according to {dataset}.".format(**attributes))
+    caption = attributes['caption'].format(**attributes)
 
     record = {
         'caption': caption,
