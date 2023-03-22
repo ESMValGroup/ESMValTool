@@ -181,8 +181,8 @@ preprocessors:
 
 diagnostics:
 
-  diagnostic_general:
-    description: Get most of Arctic_midlat actors
+  diagnostic_arctic:
+    description: Get the variables for Arctic-midlatitude processes 
     themes:
        - phys
        - seaIce
@@ -227,16 +227,6 @@ diagnostics:
         short_name: tas
         preprocessor: pre_tas
 
-      tas_baffin:
-        <<: *my_settings
-        short_name: tas
-        preprocessor: pre_tas_baffin
-
-      tas_sib:
-        <<: *my_settings
-        short_name: tas
-        preprocessor: pre_tas_sib
-
       psl_Ural:
         <<: *my_settings
         short_name: psl
@@ -251,11 +241,6 @@ diagnostics:
         <<: *my_settings
         short_name: psl
         preprocessor: pressure_aleut
-
-      zon_wind:
-        <<: *my_settings
-        short_name: uas
-        preprocessor: zonal_wind
 
       va:
         <<: *my_settings
@@ -335,4 +320,59 @@ diagnostics:
 
     scripts:
       output:
-        script: galytska23/select_actors_for_tigramite.py
+        script: galytska23/select_variables_for_tigramite.py
+
+  diagnostic_cvdp:
+    description: Run the NCAR CVDPackage.
+    variables:
+      ts: &cvdp_settings
+        short_name: ts
+        mip: Amon
+        start_year: 1979
+        end_year: 2019
+        project: CMIP6
+        exp:
+          - historical
+          - ssp585
+        ensemble: r1i1p1f1
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+          - {dataset: ACCESS-ESM1-5, grid: gn}
+          - {dataset: ACCESS-CM2, grid: gn}
+          - {dataset: BCC-CSM2-MR, grid: gn}
+          - {dataset: CAMS-CSM1-0, grid: gn}
+          - {dataset: CanESM5, grid: gn}
+          - {dataset: CMCC-CM2-SR5, grid: gn}
+          - {dataset: CMCC-ESM2, grid: gn}
+          - {dataset: EC-Earth3, grid: gr}
+          - {dataset: EC-Earth3-CC, grid: gr}
+          - {dataset: EC-Earth3-Veg, grid: gr}
+          - {dataset: EC-Earth3-Veg-LR, grid: gr}
+          - {dataset: GFDL-CM4, grid: gr1}
+          - {dataset: GFDL-ESM4, grid: gr1}
+          - {dataset: INM-CM4-8, grid: gr1}
+          - {dataset: INM-CM5-0, grid: gr1}
+          - {dataset: IPSL-CM6A-LR, grid: gr}
+          - {dataset: MPI-ESM1-2-HR, grid: gn}
+          - {dataset: MPI-ESM1-2-LR, grid: gn}
+          - {dataset: MIROC6, grid: gn}
+          - {dataset: MRI-ESM2-0, grid: gn}
+
+      tas:
+        <<: *cvdp_settings 
+        short_name: tas
+        mip: Amon
+
+      pr:
+        <<: *cvdp_settings 
+        short_name: pr
+        mip: Amon
+
+      psl:
+        <<: *cvdp_settings 
+        short name: psl
+        mip: Amon
+
+    scripts:
+     cvdp:
+        script: cvdp/cvdp_wrapper.py        
