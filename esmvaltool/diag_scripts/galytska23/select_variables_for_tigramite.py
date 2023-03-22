@@ -25,11 +25,13 @@ def calculate_polar_vortex(dict_item):
     var.var_name = 'PV'
     return var
 
+
 def calculate_slp(dict_item):
     """Get surface pressre and calculate hPa from Pa."""
     var = iris.load_cube(dict_item['filename'])
     var.data /= 100
     return var
+
 
 def prepare_for_heat_flux(dict_item):
     """Prepare variables for the heat flux calculations."""
@@ -39,6 +41,7 @@ def prepare_for_heat_flux(dict_item):
     deviation = var_mermean - var_avg
     return deviation
 
+
 def calculate_heat_flux(list_va_ta):
     """Calculate eddy poleward heat flux."""
     heat_flux = list_va_ta[0] * list_va_ta[1]
@@ -46,6 +49,7 @@ def calculate_heat_flux(list_va_ta):
     hf_anom_zm = zonal_statistics(hf_anom, operator='mean')
     hf_anom_zm.var_name = 'heat_flux'
     return hf_anom_zm
+
 
 def run_my_diagnostic(cfg):
     """Save variables into .nc files."""
@@ -96,6 +100,7 @@ def run_my_diagnostic(cfg):
             iris.save(cube_list, diagnostic_file)
 
     return '.nc files are saved'
+
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
