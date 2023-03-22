@@ -62,7 +62,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     loop_date = start_date
 
     options = ["-O", "Authentication.log", "--save-cookies=auth.rda_ucar_edu",
-        f"--post-data=\"email={user}&passwd={passwd}&action=login\""]
+               f"--post-data=\"email={user}&passwd={passwd}&action=login\""]
 
     # login to Research Data Archive (RDA)
 
@@ -97,10 +97,10 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
             fname = f"{channel}.{var}.{year}01_{year}12"
             # download file
             downloader.download_file(url + f"/{channel}/{year}/" +
-                fname, download_options)
+                                     fname, download_options)
             # add file extension ".grb"
             os.rename(downloader.local_folder + "/" + fname,
-                downloader.local_folder + "/" + fname + ".grb")
+                      downloader.local_folder + "/" + fname + ".grb")
 
         loop_date += relativedelta.relativedelta(years=1)
 
