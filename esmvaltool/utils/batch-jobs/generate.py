@@ -204,11 +204,23 @@ def generate_submit():
             if not SPECIAL_RECIPES.get(recipe.stem, None):
                 # continue
                 file.write(f'#SBATCH --partition={partition}\n')
-                file.write('#SBATCH --time=08:00:00\n')
+                file.write('#SBATCH --time={time}\n')
+                file.write(f'#SBATCH --mem={memory}\n')
             else:
                 file.write(SPECIAL_RECIPES[recipe.stem]['partition'])
-                file.write(SPECIAL_RECIPES[recipe.stem]['time'])
-                file.write(SPECIAL_RECIPES[recipe.stem]['memory'])
+                # Special time requirements
+                if 'time' in SPECIAL_RECIPES[recipe.stem]:
+                    file.write(SPECIAL_RECIPES[recipe.stem]['time'])
+                # Default
+                else:
+                    file.write(f'#SBATCH --time={time}\n')
+                # Special memory requirements
+                if 'memory' in SPECIAL_RECIPES[recipe.stem]:
+                    file.write(SPECIAL_RECIPES[recipe.stem]['memory'])
+                # Default (only needed for non-compute partitions)
+                else:
+                    if 'compute' not in SPECIAL_RECIPES[recipe.stem]['partition']:
+                        file.write(f'#SBATCH --mem={memory}\n')
             if mail:
                 file.write('#SBATCH --mail-type=FAIL,END \n')
             file.write('\n')
@@ -218,7 +230,12 @@ def generate_submit():
             file.write(f'. {conda_path}\n')
             file.write(f'conda activate {env}\n')
             file.write('\n')
-            file.write(f'esmvaltool run {str(recipe)}')
+            if not config_file:
+                file.write(f'esmvaltool run {str(recipe)}')
+            else:
+                file.write(f'esmvaltool run --config_file {str(config_file)} {str(recipe)}')
+            if recipe.stem in ONE_TASK_RECIPES:
+                file.write(' --max_parallel_tasks=1')
 
         if submit:
             subprocess.check_call(['sbatch', filename])
