@@ -8,7 +8,7 @@ latest release of ESMValTool.
 More details can be found in the :ref:`broken recipe policy
 <broken-recipe-policy>`.
 
-.. list-table:: Title
+.. list-table:: Broken recipes
    :widths: 25 25 25 25
    :header-rows: 1
 
