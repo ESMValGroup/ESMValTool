@@ -132,3 +132,11 @@ Other
    recipe_shapeselect
    recipes_testing
    recipe_toymodel
+
+Broken recipe list
+^^^^^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 1
+
+   broken_recipe_list
