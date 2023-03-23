@@ -180,7 +180,10 @@ ONE_TASK_RECIPES = {
 def generate_submit():
     """Generate and submit scripts."""
     home = os.path.expanduser('~')
-    exclude = []  # Fill the list with the names of the recipes to be excluded
+    # Fill the list with the names of the recipes to be excluded
+    exclude = ['recipe_schlund20jgr_gpp_abs_rcp85',
+               'recipe_schlund20jgr_gpp_change_1pct',
+               'recipe_schlund20jgr_gpp_change_rcp85']
     dir_recipes = Path('/'.join((esmvaltool.__path__[0], 'recipes')))
 
     for recipe in Path(dir_recipes).rglob('*.yml'):
