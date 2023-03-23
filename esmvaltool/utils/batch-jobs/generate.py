@@ -17,7 +17,7 @@ account = ''  # Select a compute project to be billed
 # The outputs will be saved in /home/user/<outputs>
 outputs = 'output_rc4'
 # Default Levante computing partition used
-partition = 'compute'
+partition = 'interactive'
 # Default amount of memory used
 memory = '64G'
 # Default walltime
@@ -38,12 +38,12 @@ SPECIAL_RECIPES = {
     'recipe_bock20jgr_fig_6-7': {
         'partition': '#SBATCH --partition=shared \n',
         'time': '#SBATCH --time=48:00:00 \n',
-        'memory': '#SBATCH --mem=50000 \n',
+        'memory': '#SBATCH --mem=50G \n',
     },
     'recipe_bock20jgr_fig_8-10': {
         'partition': '#SBATCH --partition=shared \n',
         'time': '#SBATCH --time=48:00:00 \n',
-        'memory': '#SBATCH --mem=50000 \n',
+        'memory': '#SBATCH --mem=50G \n',
     },
     'recipe_check_obs': {
         'partition': '#SBATCH --partition=compute \n',
@@ -84,7 +84,7 @@ SPECIAL_RECIPES = {
     'recipe_ipccwg1ar6ch3_fig_3_9': {
         'partition': '#SBATCH --partition=shared \n',
         'time': '#SBATCH --time=15:00:00 \n',
-        'memory': '#SBATCH --mem=150000 \n',
+        'memory': '#SBATCH --mem=150G \n',
     },
     'recipe_ipccwg1ar6ch3_fig_3_19': {
         'partition': '#SBATCH --partition=compute \n',
@@ -204,22 +204,30 @@ def generate_submit():
             if not SPECIAL_RECIPES.get(recipe.stem, None):
                 # continue
                 file.write(f'#SBATCH --partition={partition}\n')
-                file.write('#SBATCH --time={time}\n')
+                file.write(f'#SBATCH --time={time}\n')
                 file.write(f'#SBATCH --mem={memory}\n')
             else:
                 file.write(SPECIAL_RECIPES[recipe.stem]['partition'])
+                # Time requirements
                 # Special time requirements
                 if 'time' in SPECIAL_RECIPES[recipe.stem]:
                     file.write(SPECIAL_RECIPES[recipe.stem]['time'])
                 # Default
                 else:
                     file.write(f'#SBATCH --time={time}\n')
-                # Special memory requirements
-                if 'memory' in SPECIAL_RECIPES[recipe.stem]:
-                    file.write(SPECIAL_RECIPES[recipe.stem]['memory'])
-                # Default (only needed for non-compute partitions)
+                # Memory requirements
+                # Full node memory (compute partition)
+                if 'compute' in SPECIAL_RECIPES[recipe.stem]['partition']:
+                    file.write(f'#SBATCH --mem=0\n')
+                    if 'memory' in SPECIAL_RECIPES[recipe.stem]:
+                        file.write(SPECIAL_RECIPES[recipe.stem]['memory'])
+                # Shared nodes (other partitions)
                 else:
-                    if 'compute' not in SPECIAL_RECIPES[recipe.stem]['partition']:
+                    # Special memory requirements
+                    if 'memory' in SPECIAL_RECIPES[recipe.stem]:
+                        file.write(SPECIAL_RECIPES[recipe.stem]['memory'])
+                    # Default
+                    else:
                         file.write(f'#SBATCH --mem={memory}\n')
             if mail:
                 file.write('#SBATCH --mail-type=FAIL,END \n')
