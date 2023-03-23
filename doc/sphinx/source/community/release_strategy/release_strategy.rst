@@ -354,6 +354,9 @@ The release branch can be used to do some additional testing before the release,
 How to make an ESMValTool release
 ---------------------------------
 
+Before the actual release, a number of tests, and pre-release steps must be performed,
+a detailed workflow description can be found here :ref:`detailed_release_procedure`.
+
 The release manager makes the release, assisted by the release manager of the
 previous release, or if that person is not available, another previous release
 manager.
