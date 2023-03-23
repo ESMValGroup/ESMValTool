@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - remove_rc_channel
   schedule:
     - cron: '0 0 * * *'
 
