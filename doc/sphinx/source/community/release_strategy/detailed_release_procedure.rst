@@ -77,6 +77,7 @@ Also, for computationally-heavy recipes, you can require more memory and/or time
 
   #SBATCH --partition=compute
   #SBATCH --time=08:00:00
+  #SBATCH --mem=0
   #SBATCH --constraint=512G
 
 .. note::
@@ -84,6 +85,8 @@ Also, for computationally-heavy recipes, you can require more memory and/or time
   On DKRZ/Levante, a user can't have more than 20 SLURM jobs running at a time.
   As soon as a job is finished, the next one should start. More information on the job handling at DKRZ `here
   <https://docs.dkrz.de/doc/levante/running-jobs/partitions-and-limits.html#levante-partitions-and-limits>`_.
+  Also note that the ``--mem=0`` argument needs be specified if any of the ``--constraint`` arguments are
+  used for memory requests, so that the node's full memory is allocated.
 
 Analyse the results
 -------------------
