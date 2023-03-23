@@ -156,6 +156,27 @@ SPECIAL_RECIPES = {
     },
 }
 
+# These recipes either use CMIP3 input data
+# (see https://github.com/ESMValGroup/ESMValCore/issues/430)
+# and recipes where tasks require the full compute node memory.
+ONE_TASK_RECIPES = {
+    'recipe_bock20jgr_fig_1-4',
+    'recipe_bock20jgr_fig_6-7',
+    'recipe_bock20jgr_fig_8-10',
+    'recipe_flato13ipcc_figure_96',
+    'recipe_flato13ipcc_figures_938_941_cmip3',
+    'recipe_ipccwg1ar6ch3_fig_3_9',
+    'recipe_ipccwg1ar6ch3_fig_3_42_a',
+    'recipe_ipccwg1ar6ch3_fig_3_43',
+    'recipe_check_obs'
+    'recipe_collins13ipcc',
+    'recipe_lauer22jclim_fig3-4_zonal',
+    'recipe_lauer22jclim_fig5_lifrac',
+    'recipe_smpi',
+    'recipe_smpi_4cds',
+    'recipe_wenzel14jgr',
+}
+
 def generate_submit():
     """Generate and submit scripts."""
     home = os.path.expanduser('~')
