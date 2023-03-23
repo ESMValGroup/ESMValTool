@@ -3,8 +3,8 @@
 Broken recipe list
 ==================
 
-This table gives an overview of the recipes that cannot run fully with the
-latest release of ESMValTool.
+This table gives an overview of the recipes that are known to have issues; the table is always updated for the
+latest stable release of ESMValTool.
 More details can be found in the :ref:`broken recipe policy
 <broken-recipe-policy>`.
 
