@@ -4,8 +4,6 @@
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
-from pathlib import Path
-import logging
 import seaborn as sns
 
 from esmvalcore.preprocessor import (
@@ -21,10 +19,6 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 from esmvaltool.diag_scripts.shared._base import get_diagnostic_filename
-
-logger = logging.getLogger(Path(__file__).stem)
-
-plot_timeseries = False
 
 
 def calculate_polar_vortex(dict_item):
@@ -129,7 +123,7 @@ def run_my_diagnostic(cfg):
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
     print('my_files_dict', my_files_dict)
     all_variables = calculate_variables(my_files_dict)
-    for key in my_files_dict.keys():
+    for key in my_files_dict:
         diagnostic_file = get_diagnostic_filename(key, cfg)
         var = all_variables[key]
         if key == "ERA5":
