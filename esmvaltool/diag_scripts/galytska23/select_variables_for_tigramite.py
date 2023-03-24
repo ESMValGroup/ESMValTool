@@ -146,10 +146,6 @@ def run_my_diagnostic(cfg):
                 var['BK_sic'], var['Ok_sic']])
         iris.save(cube_list, diagnostic_file)
 
-#    if plot_timeseries == "True":
-#
-
-# Run the diagnostics
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
