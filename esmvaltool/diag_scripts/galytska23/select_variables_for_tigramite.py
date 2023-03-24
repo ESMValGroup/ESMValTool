@@ -110,17 +110,16 @@ def calculate_variables(input_dict):
 
 def plot_selected_timeseries(dictionary):
     """Plot timeseries of indicated variables."""
-    #provide the variables in the list below
-    var_names =['heat_flux', 'PV']
+    var_names = ['heat_flux', 'PV']
     for var in var_names: 
-        fig = plt.figure(figsize=(14,4))
+        plt.figure(figsize=(14, 4))
         sns.set_theme()
         for key in dictionary:
             time_orig = dictionary[key][var].coord('time')
             times = np.asarray(time_orig.units.num2date(time_orig.points))
             time_pts = [t.strftime('%Y-%m') for t in times]
             plt.plot(time_pts, dictionary[key][var].data)
-            plt.title (var)
+            plt.title(var)
             plt.ylabel('Anomalies')
             plt.xticks(rotation=45, ha="right", rotation_mode='anchor')
 
@@ -150,6 +149,7 @@ def run_my_diagnostic(cfg):
 #    if plot_timeseries == "True":
 #
 
+# Run the diagnostics
 if __name__ == '__main__':
     with run_diagnostic() as config:
-        run_my_diagnostic(config)
+        main(config)
