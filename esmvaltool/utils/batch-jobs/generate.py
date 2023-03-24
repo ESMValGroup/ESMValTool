@@ -177,6 +177,7 @@ ONE_TASK_RECIPES = {
     'recipe_wenzel14jgr',
 }
 
+
 def generate_submit():
     """Generate and submit scripts."""
     home = os.path.expanduser('~')
@@ -218,7 +219,8 @@ def generate_submit():
                 # Memory requirements
                 # Full node memory (compute partition)
                 if 'compute' in SPECIAL_RECIPES[recipe.stem]['partition']:
-                    file.write(f'#SBATCH --mem=0\n')
+                    mem_req_levante = '#SBATCH --mem=0\n'
+                    file.write(mem_req_levante)
                     if 'memory' in SPECIAL_RECIPES[recipe.stem]:
                         file.write(SPECIAL_RECIPES[recipe.stem]['memory'])
                 # Shared nodes (other partitions)
@@ -241,7 +243,8 @@ def generate_submit():
             if not config_file:
                 file.write(f'esmvaltool run {str(recipe)}')
             else:
-                file.write(f'esmvaltool run --config_file {str(config_file)} {str(recipe)}')
+                file.write(f'esmvaltool run --config_file '
+                           f'{str(config_file)} {str(recipe)}')
             if recipe.stem in ONE_TASK_RECIPES:
                 file.write(' --max_parallel_tasks=1')
 
