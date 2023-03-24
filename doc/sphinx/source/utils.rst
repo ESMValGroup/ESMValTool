@@ -240,9 +240,15 @@ The following parameters have to be set in the script in order to make it run:
 * ``outputs``, *str*: Name of the directory in which the job outputs (.out and .err files) are going to be saved. The outputs will be saved in `/home/user/<outputs>`.
 * ``conda_path``, *str*: Full path to the `mambaforge/etc/profile.d/conda.sh` executable.
 
-The script will generate a submission script for all recipes using by default the ``compute`` queue and with a time limit of 8h. In case a recipe
+Optionally, the following parameters can be edited:
+* ``env``, *str*: Path to ``config-user.yml`` if default ``~/.esmvaltool/config-user.yml`` not used.
+* ``partition``, *str*: Name of the DKRZ partition used to run jobs. Default is ``interactive`` to minimize computing cost compared to ``compute`` where nodes cannot be shared.
+* ``memory``, *str*: Amount of memory requested for each run. Default is ``64G`` to allow to run 4 recipes on the same node in parallel.
+* ``time``, *str*: Walltime. Default is ``04:00:00``. Jobs can run for up to 8 hours and 12 hours on the compute and interactive partitions, respectively.
+
+The script will generate a submission script for all recipes using by default the ``interactive`` queue and with a time limit of 4h. In case a recipe
 may require of additional resources, they can be defined in the ``SPECIAL_RECIPES`` dictionary. The recipe name has to be given as a ``key`` in which the
-values are another dictionaries. 
+values are another dictionary. 
 The latter are used to specify the ``partition`` in which to submit the recipe, the new ``time`` limit and other ``memory`` requirements
 given by the slurm flags ``--mem``, ``--constraint`` or ``--ntasks``. In general, an entry in ``SPECIAL_RECIPES`` should be set as:
 
@@ -255,6 +261,12 @@ given by the slurm flags ``--mem``, ``--constraint`` or ``--ntasks``. In general
         'memory': '#SBATCH --mem=<custom_memory_requirement>' # --constraint or --nstasks can be used instead.
         },
    }
+
+Some recipes can only be run with `--max_parallel_tasks=1` for different reasons (memory issues, diagnostic issues, CMIP3 data used).
+These recipes need to be added to ``ONE_TASK_RECIPES``.
+
+Note that the script has been optimized to use standard SLURM settings to run most recipes and tailored runtime settings for special cases.
+It is only necessary to edit this script for recipes that have been added since the last release and cannot be run with the default settings.
 
 In the case in which ``submit`` is set to ``True``, but you want to exclude certain recipes from being submitted, their name can be added in the ``exclude`` list:
 
