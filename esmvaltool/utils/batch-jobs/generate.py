@@ -1,4 +1,27 @@
-"""Generate SLURM run scripts to run recipes."""
+"""Generate SLURM run scripts to run every recipe.
+
+To use this script, follow these steps:
+1) Edit the following parameters:
+- env
+- mail
+- submit. Try the script with false before running the jobs.
+- account
+- conda_path
+2) If needed, edit optional parameters:
+- outputs
+- config_file
+3) SLURM settings
+This script is configured to optimize the computing
+footpring of the recipe testing. It is not necessary to edit
+SLURM related parameters.
+4) If new memory intensive recipes have been merged since
+the last release (e.g. IPCC recipes), you may to add them
+to `SPECIAL_RECIPES` and/or to `ONE_TASK_RECIPES`
+5) Check the generation of the batch scripts with 
+`submit = False`. Once the batch scripts are correct, change
+to `submit = True` and rerun the script to submit all jobs
+to the SLURM scheduler.
+"""
 import os
 import subprocess
 from pathlib import Path
