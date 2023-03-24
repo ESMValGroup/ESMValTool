@@ -17,7 +17,7 @@ SLURM related parameters.
 4) If new memory intensive recipes have been merged since
 the last release (e.g. IPCC recipes), you may to add them
 to `SPECIAL_RECIPES` and/or to `ONE_TASK_RECIPES`
-5) Check the generation of the batch scripts with 
+5) Check the generation of the batch scripts with
 `submit = False`. Once the batch scripts are correct, change
 to `submit = True` and rerun the script to submit all jobs
 to the SLURM scheduler.
