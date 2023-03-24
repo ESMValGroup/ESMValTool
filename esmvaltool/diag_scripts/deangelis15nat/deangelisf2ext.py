@@ -36,6 +36,7 @@ from pprint import pformat
 import iris
 import iris.coord_categorisation as cat
 import matplotlib.pyplot as plt
+import matplotlib.transforms as mpltrans
 import numpy as np
 from scipy import stats
 
@@ -609,8 +610,7 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
                       'label': yreg_dict["lab_hfss"]},
                      {'color': 'tab:gray',
                       'linestyle': '-'}],
-        save_kwargs={'bbox_inches': 'tight',
-                     'orientation': 'landscape'},
+        save_kwargs={'bbox_inches': mpltrans.Bbox.from_extents(0, -1, 6.5, 6)},
         axes_functions={'set_title': dataset_name,
                         'set_xlabel': '2−m temperature (tas)' +
                                       'global−mean annual anomaly (' +
