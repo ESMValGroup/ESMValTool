@@ -217,6 +217,10 @@ def plot_tp_map(cfg, mean_cube, titlestr, variable, listdata):
                               _get_provenance_record(listdata,
                                                      titlestr + variable,
                                                      ['other'], ['global']))
+        provenance_logger.log(get_plot_filename(figname, cfg),
+                              _get_provenance_record(listdata,
+                                                     titlestr + variable,
+                                                     ['other'], ['global']))
 
 
 def main(cfg):

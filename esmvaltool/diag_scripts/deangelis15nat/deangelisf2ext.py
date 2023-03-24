@@ -366,6 +366,8 @@ def plot_slope_regression(cfg, data_dict):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(get_plot_filename('fig2a', cfg),
+                              provenance_record)
 
     fig, axx = plt.subplots(figsize=(7, 7))
 
@@ -537,6 +539,8 @@ def plot_slope_regression_all(cfg, data_dict, available_vars):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(get_plot_filename('exfig2a', cfg),
+                              provenance_record)
 
 
 def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
@@ -670,6 +674,7 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(filepath, provenance_record)
 
 
 def substract_and_reg_deangelis2(cfg, data, var):
