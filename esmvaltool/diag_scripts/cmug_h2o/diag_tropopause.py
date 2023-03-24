@@ -144,7 +144,7 @@ def find_min(data, data_min, axis):
 def plot_tp_map(cfg, mean_cube, titlestr, variable, listdata):
     """Plot contour map."""
     # create figure and axes instances
-    
+
     subplot_kw = {'projection': cart.PlateCarree(central_longitude=0.0)}
     fig, axx = plt.subplots(figsize=(7, 5), subplot_kw=subplot_kw)
     axx.set_extent([-180, 180, -90, 90], cart.PlateCarree())
