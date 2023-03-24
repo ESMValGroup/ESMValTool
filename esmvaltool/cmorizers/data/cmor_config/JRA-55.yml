@@ -1,0 +1,64 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: JRA-55
+  version: '1'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'https://rda.ucar.edu/datasets/ds628.1/'
+  reference: 'jra_55'
+  comment: |
+    '' 
+
+# Variables to cmorize
+variables:
+#  cli:
+#    short_name: cli
+#    mip: Amon
+#    file: fcst_p125.229_ciwc.*.grb
+
+#  clivi:
+#    short_name: clivi
+#    mip: Amon
+#    file: fcst_column125.058_cice.*.grb
+
+#  clw:
+#    short_name: clw
+#    mip: Amon
+#    file: fcst_p125.228_clwc.*.grb
+
+#  clwvi:
+#    short_name: clwvi
+#    mip: Amon
+#    operator: sum
+#    files:
+#      - 'fcst_column125.058_cice.*.grb'
+#      - 'fcst_column125.227_cw.*.grb'
+
+#  clt:
+#    short_name: clt
+#    mip: Amon
+#    file: fcst_surf125.071_tcdc.*.grb
+
+#  prw:
+#    short_name: prw
+#    mip: Amon
+#    file: fcst_column125.054_pwat.*.grb
+
+#  rsuscs:
+#    short_name: rsuscs
+#    mip: Amon
+#    start_element: 0
+#    file: fcst_phy2m125.160_csusf.*.grb
+
+  rsutcs:
+    short_name: rsutcs
+    mip: Amon
+    start_element: 1
+    file: fcst_phy2m125.160_csusf.*.grb
+
+  tas:
+    short_name: tas
+    mip: Amon
+    file: anl_surf125.011_tmp.*.grb
