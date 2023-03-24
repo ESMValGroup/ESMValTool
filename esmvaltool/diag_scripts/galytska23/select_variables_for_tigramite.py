@@ -111,7 +111,7 @@ def calculate_variables(input_dict):
 def plot_selected_timeseries(dictionary):
     """Plot timeseries of indicated variables."""
     var_names = ['heat_flux', 'PV']
-    for var in var_names: 
+    for var in var_names:
         plt.figure(figsize=(14, 4))
         sns.set_theme()
         for key in dictionary:
@@ -150,6 +150,7 @@ def run_my_diagnostic(cfg):
 #
 
 # Run the diagnostics
+
 if __name__ == '__main__':
     with run_diagnostic() as config:
-        main(config)
+        run_my_diagnostic(config)
