@@ -57,11 +57,16 @@ Submit run scripts - test recipe runs
 We are now ready to start running all the available recipes, to compare output against previous release. Running is currently done
 via batch scripts submitted to a schedulers (SLURM). Generate the submission scripts using the ``generate.py`` :ref:`utility Python script <utils_generate>`.
 
-You will have to set the name of your environment, your email address (if you want to get email notifications for successful/failed jobs) and the name of the directory you want to store the log files of the jobs. A compute project from which resources are billed needs to be set, and the default partition is set to `compute`.
+You will have to set the name of your environment, your email address (if you want to get email notifications for successful/failed jobs) and the name of the directory you want to store the log files of the jobs. A compute project from which resources are billed needs to be set, and the default partition is set to `interactive`.
 More information on running jobs with SLURM on DKRZ/Levante can be found in the DKRZ `documentation
 <https://docs.dkrz.de/doc/levante/running-jobs/index.html>`_.
 
+You can also specify the path to your ``config-user.yml`` file where ``max_parallel_tasks`` can be set. The script was found to work well with ``max_parallel_tasks=8``. Some recipes need to be run with `max_parallel_tasks=1`` (large memory requirements, CMIP3 data, diagnostic issues). These recipes are listed in `ONE_TASK_RECIPES`.
+
 Some recipes need other job requirements, you can add their headers in the `SPECIAL_RECIPES` dictionary. Otherwise the header will be written following the template that is written in the lines below. If you want to exclude recipes, you can do so by uncommenting the exclude lines.
+
+Before submitting all jobs, it is recommended to first try the batch script generation with ``submit = False`` and check the generated files. If memory with special runtime requirements have been added to ESMValTool since the last release, these may need to be added to `SPECIAL_RECIPES` and/or `ONE_TASK_RECIPES`.
+Other recipes should run successfully with the default SLURM settings set in the script.
 
 The launch scripts will be saved in the same directory you execute the script from. These are named like ``launch_recipe_<name>.sh``.
 To submit these scripts to the SLURM scheduler, use the ``sbatch launch_recipe_<name>.sh`` command. You can check the status of your BATCH queue by invoking:
