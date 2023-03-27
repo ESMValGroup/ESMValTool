@@ -47,6 +47,7 @@ Bug fixes
 -  Fix recipe_carvalhais14: replace outline patch with splines (`#3111 <https://github.com/ESMValGroup/ESMValTool/pull/3111>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Replace deprecated function "cm.register_cmap" with "mpl.colormaps.register" for `recipe_ arctic_ocean` (`#3112 <https://github.com/ESMValGroup/ESMValTool/pull/3112>`__) `Tomas Torsvik <https://github.com/TomasTorsvik>`__
 -  Fix recipe_sea_surface_salinity for v2.8 (`#3102 <https://github.com/ESMValGroup/ESMValTool/pull/3102>`__) `sloosvel <https://github.com/sloosvel>`__
+-  Fix recipe_extract_shape.yml (lacking caption for provenance) (`#3126 <https://github.com/ESMValGroup/ESMValTool/pull/3126>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 
 Community
 ~~~~~~~~~
@@ -83,6 +84,9 @@ Documentation
 -  Added note to documentation that not all datasets used in schlund20jgr recipes are available on ESGF (`#3121 <https://github.com/ESMValGroup/ESMValTool/pull/3121>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Update Python example recipe (`#3119 <https://github.com/ESMValGroup/ESMValTool/pull/3119>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Re-pin sphinx to latest (6.1.3) and add nbsphinx to the environment (`#3118 <https://github.com/ESMValGroup/ESMValTool/pull/3118>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Add link to recipe portal in the gallery page (`#3113 <https://github.com/ESMValGroup/ESMValTool/pull/3113>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Detailed instructions for release procedure: running recipes and analyzing the output (`#3032 <https://github.com/ESMValGroup/ESMValTool/pull/3032>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Documenting broken recipes after recipe testing for releases (`#3129 <https://github.com/ESMValGroup/ESMValTool/pull/3129>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 
 Diagnostics
 ~~~~~~~~~~~
@@ -104,6 +108,7 @@ Diagnostics
 -  Diagnostic for `recipe_autoassess_stratosphere.yml`: remove unused feature incompatible with Matplotlib=3.7.1 (`#3089 <https://github.com/ESMValGroup/ESMValTool/pull/3089>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Fix numpy deprecation in hype diagnostic (`#3101 <https://github.com/ESMValGroup/ESMValTool/pull/3101>`__) `Peter Kalverla <https://github.com/Peter9192>`__
 -  Removed `fx_variables` in recipe_mpqb_xch4 and recipe_lauer22jclim_fig8 (`#3117 <https://github.com/ESMValGroup/ESMValTool/pull/3117>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Updated figure settings to account for newer matplotlib version. (`#3133 <https://github.com/ESMValGroup/ESMValTool/pull/3133>`__) `katjaweigel <https://github.com/katjaweigel>`__
 
 Observational and re-analysis dataset support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -133,6 +138,7 @@ Automatic testing
 -  Fix `test_naming.py` so it doesn't let through directories that need be ignored (`#3082 <https://github.com/ESMValGroup/ESMValTool/pull/3082>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Conda environment files for interim use of `esmvalcore=2.8.0rc1` (`#3090 <https://github.com/ESMValGroup/ESMValTool/pull/3090>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Move flake8 check to a step separate from installation on CircleCI (`#3105 <https://github.com/ESMValGroup/ESMValTool/pull/3105>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Update batch script generation to run all recipes in one command (`#3130 <https://github.com/ESMValGroup/ESMValTool/pull/3130>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 
 Installation
 ~~~~~~~~~~~~
@@ -142,6 +148,7 @@ Installation
 -   Set the version number on the development branches to one minor version more than the last release  (`#2964 <https://github.com/ESMValGroup/ESMValTool/pull/2964>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Add `packaging` as direct dependency to ESMValTool (`#3099 <https://github.com/ESMValGroup/ESMValTool/pull/3099>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Conda environment files for esmvalcore=2.8.0rc2 (`#3120 <https://github.com/ESMValGroup/ESMValTool/pull/3120>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Remove rc (release candidates) conda channel and re-pin esmvalcore to new stable 2.8 (`#3131 <https://github.com/ESMValGroup/ESMValTool/pull/3131>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 
 Improvements
 ~~~~~~~~~~~~
