@@ -27,6 +27,17 @@ Highlights
 Please also note the highlights from the corresponding ESMValCore release :ref:`here<esmvalcore:changelog-v2-8-0>`.
 Thanks to that ESMValTool has gained the following features:
 
+- ESMValCore now supports wildcards in recipes and offers improved support
+  for ancillary variables and dataset versioning.
+- Support for CORDEX datasets in a rotated pole coordinate system has been added.
+- Native :ref:`ICON <esmvalcore:read_icon>` output is now made UGRID-compliant
+  on-the-fly.
+- The Python API has been extended with the addition of three modules:
+  :mod:`esmvalcore.config`, :mod:`esmvalcore.dataset`, and
+  :mod:`esmvalcore.local`
+- The preprocessor :func:`~esmvalcore.preprocessor.multi_model_statistics`
+  has been extended to support more use-cases.
+
 This release includes:
 
 Backwards incompatible changes
