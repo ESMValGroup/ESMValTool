@@ -42,14 +42,14 @@ Please read the descriptions of the linked pull requests for detailed upgrade in
    ``var_name`` instead).
    Removed `write_netcdf` and `write_plots` from `recipe_filer.py`.
 -  No files from the ``native6`` project will be found if a non-existent version
-   of a dataset is specified (`#3041 <https://github.com/ESMValGroup/ESMValTool/pull/3041>`__)
+   of a dataset is specified (`#3041 <https://github.com/ESMValGroup/ESMValTool/pull/3041>`_)
    `Rémi Kazeroni <https://github.com/remi-kazeroni>`__.
    The tool now searches for exact ``version`` of ``native6`` datasets.
    Therefore, it is necessary to make sure that the version number in the
    directory tree matches with the version number in the recipe to find the files.
 -  The conversion of precipitation units from monitoring diagnostic is now done
    at the preprocessor stage
-   (`#3049 <https://github.com/ESMValGroup/ESMValTool/pull/3049>`__)
+   (`#3049 <https://github.com/ESMValGroup/ESMValTool/pull/3049>`_)
    `Manuel Schlund <https://github.com/schlunma>`__.
    To use the unit conversion for precipitation in the new version of this
    diagnostic, add it as a preprocessor for the precipitation dataset to the
@@ -86,7 +86,7 @@ Community
 Deprecations
 ~~~~~~~~~~~~
 
--  Remove radiation recipes that have been superseded by :ref:`recipe_radiation_budget <recipes_radiation_budget>` along with associated diagnostic scripts (`#3115 <https://github.com/ESMValGroup/ESMValTool/pull/3115>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
+-  Remove radiation recipes that have been superseded by :ref:`recipe_radiation_budget <recipes_radiation_budget>` along with associated diagnostic scripts (`#3115 <https://github.com/ESMValGroup/ESMValTool/pull/3115>`_) `Alistair Sellar <https://github.com/alistairsellar>`__
 
 Documentation
 ~~~~~~~~~~~~~
