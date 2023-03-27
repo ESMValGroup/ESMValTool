@@ -263,9 +263,9 @@ These are the detailed steps to take to make a release.
 
 #. Some additional testing of ESMValTool
 
-   - :ref:`Run all the recipes to check that they still work and generate the overview HTML pages.<running_multiple_recipes>`
+   - :ref:`Run all the recipes to check that they still work and generate the overview HTML pages <detailed_release_procedure>`.
    - Upload the results to the webpage at https://esmvaltool.dkrz.de/shared/esmvaltool/.
-   - :ref:`Compare the results to those obtained with the previous release.<compare_recipe_runs>`
+   - :ref:`Compare the results to those obtained with the previous release <compare_recipe_runs>`.
    - Create a `GitHub discussion <https://github.com/ESMValGroup/ESMValTool/discussions>`__ to communicate about the results.
    - If there are differences with the previous release, ask recipe maintainers
      or authors to review the plots and NetCDF files of their diagnostics, for
@@ -273,6 +273,8 @@ These are the detailed steps to take to make a release.
      `mentioning <https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#mentioning-people-and-teams>`__
      them in the discussion.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
+   - Update the :ref:`list of broken recipes <broken-recipe-list>` with new recipes that could not be run successfully during the testing.
+     Open a separate GitHub issue for each failing recipe and assign the next milestone.
 
 
 #. ESMValCore release
@@ -353,6 +355,9 @@ The release branch can be used to do some additional testing before the release,
 
 How to make an ESMValTool release
 ---------------------------------
+
+Before the actual release, a number of tests, and pre-release steps must be performed,
+a detailed workflow description can be found here :ref:`detailed_release_procedure`.
 
 The release manager makes the release, assisted by the release manager of the
 previous release, or if that person is not available, another previous release
