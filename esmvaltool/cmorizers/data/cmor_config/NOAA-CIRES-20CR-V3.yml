@@ -1,12 +1,12 @@
 ---
 # Global attributes of NetCDF file
 attributes:
-  dataset_id: NOAA-CIRES-20CR-V2
+  dataset_id: NOAA-CIRES-20CR-V3
   project_id: OBS6
   tier: 2
-  version: 'v2'
+  version: 'v3'
   modeling_realm: reanaly
-  source: 'https://psl.noaa.gov/data/gridded/data.20thC_ReanV2.html'
+  source: 'https://psl.noaa.gov/data/gridded/data.20thC_ReanV3.html'
   reference: 'noaa-cires-20cr'
   comment: |
     ''
@@ -44,3 +44,13 @@ variables:
     mip: Amon
     raw: uswrf
     file: 'uswrf.ntat.mon.mean.nc'
+  rlutcs_month:
+    short_name: rlutcs
+    mip: Amon
+    raw: csulf
+    file: 'csulf.ntat.mon.mean.nc'
+  rsutcs_month:
+    short_name: rsutcs
+    mip: Amon
+    raw: csusf
+    file: 'csusf.ntat.mon.mean.nc'
