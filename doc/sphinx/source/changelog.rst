@@ -61,30 +61,27 @@ Deprecations
 Documentation
 ~~~~~~~~~~~~~
 
+-  Backward compatibility policy (`#2879 <https://github.com/ESMValGroup/ESMValTool/pull/2879>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
 -  Suppress installing and reinstalling deps with pip at readthedocs builds (`#2913 <https://github.com/ESMValGroup/ESMValTool/pull/2913>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Update installation instructions (`#2939 <https://github.com/ESMValGroup/ESMValTool/pull/2939>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Update documentation for `recipe_extreme_index` (`#2951 <https://github.com/ESMValGroup/ESMValTool/pull/2951>`__) `katjaweigel <https://github.com/katjaweigel>`__
+-  Update documentation and `recipe_check_obs` (ERA5) (`#2952 <https://github.com/ESMValGroup/ESMValTool/pull/2952>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Updated ICON dataset entry in documentation (`#2954 <https://github.com/ESMValGroup/ESMValTool/pull/2954>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Update documentation and recipe_check_obs (ERA5) (`#2952 <https://github.com/ESMValGroup/ESMValTool/pull/2952>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Add Franziska Winterstein as collaborator in CITATION file (`#3001 <https://github.com/ESMValGroup/ESMValTool/pull/3001>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Update documentation for recipe_extreme_index (`#2951 <https://github.com/ESMValGroup/ESMValTool/pull/2951>`__) `katjaweigel <https://github.com/katjaweigel>`__
 -  Update release schedule for v2.7.0 and v2.8.0 (`#3010 <https://github.com/ESMValGroup/ESMValTool/pull/3010>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Add ESMValCore Bugfix release v2.7.1 to the release overview table (`#3028 <https://github.com/ESMValGroup/ESMValTool/pull/3028>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Backward compatibility policy (`#2879 <https://github.com/ESMValGroup/ESMValTool/pull/2879>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
--  Link backward compatibility policy to top level of ESMValCore changelog  (`#3052 <https://github.com/ESMValGroup/ESMValTool/pull/3052>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
--  Unpin matplotlib (`#3068 <https://github.com/ESMValGroup/ESMValTool/pull/3068>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Update script to draft release notes (`#3070 <https://github.com/ESMValGroup/ESMValTool/pull/3070>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
--  Update release instructions (`#3066 <https://github.com/ESMValGroup/ESMValTool/pull/3066>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
--  Synchronize documentation table of contents with ESMValCore (`#3073 <https://github.com/ESMValGroup/ESMValTool/pull/3073>`__) `Bouwe Andela <https://github.com/bouweandela>`__
--  Clarify use (or not) of Jasmin climatology files by soil moisture & permafrost recipes (`#3103 <https://github.com/ESMValGroup/ESMValTool/pull/3103>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
--  Updated docs and tests regarding new `search_esgf` option (`#3069 <https://github.com/ESMValGroup/ESMValTool/pull/3069>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Add DKRZ/Levante batch scripts for release recipe running (`#2883 <https://github.com/ESMValGroup/ESMValTool/pull/2883>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Improve stratosphere documentation (`#3114 <https://github.com/ESMValGroup/ESMValTool/pull/3114>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
--  Update environment handling in release documentation (`#3096 <https://github.com/ESMValGroup/ESMValTool/pull/3096>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
--  Added note to documentation that not all datasets used in schlund20jgr recipes are available on ESGF (`#3121 <https://github.com/ESMValGroup/ESMValTool/pull/3121>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Update Python example recipe (`#3119 <https://github.com/ESMValGroup/ESMValTool/pull/3119>`__) `Bouwe Andela <https://github.com/bouweandela>`__
--  Re-pin sphinx to latest (6.1.3) and add nbsphinx to the environment (`#3118 <https://github.com/ESMValGroup/ESMValTool/pull/3118>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Add link to recipe portal in the gallery page (`#3113 <https://github.com/ESMValGroup/ESMValTool/pull/3113>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Detailed instructions for release procedure: running recipes and analyzing the output (`#3032 <https://github.com/ESMValGroup/ESMValTool/pull/3032>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Link backward compatibility policy to top level of ESMValCore changelog  (`#3052 <https://github.com/ESMValGroup/ESMValTool/pull/3052>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
+-  Update release instructions (`#3066 <https://github.com/ESMValGroup/ESMValTool/pull/3066>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Updated docs and tests regarding new `search_esgf` option (`#3069 <https://github.com/ESMValGroup/ESMValTool/pull/3069>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Update script to draft release notes (`#3070 <https://github.com/ESMValGroup/ESMValTool/pull/3070>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Synchronize documentation table of contents with ESMValCore (`#3073 <https://github.com/ESMValGroup/ESMValTool/pull/3073>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Update environment handling in release documentation (`#3096 <https://github.com/ESMValGroup/ESMValTool/pull/3096>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Clarify use (or not) of Jasmin climatology files by soil moisture & permafrost recipes (`#3103 <https://github.com/ESMValGroup/ESMValTool/pull/3103>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
+-  Add link to recipe portal in the gallery page (`#3113 <https://github.com/ESMValGroup/ESMValTool/pull/3113>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Improve stratosphere documentation (`#3114 <https://github.com/ESMValGroup/ESMValTool/pull/3114>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
+-  Re-pin sphinx to latest (6.1.3) and add nbsphinx to the environment (`#3118 <https://github.com/ESMValGroup/ESMValTool/pull/3118>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Added note to documentation that not all datasets used in `schlund20jgr` recipes are available on ESGF (`#3121 <https://github.com/ESMValGroup/ESMValTool/pull/3121>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Documenting broken recipes after recipe testing for releases (`#3129 <https://github.com/ESMValGroup/ESMValTool/pull/3129>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 
 Diagnostics
@@ -107,6 +104,7 @@ Diagnostics
 -  Diagnostic for `recipe_autoassess_stratosphere.yml`: remove unused feature incompatible with Matplotlib=3.7.1 (`#3089 <https://github.com/ESMValGroup/ESMValTool/pull/3089>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Fix numpy deprecation in hype diagnostic (`#3101 <https://github.com/ESMValGroup/ESMValTool/pull/3101>`__) `Peter Kalverla <https://github.com/Peter9192>`__
 -  Removed `fx_variables` in recipe_mpqb_xch4 and recipe_lauer22jclim_fig8 (`#3117 <https://github.com/ESMValGroup/ESMValTool/pull/3117>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Update Python example recipe (`#3119 <https://github.com/ESMValGroup/ESMValTool/pull/3119>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Updated figure settings to account for newer matplotlib version. (`#3133 <https://github.com/ESMValGroup/ESMValTool/pull/3133>`__) `katjaweigel <https://github.com/katjaweigel>`__
 
 Observational and re-analysis dataset support
@@ -128,6 +126,7 @@ Observational and re-analysis dataset support
 Automatic testing
 ~~~~~~~~~~~~~~~~~
 
+-  Add DKRZ/Levante batch scripts for release recipe running (`#2883 <https://github.com/ESMValGroup/ESMValTool/pull/2883>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Remove pytest-flake8 and call the use of flake8 straight (`#2904 <https://github.com/ESMValGroup/ESMValTool/pull/2904>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Unpin NetCDF4 (`#2929 <https://github.com/ESMValGroup/ESMValTool/pull/2929>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Unpin flake8 (`#2937 <https://github.com/ESMValGroup/ESMValTool/pull/2937>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
@@ -147,6 +146,7 @@ Installation
 -  Unpin cf-units (`#2930 <https://github.com/ESMValGroup/ESMValTool/pull/2930>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Pin shapely<2.0.0 for linux64 (`#2970 <https://github.com/ESMValGroup/ESMValTool/pull/2970>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -   Set the version number on the development branches to one minor version more than the last release  (`#2964 <https://github.com/ESMValGroup/ESMValTool/pull/2964>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Unpin matplotlib (`#3068 <https://github.com/ESMValGroup/ESMValTool/pull/3068>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Add `packaging` as direct dependency to ESMValTool (`#3099 <https://github.com/ESMValGroup/ESMValTool/pull/3099>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Recreate conda lock file to harpoon esmvalcore=2.8.0rc1 (`#3108 <https://github.com/ESMValGroup/ESMValTool/pull/3108>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Conda environment files for esmvalcore=2.8.0rc2 (`#3120 <https://github.com/ESMValGroup/ESMValTool/pull/3120>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
