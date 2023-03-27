@@ -12,7 +12,7 @@ To use this script, follow these steps:
 - config_file
 3) SLURM settings
 This script is configured to optimize the computing
-footpring of the recipe testing. It is not necessary to edit
+footprint of the recipe testing. It is not necessary to edit
 SLURM related parameters.
 4) If new memory intensive recipes have been merged since
 the last release (e.g. IPCC recipes), you may to add them
@@ -182,7 +182,7 @@ SPECIAL_RECIPES = {
 # These recipes either use CMIP3 input data
 # (see https://github.com/ESMValGroup/ESMValCore/issues/430)
 # and recipes where tasks require the full compute node memory.
-ONE_TASK_RECIPES = {
+ONE_TASK_RECIPES = [
     'recipe_bock20jgr_fig_1-4',
     'recipe_bock20jgr_fig_6-7',
     'recipe_bock20jgr_fig_8-10',
@@ -191,20 +191,21 @@ ONE_TASK_RECIPES = {
     'recipe_ipccwg1ar6ch3_fig_3_9',
     'recipe_ipccwg1ar6ch3_fig_3_42_a',
     'recipe_ipccwg1ar6ch3_fig_3_43',
-    'recipe_check_obs'
+    'recipe_check_obs',
     'recipe_collins13ipcc',
     'recipe_lauer22jclim_fig3-4_zonal',
     'recipe_lauer22jclim_fig5_lifrac',
     'recipe_smpi',
     'recipe_smpi_4cds',
     'recipe_wenzel14jgr',
-}
+    ]
 
 
 def generate_submit():
     """Generate and submit scripts."""
     home = os.path.expanduser('~')
     # Fill the list with the names of the recipes to be excluded
+    # This includes recipes containing missing datasets
     exclude = ['recipe_schlund20jgr_gpp_abs_rcp85',
                'recipe_schlund20jgr_gpp_change_1pct',
                'recipe_schlund20jgr_gpp_change_rcp85']
