@@ -19,11 +19,28 @@ This release includes:
 Backwards incompatible changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO: add examples of how to deal with these changes
+Please read the descriptions of the linked pull requests for detailed upgrade instructions.
 
--  Remove deprecated features scheduled for removal in v2.8.0 or earlier (`#2941 <https://github.com/ESMValGroup/ESMValTool/pull/2941>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Fix version numbers of native6 datasets in recipes (`#3041 <https://github.com/ESMValGroup/ESMValTool/pull/3041>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
--  Removed automatic conversion of precipitation units from monitoring diagnostic (`#3049 <https://github.com/ESMValGroup/ESMValTool/pull/3049>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Remove deprecated features scheduled for removal in v2.8.0 or earlier
+   (`#2941 <https://github.com/ESMValGroup/ESMValTool/pull/2941>`__)
+   `Manuel Schlund <https://github.com/schlunma>`__.
+   Removed ``esmvalcore.iris_helpers.var_name_constraint`` (has been deprecated
+   in v2.6.0; please use :class:`iris.NameConstraint` with the keyword argument
+   ``var_name`` instead).
+   Removed `write_netcdf` and `write_plots` from `recipe_filer.py`.
+-  No files from the ``native6`` project will be found if a non-existent version
+   of a dataset is specified (`#3041 <https://github.com/ESMValGroup/ESMValTool/pull/3041>`__)
+   `Rémi Kazeroni <https://github.com/remi-kazeroni>`__.
+   The tool now searches for exact ``version`` of ``native6`` datasets.
+   Therefore, it is necessary to make sure that the version number in the
+   directory tree matches with the version number in the recipe to find the files.
+-  The conversion of precipitation units from monitoring diagnostic is now done
+   at the preprocessor stage
+   (`#3049 <https://github.com/ESMValGroup/ESMValTool/pull/3049>`__)
+   `Manuel Schlund <https://github.com/schlunma>`__.
+   To use the unit conversion for precipitation in the new version of this
+   diagnostic, add it as a preprocessor for the precipitation dataset to the
+   recipe.
 
 Bug fixes
 ~~~~~~~~~
@@ -56,7 +73,7 @@ Community
 Deprecations
 ~~~~~~~~~~~~
 
--  Remove superseded radiation recipes (`#3115 <https://github.com/ESMValGroup/ESMValTool/pull/3115>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
+-  Remove radiation recipes that have been superseded by :ref:`recipe_radiation_budget` <recipes_radiation_budget> along with associated diagnostic scripts (`#3115 <https://github.com/ESMValGroup/ESMValTool/pull/3115>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
 
 Documentation
 ~~~~~~~~~~~~~
@@ -86,21 +103,24 @@ Documentation
 Diagnostics
 ~~~~~~~~~~~
 
+-  Cloud diagnostics for Lauer et al. (2022) (`#2750 <https://github.com/ESMValGroup/ESMValTool/pull/2750>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Splitting of `flato13ipcc.yml` into separate recipes and adding recipes for regional Figures (`#2156 <https://github.com/ESMValGroup/ESMValTool/pull/2156>`__) `katjaweigel <https://github.com/katjaweigel>`__
+-  Adding IPCC AR6 Chapter 3 Figure  3.43 - Pattern Correlation (`#2772 <https://github.com/ESMValGroup/ESMValTool/pull/2772>`__) `Lisa Bock <https://github.com/LisaBock>`__
+-  Adding IPCC AR6 Chapter 3 Fig. 3.42 - Perfmetrics (`#2856 <https://github.com/ESMValGroup/ESMValTool/pull/2856>`__) `Lisa Bock <https://github.com/LisaBock>`__
 -  Comment missing datasets and remove deprecated argument in `recipe_climate_change_hotspot` (`#2920 <https://github.com/ESMValGroup/ESMValTool/pull/2920>`__) `sloosvel <https://github.com/sloosvel>`__
 -  Add plot type `annual_cycle` to multi-dataset monitoring diagnostic (`#2922 <https://github.com/ESMValGroup/ESMValTool/pull/2922>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Adding IPCC AR6 Chapter 3 Fig. 3.42 - Perfmetrics (`#2856 <https://github.com/ESMValGroup/ESMValTool/pull/2856>`__) `Lisa Bock <https://github.com/LisaBock>`__
--  Cloud diagnostics for Lauer et al. (2022) (`#2750 <https://github.com/ESMValGroup/ESMValTool/pull/2750>`__) `Axel Lauer <https://github.com/axel-lauer>`__
--  Obs4mips CERES-EBAF: update version to latest available through esgf in `recipe_validation.yml` (`#3002 <https://github.com/ESMValGroup/ESMValTool/pull/3002>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Improve flexibility of cloud diagnostics (`#3016 <https://github.com/ESMValGroup/ESMValTool/pull/3016>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Adding IPCC AR6 Chapter 3 Fig. 3.19 - Speed-Up Of Zonal Mean Wind (`#2984 <https://github.com/ESMValGroup/ESMValTool/pull/2984>`__) `Lisa Bock <https://github.com/LisaBock>`__
 -  Adding IPCC AR6 Chapter 3 Fig. 3.9 - Attribution (`#2986 <https://github.com/ESMValGroup/ESMValTool/pull/2986>`__) `Lisa Bock <https://github.com/LisaBock>`__
--  Adding IPCC AR6 Chapter 3 Figure  3.43 - Pattern Correlation (`#2772 <https://github.com/ESMValGroup/ESMValTool/pull/2772>`__) `Lisa Bock <https://github.com/LisaBock>`__
+-  Obs4mips CERES-EBAF: update version to latest available through esgf in `recipe_validation.yml` (`#3002 <https://github.com/ESMValGroup/ESMValTool/pull/3002>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Improve flexibility of cloud diagnostics (`#3016 <https://github.com/ESMValGroup/ESMValTool/pull/3016>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Let `recipe_impact.yml` write a CSV file that can directly be used in C4I portal (`#2258 <https://github.com/ESMValGroup/ESMValTool/pull/2258>`__) `Peter Kalverla <https://github.com/Peter9192>`__
+-  Fix version numbers of native6 datasets in recipes (`#3041`_) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Removed automatic conversion of precipitation units from monitoring diagnostic (`#3049`_) `Manuel Schlund <https://github.com/schlunma>`__.
 -  Updated recipes for ESMValCore v2.8 (`#3064 <https://github.com/ESMValGroup/ESMValTool/pull/3064>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Splitting of `flato13ipcc.yml` into separate recipes and adding recipes for regional Figures (`#2156 <https://github.com/ESMValGroup/ESMValTool/pull/2156>`__) `katjaweigel <https://github.com/katjaweigel>`__
 -  Fix `cos22esd` for release of 2.8 (`#3097 <https://github.com/ESMValGroup/ESMValTool/pull/3097>`__) `sloosvel <https://github.com/sloosvel>`__
 -  Diagnostic for `recipe_autoassess_stratosphere.yml`: remove unused feature incompatible with Matplotlib=3.7.1 (`#3089 <https://github.com/ESMValGroup/ESMValTool/pull/3089>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Fix numpy deprecation in `hype` diagnostic (`#3101 <https://github.com/ESMValGroup/ESMValTool/pull/3101>`__) `Peter Kalverla <https://github.com/Peter9192>`__
+-  Remove superseded radiation recipes (`#3115`_) `Alistair Sellar <https://github.com/alistairsellar>`__
 -  Removed `fx_variables` in `recipe_mpqb_xch4` and `recipe_lauer22jclim_fig8` (`#3117 <https://github.com/ESMValGroup/ESMValTool/pull/3117>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Update Python example recipe (`#3119 <https://github.com/ESMValGroup/ESMValTool/pull/3119>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Updated figure settings to account for newer matplotlib version (`#3133 <https://github.com/ESMValGroup/ESMValTool/pull/3133>`__) `katjaweigel <https://github.com/katjaweigel>`__
