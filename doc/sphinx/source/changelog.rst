@@ -12,7 +12,20 @@ v2.8.0
 Highlights
 ~~~~~~~~~~
 
-TODO: add highlights
+-  This release has seen the inclusion of the code for figures 3.9, 3.19,
+   3.42 and 3.43 of the IPCC AR6 WG1 report.
+   See :ref:`recipe documentation <recipes_ipccwg1ar6ch3>` about added recipes.
+-  A new set of recipes and diagnostics has been included to evaluate cloud
+   climatologies from CMIP models as used in (`Lauer et al. (2023), J. Climate
+   <https://doi.org/10.1175/JCLI-D-22-0181.1>`__.
+   See :ref:`recipe documentation <recipes_clouds>` about added recipes.
+-  We have also included a set of recipes for extreme events, regional and impact 
+   evaluation as used in (`Weigel et al. (2021), J. Climate
+   <https://doi.org/10.5194/gmd-14-3159-2021>`__ and in IPCC AR5.
+   See :ref:`recipe documentation <recipes_ipccwg1ar5ch9>` about added recipes.
+
+Please also note the highlights from the corresponding ESMValCore release :ref:`here<esmvalcore:changelog-v2-8-0>`.
+Thanks to that ESMValTool has gained the following features:
 
 This release includes:
 
@@ -73,7 +86,7 @@ Community
 Deprecations
 ~~~~~~~~~~~~
 
--  Remove radiation recipes that have been superseded by :ref:`recipe_radiation_budget` <recipes_radiation_budget> along with associated diagnostic scripts (`#3115 <https://github.com/ESMValGroup/ESMValTool/pull/3115>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
+-  Remove radiation recipes that have been superseded by :ref:`recipe_radiation_budget <recipes_radiation_budget>` along with associated diagnostic scripts (`#3115 <https://github.com/ESMValGroup/ESMValTool/pull/3115>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
 
 Documentation
 ~~~~~~~~~~~~~
