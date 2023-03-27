@@ -1,7 +1,7 @@
 .. _recipe_galytska23jgr:
 
 Timeseries for Arctic-Midlatitude Teleconnections
-===========================================
+=================================================
 
 Overview
 --------
@@ -40,6 +40,7 @@ User settings in recipe
 #. Script <cvdp_wrapper.py>
 
    none
+
 Variables
 ---------
 
