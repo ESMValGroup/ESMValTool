@@ -41,9 +41,9 @@ Bug fixes
 -  Fix call of output_type in `aux_plotting.ncl` (`#3083 <https://github.com/ESMValGroup/ESMValTool/pull/3083>`__) `Lisa Bock <https://github.com/LisaBock>`__
 -  Remove colorbar from `bbox_extra_artists` (`#3087 <https://github.com/ESMValGroup/ESMValTool/pull/3087>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Fix `MPI-ESM1-2-HR` entries in `recipe_tebaldi21esd` (`#3093 <https://github.com/ESMValGroup/ESMValTool/pull/3093>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
--  Fix `perfmetric`s v2.8.0 (`#3098 <https://github.com/ESMValGroup/ESMValTool/pull/3098>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Fix bug in provenance writing of `perfmetrics` recipes v2.8.0 (`#3098 <https://github.com/ESMValGroup/ESMValTool/pull/3098>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Fix `recipe_sea_surface_salinity` for v2.8 (`#3102 <https://github.com/ESMValGroup/ESMValTool/pull/3102>`__) `sloosvel <https://github.com/sloosvel>`__
--  Fix the ESACCI-LST CMORizer (`#3104 <https://github.com/ESMValGroup/ESMValTool/pull/3104>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fix variable `short_name` and metadata for ESACCI-LST CMORizer (`#3104 <https://github.com/ESMValGroup/ESMValTool/pull/3104>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Fix `recipe_carvalhais14`: replace outline patch with splines (`#3111 <https://github.com/ESMValGroup/ESMValTool/pull/3111>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Replace deprecated function `cm.register_cmap` with `mpl.colormaps.register` for `recipe_ arctic_ocean` (`#3112 <https://github.com/ESMValGroup/ESMValTool/pull/3112>`__) `Tomas Torsvik <https://github.com/TomasTorsvik>`__
 -  Fix `recipe_extract_shape.yml` (lacking caption for provenance) (`#3126 <https://github.com/ESMValGroup/ESMValTool/pull/3126>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
@@ -80,7 +80,6 @@ Documentation
 -  Clarify use (or not) of Jasmin climatology files by soil moisture & permafrost recipes (`#3103 <https://github.com/ESMValGroup/ESMValTool/pull/3103>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
 -  Add link to recipe portal in the gallery page (`#3113 <https://github.com/ESMValGroup/ESMValTool/pull/3113>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Improve stratosphere documentation (`#3114 <https://github.com/ESMValGroup/ESMValTool/pull/3114>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
--  Re-pin sphinx to latest (6.1.3) and add nbsphinx to the environment (`#3118 <https://github.com/ESMValGroup/ESMValTool/pull/3118>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Added note to documentation that not all datasets used in `schlund20jgr` recipes are available on ESGF (`#3121 <https://github.com/ESMValGroup/ESMValTool/pull/3121>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Documenting broken recipes after recipe testing for releases (`#3129 <https://github.com/ESMValGroup/ESMValTool/pull/3129>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 
@@ -113,9 +112,9 @@ Observational and re-analysis dataset support
 -  Added CMORizer for Landschützer2020 (spco2) (`#2908 <https://github.com/ESMValGroup/ESMValTool/pull/2908>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Added CMORizer for MOBO-DIC_MPIM (dissic) (`#2909 <https://github.com/ESMValGroup/ESMValTool/pull/2909>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Added CMORizer for OceanSODA-ETHZ (areacello, co3os, dissicos, fgco2, phos, spco2, talkos) (`#2915 <https://github.com/ESMValGroup/ESMValTool/pull/2915>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Extension of ERA-Interim CMORizer (`#2923 <https://github.com/ESMValGroup/ESMValTool/pull/2923>`__) `Axel Lauer <https://github.com/axel-lauer>`__
--  Add JRA-25 cmorizer (`#2927 <https://github.com/ESMValGroup/ESMValTool/pull/2927>`__) `Lisa Bock <https://github.com/LisaBock>`__
--  New CMORizers for datasets from the NCEP family (`#2931 <https://github.com/ESMValGroup/ESMValTool/pull/2931>`__) `Birgit Hassler <https://github.com/hb326>`__
+-  Extension of ERA-Interim CMORizer (cl, cli, clw, lwp, rlut, rlutcs, rsut, rsutcs) (`#2923 <https://github.com/ESMValGroup/ESMValTool/pull/2923>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Add JRA-25 cmorizer (clt, hus, prw, rlut, rlutcs, rsut, rsutcs) (`#2927 <https://github.com/ESMValGroup/ESMValTool/pull/2927>`__) `Lisa Bock <https://github.com/LisaBock>`__
+-  New CMORizers for datasets from the NCEP family (NCEP-DOE-R2, NCEP-NCAR-R1, NOAA-CIRES-20CR) (`#2931 <https://github.com/ESMValGroup/ESMValTool/pull/2931>`__) `Birgit Hassler <https://github.com/hb326>`__
 -  Updates to the recipes that use the NCEP reanalysis dataset (`#2932 <https://github.com/ESMValGroup/ESMValTool/pull/2932>`__) `Birgit Hassler <https://github.com/hb326>`__
 -  Merra2 cmorizer convert vertical level coordinate units from hPa to Pa (`#3003 <https://github.com/ESMValGroup/ESMValTool/pull/3003>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Merra2 cmorizer set UNLIMITED time coordinate (`#3006 <https://github.com/ESMValGroup/ESMValTool/pull/3006>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
@@ -135,6 +134,7 @@ Automatic testing
 -  Fix `test_naming.py` so it doesn't let through directories that need be ignored (`#3082 <https://github.com/ESMValGroup/ESMValTool/pull/3082>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Conda environment files for interim use of `esmvalcore=2.8.0rc1` (`#3090 <https://github.com/ESMValGroup/ESMValTool/pull/3090>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Move `flake8` check to a step separate from installation on CircleCI (`#3105 <https://github.com/ESMValGroup/ESMValTool/pull/3105>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Recreate conda lock file to harpoon esmvalcore=2.8.0rc1 (`#3108 <https://github.com/ESMValGroup/ESMValTool/pull/3108>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Update batch script generation to run all recipes in one command (`#3130 <https://github.com/ESMValGroup/ESMValTool/pull/3130>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 
 Installation
@@ -147,7 +147,7 @@ Installation
 -  Pin `shapely<2.0.0` for linux64 (`#2970 <https://github.com/ESMValGroup/ESMValTool/pull/2970>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Unpin `matplotlib` (`#3068 <https://github.com/ESMValGroup/ESMValTool/pull/3068>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Add `packaging` as direct dependency to ESMValTool (`#3099 <https://github.com/ESMValGroup/ESMValTool/pull/3099>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Recreate conda lock file to harpoon esmvalcore=2.8.0rc1 (`#3108 <https://github.com/ESMValGroup/ESMValTool/pull/3108>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Re-pin sphinx to latest (6.1.3) and add nbsphinx to the environment (`#3118 <https://github.com/ESMValGroup/ESMValTool/pull/3118>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Conda environment files for esmvalcore=2.8.0rc2 (`#3120 <https://github.com/ESMValGroup/ESMValTool/pull/3120>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Remove rc (release candidates) conda channel and re-pin esmvalcore to new stable 2.8 (`#3131 <https://github.com/ESMValGroup/ESMValTool/pull/3131>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 
