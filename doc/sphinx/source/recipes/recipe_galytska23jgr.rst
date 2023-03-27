@@ -1,7 +1,7 @@
 .. _recipe_galytska23jgr:
 
 Timeseries for Arctic-Midlatitude Teleconnections
-====================================
+===========================================
 
 Overview
 --------
@@ -30,13 +30,16 @@ User settings in recipe
 #. Preprocessor
 
    * ``anomalies`` (*period: monthly*): Calculate anomalies for selected variables
-   * ``regrid``(*target_grid: 1x1*): Linear regridding of all datasets to the uniform grid
-   * ``area_statistics`` (*operation: mean*): Calculate mean over defined regions.
+   * ``regrid`` (*target_grid: 1x1*): Linear regridding of all datasets to the uniform grid
+   * ``area_statistics`` (*operation: mean*): Calculate mean over defined regions
 
 #. Script <select_variables_for_tigramite.py>
 
    none
 
+#. Script <cvdp_wrapper.py>
+
+   none
 Variables
 ---------
 
