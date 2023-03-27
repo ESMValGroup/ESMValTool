@@ -242,7 +242,7 @@ The following parameters have to be set in the script in order to make it run:
 
 Optionally, the following parameters can be edited:
 
-* ``env``, *str*: Path to ``config-user.yml`` if default ``~/.esmvaltool/config-user.yml`` not used.
+* ``config_file``, *str*: Path to ``config-user.yml`` if default ``~/.esmvaltool/config-user.yml`` not used.
 * ``partition``, *str*: Name of the DKRZ partition used to run jobs. Default is ``interactive`` to minimize computing cost compared to ``compute`` for which nodes cannot be shared.
 * ``memory``, *str*: Amount of memory requested for each run. Default is ``64G`` to allow to run 4 recipes on the same node in parallel.
 * ``time``, *str*: Time limit. Default is ``04:00:00`` to increase the job priority. Jobs can run for up to 8 hours and 12 hours on the compute and interactive partitions, respectively.
