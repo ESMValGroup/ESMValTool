@@ -143,24 +143,24 @@ Automatic testing
 Installation
 ~~~~~~~~~~~~
 
+-  Merge release branch `release_270stable` in main so we pick up unsquashed commits and set the correct version 2.7.0 for main (and up version in CITATION.cff) (`#2896 <https://github.com/ESMValGroup/ESMValTool/pull/2896>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Unpin cf-units (`#2930 <https://github.com/ESMValGroup/ESMValTool/pull/2930>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Pin shapely<2.0.0 for linux64 (`#2970 <https://github.com/ESMValGroup/ESMValTool/pull/2970>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -   Set the version number on the development branches to one minor version more than the last release  (`#2964 <https://github.com/ESMValGroup/ESMValTool/pull/2964>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Add `packaging` as direct dependency to ESMValTool (`#3099 <https://github.com/ESMValGroup/ESMValTool/pull/3099>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Recreate conda lock file to harpoon esmvalcore=2.8.0rc1 (`#3108 <https://github.com/ESMValGroup/ESMValTool/pull/3108>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Conda environment files for esmvalcore=2.8.0rc2 (`#3120 <https://github.com/ESMValGroup/ESMValTool/pull/3120>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Remove rc (release candidates) conda channel and re-pin esmvalcore to new stable 2.8 (`#3131 <https://github.com/ESMValGroup/ESMValTool/pull/3131>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 
 Improvements
 ~~~~~~~~~~~~
 
--  Merge release branch `release_270stable` in main so we pick up unsquashed commits and set the correct version 2.7.0 for main (and up version in CITATION.cff) (`#2896 <https://github.com/ESMValGroup/ESMValTool/pull/2896>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Make results of recipes schlund20jgr_*.yml deterministic (`#2900 <https://github.com/ESMValGroup/ESMValTool/pull/2900>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Recipe_gier2020bg.yml: add sorting to SA barplot (`#2905 <https://github.com/ESMValGroup/ESMValTool/pull/2905>`__) `Bettina Gier <https://github.com/bettina-gier>`__
 -  Add the outline of a climatological tropopause to the zonalmean_profile plots (`#2947 <https://github.com/ESMValGroup/ESMValTool/pull/2947>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
 -  Update data finder imports (`#2958 <https://github.com/ESMValGroup/ESMValTool/pull/2958>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Add support for the upcoming ESMValCore v2.8 release to the recipe filler tool (`#2995 <https://github.com/ESMValGroup/ESMValTool/pull/2995>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Read config-user.yml using `esmvalcore.config` module (`#2736 <https://github.com/ESMValGroup/ESMValTool/pull/2736>`__) `Bouwe Andela <https://github.com/bouweandela>`__
--  Recreate conda lock file to harpoon esmvalcore=2.8.0rc1 (`#3108 <https://github.com/ESMValGroup/ESMValTool/pull/3108>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Use aliases in perfmetrics (`#3058 <https://github.com/ESMValGroup/ESMValTool/pull/3058>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
 
 
