@@ -109,43 +109,43 @@ Diagnostics
 Observational and re-analysis dataset support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Added CMORizer for MOBO-DIC_MPIM (dissic) (`#2909 <https://github.com/ESMValGroup/ESMValTool/pull/2909>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Earth System Data Cube (ESDC) cmorizer (`#2799 <https://github.com/ESMValGroup/ESMValTool/pull/2799>`__) `Brei Soliño <https://github.com/bsolino>`__
 -  Added CMORizer for Landschützer2020 (spco2) (`#2908 <https://github.com/ESMValGroup/ESMValTool/pull/2908>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Added CMORizer for MOBO-DIC_MPIM (dissic) (`#2909 <https://github.com/ESMValGroup/ESMValTool/pull/2909>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Added CMORizer for OceanSODA-ETHZ (areacello, co3os, dissicos, fgco2, phos, spco2, talkos) (`#2915 <https://github.com/ESMValGroup/ESMValTool/pull/2915>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Add JRA-25 cmorizer (`#2927 <https://github.com/ESMValGroup/ESMValTool/pull/2927>`__) `Lisa Bock <https://github.com/LisaBock>`__
 -  Extension of ERA-Interim CMORizer (`#2923 <https://github.com/ESMValGroup/ESMValTool/pull/2923>`__) `Axel Lauer <https://github.com/axel-lauer>`__
--  Update HadISST cmorizer with recent years (`#3027 <https://github.com/ESMValGroup/ESMValTool/pull/3027>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Add JRA-25 cmorizer (`#2927 <https://github.com/ESMValGroup/ESMValTool/pull/2927>`__) `Lisa Bock <https://github.com/LisaBock>`__
 -  New CMORizers for datasets from the NCEP family (`#2931 <https://github.com/ESMValGroup/ESMValTool/pull/2931>`__) `Birgit Hassler <https://github.com/hb326>`__
 -  Updates to the recipes that use the NCEP reanalysis dataset (`#2932 <https://github.com/ESMValGroup/ESMValTool/pull/2932>`__) `Birgit Hassler <https://github.com/hb326>`__
+-  Merra2 cmorizer convert vertical level coordinate units from hPa to Pa (`#3003 <https://github.com/ESMValGroup/ESMValTool/pull/3003>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Merra2 cmorizer set UNLIMITED time coordinate (`#3006 <https://github.com/ESMValGroup/ESMValTool/pull/3006>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Added CMORizers for TCOM-CH4 (ch4) and TCOM-N2O (n2o) (`#3014 <https://github.com/ESMValGroup/ESMValTool/pull/3014>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Earth System Data Cube (ESDC) cmorizer (`#2799 <https://github.com/ESMValGroup/ESMValTool/pull/2799>`__) `Brei Soliño <https://github.com/bsolino>`__
--  Merra2 cmorizer convert vertical level coordinate units from hPa to Pa (`#3003 <https://github.com/ESMValGroup/ESMValTool/pull/3003>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Update HadISST cmorizer with recent years (`#3027 <https://github.com/ESMValGroup/ESMValTool/pull/3027>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 
 Automatic testing
 ~~~~~~~~~~~~~~~~~
 
 -  Add DKRZ/Levante batch scripts for release recipe running (`#2883 <https://github.com/ESMValGroup/ESMValTool/pull/2883>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Remove pytest-flake8 and call the use of flake8 straight (`#2904 <https://github.com/ESMValGroup/ESMValTool/pull/2904>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Unpin NetCDF4 (`#2929 <https://github.com/ESMValGroup/ESMValTool/pull/2929>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Unpin flake8 (`#2937 <https://github.com/ESMValGroup/ESMValTool/pull/2937>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Fix failing tests that use deprecated feature of sklearn (`#2961 <https://github.com/ESMValGroup/ESMValTool/pull/2961>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Remove `pytest-flake8` and call the use of `flake8` straight (`#2904 <https://github.com/ESMValGroup/ESMValTool/pull/2904>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Unpin `flake8` (`#2937 <https://github.com/ESMValGroup/ESMValTool/pull/2937>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Fix failing tests that use deprecated feature of `sklearn` (`#2961 <https://github.com/ESMValGroup/ESMValTool/pull/2961>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Fix recipe loading tests for esmvalcore before and after version 2.8 (`#3020 <https://github.com/ESMValGroup/ESMValTool/pull/3020>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Update recipe load test for v2.8 (`#3040 <https://github.com/ESMValGroup/ESMValTool/pull/3040>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Test running recipes with the development version of ESMValCore (`#3072 <https://github.com/ESMValGroup/ESMValTool/pull/3072>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Fix `test_naming.py` so it doesn't let through directories that need be ignored (`#3082 <https://github.com/ESMValGroup/ESMValTool/pull/3082>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Conda environment files for interim use of `esmvalcore=2.8.0rc1` (`#3090 <https://github.com/ESMValGroup/ESMValTool/pull/3090>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Move flake8 check to a step separate from installation on CircleCI (`#3105 <https://github.com/ESMValGroup/ESMValTool/pull/3105>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Move `flake8` check to a step separate from installation on CircleCI (`#3105 <https://github.com/ESMValGroup/ESMValTool/pull/3105>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Update batch script generation to run all recipes in one command (`#3130 <https://github.com/ESMValGroup/ESMValTool/pull/3130>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 
 Installation
 ~~~~~~~~~~~~
 
 -  Merge release branch `release_270stable` in main so we pick up unsquashed commits and set the correct version 2.7.0 for main (and up version in CITATION.cff) (`#2896 <https://github.com/ESMValGroup/ESMValTool/pull/2896>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Unpin cf-units (`#2930 <https://github.com/ESMValGroup/ESMValTool/pull/2930>`__) `Bouwe Andela <https://github.com/bouweandela>`__
--  Pin shapely<2.0.0 for linux64 (`#2970 <https://github.com/ESMValGroup/ESMValTool/pull/2970>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--   Set the version number on the development branches to one minor version more than the last release  (`#2964 <https://github.com/ESMValGroup/ESMValTool/pull/2964>`__) `Bouwe Andela <https://github.com/bouweandela>`__
--  Unpin matplotlib (`#3068 <https://github.com/ESMValGroup/ESMValTool/pull/3068>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Unpin `NetCDF4` (`#2929 <https://github.com/ESMValGroup/ESMValTool/pull/2929>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Unpin `cf-units` (`#2930 <https://github.com/ESMValGroup/ESMValTool/pull/2930>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Set the version number on the development branches to one minor version more than the last release  (`#2964 <https://github.com/ESMValGroup/ESMValTool/pull/2964>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Pin `shapely<2.0.0` for linux64 (`#2970 <https://github.com/ESMValGroup/ESMValTool/pull/2970>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Unpin `matplotlib` (`#3068 <https://github.com/ESMValGroup/ESMValTool/pull/3068>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Add `packaging` as direct dependency to ESMValTool (`#3099 <https://github.com/ESMValGroup/ESMValTool/pull/3099>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Recreate conda lock file to harpoon esmvalcore=2.8.0rc1 (`#3108 <https://github.com/ESMValGroup/ESMValTool/pull/3108>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Conda environment files for esmvalcore=2.8.0rc2 (`#3120 <https://github.com/ESMValGroup/ESMValTool/pull/3120>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
@@ -154,12 +154,12 @@ Installation
 Improvements
 ~~~~~~~~~~~~
 
--  Make results of recipes schlund20jgr_*.yml deterministic (`#2900 <https://github.com/ESMValGroup/ESMValTool/pull/2900>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Recipe_gier2020bg.yml: add sorting to SA barplot (`#2905 <https://github.com/ESMValGroup/ESMValTool/pull/2905>`__) `Bettina Gier <https://github.com/bettina-gier>`__
+-  Read `config-user.yml` using `esmvalcore.config` module (`#2736 <https://github.com/ESMValGroup/ESMValTool/pull/2736>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Make results of recipes `schlund20jgr_*.yml` deterministic (`#2900 <https://github.com/ESMValGroup/ESMValTool/pull/2900>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  `Recipe_gier2020bg.yml`: add sorting to SA barplot (`#2905 <https://github.com/ESMValGroup/ESMValTool/pull/2905>`__) `Bettina Gier <https://github.com/bettina-gier>`__
 -  Add the outline of a climatological tropopause to the zonalmean_profile plots (`#2947 <https://github.com/ESMValGroup/ESMValTool/pull/2947>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
 -  Update data finder imports (`#2958 <https://github.com/ESMValGroup/ESMValTool/pull/2958>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Add support for the upcoming ESMValCore v2.8 release to the recipe filler tool (`#2995 <https://github.com/ESMValGroup/ESMValTool/pull/2995>`__) `Bouwe Andela <https://github.com/bouweandela>`__
--  Read config-user.yml using `esmvalcore.config` module (`#2736 <https://github.com/ESMValGroup/ESMValTool/pull/2736>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Updated monitoring diagnostics with netCDF output and additional logging (`#3029 <https://github.com/ESMValGroup/ESMValTool/pull/3029>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Use aliases in perfmetrics (`#3058 <https://github.com/ESMValGroup/ESMValTool/pull/3058>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
 
