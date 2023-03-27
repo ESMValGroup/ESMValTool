@@ -28,26 +28,25 @@ TODO: add examples of how to deal with these changes
 Bug fixes
 ~~~~~~~~~
 
--  Fix for provenance records from seaice_tsline.ncl (`#2938 <https://github.com/ESMValGroup/ESMValTool/pull/2938>`__) `Axel Lauer <https://github.com/axel-lauer>`__
--  Fix typo in perfmetrics/main.ncl to add tropopause (`#2966 <https://github.com/ESMValGroup/ESMValTool/pull/2966>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
--  Bugfix: masking of non-significant differences in zonal.ncl (perfmetrics) (`#2957 <https://github.com/ESMValGroup/ESMValTool/pull/2957>`__) `Axel Lauer <https://github.com/axel-lauer>`__
--  Recipe_ocean_Landschuetzer2016: Fix typo in filename to run model vs OBS diagnostics (`#2997 <https://github.com/ESMValGroup/ESMValTool/pull/2997>`__) `Tomas Torsvik <https://github.com/TomasTorsvik>`__
--  Fix .png bug in wenzel16nat diagnostics (`#2976 <https://github.com/ESMValGroup/ESMValTool/pull/2976>`__) `Axel Lauer <https://github.com/axel-lauer>`__
--  Fix in validation.py for resolving datasets with identical names by using distinct alias (`#2955 <https://github.com/ESMValGroup/ESMValTool/pull/2955>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
+-  Fix for provenance records from `seaice_tsline.ncl` (`#2938 <https://github.com/ESMValGroup/ESMValTool/pull/2938>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Fix in `validation.py` for resolving datasets with identical names by using distinct alias (`#2955 <https://github.com/ESMValGroup/ESMValTool/pull/2955>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
+-  Bugfix: masking of non-significant differences in `zonal.ncl` (perfmetrics) (`#2957 <https://github.com/ESMValGroup/ESMValTool/pull/2957>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Fix typo in `perfmetrics/main.ncl` to add tropopause (`#2966 <https://github.com/ESMValGroup/ESMValTool/pull/2966>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
+-  Fix .png bug in `wenzel16nat` diagnostics (`#2976 <https://github.com/ESMValGroup/ESMValTool/pull/2976>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  `Recipe_ocean_Landschuetzer2016`: Fix typo in filename to run model vs OBS diagnostics (`#2997 <https://github.com/ESMValGroup/ESMValTool/pull/2997>`__) `Tomas Torsvik <https://github.com/TomasTorsvik>`__
 -  Fix read_cmor in NCL utilities (`#3007 <https://github.com/ESMValGroup/ESMValTool/pull/3007>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Removed usages of deprecated features that cause diagnostic crashes (`#3009 <https://github.com/ESMValGroup/ESMValTool/pull/3009>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Merra2 cmorizer set UNLIMITED time coordinate (`#3006 <https://github.com/ESMValGroup/ESMValTool/pull/3006>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Added missing comma to `sommer17joss.bibtex` (`#3078 <https://github.com/ESMValGroup/ESMValTool/pull/3078>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Replace removed `matplotlib.pyplot.savefig` option `additional_artists` (`#3075 <https://github.com/ESMValGroup/ESMValTool/pull/3075>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Fix call of output_type in aux_plotting.ncl (`#3083 <https://github.com/ESMValGroup/ESMValTool/pull/3083>`__) `Lisa Bock <https://github.com/LisaBock>`__
+-  Added missing comma to `sommer17joss.bibtex` (`#3078 <https://github.com/ESMValGroup/ESMValTool/pull/3078>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Fix call of output_type in `aux_plotting.ncl` (`#3083 <https://github.com/ESMValGroup/ESMValTool/pull/3083>`__) `Lisa Bock <https://github.com/LisaBock>`__
 -  Remove colorbar from `bbox_extra_artists` (`#3087 <https://github.com/ESMValGroup/ESMValTool/pull/3087>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Fix `MPI-ESM1-2-HR` entries in `recipe_tebaldi21esd` (`#3093 <https://github.com/ESMValGroup/ESMValTool/pull/3093>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
--  Fix perfmetrics v2.8.0 (`#3098 <https://github.com/ESMValGroup/ESMValTool/pull/3098>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Fix `perfmetric`s v2.8.0 (`#3098 <https://github.com/ESMValGroup/ESMValTool/pull/3098>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Fix `recipe_sea_surface_salinity` for v2.8 (`#3102 <https://github.com/ESMValGroup/ESMValTool/pull/3102>`__) `sloosvel <https://github.com/sloosvel>`__
 -  Fix the ESACCI-LST CMORizer (`#3104 <https://github.com/ESMValGroup/ESMValTool/pull/3104>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
--  Fix recipe_carvalhais14: replace outline patch with splines (`#3111 <https://github.com/ESMValGroup/ESMValTool/pull/3111>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Replace deprecated function "cm.register_cmap" with "mpl.colormaps.register" for `recipe_ arctic_ocean` (`#3112 <https://github.com/ESMValGroup/ESMValTool/pull/3112>`__) `Tomas Torsvik <https://github.com/TomasTorsvik>`__
--  Fix recipe_sea_surface_salinity for v2.8 (`#3102 <https://github.com/ESMValGroup/ESMValTool/pull/3102>`__) `sloosvel <https://github.com/sloosvel>`__
--  Fix recipe_extract_shape.yml (lacking caption for provenance) (`#3126 <https://github.com/ESMValGroup/ESMValTool/pull/3126>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Fix `recipe_carvalhais14`: replace outline patch with splines (`#3111 <https://github.com/ESMValGroup/ESMValTool/pull/3111>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Replace deprecated function `cm.register_cmap` with `mpl.colormaps.register` for `recipe_ arctic_ocean` (`#3112 <https://github.com/ESMValGroup/ESMValTool/pull/3112>`__) `Tomas Torsvik <https://github.com/TomasTorsvik>`__
+-  Fix `recipe_extract_shape.yml` (lacking caption for provenance) (`#3126 <https://github.com/ESMValGroup/ESMValTool/pull/3126>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 
 Community
 ~~~~~~~~~
@@ -121,6 +120,7 @@ Observational and re-analysis dataset support
 -  Update HadISST cmorizer with recent years (`#3027 <https://github.com/ESMValGroup/ESMValTool/pull/3027>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  New CMORizers for datasets from the NCEP family (`#2931 <https://github.com/ESMValGroup/ESMValTool/pull/2931>`__) `Birgit Hassler <https://github.com/hb326>`__
 -  Updates to the recipes that use the NCEP reanalysis dataset (`#2932 <https://github.com/ESMValGroup/ESMValTool/pull/2932>`__) `Birgit Hassler <https://github.com/hb326>`__
+-  Merra2 cmorizer set UNLIMITED time coordinate (`#3006 <https://github.com/ESMValGroup/ESMValTool/pull/3006>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Added CMORizers for TCOM-CH4 (ch4) and TCOM-N2O (n2o) (`#3014 <https://github.com/ESMValGroup/ESMValTool/pull/3014>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Earth System Data Cube (ESDC) cmorizer (`#2799 <https://github.com/ESMValGroup/ESMValTool/pull/2799>`__) `Brei Soliño <https://github.com/bsolino>`__
 -  Merra2 cmorizer convert vertical level coordinate units from hPa to Pa (`#3003 <https://github.com/ESMValGroup/ESMValTool/pull/3003>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
