@@ -117,6 +117,7 @@ Other
    recipe_ensclus
    recipe_esacci_lst
    recipe_examples
+   recipe_galytska23jgr
    recipe_monitor
    recipe_multimodel_products
    recipe_psyplot
