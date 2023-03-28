@@ -35,6 +35,7 @@ REQUIREMENTS = {
         'esmf-regrid',
         'fiona',
         'GDAL',
+        'iris-grib',
         'jinja2',
         'joblib',
         'lime',
