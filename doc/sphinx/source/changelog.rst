@@ -12,20 +12,19 @@ v2.8.0
 Highlights
 ~~~~~~~~~~
 
--  This release has seen the inclusion of the code for figures 3.9, 3.19,
+-  This release includes the diagnostics for reproducing figures 3.9, 3.19,
    3.42 and 3.43 of the IPCC AR6 WG1 report.
    See :ref:`recipe documentation <recipes_ipccwg1ar6ch3>` about added recipes.
 -  A new set of recipes and diagnostics has been included to evaluate cloud
    climatologies from CMIP models as used in `Lauer et al. (2023), J. Climate
    <https://doi.org/10.1175/JCLI-D-22-0181.1>`__.
    See :ref:`recipe documentation <recipes_clouds>` about added recipes.
--  We have also included a set of recipes for extreme events, regional and impact 
+-  Addition of a set of recipes for extreme events, regional and impact 
    evaluation as used in `Weigel et al. (2021), J. Climate
    <https://doi.org/10.5194/gmd-14-3159-2021>`__ and in IPCC AR5.
    See :ref:`recipe documentation <recipes_ipccwg1ar5ch9>` about added recipes.
 
-Please also note the highlights from the corresponding ESMValCore release :ref:`here<esmvalcore:changelog-v2-8-0>`.
-Thanks to that ESMValTool has gained the following features:
+Highlights from ESMValCore v2.8.0 :ref:`here<esmvalcore:changelog-v2-8-0>`:
 
 - ESMValCore now supports wildcards in recipes and offers improved support
   for ancillary variables and dataset versioning.
@@ -45,7 +44,7 @@ Backwards incompatible changes
 
 Please read the descriptions of the linked pull requests for detailed upgrade instructions.
 
--  Remove deprecated features scheduled for removal in v2.8.0 or earlier
+-  Deprecated features scheduled for removal in v2.8.0 or earlier have now been removed
    (`#2941 <https://github.com/ESMValGroup/ESMValTool/pull/2941>`__)
    `Manuel Schlund <https://github.com/schlunma>`__.
    Removed ``esmvaltool.iris_helpers.var_name_constraint`` (has been deprecated
@@ -70,7 +69,7 @@ Bug fixes
 ~~~~~~~~~
 
 -  Fix for provenance records from `seaice_tsline.ncl` (`#2938 <https://github.com/ESMValGroup/ESMValTool/pull/2938>`__) `Axel Lauer <https://github.com/axel-lauer>`__
--  Fix in `validation.py` for resolving datasets with identical names by using distinct alias (`#2955 <https://github.com/ESMValGroup/ESMValTool/pull/2955>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
+-  Fix in `validation.py` for resolving datasets with identical names by using distinct aliases (`#2955 <https://github.com/ESMValGroup/ESMValTool/pull/2955>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
 -  Bugfix: masking of non-significant differences in `zonal.ncl` (perfmetrics) (`#2957 <https://github.com/ESMValGroup/ESMValTool/pull/2957>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Fix typo in `perfmetrics/main.ncl` to add tropopause (`#2966 <https://github.com/ESMValGroup/ESMValTool/pull/2966>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
 -  Fix .png bug in `wenzel16nat` diagnostics (`#2976 <https://github.com/ESMValGroup/ESMValTool/pull/2976>`__) `Axel Lauer <https://github.com/axel-lauer>`__
@@ -103,7 +102,7 @@ Documentation
 ~~~~~~~~~~~~~
 
 -  Backward compatibility policy (`#2879 <https://github.com/ESMValGroup/ESMValTool/pull/2879>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
--  Suppress installing and reinstalling deps with pip at readthedocs builds (`#2913 <https://github.com/ESMValGroup/ESMValTool/pull/2913>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Suppress installing and reinstalling dependencies with pip during readthedocs builds (`#2913 <https://github.com/ESMValGroup/ESMValTool/pull/2913>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Update installation instructions (`#2939 <https://github.com/ESMValGroup/ESMValTool/pull/2939>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Update documentation for `recipe_extreme_index` (`#2951 <https://github.com/ESMValGroup/ESMValTool/pull/2951>`__) `katjaweigel <https://github.com/katjaweigel>`__
 -  Update documentation and `recipe_check_obs` (ERA5) (`#2952 <https://github.com/ESMValGroup/ESMValTool/pull/2952>`__) `Axel Lauer <https://github.com/axel-lauer>`__
@@ -128,7 +127,7 @@ Documentation
 Diagnostics
 ~~~~~~~~~~~
 
--  Cloud diagnostics for Lauer et al. (2022) (`#2750 <https://github.com/ESMValGroup/ESMValTool/pull/2750>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Cloud diagnostics for Lauer et al. (2023) (`#2750 <https://github.com/ESMValGroup/ESMValTool/pull/2750>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Splitting of `flato13ipcc.yml` into separate recipes and adding recipes for regional Figures (`#2156 <https://github.com/ESMValGroup/ESMValTool/pull/2156>`__) `katjaweigel <https://github.com/katjaweigel>`__
 -  Adding IPCC AR6 Chapter 3 Figure  3.43 - Pattern Correlation (`#2772 <https://github.com/ESMValGroup/ESMValTool/pull/2772>`__) `Lisa Bock <https://github.com/LisaBock>`__
 -  Adding IPCC AR6 Chapter 3 Fig. 3.42 - Perfmetrics (`#2856 <https://github.com/ESMValGroup/ESMValTool/pull/2856>`__) `Lisa Bock <https://github.com/LisaBock>`__
@@ -161,10 +160,10 @@ Observational and re-analysis dataset support
 -  Add JRA-25 cmorizer (clt, hus, prw, rlut, rlutcs, rsut, rsutcs) (`#2927 <https://github.com/ESMValGroup/ESMValTool/pull/2927>`__) `Lisa Bock <https://github.com/LisaBock>`__
 -  New CMORizers for datasets from the NCEP family (NCEP-DOE-R2, NCEP-NCAR-R1, NOAA-CIRES-20CR) (`#2931 <https://github.com/ESMValGroup/ESMValTool/pull/2931>`__) `Birgit Hassler <https://github.com/hb326>`__
 -  Updates to the recipes that use the NCEP reanalysis dataset (`#2932 <https://github.com/ESMValGroup/ESMValTool/pull/2932>`__) `Birgit Hassler <https://github.com/hb326>`__
--  Merra2 cmorizer convert vertical level coordinate units from hPa to Pa (`#3003 <https://github.com/ESMValGroup/ESMValTool/pull/3003>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Merra2 cmorizer set UNLIMITED time coordinate (`#3006 <https://github.com/ESMValGroup/ESMValTool/pull/3006>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Added CMORizers for TCOM-CH4 (ch4) and TCOM-N2O (n2o) (`#3014 <https://github.com/ESMValGroup/ESMValTool/pull/3014>`__) `Manuel Schlund <https://github.com/schlunma>`__
--  Update HadISST cmorizer with recent years (`#3027 <https://github.com/ESMValGroup/ESMValTool/pull/3027>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  MERRA2 cmorizer convert vertical level coordinate units from hPa to Pa (`#3003 <https://github.com/ESMValGroup/ESMValTool/pull/3003>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  MERRA2 cmorizer set UNLIMITED time coordinate (`#3006 <https://github.com/ESMValGroup/ESMValTool/pull/3006>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Added CMORizers for TCOM-CH4 (CH4) and TCOM-N2O (N2O) (`#3014 <https://github.com/ESMValGroup/ESMValTool/pull/3014>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Update HadISST cmorizer to include recent years (`#3027 <https://github.com/ESMValGroup/ESMValTool/pull/3027>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 
 Automatic testing
 ~~~~~~~~~~~~~~~~~
