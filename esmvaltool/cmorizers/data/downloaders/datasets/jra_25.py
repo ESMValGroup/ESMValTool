@@ -1,8 +1,13 @@
-"""Script to download JRA-25 from ESGF."""
+"""Script to download JRA-25 from RDA."""
 import logging
 import os
 
+from datetime import datetime
+
+from dateutil import relativedelta
+
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
+
 
 logger = logging.getLogger(__name__)
 
@@ -35,31 +40,73 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     os.makedirs(downloader.local_folder, exist_ok=True)
 
-    url = ("https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/"
-           "reanalysis/JMA/JRA-25/JRA-25/mon/atmos/")
+    user = os.environ.get("rda-user")
+    if user is None:
+        user = str(input("RDA user name? "))
+        if user == "":
+            errmsg = ("A RDA account is required to download JRA-55 data."
+                      " Please visit https://rda.ucar.edu/login/register/"
+                      " to create an account at the Research Data Archive"
+                      " (RDA) if needed.")
+            logger.error(errmsg)
+            raise ValueError
 
-    downloader.download_file(url +
-                             "clt/clt_Amon_reanalysis_JRA-25_197901-201312.nc",
-                             wget_options=[])
-    downloader.download_file(url +
-                             "hus/hus_Amon_reanalysis_JRA-25_197901-201312.nc",
-                             wget_options=[])
-    downloader.download_file(url +
-                             "prw/prw_Amon_reanalysis_JRA-25_197901-201312.nc",
-                             wget_options=[])
-    downloader.download_file(url +
-                             "rlut/"
-                             "rlut_Amon_reanalysis_JRA-25_197901-201312.nc",
-                             wget_options=[])
-    downloader.download_file(url +
-                             "rlutcs/"
-                             "rlutcs_Amon_reanalysis_JRA-25_197901-201312.nc",
-                             wget_options=[])
-    downloader.download_file(url +
-                             "rsut/"
-                             "rsut_Amon_reanalysis_JRA-25_197901-201312.nc",
-                             wget_options=[])
-    downloader.download_file(url +
-                             "rsutcs/"
-                             "rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc",
-                             wget_options=[])
+    passwd = os.environ.get("rda-passwd")
+    if passwd is None:
+        passwd = str(input("RDA password? "))
+
+    if start_date is None:
+        start_date = datetime(1958, 1, 1)
+    if end_date is None:
+        end_date = datetime(2022, 12, 31)
+    loop_date = start_date
+
+    options = ["-O", "Authentication.log", "--save-cookies=auth.rda_ucar_edu",
+               f"--post-data=\"email={user}&passwd={passwd}&action=login\""]
+
+    # login to Research Data Archive (RDA)
+
+    downloader.login("https://rda.ucar.edu/cgi-bin/login", options)
+
+    # download files
+
+    url = "https://rda.ucar.edu/data/ds625.1"
+    download_options = ["--load-cookies=auth.rda_ucar_edu"]
+
+    # define variables to download
+
+    var = {"011_tmp": "anl_surf125",
+           "039_vvel": "anl_p125",
+           "071_tcdc": "fcst_surf125",
+           "054_pwat": "fcst_column125",
+           "058_cice": "fcst_column125",
+           "160_csusf": "fcst_phy2m125",
+           "162_csulf": "fcst_phy2m125",
+           "211_uswrf": "fcst_phy2m125",
+           "212_ulwrf": "fcst_phy2m125",
+           "227_cw": "fcst_column125",
+           "228_clwc": "fcst_p125",
+           "229_ciwc": "fcst_p125"}
+
+    # download data
+
+    while loop_date <= end_date:
+        year = loop_date.year
+
+        for varname, channel in var.items():
+            fname = f"{channel}.{varname}.{year}01_{year}12"
+            # download file
+            downloader.download_file(url + f"/{channel}/{year}/" +
+                                     fname, download_options)
+            # add file extension ".grb"
+            os.rename(downloader.local_folder + "/" + fname,
+                      downloader.local_folder + "/" + fname + ".grb")
+
+        loop_date += relativedelta.relativedelta(years=1)
+
+    # clean up temporary files
+
+    if os.path.exists("Authentication.log"):
+        os.remove("Authentication.log")
+    if os.path.exists("auth.rda_ucar_edu"):
+        os.remove("auth.rda_ucar_edu")
