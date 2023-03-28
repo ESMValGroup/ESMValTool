@@ -73,14 +73,14 @@ def _load_jra55_grib(filenames, var):
             # atmosphere" is not possible (bug?).
             # If "start_element" is given in the JRA-55 CMOR config file
             # (esmvaltool/cmorizers/data/cmor_config/JRA-55.yml), we simply
-            # extract every second cube as "surface" and "top of the
-            # atmosphere" from the list of cube as the fields are alternating
-            # in the GRIB file.
-            # If "first element" is not specified in the JRA-55 CMOR config
+            # extract every second cube from the list of cube starting
+            # with field "start_element" as the fields "surface" and "top of
+            # the atmosphere" are alternating in the GRIB file.
+            # If "start_element" is not specified in the JRA-55 CMOR config
             # file, no selection of cubes is done before merging into a
             # single cube.
-            
-            if start_element != None:
+
+            if start_element is not None:
                 cubelist.append(tmp_cubes[start_element::2].merge_cube())
             else:
                 cubelist.append(tmp_cubes.merge_cube())
