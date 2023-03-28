@@ -121,6 +121,7 @@ Documentation
 -  Add link to recipe portal in the gallery page (`#3113 <https://github.com/ESMValGroup/ESMValTool/pull/3113>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Improve stratosphere documentation (`#3114 <https://github.com/ESMValGroup/ESMValTool/pull/3114>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
 -  Added note to documentation that not all datasets used in `schlund20jgr` recipes are available on ESGF (`#3121 <https://github.com/ESMValGroup/ESMValTool/pull/3121>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Draft changelog for `v2.8.0` (`#3124 <https://github.com/ESMValGroup/ESMValTool/pull/3124>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Documenting broken recipes after recipe testing for releases (`#3129 <https://github.com/ESMValGroup/ESMValTool/pull/3129>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Increase ESMValTool version to 2.8.0 and update release dates (`#3136 <https://github.com/ESMValGroup/ESMValTool/pull/3136>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 
