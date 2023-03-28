@@ -29,6 +29,7 @@ dependencies:
   - gdal
   - iris>=3.1.0
   - iris-esmf-regrid
+  - iris-grib
   - jinja2
   - joblib
   - lime
