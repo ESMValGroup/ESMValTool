@@ -7,7 +7,7 @@ attributes:
   version: 'v3'
   modeling_realm: reanaly
   source: 'https://psl.noaa.gov/data/gridded/data.20thC_ReanV3.html'
-  reference: 'noaa-cires-20cr'
+  reference: 'noaa-cires-20cr-v3'
   comment: |
     ''
 
