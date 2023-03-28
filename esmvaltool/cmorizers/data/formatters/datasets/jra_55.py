@@ -20,12 +20,11 @@ import glob
 import logging
 import os
 
-import iris
-import numpy as np
-
 from datetime import datetime
 from iris_grib.message import GribMessage
 from cf_units import Unit
+
+import iris
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -38,20 +37,23 @@ def _load_jra55_grib(filenames, var):
     for infile in filenames:
         tmp_cubes = iris.load(infile)
         if len(tmp_cubes) > 1:
-            start_element = var.get('start_element', 0)
+            start_element = var.get('start_element')
             i = 0
-            # create list of files (needed in case infile contains wildcards)
-            listing = glob.glob(infile)
+            # create list of files (needed in case 'infile' contains wildcards)
+            # note: list has to be sorted by year (i.e. filename) to be
+            #       compatible with the output of iris.load()
+            listing = sorted(glob.glob(infile), key=os.path.basename)
             for fname in listing:
                 for message in GribMessage.messages_from_filename(fname):
                     day = message.sections[1]['day']
                     month = message.sections[1]['month']
-                    year = ((message.sections[1]['centuryOfReferenceTimeOfData']
+                    year = ((message.sections[1][
+                           'centuryOfReferenceTimeOfData']
                          - 1) * 100 + message.sections[1]['yearOfCentury'])
 
                     point = datetime(year=year, month=month, day=day)
                     time_units = Unit('days since 1950-01-01 00:00:00',
-                        calendar='standard')
+                                      calendar='standard')
                     time_coord = iris.coords.DimCoord(
                         time_units.date2num(point),
                         var_name='time',
@@ -64,29 +66,37 @@ def _load_jra55_grib(filenames, var):
 
                     i = i + 1
 
+            # Some JRA-55 GRIB files contain two fields: "surface" and
+            # "top of the atmosphere". As
             # message.sections[1]['indicatorOfTypeOfLevel'] always gives
-            # 'sfc', so a distinction between "surface" and "top of the
-            # atmosphere" is not possible. Instead, we simply use every
-            # second cube as "surface" and "top of the atmosphere" are
-            # alternating in the GRIB file with "surface" being element
-            # 'start_element' read from config file
-            # (esmvaltool/cmorizers/data/cmor_config/JRA-55.yml).
-
-            cubelist.append(tmp_cubes[start_element::2].merge_cube())
+            # 'sfc', a distinction between "surface" and "top of the
+            # atmosphere" is not possible (bug?).
+            # If "start_element" is given in the JRA-55 CMOR config file
+            # (esmvaltool/cmorizers/data/cmor_config/JRA-55.yml), we simply
+            # extract every second cube as "surface" and "top of the
+            # atmosphere" from the list of cube as the fields are alternating
+            # in the GRIB file.
+            # If "first element" is not specified in the JRA-55 CMOR config
+            # file, no selection of cubes is done before merging into a
+            # single cube.
+            
+            if start_element != None:
+                cubelist.append(tmp_cubes[start_element::2].merge_cube())
+            else:
+                cubelist.append(tmp_cubes.merge_cube())
         else:
-            #tmp_cubes.remove_coord('originating_centre')
+            tmp_cubes[0].remove_coord('originating_centre')
             cubelist = tmp_cubes
 
-    return(cubelist)
+    return cubelist
 
 
-def _extract_variable(short_name, var, in_files, cfg, in_dir,
-                      out_dir):
+def _extract_variable(short_name, var, in_files, cfg, out_dir):
     """Extract variable."""
     # load data (returns a list of cubes)
 
     cubes = _load_jra55_grib(in_files, var)
-    
+
     # apply operators (if any)
 
     if len(cubes) > 1:
@@ -115,14 +125,27 @@ def _extract_variable(short_name, var, in_files, cfg, in_dir,
     else:
         cube = cubes[0]
 
-    print(cube)
-    print(cubes)
-
     # Fix metadata
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     attrs = copy.deepcopy(cfg['attributes'])
     attrs['mip'] = var['mip']
     utils.fix_var_metadata(cube, cmor_info)
+
+    # fix z-coordinate (if present)
+
+    for coord in cube.dim_coords:
+        coord_type = iris.util.guess_coord_axis(coord)
+        if coord_type == 'Z':
+            coord.standard_name = 'air_pressure'
+            coord.long_name = 'pressure'
+            coord.var_name = 'plev'
+            coord.attributes['positive'] = 'down'
+            if coord.units == "hPa":
+                coord.convert_units('Pa')
+            utils.flip_dim_coord(cube, coord.standard_name)
+
+    utils.fix_dim_coordnames(cube)
+    utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
 
     # Save variable
@@ -151,4 +174,4 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
         logger.info("CMORizing variable '%s' from file '%s'", short_name,
                     filename)
-        _extract_variable(short_name, var, filename, cfg, in_dir, out_dir)
+        _extract_variable(short_name, var, filename, cfg, out_dir)
