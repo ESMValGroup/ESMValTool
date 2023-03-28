@@ -16,11 +16,11 @@ Highlights
    3.42 and 3.43 of the IPCC AR6 WG1 report.
    See :ref:`recipe documentation <recipes_ipccwg1ar6ch3>` about added recipes.
 -  A new set of recipes and diagnostics has been included to evaluate cloud
-   climatologies from CMIP models as used in (`Lauer et al. (2023), J. Climate
+   climatologies from CMIP models as used in `Lauer et al. (2023), J. Climate
    <https://doi.org/10.1175/JCLI-D-22-0181.1>`__.
    See :ref:`recipe documentation <recipes_clouds>` about added recipes.
 -  We have also included a set of recipes for extreme events, regional and impact 
-   evaluation as used in (`Weigel et al. (2021), J. Climate
+   evaluation as used in `Weigel et al. (2021), J. Climate
    <https://doi.org/10.5194/gmd-14-3159-2021>`__ and in IPCC AR5.
    See :ref:`recipe documentation <recipes_ipccwg1ar5ch9>` about added recipes.
 
@@ -48,7 +48,7 @@ Please read the descriptions of the linked pull requests for detailed upgrade in
 -  Remove deprecated features scheduled for removal in v2.8.0 or earlier
    (`#2941 <https://github.com/ESMValGroup/ESMValTool/pull/2941>`__)
    `Manuel Schlund <https://github.com/schlunma>`__.
-   Removed ``esmvalcore.iris_helpers.var_name_constraint`` (has been deprecated
+   Removed ``esmvaltool.iris_helpers.var_name_constraint`` (has been deprecated
    in v2.6.0; please use :class:`iris.NameConstraint` with the keyword argument
    ``var_name`` instead).
    Removed `write_netcdf` and `write_plots` from `recipe_filer.py`.
