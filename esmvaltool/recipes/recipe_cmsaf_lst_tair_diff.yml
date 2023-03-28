@@ -1,0 +1,68 @@
+# Recipe to call CMSAF LST UCS diagnostics.
+---
+documentation:
+  title: CMSAF LST UCS
+  description: |
+    Please add description here
+  authors:
+    - king_robert
+
+  maintainer:
+    - king_robert
+
+  references:
+    - esacci_lst
+
+  projects:
+    - cmug
+
+datasets:
+  # - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r(2:3)i1p1f1,
+  #    start_year: 2004, end_year: 2005, grid: gn}
+  # - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical,
+  #    ensemble: r(1:2)i1p1f2, start_year: 2004, end_year: 2005, grid: gn}
+  - {dataset: CMSAF_LST, project: OBS, type: sat, tier: 2,
+     start_year: 2010, end_year: 2010, version: ''}
+
+preprocessors:
+
+  lst_preprocessor:
+    # regrid:
+    #   target_grid: UKESM1-0-LL
+    #   scheme: linear
+
+    extract_region:
+      start_longitude: 10
+      end_longitude: 11
+      start_latitude: 5
+      end_latitude: 6
+
+    # mask_landsea:
+    #   mask_out: sea
+
+    # area_statistics:
+    #   operator: mean
+
+    # multi_model_statistics:
+    #   span: overlap
+    #   statistics: [mean, std_dev]
+    #   exclude: [ESACCI-LST]
+
+
+diagnostics:
+
+  timeseries:
+    description: xxx
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      tsrpk:
+        mip: custom
+        preprocessor: lst_preprocessor
+
+    scripts:
+      null
+      # script1:
+      #   script: lst/lst.py
