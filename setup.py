@@ -85,8 +85,8 @@ REQUIREMENTS = {
     'doc': [
         'autodocsumm>=0.2.2',
         'nbsphinx',
-        'sphinx',  # >=6.1.3',
-        'sphinx_rtd_theme<1.2.0',
+        'sphinx<6',  # >=6.1.3',
+        'sphinx_rtd_theme==1.2.0',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
