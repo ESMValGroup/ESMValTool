@@ -85,8 +85,8 @@ REQUIREMENTS = {
     'doc': [
         'autodocsumm>=0.2.2',
         'nbsphinx',
-        'sphinx<6',  # >=6.1.3',
-        'sphinx_rtd_theme==1.2.0',
+        'sphinx!=6.1.3',  # github.com/ESMValGroup/ESMValTool/issues/3139
+        'sphinx_rtd_theme',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
