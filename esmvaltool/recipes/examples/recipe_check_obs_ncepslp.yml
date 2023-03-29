@@ -1,0 +1,21 @@
+# ESMValTool
+# recipe_check_obs.yml
+---
+documentation:
+  description: |
+    Test recipe for OBS, no proprocessor or diagnostics are applied,
+    just to check correct reading of the CMORized data.
+
+  authors:
+    - righi_mattia
+
+diagnostics:
+
+  NCEPslp:
+    description: NCEPslp check
+    variables:
+      psl:
+    additional_datasets:
+      - {dataset: NCEPslp, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: May2020, start_year: 1948, end_year: 2019}
+    scripts: null
