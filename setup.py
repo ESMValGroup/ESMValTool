@@ -20,6 +20,7 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
+        'aiohttp',
         'cartopy',
         'cdo',
         'cdsapi',
@@ -38,11 +39,12 @@ REQUIREMENTS = {
         'joblib',
         'lime',
         'mapgenerator>=1.0.5',
-        'matplotlib<3.6.0',  # github.com/ESMValGroup/ESMValTool/issues/2800
+        'matplotlib',
         'natsort',
         'nc-time-axis',
         'netCDF4',
         'numpy',
+        'packaging',
         'openpyxl',
         'pandas',
         'pyproj',
@@ -65,6 +67,7 @@ REQUIREMENTS = {
         'xesmf==0.3.0',
         'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
+        'zarr',
     ],
     # Test dependencies
     # Execute `pip install .[test]` once and the use `pytest` to run tests
@@ -81,7 +84,8 @@ REQUIREMENTS = {
     # Documentation dependencies
     'doc': [
         'autodocsumm>=0.2.2',
-        'sphinx>=5',
+        'nbsphinx',
+        'sphinx>=6.1.3',
         'sphinx_rtd_theme',
     ],
     # Development dependencies
