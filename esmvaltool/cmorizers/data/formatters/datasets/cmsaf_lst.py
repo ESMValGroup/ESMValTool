@@ -61,10 +61,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                           )
 
                 # now sort coordinates
-                fixed_cubes = fix_coords(loaded_cubes)
+                # fix_coords breaks longitude!
+                # fixed_cubes = fix_coords(loaded_cubes)
 
                 # save this year's data
-                save_variable(fixed_cubes,
+#               save_variable(fixed_cubes,
+                save_variable(loaded_cubes,
                               var,
                               out_dir,
                               glob_attrs
