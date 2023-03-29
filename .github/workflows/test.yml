@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - pin_sphinx_rtd_theme
   schedule:
     - cron: '0 0 * * *'
 
