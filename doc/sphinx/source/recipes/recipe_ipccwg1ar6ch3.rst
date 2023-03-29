@@ -60,9 +60,9 @@ Available recipes and diagnostics
 Recipes are stored in esmvaltool/recipes/ipccwg1ar6ch3/
 
     * recipe_ipccwg1ar6ch3_atmosphere.yml
-    * recipe_ipccwg1ar6ch3_ocean.yml
     * recipe_ipccwg1ar6ch3_fig_3_9.yml
     * recipe_ipccwg1ar6ch3_fig_3_19.yml
+    * recipe_ipccwg1ar6ch3_fig_3_23.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_a.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_b.yml
     * recipe_ipccwg1ar6ch3_fig_3_43.yml

@@ -70,8 +70,8 @@ models_cmip6_historical_woa: &models_cmip6_historical_woa
   - {dataset: GISS-E2-1-H, grid: gn}
   - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
   - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
-    # - {dataset: INM-CM4-8, grid: gr1}
-    # - {dataset: INM-CM5-0, grid: gr1}
+  - {dataset: INM-CM4-8, grid: gr1}
+  - {dataset: INM-CM5-0, grid: gr1}
   - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gn}
   - {dataset: IPSL-CM6A-LR}
   - {dataset: KIOST-ESM, grid: gr1}
@@ -120,8 +120,8 @@ models_cmip6_piControl: &models_cmip6_piControl
      end_year: 2150}
   - {dataset: HadGEM3-GC31-LL, grid: gn, start_year: 1850, end_year: 2349}
   - {dataset: HadGEM3-GC31-MM, grid: gn, start_year: 1850, end_year: 2349}
-    #- {dataset: INM-CM4-8, grid: gr1, start_year: 1850, end_year: 2380}
-    #- {dataset: INM-CM5-0, grid: gr1, start_year: 1996, end_year: 3196}
+  - {dataset: INM-CM4-8, grid: gr1, start_year: 1850, end_year: 2380}
+  - {dataset: INM-CM5-0, grid: gr1, start_year: 1996, end_year: 3196}
   - {dataset: IPSL-CM6A-LR, start_year: 3050, end_year: 3849}
   - {dataset: MIROC6, grid: gn, start_year: 3200, end_year: 3999}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, start_year: 1850,
