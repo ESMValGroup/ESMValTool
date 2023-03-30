@@ -46,7 +46,7 @@ REQUIREMENTS = {
         'numpy',
         'pandas',
         'pynio',
-        'pyproj>=2.1'
+        'pyproj>=2.1',
         'pyyaml',
         'scikit-image',
         'scikit-learn',
