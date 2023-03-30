@@ -85,7 +85,7 @@ REQUIREMENTS = {
     'doc': [
         'autodocsumm>=0.2.2',
         'nbsphinx',
-        'sphinx!=6.1.3',  # github.com/ESMValGroup/ESMValTool/issues/3139
+        'sphinx==6.0.0',  # github.com/ESMValGroup/ESMValTool/issues/3139
         'sphinx_rtd_theme',
     ],
     # Development dependencies
