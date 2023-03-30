@@ -326,16 +326,22 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     except iris.exceptions.CoordinateNotFoundError:
         time_suffix = None
     else:
-        if len(time.points) == 1 and "mon" not in cube.attributes.get('mip'):
+        mip = cube.attributes.get('mip')
+        if len(time.points) == 1 and "mon" not in mip:
             year = str(time.cell(0).point.year)
             time_suffix = '-'.join([year + '01', year + '12'])
         else:
-            date1 = (
-                f"{time.cell(0).point.year:d}{time.cell(0).point.month:02d}"
-            )
-            date2 = (
-                f"{time.cell(-1).point.year:d}{time.cell(-1).point.month:02d}"
-            )
+            tp0, tpn = time.cell(0).point, time.cell(-1).point
+            date1 = f"{tp0.year:d}{tp0.month:02d}"
+            date2 = f"{tpn.year:d}{tpn.month:02d}"
+
+            if "day" in mip or "hr" in mip:
+                date1 = date1 + f"{tp0.day:02d}"
+                date2 = date2 + f"{tpn.day:02d}"
+            if "hr" in mip:
+                date1 = date1 + f"{tp0.hour:02d}{tp0.minute:02d}"
+                date2 = date2 + f"{tpn.hour:02d}{tpn.minute:02d}"
+
             time_suffix = '-'.join([date1, date2])
 
     name_elements = [
@@ -440,10 +446,10 @@ def fix_bounds(cube, dim_coord):
     return cube
 
 
-def fix_dim_coordnames(cube):
+def fix_dim_coordnames(cube, project_id="OBS6"):
     """Perform a check on dim coordinate names."""
     # first check for CMOR standard coord;
-    for coord in cube.coords():
+    for coord in cube.dim_coords:
         # guess the CMOR-standard x, y, z and t axes if not there
         coord_type = iris.util.guess_coord_axis(coord)
         try:
@@ -455,36 +461,35 @@ def fix_dim_coordnames(cube):
                 coord_type)
             continue
 
-        if coord_type == 'T':
-            coord.var_name = 'time'
-            coord.attributes = {}
+        coord.attributes = {}
 
-        if coord_type == 'X':
-            coord.var_name = 'lon'
-            coord.standard_name = 'longitude'
-            coord.long_name = 'longitude coordinate'
-            coord.units = Unit('degrees')
-            coord.attributes = {}
+        match coord_type:
+            case 'T':
+                tindex = 'time'
+            case 'X':
+                tindex = 'longitude'
+            case 'Y':
+                tindex = 'latitude'
+            case 'Z':
+                if coord.var_name == 'depth':
+                    tindex = 'depth_coord'
+                    coord.attributes['positive'] = 'down'
+                elif coord.var_name == 'pressure':
+                    # Any pressure coord would work.
+                    tindex = 'p220'
+                    coord.attributes['positive'] = 'up'
+                else:
+                    tindex = None
+            case _:
+                tindex = None
 
-        if coord_type == 'Y':
-            coord.var_name = 'lat'
-            coord.standard_name = 'latitude'
-            coord.long_name = 'latitude coordinate'
-            coord.units = Unit('degrees')
-            coord.attributes = {}
-
-        if coord_type == 'Z':
-            if coord.var_name == 'depth':
-                coord.standard_name = 'depth'
-                coord.long_name = \
-                    'ocean depth coordinate'
-                coord.var_name = 'lev'
-                coord.attributes['positive'] = 'down'
-            if coord.var_name == 'pressure':
-                coord.standard_name = 'air_pressure'
-                coord.long_name = 'pressure'
-                coord.var_name = 'air_pressure'
-                coord.attributes['positive'] = 'up'
+        if tindex:
+            coord_info = CMOR_TABLES[project_id].coords[tindex]
+            coord.var_name = coord_info.out_name
+            coord.standard_name = coord_info.standard_name
+            coord.long_name = coord_info.long_name
+            if tindex != 'time':
+                coord.units = Unit(coord_info.units) 
     return cube
 
 
@@ -553,7 +558,7 @@ def unpack_files_in_folder(folder):
                 continue
             if filename.startswith('.'):
                 continue
-            if not filename.endswith(('.gz', '.tgz', '.tar')):
+            if not filename.endswith(('.zip', '.bz2', '.gz', '.tgz', '.tar')):
                 continue
             logger.info('Unpacking %s', filename)
             shutil.unpack_archive(full_path, folder)

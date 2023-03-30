@@ -50,7 +50,8 @@ class WGetDownloader(BaseDownloader):
             server_path,
         ]
         if self.overwrite:
-            command.append(f'-O {os.path.basename(server_path)}')
+            command.append(
+                f"--output-document={self.local_folder}/{os.path.basename(server_path)}")
         logger.debug(command)
         subprocess.check_output(command)
 
