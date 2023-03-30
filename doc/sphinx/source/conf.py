@@ -60,6 +60,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'autodocsumm',
+    'sphinxcontrib.jquery',
 ]
 
 autodoc_default_options = {
