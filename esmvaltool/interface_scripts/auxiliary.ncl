@@ -523,7 +523,7 @@ function ncdf_define(ncdf, data)
 ;    20131112-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, data, diag_script, var, fAtt, dimNames, dimSzs, \
-  dimUnlim, atts
+  dimUnlim, atts, i, ii, jj
 begin
 
   funcname = "ncdf_define"
@@ -657,7 +657,7 @@ function ncdf_write(data,
 ; Modification history
 ;    20131107-gottschaldt_klaus-dirk: written.
 ;
-local funcname, scriptname, data, outfile, outfile_in, ncdf, varname
+local funcname, scriptname, data, outfile, outfile_in, ncdf, varname, i, idim
 begin
 
   funcname = "ncdf_write"
@@ -694,19 +694,33 @@ begin
       ncdf = addfile(outfile, "w")
       dimNames = getvardims(data)
       dim_dim = dimsizes(dimNames)
-      ; define dimensions in case not defined yet
-      dimSzs = new(dimsizes(dimNames), long)
-      dimUnlim = new(dimsizes(dimNames), logical)
-      dimUnlim(:) = False
-      do i = 0, dim_dim - 1
-        dimSzs(i) = dimsizes(data&$dimNames(i)$)
+      ; define dimensions in case not defined
+      do idim = 0, dim_dim-1
+        if all(dimNames(idim) .ne. getvardims(ncdf)) then
+          if .not. isdefined("dims_new") then
+            dims_new = dimNames(idim)
+          else
+            dims_new := array_append_index(dims_new, dimNames(idim), 0)
+          end if
+        end if
       end do
-      filedimdef(ncdf, dimNames, dimSzs, dimUnlim)
+      if isdefined("dims_new") then
+        dimSzs = new(dimsizes(dims_new), long)
+        dimUnlim = new(dimsizes(dims_new), logical)
+        dimUnlim(:) = False
+        do i = 0, dim_dim - 1
+          dimSzs(i) = dimsizes(data&$dimsnew(i)$)
+        end do
+        filedimdef(ncdf, dimNames, dimSzs, dimUnlim)
+      end if
       filevardef(ncdf, varname, typeof(data), dimNames)
       ; Copy attributes associated with each variable to the file
       do i = 0, dim_dim - 1
         ; No attribute assignment to variable if no attributes are available
-        if (.not.(all(ismissing(getvaratts(data&$dimNames(i)$))))) then
+        ; Also skip existing dimensions
+        if ((.not.(all(ismissing(getvaratts(data&$dimNames(i)$))))) .and. \
+            (all(dimNames(i) .ne. getvardims(ncdf)))) then
+          print("in if I should not be in")
           filevarattdef(ncdf, dimNames(i), data&$dimNames(i)$)
         end if
       end do
@@ -824,7 +838,7 @@ function copy_CoordNames_n(var_from,
 ; Modification history
 ;    20130419-gottschaldt_klaus-dirk: written.
 ;
-local funcname, scriptname, var_from, var_to, n, rank
+local funcname, scriptname, var_from, var_to, n, rank, ii
 begin
 
   funcname = "copy_CoordNames_n"

@@ -36,6 +36,7 @@ from pprint import pformat
 import iris
 import iris.coord_categorisation as cat
 import matplotlib.pyplot as plt
+import matplotlib.transforms as mpltrans
 import numpy as np
 from scipy import stats
 
@@ -306,9 +307,6 @@ def get_provenance_record(ancestor_files, caption, statistics,
 
 def plot_slope_regression(cfg, data_dict):
     """Scatter plot of linear regression slope, some variables (fig2a)."""
-    if not cfg[n.WRITE_PLOTS]:
-        return
-
     sa_dict = {}
     sa_dict["lvpdt"] = data_dict['regressions'][:, 3]
     sa_dict["rsnstdt"] = data_dict['regressions'][:, 1]
@@ -368,6 +366,8 @@ def plot_slope_regression(cfg, data_dict):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(get_plot_filename('fig2a', cfg),
+                              provenance_record)
 
     fig, axx = plt.subplots(figsize=(7, 7))
 
@@ -424,9 +424,6 @@ def plot_slope_regression(cfg, data_dict):
 
 def plot_slope_regression_all(cfg, data_dict, available_vars):
     """Scatter plot of linear regression slope, all variables (exfig2a)."""
-    if not cfg[n.WRITE_PLOTS]:
-        return
-
     data_model = data_dict['regressions']
     m_all = np.array([np.mean(data_model[:, 3]), np.mean(data_model[:, 0]),
                       np.mean(data_model[:, 1]), np.mean(data_model[:, 2]),
@@ -542,13 +539,12 @@ def plot_slope_regression_all(cfg, data_dict, available_vars):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(get_plot_filename('exfig2a', cfg),
+                              provenance_record)
 
 
 def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
     """Plot linear regression used to calculate ECS."""
-    if not cfg[n.WRITE_PLOTS]:
-        return
-
     filepath = get_plot_filename(dataset_name, cfg)
 
     # Regression line
@@ -618,8 +614,7 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
                       'label': yreg_dict["lab_hfss"]},
                      {'color': 'tab:gray',
                       'linestyle': '-'}],
-        save_kwargs={'bbox_inches': 'tight',
-                     'orientation': 'landscape'},
+        save_kwargs={'bbox_inches': mpltrans.Bbox.from_extents(0, -1, 6.5, 6)},
         axes_functions={'set_title': dataset_name,
                         'set_xlabel': '2−m temperature (tas)' +
                                       'global−mean annual anomaly (' +
@@ -679,6 +674,7 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(filepath, provenance_record)
 
 
 def substract_and_reg_deangelis2(cfg, data, var):

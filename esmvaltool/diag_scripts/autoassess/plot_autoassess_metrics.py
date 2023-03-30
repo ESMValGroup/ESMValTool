@@ -1,12 +1,15 @@
 """Standard MO metrics plotter."""
-import os
 import logging
+import os
 import sys
 
-import iris
 import yaml
+
 from esmvaltool.diag_scripts.autoassess._plot_mo_metrics import (
-    read_model_metrics, read_obs_metrics, plot_nac)
+    plot_nac,
+    read_model_metrics,
+    read_obs_metrics,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +72,6 @@ def main():
 
 
 if __name__ == '__main__':
-    iris.FUTURE.netcdf_promote = True
     logging.basicConfig(format="%(asctime)s [%(process)d] %(levelname)-8s "
                         "%(name)s,%(lineno)s\t%(message)s")
     main()

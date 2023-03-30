@@ -1,0 +1,33 @@
+
+# ESMValTool
+# recipe_cccma_tutorial.yml---
+
+
+documentation:
+  description: Example recipe that plots a sea ice area anomaly.
+  title: Recipe that runs an example diagnostic to calculate sea ice area.
+  authors:
+    - gillett_nathan
+
+
+datasets:
+  - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+
+
+preprocessors:
+  siconc_extractor:
+    custom_order: True
+        extract_month:
+          month: 9
+    regrid:
+      target_grid: 1x1
+      lon_offset: True
+      lat_offset: True
+      scheme: nearest
+    extract_region:
+      start_longitude: 0.0
+      end_longitude: 360.0
+      start_latitude: 50.0
+      end_latitude: 90.0
+
+

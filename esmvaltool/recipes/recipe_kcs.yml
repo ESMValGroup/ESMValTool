@@ -2,6 +2,7 @@
 # recipe_kcs.yml
 ---
 documentation:
+  title: Reproduce KNMI '14 Climate Scenarios
   description: >
     This recipe reproduces the basic steps described in Lenderink 2014,
     one scenario at a time.
@@ -13,6 +14,12 @@ documentation:
     - rol_evert
     - kalverla_peter
     - alidoost_sarah
+
+  maintainer:
+    - unmaintained
+
+  projects:
+    - eucp
 
 
 cmip5: &cmip5

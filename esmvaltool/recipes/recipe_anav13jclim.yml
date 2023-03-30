@@ -2,6 +2,8 @@
 # recipe_anav13jclim.xml
 ---
 documentation:
+  title: Land and ocean components of the global carbon cycle in CMIP5
+
   description: |
     This recipe reproduces most of the figures of Anav et al. (2013).
 
@@ -10,6 +12,9 @@ documentation:
     - wenzel_sabrina
     - schlund_manuel
     - righi_mattia
+
+  maintainer:
+    - gier_bettina
 
   references:
     - anav13jclim
@@ -39,7 +44,7 @@ preprocessors:
       area_type: land
       exclude: [
         'bcc-csm1-1-m',
-        'GCP',
+        'GCP2018',
         'inmcm4',
         'JMA-TRANSCOM',
         'LAI3g',
@@ -308,7 +313,7 @@ diagnostics:
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
         additional_datasets:
-          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2017, frequency: yr}
+          - {dataset: GCP2018, project: OBS, type: reanaly, version: '1.0', tier: 2, start_year: 1959, end_year: 2017, frequency: yr}
     additional_datasets: &nbp_datasets
       - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 2018, tier: 3, start_year: 1986, end_year: 2005}
       - {dataset: BNU-ESM}
@@ -330,7 +335,7 @@ diagnostics:
     scripts:
       main_global:
         <<: *main_global
-        evolution_plot_ref_dataset: GCP
+        evolution_plot_ref_dataset: GCP2018
         evolution_plot_anomaly: false
         anav_month: true
 
@@ -543,7 +548,8 @@ diagnostics:
         reference_dataset: HWSD
         plot_units: PgC
         additional_datasets:
-          - {dataset: HWSD, project: OBS, type: reanaly, version: 1.2, tier: 3, start_year: 2000, end_year: 2000}
+          - {dataset: HWSD, project: OBS, type: reanaly, version: 1.2, tier: 3, start_year: 2000, end_year: 2000,
+             supplementary_variables: [{short_name: sftlf, mip: fx}]}
     additional_datasets:
       - {dataset: BNU-ESM}
       - {dataset: CanESM2}
@@ -606,21 +612,21 @@ diagnostics:
           - {dataset: IPSL-CM5A-LR}
           - {dataset: IPSL-CM5A-MR}
           - {dataset: IPSL-CM5B-LR}
-          - {dataset: MIROC-ESM}
-          - {dataset: MIROC-ESM-CHEM}
+          - {dataset: MIROC-ESM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}
+          - {dataset: MIROC-ESM-CHEM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}
           - {dataset: MPI-ESM-LR}
           - {dataset: MPI-ESM-MR}
           - {dataset: NorESM1-ME}
-      fgco2_GCP:
+      fgco2_GCP2018:
         <<: *var_fgco2
         short_name: fgco2
         preprocessor: default
         additional_datasets:
-          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2017, frequency: yr}
+          - {dataset: GCP2018, project: OBS, type: reanaly, version: '1.0', tier: 2, start_year: 1959, end_year: 2017, frequency: yr}
     scripts:
       main_global:
         <<: *main_global
-        evolution_plot_ref_dataset: GCP
+        evolution_plot_ref_dataset: GCP2018
         evolution_plot_anomaly: false
 
   diag_main_fgco2_not_global:
@@ -850,12 +856,40 @@ diagnostics:
         cm_reverse: true
         cm_interval: [2, 63]
         sort: true
+        diag_order: [
+          'diag_grading_gpp-global',
+          'diag_grading_nbp-global',
+          'diag_grading_lai-global',
+          'diag_grading_tas-global',
+          'diag_grading_pr-global',
+        ]
       collect_nh:
         <<: *collect_global
         ancestors: ['diag_grading_*/grading_nh']
+        diag_order: [
+          'diag_grading_gpp-nh',
+          'diag_grading_nbp-nh',
+          'diag_grading_lai-nh',
+          'diag_grading_tas-nh',
+          'diag_grading_pr-nh',
+        ]
       collect_sh:
         <<: *collect_global
         ancestors: ['diag_grading_*/grading_sh']
+        diag_order: [
+          'diag_grading_gpp-sh',
+          'diag_grading_nbp-sh',
+          'diag_grading_lai-sh',
+          'diag_grading_tas-sh',
+          'diag_grading_pr-sh',
+        ]
       collect_trop:
         <<: *collect_global
         ancestors: ['diag_grading_*/grading_trop']
+        diag_order: [
+          'diag_grading_gpp-trop',
+          'diag_grading_nbp-trop',
+          'diag_grading_lai-trop',
+          'diag_grading_tas-trop',
+          'diag_grading_pr-trop',
+        ]

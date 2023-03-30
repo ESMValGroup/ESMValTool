@@ -73,7 +73,7 @@ begin
     end if
 
     if (units_to.eq."ppmv") then
-      out = out * 1.e-6
+      out = out * 1.e6
       out@units = units_to
       leave_msg(scriptname, funcname)
       return(out)
@@ -124,7 +124,7 @@ begin
     end if
   end if
 
-  if (units_from.eq."mole mole-1") then
+  if (any(units_from.eq.(/"mole mole-1", "mol mol-1"/))) then
     if (any(units_to.eq.(/"ppm", "ppmv", "umol/mol"/))) then
       out = out * 1.e6
       out@units = units_to
@@ -148,6 +148,12 @@ begin
   if (units_from.eq."kg kg-1") then
     if (any(units_to.eq.(/"ng kg-1", "ng/kg"/))) then
       out = out * 1.e12
+      out@units = units_to
+      leave_msg(scriptname, funcname)
+      return(out)
+    end if
+    if (any(units_to.eq.(/"g kg-1", "g/kg"/))) then
+      out = out * 1.e3
       out@units = units_to
       leave_msg(scriptname, funcname)
       return(out)

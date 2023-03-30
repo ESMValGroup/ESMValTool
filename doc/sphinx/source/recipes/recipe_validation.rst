@@ -15,9 +15,8 @@ The meridional_mean and zonal_mean produce variable vs coordinate (``latitude`` 
 in each plot, for the entire duration of time specified and also, if the user wishes, for each season (seasonal means): winter DJF, spring MAM, summer JJA, autumn SON (by setting ``seasonal_analysis: true`` in the recipe).
 
 At least regridding on a common grid for all model and observational datasets should be performed in preprocessing (if datasets
-are on different grids). Also note that currently it is not allowed to use the same dataset (with varying parameters like experiment
-or ensemble) for both CONTROL and EXPERIMENT (the use case for comparison between different experiments or ensembles for the same model
-will be implemented in a future release).
+are on different grids). Also note that it is allowed to use the same dataset (with varying parameters like experiment
+or ensemble or mip) for both CONTROL and EXPERIMENT (as long as at least one data parameter is different).
 
 Available recipes and diagnostics
 -----------------------------------
@@ -55,7 +54,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4mips or OBS or ana4mips can be used.*
+*Note: (1) obs4MIPs or OBS or ana4mips can be used.*
 
 * any observations
 * it is important to note that all observational data should go through the same preprocessing as model data

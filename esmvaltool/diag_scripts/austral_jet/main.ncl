@@ -558,172 +558,170 @@ begin
   ; ---------------------------------------------------------------------------
 
   ; Basic plotting settings
-  if (config_user_info@write_plots) then
-    colors = project_style(INFO0, diag_script_info, "colors")
-    thicks = project_style(INFO0, diag_script_info, "thicks")
-    lg_labels = unique_labels_min(INFO0, (/"dataset", "ensemble"/))
-    plot_file1 = config_user_info@plot_dir + DIAG_SCRIPT + "_" + var0 + \
-      "_" + season + "_trend"
-    plot_file2 = config_user_info@plot_dir + DIAG_SCRIPT + "_" + var0 + \
-      "_" + season + "_climmean"
+  colors = project_style(INFO0, diag_script_info, "colors")
+  thicks = project_style(INFO0, diag_script_info, "thicks")
+  lg_labels = unique_labels_min(INFO0, (/"dataset", "ensemble"/))
+  plot_file1 = config_user_info@plot_dir + DIAG_SCRIPT + "_" + var0 + \
+    "_" + season + "_trend"
+  plot_file2 = config_user_info@plot_dir + DIAG_SCRIPT + "_" + var0 + \
+    "_" + season + "_climmean"
 
-    ; Plotting instances
-    wks1 = gsn_open_wks(file_type, plot_file1)
-    wks2 = gsn_open_wks(file_type, plot_file2)
-    dum0 = new(DIM_DAT, graphic)
-    dum1 = new(DIM_DAT, graphic)
-    error_bar0 = new(DIM_DAT, graphic)
-    error_bar1 = new(DIM_DAT, graphic)
-    ti = ispan(1, dimsizes(val_trend(0, :)), 1)
+  ; Plotting instances
+  wks1 = gsn_open_wks(file_type, plot_file1)
+  wks2 = gsn_open_wks(file_type, plot_file2)
+  dum0 = new(DIM_DAT, graphic)
+  dum1 = new(DIM_DAT, graphic)
+  error_bar0 = new(DIM_DAT, graphic)
+  error_bar1 = new(DIM_DAT, graphic)
+  ti = ispan(1, dimsizes(val_trend(0, :)), 1)
 
-    ; Get plot descriptions
-    if (lat_range(0).le.-82.5 .and. lat_range(1).ge.82.5) then
-      lat_string = "NG"
-    else
-      if (lat_range(0) .ge. 0.0) then
-        lat_string = "(" + round(lat_range(0), 3) + "N"
-      else if (lat_range(0) .lt. 0.0) then
-        lat_string = "(" + -1 * round(lat_range(0), 3) + "S"
-      end if
-      end if
-      lat_string = lat_string + "-"
-      if (lat_range(1) .ge. 0.0) then
-        lat_string = lat_string + round(lat_range(1), 3) + "N)"
-      else if (lat_range(1) .lt. 0.0) then
-        lat_string = lat_string + -1 * round(lat_range(1), 3) + "S)"
-      end if
-      end if
+  ; Get plot descriptions
+  if (lat_range(0).le.-82.5 .and. lat_range(1).ge.82.5) then
+    lat_string = "NG"
+  else
+    if (lat_range(0) .ge. 0.0) then
+      lat_string = "(" + round(lat_range(0), 3) + "N"
+    else if (lat_range(0) .lt. 0.0) then
+      lat_string = "(" + -1 * round(lat_range(0), 3) + "S"
     end if
-    if (season .eq. "yearly") then
-      season = "ANN"
     end if
-
-    ; -------------------------------------------------------------------------
-    ; Plot 1: Trend
-    ; -------------------------------------------------------------------------
-
-    res = True
-    if ((isatt(VAR0, "units"))) then
-        res@tiYAxisString = "(" + VAR0@units + "/dec)"
-    else
-        res@tiYAxisString = "(per dec)"
+    lat_string = lat_string + "-"
+    if (lat_range(1) .ge. 0.0) then
+      lat_string = lat_string + round(lat_range(1), 3) + "N)"
+    else if (lat_range(1) .lt. 0.0) then
+      lat_string = lat_string + -1 * round(lat_range(1), 3) + "S)"
     end if
-    res@tiMainString = lev/100 + " hPa " + season + " " + var0 + " " + \
-      lat_string + " trend (" + diag_script_info@wdiag_title(0) + ")"
-    res@gsnFrame = False                    ; don't draw yet
-    res@gsnDraw = False                     ; don't advance frame
-    res@gsnMaximize = True
-    res@xyMarker = thicks(0)                ; choose type of marker (16)
-    res@xyMonoMarkerColor = False
-    res@xyMarkerColors = colors(0)          ; Marker color
-    res@xyMarkerSizeF = 0.01                ; Marker size (default 0.01)
-    res@tiMainFontHeightF = 0.022
-    res@trYMinF = min(val_trend(0, :)) - 0.5 * abs(min(val_trend(0, :)))
-    res@trYMaxF = max(val_trend(0, :)) + 0.5 * abs(max(val_trend(0, :)))
-    res@trXMinF = 0
-    res@trXMaxF = DIM_DAT + 1
-    res@vpWidthF = 0.9                      ; Change the aspect ratio, but
-    res@vpHeightF = 0.4                     ; make plot as large as possible.
-    res@gsnYRefLine = 0.0
-    res@tmXBLabelAngleF = 90.0
-    res@tmXBMode = "Explicit"               ; explicitly set Y-axis labels
-    res@tmXBLabelJust = "CenterRight"
-    res@tmXBValues = ti
-    res@tmXBLabels = lg_labels
-    res@tmXBLabelFontHeightF = 0.015
-
-    ; Plot trend
-    plot1 = gsn_csm_xy(wks1, \
-                       (/ti(0), ti(0)/), \
-                       (/val_trend(0, 0), val_trend(0, 0)/), \
-                       res)
-    mkres = True
-    mkres@gsMarkerSizeF = 0.01
-    mkres@gsMarkerThicknessF = 1.0
-    do t = 0, DIM_DAT - 1
-      mkres@gsMarkerColor = colors(t)
-      mkres@gsMarkerIndex = 16
-      dum0(t) = gsn_add_polymarker(wks1, plot1, ti(t), val_trend(0, t), mkres)
-    end do
-
-    ; Plot error bars
-    polyres = True
-    do t = 0, DIM_DAT - 1
-      polyres@gsLineColor = colors(t)
-      error_bar0(t) = gsn_add_polyline(wks1, plot1, (/ti(t), ti(t)/), \
-                                       (/val_trend(0, t) - val_trend(1, t), \
-                                       val_trend(0, t) + val_trend(1, t)/), \
-                                       polyres)
-    end do
-    draw(plot1)
-    frame(wks1)
-
-    ; Write ncdf file
-    new_path = work_dir + "trend_" + season + "_" + var0 + ".nc"
-    val_trend@var = var0
-    val_trend@diag_script = DIAG_SCRIPT
-    val_trend@ncdf = new_path
-    outfile_trend = ncdf_write(val_trend, new_path)
-
-    ; Provenance tracking
-    plot_path = plot_file1 + "." + file_type
-    caption = "Trends in " + season + " " + var0 + "."
-    statistics := (/"trend", "stddev"/)
-    log_provenance(outfile_trend, plot_path, caption, statistics, \
-                   DOMAIN, PLOT_TYPE, AUTHORS, REFERENCES, ANCESTORS)
-
-    ; -------------------------------------------------------------------------
-    ; Plot 2: Climatological mean
-    ; -------------------------------------------------------------------------
-
-    res@tiMainString = lev/100 + " hPa " + season + " " + var0 + " " + \
-      lat_string + " mean (" + diag_script_info@wdiag_title(1) + ")"
-    res@tiYAxisString = "(" + VAR0@units + ")"
-    res@trYMinF = min(val_mean(0, :)) - 0.1 * abs(min(val_mean(0, :) - \
-                                                      val_mean(1, :)))
-    res@trYMaxF = max(val_mean(0, :)) + 0.1 * abs(max(val_mean(0, :) + \
-                                                      val_mean(1, :)))
-
-    ; Plot mean
-    plot2 = gsn_csm_xy(wks2, \
-                       (/ti(0), ti(0)/), \
-                       (/val_mean(0, 0), val_mean(0, 0)/), \
-                       res)
-    mkres = True
-    mkres@gsMarkerSizeF = 0.01
-    mkres@gsMarkerThicknessF = 1.0
-    do t = 0, DIM_DAT - 1
-      mkres@gsMarkerColor = colors(t)
-      mkres@gsMarkerIndex = 16    ; thicks(t)
-      dum1(t) = gsn_add_polymarker(wks2, plot2, ti(t), val_mean(0, t), mkres)
-    end do
-
-    ; Plot error bars
-    polyres = True
-    do t = 0, DIM_DAT - 1
-      polyres@gsLineColor = colors(t)
-      error_bar1(t) = gsn_add_polyline(wks2, plot2, (/ti(t), ti(t)/), \
-                                       (/val_mean(0, t) - val_mean(1, t), \
-                                       val_mean(0, t) + val_mean(1, t)/), \
-                                       polyres)
-    end do
-    draw(plot2)
-    frame(wks2)
-
-    ; Write ncdf file
-    new_path = work_dir + "mean_" + season + "_" + var0 + ".nc"
-    val_mean@var = var0
-    val_mean@diag_script = DIAG_SCRIPT
-    val_mean@ncdf = new_path
-    outfile_mean = ncdf_write(val_mean, new_path)
-
-    ; Provenance tracking
-    plot_path = plot_file2 + "." + file_type
-    caption = "Climatological mean in " + season + " " + var0 + "."
-    statistics := (/"mean", "clim", "stddev"/)
-    log_provenance(outfile_mean, plot_path, caption, statistics, \
-                   DOMAIN, PLOT_TYPE, AUTHORS, REFERENCES, ANCESTORS)
+    end if
   end if
+  if (season .eq. "yearly") then
+    season = "ANN"
+  end if
+
+  ; -------------------------------------------------------------------------
+  ; Plot 1: Trend
+  ; -------------------------------------------------------------------------
+
+  res = True
+  if ((isatt(VAR0, "units"))) then
+      res@tiYAxisString = "(" + VAR0@units + "/dec)"
+  else
+      res@tiYAxisString = "(per dec)"
+  end if
+  res@tiMainString = lev/100 + " hPa " + season + " " + var0 + " " + \
+    lat_string + " trend (" + diag_script_info@wdiag_title(0) + ")"
+  res@gsnFrame = False                    ; don't draw yet
+  res@gsnDraw = False                     ; don't advance frame
+  res@gsnMaximize = True
+  res@xyMarker = thicks(0)                ; choose type of marker (16)
+  res@xyMonoMarkerColor = False
+  res@xyMarkerColors = colors(0)          ; Marker color
+  res@xyMarkerSizeF = 0.01                ; Marker size (default 0.01)
+  res@tiMainFontHeightF = 0.022
+  res@trYMinF = min(val_trend(0, :)) - 0.5 * abs(min(val_trend(0, :)))
+  res@trYMaxF = max(val_trend(0, :)) + 0.5 * abs(max(val_trend(0, :)))
+  res@trXMinF = 0
+  res@trXMaxF = DIM_DAT + 1
+  res@vpWidthF = 0.9                      ; Change the aspect ratio, but
+  res@vpHeightF = 0.4                     ; make plot as large as possible.
+  res@gsnYRefLine = 0.0
+  res@tmXBLabelAngleF = 90.0
+  res@tmXBMode = "Explicit"               ; explicitly set Y-axis labels
+  res@tmXBLabelJust = "CenterRight"
+  res@tmXBValues = ti
+  res@tmXBLabels = lg_labels
+  res@tmXBLabelFontHeightF = 0.015
+
+  ; Plot trend
+  plot1 = gsn_csm_xy(wks1, \
+                     (/ti(0), ti(0)/), \
+                     (/val_trend(0, 0), val_trend(0, 0)/), \
+                     res)
+  mkres = True
+  mkres@gsMarkerSizeF = 0.01
+  mkres@gsMarkerThicknessF = 1.0
+  do t = 0, DIM_DAT - 1
+    mkres@gsMarkerColor = colors(t)
+    mkres@gsMarkerIndex = 16
+    dum0(t) = gsn_add_polymarker(wks1, plot1, ti(t), val_trend(0, t), mkres)
+  end do
+
+  ; Plot error bars
+  polyres = True
+  do t = 0, DIM_DAT - 1
+    polyres@gsLineColor = colors(t)
+    error_bar0(t) = gsn_add_polyline(wks1, plot1, (/ti(t), ti(t)/), \
+                                     (/val_trend(0, t) - val_trend(1, t), \
+                                     val_trend(0, t) + val_trend(1, t)/), \
+                                     polyres)
+  end do
+  draw(plot1)
+  frame(wks1)
+
+  ; Write ncdf file
+  new_path = work_dir + "trend_" + season + "_" + var0 + ".nc"
+  val_trend@var = var0
+  val_trend@diag_script = DIAG_SCRIPT
+  val_trend@ncdf = new_path
+  outfile_trend = ncdf_write(val_trend, new_path)
+
+  ; Provenance tracking
+  plot_path = plot_file1 + "." + file_type
+  caption = "Trends in " + season + " " + var0 + "."
+  statistics := (/"trend", "stddev"/)
+  log_provenance(outfile_trend, plot_path, caption, statistics, \
+                 DOMAIN, PLOT_TYPE, AUTHORS, REFERENCES, ANCESTORS)
+
+  ; -------------------------------------------------------------------------
+  ; Plot 2: Climatological mean
+  ; -------------------------------------------------------------------------
+
+  res@tiMainString = lev/100 + " hPa " + season + " " + var0 + " " + \
+    lat_string + " mean (" + diag_script_info@wdiag_title(1) + ")"
+  res@tiYAxisString = "(" + VAR0@units + ")"
+  res@trYMinF = min(val_mean(0, :)) - 0.1 * abs(min(val_mean(0, :) - \
+                                                    val_mean(1, :)))
+  res@trYMaxF = max(val_mean(0, :)) + 0.1 * abs(max(val_mean(0, :) + \
+                                                    val_mean(1, :)))
+
+  ; Plot mean
+  plot2 = gsn_csm_xy(wks2, \
+                     (/ti(0), ti(0)/), \
+                     (/val_mean(0, 0), val_mean(0, 0)/), \
+                     res)
+  mkres = True
+  mkres@gsMarkerSizeF = 0.01
+  mkres@gsMarkerThicknessF = 1.0
+  do t = 0, DIM_DAT - 1
+    mkres@gsMarkerColor = colors(t)
+    mkres@gsMarkerIndex = 16    ; thicks(t)
+    dum1(t) = gsn_add_polymarker(wks2, plot2, ti(t), val_mean(0, t), mkres)
+  end do
+
+  ; Plot error bars
+  polyres = True
+  do t = 0, DIM_DAT - 1
+    polyres@gsLineColor = colors(t)
+    error_bar1(t) = gsn_add_polyline(wks2, plot2, (/ti(t), ti(t)/), \
+                                     (/val_mean(0, t) - val_mean(1, t), \
+                                     val_mean(0, t) + val_mean(1, t)/), \
+                                     polyres)
+  end do
+  draw(plot2)
+  frame(wks2)
+
+  ; Write ncdf file
+  new_path = work_dir + "mean_" + season + "_" + var0 + ".nc"
+  val_mean@var = var0
+  val_mean@diag_script = DIAG_SCRIPT
+  val_mean@ncdf = new_path
+  outfile_mean = ncdf_write(val_mean, new_path)
+
+  ; Provenance tracking
+  plot_path = plot_file2 + "." + file_type
+  caption = "Climatological mean in " + season + " " + var0 + "."
+  statistics := (/"mean", "clim", "stddev"/)
+  log_provenance(outfile_mean, plot_path, caption, statistics, \
+                 DOMAIN, PLOT_TYPE, AUTHORS, REFERENCES, ANCESTORS)
 
   ; ---------------------------------------------------------------------------
   ; Write NETCDF file for MDER

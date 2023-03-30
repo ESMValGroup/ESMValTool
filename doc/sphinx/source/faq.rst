@@ -90,7 +90,7 @@ a symbolic link to it so it gets picked up at every re-run iteration:
    ln -sfT $(ls -1d ~/esmvaltool_output/recipe_example_* | tail -1) ~/esmvaltool_output/recipe_example_latest
 
 
-.. uncomment when feature plopped in master
+.. uncomment when feature plopped in main
 .. # Running a dry run
 .. =================
 
@@ -108,3 +108,16 @@ a symbolic link to it so it gets picked up at every re-run iteration:
 .. way to have this mode run. The information provided will help you obtain any data
 .. that is missing and/or create fixes for the datasets and variables that failed the
 .. CMOR checks and could not be fixed on the fly.
+
+
+Can ESMValTool plot arbitrary model output?
+===========================================
+
+Recipe :ref:`recipe_monitor` allows for the plotting of any preprocessed model.
+The plotting parameters are set through a yaml configuration file, and the
+type of plots to be generated are determined in the recipe.
+
+Moreover, recipe :ref:`recipes_psyplot_diag` and the corresponding diagnostic
+:ref:`psyplot_diag.py <api.esmvaltool.diag_scripts.psyplot_diag>` provide a
+high-level interface to the `Psyplot <https://psyplot.github.io/>`__ package
+which can be used to create a large variety of different plots.

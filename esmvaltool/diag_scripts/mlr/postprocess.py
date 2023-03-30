@@ -62,8 +62,8 @@ add_var_from_cov: bool, optional (default: True)
 area_weighted: bool, optional (default: True)
     Calculate weighted averages/sums when collapsing over latitude and/or
     longitude coordinates using grid cell areas (calculated using grid cell
-    boundaries). Only possible if the datasets contains ``latitude`` and
-    ``longitude`` coordinates.
+    bounds). Only possible for datasets on regular grids that contain
+    ``latitude`` and ``longitude`` coordinates.
 convert_units_to: str, optional
     Convert units of the input data.
 cov_estimate_dim_map: list of int, optional
@@ -85,7 +85,7 @@ pattern: str, optional
 sum: list of str, optional
     Perform sum over the given coordinates.
 time_weighted: bool, optional (default: True)
-    Calculate weighted averages/sums for time (using grid cell boundaries).
+    Calculate weighted averages/sums for time (using time bounds).
 
 """
 
@@ -176,10 +176,10 @@ def _convert_units(cfg, cube):
                      units_to)
         try:
             cube.convert_units(units_to)
-        except ValueError:
+        except ValueError as exc:
             raise ValueError(
                 f"Cannot convert units of cube {cube.summary(shorten=True)} "
-                f"from '{cube.units}' to '{units_to}'")
+                f"from '{cube.units}' to '{units_to}'") from exc
 
 
 def _collapse_covariance_cube(cfg, cov_cube, ref_cube):
@@ -304,7 +304,7 @@ def _estim_cov_identical_shape(squared_error_cube, cov_est_cube, weights):
     error_dim0 = np.ma.sqrt(np.ma.sum(cov_dim0, axis=(1, 2)))
     error_dim1 = np.ma.sqrt(np.ma.sum(cov_dim1, axis=(1, 2)))
 
-    # Collaps further (all weights are already included in first step)
+    # Collapse further (all weights are already included in first step)
     cov_order_0 = pearson_dim0 * np.ma.outer(error_dim0, error_dim0)
     cov_order_1 = pearson_dim1 * np.ma.outer(error_dim1, error_dim1)
     error_order_0 = np.ma.sqrt(np.ma.sum(cov_order_0))
@@ -403,10 +403,9 @@ def _get_all_weights(cfg, cube, power=1):
         if horizontal_coords:
             (horizontal_weights, area_units) = _get_horizontal_weights(
                 cfg, cube, power=power)
+            weights *= horizontal_weights
             if operation == 'sum':
                 units *= area_units
-            if horizontal_weights is not None:
-                weights *= horizontal_weights
             weights /= _get_normalization_factor(
                 horizontal_weights, horizontal_coords, cube,
                 normalize=normalize)**power
@@ -485,8 +484,7 @@ def _get_horizontal_weights(cfg, cube, power=1):
         area_weighted=cfg['area_weighted'],
         landsea_fraction_weighted=cfg.get('landsea_fraction_weighted'),
     )
-    if weights is not None:
-        weights = weights**power
+    weights = weights**power
     if cfg['area_weighted']:
         units = Unit('m2')**power
     else:
@@ -569,7 +567,7 @@ def check_cfg(cfg):
     """Check options of configuration and catch errors."""
     for operation in ('sum', 'mean'):
         if operation in cfg:
-            cfg[operation] = list(set(cfg[operation]))
+            cfg[operation] = sorted(list(set(cfg[operation])))
     for coord in cfg.get('sum', []):
         if coord in cfg.get('mean', []):
             raise ValueError(f"Coordinate '{coord}' given in 'sum' and 'mean'")

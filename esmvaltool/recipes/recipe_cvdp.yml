@@ -2,6 +2,8 @@
 # recipe_cvdp.yml
 ---
 documentation:
+  title: Climate Variability Diagnostics Package
+
   description: |
     Recipe for executing the NCAR CVDP package in the ESMValTool framework.
 

@@ -32,7 +32,7 @@ on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
 # This is used for linking and such so we link to the thing we're building
 rtd_version = os.environ.get("READTHEDOCS_VERSION", "latest")
-if rtd_version not in ["latest", "doc"]:  # TODO: add "stable" once we have it
+if rtd_version not in ["latest", "stable", "doc"]:
     rtd_version = "latest"
 
 # Generate gallery
@@ -60,6 +60,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'autodocsumm',
+    # github.com/readthedocs/sphinx_rtd_theme/issues/1451
+    'sphinxcontrib.jquery',
 ]
 
 autodoc_default_options = {
@@ -69,22 +71,6 @@ autodoc_default_options = {
     'show-inheritance': True,
     'autosummary': True,
 }
-
-autodoc_mock_imports = [
-    'cartopy',
-    'cftime',
-    'cf_units',
-    'ESMPy',
-    'esmvalcore',
-    'GDAL',
-    'iris',
-    'psutil',
-    'pynio',
-    'scipy',
-    'sklearn',
-    'xesmf',
-    'xgboost',
-]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -172,7 +158,7 @@ html_short_title = "ESMValTool {0}".format(release)
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = 'figures/ESMValTool-logo.png'
+html_logo = 'figures/ESMValTool-logo-2.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -264,7 +250,7 @@ latex_elements = {
      \fi}
      \begin{titlepage}
      \begin{center}
-     \includegraphics[width=\textwidth]{../../source/figures/ESMValTool-logo.pdf}\par
+     \includegraphics[width=\textwidth]{../../source/figures/ESMValTool-logo-2.pdf}\par
      \vspace{2cm}
      {\Huge \bf \sffamily User's and Developer's Guide \par}
      \vspace{1cm}
@@ -420,18 +406,19 @@ numfig = True
 
 # Configuration for intersphinx
 intersphinx_mapping = {
-    'cf_units': ('https://scitools.org.uk/cf-units/docs/latest/', None),
+    'cartopy': ('https://scitools.org.uk/cartopy/docs/latest/', None),
+    'cf_units': ('https://cf-units.readthedocs.io/en/latest/', None),
     'esmvalcore':
     (f'https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/',
      None),
     'esmvaltool': (f'https://docs.esmvaltool.org/en/{rtd_version}/', None),
-    'iris': ('https://scitools.org.uk/iris/docs/latest/', None),
+    'iris': ('https://scitools-iris.readthedocs.io/en/latest/', None),
     'lime': ('https://lime-ml.readthedocs.io/en/latest/', None),
-    'matplotlib': ('https://matplotlib.org/', None),
+    'matplotlib': ('https://matplotlib.org/stable/', None),
     'numpy': ('https://numpy.org/doc/stable/', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
     'python': ('https://docs.python.org/3/', None),
-    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/', None),
     'seaborn': ('https://seaborn.pydata.org/', None),
     'sklearn': ('https://scikit-learn.org/stable', None),
 }

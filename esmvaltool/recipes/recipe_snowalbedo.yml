@@ -2,6 +2,8 @@
 # recipe_snowalbedo.yml
 ---
 documentation:
+  title: Snow-albedo feedback
+
   description: |
     Recipe snow-albedo feedback
 
@@ -19,6 +21,7 @@ documentation:
 
 diagnostics:
   snowalbedo:
+    title: Springtime snow-albedo effect (IPCC AR5 Fig. 9.45a)
     description: springtime snow-albedo feedback values vs. seasonal cycle
     themes:
       - EC

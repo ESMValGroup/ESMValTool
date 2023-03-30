@@ -58,6 +58,7 @@ def generate_sidebar(conf, conf_api):
 
     _header("esmvaltool", "ESMValTool")
     _write("esmvaltool", "Introduction", "introduction")
+    _write("esmvaltool", "ESMValTool Functionalities", "functionalities")
     _write("esmvaltool", "Getting started", "quickstart/index")
     _write("esmvaltool", "Gallery", "gallery")
     _write("esmvaltool", "Available recipes", "recipes/index")
@@ -72,6 +73,7 @@ def generate_sidebar(conf, conf_api):
 
     _header("esmvalcore", "ESMValCore")
     _write("esmvalcore", "Getting started", "quickstart/index")
+    _write("esmvalcore", "Example notebooks", "example-notebooks")
     _write("esmvalcore", "The recipe format", "recipe/index")
     _write("esmvalcore", "Diagnostic script interfaces", "interfaces")
     _write("esmvalcore", "Development", "develop/index")

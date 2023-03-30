@@ -2,7 +2,10 @@
 # recipe_ecs_constraints.yml
 ---
 documentation:
-  description: |
+  title: >
+    Emergent constraints for ECS
+
+  description: >
     Multiple emergent constraints for ECS.
 
   authors:
@@ -37,7 +40,7 @@ DIAG_NCL: &diag_ncl
   output_diag_only: true
 
 DIAG_EMERGENT_CONSTRAINT: &diag_emergent_constraint
-  script: emergent_constraints/univariate_constraint.py
+  script: emergent_constraints/single_constraint.py
   ancestors: [
     'ecs_predictor',
     'diag_y_ecs_cmip5/ecs',
@@ -521,7 +524,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: GPCP-SG
         additional_datasets:
-          - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
+          - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2, tier: 1}
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -572,7 +575,7 @@ diagnostics:
         <<: *diag_emergent_constraint
         additional_data:
           - dataset: 0
-            project: obs4mips
+            project: obs4MIPs
             var_type: prediction_input_error
             tag: TII
             data: 0.5
@@ -592,7 +595,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: AIRS
         additional_datasets:
-          - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
+          - {dataset: AIRS, project: obs4MIPs, level: L3, version: RetStd-v5, tier: 1}
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -643,7 +646,7 @@ diagnostics:
         <<: *diag_emergent_constraint
         additional_data:
           - dataset: 0
-            project: obs4mips
+            project: obs4MIPs
             var_type: prediction_input_error
             tag: TIH
             data: 10.0
@@ -752,7 +755,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
       rsutcs:
         <<: *var_settings_cmip5
         preprocessor: default
@@ -761,7 +764,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
       rsdt:
         <<: *var_settings_cmip5
         preprocessor: default
@@ -770,7 +773,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -1174,7 +1177,7 @@ diagnostics:
         end_year: 2010
         reference_dataset: 'AIRS-2-0|MLS-AURA'
         additional_datasets:
-          - {dataset: AIRS-2-0, project: obs4mips, level: L3, version: v2, tier: 1}
+          - {dataset: AIRS-2-0, project: obs4MIPs, level: L3, version: v2, tier: 1}
           - {dataset: MLS-AURA, project: OBS6, type: sat, version: '004', tier: 3}
     additional_datasets:
       - {dataset: ACCESS1-0}

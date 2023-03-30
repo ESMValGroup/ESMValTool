@@ -2,10 +2,14 @@
 # recipe_li17natcc.yml
 ---
 documentation:
+  title: "Constraining future Indian Summer Monsoon projections"
   description: |
     Recipe for reproducing the plots in Li et al., 2017 Nature climate change
 
   authors:
+    - weigel_katja
+
+  maintainer:
     - weigel_katja
 
   references:

@@ -18,7 +18,7 @@ or
 
 2. Make a branch to develop your recipe and diagnostic
 ======================================================
-``git checkout master``
+``git checkout main``
 
 ``git pull``
 

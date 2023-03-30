@@ -1,0 +1,26 @@
+---
+filename: 'esdc-8d-{grid}-{chunking}-{version}.zarr'
+
+attributes:
+  project_id: OBS6
+  dataset_id: ESDC
+  version: 3.0.1
+  tier: 2
+  grid: 0.25deg
+  chunking: 1x720x1440
+  # chunking: 256x128x128
+  modeling_realm: reanaly
+  source: http://data.rsc4earth.de/EarthSystemDataCube/
+  reference: 'esdc'
+  comment: ''
+
+variables:
+  tas:
+    mip: Amon
+    raw: air_temperature_2m
+  tasmax:
+    mip: Amon
+    raw: max_air_temperature_2m
+  tasmin:
+    mip: Amon
+    raw: min_air_temperature_2m

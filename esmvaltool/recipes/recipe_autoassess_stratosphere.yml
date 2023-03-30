@@ -19,6 +19,9 @@ documentation:
 
   authors:
     - predoi_valeriu
+    - sellar_alistair
+
+  title: Diagnostic that computes stratospheric indices (from Autoassess).
 
   maintainer:
     - predoi_valeriu

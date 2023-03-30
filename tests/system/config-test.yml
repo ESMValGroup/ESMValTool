@@ -30,8 +30,6 @@ reference:
 
 # Template for the user configuration file
 user:
-  write_plots: true
-  write_netcdf: true
   log_level: warning
   exit_on_warning: false
   output_file_type: pdf

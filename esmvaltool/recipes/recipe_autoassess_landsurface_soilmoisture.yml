@@ -1,0 +1,65 @@
+# ESMValTool
+# recipe_autoassess_landsurface_soilmoisture.yml
+---
+documentation:
+  description: |
+    Recipe that runs the Autoassess Land-surface assessment area diagnostic.
+    Climatological files are stored externally to avoid overloading the
+    ESMValTool source. See /gws/nopw/j04/esmeval/autoassess_specific_files
+    (on JASMIN).
+
+  authors:
+    - predoi_valeriu
+    - sellar_alistair
+
+  title: Land-surface diagnostic that computes soilmoisture indices (from Autoassess).
+
+  references:
+    - esacci-soilmoisture
+    - dorigo17rse
+    - gruber19essd
+
+  maintainer:
+    - predoi_valeriu
+
+datasets:
+    - {dataset: ACCESS-CM2,  project: CMIP6, exp: historical,  grid: gn,  ensemble: r1i1p1f1,  start_year: 1992,  end_year: 2002}
+    - {dataset: E3SM-1-0,  project: CMIP6, exp: historical,  grid: gr,  ensemble: r1i1p1f1,  start_year: 1992,  end_year: 2002}
+
+preprocessors:
+  pp_aa_area:
+    regrid:  # NOT USED
+      target_grid: 0.15x0.15
+      scheme: linear
+
+diagnostics:
+  aa_landsurf_soilmoisture:
+    description: Autoassess test diag for Land-Surface Soilmoisture.
+    variables:
+      mrsos: # moisture_content_of_soil_layer
+        mip: Lmon
+    scripts:
+      autoassess_landsurf_soilmoisture: &autoassess_landsurf_soilmoisture_settings
+        script: autoassess/autoassess_area_base.py
+        title: "Autoassess Land-Surface Soilmoisture Diagnostic"
+        area: land_surface_soilmoisture
+        control_model: ACCESS-CM2
+        exp_model: E3SM-1-0
+        obs_models: []
+        start: 1993/12/01
+        end: 2002/12/01
+        climfiles_root: '/gws/nopw/j04/esmeval/autoassess_specific_files/files'  # on JASMIN
+
+  plot_standard:
+    description: Wrapper to collect and plot previously calculated metrics
+    scripts:
+      plot_landsurf_soilmoisture: &plot_landsurf_soilmoisture_settings
+        <<: *autoassess_landsurf_soilmoisture_settings
+        control_model: ACCESS-CM2
+        exp_model: E3SM-1-0
+        script: autoassess/plot_autoassess_metrics.py
+        ancestors: ['*/autoassess_landsurf_soilmoisture']
+        title: "Plot Land-Surface Soilmoisture Metrics"
+        plot_name: "Soilmoisture_Metrics"
+        diag_tag: aa_landsurf_soilmoisture
+        diag_name: autoassess_landsurf_soilmoisture

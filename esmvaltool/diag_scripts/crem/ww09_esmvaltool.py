@@ -218,25 +218,22 @@ def main(cfg):
 
     # plot results
 
-    if cfg['write_plots']:
-        plotname = os.path.join(
-            cfg['plot_dir'],
-            'ww09_metric_multimodel.' + cfg['output_file_type'],
-        )
-        logger.debug("Plotting results to %s", plotname)
+    plotname = os.path.join(
+        cfg['plot_dir'],
+        'ww09_metric_multimodel.' + cfg['output_file_type'],
+    )
+    logger.debug("Plotting results to %s", plotname)
 
-        plt.figure()
-        ypos = np.arange(nummod)
-        plt.barh(ypos, crems, align='center')
-        plt.yticks(ypos, models)
-        plt.xlabel('Cloud Regime Error Metric')
+    plt.figure()
+    ypos = np.arange(nummod)
+    plt.barh(ypos, crems, align='center')
+    plt.yticks(ypos, models)
+    plt.xlabel('Cloud Regime Error Metric')
 
-        # draw observational uncertainties (dashed red line)
-        plt.plot([0.96, 0.96], [-0.5, nummod - 0.5], 'r--')
+    # draw observational uncertainties (dashed red line)
+    plt.plot([0.96, 0.96], [-0.5, nummod - 0.5], 'r--')
 
-        plt.savefig(plotname, bbox_inches='tight')
-
-        provenance_record['plot_file'] = plotname
+    plt.savefig(plotname, bbox_inches='tight')
 
     # save results to netcdf
 
@@ -282,6 +279,7 @@ def main(cfg):
 
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(oname, provenance_record)
+        provenance_logger.log(plotname, provenance_record)
 
 
 def read_and_check(srcfilename, varname, lons2, lats2, time2):

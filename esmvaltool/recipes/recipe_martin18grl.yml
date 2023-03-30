@@ -2,6 +2,7 @@
 # recipe_martin18grl.yml
 ---
 documentation:
+  title: "Drought characteristics following Martin (2018)"
   description: |
     Calculate the SPI and counting drought events following Martin (2018).
   authors:
@@ -10,6 +11,9 @@ documentation:
 
   references:
     - martin18grl
+
+  maintainer:
+    - weigel_katja
 
   projects:
     - eval4cmip

@@ -95,7 +95,6 @@ def plot_timehgt(cube, levels, title, log=False, ax1=None):
     new_epoch = time_coord.points[0]
     new_unit_str = 'hours since {}'
     new_unit = new_unit_str.format(time_coord.units.num2date(new_epoch))
-    ax1.xaxis.axis_date()
     ax1.xaxis.set_label(new_unit)
     ax1.xaxis.set_major_locator(mdates.YearLocator(4))
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
@@ -340,8 +339,7 @@ def qbo_metrics(run, ucube, metrics):
 
     # write results to current working directory
     outfile = '{0}_qbo30_{1}.nc'
-    with iris.FUTURE.context(netcdf_no_unlimited=True):
-        iris.save(qbo30, outfile.format(run['runid'], run['period']))
+    iris.save(qbo30, outfile.format(run['runid'], run['period']))
 
     # Calculate QBO metrics
     (period, amp_west, amp_east) = calc_qbo_index(qbo30)
@@ -442,8 +440,7 @@ def teq_metrics(run, tcube, metrics):
 
     # write results to current working directory
     outfile = '{0}_teq100_{1}.nc'
-    with iris.FUTURE.context(netcdf_no_unlimited=True):
-        iris.save(t_months, outfile.format(run['runid'], run['period']))
+    iris.save(t_months, outfile.format(run['runid'], run['period']))
 
     # Calculate metrics
     (tmean, tstrength) = mean_and_strength(t_months)
@@ -471,8 +468,7 @@ def t_metrics(run, tcube, metrics):
 
     # write results to current working directory
     outfile = '{0}_t100_{1}.nc'
-    with iris.FUTURE.context(netcdf_no_unlimited=True):
-        iris.save(t_months, outfile.format(run['runid'], run['period']))
+    iris.save(t_months, outfile.format(run['runid'], run['period']))
 
     # Calculate metrics
     (tmean, tstrength) = mean_and_strength(t_months)
@@ -500,8 +496,7 @@ def q_metrics(run, qcube, metrics):
 
     # write results to current working directory
     outfile = '{0}_q70_{1}.nc'
-    with iris.FUTURE.context(netcdf_no_unlimited=True):
-        iris.save(q_months, outfile.format(run['runid'], run['period']))
+    iris.save(q_months, outfile.format(run['runid'], run['period']))
 
     # Calculate metrics
     qmean = q_mean(q_months)
@@ -759,9 +754,8 @@ def calc_merra(run):
         time=lambda cell:
         run['from_monthly'] <= cell.point <= run['to_monthly']
     )
-    with iris.FUTURE.context(cell_datetime_objects=True):
-        t = t.extract(time)
-        q = q.extract(time)
+    t = t.extract(time)
+    q = q.extract(time)
 
     # zonal mean
     t_cds = [cdt.standard_name for cdt in t.coords()]
@@ -819,9 +813,8 @@ def calc_erai(run):
         time=lambda cell:
         run['from_monthly'] <= cell.point <= run['to_monthly']
     )
-    with iris.FUTURE.context(cell_datetime_objects=True):
-        t = t.extract(time)
-        q = q.extract(time)
+    t = t.extract(time)
+    q = q.extract(time)
     # Calculate time mean
     t = t.collapsed('time', iris.analysis.MEAN)
     q = q.collapsed('time', iris.analysis.MEAN)

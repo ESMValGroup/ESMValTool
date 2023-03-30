@@ -8,8 +8,11 @@ library(ClimProjDiags) # nolint
 
 # function to flatten nested lists
 flatten_lists <- function(x) {
-  if (!inherits(x, "list")) return(list(x))
-  else return(unlist(c(lapply(x, flatten_lists)), recursive = FALSE))
+  if (!inherits(x, "list")) {
+    return(list(x))
+  } else {
+    return(unlist(c(lapply(x, flatten_lists)), recursive = FALSE))
+  }
 }
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -38,41 +41,48 @@ provenance <- list()
 wdata <- NULL
 for (j in 1:4) { # nolint
   input_files_per_var <- yaml::read_yaml(params$input_files[j])
-  var0 <- lapply(input_files_per_var, function(x)
-    x$short_name)
+  var0 <- lapply(input_files_per_var, function(x) {
+    x$short_name
+  })
   fullpath_filenames <- names(var0)
   var0 <- unname(var0)[1]
-  experiment <- lapply(input_files_per_var, function(x)
-    x$exp)
+  experiment <- lapply(input_files_per_var, function(x) {
+    x$exp
+  })
   experiment <- unlist(unname(experiment))
 
   reference_files <- which(unname(experiment) == "historical")
   projection_files <- which(unname(experiment) != "historical")
 
   rcp_scenario <- unique(experiment[projection_files])
-  model_names <- lapply(input_files_per_var, function(x)
-    x$dataset)
+  model_names <- lapply(input_files_per_var, function(x) {
+    x$dataset
+  })
   model_names <- unlist(unname(model_names))[projection_files]
 
   start_reference <-
-    lapply(input_files_per_var, function(x)
-      x$start_year)
+    lapply(input_files_per_var, function(x) {
+      x$start_year
+    })
   start_reference <-
     c(unlist(unname(start_reference))[reference_files])[1]
   end_reference <-
-    lapply(input_files_per_var, function(x)
-      x$end_year)
+    lapply(input_files_per_var, function(x) {
+      x$end_year
+    })
   end_reference <-
     c(unlist(unname(end_reference))[reference_files])[1]
 
   start_projection <-
-    lapply(input_files_per_var, function(x)
-      x$start_year)
+    lapply(input_files_per_var, function(x) {
+      x$start_year
+    })
   start_projection <-
     c(unlist(unname(start_projection))[projection_files])[1]
   end_projection <-
-    lapply(input_files_per_var, function(x)
-      x$end_year)
+    lapply(input_files_per_var, function(x) {
+      x$end_year
+    })
   end_projection <-
     c(unlist(unname(end_projection))[projection_files])[1]
 
@@ -421,7 +431,12 @@ for (j in 1:4) { # nolint
         # Set provenance for output files
         xprov <-
           list(
-            ancestors = flatten_lists(list(projection_filenames, reference_filenames)),
+            ancestors = flatten_lists(
+              list(
+                projection_filenames,
+                reference_filenames
+              )
+            ),
             authors = list(
               "hunter_alasdair",
               "manubens_nicolau",
@@ -432,9 +447,9 @@ for (j in 1:4) { # nolint
             statistics = list("other"),
             weight = weights[j + (m - 1)],
             realms = list("atmos"),
-            themes = list("phys"),
-            plot_file = filepng
+            themes = list("phys")
           )
+        provenance[[filepng]] <- xprov
         provenance[[filencdf]] <- xprov
         # compute weights in the data
         lon <- as.vector(lon)
@@ -467,9 +482,24 @@ if (!is.numeric(weights)) {
 }
 
 # Plotting time series:
+xprov <- list(
+  ancestors = fullpath_filenames,
+  authors = list(
+    "hunter_alasdair",
+    "manubens_nicolau",
+    "perez-zanon_nuria"
+  ),
+  projects = list("c3s-magic"),
+  caption = "Combined selection",
+  statistics = list("other"),
+  realms = list("atmos"),
+  themes = list("phys")
+)
+
 data <- drop(data)
 if (length(data) >= 5) {
-  png(paste0(plot_dir, "/", "CombinedIndices.png"))
+  plot_file <- paste0(plot_dir, "/", "CombinedIndices.png")
+  png(plot_file)
   plot(
     start_projection:end_projection,
     data,
@@ -480,6 +510,7 @@ if (length(data) >= 5) {
     ylab = "Combined indices"
   )
   dev.off()
+  provenance[[plot_file]] <- xprov
 }
 dimtime <- ncdim_def(
   name = "time",
@@ -502,21 +533,6 @@ file <- nc_create(filencdf, list(defdata))
 ncvar_put(file, defdata, data)
 nc_close(file)
 
-
-xprov <- list(
-  ancestors = fullpath_filenames,
-  authors = list(
-    "hunter_alasdair",
-    "manubens_nicolau",
-    "perez-zanon_nuria"
-  ),
-  projects = list("c3s-magic"),
-  plot_file = paste0(plot_dir, "/", "CombinedIndices.png"),
-  caption = "Combined selection",
-  statistics = list("other"),
-  realms = list("atmos"),
-  themes = list("phys")
-)
 provenance[[filencdf]] <- xprov
 
 # Write provenance to file

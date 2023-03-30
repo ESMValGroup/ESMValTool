@@ -23,40 +23,6 @@ determining the stratospheric water vapour concentrations at entry point (70hPa,
 and this in turn is important for the accurate simulation of stratospheric chemistry and
 radiative balance.
 
-Prior and current contributors
-------------------------------
-Met Office:
-
-* Prior to May 2008: Neal Butchart
-* May 2008 - May 2016: Steven C Hardiman
-* Since May 2016: Alistair Sellar and Paul Earnshaw
-
-ESMValTool:
-
-* Since April 2018: Porting into ESMValTool by Valeriu Predoi
-
-
-Developers
-----------
-Met Office:
-
-* Prior to May 2008: Neal Butchart
-* May 2008 - May 2016: Steven C Hardiman
-
-ESMValTool:
-
-* Since April 2018: Valeriu Predoi
-
-Review of current port in ESMValTool
-------------------------------------
-The code and results review of the port from native Autoassess to ESMValTool
-was conducted by Alistair Sellar (`<alistair.sellar@matoffice.gov.uk>`_) and
-Valeriu Predoi (`<valeriu.predoi@ncas.ac.uk>`_) in July 2019. Review consisted in
-comparing results from runs using ESMValTool's port and native Autoassess using
-the same models and data stretches.
-
-Metrics and Diagnostics
------------------------
 
 Performance metrics:
 
@@ -75,28 +41,30 @@ Performance metrics:
 * 100 hPa equatorial temp (annual cycle strength) vs. ERA Interim
 * 70 hPa 10S-10N water vapour (annual mean) vs. ERA-Interim
 
-Diagnostics:
+Diagnostic plot:
 
 * Age of stratospheric air vs. observations from Andrews et al. (2001) and Engel et al. (2009)
 
 
-Model Data
-----------
+Available recipes and diagnostics
+---------------------------------
 
-===========================   ================== ============== ==============================================
-Variable/Field name           realm              frequency      Comment
-===========================   ================== ============== ==============================================
-Eastward wind (ua)            Atmosphere         monthly mean   original stash: x-wind, no stash
-Air temperature (ta)          Atmosphere         monthly mean   original stash: m01s30i204
-Specific humidity (hus)       Atmosphere         monthly mean   original stash: m01s30i205
-===========================   ================== ============== ==============================================
+Recipes are stored in esmvaltool/recipes/
 
-The recipe takes as input a control model and experimental model, comparisons being made
-with these two CMIP models; additionally it can take observational data s input, in the
-current implementation ERA-Interim.
+* recipe_autoassess_stratosphere.yml
 
-Inputs and usage
-----------------
+Diagnostics are stored in esmvaltool/diag_scripts/autoassess/
+
+* autoassess_area_base.py: wrapper for autoassess scripts
+* stratosphere/strat_metrics_1.py: calculation of metrics
+* stratosphere/age_of_air.py: calculate age of stratospheric air
+* stratosphere/plotting.py: zonal mean wind and QBO plots
+* plot_autoassess_metrics.py: plot normalised assessment metrics
+
+
+User settings in recipe
+-----------------------
+
 The ``stratosphere`` area metric is part of the ``esmvaltool/diag_scripts/autoassess`` diagnostics,
 and, as any other ``autoassess`` metric, it uses the ``autoassess_area_base.py`` as general purpose
 wrapper. This wrapper accepts a number of input arguments that are read through from the recipe.
@@ -122,7 +90,7 @@ are almost the same as for the other Atoassess metrics.
    implementation to fully replicate the native Autoassess functionality
    and a minor user inconvenience since they need to set an extra set of
    ``start`` and ``end`` arguments in the diagnostic; this will be phased
-   when all the native Autoassess metrics hanve been ported to ESMValTool
+   when all the native Autoassess metrics have been ported to ESMValTool
    review has completed.
 
 .. note::
@@ -156,19 +124,37 @@ over to the diagnostic/metric is listed below.
         end: 2014/12/01  # end date in native Autoassess format
 
 
+Variables
+---------
+
+===========================   ================== ============== ==============================================
+Variable/Field name           realm              frequency      Comment
+===========================   ================== ============== ==============================================
+Eastward wind (ua)            Atmosphere         monthly mean   original stash: x-wind, no stash
+Air temperature (ta)          Atmosphere         monthly mean   original stash: m01s30i204
+Specific humidity (hus)       Atmosphere         monthly mean   original stash: m01s30i205
+===========================   ================== ============== ==============================================
+
+The recipe takes as input a control model and experimental model, comparisons being made
+with these two CMIP models; additionally it can take observational data s input, in the
+current implementation ERA-Interim.
+
+
+Observations and reformat scripts
+-----------------------------------
+
+ERA-Interim (ta, ua, hus - cmorizers/data/formatters/datasets/era_interim.py)
+
+
 References
 ----------
 * Andrews, A. E., and Coauthors, 2001: Mean ages of stratospheric air derived from in situ observations of CO2, CH4, and N2O. J. Geophys. Res.,   106 (D23), 32295-32314.
 * Dee, D. P., and Coauthors, 2011: The ERA-Interim reanalysis: configuration and performance of the data assimilation system. Q. J. R. Meteorol.  Soc, 137, 553-597, doi:10.1002/qj.828.
 * Engel, A., and Coauthors, 2009: Age of stratospheric air unchanged within uncertainties over the past 30 years. Nat. Geosci., 2, 28-31, doi:10  .1038/NGEO388.
 
-Observations Data sets
-----------------------
 
-ERA-Interim data (Dee et al., 2011) data can be obtained online from ECMWF and NASA respectively.  Monthly mean zonal mean U and T data are required. CMORized that exists on CEDA-Jasmin or DKRZ (contact Valeriu Predoi (`<valeriu.predoi@ncas.ac.uk>`_) for Jasmin or Mattia Righi (`<mattia.righi@dlr.de>`_ )for DKRZ).
-
-Sample Plots and metrics
-------------------------
+Example metrics and plots
+-------------------------
 Below is a set of metrics for  UKESM1-0-LL (historical data); the table
 shows a comparison made between running ESMValTool on CMIP6 CMORized
 netCDF data freely available on ESGF nodes and the run made using native
@@ -202,7 +188,7 @@ on ``.pp`` data from UKESM1 ``u-bc179`` suite and are listed here to confirm the
 compliance between the ported Autoassess metric in ESMValTool and the original native metric.
 
 Another reference run comparing UKESM1-0-LL to the physical model HadGEM3-GC31-LL can be found
-`here <https://github.com/NCAS-CMS/NCAS-Useful-Documentation/tree/master/autoassess_review_results/stratosphere_AERmonZ/plots/aa_strato/autoassess_strato_test_1/HadGEM3-GC31-LL_vs_UKESM1-0-LL/stratosphere>`_ .
+`here <https://github.com/NCAS-CMS/NCAS-Useful-Documentation/tree/main/autoassess_review_results/stratosphere_AERmonZ/plots/aa_strato/autoassess_strato_test_1/HadGEM3-GC31-LL_vs_UKESM1-0-LL/stratosphere>`_ .
 
 
 .. figure:: /recipes/figures/autoassess_stratosphere/metrics.png
@@ -247,3 +233,28 @@ Another reference run comparing UKESM1-0-LL to the physical model HadGEM3-GC31-L
    :alt: teq_100hpa.png
 
    Equatorial temperature at 100hPa, multi annual means.
+
+
+Prior and current contributors
+------------------------------
+Met Office:
+
+* Prior to May 2008: Neal Butchart
+* May 2008 - May 2016: Steven C Hardiman
+* Since May 2016: Alistair Sellar and Paul Earnshaw
+
+ESMValTool:
+
+* Since April 2018: Porting into ESMValTool by Valeriu Predoi
+
+
+Developers
+----------
+Met Office:
+
+* Prior to May 2008: Neal Butchart
+* May 2008 - May 2016: Steven C Hardiman
+
+ESMValTool:
+
+* Since April 2018: Valeriu Predoi

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Diagnostic script to reproduce Cox et al. (2018).
+"""Diagnostic script to reproduce emergent constraint of Cox et al. (2018).
 
 Description
 -----------
-Plot equilibrium climate sensitivity ECS vs. temperature variability metric psi
+Plot equilibrium climate sensitivity ECS vs. temperature variability metric Ψ
 to establish an emergent relationship for ECS.
 
 Author
@@ -17,7 +17,7 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-confidence_level : float, optional (default: 0.66)
+confidence_level: float, optional (default: 0.66)
     Confidence level for ECS error estimation.
 
 """
@@ -42,6 +42,7 @@ from esmvaltool.diag_scripts.shared import (
     plot,
     run_diagnostic,
     select_metadata,
+    sorted_metadata,
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -80,7 +81,7 @@ def _get_ancestor_files(cfg, obs_name, projects=None):
             select_metadata(cfg['input_data'].values(), project=project))
     datasets.extend(
         select_metadata(cfg['input_data'].values(), dataset=obs_name))
-    return [d['filename'] for d in datasets]
+    return sorted([d['filename'] for d in datasets])
 
 
 def _get_model_color(model, lambda_cube):
@@ -133,20 +134,16 @@ def _get_project(cfg):
     projects = [p for p in projects if 'obs' not in p.lower()]
     if len(projects) == 1:
         return projects[0]
-    return projects
+    return sorted(projects)
 
 
 def _save_fig(cfg, basename, legend=None):
     """Save matplotlib figure."""
     path = get_plot_filename(basename, cfg)
-    if legend is None:
-        legend = []
-    else:
-        legend = [legend]
-    FIG.savefig(path,
-                additional_artists=legend,
-                bbox_inches='tight',
-                orientation='landscape')
+    savefig_kwargs = dict(bbox_inches='tight', orientation='landscape')
+    if legend is not None:
+        savefig_kwargs['bbox_extra_artists'] = [legend]
+    FIG.savefig(path, **savefig_kwargs)
     logger.info("Wrote %s", path)
     AXES.cla()
     return path
@@ -156,6 +153,7 @@ def get_external_cubes(cfg):
     """Get external cubes for psi, ECS and lambda."""
     cubes = iris.cube.CubeList()
     input_data = list(cfg['input_data'].values())
+    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
     for filename in ('psi.nc', 'ecs.nc', 'lambda.nc'):
         filepath = io.get_ancestor_file(cfg, filename)
         cube = iris.load_cube(filepath)
@@ -230,36 +228,36 @@ def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
         ['times'], _get_ancestor_files(cfg, obs_name))
 
     # Plot
-    if cfg['write_plots']:
-        models = lambda_cube.coord('dataset').points
+    models = lambda_cube.coord('dataset').points
 
-        # Plot lines
-        for model in models:
-            cube = tas_cubes[model]
-            AXES.plot(cube.coord('year').points,
-                      cube.data,
-                      color=_get_model_color(model, lambda_cube))
-        obs_style = plot.get_dataset_style('OBS', 'cox18nature')
-        obs_cube = tas_cubes[obs_name]
-        AXES.plot(obs_cube.coord('year').points,
-                  obs_cube.data,
-                  linestyle='none',
-                  marker='o',
-                  markeredgecolor=obs_style['color'],
-                  markerfacecolor=obs_style['color'])
+    # Plot lines
+    for model in models:
+        cube = tas_cubes[model]
+        AXES.plot(cube.coord('year').points,
+                  cube.data,
+                  color=_get_model_color(model, lambda_cube))
+    obs_style = plot.get_dataset_style('OBS', 'cox18nature')
+    obs_cube = tas_cubes[obs_name]
+    AXES.plot(obs_cube.coord('year').points,
+              obs_cube.data,
+              linestyle='none',
+              marker='o',
+              markeredgecolor=obs_style['color'],
+              markerfacecolor=obs_style['color'])
 
-        # Plot appearance
-        AXES.set_title('Simulation of global warming record')
-        AXES.set_xlabel('Year')
-        AXES.set_ylabel('Temperature anomaly / K')
-        legend = _get_line_plot_legend()
+    # Plot appearance
+    AXES.set_title('Simulation of global warming record')
+    AXES.set_xlabel('Year')
+    AXES.set_ylabel('Temperature anomaly / K')
+    legend = _get_line_plot_legend()
 
-        # Save plot
-        provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
+    # Save plot
+    plot_path = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 def plot_psi(cfg, psi_cubes, lambda_cube, obs_name):
@@ -278,36 +276,36 @@ def plot_psi(cfg, psi_cubes, lambda_cube, obs_name):
         ['corr', 'var'], ['times'], _get_ancestor_files(cfg, obs_name))
 
     # Plot
-    if cfg['write_plots']:
-        models = lambda_cube.coord('dataset').points
+    models = lambda_cube.coord('dataset').points
 
-        # Plot lines
-        for model in models:
-            cube = psi_cubes[model]
-            AXES.plot(cube.coord('year').points,
-                      cube.data,
-                      color=_get_model_color(model, lambda_cube))
-        obs_style = plot.get_dataset_style('OBS', 'cox18nature')
-        obs_cube = psi_cubes[obs_name]
-        AXES.plot(obs_cube.coord('year').points,
-                  obs_cube.data,
-                  linestyle='none',
-                  marker='o',
-                  markeredgecolor=obs_style['color'],
-                  markerfacecolor=obs_style['color'])
+    # Plot lines
+    for model in models:
+        cube = psi_cubes[model]
+        AXES.plot(cube.coord('year').points,
+                  cube.data,
+                  color=_get_model_color(model, lambda_cube))
+    obs_style = plot.get_dataset_style('OBS', 'cox18nature')
+    obs_cube = psi_cubes[obs_name]
+    AXES.plot(obs_cube.coord('year').points,
+              obs_cube.data,
+              linestyle='none',
+              marker='o',
+              markeredgecolor=obs_style['color'],
+              markerfacecolor=obs_style['color'])
 
-        # Plot appearance
-        AXES.set_title('Metric of variability versus time')
-        AXES.set_xlabel('Year')
-        AXES.set_ylabel(r'$\Psi$ / K')
-        legend = _get_line_plot_legend()
+    # Plot appearance
+    AXES.set_title('Metric of variability versus time')
+    AXES.set_xlabel('Year')
+    AXES.set_ylabel(r'$\Psi$ / K')
+    legend = _get_line_plot_legend()
 
-        # Save plot
-        provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
+    # Save plot
+    plot_path = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
@@ -331,55 +329,54 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
         ['scatter'], _get_ancestor_files(cfg, obs_cube.attributes['dataset']))
 
     # Plot
-    if cfg['write_plots']:
-        obs_mean = np.mean(obs_cube.data)
-        obs_std = np.std(obs_cube.data)
+    obs_mean = np.mean(obs_cube.data)
+    obs_std = np.std(obs_cube.data)
 
-        # Calculate regression line
-        lines = ec.regression_surface(psi_cube.data, ecs_cube.data,
-                                      n_points=1000)
-        logger.info("Found emergent relationship with slope %.2f (R2 = %.2f)",
-                    lines['coef'], lines['R2'])
+    # Calculate regression line
+    lines = ec.regression_line(psi_cube.data, ecs_cube.data)
+    logger.info("Found emergent relationship with slope %.2f (R2 = %.2f)",
+                lines['slope'], lines['rvalue']**2)
 
-        # Plot points
-        for model in psi_cube.coord('dataset').points:
-            _plot_model_point(model, psi_cube, ecs_cube, lambda_cube)
+    # Plot points
+    for model in psi_cube.coord('dataset').points:
+        _plot_model_point(model, psi_cube, ecs_cube, lambda_cube)
 
-        # Plot lines
-        AXES.set_xlim(auto=False)
-        AXES.set_ylim(auto=False)
-        AXES.plot(lines['x'],
-                  lines['y'],
-                  color='black',
-                  linestyle='dashdot',
-                  label='Linear regression')
-        AXES.plot(lines['x'],
-                  lines['y_minus_err'],
-                  color='black',
-                  linestyle='dashed')
-        AXES.plot(lines['x'],
-                  lines['y_plus_err'],
-                  color='black',
-                  linestyle='dashed')
-        AXES.axvline(obs_mean,
-                     color='blue',
-                     linestyle='dashdot',
-                     label='Observational constraint')
-        AXES.axvline(obs_mean - obs_std, color='blue', linestyle='dashed')
-        AXES.axvline(obs_mean + obs_std, color='blue', linestyle='dashed')
+    # Plot lines
+    AXES.set_xlim(auto=False)
+    AXES.set_ylim(auto=False)
+    AXES.plot(lines['x'],
+              lines['y'],
+              color='black',
+              linestyle='dashdot',
+              label='Linear regression')
+    AXES.plot(lines['x'],
+              lines['y_minus_err'],
+              color='black',
+              linestyle='dashed')
+    AXES.plot(lines['x'],
+              lines['y_plus_err'],
+              color='black',
+              linestyle='dashed')
+    AXES.axvline(obs_mean,
+                 color='blue',
+                 linestyle='dashdot',
+                 label='Observational constraint')
+    AXES.axvline(obs_mean - obs_std, color='blue', linestyle='dashed')
+    AXES.axvline(obs_mean + obs_std, color='blue', linestyle='dashed')
 
-        # Plot appearance
-        AXES.set_title('Emergent relationship fit')
-        AXES.set_xlabel(r'$\Psi$ / K')
-        AXES.set_ylabel('ECS / K')
-        legend = AXES.legend(loc='upper left')
+    # Plot appearance
+    AXES.set_title('Emergent relationship fit')
+    AXES.set_xlabel(r'$\Psi$ / K')
+    AXES.set_ylabel('ECS / K')
+    legend = AXES.legend(loc='upper left')
 
-        # Save plot
-        provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
+    # Save plot
+    plot_path = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 def plot_pdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name):
@@ -401,31 +398,31 @@ def plot_pdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name):
         _get_ancestor_files(cfg, obs_name))
 
     # Plot
-    if cfg['write_plots']:
-        AXES.plot(ecs_lin,
-                  ecs_pdf,
-                  color='black',
-                  linewidth=2.0,
-                  label='Emergent constraint')
-        AXES.hist(ecs_cube.data,
-                  bins=6,
-                  range=(2.0, 5.0),
-                  density=True,
-                  color='orange',
-                  label='{} models'.format(project))
+    AXES.plot(ecs_lin,
+              ecs_pdf,
+              color='black',
+              linewidth=2.0,
+              label='Emergent constraint')
+    AXES.hist(ecs_cube.data,
+              bins=6,
+              range=(2.0, 5.0),
+              density=True,
+              color='orange',
+              label='{} models'.format(project))
 
-        # Plot appearance
-        AXES.set_title('PDF of emergent constraint')
-        AXES.set_xlabel('ECS / K')
-        AXES.set_ylabel('Probability density')
-        legend = AXES.legend(loc='upper left')
+    # Plot appearance
+    AXES.set_title('PDF of emergent constraint')
+    AXES.set_xlabel('ECS / K')
+    AXES.set_ylabel('Probability density')
+    legend = AXES.legend(loc='upper left')
 
-        # Save plot
-        provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
+    # Save plot
+    plot_path = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 def plot_cdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name):
@@ -452,38 +449,38 @@ def plot_cdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name):
         ['other'], _get_ancestor_files(cfg, obs_name))
 
     # Plot
-    if cfg['write_plots']:
-        AXES.plot(ecs_lin,
-                  ecs_cdf,
-                  color='black',
-                  linewidth=2.0,
-                  label='Emergent constraint')
-        AXES.hist(ecs_cube.data,
-                  bins=6,
-                  range=(2.0, 5.0),
-                  cumulative=True,
-                  density=True,
-                  color='orange',
-                  label='{} models'.format(project))
-        AXES.axhline((1.0 - confidence_level) / 2.0,
-                     color='black',
-                     linestyle='dashdot')
-        AXES.axhline((1.0 + confidence_level) / 2.0,
-                     color='black',
-                     linestyle='dashdot')
+    AXES.plot(ecs_lin,
+              ecs_cdf,
+              color='black',
+              linewidth=2.0,
+              label='Emergent constraint')
+    AXES.hist(ecs_cube.data,
+              bins=6,
+              range=(2.0, 5.0),
+              cumulative=True,
+              density=True,
+              color='orange',
+              label='{} models'.format(project))
+    AXES.axhline((1.0 - confidence_level) / 2.0,
+                 color='black',
+                 linestyle='dashdot')
+    AXES.axhline((1.0 + confidence_level) / 2.0,
+                 color='black',
+                 linestyle='dashdot')
 
-        # Plot appearance
-        AXES.set_title('CDF of emergent constraint')
-        AXES.set_xlabel('ECS / K')
-        AXES.set_ylabel('CDF')
-        legend = AXES.legend(loc='upper left')
+    # Plot appearance
+    AXES.set_title('CDF of emergent constraint')
+    AXES.set_xlabel('ECS / K')
+    AXES.set_ylabel('CDF')
+    legend = AXES.legend(loc='upper left')
 
-        # Save plot
-        provenance_record['plot_file'] = _save_fig(cfg, filename, legend)
+    # Save plot
+    plot_path = _save_fig(cfg, filename, legend)
 
     # Write provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 def get_ecs_range(cfg, ecs_lin, ecs_pdf):
@@ -492,11 +489,11 @@ def get_ecs_range(cfg, ecs_lin, ecs_pdf):
     conf_low = (1.0 - confidence_level) / 2.0
     conf_high = (1.0 + confidence_level) / 2.0
 
-    # Calculate CDF
-    ecs_cdf = ec.cdf(ecs_lin, ecs_pdf)
+    # Mean ECS
+    ecs_mean = np.sum(ecs_lin * ecs_pdf) / np.sum(ecs_pdf)
 
     # Calculate constrained ECS range
-    ecs_mean = ecs_lin[np.argmax(ecs_pdf)]
+    ecs_cdf = ec.cdf(ecs_lin, ecs_pdf)
     ecs_index_range = np.where((ecs_cdf >= conf_low)
                                & (ecs_cdf <= conf_high))[0]
     ecs_range = ecs_lin[ecs_index_range]
@@ -510,6 +507,7 @@ def main(cfg):
     input_data = (
         select_metadata(cfg['input_data'].values(), short_name='tas') +
         select_metadata(cfg['input_data'].values(), short_name='tasa'))
+    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
     if not input_data:
         raise ValueError("This diagnostics needs 'tas' or 'tasa' variable")
 
@@ -530,9 +528,9 @@ def main(cfg):
         obs_cube = psi_cubes[obs_name]
         plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube,
                                    obs_cube)
-        (ecs_lin, ecs_pdf) = ec.gaussian_pdf(psi_cube.data, ecs_cube.data,
-                                             np.mean(obs_cube.data),
-                                             np.var(obs_cube.data))
+        (ecs_lin, ecs_pdf) = ec.target_pdf(psi_cube.data, ecs_cube.data,
+                                           np.mean(obs_cube.data),
+                                           np.std(obs_cube.data))
         plot_pdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name)
         plot_cdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name)
 

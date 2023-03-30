@@ -2,6 +2,7 @@
 # recipe_russell18jgr.yml
 ---
 documentation:
+  title: Southern Ocean Metrics
   description: |
     Recipe for russell et al figures 1, 2, 3a, 3b, 4, 5, 5g, 6a,
                                      6b, 7, 7h, 7i, 8, 9a, 9b, 9c.
@@ -45,7 +46,7 @@ diagnostics:
       Diagnostic for russell et al figure 1. Plots Annual-mean zonal wind
        stress as polar contour map. Here, we are using tauuo. Figures in
       russell18jgr paper were  made using tauuo, but tauu can also be used if
-      tauuo file is not availble. To use tauu variable in this recipe just
+      tauuo file is not available. To use tauu variable in this recipe just
       uncomment variable 'tauu' and add dataset names in additional datasets of
       respective variable. If there are no dataset in a variable, entire
       variable section needs to be commented out.
@@ -100,7 +101,7 @@ diagnostics:
       Diagnostic for russell et al Figure 2. Plots The zonal and annual means
       of the zonal wind stress (N/m^2). Here, we are using tauuo,
       figures in russell18jgr paper were  made using tauuo, but tauu can
-      also be used if tauuo file is not availble. To use tauu variable
+      also be used if tauuo file is not available. To use tauu variable
       in this recipe just uncomment variable 'tauu' and add dataset names
       in additional datasets of respective variable. If there are no dataset
       in a variable, entire variable section needs to be commented out.
@@ -624,7 +625,7 @@ diagnostics:
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}  # , ensemble: r3i1p1}
+      - {dataset: MIROC-ESM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}  # , ensemble: r3i1p1}
       - {dataset: MRI-ESM1}
     scripts:
       fgco2-polar:
@@ -680,7 +681,7 @@ diagnostics:
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}  # , ensemble: r3i1p1}
+      - {dataset: MIROC-ESM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}  # , ensemble: r3i1p1}
       - {dataset: MRI-ESM1}
     scripts:
       fgco2_line:
@@ -709,6 +710,8 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1986
         end_year: 2005
+        additional_datasets:
+          - {dataset: MIROC-ESM, supplementary_variables: [{short_name: sftlf, mip: fx, ensemble: r0i0p0}, {short_name: sftof, skip: true}]}  # , ensemble: r3i1p1}
       areacello:
         mip: fx
         project: CMIP5
@@ -716,6 +719,8 @@ diagnostics:
         ensemble: r0i0p0
         start_year: 1986
         end_year: 2005
+        additional_datasets:
+          - {dataset: MIROC-ESM}  # , ensemble: r3i1p1}
     additional_datasets:
       - {dataset: bcc-csm1-1}
       # - {dataset: BNU-ESM}
@@ -728,7 +733,6 @@ diagnostics:
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}  # , ensemble: r3i1p1}
       - {dataset: MRI-ESM1}
     scripts:
       fgco2_cumulative_line:

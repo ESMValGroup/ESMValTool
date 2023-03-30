@@ -2,6 +2,9 @@
 # recipe_extreme_index.yml
 ---
 documentation:
+  title: |
+    Time series for extreme events.
+
   description: |
     Tool to compute time series of a number of extreme events: heatwave,
     coldwave, heavy precipitation, drought and high wind.
@@ -12,6 +15,9 @@ documentation:
     - manubens_nicolau
     - caron_louis-philippe
 
+  maintainer:
+    - unmaintained
+
   projects:
     - c3s-magic
 
@@ -19,8 +25,8 @@ documentation:
     - alexander06jgr
 
 datasets:
-  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1971,  end_year: 2000}
-  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
+  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1971, end_year: 2000}
+  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2020, end_year: 2040}
 
 preprocessors:
   preproc:

@@ -9,6 +9,8 @@ documentation:
     esmvaltool/diag_scripts/shapeselect/testdata/Elbe.* and
     placed in the auxiliary_data_dir defined in config-user.yml.
 
+  title: Example recipe extracting precipitation in the Elbe catchment.
+
   authors:
     - andela_bouwe
 

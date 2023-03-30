@@ -39,7 +39,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* GPCP-SG observations (accessible via the obs4mips project)
+* GPCP-SG observations (accessible via the obs4MIPs project)
 
 
 References

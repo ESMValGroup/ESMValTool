@@ -34,6 +34,11 @@ that the simulated frequency of occurrence of a particular regime is zero,
 then a NaN will be returned from the code and a bar not plotted on the
 figure for that model.
 
+The original publication recommends to use sea ice fields from one model also
+for other models that do not provide daily sea ice concentration. This is
+possible as sea ice concentrations are prescribed in the AMIP simulations and
+has been done to produce the example figure shown below.
+
 
 Available recipes and diagnostics
 ---------------------------------
@@ -103,9 +108,11 @@ Example plots
 
 .. figure:: /recipes/figures/crem/crem_error_metric.png
    :width: 10cm
-   :alt: xxxxx
+   :alt: CREM
 
    Cloud Regime Error Metrics (CREMpd) from William and Webb (2009) applied
-   to those CMIP5 AMIP simulations with the required data in the archive. A
+   to selected CMIP5 AMIP simulations. A
    perfect score with respect to ISCCP is zero; the dashed red line is an
    indication of observational uncertainty.
+   Note: as daily sea ice concentration (sic) is not available for all models
+   shown, the regridded fields from CanAM4 have been used for all models.

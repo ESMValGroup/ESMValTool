@@ -9,7 +9,6 @@ kwargs: &kwargs
   output_file_type: pdf
   plot_dir: /luke/i/am/your/father
   work_dir: /no
-  write_plots: true
   parameters:
     very: 3.0
     cool: 1

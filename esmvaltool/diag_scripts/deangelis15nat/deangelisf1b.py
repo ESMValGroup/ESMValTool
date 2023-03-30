@@ -102,9 +102,6 @@ def get_provenance_record(ancestor_files, caption, statistics,
 
 def plot_bar_deangelis(cfg, data_var_sum, available_exp, available_vars):
     """Plot linear regression used to calculate ECS."""
-    if not cfg[n.WRITE_PLOTS]:
-        return
-
     # Plot data
     fig, axx = plt.subplots()
 
@@ -125,7 +122,8 @@ def plot_bar_deangelis(cfg, data_var_sum, available_exp, available_vars):
     axx.legend(loc=1)
 
     fig.tight_layout()
-    fig.savefig(get_plot_filename('bar_all', cfg), dpi=300)
+    plot_file = get_plot_filename('bar_all', cfg)
+    fig.savefig(plot_file, dpi=300)
     plt.close()
 
     caption = 'Global average multi-model mean comparing different ' + \
@@ -153,6 +151,7 @@ def plot_bar_deangelis(cfg, data_var_sum, available_exp, available_vars):
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
@@ -234,8 +233,8 @@ def main(cfg):
 
     data_var_sum = {}
     for iexp in available_exp:
-        data_var_sum[iexp] = np.fromiter(data_var[iexp].values(),
-                                         dtype=float) / float(len(pathlist))
+        data_var_sum[iexp] = np.fromiter(
+            data_var[iexp].values(), dtype=np.float64) / float(len(pathlist))
 
     # Plot ECS regression if desired
     plot_bar_deangelis(cfg, data_var_sum, available_exp, available_vars)

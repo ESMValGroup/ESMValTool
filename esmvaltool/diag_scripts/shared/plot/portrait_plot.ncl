@@ -45,6 +45,8 @@ function portrait_plot(wks_in[1],
 ; Caveats
 ;
 ; Modification history
+;    20220609-bock_lisa: added gaps between project blocks and improved style
+;    20211014-bock_lisa: added sorting by project
 ;    20151027-righi_mattia: added option for displaying rankings.
 ;    20140605-righi_mattia: modified with flexible plot shapes.
 ;    20140204-frank_franziska: extended.
@@ -176,6 +178,20 @@ begin
   end do
   levels = round(100. * levels, 0) / 100.
 
+  ; Determine breakpoints for x-values
+  vals = new(nmod, float)
+  vals = 1
+  if isatt(data, "breakpoints") then
+    nbreak = dimsizes(data@breakpoints)
+    do ibreak = 0, nbreak - 1
+      vals(data@breakpoints(ibreak)) = 3.
+    end do
+  else
+    nbreak = 0
+  end if
+  x_space = cumsum(vals, 2) - 1
+  delete(vals)
+
   ; Display metrics value on the plot
   flag_values = False
   if (isatt(data, "disp_values")) then
@@ -249,7 +265,7 @@ begin
   res@tmYLOn = False
   res@tmYROn = False
   res@trXMinF = 0.
-  res@trXMaxF = 1.0
+  res@trXMaxF = 1.0 + 2.*nbreak/nmod
   res@trYMinF = 0.
   res@trYMaxF = 1.0
 
@@ -276,9 +292,14 @@ begin
   res@vpYF = 0.2 + res@vpHeightF
 
   ; Title
-  res@tiMainFontHeightF = 0.020
+  res@tiMainFontHeightF = 0.01
   if (isatt(data, "metric")) then
-    res@tiMainString = data@metric
+    if (isatt(data, "caption")) then
+      res@tiMainOffsetYF    = 0.01
+      res@tiMainString = data@caption
+    else
+      res@tiMainString = data@metric
+    end if
   end if
 
   ; Override defaults with "res_" attributes of "data"
@@ -292,6 +313,7 @@ begin
   resTxt = True
   resTxt@txFontHeightF = 0.010
   resTxt@txJust = "CenterCenter"
+  resTxt@txFont = "times-roman"
 
   ; Polygons resources
   resPol = True
@@ -373,8 +395,9 @@ begin
       end if
 
       if (l_square) then
-        xx = (/imod * xbsize, (imod + 1) * xbsize, \
-              (imod + 1) * xbsize, imod * xbsize, imod * xbsize/)
+        xx = (/x_space(imod) * xbsize, (x_space(imod) + 1) * xbsize, \
+              (x_space(imod) + 1) * xbsize, x_space(imod) * xbsize, \
+              x_space(imod) * xbsize/)
         yy = (/idiag * ybsize, idiag * ybsize, (idiag + 1) * ybsize, \
               (idiag + 1) * ybsize, idiag * ybsize/)
         poly(idiag, imod, 0) = gsn_add_polygon(wks, plot, xx, yy, resPol)
@@ -402,8 +425,8 @@ begin
       else
 
         ; Primary reference => lower triangle
-        xx = (/imod * xbsize, (imod + 1) * xbsize, \
-              (imod + 1) * xbsize, imod * xbsize/)
+        xx = (/x_space(imod) * xbsize, (x_space(imod) + 1) * xbsize, \
+              (x_space(imod) + 1) * xbsize, x_space(imod) * xbsize/)
         yy = (/idiag * ybsize, idiag * ybsize, (idiag + 1) * ybsize, \
               idiag * ybsize/)
         poly(idiag, imod, 0) = gsn_add_polygon(wks, plot, xx, yy, resPol)
@@ -457,8 +480,8 @@ begin
         end if
 
         ; Alternative reference => upper triangle
-        xx = (/imod * xbsize, (imod + 1) * xbsize, \
-              imod * xbsize, imod * xbsize/)
+        xx = (/x_space(imod) * xbsize, (x_space(imod) + 1) * xbsize, \
+              x_space(imod) * xbsize, x_space(imod) * xbsize/)
         yy = (/idiag * ybsize, (idiag + 1) * ybsize, \
               (idiag + 1) * ybsize, idiag * ybsize/)
         poly(idiag, imod, 1) = gsn_add_polygon(wks, plot, xx, yy, resPol)
@@ -503,81 +526,104 @@ begin
     scale_font = 1.
   end if
   resTxt@txFontHeightF = min((/0.012 * scale_font, \
-                              0.57 * scale_font / max((/ndiag, nmod/))/))
+                              0.57 * scale_font / max((/ndiag, (nmod)/))/))
   resTxt@txJust = "CenterRight"
   step = res@vpHeightF / ndiag
   xpos = 0.195
   ypos = 0.2 + step / 2.
   do idiag = 0, ndiag - 1
-    gsn_text_ndc(wks, data&diagnostics(idiag), xpos, ypos, resTxt)
+    if (isatt(data, "diag_label")) then
+      gsn_text_ndc(wks, data@diag_label(idiag), xpos, ypos, resTxt)
+    else
+      gsn_text_ndc(wks, data&diagnostics(idiag), xpos, ypos, resTxt)
+    end if
     ypos = ypos + step
   end do
 
   ; Add text for the models
-  resTxt@txAngleF = 90.
+  resTxt@txAngleF = 45.
+  resTxt@txFontHeightF = min((/0.12 * scale_font, \
+                              0.37 * scale_font / max((/ndiag, (nmod)/))/))
   step = res@vpWidthF / nmod
   resTxt@txJust = "CenterRight"
-  xpos = 0.2 + step / 2.
-  ypos = 0.19
+  xposs = 0.2 + (x_space+.5)*(res@vpWidthF/(nmod+2.*nbreak))
+  yposs = 0.19
   do imod = 0, nmod - 1
-    gsn_text_ndc(wks, data&models(imod), xpos, ypos, resTxt)
-    xpos = xpos + step
+    gsn_text_ndc(wks, data&models(imod), xposs(imod), yposs, resTxt)
   end do
+
+  ; Add subtitles
+  if (isatt(diag_script_info, "project_order")) then
+    titles = diag_script_info@project_order
+    resTxt@txAngleF = 0.
+    resTxt@txFontHeightF = 0.008
+    resTxt@txJust = "CenterLeft"
+    ypos = ypos + 0.005
+    gsn_text_ndc(wks, titles(0), xposs(0), ypos, resTxt)
+    do ititle = 1, dimsizes(titles) - 1
+      gsn_text_ndc(wks, titles(ititle), xposs(data@breakpoints(ititle-1)+1), \
+                   ypos, resTxt)
+    end do
+  end if
 
   ; Draw a labelbar
-  resTxt@txFontHeightF = 0.015 * scale_font
-  resTxt@txAngleF = 0.
-  resTxt@txJust = "CenterLeft"
-  height = res@vpHeightF / npos
-  xp1 = 0.2 + res@vpWidthF + 0.01
-  xp2 = 0.2 + res@vpWidthF + 0.04
-  xpm = (xp1 + xp2) / 2.
-  ypos = 0.2
+  if (.not.isatt(data, "no_labelbar") .or. \
+      (isatt(data, "no_labelbar") .and. data@no_labelbar .eq. False)) then
+    resTxt@txFontHeightF = 0.015 * scale_font
+    resTxt@txAngleF = 0.
+    resTxt@txJust = "CenterLeft"
+    height = res@vpHeightF / npos
+    xp1 = 0.2 + res@vpWidthF + 0.01
+    xp2 = 0.2 + res@vpWidthF + 0.04
+    xpm = (xp1 + xp2) / 2.
+    ypos = 0.2
 
-  il = 0
-  do ii = 0, npos - 1
-    resPol@gsFillColor = pos(ii)
-    if (ii.eq.0) then
-      if (label_lo) then
-        gsn_polygon_ndc(wks, (/xpm, xp1, xp2, xpm/),\
-                        (/ypos, ypos + height, \
-                         ypos + height, ypos/), resPol)
+    il = 0
+    do ii = 0, npos - 1
+      resPol@gsFillColor = pos(ii)
+      if (ii.eq.0) then
+        if (label_lo) then
+          gsn_polygon_ndc(wks, (/xpm, xp1, xp2, xpm/),\
+                          (/ypos, ypos + height, \
+                           ypos + height, ypos/), resPol)
+        else
+          gsn_polygon_ndc(wks, (/xp1, xp1, xp2, xp2, xp1/),\
+                          (/ypos, ypos + height, \
+                           ypos + height, ypos, ypos/), resPol)
+          gsn_text_ndc(wks, sprintf("%4.2f", levels(il)), \
+                       xp2 + 0.01, ypos, resTxt)
+          il = il + 1
+        end if
+      elseif (ii.eq.(npos - 1)) then
+        if (label_hi) then
+          gsn_polygon_ndc(wks, (/xp1, xpm, xp2, xp1/), \
+                          (/ypos, ypos + height, ypos, ypos/), resPol)
+          gsn_text_ndc(wks, sprintf("%4.2f", levels(il)), \
+                       xp2 + 0.01, ypos, resTxt)
+          il = il + 1
+        else
+          gsn_polygon_ndc(wks, (/xp1, xp1, xp2, xp2, xp1/),\
+                          (/ypos, ypos + height, \
+                           ypos + height, ypos, ypos/), resPol)
+          gsn_text_ndc(wks, sprintf("%4.2f", levels(il)), \
+                       xp2 + 0.01, ypos, resTxt)
+          il = il + 1
+          gsn_text_ndc(wks, sprintf("%4.2f", levels(il)), \
+                       xp2 + 0.01, ypos + height, resTxt)
+          il = il + 1
+        end if
       else
-        gsn_polygon_ndc(wks, (/xp1, xp1, xp2, xp2, xp1/),\
-                        (/ypos, ypos + height, \
-                         ypos + height, ypos, ypos/), resPol)
+        gsn_polygon_ndc(wks, (/xp1, xp1, xp2, xp2, xp1/), \
+                        (/ypos, ypos + height, ypos + height, ypos, ypos/), \
+                        resPol)
         gsn_text_ndc(wks, sprintf("%4.2f", levels(il)), \
                      xp2 + 0.01, ypos, resTxt)
         il = il + 1
       end if
-    elseif (ii.eq.(npos - 1)) then
-      if (label_hi) then
-        gsn_polygon_ndc(wks, (/xp1, xpm, xp2, xp1/), \
-                        (/ypos, ypos + height, ypos, ypos/), resPol)
-        gsn_text_ndc(wks, sprintf("%4.2f", levels(il)), \
-                     xp2 + 0.01, ypos, resTxt)
-        il = il + 1
-      else
-        gsn_polygon_ndc(wks, (/xp1, xp1, xp2, xp2, xp1/),\
-                        (/ypos, ypos + height, \
-                         ypos + height, ypos, ypos/), resPol)
-        gsn_text_ndc(wks, sprintf("%4.2f", levels(il)), \
-                     xp2 + 0.01, ypos, resTxt)
-        il = il + 1
-        gsn_text_ndc(wks, sprintf("%4.2f", levels(il)), \
-                     xp2 + 0.01, ypos + height, resTxt)
-        il = il + 1
-      end if
-    else
-      gsn_polygon_ndc(wks, (/xp1, xp1, xp2, xp2, xp1/), \
-                      (/ypos, ypos + height, ypos + height, ypos, ypos/), \
-                      resPol)
-      gsn_text_ndc(wks, sprintf("%4.2f", levels(il)), \
-                   xp2 + 0.01, ypos, resTxt)
-      il = il + 1
-    end if
-    ypos = ypos + height
-  end do
+      ypos = ypos + height
+    end do
+  end if
+
   draw(plot)
   frame(wks)
 

@@ -2,6 +2,9 @@
 # recipe_seaice_drift.yml
 ---
 documentation:
+  title: |
+    Sea-ice drift.
+
   description: |
     'Sea ice drift evaluation'
 
@@ -14,12 +17,10 @@ documentation:
   references:
     - 'docquier2017cryo'
 
-  mantainer:
+  maintainer:
     - vegas-regidor_javier
 
 datasets:
-  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical,
-     ensemble: r1i1p1, start_year: 1979, end_year: 2005}
   - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical,
      ensemble: r1i1p1, start_year: 1979, end_year: 2005}
 

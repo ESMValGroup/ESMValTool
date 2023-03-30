@@ -5,6 +5,8 @@ documentation:
   description: |
     Recipe for example diagnostic written in R.
 
+  title: Recipe that runs an example diagnostic written in R.
+
   authors:
     - arnone_enrico
 

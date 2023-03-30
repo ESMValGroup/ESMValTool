@@ -84,18 +84,11 @@ begin
     end if
 
     ; Write output
-    if (config_user_info@write_netcdf) then
-      var_all@ncdf = workpath_abs
-      ncdf_abs = ncdf_write(var_all, workpath_abs)
-      if (l_diff) then
-        var_diff@ncdf = workpath_diff
-        ncdf_diff = ncdf_write(var_diff, workpath_diff)
-      end if
-    end if
-
-    ; Plotting
-    if (.not.config_user_info@write_plots) then
-      continue
+    var_all@ncdf = workpath_abs
+    ncdf_abs = ncdf_write(var_all, workpath_abs)
+    if (l_diff) then
+      var_diff@ncdf = workpath_diff
+      ncdf_diff = ncdf_write(var_diff, workpath_diff)
     end if
 
     ; Convert units for plotting (if required)

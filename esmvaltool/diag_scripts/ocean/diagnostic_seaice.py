@@ -76,6 +76,7 @@ import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -236,11 +237,21 @@ def make_ts_plots(
                 )
 
             # Saving files:
-            if cfg['write_plots']:
-                logger.info('Saving plots to %s', path)
-                plt.savefig(path)
-
+            logger.info('Saving plots to %s', path)
+            plt.savefig(path)
             plt.close()
+
+            provenance_record = diagtools.prepare_provenance_record(
+                cfg,
+                caption=f'Time serie of {title}',
+                statistics=['mean'],
+                domain=['polar'],
+                plot_type=['times'],
+                ancestors=[filename],
+            )
+
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(path, provenance_record)
 
 
 def make_polar_map(
@@ -474,11 +485,21 @@ def make_map_plots(
                 )
 
             # Saving files:
-            if cfg['write_plots']:
-                logger.info('Saving plots to %s', path)
-                plt.savefig(path)
-
+            logger.info('Saving plots to %s', path)
+            plt.savefig(path)
             plt.close()
+
+            provenance_record = diagtools.prepare_provenance_record(
+                cfg,
+                caption=f'Map of {title}',
+                statistics=['mean'],
+                domain=['polar'],
+                plot_type=['map'],
+                ancestors=[filename],
+            )
+
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(path, provenance_record)
 
 
 def agregate_by_season(cube):
@@ -653,10 +674,21 @@ def make_map_extent_plots(
             )
 
         # Saving files:
-        if cfg['write_plots']:
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
         plt.close()
+
+        provenance_record = diagtools.prepare_provenance_record(
+            cfg,
+            caption=f'Temporal extent of {title}',
+            statistics=['mean'],
+            domain=['polar'],
+            plot_type=['map'],
+            ancestors=[filename],
+        )
+
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
 
 def main(cfg):

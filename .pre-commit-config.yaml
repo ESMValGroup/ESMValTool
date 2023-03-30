@@ -8,7 +8,7 @@ exclude: |
   ^esmvaltool/diag_scripts/cvdp/
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.4.0
+    rev: v3.4.0
     hooks:
       - id: check-added-large-files
       - id: check-ast
@@ -19,7 +19,7 @@ repos:
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
   - repo: https://github.com/adrienverge/yamllint
-    rev: ''
+    rev: 'v1.26.0'
     hooks:
       - id: yamllint
   - repo: local  # nclcodestyle is installed alongside ESMValTool
@@ -30,28 +30,28 @@ repos:
         language: system
         files: '\.(ncl|NCL)$'
   - repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
-    rev: ''
+    rev: 'v0.1.3'
     hooks:
       - id: style-files  # styler
       - id: lintr
   - repo: https://github.com/codespell-project/codespell
-    rev: ''
+    rev: 'v2.0.0'
     hooks:
       - id: codespell
   - repo: https://github.com/PyCQA/isort
-    rev: ''
+    rev: '5.7.0'
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/mirrors-yapf
-    rev: ''
+    rev: 'v0.30.0'
     hooks:
       - id: yapf
   - repo: https://github.com/myint/docformatter
-    rev: ''
+    rev: 'v1.4'
     hooks:
       - id: docformatter
   - repo: https://gitlab.com/pycqa/flake8
-    rev: ''
+    rev: '3.8.4'
     hooks:
       - id: flake8
   # - repo: https://github.com/PyCQA/prospector

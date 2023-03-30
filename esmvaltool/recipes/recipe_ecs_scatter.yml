@@ -2,6 +2,8 @@
 # recipe_ecs_scatter.yml
 ---
 documentation:
+  title: Emergent constraints for ECS
+
   description: |
     Calculates equilibrium climate sensitivity (ECS) versus
     1) southern ITCZ index, similar to fig. 2 from Tian (2015)
@@ -62,6 +64,7 @@ preprocessors:
 diagnostics:
 
   cmip5_shhc:
+    title: CMIP5 Hadley cell extent (Lipat et al. 2017)
     description: climatological Hadley cell extent
     themes:
       - EC
@@ -115,6 +118,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip5_itczidx:
+    title: CMIP5 southern ITCZ index (Tian 2015)
     description: southern ITCZ index
     themes:
       - EC
@@ -129,7 +133,7 @@ diagnostics:
         end_year: 2005
         project: CMIP5
         additional_datasets:
-          - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
+          - {dataset: TRMM-L3, project: obs4MIPs, level: v7, version: 7A,
              start_year: 1998, end_year: 2013, tier: 1}
           - {dataset: ACCESS1-0, ensemble: r1i1p1}
           # - {dataset: ACCESS1-3, ensemble: r1i1p1}
@@ -162,7 +166,7 @@ diagnostics:
         mip: Amon
         frequency: mon
         additional_datasets:
-          - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
+          - {dataset: TRMM-L3, project: obs4MIPs, level: v7, version: 7A,
              start_year: 1998, end_year: 2013, tier: 1}
     scripts:
       ecs_scatter:
@@ -175,6 +179,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip5_humidx:
+    title: CMIP5 humidity index (Tian 2015)
     description: tropical mid-tropospheric humidity asymmetry index
     themes:
       - EC
@@ -190,7 +195,7 @@ diagnostics:
         end_year: 2005
         project: CMIP5
         additional_datasets:
-          - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5,
+          - {dataset: AIRS, project: obs4MIPs, level: L3, version: RetStd-v5,
              start_year: 2003, end_year: 2010, tier: 1}
           - {dataset: ACCESS1-0, ensemble: r1i1p1}
           # - {dataset: ACCESS1-3, ensemble: r1i1p1}
@@ -224,7 +229,7 @@ diagnostics:
         mip: Amon
         frequency: mon
         additional_datasets:
-          - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5,
+          - {dataset: AIRS, project: obs4MIPs, level: L3, version: RetStd-v5,
              start_year: 2003, end_year: 2010, tier: 1}
     scripts:
       ecs_scatter:
@@ -237,6 +242,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip5_ltmi:
+    title: CMIP5 LTMI (Sherwood et al., 2014)
     description: lower tropospheric mixing index
     themes:
       - EC
@@ -307,6 +313,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip5_covrefl:
+    title: CMIP5 covariance of shortwave cloud reflection (Brient and Schneider, 2016)
     description: covariance of shortwave cloud reflection
     themes:
       - EC
@@ -389,7 +396,7 @@ diagnostics:
         exp: historical
         project: CMIP5
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
              start_year: 2001, end_year: 2005, tier: 1}
       rsutcs:
         reference_dataset: CERES-EBAF
@@ -397,7 +404,7 @@ diagnostics:
         exp: historical
         project: CMIP5
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
              start_year: 2001, end_year: 2005, tier: 1}
       rsdt:
         reference_dataset: CERES-EBAF
@@ -405,7 +412,7 @@ diagnostics:
         exp: historical
         project: CMIP5
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
              start_year: 2001, end_year: 2005, tier: 1}
     scripts:
       ecs_scatter:
@@ -418,6 +425,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip6_itczidx:
+    title: CMIP6 southern ITCZ index (Tian 2015)
     description: southern ITCZ index
     themes:
       - EC
@@ -432,7 +440,7 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: TRMM-L3, project: obs4mips, level: v7,
+          - {dataset: TRMM-L3, project: obs4MIPs, level: v7,
              version: 7A, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
@@ -455,7 +463,7 @@ diagnostics:
         start_year: 1998
         end_year: 2013
         additional_datasets:
-          - {dataset: TRMM-L3, project: obs4mips, level: v7,
+          - {dataset: TRMM-L3, project: obs4MIPs, level: v7,
              version: 7A, tier: 1}
     scripts:
       ecs_scatter:
@@ -467,6 +475,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip6_humidx:
+    title: CMIP6 humidity index (Tian 2015)
     description: tropical mid-tropospheric humidity asymmetry index
     themes:
       - EC
@@ -482,7 +491,7 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: AIRS, project: obs4mips, level: L3,
+          - {dataset: AIRS, project: obs4MIPs, level: L3,
              version: RetStd-v5, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
@@ -506,7 +515,7 @@ diagnostics:
         start_year: 2003
         end_year: 2010
         additional_datasets:
-          - {dataset: AIRS, project: obs4mips, level: L3,
+          - {dataset: AIRS, project: obs4MIPs, level: L3,
              version: RetStd-v5, tier: 1}
     scripts:
       ecs_scatter:
@@ -518,6 +527,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip6_ltmi:
+    title: CMIP6 LTMI (Sherwood et al., 2014)
     description: lower tropospheric mixing index
     themes:
       - EC
@@ -575,6 +585,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip6_shhc:
+    title: CMIP6 Hadley cell extent (Lipat et al. 2017)
     description: climatological Hadley cell extent
     themes:
       - EC
@@ -615,6 +626,7 @@ diagnostics:
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip6_covrefl:
+    title: CMIP6 covariance of shortwave cloud reflection (Brient and Schneider, 2016)
     description: covariance of shortwave cloud reflection
     themes:
       - EC
@@ -677,7 +689,7 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
              version: Ed2-7, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
@@ -701,7 +713,7 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
              version: Ed2-7, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
@@ -725,7 +737,7 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
              version: Ed2-7, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}

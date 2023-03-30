@@ -45,6 +45,7 @@ __pycache__/
 
 #Create by VSCode
 .vscode
+*.code-workspace
 
 #pytest
 .cache
@@ -84,6 +85,7 @@ test-reports/
 
 # Build folder
 doc/sphinx/build
+doc/sphinx/_build
 doc/sphinx/source/_sidebar.rst.inc
 doc/sphinx/source/gallery.rst
 
@@ -107,3 +109,6 @@ esmvaltool.Rproj
 
 # Julia installation
 esmvaltool/install/Julia/Manifest.toml
+
+# Cylc suite
+esmvaltool/utils/testing/regression/.service/

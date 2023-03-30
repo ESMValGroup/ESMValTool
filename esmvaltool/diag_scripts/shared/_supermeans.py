@@ -58,7 +58,7 @@ def get_supermean(name, season, data_dir, obs_flag=None):
         if cube.name() == 'unknown':
             cube.rename(str(cube.attributes['STASH']))
 
-    cube = cubes.extract_strict(name_constraint)
+    cube = cubes.extract_cube(name_constraint)
 
     if season in ['djf', 'mam', 'jja', 'son']:
         supermeans_cube = periodic_mean(cube, period='season')
@@ -297,7 +297,7 @@ def time_average_by(cube, periods='time'):
     idx_obj = [None] * cube.data.ndim
     idx_obj[cube.coord_dims('time')[0]] = slice(
         None)  # [None, slice(None), None] == [np.newaxis, :, np.newaxis]
-    cube.data *= durations_cube.data[idx_obj]
+    cube.data *= durations_cube.data[tuple(idx_obj)]
 
     if periods == ['time']:  # duration weighted averaging
         cube = cube.collapsed(periods, iris.analysis.SUM)
@@ -311,7 +311,7 @@ def time_average_by(cube, periods='time'):
     if durations_cube.data.shape == ():
         cube.data /= durations_cube.data
     else:
-        cube.data /= durations_cube.data[idx_obj]
+        cube.data /= durations_cube.data[tuple(idx_obj)]
 
     # correct cell methods
     cube.cell_methods = orig_cell_methods

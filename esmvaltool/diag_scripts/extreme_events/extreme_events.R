@@ -31,8 +31,11 @@ library(RColorBrewer) # nolint
 
 # function to flatten nested lists
 flatten_lists <- function(x) {
-  if (!inherits(x, "list")) return(x)
-  else return(unlist(c(lapply(x, flatten_lists)), recursive = FALSE))
+  if (!inherits(x, "list")) {
+    return(x)
+  } else {
+    return(unlist(c(lapply(x, flatten_lists)), recursive = FALSE))
+  }
 }
 
 provenance_record <- function(infile) {
@@ -278,6 +281,7 @@ for (model_idx in c(1:length(models_name))) { # nolint
     write_plots <- FALSE
   } else if (!any(grepl("mon", idx_select))) {
     timeres <- "annual"
+    write_plots <- TRUE
   } else {
     timeres <- "all"
     write_plots <- FALSE

@@ -44,21 +44,22 @@ Diagnostics are stored in diag_scripts/
 User settings in recipe
 -----------------------
 
-#. Preprocessor
+* Preprocessor
 
    * ``area_statistics`` (*operation: mean*): Calculate global mean.
 
-#. Script emergent_constraints/cox18nature.py
+* Script emergent_constraints/cox18nature.py
 
-   * ``confidence_level``, *float*, optional (default: 0.66): Confidence level
-     for ECS error estimation.
+   See
+   :ref:`here<api.esmvaltool.diag_scripts.emergent_constraints.cox18nature>`.
 
-#. Script climate_metrics/ecs.py
+* Script climate_metrics/ecs.py
 
-   * ``read_external_file``, *str*, optional: Read ECS and net climate feedback
-     parameter from external file. All other input data is ignored.
+   See :ref:`here<ecs.py>`.
 
-#. Script climate_metrics/psi.py
+.. _psi.py:
+
+* Script climate_metrics/psi.py
 
    * ``output_attributes``, *dict*, optional: Write additional attributes to
      all output netcdf files.

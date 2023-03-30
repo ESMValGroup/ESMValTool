@@ -14,12 +14,14 @@ Copyright 2008- Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR) and partne
 ==========================================
 (1) ESMValTool VERSION 2.0 CORE DEVELOPMENT TEAM
 ==========================================
-Copyright 2008- Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR), Germany - ESMValTool Principal Investigator (PI)
+Copyright 2008- Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR), Germany - ESMValTool Co-PI
+Copyright 2020- Met Office, UK - ESMValTool Co-PI
 Copyright 2017- Alfred-Wegener-Institute (AWI), Germany
 Copyright 2017- Barcelona Supercomputing Center (BSC), Spain
 Copyright 2016- Ludwig Maximilian University, Germany
-Copyright 2017- Netherlands e-Science Center (NLeSC), Netherlands
+Copyright 2017- Netherlands e-Science Center (NLeSC), The Netherlands
 Copyright 2019- Plymouth Marine Laboratory, UK
+Copyright 2011- Swedish Meteorological and Hydrological Institute (SMHI), Sweden
 Copyright 2017- University of Reading, UK
 
 ==========================================
@@ -41,7 +43,7 @@ recipe_autoassess_radiation_rms_Amon_obs.yml
 recipe_autoassess_radiation_rms_cfMon_all.yml
 recipe_autoassess_stratosphere.yml
 Copyright 2017- University of Reading, UK
-Copyright 2017- MetOffice, UK
+Copyright 2017- Met Office, UK
 
 recipe_my_personal_diagnostic.yml
 recipe_validation.yml
@@ -100,10 +102,15 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ==========================================
 
-Users who apply the Software resulting in presentations or papers are kindly asked to cite the following “Software Documentation Paper” alongside with the Software doi (doi:10.17874/ac8548f0315) and version number:
-Eyring et al., ESMValTool (v1.0) – a community diagnostic and performance metrics tool for routine evaluation of Earth System Models in CMIP, Geosci. Model Dev., 2016.
+Users who apply the Software resulting in presentations or papers are kindly asked to cite the following “Software Documentation Papers” alongside with the Software doi (ESMValCore doi:10.5281/zenodo.3952695,
+ESMValTool doi:10.5281/zenodo.3970975) and version number:
 
-Besides the above citation, users are kindly asked to register any journal articles (or other scientific documents) that use the Software at ESMValTool webpage (see http://www.esmvaltool.org/).
+- Righi et al., Earth System Model Evaluation Tool (ESMValTool) v2.0 - technical overview, Geosci. Model Dev., 2020.
+- Eyring et al., Earth System Model Evaluation Tool (ESMValTool) v2.0 - an extended set of large-scale diagnostics for quasi-operational and comprehensive evaluation of Earth system models in CMIP, Geosci. Model Dev., 2020.
+- Lauer et al., Earth System Model Evaluation Tool (ESMValTool) v2.0 - diagnostics for emergent constraints and future projections from Earth system models in CMIP, Geosci. Model Dev., 2020.
+- Weigel et al., Earth System Model Evaluation Tool (ESMValTool) v2.0 - diagnostics for extreme events, regional and impact evaluation and analysis of Earth system models in CMIP, Geosci. Model Dev. Discuss., in review, 2020.
+
+Besides the above citation, users are kindly asked to register any journal articles (or other scientific documents) that use the Software at ESMValTool webpage (see https://www.esmvaltool.org/).
 Citing the Software Documentation Paper and registering your paper(s) will serve to document the scientific impact of the Software, which is of vital importance for securing future funding. You should consider this an obligation if you have taken advantage of the Software, which represents the end product of considerable effort by the development team.
 
 ==========================================
@@ -112,7 +119,7 @@ In addition to using the Software, we encourage the community to join the Softwa
 
 ==========================================
 
-To join the ESMValTool Development Team, please contact Prof. Veronika Eyring (veronika.eyring@dlr.de) and Dr. Axel Lauer (axel.lauer@dlr.de).
+To join the ESMValTool Development Team, please contact Dr. Birgit Hassler (birgit.hassler@dlr.de) and Dr. Axel Lauer (axel.lauer@dlr.de).
 
 ==========================================
 

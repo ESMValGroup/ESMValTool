@@ -28,6 +28,7 @@
 ;   - only 1 reference dataset supported
 ;
 ; Modification history
+;    20211006-lauer_axel: removed write_plots
 ;    20191028-lauer_axel: rewritten for v2.0
 ;    20161212-senftleben_daniel: implemented.
 ; #############################################################################
@@ -100,10 +101,8 @@ begin
   end if
 
   ; Create output plot directory
-  if (config_user_info@write_plots) then
-    plot_dir = config_user_info@plot_dir
-    system("mkdir -p " + plot_dir)
-  end if
+  plot_dir = config_user_info@plot_dir
+  system("mkdir -p " + plot_dir)
 
   ; Create output directory (work)
   system("mkdir -p " + config_user_info@work_dir)
