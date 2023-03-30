@@ -489,7 +489,7 @@ def fix_dim_coordnames(cube, project_id="OBS6"):
             coord.standard_name = coord_info.standard_name
             coord.long_name = coord_info.long_name
             if tindex != 'time':
-                coord.units = Unit(coord_info.units) 
+                coord.units = Unit(coord_info.units)
     return cube
 
 
