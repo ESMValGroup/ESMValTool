@@ -85,7 +85,7 @@ REQUIREMENTS = {
     'doc': [
         'autodocsumm>=0.2.2',
         'nbsphinx',
-        'sphinx',
+        'sphinx>=6.1.3',
         'sphinx_rtd_theme',
     ],
     # Development dependencies
