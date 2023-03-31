@@ -342,7 +342,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
                 dates[0] = dates[0] + f"{tp0.hour:02d}{tp0.minute:02d}"
                 dates[1] = dates[1] + f"{tpn.hour:02d}{tpn.minute:02d}"
 
-            time_suffix = '-'.join([dates[0], dates[1]])
+            time_suffix = '-'.join(dates)
 
     name_elements = [
         attrs['project_id'],
