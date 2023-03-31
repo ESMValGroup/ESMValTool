@@ -329,7 +329,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
         mip = cube.attributes.get('mip')
         tp0, tpn = time.cell(0).point, time.cell(-1).point
         if len(time.points) == 1 and "mon" not in mip:
-            time_suffix = '-'.join([tp0.year + '01', tp0.year + '12'])
+            time_suffix = '-'.join([f"{tp0.year}01", f"{tp0.year}12"])
         else:
             dates = ["", ""]
             dates[0] = f"{tp0.year:d}{tp0.month:02d}"
@@ -462,21 +462,23 @@ def fix_dim_coordnames(cube, project_id="OBS6"):
 
         coord.attributes = {}
 
-        if coord_type == 'T':
-            tindex = 'time'
-        elif coord_type == 'X':
-            tindex = 'longitude'
-        elif coord_type == 'Y':
-            tindex = 'latitude'
-        elif coord_type == 'Z' and coord.var_name == 'depth':
-            tindex = 'depth_coord'
-            coord.attributes['positive'] = 'down'
-        elif coord_type == 'Z' and coord.var_name == 'pressure':
-            # Any pressure coord would work.
-            tindex = 'p220'
-            coord.attributes['positive'] = 'up'
-        else:
-            tindex = None
+        # lookup table
+        lut = {
+            'T': 'time',
+            'X': 'longitude',
+            'Y': 'latitude',
+            'Z': {
+                'depth': ('depth_coord', 'down'),
+                # Any pressure coord would work.
+                'pressure': ('p220', 'up')
+                }}
+
+        match = lut.get(coord_type)
+        tindex = match if isinstance(match, str) else None
+        if(isinstance(match, dict)):
+            nested = match.get(coord.var_name)
+            tindex, coord.attributes['positive'] = (
+                nested if nested else (None, None))
 
         if tindex:
             coord_info = CMOR_TABLES[project_id].coords[tindex]
