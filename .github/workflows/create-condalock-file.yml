@@ -4,9 +4,10 @@ on:
   # Trigger on push on main or other branch for testing
   # NOTE that push: main will create the file very often
   # and hence lots of automated PRs
-  # push:
-  #   branches:
-  #     - condalock-update
+  push:
+    branches:
+      - restore_condalock_file
+  #    - condalock-update
   schedule:
     - cron: '0 4 */10 * *'
 
@@ -28,6 +29,7 @@ jobs:
       - name: Show conda config
         shell: bash -l {0}
         run: |
+          conda update -n base -c conda-forge conda
           conda info
           conda list
           conda config --show-sources
