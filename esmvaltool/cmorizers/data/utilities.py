@@ -463,25 +463,24 @@ def fix_dim_coordnames(cube, project_id="OBS6"):
 
         coord.attributes = {}
 
-        match coord_type:
-            case 'T':
-                tindex = 'time'
-            case 'X':
-                tindex = 'longitude'
-            case 'Y':
-                tindex = 'latitude'
-            case 'Z':
-                if coord.var_name == 'depth':
-                    tindex = 'depth_coord'
-                    coord.attributes['positive'] = 'down'
-                elif coord.var_name == 'pressure':
-                    # Any pressure coord would work.
-                    tindex = 'p220'
-                    coord.attributes['positive'] = 'up'
-                else:
-                    tindex = None
-            case _:
+        if coord_type == 'T':
+            tindex = 'time'
+        elif coord_type == 'X':
+            tindex = 'longitude'
+        elif coord_type == 'Y':
+            tindex = 'latitude'
+        elif coord_type == 'Z':
+            if coord.var_name == 'depth':
+                tindex = 'depth_coord'
+                coord.attributes['positive'] = 'down'
+            elif coord.var_name == 'pressure':
+                # Any pressure coord would work.
+                tindex = 'p220'
+                coord.attributes['positive'] = 'up'
+            else:
                 tindex = None
+        else:
+            tindex = None
 
         if tindex:
             coord_info = CMOR_TABLES[project_id].coords[tindex]
