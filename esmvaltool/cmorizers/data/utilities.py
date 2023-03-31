@@ -475,7 +475,7 @@ def fix_dim_coordnames(cube, project_id="OBS6"):
 
         match = lut.get(coord_type)
         tindex = match if isinstance(match, str) else None
-        if(isinstance(match, dict)):
+        if isinstance(match, dict):
             nested = match.get(coord.var_name)
             tindex, coord.attributes['positive'] = (
                 nested if nested else (None, None))
