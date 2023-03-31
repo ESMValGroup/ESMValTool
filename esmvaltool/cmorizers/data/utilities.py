@@ -327,22 +327,22 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
         time_suffix = None
     else:
         mip = cube.attributes.get('mip')
+        tp0, tpn = time.cell(0).point, time.cell(-1).point
         if len(time.points) == 1 and "mon" not in mip:
-            year = str(time.cell(0).point.year)
-            time_suffix = '-'.join([year + '01', year + '12'])
+            time_suffix = '-'.join([tp0.year + '01', tp0.year + '12'])
         else:
-            tp0, tpn = time.cell(0).point, time.cell(-1).point
-            date1 = f"{tp0.year:d}{tp0.month:02d}"
-            date2 = f"{tpn.year:d}{tpn.month:02d}"
+            dates = ("", "")
+            dates[0] = f"{tp0.year:d}{tp0.month:02d}"
+            dates[1] = f"{tpn.year:d}{tpn.month:02d}"
 
             if "day" in mip or "hr" in mip:
-                date1 = date1 + f"{tp0.day:02d}"
-                date2 = date2 + f"{tpn.day:02d}"
+                dates[0] = dates[0] + f"{tp0.day:02d}"
+                dates[1] = dates[1] + f"{tpn.day:02d}"
             if "hr" in mip:
-                date1 = date1 + f"{tp0.hour:02d}{tp0.minute:02d}"
-                date2 = date2 + f"{tpn.hour:02d}{tpn.minute:02d}"
+                dates[0] = dates[0] + f"{tp0.hour:02d}{tp0.minute:02d}"
+                dates[1] = dates[1] + f"{tpn.hour:02d}{tpn.minute:02d}"
 
-            time_suffix = '-'.join([date1, date2])
+            time_suffix = '-'.join([dates[0], dates[1]])
 
     name_elements = [
         attrs['project_id'],
@@ -354,8 +354,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     ]
     if time_suffix:
         name_elements.append(time_suffix)
-    file_name = '_'.join(name_elements) + '.nc'
-    file_path = os.path.join(outdir, file_name)
+    file_path = os.path.join(outdir, '_'.join(name_elements) + '.nc')
     logger.info('Saving: %s', file_path)
     status = 'lazy' if cube.has_lazy_data() else 'realized'
     logger.info('Cube has %s data [lazy is preferred]', status)
@@ -469,16 +468,13 @@ def fix_dim_coordnames(cube, project_id="OBS6"):
             tindex = 'longitude'
         elif coord_type == 'Y':
             tindex = 'latitude'
-        elif coord_type == 'Z':
-            if coord.var_name == 'depth':
-                tindex = 'depth_coord'
-                coord.attributes['positive'] = 'down'
-            elif coord.var_name == 'pressure':
-                # Any pressure coord would work.
-                tindex = 'p220'
-                coord.attributes['positive'] = 'up'
-            else:
-                tindex = None
+        elif coord_type == 'Z' and coord.var_name == 'depth':
+            tindex = 'depth_coord'
+            coord.attributes['positive'] = 'down'
+        elif coord_type == 'Z' and coord.var_name == 'pressure':
+            # Any pressure coord would work.
+            tindex = 'p220'
+            coord.attributes['positive'] = 'up'
         else:
             tindex = None
 
