@@ -331,7 +331,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
         if len(time.points) == 1 and "mon" not in mip:
             time_suffix = '-'.join([tp0.year + '01', tp0.year + '12'])
         else:
-            dates = ("", "")
+            dates = ["", ""]
             dates[0] = f"{tp0.year:d}{tp0.month:02d}"
             dates[1] = f"{tpn.year:d}{tpn.month:02d}"
 
