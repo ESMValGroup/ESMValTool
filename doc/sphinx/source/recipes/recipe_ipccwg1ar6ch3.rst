@@ -14,8 +14,8 @@ on developing more innovative analysis methods rather than constantly having to
 "re-invent the wheel".
 
 Processing of CMIP3 models currently works only in serial mode, due to an issue
-in the input data still under investigation. To run the recipe for Fig 3.42a set
-"max_parallel_tasks: 1" in the config-user.yml file.
+in the input data still under investigation. To run the recipe for Fig 3.42a
+and Fig. 3.43 set "max_parallel_tasks: 1" in the config-user.yml file.
 
 The plots are produced collecting the diagnostics from individual recipes. The
 following figures from `Eyring et al. (2021)`_ can currently be reproduced:
@@ -35,6 +35,8 @@ following figures from `Eyring et al. (2021)`_ can currently be reproduced:
     * Figure 3.19: Speed-Up Of Zonal Mean Wind
 
     * Figure 3.42: Relative Model Performance
+
+    * Figure 3.43: Correlation Pattern
 
 To reproduce Fig. 3.9 you need the shapefile of the `AR6 reference regions
 <https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions>`_
@@ -60,6 +62,7 @@ Recipes are stored in esmvaltool/recipes/ipccwg1ar6ch3/
     * recipe_ipccwg1ar6ch3_fig_3_19.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_a.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_b.yml
+    * recipe_ipccwg1ar6ch3_fig_3_43.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
@@ -98,6 +101,11 @@ Diagnostics are stored in esmvaltool/diag_scripts/
 
     * perfmetrics/main.ncl
     * perfmetrics/collect.ncl
+
+    Fig. 3.43:
+
+    * ipcc_ar6/corr_pattern.ncl
+    * ipcc_ar6/corr_pattern_collect.ncl
 
 
 User settings in recipe
@@ -278,18 +286,38 @@ User settings in recipe
 
    See :ref:`here<perf-collect.ncl>`.
 
+#. Script ipcc_ar6/corr_pattern.ncl
+
+   *Required settings for variables*
+
+   * reference_dataset: name of reference observation
+
+   *Optional settings for variables*
+
+   * alternative_dataset: name of alternative observations
+
+#. Script ipcc_ar6/corr_pattern_collect.ncl
+
+   *Optional settings for script*
+
+   * diag_order: give order of plotting variables on the x-axis
+   * labels: List of labels for each variable on the x-axis
+   * model_spread: if True, model spread is shaded
+   * plot_median: if True, median is plotted
+   * project_order: give order of projects 
+
 
 Variables
 ---------
 
-* et (atmos, monthly mean, longitude latitude time)
-* fgco2 (atmos, monthly mean, longitude latitude time)
-* gpp (atmos, monthly mean, longitude latitude time)
-* hfds (atmos, monthly mean, longitude latitude time)
-* hus (atmos, monthly mean, longitude latitude level time)
-* lai (atmos, monthly mean, longitude latitude time)
+* et (land, monthly mean, longitude latitude time)
+* fgco2 (ocean, monthly mean, longitude latitude time)
+* gpp (land, monthly mean, longitude latitude time)
+* hfds (land, monthly mean, longitude latitude time)
+* hus (land, monthly mean, longitude latitude level time)
+* lai (land, monthly mean, longitude latitude time)
 * lwcre (atmos, monthly mean, longitude latitude time)
-* nbp (atmos, monthly mean, longitude latitude time)
+* nbp (land, monthly mean, longitude latitude time)
 * pr (atmos, monthly mean, longitude latitude time)
 * psl (atmos, monthly mean, longitude latitude time)
 * rlds (atmos, monthly mean, longitude latitude time)
@@ -298,9 +326,9 @@ Variables
 * rsds (atmos, monthly mean, longitude latitude time)
 * rsus (atmos, monthly mean, longitude latitude time)
 * rsut (atmos, monthly mean, longitude latitude time)
-* sm (atmos, monthly mean, longitude latitude time)
-* sic (atmos, monthly mean, longitude latitude time)
-* siconc (atmos, monthly mean, longitude latitude time)
+* sm (land, monthly mean, longitude latitude time)
+* sic (seaice, monthly mean, longitude latitude time)
+* siconc (seaice, monthly mean, longitude latitude time)
 * swcre (atmos, monthly mean, longitude latitude time)
 * ta (atmos, monthly mean, longitude latitude level time)
 * tas (atmos, monthly mean, longitude latitude time)
@@ -364,7 +392,7 @@ Example plots
    :align:   center
 
    Figure 3.3: Annual mean near-surface (2 m) air temperature (°C) for the
-   period 1995–2014. (a) Multi-model (ensemble) mean constructed with one
+   period 1995-2014. (a) Multi-model (ensemble) mean constructed with one
    realization of the CMIP6 historical experiment from each model. (b)
    Multi-model mean bias, defined as the difference between the CMIP6
    multi-model mean and the climatology of the fifth generation European
@@ -372,12 +400,12 @@ Example plots
    of the global climate (ERA5). (c) Multi-model mean of the root mean square
    error calculated over all months separately and averaged, with respect to
    the climatology from ERA5. Uncertainty is represented using the advanced
-   approach: No overlay indicates regions with robust signal, where ≥66% of
-   models show change greater than the variability threshold and ≥80% of all
+   approach: No overlay indicates regions with robust signal, where >=66% of
+   models show change greater than the variability threshold and >=80% of all
    models agree on sign of change; diagonal lines indicate regions with no
    change or no robust signal, where <66% of models show a change greater
    than the variability threshold; crossed lines indicate regions with
-   conflicting signal, where ≥66% of models show change greater than the
+   conflicting signal, where >=66% of models show change greater than the
    variability threshold and <80% of all models agree on sign of change.
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/gsat_Global_CMIP6_historical-ssp245_anom_1850-2020.png
@@ -385,8 +413,8 @@ Example plots
 
    Figure 3.4a: Observed and simulated time series of the anomalies in annual
    and global mean surface air temperature (GSAT). All anomalies are
-   differences from the 1850–1900 time-mean of each individual time series.
-   The reference period 1850–1900 is indicated by grey shading. (a) Single
+   differences from the 1850-1900 time-mean of each individual time series.
+   The reference period 1850-1900 is indicated by grey shading. (a) Single
    simulations from CMIP6 models (thin lines) and the multi-model mean (thick
    red line). Observational data (thick black lines) are from the Met Office
    Hadley Centre/Climatic Research Unit dataset (HadCRUT5), and are blended
@@ -401,17 +429,17 @@ Example plots
 
    Figure 3.4b: Observed and simulated time series of the anomalies in annual
    and global mean surface air temperature (GSAT). All anomalies are
-   differences from the 1850–1900 time-mean of each individual time series.
-   The reference period 1850–1900 is indicated by grey shading. (b) Multi-model
+   differences from the 1850-1900 time-mean of each individual time series.
+   The reference period 1850-1900 is indicated by grey shading. (b) Multi-model
    means of CMIP5 (blue line) and CMIP6 (red line) ensembles and associated 5th
    to 95th percentile ranges (shaded regions). Observational data are HadCRUT5,
    Berkeley Earth, National Oceanic and Atmospheric Administration
    NOAAGlobalTemp and Kadow et al. (2020). Masking was done as in (a). CMIP6
    historical simulations were extended with SSP2-4.5 simulations for the
-   period 2015–2020 and CMIP5 simulations were extended with RCP4.5 simulations
-   for the period 2006–2020. All available ensemble members were used. The
+   period 2015-2020 and CMIP5 simulations were extended with RCP4.5 simulations
+   for the period 2006-2020. All available ensemble members were used. The
    multi-model means and percentiles were calculated solely from simulations
-   available for the whole time span (1850–2020).
+   available for the whole time span (1850-2020).
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/tas_std_dev_zonmean.png
    :align:   center
@@ -444,8 +472,8 @@ Example plots
 .. figure::  /recipes/figures/ipccwg1ar6ch3/model_bias_pr_annualclim_CMIP6.png
    :align:   center
 
-   Figure 3.13:  Annual-mean precipitation rate (mm day–1) for the period
-   1995–2014. (a) Multi-model (ensemble) mean constructed with one realization
+   Figure 3.13:  Annual-mean precipitation rate (mm day-1) for the period
+   1995-2014. (a) Multi-model (ensemble) mean constructed with one realization
    of the CMIP6 historical experiment from each model. (b) Multi-model mean
    bias, defined as the difference between the CMIP6 multi-model mean and
    precipitation analysis from the Global Precipitation Climatology Project
@@ -453,11 +481,11 @@ Example plots
    mean square error calculated over all months separately and averaged with
    respect to the precipitation analysis from GPCP version 2.3. Uncertainty is
    represented using the advanced approach. No overlay indicates regions with
-   robust signal, where ≥66% of models show change greater than the variability
-   threshold and ≥80% of all models agree on sign of change; diagonal lines
+   robust signal, where >=66% of models show change greater than the variability
+   threshold and >=80% of all models agree on sign of change; diagonal lines
    indicate regions with no change or no robust signal, where <66% of models
    show a change greater than the variability threshold; crossed lines indicate
-   regions with conflicting signal, where ≥66% of models show change greater
+   regions with conflicting signal, where >=66% of models show change greater
    than the variability threshold and <80% of all models agree on the sign of
    change. 
 
@@ -465,24 +493,24 @@ Example plots
    :align:   center
 
    Figure 3.15: Observed and simulated time series of anomalies in zonal
-   average annual mean precipitation. (a), (c–f) Evolution of global and zonal
-   average annual mean precipitation (mm day–1) over areas of land where there
-   are observations, expressed relative to the base period of 1961–1990,
+   average annual mean precipitation. (a), (c-f) Evolution of global and zonal
+   average annual mean precipitation (mm day-1) over areas of land where there
+   are observations, expressed relative to the base period of 1961-1990,
    simulated by CMIP6 models (one ensemble member per model) forced with both
    anthropogenic and natural forcings (brown) and natural forcings only
    (green). Multi-model means are shown in thick solid lines and shading
-   shows the 5–95% confidence interval of the individual model simulations.
+   shows the 5-95% confidence interval of the individual model simulations.
    The data is smoothed using a low pass filter. Observations from three
    different datasets are included: gridded values derived from Global
    Historical Climatology Network (GHCN version 2) station data, updated
    from Zhang et al. (2007), data from the Global Precipitation Climatology
    Product (GPCP L3 version 2.3, Adler et al. (2003)) and from the Climate
    Research Unit (CRU TS4.02, Harris et al. (2014)). Also plotted are
-   boxplots showing interquartile and 5–95% ranges of simulated trends over
+   boxplots showing interquartile and 5-95% ranges of simulated trends over
    the period for simulations forced with both anthropogenic and natural
    forcings (brown) and natural forcings only (blue). Observed trends for each
    observational product are shown as horizontal lines. Panel (b) shows annual
-   mean precipitation rate (mm day–1) of GHCN version 2 for the years 1950–2014
+   mean precipitation rate (mm day-1) of GHCN version 2 for the years 1950-2014
    over land areas used to compute the plots. 
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/zonal_westerly_winds.png
@@ -500,17 +528,35 @@ Example plots
 .. figure::  /recipes/figures/ipccwg1ar6ch3/fig_3_42_a.png
    :align:   center
 
-   Figure 3.42a: Relative space–time root-mean-square deviation (RMSD)
+   Figure 3.42a: Relative space-time root-mean-square deviation (RMSD)
    calculated from the climatological seasonal cycle of the CMIP simulations
-   (1980–1999) compared to observational datasets. A relative performance
+   (1980-1999) compared to observational datasets. A relative performance
    measure is displayed, with blue shading indicating better and red shading
    indicating worse performance than the median error of all model results. A
    diagonal split of a grid square shows the relative error with respect to the
    reference data set (lower right triangle) and an additional data set (upper
    left triangle). Reference/additional datasets are from top to bottom in (a):
-   ERA5/NCEP-NCAR-R1, GPCP-SG/GHCN, CERES-EBAF, CERES-EBAF, CERES-EBAF,
-   CERES-EBAF, JRA-55/ERA5, ESACCI-SST/HadISST, ERA5/NCEP-NCAR-R1,
-   ERA5/NCEP-NCAR-R1, ERA5/NCEP-NCAR-R1, ERA5/NCEP-NCAR-R1, ERA5/NCEP-NCAR-R1,
-   ERA5/NCEP-NCAR-R1, AIRS/ERA5, ERA5/NCEP-NCAR-R1. White boxes are used when
-   data are not available for a given model and variable. Figure is updated 
-   and expanded from Bock et al. (2020).
+   ERA5/NCEP, GPCP-SG/GHCN, CERES-EBAF, CERES-EBAF, CERES-EBAF, CERES-EBAF,
+   JRA-55/ERA5, ESACCI-SST/HadISST, ERA5/NCEP, ERA5/NCEP, ERA5/NCEP, ERA5/NCEP,
+   ERA5/NCEP, ERA5/NCEP, AIRS/ERA5, ERA5/NCEP. White boxes are used when data
+   are not available for a given model and variable. Figure is updated and
+   expanded from Bock et al. (2020).
+
+.. figure::  /recipes/figures/ipccwg1ar6ch3/patterncor.png
+   :align:   center
+
+   Figure 3.43 | Centred pattern correlations between models and observations
+   for the annual mean climatology over the period 1980-1999. Results are
+   shown for individual CMIP3 (green), CMIP5 (blue) and CMIP6 (red) models (one
+   ensemble member from each model is used) as short lines, along with the
+   corresponding multi-model ensemble averages (long lines). Correlations are
+   shown between the models and the primary reference observational data set
+   (from left to right: ERA5, GPCP-SG, CERES-EBAF, CERES-EBAF, CERES-EBAF,
+   CERES-EBAF, JRA-55, ESACCI-SST, ERA5, ERA5, ERA5, ERA5, ERA5, ERA5, AIRS,
+   ERA5). In addition, the correlation between the primary reference and
+   additional observational datasets (from left to right: NCEP, GHCN, -, -, -,
+   -, ERA5, HadISST, NCEP, NCEP, NCEP, NCEP, NCEP, NCEP, NCEP, ERA5) are shown
+   (solid grey circles) if available. To ensure a fair comparison across a
+   range of model resolutions, the pattern correlations are computed after
+   regridding all datasets to a resolution of 4° in longitude and 5°
+   latitude.

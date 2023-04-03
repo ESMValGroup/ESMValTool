@@ -6,26 +6,45 @@ import esmvalcore._config
 import esmvalcore.cmor.check
 import pytest
 import yaml
+from esmvalcore import __version__ as core_ver
+from packaging import version
 
 import esmvaltool
 
-from esmvalcore import __version__ as core_ver
-from packaging import version
-from .test_diagnostic_run import write_config_user_file
+try:
+    # Since ESValCore v2.8.0
+    from esmvalcore.config import CFG, _config
+except ImportError:
+    # Prior to ESMValCore v2.8.0
+    from esmvalcore._config import _config
+    from esmvalcore.experimental.config import CFG
+
+    # Work around
+    # https://github.com/ESMValGroup/ESMValCore/issues/1579
+    def clear(self):
+        self._mapping.clear()
+
+    esmvalcore.experimental.config.Config.clear = clear
 
 
-@pytest.fixture(scope='module')
-def config_user(tmp_path_factory):
-    """Generate dummy config-user dict for testing purposes."""
-    path = tmp_path_factory.mktemp('recipe-test')
-    filename = write_config_user_file(path)
-    # The fixture scope is set to module to avoid very slow
-    # test runs, as the following line also reads the CMOR tables
-    cfg = esmvalcore._config.read_config_user_file(filename, 'recipe_test', {})
-    cfg['offline'] = True
-    cfg['auxiliary_data_dir'] = str(path / 'auxiliary_data_dir')
-    cfg['check_level'] = esmvalcore.cmor.check.CheckLevels['DEFAULT']
-    return cfg
+@pytest.fixture
+def session(mocker, tmp_path):
+    mocker.patch.dict(
+        CFG,
+        auxiliary_data_dir=str(tmp_path / 'auxiliary_data_dir'),
+        check_level=esmvalcore.cmor.check.CheckLevels['DEFAULT'],
+        drs={},
+        search_esgf='never',
+        rootpath={'default': str(tmp_path)},
+    )
+    session = CFG.start_session('test')
+
+    # The patched_datafinder fixture does not return the correct input
+    # directory structure, so make sure it is set to flat for every project
+    for project in _config.CFG:
+        mocker.patch.dict(_config.CFG[project]['input_dir'], default='/')
+
+    return session
 
 
 def _get_recipes():
@@ -39,7 +58,7 @@ RECIPES, IDS = _get_recipes()
 
 
 @pytest.mark.parametrize('recipe_file', RECIPES, ids=IDS)
-def test_recipe_valid(recipe_file, config_user, mocker):
+def test_recipe_valid(recipe_file, session, mocker):
     """Check that recipe files are valid ESMValTool recipes."""
     # Mock input files
     try:
@@ -47,12 +66,6 @@ def test_recipe_valid(recipe_file, config_user, mocker):
         import esmvalcore.local
         module = esmvalcore.local
         method = 'glob'
-        # The patched_datafinder fixture does not return the correct input
-        # directory structure, so make sure it is set to flat for every project
-        from esmvalcore.config import CFG, _config
-        mocker.patch.dict(CFG, drs={})
-        for project in _config.CFG:
-            mocker.patch.dict(_config.CFG[project]['input_dir'], default='/')
     except ImportError:
         # Prior to ESMValCore v2.8.0
         import esmvalcore._data_finder
@@ -68,6 +81,20 @@ def test_recipe_valid(recipe_file, config_user, mocker):
             'test_1850-9999.nc',
         ],
     )
+
+    # Do not remove unexpanded supplementaries. These cannot be expanded
+    # because the mocked file finding above does not produce facets.
+    try:
+        import esmvalcore.dataset
+    except ImportError:
+        pass
+    else:
+        mocker.patch.object(
+            esmvalcore.dataset.Dataset,
+            '_remove_unexpanded_supplementaries',
+            autospec=True,
+            spec_set=True,
+        )
 
     # Mock vertical levels
     # Account for module change after esmvalcore=2.7
@@ -130,12 +157,13 @@ def test_recipe_valid(recipe_file, config_user, mocker):
         extract_shape = preproc.get('extract_shape')
         if extract_shape and 'shapefile' in extract_shape:
             filename = Path(
-                config_user['auxiliary_data_dir']) / extract_shape['shapefile']
+                session['auxiliary_data_dir']) / extract_shape['shapefile']
             filename.parent.mkdir(parents=True, exist_ok=True)
             filename.touch()
 
     # Account for module change after esmvalcore=2.7
     if version.parse(core_ver) <= version.parse('2.7.1'):
+        config_user = session.to_config_user()
         esmvalcore._recipe.read_recipe_file(recipe_file, config_user)
     else:
-        esmvalcore._recipe.recipe.read_recipe_file(recipe_file, config_user)
+        esmvalcore._recipe.recipe.read_recipe_file(recipe_file, session)
