@@ -41,6 +41,7 @@ def _fix_var_metadata(var_info, cmor_info, cube):
     utils.fix_var_metadata(cube, cmor_info)
     return cube
 
+
 def _fix_coords(cube, filepath):
     """Fix coordinates."""
     utils.fix_dim_coordnames(cube)
@@ -56,7 +57,6 @@ def _fix_coords(cube, filepath):
     # Longitude
     lon_bnds = iris.load_cube(filepath, NameConstraint(var_name='lon_bnds'))
     cube.coord('longitude').bounds = lon_bnds.core_data()
-
 
 
 def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
