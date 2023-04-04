@@ -416,8 +416,8 @@ diagnostics:
          version: v2018_25-numgauge1, start_year: 1891, end_year: 2016}
     scripts: null
 
-  GPCP:
-    description: GPCP check
+  GPCP-SG:
+    description: GPCP-SG check
     variables:
       pr:
     additional_datasets:

@@ -33,10 +33,9 @@ def _fix_var_metadata(var_info, cmor_info, cube):
         cube.units = var_info['raw_units']
 
     if cube.units == 'mm/day':
-        cube = cube / 86400.
-        cube.units = 'kg m-2 s-1'
-    else:
-        cube.convert_units(cmor_info.units)
+        cube.units = 'kg m-2 day-1'
+
+    cube.convert_units(cmor_info.units)
 
     utils.fix_var_metadata(cube, cmor_info)
     return cube
