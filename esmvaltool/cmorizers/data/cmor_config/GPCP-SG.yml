@@ -6,7 +6,7 @@ attributes:
   tier: 2
   modeling_realm: atmos
   project_id: OBS
-  source: 'https://downloads.psl.noaa.gov/Datasets/gpcp/precip.mon.mean.nc
+  source: 'https://downloads.psl.noaa.gov/Datasets/gpcp/precip.mon.mean.nc'
   reference: 'gpcp-sg'
 
 # Variables to cmorize
