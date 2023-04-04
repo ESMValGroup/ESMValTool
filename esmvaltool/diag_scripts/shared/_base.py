@@ -9,6 +9,7 @@ import sys
 import time
 from pathlib import Path
 
+import dask.distributed
 import iris
 import matplotlib.pyplot as plt
 import yaml
@@ -555,6 +556,10 @@ def run_diagnostic():
         logger.info("Removing %s from previous run.", provenance_file)
         os.remove(provenance_file)
 
-    yield cfg
+    if 'scheduler_address' in cfg:
+        with dask.distributed.Client(cfg['scheduler_address']):
+            yield cfg
+    else:
+        yield cfg
 
     logger.info("End of diagnostic script run.")
