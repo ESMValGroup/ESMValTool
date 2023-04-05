@@ -47,6 +47,7 @@ REQUIREMENTS = {
         'packaging',
         'openpyxl',
         'pandas',
+        'pygrid',
         'pyproj',
         'pyyaml',
         'progressbar2',
