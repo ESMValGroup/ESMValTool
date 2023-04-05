@@ -187,6 +187,14 @@ datasets:
       Put all files in input_dir_path (no subdirectories with years).
       For orders larger than 2 GB a registration is required.
 
+  CFSv2:
+    tier: 2
+    source: https://rda.ucar.edu/OS/web/datasets/ds093.2
+    last_access: 2023-04-05
+    info: |
+      Download and processing instructions
+      TO ADD
+
   CLARA-AVHRR:
     tier: 3
     source: https://wui.cmsaf.eu/
