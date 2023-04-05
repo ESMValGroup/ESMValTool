@@ -52,6 +52,26 @@ diagnostics:
     scripts: null
 
 
+  CFSv2:
+    description: JRA-55 check
+    variables:
+      clwvi:
+      clt:
+      prw:
+      rlus:
+      rlut:
+      rlutcs:
+      rsus:
+      rsuscs:
+      rsut:
+      rsutcs:
+      tas:
+    additional_datasets:
+      - {dataset: CFSv2, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 1, start_year: 2011, end_year: 2022} 
+    scripts: null
+
+
   CRU:
     description: CRU check
     variables:
