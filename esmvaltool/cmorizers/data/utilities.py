@@ -296,6 +296,25 @@ def read_cmor_config(dataset):
     return cfg
 
 
+def make_time_suffix(mip, tp0, tpn):
+    """Make time suffix for outfiles given first and last time points."""
+    dates = ["", ""]
+    # tp0 == tpn <-> len(time.points) == 1
+    if tp0 == tpn and "mon" not in mip:
+        dates[0], dates[1] = f"{tp0.year}01", f"{tp0.year}12"
+    else:
+        dates[0] = f"{tp0.year:d}{tp0.month:02d}"
+        dates[1] = f"{tpn.year:d}{tpn.month:02d}"
+
+        if "day" in mip or "hr" in mip:
+            dates[0] = dates[0] + f"{tp0.day:02d}"
+            dates[1] = dates[1] + f"{tpn.day:02d}"
+        if "hr" in mip:
+            dates[0] = dates[0] + f"{tp0.hour:02d}{tp0.minute:02d}"
+            dates[1] = dates[1] + f"{tpn.hour:02d}{tpn.minute:02d}"
+    return '-'.join(dates)
+
+
 def save_variable(cube, var, outdir, attrs, **kwargs):
     """Saver function.
 
@@ -326,23 +345,10 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     except iris.exceptions.CoordinateNotFoundError:
         time_suffix = None
     else:
-        mip = cube.attributes.get('mip')
-        tp0, tpn = time.cell(0).point, time.cell(-1).point
-        if len(time.points) == 1 and "mon" not in mip:
-            time_suffix = '-'.join([f"{tp0.year}01", f"{tp0.year}12"])
-        else:
-            dates = ["", ""]
-            dates[0] = f"{tp0.year:d}{tp0.month:02d}"
-            dates[1] = f"{tpn.year:d}{tpn.month:02d}"
-
-            if "day" in mip or "hr" in mip:
-                dates[0] = dates[0] + f"{tp0.day:02d}"
-                dates[1] = dates[1] + f"{tpn.day:02d}"
-            if "hr" in mip:
-                dates[0] = dates[0] + f"{tp0.hour:02d}{tp0.minute:02d}"
-                dates[1] = dates[1] + f"{tpn.hour:02d}{tpn.minute:02d}"
-
-            time_suffix = '-'.join(dates)
+        time_suffix = make_time_suffix(
+            cube.attributes.get('mip'),
+            time.cell(0).point,
+            time.cell(-1).point)
 
     name_elements = [
         attrs['project_id'],
@@ -354,6 +360,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     ]
     if time_suffix:
         name_elements.append(time_suffix)
+
     file_path = os.path.join(outdir, '_'.join(name_elements) + '.nc')
     logger.info('Saving: %s', file_path)
     status = 'lazy' if cube.has_lazy_data() else 'realized'

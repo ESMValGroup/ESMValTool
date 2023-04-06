@@ -11,6 +11,7 @@ import iris.fileformats
 import numpy as np
 import pytest
 from cf_units import Unit
+from cftime import DatetimeGregorian
 
 import esmvaltool.cmorizers.data.utilities as utils
 
@@ -329,3 +330,17 @@ def test_read_cmor_config():
     assert 'thetao' in cfg['variables']
     assert 'Omon' in cfg['cmor_table'].tables
     assert 'thetao' in cfg['cmor_table'].tables['Omon']
+
+
+def test_make_time_suffix():
+    """Test the making of time suffix."""
+    fct = utils.make_time_suffix
+    # year / month / day / hour / minute
+    tp0 = DatetimeGregorian(2020, 1, 1, 10, 55)
+    tpn = DatetimeGregorian(2023, 4, 6, 20, 15)
+
+    assert fct("yr", tp0, tp0) == "202001-202012"
+    assert fct("mon", tp0, tpn) == "202001-202304"
+    assert fct("day", tp0, tpn) == "20200101-20230406"
+    assert fct("3hr", tp0, tpn) == "202001011055-202304062015"
+    assert fct("subhrPt", tp0, tpn) == "202001011055-202304062015"
