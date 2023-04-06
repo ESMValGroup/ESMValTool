@@ -73,7 +73,7 @@ def _load_cfsv2_grib2(infile, var):
         sel_grb = grbs.select(shortName=var.get('raw'))
         if len(sel_grb) > 1:
             grb = [grb for grb in sel_grb
-                       if grb.typeOfLevel==var.get('level')][0]
+                   if grb.typeOfLevel == var.get('level')][0]
         else:
             grb = sel_grb[0]
 
