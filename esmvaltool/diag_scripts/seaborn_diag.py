@@ -26,7 +26,7 @@ add_ancillary_variables: bool, optional (default: False)
     cubes within a group (see option `groupby_facet`). This equality is not
     checked!
 add_aux_coords: bool, optional (default: False)
-    Add :meth:`~iris.cube.Cube.aux_coords` to the main data frame. Note that
+    Add :attr:`~iris.cube.Cube.aux_coords` to the main data frame. Note that
     this will assume that auxiliary coordinates are identical across cubes
     within a group (see option `groupby_facet`). This equality is not checked!
 add_cell_measures: bool, optional (default: False)
@@ -35,10 +35,14 @@ add_cell_measures: bool, optional (default: False)
     group (see option `groupby_facet`). This equality is not checked!
 data_frame_ops: dict, optional
     Perform additional operations on the main data frame. Allowed operations
-    are :func:`pandas.DataFrame.query` (dict key `query`) and
-    :func:`pandas.DataFrame.eval` (dict key `eval`). Operations are defined by
+    are :meth:`pandas.DataFrame.query` (dict key `query`) and
+    :meth:`pandas.DataFrame.eval` (dict key `eval`). Operations are defined by
     strings (dict values). Examples: ``{'query': 'latitude > 80', 'eval':
     'longitude = longitude - 180.0'}``.
+dropna_kwargs: dict, optional
+    Optional keyword arguments for :meth:`pandas.DataFrame.dropna` to drop
+    missing values in the input data. If not given, do not drop NaNs. Note:
+    NaNs are dropped after potential `data_frame_ops`.
 facets_as_columns: list of str, optional
     Facets that will will be added as a columns to the main data frame. Values
     for these facets must be identical across all datasets within a group (see
@@ -55,6 +59,18 @@ groupby_facet: str, optional (default: 'alias')
 legend_title: str, optional (default: None)
     Title for legend. If ``None``, Seaborn will determine the legend title (if
     possible).
+plot_object_methods: dict, optional
+    Execute methods of the object returned by the plotting function
+    (`seaborn_func`). This object will either be a
+    :class:`matplotlib.axes.Axes` (e.g., :func:`~seaborn.scatterplot`,
+    :func:`~seaborn.lineplot`), a :class:`seaborn.FacetGrid` (e.g.,
+    :func:`~seaborn.relplot`, :func:`~seaborn.displot`), a
+    :class:`seaborn.JointGrid` (e.g., :func:`~seaborn.jointplot`), or a
+    :class:`seaborn.PairGrid` (e.g., :func:`~seaborn.pairplot`). Dictionary
+    keys are method names, dictionary values function arguments (use a
+    :obj:`dict` to specify keyword arguments). Example (for
+    :func:`~seaborn.relplot`): ``{'set': {'xlabel': 'X [km]'}, 'set_titles':
+    'Model {col_name}'}``.
 reset_index: bool, optional (default: False)
     Put coordinate information of datasets into columns instead of (multi-)
     indices. This avoids the deletion of coordinate information if different
@@ -64,8 +80,8 @@ savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
     default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
 seaborn_func: str
-    Function used to plot the data. Must be a function of
-    :mod:`seaborn`. An overview of seaborn's plotting functions is given `here
+    Function used to plot the data. Must be a function of Seaborn. An overview
+    of Seaborn's plotting functions is given `here
     <https://seaborn.pydata.org/tutorial/function_overview.html>`__.
 seaborn_kwargs: dict, optional
     Optional keyword arguments for the plotting function given by
@@ -73,19 +89,10 @@ seaborn_kwargs: dict, optional
     ``{'x': 'variable_1', 'y': 'variable_2', 'hue': 'coord_1'}``.
 seaborn_settings: dict, optional
     Options for :func:`seaborn.set_theme` (affects all plots).
-set_kwargs: dict, optional
-    Optional keyword arguments for the ``set`` method of the object returned by
-    the plotting function (`seaborn_func`). This will either be
-    :meth:`matplotlib.axes.Axes.set` (e.g., :func:`~seaborn.scatterplot`,
-    :func:`~seaborn.lineplot`), :meth:`seaborn.FacetGrid.set` (e.g.,
-    :func:`~seaborn.relplot`, :func:`~seaborn.displot`),
-    :meth:`seaborn.JointGrid.set` (e.g., :func:`~seaborn.jointplot`), or
-    :meth:`seaborn.PairGrid.set` (e.g., :func:`~seaborn.pairplot`). Example:
-    ``{'xlabel': 'X [km]', 'xlim': [0, 20]}``.
 suptitle: str or None, optional (default: None)
     Suptitle for the plot (see :func:`matplotlib.pyplot.suptitle`). If
     ``None``, do not create a suptitle. If the plot shows only a single panel,
-    use `set_kwargs` with ``{'title': 'TITLE'}`` instead.
+    use `plot_object_methods` with ``{'set': {'title': 'TITLE'}}`` instead.
 
 """
 from __future__ import annotations
@@ -142,13 +149,24 @@ def _create_plot(
     plot_obj = plot_func(data=data_frame, **plot_kwargs)
 
     # Adjust plot appearance
-    if cfg['set_kwargs']:
-        logger.debug(
-            "Running\n%s.set(\n%s\n)",
-            type(plot_obj).__name__,
-            _get_str_from_kwargs(cfg['set_kwargs']),
-        )
-        plot_obj.set(**cfg['set_kwargs'])
+    if cfg['plot_object_methods']:
+        for (func_name, func_args) in cfg['plot_object_methods'].items():
+            if isinstance(func_args, dict):
+                logger.debug(
+                    "Running\n%s.%s(\n%s\n)",
+                    type(plot_obj).__name__,
+                    func_name,
+                    _get_str_from_kwargs(func_args),
+                )
+                getattr(plot_obj, func_name)(**func_args)
+            else:
+                logger.debug(
+                    "Running %s.%s(%r)",
+                    type(plot_obj).__name__,
+                    func_name,
+                    func_args,
+                )
+                getattr(plot_obj, func_name)(func_args)
     if cfg['suptitle'] is not None:
         logger.debug("Setting `suptitle='%s'`", cfg['suptitle'])
         plt.suptitle(cfg['suptitle'], y=1.05)
@@ -350,9 +368,11 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg.setdefault('add_aux_coords', False)
     cfg.setdefault('add_cell_measures', False)
     cfg.setdefault('data_frame_ops', {})
+    cfg.setdefault('dropna_kwargs', {})
     cfg.setdefault('facets_as_columns', [])
     cfg.setdefault('groupby_facet', 'alias')
     cfg.setdefault('legend_title', None)
+    cfg.setdefault('plot_object_methods', {})
     cfg.setdefault('reset_index', False)
     cfg.setdefault('savefig_kwargs', {
         'bbox_inches': 'tight',
@@ -361,7 +381,6 @@ def _get_default_cfg(cfg: dict) -> dict:
     })
     cfg.setdefault('seaborn_kwargs', {})
     cfg.setdefault('seaborn_settings', {})
-    cfg.setdefault('set_kwargs', {})
     cfg.setdefault('suptitle', None)
 
     return cfg
@@ -390,6 +409,8 @@ def _get_plot_func(cfg: dict) -> callable:
 def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     """Modify data frame according to the option ``data_frame_ops``."""
     allowed_funcs = ('query', 'eval')
+
+    # data_frame_ops
     for (func, expr) in cfg['data_frame_ops'].items():
         if func not in allowed_funcs:
             raise ValueError(
@@ -402,6 +423,15 @@ def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
         logger.debug(
             "Main data frame after operation %s:\n%s", op_str, data_frame
         )
+
+    # dropna_kwargs
+    if cfg['dropna_kwargs']:
+        logger.debug(
+            "Running\ndata_frame.dropna(\n%s\n)",
+            _get_str_from_kwargs(cfg['dropna_kwargs']),
+        )
+        data_frame = data_frame.dropna(**cfg['dropna_kwargs'])
+        logger.debug("Main data frame after dropna \n%s", data_frame)
     return data_frame
 
 
