@@ -79,7 +79,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         year = loop_date.year
         month = loop_date.month
 
-        fname = f'flxl.gdas.{year}{month:02}.tar'
+        fname = f'flxf.gdas.{year}{month:02}.tar'
         downloader.download_file(url + fname, download_options)
         fname = f'pgbh.gdas.{year}{month:02}.tar'
         downloader.download_file(url + fname, download_options)

@@ -35,7 +35,7 @@ variables:
     mip: Amon
     raw: tcc
     level: atmosphereSingleLayer
-    file: flxl01.gdas.*.grib2
+    file: flxf01.gdas.*.grib2
 
   prw:
     short_name: prw
@@ -49,52 +49,52 @@ variables:
     mip: Amon
     raw: ulwrf
     level: surface
-    file: flxl01.gdas.*.grib2
+    file: flxf01.gdas.*.grib2
     
   rlut:
     short_name: rlut
     mip: Amon
     raw: ulwrf
     level: nominalTop
-    file: flxl01.gdas.*.grib2
+    file: flxf01.gdas.*.grib2
     
   rlutcs:
     short_name: rlutcs
     mip: Amon
     raw: csulf
     level: nominalTop
-    file: flxl01.gdas.*.grib2
+    ile: flxf01.gdas.*.grib2
 
   rsus:
     short_name: rsus
     mip: Amon
     raw: uswrf
     level: surface
-    file: flxl01.gdas.*.grib2
+    file: flxf01.gdas.*.grib2
 
   rsuscs:
     short_name: rsuscs
     mip: Amon
     raw: csusf
     level: nominalTop
-    file: flxl01.gdas.*.grib2
+    file: flxf01.gdas.*.grib2
 
   rsut:
     short_name: rsut
     mip: Amon
     raw: uswrf
     level: nominalTop
-    file: flxl01.gdas.*.grib2
+    file: flxf01.gdas.*.grib2
 
   rsutcs:
     short_name: rsutcs
     mip: Amon
     raw: csusf
     level: nominalTop
-    file: flxl01.gdas.*.grib2
+    file: flxf01.gdas.*.grib2
 
   tas:
     short_name: tas
     mip: Amon
     raw: 2t
-    file: flxl01.gdas.*.grib2
+    file: flxf01.gdas.*.grib2
