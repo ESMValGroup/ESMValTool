@@ -52,8 +52,28 @@ diagnostics:
     scripts: null
 
 
+  CFSR:
+    description: CFSR check
+    variables:
+      clwvi:
+      clt:
+      prw:
+      rlus:
+      rlut:
+      rlutcs:
+      rsus:
+      rsuscs:
+      rsut:
+      rsutcs:
+      tas:
+    additional_datasets:
+      - {dataset: CFSR, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 1, start_year: 2009, end_year: 2010} 
+    scripts: null
+
+
   CFSv2:
-    description: JRA-55 check
+    description: CFSv2 check
     variables:
       clwvi:
       clt:
@@ -68,7 +88,7 @@ diagnostics:
       tas:
     additional_datasets:
       - {dataset: CFSv2, project: OBS6, mip: Amon, tier: 2,
-         type: reanaly, version: 1, start_year: 2011, end_year: 2022} 
+         type: reanaly, version: 1, start_year: 2011, end_year: 2011} 
     scripts: null
 
 
