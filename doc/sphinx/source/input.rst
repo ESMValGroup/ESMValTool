@@ -252,6 +252,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | CERES-SYN1deg                | rlds, rldscs, rlus, rluscs, rlut, rlutcs, rsds, rsdscs, rsus, rsuscs, rsut, rsutcs (3hr)             |   3  | NCL             |
 |                              | rlds, rldscs, rlus, rlut, rlutcs, rsds, rsdt, rsus, rsut, rsutcs (Amon)                              |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| CFSR                         | clwvi, clt, prw, rlus, rlut, rlutcs, rsus, rsuscs, rsut, rsutcs, tas (Amon)                          |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CFSv2                        | clwvi, clt, prw, rlus, rlut, rlutcs, rsus, rsuscs, rsut, rsutcs, tas (Amon)                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CLARA-AVHRR                  | clt, clivi, lwp (Amon)                                                                               |   3  | NCL             |
