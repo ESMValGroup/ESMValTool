@@ -57,8 +57,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         passwd = str(input("RDA password? "))
 
     if start_date is None:
-        # start_date = datetime(1979, 1, 1)
-        start_date = datetime(2009, 1, 1)
+        start_date = datetime(1979, 1, 1)
     if end_date is None:
         end_date = datetime(2010, 12, 31)
     loop_date = start_date
