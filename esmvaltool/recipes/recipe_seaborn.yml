@@ -18,7 +18,7 @@ documentation:
     - schlund_manuel
 
   references:
-    - waskom2021
+    - waskom21joss
 
   projects:
     - 4c
@@ -78,8 +78,4 @@ diagnostics:
           style: ticks
           rc:
             axes.titlepad: 15.0
-            xtick.top: true
-            ytick.right: true
-            xtick.minor.visible: true
-            ytick.minor.visible: true
         suptitle: Simulated Temperature (1991-2014)
