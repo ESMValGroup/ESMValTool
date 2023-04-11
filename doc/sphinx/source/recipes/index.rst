@@ -10,6 +10,19 @@ ESMValTool for all available recipes can be accessed `here
 .. toctree::
    :maxdepth: 1
 
+General-purpose diagnostics
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Recipes that use highly costumizable diagnostics which are designed to plot a
+large variety of input data.
+
+.. toctree::
+   :maxdepth: 1
+
+   recipe_monitor
+   recipe_psyplot
+   recipe_seaborn
+
 Atmosphere
 ^^^^^^^^^^
 .. toctree::
@@ -121,9 +134,7 @@ Other
    recipe_ensclus
    recipe_esacci_lst
    recipe_examples
-   recipe_monitor
    recipe_multimodel_products
-   recipe_psyplot
    recipe_pv_capacity_factor
    recipe_rainfarm
    recipe_seaice
