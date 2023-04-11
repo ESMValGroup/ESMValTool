@@ -13,16 +13,6 @@ attributes:
 
 # Variables to cmorize
 variables:
-        #  cli:
-        #    short_name: cli
-        #    mip: Amon
-        #    file: fcst_p125.229_ciwc.*.grb
-        #
-        #  clw:
-        #    short_name: clw
-        #    mip: Amon
-        #    file: fcst_p125.228_clwc.*.grb
-        
   clwvi:
     short_name: clwvi
     mip: Amon
@@ -63,7 +53,7 @@ variables:
     mip: Amon
     raw: csulf
     level: nominalTop
-    ile: flxf01.gdas.*.grib2
+    file: flxf01.gdas.*.grib2
 
   rsus:
     short_name: rsus
@@ -97,4 +87,5 @@ variables:
     short_name: tas
     mip: Amon
     raw: 2t
+    level: heightAboveGround
     file: flxf01.gdas.*.grib2

@@ -83,7 +83,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         fname = f'pgbhnl.gdas.{year}.tar'
         downloader.download_file(url + fname, download_options)
 
-        loop_date += relativedelta.relativedelta(year=1)
+        loop_date += relativedelta.relativedelta(years=1)
 
     unpack_files_in_folder(downloader.local_folder)
 

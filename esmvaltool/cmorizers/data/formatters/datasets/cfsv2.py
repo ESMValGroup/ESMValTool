@@ -107,21 +107,12 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
     attrs['mip'] = var['mip']
     utils.fix_var_metadata(cube, cmor_info)
 
-#    # fix z-coordinate (if present)
-#    for coord in cube.dim_coords:
-#        coord_type = iris.util.guess_coord_axis(coord)
-#        if coord_type == 'Z':
-#            coord.standard_name = 'air_pressure'
-#            coord.long_name = 'pressure'
-#            coord.var_name = 'plev'
-#            coord.attributes['positive'] = 'down'
-#            if coord.units == "hPa":
-#                coord.convert_units('Pa')
-#            utils.flip_dim_coord(cube, coord.standard_name)
-
     utils.fix_dim_coordnames(cube)
     utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
+
+    if 'height2m' in cmor_info.dimensions:
+        utils.add_height2m(cube)
 
     # Save variable
     utils.save_variable(cube,
