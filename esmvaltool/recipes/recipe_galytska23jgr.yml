@@ -263,8 +263,8 @@ diagnostics:
           - {dataset: BCC-CSM2-MR , grid: gn}
           - {dataset: CAMS-CSM1-0, grid: gn}
           - {dataset: CanESM5, grid: gn}
-          - {dataset: CMCC-CM2-SR5, grid: gn}
-          - {dataset: CMCC-ESM2, grid: gn}
+          - {dataset: CMCC-CM2-SR5, grid: gn, supplementary_variables: [{short_name: areacello, skip: true}]}
+          - {dataset: CMCC-ESM2, grid: gn, supplementary_variables: [{short_name: areacello, skip: true}]}
           - {dataset: EC-Earth3, grid: gn}
           - {dataset: EC-Earth3-Veg, grid: gn}
           - {dataset: EC-Earth3-Veg-LR, grid: gn}
