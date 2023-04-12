@@ -149,7 +149,8 @@ Next, get started with `cylc <https://cylc.github.io/cylc-doc/7.9.3/html/index.h
 #. Run all recipes ``cylc run run-esmvaltool-recipes``
 #. View progress ``cylc log run-esmvaltool-recipes``, use e.g. ``cylc log run-all-esmvaltool-recipes examples-recipe_python_yml.1 --stdout`` to see the log of an individual esmvaltool run. Once the suite has finished running, you will see the message "WARNING - suite stalled" in the log.
 #. Stop the cylc run once everything is done ``cylc stop run-esmvaltool-recipes``.
-#. Create the index.html overview page by running ``python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/``
+
+To generate an overview page of the recipe runs, use the ``summarize.py`` :ref:`utility script <overview_page>`.
 
 Using Rose and cylc
 -------------------
@@ -212,12 +213,16 @@ There you will find the run shell: ``run_example``, as well as an example
 how to set the configuration file. If you don't have Met Office credentials,
 a copy of `u-bd684` is always located in ``/home/users/valeriu/roses/u-bd684`` on Jasmin.
 
+.. _utils_batch_jobs:
+
 Using the scripts in `utils/batch-jobs`
 ---------------------------------------
 
 In `utils/batch-jobs <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs>`_, 
 you can find a script to generate slurm submission scripts for all available recipes in ESMValTool,
 as well as a script to parse the job outputs.
+
+.. _utils_generate:
 
 Using `generate.py`
 ...................
@@ -235,9 +240,16 @@ The following parameters have to be set in the script in order to make it run:
 * ``outputs``, *str*: Name of the directory in which the job outputs (.out and .err files) are going to be saved. The outputs will be saved in `/home/user/<outputs>`.
 * ``conda_path``, *str*: Full path to the `mambaforge/etc/profile.d/conda.sh` executable.
 
-The script will generate a submission script for all recipes using by default the ``compute`` queue and with a time limit of 8h. In case a recipe
+Optionally, the following parameters can be edited:
+
+* ``config_file``, *str*: Path to ``config-user.yml`` if default ``~/.esmvaltool/config-user.yml`` not used.
+* ``partition``, *str*: Name of the DKRZ partition used to run jobs. Default is ``interactive`` to minimize computing cost compared to ``compute`` for which nodes cannot be shared.
+* ``memory``, *str*: Amount of memory requested for each run. Default is ``64G`` to allow to run 4 recipes on the same node in parallel.
+* ``time``, *str*: Time limit. Default is ``04:00:00`` to increase the job priority. Jobs can run for up to 8 hours and 12 hours on the compute and interactive partitions, respectively.
+
+The script will generate a submission script for all recipes using by default the ``interactive`` queue and with a time limit of 4h. In case a recipe
 may require of additional resources, they can be defined in the ``SPECIAL_RECIPES`` dictionary. The recipe name has to be given as a ``key`` in which the
-values are another dictionaries. 
+values are another dictionary. 
 The latter are used to specify the ``partition`` in which to submit the recipe, the new ``time`` limit and other ``memory`` requirements
 given by the slurm flags ``--mem``, ``--constraint`` or ``--ntasks``. In general, an entry in ``SPECIAL_RECIPES`` should be set as:
 
@@ -251,11 +263,19 @@ given by the slurm flags ``--mem``, ``--constraint`` or ``--ntasks``. In general
         },
    }
 
+Some recipes can only be run with ``--max_parallel_tasks=1`` for various reasons (memory issues, diagnostic issues, CMIP3 data used).
+These recipes need to be added to the ``ONE_TASK_RECIPES`` list.
+
+Note that the script has been optimized to use standard SLURM settings to run most recipes while minimizing the computational cost of the jobs and tailored runtime settings for resource-intensive recipes.
+It is only necessary to edit this script for recipes that have been added since the last release and cannot be run with the default settings.
+
 In the case in which ``submit`` is set to ``True``, but you want to exclude certain recipes from being submitted, their name can be added in the ``exclude`` list:
 
 .. code-block:: python
 
    exclude = ['recipe_to_be_excluded_1', 'recipe_to_be_excluded_2']
+
+.. _utils_parse:
 
 Using `parse_recipes_outputs`
 .............................
@@ -274,6 +294,25 @@ be obtained by running:
 .. code-block:: bash
 
    for recipe in $(esmvaltool recipes list | grep '\.yml$'); do echo "$recipe"; done > all_recipes.txt
+
+.. _overview_page:
+
+Overview of recipe runs
+=======================
+
+To create overview webpages of a set of recipe runs, run:
+
+.. code-block:: python
+
+   python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/
+
+This will generate 2 html files:
+
+-  ``index.html`` that displays a summary of each recipe run, with a title and
+   a representative plot, a short description of the aim of the recipe, and
+   links to each individual run.
+-  ``debug.html`` that provides an overview table of successful and failed runs
+   with links to each individual run, and computing resources used for each run.
 
 .. _compare_recipe_runs:
 

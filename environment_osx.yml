@@ -4,7 +4,7 @@ channels:
   # The release candidate channel should only be activated
   # during the rc phase right before the next release of the
   # ESMValCore.
-  - conda-forge/label/esmvalcore_rc
+  # - conda-forge/label/esmvalcore_rc
   - conda-forge
   - nodefaults
 
@@ -23,7 +23,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore==2.8.0rc1  # change to 2.8.* after release
+  - esmvalcore 2.8.*
   - fiona
   - fire
   - gdal
@@ -76,7 +76,8 @@ dependencies:
   - pytest-xdist
   # Python packages needed for building docs
   - autodocsumm>=0.2.2
-  - sphinx>=5
+  - nbsphinx
+  - sphinx>=6.1.3
   - sphinx_rtd_theme
   # Python packages needed for development
   - codespell
