@@ -133,7 +133,8 @@ begin
                  (/"mean", "stddev"/), \
                  diag_script_info@region, \
                  "seas", \
-                 (/"winterstein_franziska", "righi_mattia", "eyring_veronika"/), \
+                 (/"winterstein_franziska", "righi_mattia", \
+                 "eyring_veronika"/), \
                  (/"righi15gmd", "gleckler08jgr"/), \
                  metadata_att_as_array(info_items, "filename"))
 
