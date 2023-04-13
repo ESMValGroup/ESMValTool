@@ -135,7 +135,7 @@ begin
                    diag_script_info@region, \
                    "zonal", \
                    (/"winterstein_franziska", "righi_mattia", \
-                   "eyring_veronika"/), \
+                     "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 
@@ -211,7 +211,7 @@ begin
                    diag_script_info@region, \
                    "zonal", \
                    (/"winterstein_franziska", "righi_mattia", \
-                   "eyring_veronika"/), \
+                     "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 

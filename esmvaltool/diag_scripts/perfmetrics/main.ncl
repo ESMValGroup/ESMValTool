@@ -354,7 +354,7 @@ begin
         ; Provenance information
         statistics = (/"rmsd"/)
         authors = (/"winterstein_franziska", "righi_mattia", \
-        "eyring_veronika"/)
+                    "eyring_veronika"/)
         references = (/"righi15gmd", "gleckler08jgr"/)
 
       elseif (diag_script_info@metric(met).eq."BIAS") then
@@ -381,7 +381,7 @@ begin
         ; Provenance information
         statistics = (/"diff"/)
         authors = (/"winterstein_franziska", "righi_mattia", \
-        "eyring_veronika"/)
+                    "eyring_veronika"/)
         references = (/"righi15gmd", "gleckler08jgr"/)
 
       elseif (diag_script_info@metric(met).eq."taylor") then
@@ -395,7 +395,7 @@ begin
         ; Provenance information
         statistics = (/"rmsd", "corr"/)
         authors = (/"winterstein_franziska", "righi_mattia", \
-        "eyring_veronika"/)
+                    "eyring_veronika"/)
         references = (/"righi15gmd", "gleckler08jgr"/)
 
       elseif (diag_script_info@metric(met).eq."SMPI") then
