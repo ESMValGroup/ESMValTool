@@ -18,7 +18,7 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-* recipe_galytska23jgr
+* recipe_galytska23jgr.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
