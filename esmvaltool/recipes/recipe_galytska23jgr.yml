@@ -8,6 +8,10 @@ documentation:
     Recipe to select variables that reproduce Arctic-midlatitude
     teleconnections for further application of 
     Causal Model Evaluation (CME) described in Galytska et al. (2023).
+    This recipe also applies the CVDP package. There are necessary
+    changes in cvdp/cvdp/driver.ncl to be applied: 
+    modular = "True" and modular_list = "psl.nam_nao"
+
 
   authors:
     - galytska_evgenia
