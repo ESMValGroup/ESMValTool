@@ -79,6 +79,8 @@ References
   Climate Change Service Climate Data Store (CDS).
   https://cds.climate.copernicus.eu/cdsapp#!/home
 
+* http://www.cesm.ucar.edu/working_groups/CVC/cvdp/
+
 Example plots
 -------------
 
