@@ -16,7 +16,7 @@ Each file contains the area-weighted spatial average of climatological monthly a
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in esmvaltool/recipes/galytska23/
+Recipes are stored in esmvaltool/recipes/
 
 * recipe_galytska23jgr
 
