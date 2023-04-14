@@ -42,6 +42,11 @@ User settings in recipe
 
    none
 
+#. Script <cvdp/cvdp/driver.ncl>
+
+   ``modular`` (*True*) : Run only the diagnostics that selected in ``modular_list``
+   ``modular_list`` (*psl.nam_nao*) : Calculate NAO diagnostics
+
 Variables
 ---------
 
