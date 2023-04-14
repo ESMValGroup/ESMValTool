@@ -11,6 +11,7 @@ in Galytska et al. (2023).
 
 The output of the recipe consists of the .nc files named after the data source (e.g. ERA5, ACCESS-CM2.nc etc.). 
 Each file contains the area-weighted spatial average of climatological monthly anomalies of selected variables.
+The recipe also applies the CVDP package. 
 
 
 Available recipes and diagnostics
