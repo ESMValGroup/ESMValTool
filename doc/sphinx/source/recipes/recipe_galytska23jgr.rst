@@ -44,8 +44,8 @@ User settings in recipe
 
 #. Script <cvdp/cvdp/driver.ncl>
 
-   ``modular`` (*True*) : Run only the diagnostics that selected in ``modular_list``
-   ``modular_list`` (*psl.nam_nao*) : Calculate NAO diagnostics
+   * ``modular`` (*modular: True*) : Run only the diagnostics that selected in ``modular_list``
+   * ``modular_list`` (*modular_list: psl.nam_nao*) : Calculate only NAO diagnostics
 
 Variables
 ---------
@@ -92,4 +92,4 @@ Example plots
 .. figure::  /recipes/figures/galytska23jgr/test_fig_TAS.png
    :align:   center
 
-   Timeseries of Arctic near-surface temperature monthly mean anomalies from observations and selected CMIP6 models during 1980-2021
+   Monthly mean temperature anomalies in the Arctic (65°–90°N) from observations and selected CMIP6 models during 1980-2021.
