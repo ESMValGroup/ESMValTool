@@ -2,9 +2,8 @@
 
 # import libraries
 import iris
-import matplotlib.pyplot as plt
-import numpy as np
-import seaborn as sns
+# import numpy as np
+# import seaborn as sns
 
 from esmvalcore.preprocessor import (
     anomalies,
@@ -34,11 +33,32 @@ def calculate_polar_vortex(dict_item):
     return var
 
 
+def calculate_arctic_tas(dict_item):
+    """Read Arctic temperature data."""
+    var = iris.load_cube(dict_item['filename'])
+    var.var_name = 'Arctic_temperature'
+    return var
+
+
 def calculate_slp(dict_item):
     """Get surface pressure."""
     var = iris.load_cube(dict_item['filename'])
     # calculate hPa from Pa.
     var.data /= 100
+    return var
+
+
+def finalize_bk_ice(dict_item):
+    """Read sea ice data (Barents-Kara seas)."""
+    var = iris.load_cube(dict_item['filename'])
+    var.var_name = 'BK_sic'
+    return var
+
+
+def finalize_ok_ice(dict_item):
+    """Read sea ice data (Sea of Okhotsk)."""
+    var = iris.load_cube(dict_item['filename'])
+    var.var_name = 'Ok_sic'
     return var
 
 
@@ -60,6 +80,38 @@ def calculate_heat_flux(list_va_ta):
     return hf_anom_zm
 
 
+def variable_cases(x, item):
+    """Match variables and functions."""
+    match x:
+        case 'pv':
+            pv = calculate_polar_vortex(item)
+            return pv
+        case 'pre_tas':
+            tas = calculate_arctic_tas(item)
+            return tas
+        case 'pressure_ural':
+            psl_ural = calculate_slp(item)
+            psl_ural.var_name = 'Psl_Ural'
+            return psl_ural
+        case 'pressure_sib':
+            psl_sib = calculate_slp(item)
+            psl_sib.var_name = 'Psl_Sib'
+            return psl_sib
+        case 'pressure_aleut':
+            psl_aleut = calculate_slp(item)
+            psl_aleut.var_name = 'Psl_Aleut'
+            return psl_aleut
+        case 'bk_ice':
+            sic_bk = finalize_bk_ice(item)
+            return sic_bk
+        case 'ok_ice':
+            sic_ok = finalize_ok_ice(item)
+            return sic_ok
+        case 'heat_flux':
+            var = prepare_heat_flux(item)
+            return var
+
+
 def calculate_variables(input_dict):
     """Calculate all necessary variables."""
     dictionary = {}
@@ -67,61 +119,39 @@ def calculate_variables(input_dict):
         dictionary.setdefault(key, {})
         tmp_list = []
         for item in value:
-            if item['preprocessor'] == 'pv':
-                polar_vortex = calculate_polar_vortex(item)
-            elif item['preprocessor'] == 'pre_tas':
-                tas = iris.load_cube(item['filename'])
-                tas.var_name = 'Arctic_temperature'
-            elif item['preprocessor'] == 'pressure_ural':
-                psl_ural = calculate_slp(item)
-                psl_ural.var_name = 'Psl_Ural'
-            elif item['preprocessor'] == 'pressure_sib':
-                psl_sib = calculate_slp(item)
-                psl_sib.var_name = 'Psl_Sib'
-            elif item['preprocessor'] == 'pressure_aleut':
-                psl_aleut = calculate_slp(item)
-                psl_aleut.var_name = 'Psl_Aleut'
-            elif item['preprocessor'] == 'bk_ice':
-                sic_bk = iris.load_cube(item['filename'])
-                sic_bk.var_name = 'BK_sic'
-            elif item['preprocessor'] == 'ok_ice':
-                sic_ok = iris.load_cube(item['filename'])
-                sic_ok.var_name = 'Ok_sic'
-            elif item['preprocessor'] == 'heat_flux':
-                var = prepare_heat_flux(item)
-                tmp_list.append(var)
-        heat_flux = calculate_heat_flux(tmp_list)
-        dictionary[key].setdefault('PV', polar_vortex)
-        dictionary[key].setdefault('Arctic_temperature', tas)
-        dictionary[key].setdefault('Psl_Ural', psl_ural)
-        dictionary[key].setdefault('Psl_Sib', psl_sib)
-        dictionary[key].setdefault('Psl_Aleut', psl_aleut)
-        dictionary[key].setdefault('BK_sic', sic_bk)
-        dictionary[key].setdefault('Ok_sic', sic_ok)
-        dictionary[key].setdefault('heat_flux', heat_flux)
+            if item['preprocessor'] == "heat_flux":
+                tmp_list.append(variable_cases(item['preprocessor'], item))
+            else:
+                dictionary[key].setdefault(
+                    variable_cases(item['preprocessor'], item).var_name,
+                    variable_cases(item['preprocessor'], item)
+                )
+
+        if key != "HadISST":
+            # calculate heat flux for all data sources except HadISST
+            heat_flux = calculate_heat_flux(tmp_list)
+            dictionary[key].setdefault(heat_flux.var_name, heat_flux)
     return dictionary
 
-
-def plot_selected_timeseries(dictionary):
-    """Plot timeseries of indicated variables."""
-    var_names = ['heat_flux', 'PV']
-    for var in var_names:
-        plt.figure(figsize=(14, 4))
-        sns.set_theme()
-        for key in dictionary:
-            time_orig = dictionary[key][var].coord('time')
-            times = np.asarray(time_orig.units.num2date(time_orig.points))
-            time_pts = [t.strftime('%Y-%m') for t in times]
-            plt.plot(time_pts, dictionary[key][var].data)
-            plt.title(var)
-            plt.ylabel('Anomalies')
-            plt.xticks(rotation=45, ha="right", rotation_mode='anchor')
+# def plot_selected_timeseries(dictionary):
+#     """Plot timeseries of indicated variables."""
+#     var_names = ['heat_flux', 'PV']
+#     for var in var_names:
+#         plt.figure(figsize=(14, 4))
+#         sns.set_theme()
+#         for key in dictionary:
+#             time_orig = dictionary[key][var].coord('time')
+#             times = np.asarray(time_orig.units.num2date(time_orig.points))
+#             time_pts = [t.strftime('%Y-%m') for t in times]
+#             plt.plot(time_pts, dictionary[key][var].data)
+#             plt.title(var)
+#             plt.ylabel('Anomalies')
+#             plt.xticks(rotation=45, ha="right", rotation_mode='anchor')
 
 
 def run_my_diagnostic(cfg):
     """Calculate and save final variables into .nc files."""
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
-    print('my_files_dict', my_files_dict)
     all_variables = calculate_variables(my_files_dict)
     for key in my_files_dict:
         diagnostic_file = get_diagnostic_filename(key, cfg)
