@@ -2,14 +2,13 @@
 # recipe_galytska23jgr.yml
 ---
 documentation:
-  title: Arctic-Midlatitude Teleconnections Recipe
-  
+  title: Arctic-Midlatitude Teleconnections recipe
   description: |
     Recipe to select variables that reproduce Arctic-midlatitude
-    teleconnections for further application of 
+    teleconnections for further application of
     Causal Model Evaluation (CME) described in Galytska et al. (2023).
     This recipe also applies the CVDP package. There are necessary
-    changes in cvdp/cvdp/driver.ncl to be applied: 
+    changes in cvdp/cvdp/driver.ncl to be applied:
     modular = "True" and modular_list = "psl.nam_nao"
 
 
@@ -186,10 +185,10 @@ preprocessors:
 diagnostics:
 
   diagnostic_arctic:
-    description: Get the variables for Arctic-midlatitude processes 
+    description: Get the variables for Arctic-midlatitude processes
     themes:
-       - phys
-       - seaIce
+      - phys
+      - seaIce
     realms:
       - atmos
       - seaIce
@@ -197,8 +196,8 @@ diagnostics:
       pv: &my_settings
         short_name: zg
         preprocessor: pv
-        start_year: 1979
-        end_year: 2019
+        start_year: 1980
+        end_year: 2021
         mip: Amon
         project: CMIP6
         exp:
@@ -209,7 +208,7 @@ diagnostics:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
           - {dataset: ACCESS-CM2, grid: gn}
           - {dataset: ACCESS-ESM1-5, grid: gn, supplementary_variables: [{short_name: areacella, skip: true}]}
-          - {dataset: BCC-CSM2-MR , grid: gn}
+          - {dataset: BCC-CSM2-MR, grid: gn}
           - {dataset: CAMS-CSM1-0, grid: gn}
           - {dataset: CanESM5, grid: gn}
           - {dataset: CMCC-CM2-SR5, grid: gn}
@@ -221,10 +220,10 @@ diagnostics:
           - {dataset: GFDL-ESM4, grid: gr1}
           - {dataset: INM-CM4-8, grid: gr1}
           - {dataset: INM-CM5-0, grid: gr1}
-          - {dataset: IPSL-CM6A-LR , grid: gr}
+          - {dataset: IPSL-CM6A-LR, grid: gr}
           - {dataset: MPI-ESM1-2-HR, grid: gn}
           - {dataset: MPI-ESM1-2-LR, grid: gn}
-          - {dataset: MIROC6 , grid: gn}
+          - {dataset: MIROC6, grid: gn}
           - {dataset: MRI-ESM2-0, grid: gn}
       tas:
         <<: *my_settings
@@ -256,15 +255,15 @@ diagnostics:
         short_name: ta
         preprocessor: heat_flux
 
-      sic_BK_siconc: 
-        <<: *my_settings 
+      sic_BK_siconc:
+        <<: *my_settings
         short_name: siconc
         preprocessor: bk_ice
         mip: SImon
         additional_datasets:
           - {dataset: ACCESS-CM2, grid: gn}
           - {dataset: ACCESS-ESM1-5, grid: gn}
-          - {dataset: BCC-CSM2-MR , grid: gn}
+          - {dataset: BCC-CSM2-MR, grid: gn}
           - {dataset: CAMS-CSM1-0, grid: gn}
           - {dataset: CanESM5, grid: gn}
           - {dataset: CMCC-CM2-SR5, grid: gn, supplementary_variables: [{short_name: areacello, skip: true}]}
@@ -276,21 +275,21 @@ diagnostics:
           - {dataset: GFDL-ESM4, grid: gr}
           - {dataset: INM-CM4-8, grid: gr1}
           - {dataset: INM-CM5-0, grid: gr1}
-          - {dataset: IPSL-CM6A-LR , grid: gn}
+          - {dataset: IPSL-CM6A-LR, grid: gn}
           - {dataset: MPI-ESM1-2-HR, grid: gn}
           - {dataset: MPI-ESM1-2-LR, grid: gn}
           - {dataset: MIROC6, grid: gn}
           - {dataset: MRI-ESM2-0, grid: gn}
 
       sic_Ok_siconc:
-        <<: *my_settings 
+        <<: *my_settings
         short_name: siconc
         preprocessor: ok_ice
         mip: SImon
         additional_datasets:
           - {dataset: ACCESS-CM2, grid: gn}
           - {dataset: ACCESS-ESM1-5, grid: gn}
-          - {dataset: BCC-CSM2-MR , grid: gn}
+          - {dataset: BCC-CSM2-MR, grid: gn}
           - {dataset: CAMS-CSM1-0, grid: gn}
           - {dataset: CanESM5, grid: gn}
           - {dataset: CMCC-CM2-SR5, grid: gn, supplementary_variables: [{short_name: areacello, skip: true}]}
@@ -302,7 +301,7 @@ diagnostics:
           - {dataset: GFDL-ESM4, grid: gr}
           - {dataset: INM-CM4-8, grid: gr1}
           - {dataset: INM-CM5-0, grid: gr1}
-          - {dataset: IPSL-CM6A-LR , grid: gn}
+          - {dataset: IPSL-CM6A-LR, grid: gn}
           - {dataset: MPI-ESM1-2-HR, grid: gn}
           - {dataset: MPI-ESM1-2-LR, grid: gn}
           - {dataset: MIROC6, grid: gn}
@@ -313,14 +312,14 @@ diagnostics:
         short_name: sic
         preprocessor: bk_ice
         additional_datasets:
-          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly,  version: 1, tier: 2}
+          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly, version: 1, tier: 2}
 
       sic_Ok:
         <<: *my_settings
         short_name: sic
         preprocessor: ok_ice
         additional_datasets:
-          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly,  version: 1, tier: 2}
+          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly, version: 1, tier: 2}
 
     scripts:
       output:
@@ -332,8 +331,8 @@ diagnostics:
       ts: &cvdp_settings
         short_name: ts
         mip: Amon
-        start_year: 1979
-        end_year: 2019
+        start_year: 1980
+        end_year: 2021
         project: CMIP6
         exp:
           - historical
@@ -363,20 +362,20 @@ diagnostics:
           - {dataset: MRI-ESM2-0, grid: gn}
 
       tas:
-        <<: *cvdp_settings 
+        <<: *cvdp_settings
         short_name: tas
         mip: Amon
 
       pr:
-        <<: *cvdp_settings 
+        <<: *cvdp_settings
         short_name: pr
         mip: Amon
 
       psl:
-        <<: *cvdp_settings 
+        <<: *cvdp_settings
         short name: psl
         mip: Amon
 
     scripts:
-     cvdp:
-        script: cvdp/cvdp_wrapper.py        
+      cvdp:
+        script: cvdp/cvdp_wrapper.py
