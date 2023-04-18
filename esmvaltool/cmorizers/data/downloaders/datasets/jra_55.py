@@ -75,7 +75,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     # define variables to download
 
-    var = {"011_tmp": "anl_surf125",
+    var = {"011_tmp": "anl_p125"},
+          "011_tmp": "anl_surf125",
            "039_vvel": "anl_p125",
            "071_tcdc": "fcst_surf125",
            "054_pwat": "fcst_column125",

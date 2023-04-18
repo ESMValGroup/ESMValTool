@@ -87,6 +87,11 @@ variables:
     start_element: 1
     file: fcst_phy2m125.160_csusf.*.grb
 
+  ta:
+    short_name: ta
+    mip: Amon
+    file: anl_p125.011_tmp.*.grb
+
   tas:
     short_name: tas
     mip: Amon
