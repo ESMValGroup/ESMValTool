@@ -1,0 +1,95 @@
+# ESMValTool
+# recipe_srip2_lifrac.yml
+---
+documentation:
+  title: Cloud diagnostics v2 (liquid/ice fraction)
+
+  description: |
+    Diagnostics of 3-d cloud parameters.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - lauer22jclim
+
+  projects:
+    - cmug
+
+
+preprocessors:
+
+  pp27_all_lev:
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev27}
+      coordinate: air_pressure
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean, median]
+#      exclude: [reference_dataset]
+
+
+diagnostics:
+
+  lifrac_scatter:
+    description: ice / liquid fraction vs. temperature
+    themes:
+      - phys
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clw:
+        preprocessor: pp27_all_lev
+        mip: Amon
+        start_year: 1995
+        end_year: 2014
+        exp: historical
+        reference_dataset: CLOUDSAT-L2
+        additional_datasets:
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+             version: P1-R05-gridbox-average-noprecip, tier: 3,
+             start_year: 2007, end_year: 2015}
+      cli:
+        preprocessor: pp27_all_lev
+        mip: Amon
+        start_year: 1995
+        end_year: 2014
+        exp: historical
+        reference_dataset: CALIPSO-ICECLOUD
+        additional_datasets:
+          - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat,
+             version: 1-00, mip: Amon, tier: 3,
+             start_year: 2007, end_year: 2015}
+      ta:
+        preprocessor: pp27_all_lev
+        mip: Amon
+        start_year: 1995
+        end_year: 2014
+        exp: historical
+        reference_dataset: ERA5
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, start_year: 2007, end_year: 2015}
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+#      - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
+      - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2}
+      - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3}
+#      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
+#      - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2}
+#      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
+#      - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
+    scripts:
+      lifrac_scatter:
+        script: clouds/clouds_lifrac_scatter.ncl
+        min_mass: 1.0e-6
+        panel_labels: true

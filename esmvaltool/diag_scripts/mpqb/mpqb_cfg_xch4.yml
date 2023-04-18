@@ -28,15 +28,17 @@ datasetnames:
   a09_PATMOS-x: PATMOS-x
   MultiModelMean: MultiReanalysisMean
   r01_CFSR: CFSR
-  r02_ERA5: ERA5
-  r03_ERA-Interim: ERA-Interim
-  r04_JRA-25: JRA-25
-  r05_JRA-55: JRA-55
-  r06_MERRA: MERRA
-  r07_MERRA2: MERRA2
-  r08_NCEP-DOE-R2: NCEP-DOE-R2
-  r09_NCEP-NCAR-R1: NCEP-NCAR-R1
-  r10_NOAA-CIRES-20CR: NOAA-CIRES-20CR
+  r02_CFSv2: CFSv2
+  r03_ERA5: ERA5
+  r04_ERA-Interim: ERA-Interim
+  r05_JRA-25: JRA-25
+  r06_JRA-55: JRA-55
+  r07_MERRA: MERRA
+  r08_MERRA2: MERRA2
+  r09_NCEP-DOE-R2: NCEP-DOE-R2
+  r10_NCEP-NCAR-R1: NCEP-NCAR-R1
+  r11_NOAA-CIRES-20CR-V2: NOAA-CIRES-20CR-V2
+  r12_NOAA-CIRES-20CR-V3: NOAA-CIRES-20CR-V3
 
 datasetcolors:
   CDS-XCH4: '#d62728'
@@ -62,15 +64,17 @@ datasetcolors:
   a09_PATMOS-x: '#f9f5f3'
   MultiModelMean: '#000000'
   r01_CFSR: '#669900'
-  r02_ERA5: '#99cc33'
-  r03_ERA-Interim: '#ccee66'
-  r04_JRA-25: '#006699'
-  r05_JRA-55: '#3399cc'
-  r06_MERRA: '#990066'
-  r07_MERRA2: '#cc3399'
-  r08_NCEP-DOE-R2: '#ff6600'
-  r09_NCEP-NCAR-R1: '#ff9900'
-  r10_NOAA-CIRES-20CR: '#ffcc00'
+  r02_CFSv2: '#88bb00'
+  r03_ERA5: '#99cc33'
+  r04_ERA-Interim: '#ccee66'
+  r05_JRA-25: '#006699'
+  r06_JRA-55: '#3399cc'
+  r07_MERRA: '#990066'
+  r08_MERRA2: '#cc3399'
+  r09_NCEP-DOE-R2: '#ff6600'
+  r10_NCEP-NCAR-R1: '#ff9900'
+  r11_NOAA-CIRES-20CR-V2: '#ffaa00'
+  r12_NOAA-CIRES-20CR-V3: '#ffcc00'
 
 # From:
 # https://stackoverflow.com/questions/42086276/
