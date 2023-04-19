@@ -40,9 +40,8 @@ preprocessors:
       units: degrees_C
 
   annual_mean_amsterdam:
-    extract_point:
-      longitude: 52.3730796
-      latitude: 4.8924534
+    extract_location:
+      location: Amsterdam
       scheme: linear
     annual_statistics:
       operator: mean
