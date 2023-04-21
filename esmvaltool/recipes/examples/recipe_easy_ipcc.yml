@@ -1,0 +1,60 @@
+documentation:
+  title: Easy IPCC
+  description: Reproduce part of IPCC AR6 figure 9.3a.
+  authors:
+    - kalverla_peter
+    - andela_bouwe
+  maintainer:
+    - unmaintained
+
+datasets:
+  # - dataset: ''
+  #   exp: ['historical', 'ssp126']
+  # - dataset: '*'
+  #   exp: ['historical', 'ssp585']
+  - {dataset: CESM2, ensemble: r4i1p1f1, grid: gn}
+  - {dataset: ACCESS-CM2, ensemble: 'r(1:2)i1p1f1', grid: gn}
+
+preprocessors:
+  easy_ipcc:
+    custom_order: true
+    anomalies:
+      period: month
+      reference:
+        start_year: 1950
+        start_month: 1
+        start_day: 1
+        end_year: 1979
+        end_month: 12
+        end_day: 31
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    convert_units:
+      units: 'degrees_C'
+    ensemble_statistics:
+      statistics:
+        - mean
+    # multi_model_statistics:
+    #   statistics:
+    #     - mean
+    #     - p17
+    #     - p83
+    #   span: full
+    #   keep_input_datasets: false
+    #   ignore_scalar_coords: true
+
+diagnostics:
+  AR6_Figure_9.3:
+    variables:
+      tos:
+        project: CMIP6
+        mip: Omon
+        grid: '*'
+        timerange: '1850/2100'
+        exp: ['historical', 'ssp585']
+        preprocessor: easy_ipcc
+    scripts:
+      Figure_9.3a:
+        script: examples/make_plot.py
