@@ -56,7 +56,7 @@ diagnostics:
         additional_datasets:
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
              version: P1-R05-gridbox-average-noprecip, tier: 3,
-             start_year: 2007, end_year: 2015}
+             start_year: 2007, end_year: 2015, alias: CLOUDSAT-L2}
       cli:
         preprocessor: pp27_all_lev
         mip: Amon
@@ -67,17 +67,17 @@ diagnostics:
         additional_datasets:
           - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat,
              version: 1-00, mip: Amon, tier: 3,
-             start_year: 2007, end_year: 2015}
+             start_year: 2007, end_year: 2015, alias: CALIPSO-ICECLOUD}
       ta:
         preprocessor: pp27_all_lev
         mip: Amon
         start_year: 1995
         end_year: 2014
         exp: historical
-        reference_dataset: ERA5
+        reference_dataset: ERA5ref
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2007, end_year: 2015}
+             tier: 3, start_year: 2007, end_year: 2015, alias: ERA5ref}
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
       - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
@@ -92,4 +92,5 @@ diagnostics:
       lifrac_scatter:
         script: clouds/clouds_lifrac_scatter.ncl
         min_mass: 1.0e-6
+        use_alias_ref: true
         panel_labels: true

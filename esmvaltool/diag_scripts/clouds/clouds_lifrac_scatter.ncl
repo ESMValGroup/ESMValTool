@@ -16,6 +16,7 @@
 ;   panel_labels:       label individual panels (true, false)
 ;   PanelTop:           manual override for "@gnsPanelTop" used by panel
 ;                       plot(s)
+;   use_alias_ref:      use "alias" instead of "dataset" for reference datasets
 ;
 ; Required variable attributes (variable specific)
 ;   none
@@ -107,6 +108,13 @@ begin
   set_default_att(diag_script_info, "min_mass", 1.0e-15)
   set_default_att(diag_script_info, "mm_mean_median", True)
   set_default_att(diag_script_info, "nbins", 20)
+  set_default_att(diag_script_info, "use_alias_ref", False)
+
+  if (diag_script_info@use_alias_ref) then
+    refname_att = "alias"
+  else
+    refname_att = "dataset"
+  end if
 
   if (diag_script_info@filename_add .ne. "") then
     filename_add = "_" + diag_script_info@filename_add
@@ -134,18 +142,28 @@ begin
   ; ############
 
   info_clw = select_metadata_by_name(input_file_info, "clw")
-  names_clw = metadata_att_as_array(info_clw, "dataset")
   projects_clw = metadata_att_as_array(info_clw, "project")
   info_cli = select_metadata_by_name(input_file_info, "cli")
-  names_cli = metadata_att_as_array(info_cli, "dataset")
   projects_cli = metadata_att_as_array(info_cli, "project")
   info_ta = select_metadata_by_name(input_file_info, "ta")
-  names_ta = metadata_att_as_array(info_ta, "dataset")
   projects_ta = metadata_att_as_array(info_ta, "project")
 
-  refidx_clw = ind(names_clw .eq. refname(0))
-  refidx_cli = ind(names_cli .eq. refname(1))
-  refidx_ta = ind(names_ta .eq. refname(2))
+  names_clw = metadata_att_as_array(info_clw, "dataset")
+  names_cli = metadata_att_as_array(info_cli, "dataset")
+  names_ta = metadata_att_as_array(info_ta, "dataset")
+
+  if (diag_script_info@use_alias_ref) then
+    alias_clw = metadata_att_as_array(info_clw, "alias")
+    alias_cli = metadata_att_as_array(info_cli, "alias")
+    alias_ta = metadata_att_as_array(info_ta, "alias")
+    refidx_clw = ind(alias_clw .eq. refname(0))
+    refidx_cli = ind(alias_cli .eq. refname(1))
+    refidx_ta = ind(alias_ta .eq. refname(2))
+  else
+    refidx_clw = ind(names_clw .eq. refname(0))
+    refidx_cli = ind(names_cli .eq. refname(1))
+    refidx_ta = ind(names_ta .eq. refname(2))
+  end if
 
   if (ismissing(refidx_clw) .or. ismissing(refidx_cli) .or. \
       ismissing(refidx_ta)) then
@@ -167,7 +185,7 @@ begin
       end if
     end if
 
-    error_msg("f", DIAG_SCRIPT, "", "the following reference dataset(s) " \
+    error_msg("f", DIAG_SCRIPT, "", "the following reference datasets " \
               + "are not available: " + str)
   end if
 
@@ -232,9 +250,9 @@ begin
 
     ; reference datasets may have different names
     if (i .eq. refidx_clw) then
-      atts_clw@dataset = refname(0)
-      atts_cli@dataset = refname(1)
-      atts_ta@dataset = refname(2)
+      atts_clw@$refname_att$ = refname(0)
+      atts_cli@$refname_att$ = refname(1)
+      atts_ta@$refname_att$ = refname(2)
     ; all other datasets: force same dataset name for clw, cli and ta
     else
       atts_clw@dataset = names_clw(i)
@@ -258,6 +276,7 @@ begin
 
     info = select_metadata_by_atts(input_file_info, atts_ta)
     ta = read_data(info[0])
+
     delete(info)
 
     ; check dimensions
@@ -284,11 +303,18 @@ begin
       dimerror = True
     end if
 
+    if (i .eq. refidx_clw) then
+      att = refname_att
+    else
+      att = "dataset"
+    end if
+
     if (dimerror) then
+
       error_msg("f", DIAG_SCRIPT, "", "dimensions of datasets " \
-                + atts_cli@dataset + " (variable cli), " \
-                + atts_clw@dataset + " (variable clw), " \
-                + atts_ta@dataset + " (variable ta) do not match.")
+                + atts_cli@$att$ + " (variable cli), " \
+                + atts_clw@$att$ + " (variable clw), " \
+                + atts_ta@$att$ + " (variable ta) do not match.")
     end if
 
     delete(dims_cli)
@@ -337,7 +363,7 @@ begin
     zcli!0 = "time"
     zcli&time = ispan(0, 11, 1)
 
-    var = "f_" + tostring(atts_cli@dataset)
+    var = "f_" + tostring(atts_cli@$att$)
     zonalfile->$var$ = zcli
 
     delete(cli_avg)
@@ -432,7 +458,7 @@ begin
     zcli!0 = "time"
     zcli&time = ispan(0, 11, 1)
 
-    var = "l_" + tostring(atts_cli@dataset)
+    var = "l_" + tostring(atts_cli@$att$)
     zonalfile->$var$ = zcli
 
     delete(cli_avg)
@@ -450,6 +476,10 @@ begin
     delete(cli)
 
   ; ==========================================================================
+
+    delete(atts_cli)
+    delete(atts_clw)
+    delete(atts_ta)
 
   end do  ; loop over all datasets (ii)
 
