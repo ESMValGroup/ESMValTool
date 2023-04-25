@@ -298,9 +298,9 @@ x_pos_stats_bias: float, optional (default: 0.7)
 
 Configuration options for plot type ``1d_profile``
 --------------------------------------------------
-plot_diff: string, optional
+plot_bias: string, optional
     Optional switch to choose whether difference plot to reference should
-    be applied. And if plot_diff is not False or empty, it defines if
+    be applied. And if plot_bias is not False or empty, it defines if
     difference is 'absolute' or 'relative'.
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
@@ -309,6 +309,9 @@ gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
     lines.
+aspect_ratio: rational number, optional
+    Optional set the aspect ratio of the one-dimensional plot. Default is 3/2,
+    which results in a slender upright plot.
 plot_kwargs: dict, optional
     Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
     elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
@@ -1421,8 +1424,8 @@ class MultiDatasets(MonitorBase):
                         self._get_label(ref_dataset))
             ref_cube = ref_dataset['cube']
 
-        # To do : 1d diff plots to reference?
-        diff = self.plots[plot_type].get('plot_diff', {})
+        # To do : 1d bias plots to reference?
+        bias = self.plots[plot_type].get('plot_bias', {})
 
         logger.info("Plotting %s", plot_type)
         fig = plt.figure(**self.cfg['figure_kwargs'])
@@ -1448,9 +1451,9 @@ class MultiDatasets(MonitorBase):
 
             # apply difference
             if ref_cube:
-                if diff == 'absolute':
+                if bias == 'absolute':
                     cube = cube - ref_cube
-                elif diff == 'relative':
+                elif bias == 'relative':
                     cube = (cube / ref_cube - 1.) * 100.
                     multi_dataset_facets['units'] = '%'
             else:
@@ -1468,7 +1471,8 @@ class MultiDatasets(MonitorBase):
         if gridline_kwargs is not False:
             axes.grid(**gridline_kwargs)
         # nicer aspect ratio
-        axes.set_box_aspect(3/2)
+        aspect_ratio = self.plots[plot_type].get('aspect_ratio', 3/2)
+        axes.set_box_aspect(aspect_ratio)
 
         # Legend
         legend_kwargs = self.plots[plot_type].get('legend_kwargs', {})
