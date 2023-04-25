@@ -300,10 +300,10 @@ def make_time_suffix(mip, tp0, tpn):
     """Make time suffix for outfiles given first and last time points."""
     dates = [f"{tp0.year:d}", f"{tpn.year:d}"]
 
-    if any([x in mip for x in ('mon', 'day', 'hr')]):
+    if any(x in mip for x in ('mon', 'day', 'hr')):
         dates[0] += f"{tp0.month:02d}"
         dates[1] += f"{tpn.month:02d}"
-    if any([x in mip for x in ('day', 'hr')]):
+    if any(x in mip for x in ('day', 'hr')):
         dates[0] += f"{tp0.day:02d}"
         dates[1] += f"{tpn.day:02d}"
     if "hr" in mip:
