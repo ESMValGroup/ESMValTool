@@ -455,43 +455,56 @@ def fix_dim_coordnames(cube, project_id="OBS6"):
     # first check for CMOR standard coord;
     for coord in cube.dim_coords:
         # guess the CMOR-standard x, y, z and t axes if not there
-        coord_type = iris.util.guess_coord_axis(coord)
+        coord_axis = iris.util.guess_coord_axis(coord)
         try:
-            coord = cube.coord(axis=coord_type)
+            coord = cube.coord(axis=coord_axis)
         except iris.exceptions.CoordinateNotFoundError:
             logger.warning(
                 'Multiple coordinates for axis %s. '
                 'This may be an error, specially for regular grids',
-                coord_type)
+                coord_axis)
             continue
+
+        
+        tbl_coords = CMOR_TABLES[project_id].coords
 
         coord.attributes = {}
 
-        # lookup table
-        lut = {
+        # Lookup tables.
+        axis_to_coordname = {
             'T': 'time',
             'X': 'longitude',
             'Y': 'latitude',
             'Z': {
-                'depth': ('depth_coord', 'down'),
-                # Any pressure coord would work.
-                'pressure': ('p220', 'up')
-                }}
+                'depth': 'depth_coord',
+                # First plevX coord (named differently across projects).
+                'pressure': next((
+                    x for x in tbl_coords.keys() if x.startswith('plev')),
+                    None
+                )}}
 
-        match = lut.get(coord_type)
-        tindex = match if isinstance(match, str) else None
+        sdir_map = {
+            'increasing': 'up',
+            'decreasing': 'down'
+        }
+
+        match = axis_to_coordname.get(coord_axis)
         if isinstance(match, dict):
             nested = match.get(coord.var_name)
-            tindex, coord.attributes['positive'] = (
-                nested if nested else (None, None))
+            tindex = nested if nested else None
+        else:
+            tindex = match
 
         if tindex:
-            coord_info = CMOR_TABLES[project_id].coords[tindex]
+            coord_info = tbl_coords[tindex]
             coord.var_name = coord_info.out_name
             coord.standard_name = coord_info.standard_name
             coord.long_name = coord_info.long_name
-            if tindex != 'time':
+            if tindex in ('longitude', 'latitude'):
                 coord.units = Unit(coord_info.units)
+            if tindex in ('depth', 'pressure'):
+                sdir = coord_info.stored_direction
+                coord.attributes['positive'] = sdir_map[sdir]
     return cube
 
 
