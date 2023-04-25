@@ -298,20 +298,18 @@ def read_cmor_config(dataset):
 
 def make_time_suffix(mip, tp0, tpn):
     """Make time suffix for outfiles given first and last time points."""
-    dates = ["", ""]
-    # tp0 == tpn <-> len(time.points) == 1
-    if tp0 == tpn and "mon" not in mip:
-        dates[0], dates[1] = f"{tp0.year}01", f"{tp0.year}12"
-    else:
-        dates[0] = f"{tp0.year:d}{tp0.month:02d}"
-        dates[1] = f"{tpn.year:d}{tpn.month:02d}"
+    dates = [f"{tp0.year:d}", f"{tpn.year:d}"]
 
-        if "day" in mip or "hr" in mip:
-            dates[0] = dates[0] + f"{tp0.day:02d}"
-            dates[1] = dates[1] + f"{tpn.day:02d}"
-        if "hr" in mip:
-            dates[0] = dates[0] + f"{tp0.hour:02d}{tp0.minute:02d}"
-            dates[1] = dates[1] + f"{tpn.hour:02d}{tpn.minute:02d}"
+    if any([x in mip for x in ('mon', 'day', 'hr')]):
+        dates[0] += f"{tp0.month:02d}"
+        dates[1] += f"{tpn.month:02d}"
+    if any([x in mip for x in ('day', 'hr')]):
+        dates[0] += f"{tp0.day:02d}"
+        dates[1] += f"{tpn.day:02d}"
+    if "hr" in mip:
+        dates[0] += f"{tp0.hour:02d}{tp0.minute:02d}"
+        dates[1] += f"{tpn.hour:02d}{tpn.minute:02d}"
+
     return '-'.join(dates)
 
 
