@@ -309,7 +309,7 @@ gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
     lines.
-aspect_ratio: rational number, optional
+aspect_ratio: float, optional
     Optional set the aspect ratio of the one-dimensional plot. Default is 3/2,
     which results in a slender upright plot.
 plot_kwargs: dict, optional
