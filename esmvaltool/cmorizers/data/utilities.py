@@ -482,8 +482,8 @@ def fix_dim_coordnames(cube, project_id="OBS6"):
                 )}}
 
         sdir_map = {
-            'increasing': 'up',
-            'decreasing': 'down'
+            'increasing': 'down',
+            'decreasing': 'up'
         }
 
         match = axis_to_coordname.get(coord_axis)
@@ -500,7 +500,7 @@ def fix_dim_coordnames(cube, project_id="OBS6"):
             coord.long_name = coord_info.long_name
             if tindex in ('longitude', 'latitude'):
                 coord.units = Unit(coord_info.units)
-            if tindex in ('depth', 'pressure'):
+            if coord_axis == 'Z' and coord_info.stored_direction != '':
                 sdir = coord_info.stored_direction
                 coord.attributes['positive'] = sdir_map[sdir]
     return cube
