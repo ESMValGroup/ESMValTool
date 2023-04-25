@@ -24,12 +24,12 @@ Currently supported plot types (use the option ``plots`` to specify them):
       grid (you can use the preprocessor :func:`esmvalcore.preprocessor.regrid`
       for this). Input data needs to be 2D with dimensions `latitude`,
       `longitude`.
-    - Zonal mean profiles (plot type ``zonal_mean_profile``): for each variable and dataset,
-      an individual profile is plotted. If a reference dataset is defined, also
-      include this dataset and a bias plot into the figure. Note that if a
-      reference dataset is defined, all input datasets need to be given on the
-      same horizontal and vertical grid (you can use the preprocessors
-      :func:`esmvalcore.preprocessor.regrid` and
+    - Zonal mean profiles (plot type ``zonal_mean_profile``): for each variable
+      and dataset, an individual profile is plotted. If a reference dataset is
+      defined, also include this dataset and a bias plot into the figure. Note
+      that if a reference dataset is defined, all input datasets need to be
+      given on the same horizontal and vertical grid (you can use the
+      preprocessors :func:`esmvalcore.preprocessor.regrid` and
       :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
       needs to be 2D with dimensions `latitude`, `height`/`air_pressure`.
     - 1D profiles (plot type ``1d_profile``): for each variable separately, all
@@ -507,9 +507,10 @@ class MultiDatasets(MonitorBase):
         else:
             raise NotImplementedError(f"plot_type '{plot_type}' not supported")
 
-        # For zonal_mean_profile plots add scalar longitude coordinate (necessary for
-        # calculation of area weights). The exact values for the points/bounds
-        # of this coordinate do not matter since they don't change the weights.
+        # For zonal_mean_profile plots add scalar longitude coordinate
+        # (necessary for calculation of area weights). The exact values for the
+        # points/bounds of this coordinate do not matter since they don't
+        # change the weights.
         if not cube.coords('longitude'):
             lon_coord = AuxCoord(
                 180.0,
@@ -868,10 +869,12 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cube})
 
-    def _plot_zonal_mean_profile_with_ref(self, plot_func, dataset, ref_dataset):
-        """Plot zonal mean profile plot for single dataset with a reference dataset."""
+    def _plot_zonal_mean_profile_with_ref(self, plot_func, dataset,
+                                          ref_dataset):
+        """Plot zonal mean plot for single dataset with a reference dataset."""
         plot_type = 'zonal_mean_profile'
-        logger.info("Plotting zonal mean profile with reference dataset '%s' for '%s'",
+        logger.info("Plotting zonal mean profile with reference dataset"
+                    " '%s' for '%s'",
                     self._get_label(ref_dataset), self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
@@ -974,9 +977,10 @@ class MultiDatasets(MonitorBase):
         return (plot_path, netcdf_paths)
 
     def _plot_zonal_mean_profile_without_ref(self, plot_func, dataset):
-        """Plot zonal mean profile plot for single dataset without a reference dataset."""
+        """Plot zonal mean for single dataset without a reference dataset."""
         plot_type = 'zonal_mean_profile'
-        logger.info("Plotting zonal mean profile without reference dataset for '%s'",
+        logger.info("Plotting zonal mean profile without reference dataset"
+                    " for '%s'",
                     self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
@@ -1049,10 +1053,10 @@ class MultiDatasets(MonitorBase):
             'annual_cycle': (['month_number'],),
             'map': (['latitude', 'longitude'],),
             'zonal_mean_profile': (['latitude', 'air_pressure'],
-                        ['latitude', 'altitude']),
+                                   ['latitude', 'altitude']),
             'timeseries': (['time'],),
             '1d_profile': (['air_pressure'],
-                        ['altitude']),
+                           ['altitude']),
 
         }
         if plot_type not in expected_dimensions_dict:
@@ -1357,7 +1361,8 @@ class MultiDatasets(MonitorBase):
             ancestors = [dataset['filename']]
             if ref_dataset is None:
                 (plot_path, netcdf_paths) = (
-                    self._plot_zonal_mean_profile_without_ref(plot_func, dataset)
+                    self._plot_zonal_mean_profile_without_ref(plot_func,
+                                                              dataset)
                 )
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
@@ -1367,7 +1372,7 @@ class MultiDatasets(MonitorBase):
             else:
                 (plot_path, netcdf_paths) = (
                     self._plot_zonal_mean_profile_with_ref(plot_func, dataset,
-                                                ref_dataset)
+                                                           ref_dataset)
                 )
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
@@ -1451,13 +1456,13 @@ class MultiDatasets(MonitorBase):
 
             # apply difference
             if ref_cube:
-                if bias == 'absolute':
-                    cube = cube - ref_cube
-                elif bias == 'relative':
-                    cube = (cube / ref_cube - 1.) * 100.
-                    multi_dataset_facets['units'] = '%'
+                bias, multi_dataset_facets = (
+                    self._compute_bias(cube, ref_cube, bias,
+                                       multi_dataset_facets)
+                )
             else:
-                logger.info("Plotting of differences not possible. Reference is missing.")
+                logger.info("Plotting of differences not possible."
+                            " Reference is missing.")
 
             iris.plot.plot(cube, **plot_kwargs)
 
@@ -1471,7 +1476,7 @@ class MultiDatasets(MonitorBase):
         if gridline_kwargs is not False:
             axes.grid(**gridline_kwargs)
         # nicer aspect ratio
-        aspect_ratio = self.plots[plot_type].get('aspect_ratio', 3/2)
+        aspect_ratio = self.plots[plot_type].get('aspect_ratio', 3 / 2)
         axes.set_box_aspect(aspect_ratio)
 
         # Legend
@@ -1496,8 +1501,9 @@ class MultiDatasets(MonitorBase):
         io.save_1d_data(cubes, netcdf_path, z_coord.standard_name, var_attrs)
 
         # Provenance tracking
-        caption = (f"Vertical one-dimensional profile of "
-                   f"{multi_dataset_facets['long_name']} for various datasets.")
+        caption = ("Vertical one-dimensional profile of "
+                   f"{multi_dataset_facets['long_name']}"
+                   " for various datasets.")
         provenance_record = {
             'ancestors': ancestors,
             'authors': ['schlund_manuel', 'winterstein_franziska'],
@@ -1507,6 +1513,16 @@ class MultiDatasets(MonitorBase):
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
+
+    @staticmethod
+    def _compute_bias(cube, ref_cube, bias, facets):
+        """Compute the bias according to the given bias type."""
+        if bias == 'absolute':
+            cube = cube - ref_cube
+        elif bias == 'relative':
+            cube = (cube / ref_cube - 1.) * 100.
+            facets['units'] = '%'
+        return bias, facets
 
     def compute(self):
         """Plot preprocessed data."""
