@@ -465,9 +465,7 @@ def fix_dim_coordnames(cube, project_id="OBS6"):
                 coord_axis)
             continue
 
-        
         tbl_coords = CMOR_TABLES[project_id].coords
-
         coord.attributes = {}
 
         # Lookup tables.
