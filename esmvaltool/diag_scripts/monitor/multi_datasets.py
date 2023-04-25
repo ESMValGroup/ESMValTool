@@ -305,6 +305,10 @@ plot_diff: string, optional
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
+gridline_kwargs: dict, optional
+    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
+    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
+    lines.
 plot_kwargs: dict, optional
     Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
     elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
@@ -610,9 +614,8 @@ class MultiDatasets(MonitorBase):
         cbar_label = self._fill_facet_placeholders(cbar_label, dataset, descr)
         return cbar_label
 
-    def _get_gridline_kwargs(self):
+    def _get_gridline_kwargs(self, plot_type='map'):
         """Get gridline kwargs."""
-        plot_type = 'map'
         gridline_kwargs = self.plots[plot_type].get('gridline_kwargs', {})
         return deepcopy(gridline_kwargs)
 
@@ -1460,6 +1463,12 @@ class MultiDatasets(MonitorBase):
         axes.set_xlabel(f"{short_name} [{multi_dataset_facets['units']}]")
         z_coord = cube.coord(axis='Z')
         axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
+        # gridlines
+        gridline_kwargs = self._get_gridline_kwargs(plot_type=plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
+        # nicer aspect ratio
+        axes.set_box_aspect(3/2)
 
         # Legend
         legend_kwargs = self.plots[plot_type].get('legend_kwargs', {})
