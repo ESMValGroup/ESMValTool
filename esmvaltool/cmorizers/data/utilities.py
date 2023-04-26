@@ -468,28 +468,24 @@ def fix_dim_coordnames(cube, project_id="OBS6"):
         tbl_coords = CMOR_TABLES[project_id].coords
         coord.attributes = {}
 
-        # Lookup tables.
+        # Lookup table.
         axis_to_coordname = {
             'T': 'time',
             'X': 'longitude',
             'Y': 'latitude',
             'Z': {
-                'depth': 'depth_coord',
+                'depth': ('depth_coord', 'down'),
                 # First plevX coord (named differently across projects).
-                'pressure': next((
-                    x for x in tbl_coords.keys() if x.startswith('plev')),
-                    None
-                )}}
-
-        sdir_map = {
-            'increasing': 'down',
-            'decreasing': 'up'
-        }
+                'pressure': (next(
+                        (x for x in tbl_coords.keys() if x.startswith('plev')),
+                        None), 'up')
+                }}
 
         match = axis_to_coordname.get(coord_axis)
         if isinstance(match, dict):
             nested = match.get(coord.var_name)
-            tindex = nested if nested else None
+            tindex, coord.attributes['positive'] = (
+                nested if nested else (None, None))
         else:
             tindex = match
 
@@ -500,9 +496,6 @@ def fix_dim_coordnames(cube, project_id="OBS6"):
             coord.long_name = coord_info.long_name
             if tindex in ('longitude', 'latitude'):
                 coord.units = Unit(coord_info.units)
-            if coord_axis == 'Z' and coord_info.stored_direction != '':
-                sdir = coord_info.stored_direction
-                coord.attributes['positive'] = sdir_map[sdir]
     return cube
 
 
