@@ -340,6 +340,7 @@ def test_make_time_suffix():
     tpn = DatetimeGregorian(2023, 4, 6, 20, 15)
 
     assert fct("yr", tp0, tp0) == "2020-2020"
+    assert fct("yr", tp0, tpn) == "2020-2023"
     assert fct("mon", tp0, tpn) == "202001-202304"
     assert fct("day", tp0, tpn) == "20200101-20230406"
     assert fct("3hr", tp0, tpn) == "202001011055-202304062015"
