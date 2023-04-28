@@ -34,7 +34,7 @@ def areas( grid ):
                 math.sin(math.radians(180.0/grid)) )
   return area
 
-def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,dec_warming,obs_dec_warming,ann_warming,gmst_comp_warming,diag_name,obs='had4',ensobs='',ensobs_diag=[],ensobs_dec_warming=[]):
+def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,dec_warming,obs_dec_warming,ann_warming,gmst_comp_warming,diag_name,obs='had4',ensobs='',ensobs_diag=[],ensobs_dec_warming=[],warming_years=[2010,2019],sr15_flag=False):
 # MAIN PROGRAM
 
 # m = mask
@@ -88,9 +88,9 @@ def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,de
     lons5 = nc.variables["longitude"][:]
     if obs=='had5':
         enssize=200
-        obs_tas = nc.variables["tas_median"][:,:,:]
+        obs_tas = nc.variables["tas_mean"][:,:,:]
     #Make it work with HadCRUT5 - repeat last year in obs_tas, as noted in Gillett et al.
-        obs_tas=numpy.concatenate((obs_tas,obs_tas[2016:2028,:,:]))
+#        obs_tas=numpy.concatenate((obs_tas,obs_tas[2016:2028,:,:]))
     else:
         enssize=100
         obs_tas = nc.variables["temperature_anomaly"][:,:,:]
@@ -223,8 +223,9 @@ def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,de
   if 'm' in options: wm[ cvgmsk[0:wm.shape[0],:,:] < -100 ] = 0.0
   # calculate diagnostic
   diag=calc_diag(tos,wm,diag_name) #Diagnostic for attribution analysis.
-  dec_warming.append(calc_dec_warming(tas,w)) #Diagnose SAT warming with global coverage for attributable trends.
-  obs_dec_warming.append(calc_dec_warming(obs_tas,wm))
+#  dec_warming.append(calc_dec_warming(tas,w,warming_years,sr15_flag)) #Diagnose SAT warming with global coverage for attributable trends.
+  dec_warming.append(calc_dec_warming(tos,w,warming_years,sr15_flag)) #Diagnose GMST warming with global coverage for attributable trends.
+  obs_dec_warming.append(calc_dec_warming(obs_tas,wm,warming_years,sr15_flag))
   
   if ann_warming!=0:
     ann_warming.append(calc_ann_warming(tas,w)) #Calculate ann warming.
@@ -243,12 +244,18 @@ def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,de
       if obs=='had5':
         obs_tas = nc.variables["tas"][:,:,:]
     #Make it work with HadCRUT5 - repeat last year in obs_tas
-        obs_tas=numpy.concatenate((obs_tas,obs_tas[2016:2028,:,:]))
+#        obs_tas=numpy.concatenate((obs_tas,obs_tas[2016:2028,:,:]))
       else:
         obs_tas = nc.variables["temperature_anomaly"][:,:,:]
       nc.close()
+    #Pad with missing values to match length of tas from model.
+      if tas.shape[0]>obs_tas.shape[0]:
+        obs_tas = numpy.concatenate((obs_tas,numpy.full((tas.shape[0]-obs_tas.shape[0],obs_tas.shape[1],obs_tas.shape[2]),fill_value=-1e30)))
+      elif tas.shape[0]<obs_tas.shape[0]:
+    #Or clip obs to match length of simulations if obs are longer than simulations.
+        obs_tas=obs_tas[0:tas.shape[0],:,:]
       obs_tas=obs_tas[:,:,regrid_index] #Regrid to match esmvaltool output.
-      ensobs_dec_warming.append(calc_dec_warming(obs_tas[0:tas.shape[0],:,:],wm))
+      ensobs_dec_warming.append(calc_dec_warming(obs_tas[0:tas.shape[0],:,:],wm,warming_years,sr15_flag))
       ensobs_diag.append(calc_diag(obs_tas[0:tas.shape[0],:,:],wm,diag_name))
   return (diag,obs_diag)
 
@@ -269,18 +276,27 @@ def calc_diag(tos,wm,diag_name):
   for m in range(nper):
     for l in range(nlat):
       diag[l,m]=numpy.sum( wm[m*av_per:(m+1)*av_per,l*tos.shape[1]//nlat:(l+1)*tos.shape[1]//nlat,:] * tos[m*av_per:(m+1)*av_per,l*tos.shape[1]//nlat:(l+1)*tos.shape[1]//nlat,:] ) / numpy.sum( wm[m*av_per:(m+1)*av_per,l*tos.shape[1]//nlat:(l+1)*tos.shape[1]//nlat,:] )
-  diag=diag-numpy.mean(diag,axis=1,keepdims=True) #Take anomalies over whole period.
+#      print ('ncblendmask:l,m,diag[l,m]',l,m,diag[l,m])
+  diag=diag-numpy.nanmean(diag,axis=1,keepdims=True) #Take anomalies over whole period.
   diag=numpy.reshape(diag,nper*nlat)
   return diag
 
-def calc_dec_warming(tas,w):
+def calc_dec_warming(tas,w,warming_years,sr15_flag):
   gmt_mon=numpy.zeros(tas.shape[0])
   # calculate 2010-2019 mean relative to 1850-1900, assuming data starts in 1850.
   # If last decade is incomplete, just compute mean from available data.
   for m in range(tas.shape[0]):
       s = numpy.sum( w[m,:,:] )
       gmt_mon[m] = numpy.sum( w[m,:,:] * tas[m,:,:] ) / s
-  return (numpy.nanmean(gmt_mon[(2010-1850)*12:(2020-1850)*12])-numpy.mean(gmt_mon[0:(1901-1850)*12]))
+  if sr15_flag:
+    data=gmt_mon[(warming_years[0]-1850)*12:(warming_years[1]-1849)*12]-numpy.mean(gmt_mon[0:(1901-1850)*12])
+    data=numpy.mean(data.reshape(warming_years[1]-warming_years[0]+1,12),axis=1)
+    years=list(range(warming_years[0]-warming_years[1],1,1)) #Use sequence of years ending at 0 so intercept is at last year.
+    print ('years:',years)
+    slope,warming = numpy.polyfit(years,data,deg=1)
+  else:
+    warming=numpy.nanmean(gmt_mon[(warming_years[0]-1850)*12:(warming_years[1]-1849)*12])-numpy.mean(gmt_mon[0:(1901-1850)*12])
+  return (warming)
 
 def calc_ann_warming(tas,w):
   #Calculate timeseries of annual mean GSAT.

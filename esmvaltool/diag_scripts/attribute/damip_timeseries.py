@@ -30,10 +30,11 @@ def main(cfg):
     plot_dir=cfg['plot_dir']
     output_file_type=cfg['output_file_type']
     obs=cfg['obs']
+    sr15_flag=cfg['sr15_flag']
     if obs=='had5':
-        obs_file=auxiliary_data_dir+'/HadCRUT.5.0.0.0.anomalies.ensemble_median.nc'
+        obs_file=auxiliary_data_dir+'/HadCRUT.5.0.1.0.anomalies.ensemble_mean.nc'
         hadlabel='HadCRUT5'
-        ensobs=auxiliary_data_dir+'/HadCRUT.5.0.0.0.anomalies.' #If set apply multi-model analysis using ensemble obs data.
+        ensobs=auxiliary_data_dir+'/HadCRUT.5.0.1.0.anomalies.' #If set apply multi-model analysis using ensemble obs data.
     elif obs=='had4':
         obs_file=auxiliary_data_dir+'/HadCRUT.4.6.0.0.median.nc'  #Updated to end of 2019.
         hadlabel='HadCRUT4'
@@ -51,12 +52,12 @@ def main(cfg):
     nmodel=len(grouped_input_data)
 
 #Initialise variables.
-    experiments=['historical-ssp245','hist-GHG','hist-aer','hist-nat','hist-volc','hist-sol','hist-stratO3','hist-CO2','hist-GHG-ssp245-GHG','hist-aer-ssp245-aer','hist-nat-ssp245-nat']
+    experiments=['historical-ssp245','hist-GHG','hist-aer','hist-nat','hist-stratO3','hist-GHG-ssp245-GHG','hist-aer-ssp245-aer','hist-nat-ssp245-nat','hist-stratO3-ssp245-stratO3']
     labels=['Anthropogenic and natural forcings','Greenhouse gases','Aerosols','Natural forcings']
-    nexp=len(experiments)-3 #Subtract three to account for repetition of hist-GHG, hist-nat, hist-aer.
+    nexp=len(experiments)-4 #Subtract three to account for repetition of hist-GHG, hist-nat, hist-aer.
     diag_name='gmst01' #Annual mean GMST.
-    ldiag=170 #length of diagnostic,hard-coded.
-    years=list(range(1850,2020,1)) #Used for plotting.
+    ldiag=175 #length of diagnostic,hard-coded.
+    years=list(range(1850,2025,1)) #Used for plotting.
     anom_max=500 #arbitrary max size for number of anomalies.
     mean_diag=numpy.zeros((ldiag,nexp,nmodel))
     mean_gmst_comp_warming=numpy.zeros((ldiag,nexp,nmodel))
@@ -98,7 +99,7 @@ def main(cfg):
             experiment = exp_string[0]
             #Label hist-nat-ssp245-nat as hist-nat, hist-ghg-ssp245-ghg as hist-ghg etc
             #(some models' hist-nat ends in 2014 so is merged with ssp245-nat).
-            if experiment > 7: experiment=experiment-7
+            if experiment > 4: experiment=experiment-4
             print ('*** Experiment',exp,'Index:',experiment)
             grouped_exp_input_data = group_metadata(
               grouped_model_input_data[exp], 'ensemble', sort='variable_group')
@@ -121,9 +122,10 @@ def main(cfg):
                 ann_warming=[]
                 gmst_comp_warming=[]
                 #Calculate masked and blended GMST for individual simulation.
-                (exp_diags[:,ee],obs_diag)=ncbm.ncblendmask_esmval('max', files[0],files[1],files[2],sftlf_file,obs_file,dec_warming,obs_dec_warming,ann_warming,gmst_comp_warming,diag_name,obs,ensobs,ensobs_diag,ensobs_dec_warming)
+                (exp_diags[:,ee],obs_diag)=ncbm.ncblendmask_esmval('max', files[0],files[1],files[2],sftlf_file,obs_file,dec_warming,obs_dec_warming,ann_warming,gmst_comp_warming,diag_name,obs,ensobs,ensobs_diag,ensobs_dec_warming,sr15_flag)
                 ensobs='' #Set to empty string so that ensemble obs diagnostics are only calculated on the first iteration.
                 #Take anomalies relative to 1850-1900.
+                print ('exp_diags[:,ee]',exp_diags[:,ee])
                 exp_diags[:,ee]=exp_diags[:,ee]-numpy.mean(exp_diags[0:(1901-1850),ee]) 
                 obs_diag=obs_diag-numpy.mean(obs_diag[0:(1901-1850)])
                 exp_ann_warming[:,ee]=ann_warming[0]
@@ -175,9 +177,10 @@ def main(cfg):
     
     plt.plot(years,obs_diag,color='black',linewidth=1,label=hadlabel)
     plt.plot(years,numpy.mean(mean_diag[:,0,:],axis=1),color=cols[1],linewidth=1,label='Model mean GMST')
+    print ('Mean GMST',numpy.mean(mean_diag[:,0,:],axis=1))
     plt.plot(years,numpy.mean(mean_ann_warming[:,0,:],axis=1),color='red',linewidth=1,label='Model mean GSAT')
-    plt.plot([1850,2020],[0,0],color='black',linewidth=0.5,ls='--',zorder=0)
-    plt.axis([1850,2020,-1,2])
+    plt.plot([1850,2025],[0,0],color='black',linewidth=0.5,ls='--',zorder=0)
+    plt.axis([1850,2025,-1,2])
     plt.xlabel('Year')
     plt.ylabel('Global mean temperature anomaly ($^\circ$C)')
     plt.legend(loc="upper left",ncol=2)
@@ -215,8 +218,8 @@ def main(cfg):
         plt.plot(years,mm_ann_warming[:,experiment]+offset,color=cols[experiment+1,:],linewidth=1,label=labels[experiment],zorder=zzs[experiment]+4)
 
     plt.plot(years,obs_diag,color='black',linewidth=1,label=hadlabel,zorder=8)
-    plt.axis([1850,2020,-1,2])
-    plt.plot([1850,2020],[0,0],color='black',linewidth=0.5,ls='--',zorder=0)
+    plt.axis([1850,2025,-1,2])
+    plt.plot([1850,2025],[0,0],color='black',linewidth=0.5,ls='--',zorder=0)
     plt.xlabel('Year')
     plt.ylabel('Global mean surface temperature anomaly ($^\circ$C)')
     plt.legend(loc="upper left")
@@ -234,14 +237,14 @@ def main(cfg):
         plt.plot(years,mm_ann_warming[:,experiment]+offset,color=cols[experiment+1,:],linewidth=0.5,label=experiments[experiment])
         plt.text(1860,offset+0.4,experiments[experiment])
     plt.plot(years,obs_diag,color='black',linewidth=0.5,label=hadlabel,zorder=8)
-    ax1.set_xlim(1850,2020)
+    ax1.set_xlim(1850,2025)
     ax1.set_xlabel('Year')
     ax1.set_ylim(-11,2)
-    plt.yticks(numpy.arange(26)*0.5-11,['','','-1.0','-0.5','0.0','0.5','1.0','','-1.0','-0.5','0.0','0.5','1.0','','-1.0','-0.5','0.0','0.5','1.0','','-1.0','-0.5','0.0','0.5','1.0','',''])
+    plt.yticks(numpy.arange(27)*0.5-11,['','','-1.0','-0.5','0.0','0.5','1.0','','-1.0','-0.5','0.0','0.5','1.0','','-1.0','-0.5','0.0','0.5','1.0','','-1.0','-0.5','0.0','0.5','1.0','',''])
     ax1.set_ylabel('Global mean surface temperature change ($^\circ$C)')
     ax2=ax1.twinx()
     ax2.set_ylim(-11,2)
-    plt.yticks(numpy.arange(26)*0.5-11,['-0.5',' 0.0',' 0.5',' 1.0','','-1.0','-0.5',' 0.0',' 0.5',' 1.0','','-1.0','-0.5',' 0.0',' 0.5',' 1.0','','-1.0','-0.5',' 0.0',' 0.5',' 1.0','','','','',''])
+    plt.yticks(numpy.arange(27)*0.5-11,['-0.5',' 0.0',' 0.5',' 1.0','','-1.0','-0.5',' 0.0',' 0.5',' 1.0','','-1.0','-0.5',' 0.0',' 0.5',' 1.0','','-1.0','-0.5',' 0.0',' 0.5',' 1.0','','','','',''])
     plt.savefig(plot_dir+'/supplement_timeseries'+obs+'.'+output_file_type)
     plt.close()
 
@@ -254,7 +257,8 @@ def main(cfg):
     for mm, dataset in enumerate(grouped_input_data):
         ens_size=ens_sizes[0,mm]
         for ee in range(ens_size.astype(int)):
-          plt.plot(mm+1,numpy.mean(all_ann_warming_gsat[2010-1850:2020-1850,0,mm,ee],axis=0)/numpy.mean(all_ann_warming[2010-1850:2020-1850,0,mm,ee],axis=0),color=mod_cols[mm],marker='+')
+#          plt.plot(mm+1,numpy.mean(all_ann_warming_gsat[2010-1850:2020-1850,0,mm,ee],axis=0)/numpy.mean(all_ann_warming[2010-1850:2020-1850,0,mm,ee],axis=0),color=mod_cols[mm],marker='+')
+          plt.plot(mm+1,numpy.mean(all_ann_warming_gsat[2022-1850:2023-1850,0,mm,ee],axis=0)/numpy.mean(all_ann_warming[2022-1850:2023-1850,0,mm,ee],axis=0),color=mod_cols[mm],marker='+')
     plt.text (-2,1.31,'a',fontsize =7,fontweight='bold', va='center', ha='center')
     plt.tight_layout()
 
@@ -285,6 +289,17 @@ def main(cfg):
     obs_gsat=numpy.sort(obs_gsat)
     print ('Obs GSAT warming: mean, 5, 95%',numpy.mean(obs_gsat),obs_gsat[math.floor((nmc-1)*0.05)],obs_gsat[math.ceil((nmc-1)*0.95)])
 
+    plt.figure(2,figsize=[180*mm_conv,60*mm_conv]) 
+    plt.plot(years,all_ann_warming[:,3,1,0],color='green')
+    plt.plot(years,all_ann_warming[:,3,1,1],color='green')
+    plt.plot(years,all_ann_warming[:,3,1,2],color='green')
+    plt.plot(years,all_ann_warming[:,0,1,0],color='black')
+    plt.plot(years,all_ann_warming[:,0,1,1],color='black')
+    plt.plot(years,all_ann_warming[:,0,1,2],color='black')
+    plt.savefig(plot_dir+'/giss_timeseries.pdf')
+    plt.close()
+
+#print ('plot_dir',plot_dir)    
  
 if __name__ == '__main__':
 

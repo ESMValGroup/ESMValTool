@@ -2,6 +2,7 @@
 """Plots Figure 2, and Extended Data Figures 2-6 and 8 in Gillett et al.."""
 import logging
 import os
+import csv
 import xarray as xr
 from pprint import pformat
 from scipy.stats import t
@@ -26,6 +27,7 @@ def attrib_warming(beta,betaCI,dec_warming,ci90_dec_warming,ci90_beta_obs=0.):
   #Calculate attributable warming and confidence range, considering uncertainties in beta, dec_warming and obs.
   attrib_warming=beta*dec_warming
   attrib_range=[attrib_warming-numpy.absolute(beta)*dec_warming*(((beta-betaCI[0])/beta)**2+(ci90_dec_warming/dec_warming)**2+(ci90_beta_obs/beta)**2)**0.5,attrib_warming+numpy.absolute(beta)*dec_warming*(((betaCI[1]-beta)/beta)**2+(ci90_dec_warming/dec_warming)**2+(ci90_beta_obs/beta)**2)**0.5]
+  print ('attrib_warming',((beta-betaCI[0])/beta)**2,(ci90_dec_warming/dec_warming)**2,(ci90_beta_obs/beta)**2)
   return (attrib_warming,numpy.sort(attrib_range))
 
 
@@ -90,11 +92,13 @@ def main(cfg):
     diag_name=cfg['diag_name']
     rcplot=cfg['rcplot']
     simple_uncert=cfg['simple_uncert']
+    sr15_flag=cfg['sr15_flag']
+    warming_years=cfg['warming_years']
     ensobs=''
     pool_int_var=True #Flag to pool internal variability estimates.
     if obs=='had5':
-        obs_file=auxiliary_data_dir+'/HadCRUT.5.0.0.0.anomalies.ensemble_median.nc'
-        ensobs=auxiliary_data_dir+'/HadCRUT.5.0.0.0.anomalies.' #If set apply multi-model analysis using ensemble obs data.
+        obs_file=auxiliary_data_dir+'/HadCRUT.5.0.1.0.anomalies.ensemble_mean.nc'
+        ensobs=auxiliary_data_dir+'/HadCRUT.5.0.1.0.anomalies.' #If set apply multi-model analysis using ensemble obs data.
     elif obs=='had4':
         obs_file=auxiliary_data_dir+'/HadCRUT.4.6.0.0.median.nc'  #Updated to end of 2019.
         ensobs=auxiliary_data_dir+'/HadCRUT.4.6.0.0.anomalies.' #If set apply multi-model analysis using ensemble obs data.
@@ -119,20 +123,21 @@ def main(cfg):
     colors=numpy.array([[0,0,0],[196,121,0],[178,178,178],[0,52,102],[0,79,0],[200,0,0],[0,200,0],[0,0,200],[112,160,205],])/256.
     shade_cols=numpy.array([[128,128,128,128],[204,174,113,128],[191,191,191,128],[67,147,195,128],[223,237,195,128],[255,150,150,128],[150,255,150,128],[150,150,255,128],[91,174,178,128]])/256.
     if exp_flag=='GHG':
-      experiments=['historical-ssp245','hist-nat','hist-GHG','hist-aer','hist-CO2','hist-stratO3','hist-volc','hist-sol','hist-nat-ssp245-nat','hist-GHG-ssp245-GHG','hist-aer-ssp245-aer']
+      experiments=['historical-ssp245','hist-nat','hist-GHG','hist-aer','hist-stratO3','hist-nat-ssp245-nat','hist-GHG-ssp245-GHG','hist-aer-ssp245-aer','hist-stratO3-ssp245-stratO3']
       label=['OTH','NAT','GHG']
       cols=colors[[3,4,2],:]
     else:
       label=['GHG','NAT','AER']
       cols=colors[[2,4,3],:]        
-      experiments=['historical-ssp245','hist-nat','hist-aer','hist-GHG','hist-CO2','hist-stratO3','hist-volc','hist-sol','hist-nat-ssp245-nat','hist-aer-ssp245-aer','hist-GHG-ssp245-GHG'] 
-    nexp=len(experiments)-3 #-3 to account for repetition of hist-nat, hist-nat-ssp245-nat etc.
+      experiments=['historical-ssp245','hist-nat','hist-aer','hist-GHG','hist-stratO3','hist-nat-ssp245-nat','hist-aer-ssp245-aer','hist-GHG-ssp245-GHG','hist-stratO3-ssp245-stratO3'] 
+    nexp=len(experiments)-4 #-4 to account for repetition of hist-nat, hist-nat-ssp245-nat etc.
     print ('Number of experiments', nexp)
 
     #   Define variables for D&A analysis
     av_yr=int(diag_name[4:6]) #Last two digits of diag_name are averaging period in yrs.
-    years=list(numpy.arange(1850+av_yr/2,2020+av_yr/2,av_yr)) #Used for plotting.
-    ldiag=int(170/av_yr) #length of diagnostic, assuming 170 years of data.
+    years=list(numpy.arange(1850+av_yr/2,2025+av_yr/2,av_yr)) #Used for plotting.
+    #Added 5 years here.
+    ldiag=int(175/av_yr) #length of diagnostic, assuming 175 years of data.
     if diag_name[0:4]=='hemi': ldiag=ldiag*2
    
     anom_max=500 #arbitrary max size for number of anomalies.
@@ -159,7 +164,7 @@ def main(cfg):
             exp_string = [experiments.index(i) for i in experiments if exp == i]
             experiment = exp_string[0]
             #Label hist-nat-ssp245-nat as hist-nat etc (some models' hist-nat ends in 2014 so is merged with ssp245-nat).
-            if experiment > 7: experiment=experiment-7
+            if experiment > 4: experiment=experiment-4
             print ('*** Experiment',exp,'Index:',experiment)
             grouped_exp_input_data = group_metadata(
               grouped_model_input_data[exp], 'ensemble', sort='variable_group')
@@ -178,10 +183,17 @@ def main(cfg):
                 dec_warming=[]
                 obs_dec_warming=[]
                 #Calculate the diagnostic used for attribution from an individual simulation.
-                (exp_diags[:,ee],had4_diag)=ncbm.ncblendmask_esmval('max', files[0],files[1],files[2],sftlf_file,obs_file,dec_warming,obs_dec_warming,0,0,diag_name,obs,ensobs,ensobs_diag,ensobs_dec_warming)
+                (exp_diags[:,ee],had4_diag)=ncbm.ncblendmask_esmval('max', files[0],files[1],files[2],sftlf_file,obs_file,dec_warming,obs_dec_warming,0,0,diag_name,obs,ensobs,ensobs_diag,ensobs_dec_warming,warming_years,sr15_flag)
                 ensobs='' #Set to empty string so that ensemble obs diagnostics are only calculated on the first iteration.
                 exp_dec_warming[ee]=dec_warming[0]
             #Average diagnostic and warming in 2010-2019 vs 1850-1899 GSAT over ensemble members.
+            if mm==1 and experiment ==1: #Select GISS nat simulations.
+              plt.figure(2,figsize=[180*mm_conv,60*mm_conv]) 
+              for ee in range(nens):
+                plt.plot(years,exp_diags[:,ee],color='black')
+              plt.savefig(plot_dir+'/giss_nat.pdf')
+              plt.close()
+
             mean_diag[:,experiment,mm]=numpy.mean(exp_diags,axis=1)
             mean_dec_warming[experiment,mm]=numpy.mean(exp_dec_warming)
             if nens==1:
@@ -385,6 +397,11 @@ def main(cfg):
     multim_mean_dec_warming_gmst=numpy.mean(mean_dec_warming_gmst[:,model_indices],axis=1)
     #Define uncertainty in multi-model mean warming to 2010-2019 based on spread in ratio of GSAT to GMST increase across models.
     multim_ci90_dec_warming=numpy.std(mean_dec_warming/mean_dec_warming_gmst,ddof=1,axis=1)*t.ppf(0.95,nmodel-1)*numpy.mean(mean_dec_warming_gmst,axis=1)
+    multim_ci90_dec_warming[1]=multim_ci90_dec_warming[0] #Assume hist-nat uncertainty to be equal to historical uncertainty, since hist-nat uncertainty calculation involves division by numbers close to zero.
+    print ('multim_ci90_dec_warming',multim_ci90_dec_warming)
+    print ('mean_dec_warming',mean_dec_warming)
+    print ('mean_dec_warming_gmst',mean_dec_warming_gmst)
+    print ('mean_dec_warming/mean_dec_warming_gmst',mean_dec_warming/mean_dec_warming_gmst)
 
     if pool_int_var: #Only plot multi model results if pooling internal var.
 
@@ -401,13 +418,15 @@ def main(cfg):
       plt.subplot(bottomleft)
       print ('Two-way attributable warming')
       [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],multim_mean_dec_warming[0]-multim_mean_dec_warming[1],(multim_ci90_dec_warming[0]**2+multim_ci90_dec_warming[1]**2)**0.5,ci90_beta_obs2[0])
+      fitted_ant=att_out[dataset]['beta'][0]*numpy.mean((mean_diag[:,0,:]-mean_diag[:,1,:]),axis=1)
+      fitted_nat=att_out[dataset]['beta'][1]*numpy.mean((mean_diag[:,1,:]),axis=1)
       plt.plot([mm_attrib+0.9,mm_attrib+0.9],att_warming_range,color=colors[1,:],linewidth=2,label=ant)
       plt.plot(mm_attrib+0.9,att_warming,color=colors[1,:],marker='+')
-      print ('ANT:',att_warming_range)
+      print ('ANT:',att_warming,att_warming_range)
       [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][1],att_out[dataset]['betaCI'][1,:],multim_mean_dec_warming[1],multim_ci90_dec_warming[1],ci90_beta_obs2[1])
       plt.plot  ([mm_attrib+1.1,mm_attrib+1.1],att_warming_range,color=colors[4,:],linewidth=2,label=nat)
       plt.plot(mm_attrib+1.1,att_warming,color=colors[4,:],marker='+')
-      print ('NAT:',att_warming_range)
+      print ('NAT:',att_warming,att_warming_range)
       if simple_uncert:
         plt.plot([mm_attrib+0.9,mm_attrib+0.9],att_out[dataset]['betaCI'][0,:]*(multim_mean_dec_warming[0]-multim_mean_dec_warming[1]),color=colors[1,:],marker='_',linestyle='None')
         plt.plot  ([mm_attrib+1.1,mm_attrib+1.1],att_out[dataset]['betaCI'][1,:]*multim_mean_dec_warming[1],color=colors[4,:],marker='_',linestyle='None')
@@ -429,17 +448,19 @@ def main(cfg):
       print ('Three-way attributable warming')
       plt.subplot(bottomright)
       [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][2],att_out3[dataset]['betaCI'][2,:],multim_mean_dec_warming[2],multim_ci90_dec_warming[2],ci90_beta_obs3[2])
+      fitted_ghg=att_out3[dataset]['beta'][2]*numpy.mean((mean_diag[:,2,:]),axis=1)
+      fitted_oth=att_out3[dataset]['beta'][0]*numpy.mean((mean_diag[:,0,:]-mean_diag[:,1,:]-mean_diag[:,2,:]),axis=1)
       plt.plot([mm_attrib+0.8,mm_attrib+0.8],att_warming_range,color=cols[2,:],linewidth=2)
       plt.plot(mm_attrib+0.8,att_warming,color=cols[2,:],marker='+')
-      print (exp_flag,att_warming_range)
+      print (exp_flag,att_warming,att_warming_range)
       [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][1],att_out3[dataset]['betaCI'][1,:],multim_mean_dec_warming[1],multim_ci90_dec_warming[1],ci90_beta_obs3[1])
       plt.plot([mm_attrib+1.0,mm_attrib+1.0],att_warming_range,color=cols[1,:],linewidth=2)    
       plt.plot(mm_attrib+1.0,att_warming,color=cols[1,:],marker='+')
-      print ('NAT:',att_warming_range)
+      print ('NAT:',att_warming,att_warming_range)
       [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][0],att_out3[dataset]['betaCI'][0,:],multim_mean_dec_warming[0]-multim_mean_dec_warming[1]-multim_mean_dec_warming[2],(multim_ci90_dec_warming[0]**2+multim_ci90_dec_warming[1]**2+multim_ci90_dec_warming[2]**2)**0.5,ci90_beta_obs3[0])
       plt.plot([mm_attrib+1.2,mm_attrib+1.2],att_warming_range,color=cols[0,:],linewidth=2)
       plt.plot(mm_attrib+1.2,att_warming,color=cols[0,:],marker='+')
-      print ('OTH:',att_warming_range)
+      print ('OTH:',att_warming,att_warming_range)
       if simple_uncert:
         plt.plot([mm_attrib+0.8,mm_attrib+0.8],att_out3[dataset]['betaCI'][2,:]*multim_mean_dec_warming[2],color=cols[2,:],linestyle='None',marker='_')
         plt.plot([mm_attrib+1.0,mm_attrib+1.0],att_out3[dataset]['betaCI'][1,:]*multim_mean_dec_warming[1],color=cols[1,:],linestyle='None',marker='_')    
@@ -478,10 +499,10 @@ def main(cfg):
         plt.plot([0,nmodel_attrib+2],[0,0],color='black',linewidth=1,ls='--')
         if pool_int_var:
           plt.axis([0,nmodel_attrib+2,-1,3])
-          plt.xticks(list(range(1,nmodel_attrib+2)),[''])
+#          plt.xticks(list(range(1,nmodel_attrib+2)),[''])
         else:
           plt.axis([0,nmodel_attrib+1,-1,3])
-          plt.xticks(list(range(1,nmodel_attrib+1)),[''])
+#          plt.xticks(list(range(1,nmodel_attrib+1)),[''])
         plt.legend(loc="upper left")
         plt.text (-2.5,3.5,panel_labels[panel_counter],fontsize =7,fontweight='bold', va='center', ha='center')
         panel_counter=panel_counter+1
@@ -493,10 +514,10 @@ def main(cfg):
             plt.plot([0,nmodel_attrib+2],[0.95,0.95],color='black',linewidth=1,ls='--')
             if pool_int_var:
               plt.axis([0,nmodel_attrib+2,0,1])
-              plt.xticks(list(range(1,nmodel_attrib+2)),[''])
+#              plt.xticks(list(range(1,nmodel_attrib+2)),[''])
             else:
               plt.axis([0,nmodel_attrib+1,0,1])
-              plt.xticks(list(range(1,nmodel_attrib+1)),[''])
+#              plt.xticks(list(range(1,nmodel_attrib+1)),[''])
             if ff == 323: plt.ylabel('RCT P-value')#,size='x-small')
             plt.text (-2,1.075,panel_labels[panel_counter],fontsize =7,fontweight='bold', va='center', ha='center')
             panel_counter=panel_counter+1
@@ -524,7 +545,40 @@ def main(cfg):
     uncert_flag='__simple_uncert' if simple_uncert else ''
     plt.savefig(plot_dir+'/reg_attrib_'+diag_name+'_'+exp_flag+'_'+obs+pool_flag+uncert_flag+'.'+output_file_type)
     plt.close()
+    plt.figure(2,figsize=[180*mm_conv,60*mm_conv]) 
+    for aa in range(anom_index):
+      plt.plot(years,anom[:,aa])
+    plt.savefig(plot_dir+'/anom.pdf')
+    plt.close()
+    plt.figure(2,figsize=[180*mm_conv,60*mm_conv]) 
+#    for mm in range(3):
+    plt.plot(years,mean_diag[:,1,0],color='black')
+    plt.plot(years,mean_diag[:,1,1],color='green')
+    plt.plot(years,mean_diag[:,1,2],color='gray')
+    plt.savefig(plot_dir+'/mean_diag.pdf')
+    plt.close()
 
+    plt.figure(2,figsize=[180*mm_conv,60*mm_conv]) 
+#    for mm in range(3):
+    plt.plot(years,fitted_ant-numpy.mean(fitted_ant[0:10]),color='red')
+    plt.plot(years,fitted_nat-numpy.mean(fitted_nat[0:10]),color='green')
+    plt.plot(years,fitted_ghg-numpy.mean(fitted_ghg[0:10]),color='gray')
+    plt.plot(years,fitted_oth-numpy.mean(fitted_oth[0:10]),color='blue')
+    plt.plot(years,had4_diag[:,None]-numpy.mean(had4_diag[0:10,None]),color='black')
+    plt.savefig(plot_dir+'/fitted_model.pdf')
+    plt.close()
+
+    #Write fitted responses to file for plotting.
+    with open(plot_dir+'/cmip6_fitted_gmst.csv', mode='w') as file:
+        data_writer=csv.writer(file,delimiter=',',quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        data_writer.writerow(['CMIP6 DAMIP models HadCRUT5-masked blended 5-yr mean GMST'])
+        data_writer.writerow(['Year, ANT, NAT, GHG, OTH'])
+        for yy in range(ldiag):
+          data_writer.writerow([years[yy],fitted_ant[yy],fitted_nat[yy],fitted_ghg[yy],fitted_oth[yy]])
+
+          
+    
+      
 
     
 if __name__ == '__main__':
