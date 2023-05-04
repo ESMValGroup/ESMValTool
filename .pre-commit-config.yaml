@@ -19,7 +19,7 @@ repos:
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
   - repo: https://github.com/adrienverge/yamllint
-    rev: 'v1.26.0'
+    rev: 'v1.30.0'
     hooks:
       - id: yamllint
   - repo: local  # nclcodestyle is installed alongside ESMValTool
@@ -39,7 +39,7 @@ repos:
     hooks:
       - id: codespell
   - repo: https://github.com/PyCQA/isort
-    rev: '5.7.0'
+    rev: '5.12.0'
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/mirrors-yapf

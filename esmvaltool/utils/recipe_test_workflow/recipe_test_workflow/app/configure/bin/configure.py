@@ -1,10 +1,7 @@
 #!/usr/bin/env python
-"""
-Generate the required user configuration file for ESMValTool.
-"""
+"""Generate the required user configuration file for ESMValTool."""
 import os
 import pprint
-import warnings
 
 import yaml
 from esmvalcore.config._config_object import Config
@@ -13,8 +10,7 @@ import esmvaltool
 
 
 def main():
-    """
-    Write the required user configuration file for ESMValTool.
+    """Write the required user configuration file for ESMValTool.
 
     The default configuration values from the latest version of
     ESMValTool are updated with the configuration values defined in the
@@ -36,23 +32,18 @@ def main():
 
     # Write the updated configuration values to the file defined by
     # 'user_config_path'.
-    print(
-        f"Writing the user configuration file to '{user_config_path}' with "
-        "values: "
-    )
+    print(f"Writing the user configuration file to '{user_config_path}' with "
+          "values: ")
     pprint.PrettyPrinter().pprint(config_values)
     write_yaml(user_config_path, config_values)
 
 
 def get_default_config_values_from_latest_ESMValTool():
-    """
-    Return the default configuration values from the latest version of
-    ESMValTool.
-    """
+    """Return the default configuration values from the latest version of
+    ESMValTool."""
     latest_esmvaltool_dir = os.environ["ESMVALTOOL_DIR"]
-    default_config_file = os.path.join(
-        latest_esmvaltool_dir, "config-user-example.yml"
-    )
+    default_config_file = os.path.join(latest_esmvaltool_dir,
+                                       "config-user-example.yml")
     # A dictionary is needed here to avoid the config object from
     # converting paths to 'PosixPath' objects, which causes issues when
     # writing the YAML file.
@@ -64,20 +55,16 @@ def get_default_config_values_from_latest_ESMValTool():
     config_developer_file = str(config_values["config_developer_file"])
     config_values["config_developer_file"] = config_developer_file
 
-    print(
-        "Default configuration values from the latest version of ESMValTool "
-        f"{esmvaltool.__version__} (from '{default_config_file}'): "
-    )
+    print("Default configuration values from the latest version of ESMValTool "
+          f"{esmvaltool.__version__} (from '{default_config_file}'): ")
     pprint.PrettyPrinter().pprint(config_values)
 
     return config_values
 
 
 def get_config_values_from_task_env():
-    """
-    Return the configuration values defined in the environment for the
-    ``configure`` task.
-    """
+    """Return the configuration values defined in the environment for the
+    ``configure`` task."""
     # Note that 'auxiliary_data_dir' and 'download_dir' are set to empty
     # values and cannot currently be configured. 'auxiliary_data_dir' is
     # used by some recipes to look for additional datasets, so may need
@@ -121,17 +108,15 @@ def get_config_values_from_task_env():
             "RAWOBS": os.environ["ROOTPATH_RAWOBS"],
         },
     }
-    print(
-        "The configuration values defined in the environment for the "
-        "'configure' task: "
-    )
+    print("The configuration values defined in the environment for the "
+          "'configure' task: ")
     pprint.PrettyPrinter().pprint(config_values_from_task_env)
     return config_values_from_task_env
 
 
 def write_yaml(file_path, contents):
-    """Write the contents specified by ``contents`` to the YAML file
-    specified by ``file_path``.
+    """Write the contents specified by ``contents`` to the YAML file specified
+    by ``file_path``.
 
     Parameters
     ----------
