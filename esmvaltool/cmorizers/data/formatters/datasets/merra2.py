@@ -161,7 +161,7 @@ def _fix_coordinates(cube, definition):
             if len(coord.points) > 1:
                 coord.guess_bounds()
         else:
-            # special case for UV and 3-dim cloud variables: 
+            # special case for UV and 3-dim cloud variables:
             # variables come with "alevel" instead
             # of "plev19" in the table; "alevel" has empty fields for
             # standard_name, out_name etc. so we need to set them; it's safe
