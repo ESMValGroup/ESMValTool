@@ -176,7 +176,7 @@ def test_load_cube_pairwise_vars_wrong_oper(tmp_path):
     iris.save(cubes, str(path_cubes))
     var = {
         'short_name': 'rsut',
-        'mip': 'Amon', 'raw': 'SWTDN+SWTNT',
+        'mip': 'Amon', 'raw': 'SWTDN*SWTNT',
         'file': 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
     }
     in_files = str(tmp_path / "cubes.nc")
