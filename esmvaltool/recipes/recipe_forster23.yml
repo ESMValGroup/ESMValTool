@@ -5,8 +5,7 @@ documentation:
   title:
     Update to Gillett20 for Forster et al. 2023.
   description: |
-    Produces figures from Gillett et al. (2021)
-    'Constraining human contributions to observed warming since preindustrial'
+    Produces estimates of attributable warming for Forster et al. (2023), Indicators of Global Climate Change 2022, updated from Gillett et al. (2021)
 
   authors:
     - kirchmeier-young_megan
@@ -175,6 +174,22 @@ diagnostics:
       fig1:
         script: attribute/damip_timeseries.py
         obs: had5
+
+#Close to repeat of AR6 results, using GSAT.
+      fig2_2010-19_gsat: 
+        script: attribute/attrib_blended.py
+        obs: had5
+        exp_flag: GHG
+        diag_name: gmst05
+        rcplot: true
+        simple_uncert: false
+	gmst_flag: false
+	sr15_flag: false
+	warming_years:
+          - 2010
+	  - 2019
+
+#As above, but using GMST.
       fig2_2010-19: 
         script: attribute/attrib_blended.py
         obs: had5
@@ -182,6 +197,8 @@ diagnostics:
         diag_name: gmst05
         rcplot: true
         simple_uncert: false
+	gmst_flag: true
+	sr15_flag: false
 	warming_years:
           - 2010
 	  - 2019
@@ -193,9 +210,24 @@ diagnostics:
         diag_name: gmst05
         rcplot: true
         simple_uncert: false
+	gmst_flag: true
+	sr15_flag: false
 	warming_years:
           - 2013
 	  - 2022
+
+      fig2_2017: 
+        script: attribute/attrib_blended.py
+        obs: had5
+        exp_flag: GHG
+        diag_name: gmst05
+        rcplot: true
+        simple_uncert: false
+	gmst_flag: true
+	sr15_flag: false
+	warming_years:
+          - 2017
+	  - 2017
 
       fig2_2022: 
         script: attribute/attrib_blended.py
@@ -204,10 +236,38 @@ diagnostics:
         diag_name: gmst05
         rcplot: true
         simple_uncert: false
+	gmst_flag: true
+	sr15_flag: false
 	warming_years:
           - 2022
 	  - 2022
+	  
+#As above, but using SR1.5 15-yr trend endpoint approach.
+      fig2_2017_sr15: 
+        script: attribute/attrib_blended.py
+        obs: had5
+        exp_flag: GHG
+        diag_name: gmst05
+        rcplot: true
+        simple_uncert: false
+	gmst_flag: true
+	sr15_flag: true
+	warming_years:
+          - 2003
+	  - 2017
 
+      fig2_2022_sr15: 
+        script: attribute/attrib_blended.py
+        obs: had5
+        exp_flag: GHG
+        diag_name: gmst05
+        rcplot: true
+        simple_uncert: false
+	gmst_flag: true
+	sr15_flag: true
+	warming_years:
+          - 2008
+	  - 2022
 
 
 

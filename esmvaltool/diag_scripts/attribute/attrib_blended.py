@@ -27,7 +27,6 @@ def attrib_warming(beta,betaCI,dec_warming,ci90_dec_warming,ci90_beta_obs=0.):
   #Calculate attributable warming and confidence range, considering uncertainties in beta, dec_warming and obs.
   attrib_warming=beta*dec_warming
   attrib_range=[attrib_warming-numpy.absolute(beta)*dec_warming*(((beta-betaCI[0])/beta)**2+(ci90_dec_warming/dec_warming)**2+(ci90_beta_obs/beta)**2)**0.5,attrib_warming+numpy.absolute(beta)*dec_warming*(((betaCI[1]-beta)/beta)**2+(ci90_dec_warming/dec_warming)**2+(ci90_beta_obs/beta)**2)**0.5]
-  print ('attrib_warming',((beta-betaCI[0])/beta)**2,(ci90_dec_warming/dec_warming)**2,(ci90_beta_obs/beta)**2)
   return (attrib_warming,numpy.sort(attrib_range))
 
 
@@ -93,6 +92,7 @@ def main(cfg):
     rcplot=cfg['rcplot']
     simple_uncert=cfg['simple_uncert']
     sr15_flag=cfg['sr15_flag']
+    gmst_flag=cfg['gmst_flag']
     warming_years=cfg['warming_years']
     ensobs=''
     pool_int_var=True #Flag to pool internal variability estimates.
@@ -183,7 +183,7 @@ def main(cfg):
                 dec_warming=[]
                 obs_dec_warming=[]
                 #Calculate the diagnostic used for attribution from an individual simulation.
-                (exp_diags[:,ee],had4_diag)=ncbm.ncblendmask_esmval('max', files[0],files[1],files[2],sftlf_file,obs_file,dec_warming,obs_dec_warming,0,0,diag_name,obs,ensobs,ensobs_diag,ensobs_dec_warming,warming_years,sr15_flag)
+                (exp_diags[:,ee],had4_diag)=ncbm.ncblendmask_esmval('max', files[0],files[1],files[2],sftlf_file,obs_file,dec_warming,obs_dec_warming,0,0,diag_name,obs,ensobs,ensobs_diag,ensobs_dec_warming,warming_years,sr15_flag,gmst_flag)
                 ensobs='' #Set to empty string so that ensemble obs diagnostics are only calculated on the first iteration.
                 exp_dec_warming[ee]=dec_warming[0]
             #Average diagnostic and warming in 2010-2019 vs 1850-1899 GSAT over ensemble members.
@@ -398,10 +398,10 @@ def main(cfg):
     #Define uncertainty in multi-model mean warming to 2010-2019 based on spread in ratio of GSAT to GMST increase across models.
     multim_ci90_dec_warming=numpy.std(mean_dec_warming/mean_dec_warming_gmst,ddof=1,axis=1)*t.ppf(0.95,nmodel-1)*numpy.mean(mean_dec_warming_gmst,axis=1)
     multim_ci90_dec_warming[1]=multim_ci90_dec_warming[0] #Assume hist-nat uncertainty to be equal to historical uncertainty, since hist-nat uncertainty calculation involves division by numbers close to zero.
-    print ('multim_ci90_dec_warming',multim_ci90_dec_warming)
-    print ('mean_dec_warming',mean_dec_warming)
-    print ('mean_dec_warming_gmst',mean_dec_warming_gmst)
-    print ('mean_dec_warming/mean_dec_warming_gmst',mean_dec_warming/mean_dec_warming_gmst)
+#    print ('multim_ci90_dec_warming',multim_ci90_dec_warming)
+#    print ('mean_dec_warming',mean_dec_warming)
+#    print ('mean_dec_warming_gmst',mean_dec_warming_gmst)
+#    print ('mean_dec_warming/mean_dec_warming_gmst',mean_dec_warming/mean_dec_warming_gmst)
 
     if pool_int_var: #Only plot multi model results if pooling internal var.
 
@@ -467,18 +467,18 @@ def main(cfg):
         plt.plot([mm_attrib+1.2,mm_attrib+1.2],att_out3[dataset]['betaCI'][0,:]*(multim_mean_dec_warming[0]-multim_mean_dec_warming[1]-multim_mean_dec_warming[2]),color=cols[0,:],linestyle='None',marker='_')
 
 #Calculate attributable warming ranges in GMST.
-      print ('Two-way attributable warming - GMST')
-      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],multim_mean_dec_warming_gmst[0]-multim_mean_dec_warming_gmst[1],0.,ci90_beta_obs2[0])
-      print ('ANT:',att_warming_range)
-      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][1],att_out[dataset]['betaCI'][1,:],multim_mean_dec_warming_gmst[1],0.,ci90_beta_obs2[1])
-      print ('NAT:',att_warming_range)
-      print ('Three-way attributable warming - GMST')
-      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][2],att_out3[dataset]['betaCI'][2,:],multim_mean_dec_warming_gmst[2],0.,ci90_beta_obs3[2])
-      print (exp_flag,att_warming_range)
-      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][1],att_out3[dataset]['betaCI'][1,:],multim_mean_dec_warming_gmst[1],0.,ci90_beta_obs3[1])
-      print ('NAT:',att_warming_range)
-      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][0],att_out3[dataset]['betaCI'][0,:],multim_mean_dec_warming_gmst[0]-multim_mean_dec_warming_gmst[1]-multim_mean_dec_warming_gmst[2],0.,ci90_beta_obs3[0])
-      print ('OTH:',att_warming_range)
+#      print ('Two-way attributable warming - GMST')
+#      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],multim_mean_dec_warming_gmst[0]-multim_mean_dec_warming_gmst[1],0.,ci90_beta_obs2[0])
+#      print ('ANT:',att_warming_range)
+#      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][1],att_out[dataset]['betaCI'][1,:],multim_mean_dec_warming_gmst[1],0.,ci90_beta_obs2[1])
+#      print ('NAT:',att_warming_range)
+#      print ('Three-way attributable warming - GMST')
+#      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][2],att_out3[dataset]['betaCI'][2,:],multim_mean_dec_warming_gmst[2],0.,ci90_beta_obs3[2])
+#      print (exp_flag,att_warming_range)
+#      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][1],att_out3[dataset]['betaCI'][1,:],multim_mean_dec_warming_gmst[1],0.,ci90_beta_obs3[1])
+#      print ('NAT:',att_warming_range)
+#      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][0],att_out3[dataset]['betaCI'][0,:],multim_mean_dec_warming_gmst[0]-multim_mean_dec_warming_gmst[1]-multim_mean_dec_warming_gmst[2],0.,ci90_beta_obs3[0])
+#      print ('OTH:',att_warming_range)
         
       
     nmodel_attrib=mm_attrib

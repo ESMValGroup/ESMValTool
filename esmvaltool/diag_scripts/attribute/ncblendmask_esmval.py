@@ -34,7 +34,7 @@ def areas( grid ):
                 math.sin(math.radians(180.0/grid)) )
   return area
 
-def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,dec_warming,obs_dec_warming,ann_warming,gmst_comp_warming,diag_name,obs='had4',ensobs='',ensobs_diag=[],ensobs_dec_warming=[],warming_years=[2010,2019],sr15_flag=False):
+def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,dec_warming,obs_dec_warming,ann_warming,gmst_comp_warming,diag_name,obs='had4',ensobs='',ensobs_diag=[],ensobs_dec_warming=[],warming_years=[2010,2019],sr15_flag=False,gmst_flag=False):
 # MAIN PROGRAM
 
 # m = mask
@@ -223,8 +223,10 @@ def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,de
   if 'm' in options: wm[ cvgmsk[0:wm.shape[0],:,:] < -100 ] = 0.0
   # calculate diagnostic
   diag=calc_diag(tos,wm,diag_name) #Diagnostic for attribution analysis.
-#  dec_warming.append(calc_dec_warming(tas,w,warming_years,sr15_flag)) #Diagnose SAT warming with global coverage for attributable trends.
-  dec_warming.append(calc_dec_warming(tos,w,warming_years,sr15_flag)) #Diagnose GMST warming with global coverage for attributable trends.
+  if gmst_flag:
+    dec_warming.append(calc_dec_warming(tos,w,warming_years,sr15_flag)) #Diagnose GMST warming with global coverage for attributable trends.
+  else:  
+    dec_warming.append(calc_dec_warming(tas,w,warming_years,sr15_flag)) #Diagnose SAT warming with global coverage for attributable trends.
   obs_dec_warming.append(calc_dec_warming(obs_tas,wm,warming_years,sr15_flag))
   
   if ann_warming!=0:
