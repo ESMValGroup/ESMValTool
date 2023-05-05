@@ -312,6 +312,10 @@ gridline_kwargs: dict, optional
 aspect_ratio: float, optional
     Optional set the aspect ratio of the one-dimensional plot. Default is 3/2,
     which results in a slender upright plot.
+y_log: bool, optional
+    Optional set a logarithmic scale for the vertical axis
+x_log: bool, optional
+    Optional set a logarithmic scale for the x-axis
 plot_kwargs: dict, optional
     Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
     elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
@@ -1442,7 +1446,7 @@ class MultiDatasets(MonitorBase):
         ancestors = []
         cubes = {}
         for dataset in datasets:
-            if dataset == ref_dataset:
+            if dataset == ref_dataset and bias:
                 continue
 
             ancestors.append(dataset['filename'])
@@ -1455,14 +1459,15 @@ class MultiDatasets(MonitorBase):
             plot_kwargs['axes'] = axes
 
             # apply difference
-            if ref_cube:
-                bias, multi_dataset_facets = (
-                    self._compute_bias(cube, ref_cube, bias,
-                                       multi_dataset_facets)
-                )
-            else:
-                logger.info("Plotting of differences not possible."
-                            " Reference is missing.")
+            if bias:
+                if ref_cube:
+                    cube, multi_dataset_facets = (
+                        self._compute_bias(cube, ref_cube, bias,
+                                           multi_dataset_facets)
+                    )
+                else:
+                    logger.info("Plotting of differences not possible."
+                                " Reference is missing.")
 
             iris.plot.plot(cube, **plot_kwargs)
 
@@ -1471,6 +1476,16 @@ class MultiDatasets(MonitorBase):
         axes.set_xlabel(f"{short_name} [{multi_dataset_facets['units']}]")
         z_coord = cube.coord(axis='Z')
         axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
+
+        # apply logarithmic axes
+        if self.plots[plot_type]['log_y']:
+            axes.set_yscale('log')
+            axes.get_yaxis().set_major_formatter(
+                FormatStrFormatter('%.1f'))
+
+        if self.plots[plot_type]['log_x']:
+            axes.set_xscale('log')
+
         # gridlines
         gridline_kwargs = self._get_gridline_kwargs(plot_type=plot_type)
         if gridline_kwargs is not False:
@@ -1487,7 +1502,7 @@ class MultiDatasets(MonitorBase):
         # Customize plot appearance
         self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
 
-        # Save plot (check get_plot_path in Monitor_base)
+        # Save plot
         plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
         fig.savefig(plot_path, **self.cfg['savefig_kwargs'])
         logger.info("Wrote %s", plot_path)
@@ -1522,7 +1537,8 @@ class MultiDatasets(MonitorBase):
         elif bias == 'relative':
             cube = (cube / ref_cube - 1.) * 100.
             facets['units'] = '%'
-        return bias, facets
+
+        return cube, facets
 
     def compute(self):
         """Plot preprocessed data."""
