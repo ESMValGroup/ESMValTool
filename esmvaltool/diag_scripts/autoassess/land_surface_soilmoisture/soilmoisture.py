@@ -6,7 +6,12 @@ import numpy as np
 import iris
 from esmvalcore.preprocessor import regrid
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
-from esmvaltool.diag_scripts.shared._supermeans import get_supermean
+from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
+
+# Order of seasons must agree with preprocessor definition in recipe
+SEASONS = ("djf", "mam", "jja", "son")
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,46 +38,36 @@ def get_provenance_record(caption, run):
     return record
 
 
-def land_sm_top(run):
+def land_sm_top(clim_file, model_file, work_dir):
     """
     Calculate median absolute errors for soil mosture against CCI data.
 
     Parameters
     ----------
-    run: dict
-        dictionary containing model run metadata
-        (see auto_assess/model_run.py for description)
+    clim_file : path to observation climatology file
+    model_file : path to model file
+    work_dir : directory for intermediate working files
 
     Returns
     -------
     metrics: dict
         a dictionary of metrics names and values
     """
-    supermean_data_dir = os.path.join(run['data_root'], run['runid'],
-                                      run['_area'] + '_supermeans')
-
-    seasons = ['djf', 'mam', 'jja', 'son']
 
     # Constant: density of water
     rhow = 1000.
 
     # Work through each season
     metrics = dict()
-    for season in seasons:
-        fname = 'ecv_soil_moisture_{}.nc'.format(season)
-        clim_file = os.path.join(run['climfiles_root'], fname)
-        ecv_clim = iris.load_cube(clim_file)
-        # correct invalid units
-        if (ecv_clim.units == 'unknown' and
-                'invalid_units' in ecv_clim.attributes):
-            if ecv_clim.attributes['invalid_units'] == 'm^3m^-3':
-                ecv_clim.units = 'm3 m-3'
+    for index, season in enumerate(SEASONS):
+
+        constr_season = iris.Constraint(season_number=index)
+        ecv_clim = iris.load_cube(clim_file, constr_season)
 
         # m01s08i223
         # CMOR name: mrsos (soil moisture in top model layer kg/m2)
-        mrsos = get_supermean('mass_content_of_water_in_soil_layer',
-                              season,
-                              supermean_data_dir)
+        mrsos_std_name = "mass_content_of_water_in_soil_layer"
+        mrsos = iris.load_cube(model_file, mrsos_std_name & constr_season)
 
         # Set soil moisture to missing data on ice points (i.e. no soil)
         np.ma.masked_where(mrsos.data == 0, mrsos.data, copy=False)
@@ -117,14 +112,59 @@ def land_sm_top(run):
         dff = vol_sm1_run - ecv_clim
 
         # save output and populate metric
-        iris.save(dff, os.path.join(run['dump_output'],
+        iris.save(dff, os.path.join(work_dir,
                                     'soilmoist_diff_{}.nc'.format(season)))
         name = 'soilmoisture MedAbsErr {}'.format(season)
         dffs = dff.data
         dffs = np.ma.abs(dffs)
         metrics[name] = float(np.ma.median(dffs))
 
-    # record provenance
+    return metrics
+
+
+def main(config):
+    """
+    Top-level function for soil moisture metrics.
+
+    Parameters
+    ----------
+    config : dict
+        The ESMValTool configuration.
+    """
+    logger = logging.getLogger(__name__)
+
+    input_data = config["input_data"]
+
+    # Separate OBS from model datasets
+    # (and check there is only one obs dataset)
+    obs = [v for v in input_data.values() if v["project"] == "OBS"]
+    if len(obs) != 1:
+        msg = "Expected exactly 1 OBS dataset: found {}".format(len(obs))
+        raise RuntimeError(msg)
+    clim_file = obs[0]["filename"]
+
+    models = group_metadata(
+        [v for v in input_data.values() if v["project"] != "OBS"],
+        "dataset")
+
+    for model_dataset, group in models.items():
+        # 'model_dataset' is the name of the model dataset.
+        # 'group' is a list of dictionaries containing metadata.
+        logger.info("Processing data for %s", model_dataset)
+        model_file = [item["filename"] for item in group]
+        metrics = land_sm_top(clim_file, model_file, config["work_dir"])
+
+        # Write metrics
+        metrics_dir = os.path.join(
+            config["plot_dir"],
+            "{}_vs_{}".format(config["exp_model"], config["control_model"]),
+            config["area"],
+            model_dataset,
+        )
+
+        write_metrics(metrics_dir, metrics)
+
+    # Record provenance
     plot_file = "Autoassess soilmoisture metrics"
     caption = 'Autoassess soilmoisture MedAbsErr for {}'.format(str(seasons))
     provenance_record = get_provenance_record(caption, run)
@@ -136,4 +176,7 @@ def land_sm_top(run):
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(plot_file, provenance_record)
 
-    return metrics
+
+if __name__ == "__main__":
+    with run_diagnostic() as CONFIG:
+        main(CONFIG)

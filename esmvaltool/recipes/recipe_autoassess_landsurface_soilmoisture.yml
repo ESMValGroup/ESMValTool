@@ -46,16 +46,10 @@ diagnostics:
             - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat, version: L3S-SSMV-COMBINED-v4.2, tier: 2, start_year: 1999, end_year: 2008}
     scripts:
       autoassess_landsurf_soilmoisture: &autoassess_landsurf_soilmoisture_settings
-      #TODO: simplify to skip autoassess_area_base? simpler to write from
-      #scratch?
-        script: autoassess/autoassess_area_base.py
-        title: "Autoassess Land-Surface Soilmoisture Diagnostic"
+        script: autoassess/land_surface_soilmoisture/soilmoisture.py
         area: land_surface_soilmoisture
         control_model: ACCESS-CM2
         exp_model: E3SM-1-0
-        obs_models: []
-        start: 1993/12/01
-        end: 2002/12/01
 
   plot_standard:
     description: Wrapper to collect and plot previously calculated metrics
