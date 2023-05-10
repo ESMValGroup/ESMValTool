@@ -17,7 +17,7 @@ SEASONS = ("djf", "mam", "jja", "son")
 logger = logging.getLogger(__name__)
 
 
-def get_provenance_record(caption, run):
+def get_provenance_record(caption, filenames):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption': caption,
@@ -33,7 +33,7 @@ def get_provenance_record(caption, run):
             'dorigo17rse',
             'gruber19essd',
         ],
-        'ancestors': run,
+        "ancestors": filenames,
     }
 
     return record
@@ -192,15 +192,13 @@ def main(config):
 
     # Record provenance
     plot_file = "Autoassess soilmoisture metrics"
-    caption = 'Autoassess soilmoisture MedAbsErr for {}'.format(str(seasons))
-    provenance_record = get_provenance_record(caption, run)
+    caption = "Autoassess soilmoisture MedAbsErr for {}".format(str(SEASONS))
+    filenames = [item["filename"] for item in input_data.values()]
+    provenance_record = get_provenance_record(caption, filenames)
     cfg = {}
-    cfg['run_dir'] = run['out_dir']
-    # avoid rewriting provenance when running the plot diag
-    if not os.path.isfile(os.path.join(cfg['run_dir'],
-                                       'diagnostic_provenance.yml')):
-        with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log(plot_file, provenance_record)
+    cfg["run_dir"] = config["run_dir"]
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, provenance_record)
 
 
 if __name__ == "__main__":
