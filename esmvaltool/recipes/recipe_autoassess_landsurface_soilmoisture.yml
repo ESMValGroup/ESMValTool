@@ -22,14 +22,13 @@ documentation:
 datasets:
     - {dataset: ACCESS-CM2,  project: CMIP6, exp: historical,  grid: gn,  ensemble: r1i1p1f1,  start_year: 1992,  end_year: 2002}
     - {dataset: E3SM-1-0,  project: CMIP6, exp: historical,  grid: gr,  ensemble: r1i1p1f1,  start_year: 1992,  end_year: 2002}
-    - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat, version: L3S-SSMV-COMBINED-v4.2, tier: 2, start_year: 1980}
-    #TODO: revise start_year, add end_year
 
 preprocessors:
-  pp_aa_area:
-      regrid:  # NOT USED  TODO: really?
-      target_grid: 0.15x0.15
-      scheme: linear
+  seasonal:
+    climate_statistics:
+      operator: mean
+      period: seasonal
+      seasons: ['DJF', 'MAM', 'JJA', 'SON']
 
 diagnostics:
   aa_landsurf_soilmoisture:
@@ -38,6 +37,13 @@ diagnostics:
       mrsos: # moisture_content_of_soil_layer
         mip: Lmon
         preprocessor: seasonal
+      sm: # Volumetric Moisture in Upper Portion of Soil Column
+        mip: Lmon
+        project: CMIP5
+        derive: true
+        preprocessor: seasonal
+        additional_datasets:
+            - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat, version: L3S-SSMV-COMBINED-v4.2, tier: 2, start_year: 1999, end_year: 2008}
     scripts:
       autoassess_landsurf_soilmoisture: &autoassess_landsurf_soilmoisture_settings
       #TODO: simplify to skip autoassess_area_base? simpler to write from
