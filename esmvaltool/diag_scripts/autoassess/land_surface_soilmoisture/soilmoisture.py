@@ -3,6 +3,7 @@
 import os
 import logging
 import numpy as np
+import csv
 import iris
 from esmvalcore.preprocessor import regrid
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
@@ -36,6 +37,31 @@ def get_provenance_record(caption, run):
     }
 
     return record
+
+
+def write_metrics(output_dir, metrics):
+    """Write metrics to CSV file.
+
+    The CSV file will have the name ``metrics.csv`` and can be
+    used for the normalised metric assessment plot.
+
+    Parameters
+    ----------
+    output_dir : string
+        The full path to the directory in which the CSV file will be written.
+    seasonal_data : dictionary of metric,value pairs
+        The seasonal data to write.
+    """
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    file_name = f"metrics.csv"
+    file_path = os.path.join(output_dir, file_name)
+
+    with open(file_path, "w", newline="") as csvfile:
+        csv_writer = csv.writer(csvfile)
+        for line in metrics.items():
+            csv_writer.writerow(line)
 
 
 def land_sm_top(clim_file, model_file, work_dir):
