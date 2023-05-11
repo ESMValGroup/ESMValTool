@@ -23,6 +23,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
+  # need a 2.8.1 with updated pins for 3.11 support
   # - esmvalcore 2.8.*
   - fiona
   - fire
@@ -45,8 +46,7 @@ dependencies:
   - prov
   - psyplot
   - psy-maps
-  # not supporting Python=3.11
-  # - psy-reg
+  - psy-reg
   - psy-simple
   - pyproj>=2.1
   - python >=3.11
