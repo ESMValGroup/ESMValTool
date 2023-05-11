@@ -86,7 +86,10 @@ seaborn_func: str
 seaborn_kwargs: dict, optional
     Optional keyword arguments for the plotting function given by
     `seaborn_func`. Must not include an argument called `data`. Example:
-    ``{'x': 'variable_1', 'y': 'variable_2', 'hue': 'coord_1'}``.
+    ``{'x': 'variable_1', 'y': 'variable_2', 'hue': 'coord_1'}``. Note:
+    variables (here: `variable_1` and `variable_2` are identified by their
+    `variable_group` in the recipe, i.e., the keys that specify variable groups
+    in `variables`.
 seaborn_settings: dict, optional
     Options for :func:`seaborn.set_theme` (affects all plots).
 suptitle: str or None, optional (default: None)
@@ -284,14 +287,14 @@ def _get_df_for_group(
         cube = iris.load_cube(filename)
 
         # Update units
-        short_name = dataset['short_name']
+        variable_group = dataset['variable_group']
         units = dataset['units']
-        if short_name in UNITS and UNITS[short_name] != units:
+        if variable_group in UNITS and UNITS[variable_group] != units:
             raise ValueError(
-                f"Got duplicate units for variable '{short_name}': '{units}' "
-                f"and '{UNITS[short_name]}'"
+                f"Got duplicate units for variable '{variable_group}': "
+                f"'{units}' and '{UNITS[variable_group]}'"
             )
-        UNITS.setdefault(short_name, units)
+        UNITS.setdefault(variable_group, units)
 
         # Get data frame for individual dataset with proper name
         df_dataset = iris.pandas.as_data_frame(
@@ -301,7 +304,7 @@ def _get_df_for_group(
             add_ancillary_variables=cfg['add_ancillary_variables'],
         )
         df_dataset = df_dataset.rename(
-            {cube.name(): short_name}, axis='columns'
+            {cube.name(): variable_group}, axis='columns'
         )
 
         # Merge
