@@ -49,7 +49,6 @@ dependencies:
   - psy-reg
   - psy-simple
   - pyproj>=2.1
-  - python >=3.11
   - python-cdo
   - python-dateutil
   - pyyaml
