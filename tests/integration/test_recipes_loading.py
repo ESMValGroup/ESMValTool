@@ -34,7 +34,7 @@ def session(mocker, tmp_path):
         auxiliary_data_dir=str(tmp_path / 'auxiliary_data_dir'),
         check_level=esmvalcore.cmor.check.CheckLevels['DEFAULT'],
         drs={},
-        offline=True,
+        search_esgf='never',
         rootpath={'default': str(tmp_path)},
     )
     session = CFG.start_session('test')
@@ -81,6 +81,20 @@ def test_recipe_valid(recipe_file, session, mocker):
             'test_1850-9999.nc',
         ],
     )
+
+    # Do not remove unexpanded supplementaries. These cannot be expanded
+    # because the mocked file finding above does not produce facets.
+    try:
+        import esmvalcore.dataset
+    except ImportError:
+        pass
+    else:
+        mocker.patch.object(
+            esmvalcore.dataset.Dataset,
+            '_remove_unexpanded_supplementaries',
+            autospec=True,
+            spec_set=True,
+        )
 
     # Mock vertical levels
     # Account for module change after esmvalcore=2.7

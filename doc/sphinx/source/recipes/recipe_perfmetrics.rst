@@ -53,6 +53,7 @@ User settings in recipe
    * calc_grading: calculates grading metrics (default: False)
    * stippling: uses stippling to mark statistically significant differences (default: False = mask out non-significant differences in gray)
    * show_global_avg: diplays the global avaerage of the input field as string at the top-right of lat-lon plots (default: False)
+   * annots: choose the annotation style, e.g. ```alias``` which would display the alias of the dataset as title (applies to plot_type zonal and cycle_zonal)
    * metric: chosen grading metric(s) (if calc_grading is True)
    * normalization: metric normalization (for RMSD and BIAS metrics only)
    * abs_levs: list of contour levels for absolute plot

@@ -3,6 +3,10 @@
 Recipes
 -------
 
+A website displaying results produced with the latest release of
+ESMValTool for all available recipes can be accessed `here
+<https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/>`_.
+
 .. toctree::
    :maxdepth: 1
 
@@ -78,7 +82,7 @@ IPCC
    :maxdepth: 1
 
    recipe_ipccwg1ar6ch3
-   recipe_flato13ipcc
+   recipe_ipccwg1ar5ch9
    recipe_collins13ipcc
 
 Land
@@ -128,3 +132,11 @@ Other
    recipe_shapeselect
    recipes_testing
    recipe_toymodel
+
+Broken recipe list
+^^^^^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 1
+
+   broken_recipe_list

@@ -40,7 +40,7 @@ DATASET_ANCHOR_CO2: &datasets_co2
   - {dataset: CanESM2}
   - {dataset: CESM1-BGC}
   - {dataset: GFDL-ESM2M, start_year: 1861}
-  - {dataset: HadGEM2-ES, end_year: 2004}
+  - {dataset: HadGEM2-ES, end_year: 2004}  # missing on ESGF for co2 of esmHistorical
   - {dataset: MIROC-ESM}
   - {dataset: MPI-ESM-LR}
   - {dataset: NorESM1-ME}
@@ -59,7 +59,7 @@ DATASET_ANCHOR_1PCTBGC: &datasets_1pctBGC
   - {dataset: CESM1-BGC,  start_year:   67, end_year:   76}
   - {dataset: GFDL-ESM2M, start_year:   67, end_year:   76}
   - {dataset: HadGEM2-ES, start_year: 1916, end_year: 1925}
-  - {dataset: MIROC-ESM,  start_year:   67, end_year:   76}
+  - {dataset: MIROC-ESM,  start_year:   67, end_year:   76}  # missing on ESGF for gpp of esmFixClim1
   - {dataset: MPI-ESM-LR, start_year: 1916, end_year: 1925}
   - {dataset: NorESM1-ME, start_year:   67, end_year:   76}
 
