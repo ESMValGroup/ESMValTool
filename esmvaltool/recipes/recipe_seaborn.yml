@@ -38,7 +38,8 @@ diagnostics:
 
   plot_temperature_vs_lat:
     variables:
-      ta:
+      zonal_mean_ta:
+        short_name: ta
         mip: Amon
         preprocessor: zonal_mean
         project: CMIP6
@@ -53,7 +54,7 @@ diagnostics:
         seaborn_func: relplot
         seaborn_kwargs:
           x: latitude
-          y: ta
+          y: zonal_mean_ta
           col: alias
           col_wrap: 2
           hue: air_pressure
