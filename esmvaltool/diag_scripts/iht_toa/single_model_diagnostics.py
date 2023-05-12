@@ -4,11 +4,14 @@
 """
 
 import logging
+import sys
 from copy import deepcopy
 from pathlib import Path
 
 import cartopy.crs as ccrs
 import iris
+import iris.plot as iplt
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import gridspec, rcParams
@@ -57,6 +60,33 @@ def get_provenance_record(plot_type, ancestor_files):
     return record
 
 
+def area_average(cube, latitude='latitude', longitude='longitude', mdtol=1):
+    """Returns the gridbox weighted area average of a cube (and optionally a
+    sub-region).
+
+    Compulsory arguments:
+        cube            Cube to be area averaged.
+    Optional arguments:
+        latitude, longitude  Names of coordinates to be used for latitude
+                             and longitude
+        mdtol           Tolerance for missing data.
+    Returns:
+        cube_avg        cube which has had area averaging applied across
+                        latitude and longitude coordinates
+    """
+
+    if cube.coord(latitude).bounds is None:
+        cube.coord(latitude).guess_bounds()
+    if cube.coord(longitude).bounds is None:
+        cube.coord(longitude).guess_bounds()
+    grid_areas = iris.analysis.cartography.area_weights(cube)
+    cube_avg = cube.collapsed([longitude, latitude],
+                              iris.analysis.MEAN,
+                              weights=grid_areas,
+                              mdtol=mdtol)
+    return cube_avg
+
+
 def var_name_constraint(var_name):
     return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
 
@@ -103,52 +133,6 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
     return p_cube, mht_cube
 
 
-def compute_efp_and_mht(model_dict):
-    # Sort experiments by variable
-    exp_dataset = group_metadata(model_dict, 'exp', sort='variable_group')
-
-    # Define dict to hold the data
-    iht_dict = {}
-
-    # Loop over experiments
-    for exp_nme in exp_dataset:
-        logger.info("Experiment: %s", exp_nme)
-        efp_clim = iris.cube.CubeList()
-        mht_clim = iris.cube.CubeList()
-        flx_clim = iris.cube.CubeList()
-        mht_annual = iris.cube.CubeList()
-        files_dict = {}
-        # Loop over variables and do the relevant calculations
-        for attributes in exp_dataset[exp_nme]:
-            input_file = attributes['filename']
-            variable_name = attributes['short_name']
-            logger.info("Loading %s", input_file)
-            cube = iris.load_cube(input_file)
-            files_dict[variable_name] = input_file
-            if len(cube.shape) == 3:
-                mht_exp = iris.cube.CubeList()
-                # Iterate over time dimension and calculate EFP
-                for flx in cube.slices_over('time'):
-                    efp, mht = call_poisson(flx)
-                    mht_exp.append(mht)
-                mht_annual.append(mht_exp.merge_cube())
-            else:
-                # Call the Poisson solver
-                efp, mht = call_poisson(cube)
-                efp_clim.append(efp)
-                mht_clim.append(mht)
-                flx_clim.append(cube)
-            del efp, mht, cube
-
-        # Add iris cubelist to dictionary
-        iht_dict[exp_nme] = implied_heat_transport(mht_clim, efp_clim,
-                                                   flx_clim, mht_annual,
-                                                   files_dict)
-        del mht_clim, efp_clim, flx_clim, mht_annual
-
-    return iht_dict
-
-
 def symmetry_metric(data, grid):
     """Calculates hemispheric symmetry value.
 
@@ -160,8 +144,10 @@ def symmetry_metric(data, grid):
     # As coded, the calculation of the symmetry metrics needs the number of
     # latitude points to be multiple of 6, i.e. it needs 30 deg bands.
     Nlat = data.shape[0]
-    if (Nlat // 6) != 0:
+    if (Nlat % 6) != 0:
         logger.error("Grid not compatible with symmetry metric calculation.")
+        sys.exit(1)
+
     Nlat_hem = Nlat // 2
     Nlat_trop = Nlat_hem // 3
     nh = data[Nlat_hem:]
@@ -176,42 +162,62 @@ def symmetry_metric(data, grid):
 
 
 class implied_heat_transport:
-    def __init__(self, mht_clim, efp_clim, flx_clim, mht_annual, flx_files):
-        self.mht_clim = mht_clim
-        self.efp_clim = efp_clim
-        self.flx_clim = flx_clim
-        self.mht_annual = mht_annual
+    def __init__(self, flx_files):
         self.flx_files = flx_files
 
-        # Grid
-        vname_constraint = var_name_constraint("rtnt")
-        flux = self.flx_clim.extract_cube(vname_constraint)
-        self.grid = iris.analysis.cartography.area_weights(flux,
-                                                           normalize=True)
-        self.lat = flux.coord('latitude').points
-        self.lon = flux.coord('longitude').points
-        del flux
+        # Create cube lists for the different datasets
+        self.flx_clim = iris.cube.CubeList()
+        self.mht_clim = iris.cube.CubeList()
+        self.efp_clim = iris.cube.CubeList()
+        self.mht_rolling_mean = iris.cube.CubeList()
+        self.symmetry_metric = iris.cube.CubeList()
 
-        # Compute derived fields
-        self.derived_fields()
+        # Calculate 12-month rolling means for time series.
+        self.flx_rolling_mean = iris.cube.CubeList()
+        for flx_file in flx_files:
+            flx = iris.load_cube(flx_file)
+            if len(flx.shape) == 3:
+                self.flx_rolling_mean.append(
+                    flx.rolling_window('time', iris.analysis.MEAN, 12))
+            else:
+                self.flx_clim.append(flx)
+
+        # Save grid information
+        vname_constraint = var_name_constraint("rtnt")
+        flx = self.flx_clim.extract_cube(vname_constraint)
+        self.grid = iris.analysis.cartography.area_weights(flx, normalize=True)
+        self.lat = flx.coord('latitude').points
+        self.lon = flx.coord('longitude').points
+
+        # Compute derived fluxes
+        self.derived_fluxes()
+
+        # Calculate EFP and MHT for each flux
+        self.compute_efp_and_mht()
+
+        # Times series of MHT symmetry metric
+        self.mht_symmetry_metrics()
+
+        self.print()
         return
 
-    def derived_fields(self):
-        # Create net LW variables (change sign to the upwelling fluxes)
-        for cube in self.mht_clim:
-            if cube.var_name == "rlut_mht":
-                dcube = cube.copy()
-                dcube.data = -dcube.data
-                dcube.var_name = "rlnt_mht"
-                dcube.long_name = "meridional_heat_transport_of_rlnt"
-                self.mht_clim.append(dcube)
-        for cube in self.efp_clim:
-            if cube.var_name == "rlut_efp":
-                dcube = cube.copy()
-                dcube.data = -dcube.data
-                dcube.var_name = "rlnt_efp"
-                dcube.long_name = "energy_flux_potential_of_rlnt"
-                self.efp_clim.append(dcube)
+    def compute_efp_and_mht(self):
+        # Loop over climatologies
+        for flx in self.flx_clim:
+            efp, mht = call_poisson(flx)
+            self.efp_clim.append(efp)
+            self.mht_clim.append(mht)
+        # Loop over rolling means
+        for flx_rm in self.flx_rolling_mean:
+            mht_series = iris.cube.CubeList()
+            for flx in flx_rm.slices_over('time'):
+                efp, mht = call_poisson(flx)
+                mht_series.append(mht)
+            # Append MHT rolling mean after merging time series.
+            self.mht_rolling_mean.append(mht_series.merge_cube())
+
+    def derived_fluxes(self):
+        # Net LW (change sign to the upwelling flux)
         for cube in self.flx_clim:
             if cube.var_name == "rlut":
                 dcube = cube.copy()
@@ -219,26 +225,32 @@ class implied_heat_transport:
                 dcube.var_name = "rlnt"
                 dcube.long_name = "radiative_flux_of_rlnt"
                 self.flx_clim.append(dcube)
-        # Annual MHT of clear-sky net flux
-        for cube in self.mht_annual:
-            if cube.var_name == "rsdt_mht":
-                rsdt_mht_annual = cube.copy()
-            if cube.var_name == "rsutcs_mht":
-                rsutcs_mht_annual = cube.copy()
-            if cube.var_name == "rlutcs_mht":
-                rlutcs_mht_annual = cube.copy()
-        rtntcs_mht_annual = rsdt_mht_annual - rsutcs_mht_annual + \
-            rlutcs_mht_annual
-        rtntcs_mht_annual.var_name = "rtntcs_mht"
-        rtntcs_mht_annual.long_name = "meridional_heat_transport_of_rtntcs"
-        self.mht_annual.append(rtntcs_mht_annual)
-        # Times series of MHT symmetry metric
-        self.mht_symmetry_annual()
-        # Print contents of IHT object
-        self.print()
+            if cube.var_name == "rsdt":
+                rsdt_clim = cube.copy()
+            if cube.var_name == "rsutcs":
+                rsutcs_clim = cube.copy()
+            if cube.var_name == "rlutcs":
+                rlutcs_clim = cube.copy()
+        rtntcs_clim = rsdt_clim - rsutcs_clim - rlutcs_clim
+        rtntcs_clim.var_name = "rtntcs"
+        rtntcs_clim.long_name = "radiative_flux_of_rtntcs"
+        self.flx_clim.append(rtntcs_clim)
+        # Annual rolling means clear-sky net total TOA
+        for cube in self.flx_rolling_mean:
+            if cube.var_name == "rsdt":
+                rsdt_rolling_mean = cube.copy()
+            if cube.var_name == "rsutcs":
+                rsutcs_rolling_mean = cube.copy()
+            if cube.var_name == "rlutcs":
+                rlutcs_rolling_mean = cube.copy()
+        rtntcs_rolling_mean = rsdt_rolling_mean - rsutcs_rolling_mean - \
+            rlutcs_rolling_mean
+        rtntcs_rolling_mean.var_name = "rtntcs"
+        rtntcs_rolling_mean.long_name = "radiative_flux_of_rtntcs"
+        self.flx_rolling_mean.append(rtntcs_rolling_mean)
 
     def print(self):
-        print("=== implied_heat_transport object ===")
+        logger.info("=== implied_heat_transport object ===")
         print(self.mht_clim)
         for x in self.mht_clim:
             print(x.long_name, x.var_name)
@@ -251,8 +263,8 @@ class implied_heat_transport:
         for x in self.flx_clim:
             print(x.long_name, x.var_name)
 
-        print(self.mht_annual)
-        for x in self.mht_annual:
+        print(self.mht_rolling_mean)
+        for x in self.mht_rolling_mean:
             print(x.long_name, x.var_name)
 
         print(self.symmetry_metric)
@@ -261,16 +273,17 @@ class implied_heat_transport:
 
         print(self.flx_files)
 
-    def mht_symmetry_annual(self):
+    def mht_symmetry_metrics(self):
         # As coded, the calculation of the symmetry metrics needs the number of
         # latitude points to be multiple of 6, i.e. it needs 30 deg bands.
-        if (self.grid.shape[0] // 6) != 0:
+        if (self.grid.shape[0] % 6) != 0:
             logger.error(
                 "Grid not compatible with symmetry metric calculation.")
+            sys.exit(1)
         Nlat_2 = self.grid.shape[0] // 2
         grid = np.sum(self.grid, axis=1)[Nlat_2:]
-        self.symmetry_metric = iris.cube.CubeList()
-        for mht_series in self.mht_annual:
+
+        for mht_series in self.mht_rolling_mean:
             time_coord = mht_series.coord('time')
             Ntime = time_coord.shape[0]
             hem = np.zeros(Ntime)
@@ -283,14 +296,14 @@ class implied_heat_transport:
             long_name = "symmetry_hemisphere_of_{}".format(
                 mht_series.long_name)
             var_name = "s_hem_{}".format(mht_series.var_name)
-            cube_h = iris.cube.Cube(hem,
+            cube_h = iris.cube.Cube(hem / 1.0e15,
                                     long_name=long_name,
                                     var_name=var_name,
                                     units="PW",
                                     dim_coords_and_dims=[(time_coord, 0)])
             long_name = "symmetry_tropics_of_{}".format(mht_series.long_name)
             var_name = "s_tro_{}".format(mht_series.var_name)
-            cube_t = iris.cube.Cube(trop,
+            cube_t = iris.cube.Cube(trop / 1.0e15,
                                     long_name=long_name,
                                     var_name=var_name,
                                     units="PW",
@@ -298,7 +311,7 @@ class implied_heat_transport:
             long_name = "symmetry_extratropics_of_{}".format(
                 mht_series.long_name)
             var_name = "s_ext_{}".format(mht_series.var_name)
-            cube_e = iris.cube.Cube(extratrop,
+            cube_e = iris.cube.Cube(extratrop / 1.0e15,
                                     long_name=long_name,
                                     var_name=var_name,
                                     units="PW",
@@ -423,26 +436,22 @@ class implied_heat_transport:
 
         for i in range(nrows):
             efp = self.efp_clim.extract_cube(
-                var_name_constraint(var_name[i][0])).data
+                var_name_constraint(var_name[i][0]))
             flx = self.flx_clim.extract_cube(
-                var_name_constraint(var_name[i][1])).data
-            efp -= np.average(efp)  # Arbitrary choice of origin
-            flx -= np.average(flx)
+                var_name_constraint(var_name[i][1]))
+            efp.data -= np.average(efp.data)  # Arbitrary choice of origin
+            flx.data -= area_average(flx).data
             if change_sign[i][0]:
-                efp = -efp
+                efp.data = -efp.data
             if change_sign[i][1]:
-                flx = -flx
-            v, u = np.gradient(efp, 1e14, 1e14)
+                flx.data = -flx.data
+            v, u = np.gradient(efp.data, 1e14, 1e14)
             u = u[1:-1, 1:-1]
             v = v[1:-1, 1:-1]
-
+            efp.convert_units("PW")
             ax1 = plt.subplot(gs[i * 7:(i * 7) + 7, 0],
-                              projection=ccrs.PlateCarree())
-            cb1 = ax1.contourf(self.lon,
-                               self.lat,
-                               efp / 1e15,
-                               levels=levels1,
-                               transform=ccrs.PlateCarree(central_longitude=0))
+                              projection=ccrs.PlateCarree(central_longitude=0))
+            cb1 = iplt.contourf(efp, levels=levels1)
             plt.gca().coastlines()
             xq = x[starty::stepy, startx::stepx]
             yq = y[starty::stepy, startx::stepx]
@@ -479,13 +488,8 @@ class implied_heat_transport:
             del u, v, uq, vq
 
             ax2 = plt.subplot(gs[i * 7:(i * 7) + 7, 1],
-                              projection=ccrs.PlateCarree())
-            cb2 = ax2.contourf(self.lon,
-                               self.lat,
-                               flx,
-                               levels=levels2,
-                               transform=ccrs.PlateCarree(central_longitude=0),
-                               cmap='RdBu_r')
+                              projection=ccrs.PlateCarree(central_longitude=0))
+            cb2 = iplt.contourf(flx, levels=levels2, cmap='RdBu_r')
             plt.gca().coastlines()
             ax2.set_xticks(np.arange(-180, 190, 60))
             ax2.set_xticklabels(
@@ -504,7 +508,6 @@ class implied_heat_transport:
                      cax=ax1,
                      orientation='horizontal',
                      label='Energy flux potential (PW)')
-
         ax2 = plt.subplot(gs[-1, 1])
         plt.colorbar(cb2,
                      cax=ax2,
@@ -526,33 +529,37 @@ class implied_heat_transport:
                     ["s_tro_rtnt_mht", "s_tro_rtntcs_mht"],
                     ["s_ext_rtnt_mht", "s_ext_rtntcs_mht"]]
         col = ['C0', 'C1']
+        label = [
+            r'Global: 0$^\mathrm{o}$ - 90$^\mathrm{o}$',
+            r'Tropics: 0$^\mathrm{o}$ - 30$^\mathrm{o}$',
+            r'Extratropics: 30$^\mathrm{o}$ - 90$^\mathrm{o}$'
+        ]
+        legend_label = ["TOA net all-sky", "TOA net clear-sky"]
 
         plt.figure(figsize=(6, 12))
-        iplot = 1
-        for var_name in var_list:
-            print("Extracting " + var_name[0])
+        for i, var_name in enumerate(var_list):
             y0 = self.symmetry_metric.extract_cube(
                 var_name_constraint(var_name[0]))
-            print("Extracting " + var_name[1])
             y1 = self.symmetry_metric.extract_cube(
                 var_name_constraint(var_name[1]))
-            ax = plt.subplot(3, 1, iplot)
-            ax.plot(y0.coord('time').points,
-                    y0.data,
-                    lw=4,
-                    linestyle='-',
-                    label=var_name[0])
-            ax.plot(y1.coord('time').points,
-                    y1.data,
-                    lw=4,
-                    linestyle='-',
-                    label=var_name[1])
-            ax.annotate(r'$\sigma$: {0}'.format(np.round(np.std(y0.data), 3)),
-                        (0.05, 0.4 - (0.1 * 0)),
+            ax = plt.subplot(3, 1, i + 1)
+            iplt.plot(y0, lw=4, linestyle='-', label=legend_label[0])
+            iplt.plot(y1, lw=4, linestyle='-', label=legend_label[1])
+            ax.annotate(r'$\sigma$: {:5.3f}'.format(np.std(y0.data)),
+                        (0.05, 0.55),
                         xycoords='axes fraction',
                         color=col[0])
+            ax.annotate(r'$\sigma$: {:5.3f}'.format(np.std(y1.data)),
+                        (0.05, 0.45),
+                        xycoords='axes fraction',
+                        color=col[1])
+            ax.set_ylim(0, 0.8)
             ax.set_ylabel(r'$S$ (PW)')
-            iplot += 1
+            ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=1))
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+            ax.set_title(label[i])
+            if i == 0:
+                plt.legend(loc=5)
         plt.tight_layout()
         return
 
@@ -573,7 +580,6 @@ def efp_maps(iht, model, experiment, cfg):
                ['$P_{TOA}^{LW}$', r'$\Delta F_{TOA}^{LW}$']])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
-    figname = "efp_and_flux_toa_net_{}_{}".format(model, experiment)
     figname = "figure3_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
     # Figure 4
@@ -592,7 +598,6 @@ def efp_maps(iht, model, experiment, cfg):
                ['$P_{TOA}^{LWCRE}$', r'$\Delta CRE_{TOA}^{LW}$']])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
-    figname = "efp_and_flux_toa_cre_{}_{}".format(model, experiment)
     figname = "figure4_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
     # Figure 5
@@ -610,7 +615,6 @@ def efp_maps(iht, model, experiment, cfg):
         change_sign=[[True, True], [True, True]])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
-    figname = "efp_and_flux_toa_rsut_{}_{}".format(model, experiment)
     figname = "figure5_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
 
@@ -620,7 +624,6 @@ def mht_plots(iht, model, experiment, cfg):
     iht.mht_plot(["rtnt_mht", "rsnt_mht", "rlnt_mht"], ['Net', 'SW', 'LW'])
     provenance_record = get_provenance_record(plot_type='zonal',
                                               ancestor_files=iht.flx_files)
-    figname = "mht_toa_net_{}_{}".format(model, experiment)
     figname = "figure1_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
     # Figure 3
@@ -628,7 +631,6 @@ def mht_plots(iht, model, experiment, cfg):
                      ['Net CRE', 'SW CRE', 'LW CRE'],
                      ['rsut_mht', 'rsutcs_mht'],
                      ['-1 x OSR (all-sky)', '-1 x OSR (clear-sky)'])
-    figname = "mht_toa_cre_and_osr_{}_{}".format(model, experiment)
     figname = "figure2_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
     return
@@ -660,20 +662,32 @@ def main(cfg):
     """Solve the Poisson equation and estimate the meridional heat
     transport."""
     input_data = deepcopy(list(cfg['input_data'].values()))
+    input_data = group_metadata(input_data, 'dataset', sort='variable_group')
 
-    # Dictionary of iht objects. Each entry of the dictionary
-    # contains the iht object of a single model/dataset.
+    # Arrange input flux files in a 2-level dictionary [model_name][dataset]
+    flx_files = {}
+    for model_name, datasets in input_data.items():
+        flx_files[model_name] = {}
+        for dataset in datasets:
+            if dataset['dataset'] in flx_files[model_name]:
+                flx_files[model_name][dataset['dataset']].append(
+                    dataset['filename'])
+            else:
+                flx_files[model_name][dataset['dataset']] = [
+                    dataset['filename']
+                ]
+
+    # Create dictionary of iht objects. It's a 2-level dictionary
+    # like flx_files. This is where all the calculations are done.
     iht = {}
+    for model_name, datasets in flx_files.items():
+        logger.info("Model %s", model_name)
+        iht[model_name] = {}
+        for dataset_name, files in datasets.items():
+            logger.info("Dataset %s", dataset_name)
+            iht[model_name][dataset_name] = implied_heat_transport(files)
 
-    # Group data by dataset
-    logger.info("Group input data by model, sort by experiment")
-    model_dataset = group_metadata(input_data, 'dataset', sort='exp')
-
-    # Solve Poisson equation for each dataset
-    for model_name in model_dataset:
-        logger.info("Processing model data: %s", model_name)
-        iht[model_name] = compute_efp_and_mht(model_dataset[model_name])
-
+    print(iht)
     # Produce plots
     plot_single_model_diagnostics(iht, cfg)
 

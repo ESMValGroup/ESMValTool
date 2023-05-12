@@ -32,7 +32,7 @@ documentation:
 datasets:
   # The CERES-EBAF observations reproduce the results of Pearce and Bodas-Salcedo (2023),
   # but it can be applied to model data.
-  - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2001, end_year: 2005}
+  - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2001, end_year: 2004}
   # - {dataset: BCC-ESM1, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
   # - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f3, grid: gn, mip: Amon}
   # - {dataset: UKESM1-0-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f4, grid: gn, mip: Amon}
@@ -41,6 +41,11 @@ datasets:
   # - {dataset: MIROC6, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
 
 preprocessors:
+
+  common_grid:
+    regrid:
+      target_grid: 5.0x5.0
+      scheme: area_weighted
 
   climate_mean_global:
     regrid:
@@ -83,11 +88,11 @@ diagnostics:
         preprocessor: climate_mean_global
         start_year: 2001
         end_year: 2005
-      rtnt_filter:
+      rtnt_monthly:
         derive: true
         short_name: rtnt
         mip: Amon
-        preprocessor: annual_filter
+        preprocessor: common_grid
         start_year: 2001
         end_year: 2005
       rsnt:
@@ -109,10 +114,10 @@ diagnostics:
         preprocessor: climate_mean_global
         start_year: 2001
         end_year: 2005
-      rlutcs_filter:
+      rlutcs_monthly:
         short_name: rlutcs
         mip: Amon
-        preprocessor: annual_filter
+        preprocessor: common_grid
         start_year: 2001
         end_year: 2005
       rsutcs:
@@ -121,10 +126,10 @@ diagnostics:
         preprocessor: climate_mean_global
         start_year: 2001
         end_year: 2005
-      rsutcs_filter:
+      rsutcs_monthly:
         short_name: rsutcs
         mip: Amon
-        preprocessor: annual_filter
+        preprocessor: common_grid
         start_year: 2001
         end_year: 2005
       rsut:
@@ -139,10 +144,10 @@ diagnostics:
         preprocessor: climate_mean_global
         start_year: 2001
         end_year: 2005
-      rsdt_filter:
+      rsdt_monthly:
         short_name: rsdt
         mip: Amon
-        preprocessor: annual_filter
+        preprocessor: common_grid
         start_year: 2001
         end_year: 2005
       netcre:
