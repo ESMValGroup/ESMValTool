@@ -46,6 +46,7 @@ function select_region1(region:string)
 ;    name as an attribute.
 ;
 ; Modification history
+;
 ;    20141205 -A_gott_kl: adjusted names to Righi et al. (2015).
 ;    20140410 -A_fran_fr: extended to midlat, equatorial and polar regions.
 ;    20140129 -A_fran_fr: written.

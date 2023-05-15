@@ -49,7 +49,7 @@ function portrait_plot(wks_in[1],
 ;    20211014-bock_lisa: added sorting by project
 ;    20151027-righi_mattia: added option for displaying rankings.
 ;    20140605-righi_mattia: modified with flexible plot shapes.
-;    20140204-frank_franziska: extended.
+;    20140204-winterstein_franziska: extended.
 ;    20140114-righi_mattia: written.
 ;
 local funcname, scriptname, wks, wks_in, data, source, res, atts, \
