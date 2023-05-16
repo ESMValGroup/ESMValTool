@@ -63,6 +63,17 @@ and monthly data of:
         V component of wind
         Vertical velocity
         Specific humidity
+        net top solar radiation
+        net top solar radiation clear-sky
+        top net thermal radiation
+        top net thermal radiation clear-sky
+        fraction of cloud cover (3-dim)
+        vertical integral of condensed cloud water (ice and liquid)
+        vertical integral of cloud liquid water
+        vertical integral of cloud frozen water
+        total column water vapour
+        specific cloud liquid water content
+        specific cloud ice water content
 
 Caveats
     Make sure to select the right steps for accumulated fluxes, see:
@@ -114,9 +125,21 @@ def _fix_units(cube, definition):
         cube.units = cube.units * 'day-1'
         # Radiation fluxes are positive in downward direction
         cube.attributes['positive'] = 'down'
+    if cube.var_name in {'rlut', 'rlutcs'}:
+        # Add missing 'per day'
+        cube.units = cube.units * 'day-1'
+        # Radiation fluxes are positive in upward direction
+        cube.attributes['positive'] = 'up'
+        cube.data = cube.core_data() * -1.
+    if cube.var_name in {'rsut', 'rsutcs'}:
+        # Add missing 'per day'
+        cube.units = cube.units * 'day-1'
+        # Radiation fluxes are positive in upward direction
+        cube.attributes['positive'] = 'up'
     if cube.var_name in {'tauu', 'tauv'}:
         cube.attributes['positive'] = 'down'
-    if cube.var_name in {'sftlf', 'clt'}:
+    if cube.var_name in {'sftlf', 'clt', 'cl', 'clt-low', 'clt-med',
+                         'clt-high'}:
         # Change units from fraction to percentage
         cube.units = definition.units
         cube.data = cube.core_data() * 100.
@@ -126,6 +149,8 @@ def _fix_units(cube, definition):
         # https://apps.ecmwf.int/codes/grib/param-db?id=129
         cube.units = cube.units / 'm s-2'
         cube.data = cube.core_data() / 9.80665
+    if cube.var_name in {'cli', 'clw'}:
+        cube.units = 'kg kg-1'
 
 
 def _fix_coordinates(cube, definition):
@@ -143,8 +168,16 @@ def _fix_coordinates(cube, definition):
         utils.add_scalar_height_coord(cube, 2.)
     if 'height10m' in definition.dimensions:
         utils.add_scalar_height_coord(cube, 10.)
+
     for coord_def in definition.coordinates.values():
         axis = coord_def.axis
+
+        # ERA-Interim cloud parameters are downloaded on pressure levels
+        # (CMOR standard = generic (hybrid) levels, alevel)
+        if axis == "" and coord_def.name == "alevel":
+            axis = "Z"
+            coord_def = CMOR_TABLES['CMIP6'].coords['plev19']
+
         coord = cube.coord(axis=axis)
         if axis == 'T':
             coord.convert_units('days since 1850-1-1 00:00:00.0')
@@ -268,8 +301,20 @@ def _load_cube(in_files, var):
     """Load in_files into an iris cube."""
     ignore_warnings = (
         {
+            'raw': 'cc',
+            'units': '(0 - 1)',
+        },
+        {
             'raw': 'tcc',
             'units': '(0 - 1)',
+        },
+        {
+            'raw': 'tciw',
+            'units': 'kg m**-2',
+        },
+        {
+            'raw': 'tclw',
+            'units': 'kg m**-2',
         },
         {
             'raw': 'lsm',
@@ -314,6 +359,26 @@ def _load_cube(in_files, var):
                     cube = in_cube
                 else:
                     cube += in_cube
+        elif var.get('operator', '') == 'diff':
+            # two variables case using diff operation
+            cube = None
+            elements_var = len(var['raw'])
+            elements_files = len(in_files)
+            if (elements_var != 2) or (elements_files != 2):
+                shortname = var.get('short_name')
+                errmsg = (f'operator diff selected for variable {shortname} '
+                          f'expects exactly two input variables and two input '
+                          f'files')
+                raise ValueError(errmsg)
+            cube = iris.load_cube(
+                in_files[0],
+                constraint=NameConstraint(var_name=var['raw'][0]),
+            )
+            cube2 = iris.load_cube(
+                in_files[1],
+                constraint=NameConstraint(var_name=var['raw'][1]),
+            )
+            cube -= cube2
         else:
             raise ValueError(
                 "Multiple input files found, with operator '{}' configured: {}"

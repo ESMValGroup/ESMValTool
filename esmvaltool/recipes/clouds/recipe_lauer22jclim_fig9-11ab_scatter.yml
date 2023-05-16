@@ -1,0 +1,625 @@
+# ESMValTool
+# recipe_lauer22jclim_fig9-11ab_scatter.yml
+---
+documentation:
+  title: Cloud diagnostics v2 (scatter)
+
+  description: |
+    Cloud properties sorted by total cloud cover.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - lauer22jclim
+
+  projects:
+    - cmug
+
+
+preprocessors:
+  ppITCZPacific:
+    extract_region:
+      start_longitude: 135
+      end_longitude: 275
+      start_latitude: 0
+      end_latitude: 12
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    mask_landsea:
+      mask_out: land
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+  ppSEPacific:
+    extract_region:
+      start_longitude: 265
+      end_longitude: 275
+      start_latitude: -25
+      end_latitude: -5
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+  ppSouthernOcean:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -65
+      end_latitude: -30
+    extract_season:
+      season: DJF
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+
+CMIP5: &cmip5_models
+  - {dataset: ACCESS1-0, ensemble: r1i1p1}
+  - {dataset: ACCESS1-3, ensemble: r1i1p1}
+  - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+  - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+  - {dataset: BNU-ESM, ensemble: r1i1p1}
+  - {dataset: CanESM2, ensemble: r1i1p1}
+  - {dataset: CCSM4, ensemble: r1i1p1}
+  - {dataset: CESM1-BGC, ensemble: r1i1p1}
+  - {dataset: CESM1-CAM5, ensemble: r1i1p1}
+  - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
+  - {dataset: CESM1-WACCM, ensemble: r1i1p1}
+  - {dataset: CMCC-CESM, ensemble: r1i1p1}
+  - {dataset: CMCC-CM, ensemble: r1i1p1}
+  # missing data - {dataset: CMCC-CMS, ensemble: r1i1p1}
+  - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+  - {dataset: FGOALS-g2, ensemble: r1i1p1}
+  - {dataset: FIO-ESM, ensemble: r1i1p1}
+  - {dataset: GFDL-CM3, ensemble: r1i1p1}
+  - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+  - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+  - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
+  - {dataset: GISS-E2-H, ensemble: r1i1p1}
+  - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
+  - {dataset: GISS-E2-R, ensemble: r1i1p1}
+  # error_extract_season - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+  # error_extract_season - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+  - {dataset: inmcm4, ensemble: r1i1p1}
+  - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+  - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+  - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+  - {dataset: MIROC4h, ensemble: r1i1p1}
+  - {dataset: MIROC5, ensemble: r1i1p1}
+  - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+  - {dataset: MIROC-ESM, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+  - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+  - {dataset: MRI-ESM1, ensemble: r1i1p1}
+  - {dataset: NorESM1-ME, ensemble: r1i1p1}
+  - {dataset: NorESM1-M, ensemble: r1i1p1}
+
+CMIP6: &cmip6_models
+  - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+  # time_coord_problem_rlut - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+  # no_prw - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr}
+  - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+  - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr}
+  - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
+  - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+
+
+diagnostics:
+
+  scatter_southernocean_cmip5:
+    description: scatter plot cloud fraction vs shortwave cloud forcing
+    themes:
+      - phys
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: ppSouthernOcean
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      clivi:
+        preprocessor: ppSouthernOcean
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      lwp:
+        preprocessor: ppSouthernOcean
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1986
+        end_year: 2005
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      swcre:
+        preprocessor: ppSouthernOcean
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1986
+        end_year: 2005
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+    additional_datasets: *cmip5_models
+    scripts:
+      scatter_swcre:
+        script: clouds/clouds_scatter.ncl
+        var_x: clt
+        var_y: swcre
+        xmin: 0
+        xmax: 100
+        ymin_mm: -150.0
+        ymax_mm: 0.0
+        filename_add: so_cmip5
+      scatter_totalcwp:
+        script: clouds/clouds_scatter.ncl
+        var_x: clt
+        var_y: totalcwp
+        xmin: 0
+        xmax: 100
+        ymin_mm: 0.0
+        ymax_mm: 0.2
+        filename_add: so_cmip5
+
+  scatter_southernocean_cmip6:
+    description: scatter plot cloud fraction vs shortwave cloud forcing
+    themes:
+      - phys
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: ppSouthernOcean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1995
+        end_year: 2014
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      clivi:
+        preprocessor: ppSouthernOcean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1995
+        end_year: 2014
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      lwp:
+        preprocessor: ppSouthernOcean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1995
+        end_year: 2014
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      swcre:
+        preprocessor: ppSouthernOcean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1995
+        end_year: 2014
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+    additional_datasets: *cmip6_models
+    scripts:
+      scatter_swcre:
+        script: clouds/clouds_scatter.ncl
+        var_x: clt
+        var_y: swcre
+        xmin: 0
+        xmax: 100
+        ymin_mm: -150.0
+        ymax_mm: 0.0
+        filename_add: so_cmip6
+      scatter_totalcwp:
+        script: clouds/clouds_scatter.ncl
+        var_x: clt
+        var_y: totalcwp
+        xmin: 0
+        xmax: 100
+        ymin_mm: 0.0
+        ymax_mm: 0.2
+        filename_add: so_cmip6
+
+  scatter_sepacific_cmip5:
+    description: scatter plot cloud fraction vs shortwave cloud forcing
+    themes:
+      - phys
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: ppSEPacific
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      clivi:
+        preprocessor: ppSEPacific
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      lwp:
+        preprocessor: ppSEPacific
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      swcre:
+        preprocessor: ppSEPacific
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+    additional_datasets: *cmip5_models
+    scripts:
+      scatter_swcre:
+        script: clouds/clouds_scatter.ncl
+        var_x: clt
+        var_y: swcre
+        xmin: 0
+        xmax: 100
+        ymin_mm: -150.0
+        ymax_mm: 0.0
+        filename_add: sep_cmip5
+      scatter_totalcwp:
+        script: clouds/clouds_scatter.ncl
+        var_x: clt
+        var_y: totalcwp
+        xmin: 0
+        xmax: 100
+        ymin_mm: 0.0
+        ymax_mm: 0.2
+        filename_add: sep_cmip5
+
+  scatter_sepacific_cmip6:
+    description: scatter plot cloud fraction vs shortwave cloud forcing
+    themes:
+      - phys
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: ppSEPacific
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1996
+        end_year: 2014
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      clivi:
+        preprocessor: ppSEPacific
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1996
+        end_year: 2014
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      lwp:
+        preprocessor: ppSEPacific
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1996
+        end_year: 2014
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      swcre:
+        preprocessor: ppSEPacific
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1996
+        end_year: 2014
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+    additional_datasets: *cmip6_models
+    scripts:
+      scatter_swcre:
+        script: clouds/clouds_scatter.ncl
+        var_x: clt
+        var_y: swcre
+        xmin: 0
+        xmax: 100
+        ymin_mm: -150.0
+        ymax_mm: 0.0
+        filename_add: sep_cmip6
+      scatter_totalcwp:
+        script: clouds/clouds_scatter.ncl
+        var_x: clt
+        var_y: totalcwp
+        xmin: 0
+        xmax: 100
+        ymin_mm: 0.0
+        ymax_mm: 0.2
+        filename_add: sep_cmip6
+
+  scatter_itcz_cmip5:
+    description: scatter plot cloud fraction vs shortwave cloud forcing
+    themes:
+      - phys
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: ppITCZPacific
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      clivi:
+        preprocessor: ppITCZPacific
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      lwp:
+        preprocessor: ppITCZPacific
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      swcre:
+        preprocessor: ppITCZPacific
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+    additional_datasets: *cmip5_models
+    scripts:
+      scatter_swcre:
+        script: clouds/clouds_scatter.ncl
+        var_x: clt
+        var_y: swcre
+        xmin: 0
+        xmax: 100
+        ymin_mm: -150.0
+        ymax_mm: 0.0
+        filename_add: itcz_cmip5
+      scatter_totalcwp:
+        script: clouds/clouds_scatter.ncl
+        var_x: clt
+        var_y: totalcwp
+        xmin: 0
+        xmax: 100
+        ymin_mm: 0.0
+        ymax_mm: 0.3
+        filename_add: itcz_cmip5
+
+  scatter_itcz_cmip6:
+    description: scatter plot cloud fraction vs shortwave cloud forcing
+    themes:
+      - phys
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: ppITCZPacific
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1996
+        end_year: 2014
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      clivi:
+        preprocessor: ppITCZPacific
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1996
+        end_year: 2014
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      lwp:
+        preprocessor: ppITCZPacific
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1996
+        end_year: 2014
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+      swcre:
+        preprocessor: ppITCZPacific
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 1996
+        end_year: 2014
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+    additional_datasets: *cmip6_models
+    scripts:
+      scatter_swcre:
+        script: clouds/clouds_scatter.ncl
+        var_x: clt
+        var_y: swcre
+        xmin: 0
+        xmax: 100
+        ymin_mm: -150.0
+        ymax_mm: 0.0
+        filename_add: itcz_cmip6
+      scatter_totalcwp:
+        script: clouds/clouds_scatter.ncl
+        var_x: clt
+        var_y: totalcwp
+        xmin: 0
+        xmax: 100
+        ymin_mm: 0.0
+        ymax_mm: 0.3
+        filename_add: itcz_cmip6

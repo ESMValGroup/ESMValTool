@@ -197,7 +197,11 @@ authors:
   frank_franziska:
     name: Frank, Franziska
     institute: DLR, Germany
-    orcid:
+    orcid: https://orcid.org/0000-0002-2406-4936
+  winterstein_franziska:
+    name: Winterstein, Franziska
+    institute: DLR, Germany
+    orcid: https://orcid.org/0000-0002-2406-4936
   fuckar_neven:
     name: Fuckar, Neven
     institute: BSC, Spain
@@ -843,4 +847,5 @@ statistics:
   smpi: single metric performance index statistics
   mder: multiple diagnostic ensemble regression
   mvi: model variability index
+  pdf: probability density function (PDF)
   other: other statistics

@@ -5,7 +5,6 @@ import logging
 import os
 import re
 import shutil
-import warnings
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -15,9 +14,8 @@ import yaml
 from cf_units import Unit
 from dask import array as da
 from esmvalcore.cmor.table import CMOR_TABLES
-from iris import NameConstraint
+from iris.cube import Cube
 
-from esmvaltool import ESMValToolDeprecationWarning
 from esmvaltool import __file__ as esmvaltool_file
 from esmvaltool import __version__ as version
 
@@ -26,53 +24,65 @@ logger = logging.getLogger(__name__)
 REFERENCES_PATH = Path(esmvaltool_file).absolute().parent / 'references'
 
 
-def add_height2m(cube):
-    """Add scalar coordinate 'height' with value of 2m.
+def add_height2m(cube: Cube) -> None:
+    """Add scalar coordinate 'height' with value of 2m to cube in-place.
 
     Parameters
     ----------
     cube: iris.cube.Cube
-        data cube to get the 2m height coordinate.
+        Cube which will get the 2m-height coordinate in-place.
 
-    Returns
-    -------
-    iris.cube.Cube
-        Returns the cube with new 2m height coordinate.
     """
     add_scalar_height_coord(cube, height=2.)
 
 
-def add_height10m(cube):
-    """Add scalar coordinate 'height' with value of 10m.
+def add_height10m(cube: Cube) -> None:
+    """Add scalar coordinate 'height' with value of 10m to cube in-place.
 
     Parameters
     ----------
     cube: iris.cube.Cube
-        data cube to get the 10m height coordinate.
+        Cube which will get the 10m-height coordinate in-place.
 
-    Returns
-    -------
-    iris.cube.Cube
-        Returns the cube with new 10m height coordinate.
     """
     add_scalar_height_coord(cube, height=10.)
 
 
-def add_scalar_height_coord(cube, height=2.):
-    """Add scalar coordinate 'height' with value of `height`m.
+def add_scalar_depth_coord(cube: Cube, depth: float = 0.0) -> None:
+    """Add scalar coordinate 'depth' to cube in-place.
 
     Parameters
     ----------
     cube: iris.cube.Cube
-        data cube to have the height coordinate added to.
+        Cube which will get the depth coordinate in-place.
+    depth: float, optional (default: 0.0)
+        Value for the depth in meters.
 
-    height: float
-        value for height in meters
+    """
+    logger.debug("Adding depth coordinate (%sm)", depth)
+    depth_coord = iris.coords.AuxCoord(depth,
+                                       var_name='depth',
+                                       standard_name='depth',
+                                       long_name='depth',
+                                       units=Unit('m'),
+                                       attributes={'positive': 'down'})
+    try:
+        cube.coord('depth')
+    except iris.exceptions.CoordinateNotFoundError:
+        cube.add_aux_coord(depth_coord, ())
+    return cube
 
-    Returns
-    -------
-    iris.cube.Cube
-        Returns the iris cube with new height (value: height) coordinate.
+
+def add_scalar_height_coord(cube: Cube, height: float = 2.0) -> None:
+    """Add scalar coordinate 'height' to cube in-place.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Cube which will get the height coordinate in-place.
+    height: float, optional (default: 2.0)
+        Value for the height in meters.
+
     """
     logger.debug("Adding height coordinate (%sm)", height)
     height_coord = iris.coords.AuxCoord(height,
@@ -129,9 +139,9 @@ def convert_timeunits(cube, start_year):
         Returns the original iris cube with time coordinate reformatted.
     """
     if cube.coord('time').units == 'months since 0000-01-01 00:00:00':
-        real_unit = 'months since {}-01-01 00:00:00'.format(str(start_year))
+        real_unit = f'months since {str(start_year)}-01-01 00:00:00'
     elif cube.coord('time').units == 'days since 0000-01-01 00:00:00':
-        real_unit = 'days since {}-01-01 00:00:00'.format(str(start_year))
+        real_unit = f'days since {str(start_year)}-01-01 00:00:00'
     elif cube.coord('time').units == 'days since 1950-1-1':
         real_unit = 'days since 1950-1-1 00:00:00'
     else:
@@ -277,7 +287,7 @@ def read_cmor_config(dataset):
     """Read the associated dataset-specific config file."""
     reg_path = os.path.join(os.path.dirname(__file__), 'cmor_config',
                             dataset + '.yml')
-    with open(reg_path, 'r') as file:
+    with open(reg_path, 'r', encoding='utf-8') as file:
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
         CMOR_TABLES[cfg['attributes']['project_id']]
@@ -320,10 +330,12 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
             year = str(time.cell(0).point.year)
             time_suffix = '-'.join([year + '01', year + '12'])
         else:
-            date1 = str(time.cell(0).point.year) + '%02d' % \
-                time.cell(0).point.month
-            date2 = str(time.cell(-1).point.year) + '%02d' % \
-                time.cell(-1).point.month
+            date1 = (
+                f"{time.cell(0).point.year:d}{time.cell(0).point.month:02d}"
+            )
+            date2 = (
+                f"{time.cell(-1).point.year:d}{time.cell(-1).point.month:02d}"
+            )
             time_suffix = '-'.join([date1, date2])
 
     name_elements = [
@@ -413,38 +425,6 @@ def set_global_atts(cube, attrs):
     # Additional attributes
     glob_dict.update(attrs)
     cube.attributes = glob_dict
-
-
-def var_name_constraint(var_name):
-    """:class:`iris.Constraint` using ``var_name``.
-
-    Warning
-    -------
-    .. deprecated:: 2.6.0
-        This function has been deprecated in ESMValTool version 2.6.0 and is
-        scheduled for removal in version 2.8.0. Please use the function
-        :class:`iris.NameConstraint` with the argument ``var_name`` instead:
-        this is an exact replacement.
-
-    Parameters
-    ----------
-    var_name: str
-        ``var_name`` used for the constraint.
-
-    Returns
-    -------
-    iris.Constraint
-        Constraint.
-
-    """
-    deprecation_msg = (
-        "The function ``var_name_constraint`` has been deprecated in "
-        "ESMValTool version 2.6.0 and is scheduled for removal in version "
-        "2.8.0. Please use the function ``iris.NameConstraint`` with the "
-        "argument ``var_name`` instead: this is an exact replacement."
-    )
-    warnings.warn(deprecation_msg, ESMValToolDeprecationWarning)
-    return NameConstraint(var_name=var_name)
 
 
 def fix_bounds(cube, dim_coord):
@@ -538,7 +518,7 @@ def roll_cube_data(cube, shift, axis):
 def set_units(cube, units):
     """Set units in compliance with cf_unit."""
     special = {'psu': 1, 'Sv': '1e6 m3 s-1'}
-    if units in list(special.keys()):
+    if units in special:
         cube.units = special[units]
     else:
         cube.units = Unit(units)
