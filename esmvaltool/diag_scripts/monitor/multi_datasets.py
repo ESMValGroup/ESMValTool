@@ -24,12 +24,13 @@ Currently supported plot types (use the option ``plots`` to specify them):
       grid (you can use the preprocessor :func:`esmvalcore.preprocessor.regrid`
       for this). Input data needs to be 2D with dimensions `latitude`,
       `longitude`.
-    - Zonal mean profiles (plot type ``zonal_mean_profile``): for each variable
-      and dataset, an individual profile is plotted. If a reference dataset is
-      defined, also include this dataset and a bias plot into the figure. Note
-      that if a reference dataset is defined, all input datasets need to be
-      given on the same horizontal and vertical grid (you can use the
-      preprocessors :func:`esmvalcore.preprocessor.regrid` and
+    - Zonal mean profiles (plot type ``zonal_mean_profile``
+      or ``profile`` (deprecated))):
+      for each variable and dataset, an individual profile is plotted. If a
+      reference dataset is defined, also include this dataset and a bias plot
+      into the figure. Note that if a reference dataset is defined, all input
+      datasets need to be given on the same horizontal and vertical grid (you
+      can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
       :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
       needs to be 2D with dimensions `latitude`, `height`/`air_pressure`.
     - 1D profiles (plot type ``1d_profile``): for each variable separately, all
@@ -54,7 +55,8 @@ figure_kwargs: dict, optional
     default, uses ``constrained_layout: true``.
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
-    must be ``timeseries``, ``annual_cycle``, ``map``, or ``profile``.
+    must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``
+    or ``profile`` (deprecated).
     Dictionary values are dictionaries used as options for the corresponding
     plot. The allowed options for the different plot types are given below.
 plot_filename: str, optional
@@ -218,6 +220,7 @@ x_pos_stats_bias: float, optional (default: 0.92)
     relevant if ``show_stats: true``.
 
 Configuration options for plot type ``zonal_mean_profile``
+or ``profile`` (deprecated)
 -----------------------------------------------
 cbar_label: str, optional (default: '{short_name} [{units}]')
     Colorbar label. Can include facets in curly brackets which will be derived
@@ -408,6 +411,7 @@ class MultiDatasets(MonitorBase):
             'annual_cycle',
             'map',
             'zonal_mean_profile',
+            'profile',
             '1d_profile'
         ]
         for (plot_type, plot_options) in self.plots.items():
@@ -419,7 +423,7 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type] = {}
 
             # Defaults for map and zonal_mean_profile plots
-            if plot_type in ('map', 'zonal_mean_profile'):
+            if plot_type in ('map', 'zonal_mean_profile', 'profile'):
                 self.plots[plot_type].setdefault('fontsize', 10)
                 self.plots[plot_type].setdefault(
                     'cbar_label', '{short_name} [{units}]')
@@ -436,12 +440,12 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('x_pos_stats_bias', 0.92)
 
             # Defaults for zonal_mean_profile plots
-            if plot_type in ['zonal_mean_profile', '1d_profile']:
+            if plot_type in ['zonal_mean_profile', 'profile', '1d_profile']:
                 self.plots[plot_type].setdefault('log_y', True)
                 self.plots[plot_type].setdefault('show_y_minor_ticklabels',
                                                  False)
 
-            if plot_type == 'zonal_mean_profile':
+            if plot_type in ['zonal_mean_profile', 'profile']:
                 self.plots[plot_type].setdefault('x_pos_stats_avg', 0.01)
                 self.plots[plot_type].setdefault('x_pos_stats_bias', 0.7)
 
@@ -505,7 +509,7 @@ class MultiDatasets(MonitorBase):
         if plot_type == 'map':
             x_pos_bias = self.plots[plot_type]['x_pos_stats_bias']
             x_pos = self.plots[plot_type]['x_pos_stats_avg']
-        elif plot_type == 'zonal_mean_profile':
+        elif plot_type in ['zonal_mean_profile', 'profile']:
             x_pos_bias = self.plots[plot_type]['x_pos_stats_bias']
             x_pos = self.plots[plot_type]['x_pos_stats_avg']
         else:
@@ -602,7 +606,7 @@ class MultiDatasets(MonitorBase):
         cbar_kwargs = {}
         if plot_type == 'map':
             cbar_kwargs.update({'orientation': 'horizontal', 'aspect': 30})
-        elif plot_type == 'zonal_mean_profile':
+        elif plot_type in ['zonal_mean_profile', 'profile']:
             cbar_kwargs.update({'orientation': 'vertical'})
         cbar_kwargs.update(
             self.plots[plot_type].get('cbar_kwargs', {}))
@@ -1340,8 +1344,14 @@ class MultiDatasets(MonitorBase):
     def create_zonal_mean_profile_plot(self, datasets, short_name):
         """Create zonal mean profile plot."""
         plot_type = 'zonal_mean_profile'
-        if plot_type not in self.plots:
+        if plot_type not in self.plots and 'profile' not in self.plots:
             return
+
+        if 'profile' in self.plots:
+            logger.warning("Plot type 'profile' is deprecated and will be"
+                           " removed in version 2.10. It was renamed to"
+                           " 'zonal_mean_profile'")
+            self.plots['zonal_mean_profile'] = self.plots['profile']
 
         if not datasets:
             raise ValueError(f"No input data to plot '{plot_type}' given")
