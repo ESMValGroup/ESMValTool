@@ -28,7 +28,6 @@ logger = logging.getLogger(Path(__file__).stem)
 
 rcParams.update({
     'font.size': 14,
-    'text.latex.preamble': [r"\usepackage{amsmath}"],
     'xtick.major.pad': 10,
     'ytick.major.pad': 10,
     'xtick.major.size': 10,
@@ -42,7 +41,7 @@ rcParams.update({
 
 
 def get_provenance_record(plot_type, ancestor_files):
-    # Create a provenance record describing the diagnostic data and plot.
+    """Create a provenance record describing the diagnostic data and plot."""
 
     record = {
         'statistics': ['mean'],
@@ -88,10 +87,12 @@ def area_average(cube, latitude='latitude', longitude='longitude', mdtol=1):
 
 
 def var_name_constraint(var_name):
+    """Shortcut to create constraint for variable name."""
     return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
 
 
 def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
+    """Top-level function that calls the Poisson solver for source cube."""
 
     if flux_cube.coord(latitude).bounds is None:
         flux_cube.coord(latitude).guess_bounds()
@@ -138,7 +139,6 @@ def symmetry_metric(data, grid):
 
     :param data: zonal mean of the input variable
     :param grid: grid weights
-    :return:
     """
     # S = 0 is perfectly symmetrical.
     # As coded, the calculation of the symmetry metrics needs the number of
@@ -202,6 +202,8 @@ class implied_heat_transport:
         return
 
     def compute_efp_and_mht(self):
+        """Calculation of Energy Flux Potential and Meridional heat transport
+        for all the data fields."""
         # Loop over climatologies
         for flx in self.flx_clim:
             efp, mht = call_poisson(flx)
@@ -217,6 +219,11 @@ class implied_heat_transport:
             self.mht_rolling_mean.append(mht_series.merge_cube())
 
     def derived_fluxes(self):
+        """Calculation of the derived fluxes:
+
+        rtntcs_clim: climatology of clear-sky net TOA
+        rtntcs_rolling_mean: 12-month rolling mean of rtntcs
+        """
         # Net LW (change sign to the upwelling flux)
         for cube in self.flx_clim:
             if cube.var_name == "rlut":
@@ -250,6 +257,7 @@ class implied_heat_transport:
         self.flx_rolling_mean.append(rtntcs_rolling_mean)
 
     def print(self):
+        """Print variable names of all cubes in the IHT object."""
         logger.info("=== implied_heat_transport object ===")
         print(self.mht_clim)
         for x in self.mht_clim:
@@ -274,6 +282,8 @@ class implied_heat_transport:
         print(self.flx_files)
 
     def mht_symmetry_metrics(self):
+        """Calculate the symmetry metrics for all time series of 12-month
+        rolling means of MHT."""
         # As coded, the calculation of the symmetry metrics needs the number of
         # latitude points to be multiple of 6, i.e. it needs 30 deg bands.
         if (self.grid.shape[0] % 6) != 0:
@@ -349,6 +359,7 @@ class implied_heat_transport:
                      var_names_r,
                      legend_r,
                      ylim=(-1.5, 1.5)):
+        """Plots of CRE MHTs (Figure 3)."""
         plt.figure(figsize=(11, 5))
         ax1 = plt.subplot(121)
         for i in range(len(var_names_l)):
@@ -389,7 +400,8 @@ class implied_heat_transport:
         plt.tight_layout()
         return
 
-    def quiver_steps(self, n, step):
+    def quiver_start(self, n, step):
+        """Calculate start point for quiver plot."""
         n2 = (n - 2) // step
         start = (n - 2 - n2 * step) // 2
         return start
@@ -408,7 +420,12 @@ class implied_heat_transport:
                        title=[['', ''], ['', ''], ['', '']],
                        change_sign=[[False, False], [False, False],
                                     [False, False]]):
+        """Plot figures with energy flux potential and gradient in the left
+        hand columns and the corresponding source term in the right-hand
+        column.
 
+        Figures 2, 4, and 5.
+        """
         x, y = np.meshgrid(self.lon, self.lat)
         levels1 = np.linspace(vmin, vmax, nlevs)
         levels2 = np.linspace(wmin, wmax, nwlevs)
@@ -418,8 +435,8 @@ class implied_heat_transport:
         nlat = len(self.lat)
         stepx = nlon // 20
         stepy = nlat // 10
-        startx = self.quiver_steps(nlon, stepx)
-        starty = self.quiver_steps(nlat, stepy)
+        startx = self.quiver_start(nlon, stepx)
+        starty = self.quiver_start(nlat, stepy)
 
         if nrows == 3:
             plt.figure(figsize=(10, 10))
@@ -525,6 +542,8 @@ class implied_heat_transport:
         return
 
     def plot_symmetry_time_series(self):
+        """Plot the all-sky and clear-sky time series of the symmetry metrics
+        (Figure 6)"""
         var_list = [["s_hem_rtnt_mht", "s_hem_rtntcs_mht"],
                     ["s_tro_rtnt_mht", "s_tro_rtntcs_mht"],
                     ["s_ext_rtnt_mht", "s_ext_rtntcs_mht"]]
@@ -565,6 +584,7 @@ class implied_heat_transport:
 
 
 def efp_maps(iht, model, experiment, cfg):
+    """Wrapper function that produces Figures 2, 4, and 5."""
     # Figure 2
     iht.quiver_subplot(
         [['rtnt_efp', 'rtnt'], ['rsnt_efp', 'rsnt'], ['rlnt_efp', 'rlnt']],
@@ -580,7 +600,7 @@ def efp_maps(iht, model, experiment, cfg):
                ['$P_{TOA}^{LW}$', r'$\Delta F_{TOA}^{LW}$']])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
-    figname = "figure3_{}_{}".format(model, experiment)
+    figname = "figure2_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
     # Figure 4
     iht.quiver_subplot(
@@ -620,6 +640,7 @@ def efp_maps(iht, model, experiment, cfg):
 
 
 def mht_plots(iht, model, experiment, cfg):
+    """Wrapper function that produces Figures 1 and 3."""
     # Figure 1
     iht.mht_plot(["rtnt_mht", "rsnt_mht", "rlnt_mht"], ['Net', 'SW', 'LW'])
     provenance_record = get_provenance_record(plot_type='zonal',
@@ -631,12 +652,13 @@ def mht_plots(iht, model, experiment, cfg):
                      ['Net CRE', 'SW CRE', 'LW CRE'],
                      ['rsut_mht', 'rsutcs_mht'],
                      ['-1 x OSR (all-sky)', '-1 x OSR (clear-sky)'])
-    figname = "figure2_{}_{}".format(model, experiment)
+    figname = "figure3_{}_{}".format(model, experiment)
     save_figure(figname, provenance_record, cfg)
     return
 
 
 def symmetry_plots(iht, model, experiment, cfg):
+    """Wrapper function that produces Figure 6."""
     # Figure 6
     iht.plot_symmetry_time_series()
     provenance_record = get_provenance_record(plot_type='times',
@@ -647,6 +669,7 @@ def symmetry_plots(iht, model, experiment, cfg):
 
 
 def plot_single_model_diagnostics(iht_dict, cfg):
+    """Wrapper function that produces all plots."""
     # iht_dict is a two-level dictionary: iht_dict[model][experiment]
     for model, iht_model in iht_dict.items():
         logger.info("Plotting model: %s", model)

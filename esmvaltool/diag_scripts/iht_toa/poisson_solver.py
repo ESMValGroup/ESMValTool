@@ -1,6 +1,6 @@
-"""Poisson solver for the full ocean-atmosphere column. The Poisson equation is
-solved by numerically using the biconjugate gradient stabilized (BiCGSTAB)
-method.
+"""(C) Crown Copyright 2023, the Met Office. Poisson solver for the full ocean-
+atmosphere column. The Poisson equation is solved by numerically using the
+biconjugate gradient stabilized (BiCGSTAB) method.
 
 The solution is achieved when the difference between the input field (radiative
 flux) and the Laplacian of the output field is less than the stated tolerance.
@@ -8,8 +8,8 @@ If the solver fails to converge, the tolerance can be increased.
 
 Convergence is achieved faster by using a preconditioner on the output field.
 
-The heat transport is calculated as the gradient of the scalar
-p-field output of the Poisson solver.
+The heat transport is calculated as the gradient of the energy flux potential,
+the output of the Poisson solver.
 """
 
 import numpy as np
@@ -18,7 +18,7 @@ import numpy as np
 
 
 def set_metrics():
-    # Define variables used in the solver
+    """Define variables used in the solver."""
     hp = np.zeros(M)
     hv = np.zeros(M + 1)
 
@@ -34,6 +34,12 @@ def set_metrics():
 
 
 def set_matrix(hp, hv):
+    """Calculate the A-matrix (Eq.
+
+    8) that defines the five-point stencil. The A_[s,n,w,s] are the
+    values are the contributions from each of the four neighbouring
+    cells, while A_p is the contribution from the given cell.
+    """
     # Storing the full matrix
     A_p = np.zeros([M, N])
     A_e = np.zeros([M, N])
@@ -89,8 +95,11 @@ def set_matrix(hp, hv):
 
 
 def swap_bounds(fld):
-    # Extends the array by one in all directions
-    # As the array is periodic it allows for easier computations at boundaries
+    """Extends the array by one in all directions.
+
+    As the array is periodic it allows for easier computations at
+    boundaries.
+    """
     wrap_pnt = int(N / 2 + 1)
     for i in range(1, N + 1):
         fld[0, i] = fld[1, wrap_pnt]
@@ -106,6 +115,10 @@ def swap_bounds(fld):
 
 
 def calc_Ax(x, A_e, A_w, A_s, A_n, A_p):
+    """Matrix calculation of the Laplacian equation, LHS of Eq.
+
+    (9) in Pearce and Bodas-Salcedo (2023).
+    """
     # Laplacian equation
     Ax = np.zeros([M + 2, N + 2])
 
@@ -121,12 +134,15 @@ def calc_Ax(x, A_e, A_w, A_s, A_n, A_p):
 
 
 def dot_prod(x, y):
-    # Calculate dot product of two matrices
+    """Calculate dot product of two matrices."""
     return (x[1:M + 1, 1:N + 1] * y[1:M + 1, 1:N + 1]).sum()
 
 
 def precon(x, M_e, M_w, M_s, M_n, M_p):
-    # Preconditioner
+    """Preconditioner.
+
+    This is a wrapper to two steps that are optimised using jit.
+    """
     Cx = np.zeros([M + 2, N + 2])
     precon_a(x, M_w, M_s, M_p, Cx)
     Cx = swap_bounds(Cx)
@@ -137,6 +153,7 @@ def precon(x, M_e, M_w, M_s, M_n, M_p):
 
 # @jit
 def precon_a(x, M_w, M_s, M_p, Cx):
+    """First step of preconditioner."""
     for j in range(1, M + 1):
         for i in range(1, N + 1):
             Cx[j, i] = M_p[j, i] * (x[j, i] - M_s[j, i] * Cx[j - 1, i] -
@@ -145,6 +162,7 @@ def precon_a(x, M_w, M_s, M_p, Cx):
 
 # @jit
 def precon_b(M_e, M_n, Cx):
+    """Second step of preconditioner."""
     for j in range(M, 0, -1):
         for i in range(N, 0, -1):
             Cx[j,
@@ -153,7 +171,13 @@ def precon_b(M_e, M_n, Cx):
 
 
 def bicgstab(logger, x, b, A_e, A_w, A_s, A_n, A_p, M_e, M_w, M_s, M_n, M_p):
-    # Bi-conjugate gradient stabilized numerical solver
+    """Bi-conjugate gradient stabilized numerical solver.
+
+    van der Vorst, H. A., 1992: Bi-cgstab: A fast and smoothly
+    converging variant of bi-cg for the solution of nonsymmetric linear
+    systems. SIAM Journal on Scientific and Statistical Computing,
+    https://doi.org/10.1137/0913035.
+    """
     sc_err = dot_prod(b, b)
 
     Ax = calc_Ax(x, A_e, A_w, A_s, A_n, A_p)
@@ -212,7 +236,11 @@ def bicgstab(logger, x, b, A_e, A_w, A_s, A_n, A_p, M_e, M_w, M_s, M_n, M_p):
 
 
 def calc_mht(sol):
-    # MHT = Grad(P)
+    """Calculation of the meridional heat transport using the gradient of the
+    energy flux potential.
+
+    Equation (11) in Pearce and Bodas-Salcedo (2023)
+    """
     y = np.arange(-0.5 * np.pi + 0.5 * dy, 0.5 * np.pi, dy)
 
     grad_phi = np.gradient(sol, dy, axis=0)
@@ -223,6 +251,8 @@ def calc_mht(sol):
 
 
 def spherical_poisson(logger, forcing, tolerance=None):
+    """Wrapper function that solves the Poisson equation for a given source
+    term (forcing)."""
     # Define global variables
     logger.info("spherical_poisson: Setting global variables")
 
