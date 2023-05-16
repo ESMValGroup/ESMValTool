@@ -143,25 +143,25 @@ def symmetry_metric(data, grid):
     # S = 0 is perfectly symmetrical.
     # As coded, the calculation of the symmetry metrics needs the number of
     # latitude points to be multiple of 6, i.e. it needs 30 deg bands.
-    Nlat = data.shape[0]
-    if (Nlat % 6) != 0:
+    nlat = data.shape[0]
+    if (nlat % 6) != 0:
         logger.error("Grid not compatible with symmetry metric calculation.")
         sys.exit(1)
 
-    Nlat_hem = Nlat // 2
-    Nlat_trop = Nlat_hem // 3
-    nh = data[Nlat_hem:]
-    sh = data[:Nlat_hem]
+    nlat_hem = nlat // 2
+    nlat_trop = nlat_hem // 3
+    nh = data[nlat_hem:]
+    sh = data[:nlat_hem]
     sh = sh[::-1]
 
     diff = np.abs((nh + sh) * grid)
     hem = np.sum(diff)
-    trop = np.sum(diff[:Nlat_trop])
-    extratrop = np.sum(diff[Nlat_trop:Nlat_hem])
+    trop = np.sum(diff[:nlat_trop])
+    extratrop = np.sum(diff[nlat_trop:nlat_hem])
     return hem, trop, extratrop
 
 
-class implied_heat_transport:
+class ImpliedHeatTransport:
     def __init__(self, flx_files):
         self.flx_files = flx_files
 
@@ -290,16 +290,16 @@ class implied_heat_transport:
             logger.error(
                 "Grid not compatible with symmetry metric calculation.")
             sys.exit(1)
-        Nlat_2 = self.grid.shape[0] // 2
-        grid = np.sum(self.grid, axis=1)[Nlat_2:]
+        nlat_2 = self.grid.shape[0] // 2
+        grid = np.sum(self.grid, axis=1)[nlat_2:]
 
         for mht_series in self.mht_rolling_mean:
             time_coord = mht_series.coord('time')
-            Ntime = time_coord.shape[0]
-            hem = np.zeros(Ntime)
-            trop = np.zeros(Ntime)
-            extratrop = np.zeros(Ntime)
-            for i in np.arange(Ntime):
+            ntime = time_coord.shape[0]
+            hem = np.zeros(ntime)
+            trop = np.zeros(ntime)
+            extratrop = np.zeros(ntime)
+            for i in np.arange(ntime):
                 hem[i], trop[i], extratrop[i] = symmetry_metric(
                     mht_series.data[i], grid)
             # Create the cubes for each metric
@@ -475,21 +475,21 @@ class implied_heat_transport:
             uq = u[starty::stepy, startx::stepx]
             vq = v[starty::stepy, startx::stepx]
             if i == 0:
-                Q = ax1.quiver(xq,
+                q = ax1.quiver(xq,
                                yq,
                                uq,
                                vq,
                                pivot='mid',
                                color='w',
                                width=0.005)
-                Q._init()
+                q._init()
             else:
                 ax1.quiver(xq,
                            yq,
                            uq,
                            vq,
                            pivot='mid',
-                           scale=Q.scale,
+                           scale=q.scale,
                            color='w')
             ax1.set_xticks(np.arange(-180, 190, 60))
             ax1.set_xticklabels(
@@ -708,7 +708,7 @@ def main(cfg):
         iht[model_name] = {}
         for dataset_name, files in datasets.items():
             logger.info("Dataset %s", dataset_name)
-            iht[model_name][dataset_name] = implied_heat_transport(files)
+            iht[model_name][dataset_name] = ImpliedHeatTransport(files)
 
     print(iht)
     # Produce plots

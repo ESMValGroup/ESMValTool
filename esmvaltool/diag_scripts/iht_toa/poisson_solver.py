@@ -41,57 +41,57 @@ def set_matrix(hp, hv):
     cells, while A_p is the contribution from the given cell.
     """
     # Storing the full matrix
-    A_p = np.zeros([M, N])
-    A_e = np.zeros([M, N])
-    A_w = np.zeros([M, N])
-    A_s = np.zeros([M, N])
-    A_n = np.zeros([M, N])
+    a_p = np.zeros([M, N])
+    a_e = np.zeros([M, N])
+    a_w = np.zeros([M, N])
+    a_s = np.zeros([M, N])
+    a_n = np.zeros([M, N])
 
     # ILU factors
-    M_p = np.zeros([M + 1, N + 1])
-    M_e = np.zeros([M + 1, N + 1])
-    M_w = np.zeros([M + 1, N + 1])
-    M_s = np.zeros([M + 1, N + 1])
-    M_n = np.zeros([M + 1, N + 1])
+    m_p = np.zeros([M + 1, N + 1])
+    m_e = np.zeros([M + 1, N + 1])
+    m_w = np.zeros([M + 1, N + 1])
+    m_s = np.zeros([M + 1, N + 1])
+    m_n = np.zeros([M + 1, N + 1])
 
     # Spherical Laplacian variables
-    A = 1.0 / (dx**2.)
-    B = 1.0 / (dy**2.)
+    a = 1.0 / (dx**2.)
+    b = 1.0 / (dy**2.)
 
     # First calculate the Poisson equations 5-point stencil
     # A_w is the contribution from i-1, A_e is from i+1,
     # A_s is j-1, A_n is j+1, and A_p is the diagonal
     for j in range(0, M):
-        tx = A / hp[j]**2.0
-        ty = B / hp[j]
+        tx = a / hp[j]**2.0
+        ty = b / hp[j]
 
         for i in range(0, N):
-            A_w[j, i] = tx
-            A_e[j, i] = tx
-            A_s[j, i] = ty * hv[j]
-            A_n[j, i] = ty * hv[j + 1]
-            A_p[j, i] = -(A_w[j, i] + A_e[j, i] + A_s[j, i] + A_n[j, i])
+            a_w[j, i] = tx
+            a_e[j, i] = tx
+            a_s[j, i] = ty * hv[j]
+            a_n[j, i] = ty * hv[j + 1]
+            a_p[j, i] = -(a_w[j, i] + a_e[j, i] + a_s[j, i] + a_n[j, i])
 
     # ILU/SIP preconditioner factors: alf = 0.0 is ILU
     alf = 0.9
-    M_p += 1.0
+    m_p += 1.0
 
     for j in range(1, M + 1):
         for i in range(1, N + 1):
-            M_s[j, i] = A_s[j - 1, i - 1] / (1.0 + alf * M_e[j - 1, i])
-            M_w[j, i] = A_w[j - 1, i - 1] / (1.0 + alf * M_n[j, i - 1])
+            m_s[j, i] = a_s[j - 1, i - 1] / (1.0 + alf * m_e[j - 1, i])
+            m_w[j, i] = a_w[j - 1, i - 1] / (1.0 + alf * m_n[j, i - 1])
 
-            M_p[j, i] = A_p[j-1, i-1] - \
-                M_s[j, i]*(M_n[j-1, i] - alf*M_e[j-1, i]) -\
-                M_w[j, i]*(M_e[j, i-1] - alf*M_n[j, i-1])
-            M_p[j, i] = 1.0 / M_p[j, i]
+            m_p[j, i] = a_p[j-1, i-1] - \
+                m_s[j, i]*(m_n[j-1, i] - alf*m_e[j-1, i]) -\
+                m_w[j, i]*(m_e[j, i-1] - alf*m_n[j, i-1])
+            m_p[j, i] = 1.0 / m_p[j, i]
 
-            M_e[j, i] = (A_e[j - 1, i - 1] -
-                         alf * M_s[j, i] * M_e[j - 1, i]) * M_p[j, i]
-            M_n[j, i] = (A_n[j - 1, i - 1] -
-                         alf * M_w[j, i] * M_n[j, i - 1]) * M_p[j, i]
+            m_e[j, i] = (a_e[j - 1, i - 1] -
+                         alf * m_s[j, i] * m_e[j - 1, i]) * m_p[j, i]
+            m_n[j, i] = (a_n[j - 1, i - 1] -
+                         alf * m_w[j, i] * m_n[j, i - 1]) * m_p[j, i]
 
-    return A_e, A_w, A_s, A_n, A_p, M_e, M_w, M_s, M_n, M_p
+    return a_e, a_w, a_s, a_n, a_p, m_e, m_w, m_s, m_n, m_p
 
 
 def swap_bounds(fld):
@@ -114,23 +114,23 @@ def swap_bounds(fld):
     return fld
 
 
-def calc_Ax(x, A_e, A_w, A_s, A_n, A_p):
+def calc_ax(x, a_e, a_w, a_s, a_n, a_p):
     """Matrix calculation of the Laplacian equation, LHS of Eq.
 
     (9) in Pearce and Bodas-Salcedo (2023).
     """
     # Laplacian equation
-    Ax = np.zeros([M + 2, N + 2])
+    ax = np.zeros([M + 2, N + 2])
 
     x = swap_bounds(x)
     # Ax[j, i] = A_s[j-1, i-1]*x[j-1, i] + A_w[j-1, i-1]*x[j, i-1] + \
     #     A_e[j-1, i-1]*x[j, i+1] + A_n[j-1, i-1]*x[j+1, i] + \
     #     A_p[j-1, i-1]*x[j, i]
-    Ax[1:M+1, 1:N+1] = A_s[0:M, 0:N] * x[0:M, 1:N+1] + A_w[0:M, 0:N] * \
-        x[1:M+1, 0:N] + A_e[0:M, 0:N] * x[1:M+1, 2:N+2] + A_n[0:M, 0:N] * \
-        x[2:M+2, 1:N+1] + A_p[0:M, 0:N] * x[1:M+1, 1:N+1]
-    Ax = swap_bounds(Ax)
-    return Ax
+    ax[1:M+1, 1:N+1] = a_s[0:M, 0:N] * x[0:M, 1:N+1] + a_w[0:M, 0:N] * \
+        x[1:M+1, 0:N] + a_e[0:M, 0:N] * x[1:M+1, 2:N+2] + a_n[0:M, 0:N] * \
+        x[2:M+2, 1:N+1] + a_p[0:M, 0:N] * x[1:M+1, 1:N+1]
+    ax = swap_bounds(ax)
+    return ax
 
 
 def dot_prod(x, y):
@@ -138,39 +138,39 @@ def dot_prod(x, y):
     return (x[1:M + 1, 1:N + 1] * y[1:M + 1, 1:N + 1]).sum()
 
 
-def precon(x, M_e, M_w, M_s, M_n, M_p):
+def precon(x, m_e, m_w, m_s, m_n, m_p):
     """Preconditioner.
 
     This is a wrapper to two steps that are optimised using jit.
     """
-    Cx = np.zeros([M + 2, N + 2])
-    precon_a(x, M_w, M_s, M_p, Cx)
-    Cx = swap_bounds(Cx)
-    precon_b(M_e, M_n, Cx)
-    Cx = swap_bounds(Cx)
-    return Cx
+    cx = np.zeros([M + 2, N + 2])
+    precon_a(x, m_w, m_s, m_p, cx)
+    cx = swap_bounds(cx)
+    precon_b(m_e, m_n, cx)
+    cx = swap_bounds(cx)
+    return cx
 
 
 # @jit
-def precon_a(x, M_w, M_s, M_p, Cx):
+def precon_a(x, m_w, m_s, m_p, cx):
     """First step of preconditioner."""
     for j in range(1, M + 1):
         for i in range(1, N + 1):
-            Cx[j, i] = M_p[j, i] * (x[j, i] - M_s[j, i] * Cx[j - 1, i] -
-                                    M_w[j, i] * Cx[j, i - 1])
+            cx[j, i] = m_p[j, i] * (x[j, i] - m_s[j, i] * cx[j - 1, i] -
+                                    m_w[j, i] * cx[j, i - 1])
 
 
 # @jit
-def precon_b(M_e, M_n, Cx):
+def precon_b(m_e, m_n, cx):
     """Second step of preconditioner."""
     for j in range(M, 0, -1):
         for i in range(N, 0, -1):
-            Cx[j,
-               i] = Cx[j,
-                       i] - M_e[j, i] * Cx[j, i + 1] - M_n[j, i] * Cx[j + 1, i]
+            cx[j,
+               i] = cx[j,
+                       i] - m_e[j, i] * cx[j, i + 1] - m_n[j, i] * cx[j + 1, i]
 
 
-def bicgstab(logger, x, b, A_e, A_w, A_s, A_n, A_p, M_e, M_w, M_s, M_n, M_p):
+def bicgstab(logger, x, b, a_e, a_w, a_s, a_n, a_p, m_e, m_w, m_s, m_n, m_p):
     """Bi-conjugate gradient stabilized numerical solver.
 
     van der Vorst, H. A., 1992: Bi-cgstab: A fast and smoothly
@@ -180,9 +180,9 @@ def bicgstab(logger, x, b, A_e, A_w, A_s, A_n, A_p, M_e, M_w, M_s, M_n, M_p):
     """
     sc_err = dot_prod(b, b)
 
-    Ax = calc_Ax(x, A_e, A_w, A_s, A_n, A_p)
+    ax = calc_ax(x, a_e, a_w, a_s, a_n, a_p)
 
-    r = b - Ax
+    r = b - ax
     cr = r
 
     alf = 1.0
@@ -201,17 +201,17 @@ def bicgstab(logger, x, b, A_e, A_w, A_s, A_n, A_p, M_e, M_w, M_s, M_n, M_p):
 
         t = r - bet * omg * v
 
-        s = precon(t, M_e, M_w, M_s, M_n, M_p)
+        s = precon(t, m_e, m_w, m_s, m_n, m_p)
         p = s + bet * p
 
-        v = calc_Ax(p, A_e, A_w, A_s, A_n, A_p)
+        v = calc_ax(p, a_e, a_w, a_s, a_n, a_p)
         nrm = dot_prod(cr, v)
 
         alf = rho / nrm
         s = r - alf * v
 
-        cs = precon(s, M_e, M_w, M_s, M_n, M_p)
-        t = calc_Ax(cs, A_e, A_w, A_s, A_n, A_p)
+        cs = precon(s, m_e, m_w, m_s, m_n, m_p)
+        t = calc_ax(cs, a_e, a_w, a_s, a_n, a_p)
 
         tt = dot_prod(t, t)
         ts = dot_prod(t, s)
@@ -245,9 +245,9 @@ def calc_mht(sol):
 
     grad_phi = np.gradient(sol, dy, axis=0)
     grad_phi = grad_phi[1:-1, 1:-1]
-    MHT = np.sum((grad_phi.T * np.cos(y) * dx).T, axis=1)
+    mht = np.sum((grad_phi.T * np.cos(y) * dx).T, axis=1)
 
-    return MHT
+    return mht
 
 
 def spherical_poisson(logger, forcing, tolerance=None):
@@ -271,7 +271,7 @@ def spherical_poisson(logger, forcing, tolerance=None):
     hp, hv = set_metrics()
 
     logger.info("spherical_poisson: Calling set_matrix")
-    A_e, A_w, A_s, A_n, A_p, M_e, M_w, M_s, M_n, M_p = set_matrix(hp, hv)
+    a_e, a_w, a_s, a_n, a_p, m_e, m_w, m_s, m_n, m_p = set_matrix(hp, hv)
 
     # Solving the Poisson equation
     rhs = np.zeros([M + 2, N + 2])
@@ -279,8 +279,8 @@ def spherical_poisson(logger, forcing, tolerance=None):
     logger.info("spherical_poisson: Solving poisson equation")
     rhs[1:-1, 1:-1] = forcing
     rhs = swap_bounds(rhs)
-    sol = bicgstab(logger, sol, rhs, A_e, A_w, A_s, A_n, A_p, M_e, M_w, M_s,
-                   M_n, M_p)
+    sol = bicgstab(logger, sol, rhs, a_e, a_w, a_s, a_n, a_p, m_e, m_w, m_s,
+                   m_n, m_p)
 
     # Calculating meridional heat transport
     logger.info("spherical_poisson: Calculating MHT")
