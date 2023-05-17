@@ -40,11 +40,11 @@ class FTPDownloader(BaseDownloader):
         self._client = None
         self.server = server
 
-    def connect(self):
+    def connect(self, user="", passwd=""):
         """Connect to the FTP server."""
         self._client = ftplib.FTP(self.server)
         logger.info(self._client.getwelcome())
-        self._client.login()
+        self._client.login(user=user, passwd=passwd)
 
     def set_cwd(self, path):
         """Set current working directory in the remote.

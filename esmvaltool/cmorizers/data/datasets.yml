@@ -262,6 +262,20 @@ datasets:
       this script. If data is already present in this directory, the download is
       skipped (to force a new download delete your old files).
 
+  DARDAR-CLOUD:
+    tier: 3
+    source: ftp.icare.univ-lille1.fr/SPACEBORNE/MULTI_SENSOR/DARDAR_CLOUD/
+    last_access: 2023-05-17
+    info: |
+      Download and processing instructions
+      1) Create an account at the ICARE Data and Services Center
+         (https://www.icare.univ-lille.fr/asd-content/register)
+      2) Download the DARDAR-CLOUD .hdf files from
+         ftp.icare.univ-lille1.fr (via ftp)
+      3) Put all files for a specific year under a single directory
+         named like the year (e.g. 2007), no subdirectories with
+         days etc.
+
   Duveiller2018:
     tier: 2
     source: https://ndownloader.figshare.com/files/9969496
