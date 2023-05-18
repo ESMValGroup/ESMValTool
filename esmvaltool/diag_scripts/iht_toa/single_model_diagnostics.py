@@ -1,8 +1,11 @@
-""" Single model diagnostics
+"""(C) Crown Copyright 2023, the Met Office.
+
+Single model diagnostics
 1. Solve the Poisson solver
 2. Produce and save plots
 """
 
+import datetime
 import logging
 import sys
 from copy import deepcopy
@@ -562,8 +565,12 @@ class ImpliedHeatTransport:
             y1 = self.symmetry_metric.extract_cube(
                 var_name_constraint(var_name[1]))
             ax = plt.subplot(3, 1, i + 1)
-            iplt.plot(y0, lw=4, linestyle='-', label=legend_label[0])
-            iplt.plot(y1, lw=4, linestyle='-', label=legend_label[1])
+            dtx = [
+                datetime.datetime.strptime(str(cell[0]), '%Y-%m-%d %H:%M:%S')
+                for cell in y0.coord('time').cells()
+            ]
+            plt.plot(dtx, y0.data, lw=4, linestyle='-', label=legend_label[0])
+            plt.plot(dtx, y1.data, lw=4, linestyle='-', label=legend_label[1])
             ax.annotate(r'$\sigma$: {:5.3f}'.format(np.std(y0.data)),
                         (0.05, 0.55),
                         xycoords='axes fraction',
