@@ -66,7 +66,7 @@ Upcoming releases
 | 2023-06-26 |ESMValTool release        |
 +------------+--------------------------+
 
-- 2.10.0 (Release Manager: TBA)
+- 2.10.0 (Release Manager: `Klaus Zimmermann`_)
 
 +------------+--------------------------+
 | 2023-10-02 |ESMValCore feature freeze |
