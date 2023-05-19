@@ -18,7 +18,7 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import gridspec, rcParams
-from poisson_solver import spherical_poisson
+from poisson_solver import SphericalPoisson
 
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
@@ -111,9 +111,11 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
     data -= data_mean
 
     logger.info("Calling spherical_poisson")
-    poisson, mht = spherical_poisson(logger,
-                                     forcing=data * (6371e3**2.0),
-                                     tolerance=2.0e-4)
+    sphpo = SphericalPoisson(logger,
+                             source=data * (6371e3**2.0),
+                             tolerance=2.0e-4)
+    sphpo.solve()
+    sphpo.calc_mht()
     logger.info("Ending spherical_poisson")
 
     # Energy flux potential (P)
@@ -122,7 +124,7 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
     p_cube.long_name = "energy_flux_potential_of_{}".format(flux_cube.var_name)
     p_cube.standard_name = None
     p_cube.units = 'J s-1'
-    p_cube.data = poisson[1:-1, 1:-1]
+    p_cube.data = sphpo.efp[1:-1, 1:-1]
 
     # MHT data cube
     mht_cube = flux_cube.copy()
@@ -132,7 +134,7 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
         flux_cube.var_name)
     mht_cube.standard_name = None
     mht_cube.units = 'W'
-    mht_cube.data = mht
+    mht_cube.data = sphpo.mht
 
     return p_cube, mht_cube
 
