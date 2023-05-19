@@ -54,7 +54,7 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.9.0 (Release Manager: TBA)
+- 2.9.0 (Release Manager: `Bouwe Andela`_)
 
 +------------+--------------------------+
 | 2023-06-05 |ESMValCore feature freeze |
