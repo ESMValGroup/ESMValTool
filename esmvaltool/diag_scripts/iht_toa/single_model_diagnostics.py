@@ -120,8 +120,8 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
 
     # Energy flux potential (P)
     p_cube = flux_cube.copy()
-    p_cube.var_name = "{}_efp".format(flux_cube.var_name)
-    p_cube.long_name = "energy_flux_potential_of_{}".format(flux_cube.var_name)
+    p_cube.var_name = f"{flux_cube.var_name}_efp"
+    p_cube.long_name = f"energy_flux_potential_of_{flux_cube.var_name}"
     p_cube.standard_name = None
     p_cube.units = 'J s-1'
     p_cube.data = sphpo.efp[1:-1, 1:-1]
@@ -129,9 +129,8 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
     # MHT data cube
     mht_cube = flux_cube.copy()
     mht_cube = mht_cube.collapsed('longitude', iris.analysis.MEAN)
-    mht_cube.var_name = "{}_mht".format(flux_cube.var_name)
-    mht_cube.long_name = "meridional_heat_transport_of_{}".format(
-        flux_cube.var_name)
+    mht_cube.var_name = f"{flux_cube.var_name}_mht"
+    mht_cube.long_name = f"meridional_heat_transport_of_{flux_cube.var_name}"
     mht_cube.standard_name = None
     mht_cube.units = 'W'
     mht_cube.data = sphpo.mht
@@ -155,18 +154,29 @@ def symmetry_metric(data, grid):
 
     nlat_hem = nlat // 2
     nlat_trop = nlat_hem // 3
-    nh = data[nlat_hem:]
-    sh = data[:nlat_hem]
-    sh = sh[::-1]
+    nhm = data[nlat_hem:]
+    shm = data[:nlat_hem]
+    shm = shm[::-1]
 
-    diff = np.abs((nh + sh) * grid)
+    diff = np.abs((nhm + shm) * grid)
     hem = np.sum(diff)
     trop = np.sum(diff[:nlat_trop])
     extratrop = np.sum(diff[nlat_trop:nlat_hem])
     return hem, trop, extratrop
 
 
+def format_plot(axx, label, title):
+    """Format plots in quiver panel."""
+    axx.set_xticks(np.arange(-180, 190, 60))
+    axx.set_xticklabels(['180', '120W', '60W', '0', '60E', '120E', '180'])
+    axx.set_yticks(np.arange(-90, 100, 30))
+    axx.set_yticklabels(['90S', '60S', '30S', 'Eq', '30N', '60N', '90N'])
+    axx.annotate(label, xy=(0, 1.05), xycoords='axes fraction', color='k')
+    axx.set_title(title)
+
+
 class ImpliedHeatTransport:
+    """Class that solves IHT for a dataset."""
     def __init__(self, flx_files):
         self.flx_files = flx_files
 
@@ -187,13 +197,6 @@ class ImpliedHeatTransport:
             else:
                 self.flx_clim.append(flx)
 
-        # Save grid information
-        vname_constraint = var_name_constraint("rtnt")
-        flx = self.flx_clim.extract_cube(vname_constraint)
-        self.grid = iris.analysis.cartography.area_weights(flx, normalize=True)
-        self.lat = flx.coord('latitude').points
-        self.lon = flx.coord('longitude').points
-
         # Compute derived fluxes
         self.derived_fluxes()
 
@@ -204,7 +207,6 @@ class ImpliedHeatTransport:
         self.mht_symmetry_metrics()
 
         self.print()
-        return
 
     def compute_efp_and_mht(self):
         """Calculation of Energy Flux Potential and Meridional heat transport
@@ -265,38 +267,40 @@ class ImpliedHeatTransport:
         """Print variable names of all cubes in the IHT object."""
         logger.info("=== implied_heat_transport object ===")
         print(self.mht_clim)
-        for x in self.mht_clim:
-            print(x.long_name, x.var_name)
+        for zzz in self.mht_clim:
+            print(zzz.long_name, zzz.var_name)
 
         print(self.efp_clim)
-        for x in self.efp_clim:
-            print(x.long_name, x.var_name)
+        for zzz in self.efp_clim:
+            print(zzz.long_name, zzz.var_name)
 
         print(self.flx_clim)
-        for x in self.flx_clim:
-            print(x.long_name, x.var_name)
+        for zzz in self.flx_clim:
+            print(zzz.long_name, zzz.var_name)
 
         print(self.mht_rolling_mean)
-        for x in self.mht_rolling_mean:
-            print(x.long_name, x.var_name)
+        for zzz in self.mht_rolling_mean:
+            print(zzz.long_name, zzz.var_name)
 
         print(self.symmetry_metric)
-        for x in self.symmetry_metric:
-            print(x.long_name, x.var_name)
+        for zzz in self.symmetry_metric:
+            print(zzz.long_name, zzz.var_name)
 
         print(self.flx_files)
 
     def mht_symmetry_metrics(self):
         """Calculate the symmetry metrics for all time series of 12-month
         rolling means of MHT."""
+        grid = iris.analysis.cartography.area_weights(self.flx_clim[0],
+                                                      normalize=True)
         # As coded, the calculation of the symmetry metrics needs the number of
         # latitude points to be multiple of 6, i.e. it needs 30 deg bands.
-        if (self.grid.shape[0] % 6) != 0:
+        if (grid.shape[0] % 6) != 0:
             logger.error(
                 "Grid not compatible with symmetry metric calculation.")
             sys.exit(1)
-        nlat_2 = self.grid.shape[0] // 2
-        grid = np.sum(self.grid, axis=1)[nlat_2:]
+        nlat_2 = grid.shape[0] // 2
+        grid = np.sum(grid, axis=1)[nlat_2:]
 
         for mht_series in self.mht_rolling_mean:
             time_coord = mht_series.coord('time')
@@ -308,24 +312,22 @@ class ImpliedHeatTransport:
                 hem[i], trop[i], extratrop[i] = symmetry_metric(
                     mht_series.data[i], grid)
             # Create the cubes for each metric
-            long_name = "symmetry_hemisphere_of_{}".format(
-                mht_series.long_name)
-            var_name = "s_hem_{}".format(mht_series.var_name)
+            long_name = f"symmetry_hemisphere_of_{mht_series.long_name}"
+            var_name = f"s_hem_{mht_series.var_name}"
             cube_h = iris.cube.Cube(hem / 1.0e15,
                                     long_name=long_name,
                                     var_name=var_name,
                                     units="PW",
                                     dim_coords_and_dims=[(time_coord, 0)])
-            long_name = "symmetry_tropics_of_{}".format(mht_series.long_name)
-            var_name = "s_tro_{}".format(mht_series.var_name)
+            long_name = f"symmetry_tropics_of_{mht_series.long_name}"
+            var_name = f"s_tro_{mht_series.var_name}"
             cube_t = iris.cube.Cube(trop / 1.0e15,
                                     long_name=long_name,
                                     var_name=var_name,
                                     units="PW",
                                     dim_coords_and_dims=[(time_coord, 0)])
-            long_name = "symmetry_extratropics_of_{}".format(
-                mht_series.long_name)
-            var_name = "s_ext_{}".format(mht_series.var_name)
+            long_name = f"symmetry_extratropics_of_{mht_series.long_name}"
+            var_name = f"s_ext_{mht_series.var_name}"
             cube_e = iris.cube.Cube(extratrop / 1.0e15,
                                     long_name=long_name,
                                     var_name=var_name,
@@ -343,10 +345,11 @@ class ImpliedHeatTransport:
         variables are on each plot.
         """
         plt.figure()
-        for i in range(len(var_names)):
-            mht = self.mht_clim.extract_cube(var_name_constraint(
-                var_names[i])).data / 1e15
-            plt.plot(self.lat, mht, label=legend_label[i])
+        for i, vname in enumerate(var_names):
+            mht = self.mht_clim.extract_cube(var_name_constraint(vname))
+            plt.plot(mht.coord('latitude').points,
+                     mht.data / 1e15,
+                     label=legend_label[i])
         plt.hlines(0, -90, 90, color='k', linestyles=':')
         plt.vlines(0, -10, 10, color='k', linestyles=':')
         plt.xlim(-90, 90)
@@ -356,21 +359,16 @@ class ImpliedHeatTransport:
         plt.ylabel('MHT (PW)')
         plt.legend()
         plt.tight_layout()
-        return
 
-    def cre_mht_plot(self,
-                     var_names_l,
-                     legend_l,
-                     var_names_r,
-                     legend_r,
-                     ylim=(-1.5, 1.5)):
+    def cre_mht_plot(self, left, right, ylim=(-1.5, 1.5)):
         """Plots of CRE MHTs (Figure 3)."""
         plt.figure(figsize=(11, 5))
         ax1 = plt.subplot(121)
-        for i in range(len(var_names_l)):
-            mht = self.mht_clim.extract_cube(
-                var_name_constraint(var_names_l[i])).data / 1e15
-            ax1.plot(self.lat, mht, label=legend_l[i])
+        for i, vname in enumerate(left['vname']):
+            mht = self.mht_clim.extract_cube(var_name_constraint(vname))
+            ax1.plot(mht.coord('latitude').points,
+                     mht.data / 1e15,
+                     label=left['legend'][i])
         ax1.axhline(0, color='k', ls=':')
         ax1.axvline(0, color='k', ls=':')
         ax1.set_xlim(-90, 90)
@@ -386,10 +384,12 @@ class ImpliedHeatTransport:
 
         ax2 = plt.subplot(122)
         col = ['C3', 'C7']
-        for i in range(len(var_names_r)):
-            mht = self.mht_clim.extract_cube(
-                var_name_constraint(var_names_r[i])).data / 1e15
-            ax2.plot(self.lat, -mht, label=legend_r[i], color=col[i])
+        for i, vname in enumerate(right['vname']):
+            mht = self.mht_clim.extract_cube(var_name_constraint(vname))
+            ax2.plot(mht.coord('latitude').points,
+                     -mht.data / 1e15,
+                     label=right['legend'][i],
+                     color=col[i])
         ax2.axhline(0, color='k', ls=':')
         ax2.axvline(0, color='k', ls=':')
         ax2.set_xlim(-90, 90)
@@ -403,139 +403,107 @@ class ImpliedHeatTransport:
                      color='k')
         plt.legend(loc='lower right')
         plt.tight_layout()
-        return
 
-    def quiver_start(self, n, step):
+    def quiver_start(self, ntot, step):
         """Calculate start point for quiver plot."""
-        n2 = (n - 2) // step
-        start = (n - 2 - n2 * step) // 2
+        nnn = (ntot - 2) // step
+        start = (ntot - 2 - nnn * step) // 2
         return start
 
-    def quiver_subplot(self,
-                       var_name,
-                       wmin,
-                       wmax,
-                       nwlevs,
-                       wlevstep,
-                       vmin,
-                       vmax,
-                       nlevs,
-                       label=[['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
-                       xy_label=(0, 1.05),
-                       title=[['', ''], ['', ''], ['', '']],
-                       change_sign=[[False, False], [False, False],
-                                    [False, False]]):
+    def quiver_maps_data(self, vnames, change_sign):
+        """Obtain data for one row of plots."""
+        efp = self.efp_clim.extract_cube(var_name_constraint(vnames[0]))
+        flx = self.flx_clim.extract_cube(var_name_constraint(vnames[1]))
+        efp.data -= np.average(efp.data)  # Arbitrary choice of origin
+        flx.data -= area_average(flx).data
+        if change_sign[0]:
+            efp.data = -efp.data
+        if change_sign[1]:
+            flx.data = -flx.data
+        vvv, uuu = np.gradient(efp.data, 1e14, 1e14)
+        uuu = uuu[1:-1, 1:-1]
+        vvv = vvv[1:-1, 1:-1]
+        efp.convert_units("PW")
+        return {'efp': efp, 'flx': flx, 'uuu': uuu, 'vvv': vvv}
+
+    def quiver_subplot(self, dargs, title, label, change_sign):
         """Plot figures with energy flux potential and gradient in the left
         hand columns and the corresponding source term in the right-hand
         column.
 
         Figures 2, 4, and 5.
         """
-        x, y = np.meshgrid(self.lon, self.lat)
-        levels1 = np.linspace(vmin, vmax, nlevs)
-        levels2 = np.linspace(wmin, wmax, nwlevs)
-        nrows = len(var_name)
+        mshgrd = np.meshgrid(self.flx_clim[0].coord('longitude').points,
+                             self.flx_clim[0].coord('latitude').points)
+        nrows = len(dargs['var_name'])
         # Calculate sampling for vector plot
-        nlon = len(self.lon)
-        nlat = len(self.lat)
-        stepx = nlon // 20
-        stepy = nlat // 10
-        startx = self.quiver_start(nlon, stepx)
-        starty = self.quiver_start(nlat, stepy)
+        dxy = [mshgrd[0].shape[1] // 20, mshgrd[0].shape[0] // 10]
+        startx = self.quiver_start(mshgrd[0].shape[1], dxy[0])
+        starty = self.quiver_start(mshgrd[0].shape[0], dxy[1])
 
         if nrows == 3:
             plt.figure(figsize=(10, 10))
-            gs = gridspec.GridSpec(22, 2)
-            gs.update(wspace=0.25, hspace=1.5)
+            grds = gridspec.GridSpec(22, 2)
+            grds.update(wspace=0.25, hspace=1.5)
         elif nrows == 2:
             plt.figure(figsize=(10, 6.5))
-            gs = gridspec.GridSpec(15, 2)
-            gs.update(wspace=0.25, hspace=1.5)
+            grds = gridspec.GridSpec(15, 2)
+            grds.update(wspace=0.25, hspace=1.5)
         elif nrows == 1:
             plt.figure(figsize=(12, 4))
-            gs = gridspec.GridSpec(8, 2)
-            gs.update(wspace=0.25, hspace=1.5)
+            grds = gridspec.GridSpec(8, 2)
+            grds.update(wspace=0.25, hspace=1.5)
 
+        cbs = []
         for i in range(nrows):
-            efp = self.efp_clim.extract_cube(
-                var_name_constraint(var_name[i][0]))
-            flx = self.flx_clim.extract_cube(
-                var_name_constraint(var_name[i][1]))
-            efp.data -= np.average(efp.data)  # Arbitrary choice of origin
-            flx.data -= area_average(flx).data
-            if change_sign[i][0]:
-                efp.data = -efp.data
-            if change_sign[i][1]:
-                flx.data = -flx.data
-            v, u = np.gradient(efp.data, 1e14, 1e14)
-            u = u[1:-1, 1:-1]
-            v = v[1:-1, 1:-1]
-            efp.convert_units("PW")
-            ax1 = plt.subplot(gs[i * 7:(i * 7) + 7, 0],
-                              projection=ccrs.PlateCarree(central_longitude=0))
-            cb1 = iplt.contourf(efp, levels=levels1)
+            data = self.quiver_maps_data(dargs['var_name'][i], change_sign[i])
+            plt.subplot(grds[i * 7:(i * 7) + 7, 0],
+                        projection=ccrs.PlateCarree(central_longitude=0))
+            cbs.append(
+                iplt.contourf(data['efp'],
+                              levels=np.linspace(dargs['vmin'], dargs['vmax'],
+                                                 dargs['nlevs'])))
             plt.gca().coastlines()
-            xq = x[starty::stepy, startx::stepx]
-            yq = y[starty::stepy, startx::stepx]
-            uq = u[starty::stepy, startx::stepx]
-            vq = v[starty::stepy, startx::stepx]
             if i == 0:
-                q = ax1.quiver(xq,
-                               yq,
-                               uq,
-                               vq,
-                               pivot='mid',
-                               color='w',
-                               width=0.005)
-                q._init()
+                qqq = plt.quiver(mshgrd[0][starty::dxy[1], startx::dxy[0]],
+                                 mshgrd[1][starty::dxy[1], startx::dxy[0]],
+                                 data['uuu'][starty::dxy[1], startx::dxy[0]],
+                                 data['vvv'][starty::dxy[1], startx::dxy[0]],
+                                 pivot='mid',
+                                 color='w',
+                                 width=0.005)
             else:
-                ax1.quiver(xq,
-                           yq,
-                           uq,
-                           vq,
+                plt.quiver(mshgrd[0][starty::dxy[1], startx::dxy[0]],
+                           mshgrd[1][starty::dxy[1], startx::dxy[0]],
+                           data['uuu'][starty::dxy[1], startx::dxy[0]],
+                           data['vvv'][starty::dxy[1], startx::dxy[0]],
                            pivot='mid',
-                           scale=q.scale,
+                           scale=qqq.scale,
                            color='w')
-            ax1.set_xticks(np.arange(-180, 190, 60))
-            ax1.set_xticklabels(
-                ['180', '120W', '60W', '0', '60E', '120E', '180'])
-            ax1.set_yticks(np.arange(-90, 100, 30))
-            ax1.set_yticklabels(
-                ['90S', '60S', '30S', 'Eq', '30N', '60N', '90N'])
-            ax1.annotate(label[i][0],
-                         xy=xy_label,
-                         xycoords='axes fraction',
-                         color='k')
-            ax1.set_title(title[i][0])
-            del u, v, uq, vq
+            format_plot(plt.gca(), label[i][0], title[i][0])
 
-            ax2 = plt.subplot(gs[i * 7:(i * 7) + 7, 1],
-                              projection=ccrs.PlateCarree(central_longitude=0))
-            cb2 = iplt.contourf(flx, levels=levels2, cmap='RdBu_r')
+            plt.subplot(grds[i * 7:(i * 7) + 7, 1],
+                        projection=ccrs.PlateCarree(central_longitude=0))
+            cbs.append(
+                iplt.contourf(data['flx'],
+                              levels=np.linspace(dargs['wmin'], dargs['wmax'],
+                                                 dargs['nwlevs']),
+                              cmap='RdBu_r'))
             plt.gca().coastlines()
-            ax2.set_xticks(np.arange(-180, 190, 60))
-            ax2.set_xticklabels(
-                ['180', '120W', '60W', '0', '60E', '120E', '180'])
-            ax2.set_yticks(np.arange(-90, 100, 30))
-            ax2.set_yticklabels(
-                ['90S', '60S', '30S', 'Eq', '30N', '60N', '90N'])
-            ax2.annotate(label[i][1],
-                         xy=xy_label,
-                         xycoords='axes fraction',
-                         color='k')
-            ax2.set_title(title[i][1])
+            format_plot(plt.gca(), label[i][1], title[i][1])
 
-        ax1 = plt.subplot(gs[-1, 0])
-        plt.colorbar(cb1,
-                     cax=ax1,
+        plt.subplot(grds[-1, 0])
+        plt.colorbar(cbs[0],
+                     cax=plt.gca(),
                      orientation='horizontal',
                      label='Energy flux potential (PW)')
-        ax2 = plt.subplot(gs[-1, 1])
-        plt.colorbar(cb2,
-                     cax=ax2,
+        plt.subplot(grds[-1, 1])
+        plt.colorbar(cbs[1],
+                     cax=plt.gca(),
                      orientation='horizontal',
                      label=r'Flux (Wm$^{-2}$)',
-                     ticks=levels2[1::wlevstep])
+                     ticks=np.linspace(dargs['wmin'], dargs['wmax'],
+                                       dargs['nwlevs'])[1::dargs['wlevstep']])
 
         if nrows == 3:
             plt.subplots_adjust(left=0.1, right=0.94, top=1.0, bottom=0.11)
@@ -543,8 +511,6 @@ class ImpliedHeatTransport:
             plt.subplots_adjust(left=0.11, right=0.9, top=1.0, bottom=0.13)
         elif nrows == 1:
             plt.subplots_adjust(left=0.11, right=0.9, top=1.0, bottom=0.20)
-
-        return
 
     def plot_symmetry_time_series(self):
         """Plot the all-sky and clear-sky time series of the symmetry metrics
@@ -562,89 +528,112 @@ class ImpliedHeatTransport:
 
         plt.figure(figsize=(6, 12))
         for i, var_name in enumerate(var_list):
-            y0 = self.symmetry_metric.extract_cube(
+            yy0 = self.symmetry_metric.extract_cube(
                 var_name_constraint(var_name[0]))
-            y1 = self.symmetry_metric.extract_cube(
+            yy1 = self.symmetry_metric.extract_cube(
                 var_name_constraint(var_name[1]))
-            ax = plt.subplot(3, 1, i + 1)
+            axx = plt.subplot(3, 1, i + 1)
             dtx = [
                 datetime.datetime.strptime(str(cell[0]), '%Y-%m-%d %H:%M:%S')
-                for cell in y0.coord('time').cells()
+                for cell in yy0.coord('time').cells()
             ]
-            plt.plot(dtx, y0.data, lw=4, linestyle='-', label=legend_label[0])
-            plt.plot(dtx, y1.data, lw=4, linestyle='-', label=legend_label[1])
-            ax.annotate(r'$\sigma$: {:5.3f}'.format(np.std(y0.data)),
-                        (0.05, 0.55),
-                        xycoords='axes fraction',
-                        color=col[0])
-            ax.annotate(r'$\sigma$: {:5.3f}'.format(np.std(y1.data)),
-                        (0.05, 0.45),
-                        xycoords='axes fraction',
-                        color=col[1])
-            ax.set_ylim(0, 0.8)
-            ax.set_ylabel(r'$S$ (PW)')
-            ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=1))
-            ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
-            ax.set_title(label[i])
+            plt.plot(dtx, yy0.data, lw=4, linestyle='-', label=legend_label[0])
+            plt.plot(dtx, yy1.data, lw=4, linestyle='-', label=legend_label[1])
+            axx.annotate(rf'$\sigma$: {np.std(yy0.data):5.3f}', (0.05, 0.55),
+                         xycoords='axes fraction',
+                         color=col[0])
+            axx.annotate(rf'$\sigma$: {np.std(yy1.data):5.3f}', (0.05, 0.45),
+                         xycoords='axes fraction',
+                         color=col[1])
+            axx.set_ylim(0, 0.8)
+            axx.set_ylabel(r'$S$ (PW)')
+            axx.xaxis.set_major_locator(mdates.MonthLocator(bymonth=1))
+            axx.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+            axx.set_title(label[i])
             if i == 0:
                 plt.legend(loc=5)
         plt.tight_layout()
-        return
 
 
 def efp_maps(iht, model, experiment, cfg):
     """Wrapper function that produces Figures 2, 4, and 5."""
     # Figure 2
     iht.quiver_subplot(
-        [['rtnt_efp', 'rtnt'], ['rsnt_efp', 'rsnt'], ['rlnt_efp', 'rlnt']],
-        wmin=-180,
-        wmax=180,
-        nwlevs=19,
-        wlevstep=4,
-        vmin=-1.2,
-        vmax=1.2,
-        nlevs=11,
+        {
+            'var_name': [['rtnt_efp', 'rtnt'], ['rsnt_efp', 'rsnt'],
+                         ['rlnt_efp', 'rlnt']],
+            'wmin':
+            -180,
+            'wmax':
+            180,
+            'nwlevs':
+            19,
+            'wlevstep':
+            4,
+            'vmin':
+            -1.2,
+            'vmax':
+            1.2,
+            'nlevs':
+            11
+        },
         title=[['$P_{TOA}^{TOT}$', r'$\Delta F_{TOA}^{TOT}$'],
                ['$P_{TOA}^{SW}$', r'$\Delta F_{TOA}^{SW}$'],
-               ['$P_{TOA}^{LW}$', r'$\Delta F_{TOA}^{LW}$']])
+               ['$P_{TOA}^{LW}$', r'$\Delta F_{TOA}^{LW}$']],
+        label=[['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
+        change_sign=[[False, False], [False, False], [False, False]])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
-    figname = "figure2_{}_{}".format(model, experiment)
+    figname = f"figure2_{model}_{experiment}"
     save_figure(figname, provenance_record, cfg)
     # Figure 4
     iht.quiver_subplot(
-        [['netcre_efp', 'netcre'], ['swcre_efp', 'swcre'],
-         ['lwcre_efp', 'lwcre']],
-        wmin=-60,
-        wmax=60,
-        nwlevs=13,
-        wlevstep=2,
-        vmin=-0.3,
-        vmax=0.3,
-        nlevs=11,
+        {
+            'var_name': [['netcre_efp', 'netcre'], ['swcre_efp', 'swcre'],
+                         ['lwcre_efp', 'lwcre']],
+            'wmin':
+            -60,
+            'wmax':
+            60,
+            'nwlevs':
+            13,
+            'wlevstep':
+            2,
+            'vmin':
+            -0.3,
+            'vmax':
+            0.3,
+            'nlevs':
+            11
+        },
         title=[['$P_{TOA}^{TOTCRE}$', r'$\Delta CRE_{TOA}^{TOT}$'],
                ['$P_{TOA}^{SWCRE}$', r'$\Delta CRE_{TOA}^{SW}$'],
-               ['$P_{TOA}^{LWCRE}$', r'$\Delta CRE_{TOA}^{LW}$']])
+               ['$P_{TOA}^{LWCRE}$', r'$\Delta CRE_{TOA}^{LW}$']],
+        label=[['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
+        change_sign=[[False, False], [False, False], [False, False]])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
-    figname = "figure4_{}_{}".format(model, experiment)
+    figname = f"figure4_{model}_{experiment}"
     save_figure(figname, provenance_record, cfg)
     # Figure 5
     iht.quiver_subplot(
-        [['rsutcs_efp', 'rsutcs'], ['rsut_efp', 'rsut']],
-        wmin=-100,
-        wmax=100,
-        nwlevs=21,
-        wlevstep=3,
-        vmin=-0.35,
-        vmax=0.35,
-        nlevs=11,
+        {
+            'var_name': [['rsutcs_efp', 'rsutcs'], ['rsut_efp', 'rsut']],
+            'wmin': -100,
+            'wmax': 100,
+            'nwlevs': 21,
+            'wlevstep': 3,
+            'vmin': -0.35,
+            'vmax': 0.35,
+            'nlevs': 11
+        },
         title=[['$P_{TOA}^{SWup, clr}$', r'$\Delta F_{TOA}^{SWup, clr}$'],
                ['$P_{TOA}^{SWup, all}$', r'$\Delta F_{TOA}^{SWup, all}$']],
+        label=[['(a)', '(b)'], ['(c)', '(d)']],
         change_sign=[[True, True], [True, True]])
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
-    figname = "figure5_{}_{}".format(model, experiment)
+    figname = f"figure5_{model}_{experiment}"
     save_figure(figname, provenance_record, cfg)
 
 
@@ -654,16 +643,19 @@ def mht_plots(iht, model, experiment, cfg):
     iht.mht_plot(["rtnt_mht", "rsnt_mht", "rlnt_mht"], ['Net', 'SW', 'LW'])
     provenance_record = get_provenance_record(plot_type='zonal',
                                               ancestor_files=iht.flx_files)
-    figname = "figure1_{}_{}".format(model, experiment)
+    figname = f"figure1_{model}_{experiment}"
     save_figure(figname, provenance_record, cfg)
     # Figure 3
-    iht.cre_mht_plot(['netcre_mht', 'swcre_mht', 'lwcre_mht'],
-                     ['Net CRE', 'SW CRE', 'LW CRE'],
-                     ['rsut_mht', 'rsutcs_mht'],
-                     ['-1 x OSR (all-sky)', '-1 x OSR (clear-sky)'])
-    figname = "figure3_{}_{}".format(model, experiment)
+    iht.cre_mht_plot(
+        {
+            'vname': ['netcre_mht', 'swcre_mht', 'lwcre_mht'],
+            'legend': ['Net CRE', 'SW CRE', 'LW CRE']
+        }, {
+            'vname': ['rsut_mht', 'rsutcs_mht'],
+            'legend': ['-1 x OSR (all-sky)', '-1 x OSR (clear-sky)']
+        })
+    figname = f"figure3_{model}_{experiment}"
     save_figure(figname, provenance_record, cfg)
-    return
 
 
 def symmetry_plots(iht, model, experiment, cfg):
@@ -672,9 +664,8 @@ def symmetry_plots(iht, model, experiment, cfg):
     iht.plot_symmetry_time_series()
     provenance_record = get_provenance_record(plot_type='times',
                                               ancestor_files=iht.flx_files)
-    figname = "figure6_{}_{}".format(model, experiment)
+    figname = f"figure6_{model}_{experiment}"
     save_figure(figname, provenance_record, cfg)
-    return
 
 
 def plot_single_model_diagnostics(iht_dict, cfg):
@@ -687,7 +678,6 @@ def plot_single_model_diagnostics(iht_dict, cfg):
             mht_plots(iht_experiment, model, experiment, cfg)
             efp_maps(iht_experiment, model, experiment, cfg)
             symmetry_plots(iht_experiment, model, experiment, cfg)
-    return
 
 
 def main(cfg):
