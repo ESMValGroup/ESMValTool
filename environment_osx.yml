@@ -10,7 +10,7 @@ channels:
 
 dependencies:
   - pip!=21.3
-  - python>=3.11
+  - python>=3.9
   - aiohttp
   - cartopy
   - cdo>=1.9.7
@@ -27,7 +27,7 @@ dependencies:
   - fiona
   - fire
   - gdal
-  - iris>=3.6.0
+  - iris >=3.4.0
   - iris-esmf-regrid
   - jinja2
   - joblib
