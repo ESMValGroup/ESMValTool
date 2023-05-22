@@ -31,8 +31,8 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        # need a 2.8.1 with updated pins for 3.11 support
-        # 'esmvalcore',
+        # use 2.8.1rc1 for now
+        'esmvalcore',
         'esmf-regrid',
         'fiona',
         'GDAL',
