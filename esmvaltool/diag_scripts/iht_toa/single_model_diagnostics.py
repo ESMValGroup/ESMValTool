@@ -45,7 +45,6 @@ rcParams.update({
 
 def get_provenance_record(plot_type, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-
     record = {
         'statistics': ['mean'],
         'domains': ['global'],
@@ -63,20 +62,7 @@ def get_provenance_record(plot_type, ancestor_files):
 
 
 def area_average(cube, latitude='latitude', longitude='longitude', mdtol=1):
-    """Returns the gridbox weighted area average of a cube (and optionally a
-    sub-region).
-
-    Compulsory arguments:
-        cube            Cube to be area averaged.
-    Optional arguments:
-        latitude, longitude  Names of coordinates to be used for latitude
-                             and longitude
-        mdtol           Tolerance for missing data.
-    Returns:
-        cube_avg        cube which has had area averaging applied across
-                        latitude and longitude coordinates
-    """
-
+    """Return area-weighted average of a cube."""
     if cube.coord(latitude).bounds is None:
         cube.coord(latitude).guess_bounds()
     if cube.coord(longitude).bounds is None:
@@ -96,7 +82,6 @@ def var_name_constraint(var_name):
 
 def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
     """Top-level function that calls the Poisson solver for source cube."""
-
     if flux_cube.coord(latitude).bounds is None:
         flux_cube.coord(latitude).guess_bounds()
     if flux_cube.coord(longitude).bounds is None:
@@ -139,14 +124,13 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
 
 
 def symmetry_metric(data, grid):
-    """Calculates hemispheric symmetry value.
+    """Calculate symmetry metrics.
 
-    :param data: zonal mean of the input variable
-    :param grid: grid weights
+    A perfectly symmetrical latitude band gives S=0. As coded, the
+    calculation of the symmetry metrics needs the number of latitude
+    points to be multiple of 6, i.e. it needs 30 deg bands. It returns
+    the metric for 3 regions: globe, tropics and extratropics.
     """
-    # S = 0 is perfectly symmetrical.
-    # As coded, the calculation of the symmetry metrics needs the number of
-    # latitude points to be multiple of 6, i.e. it needs 30 deg bands.
     nlat = data.shape[0]
     if (nlat % 6) != 0:
         logger.error("Grid not compatible with symmetry metric calculation.")
@@ -209,8 +193,11 @@ class ImpliedHeatTransport:
         self.print()
 
     def compute_efp_and_mht(self):
-        """Calculation of Energy Flux Potential and Meridional heat transport
-        for all the data fields."""
+        """Calculate Energy Flux Potential and meridional heat transport.
+
+        Calculate EFP and MHT for the climatologies of radiative fluxes
+        and the 12-month rolling means of radiative fluxes.
+        """
         # Loop over climatologies
         for flx in self.flx_clim:
             efp, mht = call_poisson(flx)
@@ -226,7 +213,7 @@ class ImpliedHeatTransport:
             self.mht_rolling_mean.append(mht_series.merge_cube())
 
     def derived_fluxes(self):
-        """Calculation of the derived fluxes:
+        """Calculate derived radiative fluxes.
 
         rtntcs_clim: climatology of clear-sky net TOA
         rtntcs_rolling_mean: 12-month rolling mean of rtntcs
@@ -289,8 +276,11 @@ class ImpliedHeatTransport:
         print(self.flx_files)
 
     def mht_symmetry_metrics(self):
-        """Calculate the symmetry metrics for all time series of 12-month
-        rolling means of MHT."""
+        """Calculate symmetry metrics.
+
+        Produce 12-month rolling means for all monthly time time series
+        of MHT.
+        """
         grid = iris.analysis.cartography.area_weights(self.flx_clim[0],
                                                       normalize=True)
         # As coded, the calculation of the symmetry metrics needs the number of
@@ -338,11 +328,9 @@ class ImpliedHeatTransport:
             self.symmetry_metric.append(cube_e)
 
     def mht_plot(self, var_names, legend_label, ylim=(-10, 10)):
-        """MHT plot Produces a single plot comparing the estimated MHT due to
-        the input variables.
+        """Produce a single multi-line plot with MHT.
 
-        MHT is presented in PW, plotted against latitude. Up to three
-        variables are on each plot.
+        MHT is presented in PW. Up to three variables are on each plot.
         """
         plt.figure()
         for i, vname in enumerate(var_names):
@@ -361,7 +349,7 @@ class ImpliedHeatTransport:
         plt.tight_layout()
 
     def cre_mht_plot(self, left, right, ylim=(-1.5, 1.5)):
-        """Plots of CRE MHTs (Figure 3)."""
+        """Produce two multiline plots of MHT."""
         plt.figure(figsize=(11, 5))
         ax1 = plt.subplot(121)
         for i, vname in enumerate(left['vname']):
@@ -427,11 +415,11 @@ class ImpliedHeatTransport:
         return {'efp': efp, 'flx': flx, 'uuu': uuu, 'vvv': vvv}
 
     def quiver_subplot(self, dargs, title, label, change_sign):
-        """Plot figures with energy flux potential and gradient in the left
+        """Produce panel with EFPs (left column) and fluxes (right column).
+
+        Plot figures with energy flux potential and gradient in the left
         hand columns and the corresponding source term in the right-hand
         column.
-
-        Figures 2, 4, and 5.
         """
         mshgrd = np.meshgrid(self.flx_clim[0].coord('longitude').points,
                              self.flx_clim[0].coord('latitude').points)
@@ -513,8 +501,11 @@ class ImpliedHeatTransport:
             plt.subplots_adjust(left=0.11, right=0.9, top=1.0, bottom=0.20)
 
     def plot_symmetry_time_series(self):
-        """Plot the all-sky and clear-sky time series of the symmetry metrics
-        (Figure 6)"""
+        """Produce Figure 6.
+
+        All-sky and clear-sky time series of the symmetry metrics for
+        three regions: globe, tropics and extratropics.
+        """
         var_list = [["s_hem_rtnt_mht", "s_hem_rtntcs_mht"],
                     ["s_tro_rtnt_mht", "s_tro_rtntcs_mht"],
                     ["s_ext_rtnt_mht", "s_ext_rtntcs_mht"]]
@@ -556,7 +547,7 @@ class ImpliedHeatTransport:
 
 
 def efp_maps(iht, model, experiment, cfg):
-    """Wrapper function that produces Figures 2, 4, and 5."""
+    """Produce Figures 2, 4, and 5."""
     # Figure 2
     iht.quiver_subplot(
         {
@@ -638,7 +629,7 @@ def efp_maps(iht, model, experiment, cfg):
 
 
 def mht_plots(iht, model, experiment, cfg):
-    """Wrapper function that produces Figures 1 and 3."""
+    """Produce Figures 1 and 3."""
     # Figure 1
     iht.mht_plot(["rtnt_mht", "rsnt_mht", "rlnt_mht"], ['Net', 'SW', 'LW'])
     provenance_record = get_provenance_record(plot_type='zonal',
@@ -659,8 +650,7 @@ def mht_plots(iht, model, experiment, cfg):
 
 
 def symmetry_plots(iht, model, experiment, cfg):
-    """Wrapper function that produces Figure 6."""
-    # Figure 6
+    """Produce Figure 6."""
     iht.plot_symmetry_time_series()
     provenance_record = get_provenance_record(plot_type='times',
                                               ancestor_files=iht.flx_files)
@@ -669,8 +659,10 @@ def symmetry_plots(iht, model, experiment, cfg):
 
 
 def plot_single_model_diagnostics(iht_dict, cfg):
-    """Wrapper function that produces all plots."""
-    # iht_dict is a two-level dictionary: iht_dict[model][experiment]
+    """Produce plots for a single model and experiment.
+
+    iht_dict is a two-level dictionary: iht_dict[model][experiment]
+    """
     for model, iht_model in iht_dict.items():
         logger.info("Plotting model: %s", model)
         for experiment, iht_experiment in iht_model.items():
@@ -681,8 +673,11 @@ def plot_single_model_diagnostics(iht_dict, cfg):
 
 
 def main(cfg):
-    """Solve the Poisson equation and estimate the meridional heat
-    transport."""
+    """Produce implied heat transport plots.
+
+    Produce Figures 1 to 6 of Pearce and Bodas-Salcedo (2023) for each
+    model and dataset combination.
+    """
     input_data = deepcopy(list(cfg['input_data'].values()))
     input_data = group_metadata(input_data, 'dataset', sort='variable_group')
 
