@@ -64,7 +64,7 @@ REQUIREMENTS = {
         'seawater',
         'shapely',
         'xarray',
-        'xesmf==0.3.0',
+        'xesmf',  # ==0.3.0' tentatively unpin
         'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
         'zarr',
