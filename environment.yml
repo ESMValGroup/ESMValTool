@@ -22,7 +22,7 @@ dependencies:
   - dask
   - ecmwf-api-client
   - eofs
-  - esmpy >=8.4.2
+  - esmpy >=8.4.1
   - esmvalcore==2.8.1rc1
   - fiona
   - fire
