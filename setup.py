@@ -30,7 +30,7 @@ REQUIREMENTS = {
         'dask',
         'ecmwf-api-client',
         'eofs',
-        'ESMPy >=8.4.2',
+        'ESMPy',
         'esmvalcore',
         'esmf-regrid',
         'fiona',
