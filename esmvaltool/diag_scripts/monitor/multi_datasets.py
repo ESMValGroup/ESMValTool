@@ -366,7 +366,7 @@ from iris.analysis.cartography import area_weights
 from iris.coord_categorisation import add_year
 from iris.coords import AuxCoord
 from matplotlib.gridspec import GridSpec
-from matplotlib.ticker import FormatStrFormatter, NullFormatter
+from matplotlib.ticker import FormatStrFormatter, NullFormatter, AutoMinorLocator, LogLocator
 from sklearn.metrics import r2_score
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
@@ -389,7 +389,7 @@ class MultiDatasets(MonitorBase):
         """Initialize class member."""
         super().__init__(config)
 
-        # Get default settings
+        # Get defaul stettings
         self.cfg = deepcopy(self.cfg)
         self.cfg.setdefault('facet_used_for_labels', 'dataset')
         self.cfg.setdefault('figure_kwargs', {'constrained_layout': True})
@@ -448,6 +448,11 @@ class MultiDatasets(MonitorBase):
             if plot_type in ['zonal_mean_profile', 'profile', '1d_profile']:
                 self.plots[plot_type].setdefault('log_y', True)
                 self.plots[plot_type].setdefault('show_y_minor_ticklabels',
+                                                 False)
+
+            if plot_type in ['1d_profile']:
+                self.plots[plot_type].setdefault('log_x', False)
+                self.plots[plot_type].setdefault('show_x_minor_ticklabels',
                                                  False)
 
             if plot_type in ['zonal_mean_profile', 'profile']:
@@ -1057,7 +1062,10 @@ class MultiDatasets(MonitorBase):
                     dataset,
                     f"pyplot_kwargs of {plot_type} '{func}: {arg}'",
                 )
-            getattr(plt, func)(arg)
+            if arg == 'None':
+                getattr(plt, func)()
+            else:
+                getattr(plt, func)(arg)
 
     @staticmethod
     def _check_cube_dimensions(cube, plot_type):
@@ -1448,7 +1456,7 @@ class MultiDatasets(MonitorBase):
                         self._get_label(ref_dataset))
             ref_cube = ref_dataset['cube']
 
-        # To do : 1d bias plots to reference?
+        # bias plots
         bias = self.plots[plot_type].get('plot_bias', {})
 
         logger.info("Plotting %s", plot_type)
@@ -1497,9 +1505,21 @@ class MultiDatasets(MonitorBase):
             axes.set_yscale('log')
             axes.get_yaxis().set_major_formatter(
                 FormatStrFormatter('%.1f'))
-
+        if self.plots[plot_type]['show_y_minor_ticklabels']:
+            axes.get_yaxis().set_minor_formatter(
+                FormatStrFormatter('%.1f'))
+        else:
+            axes.get_yaxis().set_minor_formatter(NullFormatter())
         if self.plots[plot_type]['log_x']:
             axes.set_xscale('log')
+            # major and minor ticks
+            x_major = LogLocator(base = 10.0, numticks = 12)
+            axes.get_xaxis().set_major_locator(x_major)
+            x_minor = LogLocator(base = 10.0,
+                                 subs = np.arange(1.0, 10.0) * 0.1,
+                                 numticks = 12)
+            axes.get_xaxis().set_minor_locator(x_minor)
+            axes.get_xaxis().set_minor_formatter(NullFormatter())
 
         # gridlines
         gridline_kwargs = self._get_gridline_kwargs(plot_type=plot_type)
