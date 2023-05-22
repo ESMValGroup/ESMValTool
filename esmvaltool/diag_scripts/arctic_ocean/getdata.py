@@ -313,8 +313,8 @@ def transect_data(cfg, mmodel, cmor_var, region, mult=2):
 
     # create instans of the location stream (set of points)
     locstream = esmpy.LocStream(lon_s4new.shape[0],
-                               name="Atlantic Inflow Section",
-                               coord_sys=esmpy.CoordSys.SPH_DEG)
+                                name="Atlantic Inflow Section",
+                                coord_sys=esmpy.CoordSys.SPH_DEG)
 
     # appoint the section locations
     locstream["ESMF:Lon"] = lon_s4new
