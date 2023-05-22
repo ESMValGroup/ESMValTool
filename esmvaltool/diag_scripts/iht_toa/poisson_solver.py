@@ -64,7 +64,6 @@ def precon(xxx, m_matrix):
 # @jit
 def precon_a(xxx, m_w, m_s, m_p, cxxx):
     """First step of preconditioner."""
-
     shp0, shp1 = np.array(cxxx.shape) - 2
     for j in range(1, shp0 + 1):
         for i in range(1, shp1 + 1):
@@ -89,6 +88,7 @@ class SphericalPoisson:
     Solve Poisson equation for a given source term (forcing) and
     calculate MHT.
     """
+
     def __init__(self, logger, source, tolerance=2.0e-4):
         """Initialise solver with source field, metrics and matrices."""
         self.logger = logger
