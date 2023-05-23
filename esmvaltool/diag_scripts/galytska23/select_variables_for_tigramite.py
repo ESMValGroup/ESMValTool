@@ -149,7 +149,7 @@ def calculate_variables(input_dict):
 #             plt.xticks(rotation=45, ha="right", rotation_mode='anchor')
 
 
-def run_my_diagnostic(cfg):
+def main(cfg):
     """Calculate and save final variables into .nc files."""
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
     all_variables = calculate_variables(my_files_dict)
