@@ -571,8 +571,8 @@ def run_diagnostic():
             client = distributed.Client(cfg['scheduler_address'])
         except OSError:
             logger.error(
-                "Unable to conntect to the Dask distributed cluster at %s. "
-                "If the cluster is no longer available, try re-running the "
+                "Unable to connect to the Dask distributed scheduler at %s. "
+                "If the scheduler is no longer available, try re-running the "
                 "diagnostic script with the --no-distributed flag.",
                 cfg['scheduler_address'])
             raise
