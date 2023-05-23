@@ -9,7 +9,7 @@ import sys
 import time
 from pathlib import Path
 
-import dask.distributed
+import distributed
 import iris
 import matplotlib.pyplot as plt
 import yaml
@@ -568,7 +568,7 @@ def run_diagnostic():
 
     if not args.no_distributed and 'scheduler_address' in cfg:
         try:
-            client = dask.distributed.Client(cfg['scheduler_address'])
+            client = distributed.Client(cfg['scheduler_address'])
         except OSError:
             logger.error(
                 "Unable to conntect to the Dask distributed cluster at %s. "
