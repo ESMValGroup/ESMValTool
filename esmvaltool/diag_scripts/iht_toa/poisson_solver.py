@@ -15,10 +15,8 @@ the output of the Poisson solver.
 """
 
 import sys
-
 import numpy as np
-
-# from numba import jit
+from numba import jit
 
 
 def swap_bounds(fld):
