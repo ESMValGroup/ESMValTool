@@ -43,7 +43,7 @@ REQUIREMENTS = {
         'natsort',
         'nc-time-axis',
         'netCDF4',
-        'numpy',
+        'numpy!=1.24.3',  # severe masking bug
         'packaging',
         'openpyxl',
         'pandas',
