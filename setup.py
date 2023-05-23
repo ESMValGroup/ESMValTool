@@ -28,6 +28,7 @@ REQUIREMENTS = {
         'cftime',
         'cmocean',
         'dask',
+        'distributed'
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
@@ -59,7 +60,7 @@ REQUIREMENTS = {
         'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris',
+        'scitools-iris>=3.6',
         'seaborn',
         'seawater',
         'shapely<2.0.0',  # github.com/ESMValGroup/ESMValTool/issues/2965

@@ -20,6 +20,7 @@ dependencies:
   - cmocean
   - cython
   - dask
+  - distributed
   - ecmwf-api-client
   - eofs
   - esmpy
@@ -27,7 +28,7 @@ dependencies:
   - fiona
   - fire
   - gdal
-  - iris>=3.1.0
+  - iris>=3.6
   - iris-esmf-regrid
   - jinja2
   - joblib
