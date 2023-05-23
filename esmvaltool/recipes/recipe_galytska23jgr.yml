@@ -3,7 +3,8 @@
 ---
 documentation:
   title: Arctic-Midlatitude Teleconnections recipe
-  description: |
+  
+  description: >
     Recipe to select variables that reproduce Arctic-midlatitude
     teleconnections for further application of
     Causal Model Evaluation (CME) described in Galytska et al. (2023).
