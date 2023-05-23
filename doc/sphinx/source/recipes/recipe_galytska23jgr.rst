@@ -50,7 +50,7 @@ User settings in recipe
 Variables
 ---------
 
-* zg (atmos, daily mean, longitude latitude time)
+* zg (atmos, monthly mean, longitude latitude time)
 * tas (atmos, monthly mean, longitude latitude time)
 * psl (atmos, monthly mean, longitude latitude time)
 * va (atmos, monthly mean, longitude latitude time)
