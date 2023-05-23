@@ -1,6 +1,6 @@
 ; #############################################################################
 ; WRAPPER SCRIPT FOR COLLECTING AND PLOTTING PRECALCULATED METRICS
-; Author: Franziska Frank (DLR, Germany)
+; Author: Franziska Winterstein (DLR, Germany)
 ; ESMVal project
 ; #############################################################################
 ; Description
@@ -42,7 +42,7 @@
 ;    20140620-gottschaldt_klaus-dirk: modified output file naming (variable
 ;                                     plotpath) and added option for explicit
 ;                                     plot title.
-;    20140204-frank_franziska: written.
+;    20140204-winterstein_franziska: written.
 ;
 ; #############################################################################
 
@@ -473,19 +473,19 @@ begin
   if (diag_script_info@metric.eq."RMSD") then
     caption = "RMSD performance metric"
     statistics = (/"rmsd"/)
-    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+    authors = (/"winterstein_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "portrait"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."BIAS") then
     caption = "Bias performance metric"
     statistics = (/"diff"/)
-    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+    authors = (/"winterstein_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "portrait"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."taylor") then
     caption = "Taylor diagram"
     statistics = (/"rmsd", "corr"/)
-    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+    authors = (/"winterstein_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "taylor"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."SMPI") then
