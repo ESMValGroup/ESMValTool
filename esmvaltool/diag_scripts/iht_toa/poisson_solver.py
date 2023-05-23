@@ -46,6 +46,7 @@ def dot_prod(xxx, yyy):
     return (xxx[1:shp0 + 1, 1:shp1 + 1] * yyy[1:shp0 + 1, 1:shp1 + 1]).sum()
 
 
+@jit
 def precon(xxx, m_matrix):
     """Preconditioner.
 
@@ -59,7 +60,7 @@ def precon(xxx, m_matrix):
     return cxxx
 
 
-# @jit
+@jit
 def precon_a(xxx, m_w, m_s, m_p, cxxx):
     """First step of preconditioner."""
     shp0, shp1 = np.array(cxxx.shape) - 2
@@ -70,7 +71,7 @@ def precon_a(xxx, m_w, m_s, m_p, cxxx):
                  m_w[j, i] * cxxx[j, i - 1])
 
 
-# @jit
+@jit
 def precon_b(m_e, m_n, cxxx):
     """Second step of preconditioner."""
     shp0, shp1 = np.array(cxxx.shape) - 2
