@@ -539,8 +539,9 @@ class ImpliedHeatTransport:
                          color=col[1])
             axx.set_ylim(0, 0.8)
             axx.set_ylabel(r'$S$ (PW)')
-            axx.xaxis.set_major_locator(mdates.MonthLocator(bymonth=1))
+            axx.xaxis.set_major_locator(mdates.YearLocator(3, month=1, day=1))
             axx.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+            axx.xaxis.set_minor_locator(mdates.YearLocator())
             axx.set_title(label[i])
             if i == 0:
                 plt.legend(loc=5)

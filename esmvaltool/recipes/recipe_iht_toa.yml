@@ -8,16 +8,8 @@ documentation:
     Horizontal impied heat transport of the entire column derived from
     TOA radiative fluxes.
 
-#    The 'single_model' script focuses on a single simulation and produces a number
-#    of plots comparing the results of the Poisson solver output of different radiative
-#    fluxes. If multiple datasets are chosen, the plots will be produced for each
-#    dataset.
-
-#    The 'multi-model' script directly compares the chosen models to the
-#    CERES-EBAF results for the same time period. Only one set of plots are produced
-#    regardless of the number of datasets. Requires the 'additional_datasets' field
-#    to be included and filled in with the CERES-EBAF details from obs4MIPS.
-
+#    The 'single_model' script  produces Figures 1 to 6 in Pearce and
+#    Bodas-Salcedo (2023) for each of the darasets chosen.
 
   authors:
     - pearce_francesca
@@ -30,9 +22,9 @@ documentation:
     - pearce23jclim
 
 datasets:
-  # The CERES-EBAF observations reproduce the results of Pearce and Bodas-Salcedo (2023),
-  # but it can be applied to model data.
-  - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2001, end_year: 2004}
+  # The CERES-EBAF observations reproduce the results of Pearce and
+  # Bodas-Salcedo (2023), but it can be applied to model data.
+  - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2001, end_year: 2010}
   # - {dataset: BCC-ESM1, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
   # - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f3, grid: gn, mip: Amon}
   # - {dataset: UKESM1-0-LL, project: CMIP6, exp: amip, ensemble: r1i1p1f4, grid: gn, mip: Amon}
@@ -41,7 +33,8 @@ datasets:
   # - {dataset: MIROC6, project: CMIP6, exp: amip, ensemble: r1i1p1f1, grid: gn, mip: Amon}
 
 preprocessors:
-
+  # It is recommended to use a low resolution grid as the
+  # calculations are computationally expensive
   common_grid:
     regrid:
       target_grid: 5.0x5.0
@@ -49,27 +42,10 @@ preprocessors:
 
   climate_mean_global:
     regrid:
-      # Use the lowest resolution grid of your chosen data for the target 1.875x1.25
       target_grid: 5.0x5.0
       scheme: area_weighted
     climate_statistics:
       operator: mean
-
-  annual_filter:
-    regrid:
-      # It is recommended to use a low resolution grid, otherwise the process is
-      # very expensive computationally
-      target_grid: 5.0x5.0
-      scheme: area_weighted
-    timeseries_filter:
-      window: 365
-      span: 1850
-      filter_type: lowpass  # low-pass filter
-      filter_stats: mean
-#    rolling_window_statistics:
-#      coordinate: time
-#      operator: mean
-#      window_length: 12
 
 diagnostics:
 
@@ -86,93 +62,63 @@ diagnostics:
         short_name: rtnt
         mip: Amon
         preprocessor: climate_mean_global
-        start_year: 2001
-        end_year: 2005
       rtnt_monthly:
         derive: true
         short_name: rtnt
         mip: Amon
         preprocessor: common_grid
-        start_year: 2001
-        end_year: 2005
       rsnt:
         derive: true
         short_name: rsnt
         mip: Amon
         preprocessor: climate_mean_global
-        start_year: 2001
-        end_year: 2005
       rlut:
         short_name: rlut
         mip: Amon
         preprocessor: climate_mean_global
-        start_year: 2001
-        end_year: 2005
       rlutcs:
         short_name: rlutcs
         mip: Amon
         preprocessor: climate_mean_global
-        start_year: 2001
-        end_year: 2005
       rlutcs_monthly:
         short_name: rlutcs
         mip: Amon
         preprocessor: common_grid
-        start_year: 2001
-        end_year: 2005
       rsutcs:
         short_name: rsutcs
         mip: Amon
         preprocessor: climate_mean_global
-        start_year: 2001
-        end_year: 2005
       rsutcs_monthly:
         short_name: rsutcs
         mip: Amon
         preprocessor: common_grid
-        start_year: 2001
-        end_year: 2005
       rsut:
         short_name: rsut
         mip: Amon
         preprocessor: climate_mean_global
-        start_year: 2001
-        end_year: 2005
       rsdt:
         short_name: rsdt
         mip: Amon
         preprocessor: climate_mean_global
-        start_year: 2001
-        end_year: 2005
       rsdt_monthly:
         short_name: rsdt
         mip: Amon
         preprocessor: common_grid
-        start_year: 2001
-        end_year: 2005
       netcre:
         derive: true
         short_name: netcre
         mip: Amon
         preprocessor: climate_mean_global
-        start_year: 2001
-        end_year: 2005
       swcre:
         derive: true
         short_name: swcre
         mip: Amon
         preprocessor: climate_mean_global
-        start_year: 2001
-        end_year: 2005
       lwcre:
         derive: true
         short_name: lwcre
         mip: Amon
         preprocessor: climate_mean_global
-        start_year: 2001
-        end_year: 2005
     scripts:
       single_model:
         script: iht_toa/single_model_diagnostics.py
-#      multi_model:
-#        script: iht_toa/multi_model_diagnostics.py
