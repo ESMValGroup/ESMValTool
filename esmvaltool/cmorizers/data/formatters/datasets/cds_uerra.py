@@ -23,10 +23,6 @@ Download and processing instructions
 Notes
 -----
    - It might be needed to split up the request into smaller chunks
-   - This script uses the xesmf regridder, which is not standard included in
-     ESMValTool, install it in the esmvaltool environment:
-           conda install -c conda-forge xesmf
-
 
 Modification history
    20190821-A_crezee_bas: written.
@@ -216,6 +212,7 @@ def _regrid_dataset(in_dir, var, cfg):
     # Match any year here
     filepattern = var['file'].format(year='????', month='??')
     filelist = glob.glob(os.path.join(in_dir, filepattern))
+    regridder = None
     for infile in filelist:
         _, infile_tail = os.path.split(infile)
         outfile = os.path.join(cfg['work_dir'], infile_tail)
@@ -234,10 +231,15 @@ def _regrid_dataset(in_dir, var, cfg):
         assert int((input_da == 0.).sum()) == 0  # Make sure that there
         # are no zero's in the data,
         # since they will be masked out
-        regridder = xe.Regridder(input_ds,
-                                 targetgrid_ds,
-                                 'bilinear',
-                                 reuse_weights=True)
+        shapes = (input_ds["lon"].shape, input_ds["lat"].shape,
+                  targetgrid_ds["lon"].shape, targetgrid_ds["lat"].shape)
+        if regridder is None:
+            regridder = xe.Regridder(input_ds,
+                                     targetgrid_ds,
+                                     'bilinear')
+            ref_shapes = shapes
+        else:
+            assert shapes == ref_shapes
         da_out = regridder(input_da)
         da_out = da_out.where(da_out != 0.)
         da_out = da_out - constantval
