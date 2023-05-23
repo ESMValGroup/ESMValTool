@@ -1,5 +1,6 @@
 """Script to download DARDAR-CLOUD from ICARE data archive."""
 import logging
+import os
 
 import datetime
 
@@ -56,11 +57,13 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.connect(user, passwd)
 
     if not start_date:
+#        start_date = datetime.datetime(2007, 1, 1)
         start_date = datetime.datetime(2007, 1, 1)
     if not end_date:
-        end_date = datetime.datetime(2016, 12, 31)
+#        end_date = datetime.datetime(2016, 12, 31)
+        end_date = datetime.datetime(2007, 12, 31)
 
-    downloader.set_cwd("/SPACEBORNE/MULTI_SENSOR/DARDAR_CLOUD")
+    downloader.set_cwd("/SPACEBORNE/CLOUDSAT/DARDAR-CLOUD.v3.10")
 
     loop_date = start_date
     while loop_date <= end_date:
@@ -71,7 +74,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
             downloader.download_folder(
                 f'{year}/{year}_{month}_{day}/',
                 sub_folder=f'{year}',
-                filter_files=f'DARDAR-CLOUD_.+hdf')
+                filter_files=f'DARDAR-CLOUD_.+nc')
         except:
             logger.info(f'No files found for date {year}-{month}-{day}')
         loop_date += relativedelta.relativedelta(days=1)

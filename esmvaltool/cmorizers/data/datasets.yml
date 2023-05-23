@@ -264,8 +264,8 @@ datasets:
 
   DARDAR-CLOUD:
     tier: 3
-    source: ftp.icare.univ-lille1.fr/SPACEBORNE/MULTI_SENSOR/DARDAR_CLOUD/
-    last_access: 2023-05-17
+    source: ftp.icare.univ-lille1.fr/SPACEBORNE/CLOUDSAT/DARDAR-CLOUD.v3.10/
+    last_access: 2023-05-19
     info: |
       Download and processing instructions
       1) Create an account at the ICARE Data and Services Center
