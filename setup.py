@@ -28,7 +28,7 @@ REQUIREMENTS = {
         'cftime',
         'cmocean',
         'dask',
-        'distributed'
+        'distributed',
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
