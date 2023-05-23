@@ -64,9 +64,7 @@ Observations and reformat scripts
 
 * ERA5 (pr, psl, ta, tas, ts, va, zg - ERA5 data can be used via the native6 project)
 
-* HadISST - (sic)
-
-  *Reformat script:* cmorizers/data/formatters/datasets/hadisst.ncl
+* HadISST - (sic - esmvaltool/cmorizers/data/formatters/datasets/hadisst.ncl)
 
 References
 ----------
