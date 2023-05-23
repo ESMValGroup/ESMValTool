@@ -62,13 +62,9 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* ERA5 - (zg, tas, psl, va, ta, ts, pr)
+* ERA5 (pr, psl, ta, tas, ts, va, zg - ERA5 data can be used via the native6 project)
 
-  *Reformat script:* recipes/cmorizers/recipe_era5.yml
-
-* HadISST - (sic)
-
-  *Reformat script:* cmorizers/data/formatters/datasets/hadisst.ncl
+* HadISST - (sic - esmvaltool/cmorizers/data/formatters/datasets/hadisst.ncl)
 
 References
 ----------
