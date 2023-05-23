@@ -173,4 +173,5 @@ def main(cfg):
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
-        run_my_diagnostic(config)
+        main(config)
+
