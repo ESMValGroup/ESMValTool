@@ -28,8 +28,6 @@ def attrib_warming(beta,betaCI,dec_warming,ci90_dec_warming,ci90_beta_obs=0.):
   attrib_warming=beta*dec_warming
   attrib_range=[attrib_warming-numpy.absolute(beta)*dec_warming*(((beta-betaCI[0])/beta)**2+(ci90_dec_warming/dec_warming)**2+(ci90_beta_obs/beta)**2)**0.5,attrib_warming+numpy.absolute(beta)*dec_warming*(((betaCI[1]-beta)/beta)**2+(ci90_dec_warming/dec_warming)**2+(ci90_beta_obs/beta)**2)**0.5]
   perc_17_83=[attrib_warming-0.58*numpy.absolute(beta)*dec_warming*(((beta-betaCI[0])/beta)**2+(ci90_dec_warming/dec_warming)**2+(ci90_beta_obs/beta)**2)**0.5,attrib_warming+0.58*numpy.absolute(beta)*dec_warming*(((betaCI[1]-beta)/beta)**2+(ci90_dec_warming/dec_warming)**2+(ci90_beta_obs/beta)**2)**0.5] #Calculate 17th and 83rd percentiles, assuming a Gaussian.
-#  attrib_range=numpy.sort(attrib_range)
-#  perc_17_83=numpy.sort(perc_17_83)
   attrib_range.sort()
   perc_17_83.sort()
   return (attrib_warming,attrib_range,perc_17_83)
@@ -142,7 +140,8 @@ def main(cfg):
     av_yr=int(diag_name[4:6]) #Last two digits of diag_name are averaging period in yrs.
     years=list(numpy.arange(1850+av_yr/2,2025+av_yr/2,av_yr)) #Used for plotting.
     #Added 5 years here.
-    ldiag=int(175/av_yr) #length of diagnostic, assuming 175 years of data.
+    nyear=175 #Number of years, hard-coded.
+    ldiag=int(nyear/av_yr) #length of diagnostic.
     if diag_name[0:4]=='hemi': ldiag=ldiag*2
    
     anom_max=500 #arbitrary max size for number of anomalies.
@@ -158,8 +157,8 @@ def main(cfg):
     ensobs_dec_warming=[]
     ci90_beta_obs2=numpy.zeros((2))
     ci90_beta_obs3=numpy.zeros((3))
-    mean_gmst_comp_warming=numpy.zeros((175,nexp,nmodel))
-    ci90_gmst_comp_warming=numpy.zeros((175,nexp,nmodel))
+    mean_gmst_comp_warming=numpy.zeros((nyear,nexp,nmodel))
+    ci90_gmst_comp_warming=numpy.zeros((nyear,nexp,nmodel))
 
     #Loop over models, then datasets, then ensemble members.
     for mm, dataset in enumerate(grouped_input_data):
@@ -179,7 +178,7 @@ def main(cfg):
             ens_sizes[experiment,mm]=nens
             exp_diags=numpy.zeros((ldiag,nens))
             exp_dec_warming=numpy.zeros(nens)
-            exp_gmst_comp_warming=numpy.zeros((175,nens))
+            exp_gmst_comp_warming=numpy.zeros((nyear,nens))
        
             for ee, ensemble in enumerate(grouped_exp_input_data):
                 logger.info("** Processing ensemble %s", ensemble)
@@ -409,21 +408,14 @@ def main(cfg):
       mean_diag=numpy.mean(numpy.reshape(mean_diag,(nlat,nper,nexp,nmodel)),axis=0)
     mean_dec_warming_gmst=numpy.squeeze(numpy.mean(mean_diag[32:34,:,:],axis=0)-numpy.mean(mean_diag[0:10,:,:],axis=0)) #Assume 5-yr means, calculate 2010-2019-1850-1899 in GMST.
     multim_mean_dec_warming_gmst=numpy.mean(mean_dec_warming_gmst[:,model_indices],axis=1)
-    if gmst_flag:
-      multim_ci90_dec_warming=(numpy.mean(ci90_dec_warming**2,axis=1))**0.5 #RMS dec warming uncertainty across models.
-    else:
-    #Define uncertainty in multi-model mean warming to 2010-2019 based on spread in ratio of GSAT to GMST increase across models.
+    if not gmst_flag and warming_years==[2010,2019]:
+      #Define uncertainty in multi-model mean warming to 2010-2019 based on spread in ratio of GSAT to GMST increase across models, as in Gillett et al., 2021.
       multim_ci90_dec_warming=numpy.std(mean_dec_warming/mean_dec_warming_gmst,ddof=1,axis=1)*t.ppf(0.95,nmodel-1)*numpy.mean(mean_dec_warming,axis=1)
-#    multim_ci90_dec_warming[1]=multim_ci90_dec_warming[0] #Assume hist-nat uncertainty to be equal to historical uncertainty, since hist-nat uncertainty calculation involves division by numbers close to zero.
-    multim_ci90_gmst_comp_warming=numpy.zeros((175,nexp))
-    for yy in range(175):
+    else:
+      multim_ci90_dec_warming=(numpy.mean(ci90_dec_warming**2,axis=1))**0.5 #RMS dec warming uncertainty across models.
+    multim_ci90_gmst_comp_warming=numpy.zeros((nyear,nexp))
+    for yy in range(nyear):
       multim_ci90_gmst_comp_warming[yy,:]= (numpy.mean(ci90_gmst_comp_warming[yy,:,:]**2,axis=1))**0.5 #RMS dec warming uncertainty across models.   
-#        multim_ci90_gmst_comp_warming[yy,:]=numpy.std(mean_dec_warming/mean_dec_warming_gmst,ddof=1,axis=1)*t.ppf(0.95,nmodel-1)*numpy.mean(mean_gmst_comp_warming[yy,:,:],axis=1) #As above, but using timeseries of gmst_comp.
-#    multim_ci90_gmst_comp_warming[:,1]=multim_ci90_gmst_comp_warming[:,0] #Assume hist-nat uncertainty to be equal to historical unc    
-#    print ('multim_ci90_dec_warming',multim_ci90_dec_warming)
-#    print ('mean_dec_warming',mean_dec_warming)
-#    print ('mean_dec_warming_gmst',mean_dec_warming_gmst)
-#    print ('mean_dec_warming/mean_dec_warming_gmst',mean_dec_warming/mean_dec_warming_gmst)
 
     if pool_int_var: #Only plot multi model results if pooling internal var.
 
@@ -489,20 +481,6 @@ def main(cfg):
         plt.plot([mm_attrib+1.0,mm_attrib+1.0],att_out3[dataset]['betaCI'][1,:]*multim_mean_dec_warming[1],color=cols[1,:],linestyle='None',marker='_')    
         plt.plot([mm_attrib+1.2,mm_attrib+1.2],att_out3[dataset]['betaCI'][0,:]*(multim_mean_dec_warming[0]-multim_mean_dec_warming[1]-multim_mean_dec_warming[2]),color=cols[0,:],linestyle='None',marker='_')
 
-#Calculate attributable warming ranges in GMST.
-#      print ('Two-way attributable warming - GMST')
-#      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],multim_mean_dec_warming_gmst[0]-multim_mean_dec_warming_gmst[1],0.,ci90_beta_obs2[0])
-#      print ('ANT:',att_warming_range)
-#      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][1],att_out[dataset]['betaCI'][1,:],multim_mean_dec_warming_gmst[1],0.,ci90_beta_obs2[1])
-#      print ('NAT:',att_warming_range)
-#      print ('Three-way attributable warming - GMST')
-#      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][2],att_out3[dataset]['betaCI'][2,:],multim_mean_dec_warming_gmst[2],0.,ci90_beta_obs3[2])
-#      print (exp_flag,att_warming_range)
-#      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][1],att_out3[dataset]['betaCI'][1,:],multim_mean_dec_warming_gmst[1],0.,ci90_beta_obs3[1])
-#      print ('NAT:',att_warming_range)
-#      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][0],att_out3[dataset]['betaCI'][0,:],multim_mean_dec_warming_gmst[0]-multim_mean_dec_warming_gmst[1]-multim_mean_dec_warming_gmst[2],0.,ci90_beta_obs3[0])
-#      print ('OTH:',att_warming_range)
-        
       
     nmodel_attrib=mm_attrib
       
@@ -592,16 +570,11 @@ def main(cfg):
     plt.close()
 
 #Calculate annual mean timeseries for gmst_comp attributable warming, ANT, NAT, GHG, OTH.
-    nyear=175
-    ant_17_83=[1,1]
-    nat_17_83=[1,1]
-    ghg_17_83=[1,1]
-    oth_17_83=[1,1]
     
     with open(plot_dir+'/cmip6_fitted_comp_gmst.csv', mode='w') as file:
        data_writer=csv.writer(file,delimiter=',',quotechar='"', quoting=csv.QUOTE_MINIMAL)
-       data_writer.writerow(['CMIP6 DAMIP models spatially-complete GMST attributable components'])
        data_writer.writerow(['Year', 'ANT 5', '17', '83', '95', '50', 'NAT 5', '17', '83', '95', '50','GHG 5', '17', '83', '95', '50', 'OTH 5', '17', '83', '95', '50'])
+       data_writer.writerow(['CMIP6 DAMIP models spatially-complete GMST attributable components'])
        for yy in range(nyear):
          [ant_warming,ant_warming_range,ant_17_83]=attrib_warming(att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],multim_mean_gmst_comp_warming[yy,0]-multim_mean_gmst_comp_warming[yy,1],(multim_ci90_gmst_comp_warming[yy,0]**2+multim_ci90_gmst_comp_warming[yy,1]**2)**0.5,ci90_beta_obs2[0])
          [nat_warming,nat_warming_range,nat_17_83]=attrib_warming(att_out[dataset]['beta'][1],att_out[dataset]['betaCI'][1,:],multim_mean_gmst_comp_warming[yy,1],multim_ci90_gmst_comp_warming[yy,1],ci90_beta_obs2[1])
@@ -613,8 +586,6 @@ def main(cfg):
                                        float(oth_warming_range[0]),float(oth_17_83[0]),float(oth_17_83[1]),float(oth_warming_range[1]),float(oth_warming)])
                                
 
-         if yy == 172:          
-           print ("end:",att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],multim_mean_gmst_comp_warming[yy,0]-multim_mean_gmst_comp_warming[yy,1],(multim_ci90_gmst_comp_warming[yy,0]**2+multim_ci90_gmst_comp_warming[yy,1]**2)**0.5,ci90_beta_obs2[0])
       
 
     
