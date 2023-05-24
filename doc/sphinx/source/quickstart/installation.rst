@@ -489,7 +489,7 @@ To check that the installation was successful, run
 this should show the directory of the source code that you just downloaded.
 
 If the command above shows a directory inside your conda environment instead,
-e.g. ``~/mambaforge/envs/esmvaltool/lib/python3.8/site-packages/esmvalcore``,
+e.g. ``~/mambaforge/envs/esmvaltool/lib/python3.11/site-packages/esmvalcore``,
 you may need to manually remove that directory and run
 ``pip install --editable '.[develop]'`` again.
 
@@ -710,9 +710,9 @@ for example by running
 
 .. code-block:: bash
 
-    mamba create -n esmvaltool esmvaltool 'python=3.10'
+    mamba create -n esmvaltool esmvaltool 'python=3.11'
 
-you ask for Python 3.10 specifically and that makes it much easier for mamba to
+you ask for Python 3.11 specifically and that makes it much easier for mamba to
 solve the environment, because now it can ignore any packages that were built
 for other Python versions. Note that, since the esmvaltool package is built
 with Python>=3.8, asking for an older Python version, e.g. `python=3.7`, in
