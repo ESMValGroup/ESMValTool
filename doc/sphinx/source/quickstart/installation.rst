@@ -8,7 +8,7 @@ Installation
    ESMValTool now uses `mamba` instead of `conda` for the recommended installation.
    For more information about the change, have a look at :ref:`Move to Mamba<move-to-mamba>`.
 
-ESMValTool supports Python 3.8 and later and requires Linux or MacOS.
+ESMValTool supports Python 3.9 and later and requires Linux or MacOS.
 Successful usage on Windows has been reported by following the Linux
 installation instructions with
 `WSL <https://learn.microsoft.com/en-us/windows/wsl/install>`__.
