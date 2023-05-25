@@ -885,7 +885,7 @@ class MultiDatasets(MonitorBase):
 
     def _plot_zonal_mean_profile_with_ref(self, plot_func, dataset,
                                           ref_dataset):
-        """Plot zonal mean plot for single dataset with a reference dataset."""
+        """Plot zonal mean profile for single dataset with reference dataset."""
         plot_type = 'zonal_mean_profile'
         logger.info("Plotting zonal mean profile with reference dataset"
                     " '%s' for '%s'",
