@@ -1506,7 +1506,7 @@ class MultiDatasets(MonitorBase):
         if gridline_kwargs is not False:
             axes.grid(**gridline_kwargs)
         # nicer aspect ratio
-        aspect_ratio = self.plots[plot_type].get('aspect_ratio', 3 / 2)
+        aspect_ratio = self.plots[plot_type]['aspect_ratio']
         axes.set_box_aspect(aspect_ratio)
 
         # Legend
