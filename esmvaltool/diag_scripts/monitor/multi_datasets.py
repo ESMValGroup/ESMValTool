@@ -307,10 +307,6 @@ x_pos_stats_bias: float, optional (default: 0.7)
 
 Configuration options for plot type ``1d_profile``
 --------------------------------------------------
-plot_bias: string, optional
-    Optional switch to choose whether difference plot to reference should
-    be applied. And if plot_bias is not False or empty, it defines if
-    difference is 'absolute' or 'relative'.
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
@@ -416,6 +412,10 @@ class MultiDatasets(MonitorBase):
                            " scheduled for removal in version 2.11.0. Please use"
                            " plot type ``zonal_mean_profile`` instead. This is an"
                            " exact replacement.")
+            if 'zonal_mean_profile' in self.plots:
+                raise ValueError(
+                    "Both ``profile`` and ``zonal_mean_profile`` is used."
+                    " Please use ``zonal_mean_profile`` only.")
             self.plots['zonal_mean_profile'] = self.plots.pop('profile')
 
         # Check given plot types and set default settings for them
@@ -461,7 +461,7 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('log_x', False)
                 self.plots[plot_type].setdefault('show_x_minor_ticklabels',
                                                  False)
-                self.plots[plot_type].setdefault('aspect_ratio', 1.5))
+                self.plots[plot_type].setdefault('aspect_ratio', 1.5)
 
             if plot_type in ['zonal_mean_profile']:
                 self.plots[plot_type].setdefault('x_pos_stats_avg', 0.01)
@@ -1365,6 +1365,8 @@ class MultiDatasets(MonitorBase):
     def create_zonal_mean_profile_plot(self, datasets, short_name):
         """Create zonal mean profile plot."""
         plot_type = 'zonal_mean_profile'
+        if plot_type not in self.plots:
+            return
 
         if not datasets:
             raise ValueError(f"No input data to plot '{plot_type}' given")
@@ -1446,19 +1448,6 @@ class MultiDatasets(MonitorBase):
         if not datasets:
             raise ValueError(f"No input data to plot '{plot_type}' given")
 
-        # Get reference dataset if possible
-        ref_dataset = self._get_reference_dataset(datasets, short_name)
-        if ref_dataset is None:
-            logger.info("Plotting %s without reference dataset", plot_type)
-            ref_cube = None
-        else:
-            logger.info("Plotting %s with reference dataset '%s'", plot_type,
-                        self._get_label(ref_dataset))
-            ref_cube = ref_dataset['cube']
-
-        # bias plots
-        bias = self.plots[plot_type].get('plot_bias', {})
-
         logger.info("Plotting %s", plot_type)
         fig = plt.figure(**self.cfg['figure_kwargs'])
         axes = fig.add_subplot()
@@ -1469,9 +1458,6 @@ class MultiDatasets(MonitorBase):
         ancestors = []
         cubes = {}
         for dataset in datasets:
-            if dataset == ref_dataset and bias:
-                continue
-
             ancestors.append(dataset['filename'])
             cube = dataset['cube']
             cubes[self._get_label(dataset)] = cube
@@ -1480,17 +1466,6 @@ class MultiDatasets(MonitorBase):
             # Plot 1D profile
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
-
-            # apply difference
-            if bias:
-                if ref_cube:
-                    cube, multi_dataset_facets = (
-                        self._compute_bias(cube, ref_cube, bias,
-                                           multi_dataset_facets)
-                    )
-                else:
-                    logger.info("Plotting of differences not possible."
-                                " Reference is missing.")
 
             iris.plot.plot(cube, **plot_kwargs)
 
@@ -1563,17 +1538,6 @@ class MultiDatasets(MonitorBase):
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
-
-    @staticmethod
-    def _compute_bias(cube, ref_cube, bias, facets):
-        """Compute the bias according to the given bias type."""
-        if bias == 'absolute':
-            cube = cube - ref_cube
-        elif bias == 'relative':
-            cube = (cube / ref_cube - 1.) * 100.
-            facets['units'] = '%'
-
-        return cube, facets
 
     def compute(self):
         """Plot preprocessed data."""
