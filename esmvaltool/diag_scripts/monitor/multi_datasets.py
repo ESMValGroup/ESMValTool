@@ -32,14 +32,14 @@ Currently supported plot types (use the option ``plots`` to specify them):
       can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
       :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
       needs to be 2D with dimensions `latitude`, `height`/`air_pressure`.
-      
+
       .. warning::
-      
+
       The plot_type ``profile`` for zonal mean profiles has been deprecated
       in ESMValTool version 2.9.0 and is scheduled for removal in version
       2.11.0. Please use plot type ``zonal_mean_profile`` instead. This is
       an exact replacement.
-      
+
     - 1D profiles (plot type ``1d_profile``): for each variable separately, all
       datasets are plotted in one single figure. Input data needs to be 1D with
       single dimension `height` / `air_pressure`
@@ -410,13 +410,20 @@ class MultiDatasets(MonitorBase):
             sort=self.cfg['facet_used_for_labels'],
         )
 
+        if 'profile' in self.plots:
+            logger.warning("The plot_type ``profile`` for zonal mean profiles has"
+                           " been deprecated in ESMValTool version 2.9.0 and is"
+                           " scheduled for removal in version 2.11.0. Please use"
+                           " plot type ``zonal_mean_profile`` instead. This is an"
+                           " exact replacement.")
+            self.plots['zonal_mean_profile'] = self.plots.pop('profile')
+
         # Check given plot types and set default settings for them
         self.supported_plot_types = [
             'timeseries',
             'annual_cycle',
             'map',
             'zonal_mean_profile',
-            'profile',
             '1d_profile'
         ]
         for (plot_type, plot_options) in self.plots.items():
@@ -445,7 +452,7 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('x_pos_stats_bias', 0.92)
 
             # Defaults for zonal_mean_profile plots
-            if plot_type in ['zonal_mean_profile', 'profile', '1d_profile']:
+            if plot_type in ['zonal_mean_profile', '1d_profile']:
                 self.plots[plot_type].setdefault('log_y', True)
                 self.plots[plot_type].setdefault('show_y_minor_ticklabels',
                                                  False)
@@ -454,8 +461,9 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('log_x', False)
                 self.plots[plot_type].setdefault('show_x_minor_ticklabels',
                                                  False)
+                self.plots[plot_type].setdefault('aspect_ratio', 1.5))
 
-            if plot_type in ['zonal_mean_profile', 'profile']:
+            if plot_type in ['zonal_mean_profile']:
                 self.plots[plot_type].setdefault('x_pos_stats_avg', 0.01)
                 self.plots[plot_type].setdefault('x_pos_stats_bias', 0.7)
 
