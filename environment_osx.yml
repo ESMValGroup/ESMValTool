@@ -10,7 +10,7 @@ channels:
 
 dependencies:
   - pip!=21.3
-  - python>=3.8
+  - python>=3.9
   - aiohttp
   - cartopy
   - cdo>=1.9.7
