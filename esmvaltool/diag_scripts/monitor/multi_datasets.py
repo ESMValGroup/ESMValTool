@@ -321,10 +321,10 @@ gridline_kwargs: dict, optional
 aspect_ratio: float, optional
     Optional set the aspect ratio of the one-dimensional plot. Default is 3/2,
     which results in a slender upright plot.
-y_log: bool, optional
-    Optional set a logarithmic scale for the vertical axis
-x_log: bool, optional
-    Optional set a logarithmic scale for the x-axis
+log_x: bool, optional (default: False)
+    Use logarithmic X-axis.
+log_y: bool, optional (default: True)
+    Use logarithmic Y-axis.
 plot_kwargs: dict, optional
     Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
     elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
