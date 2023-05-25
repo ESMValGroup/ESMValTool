@@ -63,7 +63,7 @@ figure_kwargs: dict, optional
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
     must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``
-    or ``profile`` (deprecated).
+    or ``1d_profile``.
     Dictionary values are dictionaries used as options for the corresponding
     plot. The allowed options for the different plot types are given below.
 plot_filename: str, optional
