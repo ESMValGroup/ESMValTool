@@ -386,7 +386,7 @@ class MultiDatasets(MonitorBase):
         """Initialize class member."""
         super().__init__(config)
 
-        # Get defaul stettings
+        # Get default stettings
         self.cfg = deepcopy(self.cfg)
         self.cfg.setdefault('facet_used_for_labels', 'dataset')
         self.cfg.setdefault('figure_kwargs', {'constrained_layout': True})
