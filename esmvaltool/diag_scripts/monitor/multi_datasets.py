@@ -362,7 +362,7 @@ from iris.analysis.cartography import area_weights
 from iris.coord_categorisation import add_year
 from iris.coords import AuxCoord
 from matplotlib.gridspec import GridSpec
-from matplotlib.ticker import FormatStrFormatter, NullFormatter, AutoMinorLocator, LogLocator
+from matplotlib.ticker import FormatStrFormatter, NullFormatter, LogLocator
 from sklearn.metrics import r2_score
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
