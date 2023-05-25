@@ -35,10 +35,10 @@ Currently supported plot types (use the option ``plots`` to specify them):
 
       .. warning::
 
-      The plot_type ``profile`` for zonal mean profiles has been deprecated
-      in ESMValTool version 2.9.0 and is scheduled for removal in version
-      2.11.0. Please use plot type ``zonal_mean_profile`` instead. This is
-      an exact replacement.
+          The plot_type ``profile`` for zonal mean profiles has been deprecated
+          in ESMValTool version 2.9.0 and is scheduled for removal in version
+          2.11.0. Please use plot type ``zonal_mean_profile`` instead. This is
+          an exact replacement.
 
     - 1D profiles (plot type ``1d_profile``): for each variable separately, all
       datasets are plotted in one single figure. Input data needs to be 1D with
