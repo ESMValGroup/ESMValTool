@@ -24,8 +24,7 @@ Currently supported plot types (use the option ``plots`` to specify them):
       grid (you can use the preprocessor :func:`esmvalcore.preprocessor.regrid`
       for this). Input data needs to be 2D with dimensions `latitude`,
       `longitude`.
-    - Zonal mean profiles (plot type ``zonal_mean_profile``
-      or ``profile`` (deprecated))):
+    - Zonal mean profiles (plot type ``zonal_mean_profile``):
       for each variable and dataset, an individual profile is plotted. If a
       reference dataset is defined, also include this dataset and a bias plot
       into the figure. Note that if a reference dataset is defined, all input
