@@ -315,7 +315,8 @@ gridline_kwargs: dict, optional
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
     lines.
 aspect_ratio: float, optional (default: 1.5)
-    Aspect ratio of the plot. The default value results in a slender upright plot.
+    Aspect ratio of the plot. The default value results in a slender upright
+    plot.
 log_x: bool, optional (default: False)
     Use logarithmic X-axis.
 log_y: bool, optional (default: True)
@@ -407,11 +408,11 @@ class MultiDatasets(MonitorBase):
         )
 
         if 'profile' in self.plots:
-            logger.warning("The plot_type ``profile`` for zonal mean profiles has"
-                           " been deprecated in ESMValTool version 2.9.0 and is"
-                           " scheduled for removal in version 2.11.0. Please use"
-                           " plot type ``zonal_mean_profile`` instead. This is an"
-                           " exact replacement.")
+            logger.warning("The plot_type ``profile`` for zonal mean profiles"
+                           " has been deprecated in ESMValTool version 2.9.0"
+                           " and is scheduled for removal in version 2.11.0."
+                           " Please use plot type ``zonal_mean_profile``"
+                           " instead. This is an exact replacement.")
             if 'zonal_mean_profile' in self.plots:
                 raise ValueError(
                     "Both ``profile`` and ``zonal_mean_profile`` is used."
@@ -897,7 +898,7 @@ class MultiDatasets(MonitorBase):
 
     def _plot_zonal_mean_profile_with_ref(self, plot_func, dataset,
                                           ref_dataset):
-        """Plot zonal mean profile for single dataset with reference dataset."""
+        """Plot zonal mean profile for single dataset with reference."""
         plot_type = 'zonal_mean_profile'
         logger.info("Plotting zonal mean profile with reference dataset"
                     " '%s' for '%s'",
@@ -1003,7 +1004,7 @@ class MultiDatasets(MonitorBase):
         return (plot_path, netcdf_paths)
 
     def _plot_zonal_mean_profile_without_ref(self, plot_func, dataset):
-        """Plot zonal mean profile for single dataset without reference dataset."""
+        """Plot zonal mean profile for single dataset without reference."""
         plot_type = 'zonal_mean_profile'
         logger.info("Plotting zonal mean profile without reference dataset"
                     " for '%s'",
@@ -1488,11 +1489,11 @@ class MultiDatasets(MonitorBase):
         if self.plots[plot_type]['log_x']:
             axes.set_xscale('log')
             # major and minor ticks
-            x_major = LogLocator(base = 10.0, numticks = 12)
+            x_major = LogLocator(base=10.0, numticks=12)
             axes.get_xaxis().set_major_locator(x_major)
-            x_minor = LogLocator(base = 10.0,
-                                 subs = np.arange(1.0, 10.0) * 0.1,
-                                 numticks = 12)
+            x_minor = LogLocator(base=10.0,
+                                 subs=np.arange(1.0, 10.0) * 0.1,
+                                 numticks=12)
             axes.get_xaxis().set_minor_locator(x_minor)
             axes.get_xaxis().set_minor_formatter(NullFormatter())
 
