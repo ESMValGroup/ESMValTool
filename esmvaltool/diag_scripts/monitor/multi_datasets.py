@@ -991,7 +991,7 @@ class MultiDatasets(MonitorBase):
         return (plot_path, netcdf_paths)
 
     def _plot_zonal_mean_profile_without_ref(self, plot_func, dataset):
-        """Plot zonal mean for single dataset without a reference dataset."""
+        """Plot zonal mean profile for single dataset without reference dataset."""
         plot_type = 'zonal_mean_profile'
         logger.info("Plotting zonal mean profile without reference dataset"
                     " for '%s'",
