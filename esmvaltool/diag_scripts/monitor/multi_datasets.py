@@ -435,7 +435,7 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type] = {}
 
             # Defaults for map and zonal_mean_profile plots
-            if plot_type in ('map', 'zonal_mean_profile', 'profile'):
+            if plot_type in ('map', 'zonal_mean_profile'):
                 self.plots[plot_type].setdefault('fontsize', 10)
                 self.plots[plot_type].setdefault(
                     'cbar_label', '{short_name} [{units}]')
@@ -527,7 +527,7 @@ class MultiDatasets(MonitorBase):
         if plot_type == 'map':
             x_pos_bias = self.plots[plot_type]['x_pos_stats_bias']
             x_pos = self.plots[plot_type]['x_pos_stats_avg']
-        elif plot_type in ['zonal_mean_profile', 'profile']:
+        elif plot_type in ['zonal_mean_profile']:
             x_pos_bias = self.plots[plot_type]['x_pos_stats_bias']
             x_pos = self.plots[plot_type]['x_pos_stats_avg']
         else:
@@ -624,7 +624,7 @@ class MultiDatasets(MonitorBase):
         cbar_kwargs = {}
         if plot_type == 'map':
             cbar_kwargs.update({'orientation': 'horizontal', 'aspect': 30})
-        elif plot_type in ['zonal_mean_profile', 'profile']:
+        elif plot_type in ['zonal_mean_profile']:
             cbar_kwargs.update({'orientation': 'vertical'})
         cbar_kwargs.update(
             self.plots[plot_type].get('cbar_kwargs', {}))
@@ -644,7 +644,7 @@ class MultiDatasets(MonitorBase):
         cbar_label = self._fill_facet_placeholders(cbar_label, dataset, descr)
         return cbar_label
 
-    def _get_gridline_kwargs(self, plot_type='map'):
+    def _get_gridline_kwargs(self, plot_type):
         """Get gridline kwargs."""
         gridline_kwargs = self.plots[plot_type].get('gridline_kwargs', {})
         return deepcopy(gridline_kwargs)
@@ -764,7 +764,7 @@ class MultiDatasets(MonitorBase):
             # Options used for all subplots
             projection = self._get_map_projection()
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            gridline_kwargs = self._get_gridline_kwargs()
+            gridline_kwargs = self._get_gridline_kwargs(plot_type)
             fontsize = self.plots[plot_type]['fontsize']
 
             # Plot dataset (top left)
@@ -864,7 +864,7 @@ class MultiDatasets(MonitorBase):
             plot_kwargs['axes'] = axes
             plot_map = plot_func(cube, **plot_kwargs)
             axes.coastlines()
-            gridline_kwargs = self._get_gridline_kwargs()
+            gridline_kwargs = self._get_gridline_kwargs(plot_type)
             if gridline_kwargs is not False:
                 axes.gridlines(**gridline_kwargs)
 
@@ -1365,14 +1365,6 @@ class MultiDatasets(MonitorBase):
     def create_zonal_mean_profile_plot(self, datasets, short_name):
         """Create zonal mean profile plot."""
         plot_type = 'zonal_mean_profile'
-        if plot_type not in self.plots and 'profile' not in self.plots:
-            return
-
-        if 'profile' in self.plots:
-            logger.warning("Plot type 'profile' is deprecated and will be"
-                           " removed in version 2.10. It was renamed to"
-                           " 'zonal_mean_profile'")
-            self.plots['zonal_mean_profile'] = self.plots['profile']
 
         if not datasets:
             raise ValueError(f"No input data to plot '{plot_type}' given")
@@ -1530,7 +1522,7 @@ class MultiDatasets(MonitorBase):
             axes.get_xaxis().set_minor_formatter(NullFormatter())
 
         # gridlines
-        gridline_kwargs = self._get_gridline_kwargs(plot_type=plot_type)
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
             axes.grid(**gridline_kwargs)
         # nicer aspect ratio
