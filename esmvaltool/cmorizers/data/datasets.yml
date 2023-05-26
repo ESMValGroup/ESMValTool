@@ -524,6 +524,18 @@ datasets:
                     data/tcwv/dataset3_1/CDR-*/...
         All files need to be in one directory, not in yearly subdirectories.
 
+  ESDC:
+    tier: 2
+    source: http://data.rsc4earth.de/EarthSystemDataCube/
+    last_access: 2023-01-26
+    info: |
+      It is not necessary to download the data, as the cmorizer script can access
+      it directly from the cloud if it is not available locally.
+
+      To download a dataset, the dataset folder can be explored on the source
+      website, and downloaded using wget:
+        ```wget -m -nH -np -R "index.html*" http://data.rsc4earth.de/EarthSystemDataCube/v3.0.1/```
+
   ESRL:
     tier: 2
     source: http://www.esrl.noaa.gov/gmd/dv/data/index.php
@@ -624,6 +636,15 @@ datasets:
     info: |
       Download the following files:
         full_data_monthly_{version}.nc.gz
+
+  GPCP-SG:
+    tier: 2
+    source: |
+      https://psl.noaa.gov/data/gridded/data.gpcp.html
+      https://downloads.psl.noaa.gov/Datasets/gpcp/precip.mon.mean.nc
+    last_access: 2023-02-15
+    info: |
+      Download the file precip.mon.mean.nc
 
   GRACE:
     tier: 3
@@ -872,16 +893,35 @@ datasets:
         EnsembleGPP_GL.nc
       A registration is required for
 
-  NCEP:
+  NCEP-DOE-R2:
     tier: 2
-    source: http://www.esrl.noaa.gov/psd/data/gridded/data.ncep.reanalysis.html
-    last_access: 2019-02-04
+    source: https://psl.noaa.gov/data/gridded/data.ncep.reanalysis2.html
+    last_access: 2022-09-06
+    info: |
+      To facilitate the download, the links to the https server are provided.
+
+      https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
+      pressure/
+        rhum.mon.mean.nc
+        air.mon.mean.nc
+      https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
+      gaussian_grid
+        tcdc.eatm.mon.mean.nc
+      https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
+      surface
+        pr_wtr.eatm.mon.mean.nc
+
+
+  NCEP-NCAR-R1:
+    tier: 2
+    source: https://psl.noaa.gov/data/gridded/data.ncep.reanalysis.html
+    last_access: 2022-11-22
     info: |
       To facilitate the download, the links to the ftp server are provided.
       Since the filenames are sometimes identical across different
       save the data in two subdirectories in input_dir_path.
       Subdirectory pressure/:
-        ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/pressure/
+        ftp://ftp.cdc.noaa.gov/Projects/Datasets/data.ncep.reanalysis/pressure/
           air.mon.mean.nc
           hgt.mon.mean.nc
           rhum.mon.mean.nc
@@ -890,24 +930,31 @@ datasets:
           vwnd.mon.mean.nc
           omega.mon.mean.nc
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/pressure/
-          uwnd.YYYY.nc
-          vwnd.YYYY.nc
+          uwnd.*.nc
+          vwnd.*.nc
       Subdirectory surface/:
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/surface/
           air.mon.mean.nc
+          pr_wtr.mon.mean.nc
+          slp.mon.mean.nc
+          wspd.mon.mean.nc
+          rhum.mon.mean.nc
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/surface_gauss/
-          prate.mon.mean.nc
+          air.2m.mon.mean.nc
+          prate.sfc.mon.mean.nc
+          tmax.2m.mon.mean.nc
+          tmin.2m.mon.mean.nc
+        ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.derived/other_gauss/
+          tcdc.eatm.mon.mean.nc
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/surface_gauss/
-          prate.sft.gauss.YYYY.nc
+          prate.sft.gauss.*.nc
         ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/other_gauss/
-          ulwrf.ntat.gauss.YYYY.nc
+          ulwrf.ntat.gauss.*.nc
 
       Select the section "Pressure" and "Surface" and download the variables
       listed below. Since raw data on pressure levels and for surface have the
       same file and variable name, save the data in two different subdirectories
       "press" and "surf" in input_dir_path.
-      Specify the time range of the data as YEAR1-YEAR2 below, considering only
-      complete years (Jan to Dec).
 
   NDP:
     tier: 3
@@ -937,6 +984,19 @@ datasets:
       Download daily data from:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
+
+  NOAA-CIRES-20CR:
+    tier: 2
+    source: ftp.cdc.noaa.gov/Projects/20thC_ReanV2/Monthlies/
+    last_access: 2022-11-17
+    info: |
+      Download the following files:
+        monolevel/cldwtr.eatm.mon.mean.nc
+        monolevel/pr_wtr.eatm.mon.mean.nc
+        pressure/shum.mon.mean.nc
+        gaussian/monolevel/tcdc.eatm.mon.mean.nc
+        gaussian/monolevel/ulwrf.ntat.mon.mean.nc
+        gaussian/monolevel/uswrf.ntat.mon.mean.nc
 
   NOAAGlobalTemp:
     tier: 2
@@ -1058,6 +1118,20 @@ datasets:
     info: |
       Download the following file:
         monthly_flask_co2_kum.csv
+
+  TCOM-CH4:
+    tier: 2
+    source: https://zenodo.org/record/7293740
+    last_access: 2023-01-17
+    info: |
+      Download the file zmch4_TCOM_plev_T2Dz_1991_2021.nc
+
+  TCOM-N2O:
+    tier: 2
+    source: https://zenodo.org/record/7386001
+    last_access: 2023-01-17
+    info: |
+      Download the file zmn2o_TCOM_plev_T2Dz_1991_2021.nc.
 
   UWisc:
     tier: 3

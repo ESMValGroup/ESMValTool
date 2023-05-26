@@ -53,6 +53,7 @@ User settings in recipe
    * calc_grading: calculates grading metrics (default: False)
    * stippling: uses stippling to mark statistically significant differences (default: False = mask out non-significant differences in gray)
    * show_global_avg: diplays the global avaerage of the input field as string at the top-right of lat-lon plots (default: False)
+   * annots: choose the annotation style, e.g. ```alias``` which would display the alias of the dataset as title (applies to plot_type zonal and cycle_zonal)
    * metric: chosen grading metric(s) (if calc_grading is True)
    * normalization: metric normalization (for RMSD and BIAS metrics only)
    * abs_levs: list of contour levels for absolute plot
@@ -171,7 +172,7 @@ The following list shows the currently used observational data sets for this rec
     * GPCP-SG (pr - obs4MIPs)
     * HadISST (ts - esmvaltool/cmorizers/data/formatters/datasets/hadisst.ncl)
     * MODIS (od550aer - esmvaltool/cmorizers/data/formatters/datasets/modis.ncl)
-    * NCEP (tas, ta, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep.ncl)
+    * NCEP-NCAR-R1 (tas, ta, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep_ncar_r1.py)
     * NIWA-BS (toz - esmvaltool/cmorizers/data/formatters/datasets/niwa_bs.ncl)
     * PATMOS-x (clt - esmvaltool/cmorizers/data/formatters/datasets/patmos_x.ncl)
 
@@ -199,7 +200,7 @@ Example plots
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_1.png
    :width: 90%
 
-   Annual cycle of globally averaged temperature at 850 hPa (time period 1980-2005) for different CMIP5 models (historical simulation) (thin colored lines) in comparison to ERA-Interim (thick yellow line) and NCEP (thick black dashed line) reanalysis data.
+   Annual cycle of globally averaged temperature at 850 hPa (time period 1980-2005) for different CMIP5 models (historical simulation) (thin colored lines) in comparison to ERA-Interim (thick yellow line) and NCEP-NCAR-R1 (thick black dashed line) reanalysis data.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_2.png
    :width: 90%

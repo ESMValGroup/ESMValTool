@@ -264,7 +264,7 @@ diagnostics:
       tas:
         preprocessor: ppNOLEV1
         reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
+        alternative_dataset: NCEP-NCAR-R1
         mip: Amon
         project: CMIP5
         exp: historical
@@ -297,7 +297,7 @@ diagnostics:
 
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
@@ -412,7 +412,7 @@ diagnostics:
       zg:
         preprocessor: pp500
         reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
+        alternative_dataset: NCEP-NCAR-R1
         mip: Amon
         project: CMIP5
         exp: historical
@@ -444,7 +444,7 @@ diagnostics:
 
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
@@ -712,7 +712,7 @@ diagnostics:
       ua:
         preprocessor: pp200
         reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
+        alternative_dataset: NCEP-NCAR-R1
         mip: Amon
         project: CMIP5
         exp: historical
@@ -746,7 +746,7 @@ diagnostics:
 
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
@@ -763,7 +763,7 @@ diagnostics:
       va:
         preprocessor: pp850
         reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
+        alternative_dataset: NCEP-NCAR-R1
         mip: Amon
         project: CMIP5
         exp: historical
@@ -797,7 +797,7 @@ diagnostics:
 
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
@@ -814,7 +814,7 @@ diagnostics:
       ua:
         preprocessor: pp850
         reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
+        alternative_dataset: NCEP-NCAR-R1
         mip: Amon
         project: CMIP5
         exp: historical
@@ -848,7 +848,7 @@ diagnostics:
 
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
@@ -865,7 +865,7 @@ diagnostics:
       va:
         preprocessor: pp200
         reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
+        alternative_dataset: NCEP-NCAR-R1
         mip: Amon
         project: CMIP5
         exp: historical
@@ -899,7 +899,7 @@ diagnostics:
 
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
@@ -916,7 +916,7 @@ diagnostics:
       ta:
         preprocessor: pp850
         reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
+        alternative_dataset: NCEP-NCAR-R1
         mip: Amon
         project: CMIP5
         exp: historical
@@ -950,7 +950,7 @@ diagnostics:
 
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
@@ -967,7 +967,7 @@ diagnostics:
       ta:
         preprocessor: pp200
         reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
+        alternative_dataset: NCEP-NCAR-R1
         mip: Amon
         project: CMIP5
         exp: historical
@@ -1001,7 +1001,7 @@ diagnostics:
 
       - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
@@ -1041,7 +1041,7 @@ diagnostics:
       tas: &var_settings
         preprocessor: regrid_4_5
         reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
+        alternative_dataset: NCEP-NCAR-R1
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1074,7 +1074,7 @@ diagnostics:
 
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
          tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
     scripts:
       pattern_cor: &fig_pattern_cor
         script: bock20jgr/corr_pattern.ncl

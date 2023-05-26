@@ -20,6 +20,7 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
+        'aiohttp',
         'cartopy',
         'cdo',
         'cdsapi',
@@ -38,11 +39,12 @@ REQUIREMENTS = {
         'joblib',
         'lime',
         'mapgenerator>=1.0.5',
-        'matplotlib<3.6.0',  # github.com/ESMValGroup/ESMValTool/issues/2800
+        'matplotlib',
         'natsort',
         'nc-time-axis',
         'netCDF4',
-        'numpy',
+        'numpy!=1.24.3',  # severe masking bug
+        'packaging',
         'openpyxl',
         'pandas',
         'pyproj',
@@ -62,9 +64,10 @@ REQUIREMENTS = {
         'seawater',
         'shapely<2.0.0',  # github.com/ESMValGroup/ESMValTool/issues/2965
         'xarray',
-        'xesmf==0.3.0',
+        'xesmf>=0.7.1',
         'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
+        'zarr',
     ],
     # Test dependencies
     # Execute `pip install .[test]` once and the use `pytest` to run tests
@@ -81,7 +84,8 @@ REQUIREMENTS = {
     # Documentation dependencies
     'doc': [
         'autodocsumm>=0.2.2',
-        'sphinx>=5',
+        'nbsphinx',
+        'sphinx>=6.1.3',
         'sphinx_rtd_theme',
     ],
     # Development dependencies
@@ -208,7 +212,6 @@ setup(
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Topic :: Scientific/Engineering',

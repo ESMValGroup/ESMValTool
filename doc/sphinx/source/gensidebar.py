@@ -73,6 +73,7 @@ def generate_sidebar(conf, conf_api):
 
     _header("esmvalcore", "ESMValCore")
     _write("esmvalcore", "Getting started", "quickstart/index")
+    _write("esmvalcore", "Example notebooks", "example-notebooks")
     _write("esmvalcore", "The recipe format", "recipe/index")
     _write("esmvalcore", "Diagnostic script interfaces", "interfaces")
     _write("esmvalcore", "Development", "develop/index")

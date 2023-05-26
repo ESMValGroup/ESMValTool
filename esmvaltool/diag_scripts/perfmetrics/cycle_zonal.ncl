@@ -19,7 +19,11 @@ begin
     modidx := array_append_record(ref_ind, modidx(ind(modidx.ne.ref_ind)), 0)
   end if
 
-  annots = project_style(info_items, diag_script_info, "annots")
+  if (isatt(diag_script_info, "annots")) then
+    annots = metadata_att_as_array(info_items, diag_script_info@annots)
+  else
+    annots = project_style(info_items, diag_script_info, "annots")
+  end if
 
   ; Loop over datasets
   do ii = 0, dimsizes(modidx) - 1
@@ -88,7 +92,8 @@ begin
                    (/"mean", "rmsd"/), \
                    diag_script_info@region, \
                    "other", \
-                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
+                   (/"winterstein_franziska", "righi_mattia", \
+                     "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 

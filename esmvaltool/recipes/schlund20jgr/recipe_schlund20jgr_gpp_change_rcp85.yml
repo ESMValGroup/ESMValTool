@@ -48,7 +48,7 @@ DATASET_ANCHOR_CO2: &datasets_co2
   - {dataset: CanESM2}
   - {dataset: CESM1-BGC}
   - {dataset: GFDL-ESM2M}
-  - {dataset: HadGEM2-ES, end_year: 2004}
+  - {dataset: HadGEM2-ES, end_year: 2004}  # missing on ESGF for co2 of esmHistorical
   - {dataset: MIROC-ESM}
   - {dataset: MPI-ESM-LR}
   - {dataset: NorESM1-ME}
@@ -260,7 +260,6 @@ preprocessors:
       target_grid: 2x2
     mask_landsea: &mask_sea_NE_mask
       mask_out: sea
-      fx_variables: null
     extract_region: &extract_region
       start_latitude: -60.0
       end_latitude: 75.0
