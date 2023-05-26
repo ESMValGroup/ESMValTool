@@ -307,18 +307,20 @@ x_pos_stats_bias: float, optional (default: 0.7)
 
 Configuration options for plot type ``1d_profile``
 --------------------------------------------------
-legend_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
-    ``legend_kwargs: false`` to not show legends.
+aspect_ratio: float, optional (default: 1.5)
+    Aspect ratio of the plot. The default value results in a slender upright
+    plot.
 gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
     lines.
-aspect_ratio: float, optional (default: 1.5)
-    Aspect ratio of the plot. The default value results in a slender upright
-    plot.
+legend_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
+    ``legend_kwargs: false`` to not show legends.
 log_x: bool, optional (default: False)
-    Use logarithmic X-axis.
+    Use logarithmic X-axis. Note that for the logarithmic x axis tickmarks are
+    set so that minor tickmarks show up. Setting of individual tickmarks by
+    pyplot_kwargs is not recommended in this case.
 log_y: bool, optional (default: True)
     Use logarithmic Y-axis.
 plot_kwargs: dict, optional
@@ -340,6 +342,10 @@ pyplot_kwargs: dict, optional
     ``{project}`` that vary between the different datasets will be transformed
     to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
     of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+show_x_minor_ticklabels: bool, optional (default: False)
+    Show tick labels for the minor ticks on the X axis.
+show_y_minor_ticklabels: bool, optional (default: False)
+    Show tick labels for the minor ticks on the Y axis.
 
 .. hint::
 
@@ -1071,7 +1077,7 @@ class MultiDatasets(MonitorBase):
                     dataset,
                     f"pyplot_kwargs of {plot_type} '{func}: {arg}'",
                 )
-            if arg == 'None':
+            if arg is None:
                 getattr(plt, func)()
             else:
                 getattr(plt, func)(arg)
@@ -1494,6 +1500,7 @@ class MultiDatasets(MonitorBase):
             x_minor = LogLocator(base=10.0,
                                  subs=np.arange(1.0, 10.0) * 0.1,
                                  numticks=12)
+
             axes.get_xaxis().set_minor_locator(x_minor)
             axes.get_xaxis().set_minor_formatter(NullFormatter())
 
