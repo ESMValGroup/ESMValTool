@@ -1,0 +1,49 @@
+# ESMValTool
+# recipe_python.yml
+---
+documentation:
+  description: |
+    Example recipe that plots a map and timeseries of temperature.
+
+  title: Recipe that runs an example diagnostic written in Python.
+
+  authors:
+    - vegas-regidor_javier
+
+  maintainer:
+    - vegas-regidor_javier
+
+  references:
+    - acknow_project
+
+  projects:
+    - proyecto_off
+
+datasets:
+  - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
+
+preprocessors:
+  tos_preproc:
+    extract_region:
+      start_longitude: 320
+      end_longitude: 330
+      start_latitude: 40
+      end_latitude: 50
+
+diagnostics:
+  timeseries:
+    description: Annual mean temperature in Amsterdam and global mean since 1850.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: tos_preproc
+        start_year: 1850
+        end_year: 2000
+    scripts:
+      script1:
+        script: spy4cast/diagnostic.py
