@@ -20,30 +20,61 @@ documentation:
     - proyecto_off
 
 datasets:
-  - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: CanESM5-1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
 
 preprocessors:
-  tos_preproc:
-    extract_region:
-      start_longitude: 320
-      end_longitude: 330
-      start_latitude: 40
-      end_latitude: 50
+  predictor_preproc:
+    regrid:
+      target_grid:
+        start_longitude: -30
+        end_longitude: 0
+        step_longitude: 0.5
+        start_latitude: -5
+        end_latitude: 10
+        step_latitude: 0.5
+      scheme: linear
+    mask_above_threshold:
+      threshold: 60
+    mask_landsea:
+      mask_out: land
+
+  predictand_preproc:
+    regrid:
+      target_grid:
+        start_longitude: 345
+        end_longitude: 360
+        step_longitude: 0.5
+        start_latitude: 35
+        end_latitude: 45
+        step_latitude: 0.5
+      scheme: linear
+
+
 
 diagnostics:
-  timeseries:
+  spy4cast:
     description: Annual mean temperature in Amsterdam and global mean since 1850.
     themes:
       - phys
     realms:
       - atmos
     variables:
-      tas:
+      predictor:
+        short_name: tos
+        mip: Omon
+        preprocessor: predictor_preproc
+        start_year: 1850
+        end_year: 2000
+      predictand:
+        short_name: tas
         mip: Amon
-        preprocessor: tos_preproc
+        preprocessor: predictand_preproc
         start_year: 1850
         end_year: 2000
     scripts:
-      script1:
-        script: spy4cast/diagnostic.py
+      mca:
+        script: spy4cast/mca.py
+        cross_validation: False
+
+
