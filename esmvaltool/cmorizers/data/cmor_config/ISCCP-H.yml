@@ -1,0 +1,35 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: ISCCP-H
+  version: 'v01r00'
+  tier: 2
+  modeling_realm: sat
+  project_id: OBS6
+  source: 'https://www.ncei.noaa.gov/data/international-satellite-cloud-climate-project-isccp-h-series-data/access/isccp-basic/hgg'
+  reference: 'isccp-h'
+  comment: |
+    '' 
+
+# Variables to cmorize
+variables:
+  clt:
+    short_name: clt
+    mip: CF3hr
+    raw: cldamt
+    file: ISCCP-Basic.HGG.v01r00.GLOBAL.{year}.{month}.*.GPC.10KM.CS00.EA1.00.nc
+  cod:
+    short_name: cod
+    mip: AERday
+    raw: tau
+    file: ISCCP-Basic.HGG.v01r00.GLOBAL.{year}.{month}.*.GPC.10KM.CS00.EA1.00.nc
+  pctisccp:
+    short_name: pctisccp
+    mip: CFday
+    raw: pc
+    file: ISCCP-Basic.HGG.v01r00.GLOBAL.{year}.{month}.*.GPC.10KM.CS00.EA1.00.nc
+  clwvi:
+    short_name: clwvi
+    mip: CF3hr
+    raw: wp
+    file: ISCCP-Basic.HGG.v01r00.GLOBAL.{year}.{month}.*.GPC.10KM.CS00.EA1.00.nc

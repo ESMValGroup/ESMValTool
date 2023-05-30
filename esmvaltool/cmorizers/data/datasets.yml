@@ -741,6 +741,20 @@ datasets:
       3) go to directory tar-nc4_MPF/ (= monthly files)
       3) download and unpack files
 
+  ISCCP-H:
+    tier: 2
+    source: https://www.ncei.noaa.gov/data/international-satellite-cloud-climate-project-isccp-h-series-data/access/isccp-basic/hgg
+    last_access: 2023-05-24
+    info: |
+      Automatic downloading:
+         esmvaltool data download ISCCP-H
+
+      To download manually:
+      1) Go to https://www.ncei.noaa.gov/data/international-satellite-cloud-climate-project-isccp-h-series-data/access/isccp-basic/hgg
+         and download select folders for download
+      2) put all files for one year into separate subfolders named by year
+         (e.g. 2007 for the year 2007)
+
   JMA-TRANSCOM:
     tier: 3
     source: http://www.globalcarbonatlas.org/en/content/atmospheric-inversions
