@@ -54,7 +54,7 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.9.0 (Release Manager: TBA)
+- 2.9.0 (Release Manager: `Bouwe Andela`_)
 
 +------------+--------------------------+
 | 2023-06-05 |ESMValCore feature freeze |
@@ -66,7 +66,7 @@ Upcoming releases
 | 2023-06-26 |ESMValTool release        |
 +------------+--------------------------+
 
-- 2.10.0 (Release Manager: TBA)
+- 2.10.0 (Release Manager: `Klaus Zimmermann`_)
 
 +------------+--------------------------+
 | 2023-10-02 |ESMValCore feature freeze |
