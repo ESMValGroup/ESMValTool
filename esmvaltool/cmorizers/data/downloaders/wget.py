@@ -22,7 +22,7 @@ class WGetDownloader(BaseDownloader):
             Extra options for wget
         """
         if out_folder == '':
-           out_folder = self.local_folder
+            out_folder = self.local_folder
         if self.overwrite:
             raise ValueError(
                 'Overwrite does not work with downloading directories through '
@@ -47,7 +47,7 @@ class WGetDownloader(BaseDownloader):
             Extra options for wget
         """
         if out_folder == '':
-           out_folder = self.local_folder
+            out_folder = self.local_folder
         command = ['wget'] + wget_options + self.overwrite_options + [
             f'--directory-prefix={out_folder}',
             '--no-directories',
