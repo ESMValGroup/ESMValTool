@@ -487,6 +487,27 @@ diagnostics:
          type: sat, version: v0, start_year: 1984, end_year: 2016}
     scripts: null
 
+  ISCCP-H:
+    description: ISCCP-H check
+    variables:
+      clwvi:
+        additional_datasets:
+          - {dataset: ISCCP-H, project: OBS6, mip: CF3hr, tier: 2,
+             type: sat, version: v01r00, start_year: 1984, end_year: 2016}
+      clt:
+        additional_datasets:
+          - {dataset: ISCCP-H, project: OBS6, mip: CF3hr, tier: 2,
+             type: sat, version: v01r00, start_year: 1984, end_year: 2016}
+      cod:
+        additional_datasets:
+          - {dataset: ISCCP-H, project: OBS6, mip: AERday, frequency: 3hr, tier: 2,
+             type: sat, version: v01r00, start_year: 1984, end_year: 2016}
+      pctisccp:
+        additional_datasets:
+          - {dataset: ISCCP-H, project: OBS6, mip: CFday, frequency: 3hr, tier: 2,
+             type: sat, version: v01r00, start_year: 1984, end_year: 2016}
+    scripts: null
+
   JRA-25:
     description: JRA-25 check
     variables:
