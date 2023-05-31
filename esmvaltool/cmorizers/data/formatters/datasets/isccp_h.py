@@ -40,11 +40,11 @@ def _extract_variable(short_name, var, in_files, cfg, in_dir,
 
     drop_global_atts = [
         'id', 'isccp_input_files', 'time_coverage_start', 'time_coverage_end',
-        'isccp_gmt','isccp_number_of_satellites_contributing', 'platform',
+        'isccp_gmt', 'isccp_number_of_satellites_contributing', 'platform',
         'instrument', 'date_issued', 'date_created', 'date_modified',
         'date_metadata_modified', 'history'
     ]
-    
+
     drop_var_atts = [
         'isccp_day', 'isccp_month', 'isccp_percent_empty_cells',
         'isccp_percent_full_cells', 'isccp_year'
@@ -64,7 +64,7 @@ def _extract_variable(short_name, var, in_files, cfg, in_dir,
 
     try:
         cube.convert_units(cmor_info.units)
-    except:
+    except Exception:
         # special case: cloud water path
         if cube.units == 'cm' and cmor_info.units == 'kg m-2':
             # The ISCCP-H documentation available at
@@ -77,7 +77,7 @@ def _extract_variable(short_name, var, in_files, cfg, in_dir,
             # Using units of 'g m-2' from the documentation rather
             # that the units 'cm' reported by the netCDF files gives reasonable
             # values for 'cloud water path' while the units of 'cm' does not.
-            # ---> convert from 'g m-2' to 'kg m-2' (ignoring netCDF units) 
+            # ---> convert from 'g m-2' to 'kg m-2' (ignoring netCDF units)
             cube *= 0.001
             cube.units = cmor_info.units
 
@@ -113,7 +113,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
             # Now get list of files
             filepattern = os.path.join(in_dir + '/' + str(year),
-                                       var['file'].format(year=year, month=month))
+                                       var['file'].format(year=year,
+                                                          month=month))
             print(filepattern)
             in_files = glob.glob(filepattern)
             if not in_files:

@@ -59,6 +59,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                 f'{year}.{month}.{day}.{hour}00.GPC.10KM.CS00.EA1.00.nc',
                 wget_options=[],
                 out_folder=folder)
-        except:
-            logger.info(f'No data found for {year}-{month}-{day}, {hour}h')
+        except Exception as exc:
+            logger.info(
+                f'Failed to download data for {year}-{month}-{day}, {hour}h. '
+                f'Exception: {str(exc)}.')
         loop_date += relativedelta.relativedelta(hours=3)
