@@ -271,7 +271,7 @@ def test_vertical_levels(tmp_path):
     cube_4.units = Unit('m')
     cube_4.coord("vertical level").units = "m"
     cube_5 = _create_sample_cube()
-    cube_5.var_name = "cli"
+    cube_5.var_name = "QI"
     cube_5.units = Unit('1')
     cube_5.coord("vertical level").units = "hPa"
     cubes = iris.cube.CubeList([cube_1, cube_2, cube_3, cube_4, cube_5])
@@ -351,4 +351,4 @@ def test_vertical_levels(tmp_path):
     cmorized_data = \
         tmp_path / "OBS6_MERRA2_reanaly_5.12.4_Amon_cli_198201-198201.nc"
     cmorized_cube = iris.load_cube(str(cmorized_data))
-    np.testing.assert_equal(cmorized_cube.coord(axis='Z').units, 'Pa')
+    np.testing.assert_equal(cmorized_cube.coord(axis='Z').units, Unit('Pa'))
