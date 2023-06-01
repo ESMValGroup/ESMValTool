@@ -127,6 +127,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            set -x
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             mkdir /logs
@@ -215,7 +216,6 @@ jobs:
             esmvaltool config get_config_user
             echo "offline: false" >> ~/.esmvaltool/config-user.yml
             cat ~/.esmvaltool/config-user.yml
-            esmvaltool run examples/recipe_python.yml
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
               esmvaltool run "$recipe"
             done

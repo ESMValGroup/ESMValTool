@@ -95,6 +95,8 @@ def main(cfg):
             output_basename = Path(input_file).stem
             if group_name != attributes['short_name']:
                 output_basename = group_name + '_' + output_basename
+            if "caption" not in attributes:
+                attributes['caption'] = input_file
             provenance_record = get_provenance_record(
                 attributes, ancestor_files=[input_file])
             plot_diagnostic(cube, output_basename, provenance_record, cfg)

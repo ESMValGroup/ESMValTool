@@ -54,19 +54,7 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.8.0 (Release Manager: `Rémi Kazeroni`_)
-
-+------------+--------------------------+
-| 2023-02-20 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2023-02-27 |ESMValCore release        |
-+------------+--------------------------+
-| 2023-03-06 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2023-03-13 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.9.0 (Release Manager: TBA)
+- 2.9.0 (Release Manager: `Bouwe Andela`_)
 
 +------------+--------------------------+
 | 2023-06-05 |ESMValCore feature freeze |
@@ -78,7 +66,7 @@ Upcoming releases
 | 2023-06-26 |ESMValTool release        |
 +------------+--------------------------+
 
-- 2.10.0 (Release Manager: TBA)
+- 2.10.0 (Release Manager: `Klaus Zimmermann`_)
 
 +------------+--------------------------+
 | 2023-10-02 |ESMValCore feature freeze |
@@ -92,6 +80,20 @@ Upcoming releases
 
 Past releases
 ^^^^^^^^^^^^^
+
+- 2.8.0 (Release Manager: `Rémi Kazeroni`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2023-03-03 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2023-03-20 | 2023-03-23 | `ESMValCore Release 2.8.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.8.0>`_ | :ref:`esmvalcore:changelog-v2-8-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2023-03-17 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2023-03-27 | 2023-03-28 | `ESMValTool Release 2.8.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.8.0>`_ |      :ref:`changelog-v2-8-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
 
 - 2.7.1 (Bugfix, Release Manager: `Valeriu Predoi`_)
 
@@ -263,9 +265,9 @@ These are the detailed steps to take to make a release.
 
 #. Some additional testing of ESMValTool
 
-   - :ref:`Run all the recipes to check that they still work and generate the overview HTML pages.<running_multiple_recipes>`
+   - :ref:`Run all the recipes to check that they still work and generate the overview HTML pages <detailed_release_procedure>`.
    - Upload the results to the webpage at https://esmvaltool.dkrz.de/shared/esmvaltool/.
-   - :ref:`Compare the results to those obtained with the previous release.<compare_recipe_runs>`
+   - :ref:`Compare the results to those obtained with the previous release <compare_recipe_runs>`.
    - Create a `GitHub discussion <https://github.com/ESMValGroup/ESMValTool/discussions>`__ to communicate about the results.
    - If there are differences with the previous release, ask recipe maintainers
      or authors to review the plots and NetCDF files of their diagnostics, for
@@ -273,6 +275,8 @@ These are the detailed steps to take to make a release.
      `mentioning <https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#mentioning-people-and-teams>`__
      them in the discussion.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
+   - Update the :ref:`list of broken recipes <broken-recipe-list>` with new recipes that could not be run successfully during the testing.
+     Open a separate GitHub issue for each failing recipe and assign the next milestone.
 
 
 #. ESMValCore release
@@ -353,6 +357,9 @@ The release branch can be used to do some additional testing before the release,
 
 How to make an ESMValTool release
 ---------------------------------
+
+Before the actual release, a number of tests, and pre-release steps must be performed,
+a detailed workflow description can be found here :ref:`detailed_release_procedure`.
 
 The release manager makes the release, assisted by the release manager of the
 previous release, or if that person is not available, another previous release
