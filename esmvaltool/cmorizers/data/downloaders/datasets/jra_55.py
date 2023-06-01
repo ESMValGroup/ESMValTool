@@ -75,26 +75,28 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     # define variables to download
 
-    var = {"011_tmp": "anl_p125"},
-          "011_tmp": "anl_surf125",
-           "039_vvel": "anl_p125",
-           "071_tcdc": "fcst_surf125",
-           "054_pwat": "fcst_column125",
-           "058_cice": "fcst_column125",
-           "160_csusf": "fcst_phy2m125",
-           "162_csulf": "fcst_phy2m125",
-           "211_uswrf": "fcst_phy2m125",
-           "212_ulwrf": "fcst_phy2m125",
-           "227_cw": "fcst_column125",
-           "228_clwc": "fcst_p125",
-           "229_ciwc": "fcst_p125"}
+    var = [["011_tmp", "anl_p125"],
+           ["011_tmp", "anl_surf125"],
+           ["039_vvel", "anl_p125"],
+           ["071_tcdc", "fcst_surf125"],
+           ["054_pwat", "fcst_column125"],
+           ["058_cice", "fcst_column125"],
+           ["160_csusf", "fcst_phy2m125"],
+           ["162_csulf", "fcst_phy2m125"],
+           ["211_uswrf", "fcst_phy2m125"],
+           ["212_ulwrf", "fcst_phy2m125"],
+           ["227_cw", "fcst_column125"],
+           ["228_clwc", "fcst_p125"],
+           ["229_ciwc", "fcst_p125"]]
 
     # download data
 
     while loop_date <= end_date:
         year = loop_date.year
 
-        for varname, channel in var.items():
+        for item in var:
+            varname = item[0]
+            channel = item[1]
             fname = f"{channel}.{varname}.{year}01_{year}12"
             # download file
             downloader.download_file(url + f"/{channel}/{year}/" +
