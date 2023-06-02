@@ -35,6 +35,7 @@ jobs:
       - name: Record versions
         shell: bash -l {0}
         run: |
+          conda install -c conda-forge mamba
           mamba --version 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           which conda 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_path.txt
           which mamba 2>&1 | tee -a conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_path.txt
