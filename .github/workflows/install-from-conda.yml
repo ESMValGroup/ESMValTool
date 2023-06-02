@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - testing_v281rc1
   schedule:
     - cron: '0 4 * * *'
 
