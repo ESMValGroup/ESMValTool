@@ -2,8 +2,8 @@
 
 import os
 import logging
-import numpy as np
 import csv
+import numpy as np
 import iris
 from esmvalcore.preprocessor import regrid
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
@@ -11,8 +11,6 @@ from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 
 # Order of seasons must agree with preprocessor definition in recipe
 SEASONS = ("djf", "mam", "jja", "son")
-
-
 
 logger = logging.getLogger(__name__)
 
@@ -49,16 +47,15 @@ def write_metrics(output_dir, metrics):
     ----------
     output_dir : string
         The full path to the directory in which the CSV file will be written.
-    seasonal_data : dictionary of metric,value pairs
+    metrics : dictionary of metric,value pairs
         The seasonal data to write.
     """
-
     os.makedirs(output_dir, exist_ok=True)
 
-    file_name = f"metrics.csv"
+    file_name = "metrics.csv"
     file_path = os.path.join(output_dir, file_name)
 
-    with open(file_path, "w", newline="") as csvfile:
+    with open(file_path, "w", newline="", encoding="utf-8") as csvfile:
         csv_writer = csv.writer(csvfile)
         for line in metrics.items():
             csv_writer.writerow(line)
@@ -70,21 +67,23 @@ def land_sm_top(clim_file, model_file, work_dir):
 
     Parameters
     ----------
-    clim_file : path to observation climatology file
-    model_file : path to model file
-    work_dir : directory for intermediate working files
+    clim_file : string
+        Path to observation climatology file
+    model_file : string
+        Path to model file
+    work_dir : string
+        Directory for intermediate working files
 
     Returns
     -------
     metrics: dict
         a dictionary of metrics names and values
     """
-
     # Constant: density of water
     rhow = 1000.
 
     # Work through each season
-    metrics = dict()
+    metrics = {}
     for index, season in enumerate(SEASONS):
 
         constr_season = iris.Constraint(season_number=index)
@@ -92,8 +91,10 @@ def land_sm_top(clim_file, model_file, work_dir):
 
         # m01s08i223
         # CMOR name: mrsos (soil moisture in top model layer kg/m2)
-        mrsos_std_name = "mass_content_of_water_in_soil_layer"
-        mrsos = iris.load_cube(model_file, mrsos_std_name & constr_season)
+        mrsos = iris.load_cube(
+            model_file,
+            "mass_content_of_water_in_soil_layer" & constr_season
+        )
 
         # Set soil moisture to missing data on ice points (i.e. no soil)
         np.ma.masked_where(mrsos.data == 0, mrsos.data, copy=False)
@@ -139,8 +140,8 @@ def land_sm_top(clim_file, model_file, work_dir):
 
         # save output and populate metric
         iris.save(dff, os.path.join(work_dir,
-                                    'soilmoist_diff_{}.nc'.format(season)))
-        name = 'soilmoisture MedAbsErr {}'.format(season)
+                                    f"soilmoist_diff_{season}.nc"))
+        name = f"soilmoisture MedAbsErr {season}"
         dffs = dff.data
         dffs = np.ma.abs(dffs)
         metrics[name] = float(np.ma.median(dffs))
@@ -157,15 +158,13 @@ def main(config):
     config : dict
         The ESMValTool configuration.
     """
-    logger = logging.getLogger(__name__)
-
     input_data = config["input_data"]
 
     # Separate OBS from model datasets
     # (and check there is only one obs dataset)
     obs = [v for v in input_data.values() if v["project"] == "OBS"]
     if len(obs) != 1:
-        msg = "Expected exactly 1 OBS dataset: found {}".format(len(obs))
+        msg = f"Expected exactly 1 OBS dataset: found {len(obs)}"
         raise RuntimeError(msg)
     clim_file = obs[0]["filename"]
 
@@ -183,7 +182,7 @@ def main(config):
         # Write metrics
         metrics_dir = os.path.join(
             config["plot_dir"],
-            "{}_vs_{}".format(config["exp_model"], config["control_model"]),
+            f"{config['exp_model']}_vs_{config['control_model']}",
             config["area"],
             model_dataset,
         )
@@ -192,7 +191,7 @@ def main(config):
 
     # Record provenance
     plot_file = "Autoassess soilmoisture metrics"
-    caption = "Autoassess soilmoisture MedAbsErr for {}".format(str(SEASONS))
+    caption = f"Autoassess soilmoisture MedAbsErr for {SEASONS}"
     filenames = [item["filename"] for item in input_data.values()]
     provenance_record = get_provenance_record(caption, filenames)
     cfg = {}
