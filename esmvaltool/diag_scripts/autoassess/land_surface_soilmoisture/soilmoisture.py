@@ -150,7 +150,7 @@ def land_sm_top(clim_file, model_file, work_dir):
 
 
 def record_provenance(input_data, config):
-    """Record provenance"""
+    """Record provenance."""
     plot_file = "Autoassess soilmoisture metrics"
     caption = f"Autoassess soilmoisture MedAbsErr for {SEASONS}"
     filenames = [item["filename"] for item in input_data.values()]
