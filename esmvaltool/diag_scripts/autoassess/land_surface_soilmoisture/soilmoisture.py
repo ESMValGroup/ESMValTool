@@ -149,6 +149,18 @@ def land_sm_top(clim_file, model_file, work_dir):
     return metrics
 
 
+def record_provenance(input_data, config):
+    """Record provenance"""
+    plot_file = "Autoassess soilmoisture metrics"
+    caption = f"Autoassess soilmoisture MedAbsErr for {SEASONS}"
+    filenames = [item["filename"] for item in input_data.values()]
+    provenance_record = get_provenance_record(caption, filenames)
+    cfg = {}
+    cfg["run_dir"] = config["run_dir"]
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, provenance_record)
+
+
 def main(config):
     """
     Top-level function for soil moisture metrics.
@@ -189,15 +201,7 @@ def main(config):
 
         write_metrics(metrics_dir, metrics)
 
-    # Record provenance
-    plot_file = "Autoassess soilmoisture metrics"
-    caption = f"Autoassess soilmoisture MedAbsErr for {SEASONS}"
-    filenames = [item["filename"] for item in input_data.values()]
-    provenance_record = get_provenance_record(caption, filenames)
-    cfg = {}
-    cfg["run_dir"] = config["run_dir"]
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(plot_file, provenance_record)
+    record_provenance(input_data, config)
 
 
 if __name__ == "__main__":
