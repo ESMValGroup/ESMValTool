@@ -122,6 +122,3 @@ Example plots
    :alt: Soilmoisture_Metrics.png
 
    Normalised metrics plot comparing a control and experiment simulation
-
-**Currently this recipe is marked as broken, because it only runs on Jasmin due to a dependency on some 
-external climatology files.**
