@@ -646,6 +646,23 @@ datasets:
     info: |
       Download the file precip.mon.mean.nc
 
+  GPM-IMERGE:
+    tier: 2
+    source: |
+      https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGHH.06
+    last_access: 2023-06-02
+    info: |
+      Download and processing instructions
+      - Log in with Earthdata account
+      - Download files from https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGHH.06/{year}/{dayofyear}
+      - Put all files for each year in separate folder called {year}
+      - Note: an Earthdata account is required to download GPM-ICARE data.
+        Please visit http://urs.earthdata.nasa.gov/ to create an account
+        if needed. Please do not forget to link GES DISC with your
+        NASA Earthdata Login (https://disc.gsfc.nasa.gov/earthdata-login).
+        Please also see general instructions and Earthdata prerequisites here:
+        https://disc.gsfc.nasa.gov/information/howto?title=How%20to%20Access%20GES%20DISC%20Data%20Using%20wget%20and%20curl
+
   GRACE:
     tier: 3
     source: https://podaac.jpl.nasa.gov/dataset/TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06_V2

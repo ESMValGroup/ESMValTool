@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class WGetDownloader(BaseDownloader):
     """Data downloader based on wget."""
-    def download_folder(self, server_path, wget_options):
+    def download_folder(self, server_path, wget_options, out_folder=''):
         """Download folder.
 
         Parameters
@@ -21,12 +21,14 @@ class WGetDownloader(BaseDownloader):
         wget_options: list(str)
             Extra options for wget
         """
+        if out_folder == '':
+            out_folder = self.local_folder
         if self.overwrite:
             raise ValueError(
                 'Overwrite does not work with downloading directories through '
                 'wget. Please, remove the unwanted data manually')
         command = ['wget'] + wget_options + self.overwrite_options + [
-            f'--directory-prefix={self.local_folder}',
+            f'--directory-prefix={out_folder}',
             '--recursive',
             '--no-directories',
             f'{server_path}',
@@ -34,7 +36,7 @@ class WGetDownloader(BaseDownloader):
         logger.debug(command)
         subprocess.check_output(command)
 
-    def download_file(self, server_path, wget_options):
+    def download_file(self, server_path, wget_options, out_folder=''):
         """Download file.
 
         Parameters
@@ -44,8 +46,10 @@ class WGetDownloader(BaseDownloader):
         wget_options: list(str)
             Extra options for wget
         """
+        if out_folder == '':
+            out_folder = self.local_folder
         command = ['wget'] + wget_options + self.overwrite_options + [
-            f'--directory-prefix={self.local_folder}',
+            f'--directory-prefix={out_folder}',
             '--no-directories',
             server_path,
         ]
@@ -77,7 +81,7 @@ class NASADownloader(WGetDownloader):
             "--no-check-certificate",
         ]
 
-    def download_folder(self, server_path, wget_options=None):
+    def download_folder(self, server_path, wget_options=None, out_folder=''):
         """Download folder.
 
         Parameters
@@ -89,11 +93,11 @@ class NASADownloader(WGetDownloader):
         """
         if wget_options is None:
             wget_options = []
-        wget_options = self._wget_common_options + ["-np", "--accept=nc,nc4"
+        wget_options = self._wget_common_options + ["-np", "--accept=nc,nc4,HDF5"
                                                     ] + wget_options
-        super().download_folder(server_path, wget_options)
+        super().download_folder(server_path, wget_options, out_folder)
 
-    def download_file(self, server_path, wget_options=None):
+    def download_file(self, server_path, wget_options=None, out_folder=''):
         """Download file.
 
         Parameters
@@ -106,4 +110,4 @@ class NASADownloader(WGetDownloader):
         if wget_options is None:
             wget_options = []
         super().download_file(server_path,
-                              self._wget_common_options + wget_options)
+                              self._wget_common_options + wget_options, out_folder)
