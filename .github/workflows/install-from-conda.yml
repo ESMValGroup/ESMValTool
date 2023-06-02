@@ -20,10 +20,15 @@ jobs:
     name: Linux Python ${{ matrix.python-version }}
     steps:
       - uses: conda-incubator/setup-miniconda@v2
+        #with:
+        #  python-version: ${{ matrix.python-version }}
+        #  miniforge-version: "latest"
+        #  miniforge-variant: Mambaforge
+
         with:
           python-version: ${{ matrix.python-version }}
-          miniforge-version: "latest"
-          miniforge-variant: Mambaforge
+          miniconda-version: "latest"
+          channels: conda-forge/label/esmvalcore_rc, conda-forge
           use-mamba: true
       - shell: bash -l {0}
         run: mkdir -p conda_install_linux_artifacts_python_${{ matrix.python-version }}
