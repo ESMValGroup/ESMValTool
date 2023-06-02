@@ -123,55 +123,5 @@ Example plots
 
    Normalised metrics plot comparing a control and experiment simulation
 
-
-Additional notes on usage
--------------------------
-The ``landsurface_soilmoisture`` area metric is part of the ``esmvaltool/diag_scripts/autoassess`` diagnostics,
-and, as any other ``autoassess`` metric, it uses the ``autoassess_area_base.py`` as general purpose
-wrapper. This wrapper accepts a number of input arguments that are read through from the recipe.
-
-This recipe is part of the larger group of Autoassess metrics ported to ESMValTool
-from the native Autoassess package from the UK's Met Office. The ``diagnostics`` settings
-are almost the same as for the other Autoassess metrics.
-
 **Currently this recipe is marked as broken, because it only runs on Jasmin due to a dependency on some 
 external climatology files.**
-
-.. note::
-
-   **Time gating for autoassess metrics.**
-
-   To preserve the native Autoassess functionalities,
-   data loading and selection on time is done somewhat
-   differently for ESMValTool's autoassess metrics: the
-   time selection is done in the preprocessor as per usual but
-   a further time selection is performed as part of the diagnostic.
-   For this purpose the user will specify a ``start:`` and ``end:``
-   pair of arguments of ``scripts: autoassess_script`` (see below
-   for example). These are formatted as ``YYYY/MM/DD``; this is
-   necessary since the Autoassess metrics are computed from 1-Dec
-   through 1-Dec rather than 1-Jan through 1-Jan. This is a temporary
-   implementation to fully replicate the native Autoassess functionality
-   and a minor user inconvenience since they need to set an extra set of
-   ``start`` and ``end`` arguments in the diagnostic; this will be phased
-   when all the native Autoassess metrics have been ported to ESMValTool
-   review has completed.
-
-
-An example of standard inputs as read by ``autoassess_area_base.py`` and passed
-over to the diagnostic/metric is listed below.
-
-
-.. code-block:: yaml
-
-    scripts:
-      autoassess_landsurf_soilmoisture: &autoassess_landsurf_soilmoisture_settings
-        script: autoassess/autoassess_area_base.py
-        title: "Autoassess Land-Surface Soilmoisture Diagnostic"
-        area: land_surface_soilmoisture
-        control_model: IPSL-CM5A-LR
-        exp_model: inmcm4
-        obs_models: []
-        start: 1997/12/01
-        end: 2002/12/01
-        climfiles_root: '/gws/nopw/j04/esmeval/autoassess_specific_files/files'  # on JASMIN
