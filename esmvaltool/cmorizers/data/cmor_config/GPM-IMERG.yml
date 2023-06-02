@@ -1,0 +1,21 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: GPM-IMERG
+  project_id: OBS6
+  tier: 2
+  version: 'V06'
+  modeling_realm: sat
+  source: 'https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGHH_06/summary'
+  reference: 'gpm-imerg'
+  comment: |
+    'Contains GPM IMERG Final Precipitation data'
+
+# Variables to CMORize
+variables:
+  # monthly frequency
+  pr:
+    short_name: pr
+    mip: CFsubhr
+    raw: precipitationCal
+    file: '3B-HHR.MS.MRG.3IMERG.{year}{month}*.V06B.HDF5'

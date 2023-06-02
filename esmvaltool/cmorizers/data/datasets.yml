@@ -646,7 +646,7 @@ datasets:
     info: |
       Download the file precip.mon.mean.nc
 
-  GPM-IMERGE:
+  GPM-IMERG:
     tier: 2
     source: |
       https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGHH.06

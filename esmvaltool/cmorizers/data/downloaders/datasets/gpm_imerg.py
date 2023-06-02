@@ -1,4 +1,4 @@
-"""Script to download GPM-IMERGE data from NASA GESDISC DATA ARCHIVE."""
+"""Script to download GPM-IMERG data from NASA GESDISC DATA ARCHIVE."""
 import logging
 import os
 
