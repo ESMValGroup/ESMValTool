@@ -45,25 +45,6 @@ def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
-    # Example of how to loop over variables/datasets in alphabetical order
-    # groups = group_metadata(input_data, 'variable_group', sort='dataset')
-    # for group_name in groups:
-    #     logger.info("Processing variable %s", group_name)
-    #     for attributes in groups[group_name]:
-    #         logger.info("Processing dataset %s", attributes['dataset'])
-    #         input_file = attributes['filename']
-    #         ds = Dataset(input_file, cfg['work_dir']).open(attributes['short_name'])
-    #         map_clim = Clim(ds, 'map')
-    #         map_clim.save('map_climatology', cfg['plot_dir'])
-    #         map_clim = Clim.load('map_climatology', cfg['plot_dir'], type='map')
-    #         map_clim.plot(
-    #             show_plot=False,
-    #             save_fig=True,
-    #             name=os.path.join(cfg['plot_dir'], f'clim-{attributes["dataset"]}.png'),
-    #             cmap='jet',
-    #             levels=list(range(15, 36)),
-    #             ticks=list(range(15, 36)),
-    #         )
     variables = group_metadata(input_data, 'variable_group', sort='dataset')
     single_predictand = False
     if len(variables['predictand']) == 1:
@@ -95,13 +76,13 @@ def main(cfg):
             z_ppcessed = spy4cast.Preprocess(z)
             z_ppcessed.save(f'preprocessed_z_{predictand["alias"]}', dir=cfg['work_dir'])
 
-        nm = 3
-        alpha = 0.1
+        nm = cfg['modes']
+        alpha = cfg['alpha']
         mca = spy4cast.MCA(y_ppcessed, z_ppcessed, nm, alpha)
         mca.save(f'mca_{dataset}', dir=cfg['work_dir'])
         mca.plot(save_fig=True, cmap='viridis', dir=cfg['plot_dir'], name=f'mca-{dataset}.png')
 
-        if cfg['cross_valdiation']:
+        if cfg['cross_validation']:
             cross = spy4cast.Crossvalidation(y_ppcessed, z_ppcessed, nm, alpha)
             cross.save(f'cross_{dataset}', dir=cfg['work_dir'])
             cross.plot(save_fig=True, dir=cfg['plot_dir'], name=f'crossvalidation-{dataset}.png')

@@ -21,7 +21,7 @@ documentation:
 
 datasets:
   - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-  # - {dataset: CanESM5-1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+
 
 preprocessors:
   predictor_preproc:
@@ -34,21 +34,29 @@ preprocessors:
         end_latitude: 10
         step_latitude: 0.5
       scheme: linear
-    mask_above_threshold:
-      threshold: 60
+    # extract_region:
+    #   start_longitude: -30
+    #   end_longitude: 0
+    #   start_latitude: -5
+    #   end_latitude: 10
     mask_landsea:
       mask_out: land
 
   predictand_preproc:
-    regrid:
-      target_grid:
-        start_longitude: 345
-        end_longitude: 360
-        step_longitude: 0.5
-        start_latitude: 35
-        end_latitude: 45
-        step_latitude: 0.5
-      scheme: linear
+    # regrid:
+    #   target_grid:
+    #     start_longitude: 345
+    #     end_longitude: 360
+    #     step_longitude: 0.5
+    #     start_latitude: 35
+    #     end_latitude: 45
+    #     step_latitude: 0.5
+    #   scheme: linear
+    extract_region:
+      start_longitude: 345
+      end_longitude: 360
+      start_latitude: 35
+      end_latitude: 45
 
 
 
@@ -75,6 +83,9 @@ diagnostics:
     scripts:
       mca:
         script: spy4cast/mca.py
-        cross_validation: False
+        cross_validation: True
+        modes: 3
+        alpha: 0.1  # Significance level
+
 
 
