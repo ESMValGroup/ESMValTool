@@ -55,7 +55,7 @@ import yaml
 
 from esmvalcore import __version__ as core_ver
 from esmvalcore.cmor.table import CMOR_TABLES, read_cmor_tables
-from packaging import version
+from packaging import version as pkg_version
 from ruamel.yaml import YAML
 
 logger = logging.getLogger(__name__)
@@ -137,7 +137,7 @@ def configure_logging(cfg_file: str = None,
     """
     if cfg_file is None:
         cfg_loc = Path(esmvalcore.__file__ + "esmvalcore")
-        if version.parse(core_ver) < version.parse('2.8.0'):
+        if pkg_version.parse(core_ver) < pkg_version.parse('2.8.0'):
             cfg_file = cfg_loc.parents[0] / '_config' / 'config-logging.yml'
         else:
             cfg_file = cfg_loc.parents[0] / 'config' / 'config-logging.yml'
