@@ -10,7 +10,7 @@ from packaging import version
 
 import esmvaltool
 
-if version.parse(core_ver) < version.parse('2.8.0'):
+if version.parse(core_ver) <= version.parse('2.8.0'):
     from esmvalcore._config import _config
     from esmvalcore.experimental.config import CFG
     # Work around
