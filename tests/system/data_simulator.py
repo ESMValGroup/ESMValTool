@@ -7,8 +7,11 @@ import time
 import numpy as np
 
 from esmvalcore import __version__ as core_ver
-from esmvalcore._config import read_config_user_file
 from packaging import version
+if version.parse(core_ver) <= version.parse('2.8.1'):
+    from esmvalcore._config import read_config_user_file
+else:
+    from esmvalcore.config import CFG
 if version.parse(core_ver) <= version.parse('2.7.1'):
     from esmvalcore._recipe import read_recipe_file
 else:
@@ -62,7 +65,7 @@ def write_data_file(short_name, filename, field, start_year, end_year):
 def simulate_input_data(recipe_file, config_user_file=None):
     """Simulate data for variables defined in recipe"""
     if config_user_file:
-        user_config = read_config_user_file(
+        user_config = CFG.load_from_file(
             config_file=config_user_file, recipe_name='')
     else:
         user_config = {
