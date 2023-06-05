@@ -8,7 +8,7 @@ import numpy as np
 
 from esmvalcore import __version__ as core_ver
 from packaging import version
-if version.parse(core_ver) <= version.parse('2.8.1'):
+if version.parse(core_ver) <= version.parse('2.8.0'):
     from esmvalcore._config import read_config_user_file
 else:
     from esmvalcore.config import CFG
