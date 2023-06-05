@@ -52,7 +52,10 @@ from pathlib import Path
 
 import esmvalcore
 import yaml
+
+from esmvalcore import __version__ as core_ver
 from esmvalcore.cmor.table import CMOR_TABLES, read_cmor_tables
+from packaging import version
 from ruamel.yaml import YAML
 
 logger = logging.getLogger(__name__)
@@ -134,8 +137,10 @@ def configure_logging(cfg_file: str = None,
     """
     if cfg_file is None:
         cfg_loc = Path(esmvalcore.__file__ + "esmvalcore")
-        # TODO change to new location of config module in 2.3.0
-        cfg_file = cfg_loc.parents[0] / '_config' / 'config-logging.yml'
+        if version.parse(core_ver) < version.parse('2.8.0'):
+            cfg_file = cfg_loc.parents[0] / '_config' / 'config-logging.yml'
+        else:
+            cfg_file = cfg_loc.parents[0] / 'config' / 'config-logging.yml'
 
     cfg_file = Path(cfg_file).absolute()
 
