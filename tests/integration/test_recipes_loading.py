@@ -13,6 +13,7 @@ import esmvaltool
 if version.parse(core_ver) <= version.parse('2.8.0'):
     from esmvalcore._config import _config
     from esmvalcore.experimental.config import CFG
+
     # Work around
     # https://github.com/ESMValGroup/ESMValCore/issues/1579
     def clear(self):
