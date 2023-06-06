@@ -574,8 +574,7 @@ def run_diagnostic():
                 "Unable to connect to the Dask distributed scheduler at "
                 f"{cfg['scheduler_address']}. If the scheduler is no longer "
                 "available, try re-running the diagnostic script with the "
-                "--no-distributed flag.",
-                ) from exc
+                "--no-distributed flag.", ) from exc
     else:
         client = contextlib.nullcontext()
 
