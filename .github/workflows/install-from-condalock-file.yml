@@ -11,7 +11,7 @@ on:
   push:
     branches:
       - main
-  #     - condalock-update
+  #    - condalock-update
   # run the test only if the PR is to main
   # turn it on if required
   #pull_request:
@@ -25,7 +25,7 @@ jobs:
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.9", "3.10", "3.11"]
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:
@@ -59,6 +59,8 @@ jobs:
       - shell: bash -l {0}
         run: esmvaltool version 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
       - shell: bash -l {0}
+        run: flake8
+      - shell: bash -l {0}
         run: pytest -n 2 -m "not installation"
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
@@ -71,7 +73,7 @@ jobs:
 #    runs-on: "macos-latest"
 #    strategy:
 #      matrix:
-#        python-version: ["3.8", "3.9", "3.10"]
+#        python-version: ["3.9", "3.10", "3.11"]
 #      fail-fast: false
 #    name: OSX Python ${{ matrix.python-version }}
 #    steps:

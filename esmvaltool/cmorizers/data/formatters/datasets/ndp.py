@@ -35,7 +35,7 @@ def _extract_variable(cmor_info, attrs, var_file, out_dir, cfg):
     array = grid_file.ReadAsArray()
     for missing_value in cfg['missing_values']:
         array = np.ma.masked_equal(array, missing_value)
-    array = array.astype(np.float)
+    array = array.astype(np.float32)
     np.ma.set_fill_value(array, 1e20)
     array = np.ma.expand_dims(array, 0)
     time = iris.coords.DimCoord([183.0],
@@ -45,12 +45,12 @@ def _extract_variable(cmor_info, attrs, var_file, out_dir, cfg):
                                 var_name='time',
                                 long_name='time')
     lats = iris.coords.DimCoord(
-        90.0 - np.arange(array.shape[1]) * cfg['delta_degrees'],
+        83.65972 - np.arange(array.shape[1]) * cfg['delta_degrees'],
         standard_name='latitude',
         var_name='lat',
         long_name='latitude')
     lons = iris.coords.DimCoord(
-        180.0 + np.arange(array.shape[2]) * cfg['delta_degrees'],
+        -180.0 + np.arange(array.shape[2]) * cfg['delta_degrees'],
         standard_name='longitude',
         var_name='lon',
         long_name='longitude')

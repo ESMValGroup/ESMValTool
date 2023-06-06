@@ -1,0 +1,50 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: JRA-25
+  version: '1'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/reanalysis/JMA/JRA-25/JRA-25/'
+  reference: 'jra_25'
+  comment: |
+    '' 
+
+# Variables to cmorize
+variables:
+  clt_month:
+    short_name: clt
+    mip: Amon
+    raw: clt
+    file: clt_Amon_reanalysis_JRA-25_197901-201312.nc
+  hus_month:
+    short_name: hus
+    mip: Amon
+    raw: hus
+    file: hus_Amon_reanalysis_JRA-25_197901-201312.nc
+  prw_month:
+    short_name: prw
+    mip: Amon
+    raw: prw
+    file: prw_Amon_reanalysis_JRA-25_197901-201312.nc
+  rlut_month:
+    short_name: rlut
+    mip: Amon
+    raw: rlut
+    file: rlut_Amon_reanalysis_JRA-25_197901-201312.nc
+  rlutcs_month:
+    short_name: rlutcs
+    mip: Amon
+    raw: rlutcs
+    file: rlutcs_Amon_reanalysis_JRA-25_197901-201312.nc
+  rsut_month:
+    short_name: rsut
+    mip: Amon
+    raw: rsut
+    file: rsut_Amon_reanalysis_JRA-25_197901-201312.nc
+  rsutcs_month:
+    short_name: rsutcs
+    mip: Amon
+    raw: rsutcs
+    file: rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc

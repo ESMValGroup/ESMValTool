@@ -6,7 +6,12 @@
             --wckey = RTW
             --ntasks = {{ MAX_PARALLEL_TASKS }}
 
-    [[process<metric=radiation_budget>]]
+    [[process<fast>]]
         [[[directives]]]
             --time = 2
-            --mem = 3G
+            --mem = 2G
+
+    [[process<medium>]]
+        [[[directives]]]
+            --time = 6
+            --mem = 2G

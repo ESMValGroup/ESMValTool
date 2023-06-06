@@ -1,6 +1,6 @@
 ; #############################################################################
 ; PROCEDURE FOR THE ZONAL PLOT OF THE PERFORMANCE METRICS
-; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
+; Authors: Mattia Righi (DLR, Germany) and Franziska Winterstein (DLR, Germany)
 ; ESMVal project
 ; #############################################################################
 
@@ -14,7 +14,13 @@ begin
   modidx = ispan(0, nDatasets - 1, 1)
   modidx := array_append_record(ref_ind, modidx(ind(modidx.ne.ref_ind)), 0)
 
-  annots = project_style(info_items, diag_script_info, "annots")
+  if (isatt(diag_script_info, "annots")) then
+    annots = metadata_att_as_array(info_items, diag_script_info@annots)
+  else
+    annots = project_style(info_items, diag_script_info, "annots")
+  end if
+
+  print(annots)
 
   ; Loop over datasets
   do ii = 0, dimsizes(modidx) - 1
@@ -111,6 +117,7 @@ begin
     plot_var@res_trYMinF = diag_script_info@zonal_ymin
     plot_var@res_gsnLeftString = \
       plot_var@long_name + " [" + format_units(plot_var@units) + "]"
+    copy_VarMeta(diag_script_info, plot_var)
     wks = gsn_open_wks(file_type, plotpath_abs)
     gsn_define_colormap(wks, diag_script_info@zonal_cmap)
     plot = zonalmean_profile(wks, plot_var, var0)
@@ -127,7 +134,8 @@ begin
                    (/"mean", "stddev"/), \
                    diag_script_info@region, \
                    "zonal", \
-                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
+                   (/"winterstein_franziska", "righi_mattia", \
+                     "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 
@@ -171,11 +179,11 @@ begin
       plot_var@res_cnLevelSelectionMode = "ExplicitLevels"
       plot_var@res_cnLevels := diag_script_info@conf_level
       if (diag_script_info@stippling) then
-        plot_var@res_cnFillColors = (/"transparent", "black"/)
+        plot_var@res_cnFillColors = (/"black", "transparent"/)
         plot_var@res_cnFillPattern = 17
         caption = caption + " (non-significant points are stippled)"
       else
-        plot_var@res_cnFillColors = (/"transparent", "gray70"/)
+        plot_var@res_cnFillColors = (/"gray70", "transparent"/)
         caption = caption + " (non-significant points are masked out in gray)"
       end if
       plot_var@res_cnInfoLabelOn = False
@@ -202,7 +210,8 @@ begin
                    (/"mean", "stddev", "diff"/), \
                    diag_script_info@region, \
                    "zonal", \
-                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
+                   (/"winterstein_franziska", "righi_mattia", \
+                     "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 

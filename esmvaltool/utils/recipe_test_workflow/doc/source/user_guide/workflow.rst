@@ -27,8 +27,10 @@ The |RTW| performs the following steps:
   :Executes:
      The ``configure.py`` script from the |Rose| app
   :Details:
-     Runs once at the start of the workflow, immediately after the successful
-     completion of the ``install_cold`` job
+     Runs once at the beginning of the workflow, immediately after the
+     successful completion of the ``install_cold`` job, and then at the
+     start of each cycle, after the successful completion of the
+     previous cycle's compare jobs
 
 ``process``
   :Description:
@@ -39,7 +41,7 @@ The |RTW| performs the following steps:
   :Executes:
      The |ESMValTool| command line script
   :Details:
-     Runs for every metric defined in the workflow
+     Runs for every recipe defined in the workflow
 
 ``compare``
   :Description:
@@ -72,6 +74,7 @@ and ``opt`` directories within the workflow. The files required are:
 
 ``opt/rose-suite-<site>.conf``
   Contains configuration items specific to the ``SITE``, including ``SITE``
+  and where to find the required datasets
 
 Metadata
 ~~~~~~~~
