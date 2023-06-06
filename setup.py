@@ -28,12 +28,12 @@ REQUIREMENTS = {
         'cftime',
         'cmocean',
         'dask',
+        'distributed',
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        # use 2.8.1rc1 for now
         'esmvalcore',
-        'esmf-regrid',
+        'esmf-regrid>=0.7.0',
         'fiona',
         'GDAL',
         'jinja2',
@@ -48,7 +48,7 @@ REQUIREMENTS = {
         'packaging',
         'openpyxl',
         'pandas',
-        'pyproj',
+        'pyproj>=2.1',
         'pyyaml',
         'progressbar2',
         'psyplot',
@@ -60,11 +60,11 @@ REQUIREMENTS = {
         'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris',
+        'scitools-iris>=3.6.0',
         'seaborn',
         'seawater',
-        'shapely<2.0.0',  # github.com/ESMValGroup/ESMValTool/issues/2965
-        'xarray',
+        'shapely',
+        'xarray>=0.12.0',
         'xesmf>=0.7.1',
         'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
@@ -86,13 +86,8 @@ REQUIREMENTS = {
     'doc': [
         'autodocsumm>=0.2.2',
         'nbsphinx',
-        # sphinx >=6 can not be installed because
-        # sphinx_rtd_theme are pinning docutils<0.19 which is the only
-        # practical version that supports python=3.11; see
-        # github.com/readthedocs/sphinx_rtd_theme/issues/1323
-        # github.com/conda-forge/sphinx_rtd_theme-feedstock/issues/28
-        'sphinx',  # >=6.1.3',
-        'sphinx_rtd_theme',
+        'sphinx>=6.1.3',
+        'pydata-sphinx-theme',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
@@ -111,6 +106,7 @@ REQUIREMENTS = {
 
 def discover_python_files(paths, ignore):
     """Discover Python files."""
+
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
         return any(re.match(pattern, path) for pattern in ignore)
