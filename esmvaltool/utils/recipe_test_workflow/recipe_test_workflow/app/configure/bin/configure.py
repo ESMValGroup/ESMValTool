@@ -19,7 +19,7 @@ def main():
     """
     # Get the default configuration values from the latest version of
     # ESMValTool.
-    config_values = get_default_config_values_from_latest_ESMValTool()
+    config_values = get_default_config_values_from_latest_esmvaltool()
 
     # Get the configuration values defined in the environment for the
     # 'configure' task.
@@ -38,7 +38,7 @@ def main():
     write_yaml(user_config_path, config_values)
 
 
-def get_default_config_values_from_latest_ESMValTool():
+def get_default_config_values_from_latest_esmvaltool():
     """Return the default configuration values from the latest version of
     ESMValTool."""
     latest_esmvaltool_dir = os.environ["ESMVALTOOL_DIR"]
