@@ -35,7 +35,10 @@ LEGEND_KWARGS = {
     'bbox_to_anchor': [1.05, 0.5],
     'borderaxespad': 0.0,
 }
-PANDAS_PRINT_OPTIONS = ['display.max_rows', None, 'display.max_colwidth', -1]
+PANDAS_PRINT_OPTIONS = [
+    'display.max_rows', None,
+    'display.max_colwidth', None,
+]
 
 
 def _check_x_y_arrays(x_array, y_array):

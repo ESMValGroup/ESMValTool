@@ -49,7 +49,10 @@ from esmvaltool.diag_scripts.shared import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 EXCLUDE_VAL = 0
-PANDAS_PRINT_OPTIONS = ['display.max_rows', None, 'display.max_colwidth', -1]
+PANDAS_PRINT_OPTIONS = [
+    'display.max_rows', None,
+    'display.max_colwidth', None,
+]
 
 
 def _add_numerical_index(data_frame, exclude_datasets):
@@ -86,7 +89,10 @@ def _calculate_statistic(data_frame, stat_func, exclude_datasets):
         )
         series_to_append.append(series)
     for series in series_to_append:
-        data_frame = data_frame.append(series)
+        data_frame = pd.concat([
+            data_frame,
+            series.to_frame().T,
+        ])
     data_frame = data_frame.sort_index()
     return data_frame
 
@@ -132,8 +138,10 @@ def create_data_frame(input_files, exclude_datasets):
 
         # Expand index
         for row in series.index.difference(data_frame.index):
-            data_frame = data_frame.append(pd.Series(name=row,
-                                                     dtype=cube.dtype))
+            data_frame = pd.concat([
+                data_frame,
+                pd.Series(name=row, dtype=cube.dtype).to_frame().T,
+            ])
 
         # Add new data
         if cube.var_name in data_frame.columns:
