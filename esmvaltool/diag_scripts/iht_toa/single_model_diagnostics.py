@@ -75,6 +75,19 @@ def area_average(cube, latitude='latitude', longitude='longitude', mdtol=1):
     return cube_avg
 
 
+def weight_zm(cube, latitude=None):
+    """Weight zonal-mean by normalised gridbox areas."""
+    if cube.coord('latitude').bounds is None:
+        cube.coord('latitude').guess_bounds()
+    cube_areas = cube.copy()
+    cube_areas.data = iris.analysis.cartography.area_weights(cube,
+                                                             normalize=True)
+    if latitude is not None:
+        cube = cube.intersection(latitude=latitude)
+        cube_areas = cube_areas.intersection(latitude=latitude)
+    return cube.data * cube_areas.data
+
+
 def var_name_constraint(var_name):
     """Shortcut to create constraint for variable name."""
     return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
@@ -123,7 +136,7 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
     return p_cube, mht_cube
 
 
-def symmetry_metric(data, grid):
+def symmetry_metric(cube):
     """Calculate symmetry metrics.
 
     A perfectly symmetrical latitude band gives S=0. As coded, the
@@ -131,22 +144,16 @@ def symmetry_metric(data, grid):
     points to be multiple of 6, i.e. it needs 30 deg bands. It returns
     the metric for 3 regions: globe, tropics and extratropics.
     """
-    nlat = data.shape[0]
-    if (nlat % 6) != 0:
-        logger.error("Grid not compatible with symmetry metric calculation.")
-        sys.exit(1)
-
-    nlat_hem = nlat // 2
-    nlat_trop = nlat_hem // 3
-    nhm = data[nlat_hem:]
-    shm = data[:nlat_hem]
-    shm = shm[::-1]
-
-    diff = np.abs((nhm + shm) * grid)
-    hem = np.sum(diff)
-    trop = np.sum(diff[:nlat_trop])
-    extratrop = np.sum(diff[nlat_trop:nlat_hem])
-    return hem, trop, extratrop
+    # Hemisphere
+    hem = np.abs(weight_zm(cube, latitude=(0, 90, False, False))[::-1] +
+                 weight_zm(cube, latitude=(-90, 0, False, False))).sum()
+    # Tropics
+    tro = np.abs(weight_zm(cube, latitude=(0, 30, False, False))[::-1] +
+                 weight_zm(cube, latitude=(-30, 0, False, False))).sum()
+    # Extra-tropics
+    etr = np.abs(weight_zm(cube, latitude=(30, 90, False, False))[::-1] +
+                 weight_zm(cube, latitude=(-90, -30, False, False))).sum()
+    return hem, tro, etr
 
 
 def format_plot(axx, label, title):
@@ -282,17 +289,6 @@ class ImpliedHeatTransport:
         Produce 12-month rolling means for all monthly time time series
         of MHT.
         """
-        grid = iris.analysis.cartography.area_weights(self.flx_clim[0],
-                                                      normalize=True)
-        # As coded, the calculation of the symmetry metrics needs the number of
-        # latitude points to be multiple of 6, i.e. it needs 30 deg bands.
-        if (grid.shape[0] % 6) != 0:
-            logger.error(
-                "Grid not compatible with symmetry metric calculation.")
-            sys.exit(1)
-        nlat_2 = grid.shape[0] // 2
-        grid = np.sum(grid, axis=1)[nlat_2:]
-
         for mht_series in self.mht_rolling_mean:
             time_coord = mht_series.coord('time')
             ntime = time_coord.shape[0]
@@ -300,8 +296,7 @@ class ImpliedHeatTransport:
             trop = np.zeros(ntime)
             extratrop = np.zeros(ntime)
             for i in np.arange(ntime):
-                hem[i], trop[i], extratrop[i] = symmetry_metric(
-                    mht_series.data[i], grid)
+                hem[i], trop[i], extratrop[i] = symmetry_metric(mht_series[i])
             # Create the cubes for each metric
             long_name = f"symmetry_hemisphere_of_{mht_series.long_name}"
             var_name = f"s_hem_{mht_series.var_name}"
