@@ -569,13 +569,13 @@ def run_diagnostic():
     if not args.no_distributed and 'scheduler_address' in cfg:
         try:
             client = distributed.Client(cfg['scheduler_address'])
-        except OSError:
-            logger.error(
-                "Unable to connect to the Dask distributed scheduler at %s. "
-                "If the scheduler is no longer available, try re-running the "
-                "diagnostic script with the --no-distributed flag.",
-                cfg['scheduler_address'])
-            raise
+        except OSError as exc:
+            raise OSError(
+                "Unable to connect to the Dask distributed scheduler at "
+                f"{cfg['scheduler_address']}. If the scheduler is no longer "
+                "available, try re-running the diagnostic script with the "
+                "--no-distributed flag.",
+                ) from exc
     else:
         client = contextlib.nullcontext()
 
