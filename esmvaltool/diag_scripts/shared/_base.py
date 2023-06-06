@@ -483,7 +483,7 @@ def run_diagnostic():
     parser.add_argument(
         '-i',
         '--ignore-existing',
-        help=("Force running the script, even if output files exists "
+        help=("Force running the script, even if output files exist "
               "(useful when re-running the script, use at your own risk)."),
         action='store_true',
     )
