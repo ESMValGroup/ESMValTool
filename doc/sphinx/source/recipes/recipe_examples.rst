@@ -21,21 +21,10 @@ make sure to download all files with the same name but different extensions.
 The recipe examples/recipe_julia.yml produces a map plot with the mean temperature
 over the year 1997 plus a number that is configurable from the recipe.
 
-The recipe examples/recipe_decadal.yml showcases how the ``timerange`` tag 
+The recipe examples/recipe_decadal.yml showcases how the ``timerange`` tag
 can be used to load datasets belonging to the DCPP activity. Produces timeseries
 plots comparing the global mean temperature of a DCPP dataset with an observational
 dataset.
-
-For detailed instructions on obtaining input data, please refer to
-:ref:`inputdata`. However, in case you just quickly want to run through the
-example, you can use the following links to obtain the data from ESGF:
-
-  * `BCC-ESM1 <http://esgf3.dkrz.de/thredds/fileServer/cmip6/CMIP/BCC/BCC-ESM1/historical/r1i1p1f1/Amon/tas/gn/v20181214/tas_Amon_BCC-ESM1_historical_r1i1p1f1_gn_185001-201412.nc>`_
-  * `CanESM2 <http://esgf2.dkrz.de/thredds/fileServer/lta_dataroot/cmip5/output1/CCCma/CanESM2/historical/mon/atmos/Amon/r1i1p1/v20120718/tas/tas_Amon_CanESM2_historical_r1i1p1_185001-200512.nc>`_
-
-Please refer to the terms of use for `CMIP5
-<https://pcmdi.llnl.gov/mips/cmip5/terms-of-use.html>`_ and `CMIP6
-<https://pcmdi.llnl.gov/CMIP6/TermsOfUse/TermsOfUse6-1.html>`_ data.
 
 Available recipes and diagnostics
 ---------------------------------
@@ -63,11 +52,6 @@ User settings in recipe
    * ``quickplot: plot_type``: which of the :py:mod:`iris.quickplot` functions to use.
      Arguments that are accepted by these functions can also be specified here, e.g. ``cmap``.
      Preprocessors need to be configured such that the resulting data matches the plot type, e.g. a timeseries or a map.
-
-   *Optional settings for script*
-
-   * ``write_netcdf``: ``true`` (default) or ``false``.
-     This can be used to disable writing the results to netcdf files.
 
 #. Script ``examples/diagnostic.jl``
 
@@ -106,4 +90,3 @@ Example plots
    :align:   center
 
    Global mean temperature of CMIP6 dcppA-hindcast EC-Earth3 and OBS ERA-Interim.
-   

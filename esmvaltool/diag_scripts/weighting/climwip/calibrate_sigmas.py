@@ -95,7 +95,7 @@ def calculate_percentiles(target: 'xr.DataArray',
         vectorize=True,
     )
 
-    inside_count = xr.ufuncs.logical_and(
+    inside_count = np.logical_and(
         target_perfect >= percentiles_data.isel(percentile=0),
         target_perfect <= percentiles_data.isel(percentile=1)).values
     inside_ratio = inside_count.sum() / len(inside_count)
