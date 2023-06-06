@@ -12,7 +12,7 @@ documentation:
 
 
 datasets:
-  - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, start_year: 1979, end_year: 2014}
+  - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, start_year: 1979, end_year: 2014, plot_label: 'EC-Earth3 historical'}  # Note: plot_label currently only used by diagnostic plot_multiple_annual_cycles
 
 
 preprocessors:
@@ -20,8 +20,17 @@ preprocessors:
   timeseries_regular:
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
+
+  annual_cycle_nh:
+    extract_region:
+      start_latitude: 0
+      end_latitude: 90
+      start_longitude: 0
+      end_longitude: 360
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: monthly
 
   full_climatology:
     climate_statistics:
@@ -66,10 +75,36 @@ diagnostics:
             annual_mean_kwargs:
               linestyle: '--'
             plot_kwargs:
-              EC-Earth3:
+              EC-Earth3:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
                 color: C0
               ERA5:
                 color: black
+
+  plot_multiple_annual_cycles:
+    description: Plot annual cycles including reference datasets.
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: annual_cycle_nh
+        grid: gr
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 1979, end_year: 2014, plot_label: 'Reference (ERA5)'}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        facet_used_for_labels: plot_label
+        plots:
+          annual_cycle:
+            legend_kwargs:
+              loc: upper right
+            plot_kwargs:
+              'EC-Earth3 historical':  # = plot_label since 'facet_used_for_labels: plot_label'
+                color: C0
+              'Reference (ERA5)':
+                color: black
+            pyplot_kwargs:
+              title: Near-Surface Air Temperature on Northern Hemisphere
+              ylim: [280, 297]
 
   plot_maps_with_references:
     description: Plot climatology maps including reference datasets.
