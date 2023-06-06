@@ -51,6 +51,8 @@ def precon(xxx, m_matrix):
     """Preconditioner.
 
     This is a wrapper to two steps that are optimised using jit.
+    It implements the preconditioning step of van der Vorst, H. A., 1992.
+    https://doi.org/10.1137/0913035.
     """
     cxxx = np.zeros(np.array(xxx.shape))
     precon_a(xxx, m_matrix[1], m_matrix[2], m_matrix[4], cxxx)
@@ -183,6 +185,8 @@ class SphericalPoisson:
         variant of bi-cg for the solution of nonsymmetric linear
         systems. SIAM Journal on Scientific and Statistical Computing,
         https://doi.org/10.1137/0913035.
+        This solver implements the preconditioned Bi-CGSTAB algorithm,
+        described in page 638 of that paper.
         """
         bbb = np.zeros(np.array(self.source.shape) + 2)
         xxx = np.zeros(np.array(self.source.shape) + 2)
