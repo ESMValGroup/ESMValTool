@@ -4,7 +4,7 @@ attributes:
   dataset_id: GPM-IMERG
   project_id: OBS6
   tier: 2
-  version: 'V06'
+  version: 'V06B'
   modeling_realm: sat
   source: 'https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGHH_06/summary'
   reference: 'gpm-imerg'
