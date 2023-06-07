@@ -55,6 +55,17 @@ preprocessors:
     zonal_statistics:
       operator: mean
 
+  extract_1d_profile:
+    custom_order: true
+    climate_statistics:
+      period: full
+    area_statistics:
+      operator: mean
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev39}
+      scheme: linear
+      coordinate: air_pressure
+
 
 diagnostics:
 
@@ -137,3 +148,22 @@ diagnostics:
             common_cbar: true
             plot_kwargs_bias:
               levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
+
+  plot_1D_profiles_with_references:
+    description: Plot 1D profiles including reference datasets.
+    variables:
+      ta:
+        mip: Amon
+        preprocessor: extract_1d_profile
+        timerange: '2000/2014'
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          1d_profile:
+            plot_kwargs:
+              EC-Earth3:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
+                color: C0
+              CanESM5:
+                color: black
