@@ -69,7 +69,6 @@ preprocessors:
         ]
     area_statistics:
       operator: sum
-      fx_variables:
         areacello:
 
   tropical:
