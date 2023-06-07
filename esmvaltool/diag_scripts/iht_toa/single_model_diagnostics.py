@@ -170,6 +170,7 @@ def format_plot(axx, label, title):
 
 class ImpliedHeatTransport:
     """Class that solves IHT for a given dataset."""
+
     def __init__(self, flx_files):
         self.flx_files = flx_files
 
