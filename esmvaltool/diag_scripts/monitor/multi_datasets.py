@@ -291,10 +291,10 @@ rasterize: bool, optional (default: True)
     <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
     profile plots to produce smaller files. This is only relevant for vector
     graphics (e.g., ``output_file_type=pdf,svg,ps``).
-show_y_minor_ticklabels: bool, optional (default: False)
-    Show tick labels for the minor ticks on the Y axis.
 show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
+show_y_minor_ticklabels: bool, optional (default: False)
+    Show tick labels for the minor ticks on the Y axis.
 x_pos_stats_avg: float, optional (default: 0.01)
     Text x-position of average (shown on the left) in Axes coordinates. Can be
     adjusted to avoid overlap with the figure. Only relevant if ``show_stats:
@@ -438,38 +438,89 @@ class MultiDatasets(MonitorBase):
             if plot_options is None:
                 self.plots[plot_type] = {}
 
-            # Defaults for map and zonal_mean_profile plots
-            if plot_type in ('map', 'zonal_mean_profile'):
-                self.plots[plot_type].setdefault('fontsize', 10)
+            # Default options for the different plot types
+            if plot_type == 'timeseries':
+                self.plots[plot_type].setdefault('annual_mean_kwargs', {})
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
+                self.plots[plot_type].setdefault('legend_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+
+            if plot_type == 'annual_cycle':
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
+                self.plots[plot_type].setdefault('legend_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+
+            if plot_type == 'map':
                 self.plots[plot_type].setdefault(
                     'cbar_label', '{short_name} [{units}]')
                 self.plots[plot_type].setdefault(
                     'cbar_label_bias', 'Δ{short_name} [{units}]')
+                self.plots[plot_type].setdefault(
+                    'cbar_kwargs', {'orientation': 'horizontal', 'aspect': 30}
+                )
+                self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
                 self.plots[plot_type].setdefault('common_cbar', False)
+                self.plots[plot_type].setdefault('fontsize', 10)
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs_bias', {})
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'cmap', 'bwr'
+                )
+                if 'projection' not in self.plots[plot_type]:
+                    self.plots[plot_type].setdefault('projection', 'Robinson')
+                    self.plots[plot_type].setdefault(
+                        'projection_kwargs', {'central_longitude': 10}
+                    )
+                else:
+                    self.plots[plot_type].setdefault('projection_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('rasterize', True)
                 self.plots[plot_type].setdefault('show_stats', True)
-
-            # Defaults for map plots
-            if plot_type == 'map':
                 self.plots[plot_type].setdefault('x_pos_stats_avg', 0.0)
                 self.plots[plot_type].setdefault('x_pos_stats_bias', 0.92)
 
-            # Defaults for zonal_mean_profile plots
-            if plot_type in ['zonal_mean_profile', '1d_profile']:
+            if plot_type == 'zonal_mean_profile':
+                self.plots[plot_type].setdefault(
+                    'cbar_label', '{short_name} [{units}]')
+                self.plots[plot_type].setdefault(
+                    'cbar_label_bias', 'Δ{short_name} [{units}]')
+                self.plots[plot_type].setdefault(
+                    'cbar_kwargs', {'orientation': 'vertical'}
+                )
+                self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
+                self.plots[plot_type].setdefault('common_cbar', False)
+                self.plots[plot_type].setdefault('fontsize', 10)
                 self.plots[plot_type].setdefault('log_y', True)
-                self.plots[plot_type].setdefault('show_y_minor_ticklabels',
-                                                 False)
-
-            if plot_type in ['1d_profile']:
-                self.plots[plot_type].setdefault('log_x', False)
-                self.plots[plot_type].setdefault('show_x_minor_ticklabels',
-                                                 False)
-                self.plots[plot_type].setdefault('aspect_ratio', 1.5)
-
-            if plot_type in ['zonal_mean_profile']:
+                self.plots[plot_type].setdefault('plot_func', 'contourf')
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs_bias', {})
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'cmap', 'bwr'
+                )
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+                self.plots[plot_type].setdefault('rasterize', True)
+                self.plots[plot_type].setdefault('show_stats', True)
+                self.plots[plot_type].setdefault(
+                    'show_y_minor_ticklabels', False
+                )
                 self.plots[plot_type].setdefault('x_pos_stats_avg', 0.01)
                 self.plots[plot_type].setdefault('x_pos_stats_bias', 0.7)
+
+            if plot_type == '1d_profile':
+                self.plots[plot_type].setdefault('aspect_ratio', 1.5)
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
+                self.plots[plot_type].setdefault('legend_kwargs', {})
+                self.plots[plot_type].setdefault('log_x', False)
+                self.plots[plot_type].setdefault('log_y', True)
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+                self.plots[plot_type].setdefault(
+                    'show_y_minor_ticklabels', False
+                )
 
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
@@ -625,16 +676,9 @@ class MultiDatasets(MonitorBase):
 
     def _get_cbar_kwargs(self, plot_type, bias=False):
         """Get colorbar kwargs."""
-        cbar_kwargs = {}
-        if plot_type == 'map':
-            cbar_kwargs.update({'orientation': 'horizontal', 'aspect': 30})
-        elif plot_type in ['zonal_mean_profile']:
-            cbar_kwargs.update({'orientation': 'vertical'})
-        cbar_kwargs.update(
-            self.plots[plot_type].get('cbar_kwargs', {}))
+        cbar_kwargs = deepcopy(self.plots[plot_type]['cbar_kwargs'])
         if bias:
-            cbar_kwargs.update(
-                self.plots[plot_type].get('cbar_kwargs_bias', {}))
+            cbar_kwargs.update(self.plots[plot_type]['cbar_kwargs_bias'])
         return deepcopy(cbar_kwargs)
 
     def _get_cbar_label(self, plot_type, dataset, bias=False):
@@ -650,24 +694,14 @@ class MultiDatasets(MonitorBase):
 
     def _get_gridline_kwargs(self, plot_type):
         """Get gridline kwargs."""
-        gridline_kwargs = self.plots[plot_type].get('gridline_kwargs', {})
+        gridline_kwargs = self.plots[plot_type]['gridline_kwargs']
         return deepcopy(gridline_kwargs)
 
     def _get_map_projection(self):
         """Get projection used for map plots."""
         plot_type = 'map'
-
-        # If no projection is specified, use Robinson with a set of default
-        # kwargs
-        if 'projection' not in self.plots[plot_type]:
-            projection = 'Robinson'
-            projection_kwargs = {'central_longitude': 10}
-        else:
-            projection = self.plots[plot_type]['projection']
-            projection_kwargs = {}
-        projection_kwargs.update(
-            self.plots[plot_type].get('projection_kwargs', {})
-        )
+        projection = self.plots[plot_type]['projection']
+        projection_kwargs = self.plots[plot_type]['projection_kwargs']
 
         # Check if desired projection is valid
         if not hasattr(ccrs, projection):
@@ -690,7 +724,7 @@ class MultiDatasets(MonitorBase):
 
     def _get_plot_kwargs(self, plot_type, dataset, bias=False):
         """Get keyword arguments for plot functions."""
-        all_plot_kwargs = self.plots[plot_type].get('plot_kwargs', {})
+        all_plot_kwargs = self.plots[plot_type]['plot_kwargs']
         all_plot_kwargs = deepcopy(all_plot_kwargs)
 
         # First get default kwargs, then overwrite them with dataset-specific
@@ -701,8 +735,7 @@ class MultiDatasets(MonitorBase):
 
         # For bias plots, overwrite the kwargs with bias-specific option
         if bias:
-            bias_kwargs = self.plots[plot_type].get('plot_kwargs_bias', {})
-            bias_kwargs.setdefault('cmap', 'bwr')
+            bias_kwargs = self.plots[plot_type]['plot_kwargs_bias']
             plot_kwargs.update(bias_kwargs)
 
         # Replace facets with dataset entries for string arguments
@@ -1066,7 +1099,7 @@ class MultiDatasets(MonitorBase):
 
     def _process_pyplot_kwargs(self, plot_type, dataset):
         """Process functions for :mod:`matplotlib.pyplot`."""
-        pyplot_kwargs = self.plots[plot_type].get('pyplot_kwargs', {})
+        pyplot_kwargs = self.plots[plot_type]['pyplot_kwargs']
         for (func, arg) in pyplot_kwargs.items():
             if isinstance(arg, str):
                 arg = self._fill_facet_placeholders(
@@ -1171,8 +1204,7 @@ class MultiDatasets(MonitorBase):
             iris.plot.plot(cube, **plot_kwargs)
 
             # Plot annual means if desired
-            annual_mean_kwargs = self.plots[
-                plot_type].get('annual_mean_kwargs', {})
+            annual_mean_kwargs = self.plots[plot_type]['annual_mean_kwargs']
             if annual_mean_kwargs is not False:
                 logger.debug("Plotting annual means")
                 if not cube.coords('year'):
@@ -1188,9 +1220,12 @@ class MultiDatasets(MonitorBase):
         axes.set_title(multi_dataset_facets['long_name'])
         axes.set_xlabel('Time')
         axes.set_ylabel(f"{short_name} [{multi_dataset_facets['units']}]")
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
 
         # Legend
-        legend_kwargs = self.plots[plot_type].get('legend_kwargs', {})
+        legend_kwargs = self.plots[plot_type]['legend_kwargs']
         if legend_kwargs is not False:
             axes.legend(**legend_kwargs)
 
@@ -1256,9 +1291,12 @@ class MultiDatasets(MonitorBase):
         axes.set_xlabel('Month')
         axes.set_ylabel(f"{short_name} [{multi_dataset_facets['units']}]")
         axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
 
         # Legend
-        legend_kwargs = self.plots[plot_type].get('legend_kwargs', {})
+        legend_kwargs = self.plots[plot_type]['legend_kwargs']
         if legend_kwargs is not False:
             axes.legend(**legend_kwargs)
 
@@ -1458,7 +1496,7 @@ class MultiDatasets(MonitorBase):
 
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
 
-        # Plot all datsets in one single figure
+        # Plot all datasets in one single figure
         ancestors = []
         cubes = {}
         for dataset in datasets:
@@ -1510,7 +1548,7 @@ class MultiDatasets(MonitorBase):
         axes.set_box_aspect(aspect_ratio)
 
         # Legend
-        legend_kwargs = self.plots[plot_type].get('legend_kwargs', {})
+        legend_kwargs = self.plots[plot_type]['legend_kwargs']
         if legend_kwargs is not False:
             axes.legend(**legend_kwargs)
 
