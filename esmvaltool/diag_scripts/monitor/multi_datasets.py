@@ -304,7 +304,6 @@ x_pos_stats_bias: float, optional (default: 0.7)
     coordinates. Can be adjusted to avoid overlap with the figure. Only
     relevant if ``show_stats: true``.
 
-
 Configuration options for plot type ``1d_profile``
 --------------------------------------------------
 aspect_ratio: float, optional (default: 1.5)
@@ -342,8 +341,6 @@ pyplot_kwargs: dict, optional
     ``{project}`` that vary between the different datasets will be transformed
     to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
     of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
-show_x_minor_ticklabels: bool, optional (default: False)
-    Show tick labels for the minor ticks on the X axis.
 show_y_minor_ticklabels: bool, optional (default: False)
     Show tick labels for the minor ticks on the Y axis.
 
@@ -369,7 +366,7 @@ from iris.analysis.cartography import area_weights
 from iris.coord_categorisation import add_year
 from iris.coords import AuxCoord
 from matplotlib.gridspec import GridSpec
-from matplotlib.ticker import FormatStrFormatter, NullFormatter, LogLocator
+from matplotlib.ticker import FormatStrFormatter, LogLocator, NullFormatter
 from sklearn.metrics import r2_score
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
