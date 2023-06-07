@@ -121,8 +121,8 @@ diagnostics:
             plot_kwargs_bias:
               levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
 
-  plot_profiles_with_references:
-    description: Plot vertical profiles including reference datasets.
+  plot_zonal_mean_profiles_with_references:
+    description: Plot 2D zonal mean profiles including reference datasets.
     variables:
       ta:
         mip: Amon
@@ -133,7 +133,7 @@ diagnostics:
         <<: *plot_multi_dataset_default
         script: monitor/multi_datasets.py
         plots:
-          profile:
+          zonal_mean_profile:
             common_cbar: true
             plot_kwargs_bias:
               levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
