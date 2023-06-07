@@ -7,7 +7,6 @@ Single model diagnostics
 
 import datetime
 import logging
-import sys
 from copy import deepcopy
 from pathlib import Path
 
@@ -145,14 +144,17 @@ def symmetry_metric(cube):
     the metric for 3 regions: globe, tropics and extratropics.
     """
     # Hemisphere
-    hem = np.abs(weight_zm(cube, latitude=(0, 90, False, False))[::-1] +
-                 weight_zm(cube, latitude=(-90, 0, False, False))).sum()
+    hem = np.abs(
+        weight_zm(cube, latitude=(0, 90, False, False))[::-1] +
+        weight_zm(cube, latitude=(-90, 0, False, False))).sum()
     # Tropics
-    tro = np.abs(weight_zm(cube, latitude=(0, 30, False, False))[::-1] +
-                 weight_zm(cube, latitude=(-30, 0, False, False))).sum()
+    tro = np.abs(
+        weight_zm(cube, latitude=(0, 30, False, False))[::-1] +
+        weight_zm(cube, latitude=(-30, 0, False, False))).sum()
     # Extra-tropics
-    etr = np.abs(weight_zm(cube, latitude=(30, 90, False, False))[::-1] +
-                 weight_zm(cube, latitude=(-90, -30, False, False))).sum()
+    etr = np.abs(
+        weight_zm(cube, latitude=(30, 90, False, False))[::-1] +
+        weight_zm(cube, latitude=(-90, -30, False, False))).sum()
     return hem, tro, etr
 
 
@@ -168,7 +170,6 @@ def format_plot(axx, label, title):
 
 class ImpliedHeatTransport:
     """Class that solves IHT for a given dataset."""
-
     def __init__(self, flx_files):
         self.flx_files = flx_files
 

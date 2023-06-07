@@ -98,14 +98,14 @@ Example plots
 .. figure::  /recipes/figures/iht_toa/figure4_CERES-EBAF_CERES-EBAF.png
    :align:   center
 
-   As in Figure 2, but for the implied heat transport associated with
+   As in :numref:`fig_iht_toa_2`, but for the implied heat transport associated with
    (a),(b) TOT CRE, (c),(d) SW CRE, and (e),(f) LW CRE fluxes.
 
 .. _fig_iht_toa_5:
 .. figure::  /recipes/figures/iht_toa/figure5_CERES-EBAF_CERES-EBAF.png
    :align:   center
 
-   As in Figure 2, but for (a), (b) clear-sky and (c), (d) all-sky reflected
+   As in :numref:`fig_iht_toa_2`, but for (a), (b) clear-sky and (c), (d) all-sky reflected
    SW flux.
 
 .. _fig_iht_toa_6:

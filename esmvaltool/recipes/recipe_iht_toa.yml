@@ -5,11 +5,11 @@ documentation:
   title: Implied heat transport
 
   description: |
-    Horizontal impied heat transport of the entire column derived from
+    Horizontal implied heat transport of the entire column derived from
     TOA radiative fluxes.
 
 #    The 'single_model' script  produces Figures 1 to 6 in Pearce and
-#    Bodas-Salcedo (2023) for each of the darasets chosen.
+#    Bodas-Salcedo (2023) for each of the datasets chosen.
 
   authors:
     - pearce_francesca
