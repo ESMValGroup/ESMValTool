@@ -49,8 +49,7 @@ jobs:
         run: echo "pver1=$(python -c 'import sys; print(sys.version_info[1])')" >> $GITHUB_ENV
       - name: Exit if Python minor version changed
         shell: bash -l {0}
-        run: python -V
-        if: ${{ env.pver1 < env.pver0}}
+        if: ${{ env.pver1 == env.pver0}}
         run: exit 1
       - name: Run flake8
         shell: bash -l {0}
