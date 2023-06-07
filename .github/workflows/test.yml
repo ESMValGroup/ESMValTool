@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - check_python_version_after_Julia
   schedule:
     - cron: '0 0 * * *'
 
@@ -42,6 +43,11 @@ jobs:
       - name: Install Julia dependencies
         shell: bash -l {0}
         run: esmvaltool install Julia
+      - name: Check Python version and exit if downgraded
+        shell: bash -l {0}
+        run: export pver=$(python -c 'import sys; print(sys.version_info[1])')
+        if: ${{ pver < matrix.python-minor-version}}
+        run: exit 1
       - name: Run flake8
         shell: bash -l {0}
         run: flake8
