@@ -93,6 +93,10 @@ annual_mean_kwargs: dict, optional
     means. These keyword arguments update (and potentially overwrite) the
     ``plot_kwargs`` for the annual mean plots. Use ``annual_mean_kwargs`` to
     not show annual means.
+gridline_kwargs: dict, optional
+    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
+    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
+    lines.
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
@@ -118,6 +122,10 @@ pyplot_kwargs: dict, optional
 
 Configuration options for plot type ``annual_cycle``
 ----------------------------------------------------
+gridline_kwargs: dict, optional
+    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
+    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
+    lines.
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
