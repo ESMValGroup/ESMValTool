@@ -50,7 +50,7 @@ jobs:
         run: echo "pver1=$(python -V)" >> $GITHUB_ENV
       - name: Exit if Python minor version changed
         shell: bash -l {0}
-        if: ${{ env.pver1 == env.pver0}}
+        if: ${{ env.pver1 != env.pver0}}
         run: |
           echo "Python minor version changed after Julia install"
           python -V
