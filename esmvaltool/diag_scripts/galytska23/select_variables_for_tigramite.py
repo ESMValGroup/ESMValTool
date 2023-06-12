@@ -80,9 +80,9 @@ def calculate_heat_flux(list_va_ta):
     return hf_anom_zm
 
 
-def variable_cases(x, item):
+def variable_cases(variable, item):
     """Match variables and functions."""
-    match x:
+    match variable:
         case 'pv':
             pv = calculate_polar_vortex(item)
             return pv
@@ -174,4 +174,3 @@ def main(cfg):
 if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
-
