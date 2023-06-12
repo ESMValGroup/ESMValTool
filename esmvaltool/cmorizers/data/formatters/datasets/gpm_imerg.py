@@ -1,6 +1,7 @@
 """
-ESMValTool CMORizer for GPM-IMERG data from NASA GEODISC DATA ARCHIVE (30 min.).
-By default, data are regridded to 0.5x0.5 degrees and hourly values. 
+ESMValTool CMORizer for GPM-IMERG data from NASA GEODISC DATA ARCHIVE
+(30 min.). Data are regridded to a regular 0.5x0.5 degrees grid
+and aggregated to hourly values.
 
 Tier
     Tier 2: other freely-available dataset.
@@ -32,7 +33,6 @@ from datetime import datetime
 from dateutil import relativedelta
 
 from iris.coords import DimCoord
-from iris import coord_categorisation
 
 from esmvalcore.preprocessor import regrid
 
@@ -59,7 +59,7 @@ def _extract_variable(short_name, var, in_files, cfg, in_dir,
         longitude = DimCoord(lon[()], var_name='lon',
                              standard_name='longitude', units='degrees')
         time = DimCoord(time[()], var_name='time', standard_name='time',
-                             units='seconds since 1970-01-01 00:00:00 UTC')
+                        units='seconds since 1970-01-01 00:00:00 UTC')
 
         # define fill value
         x = da.ma.masked_equal(precipdata, -9999.9)
@@ -67,8 +67,8 @@ def _extract_variable(short_name, var, in_files, cfg, in_dir,
         # convert units from 'mm hr-1' to 'kg m-2 s-1'
         x /= 3600.0
 
-        tmpcube = iris.cube.Cube(x, dim_coords_and_dims=
-                                 [(time, 0), (longitude, 1), (latitude, 2)])
+        tmpcube = iris.cube.Cube(x, dim_coords_and_dims=[
+                                 (time, 0), (longitude, 1), (latitude, 2)])
 
         # flip longitudes and latitudes
         tmpcube.transpose([0, 2, 1])
@@ -76,8 +76,8 @@ def _extract_variable(short_name, var, in_files, cfg, in_dir,
         # regridding from 0.1x0.1 to 0.5x0.5
         cube05 = regrid(tmpcube, target_grid='0.5x0.5', scheme='linear')
         # realize data to be able to close hdf file
-        # this is needed as keeping ~48*30=1440 files per month open quickly exceeds
-        # the maximum number of open files (check with ulimit -n)
+        # this is needed as keeping ~48*30=1440 files per month open quickly
+        # exceeds the maximum number of open files (check with ulimit -n)
         cube05.data
         hdf.close()
         cubes.append(cube05)
@@ -86,7 +86,8 @@ def _extract_variable(short_name, var, in_files, cfg, in_dir,
 
     # aggregate 30-minute data to hourly values
     iris.coord_categorisation.add_hour(cube, cube.coord('time'), name='hour')
-    iris.coord_categorisation.add_day_of_year(cube, cube.coord('time'), name='day_of_year')
+    iris.coord_categorisation.add_day_of_year(cube, cube.coord('time'),
+                                              name='day_of_year')
     outcube = cube.aggregated_by(['day_of_year', 'hour'], iris.analysis.MEAN)
 
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)

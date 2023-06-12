@@ -49,8 +49,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     # download files
 
-    rootpath = (f'https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/'
-                f'GPM_3IMERGHH.06')
+    rootpath = ('https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/'
+                'GPM_3IMERGHH.06')
 
     loop_date = start_date
     while loop_date <= end_date:

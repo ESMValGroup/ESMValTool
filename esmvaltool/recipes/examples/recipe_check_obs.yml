@@ -425,6 +425,17 @@ diagnostics:
          version: 2.3,  start_year: 1979,  end_year: 2022}
     scripts: null
 
+
+  GPM-IMERG:
+    description: GPM-IMERG check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: GPM-IMERG, project: OBS6, mip: E1hr, tier: 2, type: atmos,
+         version: V06B,  start_year: 2001,  end_year: 2001}
+    scripts: null
+
+
   HadCRUT3:
     description: HadCRUT3 check
     variables:

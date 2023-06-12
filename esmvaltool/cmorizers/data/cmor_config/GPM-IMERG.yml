@@ -5,7 +5,7 @@ attributes:
   project_id: OBS6
   tier: 2
   version: 'V06B'
-  modeling_realm: sat
+  modeling_realm: atmos
   source: 'https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGHH_06/summary'
   reference: 'gpm-imerg'
   comment: |
@@ -16,6 +16,6 @@ variables:
   # monthly frequency
   pr:
     short_name: pr
-    mip: CFsubhr
+    mip: E1hr
     raw: precipitationCal
     file: '3B-HHR.MS.MRG.3IMERG.{year}{month}*.V06B.HDF5'
