@@ -80,37 +80,31 @@ def calculate_heat_flux(list_va_ta):
     return hf_anom_zm
 
 
-def variable_cases(variable, item):
-    """Match variables and functions."""
-    match variable:
-        case 'pv':
-            pv = calculate_polar_vortex(item)
-            return pv
-        case 'pre_tas':
-            tas = calculate_arctic_tas(item)
-            return tas
-        case 'pressure_ural':
-            psl_ural = calculate_slp(item)
-            psl_ural.var_name = 'Psl_Ural'
-            return psl_ural
-        case 'pressure_sib':
-            psl_sib = calculate_slp(item)
-            psl_sib.var_name = 'Psl_Sib'
-            return psl_sib
-        case 'pressure_aleut':
-            psl_aleut = calculate_slp(item)
-            psl_aleut.var_name = 'Psl_Aleut'
-            return psl_aleut
-        case 'bk_ice':
-            sic_bk = finalize_bk_ice(item)
-            return sic_bk
-        case 'ok_ice':
-            sic_ok = finalize_ok_ice(item)
-            return sic_ok
-        case 'heat_flux':
-            var = prepare_heat_flux(item)
-            return var
+def variable_cases(var, item):
+    if var == 'pv':
+        out_var  = calculate_polar_vortex(item)
+    if var == 'pre_tas':
+        out_var = calculate_arctic_tas(item)
+    elif var =='pressure_ural':
+        out_var = calculate_slp(item)
+        out_var.var_name = 'Psl_Ural'
+    elif var == 'pressure_sib':
+        out_var = calculate_slp(item)
+        out_var.var_name = 'Psl_Sib'
+    elif var == 'pressure_aleut':
+        out_var = calculate_slp(item)
+        out_var.var_name = 'Psl_Aleut'
+    elif var == 'bk_ice':
+        out_var = finalize_bk_ice(item)
+    elif var == 'ok_ice':
+        out_var = finalize_ok_ice(item)
+    elif var == 'heat_flux':
+        out_var = prepare_heat_flux(item)
+    else:
+        raise NotImplementedError(f"Variable '{var}' not supported")
+    return out_var
 
+    
 
 def calculate_variables(input_dict):
     """Calculate all necessary variables."""
