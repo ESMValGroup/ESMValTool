@@ -167,8 +167,6 @@ def _xy_plot(x_data, y_data, reg_line=False, **plot_kwargs):
     plot_kwargs['linestyle'] = '-'
     plot_kwargs['marker'] = None
     plot_kwargs.pop('label', None)
-    print(x_data)
-    print(y_data)
     #reg = linregress(x_data, y_data)
     #y_reg = reg.slope * np.array(x_data) + reg.intercept
     #plt.plot(x_data, y_reg, **plot_kwargs)
@@ -181,7 +179,10 @@ def _xy_plot(x_data, y_data, reg_line=False, **plot_kwargs):
     print("Pearson correlation: r = ", corr[0], "p = ", corr[1])
     # Extracting the r-value and the p-value:
     corr = [np.round(c, 2) for c in corr]
-    title = 'r=%s, p=%s' % (corr[0], corr[1])
+    if corr[1] < 0.001:
+        title = 'r=%s, p<<0.001' % (corr[0])
+    else:
+        title = 'r=%s, p=%s' % (corr[0], corr[1])
     # Adding the text to the Seaborn plot:
     plt.title(title, loc='right')
 
@@ -189,7 +190,6 @@ def _xy_plot(x_data, y_data, reg_line=False, **plot_kwargs):
 def get_plot_kwargs(cfg, option, key=None):
     """Get keyword arguments for desired plot function and key."""
     plot_kwargs = cfg.get(option, {}).get('plot_kwargs', {})
-    print(plot_kwargs)
     if key is None:
         return plot_kwargs
     if '_xy' in option:
@@ -271,6 +271,8 @@ def read_data_and_preprocess(cfg):
       logger.debug("Loading %s", input_file)
       cube = iris.load_cube(input_file)
       grid_areas = iris.analysis.cartography.area_weights(cube)
+
+      cube.data = np.ma.masked_invalid(cube.data)
       new_cube = cube.collapsed(['longitude', 'latitude'], iris.analysis.MEAN,
                                 weights=grid_areas)
       data2.append(new_cube.data.item())
