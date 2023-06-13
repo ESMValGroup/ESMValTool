@@ -10,6 +10,8 @@ ESMValTool for all available recipes can be accessed `here
 .. toctree::
    :maxdepth: 1
 
+.. _general_purpose_diags:
+
 General-purpose diagnostics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

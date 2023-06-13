@@ -62,5 +62,5 @@ Example plots
    Spatiotemporal distribution of daily precipitation in the period 2005-2014
    for six IPCC AR6 regions simulated by two Earth system models (CESM2-WACCM
    and GFDL-ESM4).
-   Each day in each grid cell in the corresponding regions is
-   considered equally.
+   Each day in each grid cell in the corresponding regions is considered with
+   equal weight.

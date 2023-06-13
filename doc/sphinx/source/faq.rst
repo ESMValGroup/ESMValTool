@@ -126,3 +126,5 @@ Similarly, recipe :ref:`recipes_seaborn_diag` and the corresponding diagnostic
 :ref:`seaborn_diag.py <api.esmvaltool.diag_scripts.seaborn_diag>` provide a
 high-level interface to the `Seaborn <https://seaborn.pydata.org>`__ package
 which can also be used to create a large variety of different plots.
+
+See also :ref:`general_purpose_diags`.
