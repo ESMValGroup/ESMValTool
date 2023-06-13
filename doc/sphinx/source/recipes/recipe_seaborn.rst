@@ -51,5 +51,16 @@ Example plots
    :width: 50%
 
    Monthly and zonal mean temperatures vs. latitude in the period 1991-2014 for
-   two Earth system models (CESM2-WACCM and GFDL-ESM4). Colors visualize the
-   corresponding pressure levels.
+   two Earth system models (CESM2-WACCM and GFDL-ESM4).
+   Colors visualize the corresponding pressure levels.
+
+.. _fig_seaborn_2:
+.. figure:: /recipes/figures/seaborn/regional_pr_hists.jpg
+   :align: center
+   :width: 50%
+
+   Spatiotemporal distribution of daily precipitation in the period 2005-2014
+   for six IPCC AR6 regions simulated by two Earth system models (CESM2-WACCM
+   and GFDL-ESM4).
+   Each day in each grid cell in the corresponding regions is
+   considered equally.
