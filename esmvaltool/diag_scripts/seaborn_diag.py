@@ -44,18 +44,17 @@ dropna_kwargs: dict, optional
     missing values in the input data. If not given, do not drop NaNs. Note:
     NaNs are dropped after potential `data_frame_ops`.
 facets_as_columns: list of str, optional
-    Facets that will will be added as a columns to the main data frame. Values
-    for these facets must be identical across all datasets within a group (see
+    Facets that will be added as a columns to the main data frame. Values for
+    these facets must be identical across all datasets within a group (see
     option `groupby_facet`).
 groupby_facet: str, optional (default: 'alias')
     Facet which is used to group input datasets when creating the main data
     frame. All datasets within a group are expected to have the same index
     after calling :func:`iris.pandas.as_data_frame` on them. These datasets
     within a group will then get merged (combined along axis 1, i.e., columns)
-    into a single data frame per group.  Finally, the data frames for all
-    groups are concatenated (combined along axis 0, i.e., rows) into one main
-    data frame. `groupby_facet` is also added as a column to this main data
-    frame.
+    into a single data frame per group. Finally, the data frames for all groups
+    are concatenated (combined along axis 0, i.e., rows) into one main data
+    frame. `groupby_facet` is also added as a column to this main data frame.
 legend_title: str, optional (default: None)
     Title for legend. If ``None``, Seaborn will determine the legend title (if
     possible).
