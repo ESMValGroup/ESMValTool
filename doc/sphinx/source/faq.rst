@@ -121,3 +121,8 @@ Moreover, recipe :ref:`recipes_psyplot_diag` and the corresponding diagnostic
 :ref:`psyplot_diag.py <api.esmvaltool.diag_scripts.psyplot_diag>` provide a
 high-level interface to the `Psyplot <https://psyplot.github.io/>`__ package
 which can be used to create a large variety of different plots.
+
+Similarly, recipe :ref:`recipes_seaborn_diag` and the corresponding diagnostic
+:ref:`seaborn_diag.py <api.esmvaltool.diag_scripts.seaborn_diag>` provide a
+high-level interface to the `Seaborn <https://seaborn.pydata.org>`__ package
+which can also be used to create a large variety of different plots.
