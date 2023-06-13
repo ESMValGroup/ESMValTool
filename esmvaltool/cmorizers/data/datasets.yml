@@ -264,17 +264,24 @@ datasets:
 
   DARDAR-CLOUD:
     tier: 3
-    source: ftp.icare.univ-lille1.fr/SPACEBORNE/CLOUDSAT/DARDAR-CLOUD.v3.10/
+    source: |
+      DARDAR-CLOUD: ftp.icare.univ-lille1.fr/SPACEBORNE/CLOUDSAT/DARDAR-CLOUD.v3.10/
+      2C-PRECIP-COLUMN: ftp.icare.univ-lille1.fr/SPACEBORNE/CLOUDSAT/2C-PRECIP-COLUMN.C5/
     last_access: 2023-05-19
     info: |
       Download and processing instructions
       1) Create an account at the ICARE Data and Services Center
          (https://www.icare.univ-lille.fr/asd-content/register)
-      2) Download the DARDAR-CLOUD .hdf files from
+      2) Download the DARDAR-CLOUD .nc files from
          ftp.icare.univ-lille1.fr (via ftp)
-      3) Put all files for a specific year under a single directory
-         named like the year (e.g. 2007), no subdirectories with
-         days etc.
+      3) Put all DARDAR-CLOUD files for a specific year into a single
+         directory named yyyy_DARDAR (e.g. 2007_DARDAR), no subdirectories
+         with days etc.
+      4) Download the 2C-PRECIP-COLUMN .hdf files from
+         ftp.icare.univ-lille1.fr (via ftp)
+      5) Put all 2C-PRECIP-COLUMN files for a specific year into a single
+         directory named yyyy_PRECIP (e.g. 2007_PRECIP), no subdirectories
+         with days etc.
 
   Duveiller2018:
     tier: 2

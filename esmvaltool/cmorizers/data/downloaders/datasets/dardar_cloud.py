@@ -57,24 +57,32 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.connect(user, passwd)
 
     if not start_date:
-#        start_date = datetime.datetime(2007, 1, 1)
         start_date = datetime.datetime(2007, 1, 1)
     if not end_date:
-#        end_date = datetime.datetime(2016, 12, 31)
+        # end_date = datetime.datetime(2016, 12, 31)
         end_date = datetime.datetime(2007, 12, 31)
-
-    downloader.set_cwd("/SPACEBORNE/CLOUDSAT/DARDAR-CLOUD.v3.10")
 
     loop_date = start_date
     while loop_date <= end_date:
         year = loop_date.year
         month = f'{loop_date.month:0>2}'
         day = f'{loop_date.day:0>2}'
+        # download DARDAR files
         try:
+            downloader.set_cwd("/SPACEBORNE/CLOUDSAT/DARDAR-CLOUD.v3.10")
             downloader.download_folder(
                 f'{year}/{year}_{month}_{day}/',
-                sub_folder=f'{year}',
-                filter_files=f'DARDAR-CLOUD_.+nc')
-        except:
-            logger.info(f'No files found for date {year}-{month}-{day}')
+                sub_folder=f'{year}_DARDAR',
+                filter_files='DARDAR-CLOUD_.+nc')
+        except Exception:
+            logger.info(f'No DARDAR files found for date {year}-{month}-{day}')
+        # download CLOUDSAT precipitation files
+        try:
+            downloader.set_cwd("/SPACEBORNE/CLOUDSAT/2C-PRECIP-COLUMN.C5")
+            downloader.download_folder(
+                f'{year}/{year}_{month}_{day}/',
+                sub_folder=f'{year}_PRECIP-test',
+                filter_files='')
+        except Exception:
+            logger.info(f'No PRECIP files found for date {year}-{month}-{day}')
         loop_date += relativedelta.relativedelta(days=1)
