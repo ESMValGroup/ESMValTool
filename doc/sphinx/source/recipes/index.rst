@@ -15,7 +15,7 @@ ESMValTool for all available recipes can be accessed `here
 General-purpose diagnostics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Recipes that use highly costumizable diagnostics which are designed to plot a
+Recipes that use highly customizable diagnostics which are designed to plot a
 large variety of input data.
 
 .. toctree::
