@@ -11,7 +11,7 @@ documentation:
 
   title: Land-surface diagnostic that computes soilmoisture indices (from Autoassess).
 
-  observation_references:
+  references:
     - esacci-soilmoisture
     - dorigo17rse
     - gruber19essd
