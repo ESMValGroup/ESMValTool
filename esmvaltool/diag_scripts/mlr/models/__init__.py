@@ -271,7 +271,7 @@ random_state: int or None (default: None)
 savefig_kwargs: dict
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 standardize_data: bool (default: True)
     Linearly standardize numerical input data by removing mean and scaling to
     unit variance.
@@ -443,7 +443,7 @@ class MLRModel():
         self._random_state = np.random.RandomState(self._cfg['random_state'])
 
         # Seaborn
-        sns.set(**self._cfg.get('seaborn_settings', {}))
+        sns.set_theme(**self._cfg.get('seaborn_settings', {}))
 
         # Adapt output directories
         self._cfg['mlr_work_dir'] = os.path.join(self._cfg['work_dir'],
