@@ -169,7 +169,7 @@ def plot_htmltable(dataframe, ancestors, cfg):
         .set_table_styles(styles)\
         .background_gradient(cmap='RdYlGn', low=0, high=1, axis=0)\
         .format("{:.2e}", na_rep="-")\
-        .render()
+        .to_html()
 
     filename = get_diagnostic_filename('bias_vs_change', cfg, extension='html')
     with open(filename, 'w') as htmloutput:

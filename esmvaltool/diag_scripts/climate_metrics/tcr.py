@@ -26,7 +26,7 @@ read_external_file : str, optional
 savefig_kwargs : dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 
 """
 
@@ -342,7 +342,7 @@ def write_data(cfg, tcr, external_file=None):
 def main(cfg):
     """Run the diagnostic."""
     cfg = set_default_cfg(cfg)
-    sns.set(**cfg.get('seaborn_settings', {}))
+    sns.set_theme(**cfg.get('seaborn_settings', {}))
 
     # Read external file if desired
     if cfg.get('read_external_file'):
