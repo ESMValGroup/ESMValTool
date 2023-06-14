@@ -298,6 +298,16 @@ begin
         fs_precip = systemfunc("ls " + inpath + "_PRECIP/" + \
                                sorbit + "_" + strs(2) + \
                                "_CS_2C-PRECIP-COLUMN_GRANULE_P1_R05_*.hdf")
+
+        if (ismissing(fs_precip)) then
+          log_info("Warning: no precipitation input file for " + \
+                   tostring(calyear) + "-" + sprinti("%03d", dayofyear) + \
+                   " orbit " + tostring(orbit) + " (" + sorbit + "_" + \
+                   strs(2) + "), skipping orbit.")
+          delete(fs_precip)
+          continue
+        end if
+
         delete(ssplit)
         delete(strs)
 
