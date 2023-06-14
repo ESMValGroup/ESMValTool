@@ -17,6 +17,7 @@ Performance metrics:
 
 Metrics are calculated using model and observation multi-year climatologies (seasonal means) 
 for meteorological seasons:
+
 * December-January-February (djf)
 * March-April-May (mam)
 * June-July-August (jja)
@@ -38,7 +39,6 @@ Recipes are stored in esmvaltool/recipes/
 
 Diagnostics are stored in esmvaltool/diag_scripts/autoassess/
 
-    * autoassess_area_base.py: wrapper for autoassess scripts
     * land_surface_soilmoisture/soilmoisture.py: script to calculate soil moisture
       metrics
     * plot_autoassess_metrics.py: plot normalised assessment metrics
@@ -47,21 +47,17 @@ Diagnostics are stored in esmvaltool/diag_scripts/autoassess/
 User settings in recipe
 -----------------------
 
-#. Script autoassess_area_base.py
+#. Script soilmoisture.py
 
    *Required settings for script*
 
    * area: must equal land_surface_soilmoisture to select this diagnostic
    * control_model: name of model to be used as control
    * exp_model: name of model to be used as experiment
-   * start: date (YYYY/MM/DD) at which period begins (see note on time gating)
-   * end: date (YYYY/MM/DD) at which period ends (see note on time gating)
-   * climfiles_root: path to observation climatologies
 
    *Optional settings for script*
 
-   * title: arbitrary string with name of diagnostic
-   * obs_models: unused for this recipe
+   none
 
    *Required settings for variables*
 
@@ -97,7 +93,8 @@ User settings in recipe
 Variables
 ---------
 
-* mrsos (land, monthly mean, longitude latitude time)
+* mrsos (from models: land, monthly mean, longitude latitude time)
+* sm (from observations: land, monthly mean, longitude latitude time)
 
 
 Observations and reformat scripts
