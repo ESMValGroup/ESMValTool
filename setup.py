@@ -28,11 +28,12 @@ REQUIREMENTS = {
         'cftime',
         'cmocean',
         'dask',
+        'distributed',
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
         'esmvalcore',
-        'esmf-regrid',
+        'esmf-regrid>=0.7.0',
         'fiona',
         'GDAL',
         'jinja2',
@@ -47,7 +48,7 @@ REQUIREMENTS = {
         'packaging',
         'openpyxl',
         'pandas',
-        'pyproj',
+        'pyproj>=2.1',
         'pyyaml',
         'progressbar2',
         'psyplot',
@@ -59,11 +60,11 @@ REQUIREMENTS = {
         'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris',
+        'scitools-iris>=3.6.0',
         'seaborn',
         'seawater',
-        'shapely<2.0.0',  # github.com/ESMValGroup/ESMValTool/issues/2965
-        'xarray',
+        'shapely',
+        'xarray>=0.12.0',
         'xesmf>=0.7.1',
         'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
@@ -86,7 +87,7 @@ REQUIREMENTS = {
         'autodocsumm>=0.2.2',
         'nbsphinx',
         'sphinx>=6.1.3',
-        'sphinx_rtd_theme',
+        'pydata-sphinx-theme',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
@@ -105,6 +106,7 @@ REQUIREMENTS = {
 
 def discover_python_files(paths, ignore):
     """Discover Python files."""
+
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
         return any(re.match(pattern, path) for pattern in ignore)
@@ -214,6 +216,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Atmospheric Science',
         'Topic :: Scientific/Engineering :: GIS',
