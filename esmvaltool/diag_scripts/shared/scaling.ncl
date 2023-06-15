@@ -12,6 +12,42 @@
 load "$diag_scripts/../interface_scripts/logging.ncl"
 
 ; #############################################################################
+undef("normalize_units")
+function normalize_units(units[1]:string)
+;
+; Arguments
+;    units: a string of units that will be normalized.
+;
+; Return value
+;    A string of normalized units.
+;
+; Description
+;    Normalize units, i.e., split units by ".", sort them, and return
+;    concantenated units (by " "). Example: "m-2.kg.s-1" -> "kg m-2 s-1".
+;
+; Modification history
+;    20230614-schlund_manuel: written.
+;
+local funcname, scriptname, split_units, concatenated_units
+begin
+
+  funcname = "normalize_units"
+  scriptname = "diag_scripts/shared/scaling.ncl"
+  enter_msg(scriptname, funcname)
+
+  ; Split units by "." and sort if necessary
+  split_units = str_split(units, ".")
+  if (dimsizes(split_units).gt.1) then
+    sqsort(split_units)
+  end if
+
+  ; Concatenate with seperator " "
+  concatenated_units = str_join(split_units, " ")
+
+  return(concatenated_units)
+end
+
+; #############################################################################
 undef("convert_units")
 function convert_units(var:numeric,
                        units_to[1]:string)
@@ -63,6 +99,9 @@ begin
               units_from + " to " + units_to)
     return(out)
   end if
+
+  ; Normalize source units
+  units_from = normalize_units(units_from)
 
   if (units_from.eq."1") then
     if (units_to.eq."g/kg") then
