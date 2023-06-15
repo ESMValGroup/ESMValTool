@@ -1,3 +1,4 @@
+
 """
 Arctic-midlatitude teleconnections Diagnostics.
 ====================
@@ -194,19 +195,18 @@ def plot_timeseries(dictionary, var, cfg):
     fig = plt.figure(figsize=(10, 4))
     sns.set_style('whitegrid')
     colors = plt.cm.viridis(np.linspace(0, 1, len(dictionary.keys())))
-    baseplotname = (f"Timeseries_{var}_anomalies")
+    baseplotname = f"Timeseries_{var}_anomalies"
     filename = get_plot_filename(baseplotname, cfg)
     for i, key in enumerate(dictionary.keys()):
-        if var != 'BK_sic' and var != 'Ok_sic':
+        if var not in ('BK_sic', 'Ok_sic'):
             if key == "HadISST":
                 continue
+            if key != 'ERA5':
+                plotting_support(dictionary[key][var], key,
+                                    color=colors[i])
             else:
-                if key != 'ERA5':
-                    plotting_support(dictionary[key][var], key,
-                                     color=colors[i])
-                else:
-                    plotting_support(dictionary[key][var], key,
-                                     color='k', linewidth=2)
+                plotting_support(dictionary[key][var], key,
+                                    color='k', linewidth=2)
         else:
             if key == "ERA5":
                 continue
@@ -221,7 +221,6 @@ def plot_timeseries(dictionary, var, cfg):
 def main(cfg):
     """Calculate and save final variables into .nc files."""
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
-    np.save('/work/bd0854/b380971/output/tests/cfg.npy', cfg)
     all_variables = calculate_variables(my_files_dict)
     # Check is timeseries should be plotted
     if cfg['plot_timeseries'] is True:
