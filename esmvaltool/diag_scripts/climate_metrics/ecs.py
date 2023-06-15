@@ -34,7 +34,7 @@ read_external_file : str, optional
 savefig_kwargs : dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 sep_year : int, optional (default: 20)
     Year to separate regressions of complex Gregory plot. Only effective if
     ``complex_gregory_plot`` is ``True``.
@@ -413,9 +413,10 @@ def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
 
     # Save plot
     plot_path = get_plot_filename(dataset_name, cfg)
-    plt.savefig(plot_path,
-                additional_artists=[legend],
-                **cfg['savefig_kwargs'])
+    savefig_kwargs = dict(cfg['savefig_kwargs'])
+    if legend is not None:
+        savefig_kwargs['bbox_extra_artists'] = [legend]
+    plt.savefig(plot_path, **savefig_kwargs)
     logger.info("Wrote %s", plot_path)
     plt.close()
 
@@ -501,7 +502,7 @@ def write_data(cfg, ecs_data, feedback_parameter_data, ancestor_files):
 def main(cfg):
     """Run the diagnostic."""
     cfg = set_default_cfg(cfg)
-    sns.set(**cfg.get('seaborn_settings', {}))
+    sns.set_theme(**cfg.get('seaborn_settings', {}))
 
     # Read external file if desired
     if cfg.get('read_external_file'):

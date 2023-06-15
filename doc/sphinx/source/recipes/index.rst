@@ -3,8 +3,27 @@
 Recipes
 -------
 
+A website displaying results produced with the latest release of
+ESMValTool for all available recipes can be accessed `here
+<https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/>`_.
+
 .. toctree::
    :maxdepth: 1
+
+.. _general_purpose_diags:
+
+General-purpose diagnostics
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Recipes that use highly customizable diagnostics which are designed to plot a
+large variety of input data.
+
+.. toctree::
+   :maxdepth: 1
+
+   recipe_monitor
+   recipe_psyplot
+   recipe_seaborn
 
 Atmosphere
 ^^^^^^^^^^
@@ -78,7 +97,7 @@ IPCC
    :maxdepth: 1
 
    recipe_ipccwg1ar6ch3
-   recipe_flato13ipcc
+   recipe_ipccwg1ar5ch9
    recipe_collins13ipcc
 
 Land
@@ -117,9 +136,7 @@ Other
    recipe_ensclus
    recipe_esacci_lst
    recipe_examples
-   recipe_monitor
    recipe_multimodel_products
-   recipe_psyplot
    recipe_pv_capacity_factor
    recipe_rainfarm
    recipe_seaice
@@ -128,3 +145,11 @@ Other
    recipe_shapeselect
    recipes_testing
    recipe_toymodel
+
+Broken recipe list
+^^^^^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 1
+
+   broken_recipe_list

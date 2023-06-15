@@ -21,6 +21,10 @@ If you are a regular contributor, please try to review a bit more than two
 other pull requests for every pull request you create yourself, to make sure
 that each pull request gets the attention it deserves.
 
+If a pull request contains backward-incompatible changes, the developer or
+reviewer must tag the `@ESMValGroup/esmvaltool-coreteam`_ team to notify them
+of the :ref:`backward-incompatible change <guidance-on-backward-incompatiable-changes>`.
+
 .. _technical_review:
 
 1. Technical review
@@ -81,6 +85,13 @@ contains a concise and meaningful text.
 Any issues that were solved by the pull request can be closed after merging.
 It is always a good idea to check with the author of an issue and ask if it is
 completely solved by the related pull request before closing the issue.
+
+If a pull request contains
+:ref:`backward-incompatible changes <guidance-on-backward-incompatiable-changes>`,
+the person in charge of merging must give the core development team at least 2
+weeks for objections to be raised before merging to the main branch.
+If a strong objection is raised the backward-incompatible change should not be
+merged until the objection is resolved.
 
 The core development team can be contacted by writing `@ESMValGroup/esmvaltool-coreteam`_
 in a comment on an issue or pull request on GitHub.

@@ -1,4 +1,4 @@
-.. _recipes_flato13ipcc:
+.. _recipes_ipccwg1ar5ch9:
 
 IPCC AR5 Chapter 9 (selected figures)
 =====================================
@@ -11,6 +11,12 @@ so that the plots can be readily reproduced and compared to previous CMIP
 versions. In this way we can next time start with what was available in the
 previous round and can focus on developing more innovative methods of analysis
 rather than constantly having to "re-invent the wheel".
+
+.. note::
+
+    Please note that most recipes have been modified to include only models that are
+    (still) readily available via ESGF. Plots produced may therefore look different
+    than the original figures from IPCC AR5.
 
 The plots are produced collecting the diagnostics from individual recipes. The
 following figures from Flato et al. (2013) can currently be reproduced:
@@ -33,7 +39,7 @@ following figures from Flato et al. (2013) can currently be reproduced:
       CMIP5 multi-model mean and the climatology from the Global Precipitation
       Climatology Project (Adler et al., 2003), c) multi-model mean absolute
       error with respect to observations, and d) multi-model mean error
-      relative to the multi-model mean precipitation ifself.
+      relative to the multi-model mean precipitation itself.
 
     * Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative
       effects in Wm-2 for the CMIP5 models against CERES EBAF (2001-2011) in
@@ -43,7 +49,7 @@ following figures from Flato et al. (2013) can currently be reproduced:
       averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin
       gray lines), and the multi-model mean (thick red line).
 
-    * Figure 9.6: Centred pattern correlations between models and observations
+    * Figure 9.6: Centered pattern correlations between models and observations
       for the annual mean climatology over the period 1980–1999. Results are
       shown for individual CMIP3 (black) and CMIP5 (blue) models as thin
       dashes, along with the corresponding ensemble average (thick dash) and
@@ -89,6 +95,21 @@ following figures from Flato et al. (2013) can currently be reproduced:
       calculated as the standard deviation of the annual means over the period
       1986–2005.
 
+    * Figure 9.38: Seasonal cycle for the surface temperature or precipitation
+      over land within defined regions multi-model mean and difference to
+      reference dataset or absolute annual cycle can be chosen.
+
+    * Figure 9.39: Seasonal bias box and whiskers plot
+      for surface temperature or precipitation within
+      SREX (IPCC Special Report on Managing the Risks of Extreme Events and
+      Disasters to Advance Climate Change Adaptation) regions.
+
+    * Figure 9.40: Seasonal bias box and whiskers plot for surface
+      temperature or precipitation within defined polar and ocean regions.
+
+    * Figure 9.41b: Comparison between observations and models for variable
+      values within defined regions.
+
     * Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global
       mean surface air temperature, both for the period 1961-1990 and for the
       pre-industrial control runs.
@@ -103,9 +124,19 @@ following figures from Flato et al. (2013) can currently be reproduced:
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in esmvaltool/recipes/
+Recipes are stored in esmvaltool/recipes/recipe_ipccwg1ar5ch9
 
-    * recipe_flato13ipcc.yml
+    * recipe_flato13ipcc_figures_92_95.yml: Figures 9.2, 9.3, 9.4, 9.5
+    * recipe_flato13ipcc_figure_96.yml: Figure 9.6
+    * recipe_flato13ipcc_figure_98.yml: Figure 9.8
+    * recipe_flato13ipcc_figure_914.yml: Figure 9.14
+    * recipe_flato13ipcc_figure_924.yml: Figure 9.24
+    * recipe_flato13ipcc_figures_926_927.yml: Figures 9.26 and 9.27
+    * recipe_flato13ipcc_figure_942.yml: Figure 9.42
+    * recipe_flato13ipcc_figure_945a.yml: Figure 9.45a
+    * recipe_flato13ipcc_figures_938_941_cmip3.yml: Figures 9.38, 9.39, 9.40, and 9.41
+    * recipe_flato13ipcc_figures_938_941_cmip6.yml: Figures 9.38, 9.39, 9.40, and 9.41 CMIP6 instead of CMIP3
+    * recipe_weigel21gmd_figures_13_16.yml: ESMValTool paper version (Weigel et al., 2021) of Figures 9.38, 9.39, 9.40, and 9.41, only CMIP5
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
@@ -113,7 +144,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     * climate_metrics/ecs.py: See :ref:`here<ecs.py>`.
     * clouds/clouds_bias.ncl: global maps of the multi-model mean and the multi-model
       mean bias (Fig. 9.2, 9.4)
-    * clouds/clouds_isccp: global maps of multi-model mean minus observations + zonal
+    * clouds/clouds_ipcc.ncl: global maps of multi-model mean minus observations + zonal
       averages of individual models, multi-model mean and observations (Fig. 9.5)
     * ipcc_ar5/ch09_fig09_3.ncl: multi-model mean seasonality of near-surface
       temperature (Fig. 9.3)
@@ -125,6 +156,10 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     * ipcc_ar5/ch09_fig09_14.py: Zonally averaged and equatorial SST (Fig. 9.14)
     * seaice/seaice_tsline.ncl: Time series of sea ice extent (Fig. 9.24a/b)
     * seaice/seaice_trends.ncl: Trend distributions of sea ice extent (Fig 9.24c/d)
+    * regional_downscaling/Figure9_38.ncl (Fig 9.38a (variable tas) and Fig 9.38b (variable pr))
+    * regional_downscaling/Figure9_39.ncl (Fig 9.39a/c/e (variable tas) and Fig 9.39b/d/f (variable pr))
+    * regional_downscaling/Figure9_40.ncl (Fig 9.40a/c/e (variable tas) and Fig 9.40b/d/f (variable pr))
+    * regional_downscaling/Figure9_41.ncl (Fig 9.41b)
     * ipcc_ar5/ch09_fig09_42a.py: ECS vs. surface air temperature (Fig. 9.42a)
     * ipcc_ar5/ch09_fig09_42b.py: TCR vs. ECS (Fig. 9.42b)
     * emergent_constraints/snowalbedo.ncl: snow-albedo effect (Fig. 9.45a)
@@ -142,8 +177,6 @@ User settings in recipe
 
 #. Script clouds/clouds_bias.ncl
 
-#. Script clouds_bias.ncl
-
    *Required settings (scripts)*
 
    none
@@ -158,7 +191,7 @@ User settings in recipe
 
    * Required settings (variables)*
 
-   * reference_dataset: name of reference datatset
+   * reference_dataset: name of reference dataset
 
    *Optional settings (variables)*
 
@@ -213,7 +246,7 @@ User settings in recipe
    * time_avg: type of time average (currently only "yearly" and "monthly" are
      available).
    * ts_anomaly: calculates anomalies with respect to the defined period; for
-     each gird point by removing the mean for the given calendar month
+     each grid point by removing the mean for the given calendar month
      (requiring at least 50% of the data to be non-missing)
    * ref_start: start year of reference period for anomalies
    * ref_end: end year of reference period for anomalies
@@ -310,6 +343,100 @@ User settings in recipe
    * EMs_in_lg: create a legend label for individual ensemble members (default: False)
    * fill_pole_hole: fill polar hole (typically in satellite data) with sic = 1 (default: False)
 
+#. Script regional_downscaling/Figure9.38.ncl
+
+   *Required settings for script*
+
+   none
+
+   *Optional settings (scripts)*
+
+   * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
+   * fig938_region_label: Labels for regions, which should be included
+     (["WNA", "ENA", "CAM", "TSA", "SSA", "EUM", "NAF","CAF", "SAF", "NAS",
+     "CAS", "EAS", "SAS", "SEA", "AUS"]), default "WNA"
+   * fig938_project_MMM: projects to average, default "CMIP5"
+   * fig938_experiment_MMM: experiments to average, default "historical"
+   * fig938_mip_MMM: mip to average, default "Amon"
+   * fig938_names_MMM: names in legend  i.e. (["CMIP5","CMIP3"]), default fig938_project_MMM
+   * fig938_colors_MMM: Color for multi-model mean (e.g. ["red"]), default "red"
+   * If set fig938_mip_MMM, fig938_experiment_MMM, fig938_project_MMM, fig938_names_MMM, and fig938_colors_MMM must
+     have the same number of elements
+
+   * fig938_refModel: Reference data set for differences default "ERA-Interim"
+   * fig938_MMM: Plot multi-model mean (true/false), default "true"
+   * fig938_YMin: minimum Y Axis
+   * fig938_YMax: maximum Y Axis
+   * fig938_diff: Difference to reference data (true) or absolute annual cycle (false), default "true"
+
+#. Script regional_downscaling/Figure9.39.ncl
+
+   *Required settings (scripts)*
+
+   * reference_dataset: reference dataset name (set of variables)
+
+   *Optional settings (scripts)*
+
+   * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
+   * fig939_season: seasons i.e. (["DJF","JJA","ANN"]), default "DJF"
+   * fig939_region_label: Labels for regions, which should be included
+     (["ALAs","CGIs","WNAs","CNAs","ENAs","CAMs","AMZs","NEBs","WSAs","SSAs",
+     "NEUs","CEUs","MEDs","SAHs","WAFs","EAFs","SAFs","NASs","WASs","CASs",
+     "TIBs","EASs","SASs","SEAs","NAUs","SAUs"]), default "ALAs"
+   * fig939_project_MMM: projects to average, default "CMIP5"
+   * fig939_experiment_MMM: experiments to average, default "historical"
+   * fig939_mip_MMM: mip to average, default "Amon"
+   * fig939_MMM: Plot multi-model mean (true/false)
+   * fig939_names_MMM: names in legend  i.e. (["CMIP5","CMIP3"])
+   * fig939_YMin: minimum Y Axis
+   * fig939_YMax: maximum Y Axis
+   * fig939_vert_line_pos: i.e. ([6,10,13,17,24,26])
+   * fig939_vert_line_label: labels of vertical lines, i.e. (["North America",
+     "South America","Europe","Africa","Asia","Australia"])
+   * fig939_mode: True= cumulative mode
+
+#. Script regional_downscaling/Figure9.40.ncl
+
+   *Required settings (scripts)*
+
+   * reference_dataset: reference dataset name (set of variables)
+
+   *Optional settings (scripts)*
+
+   * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
+   * fig940_season: seasons i.e. (["DJF","JJA","ANN"]), default "DJF"
+   * fig940_region_label: Labels for regions, which should be included
+     (["Arctic_land","Arctic_sea","Antarctic_land","Antarctic_sea",
+     "Caribbean","WesternIndianOcean","NorthernIndianOcean",
+     "NorthernTropicalPacific","EquatorialTropicalPacific",
+     "SouthernTropicalPacific","World_land","World_sea","World"]),
+     default "Arctic_land"
+   * fig940_project_MMM: projects to average, default "CMIP5"
+   * fig940_experiment_MMM: experiments to average, default "historical"
+   * fig940_mip_MMM: mip to average, default "Amon"
+   * fig940_MMM: Plot multi-model mean (true/false)
+   * fig940_names_MMM: names in legend  i.e. (["CMIP5","CMIP3"])
+   * fig940_YMin: minimum Y Axis
+   * fig940_YMax: maximum Y Axis
+   * fig940_vert_line_pos: i.e. ([6,10,13,17,24,26])
+   * fig940_vert_line_label: labels of vertical lines, i.e. (["North America",
+     "South America","Europe","Africa","Asia","Australia"])
+   * fig940_mode: True= cumulative mode
+
+#. Script regional_downscaling/Figure9.41.ncl
+
+   *Required settings (scripts)*
+
+   * reference_dataset: reference dataset name (set of variables)
+
+   *Optional settings (scripts)*
+
+   * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
+   * fig941_region_label: Labels for regions, which should be included
+     (["ALAs","CGIs","WNAs","CNAs","ENAs","CAMs","AMZs","NEBs","WSAs","SSAs",
+     "NEUs","CEUs","MEDs","SAHs","WAFs","EAFs","SAFs","NASs","WASs","CASs",
+     "TIBs","EASs","SASs","SEAs","NAUs","SAUs"]), default "MEDs"
+
 #. Script ipcc_ar5/ch09_fig09_42a.py
 
    *Required settings for script*
@@ -326,7 +453,8 @@ User settings in recipe
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
    * save: :obj:`dict` containing keyword arguments for the function
      :func:`matplotlib.pyplot.savefig`.
-   * seaborn_settings: Options for :func:`seaborn.set` (affects all plots).
+   * seaborn_settings: Options for :func:`seaborn.set_theme` (affects all
+     plots).
 
 .. _ch09_fig09_42b.py:
 
@@ -349,7 +477,8 @@ User settings in recipe
      ``marker_column``).  If a relative path is given, assumes that this is a
      pattern to search for ancestor files.
    * savefig_kwargs: Keyword arguments for :func:`matplotlib.pyplot.savefig`.
-   * seaborn_settings: Options for :func:`seaborn.set` (affects all plots).
+   * seaborn_settings: Options for :func:`seaborn.set_theme` (affects all
+     plots).
    * x_lim: Plot limits for X axis (ECS).
    * y_lim: Plot limits for Y axis (TCR).
 
@@ -434,11 +563,31 @@ References
   variations to anthropogenic and natural causes using CMIP5 simulations. Journal
   of Geophysical Research: Atmosphere, 118, 4001-4024, doi:10.1002/jgrd.50239.
 
+* Seneviratne, S. I., Nicholls, N., Easterling, D., Goodess, C. M., Kanae, S.,
+  Kossin, J., Luo, Y., Marengo, J., McInnes, K., Rahimi, M., Reichstein, M.,
+  Sorteberg, A., Vera, C., and Zhang, X., 2012:
+  Changes in climate extremes and their impacts on the naturalphysical
+  environment. , in: Managing the Risks of Extreme Events and Disasters to
+  Advance Climate Change Adaptation.  A Special Report of Working Groups I and
+  II of the Intergovernmental Panel on ClimateChange (IPCC), edited by:
+  Field, C. B., Barros, V., Stocker, T. F., Qin, D., Dokken, D. J.,
+  Ebi, K. L., Mastrandrea, M. D., Mach, K. J., Plattner, G.-K., Allen, S. K.,
+  Tignor, M., and Midgley, P. M., Cambridge University Press, Cambridge, UK,
+  and New York, NY, USA, 109-230.
+
+* Weigel, K., Bock, L., Gier, B. K., Lauer, A., Righi, M., Schlund, M., Adeniyi, K.,
+  Andela, B., Arnone, E., Berg, P., Caron, L.-P., Cionni, I., Corti, S., Drost, N.,
+  Hunter, A., Lledó, L., Mohr, C. W., Paçal, A., Pérez-Zanón, N., Predoi, V., Sandstad,
+  M., Sillmann, J., Sterl, A., Vegas-Regidor, J., von Hardenberg, J., and Eyring, V.:
+  Earth System Model Evaluation Tool (ESMValTool) v2.0 - diagnostics for extreme events,
+  regional and impact evaluation, and analysis of Earth system models in CMIP,
+  Geosci. Model Dev., 14, 3159-3184, https://doi.org/10.5194/gmd-14-3159-2021, 2021.
+
 
 Example plots
 -------------
 
-.. figure::  /recipes/figures/flato13ipcc/fig-9-2.png
+.. figure::  /recipes/figures/ipccwg1ar5ch9/fig-9-2.png
    :align:   center
 
    Figure 9.2 a,b,c: Annual-mean surface air temperature for the period
@@ -447,7 +596,7 @@ Example plots
    (Dee et al., 2011), c) mean absolute model error with respect to the
    climatology from ERA-Interim.
 
-.. figure::  /recipes/figures/flato13ipcc/fig-9-3.png
+.. figure::  /recipes/figures/ipccwg1ar5ch9/fig-9-3.png
    :align:   center
 
    Figure 9.3: Multi model values for seasonality of near-surface temperature,
@@ -455,7 +604,7 @@ Example plots
    in seasonality, mean bias in absolute seasonality. Reference dataset:
    ERA-Interim.
 
-.. figure::  /recipes/figures/flato13ipcc/fig-9-4.png
+.. figure::  /recipes/figures/ipccwg1ar5ch9/fig-9-4.png
    :align:   center
 
    Figure 9.4: Annual-mean precipitation rate (mm day-1) for the period
@@ -463,9 +612,9 @@ Example plots
    CMIP5 multi-model mean and the climatology from the Global Precipitation
    Climatology Project (Adler et al., 2003), c) multi-model mean absolute
    error with respect to observations, and d) multi-model mean error
-   relative to the multi-model mean precipitation ifself.
+   relative to the multi-model mean precipitation itself.
 
-.. figure::  /recipes/figures/flato13ipcc/fig-9-5.png
+.. figure::  /recipes/figures/ipccwg1ar5ch9/fig-9-5.png
    :align:   center
 
    Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative
@@ -476,10 +625,10 @@ Example plots
    averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin
    gray lines), and the multi-model mean (thick red line).
 
-.. figure::  /recipes/figures/flato13ipcc/fig-9-6.png
+.. figure::  /recipes/figures/ipccwg1ar5ch9/fig-9-6.png
    :align:   center
 
-   Figure 9.6: Centred pattern correlations between models and observations
+   Figure 9.6: Centered pattern correlations between models and observations
    for the annual mean climatology over the period 1980–1999. Results are
    shown for individual CMIP3 (black) and CMIP5 (blue) models as thin
    dashes, along with the corresponding ensemble average (thick dash) and
@@ -489,7 +638,7 @@ Example plots
    effect (SW CRE). The correlations between the reference and alternate
    observations are also shown (solid green circles).
 
-.. figure::  /recipes/figures/flato13ipcc/fig-9-8.png
+.. figure::  /recipes/figures/ipccwg1ar5ch9/fig-9-8.png
    :align:   center
 
    Figure 9.8: Observed and simulated time series of the anomalies in annual
@@ -501,7 +650,7 @@ Example plots
    different observations (thick black lines). Dataset pre-processing like
    described in Jones et al., 2013.
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-14.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-14.png
    :align: center
 
    Figure 9.14: (a) Zonally averaged sea surface temperature (SST) error
@@ -529,7 +678,7 @@ Example plots
    Figure 9.24a: Time series of total sea ice area and extent (accumulated) for the Arctic
    in September including multi-model mean and standard deviation.
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-26.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-26.png
    :align: center
 
    Figure 9.26 (bottom): Ensemble-mean global land carbon uptake in the CMIP5
@@ -540,7 +689,7 @@ Example plots
    grey areas show the range of annual mean fluxes simulated across the model
    ensemble.
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-27.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-27.png
    :align: center
 
    Figure 9.27 (top): Simulation of global mean atmosphere–ocean CO2 fluxes
@@ -550,20 +699,138 @@ Example plots
    variability in the fluxes, calculated as the standard deviation of the
    annual means over the period 1986–2005.
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-42a.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-38.png
+   :align: center
+
+   Figure 9.38tas: Mean seasonal cycle for surface temperature (tas)
+   as multi model mean of 38 CMIP5 and 22 CMIP6 models as well as
+   CRU and ERA-Interim reanalysis data averaged
+   for 1980-2005 over land in different regions:
+   Western North America (WNA), Eastern North America (ENA),
+   Central America (CAM), Tropical South America (TSA),
+   Southern South America (SSA), Europe and Mediterranean (EUM),
+   North Africa (NAF), Central Africa (CAF), South Africa (SAF),
+   North Asia (NAS), Central Asia (CAS), East Asia (EAS),
+   South Asia (SAS), Southeast Asia (SEA), and Australia (AUS).
+   Similar to Fig. 9.38a from Flato et al. (2013), CMIP6 instead of CMIP3 and
+   set of CMIP5 models used different.
+
+
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-38-pr.png
+   :align: center
+
+   Figure 9.38pr: Mean seasonal cycle for precipitation (pr)
+   as multi model mean of 38 CMIP5 and 22 CMIP6 models as well as
+   CRU and ERA-Interim reanalysis data averaged
+   for 1980-1999 over land in different regions:
+   Western North America (WNA), Eastern North America (ENA),
+   Central America (CAM), Tropical South America (TSA),
+   Southern South America (SSA), Europe and Mediterranean (EUM),
+   North Africa (NAF), Central Africa (CAF), South Africa (SAF),
+   North Asia (NAS), Central Asia (CAS), East Asia (EAS),
+   South Asia (SAS), Southeast Asia (SEA), and Australia (AUS).
+   Similar to Fig. 9.38b from Flato et al. (2013), CMIP6 instead of CMIP3 and
+   set of CMIP5 models used different.
+
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-38_regions.png
+   :align: center
+
+   Figure 9.38reg: Positions of the regions used in Figure 9.38.
+
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-39.png
+   :align: center
+
+   Figure 9.39tas: Box and whisker plots showing the 5th, 25th, 50th, 75th
+   and 95th percentiles of the seasonal- and annual mean biases for
+   surface temperature (tas) for 1980-2005 between 38 CMIP5 models
+   (box and whiskers) or 22 CMIP6 models (crosses) and CRU data.
+   The regions are: Alaska/NW Canada (ALAs),
+   Eastern Canada/Greenland/Iceland (CGIs), Western North America(WNAs),
+   Central North America (CNAs), Eastern North America (ENAs),
+   Central America/Mexico (CAMs), Amazon (AMZs), NE Brazil (NEBs),
+   West Coast South America (WSAs), South-Eastern South America (SSAs),
+   Northern Europe (NEUs), Central Europe (CEUs),
+   Southern Europe/the Mediterranean (MEDs), Sahara (SAHs),
+   Western Africa (WAFs), Eastern Africa (EAFs), Southern Africa (SAFs),
+   Northern Asia (NASs), Western Asia (WASs), Central Asia (CASs),
+   Tibetan Plateau (TIBs), Eastern Asia (EASs), Southern Asia (SASs),
+   Southeast Asia (SEAs), Northern Australia (NASs) and
+   Southern Australia/New Zealand (SAUs).
+   The positions of these regions are defined following
+   (Seneviratne et al., 2012) and differ from the ones in Fig. 9.38.
+   Similar to Fig. 9.39 a,c,e from Flato et al. (2013), CMIP6 instead of CMIP3 and
+   set of CMIP5 models used different.
+
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-39-pr.png
+   :align: center
+
+   Figure 9.39pr: Box and whisker plots showing the 5th, 25th, 50th, 75th
+   and 95th percentiles of the seasonal- and annual mean biases for
+   precipitation (pr) for 1980-2005 between 38 CMIP5 models
+   (box and whiskers) or 22 CMIP6 models (crosses) and CRU data.
+   The regions are: Alaska/NW Canada (ALAs),
+   Eastern Canada/Greenland/Iceland (CGIs), Western North America(WNAs),
+   Central North America (CNAs), Eastern North America (ENAs),
+   Central America/Mexico (CAMs), Amazon (AMZs), NE Brazil (NEBs),
+   West Coast South America (WSAs), South-Eastern South America (SSAs),
+   Northern Europe (NEUs), Central Europe (CEUs),
+   Southern Europe/the Mediterranean (MEDs), Sahara (SAHs),
+   Western Africa (WAFs), Eastern Africa (EAFs), Southern Africa (SAFs),
+   Northern Asia (NASs), Western Asia (WASs), Central Asia (CASs),
+   Tibetan Plateau (TIBs), Eastern Asia (EASs), Southern Asia (SASs),
+   Southeast Asia (SEAs), Northern Australia (NASs) and
+   Southern Australia/New Zealand (SAUs).
+   The positions of these regions are defined following
+   (Seneviratne et al., 2012) and differ from the ones in Fig. 9.38.
+   Similar to Fig. 9.39 b,d,f from Flato et al. (2013), CMIP6 instead of CMIP3 and
+   set of CMIP5 models used different.
+
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-39_regions.png
+   :align: center
+
+   Figure 9.39reg: Positions of the regions used in Figure 9.39.
+
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-40.png
+   :align: center
+
+   Figure 9.40tas: Box and whisker plots showing the 5th, 25th, 50th, 75th
+   and 95th percentiles of the seasonal- and annual mean biases for
+   surface temperature (tas) for oceanic and polar regions between 38 CMIP5 (box and whiskers) or 22 CMIP6 (crosses)
+   models and ERA-Interim data for 1980–2005.
+
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-40-pr.png
+   :align: center
+
+   Figure 9.40pr: Box and whisker plots showing the 5th, 25th, 50th, 75th
+   and 95th percentiles of the seasonal- and annual mean biases for
+   precipitation (pr) for oceanic and polar regions between 38 CMIP5 (box and whiskers) or 22 CMIP6 (crosses)
+   models and Global Precipitation Climatology Project - Satellite-Gauge (GPCP-SG) data for 1980–2005.
+
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-40_regions.png
+   :align: center
+
+   Figure 9.40reg: Positions of the regions used in Figure 9.40.
+
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-41b.png
+   :align: center
+
+   Figure 9.41b: Ranked modelled versus ERA-Interim mean temperature for
+   38 CMIP5 models in the Mediterranean region for 1961–2000.
+
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-42a.png
    :align: center
 
    Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global mean
    surface air temperature of CMIP5 models, both for the period 1961-1990
    (larger symbols) and for the pre-industrial control runs (smaller symbols).
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-42b.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-42b.png
    :align: center
 
    Figure 9.42b: Transient climate response (TCR) against equilibrium climate
    sensitivity (ECS) for CMIP5 models.
 
-.. figure:: /recipes/figures/flato13ipcc/fig-9-45a.png
+.. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-45a.png
    :align: center
 
    Figure 9.45a: Scatterplot of springtime snow-albedo effect values in climate
