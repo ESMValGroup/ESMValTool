@@ -1589,6 +1589,7 @@ class MultiDatasets(MonitorBase):
             'authors': ['schlund_manuel', 'winterstein_franziska'],
             'caption': caption,
             'plot_types': ['line'],
+            'long_names': [var_attrs['long_name']],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
