@@ -54,6 +54,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     # define files to download
 
     files = ['fcst_phy2m',
+             'fcst_phy3m',
              'anl_chipsi',
              'anl_p']
 

@@ -490,16 +490,22 @@ diagnostics:
   JRA-25:
     description: JRA-25 check
     variables:
+      cl:
       clt:
+      clwvi:
       hus:
       prw:
       rlut:
       rlutcs:
       rsut:
       rsutcs:
+      ta:
+      tas:
+      tcw:
+      wap:
     additional_datasets:
       - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
-         type: reanaly, version: 1, start_year: 1979, end_year: 2013} 
+         type: reanaly, version: 1, start_year: 1979, end_year: 2007} 
     scripts: null
 
   Kadow2020:
