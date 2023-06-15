@@ -226,6 +226,7 @@ It is also possible to add more information for the implemented diagnostics usin
 - :code:`domains` a list of spatial coverage of the dataset
 - :code:`plot_types` a list of plot types if the diagnostic created a plot, e.g. error bar
 - :code:`statistics` a list of types of the statistic, e.g. anomaly
+- :code:`long_names` a list of long names of the variables, e.g. Air Temperature
 
 Arbitrarily named other items are also supported.
 
