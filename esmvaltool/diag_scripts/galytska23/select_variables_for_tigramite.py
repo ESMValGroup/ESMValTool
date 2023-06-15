@@ -203,10 +203,10 @@ def plot_timeseries(dictionary, var, cfg):
                 continue
             if key != 'ERA5':
                 plotting_support(dictionary[key][var], key,
-                                    color=colors[i])
+                                 color=colors[i])
             else:
                 plotting_support(dictionary[key][var], key,
-                                    color='k', linewidth=2)
+                                 color='k', linewidth=2)
         else:
             if key == "ERA5":
                 continue
