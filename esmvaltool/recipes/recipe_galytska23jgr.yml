@@ -198,7 +198,7 @@ diagnostics:
         short_name: zg
         preprocessor: pv
         start_year: 1980
-        end_year: 2021
+        end_year: 1921
         mip: Amon
         project: CMIP6
         exp:
@@ -325,6 +325,8 @@ diagnostics:
     scripts:
       output:
         script: galytska23/select_variables_for_tigramite.py
+        plot_timeseries: True 
+        variable_to_plot: Arctic_temperature
 
   diagnostic_cvdp:
     description: Run the NCAR CVDPackage.
