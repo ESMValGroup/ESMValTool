@@ -1,10 +1,37 @@
-"""Personal diagnostics for Arctic-midlatitude research."""
+"""
+Arctic-midlatitude teleconnections Diagnostics.
+====================
 
-# import libraries
+Diagnostic to prepare data for
+Causal Model Evaluation of Arctic-midlatitude teleconnections.
+
+  Description:
+    This diagnostics calculates timeseries of the variables that represent
+    Arctic-midlatitude teleconenctions that are further used for the
+    Causal Model Evaluation of CMIP6 (Galytska et al., 2023). The output of
+    this diagnostics is a .nc file per data source. Optionally this diagnostics
+    plots the timeseries of the evolution of each selected variable. If the
+    user kept "plot_timeseries: True" in recipe_galytska23jgr.yml, then
+    "variable_to_plot:" expects the name of the variable to be plotted.
+    Possible options for "variable_to_plot:" are:
+    Arctic_temperature
+    Psl_Ural
+    Psl_Sib
+    Psl_Aleut
+    PV
+    heat_flux
+    BK_sic
+    Ok_sic
+  Author: Evgenia Galytska, IUP-UB
+          egalytska@iup.physik.uni-bremen.de
+  Project: USMILE
+"""
+import logging
+from pathlib import Path
 import iris
-# import numpy as np
-# import seaborn as sns
-
+import numpy as np
+import seaborn as sns
+from matplotlib import pyplot as plt
 from esmvalcore.preprocessor import (
     anomalies,
     area_statistics,
@@ -12,12 +39,32 @@ from esmvalcore.preprocessor import (
     zonal_statistics,
 )
 
-# import internal esmvaltool modules here
+import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
     group_metadata,
     run_diagnostic,
+    save_data,
 )
-from esmvaltool.diag_scripts.shared._base import get_diagnostic_filename
+from esmvaltool.diag_scripts.shared._base import (
+    get_diagnostic_filename,
+    get_plot_filename,
+)
+
+logger = logging.getLogger(Path(__file__).stem)
+
+
+def get_provenance_record(ancestor_files):
+    """Create a provenance record describing the diagnostic data and plot."""
+    record = {
+        'authors': ['galytska_evgenia'],
+        'ancestors': ancestor_files,
+        'projects': ['usmile'],
+        'references': [
+            'acknow_project',
+        ],
+    }
+    return record
 
 
 def calculate_polar_vortex(dict_item):
@@ -81,11 +128,12 @@ def calculate_heat_flux(list_va_ta):
 
 
 def variable_cases(var, item):
+    """Match preprocessor name and corresponding calculations."""
     if var == 'pv':
-        out_var  = calculate_polar_vortex(item)
-    if var == 'pre_tas':
+        out_var = calculate_polar_vortex(item)
+    elif var == 'pre_tas':
         out_var = calculate_arctic_tas(item)
-    elif var =='pressure_ural':
+    elif var == 'pressure_ural':
         out_var = calculate_slp(item)
         out_var.var_name = 'Psl_Ural'
     elif var == 'pressure_sib':
@@ -104,12 +152,14 @@ def variable_cases(var, item):
         raise NotImplementedError(f"Variable '{var}' not supported")
     return out_var
 
-    
 
 def calculate_variables(input_dict):
     """Calculate all necessary variables."""
+    logger.debug("Variables are calculated for the following datasources:%s",
+                 input_dict.keys())
     dictionary = {}
     for key, value in input_dict.items():
+        logger.debug("Calculating final variables for %s dataset", key)
         dictionary.setdefault(key, {})
         tmp_list = []
         for item in value:
@@ -122,33 +172,66 @@ def calculate_variables(input_dict):
                 )
 
         if key != "HadISST":
-            # calculate heat flux for all data sources except HadISST
+            # Calculate heat flux for all data sources except HadISST
             heat_flux = calculate_heat_flux(tmp_list)
             dictionary[key].setdefault(heat_flux.var_name, heat_flux)
     return dictionary
 
-# def plot_selected_timeseries(dictionary):
-#     """Plot timeseries of indicated variables."""
-#     var_names = ['heat_flux', 'PV']
-#     for var in var_names:
-#         plt.figure(figsize=(14, 4))
-#         sns.set_theme()
-#         for key in dictionary:
-#             time_orig = dictionary[key][var].coord('time')
-#             times = np.asarray(time_orig.units.num2date(time_orig.points))
-#             time_pts = [t.strftime('%Y-%m') for t in times]
-#             plt.plot(time_pts, dictionary[key][var].data)
-#             plt.title(var)
-#             plt.ylabel('Anomalies')
-#             plt.xticks(rotation=45, ha="right", rotation_mode='anchor')
+
+def plotting_support(cube, key, **kwargs):
+    """Help for the pretty plot."""
+    if cube.coords('time', dim_coords=True):
+        ih.unify_time_coord(cube)
+    iris.quickplot.plot(cube, label=key, **kwargs)
+    plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+    plt.ylabel("Anomalies, " + str(cube.units))
+    plt.title(f"Time series of monthly mean {cube.var_name.upper()} anomalies")
+    plt.xticks(rotation=45, ha="right", rotation_mode="anchor")
+
+
+def plot_timeseries(dictionary, var, cfg):
+    """Timeseries plot."""
+    fig = plt.figure(figsize=(10, 4))
+    sns.set_style('whitegrid')
+    colors = plt.cm.viridis(np.linspace(0, 1, len(dictionary.keys())))
+    baseplotname = (f"Timeseries_{var}_anomalies")
+    filename = get_plot_filename(baseplotname, cfg)
+    for i, key in enumerate(dictionary.keys()):
+        if var != 'BK_sic' and var != 'Ok_sic':
+            if key == "HadISST":
+                continue
+            else:
+                if key != 'ERA5':
+                    plotting_support(dictionary[key][var], key,
+                                     color=colors[i])
+                else:
+                    plotting_support(dictionary[key][var], key,
+                                     color='k', linewidth=2)
+        else:
+            if key == "ERA5":
+                continue
+            if key != 'HadISST':
+                plotting_support(dictionary[key][var], key, color=colors[i])
+            else:
+                plotting_support(dictionary[key][var], key, color='blue',
+                                 linewidth=2)
+    fig.savefig(filename, bbox_inches='tight')
 
 
 def main(cfg):
     """Calculate and save final variables into .nc files."""
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
+    np.save('/work/bd0854/b380971/output/tests/cfg.npy', cfg)
     all_variables = calculate_variables(my_files_dict)
+    # Check is timeseries should be plotted
+    if cfg['plot_timeseries'] is True:
+        plot_timeseries(all_variables, cfg['variable_to_plot'], cfg)
     for key in my_files_dict:
+        logger.info("Processing final calculations in dataset %s", key)
+        prov_record = get_provenance_record([key])
         diagnostic_file = get_diagnostic_filename(key, cfg)
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(diagnostic_file, prov_record)
         var = all_variables[key]
         if key == "ERA5":
             cube_list = iris.cube.CubeList([
@@ -162,7 +245,9 @@ def main(cfg):
                 var['PV'], var['Arctic_temperature'], var['Psl_Ural'],
                 var['Psl_Sib'], var['Psl_Aleut'], var['heat_flux'],
                 var['BK_sic'], var['Ok_sic']])
-        iris.save(cube_list, diagnostic_file)
+        save_data(diagnostic_file, prov_record, cfg, cube_list)
+        logger.info("%s data is saved in .nc", key)
+    logger.info("Done.")
 
 
 if __name__ == '__main__':
