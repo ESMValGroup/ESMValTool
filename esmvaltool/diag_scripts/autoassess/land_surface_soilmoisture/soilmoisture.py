@@ -49,10 +49,11 @@ def write_metrics(output_dir, metrics, config):
         The full path to the directory in which the CSV file will be written.
     metrics : dictionary of metric,value pairs
         The seasonal data to write.
+    config : dictionary
+        ESMValTool configuration object
     """
     os.makedirs(output_dir, exist_ok=True)
 
-    #TODO use esmvaltool.diag_scripts.shared.get_diagnostic_filename("metrics", config, extension=csv)
     file_name = "metrics.csv"
     file_path = os.path.join(output_dir, file_name)
 
