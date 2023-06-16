@@ -46,7 +46,6 @@ from esmvaltool.diag_scripts.shared import (
     save_data,
 )
 from esmvaltool.diag_scripts.shared._base import (
-    get_diagnostic_filename,
     get_plot_filename,
 )
 
@@ -226,9 +225,6 @@ def main(cfg):
     for key in my_files_dict:
         logger.info("Processing final calculations in dataset %s", key)
         prov_record = get_provenance_record([key])
-        diagnostic_file = get_diagnostic_filename(key, cfg)
-        with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log(diagnostic_file, prov_record)
         var = all_variables[key]
         if key == "ERA5":
             cube_list = iris.cube.CubeList([
@@ -242,7 +238,7 @@ def main(cfg):
                 var['PV'], var['Arctic_temperature'], var['Psl_Ural'],
                 var['Psl_Sib'], var['Psl_Aleut'], var['heat_flux'],
                 var['BK_sic'], var['Ok_sic']])
-        save_data(diagnostic_file, prov_record, cfg, cube_list)
+        save_data(key, prov_record, cfg, cube_list)
         logger.info("%s data is saved in .nc", key)
     logger.info("Done.")
 
