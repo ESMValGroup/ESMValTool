@@ -85,7 +85,7 @@ References
 Example plots
 -------------
 
-.. figure::  /recipes/figures/galytska23jgr/test_fig_TAS.png
+.. figure::  /recipes/figures/galytska23jgr/Timeseries_Arctic_temperature_anomalies.png
    :align:   center
 
    Monthly mean temperature anomalies in the Arctic (65°–90°N) from observations and selected CMIP6 models during 1980-2021.
