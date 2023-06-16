@@ -37,7 +37,7 @@ def get_provenance_record(caption, filenames):
     return record
 
 
-def write_metrics(output_dir, metrics):
+def write_metrics(output_dir, metrics, config):
     """Write metrics to CSV file.
 
     The CSV file will have the name ``metrics.csv`` and can be
@@ -52,6 +52,7 @@ def write_metrics(output_dir, metrics):
     """
     os.makedirs(output_dir, exist_ok=True)
 
+    #TODO use esmvaltool.diag_scripts.shared.get_diagnostic_filename("metrics", config, extension=csv)
     file_name = "metrics.csv"
     file_path = os.path.join(output_dir, file_name)
 
@@ -59,6 +60,8 @@ def write_metrics(output_dir, metrics):
         csv_writer = csv.writer(csvfile)
         for line in metrics.items():
             csv_writer.writerow(line)
+
+    record_provenance(file_path, config)
 
 
 def land_sm_top(clim_file, model_file, work_dir):
@@ -149,16 +152,15 @@ def land_sm_top(clim_file, model_file, work_dir):
     return metrics
 
 
-def record_provenance(input_data, config):
+def record_provenance(diagnostic_file, config):
     """Record provenance."""
-    plot_file = "Autoassess soilmoisture metrics"
     caption = f"Autoassess soilmoisture MedAbsErr for {SEASONS}"
-    filenames = [item["filename"] for item in input_data.values()]
+    filenames = [item["filename"] for item in config["input_data"].values()]
     provenance_record = get_provenance_record(caption, filenames)
     cfg = {}
-    cfg["run_dir"] = config["run_dir"]
+    cfg["run_dir"] = config["run_dir"]  #TODO needed?
     with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(plot_file, provenance_record)
+        provenance_logger.log(diagnostic_file, provenance_record)
 
 
 def main(config):
@@ -199,9 +201,7 @@ def main(config):
             model_dataset,
         )
 
-        write_metrics(metrics_dir, metrics)
-
-    record_provenance(input_data, config)
+        write_metrics(metrics_dir, metrics, config)
 
 
 if __name__ == "__main__":
