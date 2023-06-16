@@ -14,7 +14,7 @@ diagnostics:
         grid: gn
         mip: Omon
         preprocessor: prep_map_2
-        activity: CMIP6
+        #activity: CMIP6
         project: CMIP6
         short_name: tos
         start_year: 2000
@@ -30,7 +30,7 @@ diagnostics:
         grid: gn
         mip: Omon
         preprocessor: prep_map_2
-        activity: CMIP6
+        #activity: CMIP6
         project: CMIP6
         short_name: tos
         start_year: 2040
@@ -45,7 +45,7 @@ diagnostics:
         grid: gn
         mip: Omon
         preprocessor: prep_profile_2
-        activity: CMIP6
+        #activity: CMIP6
         project: CMIP6
         short_name: thetao
         start_year: 2000
@@ -61,7 +61,7 @@ diagnostics:
         grid: gn
         mip: Omon
         preprocessor: prep_profile_2
-        activity: CMIP6
+        #activity: CMIP6
         project: CMIP6
         short_name: thetao
         start_year: 2040
@@ -76,7 +76,7 @@ diagnostics:
         grid: gn
         mip: Omon
         preprocessor: prep_regional_ts_2d
-        activity: CMIP6
+        #activity: CMIP6
         project: CMIP6
         short_name: tos
         start_year: 1850
@@ -88,7 +88,7 @@ diagnostics:
         - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r1i1p1f2, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
  
         end_year: 2100
-        activity: CMIP6
+        #activity: CMIP6
         exp: ssp585
         grid: gn
         mip: Omon

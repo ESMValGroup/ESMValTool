@@ -2024,7 +2024,7 @@ diagnostics:
         - {dataset: CIESM, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
         - {dataset: MCM-UA-1-0, end_year: 2100, ensemble: r1i1p1f2, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
         end_year: 2100
-         exp: ssp585
+        exp: ssp585
         grid: gn
         mip: Omon
         preprocessor: prep_regional_ts_2d
