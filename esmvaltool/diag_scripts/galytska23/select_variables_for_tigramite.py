@@ -1,10 +1,8 @@
-
 """
 Arctic-midlatitude teleconnections Diagnostics.
-====================
 
-Diagnostic to prepare data for
-Causal Model Evaluation of Arctic-midlatitude teleconnections.
+Diagnostic calculates timeseries needed for Causal Model Evaluation
+of Arctic-midlatitude teleconnections.
 
   Description:
     This diagnostics calculates timeseries of the variables that represent
