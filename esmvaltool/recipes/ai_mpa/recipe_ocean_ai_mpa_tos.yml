@@ -4,17 +4,18 @@ diagnostics:
       Model_range_polots: {script: ocean/diagnostic_ai_plots.py}
     variables:
       tos_map_hist:
+        supplementary_variables: &ofx
+                  - {short_name: areacello, mip: Ofx, exp: '*',activity: '*', ensemble: '*'}
         additional_datasets:
-        - {dataset: TaiESM1, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000, 
-               supplementary_variables: &ofx
-                  - {short_name: areacello, mip: Ofx, exp: '*',activity: '*', ensemble: '*'}}
+        - {dataset: TaiESM1, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000, }
+               
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2010, ensemble: r2i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2010, ensemble: r3i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2010, ensemble: r4i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2010, ensemble: r5i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: AWI-ESM-1-1-LR, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
-        - {dataset: BCC-CSM2-MR, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000, supplementary_variables: *ofx}
+        - {dataset: BCC-CSM2-MR, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: BCC-CSM2-MR, end_year: 2010, ensemble: r2i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: BCC-CSM2-MR, end_year: 2010, ensemble: r3i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         # - {dataset: BCC-ESM1, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
@@ -218,6 +219,7 @@ diagnostics:
         short_name: tos
         start_year: 2000
       tos_map_ssp126:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2050, ensemble: r1i1p1f1, exp: ssp126, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp126, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -363,6 +365,7 @@ diagnostics:
         short_name: tos
         start_year: 2040
       tos_map_ssp245:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2050, ensemble: r1i1p1f1, exp: ssp245, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp245, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -466,6 +469,7 @@ diagnostics:
         short_name: tos
         start_year: 2040
       tos_map_ssp370:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -634,6 +638,7 @@ diagnostics:
         short_name: tos
         start_year: 2040
       tos_map_ssp585:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -745,6 +750,7 @@ diagnostics:
         short_name: tos
         start_year: 2040
       tos_profile_hist:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
@@ -918,6 +924,7 @@ diagnostics:
         short_name: thetao
         start_year: 2000
       tos_profile_ssp126:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2050, ensemble: r1i1p1f1, exp: ssp126, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp126, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -1020,6 +1027,7 @@ diagnostics:
         short_name: thetao
         start_year: 2040
       tos_profile_ssp245:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2050, ensemble: r1i1p1f1, exp: ssp245, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp245, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -1112,6 +1120,7 @@ diagnostics:
         short_name: thetao
         start_year: 2040
       tos_profile_ssp370:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -1227,6 +1236,7 @@ diagnostics:
         short_name: thetao
         start_year: 2040
       tos_profile_ssp585:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -1315,6 +1325,7 @@ diagnostics:
         short_name: thetao
         start_year: 2040
       tos_ts_hist:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2014, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2014, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
@@ -1526,6 +1537,7 @@ diagnostics:
         short_name: tos
         start_year: 1850
       tos_ts_ssp126:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2100, ensemble: r1i1p1f1, exp: ssp126, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp126, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -1668,6 +1680,7 @@ diagnostics:
         short_name: tos
         start_year: 2015
       tos_ts_ssp245:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2100, ensemble: r1i1p1f1, exp: ssp245, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp245, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -1768,6 +1781,7 @@ diagnostics:
         short_name: tos
         start_year: 2015
       tos_ts_ssp370:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2100, ensemble: r1i1p1f1, exp: ssp370, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp370, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -1924,6 +1938,7 @@ diagnostics:
         short_name: tos
         start_year: 2015
       tos_ts_ssp585:
+        supplementary_variables: *ofx
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
