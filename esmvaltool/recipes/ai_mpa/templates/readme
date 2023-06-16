@@ -1,0 +1,7 @@
+Templates are empty recipes than can be populated with local datasets. 
+
+The ESMValTool tool, recipe_filler can be used to populate these templates. 
+
+Note that not all datasets may exist locally. This tool will not (currently)
+populate recipes with CMIP6 data this is not available locally.
+
