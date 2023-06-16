@@ -1261,6 +1261,7 @@ class MultiDatasets(MonitorBase):
             'authors': ['schlund_manuel'],
             'caption': caption,
             'plot_types': ['line'],
+            'long_names': [var_attrs['long_name']],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
@@ -1332,6 +1333,7 @@ class MultiDatasets(MonitorBase):
             'authors': ['schlund_manuel'],
             'caption': caption,
             'plot_types': ['seas'],
+            'long_names': [var_attrs['long_name']],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
@@ -1406,6 +1408,7 @@ class MultiDatasets(MonitorBase):
                 'authors': ['schlund_manuel'],
                 'caption': caption,
                 'plot_types': ['map'],
+                'long_names': [dataset['long_name']],
             }
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
@@ -1483,6 +1486,7 @@ class MultiDatasets(MonitorBase):
                 'authors': ['schlund_manuel'],
                 'caption': caption,
                 'plot_types': ['vert'],
+                'long_names': [dataset['long_name']],
             }
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
@@ -1585,6 +1589,7 @@ class MultiDatasets(MonitorBase):
             'authors': ['schlund_manuel', 'winterstein_franziska'],
             'caption': caption,
             'plot_types': ['line'],
+            'long_names': [var_attrs['long_name']],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
