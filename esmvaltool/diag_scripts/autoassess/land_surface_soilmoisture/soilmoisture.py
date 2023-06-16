@@ -157,9 +157,7 @@ def record_provenance(diagnostic_file, config):
     caption = f"Autoassess soilmoisture MedAbsErr for {SEASONS}"
     filenames = [item["filename"] for item in config["input_data"].values()]
     provenance_record = get_provenance_record(caption, filenames)
-    cfg = {}
-    cfg["run_dir"] = config["run_dir"]  #TODO needed?
-    with ProvenanceLogger(cfg) as provenance_logger:
+    with ProvenanceLogger(config) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
