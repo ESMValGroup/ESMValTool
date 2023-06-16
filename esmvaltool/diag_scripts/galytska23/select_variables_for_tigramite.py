@@ -40,7 +40,6 @@ from esmvalcore.preprocessor import (
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger,
     group_metadata,
     run_diagnostic,
     save_data,
