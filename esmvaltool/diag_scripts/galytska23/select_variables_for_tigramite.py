@@ -58,7 +58,7 @@ def get_provenance_record(ancestor_files):
         'ancestors': ancestor_files,
         'projects': ['usmile'],
         'references': [
-            'acknow_project',
+            'galytska23jgr',
         ],
     }
     return record
