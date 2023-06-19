@@ -745,6 +745,8 @@ diagnostics:
         project: CMIP6
         short_name: so
         start_year: 2000
+        supplementary_variables: &ofx
+                  - {short_name: areacello, mip: Ofx, exp: '*',activity: '*', ensemble: '*'}        
       sos_profile_ssp126:
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2050, ensemble: r1i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
@@ -847,6 +849,8 @@ diagnostics:
         project: CMIP6
         short_name: so
         start_year: 2040
+        supplementary_variables: *ofx
+
       sos_profile_ssp245:
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2050, ensemble: r1i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
@@ -940,6 +944,8 @@ diagnostics:
         project: CMIP6
         short_name: so
         start_year: 2040
+        supplementary_variables: *ofx
+
       sos_profile_ssp370:
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
@@ -1056,6 +1062,8 @@ diagnostics:
         project: CMIP6
         short_name: so
         start_year: 2040
+        supplementary_variables: *ofx
+
       sos_profile_ssp585:
         additional_datasets:
         - {dataset: TaiESM1, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
@@ -1150,6 +1158,8 @@ diagnostics:
         project: CMIP6
         short_name: so
         start_year: 2040
+        supplementary_variables: *ofx
+
       sos_ts_hist:
         additional_datasets:
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2014, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
@@ -1337,6 +1347,8 @@ diagnostics:
         project: CMIP6
         short_name: sos
         start_year: 1850
+        supplementary_variables: *ofx
+
       sos_ts_ssp126:
         additional_datasets:
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -1430,6 +1442,8 @@ diagnostics:
         project: CMIP6
         short_name: sos
         start_year: 2015
+        supplementary_variables: *ofx
+
       sos_ts_ssp245:
         additional_datasets:
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -1526,6 +1540,8 @@ diagnostics:
         project: CMIP6
         short_name: sos
         start_year: 2015
+        supplementary_variables: *ofx
+
       sos_ts_ssp370:
         additional_datasets:
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -1622,6 +1638,8 @@ diagnostics:
         project: CMIP6
         short_name: sos
         start_year: 2015
+        supplementary_variables: *ofx
+
       sos_ts_ssp585:
         additional_datasets:
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -1711,8 +1729,10 @@ diagnostics:
         project: CMIP6
         short_name: sos
         start_year: 2015
+        supplementary_variables: *ofx
+
 documentation:
-  title: "CRACAB MPA analysis: Salinity"
+  title: "Ascension Island MPA analysis: Salinity"
   authors: [demora_lee]
   description: "Template recipe to produce a generic plot of temperature for the Ascension\
     \ Islands.\n"
@@ -1731,14 +1751,16 @@ preprocessors:
 
   prep_regional_ts_2d: # For regional 2d fields
     #custom_order: true
-    extract_region: &mpa_region
-      start_longitude: -17.25 #14.25W
-      end_longitude: -11.25 #
-      start_latitude: -10.56 # -7.56
-      end_latitude: -4.56 #
+    extract_region: &id001 {end_latitude: -5.053, end_longitude: -11.487, start_latitude: -10.813,
+      start_longitude: -17.246}
+#     extract_region: &mpa_region
+#       start_longitude: -17.25 #14.25W
+#       end_longitude: -11.25 #
+#       start_latitude: -10.56 # -7.56
+#       end_latitude: -4.56 #
     area_statistics:
       operator: mean
-      fx_variables: [{short_name: areacello, mip: Ofx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
+      #fx_variables: [{short_name: areacello, mip: Ofx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
 
   # --------------------------------------------------
   # Map preprocessors
@@ -1756,10 +1778,10 @@ preprocessors:
   # --------------------------------------------------
   prep_profile_2: # For a regional profile
     #custom_order: true
-    extract_region: *mpa_region
+    extract_region: *id001
     area_statistics:
       operator: mean
-      fx_variables: [{short_name: areacello, mip: Ofx, exp: '*', ensemble: '*', grid: gn, }]
+      #fx_variables: [{short_name: areacello, mip: Ofx, exp: '*', ensemble: '*', grid: gn, }]
     extract_levels:
         scheme: linear
         levels: [0.5, 1., 5., 10., 50., 100., 200., 300., 400., 500., 600., 700., 800., 900., 1000.,
