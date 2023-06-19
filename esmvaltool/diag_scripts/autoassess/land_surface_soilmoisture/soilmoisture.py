@@ -69,6 +69,52 @@ def write_metrics(output_dir, metrics, config):
     record_provenance(file_path, config)
 
 
+def volumetric_soil_moisture(model_file, constr_season):
+    """
+    Read moisture mass content and convert to volumetric soil moisture 
+
+    Parameters
+    ----------
+    model_file : string
+        Path to model file
+    constr_season : iris constraint
+        Constraint on season to load
+
+    Returns
+    -------
+    vol_sm1_run : cube
+        Volumetric soil moisture
+    """
+    # Constant: density of water
+    rhow = 1000.
+
+    # m01s08i223
+    # CMOR name: mrsos (soil moisture in top model layer kg/m2)
+    mrsos = iris.load_cube(
+        model_file,
+        "mass_content_of_water_in_soil_layer" & constr_season
+    )
+
+    # Set soil moisture to missing data where no soil (moisture=0)
+    np.ma.masked_where(mrsos.data == 0, mrsos.data, copy=False)
+
+    # first soil layer depth
+    dz1 = mrsos.coord('depth').bounds[0, 1] - \
+        mrsos.coord('depth').bounds[0, 0]
+
+    # Calculate the volumetric soil moisture in m3/m3
+    # volumetric soil moisture = volume of water / volume of soil layer
+    # = depth equivalent of water / thickness of soil layer
+    # = (soil moisture content (kg m-2) / water density (kg m-3) )  /
+    #      soil layer thickness (m)
+    # = mosrs / (rhow * dz1)
+    vol_sm1_run = mrsos / (rhow * dz1)
+    vol_sm1_run.units = "m3 m-3"
+    vol_sm1_run.long_name = "Top layer Soil Moisture"
+
+    return vol_sm1_run
+
+
 def land_sm_top(clim_file, model_file, model_dataset, config):
     """
     Calculate median absolute errors for soil mosture against CCI data.
@@ -89,9 +135,6 @@ def land_sm_top(clim_file, model_file, model_dataset, config):
     metrics: dict
         a dictionary of metrics names and values
     """
-    # Constant: density of water
-    rhow = 1000.
-
     # Input filenames for provenance
     filenames = [item["filename"] for item in config["input_data"].values()]
 
@@ -102,29 +145,7 @@ def land_sm_top(clim_file, model_file, model_dataset, config):
         constr_season = iris.Constraint(season_number=index)
         ecv_clim = iris.load_cube(clim_file, constr_season)
 
-        # m01s08i223
-        # CMOR name: mrsos (soil moisture in top model layer kg/m2)
-        mrsos = iris.load_cube(
-            model_file,
-            "mass_content_of_water_in_soil_layer" & constr_season
-        )
-
-        # Set soil moisture to missing data on ice points (i.e. no soil)
-        np.ma.masked_where(mrsos.data == 0, mrsos.data, copy=False)
-
-        # first soil layer depth
-        dz1 = mrsos.coord('depth').bounds[0, 1] - \
-            mrsos.coord('depth').bounds[0, 0]
-
-        # Calculate the volumetric soil moisture in m3/m3
-        # volumetric soil moisture = volume of water / volume of soil layer
-        # = depth equivalent of water / thickness of soil layer
-        # = (soil moisture content (kg m-2) / water density (kg m-3) )  /
-        #      soil layer thickness (m)
-        # = mosrs / (rhow * dz1)
-        vol_sm1_run = mrsos / (rhow * dz1)
-        vol_sm1_run.units = "m3 m-3"
-        vol_sm1_run.long_name = "Top layer Soil Moisture"
+        vol_sm1_run = volumetric_soil_moisture(model_file, constr_season)
 
         # update the coordinate system ECV data with a WGS84 coord system
         # unify coord systems for regridder
@@ -158,9 +179,7 @@ def land_sm_top(clim_file, model_file, model_dataset, config):
                   provenance_record, config, dff)
 
         name = f"soilmoisture MedAbsErr {season}"
-        dffs = dff.data
-        dffs = np.ma.abs(dffs)
-        metrics[name] = float(np.ma.median(dffs))
+        metrics[name] = float(np.ma.median(np.ma.abs(dff.data)))
 
     return metrics
 
