@@ -7,7 +7,11 @@ import numpy as np
 import iris
 from esmvalcore.preprocessor import regrid
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
-from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
+from esmvaltool.diag_scripts.shared import (
+    group_metadata,
+    run_diagnostic,
+    save_data,
+)
 
 # Order of seasons must agree with preprocessor definition in recipe
 SEASONS = ("djf", "mam", "jja", "son")
@@ -65,7 +69,7 @@ def write_metrics(output_dir, metrics, config):
     record_provenance(file_path, config)
 
 
-def land_sm_top(clim_file, model_file, work_dir):
+def land_sm_top(clim_file, model_file, model_dataset, config):
     """
     Calculate median absolute errors for soil mosture against CCI data.
 
@@ -75,8 +79,10 @@ def land_sm_top(clim_file, model_file, work_dir):
         Path to observation climatology file
     model_file : string
         Path to model file
-    work_dir : string
-        Directory for intermediate working files
+    model_dataset : string
+        Name of model dataset
+    config : dict
+        ESMValTool configuration object
 
     Returns
     -------
@@ -85,6 +91,9 @@ def land_sm_top(clim_file, model_file, work_dir):
     """
     # Constant: density of water
     rhow = 1000.
+
+    # Input filenames for provenance
+    filenames = [item["filename"] for item in config["input_data"].values()]
 
     # Work through each season
     metrics = {}
@@ -143,8 +152,11 @@ def land_sm_top(clim_file, model_file, work_dir):
         dff = vol_sm1_run - ecv_clim
 
         # save output and populate metric
-        iris.save(dff, os.path.join(work_dir,
-                                    f"soilmoist_diff_{season}.nc"))
+        caption = f"Model minus CCI soil moisture climatology for {season}"
+        provenance_record = get_provenance_record(caption, filenames)
+        save_data(f"soilmoist_diff_{model_dataset}_{season}",
+                  provenance_record, config, dff)
+
         name = f"soilmoisture MedAbsErr {season}"
         dffs = dff.data
         dffs = np.ma.abs(dffs)
@@ -190,7 +202,7 @@ def main(config):
         # 'group' is a list of dictionaries containing metadata.
         logger.info("Processing data for %s", model_dataset)
         model_file = [item["filename"] for item in group]
-        metrics = land_sm_top(clim_file, model_file, config["work_dir"])
+        metrics = land_sm_top(clim_file, model_file, model_dataset, config)
 
         # Write metrics
         metrics_dir = os.path.join(
