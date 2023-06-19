@@ -1,0 +1,23 @@
+# CMORIZE ESA CCI CLOUD daily data
+---
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: ESACCI-CLOUD
+  version: 'v3.0'
+  tier: 2
+  project_id: OBS
+  source: 'ESA CCI'
+  modeling_realm: sat
+  reference: 'esacci_cloud'
+  comment: ''
+  start_year: 2000
+  end_year: 2000
+
+# Variables to cmorize
+variables:
+  clt:
+    mip: day
+    raw: cmask_asc
+    raw_units: 1
+    file: '*-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_NOAA-14-fv3.0.nc'
