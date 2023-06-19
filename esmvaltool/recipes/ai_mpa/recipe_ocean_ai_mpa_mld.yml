@@ -611,6 +611,9 @@ diagnostics:
         project: CMIP6
         short_name: mlotst
         start_year: 1850
+        supplementary_variables: &ofx
+                  - {short_name: areacello, mip: Ofx, exp: '*',activity: '*', ensemble: '*'}  
+                          
       mlotst_ts_ssp126:
         additional_datasets:
 #        - {dataset: BCC-CSM2-MR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -672,6 +675,8 @@ diagnostics:
         project: CMIP6
         short_name: mlotst
         start_year: 2015
+        supplementary_variables: *ofx
+
       mlotst_ts_ssp245:
         additional_datasets:
 #        - {dataset: AWI-CM-1-1-MR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -768,6 +773,8 @@ diagnostics:
         project: CMIP6
         short_name: mlotst
         start_year: 2015
+        supplementary_variables: *ofx
+
       mlotst_ts_ssp370:
         additional_datasets:
 #        - {dataset: BCC-CSM2-MR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -837,6 +844,8 @@ diagnostics:
         project: CMIP6
         short_name: mlotst
         start_year: 2015
+        supplementary_variables: *ofx
+
       mlotst_ts_ssp585:
         additional_datasets:
 #        - {dataset: BCC-CSM2-MR, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -893,6 +902,8 @@ diagnostics:
         project: CMIP6
         short_name: mlotst
         start_year: 2015
+        supplementary_variables: *ofx
+
 documentation:
   title: "CRACAB MPA analysis: MLD"
   authors: [demora_lee]
@@ -911,12 +922,14 @@ preprocessors:
   # --------------------------------------------------
   prep_regional_ts_3d_surface: # For regional fields
     custom_order: true
-    extract_region: &mpa_region
-      start_longitude: -17.25 #14.25W
-      end_longitude: -11.25 #
-      start_latitude: -10.56 # -7.56
-      end_latitude: -4.56 #
-    #extract_region: *mpa_region
+    extract_region: &id001 {end_latitude: -5.053, end_longitude: -11.487, start_latitude: -10.813,
+      start_longitude: -17.246}    
+#     extract_region: &mpa_region
+#       start_longitude: -17.25 #14.25W
+#       end_longitude: -11.25 #
+#       start_latitude: -10.56 # -7.56
+#       end_latitude: -4.56 #
+    #extract_region: *id001
     area_statistics:
       operator: mean
       fx_variables:
@@ -937,7 +950,7 @@ preprocessors:
   # --------------------------------------------------
   prep_profile_2: # For a regional profile
     custom_order: true
-    extract_region: *mpa_region
+    extract_region: *id001
     area_statistics:
       operator: mean
       fx_variables:
