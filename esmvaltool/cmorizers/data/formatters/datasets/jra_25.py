@@ -92,7 +92,7 @@ def _extract_variable(short_name, var, in_files, cfg, in_dir,
             coord.standard_name = 'air_pressure'
             coord.long_name = 'pressure'
             coord.attributes['positive'] = 'up'
-            
+
     # Fix metadata
     attrs = copy.deepcopy(cfg['attributes'])
     attrs['mip'] = var['mip']
