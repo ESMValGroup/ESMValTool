@@ -3,6 +3,7 @@
 import os
 import logging
 import csv
+from collections.abc import Iterable
 import numpy as np
 import iris
 from esmvalcore.preprocessor import regrid
@@ -19,7 +20,7 @@ SEASONS = ("djf", "mam", "jja", "son")
 logger = logging.getLogger(__name__)
 
 
-def get_provenance_record(caption, filenames):
+def get_provenance_record(caption, ancestor_filenames):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption': caption,
@@ -35,13 +36,13 @@ def get_provenance_record(caption, filenames):
             'dorigo17rse',
             'gruber19essd',
         ],
-        "ancestors": filenames,
+        "ancestors": ancestor_filenames,
     }
 
     return record
 
 
-def write_metrics(output_dir, metrics, config):
+def write_metrics(output_dir, metrics, config, ancestors):
     """Write metrics to CSV file.
 
     The CSV file will have the name ``metrics.csv`` and can be
@@ -55,6 +56,8 @@ def write_metrics(output_dir, metrics, config):
         The seasonal data to write.
     config : dictionary
         ESMValTool configuration object
+    ancestors : list
+        Filenames of input files for provenance
     """
     os.makedirs(output_dir, exist_ok=True)
 
@@ -66,7 +69,7 @@ def write_metrics(output_dir, metrics, config):
         for line in metrics.items():
             csv_writer.writerow(line)
 
-    record_provenance(file_path, config)
+    record_provenance(file_path, config, ancestors)
 
 
 def volumetric_soil_moisture(model_file, constr_season):
@@ -115,7 +118,31 @@ def volumetric_soil_moisture(model_file, constr_season):
     return vol_sm1_run
 
 
-def land_sm_top(clim_file, model_file, model_dataset, config):
+def flatten(list_of_lists):
+    """
+    Convert list of lists into a flat list, allowing some items to be non-list.
+
+    Parameters
+    ----------
+    list_of_lists : list
+        List containing iterables to flatten, plus optionally non-list items
+
+    Returns
+    -------
+    flattened : list
+        Flattened list with one level of nesting removed
+    """
+    flattened = []
+    for item in list_of_lists:
+        if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
+            flattened.extend(item)
+        else:
+            flattened.append(item)
+
+    return flattened
+
+
+def land_sm_top(clim_file, model_file, model_dataset, config, ancestors):
     """
     Calculate median absolute errors for soil mosture against CCI data.
 
@@ -123,21 +150,20 @@ def land_sm_top(clim_file, model_file, model_dataset, config):
     ----------
     clim_file : string
         Path to observation climatology file
-    model_file : string
-        Path to model file
+    model_file : list
+        Paths to model files
     model_dataset : string
         Name of model dataset
     config : dict
         ESMValTool configuration object
+    ancestors : list
+        Filenames of input files for provenance
 
     Returns
     -------
     metrics: dict
         a dictionary of metrics names and values
     """
-    # Input filenames for provenance
-    filenames = [item["filename"] for item in config["input_data"].values()]
-
     # Work through each season
     metrics = {}
     for index, season in enumerate(SEASONS):
@@ -173,8 +199,8 @@ def land_sm_top(clim_file, model_file, model_dataset, config):
         dff = vol_sm1_run - ecv_clim
 
         # save output and populate metric
-        caption = f"Model minus CCI soil moisture climatology for {season}"
-        provenance_record = get_provenance_record(caption, filenames)
+        caption = f"{model_dataset} minus CCI soil moisture clim for {season}"
+        provenance_record = get_provenance_record(caption, ancestors)
         save_data(f"soilmoist_diff_{model_dataset}_{season}",
                   provenance_record, config, dff)
 
@@ -184,11 +210,10 @@ def land_sm_top(clim_file, model_file, model_dataset, config):
     return metrics
 
 
-def record_provenance(diagnostic_file, config):
+def record_provenance(diagnostic_file, config, ancestors):
     """Record provenance."""
     caption = f"Autoassess soilmoisture MedAbsErr for {SEASONS}"
-    filenames = [item["filename"] for item in config["input_data"].values()]
-    provenance_record = get_provenance_record(caption, filenames)
+    provenance_record = get_provenance_record(caption, ancestors)
     with ProvenanceLogger(config) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
 
@@ -221,7 +246,13 @@ def main(config):
         # 'group' is a list of dictionaries containing metadata.
         logger.info("Processing data for %s", model_dataset)
         model_file = [item["filename"] for item in group]
-        metrics = land_sm_top(clim_file, model_file, model_dataset, config)
+
+        # Input filenames for provenance
+        ancestors = flatten([model_file, clim_file])
+
+        # Calculate metrics
+        metrics = land_sm_top(clim_file, model_file, model_dataset, config,
+                              ancestors)
 
         # Write metrics
         metrics_dir = os.path.join(
@@ -231,7 +262,7 @@ def main(config):
             model_dataset,
         )
 
-        write_metrics(metrics_dir, metrics, config)
+        write_metrics(metrics_dir, metrics, config, ancestors)
 
 
 if __name__ == "__main__":
