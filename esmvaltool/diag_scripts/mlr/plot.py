@@ -835,7 +835,7 @@ def main(cfg):
     if cfg['print_corr']:
         pandas_print_options = [
             'display.max_rows', None,
-            'display.max_colwidth', -1,
+            'display.max_colwidth', None,
         ]
         corr = ALL_CUBES.corr()
         with pd.option_context(*pandas_print_options):
