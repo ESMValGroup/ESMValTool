@@ -218,6 +218,8 @@ diagnostics:
         project: CMIP6
         short_name: no3
         start_year: 2000
+        supplementary_variables: &ofx
+                  - {short_name: areacello, mip: Ofx, exp: '*',activity: '*', ensemble: '*'}          
       no3_profile_ssp126:
         additional_datasets:
 
@@ -250,9 +252,9 @@ diagnostics:
         project: CMIP6
         short_name: no3
         start_year: 2040
+        supplementary_variables: *ofx        
       no3_profile_ssp245:
         additional_datasets:
-
         - {dataset: ACCESS-ESM1-5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
         - {dataset: CanESM5, end_year: 2050, ensemble: r1i1p1f1, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
         - {dataset: CESM2, end_year: 2050, ensemble: r4i1p1f1, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -275,6 +277,7 @@ diagnostics:
         project: CMIP6
         short_name: no3
         start_year: 2040
+        supplementary_variables: *ofx        
       no3_profile_ssp370:
         additional_datasets:
 
@@ -308,6 +311,7 @@ diagnostics:
         project: CMIP6
         short_name: no3
         start_year: 2040
+        supplementary_variables: *ofx      
       no3_profile_ssp585:
         additional_datasets:
 
@@ -341,6 +345,7 @@ diagnostics:
         project: CMIP6
         short_name: no3
         start_year: 2040
+        supplementary_variables: *ofx   
       no3_ts_hist:
         additional_datasets:
         - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r10i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
@@ -389,6 +394,7 @@ diagnostics:
         project: CMIP6
         short_name: no3
         start_year: 1850
+        supplementary_variables: *ofx   
       no3_ts_ssp126:
         additional_datasets:
         - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r10i1p1f2, exp: ssp126,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -422,6 +428,7 @@ diagnostics:
         project: CMIP6
         short_name: no3
         start_year: 2015
+        supplementary_variables: *ofx   
       no3_ts_ssp245:
         additional_datasets:
         - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r1i1p1f2, exp: ssp245,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -447,6 +454,7 @@ diagnostics:
         project: CMIP6
         short_name: no3
         start_year: 2015
+        supplementary_variables: *ofx   
       no3_ts_ssp370:
         additional_datasets:
         - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r10i1p1f2, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -479,6 +487,7 @@ diagnostics:
         project: CMIP6
         short_name: no3
         start_year: 2015
+        supplementary_variables: *ofx   
       no3_ts_ssp585:
         additional_datasets:
         # - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -511,6 +520,7 @@ diagnostics:
         project: CMIP6
         short_name: no3
         start_year: 2015
+        supplementary_variables: *ofx   
 documentation:
   authors: [demora_lee]
   description: "Template recipe to produce a generic plot of temperature for the Ascension\
@@ -526,20 +536,21 @@ preprocessors:
   # --------------------------------------------------
   prep_regional_ts_3d_surface: # For regional fields
     custom_order: true
-
-    extract_region: &mpa_region
-      start_longitude: -17.25 #14.25W
-      end_longitude: -11.25 #
-      start_latitude: -10.56 # -7.56
-      end_latitude: -4.56 #
-
-    area_statistics:
-      operator: mean
+    extract_region: &mpa_region {end_latitude: -5.053, end_longitude: -11.487, start_latitude: -10.813,
+      start_longitude: -17.246}     
+    # extract_region: &mpa_region
+    #   start_longitude: -17.25 #14.25W
+    #   end_longitude: -11.25 #
+    #   start_latitude: -10.56 # -7.56
+    #   end_latitude: -4.56 #
 
     area_statistics:
       operator: mean
-      fx_variables: &areacello
-         - {activity: CMIP, grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
+
+    area_statistics:
+      operator: mean
+      # fx_variables: &areacello
+      #    - {activity: CMIP, grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
 #        - {short_name: areacello, mip: Ofx, }
 
     extract_levels:
@@ -576,8 +587,8 @@ preprocessors:
     extract_region: *mpa_region
     area_statistics:
       operator: mean
-      fx_variables: *areacello
-#     - {activity: CMIP, grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
+#       fx_variables: *areacello
+# #     - {activity: CMIP, grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
     extract_levels:
       scheme: linear
       levels: [0.5, 1., 5., 10., 50., 100., 200., 300., 400., 500., 600., 700., 800.,

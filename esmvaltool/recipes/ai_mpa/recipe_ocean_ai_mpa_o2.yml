@@ -418,6 +418,8 @@ diagnostics:
         project: CMIP6
         short_name: o2
         start_year: 2000
+        supplementary_variables: &ofx
+                  - {short_name: areacello, mip: Ofx, exp: '*',activity: '*', ensemble: '*'}          
       o2_profile_ssp126:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
@@ -482,6 +484,7 @@ diagnostics:
         project: CMIP6
         short_name: o2
         start_year: 2040
+        supplementary_variables: *ofx   
       o2_profile_ssp245:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
@@ -535,6 +538,7 @@ diagnostics:
         project: CMIP6
         short_name: o2
         start_year: 2040
+        supplementary_variables: *ofx   
       o2_profile_ssp370:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
@@ -617,6 +621,7 @@ diagnostics:
         project: CMIP6
         short_name: o2
         start_year: 2040
+        supplementary_variables: *ofx   
       o2_profile_ssp585:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2050, ensemble: r10i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
@@ -667,6 +672,7 @@ diagnostics:
         project: CMIP6
         short_name: o2
         start_year: 2040
+        supplementary_variables: *ofx   
       o2_ts_hist:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2014, ensemble: r10i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
@@ -750,6 +756,7 @@ diagnostics:
         project: CMIP6
         short_name: o2
         start_year: 1850
+        supplementary_variables: *ofx   
       o2_ts_ssp126:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2100, ensemble: r10i1p1f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -814,6 +821,7 @@ diagnostics:
         project: CMIP6
         short_name: o2
         start_year: 2015
+        supplementary_variables: *ofx   
       o2_ts_ssp245:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2100, ensemble: r10i1p1f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -867,6 +875,7 @@ diagnostics:
         project: CMIP6
         short_name: o2
         start_year: 2015
+        supplementary_variables: *ofx   
       o2_ts_ssp370:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2100, ensemble: r10i1p1f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -947,6 +956,7 @@ diagnostics:
         project: CMIP6
         short_name: o2
         start_year: 2015
+        supplementary_variables: *ofx   
       o2_ts_ssp585:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2100, ensemble: r10i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -997,6 +1007,7 @@ diagnostics:
         project: CMIP6
         short_name: o2
         start_year: 2015
+        supplementary_variables: *ofx   
 documentation:
   title: "CRACAB MPA anaysis: o2" 
   authors: [demora_lee]
@@ -1013,18 +1024,20 @@ preprocessors:
   # --------------------------------------------------
   prep_regional_ts_500m_1000m: # For regional fields
     custom_order: true
-    extract_region: &mpa_region
-      start_longitude: -17.25 #14.25W
-      end_longitude: -11.25 #
-      start_latitude: -10.56 # -7.56
-      end_latitude: -4.56 #
+    extract_region: &mpa_region {end_latitude: -5.053, end_longitude: -11.487, start_latitude: -10.813,
+      start_longitude: -17.246}     
+    # extract_region: &mpa_region
+    #   start_longitude: -17.25 #14.25W
+    #   end_longitude: -11.25 #
+    #   start_latitude: -10.56 # -7.56
+    #   end_latitude: -4.56 #
     extract_volume:
       z_min: 500.
       z_max: 1000.
     volume_statistics:
       operator: mean
-      fx_variables:
-      - {activity: CMIP,  grid: gn, short_name: volcello, exp: '*', ensemble: '*'} #, mip: '*'}
+      # fx_variables:
+      # - {activity: CMIP,  grid: gn, short_name: volcello, exp: '*', ensemble: '*'} #, mip: '*'}
 
 
   prep_regional_ts_500m:
@@ -1039,8 +1052,8 @@ preprocessors:
         levels: [500., ]
     area_statistics:
       operator: mean
-      fx_variables:
-      - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
+      # fx_variables:
+      # - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
 
 
   # --------------------------------------------------
@@ -1065,8 +1078,8 @@ preprocessors:
     extract_region: *mpa_region
     area_statistics:
       operator: mean
-      fx_variables:
-      - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
+      # fx_variables:
+      # - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
     extract_levels:
         scheme: linear
         levels: [0.5, 1., 5., 10., 50., 100., 200., 300., 400., 500., 600., 700., 800., 900., 1000.,

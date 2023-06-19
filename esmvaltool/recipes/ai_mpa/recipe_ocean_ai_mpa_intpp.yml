@@ -255,6 +255,8 @@ diagnostics:
         project: CMIP6
         short_name: intpp
         start_year: 1850
+        supplementary_variables: &ofx
+                  - {short_name: areacello, mip: Ofx, exp: '*',activity: '*', ensemble: '*'}          
       intpp_ts_ssp126:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -302,6 +304,7 @@ diagnostics:
         project: CMIP6
         short_name: intpp
         start_year: 2015
+        supplementary_variables: *ofx   
       intpp_ts_ssp245:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -350,6 +353,7 @@ diagnostics:
         project: CMIP6
         short_name: intpp
         start_year: 2015
+        supplementary_variables: *ofx   
       intpp_ts_ssp370:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -395,6 +399,7 @@ diagnostics:
         project: CMIP6
         short_name: intpp
         start_year: 2015
+        supplementary_variables: *ofx   
       intpp_ts_ssp585:
         additional_datasets:
         - {dataset: CMCC-ESM2, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -419,6 +424,7 @@ diagnostics:
         project: CMIP6
         short_name: intpp
         start_year: 2015
+        supplementary_variables: *ofx   
 documentation:
   authors: [demora_lee]
   description: "Template recipe to produce a generic plot of temperature for the Ascension\
@@ -435,15 +441,17 @@ preprocessors:
   # --------------------------------------------------
   prep_regional_ts_2d: # For regional 2d fields
     #custom_order: true
-    extract_region: &mpa_region
-      start_longitude: -17.25 #14.25W
-      end_longitude: -11.25 #
-      start_latitude: -10.56 # -7.56
-      end_latitude: -4.56 #
+    extract_region: &mpa_region {end_latitude: -5.053, end_longitude: -11.487, start_latitude: -10.813,
+      start_longitude: -17.246}     
+    # extract_region: &mpa_region
+    #   start_longitude: -17.25 #14.25W
+    #   end_longitude: -11.25 #
+    #   start_latitude: -10.56 # -7.56
+    #   end_latitude: -4.56 #
     area_statistics:
       operator: mean
-      fx_variables:
-      - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
+      # fx_variables:
+      # - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
 
   prep_regional_ts_3d_surface: # For regional fields
     custom_order: true
@@ -456,8 +464,8 @@ preprocessors:
 
     area_statistics:
       operator: mean
-      fx_variables:
-      - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
+      # fx_variables:
+      # - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
 
   # --------------------------------------------------
   # Map preprocessors
