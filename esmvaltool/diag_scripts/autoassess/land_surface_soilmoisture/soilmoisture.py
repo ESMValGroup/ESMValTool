@@ -71,7 +71,7 @@ def write_metrics(output_dir, metrics, config):
 
 def volumetric_soil_moisture(model_file, constr_season):
     """
-    Read moisture mass content and convert to volumetric soil moisture 
+    Read moisture mass content and convert to volumetric soil moisture.
 
     Parameters
     ----------
