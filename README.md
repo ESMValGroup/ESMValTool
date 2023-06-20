@@ -15,7 +15,7 @@
 
 - [**Documentation**](https://docs.esmvaltool.org/en/latest/)
 - [**ESMValTool Website**](https://www.esmvaltool.org/)
-- [**ESMValTool Tutorial**](https://esmvalgroup.github.io/ESMValTool_Tutorial/index.html)
+- [**ESMValTool Tutorial**](https://tutorial.esmvaltool.org/index.html)
 - [**ESMValGroup Project on GitHub**](https://github.com/ESMValGroup)
 - [**Gallery**](https://docs.esmvaltool.org/en/latest/gallery.html)
 - [**`conda-forge` package feedstock**](https://github.com/conda-forge/esmvaltool-suite-feedstock)
@@ -53,7 +53,7 @@ ESMValTool can run with the following types of [data as input](https://docs.esmv
 
 # Getting started
 
-Please see [getting started](https://docs.esmvaltool.org/en/latest/quickstart/index.html) on readthedocs as well as [ESMValTool tutorial](https://esmvalgroup.github.io/ESMValTool_Tutorial/index.html). The tutorial is a set of lessons that together teach skills needed to work with ESMValTool in climate-related domains.
+Please see [getting started](https://docs.esmvaltool.org/en/latest/quickstart/index.html) on readthedocs as well as [ESMValTool tutorial](https://tutorial.esmvaltool.org/index.html). The tutorial is a set of lessons that together teach skills needed to work with ESMValTool in climate-related domains.
 
 ## Getting help
 
