@@ -49,7 +49,10 @@ from esmvaltool.diag_scripts.shared import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 EXCLUDE_VAL = 0
-PANDAS_PRINT_OPTIONS = ['display.max_rows', None, 'display.max_colwidth', -1]
+PANDAS_PRINT_OPTIONS = [
+    'display.max_rows', None,
+    'display.max_colwidth', None,
+]
 
 
 def _add_numerical_index(data_frame, exclude_datasets):
@@ -72,7 +75,7 @@ def _add_numerical_index(data_frame, exclude_datasets):
 def _calculate_statistic(data_frame, stat_func, exclude_datasets):
     """Calculate statistic."""
     projects = data_frame.index.get_level_values('project')
-    series_to_append = []
+    dfs_to_append = []
     for project in list(set(projects)):
         sub_data_frame = data_frame.loc[projects == project]
         datasets = sub_data_frame.index.get_level_values('dataset')
@@ -84,10 +87,10 @@ def _calculate_statistic(data_frame, stat_func, exclude_datasets):
             index=data_frame.columns,
             name=(project, f'--{stat_func.__name__.upper()}--', EXCLUDE_VAL),
         )
-        series_to_append.append(series)
-    for series in series_to_append:
-        data_frame = data_frame.append(series)
-    data_frame = data_frame.sort_index()
+        df_to_append = series.to_frame().T
+        df_to_append.index.names = data_frame.index.names
+        dfs_to_append.append(df_to_append)
+    data_frame = pd.concat([data_frame] + dfs_to_append).sort_index()
     return data_frame
 
 
@@ -131,9 +134,11 @@ def create_data_frame(input_files, exclude_datasets):
         series = pd.Series(data=cube.data, index=index)
 
         # Expand index
-        for row in series.index.difference(data_frame.index):
-            data_frame = data_frame.append(pd.Series(name=row,
-                                                     dtype=cube.dtype))
+        rows_to_add = [
+            pd.Series(name=row, dtype=cube.dtype).to_frame().T for row in
+            series.index.difference(data_frame.index)
+        ]
+        data_frame = pd.concat([data_frame] + rows_to_add)
 
         # Add new data
         if cube.var_name in data_frame.columns:
