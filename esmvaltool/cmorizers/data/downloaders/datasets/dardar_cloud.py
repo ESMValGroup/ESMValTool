@@ -75,7 +75,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                 sub_folder=f'{year}_DARDAR',
                 filter_files='DARDAR-CLOUD_.+nc')
         except Exception:
-            logger.info(f'No DARDAR files found for date {year}-{month}-{day}')
+            logger.info('No DARDAR files found for date %d-%s-%s',
+                        year, month, day)
         # download CLOUDSAT precipitation files
         try:
             downloader.set_cwd("/SPACEBORNE/CLOUDSAT/2C-PRECIP-COLUMN.C5")
@@ -84,5 +85,6 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                 sub_folder=f'{year}_PRECIP-test',
                 filter_files='')
         except Exception:
-            logger.info(f'No PRECIP files found for date {year}-{month}-{day}')
+            logger.info('No PRECIP files found for date %d-%s-%s',
+                        year, month, day)
         loop_date += relativedelta.relativedelta(days=1)
