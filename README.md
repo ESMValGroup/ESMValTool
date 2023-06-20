@@ -11,11 +11,11 @@
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/esmvaltool/badges/version.svg)](https://anaconda.org/conda-forge/esmvaltool)
 ![stand with Ukraine](https://badgen.net/badge/stand%20with/UKRAINE/?color=0057B8&labelColor=FFD700)
 
-![esmvaltoollogo](https://github.com/ESMValGroup/ESMValTool/blob/main/doc/sphinx/source/figures/ESMValTool-logo-2.png)
+![esmvaltoollogo](https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/doc/sphinx/source/figures/ESMValTool-logo-2.png)
 
 - [**Documentation**](https://docs.esmvaltool.org/en/latest/)
 - [**ESMValTool Website**](https://www.esmvaltool.org/)
-- [**ESMValTool Tutorial**](https://esmvalgroup.github.io/ESMValTool_Tutorial/index.html)
+- [**ESMValTool Tutorial**](https://tutorial.esmvaltool.org/index.html)
 - [**ESMValGroup Project on GitHub**](https://github.com/ESMValGroup)
 - [**Gallery**](https://docs.esmvaltool.org/en/latest/gallery.html)
 - [**`conda-forge` package feedstock**](https://github.com/conda-forge/esmvaltool-suite-feedstock)
@@ -53,7 +53,7 @@ ESMValTool can run with the following types of [data as input](https://docs.esmv
 
 # Getting started
 
-Please see [getting started](https://docs.esmvaltool.org/en/latest/quickstart/index.html) on readthedocs as well as [ESMValTool tutorial](https://esmvalgroup.github.io/ESMValTool_Tutorial/index.html). The tutorial is a set of lessons that together teach skills needed to work with ESMValTool in climate-related domains.
+Please see [getting started](https://docs.esmvaltool.org/en/latest/quickstart/index.html) on readthedocs as well as [ESMValTool tutorial](https://tutorial.esmvaltool.org/index.html). The tutorial is a set of lessons that together teach skills needed to work with ESMValTool in climate-related domains.
 
 ## Getting help
 

@@ -197,9 +197,16 @@ Annual cycle of tas including a reference dataset.
 
 Global climatology of tas including a reference dataset.
 
-.. _fig_profile_with_ref:
-.. figure::  /recipes/figures/monitor/profile_with_ref.png
+.. _fig_zonal_mean_profile_with_ref:
+.. figure::  /recipes/figures/monitor/zonalmean_profile_with_ref.png
    :align:   center
    :width:   14cm
 
-Vertical profile of ta including a reference dataset.
+Zonal mean profile of ta including a reference dataset.
+
+.. _fig_1d_profile_with_ref:
+.. figure::  /recipes/figures/monitor/1d_profile_with_ref.png
+   :align:   center
+   :width:   14cm
+
+1D profile of ta including a reference dataset.
