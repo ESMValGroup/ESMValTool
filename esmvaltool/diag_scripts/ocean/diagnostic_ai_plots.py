@@ -435,8 +435,14 @@ def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table):
 
     ssps = ['Historical', 'SSP1-2.6', 'SSP2-4.5', 'SSP3-7.0', 'SSP5-8.5']
     #columns = {'Historical':2, 'SSP1-2.6':3, 'SSP2-4.5':4, 'SSP3-7.0':5, 'SSP5-8.5':6}
-    colours = ['blue', 'green' ,'gold', 'orange', 'red']
-    colours2 = ['navy', 'darkgreen' ,'goldenrod', 'darkorange', 'darkred']
+    # colours = ['blue', 'green' ,'gold', 'orange', 'red']
+    # colours2 = ['navy', 'darkgreen' ,'goldenrod', 'darkorange', 'darkred']
+
+    colours2_rgb = [(23, 60, 102), (0, 173, 207), (247, 148, 32), (231, 29, 37), (149, 27, 30)]
+    colours = [(a/256., b/256. ,c/256.) for (a, b, c) in colours2_rgb]
+    f = 0.75
+    colours2 = [(f*a, f*b, f*c) for (a, b, c) in colours2_rgb]
+
 
     for x, ssp in zip(xes, ssps):
         for new_ssp, (mean, std) in anomaly_table.items():
