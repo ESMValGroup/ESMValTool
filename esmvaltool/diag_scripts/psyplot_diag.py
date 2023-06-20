@@ -33,7 +33,7 @@ savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
     default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
 seaborn_settings: dict, optional
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 
 """
 import logging
@@ -104,7 +104,7 @@ def _get_psyplot_kwargs(cfg, dataset):
 def main(cfg):
     """Run diagnostic."""
     cfg = _get_default_cfg(cfg)
-    sns.set(**cfg['seaborn_settings'])
+    sns.set_theme(**cfg['seaborn_settings'])
     plot_func = _get_plot_func(cfg)
 
     # Create individual plots for each dataset
