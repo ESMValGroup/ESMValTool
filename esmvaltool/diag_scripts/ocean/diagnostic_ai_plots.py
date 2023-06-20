@@ -392,6 +392,91 @@ def write_csv_ts(cfg, metadatas, data_values, single_model, short_name):
 
     #assert 0
 
+
+
+def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table):
+    """
+    A figure for the historical anomaly in figure 2.
+    """
+    backgroundcolor='white'
+    print('hist, anom', short_name, anomaly_table)
+
+    fig = pyplot.figure()
+    axes = fig.add_subplot(1, 1, 1)
+    fig.set_facecolor(backgroundcolor)
+    axes.set_facecolor(backgroundcolor)
+
+    fig.set_size_inches(3.0, 3.5)
+
+    titles = {}
+    hist_anom_data['temp'] = ['Sea Surface Temperature',  r'$\degree$ C',]
+    hist_anom_data['sal'] = ['Salinity', 'PSU', ]
+    hist_anom_data['mld'] = ['Mixed Layer Depth', 'm', ]
+    hist_anom_data['ph'] = ['pH', '', ]
+    hist_anom_data['o2'] = ['Oxygen', r'mmol m$^{-3}$', ]
+    hist_anom_data['nit'] = ['Nitrate', r'$\mu$mol m$^{-3}$', ]
+    hist_anom_data['pho'] = ['Phosphate', r'$\mu$mol m$^{-3}$',]
+    hist_anom_data['chl']  = ['Chlorophyll', r'mg m$^{-3}$', ]
+    hist_anom_data['intpp'] = ['Int. Production', r'mmol m$^{-2}$ d$^{-1}$',]
+
+
+    if hist_anom_data[short_name][1] in ['', None]:
+            pyplot.title(''.join([hist_anom_data[short_name],])) # ' Anomaly']))
+    else:
+        pyplot.title(''.join([hist_anom_data[short_name][0],', ',  hist_anom_data[short_name][1]]))
+
+    xes = [0.75, 1.5, 2., 2.5, 3.,  ]
+    a = []
+    b = []
+    c = []
+    # hist_val = 0.
+    # hist_stf = 0.
+
+    ssps = ['Historical', 'SSP1-2.6', 'SSP2-4.5', 'SSP3-7.0', 'SSP5-8.5']
+    #columns = {'Historical':2, 'SSP1-2.6':3, 'SSP2-4.5':4, 'SSP3-7.0':5, 'SSP5-8.5':6}
+    colours = ['blue', 'green' ,'gold', 'orange', 'red']
+    colours2 = ['navy', 'darkgreen' ,'goldenrod', 'darkorange', 'darkred']
+
+    for x, ssp in zip(xes, ssps):
+        for new_ssp, (mean, std) in anomaly_table.items():
+            if sspify(new_ssp) != ssp:
+                continue
+
+            #if ssp.lower() == 'historical': # no historical here
+            #    hist_val = v
+            #    hist_stf = s
+            #    continue
+
+            #print(short_name, ssp, v,s)
+            a.append(x)
+            b.append(mean)
+            c.append(std)
+
+    #    #axes.axhline(hist_val, xmin=0.1, xmax=0.9, c=colours2[0])#', zorder=2.)
+    axes.axhline(0., linewidth=2.5, xmin=0.1, xmax=0.9, c=colours2[0], zorder=-2.)
+
+    pyplot.xlim([min(a)-0.6, max(a)+0.6])
+
+    pyplot.xticks([], [])
+    axes.set_xticks([])
+    axes.set_xticks([], minor=True)
+    axes.spines['top'].set_visible(False)
+    axes.spines['right'].set_visible(False)
+    axes.spines['bottom'].set_visible(False)
+    pyplot.subplots_adjust(left=0.20)
+
+    pyplot.scatter(a, b, color=colours2[1:], marker='_', s=700,zorder=1,) # marker
+    pyplot.errorbar(a, b, yerr=c, ecolor=colours[1:], capsize=0., elinewidth=22.,  fmt="None", zorder=-1) # error bars only (fmt=None)
+
+    impath = diagtools.folder(''.join([cfg['plot_dir'], '/mean_anomaly_plots']))
+    impath += ''.join(['hist_anom_', short_name] )
+    print('Saving:', impath)
+    pyplot.savefig(impath+diagtools.get_image_format(cfg), dpi=300., transparent=True)
+    pyplot.savefig(impath.+'.svg', transparent=True)
+    pyplot.close()
+    assert 0
+
+
 def multi_model_time_series(
         cfg,
         metadatas,
@@ -636,7 +721,6 @@ def multi_model_time_series(
     if make_csvs_data :
         write_csv_ts(cfg,metadatas, data_values, single_model, short_name)
 
-
     if make_csvs and single_model=='all':
         # want a table that includes:
         # field: historical mean 2000-2010 +/1 std, each scenario +/- std
@@ -656,8 +740,6 @@ def multi_model_time_series(
 
             model_ensembles_dict = add_dict_list(model_ensembles_dict, key, ensemble)
             ensembles_dict = add_dict_list(ensembles_dict, (short_name, scenario), ensemble)
-            #print('mean:', variable_group, short_name, dataset, scenario, ensemble, value)
-        #assert 0
 
         scenario_values = {}
         for (short_name, dataset, scenario), means in model_values.items():
@@ -725,7 +807,6 @@ def multi_model_time_series(
             ensembles_dict = add_dict_list(ensembles_dict, (short_name, scenario), ensemble)
             #print('mean:', variable_group, short_name, dataset, scenario, ensemble, value)
         #assert 0
-
 
         scenario_values = {}
         for (short_name, dataset, scenario), means in model_values.items():
@@ -801,12 +882,14 @@ def multi_model_time_series(
             model_mean =  np.mean(means)
             scenario_values = add_dict_list(scenario_values, (short_name, scenario), model_mean)
 
-        # generate the output line:
+        #  anomaly_table: this is the data used for figure 2 (summary)
+        # generate the output line: # This 
         header = ['field', ]
         line = [short_name, ] 
         line1 = [short_name, ]
         line2 = [short_name, ]
         line3 = [short_name, ]
+        anomaly_table = {}
         for (short_name, scenario) in sorted(scenario_values.keys()):
             header.append(scenario)
             model_means = np.array(scenario_values[(short_name, scenario)])
@@ -820,6 +903,9 @@ def multi_model_time_series(
                 value2 = str(round(model_means.std(), 3))
                 value3 = str(round(model_means.min(), 4))
                 value4 = str(round(model_means.max(), 4))
+
+            anomaly_table[scenario] = (model_means.mean(), model_means.std())
+
             line.append(''.join([' ', value1, ' $\pm$ ', value2,]))
             line1.append(''.join(['"', value1, ' $\pm$ ', value2, '"',]))
             line2.append(''.join(['"', value1, ' + ', value4, ' - ', value3, '"',]))
@@ -848,6 +934,9 @@ def multi_model_time_series(
         mp_fn.close()
         print('csv_str:',csv_str)
         print('saved to path:', csv_path)
+
+        make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table)
+
 
         # number of ensembles
         # Number of models, number of ensembles, (ensembles per model)
