@@ -146,7 +146,7 @@ diagnostics:
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r7i1p1f3, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r8i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r9i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
-        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r13i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+#        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r13i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: MPI-ESM1-2-HR, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: MPI-ESM1-2-HR, end_year: 2010, ensemble: r2i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: MPI-ESM1-2-LR, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
@@ -199,7 +199,7 @@ diagnostics:
         - {dataset: NorESM2-LM, end_year: 2010, ensemble: r2i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: NorESM2-MM, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: NorESM2-MM, end_year: 2010, ensemble: r2i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
-        - {dataset: GFDL-CM4, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+#        - {dataset: GFDL-CM4, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: GFDL-ESM4, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: GFDL-ESM4, end_year: 2010, ensemble: r2i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: NESM3, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}

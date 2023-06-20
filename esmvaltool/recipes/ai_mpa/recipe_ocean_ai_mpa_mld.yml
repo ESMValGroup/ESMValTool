@@ -905,10 +905,9 @@ diagnostics:
         supplementary_variables: *ofx
 
 documentation:
-  title: "CRACAB MPA analysis: MLD"
+  title: "Ascension Island MPA analysis: Mixed Layer Depth"
   authors: [demora_lee]
-  description: "Template recipe to produce a generic plot of temperature for the Ascension\
-    \ Islands.\n"
+  description: "Template recipe to produce a generic plot of MLD for the Ascension Island."
   maintainer: [demora_lee]
   projects: [ukesm]
   references: [demora2018gmd]
@@ -932,8 +931,8 @@ preprocessors:
     #extract_region: *id001
     area_statistics:
       operator: mean
-      fx_variables:
-      - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
+#      fx_variables:
+#      - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
   # --------------------------------------------------
   # Map preprocessors
   # --------------------------------------------------
@@ -953,8 +952,8 @@ preprocessors:
     extract_region: *id001
     area_statistics:
       operator: mean
-      fx_variables:
-      - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
+#      fx_variables:
+#      - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
     extract_levels:
         scheme: linear
         levels: [0.5, 1., 5., 10., 50., 100., 200., 300., 400., 500., 600., 700., 800., 900., 1000.,

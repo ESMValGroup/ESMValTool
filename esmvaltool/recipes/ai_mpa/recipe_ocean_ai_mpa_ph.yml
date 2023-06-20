@@ -715,7 +715,8 @@ diagnostics:
 
 documentation:
   authors: [demora_lee]
-  description: "Template recipe to produce a generic plot of temperature for the Ascension\
+  title: "Ascension Island MPA analysis: pH"
+  description: "Template recipe to produce a generic plot of pH for the Ascension\
     \ Islands.\n"
   maintainer: [demora_lee]
   projects: [ukesm]

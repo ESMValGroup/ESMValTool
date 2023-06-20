@@ -1009,10 +1009,9 @@ diagnostics:
         start_year: 2015
         supplementary_variables: *ofx   
 documentation:
-  title: "CRACAB MPA anaysis: o2" 
+  title: "Ascension Island MPA analysis: Oxygen"
   authors: [demora_lee]
-  description: "Template recipe to produce a generic plot of temperature for the Ascension\
-    \ Islands.\n"
+  description: "Template recipe to produce a generic plot of Oxygen for the Ascension Island"
   maintainer: [demora_lee]
   projects: [ukesm]
   references: [demora2018gmd]

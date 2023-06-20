@@ -523,12 +523,11 @@ diagnostics:
         supplementary_variables: *ofx   
 documentation:
   authors: [demora_lee]
-  description: "Template recipe to produce a generic plot of temperature for the Ascension\
-    \ Islands.\n"
+  description: "Template recipe to produce a generic plot of Nitrate for the Ascension Island"
   maintainer: [demora_lee]
   projects: [ukesm]
   references: [demora2018gmd]
-  title: CRACAB No3 analysis
+  title: "Ascension Island MPA analysis: Nitrate"
 
 preprocessors:
   # --------------------------------------------------
