@@ -22,6 +22,8 @@ import glob
 import logging
 import os
 
+from datetime import datetime
+
 import iris
 import h5py
 
@@ -29,7 +31,6 @@ import dask.array as da
 
 from esmvaltool.cmorizers.data import utilities as utils
 
-from datetime import datetime
 from dateutil import relativedelta
 
 from iris.coords import DimCoord
@@ -39,8 +40,7 @@ from esmvalcore.preprocessor import regrid
 logger = logging.getLogger(__name__)
 
 
-def _extract_variable(short_name, var, in_files, cfg, in_dir,
-                      out_dir):
+def _extract_variable(short_name, var, in_files, cfg, out_dir):
     """Extract variable."""
     # load data
     raw_var = var.get('raw', short_name)
@@ -62,12 +62,12 @@ def _extract_variable(short_name, var, in_files, cfg, in_dir,
                         units='seconds since 1970-01-01 00:00:00 UTC')
 
         # define fill value
-        x = da.ma.masked_equal(precipdata, -9999.9)
+        xfilled = da.ma.masked_equal(precipdata, -9999.9)
 
         # convert units from 'mm hr-1' to 'kg m-2 s-1'
-        x /= 3600.0
+        xfilled /= 3600.0
 
-        tmpcube = iris.cube.Cube(x, dim_coords_and_dims=[
+        tmpcube = iris.cube.Cube(xfilled, dim_coords_and_dims=[
                                  (time, 0), (longitude, 1), (latitude, 2)])
 
         # flip longitudes and latitudes
@@ -132,9 +132,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             print(filepattern)
             in_files = glob.glob(filepattern)
             if not in_files:
-                logger.warning(f'Warning: no data found for '
-                               f'{year}-{month}')
+                logger.warning('Warning: no data found for %d-%s', year, month)
                 continue
-            _extract_variable(short_name, var, in_files, cfg, in_dir, out_dir)
+            _extract_variable(short_name, var, in_files, cfg, out_dir)
 
         loop_date += relativedelta.relativedelta(months=1)
