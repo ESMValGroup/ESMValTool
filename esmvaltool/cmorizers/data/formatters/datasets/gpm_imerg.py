@@ -74,7 +74,7 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
         tmpcube.transpose([0, 2, 1])
 
         # regridding from 0.1x0.1 to 0.5x0.5
-        cube05 = regrid(tmpcube, target_grid='0.5x0.5', scheme='linear')
+        cube05 = regrid(tmpcube, target_grid='0.5x0.5', scheme='area_weighted')
         # realize data to be able to close hdf file
         # this is needed as keeping ~48*30=1440 files per month open quickly
         # exceeds the maximum number of open files (check with ulimit -n)
