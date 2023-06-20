@@ -21,7 +21,7 @@ Recipes are stored in recipes/
 Diagnostics are stored in diag_scripts/perfmetrics/
 
 * main.ncl: calculates and (optionally) plots annual/seasonal cycles, zonal means, lat-lon fields and time-lat-lon fields. The calculated fields can also be plotted as difference w.r.t. a given reference dataset. main.ncl also calculates RMSD, bias and taylor metrics. Input data have to be regridded to a common grid in the preprocessor. Each plot type is created by a separated routine, as detailed below.
-* cycle_zonal.ncl: calculates single model perfomance index (Reichler and Kim, 2008). It requires fields precalculated by main.ncl.
+* cycle_zonal.ncl: calculates single model performance index (Reichler and Kim, 2008). It requires fields precalculated by main.ncl.
 * collect.ncl: collects the metrics previously calculated by cycle_latlon.ncl and passes them to the plotting functions.
 
 User settings
@@ -72,11 +72,11 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4MIPs data can be used directly without any reformating. For non-obs4MIPs data use `esmvaltool data info DATASET` or see headers of cmorization scripts for downloading and processing instructions.
+The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4MIPs data can be used directly without any reformatting. For non-obs4MIPs data use `esmvaltool data info DATASET` or see headers of cmorization scripts for downloading and processing instructions.
 
 * ERA-Interim (hfds, hus, psl, ta, tas, tauu, tauv, ua, va - esmvaltool/data/formatters/datasets/era-interim.py)
 * HadISST (sic, tos - esmvaltool/data/formatters/datasets/hadisst.ncl)
-* GPCP-SG (pr - obs4MIPs)
+* GPCP-V2.2 (pr - obs4MIPs)
 
 References
 ----------

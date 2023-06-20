@@ -18,11 +18,12 @@ import logging
 import os
 import glob
 
+from datetime import datetime
+
 import iris
 from iris import NameConstraint
 from iris.util import equalise_attributes
 
-from datetime import datetime
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data import utilities as utils
@@ -32,8 +33,7 @@ from esmvalcore.preprocessor import extract_levels
 logger = logging.getLogger(__name__)
 
 
-def _extract_variable(short_name, var, in_files, cfg, in_dir,
-                      out_dir):
+def _extract_variable(short_name, var, in_files, cfg, out_dir):
     """Extract variable."""
     # load data
     raw_var = var.get('raw', short_name)
@@ -81,9 +81,9 @@ def _extract_variable(short_name, var, in_files, cfg, in_dir,
 
     try:
         cube.convert_units(cmor_info.units)
-    except Exception:
-        logger.warning(f'Warning: could not convert units from {cube.units}'
-                       f'to {cmor_info.units}')
+    except Exception as ex:
+        logger.warning('Warning: could not convert units from %s to %s (%r)',
+                       cube.units, cmor_info.units, ex)
 
     # Fix coordinates
     utils.fix_coords(cube)
@@ -132,8 +132,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             print('*** ' + filepattern)
             in_files = glob.glob(filepattern)
             if not in_files:
-                logger.warning(f'Warning: no data found for {year}')
+                logger.warning('Warning: no data found for %d', year)
                 continue
-            _extract_variable(short_name, var, in_files, cfg, in_dir, out_dir)
+            _extract_variable(short_name, var, in_files, cfg, out_dir)
 
         loop_date += relativedelta.relativedelta(years=1)

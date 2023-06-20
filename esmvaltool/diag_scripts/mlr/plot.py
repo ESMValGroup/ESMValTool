@@ -86,7 +86,7 @@ print_corr: bool, optional (default: False)
 savefig_kwargs: dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict, optional
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 years_in_title: bool, optional (default: False)
     Print years in default title of plots.
 
@@ -808,7 +808,7 @@ def plot_xy_with_errors(cfg, cube_dict):
 
 def main(cfg):
     """Run the diagnostic."""
-    sns.set(**cfg.get('seaborn_settings', {}))
+    sns.set_theme(**cfg.get('seaborn_settings', {}))
     cfg = deepcopy(cfg)
     cfg.setdefault('group_by_attribute', 'mlr_model_name')
     cfg.setdefault('group_attribute_as_default_alias', True)
@@ -835,7 +835,7 @@ def main(cfg):
     if cfg['print_corr']:
         pandas_print_options = [
             'display.max_rows', None,
-            'display.max_colwidth', -1,
+            'display.max_colwidth', None,
         ]
         corr = ALL_CUBES.corr()
         with pd.option_context(*pandas_print_options):
