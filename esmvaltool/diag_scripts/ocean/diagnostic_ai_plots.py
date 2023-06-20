@@ -401,17 +401,18 @@ def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table):
     backgroundcolor='white'
     print('hist, anom', short_name, anomaly_table)
 
-    fig = pyplot.figure()
+    fig = plt.figure()
     axes = fig.add_subplot(1, 1, 1)
     fig.set_facecolor(backgroundcolor)
     axes.set_facecolor(backgroundcolor)
 
     fig.set_size_inches(3.0, 3.5)
 
-    titles = {}
+    hist_anom_data = {}
     hist_anom_data['temp'] = ['Sea Surface Temperature',  r'$\degree$ C',]
     hist_anom_data['sal'] = ['Salinity', 'PSU', ]
     hist_anom_data['mld'] = ['Mixed Layer Depth', 'm', ]
+    hist_anom_data['mlotst'] = hist_anom_data['mld']
     hist_anom_data['ph'] = ['pH', '', ]
     hist_anom_data['o2'] = ['Oxygen', r'mmol m$^{-3}$', ]
     hist_anom_data['nit'] = ['Nitrate', r'$\mu$mol m$^{-3}$', ]
@@ -421,9 +422,9 @@ def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table):
 
 
     if hist_anom_data[short_name][1] in ['', None]:
-            pyplot.title(''.join([hist_anom_data[short_name],])) # ' Anomaly']))
+            plt.title(''.join([hist_anom_data[short_name],])) # ' Anomaly']))
     else:
-        pyplot.title(''.join([hist_anom_data[short_name][0],', ',  hist_anom_data[short_name][1]]))
+        plt.title(''.join([hist_anom_data[short_name][0],', ',  hist_anom_data[short_name][1]]))
 
     xes = [0.75, 1.5, 2., 2.5, 3.,  ]
     a = []
@@ -442,38 +443,39 @@ def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table):
             if sspify(new_ssp) != ssp:
                 continue
 
-            #if ssp.lower() == 'historical': # no historical here
+            if ssp.lower() == 'historical': # no historical here
             #    hist_val = v
             #    hist_stf = s
-            #    continue
+                continue
 
             #print(short_name, ssp, v,s)
             a.append(x)
             b.append(mean)
             c.append(std)
 
+    print('a:', a,'\nb:', b, '\nc:', c)
     #    #axes.axhline(hist_val, xmin=0.1, xmax=0.9, c=colours2[0])#', zorder=2.)
     axes.axhline(0., linewidth=2.5, xmin=0.1, xmax=0.9, c=colours2[0], zorder=-2.)
 
-    pyplot.xlim([min(a)-0.6, max(a)+0.6])
+    plt.xlim([min(a)-0.6, max(a)+0.6])
 
-    pyplot.xticks([], [])
+    plt.xticks([], [])
     axes.set_xticks([])
     axes.set_xticks([], minor=True)
     axes.spines['top'].set_visible(False)
     axes.spines['right'].set_visible(False)
     axes.spines['bottom'].set_visible(False)
-    pyplot.subplots_adjust(left=0.20)
+    plt.subplots_adjust(left=0.20)
 
-    pyplot.scatter(a, b, color=colours2[1:], marker='_', s=700,zorder=1,) # marker
-    pyplot.errorbar(a, b, yerr=c, ecolor=colours[1:], capsize=0., elinewidth=22.,  fmt="None", zorder=-1) # error bars only (fmt=None)
+    plt.scatter(a, b, color=colours2[1:], marker='_', s=700,zorder=1,) # marker
+    plt.errorbar(a, b, yerr=c, ecolor=colours[1:], capsize=0., elinewidth=22.,  fmt="None", zorder=-1) # error bars only (fmt=None)
 
     impath = diagtools.folder(''.join([cfg['plot_dir'], '/mean_anomaly_plots']))
     impath += ''.join(['hist_anom_', short_name] )
     print('Saving:', impath)
-    pyplot.savefig(impath+diagtools.get_image_format(cfg), dpi=300., transparent=True)
-    pyplot.savefig(impath.+'.svg', transparent=True)
-    pyplot.close()
+    plt.savefig(impath+diagtools.get_image_format(cfg), dpi=300., transparent=True)
+    plt.savefig(impath+'.svg', transparent=True)
+    plt.close()
     assert 0
 
 
