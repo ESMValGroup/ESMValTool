@@ -48,8 +48,8 @@ def _load_jra55_grib(filenames, var):
                     day = message.sections[1]['day']
                     month = message.sections[1]['month']
                     year = ((message.sections[1][
-                           'centuryOfReferenceTimeOfData']
-                         - 1) * 100 + message.sections[1]['yearOfCentury'])
+                            'centuryOfReferenceTimeOfData']
+                            - 1) * 100 + message.sections[1]['yearOfCentury'])
 
                     point = datetime(year=year, month=month, day=day)
                     time_units = Unit('days since 1950-01-01 00:00:00',
