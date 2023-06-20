@@ -738,7 +738,11 @@ preprocessors:
       # - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
   prep_regional_ts_3d_surface: # For regional fields
     custom_order: true
-    extract_surface:
+
+    extract_levels:
+       scheme: nearest_extrapolate
+       levels: [0.5, ]
+
     extract_region: *id001
     area_statistics:
       operator: mean
@@ -752,7 +756,11 @@ preprocessors:
       scheme: linear
   prep_map_surf: # For Global 2D fields
     custom_order: true
-    extract_surface:
+
+    extract_levels:
+       scheme: nearest_extrapolate
+       levels: [0.5, ]
+
     climate_statistics:
        operator: mean
     regrid:

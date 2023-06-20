@@ -2047,7 +2047,7 @@ preprocessors:
     regrid: {scheme: linear, target_grid: 1x1}
   prep_map_surf:
     climate_statistics: {operator: mean}
-    extract_surface: null
+#    extract_surface: null
   prep_profile_2:
     custom_order: true
 #    add_fx_variables:
@@ -2084,7 +2084,7 @@ preprocessors:
 #      - {activity: CMIP, ensemble: "r1i1p1f(1:10)", exp: piControl, grid: gn, mip: Ofx, short_name: areacello}
       operator: mean
     extract_region: *id001
-    extract_surface: null
+#    extract_surface: null
   prep_regional_ts_3d_top:
     extract_region: *id001
     extract_volume: {z_max: 1000.0, z_min: 0.0}

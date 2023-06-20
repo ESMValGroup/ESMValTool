@@ -2627,8 +2627,6 @@ def main(cfg):
         if variable_group.find('_map_')>-1:
             maps_fns = add_dict_list(maps_fns, variable_group, fn)
 
-
-
     #jobs:
     #Make UKESM-only version of everything (or single model?)
     #prepare data for export.
