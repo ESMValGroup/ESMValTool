@@ -90,9 +90,9 @@ diagnostics:
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
 #          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
-#          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1}
+          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1}
           - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3}
-#          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
 #          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2}
 #          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
 #          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
@@ -120,9 +120,9 @@ diagnostics:
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
 #          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
-#          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1}
+          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1}
           - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3}
-#          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
 #          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2}
 #          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
 #          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}

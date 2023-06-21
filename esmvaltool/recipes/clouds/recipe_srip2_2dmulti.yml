@@ -141,7 +141,7 @@ diagnostics:
 #          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2, alias: r05_JRA-25}
           - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2, alias: r06_JRA-55}
           - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3, alias: r07_MERRA}
-#          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3, alias: r08_MERRA2}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3, alias: r08_MERRA2}
 #          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2, alias: r09_NCEP-DOE-R2}
 #          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2, alias: r10_NCEP-NCAR-R1}
 #          - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, type: reanaly, version: 'v2', tier: 2, alias: r11_NOAA-CIRES-20CR-V2}
@@ -198,7 +198,7 @@ diagnostics:
 #          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2, alias: r05_JRA-25}
           - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2, alias: r06_JRA-55}
           - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3, alias: r07_MERRA}
-#          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3, alias: r08_MERRA2}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3, alias: r08_MERRA2}
 #          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2, alias: r09_NCEP-DOE-R2}
 #          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2, alias: r10_NCEP-NCAR-R1}
 #          - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, type: reanaly, version: 'v2', tier: 2, alias: r11_NOAA-CIRES-20CR-V2}
