@@ -4,9 +4,6 @@
 documentation:
   description: |
     Recipe that runs the Autoassess Land-surface assessment area diagnostic.
-    Climatological files are stored externally to avoid overloading the
-    ESMValTool source. See /gws/nopw/j04/esmeval/autoassess_specific_files
-    (on JASMIN).
 
   authors:
     - predoi_valeriu
@@ -27,10 +24,11 @@ datasets:
     - {dataset: E3SM-1-0,  project: CMIP6, exp: historical,  grid: gr,  ensemble: r1i1p1f1,  start_year: 1992,  end_year: 2002}
 
 preprocessors:
-  pp_aa_area:
-    regrid:  # NOT USED
-      target_grid: 0.15x0.15
-      scheme: linear
+  seasonal:
+    climate_statistics:
+      operator: mean
+      period: seasonal
+      seasons: ['DJF', 'MAM', 'JJA', 'SON']
 
 diagnostics:
   aa_landsurf_soilmoisture:
@@ -38,17 +36,20 @@ diagnostics:
     variables:
       mrsos: # moisture_content_of_soil_layer
         mip: Lmon
+        preprocessor: seasonal
+      sm: # Volumetric Moisture in Upper Portion of Soil Column
+        mip: Lmon
+        project: CMIP5
+        derive: true
+        preprocessor: seasonal
+        additional_datasets:
+            - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat, version: L3S-SSMV-COMBINED-v4.2, tier: 2, start_year: 1999, end_year: 2008}
     scripts:
       autoassess_landsurf_soilmoisture: &autoassess_landsurf_soilmoisture_settings
-        script: autoassess/autoassess_area_base.py
-        title: "Autoassess Land-Surface Soilmoisture Diagnostic"
+        script: autoassess/land_surface_soilmoisture/soilmoisture.py
         area: land_surface_soilmoisture
         control_model: ACCESS-CM2
         exp_model: E3SM-1-0
-        obs_models: []
-        start: 1993/12/01
-        end: 2002/12/01
-        climfiles_root: '/gws/nopw/j04/esmeval/autoassess_specific_files/files'  # on JASMIN
 
   plot_standard:
     description: Wrapper to collect and plot previously calculated metrics

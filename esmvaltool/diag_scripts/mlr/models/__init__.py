@@ -2098,13 +2098,12 @@ class MLRModel():
             raise ValueError(
                 f"Excepted one of '{allowed_types}' for 'var_type', got "
                 f"'{var_type}'")
-        x_data = pd.DataFrame(columns=self.features, dtype=self._cfg['dtype'])
+        x_data_for_groups = []
         x_cube = None
         if self._cfg['weighted_samples'] and var_type == 'feature':
-            sample_weights = pd.DataFrame(columns=['sample_weight'],
-                                          dtype=self._cfg['dtype'])
+            sample_weights_for_groups = []
         else:
-            sample_weights = None
+            sample_weights_for_groups = None
 
         # Iterate over datasets
         datasets = select_metadata(datasets, var_type=var_type)
@@ -2123,14 +2122,15 @@ class MLRModel():
             (group_data, x_cube,
              weights) = self._get_x_data_for_group(group_datasets, var_type,
                                                    group_attr)
-            x_data = pd.concat([x_data, group_data])
+            x_data_for_groups.append(group_data)
 
             # Append weights if desired
-            if sample_weights is not None:
-                sample_weights = pd.concat([sample_weights, weights])
+            if sample_weights_for_groups is not None:
+                sample_weights_for_groups.append(weights)
 
         # Adapt sample_weights if necessary
-        if sample_weights is not None:
+        if sample_weights_for_groups is not None:
+            sample_weights = pd.concat(sample_weights_for_groups)
             sample_weights.index = pd.MultiIndex.from_tuples(
                 sample_weights.index, names=self._get_multiindex_names())
             logger.info(
@@ -2145,8 +2145,11 @@ class MLRModel():
                     "cubes",
                     sample_weights.min().values[0],
                     sample_weights.max().values[0])
+        else:
+            sample_weights = None
 
         # Convert index back to MultiIndex
+        x_data = pd.concat(x_data_for_groups)
         x_data.index = pd.MultiIndex.from_tuples(
             x_data.index, names=self._get_multiindex_names())
 
@@ -2159,7 +2162,7 @@ class MLRModel():
             raise ValueError(
                 f"Excepted one of '{allowed_types}' for 'var_type', got "
                 f"'{var_type}'")
-        y_data = pd.DataFrame(columns=[self.label], dtype=self._cfg['dtype'])
+        y_data_for_groups = []
 
         # Iterate over datasets
         datasets = select_metadata(datasets, var_type=var_type)
@@ -2186,9 +2189,10 @@ class MLRModel():
                 index=self._get_multiindex(cube, group_attr=group_attr),
                 dtype=self._cfg['dtype'],
             )
-            y_data = pd.concat([y_data, cube_data])
+            y_data_for_groups.append(cube_data)
 
         # Convert index back to MultiIndex
+        y_data = pd.concat(y_data_for_groups)
         y_data.index = pd.MultiIndex.from_tuples(
             y_data.index, names=self._get_multiindex_names())
 
