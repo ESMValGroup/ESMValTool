@@ -1,5 +1,11 @@
 # ESMValTool
-# recipe_python.yml
+# recipe_python_for_CI.yml
+# 
+# This recipe is identical to recipe_python.yml bar the extract_location
+# preprocessor which is replaced here with extract_point. The reason for this
+# is that this recipe is used solely for CI tests, and the geolocator/Nominatim
+# engine for location extraction should not be used in CI runs as per their
+# usage policy.
 #
 # See https://docs.esmvaltool.org/en/latest/recipes/recipe_examples.html
 # for a description of this recipe.
@@ -18,7 +24,7 @@ documentation:
     - righi_mattia
 
   maintainer:
-    - schlund_manuel
+    - predoi_valeriu
 
   references:
     - acknow_project
@@ -40,8 +46,9 @@ preprocessors:
       units: degrees_C
 
   annual_mean_amsterdam:
-    extract_location:
-      location: Amsterdam
+    extract_point:
+      longitude: 52.3730796
+      latitude: 4.8924534
       scheme: linear
     annual_statistics:
       operator: mean
