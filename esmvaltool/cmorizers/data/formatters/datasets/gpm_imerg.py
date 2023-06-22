@@ -47,6 +47,7 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
     cubes = iris.cube.CubeList([])
     for infile in in_files:
         print(infile)
+        tim0 = datetime.now()
         hdf = h5py.File(infile, 'r')
 
         precipdata = hdf[f'Grid/{raw_var}']
@@ -74,15 +75,30 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
         tmpcube.transpose([0, 2, 1])
 
         # regridding from 0.1x0.1 to 0.5x0.5
+        # ----------------------------------
+        # Linear regridding is computationally cheap enough to do this for each
+        # field instead of doing it for the concatenated array in the very end.
+        # Doing so reduces the memory usage as storing the full resolution
+        # fields for a whole month (~48*30=1440 fields) requires ~150 GB of
+        # memory.
         utils.fix_bounds(tmpcube, tmpcube.coord('longitude'))
         utils.fix_bounds(tmpcube, tmpcube.coord('latitude'))
-        cube05 = regrid(tmpcube, target_grid='0.5x0.5', scheme='area_weighted')
+        # 'area_weighted' regridding results in a vertical line of missing
+        # values at lon=180 --> use 'linear' scheme instead, which is good
+        # enough and much faster
+        cube05 = regrid(tmpcube, target_grid='0.5x0.5', scheme='linear')
+
         # realize data to be able to close hdf file
-        # this is needed as keeping ~48*30=1440 files per month open quickly
-        # exceeds the maximum number of open files (check with ulimit -n)
+        # -----------------------------------------
+        # This is needed as keeping ~48*30=1440 files per month open quickly
+        # exceeds the maximum number of open files (check with ulimit -n).
         cube05.data
         hdf.close()
+
         cubes.append(cube05)
+
+        tim1 = datetime.now()
+        print(tim1 - tim0)
 
     cube = cubes.concatenate_cube()
 
@@ -114,9 +130,9 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     if start_date is None:
-        start_date = datetime(2001, 1, 1)
+        start_date = datetime(2006, 1, 1)
     if end_date is None:
-        end_date = datetime(2001, 12, 31)
+        end_date = datetime(2006, 12, 31)
     loop_date = start_date
 
     while loop_date <= end_date:
