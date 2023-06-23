@@ -440,7 +440,7 @@ def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table):
 
     colours2_rgb = [(23, 60, 102), (0, 173, 207), (247, 148, 32), (231, 29, 37), (149, 27, 30)]
     colours = [(a/256., b/256. ,c/256.) for (a, b, c) in colours2_rgb]
-    f = 0.75
+    f = 0.75/256.
     colours2 = [(f*a, f*b, f*c) for (a, b, c) in colours2_rgb]
 
 
