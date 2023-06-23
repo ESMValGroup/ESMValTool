@@ -926,8 +926,6 @@ preprocessors:
     area_statistics:
       operator: mean
 
-    area_statistics:
-      operator: mean
 #       fx_variables: &areacello
 #          - {activity: CMIP, grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
 #        - {short_name: areacello, mip: Ofx, }
