@@ -1,58 +1,84 @@
 #!/usr/bin/env python
 """Generate the required user configuration file for ESMValTool."""
 import os
-import warnings
+import pprint
 
-with warnings.catch_warnings():
-    warnings.filterwarnings(
-        "ignore",
-        message=(
-            "\n  Thank you for trying out the new ESMValCore API.\n  Note "
-            "that this API is experimental and may be subject to change.\n  "
-            "More info: https://github.com/ESMValGroup/ESMValCore/issues/498"),
-        category=UserWarning,
-        module="esmvalcore.experimental._warnings",
-    )
-    import esmvalcore.experimental as esmvaltool
 import yaml
+from esmvalcore.config._config_object import Config
 
-USER_CONFIG_PATH = os.environ["USER_CONFIG_PATH"]
+import esmvaltool
 
 
 def main():
-    """Write the updated configuration values to the file defined by
-    ``USER_CONFIG_PATH``."""
-    # Get the default configuration values from ESMValTool. A dictionary is
-    # needed here to avoid the config object from converting paths to PosixPath
-    # objects, which causes issues when writing the YAML file.
-    config_values = dict(esmvaltool.CFG)
+    """Write the required user configuration file for ESMValTool.
+
+    The default configuration values from the latest version of
+    ESMValTool are updated with the configuration values defined in the
+    environment for the ``configure`` task and the result is written to
+    the file defined by ``USER_CONFIG_PATH`` in the ``flow.cylc`` file.
+    """
+    # Get the default configuration values from the latest version of
+    # ESMValTool.
+    config_values = get_latest_default_conf_vals()
 
     # Get the configuration values defined in the environment for the
-    # ``configure`` task.
+    # 'configure' task.
     config_values_from_task_env = get_config_values_from_task_env()
 
     # Update the default configuration values.
     config_values.update(config_values_from_task_env)
+    user_config_path = os.environ["USER_CONFIG_PATH"]
+    config_values["config_file"] = user_config_path
 
     # Write the updated configuration values to the file defined by
-    # 'USER_CONFIG_PATH'.
-    write_yaml(USER_CONFIG_PATH, config_values)
+    # 'user_config_path'.
+    print(f"Writing the user configuration file to '{user_config_path}' with "
+          "values: ")
+    pprint.PrettyPrinter().pprint(config_values)
+    write_yaml(user_config_path, config_values)
+
+
+def get_latest_default_conf_vals():
+    """Return the default configuration values from the latest version of
+    ESMValTool."""
+    latest_esmvaltool_dir = os.environ["ESMVALTOOL_DIR"]
+    default_config_file = os.path.join(latest_esmvaltool_dir,
+                                       "config-user-example.yml")
+    # A dictionary is needed here to avoid the config object from
+    # converting paths to 'PosixPath' objects, which causes issues when
+    # writing the YAML file.
+    config_values = dict(Config._load_user_config(default_config_file))
+
+    # Update the type of the value of 'config_developer_file' from a
+    # 'PosixPath' object to a string, to avoid issues when writing the
+    # YAML file (all other paths will be overwritten).
+    config_developer_file = str(config_values["config_developer_file"])
+    config_values["config_developer_file"] = config_developer_file
+
+    print("Default configuration values from the latest version of ESMValTool "
+          f"{esmvaltool.__version__} (from '{default_config_file}'): ")
+    pprint.PrettyPrinter().pprint(config_values)
+
+    return config_values
 
 
 def get_config_values_from_task_env():
     """Return the configuration values defined in the environment for the
     ``configure`` task."""
-    # Note that 'auxiliary_data_dir', 'download_dir' and
-    # 'extra_facets_dir' are set to empty values and cannot currently be
-    # configured. However, 'download_dir' is used only when using the
-    # automatic download feature via ESMValTool (which we do not intend
-    # to use here) and 'extra_facets_dir' is not available in the
-    # default configuration file provided by ESMValTool v2.6.0.
-    # 'auxiliary_data_dir' is used by some recipes to look for
-    # additional datasets, so may need to be configured in the future.
+    # Note that 'auxiliary_data_dir' and 'download_dir' are set to empty
+    # values and cannot currently be configured. 'auxiliary_data_dir' is
+    # used by some recipes to look for additional datasets, so may need
+    # to be configured in the future. 'download_dir' is used only when
+    # using the automatic download feature via ESMValTool, which is not
+    # the intention here, so should not be configurable.
+    #
+    # In addition, 'check_level' and 'extra_facets_dir' are added to the
+    # config object in ESMValTool after loading the user configuration
+    # file, but they need updating to avoid issues when writing the YAML
+    # file.
     config_values_from_task_env = {
         "auxiliary_data_dir": "",
-        "config_file": USER_CONFIG_PATH,
+        "check_level": "DEFAULT",
         "download_dir": "",
         "drs": {
             "ana4mips": os.environ["DRS_ANA4MIPS"],
@@ -68,6 +94,7 @@ def get_config_values_from_task_env():
         "extra_facets_dir": [],
         "max_parallel_tasks": int(os.environ["MAX_PARALLEL_TASKS"]),
         "output_dir": os.environ["OUTPUT_DIR"],
+        "remove_preproc_dir": False,
         "rootpath": {
             "ana4mips": os.environ["ROOTPATH_ANA4MIPS"],
             "CMIP3": os.environ["ROOTPATH_CMIP3"],
@@ -81,6 +108,9 @@ def get_config_values_from_task_env():
             "RAWOBS": os.environ["ROOTPATH_RAWOBS"],
         },
     }
+    print("The configuration values defined in the environment for the "
+          "'configure' task: ")
+    pprint.PrettyPrinter().pprint(config_values_from_task_env)
     return config_values_from_task_env
 
 
