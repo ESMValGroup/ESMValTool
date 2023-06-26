@@ -14,9 +14,9 @@ Running your first recipe
 =========================
 
 There is a step-by-step tutorial available in the
-`ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
+`ESMValTool tutorial <https://tutorial.esmvaltool.org/>`_
 on how to run your first recipe. It can be found
-`here <https://esmvalgroup.github.io/ESMValTool_Tutorial/04-recipe/index.html>`_.
+`here <https://tutorial.esmvaltool.org/04-recipe/index.html>`_.
 
 An
 `example recipe <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_python.yml>`_
@@ -35,16 +35,22 @@ from ESGF to the local directory ``~/climate_data``, run
 
 .. code:: bash
 
-	esmvaltool run examples/recipe_python.yml --offline=False
+	esmvaltool run examples/recipe_python.yml --search_esgf=when_missing
 
-The ``--offline=False`` option tells ESMValTool to search for and download
-the necessary climate data files, if they cannot be found locally.
+The ``--search_esgf=when_missing`` option tells ESMValTool to search for and
+download the necessary climate data files, if they cannot be found locally.
 The data only needs to be downloaded once, every following run will re-use
 previously downloaded data.
-If you have all required data available locally, you can run the tool without
-the ``--offline=False`` argument (the default).
+If you have all required data available locally, you can run the tool with
+``--search_esgf=never`` argument (the default).
 Note that in that case the required data should be located in the directories
 specified in your user configuration file.
+A third option ``--search_esgf=always`` is available.
+With this option, the tool will first check the ESGF for the needed data,
+regardless of any local data availability; if the data found on ESGF is newer
+than the local data (if any) or the user specifies a version of the data that
+is available only from the ESGF, then that data will be downloaded; otherwise,
+local data will be used.
 Recall that the chapter :ref:`Configuring ESMValTool <config-user>`
 provides an explanation of how to create your own config-user.yml file.
 

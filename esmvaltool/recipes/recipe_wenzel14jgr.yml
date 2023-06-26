@@ -69,8 +69,6 @@ preprocessors:
         ]
     area_statistics:
       operator: sum
-      fx_variables:
-        areacello:
 
   tropical:
     extract_region:
@@ -567,9 +565,9 @@ diagnostics:
         start_year: 1960
         end_year: 2005
         plot_units: K
-        reference_dataset: NCEP
+        reference_dataset: NCEP-NCAR-R1
         additional_datasets:
-          - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2005}#, frequency: yr}
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2005}#, frequency: yr}
           - {dataset: CanESM2, start_year: 1960 ,end_year: 2005}
           - {dataset: CESM1-BGC, start_year: 1960 ,end_year: 2005}
           - {dataset: GFDL-ESM2M, start_year: 1960 ,end_year: 2005}

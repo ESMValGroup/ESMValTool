@@ -3,6 +3,15 @@
 Constraining uncertainty in projected gross primary production (GPP) with machine learning
 ==========================================================================================
 
+.. warning::
+
+    Not all datasets necessary to run these recipes are available on ESGF.
+    The following datasets are missing:
+
+    * Dataset: co2, Amon, CMIP5, HadGEM2-ES, esmHistorical, r1i1p1
+    * Dataset: gpp, Lmon, CMIP5, MIROC-ESM, esmFixClim1, r1i1p1
+    * Supplementary: sftlf, fx, CMIP5, MIROC-ESM, esmFixClim1, r0i0p0
+
 Overview
 --------
 

@@ -100,7 +100,7 @@ class GBRModel(MLRModel):
         title = f"Training progress ({self._cfg['mlr_model_name']})"
         axes.set_title(title)
         axes.set_xlabel('Boosting iterations')
-        axes.set_ylabel('Normalized RMSE')
+        axes.set_ylabel('Loss')
         axes.legend(loc='upper right')
         new_filename = filename + '.' + self._cfg['output_file_type']
         plot_path = os.path.join(self._cfg['mlr_plot_dir'], new_filename)

@@ -523,7 +523,7 @@ function ncdf_define(ncdf, data)
 ;    20131112-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, data, diag_script, var, fAtt, dimNames, dimSzs, \
-  dimUnlim, atts
+  dimUnlim, atts, i, ii, jj
 begin
 
   funcname = "ncdf_define"
@@ -657,7 +657,7 @@ function ncdf_write(data,
 ; Modification history
 ;    20131107-gottschaldt_klaus-dirk: written.
 ;
-local funcname, scriptname, data, outfile, outfile_in, ncdf, varname
+local funcname, scriptname, data, outfile, outfile_in, ncdf, varname, i, idim
 begin
 
   funcname = "ncdf_write"
@@ -838,7 +838,7 @@ function copy_CoordNames_n(var_from,
 ; Modification history
 ;    20130419-gottschaldt_klaus-dirk: written.
 ;
-local funcname, scriptname, var_from, var_to, n, rank
+local funcname, scriptname, var_from, var_to, n, rank, ii
 begin
 
   funcname = "copy_CoordNames_n"
