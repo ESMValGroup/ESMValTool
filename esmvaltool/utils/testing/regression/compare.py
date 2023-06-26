@@ -96,12 +96,15 @@ def diff_array(ref: np.ndarray, cur: np.ndarray) -> str:
     msg = []
     if cur.shape != ref.shape:
         msg.append("data has different shape")
+    if np.issubdtype(ref.dtype, np.inexact) and np.issubdtype(
+            cur.dtype, np.inexact):
+        if not np.array_equal(ref, cur, equal_nan=True):
+            if np.allclose(ref, cur, equal_nan=True):
+                msg.append("data is almost but not quite the same")
+            else:
+                msg.append("data is different")
     elif not np.array_equal(ref, cur):
-        if np.issubdtype(ref.dtype, np.inexact) and np.issubdtype(
-                cur.dtype, np.inexact) and np.allclose(ref, cur):
-            msg.append("data is almost but not quite the same")
-        else:
-            msg.append("data is different")
+        msg.append("data is different")
     return as_txt(msg)
 
 
