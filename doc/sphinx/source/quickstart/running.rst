@@ -14,9 +14,9 @@ Running your first recipe
 =========================
 
 There is a step-by-step tutorial available in the
-`ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
+`ESMValTool tutorial <https://tutorial.esmvaltool.org/>`_
 on how to run your first recipe. It can be found
-`here <https://esmvalgroup.github.io/ESMValTool_Tutorial/04-recipe/index.html>`_.
+`here <https://tutorial.esmvaltool.org/04-recipe/index.html>`_.
 
 An
 `example recipe <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_python.yml>`_
