@@ -26,9 +26,7 @@ The |RTW| performs the following steps:
   :Executes:
      The ``clone_latest_esmval.sh`` script from the |Rose| app
   :Details:
-     Runs once at the start of the workflow and then at the completion of a
-     full recipe test cycle to pull any changes to the repository ready for the
-     next test cycle.
+     Runs at the start of each cycle
 
 ``configure``
   :Description:
