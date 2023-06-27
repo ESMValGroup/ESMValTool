@@ -11,7 +11,6 @@ The |RTW| performs the following steps:
 ``install_env_file``
   :Description:
      Copies the environment file for |ESMValTool|, based on the ``SITE`` provided
-     and installs any required dependencies
   :Runs on:
      Localhost
   :Executes:
