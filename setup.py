@@ -59,7 +59,7 @@ REQUIREMENTS = {
         'ruamel.yaml',
         'scikit-image',
         'scikit-learn',
-        'scipy',
+        'scipy>=1.10.1',
         'scitools-iris>=3.6.0',
         'seaborn',
         'seawater',
