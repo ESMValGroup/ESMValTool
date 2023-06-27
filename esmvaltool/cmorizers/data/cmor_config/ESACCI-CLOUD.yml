@@ -16,16 +16,16 @@ attributes:
 
 # Variables to cmorize
 variables:
-        #  clt:
-        #    mip: day
-        #    raw: cmask_asc
-        #    raw_units: 1
-        #    file: '*-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_NOAA-*-fv3.0.nc'
-        #  clwvi:
-        #    mip: CFday
-        #    raw: cwp_asc
-        #    raw_units: g/m2
-        #    file: '*-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
+  clt:
+    mip: day
+    raw: cmask_asc
+    raw_units: 1
+    file: '*-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_NOAA-*-fv3.0.nc'
+  clwvi:
+    mip: CFday
+    raw: cwp_asc
+    raw_units: g/m2
+    file: '*-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
   ctp:
     mip: day
     raw: ctp_asc
@@ -41,9 +41,9 @@ variables:
     raw: cot_asc
     raw_units: 1
     file: '*-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
-    #rlut:
-    #  mip: day
-    #  raw: toa_lwup_asc
-    #  raw_units: W/m2
-    #  file: '*-ESACCI-L3U_CLOUD-RAD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
+  rlut:
+    mip: day
+    raw: toa_lwup_asc
+    raw_units: W/m2
+    file: '*-ESACCI-L3U_CLOUD-RAD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
 

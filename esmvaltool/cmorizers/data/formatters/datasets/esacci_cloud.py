@@ -19,6 +19,7 @@ import logging
 import os
 
 import iris
+import numpy as np
 from cf_units import Unit
 from iris import NameConstraint
 
@@ -32,8 +33,8 @@ def _extract_variable(short_name, var, year, month, cfg, in_dir,
                       out_dir):
     """Extract variable."""
     cube = iris.cube.CubeList()
-    #filename = f'{year}{month:02}0*' + var['file']
-    filename = f'{year}{month:02}01' + var['file']
+    filename = f'{year}{month:02}*' + var['file']
+    #filename = f'{year}{month:02}01' + var['file']
     filelist = glob.glob(os.path.join(in_dir, filename))
     for filename in sorted(filelist):
         logger.info("CMORizing file %s", filename)
@@ -41,7 +42,10 @@ def _extract_variable(short_name, var, year, month, cfg, in_dir,
         # load data
         raw_var = var.get('raw', short_name)
         daily_cube = iris.load_cube(filename, NameConstraint(var_name=raw_var))
-        daily_cube.data = 100. * daily_cube.data
+        #if short_name == 'clt':
+        #    daily_cube.data = 100. * daily_cube.data
+        #if short_name in ['clwvi', 'ctp', 'reff', 'cod']:
+        #    daily_cube.data = np.ma.masked_invalid(daily_cube.data)
         daily_cube.attributes.clear()
 
         # Fix coordinates
@@ -54,16 +58,13 @@ def _extract_variable(short_name, var, year, month, cfg, in_dir,
     # regridding from 0.05x0.05 to 0.5x0.5
     cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
 
-    # fix time units
-    cube.coord('time').convert_units(
-        Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
-
-    print(cfg['cmor_table'])
-    #for i in cfg['cmor_table']:
-    #    print(i)
-    print(var['mip'])
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
-    print(*cmor_info)
+
+    # Fix units
+    if 'raw_units' in var:
+        cube.units = var['raw_units']
+    cube.convert_units(cmor_info.units)
+    utils.convert_timeunits(cube, 1950)
 
     # Fix coordinates
     utils.fix_dim_coordnames(cube)
