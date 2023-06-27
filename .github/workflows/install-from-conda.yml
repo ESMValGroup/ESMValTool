@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - run_install_conda
   schedule:
     - cron: '0 4 * * *'
 
