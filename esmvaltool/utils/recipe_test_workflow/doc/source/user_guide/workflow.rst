@@ -39,10 +39,9 @@ The |RTW| performs the following steps:
   :Executes:
      The ``configure.py`` script from the |Rose| app
   :Details:
-     Runs once at the beginning of the workflow, immediately after the
-     successful completion of the ``clone_latest_esmval`` job, and then at the
-     end of each cycle, after the successful completion of the compare jobs
-     to prepare for the start of the next testing cycle.
+     ``configure`` should run at the start of each cycle after ``clone_latest_esmval``
+     has completed; in the case where the next cycle doesn't happen for a week,
+     the clone could potentially be out of date by the time of the task trigger.
 
 ``process``
   :Description:
