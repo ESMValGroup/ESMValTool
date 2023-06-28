@@ -1,7 +1,7 @@
-"""Python example diagnostic."""
+"""Python code to plot supplementary figures in Gillett (2023)."""
 import logging
 import os
-
+import csv
 import matplotlib.pyplot as plt
 import numpy as np
 import iris
@@ -51,17 +51,14 @@ def main(cfg):
     )
     plot_dir=cfg['plot_dir']
     plt.ioff() #Turn off interactive plotting.
-# Models to plot.
-#    models=['ACCESS-ESM1-5','CanESM5','CESM2','CESM2-WACCM','CESM2-WACCM-FV2','MPI-ESM1-2-LR','NorESM2-MM']
+# Define variables.
     models=['CanESM5']
-    F_4co2=[7.61] #Smith et al., 2020 Table 2. Had to assume same ERF for ACCESS and CESM families.
-#    ECS=[3.87,5.62,5.16,4.75,4.79,3.00,2.50] #Schlund et al., 2020, Table A2
-    ECS=[5.62] #Schlund et al., 2020, Table A2
     TCRE=[2.09] #Arora et al. 2020, Table 4. Assume same TCRE for all CESM2 models.
     nmodel=len(models)
     plt.figure(1,figsize=[13,2.5])
     plt.figure(2,figsize=[13,2.5])
-    
+
+# Read in data (note only plots output for CanESM5 1pctCO2 and zero emissions simulation).
     for dataset in input_data:
         logger.info("Processing model %s", dataset)
         grouped_input_data=group_metadata(input_data[dataset],'variable_group',sort='exp')
@@ -88,54 +85,29 @@ def main(cfg):
                merged[0:61]=cube1.data[:,0]
                merged[61:166]=cube3.data[:,0]
                 
-#              print (cubes)
-#              print ('cubes.concatendate())',cubes.concatenate())
-#              merged_data=cubes.concatenate()      
-#            merged_data=np.vstack((cube1.data,cube3.data))
-#              merged_data=np.ma.concatenate(cube1.data,cube3.data)
-#              print ('merged_data',merged_data)
             if short_name == 'tas':
                 tas=merged-cube2.data
-#                print ('tas',tas)
             if short_name == 'co2':
                 atmos_co2=(merged-cube2.data[:,0])*2.13*1e3 #Convert to Eg
-                print ('atmos_co2',atmos_co2)
             if short_name == 'nbp':
                 atmos_land_flux=(merged-cube2.data)*31556952/1e12 #in PgC/yr
-#                print ('atmos_land_flux',atmos_land_flux)
             if short_name == 'fgco2':
-#                print ('cube1',cube1)
-#                print ('cube2',cube2)
                 atmos_ocean_flux=(merged-cube2.data)*31556952/1e12 #in PgC/yr
-#                print ('atmos_ocean_flux',atmos_ocean_flux)
-#                print ('len(atmos_ocean_flux),len(cube1.data),len(cube2.data)',len(atmos_ocean_flux),len(cube1.data),len(cube2.data))
             if short_name == 'hfds':
                 q=(merged-cube2.data)/5.101e14 #Convert to W/m^2.
-#                print ('q',q)
-#                print (cube.time)
-#        atmos_co2=np.full([150],1.8163314) #Increase in atmospheric CO2 in 4xCO2 simulation.
+
         ocean_cumflux=np.cumsum(atmos_ocean_flux[:])/1000.
         land_cumflux=np.cumsum(atmos_land_flux[:])/1000.
         emiss=atmos_co2[:]+ocean_cumflux[:]+land_cumflux[:]
         year=list(np.arange(166))
         mod_index=models.index(dataset)        
-#        print ('dataset,mod_index',dataset,mod_index)
-        
+
+#Plot Supplementary Fig 2.
         plt.figure(1)
         plt.subplot(nmodel,3,mod_index*3+1)
         plt.plot(year[:],q[:],color='black')
         plt.ylabel('q (W/$m^2$)')
-#Calculate values to compare.
-        lambda_=F_4co2[mod_index]/(2*ECS[mod_index]) 
-        delta_ca=atmos_co2[0] 
-#        q0=F_4co2[mod_index]-lambda_*TCRE[mod_index]*delta_ca
-        q0=F_4co2[mod_index]
-        alpha=(atmos_ocean_flux[0])*lambda_*TCRE[mod_index]/(q0*1000)
-#        f_est=(atmos_ocean_flux[0])*np.exp(-1.*np.arange(150)*alpha)
-#        emiss_est=atmos_co2[:]-((atmos_ocean_flux[0])/(alpha*1000.))*(np.exp(-1.*np.arange(150)*alpha)-1)
-#        emiss_est=((atmos_ocean_flux[0])/(alpha*1000.))*(1-np.exp(-1.*np.arange(150)*alpha))
-#        q_est=q0*np.exp(-1.*np.arange(150)*alpha)
-#        plt.plot(year[:],q_est[:],color='gray')
+
         plt.axis([0,150,0,2])
         if mod_index==nmodel-1:
           plt.xlabel('Year')
@@ -147,7 +119,6 @@ def main(cfg):
         plt.subplot(nmodel,3,mod_index*3+2)
         plt.ylabel('f (PgC/yr)')
         plt.plot(year[:],atmos_ocean_flux[:],color='black')
-#        plt.plot(year[:],f_est[:],color='gray',label='Analytical')
         plt.axis([0,150,0,7])
         if mod_index == 0:
           plt.title('Carbon flux')
@@ -159,7 +130,6 @@ def main(cfg):
         plt.subplot(nmodel,3,mod_index*3+3)
         plt.ylabel('(W/$m^2$)/(PgC/yr)')
         plt.plot(year[:],q[:]/(atmos_ocean_flux[:]),color='black')
-        plt.plot([0,1000],[q0/atmos_ocean_flux[0],q0/atmos_ocean_flux[0]],color='gray')
         plt.axis([0,150,0,2])
         if mod_index == 0:
           plt.title('Ratio')
@@ -168,12 +138,10 @@ def main(cfg):
         if mod_index < nmodel-1:
           plt.xticks([])
 
+#Plot Supplementary Fig 1.
         plt.figure(2)
         plt.subplot(nmodel,3,mod_index*3+1)
         plt.plot(year[:],tas[:],color="black",label='ESM')#,label='\u0394T')
-#        plt.plot(year[:],(q[:]*-1.+F_4co2[mod_index])/lambda_,color="black",linestyle='dashed')
-#        plt.plot(year[:],(q_est[:]*-1.+F_4co2[mod_index])/lambda_,color="gray",label='Analytical')
-#        print ('T_est/T',(q_est[:]*-1.+F_4co2)/(tas[:]*lambda_))
         plt.ylabel('\u0394T (K)')
         if mod_index==nmodel-1:
           plt.xlabel('Year')
@@ -189,17 +157,9 @@ def main(cfg):
         plt.fill_between(year[:],atmos_co2[:],atmos_co2[:]+ocean_cumflux,color="blue")
         plt.fill_between(year[:],atmos_co2[:]+ocean_cumflux,atmos_co2[:]+ocean_cumflux+land_cumflux,color="green")
         plt.plot(year[:],emiss[:],color="black",label='Cumulative CO2 emissions')
-#        plt.plot(year[:],emiss_est[:],color="gray",label='Cumulative CO2 emissions - analytical')
         plt.ylabel('Carbon (EgC)')
-#        print ('atmos,ocean,land fractions:',atmos_co2[149]/emiss[149],ocean_cumflux[149]/emiss[149],land_cumflux[149]/emiss[149])
-#        print ('emiss_est/ocean_cumflux',emiss_est/ocean_cumflux)
         if mod_index == 0:
           plt.title('Cumulative emissions')
-#        if mod_index == nmodel-1:
-#          plt.text (65,1.3,'Atmosphere',fontsize =10, va='center')
-#          plt.text (65,2.1,'Ocean',fontsize =10, va='center')
-#          plt.text (65,2.9,'Land',fontsize =10, va='center')
-#          plt.xlabel('Year')
         plt.axis([0,150,0,2])
         if mod_index < nmodel-1:
           plt.xticks([])
@@ -208,7 +168,7 @@ def main(cfg):
         plt.plot(year[:],0.1*tas[:]/ocean_cumflux[:],color='blue',label='0.1\u0394T/\u0394$C_O$')
         plt.plot(year[:],tas[:]/(ocean_cumflux[:]+atmos_co2[:]),color='red',label='\u0394T/(\u0394$C_O$+\u0394$C_A$)')
         plt.plot(year[:],tas[:]/emiss,color="black",label='\u0394T/E')
-        plt.plot([0,1000],[TCRE[mod_index],TCRE[mod_index]],color="gray")#,label='TCRE')
+        plt.plot([0,1000],[TCRE[mod_index],TCRE[mod_index]],color="gray")
         plt.axis([0,150,0,4])
         if mod_index == 0:
           plt.title('Ratios')
@@ -217,6 +177,17 @@ def main(cfg):
         if mod_index == nmodel-1:        
           plt.xlabel('Year')
           plt.legend(loc="upper left",labelspacing=0.1,borderpad=0.1,fontsize=10)
+#Write data out to a file, one per model.
+        with open(plot_dir+'/gillett23_supp_figs1and2_data_'+dataset+'.csv', mode='w') as file:
+          data_writer=csv.writer(file,delimiter=',',quotechar='"', quoting=csv.QUOTE_MINIMAL)
+          data_writer.writerow(['Year','Delta T','Delta C_A','Delta C_A + Delta C_O',\
+                                'E','0.1*Delta T / Delta C_O','Delta T/(Delta C_A+DeltaC_O)','Delta T/E','TCRE',\
+                                'q','f','q/f'])
+          for yy in range(150):
+            data_writer.writerow([yy,tas[yy],atmos_co2[yy],atmos_co2[yy]+ocean_cumflux[yy],\
+                                  emiss[yy],0.1*tas[yy]/ocean_cumflux[yy],tas[yy]/(ocean_cumflux[yy]+atmos_co2[yy]),tas[yy]/emiss[yy],TCRE[mod_index],\
+                                  q[yy],atmos_ocean_flux[yy],q[yy]/atmos_ocean_flux[yy]])
+
     plt.figure(1)
     plt.tight_layout(pad=0.1)
     plt.savefig(plot_dir+'/ocean_fluxes.png')
