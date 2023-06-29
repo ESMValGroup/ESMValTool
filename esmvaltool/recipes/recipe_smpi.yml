@@ -229,9 +229,9 @@ diagnostics:
       pr:
         <<: *variable_settings
         preprocessor: ppNOLEV
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.2
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2, tier: 1}
+      - {dataset: GPCP-V2.2, project: obs4MIPs, tier: 1}
     scripts:
       grading:
         script: perfmetrics/main.ncl

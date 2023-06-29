@@ -83,7 +83,7 @@ savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
     default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
 seaborn_settings: dict, optional
-    Options for :func:`seaborn.set` (affects all plots). By default, uses
+    Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
     ``style: ticks``.
 
 Configuration options for plot type ``timeseries``
@@ -539,7 +539,7 @@ class MultiDatasets(MonitorBase):
                     f"the following dataset:\n{pformat(dataset)}")
 
         # Load seaborn settings
-        sns.set(**self.cfg['seaborn_settings'])
+        sns.set_theme(**self.cfg['seaborn_settings'])
 
     def _add_colorbar(self, plot_type, plot_left, plot_right, axes_left,
                       axes_right, dataset_left, dataset_right):
@@ -1261,6 +1261,7 @@ class MultiDatasets(MonitorBase):
             'authors': ['schlund_manuel'],
             'caption': caption,
             'plot_types': ['line'],
+            'long_names': [var_attrs['long_name']],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
@@ -1332,6 +1333,7 @@ class MultiDatasets(MonitorBase):
             'authors': ['schlund_manuel'],
             'caption': caption,
             'plot_types': ['seas'],
+            'long_names': [var_attrs['long_name']],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
@@ -1406,6 +1408,7 @@ class MultiDatasets(MonitorBase):
                 'authors': ['schlund_manuel'],
                 'caption': caption,
                 'plot_types': ['map'],
+                'long_names': [dataset['long_name']],
             }
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
@@ -1483,6 +1486,7 @@ class MultiDatasets(MonitorBase):
                 'authors': ['schlund_manuel'],
                 'caption': caption,
                 'plot_types': ['vert'],
+                'long_names': [dataset['long_name']],
             }
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
@@ -1585,6 +1589,7 @@ class MultiDatasets(MonitorBase):
             'authors': ['schlund_manuel', 'winterstein_franziska'],
             'caption': caption,
             'plot_types': ['line'],
+            'long_names': [var_attrs['long_name']],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
