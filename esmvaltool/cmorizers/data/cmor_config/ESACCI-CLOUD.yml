@@ -19,7 +19,7 @@ variables:
   clt:
     mip: day
     raw: cmask_asc
-    raw_units: 1
+    raw_units: '1'
     file: '*-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_NOAA-*-fv3.0.nc'
   clwvi:
     mip: CFday

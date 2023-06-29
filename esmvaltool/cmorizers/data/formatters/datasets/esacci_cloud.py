@@ -42,10 +42,6 @@ def _extract_variable(short_name, var, year, month, cfg, in_dir,
         # load data
         raw_var = var.get('raw', short_name)
         daily_cube = iris.load_cube(filename, NameConstraint(var_name=raw_var))
-        #if short_name == 'clt':
-        #    daily_cube.data = 100. * daily_cube.data
-        #if short_name in ['clwvi', 'ctp', 'reff', 'cod']:
-        #    daily_cube.data = np.ma.masked_invalid(daily_cube.data)
         daily_cube.attributes.clear()
 
         # Fix coordinates
@@ -61,9 +57,12 @@ def _extract_variable(short_name, var, year, month, cfg, in_dir,
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
 
     # Fix units
-    if 'raw_units' in var:
-        cube.units = var['raw_units']
-    cube.convert_units(cmor_info.units)
+    if short_name == 'clt':
+        daily_cube.data = 100. * daily_cube.data
+    else:
+        if 'raw_units' in var:
+            cube.units = var['raw_units']
+        cube.convert_units(cmor_info.units)
     utils.convert_timeunits(cube, 1950)
 
     # Fix coordinates
@@ -98,7 +97,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         logger.info("CMORizing variable '%s'", short_name)
         for year in range(glob_attrs['start_year'],
                           glob_attrs['end_year'] + 1):
-            for month in range(1,2):
+            for month in range(1,13):
                 print(month)
                 _extract_variable(short_name, var, year, month, cfg, in_dir,
                                      out_dir)
