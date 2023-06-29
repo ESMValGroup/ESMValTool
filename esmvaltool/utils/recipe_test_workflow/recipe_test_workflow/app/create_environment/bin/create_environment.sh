@@ -1,14 +1,14 @@
 #!/bin/bash
 # Send the output from 'set -x' to 'stdout' rather than 'stderr'.
 BASH_XTRACEFD=1
-set -eux
-source /etc/profile.d/conda.sh
+# set -eux
 
-export CONDA_PKGS_DIRS=/tmp/conda/pkgs/
-export CONDA_ENVS_PATH=${CYLC_WORKFLOW_RUN_DIR}/conda/envs/
+export CONDA_PKGS_DIRS=${CYLC_WORKFLOW_SHARE_DIR}/rtw/conda/pkgs/
+export CONDA_ENVS_PATH=${CYLC_WORKFLOW_SHARE_DIR}/rtw/conda/envs/
 
-conda create -y --name rtw-env mamba
+conda create -y --name rtw-env --override-channels -c conda-forge mamba
 
-conda activate ${CYLC_WORKFLOW_RUN_DIR}/conda/envs/rtw-env
+eval "$(conda shell.bash hook)"
+conda activate rtw-env
 
-mamba env update -y --file ${ESMVALTOOL_DIR}/environment.yml
+mamba env update --file ${ESMVALTOOL_DIR}/environment.yml
