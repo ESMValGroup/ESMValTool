@@ -3,6 +3,77 @@
 Changelog
 =========
 
+.. _changelog-v2-9-0:
+
+v2.9.0
+------
+Highlights
+
+TODO: add highlights
+
+This release includes
+
+Bug fixes
+~~~~~~~~~
+
+-  Fixed usage of `work_dir` in some CMORizer scripts (`#3192 <https://github.com/ESMValGroup/ESMValTool/pull/3192>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+
+Documentation
+~~~~~~~~~~~~~
+
+-  Update release schedule after v2.8.0 (`#3138 <https://github.com/ESMValGroup/ESMValTool/pull/3138>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Added reference entry for Winterstein (`#3154 <https://github.com/ESMValGroup/ESMValTool/pull/3154>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
+-  Show logo on PyPI (`#3185 <https://github.com/ESMValGroup/ESMValTool/pull/3185>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Add Release Managers for `v2.9.0` and `v2.10.0` (`#3184 <https://github.com/ESMValGroup/ESMValTool/pull/3184>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fix readthedocs build with esmpy>=8.4.0 and missing ESMFMKFILE variable (`#3205 <https://github.com/ESMValGroup/ESMValTool/pull/3205>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Add ESMValCore release `v2.8.1` into the documentation (`#3235 <https://github.com/ESMValGroup/ESMValTool/pull/3235>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Modified links to the tutorial (`#3236 <https://github.com/ESMValGroup/ESMValTool/pull/3236>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fix gitter badge in README (`#3258 <https://github.com/ESMValGroup/ESMValTool/pull/3258>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+
+Diagnostics
+~~~~~~~~~~~
+
+-  New plot_type 1d_profile in monitor  (`#3178 <https://github.com/ESMValGroup/ESMValTool/pull/3178>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
+-  Add Seaborn diagnostic (`#3155 <https://github.com/ESMValGroup/ESMValTool/pull/3155>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  New recipe and diagnostic for Arctic-midlatitude research (`#3021 <https://github.com/ESMValGroup/ESMValTool/pull/3021>`__) `Evgenia Galytska <https://github.com/egalytska>`__
+-  Generate climatology on the fly for AutoAssess soil moisture (`#3197 <https://github.com/ESMValGroup/ESMValTool/pull/3197>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
+-  Remove "fx_variables" from recipe_tebaldi21esd.yml (`#3211 <https://github.com/ESMValGroup/ESMValTool/pull/3211>`__) `Birgit Hassler <https://github.com/hb326>`__
+-  Remove "fx_variables" from ipccwg1ar5ch9 recipes (`#3215 <https://github.com/ESMValGroup/ESMValTool/pull/3215>`__) `katjaweigel <https://github.com/katjaweigel>`__
+-  Remove "fx_variables" from recipe_wenzel14jgr.yml (`#3212 <https://github.com/ESMValGroup/ESMValTool/pull/3212>`__) `Birgit Hassler <https://github.com/hb326>`__
+-  Update obs4MIPs dataset to the current naming scheme in recipe_smpi.yml (`#2991 <https://github.com/ESMValGroup/ESMValTool/pull/2991>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Fixed pandas diagnostics for pandas>=2.0.0 (`#3209 <https://github.com/ESMValGroup/ESMValTool/pull/3209>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Update recipe_impact.yml to work with newer versions of `pandas` (`#3220 <https://github.com/ESMValGroup/ESMValTool/pull/3220>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Add variable long names to provenance record in monitoring diagnostics (`#3222 <https://github.com/ESMValGroup/ESMValTool/pull/3222>`__) `Brei Soliño <https://github.com/bsolino>`__
+
+Observational and re-analysis dataset support
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Add CMORizer for GPCP-SG (pr) (`#3150 <https://github.com/ESMValGroup/ESMValTool/pull/3150>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
+-  Extension of NASA MERRA2 CMORizer (cl, cli, clivi, clw, clwvi) (`#3167 <https://github.com/ESMValGroup/ESMValTool/pull/3167>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+
+Automatic testing
+~~~~~~~~~~~~~~~~~
+
+-  Add a CircleCI-testing-specific `recipe_python_for_CI.yml` to avoid calling geolocator/Nominatim over CI (`#3159 <https://github.com/ESMValGroup/ESMValTool/pull/3159>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Check if Python minor version changed after Julia install in development installation test (`#3213 <https://github.com/ESMValGroup/ESMValTool/pull/3213>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Fix tests using deprecated `esmvalcore._config` module that will be removed in ESMValCore v2.9 (`#3204 <https://github.com/ESMValGroup/ESMValTool/pull/3204>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+
+Installation
+~~~~~~~~~~~~
+
+-  Add support for Python=3.11 (`#3173 <https://github.com/ESMValGroup/ESMValTool/pull/3173>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Drop python=3.8 support (`#3193 <https://github.com/ESMValGroup/ESMValTool/pull/3193>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Repair generation of conda lock files (`#3148 <https://github.com/ESMValGroup/ESMValTool/pull/3148>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Modernize lock creation script and repair lock generation (`#3174 <https://github.com/ESMValGroup/ESMValTool/pull/3174>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Pin numpy !=1.24.3 due to severe masking bug (`#3182 <https://github.com/ESMValGroup/ESMValTool/pull/3182>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Update xesmf to versions >= 0.4.0 (`#2728 <https://github.com/ESMValGroup/ESMValTool/pull/2728>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
+-  Update esmpy import for ESMF version 8.4.0 or larger (`#3188 <https://github.com/ESMValGroup/ESMValTool/pull/3188>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+
+Improvements
+~~~~~~~~~~~~
+
+-  Update pre-commit hooks (`#3189 <https://github.com/ESMValGroup/ESMValTool/pull/3189>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Add support for using a dask distributed scheduler (`#3151 <https://github.com/ESMValGroup/ESMValTool/pull/3151>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 
 .. _changelog-v2-8-0:
 
