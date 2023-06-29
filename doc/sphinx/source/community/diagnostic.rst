@@ -233,20 +233,25 @@ Arbitrarily named other items are also supported.
 Please see the (installed version of the) file
 `esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/config-references.yml>`_
 for all available information on each item, see :ref:`esmvalcore:config-ref` for
-an introduction.
-In this file, the information is written in the form of ``key: value``.
-Note that we add the keys to the diagnostics.
-The keys will automatically be replaced by their values in the final provenance records.
-For example, in the ``config-references.yml`` there is a category for types of the plots:
+an introduction. It is also possible to add custom provenance information by adding items to each category in this file.
+In this file, the information is written in the form
+
+.. code-block:: console
+
+  key:
+    value: description
+
+for example
 
 .. code-block:: console
 
   plot_types:
     errorbar: error bar plot
 
-In the diagnostics, we add the key as:
-:code:`plot_types: [errorbar]`
-It is also possible to add custom provenance information by adding items to each category in this file.
+To use these items, include them in the provenance record dictionary in the form 
+:code:`key: [value]`
+i.e. for the example above as
+:code:`plot_types: [errorbar]`.
 
 In order to communicate with the diagnostic script, two interfaces have been defined,
 which are described in the `ESMValCore documentation <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/interfaces.html>`_.
