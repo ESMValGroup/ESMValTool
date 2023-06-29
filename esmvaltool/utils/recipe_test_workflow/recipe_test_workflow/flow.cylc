@@ -11,7 +11,7 @@
    initial cycle point = 1
    final cycle point = 10
     [[graph]]
-        R1 = install_env_file => clone_latest_esmval => create_environment
+        R1 = install_env_file => clone_latest_esmval => create_environment => configure => process<fast> => compare<fast>
         # R1 = """install_env_file => clone_latest_esmval => configure
         #         configure => process<fast> => compare<fast>
         #         configure => process<medium> => compare<medium>"""
@@ -28,9 +28,11 @@
             USER_CONFIG_DIR = ${CYLC_WORKFLOW_RUN_DIR}/etc
             USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
             OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/${CYLC_TASK_CYCLE_POINT}
-            ESMVALCORE_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValCore
-            ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValTool
-            PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
+            ESMVALCORE_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/python/ESMValCore
+            ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/python/ESMValTool
+            # PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
+            CONDA_PKGS_DIRS = ${CYLC_WORKFLOW_SHARE_DIR}/rtw/conda/pkgs/
+            CONDA_ENVS_PATH = ${CYLC_WORKFLOW_SHARE_DIR}/rtw/conda/envs/
 
     [[create_environment]]
         platform = localhost

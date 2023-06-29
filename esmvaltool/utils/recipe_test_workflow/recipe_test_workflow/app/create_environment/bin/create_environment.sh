@@ -3,9 +3,6 @@
 BASH_XTRACEFD=1
 # set -eux
 
-export CONDA_PKGS_DIRS=${CYLC_WORKFLOW_SHARE_DIR}/rtw/conda/pkgs/
-export CONDA_ENVS_PATH=${CYLC_WORKFLOW_SHARE_DIR}/rtw/conda/envs/
-
 conda create -y --name rtw-env --override-channels -c conda-forge mamba
 
 eval "$(conda shell.bash hook)"
