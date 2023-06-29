@@ -19,7 +19,7 @@ Highlights
    climatologies from CMIP models as used in `Lauer et al. (2023), J. Climate
    <https://doi.org/10.1175/JCLI-D-22-0181.1>`__.
    See :ref:`recipe documentation <recipes_clouds>` about added recipes.
--  Addition of a set of recipes for extreme events, regional and impact 
+-  Addition of a set of recipes for extreme events, regional and impact
    evaluation as used in `Weigel et al. (2021), J. Climate
    <https://doi.org/10.5194/gmd-14-3159-2021>`__ and in IPCC AR5.
    See :ref:`recipe documentation <recipes_ipccwg1ar5ch9>` about added recipes.
@@ -265,7 +265,7 @@ Documentation
 -  Update documentation for the Landschuetzer 2016 recipe. (`#2801 <https://github.com/ESMValGroup/ESMValTool/pull/2801>`__) `Tomas Torsvik <https://github.com/TomasTorsvik>`__
 -  Fixed anaconda badge in README (`#2866 <https://github.com/ESMValGroup/ESMValTool/pull/2866>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Update release strategy notes (`#2734 <https://github.com/ESMValGroup/ESMValTool/pull/2734>`__) `sloosvel <https://github.com/sloosvel>`__
--  Add documention on how to handle CMORizers for multiple dataset versions (`#2730 <https://github.com/ESMValGroup/ESMValTool/pull/2730>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Add documentation on how to handle CMORizers for multiple dataset versions (`#2730 <https://github.com/ESMValGroup/ESMValTool/pull/2730>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Extending documentation: recipe maintainer + broken recipe policy (`#2719 <https://github.com/ESMValGroup/ESMValTool/pull/2719>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 
 Diagnostics
@@ -310,8 +310,8 @@ Highlights
 ~~~~~~~~~~
 
 - A new monitoring diagnostic has been added to allow the comparison of model runs against reference datasets. For details, see :ref:`Monitoring diagnostic to show multiple datasets in one plot (incl. biases) <api.esmvaltool.diag_scripts.monitor.multi_datasets>`.
-- A tool has been developed to compare the output of recipe runs against previous runs, in order to detect in an automatized way breaking changes between releases. Find more information in :ref:`Comparing recipe runs <compare_recipe_runs>`.
-- The recipe :ref:`Climate Change Hotspot <recipe_climate_change_hotspot.rst>` allows to compute hotspots in any rectangular region. 
+- A tool has been developed to compare the output of recipe runs against previous runs, in order to detect in an automated way breaking changes between releases. Find more information in :ref:`Comparing recipe runs <compare_recipe_runs>`.
+- The recipe :ref:`Climate Change Hotspot <recipe_climate_change_hotspot.rst>` allows to compute hotspots in any rectangular region.
 
 Please also note the highlights from the corresponding ESMValCore release :ref:`here<esmvalcore:changelog-v2-6-0>`.
 Thanks to that ESMValTool has gained the following features:
@@ -418,7 +418,7 @@ Thanks to that ESMValTool has gained the following features:
 
 - The new preprocessor ``extract_location`` can extract arbitrary locations on the Earth.
 - Time ranges can now be extracted using the `ISO 8601 format <https://en.wikipedia.org/wiki/ISO_8601>`_.
-- The new preprocessor ``ensemble_statistics`` can calculate arbitrary statitics over all ensemble members of a simulation.
+- The new preprocessor ``ensemble_statistics`` can calculate arbitrary statistics over all ensemble members of a simulation.
 
 
 This release includes
