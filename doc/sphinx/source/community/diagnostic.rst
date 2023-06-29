@@ -251,7 +251,7 @@ for example
 To use these items, include them in the provenance record dictionary in the form 
 :code:`key: [value]`
 i.e. for the example above as
-:code:`plot_types: [errorbar]`.
+:code:`'plot_types': ['errorbar']`.
 
 In order to communicate with the diagnostic script, two interfaces have been defined,
 which are described in the `ESMValCore documentation <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/interfaces.html>`_.
