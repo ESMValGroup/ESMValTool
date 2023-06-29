@@ -167,7 +167,6 @@ SPECIAL_RECIPES = {
     'recipe_schlund20jgr_gpp_change_rcp85': {
         'partition': '#SBATCH --partition=compute \n',
     },
-    
     'recipe_sea_surface_salinity': {
         'partition': '#SBATCH --partition=compute \n',
     },
