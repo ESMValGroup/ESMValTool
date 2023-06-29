@@ -74,10 +74,15 @@ SPECIAL_RECIPES = {
     },
     'recipe_climate_change_hotspot': {
         'partition': '#SBATCH --partition=compute \n',
+        'memory': '#SBATCH --constraint=512G \n',
     },
     'recipe_collins13ipcc': {
         'partition': '#SBATCH --partition=compute \n',
         'time': '#SBATCH --time=08:00:00 \n',
+        'memory': '#SBATCH --constraint=512G \n',
+    },
+    'recipe_daily_era5': {
+        'partition': '#SBATCH --partition=compute \n',
         'memory': '#SBATCH --constraint=512G \n',
     },
     'recipe_eady_growth_rate': {
@@ -134,6 +139,7 @@ SPECIAL_RECIPES = {
     },
     'recipe_mpqb_xch4': {
         'partition': '#SBATCH --partition=compute \n',
+        'memory': '#SBATCH --constraint=512G \n',
     },
     'recipe_perfmetrics_CMIP5': {
         'partition': '#SBATCH --partition=compute \n',
@@ -161,6 +167,10 @@ SPECIAL_RECIPES = {
     'recipe_schlund20jgr_gpp_change_rcp85': {
         'partition': '#SBATCH --partition=compute \n',
     },
+    
+    'recipe_sea_surface_salinity': {
+        'partition': '#SBATCH --partition=compute \n',
+    },
     'recipe_smpi': {
         'partition': '#SBATCH --partition=compute \n',
     },
@@ -170,6 +180,9 @@ SPECIAL_RECIPES = {
     'recipe_tebaldi21esd': {
         'partition': '#SBATCH --partition=compute \n',
         'time': '#SBATCH --time=08:00:00 \n',
+    },
+    'recipe_thermodyn_diagtool': {
+        'partition': '#SBATCH --partition=compute \n',
     },
     'recipe_wenzel16jclim': {
         'partition': '#SBATCH --partition=compute \n',
