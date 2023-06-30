@@ -15,7 +15,7 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-    * recipe_albedolandcover.yml
+    * :recipe:`recipe_albedolandcover.yml`
 
 Diagnostics are stored in diag_scripts/landcover/
 
