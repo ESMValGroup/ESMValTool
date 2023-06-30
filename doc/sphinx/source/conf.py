@@ -13,6 +13,7 @@
 # serve to show the default.
 
 import os
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -47,7 +48,7 @@ if rtd_version not in ["latest", "stable", "doc"]:
     rtd_version = "latest"
 
 
-if __version__:
+if re.fullmatch("v\d+\.\d+\.\d+", __version__):
     baseurl = f"https://github.com/ESMValGroup/ESMValTool/tree/v{__version__}"
 else:
     baseurl = f"https://github.com/ESMValGroup/ESMValTool/tree/main"
