@@ -212,6 +212,13 @@ ONE_TASK_RECIPES = [
     'recipe_wenzel14jgr',
     ]
 
+# These recipes can only be run on Levante compute nodes
+# with 1024 GB of memory and an appropriate number of tasks.
+THREE_TASK_RECIPES = [
+    'recipe_lauer22jclim_fig3-4_zonal.yml',
+    'recipe_lauer22jclim_fig5_lifrac.yml',
+]
+
 
 def generate_submit():
     """Generate and submit scripts."""
@@ -283,6 +290,8 @@ def generate_submit():
                            f'{str(config_file)} {str(recipe)}')
             if recipe.stem in ONE_TASK_RECIPES:
                 file.write(' --max_parallel_tasks=1')
+            if recipe.stem in THREE_TASK_RECIPES:
+                file.write(' --max_parallel_tasks=3')
 
         if submit:
             subprocess.check_call(['sbatch', filename])
