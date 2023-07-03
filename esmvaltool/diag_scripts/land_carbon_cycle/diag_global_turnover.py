@@ -737,7 +737,12 @@ def main(diag_config):
         tau_global = ctotal_global / gpp_global
         tau_global.convert_units('yr')
 
-        global_tau_mod['global'][model_name] = float(tau_global.core_data())
+        # since dask=2023.3 there is an issue with converting the core_data()
+        # to float; I have not managed to pinpoint the issue neither in dask
+        # nor in iris, since minimal test cases are not reproducing it
+        # this is a scalar cube so no big mem issue by realizing the data
+        # global_tau_mod['global'][model_name] = float(tau_global.core_data())
+        global_tau_mod['global'][model_name] = float(tau_global.data)
 
         base_name_mod = (
             'global_{title}_{source_label}_'
