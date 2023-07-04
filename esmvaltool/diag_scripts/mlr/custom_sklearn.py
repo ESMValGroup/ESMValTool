@@ -86,6 +86,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 _DEFAULT_TAGS = {
+    'array_api_support': False,
     'non_deterministic': False,
     'requires_positive_X': False,
     'requires_positive_y': False,
