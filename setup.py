@@ -60,7 +60,9 @@ REQUIREMENTS = {
         'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris>=3.6.0',
+        # See the following issue for info on the iris pin below:
+        # https://github.com/ESMValGroup/ESMValTool/issues/3239#issuecomment-1613298587
+        'scitools-iris>=3.4.0',
         'seaborn',
         'seawater',
         'shapely',
