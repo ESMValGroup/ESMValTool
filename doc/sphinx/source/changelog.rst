@@ -11,7 +11,13 @@ v2.9.0
 Highlights
 ~~~~~~~~~~
 
--  TODO: add text for seaborn diagnostic
+-  A new :ref:`diagnostic <api.esmvaltool.diag_scripts.seaborn_diag>` has been
+   added to provide a high-level interface to
+   `seaborn <https://seaborn.pydata.org/>`__,
+   a Python data visualization library based on
+   `matplotlib <https://matplotlib.org/>`__.
+   See the :ref:`recipe documentation <recipes_seaborn_diag>` for more
+   information.
 
 -  We have included a new recipe and diagnostic that represent the major
    physical processes that describe Arctic-midlatitude teleconnections and
@@ -25,14 +31,14 @@ Highlights
    `Dask distributed scheduler <https://docs.dask.org/en/latest/deploying.html>`__,
    which can
    `significantly reduce the run-time of recipes <https://github.com/ESMValGroup/ESMValCore/pull/2049#pullrequestreview-1446279391>`__.
-   Configuration examples and advice are available in
-   :ref:`our documentation <esmvalcore:config-dask>`.
+   Configuration examples and advice are available in the
+   :ref:`ESMValCore documentation <esmvalcore:config-dask>`.
    If configured, the Dask distributed scheduler will also be used by diagnostic
    scripts written in Python, so make sure to use
    `lazy data <https://scitools-iris.readthedocs.io/en/latest/userguide/real_and_lazy_data.html#real-and-lazy-data>`__
    where you can in your (new) diagnostics.
-   More work on improving the computational performance is planned, so please share
-   your experiences, good and bad, with this new feature in
+   More work on improving the computational performance is planned, so please
+   share your experiences, good and bad, with this new feature in
    `ESMValGroup/ESMValCore#1763 <https://github.com/ESMValGroup/ESMValCore/discussions/1763>`__.
 
 This release includes
