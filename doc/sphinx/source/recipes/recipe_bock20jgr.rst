@@ -21,17 +21,17 @@ different CMIP phases.
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in recipes/bock20jgr
+Recipes are stored in :file:recipes/bock20jgr
 
-    * recipe_bock20jgr_fig_1-4.yml
-    * recipe_bock20jgr_fig_6-7.yml
+    * :recipe:recipe_bock20jgr_fig_1-4.yml
+    * :recipe:bock20jgr/recipe_bock20jgr_fig_6-7.yml
     * recipe_bock20jgr_fig_8-10.yml
 
-Diagnostics are stored in diag_scripts/
+Diagnostics are stored in :file:diag_scripts/
 
     Fig. 1:
 
-    * bock20jgr/tsline.ncl: timeseries of global mean surface temperature
+    * :file:bock20jgr/tsline.ncl: timeseries of global mean surface temperature
       anomalies
 
     Fig. 2:
@@ -56,7 +56,7 @@ Diagnostics are stored in diag_scripts/
 
     Fig. 8:
 
-    * climate_metrics/ecs.py
+    * :file:climate_metrics/ecs.py
     * climate_metrics/create_barplot.py
 
     Fig. 9:
