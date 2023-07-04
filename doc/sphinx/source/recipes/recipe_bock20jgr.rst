@@ -31,7 +31,7 @@ Diagnostics are stored in :file:diag_scripts/
 
     Fig. 1:
 
-    * :file:bock20jgr/tsline.ncl: timeseries of global mean surface temperature
+    * :file:bock20jgr/tsline.ncl - timeseries of global mean surface temperature
       anomalies
 
     Fig. 2:
