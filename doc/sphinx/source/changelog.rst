@@ -36,7 +36,7 @@ Highlights
    If configured, the Dask distributed scheduler will also be used by diagnostic
    scripts written in Python, so make sure to use
    `lazy data <https://scitools-iris.readthedocs.io/en/latest/userguide/real_and_lazy_data.html#real-and-lazy-data>`__
-   where you can in your (new) diagnostics.
+   wherever it is possible in your (new) diagnostics.
    More work on improving the computational performance is planned, so please
    share your experiences, good and bad, with this new feature in
    `ESMValGroup/ESMValCore#1763 <https://github.com/ESMValGroup/ESMValCore/discussions/1763>`__.
