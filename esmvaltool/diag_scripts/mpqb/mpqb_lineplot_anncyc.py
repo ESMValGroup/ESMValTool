@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from mpqb_utils import get_mpqb_cfg
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-    select_metadata)
+                                            select_metadata)
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger,
     get_plot_filename,
@@ -46,7 +46,7 @@ def main(cfg):
     input_data = cfg['input_data'].values()
 
     vargroup = cfg.pop('variable_group', None)
-    if vargroup is not None: 
+    if vargroup is not None:
         selection = select_metadata(input_data, variable_group=vargroup)
         grouped_input_data = group_metadata(selection, 'alias', sort='alias')
     else:

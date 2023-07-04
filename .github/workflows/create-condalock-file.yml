@@ -22,12 +22,14 @@ jobs:
         with:
           auto-update-conda: true
           activate-environment: esmvaltool-fromlock
-          python-version: "3.10"
-          miniconda-version: "latest"
-          channels: conda-forge
+          python-version: "3.11"
+          miniforge-version: "latest"
+          miniforge-variant: Mambaforge
+          use-mamba: true
       - name: Show conda config
         shell: bash -l {0}
         run: |
+          conda update -n base -c conda-forge conda
           conda info
           conda list
           conda config --show-sources
@@ -39,7 +41,10 @@ jobs:
           python --version
       - name: Install conda-lock
         shell: bash -l {0}
-        run: conda install -y conda-lock
+        run: mamba install -y conda-lock
+      - name: Check version of conda-lock
+        shell: bash -l {0}
+        run: conda-lock --version
       - name: Create conda lock file for linux-64
         shell: bash -l {0}
         run: conda-lock lock --platform linux-64 -f environment.yml --mamba --kind explicit
@@ -52,7 +57,7 @@ jobs:
       - shell: bash -l {0}
         run: conda create --name esmvaltool-fromlock --file conda-linux-64.lock
       - shell: bash -l {0}
-        run: conda install -y -c conda-forge pip
+        run: mamba install -y pip
       - shell: bash -l {0}
         run: which python
       - shell: bash -l {0}

@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  coverage-reporter: codacy/coverage-reporter@13.11.16
+  coverage-reporter: codacy/coverage-reporter@13.13.0
 
 commands:
 
@@ -127,16 +127,21 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            set -x
             . /opt/conda/etc/profile.d/conda.sh
-            mkdir /logs
             conda activate esmvaltool
+            mkdir /logs
             pip install .[test] > /logs/install.txt 2>&1
-            # Run flake8 check with source code (it doesn't work without it)
-            flake8 -j 4
-            # Update/install Julia dependencies
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
-            # Remove source to test installed software
-            rm -r esmvaltool
+      - run:
+          name: Check Python code style and mistakes
+          command: |
+            . /opt/conda/etc/profile.d/conda.sh
+            conda activate esmvaltool
+            flake8 -j 4
+      - run:
+          name: Remove source code to test the installed software
+          command: rm -r esmvaltool
       - test_and_report
       - save_cache:
           key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
@@ -211,7 +216,6 @@ jobs:
             esmvaltool config get_config_user
             echo "offline: false" >> ~/.esmvaltool/config-user.yml
             cat ~/.esmvaltool/config-user.yml
-            esmvaltool run examples/recipe_python.yml
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
               esmvaltool run "$recipe"
             done

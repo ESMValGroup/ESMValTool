@@ -11,7 +11,7 @@ from mpqb_utils import get_mpqb_cfg
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-    select_metadata)
+                                            select_metadata)
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger,
     get_plot_filename,
@@ -48,7 +48,7 @@ def main(cfg):
     input_data = cfg['input_data'].values()
 
     vargroup = cfg.pop('variable_group', None)
-    if vargroup is not None: 
+    if vargroup is not None:
         selection = select_metadata(input_data, variable_group=vargroup)
         grouped_input_data = group_metadata(selection, 'alias', sort='alias')
     else:
@@ -61,7 +61,7 @@ def main(cfg):
     # In order to get the right line colors for MPQB soil moisture
     # here we put ERA-Interim-Land at the end of the dictionary if
     # it is included.
-    #if 'ERA-Interim-Land' in grouped_input_data.keys():
+    # if 'ERA-Interim-Land' in grouped_input_data.keys():
     #    grouped_input_data.move_to_end('ERA-Interim-Land')
 
     plt.clf()
