@@ -47,6 +47,8 @@ Bug fixes
 ~~~~~~~~~
 
 -  Fixed usage of `work_dir` in some CMORizer scripts (`#3192 <https://github.com/ESMValGroup/ESMValTool/pull/3192>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Realize data for scalar cube in `recipe_carvalhais14nat` to avert issue from dask latest (2023.6.0) (`#3265 <https://github.com/ESMValGroup/ESMValTool/pull/3265>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Fix failing `mlr` diagnostic test by adding new scikit-learn default tag (`#3273 <https://github.com/ESMValGroup/ESMValTool/pull/3273>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 
 Documentation
 ~~~~~~~~~~~~~
@@ -59,6 +61,7 @@ Documentation
 -  Add ESMValCore release `v2.8.1` into the documentation (`#3235 <https://github.com/ESMValGroup/ESMValTool/pull/3235>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Modified links to the tutorial (`#3236 <https://github.com/ESMValGroup/ESMValTool/pull/3236>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Fix gitter badge in README (`#3258 <https://github.com/ESMValGroup/ESMValTool/pull/3258>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Add release notes for v2.9.0 (`#3266 <https://github.com/ESMValGroup/ESMValTool/pull/3266>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 
 Diagnostics
 ~~~~~~~~~~~
@@ -98,6 +101,8 @@ Installation
 -  Pin numpy !=1.24.3 due to severe masking bug (`#3182 <https://github.com/ESMValGroup/ESMValTool/pull/3182>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Update xesmf to versions >= 0.4.0 (`#2728 <https://github.com/ESMValGroup/ESMValTool/pull/2728>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 -  Update esmpy import for ESMF version 8.4.0 or larger (`#3188 <https://github.com/ESMValGroup/ESMValTool/pull/3188>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Relax the pin on iris to allow the use of older versions for performance reasons (`#3270 <https://github.com/ESMValGroup/ESMValTool/pull/3270>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Use ESMValCore v2.9.0 (`#3274 <https://github.com/ESMValGroup/ESMValTool/pull/3274>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 
 Improvements
 ~~~~~~~~~~~~
