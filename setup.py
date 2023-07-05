@@ -59,7 +59,7 @@ REQUIREMENTS = {
         'ruamel.yaml',
         'scikit-image',
         'scikit-learn',
-        'scipy',
+        'scipy>1.10',  # avoid very old versions like 1.9.1
         # See the following issue for info on the iris pin below:
         # https://github.com/ESMValGroup/ESMValTool/issues/3239#issuecomment-1613298587
         'scitools-iris>=3.4.0',
