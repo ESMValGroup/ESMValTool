@@ -1,0 +1,65 @@
+# ESMValTool
+# recipe_preprocess_cloud.yml
+---
+documentation:
+  description: |
+    Preprocess cloud properties and cloud controlling factors for causal
+    inference study.
+
+  authors:
+    - bock_lisa
+
+  title: Preprocess cloud timeseries.
+
+  maintainer:
+    - bock_lisa
+
+  projects:
+    - cmug
+
+
+datasets:
+        #- {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2, start_year: 2000, end_year: 2000}
+        - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2, timerange: 200001/200001}
+
+
+preprocessors:
+
+  south_east_pacific:
+    custom_order: true
+    extract_region:
+      start_latitude: -30.
+      end_latitude: -10.
+      start_longitude: 265.
+      end_longitude: 285.
+    mask_landsea: &mask_land
+      mask_out: land
+    area_statistics: &area_mean
+      operator: mean
+
+
+diagnostics:
+
+  south_east_pacific:
+    description: Create timeseries.
+    variables:
+      clt: &var
+        preprocessor: south_east_pacific
+        mip: day
+        frequency: day
+      clwvi:
+        <<: *var
+        mip: CFday
+      cod:
+        <<: *var
+        mip: AERday
+      ctp:
+        <<: *var
+        mip: day
+      reff:
+        <<: *var
+        mip: day
+      rlut:
+        <<: *var
+        mip: day
+    scripts: null
