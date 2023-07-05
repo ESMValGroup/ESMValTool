@@ -552,23 +552,26 @@ preprocessors:
   prep_regional_ts_3d_surface: # For regional fields
     custom_order: true
     extract_region: &mpa_region {end_latitude: -5.053, end_longitude: -11.487, start_latitude: -10.813,
-      start_longitude: -17.246} 
+      start_longitude: -17.246}
+    area_statistics:
+      operator: mean
+ 
+    extract_levels:
+       scheme: nearest
+       levels: [0.5, ]
     # extract_region: &mpa_region
     #   start_longitude: -17.25 #14.25W
     #   end_longitude: -11.25 #
     #   start_latitude: -10.56 # -7.56
     #   end_latitude: -4.56 #
-
-    area_statistics:
-      operator: mean
       # fx_variables: &areacello
 #      - {short_name: areacello}
 #            - {activity: CMIP, grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
 #        - {grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
 #
-    extract_levels:
-       scheme: nearest
-       levels: [0.1, ]
+#    extract_levels:
+#       scheme: nearest
+#       levels: [0.5, ]
 #   extract_region: &mpa_region
 #     start_longitude: -17.25 #14.25W
 #     end_longitude: -11.25 #
@@ -583,11 +586,12 @@ preprocessors:
   # --------------------------------------------------
   prep_map_surf: # For Global 2D fields
     custom_order: true
-    extract_levels:
-       scheme: nearest
-       levels: [0.1 ,]
     climate_statistics:
       operator: mean
+    extract_levels:
+       scheme: nearest
+       levels: [0.5 ,]
+
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -600,8 +604,6 @@ preprocessors:
     extract_region: *mpa_region
     area_statistics:
       operator: mean
-#       fx_variables: *areacello
-# #      - {activity: CMIP, grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
     extract_levels:
       scheme: linear
       levels: [0.5, 1., 5., 10., 50., 100., 200., 300., 400., 500., 600., 700., 800.,

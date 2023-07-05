@@ -410,19 +410,25 @@ def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table):
 
     hist_anom_data = {}
     hist_anom_data['temp'] = ['Sea Surface Temperature',  r'$\degree$ C',]
+    hist_anom_data['tos'] = hist_anom_data['temp']
     hist_anom_data['sal'] = ['Salinity', 'PSU', ]
+    hist_anom_data['sos'] = hist_anom_data['sal']
     hist_anom_data['mld'] = ['Mixed Layer Depth', 'm', ]
     hist_anom_data['mlotst'] = hist_anom_data['mld']
     hist_anom_data['ph'] = ['pH', '', ]
+ 
     hist_anom_data['o2'] = ['Oxygen', r'mmol m$^{-3}$', ]
     hist_anom_data['nit'] = ['Nitrate', r'$\mu$mol m$^{-3}$', ]
+    hist_anom_data['no3'] =  hist_anom_data['nit']
     hist_anom_data['pho'] = ['Phosphate', r'$\mu$mol m$^{-3}$',]
+    hist_anom_data['po4'] = hist_anom_data['pho']
     hist_anom_data['chl']  = ['Chlorophyll', r'mg m$^{-3}$', ]
     hist_anom_data['intpp'] = ['Int. Production', r'mmol m$^{-2}$ d$^{-1}$',]
 
 
+    print(hist_anom_data[short_name])
     if hist_anom_data[short_name][1] in ['', None]:
-            plt.title(''.join([hist_anom_data[short_name],])) # ' Anomaly']))
+            plt.title(hist_anom_data[short_name][0]) # ' Anomaly']))
     else:
         plt.title(''.join([hist_anom_data[short_name][0],', ',  hist_anom_data[short_name][1]]))
 
@@ -478,11 +484,13 @@ def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table):
 
     impath = diagtools.folder(''.join([cfg['plot_dir'], '/mean_anomaly_plots']))
     impath += ''.join(['hist_anom_', short_name] )
+
     print('Saving:', impath)
     plt.savefig(impath+diagtools.get_image_format(cfg), dpi=300., transparent=True)
+    plt.savefig(impath+'_white'+diagtools.get_image_format(cfg), dpi=300.) #ransparent=True)
+
     plt.savefig(impath+'.svg', transparent=True)
     plt.close()
-    assert 0
 
 
 def multi_model_time_series(
@@ -1187,7 +1195,7 @@ def multi_model_time_series(
     if ssp_time_range:
         plt.fill_betweenx(y_lims, ssp_time_range[0], ssp_time_range[1], color= 'purple', alpha=0.4, label = 'SSP period')
 
-    if short_name in ['o2', 'mld', 'intpp', 'mlotst',]: #'ph'
+    if short_name in ['o2', 'no3', 'intpp', 'mlotst',]: #'ph'
         legd = plt.legend(loc='upper left')
     else:
         legd = plt.legend(loc='lower left')
@@ -1977,9 +1985,10 @@ def prep_cube_map(fn, metadata, time_range, region):
         cube = extract_time(cube, time_range[0], 1, 1, time_range[1], 12, 31)
         cube = cube.collapsed('time', iris.analysis.MEAN)
 
-    if 'depth' in [c.standard_name for c in cube.coords()]:
-        if fn.find('o2')== -1: assert 0
-        cube = extract_levels(cube, scheme = 'linear', levels = [500.])
+#    if 'depth' in [c.standard_name for c in cube.coords()]:
+#        print(cube.coord('depth'))
+#        if fn.find('o2')== -1: assert 0
+#        cube = extract_levels(cube, scheme = 'linear', levels = [500.])
 
     #print('regrid:', variable_group, time_range)
     print('map plot', region, cube)
@@ -2356,9 +2365,13 @@ def multi_model_map_figure(
         #ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=2.88, color='black', alpha=0.3, transform=proj, zorder=30))
 
         # Add circle:
-        ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=2.88, ec='black', fc=(1.,1.,1.,0.), transform=proj, zorder=30))
+        rad = 2.88
+        ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=rad, ec='black', fc=(1.,1.,1.,0.), transform=proj, zorder=30))
         # add square:
-        ax0.plot([-17.25, -11.25, -11.25, -17.25, -17.25 ], [-10.56, -10.56, -4.56, -4.56, -10.56],
+        square_lon_cc = [central_longitude-rad, central_longitude+rad, central_longitude+rad, central_longitude-rad, central_longitude-rad]
+        square_lat_cc = [central_latitude-rad, central_latitude-rad, central_latitude+rad, central_latitude+rad, central_latitude-rad ]
+        ax0.plot(square_lon_cc, square_lat_cc,
+             #[-17.25, -11.25, -11.25, -17.25, -17.25 ], [-10.56, -10.56, -4.56, -4.56, -10.56],
              color='black', linewidth=1, 
              transform=ccrs.Geodetic(), 
              )
@@ -2448,15 +2461,21 @@ def multi_model_map_figure(
 
         # Compute the required radius in projection native coordinates:
         #r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
+        rad=2.88
         ax0.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude],
-             radius=2.88, ec='black', fc=(1.,1.,1.,0.), transform=proj, zorder=30))
+             radius=rad, ec='black', fc=(1.,1.,1.,0.), transform=proj, zorder=30))
 
         #tart_longitude= -17.25 #14.25W
         #nd_longitude = -11.25 #
         #tart_latitude= -10.56 # -7.56
         #nd_latitude= -4.56 #
-        ax0.plot([-17.25, -11.25, -11.25, -17.25, -17.25 ], [-10.56, -10.56, -4.56, -4.56, -10.56],
-             color='red', linewidth=1,
+        square_lon_cc = [central_longitude-rad, central_longitude+rad, central_longitude+rad, central_longitude-rad, central_longitude-rad]
+        square_lat_cc = [central_latitude-rad, central_latitude-rad, central_latitude+rad, central_latitude+rad, central_latitude-rad ]
+
+        ax0.plot(
+             square_lon_cc, square_lat_cc,
+             #[17.25, -11.25, -11.25, -17.25, -17.25 ], [-10.56, -10.56, -4.56, -4.56, -10.56],
+             color='black', linewidth=1,
              transform=ccrs.Geodetic(),
              )
         
@@ -2733,11 +2752,18 @@ def main(cfg):
     #    subtract the time series by the mean of the observatioinal; time range
 
 
-
+    #for ddict in [time_series_fns, profile_fns, maps_fns]:
+    #    for kkey, ffiles in ddict.items():
+    #        print(kkey, ffiles)
+    #        for fn in ffiles:
+    #            print('-----\n', fn)
+    #            cube = iris.load_cube(fn)
+    #            print(cube.data.min(), cube.data.max()) 
+    #assert 0
 
 
     # Individual plots - standalone
-    do_standalone = False
+    do_standalone = True 
     if do_standalone:
 
         # plottings:
@@ -2756,7 +2782,20 @@ def main(cfg):
                      ['model_means', 'Global_range'],
                      ] #'medians', 'all_models', 'range',
         for plotting in plottings:
-            continue
+            #continue
+            for single_model in models.keys():
+                continue
+                multi_model_time_series(
+                    cfg,
+                    metadatas,
+                    ts_dict = time_series_fns,
+                    moving_average_str='annual',
+                    hist_time_range = [2000., 2010.],
+                    ssp_time_range = [2040., 2050.],
+                    plotting = plotting,
+                    single_model=single_model,
+                )
+
             for single_model in ['all', ]: #'not', 'only', 'all']:
                 multi_model_time_series(
                     cfg,
@@ -2922,7 +2961,7 @@ def main(cfg):
         elif 'ph_ts_hist' in time_series_fns.keys():
             suptitle = 'pH'
             short_name = 'pH'
-            joining = '-'
+            joining = ' -'
         elif 'intpp_ts_hist' in time_series_fns.keys():
             suptitle = 'Integrated Primary Production, mol m'+r'$^{-2}$'+' d'+r'$^{-1}$'
             short_name = 'intpp'
