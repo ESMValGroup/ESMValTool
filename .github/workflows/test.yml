@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - pin_scipy
   schedule:
     - cron: '0 0 * * *'
 
