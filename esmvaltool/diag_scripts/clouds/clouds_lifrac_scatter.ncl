@@ -9,6 +9,8 @@
 ;   none
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
+;   dataset_groups:     if defined, use these cli+clw+ta groups instead of
+;                       looping through list of datasets (for clw)
 ;   filename_add:       optionally add this string to plot filesnames
 ;   min_mass:           minimum cloud condensate (same units as clw, cli)
 ;   mm_mean_median:     calculate multi-model mean and meadian
@@ -16,7 +18,7 @@
 ;   panel_labels:       label individual panels (true, false)
 ;   PanelTop:           manual override for "@gnsPanelTop" used by panel
 ;                       plot(s)
-;   use_alias_ref:      use "alias" instead of "dataset" for reference datasets
+;   use_alias:          use "alias" instead of "dataset"
 ;
 ; Required variable attributes (variable specific)
 ;   none
@@ -28,6 +30,7 @@
 ;   none
 ;
 ; Modification history
+;   20230704-lauer_axel: added support for dataset groups
 ;   20230117-lauer_axel: added support for ICON (code from Manuel)
 ;   20210302-lauer_axel: written.
 ;
@@ -73,8 +76,42 @@ begin
 
   infiles = metadata_att_as_array(input_file_info, "filename")
 
+  ; Set default values for non-required diag_script_info attributes
+
+  set_default_att(diag_script_info, "dataset_groups", "")
+  set_default_att(diag_script_info, "filename_add", "")
+  set_default_att(diag_script_info, "panel_labels", True)
+  set_default_att(diag_script_info, "min_mass", 1.0e-15)
+  set_default_att(diag_script_info, "mm_mean_median", True)
+  set_default_att(diag_script_info, "nbins", 20)
+  set_default_att(diag_script_info, "use_alias", False)
+
+  if (diag_script_info@use_alias) then
+    search_att = "alias"
+  else
+    search_att = "dataset"
+  end if
+
+  if (diag_script_info@filename_add .ne. "") then
+    filename_add = "_" + diag_script_info@filename_add
+  else
+    filename_add = ""
+  end if
+
+  if (diag_script_info@dataset_groups(0) .ne. "") then
+    use_groups = True
+  else
+    use_groups = False
+  end if
+
+  nbins = toint(diag_script_info@nbins)
+
+  panel_labels = diag_script_info@panel_labels
+  min_mass = diag_script_info@min_mass
+  mm_mean_median = diag_script_info@mm_mean_median
+
   ; get reference datasets (if present) and check that number of datasets
-  ; is equal for each variable
+  ; is equal for each variable if not dataset groups are defined in recipe
 
   do i = 0, dim_VAR - 1
     var = variables(idx(i))
@@ -87,11 +124,13 @@ begin
     if (i .eq. 0) then
       dim_MOD = ListCount(info)
     else
-      dim_test = ListCount(info)
-      if (dim_test .ne. dim_MOD) then
-        error_msg("f", DIAG_SCRIPT, "", "number of datasets for variable " \
-                  + variables(i) + " does not match number of datasets for " \
-                  + variables(0))
+      if (.not. use_groups) then
+        dim_test = ListCount(info)
+        if (dim_test .ne. dim_MOD) then
+          error_msg("f", DIAG_SCRIPT, "", "number of datasets for variable " \
+                    + variables(i) + " does not match number of datasets for " \
+                    + variables(0))
+        end if
       end if
     end if
     delete(info)
@@ -101,32 +140,12 @@ begin
 
   delete(idx)
 
-  ; Set default values for non-required diag_script_info attributes
+  ; update number of dataset combinations to process groups
+  ; are defined in recipe
 
-  set_default_att(diag_script_info, "filename_add", "")
-  set_default_att(diag_script_info, "panel_labels", True)
-  set_default_att(diag_script_info, "min_mass", 1.0e-15)
-  set_default_att(diag_script_info, "mm_mean_median", True)
-  set_default_att(diag_script_info, "nbins", 20)
-  set_default_att(diag_script_info, "use_alias_ref", False)
-
-  if (diag_script_info@use_alias_ref) then
-    refname_att = "alias"
-  else
-    refname_att = "dataset"
+  if (use_groups) then
+    dim_MOD = dimsizes(diag_script_info@dataset_groups) / 4
   end if
-
-  if (diag_script_info@filename_add .ne. "") then
-    filename_add = "_" + diag_script_info@filename_add
-  else
-    filename_add = ""
-  end if
-
-  nbins = toint(diag_script_info@nbins)
-
-  panel_labels = diag_script_info@panel_labels
-  min_mass = diag_script_info@min_mass
-  mm_mean_median = diag_script_info@mm_mean_median
 
   ; make sure path for (mandatory) netcdf output exists
 
@@ -148,22 +167,14 @@ begin
   info_ta = select_metadata_by_name(input_file_info, "ta")
   projects_ta = metadata_att_as_array(info_ta, "project")
 
-  names_clw = metadata_att_as_array(info_clw, "dataset")
-  names_cli = metadata_att_as_array(info_cli, "dataset")
-  names_ta = metadata_att_as_array(info_ta, "dataset")
+  ; "dataset" or "alias" depending on runtime option "use_alias"
+  names_clw = metadata_att_as_array(info_clw, search_att)
+  names_cli = metadata_att_as_array(info_cli, search_att)
+  names_ta = metadata_att_as_array(info_ta, search_att)
 
-  if (diag_script_info@use_alias_ref) then
-    alias_clw = metadata_att_as_array(info_clw, "alias")
-    alias_cli = metadata_att_as_array(info_cli, "alias")
-    alias_ta = metadata_att_as_array(info_ta, "alias")
-    refidx_clw = ind(alias_clw .eq. refname(0))
-    refidx_cli = ind(alias_cli .eq. refname(1))
-    refidx_ta = ind(alias_ta .eq. refname(2))
-  else
-    refidx_clw = ind(names_clw .eq. refname(0))
-    refidx_cli = ind(names_cli .eq. refname(1))
-    refidx_ta = ind(names_ta .eq. refname(2))
-  end if
+  refidx_clw = ind(names_clw .eq. refname(0))
+  refidx_cli = ind(names_cli .eq. refname(1))
+  refidx_ta = ind(names_ta .eq. refname(2))
 
   if (ismissing(refidx_clw) .or. ismissing(refidx_cli) .or. \
       ismissing(refidx_ta)) then
@@ -226,16 +237,32 @@ begin
 
   ; -------------------------------------------------------------------------
 
-  ; create index vector with reference dataset as first entry (index 0)
-  ; so reference icefrac is calculated first
+  ; if dataset_groups are defined, loop through groups instead of through
+  ; list of all datasets
 
-  idataset = ispan(0,  dim_MOD - 1, 1)
-  idataset0 = idataset(0)
-  i1 = ind(idataset .eq. refidx_clw)
-  idataset(0) = idataset(i1)
-  idataset(i1) = idataset0
+  if (use_groups) then
+    istart = 0
+    iend = dimsizes(diag_script_info@dataset_groups) / 4 - 1
+    ; loop through groups in the order they are given in the recipe
+    idataset = ispan(istart,  iend, 1)
+    ; first group element is used as reference group
+    ref_ind = 0
+    refidx_clw = 0
+    refidx_cli = 0
+    refidx_ta = 0
+  else
+    istart = 0
+    iend = dim_MOD - 1
+    ; create index vector with reference dataset as first entry (index 0)
+    ; so reference icefrac is calculated first
+    idataset = ispan(0,  dim_MOD - 1, 1)
+    idataset0 = idataset(0)
+    i1 = ind(idataset .eq. refidx_clw)
+    idataset(0) = idataset(i1)
+    idataset(i1) = idataset0
+  end if
 
-  do ii = 0, dim_MOD - 1
+  do ii = istart, iend
 
     i = idataset(ii)
 
@@ -248,16 +275,31 @@ begin
     atts_ta = True
     atts_ta@short_name = "ta"
 
-    ; reference datasets may have different names
-    if (i .eq. refidx_clw) then
-      atts_clw@$refname_att$ = refname(0)
-      atts_cli@$refname_att$ = refname(1)
-      atts_ta@$refname_att$ = refname(2)
-    ; all other datasets: force same dataset name for clw, cli and ta
-    else
-      atts_clw@dataset = names_clw(i)
-      atts_cli@dataset = names_clw(i)
-      atts_ta@dataset = names_clw(i)
+    if (use_groups) then  ; use dataset groups defined in recipe
+      i0 = i * 4
+      i1 = i0 + 1
+      i2 = i0 + 3
+      grp_element = diag_script_info@dataset_groups(i1:i2)
+      cli_idx = str_match_ind(grp_element, "cli:")
+      clw_idx = str_match_ind(grp_element, "clw:")
+      ta_idx = str_match_ind(grp_element, "ta:")
+      atts_cli@$search_att$ = str_sub_str(grp_element(cli_idx), "cli:", "")
+      atts_clw@$search_att$ = str_sub_str(grp_element(clw_idx), "clw:", "")
+      atts_ta@$search_att$ = str_sub_str(grp_element(ta_idx), "ta:", "")
+      ; overwrite dataset name used for legend with name defined in recipe
+      names_cli(i) = diag_script_info@dataset_groups(i0)
+    else  ; default settings
+      ; reference datasets may have different names
+      if (i .eq. refidx_clw) then
+        atts_clw@$search_att$ = refname(0)
+        atts_cli@$search_att$ = refname(1)
+        atts_ta@$search_att$ = refname(2)
+      ; all other datasets: force same dataset name for clw, cli and ta
+      else
+        atts_clw@$search_att$ = names_clw(i)
+        atts_cli@$search_att$ = names_clw(i)
+        atts_ta@$search_att$ = names_clw(i)
+      end if
     end if
 
     ; read cli
@@ -303,18 +345,12 @@ begin
       dimerror = True
     end if
 
-    if (i .eq. refidx_clw) then
-      att = refname_att
-    else
-      att = "dataset"
-    end if
-
     if (dimerror) then
 
       error_msg("f", DIAG_SCRIPT, "", "dimensions of datasets " \
-                + atts_cli@$att$ + " (variable cli), " \
-                + atts_clw@$att$ + " (variable clw), " \
-                + atts_ta@$att$ + " (variable ta) do not match.")
+                + atts_cli@$search_att$ + " (variable cli), " \
+                + atts_clw@$search_att$ + " (variable clw), " \
+                + atts_ta@$search_att$ + " (variable ta) do not match.")
     end if
 
     delete(dims_cli)
@@ -363,7 +399,7 @@ begin
     zcli!0 = "time"
     zcli&time = ispan(0, 11, 1)
 
-    var = "f_" + tostring(atts_cli@$att$)
+    var = "f_" + tostring(atts_cli@$search_att$)
     zonalfile->$var$ = zcli
 
     delete(cli_avg)
@@ -389,12 +425,16 @@ begin
     names = names_cli
     projects = projects_cli
 
-    ; if reference datasets for clw, cli, ta are from different sources
-    if (refname(0) .ne. refname(1)) then
-      names(refidx_cli) = refname(0) + "/" + refname(1)
-    end if
-    if (refname(0) .ne. refname(2) .and. refname(1) .ne. refname(2)) then
-      names(refidx_cli) = names(refidx_cli) + "/" + refname(2)
+    if (use_groups) then  ; use names from group definition in recipe file
+      ; nothing to do
+    else
+      ; if reference datasets for clw, cli, ta are from different sources
+      if (refname(0) .ne. refname(1)) then
+        names(refidx_cli) = refname(0) + "/" + refname(1)
+      end if
+      if (refname(0) .ne. refname(2) .and. refname(1) .ne. refname(2)) then
+        names(refidx_cli) = names(refidx_cli) + "/" + refname(2)
+      end if
     end if
 
     ; ========================================================================
@@ -458,7 +498,7 @@ begin
     zcli!0 = "time"
     zcli&time = ispan(0, 11, 1)
 
-    var = "l_" + tostring(atts_cli@$att$)
+    var = "l_" + tostring(atts_cli@$search_att$)
     zonalfile->$var$ = zcli
 
     delete(cli_avg)
@@ -674,12 +714,12 @@ begin
 
   data_i = new((/2, nbins/), float)
   data_l = new((/2, nbins/), float)
-  if (ref_ind .gt. 0) then
+  if (ref_ind .ge. 0) then
     data_i(0, :) = resulti(ref_ind, :)
     data_l(0, :) = resultl(ref_ind, :)
   else
-    data_i(0, :) = data@_FillValue
-    data_l(0, :) = data@_FillValue
+    data_i(0, :) = data_i@_FillValue
+    data_l(0, :) = data_l@_FillValue
   end if
 
   nframe = 0

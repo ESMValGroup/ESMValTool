@@ -57,48 +57,48 @@ preprocessors:
 
 diagnostics:
 
-  clw_zonal:
-    description: cloud liquid water zonal mean
-    themes:
-      - phys
-      - clouds
-    realms:
-      - atmos
-    variables:
-      clw:
-        preprocessor: pp27
-        reference_dataset: CLOUDSAT-L2
-        mip: Amon
-        start_year: 1980
-        end_year: 2009
-        additional_datasets:
-          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
-             version: P1-R05-gridbox-average-noprecip,
-             start_year: 2006, end_year: 2017, mip: Amon, tier: 3}
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
-          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
-#          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
-          - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2}
-          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3}
-          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
-#          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2}
-#          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
-#          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
-    scripts:
-      zonal:
-        script: clouds/clouds_zonal.ncl
-        timemean: annualclim
-        embracesetup: false
-        extralegend: false
-        panel_labels: true
-        explicit_cn_levels: [0., 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08,
-                             0.09, 0.1, 0.11, 0.12, 0.13, 0.14]
-        explicit_cn_dlevels: [-0.05, -0.04, -0.03, -0.02, -0.01, 0., 0.01, 0.02,
-                              0.03, 0.04, 0.05]
-        units_to: g/kg
-        showdiff: true
-        rel_diff: false
-        t_test: true
+#  clw_zonal:
+#    description: cloud liquid water zonal mean
+#    themes:
+#      - phys
+#      - clouds
+#    realms:
+#      - atmos
+#    variables:
+#      clw:
+#        preprocessor: pp27
+#        reference_dataset: CLOUDSAT-L2
+#        mip: Amon
+#        start_year: 1980
+#        end_year: 2009
+#        additional_datasets:
+#          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+#             version: P1-R05-gridbox-average-noprecip,
+#             start_year: 2006, end_year: 2017, mip: Amon, tier: 3}
+#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+#          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+##          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
+#          - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2}
+#          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3}
+#          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
+##          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2}
+##          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
+##          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
+#    scripts:
+#      zonal:
+#        script: clouds/clouds_zonal.ncl
+#        timemean: annualclim
+#        embracesetup: false
+#        extralegend: false
+#        panel_labels: true
+#        explicit_cn_levels: [0., 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08,
+#                             0.09, 0.1, 0.11, 0.12, 0.13, 0.14]
+#        explicit_cn_dlevels: [-0.05, -0.04, -0.03, -0.02, -0.01, 0., 0.01, 0.02,
+#                              0.03, 0.04, 0.05]
+#        units_to: g/kg
+#        showdiff: true
+#        rel_diff: false
+#        t_test: true
 
   cli_zonal:
     description: cloud ice content zonal mean
@@ -112,7 +112,8 @@ diagnostics:
         mip: Amon
         start_year: 1980
         end_year: 2009
-        reference_dataset: CALIPSO-ICECLOUD
+#        reference_dataset: CALIPSO-ICECLOUD
+        reference_dataset: DARDAR-CLOUD
         mip: Amon
         additional_datasets:
           - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,

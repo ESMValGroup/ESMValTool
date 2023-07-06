@@ -49,48 +49,59 @@ diagnostics:
       clw:
         preprocessor: pp27_all_lev
         mip: Amon
-        start_year: 1995
-        end_year: 2014
+        start_year: 2007
+        end_year: 2015
         exp: historical
         reference_dataset: CLOUDSAT-L2
         additional_datasets:
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+             version: P1-R05-gridbox-average-noprecip, tier: 3, alias: CLOUDSAT-L2}
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
              version: P1-R05-gridbox-average-noprecip, tier: 3,
-             start_year: 2007, end_year: 2015, alias: CLOUDSAT-L2}
+             start_year: 2007, end_year: 2007, alias: CLOUDSAT-L2-2007}
       cli:
         preprocessor: pp27_all_lev
         mip: Amon
-        start_year: 1995
-        end_year: 2014
+        start_year: 2007
+        end_year: 2015
         exp: historical
         reference_dataset: CALIPSO-ICECLOUD
         additional_datasets:
           - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat,
-             version: 1-00, mip: Amon, tier: 3,
-             start_year: 2007, end_year: 2015, alias: CALIPSO-ICECLOUD}
+             version: 1-00, mip: Amon, tier: 3, alias: CALIPSO-ICECLOUD}
+          - {dataset: DARDAR-CLOUD, project: OBS, type: sat,
+             version: v3.10-gridbox-average-noprecip,
+             start_year: 2007, end_year: 2007, tier: 3, alias: DARDAR-CLOUD}
       ta:
         preprocessor: pp27_all_lev
         mip: Amon
-        start_year: 1995
-        end_year: 2014
+        start_year: 2007
+        end_year: 2015
         exp: historical
-        reference_dataset: ERA5ref
+        reference_dataset: ERA5
         additional_datasets:
-          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2007, end_year: 2015, alias: ERA5ref}
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3,
+             start_year: 2007, end_year: 2007, alias: ERA5-2007}
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
-      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
-#      - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
-      - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2}
-      - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3}
-      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
-#      - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2}
-#      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
-#      - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3, alias: ERA-Interim}
+      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3, alias: ERA5}
+#      - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2, alias: JRA-25}
+      - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2, alias: JRA-55}
+      - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3, alias: MERRA}
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3, alias: MERRA2}
+#      - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2, alias: NCEP-DOE-R2}
+#      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2, alias: NCEP-NCAR-R1}
+#      - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2, alias: NOAA-CIRES-20CR}
     scripts:
       lifrac_scatter:
         script: clouds/clouds_lifrac_scatter.ncl
         min_mass: 1.0e-6
-        use_alias_ref: true
+        use_alias: true
         panel_labels: true
+        dataset_groups: ["CALIPSO/CloudSat/ERA5", "cli:CALIPSO-ICECLOUD", "clw:CLOUDSAT-L2", "ta:ERA5",
+                         "DARDAR/CloudSat/ERA5", "cli:DARDAR-CLOUD", "clw:CLOUDSAT-L2-2007", "ta:ERA5-2007",
+                         "ERA-Interim", "cli:ERA-Interim", "clw:ERA-Interim", "ta:ERA-Interim",
+                         "ERA5", "cli:ERA5", "clw:ERA5", "ta:ERA5",
+                         "JRA-55", "cli:JRA-55", "clw:JRA-55", "ta:JRA-55",
+                         "MERRA", "cli:MERRA", "clw:MERRA", "ta:MERRA",
+                         "MERRA2", "cli:MERRA2", "clw:MERRA2", "ta:MERRA2"]
