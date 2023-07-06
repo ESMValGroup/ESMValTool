@@ -219,7 +219,7 @@ MAX_PARALLEL_TASKS = {
     'recipe_smpi': 1,
     'recipe_smpi_4cds': 1,
     'recipe_wenzel14jgr': 1,
-    }
+}
 
 
 def generate_submit():
@@ -290,16 +290,12 @@ def generate_submit():
             else:
                 file.write(f'esmvaltool run --config_file '
                            f'{str(config_file)} {str(recipe)}')
-            # max_parallel_tasks
-            # Default
-            if not MAX_PARALLEL_TASKS.get(recipe.stem, None):
-                file.write(f' --max_parallel_tasks='
-                           f'{default_max_parallel_tasks}\n')
-            # Special requirements
-            else:
-                file.write(f' --max_parallel_tasks='
-                           f'{MAX_PARALLEL_TASKS[recipe.stem]}\n')
-
+            # set max_parallel_tasks
+            max_parallel_tasks = MAX_PARALLEL_TASKS.get(
+                recipe.stem,
+                default_max_parallel_tasks,
+            )
+            file.write(f' --max_parallel_tasks={max_parallel_tasks}\n')
         if submit:
             subprocess.check_call(['sbatch', filename])
 
