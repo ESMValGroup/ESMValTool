@@ -133,6 +133,7 @@ SPECIAL_RECIPES = {
     },
     'recipe_ipccwg1ar6ch3_fig_3_43': {
         'partition': '#SBATCH --partition=compute \n',
+        'time': '#SBATCH --time=08:00:00 \n',
     },
     'recipe_lauer22jclim_fig3-4_zonal': {
         'partition': '#SBATCH --partition=compute \n',
