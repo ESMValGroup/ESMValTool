@@ -46,9 +46,10 @@ This release includes
 Bug fixes
 ~~~~~~~~~
 
--  Fixed usage of `work_dir` in some CMORizer scripts (`#3192 <https://github.com/ESMValGroup/ESMValTool/pull/3192>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fixed usage of ``work_dir`` in some CMORizer scripts (`#3192 <https://github.com/ESMValGroup/ESMValTool/pull/3192>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Realize data for scalar cube in `recipe_carvalhais14nat` to avert issue from dask latest (2023.6.0) (`#3265 <https://github.com/ESMValGroup/ESMValTool/pull/3265>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Fix failing `mlr` diagnostic test by adding new scikit-learn default tag (`#3273 <https://github.com/ESMValGroup/ESMValTool/pull/3273>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fix failing ``mlr`` diagnostic test by adding new scikit-learn default tag (`#3273 <https://github.com/ESMValGroup/ESMValTool/pull/3273>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fix ordering of models in perfmetrics diagnostic script (`#3275 <https://github.com/ESMValGroup/ESMValTool/pull/3275>`__) `Lisa Bock <https://github.com/LisaBock>`__
 
 Documentation
 ~~~~~~~~~~~~~
@@ -87,9 +88,9 @@ Observational and re-analysis dataset support
 Automatic testing
 ~~~~~~~~~~~~~~~~~
 
--  Add a CircleCI-testing-specific `recipe_python_for_CI.yml` to avoid calling geolocator/Nominatim over CI (`#3159 <https://github.com/ESMValGroup/ESMValTool/pull/3159>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Add a CircleCI-testing-specific ``recipe_python_for_CI.yml`` to avoid calling geolocator/Nominatim over CI (`#3159 <https://github.com/ESMValGroup/ESMValTool/pull/3159>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Check if Python minor version changed after Julia install in development installation test (`#3213 <https://github.com/ESMValGroup/ESMValTool/pull/3213>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Fix tests using deprecated `esmvalcore._config` module that will be removed in ESMValCore v2.9 (`#3204 <https://github.com/ESMValGroup/ESMValTool/pull/3204>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Fix tests using deprecated ``esmvalcore._config`` module that has been removed in ESMValCore v2.9 (`#3204 <https://github.com/ESMValGroup/ESMValTool/pull/3204>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 
 Installation
 ~~~~~~~~~~~~
