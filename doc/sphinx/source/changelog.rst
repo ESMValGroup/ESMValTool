@@ -3,6 +3,113 @@
 Changelog
 =========
 
+.. _changelog-v2-9-0:
+
+v2.9.0
+------
+
+Highlights
+~~~~~~~~~~
+
+-  A new :ref:`diagnostic <api.esmvaltool.diag_scripts.seaborn_diag>` has been
+   added to provide a high-level interface to
+   `seaborn <https://seaborn.pydata.org/>`__,
+   a Python data visualization library based on
+   `matplotlib <https://matplotlib.org/>`__.
+   See the :ref:`recipe documentation <recipes_seaborn_diag>` for more
+   information.
+
+-  We have included a new recipe and diagnostic that represent the major
+   physical processes that describe Arctic-midlatitude teleconnections and
+   provide the basis for the CMIP6 model evaluation for the further application
+   of causal discovery.
+   The results are discussed in the article
+   `"Causal model evaluation of Arctic-midlatitude teleconnections in CMIP6" <https://essopenarchive.org/doi/full/10.1002/essoar.10512569.1>`__
+   by Galytska et al. (in review in Journal of Geophysical Research: Atmospheres).
+
+-  It is now possible to use the
+   `Dask distributed scheduler <https://docs.dask.org/en/latest/deploying.html>`__,
+   which can
+   `significantly reduce the run-time of recipes <https://github.com/ESMValGroup/ESMValCore/pull/2049#pullrequestreview-1446279391>`__.
+   Configuration examples and advice are available in the
+   :ref:`ESMValCore documentation <esmvalcore:config-dask>`.
+   If configured, the Dask distributed scheduler will also be used by diagnostic
+   scripts written in Python, so make sure to use
+   `lazy data <https://scitools-iris.readthedocs.io/en/latest/userguide/real_and_lazy_data.html#real-and-lazy-data>`__
+   wherever it is possible in your (new) diagnostics.
+   More work on improving the computational performance is planned, so please
+   share your experiences, good and bad, with this new feature in
+   `ESMValGroup/ESMValCore#1763 <https://github.com/ESMValGroup/ESMValCore/discussions/1763>`__.
+
+This release includes
+
+Bug fixes
+~~~~~~~~~
+
+-  Fixed usage of ``work_dir`` in some CMORizer scripts (`#3192 <https://github.com/ESMValGroup/ESMValTool/pull/3192>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Realize data for scalar cube in `recipe_carvalhais14nat` to avert issue from dask latest (2023.6.0) (`#3265 <https://github.com/ESMValGroup/ESMValTool/pull/3265>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Fix failing ``mlr`` diagnostic test by adding new scikit-learn default tag (`#3273 <https://github.com/ESMValGroup/ESMValTool/pull/3273>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fix ordering of models in perfmetrics diagnostic script (`#3275 <https://github.com/ESMValGroup/ESMValTool/pull/3275>`__) `Lisa Bock <https://github.com/LisaBock>`__
+
+Documentation
+~~~~~~~~~~~~~
+
+-  Update release schedule after v2.8.0 (`#3138 <https://github.com/ESMValGroup/ESMValTool/pull/3138>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Added reference entry for Winterstein (`#3154 <https://github.com/ESMValGroup/ESMValTool/pull/3154>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
+-  Show logo on PyPI (`#3185 <https://github.com/ESMValGroup/ESMValTool/pull/3185>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Add Release Managers for v2.9.0 and v2.10.0 (`#3184 <https://github.com/ESMValGroup/ESMValTool/pull/3184>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fix readthedocs build with esmpy>=8.4.0 and missing ESMFMKFILE variable (`#3205 <https://github.com/ESMValGroup/ESMValTool/pull/3205>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Add ESMValCore release v2.8.1 into the documentation (`#3235 <https://github.com/ESMValGroup/ESMValTool/pull/3235>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Modified links to the tutorial (`#3236 <https://github.com/ESMValGroup/ESMValTool/pull/3236>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fix gitter badge in README (`#3258 <https://github.com/ESMValGroup/ESMValTool/pull/3258>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Add release notes for v2.9.0 (`#3266 <https://github.com/ESMValGroup/ESMValTool/pull/3266>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+
+Diagnostics
+~~~~~~~~~~~
+
+-  New plot_type 1d_profile in monitor  (`#3178 <https://github.com/ESMValGroup/ESMValTool/pull/3178>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
+-  Add Seaborn diagnostic (`#3155 <https://github.com/ESMValGroup/ESMValTool/pull/3155>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  New recipe and diagnostic for Arctic-midlatitude research (`#3021 <https://github.com/ESMValGroup/ESMValTool/pull/3021>`__) `Evgenia Galytska <https://github.com/egalytska>`__
+-  Generate climatology on the fly for AutoAssess soil moisture (`#3197 <https://github.com/ESMValGroup/ESMValTool/pull/3197>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
+-  Remove "fx_variables" from recipe_tebaldi21esd.yml (`#3211 <https://github.com/ESMValGroup/ESMValTool/pull/3211>`__) `Birgit Hassler <https://github.com/hb326>`__
+-  Remove "fx_variables" from ipccwg1ar5ch9 recipes (`#3215 <https://github.com/ESMValGroup/ESMValTool/pull/3215>`__) `katjaweigel <https://github.com/katjaweigel>`__
+-  Remove "fx_variables" from recipe_wenzel14jgr.yml (`#3212 <https://github.com/ESMValGroup/ESMValTool/pull/3212>`__) `Birgit Hassler <https://github.com/hb326>`__
+-  Update obs4MIPs dataset to the current naming scheme in recipe_smpi.yml (`#2991 <https://github.com/ESMValGroup/ESMValTool/pull/2991>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Fixed pandas diagnostics for pandas>=2.0.0 (`#3209 <https://github.com/ESMValGroup/ESMValTool/pull/3209>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Update recipe_impact.yml to work with newer versions of `pandas` (`#3220 <https://github.com/ESMValGroup/ESMValTool/pull/3220>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Add variable long names to provenance record in monitoring diagnostics (`#3222 <https://github.com/ESMValGroup/ESMValTool/pull/3222>`__) `Brei Soliño <https://github.com/bsolino>`__
+
+Observational and re-analysis dataset support
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Add CMORizer for GPCP-SG (pr) (`#3150 <https://github.com/ESMValGroup/ESMValTool/pull/3150>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
+-  Extension of NASA MERRA2 CMORizer (cl, cli, clivi, clw, clwvi) (`#3167 <https://github.com/ESMValGroup/ESMValTool/pull/3167>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+
+Automatic testing
+~~~~~~~~~~~~~~~~~
+
+-  Add a CircleCI-testing-specific ``recipe_python_for_CI.yml`` to avoid calling geolocator/Nominatim over CI (`#3159 <https://github.com/ESMValGroup/ESMValTool/pull/3159>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Check if Python minor version changed after Julia install in development installation test (`#3213 <https://github.com/ESMValGroup/ESMValTool/pull/3213>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Fix tests using deprecated ``esmvalcore._config`` module that has been removed in ESMValCore v2.9 (`#3204 <https://github.com/ESMValGroup/ESMValTool/pull/3204>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+
+Installation
+~~~~~~~~~~~~
+
+-  Add support for Python=3.11 (`#3173 <https://github.com/ESMValGroup/ESMValTool/pull/3173>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Drop python=3.8 support (`#3193 <https://github.com/ESMValGroup/ESMValTool/pull/3193>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Repair generation of conda lock files (`#3148 <https://github.com/ESMValGroup/ESMValTool/pull/3148>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Modernize lock creation script and repair lock generation (`#3174 <https://github.com/ESMValGroup/ESMValTool/pull/3174>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Pin numpy !=1.24.3 due to severe masking bug (`#3182 <https://github.com/ESMValGroup/ESMValTool/pull/3182>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Update xesmf to versions >= 0.4.0 (`#2728 <https://github.com/ESMValGroup/ESMValTool/pull/2728>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
+-  Update esmpy import for ESMF version 8.4.0 or larger (`#3188 <https://github.com/ESMValGroup/ESMValTool/pull/3188>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Relax the pin on iris to allow the use of older versions for performance reasons (`#3270 <https://github.com/ESMValGroup/ESMValTool/pull/3270>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Use ESMValCore v2.9.0 (`#3274 <https://github.com/ESMValGroup/ESMValTool/pull/3274>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+
+Improvements
+~~~~~~~~~~~~
+
+-  Update pre-commit hooks (`#3189 <https://github.com/ESMValGroup/ESMValTool/pull/3189>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Add support for using a dask distributed scheduler (`#3151 <https://github.com/ESMValGroup/ESMValTool/pull/3151>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 
 .. _changelog-v2-8-0:
 
@@ -19,7 +126,7 @@ Highlights
    climatologies from CMIP models as used in `Lauer et al. (2023), J. Climate
    <https://doi.org/10.1175/JCLI-D-22-0181.1>`__.
    See :ref:`recipe documentation <recipes_clouds>` about added recipes.
--  Addition of a set of recipes for extreme events, regional and impact 
+-  Addition of a set of recipes for extreme events, regional and impact
    evaluation as used in `Weigel et al. (2021), J. Climate
    <https://doi.org/10.5194/gmd-14-3159-2021>`__ and in IPCC AR5.
    See :ref:`recipe documentation <recipes_ipccwg1ar5ch9>` about added recipes.
@@ -265,7 +372,7 @@ Documentation
 -  Update documentation for the Landschuetzer 2016 recipe. (`#2801 <https://github.com/ESMValGroup/ESMValTool/pull/2801>`__) `Tomas Torsvik <https://github.com/TomasTorsvik>`__
 -  Fixed anaconda badge in README (`#2866 <https://github.com/ESMValGroup/ESMValTool/pull/2866>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Update release strategy notes (`#2734 <https://github.com/ESMValGroup/ESMValTool/pull/2734>`__) `sloosvel <https://github.com/sloosvel>`__
--  Add documention on how to handle CMORizers for multiple dataset versions (`#2730 <https://github.com/ESMValGroup/ESMValTool/pull/2730>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Add documentation on how to handle CMORizers for multiple dataset versions (`#2730 <https://github.com/ESMValGroup/ESMValTool/pull/2730>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Extending documentation: recipe maintainer + broken recipe policy (`#2719 <https://github.com/ESMValGroup/ESMValTool/pull/2719>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 
 Diagnostics
@@ -310,8 +417,8 @@ Highlights
 ~~~~~~~~~~
 
 - A new monitoring diagnostic has been added to allow the comparison of model runs against reference datasets. For details, see :ref:`Monitoring diagnostic to show multiple datasets in one plot (incl. biases) <api.esmvaltool.diag_scripts.monitor.multi_datasets>`.
-- A tool has been developed to compare the output of recipe runs against previous runs, in order to detect in an automatized way breaking changes between releases. Find more information in :ref:`Comparing recipe runs <compare_recipe_runs>`.
-- The recipe :ref:`Climate Change Hotspot <recipe_climate_change_hotspot.rst>` allows to compute hotspots in any rectangular region. 
+- A tool has been developed to compare the output of recipe runs against previous runs, in order to detect in an automated way breaking changes between releases. Find more information in :ref:`Comparing recipe runs <compare_recipe_runs>`.
+- The recipe :ref:`Climate Change Hotspot <recipe_climate_change_hotspot.rst>` allows to compute hotspots in any rectangular region.
 
 Please also note the highlights from the corresponding ESMValCore release :ref:`here<esmvalcore:changelog-v2-6-0>`.
 Thanks to that ESMValTool has gained the following features:
@@ -418,7 +525,7 @@ Thanks to that ESMValTool has gained the following features:
 
 - The new preprocessor ``extract_location`` can extract arbitrary locations on the Earth.
 - Time ranges can now be extracted using the `ISO 8601 format <https://en.wikipedia.org/wiki/ISO_8601>`_.
-- The new preprocessor ``ensemble_statistics`` can calculate arbitrary statitics over all ensemble members of a simulation.
+- The new preprocessor ``ensemble_statistics`` can calculate arbitrary statistics over all ensemble members of a simulation.
 
 
 This release includes
