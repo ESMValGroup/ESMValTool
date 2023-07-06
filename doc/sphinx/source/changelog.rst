@@ -56,9 +56,9 @@ Documentation
 -  Update release schedule after v2.8.0 (`#3138 <https://github.com/ESMValGroup/ESMValTool/pull/3138>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Added reference entry for Winterstein (`#3154 <https://github.com/ESMValGroup/ESMValTool/pull/3154>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
 -  Show logo on PyPI (`#3185 <https://github.com/ESMValGroup/ESMValTool/pull/3185>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Add Release Managers for `v2.9.0` and `v2.10.0` (`#3184 <https://github.com/ESMValGroup/ESMValTool/pull/3184>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Add Release Managers for v2.9.0 and v2.10.0 (`#3184 <https://github.com/ESMValGroup/ESMValTool/pull/3184>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Fix readthedocs build with esmpy>=8.4.0 and missing ESMFMKFILE variable (`#3205 <https://github.com/ESMValGroup/ESMValTool/pull/3205>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Add ESMValCore release `v2.8.1` into the documentation (`#3235 <https://github.com/ESMValGroup/ESMValTool/pull/3235>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Add ESMValCore release v2.8.1 into the documentation (`#3235 <https://github.com/ESMValGroup/ESMValTool/pull/3235>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Modified links to the tutorial (`#3236 <https://github.com/ESMValGroup/ESMValTool/pull/3236>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Fix gitter badge in README (`#3258 <https://github.com/ESMValGroup/ESMValTool/pull/3258>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Add release notes for v2.9.0 (`#3266 <https://github.com/ESMValGroup/ESMValTool/pull/3266>`__) `Bouwe Andela <https://github.com/bouweandela>`__
