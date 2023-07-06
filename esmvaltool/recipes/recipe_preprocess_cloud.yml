@@ -19,8 +19,8 @@ documentation:
 
 
 datasets:
-        #- {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2, start_year: 2000, end_year: 2000}
-        - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2, timerange: 200001/200001}
+        - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2, start_year: 2000, end_year: 2000}
+          #- {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2, timerange: 200001/200008}
 
 
 preprocessors:
@@ -62,4 +62,8 @@ diagnostics:
       rlut:
         <<: *var
         mip: day
-    scripts: null
+    scripts:
+      timeseries:
+        script: examples/diagnostic.py
+        quickplot:
+          plot_type: plot
