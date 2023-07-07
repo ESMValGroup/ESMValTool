@@ -11,8 +11,11 @@ from netCDF4 import Dataset, num2date
 from shapely.geometry import MultiPoint, shape
 from shapely.ops import nearest_points
 
-from esmvaltool.diag_scripts.shared import (run_diagnostic, ProvenanceLogger,
-                                            get_diagnostic_filename)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    run_diagnostic,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -48,16 +51,22 @@ def main(cfg):
             xname = name + '_table'
             writexls(cfg, filename, ncts, nclon, nclat)
             caption = 'Selected gridpoints within shapefile.'
-            get_provenance_record(
-                cfg, xname, caption, 'xlsx', ancestor_files=[filename])
+            get_provenance_record(cfg,
+                                  xname,
+                                  caption,
+                                  'xlsx',
+                                  ancestor_files=[filename])
         path = os.path.join(
             cfg['work_dir'],
             name + '.nc',
         )
         write_netcdf(path, ncts, nclon, nclat, cube, cfg)
         caption = 'Selected gridpoints within shapefile.'
-        get_provenance_record(
-            cfg, name, caption, 'nc', ancestor_files=[filename])
+        get_provenance_record(cfg,
+                              name,
+                              caption,
+                              'nc',
+                              ancestor_files=[filename])
 
 
 def write_keyvalue_toxlsx(worksheet, row, key, value):
@@ -93,8 +102,8 @@ def writexls(cfg, filename, ncts, nclon1, nclat1):
     workbook = xlsxwriter.Workbook(
         os.path.join(
             cfg['work_dir'],
-            os.path.splitext(os.path.basename(filename))[0] + '_polygon_table'
-            + '.xlsx'))
+            os.path.splitext(os.path.basename(filename))[0] +
+            '_polygon_table' + '.xlsx'))
     worksheet = workbook.add_worksheet('Data')
     worksheet.write(0, 0, 'Date')
     worksheet.write(0, 1, 'Lon/Lat')
@@ -102,8 +111,8 @@ def writexls(cfg, filename, ncts, nclon1, nclat1):
     for row in range(ncts.shape[1]):
         worksheet.write(
             1, row + 1,
-            str("%#.3f" % round(float(nclon1[row]), 3)) + '_' + str(
-                "%#.3f" % round(float(nclat1[row]), 3)))
+            str("%#.3f" % round(float(nclon1[row]), 3)) + '_' +
+            str("%#.3f" % round(float(nclat1[row]), 3)))
         worksheet.write_column(2, row + 1,
                                np.around(np.squeeze(ncts[:, row]), decimals=8))
         worksheet.set_column(0, row + 1, 20)
@@ -150,8 +159,8 @@ def shapeselect(cfg, cube):
             if wgtmet == 'mean_inside':
                 gpx, gpy = mean_inside(gpx, gpy, points, multi, cube)
                 if not gpx:
-                    gpx, gpy = representative(gpx, gpy, multipoint, 
-                                              multi, cube)
+                    gpx, gpy = representative(gpx, gpy, multipoint, multi,
+                                              cube)
             elif wgtmet == 'representative':
                 gpx, gpy = representative(gpx, gpy, multipoint, multi, cube)
             if len(gpx) == 1:
@@ -237,19 +246,24 @@ def write_netcdf(path, var, plon, plat, cube, cfg):
     polys.setncattr_string('standard_name', 'polygon')
     polys.setncattr_string('long_name', 'polygon')
     polys.setncattr_string('shapefile', cfg['shapefile'])
-    lon = ncout.createVariable(
-        cube.coord('longitude').var_name, 'f8', 'polygon', zlib=True)
+    lon = ncout.createVariable(cube.coord('longitude').var_name,
+                               'f8',
+                               'polygon',
+                               zlib=True)
     lon.setncattr_string('standard_name',
                          cube.coord('longitude').standard_name)
     lon.setncattr_string('long_name', cube.coord('longitude').long_name)
     lon.setncattr_string('units', cube.coord('longitude').units.origin)
-    lat = ncout.createVariable(
-        cube.coord('latitude').var_name, 'f8', 'polygon', zlib=True)
+    lat = ncout.createVariable(cube.coord('latitude').var_name,
+                               'f8',
+                               'polygon',
+                               zlib=True)
     lat.setncattr_string('standard_name', cube.coord('latitude').standard_name)
     lat.setncattr_string('long_name', cube.coord('latitude').long_name)
     lat.setncattr_string('units', cube.coord('latitude').units.origin)
-    data = ncout.createVariable(
-        cube.var_name, 'f4', ('time', 'polygon'), zlib=True)
+    data = ncout.createVariable(cube.var_name,
+                                'f4', ('time', 'polygon'),
+                                zlib=True)
     data.setncattr_string('standard_name', cube.standard_name)
     data.setncattr_string('long_name', cube.long_name)
     data.setncattr_string('units', cube.units.origin)
