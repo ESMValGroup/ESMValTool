@@ -135,7 +135,8 @@ def shapeselect(cfg, cube):
                 coordpoints[i] = (coordpoints[i][0] - 360., coordpoints[i][1])
     else:
         raise ValueError("Support for 2-d coords not implemented!")
-    points = MultiPoint(coordpoints)
+    multipoint = MultiPoint(coordpoints)
+    points = [p for p in multipoint.geoms]
     with fiona.open(shppath) as shp:
         gpx = []
         gpy = []
@@ -149,15 +150,15 @@ def shapeselect(cfg, cube):
             if wgtmet == 'mean_inside':
                 gpx, gpy = mean_inside(gpx, gpy, points, multi, cube)
                 if not gpx:
-                    gpx, gpy = representative(gpx, gpy, points, multi, cube)
+                    gpx, gpy = representative(gpx, gpy, multipoint, multi, cube)
             elif wgtmet == 'representative':
-                gpx, gpy = representative(gpx, gpy, points, multi, cube)
+                gpx, gpy = representative(gpx, gpy, multipoint, multi, cube)
             if len(gpx) == 1:
                 ncts[:, ishp] = np.reshape(cube.data[:, gpy, gpx],
                                            (cube.data.shape[0], ))
             else:
                 ncts[:, ishp] = np.mean(cube.data[:, gpy, gpx], axis=1)
-            gxx, gyy = representative([], [], points, multi, cube)
+            gxx, gyy = representative([], [], multipoint, multi, cube)
             nclon[ishp] = cube.coord('longitude').points[gxx]
             nclat[ishp] = cube.coord('latitude').points[gyy]
     return ncts, nclon, nclat
@@ -179,10 +180,10 @@ def mean_inside(gpx, gpy, points, multi, cube):
     return gpx, gpy
 
 
-def representative(gpx, gpy, points, multi, cube):
+def representative(gpx, gpy, multipoint, multi, cube):
     """Find representative point in shape."""
     reprpoint = multi.representative_point()
-    nearest = nearest_points(reprpoint, points)
+    nearest = nearest_points(reprpoint, multipoint)
     npx = nearest[1].coords[0][0]
     npy = nearest[1].coords[0][1]
     if npx < 0:
