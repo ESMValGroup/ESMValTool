@@ -94,8 +94,8 @@ diagnostics:
         - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r8i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r9i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: IPSL-CM6A-LR-INCA, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
-        - {dataset: MIROC6, end_year: 2010, ensemble: r10i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
-        - {dataset: MIROC6, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
+#        - {dataset: MIROC6, end_year: 2010, ensemble: r10i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+#        - {dataset: MIROC6, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: MIROC6, end_year: 2010, ensemble: r2i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: MIROC6, end_year: 2010, ensemble: r3i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: MIROC6, end_year: 2010, ensemble: r4i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}

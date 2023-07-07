@@ -26,8 +26,8 @@ diagnostics:
 #        - {dataset: CanESM5, end_year: 2010, ensemble: r25i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: CanESM5, end_year: 2010, ensemble: r2i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: CanESM5, end_year: 2010, ensemble: r2i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
-        - {dataset: CanESM5, end_year: 2010, ensemble: r3i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
-        - {dataset: CanESM5, end_year: 2010, ensemble: r3i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+#        - {dataset: CanESM5, end_year: 2010, ensemble: r3i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+#        - {dataset: CanESM5, end_year: 2010, ensemble: r3i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: CanESM5, end_year: 2010, ensemble: r4i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: CanESM5, end_year: 2010, ensemble: r4i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: CanESM5, end_year: 2010, ensemble: r5i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
@@ -41,8 +41,8 @@ diagnostics:
 #        - {dataset: CanESM5, end_year: 2010, ensemble: r9i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: CanESM5, end_year: 2010, ensemble: r9i1p2f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: CMCC-ESM2, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
-#        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r1i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
-#        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r2i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r1i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r2i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r3i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r4i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r5i1p1f2, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
