@@ -61,7 +61,11 @@ def area_avg(cube, return_cube=None):
     if not cube.coord("longitude").has_bounds():
         cube.coord("longitude").guess_bounds()
     area = iris.analysis.cartography.area_weights(cube, normalize=False)
-    cube2 = cube.collapsed(["latitude", "longitude"], iris.analysis.MEAN, weights=area)
+    cube2 = cube.collapsed(
+        ["latitude", "longitude"],
+        iris.analysis.MEAN,
+        weights=area
+    )
 
     if return_cube:
         return cube2
@@ -87,8 +91,12 @@ def ocean_fraction_calc(sftlf):
     of: float
         ocean fraction float for EBM calculations
     """
-    sftlf.coord("latitude").coord_system = iris.coord_systems.GeogCS(6371229.0)
-    sftlf.coord("longitude").coord_system = iris.coord_systems.GeogCS(6371229.0)
+    sftlf.coord("latitude").coord_system = iris.coord_systems.GeogCS(
+        6371229.0
+    )
+    sftlf.coord("longitude").coord_system = iris.coord_systems.GeogCS(
+        6371229.0
+    )
     sftof = sftlf.copy()
     sftof.data = 100.0 - sftlf.data
 
@@ -126,11 +134,17 @@ def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
     if not cube.coord("longitude").has_bounds():
         cube.coord("longitude").guess_bounds()
 
-    global_weights = iris.analysis.cartography.area_weights(cube, normalize=False)
+    global_weights = iris.analysis.cartography.area_weights(
+        cube,
+        normalize=False
+    )
 
     if land is False:
         ocean_frac.data = np.ma.masked_less(ocean_frac.data, 0.01)
-        weights = iris.analysis.cartography.area_weights(ocean_frac, normalize=False)
+        weights = iris.analysis.cartography.area_weights(
+            ocean_frac,
+            normalize=False
+        )
         ocean_area = (
             ocean_frac.collapsed(
                 ["latitude", "longitude"], iris.analysis.SUM, weights=weights
@@ -149,7 +163,10 @@ def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
 
     if land:
         land_frac.data = np.ma.masked_less(land_frac.data, 0.01)
-        weights = iris.analysis.cartography.area_weights(land_frac, normalize=False)
+        weights = iris.analysis.cartography.area_weights(
+            land_frac,
+            normalize=False
+        )
         land_area = (
             land_frac.collapsed(
                 ["latitude", "longitude"], iris.analysis.SUM, weights=weights
