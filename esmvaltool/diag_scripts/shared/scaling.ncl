@@ -152,6 +152,12 @@ begin
       leave_msg(scriptname, funcname)
       return(out)
     end if
+    if (any(units_to.eq.(/"g kg-1", "g/kg"/))) then
+      out = out * 1.e3
+      out@units = units_to
+      leave_msg(scriptname, funcname)
+      return(out)
+    end if
   end if
 
   if (units_from.eq."kg s-1") then

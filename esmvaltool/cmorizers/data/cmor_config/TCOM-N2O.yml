@@ -1,0 +1,18 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: TCOM-N2O
+  version: '1.0'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'https://zenodo.org/record/7386001'
+  reference: 'tcom_n2o'
+
+# Variables to cmorize
+variables:
+  n2o:
+    filename: zmn2o_TCOM_plev_T2Dz_1991_2021.nc
+    mip: Amon
+    raw_name: zmn2o
+    raw_units: '1e-3 mol mol-1'  # Note: the netcdf attribute wrongly says "mol/mol". This has been confirmed by the author of the dataset.

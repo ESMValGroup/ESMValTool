@@ -35,7 +35,7 @@ marker_file : str, optional
 savefig_kwargs : dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 x_lim : list of float, optional (default: [1.5, 6.0])
     Plot limits for X axis (ECS).
 y_lim : list of float, optional (default: [0.5, 3.5])
@@ -217,9 +217,10 @@ def plot_data(cfg, ecs_cube, tcr_cube):
 
     # Save plot
     plot_path = get_plot_filename(f'{project}_ch09_fig09_42b', cfg)
-    plt.savefig(plot_path,
-                additional_artists=[legend],
-                **cfg['savefig_kwargs'])
+    savefig_kwargs = dict(cfg['savefig_kwargs'])
+    if legend is not None:
+        savefig_kwargs['bbox_extra_artists'] = [legend]
+    plt.savefig(plot_path, **savefig_kwargs)
     logger.info("Wrote %s", plot_path)
     plt.close()
     return plot_path
@@ -262,7 +263,7 @@ def write_data(cfg, ecs_cube, tcr_cube):
 def main(cfg):
     """Run the diagnostic."""
     cfg = set_default_cfg(cfg)
-    sns.set(**cfg.get('seaborn_settings', {}))
+    sns.set_theme(**cfg.get('seaborn_settings', {}))
     ecs_file = io.get_ancestor_file(cfg, 'ecs.nc')
     tcr_file = io.get_ancestor_file(cfg, 'tcr.nc')
     ecs_cube = iris.load_cube(ecs_file)
