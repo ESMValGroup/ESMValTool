@@ -122,8 +122,15 @@ def make_monthly_climatology(cube):
         cube aggregated by month_number
     """
     if not cube.coords("month_number"):
-        iris.coord_categorisation.add_month_number(cube, "time", "month_number")
-    cube_month_climatol = cube.aggregated_by("month_number", iris.analysis.MEAN)
+        iris.coord_categorisation.add_month_number(
+            cube,
+            "time",
+            "month_number"
+        )
+    cube_month_climatol = cube.aggregated_by(
+        "month_number",
+        iris.analysis.MEAN
+    )
 
     return cube_month_climatol
 
@@ -194,7 +201,10 @@ def calculate_diurnal_range(clim_list, ts_list):
     return clim_list_final, ts_list_final
 
 
-def append_diurnal_range(derived_diurnal_clim, derived_diurnal_ts, clim_list, ts_list):
+def append_diurnal_range(derived_diurnal_clim,
+                         derived_diurnal_ts,
+                         clim_list,
+                         ts_list):
     """Append diurnal range to cubelists.
 
     Parameters
@@ -252,7 +262,10 @@ def calculate_anomaly(clim_list, ts_list):
         cubelist of anomaly vars, inc. diurnal range
     """
     # calculate diurnal temperature range cube
-    clim_list_final, ts_list_final = calculate_diurnal_range(clim_list, ts_list)
+    clim_list_final, ts_list_final = calculate_diurnal_range(
+        clim_list,
+        ts_list
+    )
 
     anom_list_final = ts_list_final.copy()
 
@@ -377,7 +390,11 @@ def calculate_regressions(anom_list, ocean_frac, land_frac, area, yrs=85):
             month_tas = tas.extract(month_constraint)
 
             regr_array, score_array = regression(
-                month_tas, month_cube_ssp.data, ocean_frac, land_frac, area=area
+                month_tas,
+                month_cube_ssp.data,
+                ocean_frac,
+                land_frac,
+                area=area
             )
 
             # re-creating cube
@@ -542,7 +559,12 @@ def save_outputs(
             plot_scores(list_of_cubelists[3], plot_path)
             write_scores(scores, work_path)
             plot_cp_timeseries(list_of_cubelists, plot_path)
-            cube_saver(list_of_cubelists, work_path, name_list, mode="imogen_scores")
+            cube_saver(
+                list_of_cubelists,
+                work_path,
+                name_list,
+                mode="imogen_scores"
+            )
 
         else:
             plot_cp_timeseries(list_of_cubelists, plot_path)
