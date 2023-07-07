@@ -150,7 +150,8 @@ def shapeselect(cfg, cube):
             if wgtmet == 'mean_inside':
                 gpx, gpy = mean_inside(gpx, gpy, points, multi, cube)
                 if not gpx:
-                    gpx, gpy = representative(gpx, gpy, multipoint, multi, cube)
+                    gpx, gpy = representative(gpx, gpy, multipoint, 
+                                              multi, cube)
             elif wgtmet == 'representative':
                 gpx, gpy = representative(gpx, gpy, multipoint, multi, cube)
             if len(gpx) == 1:
