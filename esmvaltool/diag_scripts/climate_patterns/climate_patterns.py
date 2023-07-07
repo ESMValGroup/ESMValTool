@@ -289,6 +289,12 @@ def regression(tas, cube_data, ocean_frac, land_frac, area="global"):
         near-surface air temperature
     cube_data : arr
         cube.data array of a variable
+    ocean_frac: cube
+        gridded ocean fraction
+    land_frac: cube
+        gridded land fraction
+    area: str
+        area over which to calculate patterns
 
     Returns
     -------
@@ -343,9 +349,7 @@ def regression_units(tas, cube):
     units : str
         string of calculated regression units
     """
-    logger.debug("Cube Units: ", cube.units)
     units = cube.units / tas.units
-    logger.debug("Regression Units: ", units)
 
     return units
 
@@ -359,6 +363,12 @@ def calculate_regressions(anom_list, ocean_frac, land_frac, area, yrs=85):
     ----------
     anom_list : cubelist
         cube list of variables as anomalies
+    ocean_frac: cube
+        gridded ocean fraction
+    land_frac: cube
+        gridded land fraction
+    area: str
+        area over which to calculate patterns
     yrs : int
         int to specify length of scenario
 
@@ -463,13 +473,12 @@ def write_scores(scores, work_path):
     for cube in scores:
         score = sf.area_avg(cube, return_cube=False)
         mean_score = np.mean(score)
-
-        # saving scores
-        file = open(work_path + "scores", "a", encoding="utf-8")
         data = f"{mean_score:10.3f}"
         name = cube.var_name
-        file.write(name + ": " + data + "\n")
-        file.close()
+        # saving scores
+        with open(work_path + "scores", "a") as f:
+            f.write(name + ": " + data + "\n")
+            f.close()
 
 
 def cube_saver(list_of_cubelists, work_path, name_list, mode):
@@ -613,6 +622,8 @@ def patterns(model, cfg):
     ----------
     model : str
         model name
+    cfg: dict
+        Dictionary passed in by ESMValTool preprocessors
 
     Returns
     -------

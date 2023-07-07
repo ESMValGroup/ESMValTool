@@ -74,8 +74,7 @@ def area_avg(cube, return_cube=None):
 
 
 def ocean_fraction_calc(sftlf):
-    """Calculates land and ocean fractions (gridded) and ocean fraction (float)
-    for area-weights and EBM.
+    """Calculates gridded land and ocean fractions.
 
     Parameters
     ----------
