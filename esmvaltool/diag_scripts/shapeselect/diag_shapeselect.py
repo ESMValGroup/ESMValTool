@@ -110,9 +110,8 @@ def writexls(cfg, filename, ncts, nclon1, nclat1):
     worksheet.write_column(2, 0, wtime)
     for row in range(ncts.shape[1]):
         worksheet.write(
-            1, row + 1,
-            str("%#.3f" % round(float(nclon1[row]), 3)) + '_' +
-            str("%#.3f" % round(float(nclat1[row]), 3)))
+            1, row + 1, f"{round(float(nclon1[row]), 3):.3f}_\
+            {round(float(nclat1[row]), 3)}")
         worksheet.write_column(2, row + 1,
                                np.around(np.squeeze(ncts[:, row]), decimals=8))
         worksheet.set_column(0, row + 1, 20)
@@ -145,7 +144,7 @@ def shapeselect(cfg, cube):
     else:
         raise ValueError("Support for 2-d coords not implemented!")
     multipoint = MultiPoint(coordpoints)
-    points = [p for p in multipoint.geoms]
+    points = list(multipoint.geoms)
     with fiona.open(shppath) as shp:
         gpx = []
         gpy = []
