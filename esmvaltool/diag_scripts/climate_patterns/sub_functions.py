@@ -61,14 +61,41 @@ def area_avg(cube, return_cube=None):
     if not cube.coord("longitude").has_bounds():
         cube.coord("longitude").guess_bounds()
     area = iris.analysis.cartography.area_weights(cube, normalize=False)
-    cube2 = cube.collapsed(["latitude", "longitude"],
-                           iris.analysis.MEAN,
-                           weights=area)
+    cube2 = cube.collapsed(["latitude", "longitude"], iris.analysis.MEAN, weights=area)
 
     if return_cube:
         return cube2
 
     return cube2.data
+
+
+def ocean_fraction_calc(sftlf):
+    """Calculates land and ocean fractions (gridded) and ocean fraction (float)
+    for area-weights and EBM.
+
+    Parameters
+    ----------
+    sftlf: cube
+        land-fraction cube from piControl experiment
+
+    Returns
+    -------
+    ocean_frac: cube
+        ocean_fraction cube for area-weights
+    land_frac: cube
+        land_fraction cube for area-weights
+    of: float
+        ocean fraction float for EBM calculations
+    """
+    sftlf.coord("latitude").coord_system = iris.coord_systems.GeogCS(6371229.0)
+    sftlf.coord("longitude").coord_system = iris.coord_systems.GeogCS(6371229.0)
+    sftof = sftlf.copy()
+    sftof.data = 100.0 - sftlf.data
+
+    ocean_frac = sftof / 100
+    land_frac = sftlf / 100
+
+    return ocean_frac, land_frac
 
 
 def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
@@ -99,37 +126,44 @@ def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
     if not cube.coord("longitude").has_bounds():
         cube.coord("longitude").guess_bounds()
 
-    global_weights = iris.analysis.cartography.area_weights(cube,
-                                                            normalize=False)
+    global_weights = iris.analysis.cartography.area_weights(cube, normalize=False)
 
     if land is False:
         ocean_frac.data = np.ma.masked_less(ocean_frac.data, 0.01)
-        weights = iris.analysis.cartography.area_weights(ocean_frac,
-                                                         normalize=False)
-        ocean_area = (ocean_frac.collapsed(
-            ["latitude", "longitude"], iris.analysis.SUM, weights=weights) /
-                      1e12)
+        weights = iris.analysis.cartography.area_weights(ocean_frac, normalize=False)
+        ocean_area = (
+            ocean_frac.collapsed(
+                ["latitude", "longitude"], iris.analysis.SUM, weights=weights
+            )
+            / 1e12
+        )
         print("Ocean area: ", ocean_area.data)
         cube2 = cube.copy()
         cube2.data = cube2.data * global_weights * ocean_frac.data
 
         cube2 = (
-            cube2.collapsed(["latitude", "longitude"], iris.analysis.SUM) /
-            1e12 / ocean_area.data)
+            cube2.collapsed(["latitude", "longitude"], iris.analysis.SUM)
+            / 1e12
+            / ocean_area.data
+        )
 
     if land:
         land_frac.data = np.ma.masked_less(land_frac.data, 0.01)
-        weights = iris.analysis.cartography.area_weights(land_frac,
-                                                         normalize=False)
-        land_area = (land_frac.collapsed(
-            ["latitude", "longitude"], iris.analysis.SUM, weights=weights) /
-                     1e12)
+        weights = iris.analysis.cartography.area_weights(land_frac, normalize=False)
+        land_area = (
+            land_frac.collapsed(
+                ["latitude", "longitude"], iris.analysis.SUM, weights=weights
+            )
+            / 1e12
+        )
         print("Land area: ", land_area.data)
         cube2 = cube.copy()
         cube2.data = cube2.data * global_weights * land_frac.data
         cube2 = (
-            cube2.collapsed(["latitude", "longitude"], iris.analysis.SUM) /
-            1e12 / land_area.data)
+            cube2.collapsed(["latitude", "longitude"], iris.analysis.SUM)
+            / 1e12
+            / land_area.data
+        )
 
     if return_cube:
         return cube2

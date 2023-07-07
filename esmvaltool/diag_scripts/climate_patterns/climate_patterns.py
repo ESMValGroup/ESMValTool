@@ -77,7 +77,8 @@ def climatology(cube, syr=1850, eyr=1889):
         iris.Constraint(
             time=lambda t: syr <= t.point.year <= eyr,
             month_number=lambda t: 1 <= t.point <= 12,
-        ))
+        )
+    )
     cube_aggregated = make_monthly_climatology(cube_40yr)
 
     return cube_aggregated
@@ -101,7 +102,8 @@ def constrain_latitude(cube, min_lat=-55, max_lat=82.5):
         cube with latitudes set from -55 to 82.5 degrees
     """
     cube_clipped = cube.extract(
-        iris.Constraint(latitude=lambda cell: max_lat >= cell >= min_lat))
+        iris.Constraint(latitude=lambda cell: max_lat >= cell >= min_lat)
+    )
 
     return cube_clipped
 
@@ -120,10 +122,8 @@ def make_monthly_climatology(cube):
         cube aggregated by month_number
     """
     if not cube.coords("month_number"):
-        iris.coord_categorisation.add_month_number(cube, "time",
-                                                   "month_number")
-    cube_month_climatol = cube.aggregated_by("month_number",
-                                             iris.analysis.MEAN)
+        iris.coord_categorisation.add_month_number(cube, "time", "month_number")
+    cube_month_climatol = cube.aggregated_by("month_number", iris.analysis.MEAN)
 
     return cube_month_climatol
 
@@ -188,13 +188,13 @@ def calculate_diurnal_range(clim_list, ts_list):
 
     # append diurnal range to lists
     clim_list_final, ts_list_final = append_diurnal_range(
-        derived_diurnal_clim, derived_diurnal_ts, clim_list, ts_list)
+        derived_diurnal_clim, derived_diurnal_ts, clim_list, ts_list
+    )
 
     return clim_list_final, ts_list_final
 
 
-def append_diurnal_range(derived_diurnal_clim, derived_diurnal_ts, clim_list,
-                         ts_list):
+def append_diurnal_range(derived_diurnal_clim, derived_diurnal_ts, clim_list, ts_list):
     """Append diurnal range to cubelists.
 
     Parameters
@@ -252,22 +252,22 @@ def calculate_anomaly(clim_list, ts_list):
         cubelist of anomaly vars, inc. diurnal range
     """
     # calculate diurnal temperature range cube
-    clim_list_final, ts_list_final = calculate_diurnal_range(
-        clim_list, ts_list)
+    clim_list_final, ts_list_final = calculate_diurnal_range(clim_list, ts_list)
 
     anom_list_final = ts_list_final.copy()
 
     # calc the anom by subtracting the monthly climatology from
     # the time series
     for i, _ in enumerate(ts_list_final):
-        i_months = (anom_list_final[i].coord("month_number").points - 1
-                    )  # -1 because months are numbered 1..12
+        i_months = (
+            anom_list_final[i].coord("month_number").points - 1
+        )  # -1 because months are numbered 1..12
         anom_list_final[i].data -= clim_list_final[i][i_months].data
 
     return clim_list_final, anom_list_final
 
 
-def regression(tas, cube_data):
+def regression(tas, cube_data, ocean_frac, land_frac, area="global"):
     """Calculate coeffs of regression between global surf temp and variable.
 
     Parameters
@@ -289,14 +289,21 @@ def regression(tas, cube_data):
     slope_array = np.full(tas.data.shape[1:], np.nan)
     score_array = np.full(tas.data.shape[1:], np.nan)
 
-    # calculate global average
-    tas_data = sf.area_avg(tas, return_cube=False)
+    if area == "land":
+        # calculate average warming over land
+        tas_data = sf.area_avg_landsea(
+            tas, ocean_frac, land_frac, land=True, return_cube=False
+        )
+    else:
+        # calculate global average warming
+        tas_data = sf.area_avg(tas, return_cube=False)
 
     for i in range(tas.data.shape[1]):
         for j in range(tas.data.shape[2]):
             if tas.data[0, i, j] is not np.ma.masked:
                 model = sklearn.linear_model.LinearRegression(
-                    fit_intercept=False, copy_X=True)
+                    fit_intercept=False, copy_X=True
+                )
 
                 x_val = tas_data.reshape(-1, 1)
                 y_val = cube_data[:, i, j]
@@ -330,7 +337,7 @@ def regression_units(tas, cube):
     return units
 
 
-def calculate_regressions(anom_list, yrs=85):
+def calculate_regressions(anom_list, ocean_frac, land_frac, area, yrs=85):
     """Facilitate the calculation of regression coeffs (climate patterns).
 
     Also creates of a new cube of patterns per variable.
@@ -355,7 +362,6 @@ def calculate_regressions(anom_list, yrs=85):
 
     for cube in anom_list:
         if cube.var_name == "tl1_anom":
-
             # convert years to months when selecting
             tas = cube[-months:]
 
@@ -370,8 +376,9 @@ def calculate_regressions(anom_list, yrs=85):
             month_cube_ssp = cube_ssp.extract(month_constraint)
             month_tas = tas.extract(month_constraint)
 
-            regr_array, score_array = regression(month_tas,
-                                                 month_cube_ssp.data)
+            regr_array, score_array = regression(
+                month_tas, month_cube_ssp.data, ocean_frac, land_frac, area=area
+            )
 
             # re-creating cube
             if cube.var_name in ("swdown_anom", "lwdown_anom"):
@@ -441,7 +448,7 @@ def write_scores(scores, work_path):
         mean_score = np.mean(score)
 
         # saving scores
-        file = open(work_path + "scores", "a", encoding='utf-8')
+        file = open(work_path + "scores", "a", encoding="utf-8")
         data = f"{mean_score:10.3f}"
         name = cube.var_name
         file.write(name + ": " + data + "\n")
@@ -535,10 +542,7 @@ def save_outputs(
             plot_scores(list_of_cubelists[3], plot_path)
             write_scores(scores, work_path)
             plot_cp_timeseries(list_of_cubelists, plot_path)
-            cube_saver(list_of_cubelists,
-                       work_path,
-                       name_list,
-                       mode="imogen_scores")
+            cube_saver(list_of_cubelists, work_path, name_list, mode="imogen_scores")
 
         else:
             plot_cp_timeseries(list_of_cubelists, plot_path)
@@ -598,6 +602,7 @@ def patterns(model, cfg):
     r2_scores = cfg["output_r2_scores"]
     work_path = cfg["work_dir"] + "/"
     plot_path = cfg["plot_dir"] + "/"
+    area = cfg["area"]
 
     clim_list = iris.cube.CubeList([])
     ts_list = iris.cube.CubeList([])
@@ -614,12 +619,24 @@ def patterns(model, cfg):
             else:
                 cube = cube_initial
 
-            # appending to timeseries list
-            ts_list.append(cube)
+            if dataset["exp"] not in ["historical-ssp585", "ssp585"]:
+                sftlf = cube
+            elif dataset["exp"] == "ssp585":
+                # appending to timeseries list
+                ts_list.append(cube)
+                # use first year as baseline for anomaly
+                clim_cube = cube[0]
+                clim_list.append(clim_cube)
+            else:
+                # appending to timeseries list
+                ts_list.append(cube)
 
-            # making climatology
-            clim_cube = climatology(cube)
-            clim_list.append(clim_cube)
+                # making climatology
+                clim_cube = climatology(cube)
+                clim_list.append(clim_cube)
+
+    # calculate land/ocean_fracs
+    ocean_frac, land_frac = sf.ocean_fraction_calc(sftlf)
 
     # calculate anomaly over historical + ssp timeseries
     clim_list_final, anom_list_final = calculate_anomaly(clim_list, ts_list)
@@ -628,10 +645,13 @@ def patterns(model, cfg):
         rename_clim_variables(cube)
         rename_anom_variables(anom_list_final[i])
 
-    regressions, scores = calculate_regressions(anom_list_final.copy())
+    regressions, scores = calculate_regressions(
+        anom_list_final.copy(), ocean_frac, land_frac, area
+    )
 
     model_work_dir, model_plot_dir = sf.make_model_dirs(
-        cube_initial, work_path, plot_path)
+        cube_initial, work_path, plot_path
+    )
 
     save_outputs(
         clim_list_final,
@@ -680,6 +700,5 @@ def main(cfg):
 
 
 if __name__ == "__main__":
-
     with run_diagnostic() as config:
         main(config)
