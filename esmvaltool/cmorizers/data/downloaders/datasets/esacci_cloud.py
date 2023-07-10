@@ -1,5 +1,6 @@
 """Script to download ESACCI-CLOUD."""
 import logging
+import os
 
 from datetime import datetime
 
@@ -30,9 +31,9 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         Overwrite already downloaded files
     """
     if start_date is None:
-        start_date = datetime(2000, 1, 1)
+        start_date = datetime(2002, 1, 1)
     if end_date is None:
-        end_date = datetime(2000, 12, 31)
+        end_date = datetime(2004, 12, 31)
     loop_date = start_date
 
     downloader = WGetDownloader(
@@ -42,7 +43,10 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         overwrite=overwrite,
     )
 
-    base_path = 'https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/L3U/AVHRR-PM/AVHRR_NOAA-14/'
+    #200001-200103
+    #base_path = 'https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/L3U/AVHRR-PM/AVHRR_NOAA-14/'
+    #200104-200412
+    base_path = 'https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/L3U/AVHRR-PM/AVHRR_NOAA-16/'
 
     wget_options = ['-r', '-nH', '-e', 'robots=off', '--cut-dirs=9', '--no-parent', '--reject="index.html*"']
 
@@ -51,5 +55,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         month = loop_date.month
         folder = base_path + f'{year}/{month:02}'
         print(folder)
+        logger.info("Download folder %s", folder) 
         downloader.download_folder(folder, wget_options)
+        os.remove(os.path.join(downloader.local_folder, f'{month:02}'))
         loop_date += relativedelta.relativedelta(months=1)
