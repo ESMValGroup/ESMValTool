@@ -74,7 +74,7 @@ def area_avg(cube, return_cube=None):
 
 
 def ocean_fraction_calc(sftlf):
-    """Calculates gridded land and ocean fractions.
+    """Calculate gridded land and ocean fractions.
 
     Parameters
     ----------
@@ -222,7 +222,7 @@ def parallelise(function, processes=None):
 
     Parameters
     ----------
-    func : function
+    function : function
         function to be parallelised
     processes : int
         number of threads to be used in parallelisation
