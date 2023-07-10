@@ -217,7 +217,7 @@ def make_model_dirs(cube_initial, work_path, plot_path):
     return model_work_dir, model_plot_dir
 
 
-def parallelise(func, processes=None):
+def parallelise(function, processes=None):
     """Parallelise any function, by George Ford, Met Office.
 
     Parameters
@@ -237,12 +237,12 @@ def parallelise(func, processes=None):
     if processes <= 0:
         processes = 1
 
-    def easy_parallise(f, sequence, cfg):
+    def easy_parallise(func, sequence, cfg):
         pool = mp.Pool(processes=processes)
-        config_wrapper = partial(f, cfg=cfg)
+        config_wrapper = partial(func, cfg=cfg)
         result = pool.map_async(config_wrapper, sequence).get()
         pool.close()
         pool.join()
         return result
 
-    return partial(easy_parallise, func)
+    return partial(easy_parallise, function)

@@ -43,7 +43,7 @@ import iris.cube
 import numpy as np
 import sklearn.linear_model
 import sub_functions as sf
-from cp_plotting import plot_cp_timeseries, plot_patterns, plot_scores
+from plotting import plot_cp_timeseries, plot_patterns, plot_scores
 from rename_variables import (
     rename_anom_variables,
     rename_clim_variables,
@@ -476,9 +476,9 @@ def write_scores(scores, work_path):
         data = f"{mean_score:10.3f}"
         name = cube.var_name
         # saving scores
-        with open(work_path + "scores", "a") as f:
-            f.write(name + ": " + data + "\n")
-            f.close()
+        with open(work_path + "scores", "a", encoding='utf-8') as file:
+            file.write(name + ": " + data + "\n")
+            file.close()
 
 
 def cube_saver(list_of_cubelists, work_path, name_list, mode):
