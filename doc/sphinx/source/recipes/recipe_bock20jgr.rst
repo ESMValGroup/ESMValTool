@@ -21,51 +21,51 @@ different CMIP phases.
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in :file:recipes/bock20jgr
+Recipes are stored in :file:`recipes/bock20jgr/`
 
-    * :recipe:recipe_bock20jgr_fig_1-4.yml
-    * :recipe:bock20jgr/recipe_bock20jgr_fig_6-7.yml
-    * recipe_bock20jgr_fig_8-10.yml
+    * :recipe:`bock20jgr/recipe_bock20jgr_fig_1-4.yml`
+    * :recipe:`bock20jgr/recipe_bock20jgr_fig_6-7.yml`
+    * :recipe:`bock20jgr/recipe_bock20jgr_fig_8-10.yml`
 
-Diagnostics are stored in :file:diag_scripts/
+Diagnostics are stored in :file:`diag_scripts/`
 
     Fig. 1:
 
-    * :file:bock20jgr/tsline.ncl - timeseries of global mean surface temperature
+    * :diag:`bock20jgr/tsline.ncl`: timeseries of global mean surface temperature
       anomalies
 
     Fig. 2:
 
-    * bock20jgr/tsline_collect.ncl: collect different timeseries from
+    * :diag:`bock20jgr/tsline_collect.ncl`: collect different timeseries from
       tsline.ncl to compare different models ensembles
 
     Fig. 3 and 4:
 
-    * bock20jgr/model_bias.ncl: global maps of the multi-model mean and the
+    * :diag:`bock20jgr/model_bias.ncl`: global maps of the multi-model mean and the
       multi-model mean bias
 
     Fig. 6:
 
-    * perfmetrics/main.ncl
-    * perfmetrics/collect.ncl
+    * :diag:`perfmetrics/main.ncl`
+    * :diag:`perfmetrics/collect.ncl`
 
     Fig. 7:
 
-    * bock20jgr/corr_pattern.ncl: calculate pattern correlation
-    * bock20jgr/corr_pattern_collect.ncl: create pattern correlation plot
+    * :diag:`bock20jgr/corr_pattern.ncl`: calculate pattern correlation
+    * :diag:`bock20jgr/corr_pattern_collect.ncl`: create pattern correlation plot
 
     Fig. 8:
 
-    * :file:climate_metrics/ecs.py
-    * climate_metrics/create_barplot.py
+    * :diag:`climate_metrics/ecs.py`
+    * :diag:`climate_metrics/create_barplot.py`
 
     Fig. 9:
 
-    * clouds/clouds_ipcc.ncl
+    * :diag:`clouds/clouds_ipcc.ncl`
 
     Fig. 10:
 
-    * climate_metrics/feedback_parameters.py
+    * :diag:`climate_metrics/feedback_parameters.py`
 
 
 User settings in recipe
