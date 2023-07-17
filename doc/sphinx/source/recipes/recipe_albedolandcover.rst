@@ -13,13 +13,13 @@ The diagnostic determines the coefficients of multiple linear regressions fitted
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in recipes/
+Recipes are stored in :file:`recipes/`
 
     * :recipe:`recipe_albedolandcover.yml`
 
-Diagnostics are stored in diag_scripts/landcover/
+Diagnostics are stored in :file:`diag_scripts/landcover/`
 
-    * albedolandcover.py
+    * :diag:`landcover/albedolandcover.py`
 
 
 User settings
