@@ -51,9 +51,20 @@ from esmvaltool.diag_scripts.shared._base import (
 
 logger = logging.getLogger(Path(__file__).stem)
 
+# Fixed parameters
 # list of variables to be ignored per model
 ignored_variables = {
     "HadISST": ["heat_flux"]
+}
+
+# list of variables per dataset that will be processed
+proc_vars = {
+    "ERA5": ['PV', 'Arctic_temperature', 'Psl_Ural',
+             'Psl_Sib', 'Psl_Aleut', 'heat_flux'],
+    "HadISST": ['BK_sic', 'Ok_sic'],
+    "all_other_datasets": ['PV', 'Arctic_temperature', 'Psl_Ural',
+                           'Psl_Sib', 'Psl_Aleut', 'heat_flux',
+                           'BK_sic', 'Ok_sic'],
 }
 
 
@@ -156,13 +167,13 @@ def variable_cases(var_name, var):
     return out_var
 
 
-def calculate_variables(input_dict):
+def calculate_variables(dataset_dict):
     """Calculate all necessary variables."""
     logger.debug("Variables are calculated for the following datasources:%s",
-                 input_dict.keys())
-    dictionary = {}
-    for dataset, variables in input_dict.items():
-        dictionary[dataset] = {}
+                 dataset_dict.keys())
+    processed_vars = {}
+    for dataset, variables in dataset_dict.items():
+        processed_vars[dataset] = {}
 
         logger.debug("Calculating final variables %s for %s dataset",
                      variables, dataset)
@@ -174,9 +185,9 @@ def calculate_variables(input_dict):
             if var_name not in to_ignore_vars:
                 new_var = variable_cases(var_name, var)
                 new_var_name = new_var.var_name
-                dictionary[dataset][new_var_name] = new_var
+                processed_vars[dataset][new_var_name] = new_var
 
-    return dictionary
+    return processed_vars
 
 
 def plotting_support(cube, key, **kwargs):
@@ -218,31 +229,60 @@ def plot_timeseries(dictionary, var, cfg):
     fig.savefig(filename, bbox_inches='tight')
 
 
+def assemble_cube_list(dataset, var, special_datasets):
+    """
+    Assemble a list of processed vars cubes.
+
+    Depending on what vars are needed per dataset,
+    variables list differs per analyzed dataset. Dict holding the
+    needed variables per dataset needs updating everytime a new dataset
+    or variable gets included.
+
+    Parameters
+    ----------
+    dataset: str
+        dataset name.
+    var: dict
+        variable dictionary.
+    special_datasets: list
+        list of datasets to be treated separately,
+        with restricted variables.
+        list of datasets (list of strings).
+
+    Returns
+    -------
+    iris.cube.CubeList
+        list of cubes.
+    """
+    if dataset not in special_datasets:
+        cube_list = iris.cube.CubeList(
+            [var[proc_var] for proc_var in proc_vars["all_other_datasets"]]
+        )
+    else:
+        cube_list = iris.cube.CubeList(
+            [var[proc_var] for proc_var in proc_vars[dataset]]
+        )
+
+    return cube_list
+
+
 def main(cfg):
     """Calculate and save final variables into .nc files."""
+    special_datasets = ["ERA5", "HadISST"]
+
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
     all_variables = calculate_variables(my_files_dict)
+
     # Check is timeseries should be plotted
     if cfg['plot_timeseries']:
         plot_timeseries(all_variables, cfg['variable_to_plot'], cfg)
-    for key in my_files_dict:
-        logger.info("Processing final calculations in dataset %s", key)
-        prov_record = get_provenance_record([key])
-        var = all_variables[key]
-        if key == "ERA5":
-            cube_list = iris.cube.CubeList([
-                var['PV'], var['Arctic_temperature'], var['Psl_Ural'],
-                var['Psl_Sib'], var['Psl_Aleut'], var['heat_flux']])
-        elif key == "HadISST":
-            cube_list = iris.cube.CubeList([
-                var['BK_sic'], var['Ok_sic']])
-        else:
-            cube_list = iris.cube.CubeList([
-                var['PV'], var['Arctic_temperature'], var['Psl_Ural'],
-                var['Psl_Sib'], var['Psl_Aleut'], var['heat_flux'],
-                var['BK_sic'], var['Ok_sic']])
-        save_data(key, prov_record, cfg, cube_list)
-        logger.info("%s data is saved in .nc", key)
+    for dataset in my_files_dict:
+        logger.info("Processing final calculations in dataset %s", dataset)
+        prov_record = get_provenance_record([dataset])
+        var = all_variables[dataset]
+        cube_list = assemble_cube_list(dataset, var, special_datasets)
+        save_data(dataset, prov_record, cfg, cube_list)
+        logger.info("%s data is saved in .nc", dataset)
     logger.info("Done.")
 
 
