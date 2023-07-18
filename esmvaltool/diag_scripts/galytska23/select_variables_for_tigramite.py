@@ -48,7 +48,13 @@ from esmvaltool.diag_scripts.shared._base import (
     get_plot_filename,
 )
 
+
 logger = logging.getLogger(Path(__file__).stem)
+
+# list of variables to be ignored per model
+ignore_variables = {
+    "HadISST": ["heat_flux"]
+}
 
 
 def get_provenance_record(ancestor_files):
@@ -89,6 +95,12 @@ def calculate_slp(dict_item):
     var = iris.load_cube(dict_item['filename'])
     # calculate hPa from Pa.
     var.data /= 100
+    if var.var_name == "pressure_ural":
+        var.var_name = 'Psl_Ural'
+    elif var.var_name == 'pressure_sib':
+        var.var_name = 'Psl_Sib'
+    elif var.var_name == 'pressure_aleut':
+        var.var_name = 'Psl_Aleut'
     return var
 
 
@@ -124,29 +136,23 @@ def calculate_heat_flux(list_va_ta):
     return hf_anom_zm
 
 
-def variable_cases(var, item):
+def variable_cases(var_name, var):
     """Match preprocessor name and corresponding calculations."""
-    if var == 'pv':
-        out_var = calculate_polar_vortex(item)
-    elif var == 'pre_tas':
-        out_var = calculate_arctic_tas(item)
-    elif var == 'pressure_ural':
-        out_var = calculate_slp(item)
-        out_var.var_name = 'Psl_Ural'
-    elif var == 'pressure_sib':
-        out_var = calculate_slp(item)
-        out_var.var_name = 'Psl_Sib'
-    elif var == 'pressure_aleut':
-        out_var = calculate_slp(item)
-        out_var.var_name = 'Psl_Aleut'
-    elif var == 'bk_ice':
-        out_var = finalize_bk_ice(item)
-    elif var == 'ok_ice':
-        out_var = finalize_ok_ice(item)
-    elif var == 'heat_flux':
-        out_var = prepare_heat_flux(item)
+    if var_name == 'pv':
+        out_var = calculate_polar_vortex(var)
+    elif var_name == 'pre_tas':
+        out_var = calculate_arctic_tas(var)
+    elif var_name in ['pressure_ural', 'pressure_sib',
+                      'pressure_aleut', ]:
+        out_var = calculate_slp(var)
+    elif var_name == 'bk_ice':
+        out_var = finalize_bk_ice(var)
+    elif var_name == 'ok_ice':
+        out_var = finalize_ok_ice(var)
+    elif var_name == 'heat_flux':
+        out_var = prepare_heat_flux(var)
     else:
-        raise NotImplementedError(f"Variable '{var}' not supported")
+        raise NotImplementedError(f"Variable '{var_name}' not yet supported.")
     return out_var
 
 
@@ -155,23 +161,21 @@ def calculate_variables(input_dict):
     logger.debug("Variables are calculated for the following datasources:%s",
                  input_dict.keys())
     dictionary = {}
-    for key, value in input_dict.items():
-        logger.debug("Calculating final variables for %s dataset", key)
-        dictionary.setdefault(key, {})
-        tmp_list = []
-        for item in value:
-            if item['preprocessor'] == "heat_flux":
-                tmp_list.append(variable_cases(item['preprocessor'], item))
-            else:
-                dictionary[key].setdefault(
-                    variable_cases(item['preprocessor'], item).var_name,
-                    variable_cases(item['preprocessor'], item)
-                )
+    for dataset, variables in input_dict.items():
+        dictionary[dataset] = {}
 
-        if key != "HadISST":
-            # Calculate heat flux for all data sources except HadISST
-            heat_flux = calculate_heat_flux(tmp_list)
-            dictionary[key].setdefault(heat_flux.var_name, heat_flux)
+        logger.debug("Calculating final variables %s for %s dataset",
+                     variables, dataset)
+
+        for var in variables:
+            var_name = var['preprocessor']
+            # get the list of variables to be ignored per dataset
+            to_ignore_vars = ignored_variables.get(dataset, None)
+            if var_name not in to_ignore_vars:
+                new_var = variable_cases(var_name, var)
+                new_var_name = new_var.var_name
+                dictionary[dataset][new_var_name] = new_var
+
     return dictionary
 
 
@@ -219,7 +223,7 @@ def main(cfg):
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
     all_variables = calculate_variables(my_files_dict)
     # Check is timeseries should be plotted
-    if cfg['plot_timeseries'] is True:
+    if cfg['plot_timeseries']:
         plot_timeseries(all_variables, cfg['variable_to_plot'], cfg)
     for key in my_files_dict:
         logger.info("Processing final calculations in dataset %s", key)
