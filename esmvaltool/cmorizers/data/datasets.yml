@@ -866,6 +866,13 @@ datasets:
     info: |
       Download the file MOBO-DIC_MPIM_monthly_clim.nc
 
+  MOBO-DIC2004-2019:
+    tier: 2
+    source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0277099/
+    last_access: 2023-07-18
+    info: |
+      Download the file MOBO_MPI_DIC_2004-2019_Oct2022.nc
+
   MODIS:
     tier: 3
     source: https://ladsweb.modaps.eosdis.nasa.gov/search/order

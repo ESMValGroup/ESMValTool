@@ -552,6 +552,16 @@ diagnostics:
     scripts: null
 
 
+  MOBO-DIC2004-2019:
+    description: MOBO-DIC2004-2019 check
+    variables:
+      dissic:
+    additional_datasets:
+      - {dataset: MOBO-DIC2004-2019, project: OBS6, mip: Omon, tier: 2,
+         type: clim, version: '1.2', start_year: 2004, end_year: 2019}
+    scripts: null
+
+
   NCEP-NCAR-R1:
     description: NCEP-NCAR-R1 check
     variables:
