@@ -11,8 +11,8 @@ attributes:
   modeling_realm: sat
   reference: 'esacci_cloud'
   comment: ''
-  start_year: 2002
-  end_year: 2002
+  start_year: 2000
+  end_year: 2004
 
 # Variables to cmorize
 variables:
