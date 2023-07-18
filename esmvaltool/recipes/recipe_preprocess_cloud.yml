@@ -19,7 +19,7 @@ documentation:
 
 
 datasets:
-        - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2, start_year: 2000, end_year: 2000}
+        - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2, start_year: 2000, end_year: 2004}
           #- {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2, timerange: 200001/200008}
 
 
@@ -28,12 +28,17 @@ preprocessors:
   south_east_pacific:
     custom_order: true
     extract_region:
-      start_latitude: -30.
-      end_latitude: -10.
-      start_longitude: 265.
+      #start_latitude: -30.
+      start_latitude: -25.
+      #end_latitude: -10.
+      end_latitude: -20.
+      #start_longitude: 265.
+      start_longitude: 280.
       end_longitude: 285.
     mask_landsea: &mask_land
       mask_out: land
+    anomalies:
+      period: monthly
     area_statistics: &area_mean
       operator: mean
 
