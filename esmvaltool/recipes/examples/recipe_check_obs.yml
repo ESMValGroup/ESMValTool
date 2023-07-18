@@ -456,6 +456,14 @@ diagnostics:
          version: v2018_25-numgauge1, start_year: 1891, end_year: 2016}
     scripts: null
 
+  GPCP-SG:
+    description: GPCP-SG check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: GPCP-SG, project: OBS, mip: Amon, tier: 2, type: atmos,
+         version: 2.3,  start_year: 1979,  end_year: 2022}
+    scripts: null
 
   HadCRUT3:
     description: HadCRUT3 check
@@ -539,7 +547,7 @@ diagnostics:
       rsutcs:
     additional_datasets:
       - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
-         type: reanaly, version: 1, start_year: 1979, end_year: 2013} 
+         type: reanaly, version: 1, start_year: 1979, end_year: 2013}
     scripts: null
 
   Kadow2020:
@@ -623,9 +631,9 @@ diagnostics:
         mip: Amon
       tas:
         mip: Amon
-      tasmax:  
+      tasmax:
         mip: Amon
-      tasmin:  
+      tasmin:
         mip: Amon
       ts:
         mip: Amon
@@ -656,7 +664,7 @@ diagnostics:
     variables:
       clt:
       hur:
-      prw: 
+      prw:
       ta:
     additional_datasets:
       - {dataset: NCEP-DOE-R2, project: OBS6, mip: Amon, tier: 2,
@@ -1750,6 +1758,21 @@ diagnostics:
         mip: Amon
       hur_monthly:
         short_name: hur
+        mip: Amon
+      cl_monthly:
+        short_name: cl
+        mip: Amon
+      clw_monthly:
+        short_name: clw
+        mip: Amon
+      cli_monthly:
+        short_name: cli
+        mip: Amon
+      clwvi_monthly:
+        short_name: clwvi
+        mip: Amon
+      clivi_monthly:
+        short_name: clivi
         mip: Amon
     additional_datasets:
       - {dataset: MERRA2, project: OBS6, tier: 3,

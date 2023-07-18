@@ -655,6 +655,15 @@ datasets:
       Download the following files:
         full_data_monthly_{version}.nc.gz
 
+  GPCP-SG:
+    tier: 2
+    source: |
+      https://psl.noaa.gov/data/gridded/data.gpcp.html
+      https://downloads.psl.noaa.gov/Datasets/gpcp/precip.mon.mean.nc
+    last_access: 2023-02-15
+    info: |
+      Download the file precip.mon.mean.nc
+
   GRACE:
     tier: 3
     source: https://podaac.jpl.nasa.gov/dataset/TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06_V2
@@ -1004,7 +1013,7 @@ datasets:
         monolevel/pr_wtr.eatm.mon.mean.nc
         pressure/shum.mon.mean.nc
         gaussian/monolevel/tcdc.eatm.mon.mean.nc
-        gaussian/monolevel/ulwrf.ntat.mon.mean.nc  
+        gaussian/monolevel/ulwrf.ntat.mon.mean.nc
         gaussian/monolevel/uswrf.ntat.mon.mean.nc
 
   NOAAGlobalTemp:

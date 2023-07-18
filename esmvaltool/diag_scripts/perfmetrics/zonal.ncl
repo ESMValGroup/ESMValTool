@@ -1,6 +1,6 @@
 ; #############################################################################
 ; PROCEDURE FOR THE ZONAL PLOT OF THE PERFORMANCE METRICS
-; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
+; Authors: Mattia Righi (DLR, Germany) and Franziska Winterstein (DLR, Germany)
 ; ESMVal project
 ; #############################################################################
 
@@ -134,7 +134,8 @@ begin
                    (/"mean", "stddev"/), \
                    diag_script_info@region, \
                    "zonal", \
-                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
+                   (/"winterstein_franziska", "righi_mattia", \
+                     "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 
@@ -209,7 +210,8 @@ begin
                    (/"mean", "stddev", "diff"/), \
                    diag_script_info@region, \
                    "zonal", \
-                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
+                   (/"winterstein_franziska", "righi_mattia", \
+                     "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 

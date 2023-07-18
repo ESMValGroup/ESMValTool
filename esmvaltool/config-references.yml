@@ -194,6 +194,10 @@ authors:
     name: Frank, Franziska
     institute: DLR, Germany
     orcid: https://orcid.org/0000-0002-2406-4936
+  winterstein_franziska:
+    name: Winterstein, Franziska
+    institute: DLR, Germany
+    orcid: https://orcid.org/0000-0002-2406-4936
   fuckar_neven:
     name: Fuckar, Neven
     institute: BSC, Spain
@@ -593,7 +597,7 @@ authors:
   sellar_alistair:
     name: Sellar, Alistair
     institute: MetOffice, UK
-    orcid:
+    orcid: 0000-0002-2955-7254
   wyser_klaus:
     name: Wyser, Klaus
     institute: SMHI, Sweden
@@ -664,6 +668,10 @@ authors:
     institute:
     orcid:
     github: mcreader97
+  rumbold_heather:
+    name: Heather, Rumbold
+    institute: Met Office, UK
+    orcid:
   senftleben_daniel:
     name: Senftleben, Daniel
     institute: DLR, Germany
