@@ -52,7 +52,7 @@ from esmvaltool.diag_scripts.shared._base import (
 logger = logging.getLogger(Path(__file__).stem)
 
 # list of variables to be ignored per model
-ignore_variables = {
+ignored_variables = {
     "HadISST": ["heat_flux"]
 }
 
