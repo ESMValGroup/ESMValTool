@@ -13,6 +13,11 @@ Last access
 Download and processing instructions
     Download the file precip.mon.mean.nc
     wget https://downloads.psl.noaa.gov/Datasets/gpcp/precip.mon.mean.nc
+    or
+    use the automatic download script shipped by ESMValTool
+    esmvaltool data download GPCP-SG
+    or
+    esmvaltool data prepare GPCP-SG
 """
 
 import logging

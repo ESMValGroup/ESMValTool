@@ -1006,6 +1006,14 @@ datasets:
       Download the following files:
       [SOURCE]/gridded/NOAAGlobalTemp_v5.0.0_gridded_s188001_e202205_c20220608T133245.nc
 
+  NOAA-MBL-CH4:
+    tier: 2
+    source: https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
+    last_access: 2023-07-17
+    info: |
+      Download the following file:
+      https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
+
   NSIDC-0116-sh:
     tier: 3
     source: https://nsidc.org/data/NSIDC-0116
