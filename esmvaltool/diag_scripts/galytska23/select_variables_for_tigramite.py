@@ -210,25 +210,27 @@ def plot_timeseries(dictionary, var, cfg):
     colors = plt.cm.viridis(np.linspace(0, 1, len(dictionary.keys())))
     baseplotname = f"Timeseries_{var}_anomalies"
     filename = get_plot_filename(baseplotname, cfg)
-    for i, key in enumerate(dictionary.keys()):
-        if var not in ('BK_sic', 'Ok_sic'):
-            if key == "HadISST":
+    for idx, dataset in enumerate(dictionary.keys()):
+        if var not in proc_vars["HadISST"]:
+            if dataset == "HadISST":
                 continue
-            if key != 'ERA5':
-                plotting_support(dictionary[key][var], key, color=colors[i])
+            if dataset != 'ERA5':
+                plotting_support(dictionary[dataset][var],
+                                 dataset, color=colors[idx])
             else:
-                plotting_support(dictionary[key][var],
-                                 key,
+                plotting_support(dictionary[dataset][var],
+                                 dataset,
                                  color='k',
                                  linewidth=2)
         else:
-            if key == "ERA5":
+            if dataset == "ERA5":
                 continue
-            if key != 'HadISST':
-                plotting_support(dictionary[key][var], key, color=colors[i])
+            if dataset != 'HadISST':
+                plotting_support(dictionary[dataset][var],
+                                 dataset, color=colors[idx])
             else:
-                plotting_support(dictionary[key][var],
-                                 key,
+                plotting_support(dictionary[dataset][var],
+                                 dataset,
                                  color='blue',
                                  linewidth=2)
     fig.savefig(filename, bbox_inches='tight')
@@ -252,7 +254,7 @@ def assemble_cube_list(dataset, var, special_datasets):
     special_datasets: list
         list of datasets to be treated separately,
         with restricted variables.
-        list of datasets (list of strings).
+        type: list of datasets (list of strings).
 
     Returns
     -------
