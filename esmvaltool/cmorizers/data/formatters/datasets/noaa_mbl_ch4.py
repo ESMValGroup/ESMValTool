@@ -10,7 +10,7 @@ Last access
     20230717
 
 Download and processing instructions
-    Download the file https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
+    Download the file:
     wget https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
     or
     use the automatic download script shipped by ESMValTool
@@ -23,11 +23,9 @@ import logging
 import warnings
 from pathlib import Path
 
-import iris
-from iris import NameConstraint
-from iris import pandas
-import pandas as pd
 from datetime import datetime
+import iris
+import pandas as pd
 from cf_units import Unit
 import numpy as np
 
@@ -36,17 +34,18 @@ from esmvaltool.cmorizers.data import utilities as utils
 logger = logging.getLogger(__name__)
 
 LAT_COORD = iris.coords.DimCoord([0.],
-                                 bounds=[[-90.0,90.0]],
+                                 bounds=[[-90.0, 90.0]],
                                  var_name='lat',
                                  standard_name='latitude',
                                  long_name='latitude',
                                  units='degrees')
 LON_COORD = iris.coords.DimCoord([180.0],
-                                 bounds=[[0.,360.]],
+                                 bounds=[[0., 360.]],
                                  var_name='lon',
                                  standard_name='longitude',
                                  long_name='longitude',
                                  units='degrees')
+
 
 def _fix_var_metadata(var_info, cmor_info, cube):
     """Fix variable metadata."""
@@ -57,6 +56,7 @@ def _fix_var_metadata(var_info, cmor_info, cube):
 
     utils.fix_var_metadata(cube, cmor_info)
     return cube
+
 
 def _get_time_coord(year, month):
     """Get time coordinate."""
@@ -80,6 +80,7 @@ def _get_time_coord(year, month):
     )
     return time_coord
 
+
 def _get_cube(row, column_name):
     """Create :class:`iris.cube.Cube` from :class:`pandas.Series`."""
     time_coord = _get_time_coord(int(row['year']), int(row['month']))
@@ -93,7 +94,8 @@ def _get_cube(row, column_name):
     )
     return cube
 
-def _fix_coords(cube, filepath):
+
+def _fix_coords(cube):
     """Fix coordinates."""
     utils.fix_dim_coordnames(cube)
 
@@ -103,7 +105,6 @@ def _fix_coords(cube, filepath):
 def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
-    raw_var = var_info.get('raw_name', var)
 
     # Load data
     with warnings.catch_warnings():
@@ -115,9 +116,9 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
             module='iris',
         )
         skiprows = 0
-        with open(filepath,'r') as csv:
-            for ln in csv:
-                if ln.startswith("#"):
+        with open(filepath, 'r', encoding='utf-8') as csv:
+            for line in csv:
+                if line.startswith("#"):
                     skiprows = skiprows + 1
 
         data_frame = pd.read_csv(filepath, header=skiprows)
@@ -130,24 +131,15 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
         cube = cubes.concatenate_cube()
         cube.var_name = var
 
-
-        # frame = frame.set_index('decimal')
-        # cube = iris.pandas.as_cubes(frame['average'])[0]
-        # year = frame['year']
-        # month = frame['month']
-
-    print(cube)
-
     # Fix coordinates
-    cube = _fix_coords(cube, filepath)
-    print(cube)
+    cube = _fix_coords(cube)
 
     # Fix variable metadata
     cube = _fix_var_metadata(var_info, cmor_info, cube)
 
     # Fix global metadata
     utils.set_global_atts(cube, attrs)
-    print(cube)
+
     # Save variable
     utils.save_variable(
         cube,
