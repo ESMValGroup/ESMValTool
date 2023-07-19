@@ -45,26 +45,25 @@ from esmvaltool.diag_scripts.shared import (
     save_data,
 )
 from esmvaltool.diag_scripts.shared._base import (
-    get_plot_filename,
-)
-
+    get_plot_filename, )
 
 logger = logging.getLogger(Path(__file__).stem)
 
 # Fixed parameters
 # list of variables to be ignored per model
-ignored_variables = {
-    "HadISST": ["heat_flux"]
-}
+ignored_variables = {"HadISST": ["heat_flux"]}
 
 # list of variables per dataset that will be processed
 proc_vars = {
-    "ERA5": ['PV', 'Arctic_temperature', 'Psl_Ural',
-             'Psl_Sib', 'Psl_Aleut', 'heat_flux'],
+    "ERA5": [
+        'PV', 'Arctic_temperature', 'Psl_Ural', 'Psl_Sib', 'Psl_Aleut',
+        'heat_flux'
+    ],
     "HadISST": ['BK_sic', 'Ok_sic'],
-    "all_other_datasets": ['PV', 'Arctic_temperature', 'Psl_Ural',
-                           'Psl_Sib', 'Psl_Aleut', 'heat_flux',
-                           'BK_sic', 'Ok_sic'],
+    "all_other_datasets": [
+        'PV', 'Arctic_temperature', 'Psl_Ural', 'Psl_Sib', 'Psl_Aleut',
+        'heat_flux', 'BK_sic', 'Ok_sic'
+    ],
 }
 
 
@@ -153,8 +152,11 @@ def variable_cases(var_name, var):
         out_var = calculate_polar_vortex(var)
     elif var_name == 'pre_tas':
         out_var = calculate_arctic_tas(var)
-    elif var_name in ['pressure_ural', 'pressure_sib',
-                      'pressure_aleut', ]:
+    elif var_name in [
+            'pressure_ural',
+            'pressure_sib',
+            'pressure_aleut',
+    ]:
         out_var = calculate_slp(var)
     elif var_name == 'bk_ice':
         out_var = finalize_bk_ice(var)
@@ -213,18 +215,21 @@ def plot_timeseries(dictionary, var, cfg):
             if key == "HadISST":
                 continue
             if key != 'ERA5':
-                plotting_support(dictionary[key][var], key,
-                                 color=colors[i])
+                plotting_support(dictionary[key][var], key, color=colors[i])
             else:
-                plotting_support(dictionary[key][var], key,
-                                 color='k', linewidth=2)
+                plotting_support(dictionary[key][var],
+                                 key,
+                                 color='k',
+                                 linewidth=2)
         else:
             if key == "ERA5":
                 continue
             if key != 'HadISST':
                 plotting_support(dictionary[key][var], key, color=colors[i])
             else:
-                plotting_support(dictionary[key][var], key, color='blue',
+                plotting_support(dictionary[key][var],
+                                 key,
+                                 color='blue',
                                  linewidth=2)
     fig.savefig(filename, bbox_inches='tight')
 
@@ -256,12 +261,10 @@ def assemble_cube_list(dataset, var, special_datasets):
     """
     if dataset not in special_datasets:
         cube_list = iris.cube.CubeList(
-            [var[proc_var] for proc_var in proc_vars["all_other_datasets"]]
-        )
+            [var[proc_var] for proc_var in proc_vars["all_other_datasets"]])
     else:
         cube_list = iris.cube.CubeList(
-            [var[proc_var] for proc_var in proc_vars[dataset]]
-        )
+            [var[proc_var] for proc_var in proc_vars[dataset]])
 
     return cube_list
 
