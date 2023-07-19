@@ -30,7 +30,7 @@
             OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/${CYLC_TASK_CYCLE_POINT}
             ESMVALCORE_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/python/ESMValCore
             ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/python/ESMValTool
-            # PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
+            PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
             CONDA_PKGS_DIRS = ${CYLC_WORKFLOW_SHARE_DIR}/rtw/conda/pkgs/
             CONDA_ENVS_PATH = ${CYLC_WORKFLOW_SHARE_DIR}/rtw/conda/envs/
 
@@ -38,7 +38,7 @@
         platform = localhost
         [[[environment]]]
             SITE = {{ SITE }}
-            
+
     [[install_env_file]]
         platform = localhost
         [[[environment]]]

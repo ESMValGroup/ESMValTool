@@ -9,3 +9,9 @@ eval "$(conda shell.bash hook)"
 conda activate rtw-env
 
 mamba env update --file ${ESMVALTOOL_DIR}/environment.yml
+
+conda activate esmvaltool
+cd $ESMVALCORE_DIR
+pip install .
+cd $ESMVALTOOL_DIR
+pip install .

@@ -39,8 +39,10 @@ export NUMEXPR_NUM_THREADS=1
 export PYTHONNOUSERSITE=True
 
 # safe_load "${MODULE_NAME}"
+set +eu
 eval "$(conda shell.bash hook)"
-conda activate rtw-env
+conda activate esmvaltool
+set -eu
 
 # If PYTHONPATH_PREPEND has been set, prepend it to PYTHONPATH to extend the
 # Python environment.
