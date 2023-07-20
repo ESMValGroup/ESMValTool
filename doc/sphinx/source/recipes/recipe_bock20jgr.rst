@@ -21,13 +21,13 @@ different CMIP phases.
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in :file:`recipes/bock20jgr/`
+Recipes are stored in :folder:`recipes/bock20jgr/`
 
     * :recipe:`bock20jgr/recipe_bock20jgr_fig_1-4.yml`
     * :recipe:`bock20jgr/recipe_bock20jgr_fig_6-7.yml`
     * :recipe:`bock20jgr/recipe_bock20jgr_fig_8-10.yml`
 
-Diagnostics are stored in :file:`diag_scripts/`
+Diagnostics are stored in :folder:`diag_scripts/`
 
     Fig. 1:
 
