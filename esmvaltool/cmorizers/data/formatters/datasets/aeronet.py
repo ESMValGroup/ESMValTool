@@ -105,7 +105,7 @@ def load_file(filesystem, path_like):
             na_values=-999.0,
             date_format="%Y-%b",
             parse_dates=[0],
-            usecols=lambda x: "AOD_Empty" not in x and "NUM_" not in x,
+            usecols=lambda x: "AOD_Empty" not in x,
         )
     contacts = parse_contact(contact_string)
     elevation = compress_column(df, "Elevation(meters)")
@@ -126,8 +126,8 @@ def load_file(filesystem, path_like):
 
 def sort_data_columns(columns):
     data_columns = [c for c in columns if "NUM_" not in c]
-    # assert len(df.columns) == 3*len(data_columns)
-    assert len(columns) == len(data_columns)
+    assert len(columns) == 3 * len(data_columns)
+    # assert len(columns) == len(data_columns)
     aod_columns = [c for c in data_columns if c.startswith("AOD_")]
     precipitable_water_columns = [
         c for c in data_columns if c == "Precipitable_Water(cm)"
@@ -179,6 +179,23 @@ def assemble_cube(stations, idx, wavelengths=None):
         for df in dfs
     ],
                    axis=-1)[..., idx]
+    num_days = da.stack([
+        np.stack([
+            df[f"NUM_DAYS[AOD_{wl}nm]"].values.astype(np.float32)
+            for wl in wavelengths
+        ],
+                 axis=-1) for df in dfs
+    ],
+                        axis=-1)[..., idx]
+    num_points = da.stack([
+        np.stack([
+            df[f"NUM_POINTS[AOD_{wl}nm]"].values.astype(np.float32)
+            for wl in wavelengths
+        ],
+                 axis=-1) for df in dfs
+    ],
+                          axis=-1)[..., idx]
+
     wavelength_points = np.array(wavelengths, dtype=np.float64)
     wavelength_coord = iris.coords.DimCoord(
         points=wavelength_points,
@@ -233,6 +250,23 @@ def assemble_cube(stations, idx, wavelengths=None):
         var_name="lon",
         units="degrees_east",
     )
+    num_days_ancillary = iris.coords.AncillaryVariable(
+        data=da.ma.masked_array(num_days, da.isnan(num_days),
+                                fill_value=1.e20),
+        standard_name=None,
+        long_name="Number of days",
+        var_name="num_days",
+        units="1",
+    )
+    num_points_ancillary = iris.coords.AncillaryVariable(
+        data=da.ma.masked_array(num_days,
+                                da.isnan(num_points),
+                                fill_value=1.e20),
+        standard_name="number_of_observations",
+        long_name="Number of observations",
+        var_name="num_points",
+        units="1",
+    )
     cube = iris.cube.Cube(
         data=da.ma.masked_array(aod, da.isnan(aod), fill_value=1.e20),
         standard_name=(
@@ -246,6 +280,10 @@ def assemble_cube(stations, idx, wavelengths=None):
             (longitude_coord, 2),
             (elevation_coord, 2),
             (name_coord, 2),
+        ],
+        ancillary_variables_and_dims=[
+            (num_days_ancillary, (0, 1, 2)),
+            (num_points_ancillary, (0, 1, 2)),
         ],
     )
     return cube
