@@ -223,6 +223,13 @@ def assemble_cube(stations, idx, wavelengths=None):
         units=time_units,
         bounds=time_units.date2num(time_bounds),
     )
+    index_coord = iris.coords.DimCoord(
+        points=np.arange(aod.shape[-1]),
+        standard_name=None,
+        long_name="Station index (arbitrary)",
+        var_name="station_index",
+        units="1",
+    )
     name_coord = iris.coords.AuxCoord(
         points=stations.station_name[idx],
         standard_name="platform_name",
@@ -274,7 +281,11 @@ def assemble_cube(stations, idx, wavelengths=None):
         long_name="Aerosol Optical Thickness",
         var_name="aod",
         units="1",
-        dim_coords_and_dims=[(time_coord, 0), (wavelength_coord, 1)],
+        dim_coords_and_dims=[
+            (time_coord, 0),
+            (wavelength_coord, 1),
+            (index_coord, 2),
+        ],
         aux_coords_and_dims=[
             (latitude_coord, 2),
             (longitude_coord, 2),
