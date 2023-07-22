@@ -243,9 +243,9 @@ diagnostics:
         <<: *var_tas_tsline
         project: CMIP3
         mip: A1
-        modeling_realm: atm
-        exp: 20c3m
-        frequency: mo
+        modeling_realm: atmos
+        exp: historical
+        frequency: mon
         ensemble: run1
         start_year: 1850
         end_year: 1999
@@ -347,9 +347,9 @@ diagnostics:
         <<: *var_cmip6_bias
         mip: A1
         project: CMIP3
-        modeling_realm: atm
-        exp: 20c3m
-        frequency: mo
+        modeling_realm: atmos
+        exp: historical
+        frequency: mon
         ensemble: run1
         start_year: 1980
         end_year: 1999
@@ -439,9 +439,9 @@ diagnostics:
         reference_dataset: GPCP-SG
         mip: A1
         project: CMIP3
-        modeling_realm: atm
-        exp: 20c3m
-        frequency: mo
+        modeling_realm: atmos
+        exp: historical
+        frequency: mon
         ensemble: run1
         start_year: 1980
         end_year: 1999

@@ -65,7 +65,7 @@ preprocessors:
 datasets:
   # CMIP3
   - &cmip3 {dataset: cccma_cgcm3_1, institute: CCCMA, project: CMIP3,
-            mip: A1, modeling_realm: atm, exp: 20c3m, frequency: mo,
+            mip: A1, modeling_realm: atmos, exp: historical, frequency: mon,
             ensemble: run1}
   - {<<: *cmip3, dataset: cccma_cgcm3_1_t63, institute: CCCMA}
   - {<<: *cmip3, dataset: csiro_mk3_0, institute: CSIRO}
