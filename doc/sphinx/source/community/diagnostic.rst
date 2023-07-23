@@ -263,7 +263,7 @@ see the instructions and examples below on how to add provenance information:
 
 Recording provenance in a Python diagnostic script
 --------------------------------------------------
-Always use :meth:`esmvaltool.diag_scripts.shared.run_diagnostic` at the end of your script:
+Always use :func:`esmvaltool.diag_scripts.shared.run_diagnostic` at the end of your script:
 
 .. code-block:: python
 
@@ -271,16 +271,9 @@ Always use :meth:`esmvaltool.diag_scripts.shared.run_diagnostic` at the end of y
     with run_diagnostic() as config:
         main(config)
 
-And make use of a :class:`esmvaltool.diag_scripts.shared.ProvenanceLogger` to log provenance:
-
-.. code-block:: python
-
-  with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(diagnostic_file, provenance_record)
-
-The ``diagnostic_file`` can be obtained using :class:`esmvaltool.diag_scripts.shared.get_diagnostic_filename`.
-
-The ``provenance_record`` is a dictionary of provenance items, for example:
+Create a ``provenance_record`` for each diagnostic file (i.e. image or data 
+file) that the diagnostic script creates. The ``provenance_record`` is a 
+dictionary of provenance items, for example:
 
 .. code-block:: python
 
@@ -299,9 +292,24 @@ The ``provenance_record`` is a dictionary of provenance items, for example:
         'statistics': ['mean'],
       }
 
+To save a matplotlib figure, use the convenience function 
+:func:`esmvaltool.diag_scripts.shared.save_figure`. Similarly, to save Iris cubes use 
+:func:`esmvaltool.diag_scripts.shared.save_data`. Both of these functions take
+``provenance_record`` as an argument and log the provenance accordingly.
 Have a look at the example Python diagnostic in
 `esmvaltool/diag_scripts/examples/diagnostic.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.py>`_
 for a complete example.
+
+For any other files created, you will need to make use of a 
+:class:`esmvaltool.diag_scripts.shared.ProvenanceLogger` to log provenance. Include the
+following code directly after the file is saved:
+
+.. code-block:: python
+
+  with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
+
+The full path of a ``diagnostic_file`` can be obtained using :class:`esmvaltool.diag_scripts.shared.get_diagnostic_filename`.
 
 Recording provenance in an NCL diagnostic script
 ------------------------------------------------
