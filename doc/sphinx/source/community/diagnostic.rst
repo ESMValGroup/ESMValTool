@@ -179,6 +179,10 @@ and finally it will store provenance information. Provenance information is stor
 and provided that the provenance tree is small, also plotted in an SVG file for
 human inspection.
 In addition to provenance information, a caption is also added to the plots.
+
+Provenance information from the recipe is automatically recorded by ESMValCore, whereas
+diagnostic scripts must include code specifically to record provenance. See below for 
+documentation of provenance attributes that can be included in a recipe.
 When contributing a diagnostic, please make sure it records the provenance,
 and that no warnings related to provenance are generated when running the recipe.
 To allow the ESMValCore to keep track of provenance (e.g. which input files
@@ -272,7 +276,7 @@ Always use :func:`esmvaltool.diag_scripts.shared.run_diagnostic` at the end of y
         main(config)
 
 Create a ``provenance_record`` for each diagnostic file (i.e. image or data 
-file) that the diagnostic script creates. The ``provenance_record`` is a 
+file) that the diagnostic script outputs. The ``provenance_record`` is a 
 dictionary of provenance items, for example:
 
 .. code-block:: python
