@@ -14,9 +14,11 @@ build:
   jobs:
     pre_create_environment:
       - echo "Force modern conda, Python and mamba"
-      - conda run -n base mamba install --yes --channel=conda-forge "mamba>=1.4"
+      - conda run -n base mamba install --yes --channel=conda-forge "mamba>=1.4.8"
+      - conda run -n base mamba --version
     post_create_environment:
       # use conda run executable wrapper to have all env variables
+      - conda run -n ${CONDA_DEFAULT_ENV} mamba --version
       - conda run -n ${CONDA_DEFAULT_ENV} pip install . --no-deps
 
 # Declare the requirements required to build your docs
