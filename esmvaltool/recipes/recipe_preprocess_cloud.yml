@@ -18,8 +18,10 @@ documentation:
     - cmug
 
 
-datasets:
+ESACCI_CLOUD_datasets: &esacci
         - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2, start_year: 2000, end_year: 2004}
+ERA5_datasets: &era5
+        - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3, start_year: 2000, end_year: 2004}
           #- {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2, timerange: 200001/200008}
 
 
@@ -39,8 +41,11 @@ preprocessors:
       mask_out: land
     anomalies:
       period: monthly
-    area_statistics: &area_mean
-      operator: mean
+      #area_statistics: &area_mean
+      #  operator: mean
+    regrid:
+      scheme: area_weighted
+      target_grid: 1x1      
 
 
 diagnostics:
@@ -52,6 +57,7 @@ diagnostics:
         preprocessor: south_east_pacific
         mip: day
         frequency: day
+        additional_datasets: *esacci
       clwvi:
         <<: *var
         mip: CFday
@@ -61,14 +67,26 @@ diagnostics:
       ctp:
         <<: *var
         mip: day
+      prw:
+        <<: *var
+        mip: Eday
+        additional_datasets: *era5
+      psl:
+        <<: *var
+        mip: day
+        additional_datasets: *era5
       reff:
         <<: *var
         mip: day
       rlut:
         <<: *var
         mip: day
-    scripts:
-      timeseries:
-        script: examples/diagnostic.py
-        quickplot:
-          plot_type: plot
+      tos:
+        <<: *var
+        mip: day
+        additional_datasets: *era5
+    scripts: null
+    #      timeseries:
+    #        script: examples/diagnostic.py
+    #        quickplot:
+    #          plot_type: plot
