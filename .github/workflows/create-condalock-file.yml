@@ -47,7 +47,7 @@ jobs:
           which python
           python --version
       - name: Install conda-lock
-        run: run: mamba install -y -c conda-forge conda-lock
+        run: mamba install -y -c conda-forge conda-lock
       - name: Check version of conda-lock
         run: conda-lock --version
       - name: Create conda lock file for linux-64
