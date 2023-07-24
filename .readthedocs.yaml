@@ -15,8 +15,7 @@ build:
     pre_create_environment:
       - echo "Force modern conda, Python and mamba"
       - conda update --yes --quiet --name=base --channel=defaults conda
-      - conda run -n ${CONDA_DEFAULT_ENV} conda install --yes -c conda-forge "python=3.11"
-      - conda run -n ${CONDA_DEFAULT_ENV} conda install --yes -c conda-forge "mamba>=1.4.8"
+      - conda update --yes --quiet --name=base --channel=conda-forge "mamba>=1.4"
     post_create_environment:
       # use conda run executable wrapper to have all env variables
       - conda run -n ${CONDA_DEFAULT_ENV} pip install . --no-deps
