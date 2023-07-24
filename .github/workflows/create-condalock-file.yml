@@ -6,7 +6,7 @@ on:
   # and hence lots of automated PRs
   push:
     branches:
-      - condalock-update-test
+      - update_condalock_create
   schedule:
     - cron: '0 4 */10 * *'
 
