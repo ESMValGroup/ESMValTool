@@ -10,7 +10,7 @@ build:
   os: ubuntu-22.04
   tools:
     # this is very old; needs immediate update
-    python: "miniconda3-4.7"
+    python: "mambaforge-4.10"
   jobs:
     pre_create_environment:
       - echo "Force modern mamba"
