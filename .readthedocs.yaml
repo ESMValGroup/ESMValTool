@@ -13,9 +13,8 @@ build:
     python: "miniconda3-4.7"
   jobs:
     pre_create_environment:
-      - echo "Force conda update and modern mamba"
-      - conda update --yes --quiet --name=base --channel=conda-forge conda
-      - conda run -n base conda install -c conda-forge "mamba>=1.4.8"
+      - echo "Force modern mamba"
+      - conda install --yes -c conda-forge "mamba>=1.4.8"
     post_create_environment:
       # use conda run executable wrapper to have all env variables
       - conda run -n ${CONDA_DEFAULT_ENV} pip install . --no-deps
