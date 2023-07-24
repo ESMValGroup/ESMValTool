@@ -9,12 +9,13 @@ version: 2
 build:
   os: ubuntu-22.04
   tools:
-    # this is very old! July 2023 version: 23.1.0-4
-    python: "mambaforge-4.10"
+    # this is very old; needs immediate update
+    python: "miniconda3-4.7"
   jobs:
     pre_create_environment:
-      - echo "Force modern mamba"
-      - conda run -n ${CONDA_DEFAULT_ENV} conda install -c conda-forge "mamba>=1.4.8"
+      - echo "Force conda update and modern mamba"
+      - conda update --yes --quiet --name=base --channel=conda-forge conda
+      - conda install -c conda-forge "mamba>=1.4.8"
     post_create_environment:
       # use conda run executable wrapper to have all env variables
       - conda run -n ${CONDA_DEFAULT_ENV} pip install . --no-deps
