@@ -10,15 +10,15 @@ build:
   os: ubuntu-22.04
   tools:
     # this is very old; needs immediate update
-    python: "miniconda3-4.7"  # "mambaforge-4.10"
+    python: "mambaforge-4.10"
   jobs:
     pre_create_environment:
       # solution that should work, but it doesn't (base conda too old)
       # - conda run -n base mamba install --yes --channel=conda-forge "mamba>=1.4.8"
       # - conda run -n base mamba --version
       # solution from RTD docs example
-      - conda update --yes --quiet --name=base --channel=defaults conda
-      - conda --version
+      - mamba update --yes --quiet --name=base mamba
+      - mamba --version
     post_create_environment:
       # use conda run executable wrapper to have all env variables
       - conda run -n ${CONDA_DEFAULT_ENV} mamba --version
