@@ -13,10 +13,7 @@ build:
     python: "mambaforge-4.10"
   jobs:
     pre_create_environment:
-      # solution that should work, but it doesn't (base conda too old)
-      # - conda run -n base mamba install --yes --channel=conda-forge "mamba>=1.4.8"
-      # - conda run -n base mamba --version
-      # solution from RTD docs example
+      # update mamba
       - mamba update --yes --quiet --name=base mamba
       - mamba --version
     post_create_environment:
