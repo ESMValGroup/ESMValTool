@@ -9,11 +9,11 @@ version: 2
 build:
   os: ubuntu-22.04
   tools:
-    # updated in https://github.com/readthedocs/readthedocs.org/pull/10572
+    # updated and deployed from Aug 1, 2023
     python: "mambaforge-22.9"
   jobs:
     pre_create_environment:
-      # update mamba
+      # update mamba just in case
       - mamba update --yes --quiet --name=base mamba
       - mamba --version
     post_create_environment:
