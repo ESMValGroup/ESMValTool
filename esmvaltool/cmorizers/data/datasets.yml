@@ -985,6 +985,15 @@ datasets:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
 
+  NOAA-CH4-CCGG:
+    tier: 2
+    source: https://gml.noaa.gov/aftp/data/trace_gases/ch4/flask/surface/
+    last_access: 2023-08-01
+    info: |
+      Download the following file:
+        ch4_surface-flask_1_ccgg_ASCIItext.zip
+        Only use the files 'ch4_*_surface-flask_1_ccgg_month.txt'.
+
   NOAA-CIRES-20CR:
     tier: 2
     source: ftp.cdc.noaa.gov/Projects/20thC_ReanV2/Monthlies/
