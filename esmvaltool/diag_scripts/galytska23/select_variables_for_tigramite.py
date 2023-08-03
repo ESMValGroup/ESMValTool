@@ -177,14 +177,28 @@ def calculate_variables(dataset_dict):
         logger.debug("Calculating final variables %s for %s dataset",
                      variables, dataset)
 
-        for var in variables:
-            var_name = var['preprocessor']
-            # get the list of variables to be ignored per dataset
+        if dataset in ignored_variables:
             to_ignore_vars = ignored_variables.get(dataset, None)
-            if var_name not in to_ignore_vars:
-                new_var = variable_cases(var_name, var)
-                new_var_name = new_var.var_name
-                processed_vars[dataset][new_var_name] = new_var
+            for var in variables:
+                var_name = var['preprocessor']
+                if var_name not in to_ignore_vars:
+                    new_var = variable_cases(var_name, var)
+                    new_var_name = new_var.var_name
+                    processed_vars[dataset][new_var_name] = new_var
+        else: 
+            tmp_list = []
+            for var in variables:
+                var_name = var['preprocessor']
+                if var_name == "heat_flux":
+                    tmp_list.append(variable_cases(var_name, var))
+                else: 
+                    new_var = variable_cases(var_name, var)
+                    new_var_name = new_var.var_name
+                    processed_vars[dataset][new_var_name] = new_var
+            if len (tmp_list) !=2:
+                raise IndexError("The preprocessor heat flux requests two variables in the recipe: va and ta")
+            heat_flux = calculate_heat_flux(tmp_list)
+            processed_vars[dataset][heat_flux.var_name] = heat_flux
 
     return processed_vars
 
