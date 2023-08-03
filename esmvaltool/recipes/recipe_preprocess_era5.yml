@@ -24,7 +24,7 @@ documentation:
 
 datasets:
   # For the daily diagnostic, always add the next year, otherwise the last day is not cmor compatible
-  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 2002, end_year: 2005}
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 2000, end_year: 2005}
 
 
 preprocessors:
@@ -73,13 +73,13 @@ diagnostics:
           era5_name: sea_surface_temperature
           era5_freq: hourly
           preprocessor: daily_mean
-            #wap500:
-            #    mip: E1hr
-            #    era5_name: vertical_velocity
-            #    era5_freq: hourly
-            #    preprocessor: daily_mean
-            #zg500:
-            #    mip: E1hr
-            #    era5_name: geopotential
-            #    era5_freq: hourly
-            #    preprocessor: daily_mean
+      wap500:
+          mip: E1hr
+          era5_name: vertical_velocity
+          era5_freq: hourly
+          preprocessor: daily_mean
+      zg500:
+          mip: E1hr
+          era5_name: geopotential
+          era5_freq: hourly
+          preprocessor: daily_mean
