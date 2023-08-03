@@ -41,8 +41,8 @@ preprocessors:
       mask_out: land
     anomalies:
       period: monthly
-      #area_statistics: &area_mean
-      #  operator: mean
+    area_statistics: &area_mean
+      operator: mean
     regrid:
       scheme: area_weighted
       target_grid: 1x1      
@@ -82,6 +82,14 @@ diagnostics:
         <<: *var
         mip: day
       tos:
+        <<: *var
+        mip: day
+        additional_datasets: *era5
+      wap500:
+        <<: *var
+        mip: CFday
+        additional_datasets: *era5
+      zg500:
         <<: *var
         mip: day
         additional_datasets: *era5
