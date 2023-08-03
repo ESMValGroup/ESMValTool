@@ -146,12 +146,15 @@ def variable_cases(var_name, var):
         out_var = calculate_polar_vortex(var)
     elif var_name == 'pre_tas':
         out_var = calculate_arctic_tas(var)
-    elif var_name in [
-            'pressure_ural',
-            'pressure_sib',
-            'pressure_aleut',
-    ]:
-        out_var = calculate_slp(var)
+    elif var == 'pressure_ural':
+        out_var = calculate_slp(item)
+        out_var.var_name = 'Psl_Ural'
+    elif var == 'pressure_sib':
+        out_var = calculate_slp(item)
+        out_var.var_name = 'Psl_Sib'
+    elif var == 'pressure_aleut':
+        out_var = calculate_slp(item)
+        out_var.var_name = 'Psl_Aleut'
     elif var_name == 'bk_ice':
         out_var = finalize_bk_ice(var)
     elif var_name == 'ok_ice':
