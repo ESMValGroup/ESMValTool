@@ -105,12 +105,6 @@ def calculate_slp(dict_item):
     var = iris.load_cube(dict_item['filename'])
     # calculate hPa from Pa.
     var.data /= 100
-    if var.var_name == "pressure_ural":
-        var.var_name = 'Psl_Ural'
-    elif var.var_name == 'pressure_sib':
-        var.var_name = 'Psl_Sib'
-    elif var.var_name == 'pressure_aleut':
-        var.var_name = 'Psl_Aleut'
     return var
 
 
