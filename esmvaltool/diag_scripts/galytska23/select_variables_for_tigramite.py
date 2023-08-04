@@ -146,14 +146,14 @@ def variable_cases(var_name, var):
         out_var = calculate_polar_vortex(var)
     elif var_name == 'pre_tas':
         out_var = calculate_arctic_tas(var)
-    elif var == 'pressure_ural':
-        out_var = calculate_slp(item)
+    elif var_name == 'pressure_ural':
+        out_var = calculate_slp(var)
         out_var.var_name = 'Psl_Ural'
-    elif var == 'pressure_sib':
-        out_var = calculate_slp(item)
+    elif var_name == 'pressure_sib':
+        out_var = calculate_slp(var)
         out_var.var_name = 'Psl_Sib'
-    elif var == 'pressure_aleut':
-        out_var = calculate_slp(item)
+    elif var_name == 'pressure_aleut':
+        out_var = calculate_slp(var)
         out_var.var_name = 'Psl_Aleut'
     elif var_name == 'bk_ice':
         out_var = finalize_bk_ice(var)
@@ -185,18 +185,19 @@ def calculate_variables(dataset_dict):
                     new_var = variable_cases(var_name, var)
                     new_var_name = new_var.var_name
                     processed_vars[dataset][new_var_name] = new_var
-        else: 
+        else:
             tmp_list = []
             for var in variables:
                 var_name = var['preprocessor']
                 if var_name == "heat_flux":
                     tmp_list.append(variable_cases(var_name, var))
-                else: 
+                else:
                     new_var = variable_cases(var_name, var)
                     new_var_name = new_var.var_name
                     processed_vars[dataset][new_var_name] = new_var
-            if len (tmp_list) !=2:
-                raise IndexError("The preprocessor heat flux requests two variables in the recipe: va and ta")
+            if len(tmp_list) != 2:
+                raise IndexError("The preprocessor heat flux requests two \
+                                  variables in the recipe: va and ta")
             heat_flux = calculate_heat_flux(tmp_list)
             processed_vars[dataset][heat_flux.var_name] = heat_flux
 
