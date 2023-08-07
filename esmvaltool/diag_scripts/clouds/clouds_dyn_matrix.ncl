@@ -20,6 +20,7 @@
 ;   filename_add: optionally add this string to plot filesnames
 ;   nbins: number of equally spaced bins (var_x), default = 100
 ;   sidepanels: show/hide side panels
+;   use_alias:          use "alias" instead of "dataset"
 ;   xlabel: label overriding variable name for x-axis (e.g. SST)
 ;   ylabel: label overriding variable name for y-axis (e.g. omega500)
 ;   zdmin:  min z value for labelbar (difference plots)
@@ -37,6 +38,7 @@
 ;   none
 ;
 ; Modification history
+;   20230804-lauer_axel: added support for alias
 ;   20230117-lauer_axel: added support for ICON (code from Manuel)
 ;   20220126-lauer_axel: added optional variable labels for x- and y-axes
 ;   20211118-lauer_axel: added output of frequency distributions
@@ -191,8 +193,15 @@ begin
   set_default_att(diag_script_info, "filename_add", "")
   set_default_att(diag_script_info, "nbins", 100)
   set_default_att(diag_script_info, "sidepanels", False)
+  set_default_att(diag_script_info, "use_alias", False)
   set_default_att(diag_script_info, "xlabel", var_x)
   set_default_att(diag_script_info, "ylabel", var_y)
+
+  if (diag_script_info@use_alias) then
+    search_att = "alias"
+  else
+    search_att = "dataset"
+  end if
 
   if (diag_script_info@filename_add .ne. "") then
     filename_add = "_" + diag_script_info@filename_add
@@ -222,13 +231,13 @@ begin
   ; ############
 
   info_x = select_metadata_by_name(input_file_info, varlist(varstart(0)))
-  names_x = metadata_att_as_array(info_x, "dataset")
+  names_x = metadata_att_as_array(info_x, search_att)
   projects_x = metadata_att_as_array(info_x, "project")
   info_y = select_metadata_by_name(input_file_info, varlist(varstart(1)))
-  names_y = metadata_att_as_array(info_y, "dataset")
+  names_y = metadata_att_as_array(info_y, search_att)
   projects_y = metadata_att_as_array(info_y, "project")
   info_z = select_metadata_by_name(input_file_info, varlist(varstart(2)))
-  names_z = metadata_att_as_array(info_z, "dataset")
+  names_z = metadata_att_as_array(info_z, search_att)
   projects_z = metadata_att_as_array(info_z, "project")
 
   refidx_x = ind(names_x .eq. refname(varstart(0)))
@@ -306,30 +315,33 @@ begin
 
     ; reference datasets may have different names
     if (ii .eq. refidx_x) then
-      atts_x@dataset = refname(varstart(0))
-      atts_y@dataset = refname(varstart(1))
-      atts_z@dataset = refname(varstart(2))
+      atts_x@$search_att$ = refname(varstart(0))
+      atts_y@$search_att$ = refname(varstart(1))
+      atts_z@$search_att$ = refname(varstart(2))
     else  ; all other datasets: force same dataset name for var_x, var_y, var_z
-      atts_x@dataset = names_x(ii)
-      atts_y@dataset = names_x(ii)
-      atts_z@dataset = names_x(ii)
+      atts_x@$search_att$ = names_x(ii)
+      atts_y@$search_att$ = names_x(ii)
+      atts_z@$search_att$ = names_x(ii)
     end if
 
     ; read var_x
 
     info = select_metadata_by_atts(input_file_info, atts_x)
+print(atts_x)
     x = read_data(info[0])
     delete(info)
 
     ; read var_y
 
     info = select_metadata_by_atts(input_file_info, atts_y)
+print(atts_y)
     y = read_data(info[0])
     delete(info)
 
     ; read var_z
 
     info = select_metadata_by_atts(input_file_info, atts_z)
+print(atts_z)
     z = read_data(info[0])
     delete(info)
 
@@ -351,7 +363,7 @@ begin
           calclwclt(i)) then
         atts_list[i]@short_name = varlist(varstart(i) + 1)
         if (ii .eq. refidx_x) then
-          atts_list[i]@dataset = refname(varstart(i) + 1)
+          atts_list[i]@$search_att$ = refname(varstart(i) + 1)
         end if
         info = select_metadata_by_atts(input_file_info, atts_list[i])
         var2 = read_data(info[0])
@@ -445,9 +457,10 @@ begin
 
     if (dimerror) then
       error_msg("f", DIAG_SCRIPT, "", "dimensions of datasets " \
-                + atts_x@dataset + " (variable " + var_x + ") and " \
-                + atts_y@dataset + " (variable " + var_y + ") and " \
-                + atts_z@dataset + " (variable " + var_z + ") do not match.")
+                + atts_x@$search_att$ + " (variable " + var_x + ") and " \
+                + atts_y@$search_att$ + " (variable " + var_y + ") and " \
+                + atts_z@$search_att$ + " (variable " + var_z + ") do " \
+                + "not match.")
     end if
 
     ; check dimensions

@@ -708,10 +708,10 @@ begin
         dimSzs = new(dimsizes(dims_new), long)
         dimUnlim = new(dimsizes(dims_new), logical)
         dimUnlim(:) = False
-        do i = 0, dim_dim - 1
-          dimSzs(i) = dimsizes(data&$dimsnew(i)$)
+        do i = 0, dimsizes(dims_new) - 1
+          dimSzs(i) = dimsizes(data&$dims_new(i)$)
         end do
-        filedimdef(ncdf, dimNames, dimSzs, dimUnlim)
+        filedimdef(ncdf, dims_new, dimSzs, dimUnlim)
       end if
       filevardef(ncdf, varname, typeof(data), dimNames)
       ; Copy attributes associated with each variable to the file

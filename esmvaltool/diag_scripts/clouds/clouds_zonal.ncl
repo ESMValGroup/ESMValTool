@@ -17,6 +17,14 @@
 ;   explicit_cn_dlevels: explicit contour levels for differences (array)
 ;   extralegend:        plot legend(s) to extra file(s)
 ;   filename_add:       optionally add this string to plot filesnames
+;   multiobs_exclude: list of *observational* datasets to be excluded when
+;                    calculating uncertainty estimates from multiple
+;                    observational datasets (see also multiobs_uncertainty)
+;   multiobs_uncertainty: calculate uncertainty estimates from multiple
+;                       observational datasets (true, false); by default,
+;                    all "obs", "obs6", "obs4mips" and "native6" datasets
+;                    are used; any of such datasets can be explicitely
+;                    excluded when also specifying "multiobs_exclude"
 ;   panel_labels:       label individual panels (true, false)
 ;   PanelTop:           manual override for "@gnsPanelTop" used by panel
 ;                       plot(s)
@@ -47,6 +55,8 @@
 ;   none
 ;
 ; Modification history
+;   20230803-lauer_axel: added option to estimate observational uncertainty
+;                        from multiple observational datasets
 ;   20230117-lauer_axel: added support for ICON (code from Manuel)
 ;   20200211-lauer_axel: written.
 ;
@@ -58,6 +68,7 @@ load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/scaling.ncl"
 load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/dataset_selection.ncl"
 
 begin
 
@@ -81,6 +92,8 @@ begin
   set_default_att(diag_script_info, "embrace_setup", False)
   set_default_att(diag_script_info, "extralegend", False)
   set_default_att(diag_script_info, "filename_add", "")
+  set_default_att(diag_script_info, "multiobs_exclude", "")
+  set_default_att(diag_script_info, "multiobs_uncertainty", False)
   set_default_att(diag_script_info, "panel_labels", True)
   set_default_att(diag_script_info, "rel_diff", False)
   set_default_att(diag_script_info, "rel_diff_min", -1.0e19)
@@ -94,6 +107,8 @@ begin
   flag_rel_diff = diag_script_info@rel_diff
   rel_diff_min = diag_script_info@rel_diff_min
   t_test = diag_script_info@t_test
+  flag_multiobs_unc = diag_script_info@multiobs_uncertainty
+  multiobs_exclude = diag_script_info@multiobs_exclude
 
   if (.not.flag_diff) then
     if (flag_rel_diff) then
@@ -105,6 +120,12 @@ begin
                + "set to True")
       t_test = False
     end if
+  end if
+
+  if (t_test .and. flag_multiobs_unc) then
+    log_info("Cannot plot both, t-test and multiobs uncertainty, at the " \
+             + "time ---> setting t_test to False. Check recipe.")
+    t_test = False
   end if
 
   if (diag_script_info@filename_add .ne. "") then
@@ -126,6 +147,39 @@ begin
     numseas = 4
     delete(season)
     season = (/"DJF", "MAM", "JJA", "SON"/)
+  end if
+
+  if (flag_multiobs_unc .and. timemean .ne. "annualclim") then
+    log_info("multiobs_uncertainty = True is currently supported for annual" \
+             + " means only (timemean = annualclim). Setting " \
+             + " multiobs_uncertainty to False.")
+    flag_multiobs_unc = False
+  end if
+
+  if (flag_multiobs_unc) then
+    ; find indices of all OBS and obs4mips datasets (including "native6" ERA5)
+    idxobs = get_obs(names, projects, multiobs_exclude)
+
+    if (idxobs(0) .eq. -1) then
+      flag_multiobs_unc = False
+    else
+      refname = "REF"
+      ref_ind = dimsizes(names)
+      names := array_append_record(names, (/refname/), 0)
+      projects := array_append_record(projects, (/"multiobs"/), 0)
+    end if
+  else
+    ref_ind = -1  ; set to invalid value
+    idxobs = -1
+    ; if attribute is present, use it so correlations can be calculated
+    if (isvar("refname")) then
+      ; set reference model
+      ref_ind = ind(names .eq. refname)
+      if (ismissing(ref_ind)) then
+        log_info("warning: reference dataset (" + refname + ") not found.")
+        ref_ind = -1
+      end if
+    end if
   end if
 
   units_to = diag_script_info@units_to
@@ -190,15 +244,114 @@ begin
   ; # get data and average time               #
   ; ###########################################
 
-  maps = new((/dim_MOD, 4/), graphic)
-  maps_d = new((/dim_MOD, 4/), graphic)
+  ; ---------------------------------------------------------
+  ; if requested, calculate multi-observational mean and standard deviation
 
-  ind_all_sorted = ispan(0, dim_MOD - 1, 1)  ; create array
+  if (flag_multiobs_unc) then
+    nobs = dimsizes(idxobs)
+
+    ; step 1: calculate multi-obs mean
+
+    do i = 0, nobs - 1
+      A0 = read_data(info0[idxobs(i)])
+
+      ; calculate time average
+      mean = time_operations(A0, -1, -1, "average", "annualclim", True)
+      delete(A0)
+
+      ; if requested, extract geographical region
+      if (isatt(diag_script_info, "region")) then
+        region = diag_script_info@region
+        mean := area_operations(mean, region(0), region(1), region(2), \
+                                region(3), "extract", False)
+      end if
+      if (i .eq. 0) then
+        dims = dimsizes(mean)
+        newdims = new(dimsizes(dims) + 1, integer)
+        newdims(0) = nobs
+        newdims(1:dimsizes(newdims) - 1) = dims
+        ref_tmp = new(newdims, float)
+        delete(dims)
+      end if
+      ref_tmp(i, :, :) = mean
+      delete(mean)
+    end do
+    ; note: we are using dim_avg_n_Wrap so missing values are ignored
+    ;       when averaging
+    ref_avg = dim_avg_n_Wrap(ref_tmp, 0)
+    delete(ref_tmp)
+
+    ; step 2: calculate standard deviation of all obs datasets using
+    ;         the multi-obs mean
+
+    sigma2 = new(dimsizes(ref_avg), float)
+    sig_tmp = new(newdims, float)
+    delete(newdims)
+
+    do i = 0, nobs - 1
+      A0 = read_data(info0[idxobs(i)])
+      ; calculate yearly averages
+      ymean = time_operations(A0, -1, -1, "average", "yearly", True)
+      delete(A0)
+
+      ; if requested, extract geographical region
+      if (isatt(diag_script_info, "region")) then
+        region = diag_script_info@region
+        ymean := area_operations(ymean, region(0), region(1), region(2), \
+                                 region(3), "extract", False)
+      end if
+      dims = dimsizes(ymean)
+      nyears = dims(0)
+
+      delete(dims)
+      sigma2 = 0.0
+      do j = 0, nyears - 1  ; dimension 0 = time
+        sigma2 = sigma2 + (ref_avg - ymean(j, :, :)) ^ 2
+      end do
+      if (nyears .gt. 1) then
+        sigma2 = sigma2 / tofloat(nyears - 1)
+      end if
+      sig_tmp(i, :, :) = sigma2
+      delete(ymean)
+    end do
+    delete(sigma2)
+    ; note: we are using dim_avg_n so missing values are ignored
+    ;       when averaging
+    ref_std = sqrt(dim_avg_n(sig_tmp, 0))
+    delete(sig_tmp)
+    copy_VarCoords(ref_avg, ref_std)
+    ref_std@units = ref_avg@units
+
+    if (units_to .ne. "") then
+      data0 = convert_units(ref_avg, units_to)
+      delete(ref_avg)
+      ref_avg = data0
+      delete(data0)
+
+      data0 = convert_units(ref_std, units_to)
+      delete(ref_std)
+      ref_std = data0
+      delete(data0)
+    end if
+
+  end if
+  ; ---------------------------------------------------------
+
+  nplots = dim_MOD
+  if (flag_multiobs_unc) then
+    nplots = nplots + 1
+  end if
+
+  maps = new((/nplots, 4/), graphic)
+  maps_d = new((/nplots, 4/), graphic)
+
+  ind_all_sorted = ispan(0, nplots - 1, 1)  ; create array
 
   if (ref_ind .ge. 0) then
     ind_wo_ref = ind(names .ne. refname)
     ind_all_sorted(0) = ref_ind
-    ind_all_sorted(1:dim_MOD - 1) = ind_wo_ref
+    n = dimsizes(names)
+    ind_all_sorted(1:n - 1) = ind_wo_ref
   end if
 
   corr = new((/numseas/), float)
@@ -213,9 +366,10 @@ begin
   nc_filename_mean = work_dir + "clouds_" + var0 + "_mean.nc"
   nc_filename_mean@existing = "append"
 
-  do ii = 0, dim_MOD - 1
+  do ii = 0, nplots - 1
 
     imod = ind_all_sorted(ii)
+
     log_info("processing " + names(imod))
 
     if (isvar("data1")) then
@@ -226,40 +380,95 @@ begin
       delete(A0)
     end if
 
-    A0 = read_data(info0[imod])
+    if (imod .ne. ref_ind .or. .not.flag_multiobs_unc) then
+      A0 = read_data(info0[imod])
 
-    ; check dimensions
+      ; check dimensions
 
-    dims = getvardims(A0)
+      dims = getvardims(A0)
 
-    if (dimsizes(dims) .lt. 2) then
-      error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + \
-                " dimensions, need 3")
-    end if
-    idx = ind(dims .eq. "lat")
-    if (ismissing(idx)) then
-      error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
-    end if
-    idx = ind(dims .eq. "time")
-    if (ismissing(idx)) then
-      error_msg("f", DIAG_SCRIPT, "", "no time dimension")
-    end if
+      if (dimsizes(dims) .lt. 2) then
+        error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + \
+                  " dimensions, need 3")
+      end if
+      idx = ind(dims .eq. "lat")
+      if (ismissing(idx)) then
+        error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
+      end if
+      idx = ind(dims .eq. "time")
+      if (ismissing(idx)) then
+        error_msg("f", DIAG_SCRIPT, "", "no time dimension")
+      end if
 
-;    ; if coordinate variables do not have the attribute "long_name",
-;    ; try to use attribute "standard_name" as a substitute
+;      ; if coordinate variables do not have the attribute "long_name",
+;      ; try to use attribute "standard_name" as a substitute
 ;
-;    do n = 0, dimsizes(dims) - 1
-;      if (.not.isatt(A0&$dims(n)$, "long_name")) then
-;        if (isatt(A0&$dims(n)$, "standard_name")) then
-;          A0&$dims(n)$@long_name = A0&$dims(n)$@standard_name
+;      do n = 0, dimsizes(dims) - 1
+;        if (.not.isatt(A0&$dims(n)$, "long_name")) then
+;          if (isatt(A0&$dims(n)$, "standard_name")) then
+;            A0&$dims(n)$@long_name = A0&$dims(n)$@standard_name
+;          end if
 ;        end if
-;      end if
-;    end do
+;      end do
 
-    vcoord = dims(1)  ; save name of vertical coordinate variable
+      delete(dims)
+
+      ; vertical coordinate is assumed to be the dimension not being
+      ; "time" and "lat"
+
+      ; average over time
+
+      data1 = time_operations(A0, -1, -1, "average", timemean, True)
+
+      if (units_to .ne. "") then
+        data0 = convert_units(data1, units_to)
+        delete(data1)
+        data1 = data0
+        delete(data0)
+        ; if attribute is present, overwrite with user specified units
+        if (isatt(variable_info[0], "units")) then
+          variable_info[0]@units = units_to
+        end if
+      end if
+
+      if (t_test) then
+        start_year = info0[imod]@start_year
+        end_year = info0[imod]@end_year
+        nyears = end_year - start_year + 1
+
+        if (nyears .lt. 3) then
+          log_info("warning: cannot calculate t-test for dataset " \
+                   + names(imod) + "; need at least 3 years, dataset " \
+                   + "length = " + tostring(nyears) + " years; " \
+                   + "disabling t-test")
+          t_test = False
+        else
+          if (isvar("data1_t_stddev")) then
+            delete(data1_t_stddev)
+          end if
+          if (isvar("data1_t_mean")) then
+            delete(data1_t_mean)
+          end if
+          data1_t_stddev = interannual_variability(A0, -1, -1, timemean, \
+                                                   "None")
+          data1_t_mean = data1
+        end if
+      end if
+
+      delete(A0)
+    else
+      data1 = ref_avg
+      delete(ref_avg)
+    end if
+
+    ; save name of vertical coordinate
+
+    dims = getvardims(data1)
+    vcoord = dims(0)  ; save name of vertical coordinate variable
+
     if (ii .eq. 0) then
-      vcoord0_var = A0&$vcoord$
-      vcoord0 = vcoord
+      vcoord0 = vcoord  ; save name of vertical coordinate variable
+      vcoord0_var = data1&$vcoord$
       if (isatt(vcoord0_var, "units")) then
         vcoord0_units = vcoord0_var@units
       else
@@ -268,48 +477,6 @@ begin
     end if
 
     delete(dims)
-
-    ; vertical coordinate is assumed to be the dimension not being
-    ; "time" and "lat"
-
-    ; average over time
-
-    data1 = time_operations(A0, -1, -1, "average", timemean, True)
-
-    if (t_test) then
-      start_year = info0[imod]@start_year
-      end_year = info0[imod]@end_year
-      nyears = end_year - start_year + 1
-
-      if (nyears .lt. 3) then
-        log_info("warning: cannot calculate t-test for dataset " \
-                 + names(imod) + "; need at least 3 years, dataset " \
-                 + "length = " + tostring(nyears) + " years; disabling t-test")
-        t_test = False
-      else
-        if (isvar("data1_t_stddev")) then
-          delete(data1_t_stddev)
-        end if
-        if (isvar("data1_t_mean")) then
-          delete(data1_t_mean)
-        end if
-        data1_t_stddev = interannual_variability(A0, -1, -1, timemean, "None")
-        data1_t_mean = data1
-      end if
-    end if
-
-    delete(A0)
-
-    if (units_to .ne. "") then
-      data0 = convert_units(data1, units_to)
-      delete(data1)
-      data1 = data0
-      delete(data0)
-      ; if attribute is present, overwrite with user specified units
-      if (isatt(variable_info[0], "units")) then
-        variable_info[0]@units = units_to
-      end if
-    end if
 
     ; ###########################################
     ; # Style dependent annotation              #
@@ -595,44 +762,62 @@ begin
     ; Create difference plots (if requested)
     ; =======================================================================
 
-    if (flag_diff .and. (imod .ne. ref_ind)) then
-
-      diff = data1
-      if (flag_rel_diff) then
-        ref_data = where(ref_data .le. 1.0e-19, ref_data@_FillValue, \
-                         ref_data)
-        diff = (diff - ref_data) / ref_data * 100.0
-        diff = where(ref_data .le. rel_diff_min, diff@_FillValue, diff)
-      else
-        diff = diff - ref_data
-      end if
+    if (flag_diff) then
 
       dres = res
+      dres@tiMainString = names(imod) + " - " + refname + years_str
 
-      dres@gsnLeftString  = ""
-      dres@gsnRightString = ""
+      if (imod .ne. ref_ind) then
+        diff = data1
+        if (flag_rel_diff) then
+          ref_data = where(ref_data .le. 1.0e-19, ref_data@_FillValue, \
+                           ref_data)
+          diff = (diff - ref_data) / ref_data * 100.0
+          diff = where(ref_data .le. rel_diff_min, diff@_FillValue, diff)
+        else
+          diff = diff - ref_data
+        end if
 
-      rmsd = rmsd@_FillValue
-      bias = bias@_FillValue
+        dres@gsnLeftString  = ""
+        dres@gsnRightString = ""
 
-;      if (numseas.gt.1) then
-;        do is = 0, numseas - 1
+        rmsd = rmsd@_FillValue
+        bias = bias@_FillValue
+
+;        if (numseas.gt.1) then
+;          do is = 0, numseas - 1
+;            if (.not. flag_rel_diff) then
+;              if (same_grid) then
+;                rmsd(is) = calculate_metric(ref_data(is, :, :), \
+;                                            data1(is, :, :), "RMSD")
+;              end if
+;              bias(is) = dim_avg_n_Wrap(diff(is, :, :), (/0, 1/))
+;            end if
+;          end do
+;        else
 ;          if (.not. flag_rel_diff) then
 ;            if (same_grid) then
-;              rmsd(is) = calculate_metric(ref_data(is, :, :), \
-;                                          data1(is, :, :), "RMSD")
+;              rmsd(0) = calculate_metric(ref_data, data1, "RMSD")
 ;            end if
-;            bias(is) = dim_avg_n_Wrap(diff(is, :, :), (/0, 1/))
+;            bias(0) = dim_avg_n_Wrap(diff, (/0, 1/))
 ;          end if
-;        end do
-;      else
-;        if (.not. flag_rel_diff) then
-;          if (same_grid) then
-;            rmsd(0) = calculate_metric(ref_data, data1, "RMSD")
-;          end if
-;          bias(0) = dim_avg_n_Wrap(diff, (/0, 1/))
 ;        end if
-;      end if
+
+      else if (flag_multiobs_unc) then
+        diff = ref_std
+        if (.not.isatt(diff, "diag_script")) then
+          diff@diag_script = (/DIAG_SCRIPT/)
+        end if
+        dres@gsnLeftString  = ""
+        dres@gsnRightString = ""
+        dres@gsnCenterString = ""
+        dres@tiMainString =  refname + " uncertainty" + years_str
+        rmsd = rmsd@_FillValue
+        bias = bias@_FillValue
+      else
+        continue
+      end if
+      end if
 
       ; ----------------------------------------------------------------------
 
@@ -646,7 +831,6 @@ begin
                                             / tofloat((dim_MOD + 1) / 2)/))
 
 ;      dres@tiMainOn       = False
-      dres@tiMainString = names(imod) + " - " + refname + years_str
 
       dres@cnFillOn       = True      ; color plot desired
       dres@cnLineLabelsOn = False     ; contour lines
@@ -769,7 +953,7 @@ begin
       ; # create the plot                         #
       ; ###########################################
 
-      if (t_test) then
+      if (t_test .or. flag_multiobs_unc) then
         dres@gsnDraw        = False  ; do not draw yet
         dres@gsnFrame       = False  ; don't advance frame
       end if
@@ -833,7 +1017,68 @@ begin
         else
           maps_d(imod, 0) = gsn_csm_contour(wks0d, diff, dres)
         end if
-      end if
+
+        ; obs uncertainty
+
+        if (flag_multiobs_unc) then
+          xmask = where(abs(diff) .gt. ref_std, 1.0, 0.0)
+          copy_VarMeta(diff, xmask)
+
+;          if (ii .eq. 0) then
+;            system("rm debug.nc")
+;            debugfile = addfile("debug.nc", "c")
+;          end if
+;          xm = "xmask" + names(imod)
+;          debugfile->$xm$ = xmask
+;          debugfile->obs_std = ref_std
+;          dn = "diff" + names(imod)
+;          debugfile->$dn$ = diff
+
+          xres = True
+          xres@gsnDraw        = False  ; do not draw yet
+          xres@gsnFrame       = False  ; don't advance frame
+          xres@cnMissingValFillColor = -1
+          xres@cnLevelSelectionMode = "ExplicitLevels"
+          xres@cnLevels = 0.5
+          xres@cnFillColors = (/"black", "transparent"/)
+          xres@cnFillPattern = 17  ; 10 = hatching, 17 = stippling
+          xres@cnFillOn       = True      ; color plot desired
+          xres@cnInfoLabelOn = False
+          xres@cnLinesOn = False
+          xres@cnLineLabelsOn = False
+          xres@lbLabelBarOn = False
+          xres@gsnRightString   = ""
+          xres@gsnLeftString    = ""
+          xres@gsnCenterString  = ""
+          xres@gsnCenterString  = ""
+          xres@tiYAxisOn = False
+          xres@tmXBBorderOn = False
+          xres@tmXTBorderOn = False
+          xres@tmYLBorderOn = False
+          xres@tmYRBorderOn = False
+          xres@tmXBLabelsOn = False
+          xres@tmYLLabelsOn = False
+          xres@tmXBOn = False
+          xres@tmXTOn = False
+          xres@tmYLOn = False
+          xres@tmYROn = False
+          xres@cnConstFEnableFill = True
+
+          if (.not.all(xmask .eq. 0.0)) then
+            if (vcoord0_units .eq. "Pa") then
+              plotmask = gsn_csm_pres_hgt(wks0d, xmask, xres)
+            else
+              plotmask = gsn_csm_contour(wks0d, xmask, xres)
+            end if
+            overlay(maps_d(imod, 0), plotmask)
+            delete(plotmask)
+          end if
+          delete(xmask)
+          draw(maps_d(imod, 0))
+          frame(wks0d)
+        end if  ; if flag_multiobs_unc
+      end if  ; if numseas .gt. 1
+
       ndframe = ndframe + 1
 
       ; mandatory netcdf output
