@@ -40,12 +40,12 @@ preprocessors:
     mask_landsea: &mask_land
       mask_out: land
     anomalies:
-      period: monthly
-    area_statistics: &area_mean
-      operator: mean
-      #regrid:
-      #  scheme: area_weighted
-      #  target_grid: 1x1      
+      period: daily
+      #area_statistics: &area_mean
+      #  operator: mean
+    regrid:
+      scheme: area_weighted
+      target_grid: 1x1      
 
 
 diagnostics:
@@ -93,8 +93,8 @@ diagnostics:
         <<: *var
         mip: day
         additional_datasets: *era5
-    scripts: #null
-      timeseries:
-        script: examples/diagnostic.py
-        quickplot:
-          plot_type: plot
+    scripts: null
+    #timeseries:
+    #    script: examples/diagnostic.py
+    #    quickplot:
+    #      plot_type: plot
