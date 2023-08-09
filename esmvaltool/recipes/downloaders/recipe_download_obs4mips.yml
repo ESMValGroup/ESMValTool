@@ -1,0 +1,147 @@
+# ESMValTool
+# recipe_download_obs4mips.yml
+---
+documentation:
+  title: Download ESMValTool Obs4MIPs datasets
+  description: |
+    This script can be used to create an Obs4MIP data pool
+    to be used with ESMValTool
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - unmaintained
+
+diagnostics:
+  download_data:
+    description: Precipitation
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+            #clt:
+            #  mip: Amon
+            #  additional_datasets:
+            #    - {dataset: MODIS-1-0, project: obs4MIPs, tier: 1}
+            #hus:
+            #  mip: obs4mips
+            #  time_frequency: mon
+            #  additional_datasets:
+            #    - {dataset: AIRS-2-1, project: obs4MIPs, tier: 1}
+            #hur:
+            #  mip: obs4mips
+            #  time_frequency: mon
+            #  additional_datasets:
+            #    - {dataset: AIRS-2-0, project: obs4MIPs, tier: 1}
+            #husStderr:
+            #  mip: obs4mips
+            #  time_frequency: mon
+            #  additional_datasets:
+            #    - {dataset: AIRS-2-1, project: obs4MIPs, tier: 1}
+      pr:
+        mip: Amon
+        additional_datasets:
+          - {dataset: GPCP-V2.2, project: obs4MIPs, tier: 1}
+          - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1}
+          - {dataset: TRMM, project: obs4MIPs, tier: 1}
+        #prw:
+              #mip: Amon
+        # additional_datasets:
+                #    - {dataset: RSS-v7, project: obs4MIPs, tier: 1}
+      prStderr:
+        mip: Amon
+        additional_datasets:
+          - {dataset: TRMM, project: obs4MIPs, tier: 1}
+      rsdt:
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, tier: 1}
+      rlds:
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF_Surface, project: obs4MIPs, tier: 1}
+      rldscs:
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF_Surface, project: obs4MIPs, tier: 1}
+      rsut:
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, tier: 1}
+      rlut:
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, tier: 1}
+      rlus:
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF_Surface, project: obs4MIPs, tier: 1}
+      rlutcs:
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, tier: 1}
+      rsutcs:
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, tier: 1}
+      swcre:
+        mip: Amon
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, tier: 1}
+      lwcre:
+        mip: Amon
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, tier: 1}
+      asr:
+        mip: Amon
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, tier: 1}
+      netcre:
+        mip: Amon
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, tier: 1}
+      rsds:
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF_Surface, project: obs4MIPs, tier: 1}
+      rsdscs:
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF_Surface, project: obs4MIPs, tier: 1}
+      rsus:
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF_Surface, project: obs4MIPs, tier: 1}
+      rsuscs:
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF_Surface, project: obs4MIPs, tier: 1}
+      rlns:
+        mip: Amon
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF_Surface, project: obs4MIPs, tier: 1}
+      rsns:
+        mip: Amon
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF_Surface, project: obs4MIPs, tier: 1}
+      rtnt:
+        mip: Amon
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, tier: 1}
+            #rsnstcsnorm:
+            # mip: Amon
+            #derive: true
+            #additional_datasets:
+            # - {dataset: CERES-EBAF_Surface | CERES-EBAF, project: obs4MIPs, tier: 1}
+      scripts:
+        my_script:
+          script: downloaders/downloader.py

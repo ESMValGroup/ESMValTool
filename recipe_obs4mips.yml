@@ -1,0 +1,331 @@
+
+
+recipes:
+
+  recipe_smpi.yml:
+    datasets:
+      GPCP-SG:
+        variables: [pr]
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2
+    issue: #2991
+    
+  recipe_perfmetrics_CMIP5.yml:
+    datasets:
+      AIRS:
+        variables: [hus]
+        recipe_version: RetStd-v5
+        esgf_dataset: AIRS-2-1
+      CERES-EBAF:
+        variables: [lwcre, rlut, rsut, swcre]
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+      GPCP-SG:
+        variables: [pr]
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2     
+        
+  recipe_ecs_scatter.yml:
+    datasets:
+      AIRS:
+        variables: [hus, husStderr]
+        recipe_version: RetStd-v5
+        esgf_dataset: AIRS-2-1      
+      CERES-EBAF:
+        variables: [rsdt, rsut, rsutcs]
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+      TRMM-L3:
+        variables: ['pr', 'prStderr']
+        recipe_version: 7A
+        esgf_dataset: TRMM
+        
+  recipe_quantilebias.yml:
+    datasets:
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.3
+        esgf_dataset: GPCP-V2.3
+        
+  clouds/recipe_clouds_bias.yml:
+    datasets:
+      GPCP-SG: 
+        variables: ['pr']
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2      
+      MODIS:
+        variables: ['clt']
+        recipe_version: C5
+        esgf_dataset: MODIS-1-0
+  
+  recipe_schlund20esd.yml:
+    datasets:
+      AIRS:
+        variables: [hus]
+        recipe_version: RetStd-v5
+        esgf_dataset: AIRS-2-1      
+      AIRS-2-0:
+        variables: [hur]
+        recipe_version: RetStd-v5
+        esgf_dataset: AIRS-2-1      
+      CERES-EBAF:
+        variables: [rsdt, rsut, rsutcs]
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2      
+
+  ipccwg1ar5ch9/recipe_flato13ipcc_figure_942.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['lwcre', 'netcre', 'rlut', 'swcre']
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2      
+  
+  ipccwg1ar5ch9/recipe_flato13ipcc_figures_926_927.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['lwcre', 'netcre', 'rlut', 'swcre']
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2      
+  
+  ipccwg1ar5ch9/recipe_flato13ipcc_figure_98.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['lwcre', 'netcre', 'rlut', 'swcre']
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2      
+  
+  ipccwg1ar5ch9/recipe_flato13ipcc_figures_938_941_cmip6.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['lwcre', 'netcre', 'rlut', 'swcre']
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2      
+  
+  #ipccwg1ar5ch9/recipe_flato13ipcc_figure_914.yml:
+  #  datasets:
+  #    CERES-EBAF:
+  #      variables: ['lwcre', 'netcre', 'rlut', 'swcre']
+  #      recipe_version: Ed2-7
+  #      esgf_dataset: CERES-EBAF
+  #    GPCP-SG:  
+  #      variables: ['pr']
+  #      recipe_version: v2.2
+  #      esgf_dataset: GPCP-V2.2      
+  
+  #ipccwg1ar5ch9/recipe_flato13ipcc_figure_945a.yml:
+  #  datasets:
+  #    CERES-EBAF:
+  #      variables: ['lwcre', 'netcre', 'rlut', 'swcre']
+  #      recipe_version: Ed2-7
+  #      esgf_dataset: CERES-EBAF
+  #    GPCP-SG:  
+  #      variables: ['pr']
+  #      recipe_version: v2.2
+  #      esgf_dataset: GPCP-V2.2      
+  
+  #ipccwg1ar5ch9/recipe_flato13ipcc_figures_938_941_cmip3.yml:
+  #  datasets:
+  #    CERES-EBAF:
+  #      variables: ['lwcre', 'netcre', 'rlut', 'swcre']
+  #      recipe_version: Ed2-7
+  #      esgf_dataset: CERES-EBAF
+  #    GPCP-SG:  
+  #      variables: ['pr']
+  #      recipe_version: v2.2
+  #      esgf_dataset: GPCP-V2.2      
+  
+  ipccwg1ar5ch9/recipe_flato13ipcc_figures_92_95.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['lwcre', 'netcre', 'rlut', 'swcre']
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2      
+  
+  #ipccwg1ar5ch9/recipe_flato13ipcc_figure_924.yml:
+  #  datasets:
+  #    CERES-EBAF:
+  #      variables: ['lwcre', 'netcre', 'rlut', 'swcre']
+  #      recipe_version: Ed2-7
+  #      esgf_dataset: CERES-EBAF
+  #    GPCP-SG:  
+  #      variables: ['pr']
+  #      recipe_version: v2.2
+  #      esgf_dataset: GPCP-V2.2      
+
+  recipe_perfmetrics_CMIP5_4cds.yml:
+    datasets:
+      AIRS:
+        variables: [hus]
+        recipe_version: RetStd-v5
+        esgf_dataset: AIRS-2-1      
+      CERES-EBAF:
+        variables: ['rlut', 'rsut']
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2      
+
+  recipe_wenzel16jclim.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['asr']
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+
+     
+  clouds/recipe_lauer13jclim.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['lwcre', 'swcre']
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2      
+      MODIS:
+        variables: ['clt']
+        recipe_version: C5
+        esgf_dataset: MODIS-1-0
+
+  recipe_cmug_h2o.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['rsnstcsnorm']
+        recipe_version: Ed2-8
+        esgf_dataset: CERES-EBAF
+
+  recipe_ecs_constraints.yml:
+    datasets:
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2      
+      CERES-EBAF:
+        variables: ['rsdt', 'rsut', 'rsutcs']
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+      AIRS:
+        variables: [hus]
+        recipe_version: RetStd-v5
+        esgf_dataset: AIRS-2-1      
+      AIRS-2-0:
+        variables: [hur]
+        recipe_version: RetStd-v5
+        esgf_dataset: AIRS-2-1      
+  
+  recipe_autoassess_landsurface_surfrad.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['rlns', 'rsns']
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+  
+  recipe_smpi_4cds.yml:
+    datasets:
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2      
+  
+  recipe_validation.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['rsut', 'rtnt']
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+  
+  clouds/recipe_clouds_ipcc.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['lwcre', 'swcre', 'netcre']
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+  
+  recipe_ocean_quadmap.yml:
+    datasets:
+      ATSR:
+        variables: ['tos']
+        recipe_version: ARC-v1.1.1
+        esgf_dataset: ARC-SST-1-1
+
+  recipe_deangelis15nat.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['rsnstcsnorm']
+        recipe_version: Ed2-8
+        esgf_dataset: CERES-EBAF
+      SSMI:
+        variables: ['prw']
+        recipe_version: RSSv07r00
+        esgf_dataset: RSS-v7
+
+  recipe_perfmetrics_land_CMIP5.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['rlds', 'rlus', 'rsds', 'rsus']
+        recipe_version: Ed2-8
+        esgf_dataset: CERES-EBAF
+
+  bock20jgr/recipe_bock20jgr_fig_6-7.yml:
+    datasets:
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.2
+        esgf_dataset: GPCP-V2.2 
+      AIRS:
+        variables: [hus]
+        recipe_version: RetStd-v5
+        esgf_dataset: AIRS-2-1      
+      CERES-EBAF:
+        variables: ['lwcre', 'rlut', 'rsus', 'swcre']
+        recipe_version: Ed2-8
+        esgf_dataset: CERES-EBAF
+
+  bock20jgr/recipe_bock20jgr_fig_8-10.yml:
+    datasets:
+      CERES-EBAF:
+        variables: ['swcre']
+        recipe_version: Ed2-7
+        esgf_dataset: CERES-EBAF
+
+  bock20jgr/recipe_bock20jgr_fig_1-4.yml:
+    datasets:
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.3
+        esgf_dataset: GPCP-V2.3  
+
+  ipccwg1ar6ch3/recipe_ipccwg1ar6ch3_atmosphere.yml:
+    datasets:
+      GPCP-SG:  
+        variables: ['pr']
+        recipe_version: v2.3
+        esgf_dataset: GPCP-V2.3     
+
