@@ -1,0 +1,21 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: NOAA-CH4-CCGG
+  project_id: OBS6
+  tier: 2
+  version: '1'
+  modeling_realm: atmos
+  source: ''
+  reference: 'noaa-ch4-ccgg'
+  comment: |
+    'Uses only the already monthly aggregated files and values'
+
+# Variables to CMORize
+variables:
+  # monthly frequency
+  ch4s_monthly:
+    short_name: ch4s
+    mip: Amon
+    raw: ch4
+    file: 'ch4_???_surface-flask_1_ccgg_month.txt'
