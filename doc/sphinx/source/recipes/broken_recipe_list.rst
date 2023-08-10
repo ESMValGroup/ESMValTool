@@ -16,10 +16,6 @@ More details can be found in the :ref:`broken recipe policy
      - Affected diagnostics
      - Problem
      - GitHub issue
-   * - :ref:`recipe_carvalhais14nat.yml <recipe_carvalhais14nat>`
-     - `global_turnover_time`
-     - ``cartopy`` issue
-     - `#3281 <https://github.com/ESMValGroup/ESMValTool/issues/3281>`_
    * - `recipe_check_obs.yml`
      - `ERA5_native6`
      - Derivation of custom variables `rlus` and `rsus`
