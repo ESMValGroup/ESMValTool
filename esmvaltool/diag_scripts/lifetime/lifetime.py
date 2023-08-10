@@ -329,8 +329,9 @@ class CH4Lifetime(LifetimeBase):
 
         # name
         self.short_name = f"tau_{self._get_name('reactant').upper()}"
-        self.long_name = (f"lifetime of {self._get_name('reactant').upper()}"
-                          f" with respect to {[ox.upper() for ox in self._get_name('oxidant')]}")
+        self.long_name = (f"Lifetime of {self._get_name('reactant').upper()}"
+                          " with respect to"
+                          f" {', '.join([ox.upper() for ox in self._get_name('oxidant')])}")
         self.units = self.cfg['units']
 
         # Check given plot types and set default settings for them
@@ -541,11 +542,22 @@ class CH4Lifetime(LifetimeBase):
                 filename = variable['filename']
 
                 logger.info("Loading %s", filename)
-                cube = iris.load_cube(filename)
+                cube = iris.load_cube(filename, variable['short_name'])
 
                 # Fix time coordinate if present
                 if cube.coords('time', dim_coords=True):
                     ih.unify_time_coord(cube)
+
+                # Check Z-coordinate
+                print(cube.coord('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True))
+                print(cube.coord('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True).points)
+                sys.exit()
+
+                # Set Z-coordinate
+                if cube.coords('air_pressure', dim_coords=True):
+                    self.z_coord = 'air_pressure'
+                elif cube.coords('lev', dim_coords=True):
+                    self.z_coord = 'lev'
 
                 # Fix Z-coordinate if present
                 if cube.coords('air_pressure', dim_coords=True):
@@ -558,6 +570,9 @@ class CH4Lifetime(LifetimeBase):
                 # maybe add model levels here?
 
                 # cube for each variable
+                if 'tp' in variable['short_name']:
+                    print(variable['short_name'])
+                    print(variable)
                 variables[variable['short_name']] = cube
 
             rho = self._calculate_rho(variables)
@@ -615,6 +630,7 @@ class CH4Lifetime(LifetimeBase):
         variables.
         """
         if 'grmassdry' in variables and 'grvol' in variables:
+        #if self.z_coord == 'lev' and 'grmassdry' in variables and 'grvol' in variables:
             rho = self._number_density_dryair_by_grid(
                 variables['grmassdry'],
                 variables['grvol'])
@@ -683,7 +699,11 @@ class CH4Lifetime(LifetimeBase):
         Calculate number density of dry air.
 
         Used to convert from mol / mol_dry into molec / cm3
-        by using present gridmass of dry air and gridvolumne.
+        by using present gridmass of dry air and gridvolume.
+
+        Since gridvolume might not be appropriate after interpolation
+        to pressure coordinates, this version should only be used
+        on model levels.
 
         Used constants:
         - N_A    Avogrado constant from scipy
@@ -888,8 +908,7 @@ class CH4Lifetime(LifetimeBase):
                     self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
-        cube = calculate_lifetime(dataset['reaction'],
-                                  dataset['weight'],
+        cube = calculate_lifetime(dataset,
                                   plot_type,
                                   region)
 
@@ -961,16 +980,14 @@ class CH4Lifetime(LifetimeBase):
                 getattr(plt, func)(arg)
 
     @staticmethod
-    def _check_cube_dimensions(cube, plot_type):
+    def _check_cube_dimensions(self, cube, plot_type):
         """Check that cube has correct dimensional variables."""
         expected_dimensions_dict = {
             'annual_cycle': (['month_number'],),
             'map': (['latitude', 'longitude'],),
-            'zonal_mean_profile': (['latitude', 'air_pressure'],
-                                   ['latitude', 'altitude']),
+            'zonal_mean_profile': (['latitude', self.z_coord]),
             'timeseries': (['time'],),
-            '1d_profile': (['air_pressure'],
-                           ['altitude']),
+            '1d_profile': ([self.z_coord]),
 
         }
         if plot_type not in expected_dimensions_dict:
@@ -1044,9 +1061,8 @@ class CH4Lifetime(LifetimeBase):
             _ = [ ancestors.append(variable['filename'])
                   for variable in dataset['dataset_data']]
 
-            cube = calculate_lifetime(dataset['reaction'],
-                                      dataset['weight'],
-                                     plot_type,
+            cube = calculate_lifetime(dataset,
+                                      plot_type,
                                       region)
             # convert units
             cube.convert_units(self.units)
@@ -1073,7 +1089,7 @@ class CH4Lifetime(LifetimeBase):
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(list(base_datasets.values()))
-        axes.set_title(multi_dataset_facets['long_name'])
+        axes.set_title(f'{self.long_name} in region {region}')
         axes.set_xlabel('Time')
         axes.set_ylabel(f"{chr(964)}({self._get_name('reactant').upper()}) [{self.units}]")
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
@@ -1137,9 +1153,8 @@ class CH4Lifetime(LifetimeBase):
             _ = [ ancestors.append(variable['filename'])
                   for variable in dataset['dataset_data']]
 
-            cube = calculate_lifetime(dataset['reaction'],
-                                      dataset['weight'],
-                                     plot_type,
+            cube = calculate_lifetime(dataset,
+                                      plot_type,
                                       region)
             # convert units
             cube.convert_units(self.units)
@@ -1154,7 +1169,7 @@ class CH4Lifetime(LifetimeBase):
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(list(base_datasets.values()))
-        axes.set_title(multi_dataset_facets['long_name'])
+        axes.set_title(f'{self.long_name} in region {region}')
         axes.set_xlabel('Month')
         axes.set_ylabel(f"$\tau$({self._get_name('reactant').upper()}) [{self.units}]")
         axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
@@ -1186,7 +1201,7 @@ class CH4Lifetime(LifetimeBase):
         io.save_1d_data(cubes, netcdf_path, 'month_number', var_attrs)
 
         # Provenance tracking
-        caption = (f"Annual cycle of {multi_dataset_facets['long_name']} for "
+        caption = (f"Annual cycle of {self.long_name} for "
                    f"various datasets.")
         provenance_record = {
             'ancestors': ancestors,
@@ -1302,9 +1317,8 @@ class CH4Lifetime(LifetimeBase):
             _ = [ ancestors.append(variable['filename'])
                   for variable in dataset['dataset_data']]
 
-            cube = calculate_lifetime(dataset['reaction'],
-                                      dataset['weight'],
-                                     plot_type,
+            cube = calculate_lifetime(dataset,
+                                      plot_type,
                                       region)
             # convert units
             cube.convert_units(self.units)
@@ -1320,7 +1334,7 @@ class CH4Lifetime(LifetimeBase):
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(list(base_datasets.values()))
-        axes.set_title(multi_dataset_facets['long_name'])
+        axes.set_title(f'{self.long_name} in region {region}')
         axes.set_xlabel(f"$\tau$({self._get_name('reactant').upper()}) [{self.units}]")
         z_coord = cube.coord(axis='Z')
         axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
@@ -1380,7 +1394,7 @@ class CH4Lifetime(LifetimeBase):
 
         # Provenance tracking
         caption = ("Vertical one-dimensional profile of "
-                   f"{multi_dataset_facets['long_name']}"
+                   f"{self.long_name}"
                    " for various datasets.")
         provenance_record = {
             'ancestors': ancestors,

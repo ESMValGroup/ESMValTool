@@ -4,10 +4,13 @@ import logging
 import os
 import re
 
+import sys
 import cartopy
 import iris
+import numpy as np
 import matplotlib.pyplot as plt
 import yaml
+from copy import deepcopy
 from iris.analysis import MEAN
 from mapgenerator.plotting.timeseries import PlotSeries
 
@@ -15,11 +18,12 @@ from esmvaltool.diag_scripts.shared import ProvenanceLogger, names
 
 logger = logging.getLogger(__name__)
 
-def calculate_lifetime(reaction, weight, plot_type, region):
-    """Calculate the lifetime for the given plot_type and region."""
+def calculate_lifetime(dataset, plot_type, region):
+    """Calculate the lifetime for the given plot_type and region.
+    """
     # extract region from weights and reaction
-    reaction = extract_region(reaction, region)
-    weight = extract_region(weight, region)
+    reaction = extract_region(dataset, region, case='reaction')
+    weight = extract_region(dataset, region, case='weight')
 
     # calculate nominator and denominator
     # and sum of nominator and denominator via plot_type dimensions
@@ -31,29 +35,91 @@ def calculate_lifetime(reaction, weight, plot_type, region):
 
     return division
 
-def extract_region(var, region):
+def extract_region(dataset, region, case='reaction'):
     """Return cube with everything outside region set to zero.
 
     Current aware regions:
     - TROP: troposphere (excl. tropopause), requires tropopause pressure
-    - STRA: stratosphere (incl. tropopause), requires tropopause pressure"""
-    #if region == 'TROP':
-    # I need tp here!!!
+    - STRA: stratosphere (incl. tropopause), requires tropopause pressure
+    """
+    var = dataset[case]
+
+    plev_4d = broadcast_to_shape(
+        var.coord('air_pressure').points,
+        var.shape,
+        var.coord_dims('air_pressure'),
+    )
+    if region in ['TROP', 'STRA']:
+        tp_4d = broadcast_to_shape(
+            tp.data,
+            var.shape,
+            var.coord_dims('time') + var.coord_dims('latitude') + var.coord_dims('longitude'),
+        )
+        if region == 'TROP':
+            var.data = np.ma.array(
+                var.data,
+                mask=(plev_4d < tp_4d),
+            )
+        elif region == 'STRA':
+            var.data = np.ma.array(
+                var.data,
+                mask=(plev_4d >= tp_4d),
+            )
+
+    ## The idea is to be able to choose latitudinal areas like tropics or polar region
+    ## and additionally be able to make a vertical extraction...
+    ## question is:
+    ## - is this necessary? You can choose those regions by the preprocessor
+    ## - can I choose the troposphere by the preprocessor?
+    elif isinstance(region, list):
+        start_lat = region[0]
+        end_lat = region[1]
+        start_lev = region[2]
+        end_lev = region[3]
+
+        tp_upper_4d = broadcast_to_shape(
+            float(end_lev),
+            var.shape,
+            var.coord_dims('time') + var.coord_dims('air_pressure')
+            + var.coord_dims('latitude') + var.coord_dims('longitude'),
+        )
+
+        tp_lower_4d = broadcast_to_shape(
+            float(start_lev),
+            var.shape,
+            var.coord_dims('time') + var.coord_dims('air_pressure')
+            + var.coord_dims('latitude') + var.coord_dims('longitude'),
+        )
+
+        var = esmvalcore.extract_region(var, 0., 360., start_lat, end_lat)
+
+        var.data = np.ma.array(
+            var.data,
+            mask=(tp_lower_4d <= plev_4d < tp_upper_4d),
+        )
+
+    else:
+        raise NotImplementedError(f"region '{region}' is not supported")
+
     return var
 
 def sum_up_to_plot_dimensions(var, plot_type):
     """
     Returns the cube summed over the appropriate dimensions
     """
+    if var.coords('air_pressure', dim_coords=True):
+        z_coord = 'air_pressure'
+    elif var.coords('lev', dim_coords=True):
+        z_coord = 'lev'
+
     if plot_type == 'timeseries':
-        cube = var.collapsed(['longitude','latitude','air_pressure'], iris.analysis.SUM)
+        cube = var.collapsed(['longitude', 'latitude', z_coord], iris.analysis.SUM)
     elif plot_type == 'zonal_mean_profile':
         cube = var.collapsed(['longitude'], iris.analysis.SUM)
     elif plot_type == '1d_profile':
-        cube = var.collapsed(['longitude','latitude'], iris.analysis.SUM)
+        cube = var.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
     elif plot_type == 'annual_cycle':
-        cube = var.collapsed(['longitude','latitude','air_pressure'], iris.analysis.SUM)
-        cube = cube.collapsed('time', iris.analysis.MEAN) #! TODO
+        cube = var.collapsed(['longitude', 'latitude', z_coord], iris.analysis.SUM)
 
     return cube
 
