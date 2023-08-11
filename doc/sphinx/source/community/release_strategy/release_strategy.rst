@@ -54,19 +54,7 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.9.0 (Release Manager: TBA)
-
-+------------+--------------------------+
-| 2023-06-05 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2023-06-12 |ESMValCore release        |
-+------------+--------------------------+
-| 2023-06-19 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2023-06-26 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.10.0 (Release Manager: TBA)
+- 2.10.0 (Release Manager: `Klaus Zimmermann`_)
 
 +------------+--------------------------+
 | 2023-10-02 |ESMValCore feature freeze |
@@ -80,6 +68,28 @@ Upcoming releases
 
 Past releases
 ^^^^^^^^^^^^^
+
+- 2.9.0 (Release Manager: `Bouwe Andela`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2023-06-05 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2023-06-12 | 2023-07-04 | `ESMValCore Release 2.9.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.9.0>`_ | :ref:`esmvalcore:changelog-v2-9-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2023-06-19 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2023-06-26 | 2023-07-06 | `ESMValTool Release 2.9.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.9.0>`_ |      :ref:`changelog-v2-9-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+
+- 2.8.1 (Bugfix, Release Manager: `Valeriu Predoi`_)
+
++------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|    Done    |                                            Event                                            |             Changelog              |
++============+=============================================================================================+====================================+
+| 2023-06-02 | `ESMValCore Release 2.8.1 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.8.1>`_ | :ref:`esmvalcore:changelog-v2-8-1` |
++------------+---------------------------------------------------------------------------------------------+------------------------------------+
 
 - 2.8.0 (Release Manager: `Rémi Kazeroni`_)
 
@@ -454,7 +464,37 @@ and create the new release from the release branch (i.e. not from ``main``).
 The release tag always starts with the letter ``v`` followed by the version
 number, e.g. ``v2.1.0``.
 
-6. Create and upload the PyPI package
+6. Mark the release in the main branch
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When the (pre-)release is tagged, it is time to merge the release branch back into `main`.
+We do this for two reasons, namely, one, to mark the point up to which commits in `main`
+have been considered for inclusion into the present release, and, two, to inform
+setuptools-scm about the version number so that it creates the correct version number in
+`main`.
+However, unlike in a normal merge, we do not want to integrate any of the changes from the
+release branch into main.
+This is because all changes that should be in both branches, i.e. bug fixes, originate from
+`main` anyway and the only other changes in the release branch relate to the release itself.
+To take this into account, we perform the merge in this case on the command line using `the
+ours merge strategy <https://git-scm.com/docs/merge-strategies#Documentation/merge-strategies.txt-ours-1>`__
+(``git merge -s ours``), not to be confused with the ``ours`` option to the ort merge strategy
+(``git merge -X ours``).
+For details about merge strategies, see the above-linked page.
+To execute the merge use following sequence of steps
+
+.. code-block:: bash
+
+   git fetch
+   git checkout main
+   git pull
+   git merge -s ours v2.1.x
+   git push
+
+Note that the release branch remains intact and you should continue any work on the release
+on that branch.
+
+7. Create and upload the PyPI package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The package is automatically uploaded to the
@@ -485,7 +525,7 @@ Follow these steps to create a new Python package:
 You can read more about this in
 `Packaging Python Projects <https://packaging.python.org/tutorials/packaging-projects/>`__.
 
-7. Create the Conda package
+8. Create the Conda package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ``esmvaltool`` package is published on the `conda-forge conda channel
@@ -506,7 +546,7 @@ they will merge the pull request, which will in turn publish the package on
 conda-forge some time later.
 Contact the feedstock maintainers if you want to become a maintainer yourself.
 
-8. Check the Docker images
+9. Check the Docker images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There are three main Docker container images available for ESMValTool on
