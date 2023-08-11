@@ -155,13 +155,15 @@ diagnostics:
       clivi: &clivi_settings
         <<: *tas_settings
         reference_dataset: ESACCI-CLOUD
-        alternative_dataset: MODIS
+        alternative_dataset: CLOUDSAT-L2
     additional_datasets:
             #- {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
       - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
          start_year: 1992, end_year: 2016}
-      - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
-         start_year: 2003, end_year: 2018}
+      - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip, tier: 3,
+         start_year: 2006, end_year: 2017}
+         #- {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
+         #   start_year: 2003, end_year: 2018}
 
 
   lwp:
@@ -172,12 +174,14 @@ diagnostics:
         derive: true
         force_derivation: false
         reference_dataset: ESACCI-CLOUD
-        alternative_dataset: MODIS
+        alternative_dataset: CLOUDSAT-L2
     additional_datasets:
       - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
          start_year: 1992, end_year: 2016}
-      - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
-         start_year: 2003, end_year: 2018}
+      - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip, tier: 3,
+         start_year: 2006, end_year: 2017}
+         #- {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3,
+         #   start_year: 2003, end_year: 2018}
 
 
   pr:
