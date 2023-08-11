@@ -7,6 +7,7 @@ from pprint import pformat
 import iris
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 from mpqb_utils import get_mpqb_cfg
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
@@ -82,30 +83,35 @@ def main(cfg):
         # Set default if not defined.
         label = get_mpqb_cfg('datasetname', alias)
         color = get_mpqb_cfg('datasetcolor', alias)
+        linestyle = get_mpqb_cfg('linestyle', alias)
+        linewidth = get_mpqb_cfg('linewidth', alias)
 
         # iris.quickplot.plot(cube, label=label, color=color,
         #                     linestyle='dotted')
         # iris.quickplot.plot(cube, label=label, color=color,
         #                     linestyle='dashed')
-        iris.quickplot.plot(cube, label=label, color=color, linewidth=0.5)
-    plt.xticks(rotation=90)
+        iris.quickplot.plot(cube, label=label, color=color,
+                            linestyle=linestyle, linewidth=linewidth)
+    # plt.xticks(rotation=90)
     # Add the zero line when plotting anomalies
     if 'ano' in dataset_cfg['preprocessor']:
         plt.axhline(y=0, linestyle=':', color='k')
     plt.tight_layout()
     # Time axis formatting
-    years = mdates.YearLocator()  # every year
+    years = mdates.YearLocator(5)  # every 5th year
     years_fmt = mdates.DateFormatter('%Y')
     ax1 = plt.gca()
     ax1.xaxis.set_major_locator(years)
     ax1.xaxis.set_major_formatter(years_fmt)
+    ax1.xaxis.set_minor_locator(mdates.YearLocator(1))
     ax1.grid(True, which='major', axis='x')
     ax1.set_ylim(ylims)
     ax1.set_ylabel(f"{cube.var_name.upper()} ({cube.units})")
     ax1.set_title(f"Time series of monthly mean {cube.var_name.upper()}")
 
     h1, l1 = ax1.get_legend_handles_labels()
-    leg = lax.legend(h1, l1, borderaxespad=0, ncol=4, loc='center')
+    leg = lax.legend(h1, l1, borderaxespad=0, ncol=4, loc='center',
+                     bbox_to_anchor=(0.5, 0))
     for legobj in leg.legendHandles:
         legobj.set_linewidth(2.0)
     lax.axis("off")

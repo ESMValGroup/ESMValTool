@@ -77,21 +77,27 @@ def main(cfg):
         # Set default if not defined.
         label = get_mpqb_cfg('datasetname', alias)
         color = get_mpqb_cfg('datasetcolor', alias)
+        linestyle = get_mpqb_cfg('linestyle', alias)
+        linewidth = get_mpqb_cfg('linewidth', alias)
 
         # iris.quickplot.plot(cube, label=label, color=color,
         #                     linestyle='dotted')
         # iris.quickplot.plot(cube, label=label, color=color,
         #                     linestyle='dashed')
-        iris.quickplot.plot(cube, label=label, color=color)
+        iris.quickplot.plot(cube, label=label, color=color,
+                            linestyle=linestyle, linewidth=linewidth)
 #    plt.legend()
-    ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),
-               ncol=3, fancybox=True, fontsize="medium")
+    leg = ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),
+                     ncol=4, fancybox=True, fontsize="medium")
+    for legobj in leg.legendHandles:
+        legobj.set_linewidth(1.5)
+
     plt.tight_layout()
     # Time axis formatting
     ax1 = plt.gca()
     ax1.set_xticks([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-    ax1.set_xticklabels(['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
-                         'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'])
+    ax1.set_xticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
     ax1.set_xlabel('month')
     ax1.grid(True, which='major', axis='x')
 

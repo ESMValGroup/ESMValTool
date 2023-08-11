@@ -27,6 +27,16 @@ def get_mpqb_cfg(cfgtype, cfgkey):
     if cfgtype == 'datasetcolor':
         if cfgkey in mpqb_cfg['datasetcolors']:
             return mpqb_cfg['datasetcolors'][cfgkey]
-        return 'k'
+        return mpqb_cfg['datasetcolors']['default']
+    # Defaults to solid (provided as cfgkey)
+    if cfgtype == 'linestyle':
+        if cfgkey in mpqb_cfg['linestyles']:
+            return mpqb_cfg['linestyles'][cfgkey]
+        mpqb_cfg['linestyles']['default']
+    # Defaults to 0.5 (provided as cfgkey)
+    if cfgtype == 'linewidth':
+        if cfgkey in mpqb_cfg['linewidths']:
+            return mpqb_cfg['linewidths'][cfgkey]
+        return mpqb_cfg['linewidths']['default']
 
     return None

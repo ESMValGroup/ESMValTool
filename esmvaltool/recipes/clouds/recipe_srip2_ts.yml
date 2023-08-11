@@ -106,7 +106,7 @@ diagnostics:
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
              start_year: 1979, end_year: 2018, alias: r04_ERA-Interim}
           - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
-             start_year: 1979, end_year: 2013, alias: r05_JRA-25}
+             start_year: 1979, end_year: 2007, alias: r05_JRA-25}
           - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2,
              start_year: 1979, end_year: 2019, alias: r06_JRA-55}
           - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,

@@ -41,6 +41,7 @@ datasetnames:
   r12_NOAA-CIRES-20CR-V3: NOAA-CIRES-20CR-V3
 
 datasetcolors:
+  default: '#000000'
   CDS-XCH4: '#d62728'
   BCC-CSM2-MR: '#a569bd'
   CNRM-ESM2-1: '#2ca02c'
@@ -54,27 +55,101 @@ datasetcolors:
   CESM2-WACCM-FV2: '#76d7c4'
   GFDL-ESM4: '#9c640c'
   a01_CERES-EBAF: '#4d3328'
-  a02_CLARA-AVHRR: '#644234'
+  a02_CLARA-AVHRR: '#000000'
   a03_CLOUDSAT-L2: '#815f51'
-  a04_ESACCI-CLOUD: '#aa8b7e'
+  a04_ESACCI-CLOUD: '#000000'
   a05_ESACCI-WATERVAPOUR: '#d3b6ab'
   a06_ISCCP-FH: '#d3b6ab'
   a07_MAC-LWP: '#e6d5ce'
-  a08_MODIS: '#f0e5e1'
-  a09_PATMOS-x: '#f9f5f3'
+  a08_MODIS: '#000000'
+  a09_PATMOS-x: '#000000'
   MultiModelMean: '#000000'
-  r01_CFSR: '#669900'
-  r02_CFSv2: '#88bb00'
-  r03_ERA5: '#99cc33'
-  r04_ERA-Interim: '#ccee66'
-  r05_JRA-25: '#006699'
-  r06_JRA-55: '#3399cc'
-  r07_MERRA: '#990066'
-  r08_MERRA2: '#cc3399'
-  r09_NCEP-DOE-R2: '#ff6600'
-  r10_NCEP-NCAR-R1: '#ff9900'
-  r11_NOAA-CIRES-20CR-V2: '#ffaa00'
-  r12_NOAA-CIRES-20CR-V3: '#ffcc00'
+  r01_CFSR: '#70a0ff'
+  r02_CFSv2: '#70a0ff'
+  r03_ERA5: '#30af30'
+  r04_ERA-Interim: '#30af30'
+  r05_JRA-25: '#d9c900'
+  r06_JRA-55: '#d9c900'
+  r07_MERRA: '#b2b2b2'
+  r08_MERRA2: '#b2b2b2'
+  r09_NCEP-DOE-R2: '#0830a0'
+  r10_NCEP-NCAR-R1: '#0830a0'
+  r11_NOAA-CIRES-20CR-V2: '#ff3020'
+  r12_NOAA-CIRES-20CR-V3: '#ff3020'
+
+linestyles:
+  default: 'solid'
+  CDS-XCH4: 'solid'
+  BCC-CSM2-MR: 'solid'
+  CNRM-ESM2-1: 'solid'
+  UKESM1-0-LL: 'solid'
+  BNU-ESM: 'solid'
+  FIO-ESM: 'solid'
+  MRI-ESM1: 'solid'
+  BCC-ESM1: 'solid' 
+  MRI-ESM2-0: 'solid'
+  CESM2-WACCM: 'solid' 
+  CESM2-WACCM-FV2: 'solid'
+  GFDL-ESM4: 'solid'
+  a01_CERES-EBAF: 'solid'
+  a02_CLARA-AVHRR: 'solid'
+  a03_CLOUDSAT-L2: 'solid'
+  a04_ESACCI-CLOUD: 'dashed'
+  a05_ESACCI-WATERVAPOUR: 'dashed'
+  a06_ISCCP-FH: 'solid'
+  a07_MAC-LWP: 'solid'
+  a08_MODIS: 'dashdot'
+  a09_PATMOS-x: 'dotted'
+  MultiModelMean: 'solid'
+  r01_CFSR: 'solid'
+  r02_CFSv2: 'dashed'
+  r03_ERA5: 'solid'
+  r04_ERA-Interim: 'dashed'
+  r05_JRA-25: 'solid'
+  r06_JRA-55: 'dashed'
+  r07_MERRA: 'solid'
+  r08_MERRA2: 'dashed'
+  r09_NCEP-DOE-R2: 'solid'
+  r10_NCEP-NCAR-R1: 'dashed'
+  r11_NOAA-CIRES-20CR-V2: 'solid'
+  r12_NOAA-CIRES-20CR-V3: 'dashed'
+
+linewidths:
+  default: 0.5
+  CDS-XCH4: 0.5
+  BCC-CSM2-MR: 0.5
+  CNRM-ESM2-1: 0.5
+  UKESM1-0-LL: 0.5
+  BNU-ESM: 0.5
+  FIO-ESM: 0.5
+  MRI-ESM1: 0.5
+  BCC-ESM1: 0.5 
+  MRI-ESM2-0: 0.5
+  CESM2-WACCM: 0.5 
+  CESM2-WACCM-FV2: 0.5
+  GFDL-ESM4: 0.5
+  a01_CERES-EBAF: 1.0
+  a02_CLARA-AVHRR: 1.0
+  a03_CLOUDSAT-L2: 1.0
+  a04_ESACCI-CLOUD: 1.0
+  a05_ESACCI-WATERVAPOUR: 1.0
+  a06_ISCCP-FH: 1.0
+  a07_MAC-LWP: 1.0
+  a08_MODIS: 1.0
+  a09_PATMOS-x: 1.0
+  MultiModelMean: 1.0
+  r01_CFSR: 0.5
+  r02_CFSv2: 0.5
+  r03_ERA5: 0.5
+  r04_ERA-Interim: 0.5
+  r05_JRA-25: 0.5
+  r06_JRA-55: 0.5
+  r07_MERRA: 0.5
+  r08_MERRA2: 0.5
+  r09_NCEP-DOE-R2: 0.5
+  r10_NCEP-NCAR-R1: 0.5
+  r11_NOAA-CIRES-20CR-V2: 0.5
+  r12_NOAA-CIRES-20CR-V3: 0.5
 
 # From:
 # https://stackoverflow.com/questions/42086276/
