@@ -383,11 +383,12 @@ def main(cfg):
         'orientation': 'landscape',
         'bbox_inches': 'tight',
     })
+    sns.set_theme(**cfg.get('seaborn_settings', {}))
+
     # Check options
     cfg = _check_cfg(cfg)
 
     # Get input files
-    sns.set_theme(**cfg.get('seaborn_settings', {}))
     patterns = cfg.get('patterns')
     if patterns is None:
         input_files = io.get_all_ancestor_files(cfg)
