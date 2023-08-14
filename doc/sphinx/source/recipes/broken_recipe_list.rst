@@ -15,12 +15,12 @@ More details can be found in the :ref:`broken recipe policy
    * - Broken recipe
      - Affected diagnostics
      - Problem
-     - GitHub issue 
-   * - :ref:`recipe_autoassess_landsurface_soilmoisture.yml <recipe_autoassess_landsurface_soilmoisture.rst>`
-     - All
-     - Dependency on some external climatology files
-     - `#2309 <https://github.com/ESMValGroup/ESMValTool/issues/2309>`_
+     - GitHub issue
    * - `recipe_check_obs.yml`
      - `ERA5_native6`
      - Derivation of custom variables `rlus` and `rsus`
      - `#1388 <https://github.com/ESMValGroup/ESMValCore/issues/1388>`_
+   * - :ref:`recipe_seaice_drift.yml <recipes_seaice_drift>`
+     - `sea_ice_drift_SCICEX`
+     - ``shapely`` issue
+     - `#3243 <https://github.com/ESMValGroup/ESMValTool/issues/3243>`_

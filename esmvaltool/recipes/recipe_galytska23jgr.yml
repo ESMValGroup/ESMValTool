@@ -1,0 +1,384 @@
+# ESMValTool
+# recipe_galytska23jgr.yml
+---
+documentation:
+  title: Arctic-Midlatitude Teleconnections recipe
+  
+  description: >
+    Recipe to select variables that reproduce Arctic-midlatitude
+    teleconnections for further application of
+    Causal Model Evaluation (CME) described in Galytska et al. (2023).
+    This recipe also applies the CVDP package. There are necessary
+    changes in cvdp/cvdp/driver.ncl to be applied:
+    modular = "True" and modular_list = "psl.nam_nao"
+
+
+  authors:
+    - galytska_evgenia
+
+  maintainer:
+    - galytska_evgenia
+
+  references:
+    - galytska23jgr
+
+  projects:
+    - usmile
+
+preprocessors:
+
+  bk_ice:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 70.
+      end_latitude: 80.
+      start_longitude: 30.
+      end_longitude: 105.
+    area_statistics:
+      operator: mean
+
+  ok_ice:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 50.
+      end_latitude: 60.
+      start_longitude: 140.
+      end_longitude: 160.
+    area_statistics:
+      operator: mean
+
+  pv:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_levels:
+      levels: [10000., 7000., 5000., 3000., 2000., 1000.]
+      scheme: linear
+    extract_region:
+      start_latitude: 65.
+      end_latitude: 90.
+      start_longitude: 0.
+      end_longitude: 360.
+    area_statistics:
+      operator: mean
+
+  pressure_sib:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 40.
+      end_latitude: 65.
+      start_longitude: 85.
+      end_longitude: 120.
+    area_statistics:
+      operator: mean
+
+  pressure_ural:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 45.
+      end_latitude: 70.
+      start_longitude: 40.
+      end_longitude: 85.
+    area_statistics:
+      operator: mean
+
+  pressure_aleut:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 45.
+      end_latitude: 80.
+      start_longitude: 160.
+      end_longitude: 260.
+    area_statistics:
+      operator: mean
+
+  pre_tas:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 65.
+      end_latitude: 90.
+      start_longitude: 0.
+      end_longitude: 360.
+    area_statistics:
+      operator: mean
+
+  pre_tas_baffin:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 55.
+      end_latitude: 75.
+      start_longitude: 290.
+      end_longitude: 310.
+    area_statistics:
+      operator: mean
+
+  pre_tas_sib:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 60.
+      end_latitude: 70.
+      start_longitude: 20.
+      end_longitude: 100.
+    area_statistics:
+      operator: mean
+
+  heat_flux:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_levels:
+      levels: 10000
+      scheme: linear
+    extract_region:
+      start_latitude: 45.
+      end_latitude: 75.
+      start_longitude: 0.
+      end_longitude: 360.
+
+  zonal_wind:
+    anomalies:
+      period: monthly
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_latitude: 50.
+      end_latitude: 70.
+      start_longitude: 0.
+      end_longitude: 360.
+    area_statistics:
+      operator: mean
+
+diagnostics:
+
+  diagnostic_arctic:
+    description: Get the variables for Arctic-midlatitude processes
+    themes:
+      - phys
+      - seaIce
+    realms:
+      - atmos
+      - seaIce
+    variables:
+      pv: &my_settings
+        short_name: zg
+        preprocessor: pv
+        start_year: 1980
+        end_year: 2021
+        mip: Amon
+        project: CMIP6
+        exp:
+          - historical
+          - ssp585
+        ensemble: r1i1p1f1
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+          - {dataset: ACCESS-CM2, grid: gn}
+          - {dataset: ACCESS-ESM1-5, grid: gn, supplementary_variables: [{short_name: areacella, skip: true}]}
+          - {dataset: BCC-CSM2-MR, grid: gn}
+          - {dataset: CAMS-CSM1-0, grid: gn}
+          - {dataset: CanESM5, grid: gn}
+          - {dataset: CMCC-CM2-SR5, grid: gn}
+          - {dataset: CMCC-ESM2, grid: gn}
+          - {dataset: EC-Earth3, grid: gr}
+          - {dataset: EC-Earth3-Veg, grid: gr}
+          - {dataset: EC-Earth3-Veg-LR, grid: gr}
+          - {dataset: GFDL-CM4, grid: gr1}
+          - {dataset: GFDL-ESM4, grid: gr1}
+          - {dataset: INM-CM4-8, grid: gr1}
+          - {dataset: INM-CM5-0, grid: gr1}
+          - {dataset: IPSL-CM6A-LR, grid: gr}
+          - {dataset: MPI-ESM1-2-HR, grid: gn}
+          - {dataset: MPI-ESM1-2-LR, grid: gn}
+          - {dataset: MIROC6, grid: gn}
+          - {dataset: MRI-ESM2-0, grid: gn}
+      tas:
+        <<: *my_settings
+        short_name: tas
+        preprocessor: pre_tas
+
+      psl_Ural:
+        <<: *my_settings
+        short_name: psl
+        preprocessor: pressure_ural
+
+      psl_Sib:
+        <<: *my_settings
+        short_name: psl
+        preprocessor: pressure_sib
+
+      psl_Aleut:
+        <<: *my_settings
+        short_name: psl
+        preprocessor: pressure_aleut
+
+      va:
+        <<: *my_settings
+        short_name: va
+        preprocessor: heat_flux
+
+      ta:
+        <<: *my_settings
+        short_name: ta
+        preprocessor: heat_flux
+
+      sic_BK_siconc:
+        <<: *my_settings
+        short_name: siconc
+        preprocessor: bk_ice
+        mip: SImon
+        additional_datasets:
+          - {dataset: ACCESS-CM2, grid: gn}
+          - {dataset: ACCESS-ESM1-5, grid: gn}
+          - {dataset: BCC-CSM2-MR, grid: gn}
+          - {dataset: CAMS-CSM1-0, grid: gn}
+          - {dataset: CanESM5, grid: gn}
+          - {dataset: CMCC-CM2-SR5, grid: gn, supplementary_variables: [{short_name: areacello, skip: true}]}
+          - {dataset: CMCC-ESM2, grid: gn, supplementary_variables: [{short_name: areacello, skip: true}]}
+          - {dataset: EC-Earth3, grid: gn}
+          - {dataset: EC-Earth3-Veg, grid: gn}
+          - {dataset: EC-Earth3-Veg-LR, grid: gn}
+          - {dataset: GFDL-CM4, grid: gr}
+          - {dataset: GFDL-ESM4, grid: gr}
+          - {dataset: INM-CM4-8, grid: gr1}
+          - {dataset: INM-CM5-0, grid: gr1}
+          - {dataset: IPSL-CM6A-LR, grid: gn}
+          - {dataset: MPI-ESM1-2-HR, grid: gn}
+          - {dataset: MPI-ESM1-2-LR, grid: gn}
+          - {dataset: MIROC6, grid: gn}
+          - {dataset: MRI-ESM2-0, grid: gn}
+
+      sic_Ok_siconc:
+        <<: *my_settings
+        short_name: siconc
+        preprocessor: ok_ice
+        mip: SImon
+        additional_datasets:
+          - {dataset: ACCESS-CM2, grid: gn}
+          - {dataset: ACCESS-ESM1-5, grid: gn}
+          - {dataset: BCC-CSM2-MR, grid: gn}
+          - {dataset: CAMS-CSM1-0, grid: gn}
+          - {dataset: CanESM5, grid: gn}
+          - {dataset: CMCC-CM2-SR5, grid: gn, supplementary_variables: [{short_name: areacello, skip: true}]}
+          - {dataset: CMCC-ESM2, grid: gn, supplementary_variables: [{short_name: areacello, skip: true}]}
+          - {dataset: EC-Earth3, grid: gn}
+          - {dataset: EC-Earth3-Veg, grid: gn}
+          - {dataset: EC-Earth3-Veg-LR, grid: gn}
+          - {dataset: GFDL-CM4, grid: gr}
+          - {dataset: GFDL-ESM4, grid: gr}
+          - {dataset: INM-CM4-8, grid: gr1}
+          - {dataset: INM-CM5-0, grid: gr1}
+          - {dataset: IPSL-CM6A-LR, grid: gn}
+          - {dataset: MPI-ESM1-2-HR, grid: gn}
+          - {dataset: MPI-ESM1-2-LR, grid: gn}
+          - {dataset: MIROC6, grid: gn}
+          - {dataset: MRI-ESM2-0, grid: gn}
+
+      sic_BK:
+        <<: *my_settings
+        short_name: sic
+        preprocessor: bk_ice
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly, version: 1, tier: 2}
+
+      sic_Ok:
+        <<: *my_settings
+        short_name: sic
+        preprocessor: ok_ice
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, mip: OImon, type: reanaly, version: 1, tier: 2}
+
+    scripts:
+      output:
+        script: galytska23/select_variables_for_tigramite.py
+        plot_timeseries: True 
+        variable_to_plot: Arctic_temperature
+
+  diagnostic_cvdp:
+    description: Run the NCAR CVDPackage.
+    variables:
+      ts: &cvdp_settings
+        short_name: ts
+        mip: Amon
+        start_year: 1980
+        end_year: 2021
+        project: CMIP6
+        exp:
+          - historical
+          - ssp585
+        ensemble: r1i1p1f1
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+          - {dataset: ACCESS-ESM1-5, grid: gn}
+          - {dataset: ACCESS-CM2, grid: gn}
+          - {dataset: BCC-CSM2-MR, grid: gn}
+          - {dataset: CAMS-CSM1-0, grid: gn}
+          - {dataset: CanESM5, grid: gn}
+          - {dataset: CMCC-CM2-SR5, grid: gn}
+          - {dataset: CMCC-ESM2, grid: gn}
+          - {dataset: EC-Earth3, grid: gr}
+          - {dataset: EC-Earth3-CC, grid: gr}
+          - {dataset: EC-Earth3-Veg, grid: gr}
+          - {dataset: EC-Earth3-Veg-LR, grid: gr}
+          - {dataset: GFDL-CM4, grid: gr1}
+          - {dataset: GFDL-ESM4, grid: gr1}
+          - {dataset: INM-CM4-8, grid: gr1}
+          - {dataset: INM-CM5-0, grid: gr1}
+          - {dataset: IPSL-CM6A-LR, grid: gr}
+          - {dataset: MPI-ESM1-2-HR, grid: gn}
+          - {dataset: MPI-ESM1-2-LR, grid: gn}
+          - {dataset: MIROC6, grid: gn}
+          - {dataset: MRI-ESM2-0, grid: gn}
+
+      tas:
+        <<: *cvdp_settings
+        short_name: tas
+        mip: Amon
+
+      pr:
+        <<: *cvdp_settings
+        short_name: pr
+        mip: Amon
+
+      psl:
+        <<: *cvdp_settings
+        short name: psl
+        mip: Amon
+
+    scripts:
+      cvdp:
+        script: cvdp/cvdp_wrapper.py

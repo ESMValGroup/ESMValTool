@@ -101,6 +101,9 @@ SPECIAL_RECIPES = {
     'recipe_flato13ipcc_figures_938_941_cmip6': {
         'partition': '#SBATCH --partition=compute \n',
     },
+    'recipe_galytska23jgr': {
+        'partition': '#SBATCH --partition=compute \n',
+    },
     'recipe_ipccwg1ar6ch3_atmosphere': {
         'partition': '#SBATCH --partition=compute \n',
     },
