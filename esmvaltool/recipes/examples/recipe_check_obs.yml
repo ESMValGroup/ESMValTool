@@ -652,7 +652,7 @@ diagnostics:
       rsutcs:
     additional_datasets:
       - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, mip: Amon, tier: 2,
-         type: reanaly, version: v3, start_year: 1871, end_year: 2012}
+         type: reanaly, version: v3, start_year: 1836, end_year: 2015}
     scripts: null
 
 
