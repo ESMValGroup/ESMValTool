@@ -6,7 +6,8 @@ Tier
 
 Source
    CDR2 https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
-   CDR1 https://data.ceda.ac.uk/neodc/esacci/water_vapour/data/TCWV-land/L3/v3.1/
+   CDR1 https://data.ceda.ac.uk/neodc/esacci/water_vapour/
+                                                    data/TCWV-land/L3/v3.1/
 
 Last access
    20230705
