@@ -87,7 +87,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 # Wrong values:
-#central_longitude = -14.25 #W 
+#central_longitude = -14.25 #W
 #central_latitude = -7.56
 
 # right value:
@@ -95,7 +95,7 @@ central_longitude = -14.416667 #W #-160.+3.5
 central_latitude = -7.933333 # S
 
 #pH log:
-pH_log=False 
+pH_log=False
 
 
 ipcc_colours={
@@ -113,7 +113,7 @@ ipcc_colours_dark={
     'ssp370': 'darkorange',
     'ssp585': 'red', } #'darkred',}
 
-# official 
+# official
 #colours2_rgb = [(23, 60, 102), (0, 173, 207), (247, 148, 32), (231, 29, 37), (149, 27, 30)]
 #colours2_rgb = [(a/256., b/256. ,c/256.) for (a, b, c) in colours2_rgb]
 #f = 0.75
@@ -124,7 +124,7 @@ ipcc_colours={
 #    'hist': (23, 60, 102), # a dark navy
     'historical': (35, 87, 145), # new darkish blue
     'hist': (35, 87, 145), # new darkish blue
-    'ssp126': (0, 173, 207), # light sky 
+    'ssp126': (0, 173, 207), # light sky
     'ssp245': (247, 148, 32), # orange
     'ssp370': (231, 29, 37), # red
     'ssp585': (149, 27, 30), } # dark maroon red
@@ -195,8 +195,7 @@ models_to_skip = {'all': ['GISS-E2-1-G', 'MPI-ESM-1-2-HAM',],
     'chl': ['MPI-ESM1-2-LR', ],
     'o2': ['MPI-ESM-1-2-HAM', ],
     'ph': ['MPI-ESM-1-2-HAM', ],
-    'sal': ['MPI-ESM-1-2-HAM', ],
-    'sal': ['FIO-ESM-2-0',],
+    'sal': ['MPI-ESM-1-2-HAM', 'FIO-ESM-2-0',],
 }
 
 # used to
@@ -280,10 +279,9 @@ def fix_chl(cube):
     so I'm fixing them
     """
     print('pre fix_chl:',cube.data.min(), cube.data.max())
-    cmax = cube.data.max()
+    # cmax = cube.data.max()
     for i in range(3):
         if cube.data.max()<30.:
-
             cube.data *= 1000.
 
     print('post fix_chl:',cube.data.min(), cube.data.max())
@@ -393,20 +391,20 @@ def moving_average(cube, window):
             tmax = datetime(time_itr.year + window_len, time_itr.month,
                             time_itr.day, time_itr.hour, time_itr.minute)
 
-        if win_units in ['months', 'month', 'mn']:
+        elif win_units in ['months', 'month', 'mn']:
             tmin = datetime(time_itr.year, time_itr.month - window_len,
                             time_itr.day, time_itr.hour, time_itr.minute)
             tmax = datetime(time_itr.year, time_itr.month + window_len,
                             time_itr.day, time_itr.hour, time_itr.minute)
 
-        if win_units in ['days', 'day', 'dy']:
+        elif win_units in ['days', 'day', 'dy']:
             tmin = datetime(time_itr.year, time_itr.month,
                             time_itr.day - window_len, time_itr.hour,
                             time_itr.minute)
             tmax = datetime(time_itr.year, time_itr.month,
                             time_itr.day + window_len, time_itr.hour,
                             time_itr.minute)
-
+        else: assert 0
         arr = np.ma.masked_where((times < tmin) + (times > tmax), cube.data)
         output.append(arr.mean())
     cube.data = np.array(output)
@@ -460,7 +458,7 @@ def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table, future_r
     hist_anom_data['mld'] = ['Mixed Layer Depth', 'm', ]
     hist_anom_data['mlotst'] = hist_anom_data['mld']
     hist_anom_data['ph'] = ['pH', '', ]
- 
+
     hist_anom_data['o2'] = ['Oxygen (500m)', r'mmol m$^{-3}$', ]
     hist_anom_data['nit'] = ['Nitrate', r'$\mu$mol m$^{-3}$', ]
     hist_anom_data['no3'] =  hist_anom_data['nit']
@@ -504,7 +502,7 @@ def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table, future_r
     f = 0.75/256.
     colours2 = [(f*a, f*b, f*c) for (a, b, c) in colours2_rgb]
 
-    
+
     tmp = ' '.join(['#',short_name, str(int(future_range[0])),'-', str(int(future_range[1])), '\n'])
     tmp += 'SSP, min, mean, median, max \n'
     for x, ssp in zip(xes, ssps):
@@ -558,7 +556,7 @@ def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table, future_r
 
         impath = diagtools.folder(''.join([cfg['plot_dir'], '/mean_anomaly_plots_pc5_pc95']))
         impath += ''.join(['hist_anom_pc_', short_name] )
-   
+
     impath += '-'.join([str(int(t)) for t in future_range])
     if single_model_marker:
         impath+='_mark'
@@ -623,7 +621,7 @@ def multi_model_time_series(
         for fn in sorted(filenames):
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             dataset = metadatas[fn]['dataset']
-            short_name = metadatas[fn]['short_name']  
+            short_name = metadatas[fn]['short_name']
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
 
@@ -885,13 +883,13 @@ def multi_model_time_series(
                 times = np.ma.masked_outside(times, 2000., 2010.)
             else:
                 times = np.ma.masked_outside(times, 2040., 2050.)
-            
+
             if (short_name, dataset, ensemble[:3]) in  anomalgy_basis:
                 anom =  anomalgy_basis[(short_name, dataset, ensemble[:3])]
             elif (short_name, dataset, 'r1i') in  anomalgy_basis:
                 anom =  anomalgy_basis[(short_name, dataset, 'r1i')]
             else:
-                print('unalbe to include:', (short_name, dataset, ensemble[:3]) ) 
+                print('unalbe to include:', (short_name, dataset, ensemble[:3]) )
                 continue
             value = np.ma.masked_where(times.mask, values).mean() - anom
             key = (short_name, dataset, scenario)
@@ -980,9 +978,9 @@ def multi_model_time_series(
             scenario_values = add_dict_list(scenario_values, (short_name, scenario), model_mean)
 
         #  anomaly_table: this is the data used for figure 2 (summary)
-        # generate the output line: # This 
+        # generate the output line: # This
         header = ['field', ]
-        line = [short_name, ] 
+        line = [short_name, ]
         line1 = [short_name, ]
         line2 = [short_name, ]
         line3 = [short_name, ]
@@ -991,7 +989,7 @@ def multi_model_time_series(
             header.append(scenario)
             model_means = np.array(scenario_values[(short_name, scenario)])
             try:
-                value1 = str(round(model_means.mean(),sigfigs=4)) 
+                value1 = str(round(model_means.mean(),sigfigs=4))
                 value2 = str(round(model_means.std(), sigfigs=3))
                 value3 = str(round(model_means.min(), sigfigs=4))
                 value4 = str(round(model_means.max(), sigfigs=4))
@@ -1001,7 +999,7 @@ def multi_model_time_series(
                 value3 = str(round(model_means.min(), 4))
                 value4 = str(round(model_means.max(), 4))
 
-            
+
             anomaly_table[scenario] = (model_means.mean(), model_means.std(), model_means)
 
             line.append(''.join([' ', value1, ' $\pm$ ', value2,]))
@@ -1196,16 +1194,16 @@ def multi_model_time_series(
 
         if 'model_5_95' in plotting:
             assert 0
-            times = [t for t in sorted(dat_scen_data.keys())]
-            model_mins = []
-            model_maxs = []
-            for t, ds in dat_scen_data.items():
-                model_mins.append(np.min(ds))
-                model_maxs.append(np.max(ds))
-            if model_mins == model_maxs:
-                plt.plot(times, model_mins, ls=':', c=color, lw=2.)
-            else:
-                plt.fill_between(times, model_mins, model_maxs, color = fill_color, ec=None, alpha=0.3)
+            # times = [t for t in sorted(dat_scen_data.keys())]
+            # model_mins = []
+            # model_maxs = []
+            # for t, ds in dat_scen_data.items():
+            #     model_mins.append(np.min(ds))
+            #     model_maxs.append(np.max(ds))
+            # if model_mins == model_maxs:
+            #     plt.plot(times, model_mins, ls=':', c=color, lw=2.)
+            # else:
+            #     plt.fill_between(times, model_mins, model_maxs, color = fill_color, ec=None, alpha=0.3)
 
     # global model lines:
     for scenario_x in sorted(scenarios):
@@ -1363,7 +1361,7 @@ def multi_model_clim_figure(
     for variable_group, filenames  in ts_dict.items():
         for fn in sorted(filenames):
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
-            dataset = metadatas[fn]['dataset'] 
+            dataset = metadatas[fn]['dataset']
             short_name = metadatas[fn]['short_name']
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
@@ -1545,7 +1543,7 @@ def multi_model_clim_figure(
             fn = model_cubes_paths[variable_group][i]
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             scenario = metadatas[fn]['exp']
-            
+
             dataset = metadatas[fn]['dataset']
             short_name = metadatas[fn]['short_name']
             if dataset in models_to_skip['all']: continue
@@ -1621,7 +1619,7 @@ def multi_model_clim_figure(
                    print(line)
                    if line[0] == '#': continue
                    line = line.split(',')
-                   if len(line) !=2: continue 
+                   if len(line) !=2: continue
                    times.append(float(line[0]))
                    clim.append(float(line[1].replace('\n','')))
            plt.plot(times, clim, ls='-', c='k', lw=2.2, zorder=3)
@@ -1685,7 +1683,7 @@ def extract_depth_range(data, depths, drange='surface', threshold=-1000.):
 
 
 def plot_z_line(depths, data, ax0, ax1, ls='-', c='blue', lw=2., label = '', zorder=1):
-    
+
     for ax, drange in zip([ax0, ax1], ['surface', 'depths']):
         data2 = extract_depth_range(data, depths, drange=drange)
         if not len(data2.compressed()): continue
@@ -1795,22 +1793,13 @@ def make_multi_model_profiles_plotpair(
         ax2=fig.add_subplot(gs0[0,1]) # surface
         ax3=fig.add_subplot(gs0[1,1]) # depths
 
-        #ax_left = fig.add_subplot(gs0[:])
-        #ax_left.axis('off')
-        #ax_left.set_title('Depth Profile')
-
-    ax0 = add_letter(ax0, 'c')          
-    ax2 = add_letter(ax2, 'd')           
-
-
-    #gs0 = gs[0].subgridspec(2, 1, hspace=0.35) # scatters
-    #gs1 = gs[1].subgridspec(3, 1, hspace=0.06 ) # maps
-    #ax0=fig.add_subplot(gs0[0,0]) # surface
-    #ax1=fig.add_subplot(gs0[1,0]) # depths
+    ax0 = add_letter(ax0, 'c')
+    ax2 = add_letter(ax2, 'd')
 
     models = {}
     model_cubes = {}
     model_cubes_paths = {}
+    model_hist_cubes = {}
     debug_txt = ''
     for variable_group, filenames in profile_fns.items():
         for i, fn in enumerate(filenames):
@@ -1821,9 +1810,9 @@ def make_multi_model_profiles_plotpair(
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
             models[dataset] = True
-            if single_model == 'all': 
+            if single_model == 'all':
                 pass
-            elif dataset != single_model: 
+            elif dataset != single_model:
                 continue
 
             cube = iris.load_cube(fn)
@@ -1837,7 +1826,7 @@ def make_multi_model_profiles_plotpair(
                 if metadatas[fn]['dataset'] == 'CESM2' and single_model != 'CESM2':
                      continue
             scenario = metadatas[fn]['exp']
-            debug_txt = ', '.join([debug_txt, 'a', dataset, short_name, exp, ensemble, str(cube[:,9].data.mean()), '\n']) 
+            debug_txt = ', '.join([debug_txt, 'a', dataset, short_name, exp, ensemble, str(cube[:,9].data.mean()), '\n'])
             print(dataset, short_name, exp, ensemble, cube[:,9].data.mean())
             if scenario == 'historical':
                 cube = extract_time(cube, hist_time_range[0], 1, 1, hist_time_range[1], 12, 31)
@@ -1850,7 +1839,7 @@ def make_multi_model_profiles_plotpair(
             cube = cube.collapsed('time', iris.analysis.MEAN)
             print(dataset, short_name, exp, ensemble, cube[9].data)
             debug_txt = ', '.join([debug_txt, 'c', dataset, short_name, exp, ensemble, str(cube[9].data), '\n'])
-  
+
             print(cube.shape)
             # ensure everyone uses the same levels:
             cube = extract_levels(cube,
@@ -1865,9 +1854,11 @@ def make_multi_model_profiles_plotpair(
             #assert 0
             print(dataset, short_name, exp, ensemble, cube[13])
             debug_txt = ', '.join([debug_txt, 'd', dataset, short_name, exp, ensemble, str(cube[13].data), '\n\n'])
- 
+
             model_cubes = add_dict_list(model_cubes, variable_group, cube)
             model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
+            if exp == 'historical':
+                model_hist_cubes[(dataset, ensemble)] = cube
 
     if not len(model_cubes):
         return fig, ax
@@ -1875,7 +1866,6 @@ def make_multi_model_profiles_plotpair(
     # calculate file count:
     header = ['field', ]
     line = [short_name, '(profile)', ]
-    line2 = [' ', ]
 
     data_dict = {}
     for variable_group, cubes in model_cubes.items():
@@ -1883,6 +1873,8 @@ def make_multi_model_profiles_plotpair(
         scenario = ''
         color = ''
         single_model_means = {}
+        single_model_diffs = {}
+
         for i, cube in enumerate(cubes):
             fn = model_cubes_paths[variable_group][i]
             metadata = metadatas[fn]
@@ -1893,6 +1885,7 @@ def make_multi_model_profiles_plotpair(
 
             if dataset not in single_model_means.keys():
                 single_model_means[dataset] = {}
+                single_model_diffs[dataset] = {}
 
             if single_model == 'all': pass
             elif metadata['dataset'] != single_model: continue
@@ -1901,23 +1894,24 @@ def make_multi_model_profiles_plotpair(
             color = ipcc_colours[scenario]
 
             depths = -1.* cube.coord('depth').points
-            for z, d in zip(depths, cube.data):
+            for z, d, hist in zip(depths, cube.data, model_hist_cubes[(dataset, ensemble)].data):
 #                data_values = add_dict_list(data_values, z, d)
                 single_model_means[dataset] = add_dict_list(single_model_means[dataset], z, d)
+                single_model_diffs[dataset] = add_dict_list(single_model_diffs[dataset], z, d - hist)
             if 'all_models'  in plotting:
                  ax0, ax1 = plot_z_line(depths, cube.data, ax0, ax1, ls='-', c=color, lw=0.8, label = scenario)
 
-
         #./output_csv/output_csv_*/model_table/ensemble_count_table_*.csv
         mmm = {}
+        mmm_diff = {}
         header.append('&')
         header.append(scenario)
         num_ens = 0
         for dataset, data_values in single_model_means.items():
-            
+
             depths = sorted(data_values.keys())
             model_mean = [np.ma.masked_invalid(data_values[z]).mean() for z in depths]
-            print(depths, model_mean, data_values)  
+            print(depths, model_mean, data_values)
             num_ens += len(data_values[depths[0]])
             for z, dep  in enumerate(depths):
                 print(variable_group, scenario, dataset, z, dep, len(data_values[dep]), data_values[dep],  model_mean[z], 'mean:', model_mean[z])
@@ -1926,28 +1920,40 @@ def make_multi_model_profiles_plotpair(
                  mmm = add_dict_list(mmm, z, d)
                  if z == 500.:
                      debug_txt = ', '.join([debug_txt,'single_model_means:', dataset, variable_group, 'mean', z, d, '\n'])
-                     
+
                  print('mmm',variable_group, dataset, z, d)
-      
+
+        for dataset, diff_values in single_model_diffs.items():
+            depths = sorted(diff_values.keys())
+            model_anom_mean = [np.ma.masked_invalid(diff_values[z]).mean() for z in depths]
+            print(depths, model_anom_mean, diff_values)
+            for z, dep  in enumerate(depths):
+                print(variable_group, scenario, dataset, z, dep, len(diff_values[dep]), diff_values[dep],  model_anom_mean[z], 'mean:', model_anom_mean[z])
+
+            for z,d in zip(depths, model_anom_mean):
+                 mmm_diff = add_dict_list(mmm_diff, z, d)
+                 if z == 500.:
+                     debug_txt = ', '.join([debug_txt,'single_model_means:', dataset, variable_group, 'mean', z, d, '\n'])
+
+                 print('mmm',variable_group, dataset, z, d)
+
         scen_str = ''.join([str(int(len(single_model_means.keys()))), ' (',str(int(num_ens)), ') &'])
         line.append(scen_str)
-        # model_ensembles_dict = add_dict_list(model_values, key, ensemble)
-        # ensembles_dict = add_dict_list(ensembles_dict, key, ensemble)
+
 
         depths = sorted(mmm.keys())
         mean = np.ma.array([np.mean(mmm[z]) for z in depths])
         mean = np.ma.masked_invalid(mean)
+        mean_diff = np.ma.array([np.mean(mmm_diff[z]) for z in depths])
+        mean_diff = np.ma.masked_invalid(mean_diff)
         for z, dep  in enumerate(depths):
-            print(variable_group, scenario, z, dep, len(mmm[dep]), mmm[dep], 'mmm:', mean[z])
+            print(variable_group, scenario, z, dep, len(mmm[dep]), mmm[dep], 'mmm:', mean[z], mean_diff[z])
 
-        #if scenario=='ssp370':
-        #    assert 0
-
-        print(depths, mean)
+        print(depths, mean, mean_diff)
         debug_txt = ', '.join([debug_txt,'\n\nmulti_model_means:', variable_group, scenario, ', '.join([str(d) for d in mean]), '\n'])
 
         for test_val in [0., None, np.nan, np.inf, False]:
-             if test_val in mean: 
+             if test_val in mean:
                  print('Fail:', test_val, 'in mean:', mean)
                  assert 0
              if test_val in depths:
@@ -1955,7 +1961,7 @@ def make_multi_model_profiles_plotpair(
                  assert 0
 
 
-        data_dict[scenario] = {'mean':mean, 'depths': depths, 'scenario': scenario, 'variable_group': variable_group}
+        data_dict[scenario] = {'mean':mean, 'depths': depths, 'scenario': scenario, 'variable_group': variable_group, 'anomaly':mean_diff}
 
         if 'means' in plotting:
             ax0, ax1 = plot_z_line(depths, mean, ax0, ax1, ls='-', c=color, lw=2., label = scenario)
@@ -1971,37 +1977,37 @@ def make_multi_model_profiles_plotpair(
 
         if 'medians' in plotting:
             assert 0
-            medians = [np.median(data_values[z]) for z in depths]
-            data_dict[scenario]['medians'] = medians
-            ax0, ax1 = plot_z_line(depths, medians, ax0, ax1, ls='-', c=color, lw=2., label = scenario)
-            save_profile_csv(cfg, ['profile', variable_group, single_model, scenario, 'medians'], depths, mean)
+            # medians = [np.median(data_values[z]) for z in depths]
+            # data_dict[scenario]['medians'] = medians
+            # ax0, ax1 = plot_z_line(depths, medians, ax0, ax1, ls='-', c=color, lw=2., label = scenario)
+            # save_profile_csv(cfg, ['profile', variable_group, single_model, scenario, 'medians'], depths, mean)
 
         if 'range' in plotting:
             assert 0
-            mins = [np.min(data_values[z]) for z in depths]
-            maxs = [np.max(data_values[z]) for z in depths]
-            data_dict[scenario]['mins'] = mins
-            data_dict[scenario]['maxs'] = maxs
-            ax0, ax1 =  plot_z_area(depths, mins, maxs,ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
-            save_profile_csv(cfg, ['profile', variable_group, single_model, scenario, 'mins'], depths, mins)
-            save_profile_csv(cfg, ['profile', variable_group, single_model, scenario, 'maxs'], depths, maxs)
+            # mins = [np.min(data_values[z]) for z in depths]
+            # maxs = [np.max(data_values[z]) for z in depths]
+            # data_dict[scenario]['mins'] = mins
+            # data_dict[scenario]['maxs'] = maxs
+            # ax0, ax1 =  plot_z_area(depths, mins, maxs,ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
+            # save_profile_csv(cfg, ['profile', variable_group, single_model, scenario, 'mins'], depths, mins)
+            # save_profile_csv(cfg, ['profile', variable_group, single_model, scenario, 'maxs'], depths, maxs)
 
         if '5-95' in plotting:
             assert 0
-            mins = [np.percentile(data_values[z], 5.) for z in depths]
-            maxs = [np.percentile(data_values[z], 95.) for z in depths]
-            data_dict[scenario]['5pc'] = mins
-            data_dict[scenario]['95pc'] = maxs
-            ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
+            # mins = [np.percentile(data_values[z], 5.) for z in depths]
+            # maxs = [np.percentile(data_values[z], 95.) for z in depths]
+            # data_dict[scenario]['5pc'] = mins
+            # data_dict[scenario]['95pc'] = maxs
+            # ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
 
         if '5-95_split' in plotting:
             assert 0
-            mins = [np.percentile(data_values[z], 5.) for z in depths]
-            maxs = [np.percentile(data_values[z], 95.) for z in depths]
-            data_dict[scenario]['5pc'] = mins
-            data_dict[scenario]['95pc'] = maxs
-            if scenario in ['historical', 'hist']:
-                ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
+            # mins = [np.percentile(data_values[z], 5.) for z in depths]
+            # maxs = [np.percentile(data_values[z], 95.) for z in depths]
+            # data_dict[scenario]['5pc'] = mins
+            # data_dict[scenario]['95pc'] = maxs
+            # if scenario in ['historical', 'hist']:
+            #     ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.15)
 
     print(debug_txt)
 
@@ -2021,45 +2027,41 @@ def make_multi_model_profiles_plotpair(
     # plot rhs
     #try:
     hist_data = np.array(data_dict['historical']['mean'])
-    #except: hist_data = []
 
     for scenario, ddict in data_dict.items():
-        #if scenario in ['hist', 'historical']:
-        #    continue
-        if not len(hist_data): continue
+        if not len(hist_data):
+            continue
         color = ipcc_colours[scenario]
         if 'means_split' in plotting: # and scenario not in ['historical', 'hist']:
-            hist_diff = np.array(ddict['mean']) - hist_data
-            if scenario =='ssp370':
-                print('hist_diff', single_model, scenario, hist_diff)
-                  
+
             ax2, ax3 = plot_z_line(ddict['depths'],
-                hist_diff,
+                mean_diff,
                 ax2, ax3, ls='-', c=color, lw=2., label = scenario)
 
         if '5-95_split' in plotting:
-            mins = np.array(ddict['5pc']) - hist_data
-            maxs = np.array(ddict['95pc']) - hist_data
-            ax2, ax3 =  plot_z_area(ddict['depths'], mins, maxs, ax2, ax3, color=color, alpha=0.15)
+            assert 0
+            # mins = np.array(ddict['5pc']) - hist_data
+            # maxs = np.array(ddict['95pc']) - hist_data
+            # ax2, ax3 =  plot_z_area(ddict['depths'], mins, maxs, ax2, ax3, color=color, alpha=0.15)
 
     # Add observational data.
     plot_obs = True
     if single_model=='all':
         plot_obs_diff = False
-    else: 
-        plot_obs_diff = True 
+    else:
+        plot_obs_diff = True
     obs_filename = 'aux/obs_ncs/'+short_name+'_profile.nc'
     if plot_obs and os.path.exists(obs_filename):
         obs_cube = iris.load_cube(obs_filename)
         obs_depths = -1.* obs_cube.coord('depth').points
-        obs_key = 'Observations' 
+        obs_key = 'Observations'
         ax0, ax1 = plot_z_line(obs_depths, obs_cube.data, ax0, ax1, ls='-', c='k', lw=2.5, label = obs_key)
 
         if plot_obs_diff:
             # interpolated historical data in obs_depths
             hist_interp = np.interp(obs_depths, depths, hist_data) # calculate histo
             ax2, ax3 = plot_z_line(obs_depths, obs_cube.data - hist_interp, ax2, ax3, ls='-', c='k', lw=2.5, label = obs_key)
-        
+
     # set x axis limits:
     xlims = np.array([ax0.get_xlim(), ax1.get_xlim()])
     ax0.set_xlim([xlims.min(), xlims.max()])
@@ -2098,12 +2100,12 @@ def make_multi_model_profiles_plotpair(
     ax3.axhline(-1001., ls='--', lw=1.5, c='black')
 
     if pH_log and short_name in ['ph', 'pH']:
-#        #ax0.set_xscale('log') 
-#        #ax1.set_xscale('log')   
+#        #ax0.set_xscale('log')
+#        #ax1.set_xscale('log')
 #        ax0.semilogx()
 #        ax1.semilogx()
         plt.sca(ax0)
-        plt.xscale("log")  
+        plt.xscale("log")
         plt.sca(ax1)
         plt.xscale("log")
 
@@ -2307,8 +2309,8 @@ def multi_model_map_figure(
             rgb_data_div = np.loadtxt('colormaps/continuous_colormaps_rgb_0-1/misc_div.txt')
             div_cmap = mcolors.LinearSegmentedColormap.from_list('colormap', rgb_data_div)
 
-        else: 
-            key = colour_scheme #'temp' # prec #wind #misc #slev  #chem  
+        else:
+            key = colour_scheme #'temp' # prec #wind #misc #slev  #chem
             rgb_data_seq = np.loadtxt('colormaps/continuous_colormaps_rgb_0-1/'+key+'_seq.txt')
             seq_cmap = mcolors.LinearSegmentedColormap.from_list('colormap', rgb_data_seq)
             rgb_data_div = np.loadtxt('colormaps/continuous_colormaps_rgb_0-1/'+key+'_div.txt')
@@ -2534,7 +2536,7 @@ def multi_model_map_figure(
     diff_cubes = {}
 
     # Calculate the diff range.
-    style_range = {'hist':[], 'mean':[], 'diff':[], } 
+    style_range = {'hist':[], 'mean':[], 'diff':[], }
     obs_filename = 'aux/obs_ncs/'+short_name+'_map.nc'
     if plot_obs and os.path.exists(obs_filename):
         obs_cube = iris.load_cube(obs_filename)
@@ -2667,8 +2669,8 @@ def multi_model_map_figure(
         square_lat_cc = [central_latitude-rad, central_latitude-rad, central_latitude+rad, central_latitude+rad, central_latitude-rad ]
         ax0.plot(square_lon_cc, square_lat_cc,
              #[-17.25, -11.25, -11.25, -17.25, -17.25 ], [-10.56, -10.56, -4.56, -4.56, -10.56],
-             color='black', linewidth=1, 
-             transform=ccrs.Geodetic(), 
+             color='black', linewidth=1,
+             transform=ccrs.Geodetic(),
              )
 
         gl = ax0.gridlines(draw_labels=False, linewidth=0.5, alpha=0.4, color='k',linestyle='--')
@@ -2773,7 +2775,7 @@ def multi_model_map_figure(
              color='black', linewidth=1,
              transform=ccrs.Geodetic(),
              )
-        
+
         #ax0.plot([-17.25, -11.25, -11.25, -17.25, -17.25 ], [-10.56, -10.56, -4.56, -4.56, -10.56],
         #     color='red', linewidth=1,
         #     transform=ccrs.Geodetic(),
@@ -2913,7 +2915,7 @@ def do_gridspec(cfg, ):
     """
     #fig = None
     fig = plt.figure()
-    fig.set_size_inches(12., 9.) 
+    fig.set_size_inches(12., 9.)
 
     gs = matplotlib.gridspec.GridSpec(ncols=1, nrows=2, height_ratios=[5., 5.]) #hspace=0.5,
     gs0 =gs[0,0].subgridspec(ncols=5, nrows=2,
@@ -2964,8 +2966,8 @@ def add_letter(ax, letter, par=True ):
     Adds  Letter to top left above the pane.
     """
     if par:#parenthesis.
-        letter = ''.join([letter, ')']) 
-    ax.text(0., 1.0, letter, 
+        letter = ''.join([letter, ')'])
+    ax.text(0., 1.0, letter,
        horizontalalignment='left',
        verticalalignment='bottom',
        transform=ax.transAxes)
@@ -3038,7 +3040,7 @@ def main(cfg):
         if dataset in models_to_skip:
             continue
 
-        if dataset in models_without_futures: 
+        if dataset in models_without_futures:
             continue
 
         models[dataset] = True
@@ -3065,12 +3067,12 @@ def main(cfg):
     #        for fn in ffiles:
     #            print('-----\n', fn)
     #            cube = iris.load_cube(fn)
-    #            print(cube.data.min(), cube.data.max()) 
+    #            print(cube.data.min(), cube.data.max())
     #assert 0
 
 
     # Individual plots - standalone
-    do_standalone = True 
+    do_standalone = True
     if do_standalone:
 
         # plottings:
@@ -3178,7 +3180,7 @@ def main(cfg):
 
         if not  do_whole_plot: continue
         if single_model in models_to_skip['all']: continue
-        if single_model in models_without_futures: continue 
+        if single_model in models_without_futures: continue
         #if single_model != 'all':continue
 
         fig, subplots = do_gridspec(cfg, )
@@ -3199,7 +3201,7 @@ def main(cfg):
             ax = subplots['timeseries'],
             single_model = single_model
             )
-        subplots['timeseries'] = add_letter(subplots['timeseries'], 'a') 
+        subplots['timeseries'] = add_letter(subplots['timeseries'], 'a')
 
         # b
         fig, subplots['climatology'] =  multi_model_clim_figure(
@@ -3213,8 +3215,8 @@ def main(cfg):
             plotting=['OneModelOneVote', ], #'means',],
             single_model = single_model,
         )
-        subplots['climatology'] = add_letter(subplots['climatology'], 'b')     
-      
+        subplots['climatology'] = add_letter(subplots['climatology'], 'b')
+
         # c, d
         fig, subplots['profile'] = make_multi_model_profiles_plotpair(
             cfg,
@@ -3242,19 +3244,19 @@ def main(cfg):
             plt.sca(subplots['climatology'])
             plt.yscale("log")
 
-            #subplots['profile'].set_xscale('log')  
+            #subplots['profile'].set_xscale('log')
 
-        # cmaps: 
-        # 'slev', 
+        # cmaps:
+        # 'slev',
         # 'temp', 'prec', 'wind', 'chem', 'cryo', 'standard', 'slev', 'misc1', 'misc2', 'misc3']:
         # e, f, g, h, i, j
         cmaps = {
             'tos': 'temp_1', 'thetao': 'temp_1', # temperature
-            'sos': 'temp', 'so': 'temp', 
+            'sos': 'temp', 'so': 'temp',
             'mld': 'slev', 'mlotst': 'slev',
             'ph': 'ph', # only one way!
             'o2' : 'chem',
-            'chl':'prec', 
+            'chl':'prec',
             'intpp': 'prec', #'misc1',
             'no3': 'chem',
             'po4': 'chem',
@@ -3298,9 +3300,9 @@ def main(cfg):
             assert 0
 
         suptitle = suptitles[short_name] # dict at start.
- 
+
         suptitle += ' '.join([
-                            joining, 
+                            joining,
                             'Recent Past', '('+ '-'.join([str(int(t)) for t in hist_time_range]) +')',
                             'vs Mid-Century Future', '('+'-'.join([str(int(t)) for t in ssp_time_range])+')' ])
         if single_model != 'all':
