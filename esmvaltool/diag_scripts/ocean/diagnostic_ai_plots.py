@@ -442,7 +442,7 @@ def write_csv_ts(cfg, metadatas, data_values, single_model, short_name):
     #assert 0
 
 
-def find_hist_cube(hist_cubes, dataset, short_name, scenario, ensemble):
+def find_hist_cube(hist_cubes, dataset, short_name, scenario, ensemble, return_missing=False):
     """
     Tool to figure out which historical cube it is.
     """
@@ -459,18 +459,13 @@ def find_hist_cube(hist_cubes, dataset, short_name, scenario, ensemble):
             print(d, s, sce, e, ('looking for ', ensemble))
             sets.append((d, s, sce, e))
 
-    if len(sets) == 1: # only one hist cube available.
-        hist_cube = hist_cubes[sets[0]]
-        return hist_cube
-    elif len(sets) > 1:
-#        if (dataset, short_name, scenario, ensemble) == ('IPSL-CM6A-LR', short_name, scenario, 'r10i1p1f1'):
-#            return hist_cubes[('IPSL-CM6A-LR', short_name, 'historical', 'r1i1p1f1')]
-        if dataset == 'UKESM1-0-LL':
-            return hist_cubes[(dataset, short_name, 'historical', ensemble.replace('f2', 'f3'))]
-
-        print('could not find:', (dataset, short_name, scenario, ensemble), 'but did find ', len(sets), 'ensemble members:', sets)
+    if dataset == 'UKESM1-0-LL':
+        return hist_cubes[(dataset, short_name, 'historical', ensemble.replace('f2', 'f3'))]
     else:
         print('could not find:', (dataset, short_name, scenario, ensemble), 'but did find ', len(sets), 'ensemble members:', sets)
+
+    if return_missing:
+        return (dataset, short_name, 'historical', ensemble)
     assert 0
 
 
@@ -1907,7 +1902,10 @@ def make_multi_model_profiles_plotpair(
         single_model_means = {}
         single_model_diffs = {}
 
-        for i, cube in enumerate(cubes):
+
+
+
+    for i, cube in enumerate(cubes):
             fn = model_cubes_paths[variable_group][i]
             metadata = metadatas[fn]
             dataset = metadatas[fn]['dataset']
@@ -2655,7 +2653,7 @@ def multi_model_map_figure(
                 if cube.data.min() == cube.data.max():
                     print('Problem!:', variable_group, model_itr,cube.data.min() , scenario,model_cubes_paths_anom[(variable_group, model_itr)])
                     assert 0
- 
+
                 model_cubes_anom = add_dict_list(model_cubes_anom, (variable_group, model), cube)
                 # single_map_figure(cfg, cube, variable_group,
                 #     exp=scenario,
@@ -2780,7 +2778,7 @@ def multi_model_map_figure(
     # Create the lin space for maps.
     for style, srange in style_range.items():
         if not len(srange): continue
-        print(style, srange)   
+        print(style, srange)
         style_range[style] = [round_sig(np.array(srange).min(),2), round_sig(np.array(srange).max(),2)]
         #nbins = (style_range[style][1] - style_range[style][0])
         #print(style_range[style], nbins)
@@ -2820,7 +2818,7 @@ def multi_model_map_figure(
                 variable_group = exps[exp]
                 if variable_group not in diff_cubes: continue
                 cube = diff_cubes[variable_group]
-        else: 
+        else:
             assert 0
         print('plotting', exp, sbp, single_model)
         qplot = iris.plot.contourf(
@@ -3180,6 +3178,7 @@ def main(cfg):
     maps_fns = {}
     models = {'all': True}
     model_scenarios = {}
+    variable_groups = {}
 
     # This should be the only time that it iterates over metadata.items
     for fn, metadata in metadatas.items():
@@ -3196,6 +3195,7 @@ def main(cfg):
             model_scenarios[dataset] = {scenario: True}
         else:
             model_scenarios[dataset][scenario] = True
+
 
 
     models_without_futures = []
@@ -3222,7 +3222,7 @@ def main(cfg):
             continue
 
         models[dataset] = True
-
+        variable_groups[variable_group] = True
         if variable_group.find('_ts_')>-1:
             time_series_fns = add_dict_list(time_series_fns, variable_group, fn)
         if variable_group.find('_profile_')>-1:
@@ -3230,6 +3230,30 @@ def main(cfg):
         if variable_group.find('_map_')>-1:
             maps_fns = add_dict_list(maps_fns, variable_group, fn)
 
+    # Find missing historical datasets:
+    missing_cubes = {variable_group: {} for variable_group in variable_groups.keys()}
+    missing = 0
+    for i, cube in metadatas.keys():
+        dataset = metadatas[fn]['dataset']
+        short_name = metadatas[fn]['short_name']
+        ensemble = metadatas[fn]['ensemble']
+        scenario = metadatas[fn]['exp']
+        variable_group = metadatas[fn]['variable_group']
+
+        if scenario == 'historical':
+            continue
+        hist_cube = find_hist_cube(model_hist_cubes, dataset, short_name, scenario, ensemble, return_missing=True)
+        if isinstance(hist_cube, tuple): pass
+            missing_cubes[variable_group][hist_cube] = True
+
+    for variable_group, missing_tuples in missing_cubes.items():
+        if len(missing_tuples):
+            print('The following historical jobs are missing:', variable_group)
+            for miss_tuple in missing_tuples.keys():
+                print(miss_tuple)
+                missing+=1
+    if missing >0:
+        assert 0
     #jobs:
     #Make UKESM-only version of everything (or single model?)
     #prepare data for export.
