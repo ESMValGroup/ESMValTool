@@ -361,16 +361,16 @@ def write_statistics(df, attributes, cfg):
     csv_path = get_diagnostic_filename(basename, cfg).replace('.nc', '.csv')
     df.to_csv(csv_path)
     logger.info("Wrote %s", csv_path)
-    with pd.option_context(*PANDAS_PRINT_OPTIONS):
-        logger.info("Data:\n%s", df)
+    #with pd.option_context(*PANDAS_PRINT_OPTIONS):
+    #    logger.info("Data:\n%s", df)
 
     stat = df.groupby(['Statistic', 'Group'])['Value'].describe()
     basename = "statistic_" + attributes['short_name']
     csv_path = get_diagnostic_filename(basename, cfg).replace('.nc', '.csv')
     stat.to_csv(csv_path)
     logger.info("Wrote %s", csv_path)
-    with pd.option_context(*PANDAS_PRINT_OPTIONS):
-        logger.info("Data:\n%s", df)
+    #with pd.option_context(*PANDAS_PRINT_OPTIONS):
+    #    logger.info("Data:\n%s", df)
 
 
 def bootstrapping(cubes, cube_obs, all_groups, attributes, cfg):
