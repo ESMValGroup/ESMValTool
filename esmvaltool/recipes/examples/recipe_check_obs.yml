@@ -632,18 +632,35 @@ diagnostics:
     scripts: null
 
 
-  NOAA-CIRES-20CR:
-    description: NOAA-CIRES-20CR check
+  NOAA-CIRES-20CR-V2:
+    description: NOAA-CIRES-20CR-V2 check
     variables:
       clt:
       clwvi:
       hus:
       prw:
-      rsut:
       rlut:
+      rsut:
     additional_datasets:
-      - {dataset: NOAA-CIRES-20CR, project: OBS6, mip: Amon, tier: 2,
+      - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: v2, start_year: 1871, end_year: 2012}
+    scripts: null
+
+
+  NOAA-CIRES-20CR-V3:
+    description: NOAA-CIRES-20CR-V3 check
+    variables:
+      clt:
+      clwvi:
+      hus:
+      prw:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+    additional_datasets:
+      - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: v3, start_year: 1836, end_year: 2015}
     scripts: null
 
 
