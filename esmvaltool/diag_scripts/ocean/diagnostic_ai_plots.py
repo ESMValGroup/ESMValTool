@@ -1858,7 +1858,7 @@ def make_multi_model_profiles_plotpair(
             model_cubes = add_dict_list(model_cubes, variable_group, cube)
             model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
             if exp == 'historical':
-                model_hist_cubes[(dataset, ensemble)] = cube
+                model_hist_cubes[(dataset, short_name, exp, ensemble)] = cube
 
     if not len(model_cubes):
         return fig, ax
@@ -1880,6 +1880,8 @@ def make_multi_model_profiles_plotpair(
             metadata = metadatas[fn]
             dataset = metadatas[fn]['dataset']
             short_name = metadatas[fn]['short_name']
+            ensemble = metadatas[fn]['ensemble']
+
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
 
@@ -1894,12 +1896,52 @@ def make_multi_model_profiles_plotpair(
             color = ipcc_colours[scenario]
 
             depths = -1.* cube.coord('depth').points
-            for z, d, hist in zip(depths, cube.data, model_hist_cubes[(dataset, ensemble)].data):
-#                data_values = add_dict_list(data_values, z, d)
+
+            # Try to fin historical cube
+            try:
+                hist_cube = model_hist_cubes[(dataset, short_name, 'historical', ensemble)]
+                found_hist = True 
+            except:
+                pairs = []
+                found_hist = False
+                for d, s, sce, e in model_hist_cubes.keys():
+                    print('model_hist_cubes:', len(model_hist_cubes.keys()))
+                    if d == dataset: 
+                        print(d, s, sce, e, ('looking for ', ensemble))
+                        pairs.append((d, s, sce, e))
+
+
+                if len(pairs) == 1: # only one hist cube.
+                    hist_cube = model_hist_cubes[pairs[0]]
+                    found_hist = True
+                elif len(pairs) > 1:
+                    print('could not find:', (dataset, short_name, scenario, ensemble), 'but did find ', len(pairs), 'ensemble members:', pairs)
+
+                # Specific cases where multiple historical exists:
+#                if (dataset, short_name, scenario, ensemble) == ('ACCESS-CM2', 'thetao', 'ssp126', 'r2i1p1f1'):
+#                    hist_cube = model_hist_cubes[('ACCESS-CM2', 'thetao', 'historical', 'r1i1p1f1')] 
+#                elif (dataset, short_name, scenario, ensemble) == ('ACCESS-CM2', 'thetao', 'ssp126', 'r3i1p1f1'):
+#                    hist_cube = model_hist_cubes[('ACCESS-CM2', 'thetao', 'historical', 'r1i1p1f1')]
+#                elif (dataset, short_name, scenario, ensemble) == ('ACCESS-CM2', 'thetao', 'ssp245', 'r2i1p1f1'):
+#                    hist_cube = model_hist_cubes[('ACCESS-CM2', 'thetao', 'historical', 'r1i1p1f1')]
+#                elif (dataset, short_name, scenario, ensemble) == ('ACCESS-CM2', 'thetao', 'ssp245', 'r3i1p1f1'):
+#                    hist_cube = model_hist_cubes[('ACCESS-CM2', 'thetao', 'historical', 'r1i1p1f1')]
+
+                else:     
+                    print('could not find:', (dataset, short_name, scenario, ensemble), 'but did find ', counts, 'ensemble members:', pairs) 
+                    assert 0
+ 
+
+            for z, d in zip(depths, cube.data):
                 single_model_means[dataset] = add_dict_list(single_model_means[dataset], z, d)
-                single_model_diffs[dataset] = add_dict_list(single_model_diffs[dataset], z, d - hist)
             if 'all_models'  in plotting:
                  ax0, ax1 = plot_z_line(depths, cube.data, ax0, ax1, ls='-', c=color, lw=0.8, label = scenario)
+
+            if found_hist:
+                for z, d, hist in zip(depths, cube.data, hist_cube.data):
+                    single_model_diffs[dataset] = add_dict_list(single_model_diffs[dataset], z, d - hist)
+                if 'all_models'  in plotting:
+                    ax2, ax3 = plot_z_line(depths, cube.data - hist_cube.data, ax2, ax3, ls='-', c=color, lw=0.8, label = scenario)
 
         #./output_csv/output_csv_*/model_table/ensemble_count_table_*.csv
         mmm = {}
@@ -1907,6 +1949,7 @@ def make_multi_model_profiles_plotpair(
         header.append('&')
         header.append(scenario)
         num_ens = 0
+        # ensemble mean:
         for dataset, data_values in single_model_means.items():
 
             depths = sorted(data_values.keys())
@@ -1923,14 +1966,16 @@ def make_multi_model_profiles_plotpair(
 
                  print('mmm',variable_group, dataset, z, d)
 
+        # anomaly:
         for dataset, diff_values in single_model_diffs.items():
-            depths = sorted(diff_values.keys())
-            model_anom_mean = [np.ma.masked_invalid(diff_values[z]).mean() for z in depths]
-            print(depths, model_anom_mean, diff_values)
-            for z, dep  in enumerate(depths):
-                print(variable_group, scenario, dataset, z, dep, len(diff_values[dep]), diff_values[dep],  model_anom_mean[z], 'mean:', model_anom_mean[z])
+            print(dataset, diff_values)
+            ddepths = sorted(diff_values.keys())
+            model_anom_mean = [np.ma.masked_invalid(diff_values[z]).mean() for z in ddepths]
+ #          print(depths, model_anom_mean, diff_values)
+#            for z, dep  in enumerate(depths):
+#                print(variable_group, scenario, dataset, z, dep, len(diff_values[dep]), diff_values[dep],  model_anom_mean[z], 'mean:', model_anom_mean[z])
 
-            for z,d in zip(depths, model_anom_mean):
+            for z,d in zip(ddepths, model_anom_mean):
                  mmm_diff = add_dict_list(mmm_diff, z, d)
                  if z == 500.:
                      debug_txt = ', '.join([debug_txt,'single_model_means:', dataset, variable_group, 'mean', z, d, '\n'])
@@ -1940,14 +1985,16 @@ def make_multi_model_profiles_plotpair(
         scen_str = ''.join([str(int(len(single_model_means.keys()))), ' (',str(int(num_ens)), ') &'])
         line.append(scen_str)
 
-
         depths = sorted(mmm.keys())
         mean = np.ma.array([np.mean(mmm[z]) for z in depths])
         mean = np.ma.masked_invalid(mean)
-        mean_diff = np.ma.array([np.mean(mmm_diff[z]) for z in depths])
+
+        ddepths = sorted(mmm_diff.keys())
+        mean_diff = np.ma.array([np.mean(mmm_diff[z]) for z in ddepths])
         mean_diff = np.ma.masked_invalid(mean_diff)
+        print(variable_group, scenario, ddepths, mean_diff, mmm_diff)
         for z, dep  in enumerate(depths):
-            print(variable_group, scenario, z, dep, len(mmm[dep]), mmm[dep], 'mmm:', mean[z], mean_diff[z])
+            print(variable_group, scenario, z, dep, len(mmm[dep]), mmm[dep], 'mmm:', mean[z],  mean_diff[z])
 
         print(depths, mean, mean_diff)
         debug_txt = ', '.join([debug_txt,'\n\nmulti_model_means:', variable_group, scenario, ', '.join([str(d) for d in mean]), '\n'])
@@ -1961,7 +2008,7 @@ def make_multi_model_profiles_plotpair(
                  assert 0
 
 
-        data_dict[scenario] = {'mean':mean, 'depths': depths, 'scenario': scenario, 'variable_group': variable_group, 'anomaly':mean_diff}
+        data_dict[scenario] = {'mean':mean, 'depths': depths, 'scenario': scenario, 'variable_group': variable_group, 'anomaly':mean_diff, 'ddepths':ddepths}
 
         if 'means' in plotting:
             ax0, ax1 = plot_z_line(depths, mean, ax0, ax1, ls='-', c=color, lw=2., label = scenario)
@@ -2034,8 +2081,10 @@ def make_multi_model_profiles_plotpair(
         color = ipcc_colours[scenario]
         if 'means_split' in plotting: # and scenario not in ['historical', 'hist']:
 
-            ax2, ax3 = plot_z_line(ddict['depths'],
-                mean_diff,
+            print(ddict['ddepths'],  ddict['anomaly'])
+            ax2, ax3 = plot_z_line(
+                ddict['ddepths'],
+                ddict['anomaly'],
                 ax2, ax3, ls='-', c=color, lw=2., label = scenario)
 
         if '5-95_split' in plotting:
@@ -3148,9 +3197,9 @@ def main(cfg):
             #assert 0
 
         # Profile pair
-        plottings =  [['all_models',], ['means_split',], ['5-95_split',], ['means_split', '5-95_split', ], ['range',] ]
+        plottings =  [['all_models',], ['means_split',], ]#['5-95_split',], ['means_split', '5-95_split', ], ['range',] ]
         for plotting in plottings:
-            continue
+            #continue
             for single_model in sorted(models.keys()): # ['all', 'only']:
                 make_multi_model_profiles_plotpair(
                     cfg,
