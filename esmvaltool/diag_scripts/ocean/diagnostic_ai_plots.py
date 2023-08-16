@@ -445,7 +445,7 @@ def write_csv_ts(cfg, metadatas, data_values, single_model, short_name):
 def find_hist_cube(hist_cubes, dataset, short_name, scenario, ensemble):
     """
     Tool to figure out which historical cube it is.
-    """"
+    """
     # If the exact match exists, use that:
     if (dataset, short_name, 'historical', ensemble) in hist_cubes:
         return hist_cubes[(dataset, short_name, 'historical', ensemble)]
@@ -454,19 +454,23 @@ def find_hist_cube(hist_cubes, dataset, short_name, scenario, ensemble):
     sets = []
     for d, s, sce, e in hist_cubes.keys():
         if sce != 'historical': continue
-        print('model_hist_cubes:', len(hist_cubes.keys()))
+        print('find_hist_cube: hist_cubes:', len(hist_cubes.keys()))
         if d == dataset:
             print(d, s, sce, e, ('looking for ', ensemble))
             sets.append((d, s, sce, e))
 
     if len(sets) == 1: # only one hist cube available.
-        hist_cube = model_hist_cubes[sets[0]]
+        hist_cube = hist_cubes[sets[0]]
         return hist_cube
     elif len(sets) > 1:
+#        if (dataset, short_name, scenario, ensemble) == ('IPSL-CM6A-LR', short_name, scenario, 'r10i1p1f1'):
+#            return hist_cubes[('IPSL-CM6A-LR', short_name, 'historical', 'r1i1p1f1')]
+        if dataset == 'UKESM1-0-LL':
+            return hist_cubes[(dataset, short_name, 'historical', ensemble.replace('f2', 'f3'))]
+
         print('could not find:', (dataset, short_name, scenario, ensemble), 'but did find ', len(sets), 'ensemble members:', sets)
-         # dummy but can add stuff later here if needed
     else:
-        print('could not find:', (dataset, short_name, scenario, ensemble), 'but did find ', counts, 'ensemble members:', sets)
+        print('could not find:', (dataset, short_name, scenario, ensemble), 'but did find ', len(sets), 'ensemble members:', sets)
     assert 0
 
 
@@ -1933,11 +1937,10 @@ def make_multi_model_profiles_plotpair(
             if 'all_models'  in plotting:
                  ax0, ax1 = plot_z_line(depths, cube.data, ax0, ax1, ls='-', c=color, lw=0.8, label = scenario)
 
-            if found_hist:
-                for z, d, hist in zip(depths, cube.data, hist_cube.data):
-                    single_model_diffs[dataset] = add_dict_list(single_model_diffs[dataset], z, d - hist)
-                if 'all_models'  in plotting:
-                    ax2, ax3 = plot_z_line(depths, cube.data - hist_cube.data, ax2, ax3, ls='-', c=color, lw=0.8, label = scenario)
+            for z, d, hist in zip(depths, cube.data, hist_cube.data):
+                single_model_diffs[dataset] = add_dict_list(single_model_diffs[dataset], z, d - hist)
+            if 'all_models'  in plotting:
+                ax2, ax3 = plot_z_line(depths, cube.data - hist_cube.data, ax2, ax3, ls='-', c=color, lw=0.8, label = scenario)
 
         #./output_csv/output_csv_*/model_table/ensemble_count_table_*.csv
         mmm = {}
@@ -2428,6 +2431,7 @@ def multi_model_map_figure(
             dataset = metadatas[fn]['dataset']
             short_name = metadatas[fn]['short_name']
             scenario = metadatas[filenames[0]]['exp']
+            exps[scenario] = variable_group
             ensemble = metadatas[filenames[0]]['ensemble']
             if dataset in models_to_skip['all']:
                 continue
@@ -2478,7 +2482,6 @@ def multi_model_map_figure(
             scenario = metadatas[filenames[0]]['exp']
             short_name =  metadatas[filenames[0]]['short_name']
 
-            exps[scenario] = variable_group
             model_cubes_paths = add_dict_list(model_cubes_paths, (variable_group, model_itr), filenames[0])
             #assert 0
             if scenario == 'historical':
@@ -2584,7 +2587,6 @@ def multi_model_map_figure(
             variablegroup_model_cubes_anom[variable_group] = iris.load_cube(vg_path)
             scenario= metadatas[filenames[0]]['exp']
             short_name =  metadatas[filenames[0]]['short_name']
-            exps[scenario] = variable_group
             print('loaded:', variablegroup_model_cubes_anom.keys(), variable_group)
             continue
 
@@ -2601,9 +2603,8 @@ def multi_model_map_figure(
             model_path = work_dir+'_'.join([variable_group, model_itr, region])+'_anom.nc'
             scenario = metadatas[filenames[0]]['exp']
             short_name =  metadatas[filenames[0]]['short_name']
-
-            exps[scenario] = variable_group
-            model_cubes_paths_anom = add_dict_list(model_cubes_paths_anom, (variable_group, model_itr), filenames[0])
+            if scenario == 'historical':
+                continue
 
             if scenario == 'historical':
                 time_range = hist_time_range
@@ -2620,6 +2621,7 @@ def multi_model_map_figure(
                 model = metadatas[fn]['dataset']
                 short_name = metadatas[fn]['short_name']
                 ensemble = metadatas[fn]['ensemble']
+                model_cubes_paths_anom = add_dict_list(model_cubes_paths_anom, (variable_group, model_itr), fn)
 
                 if metadatas[fn]['exp'] != scenario:
                     assert 0
@@ -2636,7 +2638,7 @@ def multi_model_map_figure(
                 cube = regrid_intersect(cube, region)
 
                 hist_fn = find_hist_cube(hist_fns, model, short_name, scenario, ensemble)
-                hist_cube = prep_cube_map(fn, metadatas[fn], hist_time_range, region)
+                hist_cube = prep_cube_map(hist_fn, metadatas[fn], hist_time_range, region)
                 hist_cube = regrid_intersect(hist_cube, region)
 
                 if short_name == 'chl':
@@ -2649,8 +2651,12 @@ def multi_model_map_figure(
                         assert 0
                     cube = fix_chl(cube)
                     hist_cube = fix_chl(hist_cube)
-
-                model_cubes_anom = add_dict_list(model_cubes_anom, (variable_group, model), cube - hist_cube)
+                cube = cube - hist_cube
+                if cube.data.min() == cube.data.max():
+                    print('Problem!:', variable_group, model_itr,cube.data.min() , scenario,model_cubes_paths_anom[(variable_group, model_itr)])
+                    assert 0
+ 
+                model_cubes_anom = add_dict_list(model_cubes_anom, (variable_group, model), cube)
                 # single_map_figure(cfg, cube, variable_group,
                 #     exp=scenario,
                 #     model=model,
@@ -2662,15 +2668,15 @@ def multi_model_map_figure(
                 continue
             # make the model mean cube here:
             model_cubes_anom[(variable_group, model_itr)] = diagtools.make_mean_of_cube_list_notime(model_cubes_anom[(variable_group, model_itr)])
-            single_map_figure(
-                cfg,
-                model_cubes_anom[(variable_group, model_itr)],
-                variable_group,
-                exp=scenario,
-                model=model_itr,
-                ensemble='AllEnsembles',
-                time_range=time_range,
-                region = region)
+            #single_map_figure(
+            #    cfg,
+            #    model_cubes_anom[(variable_group, model_itr)],
+            #    variable_group,
+            #    exp=scenario,
+            #    model=model_itr,
+            #    ensemble='AllEnsembles',
+            #    time_range=time_range,
+            #    region = region)
             iris.save(model_cubes_anom[(variable_group, model_itr)], model_path)
 
             # add model mean cube to dict.
@@ -2708,13 +2714,13 @@ def multi_model_map_figure(
 
     # calculate diffs, and range.
     nspaces = {}
-    try:
-        hist_variable_group = exps['historical']
-        hist_cube = variablegroup_model_cubes[hist_variable_group]
-        hist_cube_exists = True
-    except:
-        hist_cube_exists = False
-        hist_variable_group = ''
+#    try:
+    hist_variable_group = exps['historical']
+    hist_cube = variablegroup_model_cubes[hist_variable_group]
+    hist_cube_exists = True
+#    except:
+#        hist_cube_exists = False
+#        hist_variable_group = ''
 
     diff_cubes = {}
 
@@ -2766,6 +2772,7 @@ def multi_model_map_figure(
         # if hist_cube_exists:
         #     cube = cube - hist_cube
         # else: pass # cube
+        print(variable_group, cube.data)
         diff_cubes[variable_group] = cube
         style_range['diff'].extend([cube.data.min(), cube.data.max()])
 
@@ -2773,6 +2780,7 @@ def multi_model_map_figure(
     # Create the lin space for maps.
     for style, srange in style_range.items():
         if not len(srange): continue
+        print(style, srange)   
         style_range[style] = [round_sig(np.array(srange).min(),2), round_sig(np.array(srange).max(),2)]
         #nbins = (style_range[style][1] - style_range[style][0])
         #print(style_range[style], nbins)
@@ -2804,13 +2812,16 @@ def multi_model_map_figure(
         plt.sca(ax0)
         sbp_style = subplot_style[sbp]
         if figure_style=='hist_and_ssp':
-            if exp in ['historical', 'hist'] and hist_cube_exists:
+            print(sbp, exp, sbp_style)
+
+            if exp in ['historical', 'hist']: #d hist_cube_exists:
                 cube = hist_cube
             else:
                 variable_group = exps[exp]
                 if variable_group not in diff_cubes: continue
                 cube = diff_cubes[variable_group]
-
+        else: 
+            assert 0
         print('plotting', exp, sbp, single_model)
         qplot = iris.plot.contourf(
             cube,
