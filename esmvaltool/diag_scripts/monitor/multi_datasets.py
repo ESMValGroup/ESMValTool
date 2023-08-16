@@ -24,14 +24,25 @@ Currently supported plot types (use the option ``plots`` to specify them):
       grid (you can use the preprocessor :func:`esmvalcore.preprocessor.regrid`
       for this). Input data needs to be 2D with dimensions `latitude`,
       `longitude`.
-    - Vertical profiles (plot type ``profile``): for each variable and dataset,
-      an individual profile is plotted. If a reference dataset is defined, also
-      include this dataset and a bias plot into the figure. Note that if a
-      reference dataset is defined, all input datasets need to be given on the
-      same horizontal and vertical grid (you can use the preprocessors
-      :func:`esmvalcore.preprocessor.regrid` and
+    - Zonal mean profiles (plot type ``zonal_mean_profile``):
+      for each variable and dataset, an individual profile is plotted. If a
+      reference dataset is defined, also include this dataset and a bias plot
+      into the figure. Note that if a reference dataset is defined, all input
+      datasets need to be given on the same horizontal and vertical grid (you
+      can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
       :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
       needs to be 2D with dimensions `latitude`, `height`/`air_pressure`.
+
+      .. warning::
+
+          The plot_type ``profile`` for zonal mean profiles has been deprecated
+          in ESMValTool version 2.9.0 and is scheduled for removal in version
+          2.11.0. Please use plot type ``zonal_mean_profile`` instead. This is
+          an exact replacement.
+
+    - 1D profiles (plot type ``1d_profile``): for each variable separately, all
+      datasets are plotted in one single figure. Input data needs to be 1D with
+      single dimension `height` / `air_pressure`
 
 Author
 ------
@@ -51,7 +62,8 @@ figure_kwargs: dict, optional
     default, uses ``constrained_layout: true``.
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
-    must be ``timeseries``, ``annual_cycle``, ``map``, or ``profile``.
+    must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``
+    or ``1d_profile``.
     Dictionary values are dictionaries used as options for the corresponding
     plot. The allowed options for the different plot types are given below.
 plot_filename: str, optional
@@ -71,7 +83,7 @@ savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
     default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
 seaborn_settings: dict, optional
-    Options for :func:`seaborn.set` (affects all plots). By default, uses
+    Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
     ``style: ticks``.
 
 Configuration options for plot type ``timeseries``
@@ -81,6 +93,10 @@ annual_mean_kwargs: dict, optional
     means. These keyword arguments update (and potentially overwrite) the
     ``plot_kwargs`` for the annual mean plots. Use ``annual_mean_kwargs`` to
     not show annual means.
+gridline_kwargs: dict, optional
+    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
+    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
+    lines.
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
@@ -106,6 +122,10 @@ pyplot_kwargs: dict, optional
 
 Configuration options for plot type ``annual_cycle``
 ----------------------------------------------------
+gridline_kwargs: dict, optional
+    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
+    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
+    lines.
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
@@ -214,8 +234,8 @@ x_pos_stats_bias: float, optional (default: 0.92)
     coordinates. Can be adjusted to avoid overlap with the figure. Only
     relevant if ``show_stats: true``.
 
-Configuration options for plot type ``profile``
------------------------------------------------
+Configuration options for plot type ``zonal_mean_profile``
+----------------------------------------------------------
 cbar_label: str, optional (default: '{short_name} [{units}]')
     Colorbar label. Can include facets in curly brackets which will be derived
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
@@ -279,10 +299,10 @@ rasterize: bool, optional (default: True)
     <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
     profile plots to produce smaller files. This is only relevant for vector
     graphics (e.g., ``output_file_type=pdf,svg,ps``).
-show_y_minor_ticklabels: bool, optional (default: False)
-    Show tick labels for the minor ticks on the Y axis.
 show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
+show_y_minor_ticklabels: bool, optional (default: False)
+    Show tick labels for the minor ticks on the Y axis.
 x_pos_stats_avg: float, optional (default: 0.01)
     Text x-position of average (shown on the left) in Axes coordinates. Can be
     adjusted to avoid overlap with the figure. Only relevant if ``show_stats:
@@ -291,6 +311,46 @@ x_pos_stats_bias: float, optional (default: 0.7)
     Text x-position of bias statistics (shown on the right) in Axes
     coordinates. Can be adjusted to avoid overlap with the figure. Only
     relevant if ``show_stats: true``.
+
+Configuration options for plot type ``1d_profile``
+--------------------------------------------------
+aspect_ratio: float, optional (default: 1.5)
+    Aspect ratio of the plot. The default value results in a slender upright
+    plot.
+gridline_kwargs: dict, optional
+    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
+    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
+    lines.
+legend_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
+    ``legend_kwargs: false`` to not show legends.
+log_x: bool, optional (default: False)
+    Use logarithmic X-axis. Note that for the logarithmic x axis tickmarks are
+    set so that minor tickmarks show up. Setting of individual tickmarks by
+    pyplot_kwargs is not recommended in this case.
+log_y: bool, optional (default: True)
+    Use logarithmic Y-axis.
+plot_kwargs: dict, optional
+    Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
+    elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
+    ``CMIP6`` if ``facet_used_for_labels: project`` or ``historical`` if
+    ``facet_used_for_labels: exp``. Dictionary values are dictionaries used as
+    keyword arguments for :func:`iris.plot.plot`. String arguments can include
+    facets in curly brackets which will be derived from the corresponding
+    dataset, e.g., ``{project}``, ``{short_name}``, ``{exp}``. Examples:
+    ``default: {linestyle: '-', label: '{project}'}, CMIP6: {color: red,
+    linestyle: '--'}, OBS: {color: black}``.
+pyplot_kwargs: dict, optional
+    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
+    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
+    single argument for these functions. String arguments can include facets in
+    curly brackets which will be derived from the datasets plotted in the
+    corresponding plot, e.g., ``{short_name}``, ``{exp}``. Facets like
+    ``{project}`` that vary between the different datasets will be transformed
+    to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
+    of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+show_y_minor_ticklabels: bool, optional (default: False)
+    Show tick labels for the minor ticks on the Y axis.
 
 .. hint::
 
@@ -314,7 +374,7 @@ from iris.analysis.cartography import area_weights
 from iris.coord_categorisation import add_year
 from iris.coords import AuxCoord
 from matplotlib.gridspec import GridSpec
-from matplotlib.ticker import FormatStrFormatter, NullFormatter
+from matplotlib.ticker import FormatStrFormatter, LogLocator, NullFormatter
 from sklearn.metrics import r2_score
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
@@ -337,7 +397,7 @@ class MultiDatasets(MonitorBase):
         """Initialize class member."""
         super().__init__(config)
 
-        # Get default settings
+        # Get default stettings
         self.cfg = deepcopy(self.cfg)
         self.cfg.setdefault('facet_used_for_labels', 'dataset')
         self.cfg.setdefault('figure_kwargs', {'constrained_layout': True})
@@ -358,12 +418,25 @@ class MultiDatasets(MonitorBase):
             sort=self.cfg['facet_used_for_labels'],
         )
 
+        if 'profile' in self.plots:
+            logger.warning("The plot_type ``profile`` for zonal mean profiles"
+                           " has been deprecated in ESMValTool version 2.9.0"
+                           " and is scheduled for removal in version 2.11.0."
+                           " Please use plot type ``zonal_mean_profile``"
+                           " instead. This is an exact replacement.")
+            if 'zonal_mean_profile' in self.plots:
+                raise ValueError(
+                    "Both ``profile`` and ``zonal_mean_profile`` is used."
+                    " Please use ``zonal_mean_profile`` only.")
+            self.plots['zonal_mean_profile'] = self.plots.pop('profile')
+
         # Check given plot types and set default settings for them
         self.supported_plot_types = [
             'timeseries',
             'annual_cycle',
             'map',
-            'profile',
+            'zonal_mean_profile',
+            '1d_profile'
         ]
         for (plot_type, plot_options) in self.plots.items():
             if plot_type not in self.supported_plot_types:
@@ -373,30 +446,89 @@ class MultiDatasets(MonitorBase):
             if plot_options is None:
                 self.plots[plot_type] = {}
 
-            # Defaults for map and profile plots
-            if plot_type in ('map', 'profile'):
-                self.plots[plot_type].setdefault('fontsize', 10)
+            # Default options for the different plot types
+            if plot_type == 'timeseries':
+                self.plots[plot_type].setdefault('annual_mean_kwargs', {})
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
+                self.plots[plot_type].setdefault('legend_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+
+            if plot_type == 'annual_cycle':
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
+                self.plots[plot_type].setdefault('legend_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+
+            if plot_type == 'map':
                 self.plots[plot_type].setdefault(
                     'cbar_label', '{short_name} [{units}]')
                 self.plots[plot_type].setdefault(
                     'cbar_label_bias', 'Δ{short_name} [{units}]')
+                self.plots[plot_type].setdefault(
+                    'cbar_kwargs', {'orientation': 'horizontal', 'aspect': 30}
+                )
+                self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
                 self.plots[plot_type].setdefault('common_cbar', False)
+                self.plots[plot_type].setdefault('fontsize', 10)
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs_bias', {})
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'cmap', 'bwr'
+                )
+                if 'projection' not in self.plots[plot_type]:
+                    self.plots[plot_type].setdefault('projection', 'Robinson')
+                    self.plots[plot_type].setdefault(
+                        'projection_kwargs', {'central_longitude': 10}
+                    )
+                else:
+                    self.plots[plot_type].setdefault('projection_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('rasterize', True)
                 self.plots[plot_type].setdefault('show_stats', True)
-
-            # Defaults for map plots
-            if plot_type == 'map':
                 self.plots[plot_type].setdefault('x_pos_stats_avg', 0.0)
                 self.plots[plot_type].setdefault('x_pos_stats_bias', 0.92)
 
-            # Defaults for profile plots
-            if plot_type == 'profile':
+            if plot_type == 'zonal_mean_profile':
+                self.plots[plot_type].setdefault(
+                    'cbar_label', '{short_name} [{units}]')
+                self.plots[plot_type].setdefault(
+                    'cbar_label_bias', 'Δ{short_name} [{units}]')
+                self.plots[plot_type].setdefault(
+                    'cbar_kwargs', {'orientation': 'vertical'}
+                )
+                self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
+                self.plots[plot_type].setdefault('common_cbar', False)
+                self.plots[plot_type].setdefault('fontsize', 10)
                 self.plots[plot_type].setdefault('log_y', True)
-                self.plots[plot_type].setdefault('show_y_minor_ticklabels',
-                                                 False)
+                self.plots[plot_type].setdefault('plot_func', 'contourf')
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs_bias', {})
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'cmap', 'bwr'
+                )
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+                self.plots[plot_type].setdefault('rasterize', True)
+                self.plots[plot_type].setdefault('show_stats', True)
+                self.plots[plot_type].setdefault(
+                    'show_y_minor_ticklabels', False
+                )
                 self.plots[plot_type].setdefault('x_pos_stats_avg', 0.01)
                 self.plots[plot_type].setdefault('x_pos_stats_bias', 0.7)
+
+            if plot_type == '1d_profile':
+                self.plots[plot_type].setdefault('aspect_ratio', 1.5)
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
+                self.plots[plot_type].setdefault('legend_kwargs', {})
+                self.plots[plot_type].setdefault('log_x', False)
+                self.plots[plot_type].setdefault('log_y', True)
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+                self.plots[plot_type].setdefault(
+                    'show_y_minor_ticklabels', False
+                )
 
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
@@ -407,7 +539,7 @@ class MultiDatasets(MonitorBase):
                     f"the following dataset:\n{pformat(dataset)}")
 
         # Load seaborn settings
-        sns.set(**self.cfg['seaborn_settings'])
+        sns.set_theme(**self.cfg['seaborn_settings'])
 
     def _add_colorbar(self, plot_type, plot_left, plot_right, axes_left,
                       axes_right, dataset_left, dataset_right):
@@ -458,15 +590,16 @@ class MultiDatasets(MonitorBase):
         if plot_type == 'map':
             x_pos_bias = self.plots[plot_type]['x_pos_stats_bias']
             x_pos = self.plots[plot_type]['x_pos_stats_avg']
-        elif plot_type == 'profile':
+        elif plot_type in ['zonal_mean_profile']:
             x_pos_bias = self.plots[plot_type]['x_pos_stats_bias']
             x_pos = self.plots[plot_type]['x_pos_stats_avg']
         else:
             raise NotImplementedError(f"plot_type '{plot_type}' not supported")
 
-        # For profile plots add scalar longitude coordinate (necessary for
-        # calculation of area weights). The exact values for the points/bounds
-        # of this coordinate do not matter since they don't change the weights.
+        # For zonal_mean_profile plots add scalar longitude coordinate
+        # (necessary for calculation of area weights). The exact values for the
+        # points/bounds of this coordinate do not matter since they don't
+        # change the weights.
         if not cube.coords('longitude'):
             lon_coord = AuxCoord(
                 180.0,
@@ -551,16 +684,9 @@ class MultiDatasets(MonitorBase):
 
     def _get_cbar_kwargs(self, plot_type, bias=False):
         """Get colorbar kwargs."""
-        cbar_kwargs = {}
-        if plot_type == 'map':
-            cbar_kwargs.update({'orientation': 'horizontal', 'aspect': 30})
-        elif plot_type == 'profile':
-            cbar_kwargs.update({'orientation': 'vertical'})
-        cbar_kwargs.update(
-            self.plots[plot_type].get('cbar_kwargs', {}))
+        cbar_kwargs = deepcopy(self.plots[plot_type]['cbar_kwargs'])
         if bias:
-            cbar_kwargs.update(
-                self.plots[plot_type].get('cbar_kwargs_bias', {}))
+            cbar_kwargs.update(self.plots[plot_type]['cbar_kwargs_bias'])
         return deepcopy(cbar_kwargs)
 
     def _get_cbar_label(self, plot_type, dataset, bias=False):
@@ -574,27 +700,16 @@ class MultiDatasets(MonitorBase):
         cbar_label = self._fill_facet_placeholders(cbar_label, dataset, descr)
         return cbar_label
 
-    def _get_gridline_kwargs(self):
+    def _get_gridline_kwargs(self, plot_type):
         """Get gridline kwargs."""
-        plot_type = 'map'
-        gridline_kwargs = self.plots[plot_type].get('gridline_kwargs', {})
+        gridline_kwargs = self.plots[plot_type]['gridline_kwargs']
         return deepcopy(gridline_kwargs)
 
     def _get_map_projection(self):
         """Get projection used for map plots."""
         plot_type = 'map'
-
-        # If no projection is specified, use Robinson with a set of default
-        # kwargs
-        if 'projection' not in self.plots[plot_type]:
-            projection = 'Robinson'
-            projection_kwargs = {'central_longitude': 10}
-        else:
-            projection = self.plots[plot_type]['projection']
-            projection_kwargs = {}
-        projection_kwargs.update(
-            self.plots[plot_type].get('projection_kwargs', {})
-        )
+        projection = self.plots[plot_type]['projection']
+        projection_kwargs = self.plots[plot_type]['projection_kwargs']
 
         # Check if desired projection is valid
         if not hasattr(ccrs, projection):
@@ -617,7 +732,7 @@ class MultiDatasets(MonitorBase):
 
     def _get_plot_kwargs(self, plot_type, dataset, bias=False):
         """Get keyword arguments for plot functions."""
-        all_plot_kwargs = self.plots[plot_type].get('plot_kwargs', {})
+        all_plot_kwargs = self.plots[plot_type]['plot_kwargs']
         all_plot_kwargs = deepcopy(all_plot_kwargs)
 
         # First get default kwargs, then overwrite them with dataset-specific
@@ -628,8 +743,7 @@ class MultiDatasets(MonitorBase):
 
         # For bias plots, overwrite the kwargs with bias-specific option
         if bias:
-            bias_kwargs = self.plots[plot_type].get('plot_kwargs_bias', {})
-            bias_kwargs.setdefault('cmap', 'bwr')
+            bias_kwargs = self.plots[plot_type]['plot_kwargs_bias']
             plot_kwargs.update(bias_kwargs)
 
         # Replace facets with dataset entries for string arguments
@@ -643,7 +757,7 @@ class MultiDatasets(MonitorBase):
                 plot_kwargs[key] = val
 
         # Default settings for different plot types
-        if plot_type in ('timeseries', 'annual_cycle'):
+        if plot_type in ('timeseries', 'annual_cycle', '1d_profile'):
             plot_kwargs.setdefault('label', label)
 
         return deepcopy(plot_kwargs)
@@ -670,12 +784,6 @@ class MultiDatasets(MonitorBase):
                 z_coord = cube.coord('altitude')
                 z_coord.attributes['positive'] = 'up'
 
-            # Convert pr units if necessary
-            if cube.var_name == 'pr' and cube.units == 'kg m-2 s-1':
-                cube.units = 'mm s-1'
-                cube.convert_units('mm day-1')
-                dataset['units'] = 'mm day-1'
-
             dataset['cube'] = cube
 
         return input_data
@@ -701,7 +809,7 @@ class MultiDatasets(MonitorBase):
             # Options used for all subplots
             projection = self._get_map_projection()
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            gridline_kwargs = self._get_gridline_kwargs()
+            gridline_kwargs = self._get_gridline_kwargs(plot_type)
             fontsize = self.plots[plot_type]['fontsize']
 
             # Plot dataset (top left)
@@ -801,7 +909,7 @@ class MultiDatasets(MonitorBase):
             plot_kwargs['axes'] = axes
             plot_map = plot_func(cube, **plot_kwargs)
             axes.coastlines()
-            gridline_kwargs = self._get_gridline_kwargs()
+            gridline_kwargs = self._get_gridline_kwargs(plot_type)
             if gridline_kwargs is not False:
                 axes.gridlines(**gridline_kwargs)
 
@@ -832,10 +940,12 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cube})
 
-    def _plot_profile_with_ref(self, plot_func, dataset, ref_dataset):
-        """Plot profile plot for single dataset with a reference dataset."""
-        plot_type = 'profile'
-        logger.info("Plotting profile with reference dataset '%s' for '%s'",
+    def _plot_zonal_mean_profile_with_ref(self, plot_func, dataset,
+                                          ref_dataset):
+        """Plot zonal mean profile for single dataset with reference."""
+        plot_type = 'zonal_mean_profile'
+        logger.info("Plotting zonal mean profile with reference dataset"
+                    " '%s' for '%s'",
                     self._get_label(ref_dataset), self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
@@ -937,10 +1047,11 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, netcdf_paths)
 
-    def _plot_profile_without_ref(self, plot_func, dataset):
-        """Plot profile plot for single dataset without a reference dataset."""
-        plot_type = 'profile'
-        logger.info("Plotting profile without reference dataset for '%s'",
+    def _plot_zonal_mean_profile_without_ref(self, plot_func, dataset):
+        """Plot zonal mean profile for single dataset without reference."""
+        plot_type = 'zonal_mean_profile'
+        logger.info("Plotting zonal mean profile without reference dataset"
+                    " for '%s'",
                     self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
@@ -953,14 +1064,14 @@ class MultiDatasets(MonitorBase):
             axes = fig.add_subplot()
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
-            plot_profile = plot_func(cube, **plot_kwargs)
+            plot_zonal_mean_profile = plot_func(cube, **plot_kwargs)
 
             # Print statistics if desired
             self._add_stats(plot_type, axes, dim_coords_dat, dataset)
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']
-            colorbar = fig.colorbar(plot_profile, ax=axes,
+            colorbar = fig.colorbar(plot_zonal_mean_profile, ax=axes,
                                     **self._get_cbar_kwargs(plot_type))
             colorbar.set_label(self._get_cbar_label(plot_type, dataset),
                                fontsize=fontsize)
@@ -996,7 +1107,7 @@ class MultiDatasets(MonitorBase):
 
     def _process_pyplot_kwargs(self, plot_type, dataset):
         """Process functions for :mod:`matplotlib.pyplot`."""
-        pyplot_kwargs = self.plots[plot_type].get('pyplot_kwargs', {})
+        pyplot_kwargs = self.plots[plot_type]['pyplot_kwargs']
         for (func, arg) in pyplot_kwargs.items():
             if isinstance(arg, str):
                 arg = self._fill_facet_placeholders(
@@ -1004,7 +1115,10 @@ class MultiDatasets(MonitorBase):
                     dataset,
                     f"pyplot_kwargs of {plot_type} '{func}: {arg}'",
                 )
-            getattr(plt, func)(arg)
+            if arg is None:
+                getattr(plt, func)()
+            else:
+                getattr(plt, func)(arg)
 
     @staticmethod
     def _check_cube_dimensions(cube, plot_type):
@@ -1012,9 +1126,12 @@ class MultiDatasets(MonitorBase):
         expected_dimensions_dict = {
             'annual_cycle': (['month_number'],),
             'map': (['latitude', 'longitude'],),
-            'profile': (['latitude', 'air_pressure'],
-                        ['latitude', 'altitude']),
+            'zonal_mean_profile': (['latitude', 'air_pressure'],
+                                   ['latitude', 'altitude']),
             'timeseries': (['time'],),
+            '1d_profile': (['air_pressure'],
+                           ['altitude']),
+
         }
         if plot_type not in expected_dimensions_dict:
             raise NotImplementedError(f"plot_type '{plot_type}' not supported")
@@ -1095,8 +1212,7 @@ class MultiDatasets(MonitorBase):
             iris.plot.plot(cube, **plot_kwargs)
 
             # Plot annual means if desired
-            annual_mean_kwargs = self.plots[
-                plot_type].get('annual_mean_kwargs', {})
+            annual_mean_kwargs = self.plots[plot_type]['annual_mean_kwargs']
             if annual_mean_kwargs is not False:
                 logger.debug("Plotting annual means")
                 if not cube.coords('year'):
@@ -1112,9 +1228,12 @@ class MultiDatasets(MonitorBase):
         axes.set_title(multi_dataset_facets['long_name'])
         axes.set_xlabel('Time')
         axes.set_ylabel(f"{short_name} [{multi_dataset_facets['units']}]")
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
 
         # Legend
-        legend_kwargs = self.plots[plot_type].get('legend_kwargs', {})
+        legend_kwargs = self.plots[plot_type]['legend_kwargs']
         if legend_kwargs is not False:
             axes.legend(**legend_kwargs)
 
@@ -1142,6 +1261,7 @@ class MultiDatasets(MonitorBase):
             'authors': ['schlund_manuel'],
             'caption': caption,
             'plot_types': ['line'],
+            'long_names': [var_attrs['long_name']],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
@@ -1180,9 +1300,12 @@ class MultiDatasets(MonitorBase):
         axes.set_xlabel('Month')
         axes.set_ylabel(f"{short_name} [{multi_dataset_facets['units']}]")
         axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
 
         # Legend
-        legend_kwargs = self.plots[plot_type].get('legend_kwargs', {})
+        legend_kwargs = self.plots[plot_type]['legend_kwargs']
         if legend_kwargs is not False:
             axes.legend(**legend_kwargs)
 
@@ -1210,6 +1333,7 @@ class MultiDatasets(MonitorBase):
             'authors': ['schlund_manuel'],
             'caption': caption,
             'plot_types': ['seas'],
+            'long_names': [var_attrs['long_name']],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
@@ -1284,15 +1408,16 @@ class MultiDatasets(MonitorBase):
                 'authors': ['schlund_manuel'],
                 'caption': caption,
                 'plot_types': ['map'],
+                'long_names': [dataset['long_name']],
             }
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
                 for netcdf_path in netcdf_paths:
                     provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_profile_plot(self, datasets, short_name):
-        """Create profile plot."""
-        plot_type = 'profile'
+    def create_zonal_mean_profile_plot(self, datasets, short_name):
+        """Create zonal mean profile plot."""
+        plot_type = 'zonal_mean_profile'
         if plot_type not in self.plots:
             return
 
@@ -1318,20 +1443,21 @@ class MultiDatasets(MonitorBase):
             ancestors = [dataset['filename']]
             if ref_dataset is None:
                 (plot_path, netcdf_paths) = (
-                    self._plot_profile_without_ref(plot_func, dataset)
+                    self._plot_zonal_mean_profile_without_ref(plot_func,
+                                                              dataset)
                 )
                 caption = (
-                    f"Vertical profile of {dataset['long_name']} of dataset "
+                    f"Zonal mean profile of {dataset['long_name']} of dataset "
                     f"{dataset['dataset']} (project {dataset['project']}) "
                     f"from {dataset['start_year']} to {dataset['end_year']}."
                 )
             else:
                 (plot_path, netcdf_paths) = (
-                    self._plot_profile_with_ref(plot_func, dataset,
-                                                ref_dataset)
+                    self._plot_zonal_mean_profile_with_ref(plot_func, dataset,
+                                                           ref_dataset)
                 )
                 caption = (
-                    f"Vertical profile of {dataset['long_name']} of dataset "
+                    f"Zonal mean profile of {dataset['long_name']} of dataset "
                     f"{dataset['dataset']} (project {dataset['project']}) "
                     f"including bias relative to {ref_dataset['dataset']} "
                     f"(project {ref_dataset['project']}) from "
@@ -1360,11 +1486,114 @@ class MultiDatasets(MonitorBase):
                 'authors': ['schlund_manuel'],
                 'caption': caption,
                 'plot_types': ['vert'],
+                'long_names': [dataset['long_name']],
             }
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
                 for netcdf_path in netcdf_paths:
                     provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_1d_profile_plot(self, datasets, short_name):
+        """Create 1D profile plot."""
+        plot_type = '1d_profile'
+        if plot_type not in self.plots:
+            return
+
+        if not datasets:
+            raise ValueError(f"No input data to plot '{plot_type}' given")
+
+        logger.info("Plotting %s", plot_type)
+        fig = plt.figure(**self.cfg['figure_kwargs'])
+        axes = fig.add_subplot()
+
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+
+        # Plot all datasets in one single figure
+        ancestors = []
+        cubes = {}
+        for dataset in datasets:
+            ancestors.append(dataset['filename'])
+            cube = dataset['cube']
+            cubes[self._get_label(dataset)] = cube
+            self._check_cube_dimensions(cube, plot_type)
+
+            # Plot 1D profile
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs['axes'] = axes
+
+            iris.plot.plot(cube, **plot_kwargs)
+
+        # Default plot appearance
+        axes.set_title(multi_dataset_facets['long_name'])
+        axes.set_xlabel(f"{short_name} [{multi_dataset_facets['units']}]")
+        z_coord = cube.coord(axis='Z')
+        axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
+
+        # apply logarithmic axes
+        if self.plots[plot_type]['log_y']:
+            axes.set_yscale('log')
+            axes.get_yaxis().set_major_formatter(
+                FormatStrFormatter('%.1f'))
+        if self.plots[plot_type]['show_y_minor_ticklabels']:
+            axes.get_yaxis().set_minor_formatter(
+                FormatStrFormatter('%.1f'))
+        else:
+            axes.get_yaxis().set_minor_formatter(NullFormatter())
+        if self.plots[plot_type]['log_x']:
+            axes.set_xscale('log')
+            # major and minor ticks
+            x_major = LogLocator(base=10.0, numticks=12)
+            axes.get_xaxis().set_major_locator(x_major)
+            x_minor = LogLocator(base=10.0,
+                                 subs=np.arange(1.0, 10.0) * 0.1,
+                                 numticks=12)
+
+            axes.get_xaxis().set_minor_locator(x_minor)
+            axes.get_xaxis().set_minor_formatter(NullFormatter())
+
+        # gridlines
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
+        # nicer aspect ratio
+        aspect_ratio = self.plots[plot_type]['aspect_ratio']
+        axes.set_box_aspect(aspect_ratio)
+
+        # Legend
+        legend_kwargs = self.plots[plot_type]['legend_kwargs']
+        if legend_kwargs is not False:
+            axes.legend(**legend_kwargs)
+
+        # Customize plot appearance
+        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+
+        # Save plot
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        fig.savefig(plot_path, **self.cfg['savefig_kwargs'])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+        # Save netCDF file
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        var_attrs = {
+            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
+        }
+        io.save_1d_data(cubes, netcdf_path, z_coord.standard_name, var_attrs)
+
+        # Provenance tracking
+        caption = ("Vertical one-dimensional profile of "
+                   f"{multi_dataset_facets['long_name']}"
+                   " for various datasets.")
+        provenance_record = {
+            'ancestors': ancestors,
+            'authors': ['schlund_manuel', 'winterstein_franziska'],
+            'caption': caption,
+            'plot_types': ['line'],
+            'long_names': [var_attrs['long_name']],
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
 
     def compute(self):
         """Plot preprocessed data."""
@@ -1373,7 +1602,8 @@ class MultiDatasets(MonitorBase):
             self.create_timeseries_plot(datasets, short_name)
             self.create_annual_cycle_plot(datasets, short_name)
             self.create_map_plot(datasets, short_name)
-            self.create_profile_plot(datasets, short_name)
+            self.create_zonal_mean_profile_plot(datasets, short_name)
+            self.create_1d_profile_plot(datasets, short_name)
 
 
 def main():

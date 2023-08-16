@@ -345,6 +345,8 @@ def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(get_plot_filename('fig3a_' + dataset_name, cfg),
+                              provenance_record)
 
 
 def plot_deangelis_fig4(cfg, data_model, mdrsnstdts, prw):
@@ -457,6 +459,8 @@ def plot_deangelis_fig4(cfg, data_model, mdrsnstdts, prw):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(get_plot_filename('fig4', cfg),
+                              provenance_record)
 
 
 def plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs):
@@ -574,6 +578,8 @@ def plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(get_plot_filename('fig3b', cfg),
+                              provenance_record)
 
     # Fig 4
     plot_deangelis_fig4(cfg, data_model, mdrsnstdts, prw)

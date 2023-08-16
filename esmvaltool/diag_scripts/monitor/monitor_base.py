@@ -222,6 +222,7 @@ class MonitorBase():
             prov = self.get_provenance_record(
                 ancestor_files=[var_info['filename']],
                 plot_type=plot_type,
+                long_names=[var_info[names.LONG_NAME]],
                 **kwargs,
             )
             provenance_logger.log(filename, prov)
