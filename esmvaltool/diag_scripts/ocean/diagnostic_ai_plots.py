@@ -442,6 +442,34 @@ def write_csv_ts(cfg, metadatas, data_values, single_model, short_name):
     #assert 0
 
 
+def find_hist_cube(hist_cubes, dataset, short_name, scenario, ensemble):
+    """
+    Tool to figure out which historical cube it is.
+    """"
+    # If the exact match exists, use that:
+    if (dataset, short_name, 'historical', ensemble) in hist_cubes:
+        return hist_cubes[(dataset, short_name, 'historical', ensemble)]
+
+    # Figure out which historical ensemble members exist:
+    sets = []
+    for d, s, sce, e in hist_cubes.keys():
+        if sce != 'historical': continue
+        print('model_hist_cubes:', len(hist_cubes.keys()))
+        if d == dataset:
+            print(d, s, sce, e, ('looking for ', ensemble))
+            sets.append((d, s, sce, e))
+
+    if len(sets) == 1: # only one hist cube available.
+        hist_cube = model_hist_cubes[sets[0]]
+        return hist_cube
+    elif len(sets) > 1:
+        print('could not find:', (dataset, short_name, scenario, ensemble), 'but did find ', len(sets), 'ensemble members:', sets)
+         # dummy but can add stuff later here if needed
+    else:
+        print('could not find:', (dataset, short_name, scenario, ensemble), 'but did find ', counts, 'ensemble members:', sets)
+    assert 0
+
+
 
 def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table, future_range, style='std', single_model_marker=True):
     """
@@ -1898,39 +1926,7 @@ def make_multi_model_profiles_plotpair(
             depths = -1.* cube.coord('depth').points
 
             # Try to fin historical cube
-            try:
-                hist_cube = model_hist_cubes[(dataset, short_name, 'historical', ensemble)]
-                found_hist = True 
-            except:
-                pairs = []
-                found_hist = False
-                for d, s, sce, e in model_hist_cubes.keys():
-                    print('model_hist_cubes:', len(model_hist_cubes.keys()))
-                    if d == dataset: 
-                        print(d, s, sce, e, ('looking for ', ensemble))
-                        pairs.append((d, s, sce, e))
-
-
-                if len(pairs) == 1: # only one hist cube.
-                    hist_cube = model_hist_cubes[pairs[0]]
-                    found_hist = True
-                elif len(pairs) > 1:
-                    print('could not find:', (dataset, short_name, scenario, ensemble), 'but did find ', len(pairs), 'ensemble members:', pairs)
-
-                # Specific cases where multiple historical exists:
-#                if (dataset, short_name, scenario, ensemble) == ('ACCESS-CM2', 'thetao', 'ssp126', 'r2i1p1f1'):
-#                    hist_cube = model_hist_cubes[('ACCESS-CM2', 'thetao', 'historical', 'r1i1p1f1')] 
-#                elif (dataset, short_name, scenario, ensemble) == ('ACCESS-CM2', 'thetao', 'ssp126', 'r3i1p1f1'):
-#                    hist_cube = model_hist_cubes[('ACCESS-CM2', 'thetao', 'historical', 'r1i1p1f1')]
-#                elif (dataset, short_name, scenario, ensemble) == ('ACCESS-CM2', 'thetao', 'ssp245', 'r2i1p1f1'):
-#                    hist_cube = model_hist_cubes[('ACCESS-CM2', 'thetao', 'historical', 'r1i1p1f1')]
-#                elif (dataset, short_name, scenario, ensemble) == ('ACCESS-CM2', 'thetao', 'ssp245', 'r3i1p1f1'):
-#                    hist_cube = model_hist_cubes[('ACCESS-CM2', 'thetao', 'historical', 'r1i1p1f1')]
-
-                else:     
-                    print('could not find:', (dataset, short_name, scenario, ensemble), 'but did find ', counts, 'ensemble members:', pairs) 
-                    assert 0
- 
+            hist_cube = find_hist_cube(model_hist_cubes, dataset, short_name, scenario, ensemble)
 
             for z, d in zip(depths, cube.data):
                 single_model_means[dataset] = add_dict_list(single_model_means[dataset], z, d)
@@ -2282,7 +2278,9 @@ def single_map_figure(cfg, cube, variable_group, exp='', model='', ensemble='', 
 
 
 def prep_cube_map(fn, metadata, time_range, region):
-    #print('loading:', i, variable_group ,scenario, fn)
+    """
+    Load and prepare a netcdf to become a map cube.
+    """
     cube = iris.load_cube( fn)
 
     cube = diagtools.bgc_units(cube, metadata['short_name'])
@@ -2295,12 +2293,6 @@ def prep_cube_map(fn, metadata, time_range, region):
         cube = extract_time(cube, time_range[0], 1, 1, time_range[1], 12, 31)
         cube = cube.collapsed('time', iris.analysis.MEAN)
 
-#    if 'depth' in [c.standard_name for c in cube.coords()]:
-#        print(cube.coord('depth'))
-#        if fn.find('o2')== -1: assert 0
-#        cube = extract_levels(cube, scheme = 'linear', levels = [500.])
-
-    #print('regrid:', variable_group, time_range)
     print('map plot', region, cube)
     cube = regrid_intersect(cube, region=region)
     if metadata['short_name'] == 'chl':
@@ -2385,8 +2377,6 @@ def multi_model_map_figure(
             #div_cmap = 'afmhot'
             #div_cmap = 'afmhot_r' #Reds' #mcolors.LinearSegmentedColormap.from_list('colormap', rgb_data_div)
 
-
-
     if figure_style=='five_means':
         subplots_nums = {231: 'historical', 232: 'ssp126', 233: 'ssp245', 235: 'ssp370', 236: 'ssp585'}
         subplot_style = {231: 'hist', 232:'mean', 233: 'mean', 235: 'mean', 236: 'mean'}
@@ -2397,6 +2387,7 @@ def multi_model_map_figure(
         subplots_nums = {231: 'historical', 232: 'ssp126', 233: 'ssp245', 235: 'ssp370', 236: 'ssp585'}
         subplot_style = {231: 'hist', 232:'diff', 233: 'diff', 235: 'diff', 236: 'diff'}
         cmaps = {231: seq_cmap, 232:div_cmap, 233: div_cmap, 234: seq_cmap, 235: div_cmap, 236: div_cmap}
+
     else:
         assert 0
 
@@ -2423,21 +2414,32 @@ def multi_model_map_figure(
 
     model_cubes = {}
     model_cubes_paths = {}
+    model_cubes_anom = {}
+    model_cubes_paths_anom = {}
+
     variablegroup_model_cubes = {}
     exps = {}
     models = {}
     short_names={}
+    hist_fns = {}
+    # Run through all input files and generate list of details.
     for variable_group, filenames in maps_fns.items():
         for i, fn in enumerate(filenames):
             dataset = metadatas[fn]['dataset']
             short_name = metadatas[fn]['short_name']
-            if dataset in models_to_skip['all']: continue
-            if dataset in models_to_skip.get(short_name, {}): continue
-            if single_model == 'all': pass
-            elif dataset != single_model: continue
+            scenario = metadatas[filenames[0]]['exp']
+            ensemble = metadatas[filenames[0]]['ensemble']
+            if dataset in models_to_skip['all']:
+                continue
+            if dataset in models_to_skip.get(short_name, {}):
+                continue
+            if single_model == 'all':
+                pass
+            elif dataset != single_model:
+                continue
             models[dataset] = True
             short_names[metadatas[fn]['short_name']] = True
-
+            hist_fns[(dataset, short_name, scenario,  ensemble)] = fn
     if len(short_names.keys()) == 0:
         if save:
             return
@@ -2458,7 +2460,6 @@ def multi_model_map_figure(
             variablegroup_model_cubes[variable_group] = iris.load_cube(vg_path)
             scenario= metadatas[filenames[0]]['exp']
             short_name =  metadatas[filenames[0]]['short_name']
-            exps[scenario] = variable_group
             print('loaded:', variablegroup_model_cubes.keys(), variable_group)
             continue
 
@@ -2572,6 +2573,139 @@ def multi_model_map_figure(
         print('saving:', vg_path)
         iris.save(variablegroup_model_cubes[variable_group], vg_path)
 
+    # Calculate anomaly ensemble menmbers.
+    variablegroup_model_cubes_anom = {}
+    for variable_group, filenames in maps_fns.items():
+        print('variable_group:', variable_group, len(filenames))
+        work_dir = diagtools.folder([cfg['work_dir'], 'var_group_anomalies', single_model, ])
+        vg_path = work_dir+'_'.join([variable_group, single_model, region ])+'_anom.nc'
+        if os.path.exists(vg_path):
+            print('path exists:', vg_path)
+            variablegroup_model_cubes_anom[variable_group] = iris.load_cube(vg_path)
+            scenario= metadatas[filenames[0]]['exp']
+            short_name =  metadatas[filenames[0]]['short_name']
+            exps[scenario] = variable_group
+            print('loaded:', variablegroup_model_cubes_anom.keys(), variable_group)
+            continue
+
+        for model_itr in models:
+            print('variable_group:', variable_group, model_itr, 'looking for ', single_model, 'anomaly')
+            if model_itr in models_to_skip['all']:
+                 continue
+            if single_model == 'all':
+                 pass
+            elif model_itr != single_model:
+                 continue
+
+            work_dir = diagtools.folder([cfg['work_dir'], 'model_group_anoms','single_model_'+single_model, model_itr])
+            model_path = work_dir+'_'.join([variable_group, model_itr, region])+'_anom.nc'
+            scenario = metadatas[filenames[0]]['exp']
+            short_name =  metadatas[filenames[0]]['short_name']
+
+            exps[scenario] = variable_group
+            model_cubes_paths_anom = add_dict_list(model_cubes_paths_anom, (variable_group, model_itr), filenames[0])
+
+            if scenario == 'historical':
+                time_range = hist_time_range
+            else:
+                time_range = ssp_time_range
+
+            if os.path.exists(model_path):
+                print('path exists:', model_path)
+                model_cubes_anom[(variable_group, model_itr)] = iris.load_cube(model_path)
+                model_cubes_anom[(variable_group, model_itr)] = regrid_intersect(model_cubes_anom[(variable_group, model_itr)], region)
+                continue
+            file_count = 0
+            for i, fn in enumerate(filenames):
+                model = metadatas[fn]['dataset']
+                short_name = metadatas[fn]['short_name']
+                ensemble = metadatas[fn]['ensemble']
+
+                if metadatas[fn]['exp'] != scenario:
+                    assert 0
+                if model != model_itr:
+                    continue
+                if model_itr in models_to_skip['all']:
+                    continue
+                if model in models_to_skip.get(short_name, {}):
+                    continue
+
+                print('loading:', i, variable_group ,scenario, fn)
+
+                cube = prep_cube_map(fn, metadatas[filenames[0]], time_range, region)
+                cube = regrid_intersect(cube, region)
+
+                hist_fn = find_hist_cube(hist_fns, model, short_name, scenario, ensemble)
+                hist_cube = prep_cube_map(fn, metadatas[fn], hist_time_range, region)
+                hist_cube = regrid_intersect(hist_cube, region)
+
+                if short_name == 'chl':
+                    cube = fix_chl(cube)
+                    hist_cube = fix_chl(hist_cube)
+                    if cube.data.max()>100000. or hist_cube.data.max()>100000.:
+                        print('WHAT!? Thats too much ChlorophYLL!', cube.data.max(), cube.units, hist_cube.data.max(),
+                              hist_cube.units, )
+                        #cube.data = cube.data/1000.
+                        assert 0
+                    cube = fix_chl(cube)
+                    hist_cube = fix_chl(hist_cube)
+
+                model_cubes_anom = add_dict_list(model_cubes_anom, (variable_group, model), cube - hist_cube)
+                # single_map_figure(cfg, cube, variable_group,
+                #     exp=scenario,
+                #     model=model,
+                #     ensemble=ensemble,
+                #     time_range=time_range,
+                #     region = region)
+
+            if not model_cubes_anom.get((variable_group, model_itr), False):
+                continue
+            # make the model mean cube here:
+            model_cubes_anom[(variable_group, model_itr)] = diagtools.make_mean_of_cube_list_notime(model_cubes_anom[(variable_group, model_itr)])
+            single_map_figure(
+                cfg,
+                model_cubes_anom[(variable_group, model_itr)],
+                variable_group,
+                exp=scenario,
+                model=model_itr,
+                ensemble='AllEnsembles',
+                time_range=time_range,
+                region = region)
+            iris.save(model_cubes_anom[(variable_group, model_itr)], model_path)
+
+            # add model mean cube to dict.
+            variablegroup_model_cubes_anom = add_dict_list(
+                variablegroup_model_cubes_anom,
+                variable_group,
+                model_cubes_anom[(variable_group, model_itr)])
+
+        print('making make_mean_of_cube_list_notime:', variable_group)
+        print('variablegroup_model_cubes_anom:',variablegroup_model_cubes_anom)
+        cube_list_group = variablegroup_model_cubes_anom.get(variable_group, False)
+        if not cube_list_group:
+            print('didnt find variable_group in variablegroup_model_cubes_anom')
+            print('variable_group:', variable_group)
+            print('variablegroup_model_cubes_anom', variablegroup_model_cubes_anom)
+            print(single_model)
+            #assert 0
+            continue
+        variablegroup_model_cubes_anom[variable_group] = diagtools.make_mean_of_cube_list_notime(variablegroup_model_cubes_anom[variable_group])
+
+        # make the model mean cube here:
+        # single_map_figure(
+        #     cfg,
+        #     variablegroup_model_cubes_anom[variable_group],
+        #     variable_group,
+        #     exp=scenario,
+        #     model='AllModels',
+        #     ensemble='AllEnsembles',
+        #     time_range=time_range,
+        #     region = region)
+
+        print('saving:', vg_path)
+        iris.save(variablegroup_model_cubes_anom[variable_group], vg_path)
+
+
     # calculate diffs, and range.
     nspaces = {}
     try:
@@ -2625,13 +2759,13 @@ def multi_model_map_figure(
         style_range['hist'].extend([hist_cube.data.min(), hist_cube.data.max()])
     style_range['historical'] =  style_range['hist']
 
-    # Calculate the diff cubes.
-    for variable_group, cube in variablegroup_model_cubes.items():
+    # Calculate the diff cubes. (Anomaly is now calculated elsewhere.
+    for variable_group, cube in variablegroup_model_cubes_anom.items():
         if variable_group == hist_variable_group:
              continue
-        if hist_cube_exists:
-            cube = cube - hist_cube
-        else: pass # cube
+        # if hist_cube_exists:
+        #     cube = cube - hist_cube
+        # else: pass # cube
         diff_cubes[variable_group] = cube
         style_range['diff'].extend([cube.data.min(), cube.data.max()])
 
@@ -2732,11 +2866,11 @@ def multi_model_map_figure(
             logger.warning('Not able to add coastlines')
 
         # Add title to plot
-        long_names = {
-           'diff':'difference',
-           'hist':'mean',
-           'historial':'mean',
-        }
+        #long_names = {
+        #   'diff':'difference',
+        #   'hist':'mean',
+        #   'historial':'mean',
+        #}
         print(exp, cube.data.min(),cube.data.max())
 
         title = ' '.join([sspify(exp),]) # long_names.get(sbp_style, sbp_style,)])
@@ -2755,12 +2889,6 @@ def multi_model_map_figure(
 
         else:
             plt.title(title)
-
-    # suptitle = ' '.join([dataset, ensemble, long_name_dict[short_name],
-    #                      '\n Historical', '-'.join([str(t) for t in hist_time_range]),
-    #                      'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ])
-    #
-    # plt.suptitle(suptitle)
 
     obs_filename = 'aux/obs_ncs/'+short_name+'_map.nc'
     print('maps: obs file:', obs_filename)
@@ -2825,11 +2953,6 @@ def multi_model_map_figure(
              transform=ccrs.Geodetic(),
              )
 
-        #ax0.plot([-17.25, -11.25, -11.25, -17.25, -17.25 ], [-10.56, -10.56, -4.56, -4.56, -10.56],
-        #     color='red', linewidth=1,
-        #     transform=ccrs.Geodetic(),
-        #     )
-
         gl = ax0.gridlines(draw_labels=False, linewidth=0.5, alpha=0.4, color='k',linestyle='--')
 
         shared_cmap['hist'].append(ax0)
@@ -2837,7 +2960,6 @@ def multi_model_map_figure(
 
         title = ' '.join(['Observations',]) # long_names.get(sbp_style, sbp_style,)])
         if region in ['midatlantic', ]:
-            #plt.text(0.95, 0.9, title,  ha='right', va='center', transform=ax0.transAxes,color='black',fontweight='bold')
             plt.text(0.99, 0.92, title,  ha='right', va='center', transform=ax0.transAxes,color='black',fontweight='bold',fontsize='small')
         elif region in ['tightmidatlantic', 'verytightMPA']:
             plt.text(0.95, 1.01, title,  ha='right', va='bottom', transform=ax0.transAxes,color='black',fontweight='bold',) #fontsize='small')
@@ -2849,14 +2971,10 @@ def multi_model_map_figure(
         plt.sca(ax0)
         plt.axis('off')
 
-    #assert 0
     if len(shaped_ims['hist']):
         fig.colorbar(shaped_ims['hist'][0], ax=shared_cmap['hist'], label=short_suptitles[short_name], ) #, label = 'Historical')
 
     if len(shaped_ims['ssp']):
-        #title_time_str = ' '.join(['-'.join([str(int(t)) for t in ssp_time_range]), 'against',
-        #                 '-'.join([str(int(t)) for t in hist_time_range])])
-        #title_time_str = 'Difference against Historical'
         title_time_str = anomaly_titles[short_name]
 
         fig.colorbar(shaped_ims['ssp'][0], ax=shared_cmap['ssp'], label=title_time_str)
@@ -3174,14 +3292,14 @@ def main(cfg):
                 cfg,
                 metadatas,
                 time_series_fns,
-                hist_time_range = [1990., 2015.],
-                ssp_time_range = [2015., 2050.],
+                hist_time_range = [2000., 2010.],
+                ssp_time_range = [2040., 2050.],
                 plotting=plotting,
                 single_model='all',
             )
         # maps:
         for single_model in ['all', ]: #sorted(models.keys()): # ['all', 'only']:
-            continue
+            #continue
             for reg in ['tightmidatlantic', ]: #'midatlantic', 'verytightMPA']:
               for cmap in ['slev', ]:#'temp', 'prec', 'wind', 'chem', 'cryo', 'standard', 'slev', 'misc1', 'misc2', 'misc3']:
                 multi_model_map_figure(
