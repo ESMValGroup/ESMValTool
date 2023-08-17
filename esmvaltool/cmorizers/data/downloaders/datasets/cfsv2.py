@@ -70,7 +70,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     downloader.login("https://rda.ucar.edu/cgi-bin/login", options)
 
-    url = "https://rda.ucar.edu/data/ds094.2/regular/"
+    url = "https://data.rda.ucar.edu/ds094.2/regular/"
     download_options = ["--load-cookies=auth.rda_ucar_edu"]
 
     # download data

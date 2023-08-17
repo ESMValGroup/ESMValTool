@@ -59,7 +59,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     if start_date is None:
         start_date = datetime(1979, 1, 1)
     if end_date is None:
-        end_date = datetime(2010, 12, 31)
+        end_date = datetime(1979, 12, 31)
     loop_date = start_date
     print(loop_date)
 
@@ -70,7 +70,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     downloader.login("https://rda.ucar.edu/cgi-bin/login", options)
 
-    url = "https://rda.ucar.edu/data/ds093.2/regular/"
+    url = "https://data.rda.ucar.edu/ds093.2/regular/"
     download_options = ["--load-cookies=auth.rda_ucar_edu"]
 
     # download data
