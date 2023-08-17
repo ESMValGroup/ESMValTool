@@ -1639,7 +1639,7 @@ diagnostics:
       wap:
       zg:
     additional_datasets:
-      - {dataset: MERRA, project: OBS, tier: 3, mip: Amon
+      - {dataset: MERRA, project: OBS, tier: 3, mip: Amon,
          type: reanaly, version: 5.2.0, start_year: 1979, end_year: 2015}
     scripts: null
 
