@@ -128,7 +128,6 @@ begin
 
   ; Global attributes
   SOURCE = "https://goldsmr3.gesdisc.eosdis.nasa.gov/data/MERRA_MONTHLY/"
-  REF = "doi: "
   COMMENT = "Goddard Earth Sciences Data and Information Services Center " + \
             "(GES DISC)"
 
@@ -265,7 +264,8 @@ begin
       bounds = guess_coord_bounds(output, FREQ)
 
       ; Set global attributes
-      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF + DOI(vv), COMMENT)
+      REF = "doi: " + DOI(vv)
+      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
       ; Output file
       DATESTR = yy + "01-" + yy + "12"
