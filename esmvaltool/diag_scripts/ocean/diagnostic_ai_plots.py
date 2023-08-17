@@ -3149,6 +3149,65 @@ def add_letter(ax, letter, par=True ):
        transform=ax.transAxes)
     return ax
 
+def find_missing_cubes(metadatas, time_series_fns, profile_fns, maps_fns):
+    """
+    Find missing historical datasets and output them in the ESMValTool recipe format
+    """
+    missing_cubes = {'ts':{}, 'profile':{}, 'map':{}}
+    missing = 0
+    short_name = ''
+    for files_dict, models_hists in zip([time_series_fns, profile_fns, maps_fns],
+        [model_hist_cubes['ts'], model_hist_cubes['profile'], model_hist_cubes['map']]):
+        for outer_vg, files in files_dict.items():
+            for fn in files:
+                dataset = metadatas[fn]['dataset']
+                short_name = metadatas[fn]['short_name']
+                ensemble = metadatas[fn]['ensemble']
+                scenario = metadatas[fn]['exp']
+                variable_group = metadatas[fn]['variable_group']
+                if variable_group.find('_ts_')>-1:
+                    vg_type = 'ts'
+                if variable_group.find('_profile_')>-1:
+                    vg_type = 'profile'
+                if variable_group.find('_map_')>-1:
+                    vg_type = 'map'
+
+                if scenario == 'historical':
+                    continue
+                hist_cube = find_hist_cube(models_hists, dataset, short_name, scenario, ensemble, return_missing=True)
+                if isinstance(hist_cube, tuple):
+                    missing_cubes[vg_type][hist_cube] = fn
+
+    yml_pre = "        - {"
+    yml_post = {
+        'map':  ", exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }",
+        'ts': ", exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }",
+        'profile': ", exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }",
+    }
+    missing_recipe = ''.join(['recipe_ocean_ai_mpa_', short_name, '_missing.yml'])
+    out_txt = ''
+    for vg_type, missing_tuples in missing_cubes.items():
+        if len(missing_tuples):
+            out_txt = '',join([out_txt, '\n# The following historical jobs are missing:', vg_type, '\n''])
+            for miss_tuple, fn in missing_tuples.items():
+                grid = metadatas[fn]['grid']
+                line = ''.join([yml_pre,
+                                'dataset: ', miss_tuple[0],
+                                ', ensemble: ', miss_tuple[3],
+                                ', grid: ', grid,
+                                yml_post[vg_type],
+                                '\n'])
+                #print(line)
+                out_txt = '', join([out_txt, line])
+                missing+=1
+    if missing >0:
+        print(out_txt)
+        out_yml = open(missing_recipe, 'w')
+        out_yml.write(out_txt)
+        out_yml.close()
+        print('written to ', out_txt)
+        raise
+        assert 0
 
 def main(cfg):
     """
@@ -3206,9 +3265,7 @@ def main(cfg):
         else:
             print(model, 'is fine: ', scenarios)
 
-
     model_hist_cubes= {'ts':{}, 'profile':{}, 'map':{}}
-
     for fn, metadata in metadatas.items():
         #print(os.path.basename(fn),':',metadata['variable_group'])
         variable_group = metadata['variable_group']
@@ -3239,40 +3296,8 @@ def main(cfg):
             model_hist_cubes['map'][(dataset, short_name, exp, ensemble)] = fn
             maps_fns = add_dict_list(maps_fns, variable_group, fn)
 
+    find_missing_cubes(metadatas, time_series_fns, profile_fns, maps_fns)
 
-    # Find missing historical datasets:
-    missing_cubes = {'ts':{}, 'profile':{}, 'map':{}}
-    missing = 0
-    for files_dict, models_hists in zip([time_series_fns, profile_fns, maps_fns], 
-        [model_hist_cubes['ts'], model_hist_cubes['profile'], model_hist_cubes['map']]):
-        for outer_vg, files in files_dict.items():
-            for fn in files:
-                dataset = metadatas[fn]['dataset']
-                short_name = metadatas[fn]['short_name']
-                ensemble = metadatas[fn]['ensemble']
-                scenario = metadatas[fn]['exp']
-                variable_group = metadatas[fn]['variable_group']
-                if variable_group.find('_ts_')>-1:
-                    vg_type = 'ts'
-                if variable_group.find('_profile_')>-1:
-                    vg_type = 'profile'
-                if variable_group.find('_map_')>-1:
-                    vg_type = 'map'
-
-                if scenario == 'historical':
-                    continue
-                hist_cube = find_hist_cube(models_hists, dataset, short_name, scenario, ensemble, return_missing=True)
-                if isinstance(hist_cube, tuple): 
-                    missing_cubes[vg_type][hist_cube] = True
-
-    for vg_type, missing_tuples in missing_cubes.items():
-        if len(missing_tuples):
-            print('The following historical jobs are missing:', vg_type)
-            for miss_tuple in missing_tuples.keys():
-                print(vg_type, 'dataset: ',miss_tuple[0], 'exp: historical, ensemble:',miss_tuple[3])
-                missing+=1
-    if missing >0:
-        assert 0
     #jobs:
     #Make UKESM-only version of everything (or single model?)
     #prepare data for export.
