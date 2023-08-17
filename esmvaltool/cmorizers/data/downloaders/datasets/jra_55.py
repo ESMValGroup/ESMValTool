@@ -70,7 +70,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     # download files
 
-    url = "https://rda.ucar.edu/data/ds628.1"
+    url = "https://data.rda.ucar.edu/ds628.1"
     download_options = ["--load-cookies=auth.rda_ucar_edu"]
 
     # define variables to download
