@@ -362,7 +362,7 @@ begin
     original_entry = outstring
     do outfile_idx = 0, dimsizes(all_outfiles) - 1
       file_to_add := all_outfiles(outfile_idx)
-      new_entry = original_entry
+      new_entry = (/original_entry/)
       new_entry(0) = "? " + file_to_add
       outstring := array_append_record(outstring, new_entry, 0)
     end do
