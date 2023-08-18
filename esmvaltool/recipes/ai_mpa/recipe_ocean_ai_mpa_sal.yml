@@ -86,6 +86,7 @@ diagnostics:
         #- {dataset: EC-Earth3-Veg, end_year: 2010, ensemble: r4i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: EC-Earth3-Veg-LR, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: MPI-ESM-1-2-HAM, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: MPI-ESM-1-2-HAM, end_year: 2010, ensemble: r2i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: IPSL-CM5A2-INCA, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r2i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
@@ -183,6 +184,18 @@ diagnostics:
         - {dataset: SAM0-UNICON, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: CIESM, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: MCM-UA-1-0, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: EC-Earth3, ensemble: r4i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: MCM-UA-1-0, ensemble: r1i1p1f2, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: MPI-ESM1-2-HR, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: ACCESS-CM2, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: ACCESS-CM2, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: ACCESS-ESM1-5, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: ACCESS-ESM1-5, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: CESM2-WACCM, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: CESM2-WACCM, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: MPI-ESM1-2-LR, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: MPI-ESM1-2-LR, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: IPSL-CM6A-LR, ensemble: r10i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
         end_year: 2010
         exp: historical
         grid: gn
@@ -434,6 +447,7 @@ diagnostics:
         #- {dataset: EC-Earth3-Veg, end_year: 2050, ensemble: r4i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
 #        - {dataset: EC-Earth3-Veg-LR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
         - {dataset: MPI-ESM-1-2-HAM, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
+        - {dataset: MPI-ESM-1-2-HAM, end_year: 2050, ensemble: r2i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
         - {dataset: IPSL-CM5A2-INCA, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
         - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r10i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
         - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp370,grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -653,6 +667,7 @@ diagnostics:
 #        - {dataset: EC-Earth3-Veg-LR, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: FIO-ESM-2-0, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: MPI-ESM-1-2-HAM, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: MPI-ESM-1-2-HAM, end_year: 2010, ensemble: r2i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: IPSL-CM5A2-INCA, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: IPSL-CM6A-LR, end_year: 2010, ensemble: r2i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
@@ -737,6 +752,21 @@ diagnostics:
         - {dataset: SAM0-UNICON, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: CIESM, end_year: 2010, ensemble: r1i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: MCM-UA-1-0, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: ACCESS-CM2, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: ACCESS-CM2, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: ACCESS-ESM1-5, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: ACCESS-ESM1-5, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: FIO-ESM-2-0, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: FIO-ESM-2-0, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: MPI-ESM1-2-HR, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: MPI-ESM1-2-LR, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: MPI-ESM1-2-LR, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: CESM2-WACCM, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: CESM2-WACCM, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: EC-Earth3, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: IPSL-CM6A-LR, ensemble: r10i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: MPI-ESM1-2-HR, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
         end_year: 2010
         exp: historical
         grid: gn
@@ -1242,6 +1272,7 @@ diagnostics:
         #- {dataset: EC-Earth3-Veg, end_year: 2014, ensemble: r4i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
 #        - {dataset: EC-Earth3-Veg-LR, end_year: 2014, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
         - {dataset: MPI-ESM-1-2-HAM, end_year: 2014, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: MPI-ESM-1-2-HAM, end_year: 2014, ensemble: r2i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
         - {dataset: IPSL-CM5A2-INCA, end_year: 2014, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
         - {dataset: IPSL-CM6A-LR, end_year: 2014, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
         - {dataset: IPSL-CM6A-LR, end_year: 2014, ensemble: r2i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
@@ -1339,6 +1370,18 @@ diagnostics:
         - {dataset: SAM0-UNICON, end_year: 2014, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
         - {dataset: CIESM, end_year: 2014, ensemble: r1i1p1f1, exp: historical, grid: gn,mip: Omon, project: CMIP6, start_year: 1850}
         - {dataset: MCM-UA-1-0, end_year: 2014, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: EC-Earth3, ensemble: r4i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: MCM-UA-1-0, ensemble: r1i1p1f2, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: MPI-ESM1-2-HR, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: ACCESS-CM2, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: ACCESS-CM2, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: ACCESS-ESM1-5, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: ACCESS-ESM1-5, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: CESM2-WACCM, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: CESM2-WACCM, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: MPI-ESM1-2-LR, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: MPI-ESM1-2-LR, ensemble: r3i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: IPSL-CM6A-LR, ensemble: r10i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
         end_year: 2014
         exp: historical
         grid: gn
@@ -1741,32 +1784,21 @@ documentation:
   references: [demora2018gmd]
 
 
-
-
-
 preprocessors:
   # --------------------------------------------------
   # Time series preprocessors
   # --------------------------------------------------
 
   prep_regional_ts_2d: # For regional 2d fields
-    #custom_order: true
     extract_region: &id001 {end_latitude: -5.053, end_longitude: -11.487, start_latitude: -10.813,
       start_longitude: -17.246}
-#     extract_region: &mpa_region
-#       start_longitude: -17.25 #14.25W
-#       end_longitude: -11.25 #
-#       start_latitude: -10.56 # -7.56
-#       end_latitude: -4.56 #
     area_statistics:
       operator: mean
-      #fx_variables: [{short_name: areacello, mip: Ofx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
 
   # --------------------------------------------------
   # Map preprocessors
   # --------------------------------------------------
   prep_map_2: # For Global 2D fields with regridding
-    #custom_order: true
     climate_statistics:
       operator: mean
     regrid:
@@ -1777,14 +1809,13 @@ preprocessors:
   # Depth-profile preprocessors
   # --------------------------------------------------
   prep_profile_2: # For a regional profile
-    #custom_order: true
     extract_region: *id001
     area_statistics:
       operator: mean
-      #fx_variables: [{short_name: areacello, mip: Ofx, exp: '*', ensemble: '*', grid: gn, }]
     extract_levels:
         scheme: linear
         levels: [0.5, 1., 5., 10., 50., 100., 200., 300., 400., 500., 600., 700., 800., 900., 1000.,
                      1500., 2000., 2500., 3000., 3500., 4000.,4500., 5000.]
+
 
 
