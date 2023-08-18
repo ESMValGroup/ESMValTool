@@ -28,25 +28,27 @@ preprocessors:
     ensemble_statistics:
       statistics:
         - mean
-    # multi_model_statistics:
-    #   statistics:
-    #     - mean
-    #     - p17
-    #     - p83
-    #   span: full
-    #   keep_input_datasets: false
-    #   ignore_scalar_coords: true
+    multi_model_statistics:
+      statistics:
+        - mean
+        - p17
+        - p83
+      span: full
+      keep_input_datasets: false
+      ignore_scalar_coords: true
 
 diagnostics:
   AR6_Figure_9.3:
     variables:
-      tos:
+      tos_ssp585:
+        short_name: tos
         exp: ['historical', 'ssp585']
         project: CMIP6
         mip: Omon
         preprocessor: easy_ipcc
         timerange: '1850/2100'
-      tos:
+      tos_ssp126:
+        short_name: tos
         exp: ['historical', 'ssp126']
         project: CMIP6
         mip: Omon
@@ -91,8 +93,7 @@ datasets:
   - {dataset: FGOALS-g3, ensemble: 'r(1:4)i1p1f1', grid: gn}
   - {dataset: FIO-ESM-2-0, ensemble: 'r(1:3)i1p1f1', grid: gn}
   - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gn}
-  # - {dataset: GISS-E2-1-G, ensemble: 'r1i1p5f1', grid: gn, supplementary_variables: [{short_name: areacella, mip: fx, exp: piControl, ensemble: r1i1p5f1}, {short_name: areacello, skip: true}]} # issue with the first ensemble member:
-  - {dataset: GISS-E2-1-G, ensemble: 'r(2:4)i1p5f1', grid: gn, supplementary_variables: [{short_name: areacella, mip: fx, exp: piControl, ensemble: r1i1p5f1}, {short_name: areacello, skip: true}]}
+  - {dataset: GISS-E2-1-G, ensemble: 'r(1:4)i1p5f1', grid: gn, supplementary_variables: [{short_name: areacella, mip: fx, exp: piControl, ensemble: r1i1p5f1}, {short_name: areacello, skip: true}]}
   - {dataset: GISS-E2-1-G, ensemble: 'r(1:5)i1p1f2', grid: gn, supplementary_variables: [{short_name: areacella, mip: fx, exp: piControl, ensemble: r1i1p1f1}, {short_name: areacello, skip: true}]}
   - {dataset: GISS-E2-1-G, ensemble: 'r(1:5)i1p3f1', grid: gn, supplementary_variables: [{short_name: areacella, mip: fx, exp: piControl, ensemble: r1i1p3f1}, {short_name: areacello, skip: true}]}
   - {dataset: GISS-E2-1-H, ensemble: 'r(1:5)i1p1f2', grid: gn, supplementary_variables: [{short_name: areacella, mip: fx, exp: piControl, ensemble: r1i1p1f1}, {short_name: areacello, skip: true}]}
