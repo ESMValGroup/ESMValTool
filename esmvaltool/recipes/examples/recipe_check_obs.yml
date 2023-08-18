@@ -1612,6 +1612,38 @@ diagnostics:
          type: sat, version: v1, start_year: 1988, end_year: 2016}
     scripts: null
 
+  MERRA:
+    description: MERRA check
+    variables:
+      cli:
+      clivi:
+      clt:
+      clw:
+      clwvi:
+      hur:
+      hus:
+      lwp:
+      pr:
+      prw:
+      ps:
+      psl:
+      rlut:
+      rlutcs:
+      rsdt:
+      rsut:
+      rsutcs:
+      ta:
+      tas:
+      ts:
+      ua:
+      va:
+      wap:
+      zg:
+    additional_datasets:
+      - {dataset: MERRA, project: OBS, tier: 3, mip: Amon,
+         type: reanaly, version: 5.2.0, start_year: 1979, end_year: 2015}
+    scripts: null
+
 
   MERRA2:
     description: MERRA2 check
