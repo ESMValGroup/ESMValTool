@@ -42,7 +42,7 @@ begin
   ; Selected variable (standard name)
   VAR = (/"zg", "wap", "cli", "clw", "hus", "hur", "ta", "ua", "va",  \
           "ps", "psl",                                                \
-          "clivi", "clwvi");, "lwp", "prw",                             \
+          "clivi", "clwvi", "lwp", "prw",                             \
           "clt", "rlut", "rlutcs", "rsdt", "rsut", "rsutcs", "ts",    \
           "tas", "pr"/)
 
