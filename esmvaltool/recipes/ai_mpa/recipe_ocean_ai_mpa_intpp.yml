@@ -37,6 +37,20 @@ diagnostics:
         - {dataset: CESM2-WACCM-FV2, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: NorESM2-LM, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
 #        - {dataset: NorESM2-MM, end_year: 2010, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: ACCESS-ESM1-5, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: CESM2, ensemble: r10i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: CESM2, ensemble: r4i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: IPSL-CM6A-LR, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: MPI-ESM1-2-HR, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: MPI-ESM1-2-LR, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: CESM2-WACCM, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        - {dataset: CanESM5, end_year: 2010, ensemble: r1i1p2f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000 }
+        - {dataset: CanESM5, end_year: 2010, ensemble: r2i1p2f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000 }
+        - {dataset: CanESM5-CanOE, end_year: 2010, ensemble: r1i1p2f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000 }
+        - {dataset: CanESM5-CanOE, end_year: 2010, ensemble: r2i1p2f1, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000 }
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r1i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000 }
+        - {dataset: CNRM-ESM2-1, end_year: 2010, ensemble: r2i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000 }
+
         end_year: 2010
         exp: historical
         grid: gn
@@ -247,6 +261,19 @@ diagnostics:
         - {dataset: CESM2-WACCM-FV2, end_year: 2014, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
 #        - {dataset: NorESM2-LM, end_year: 2014, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
 #        - {dataset: NorESM2-MM, end_year: 2014, ensemble: r1i1p1f1, exp: historical,grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: ACCESS-ESM1-5, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: CESM2, ensemble: r10i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: CESM2, ensemble: r4i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: CNRM-ESM2-1, ensemble: r2i1p1f2, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: CanESM5-CanOE, ensemble: r2i1p2f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: CanESM5, ensemble: r1i1p2f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: CanESM5, ensemble: r2i1p2f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: IPSL-CM6A-LR, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: MPI-ESM1-2-HR, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: MPI-ESM1-2-LR, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        - {dataset: CESM2-WACCM, ensemble: r2i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
         end_year: 2014
         exp: historical
         grid: gn
@@ -256,7 +283,7 @@ diagnostics:
         short_name: intpp
         start_year: 1850
         supplementary_variables: &ofx
-                  - {short_name: areacello, mip: Ofx, exp: '*',activity: '*', ensemble: '*'}          
+                  - {short_name: areacello, mip: Ofx, exp: '*',activity: '*', ensemble: '*'}
       intpp_ts_ssp126:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p2f1, exp: ssp126, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -304,7 +331,7 @@ diagnostics:
         project: CMIP6
         short_name: intpp
         start_year: 2015
-        supplementary_variables: *ofx   
+        supplementary_variables: *ofx
       intpp_ts_ssp245:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p2f1, exp: ssp245, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -353,7 +380,7 @@ diagnostics:
         project: CMIP6
         short_name: intpp
         start_year: 2015
-        supplementary_variables: *ofx   
+        supplementary_variables: *ofx
       intpp_ts_ssp370:
         additional_datasets:
         - {dataset: CanESM5, end_year: 2100, ensemble: r1i1p2f1, exp: ssp370, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -399,7 +426,7 @@ diagnostics:
         project: CMIP6
         short_name: intpp
         start_year: 2015
-        supplementary_variables: *ofx   
+        supplementary_variables: *ofx
       intpp_ts_ssp585:
         additional_datasets:
         - {dataset: CMCC-ESM2, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -424,7 +451,7 @@ diagnostics:
         project: CMIP6
         short_name: intpp
         start_year: 2015
-        supplementary_variables: *ofx   
+        supplementary_variables: *ofx
 
 documentation:
   authors: [demora_lee]
@@ -439,32 +466,17 @@ preprocessors:
   # Time series preprocessors
   # --------------------------------------------------
   prep_regional_ts_2d: # For regional 2d fields
-    #custom_order: true
     extract_region: &mpa_region {end_latitude: -5.053, end_longitude: -11.487, start_latitude: -10.813,
-      start_longitude: -17.246}     
-    # extract_region: &mpa_region
-    #   start_longitude: -17.25 #14.25W
-    #   end_longitude: -11.25 #
-    #   start_latitude: -10.56 # -7.56
-    #   end_latitude: -4.56 #
+      start_longitude: -17.246}
     area_statistics:
       operator: mean
-      # fx_variables:
-      # - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
 
   prep_regional_ts_3d_surface: # For regional fields
     custom_order: true
     extract_region: *mpa_region
-#    extract_surface:
-    #extract_region: *mpa_region
-#    extract_levels:
-#        scheme: linear
-#        levels: [0.1,]
-
     area_statistics:
       operator: mean
-      # fx_variables:
-      # - {activity: CMIP,  grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
+
 
   # --------------------------------------------------
   # Map preprocessors
@@ -475,34 +487,18 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
+
   prep_map_surf: # For Global 2D fields
     custom_order: true
-#    extract_levels:
-#        scheme: linear
-#        levels: [0.1,] 
     climate_statistics:
        operator: mean
     regrid:
       target_grid: 1x1
       scheme: linear
+
   prep_map_2: # For Global 2D fields with regridding
-    #custom_order: true
     climate_statistics:
       operator: mean
     regrid:
       target_grid: 1x1
       scheme: linear
-
-
-
-
-
-
-
-
-
-
-
-
-
-
