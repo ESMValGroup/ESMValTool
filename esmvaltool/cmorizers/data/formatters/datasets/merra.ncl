@@ -104,8 +104,6 @@ begin
   FREQ = "mon"
 
   ; CMOR table
-  base = getenv("cmor_tables")
-
   CMOR_TABLE = getenv("cmor_tables") + \
     (/"/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \  ; 3d asm
       "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
