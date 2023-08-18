@@ -252,9 +252,9 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | CERES-SYN1deg                | rlds, rldscs, rlus, rluscs, rlut, rlutcs, rsds, rsdscs, rsus, rsuscs, rsut, rsutcs (3hr)             |   3  | NCL             |
 |                              | rlds, rldscs, rlus, rlut, rlutcs, rsds, rsdt, rsus, rsut, rsutcs (Amon)                              |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| CLARA-AVHRR                  | clt, clivi, lwp (Amon)                                                                               |   3  | NCL             |
+| CLARA-AVHRR                  | clt, clivi, clwvi, lwp (Amon)                                                                        |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| CLOUDSAT-L2                  | clw, clivi, lwp (Amon)                                                                               |   3  | NCL             |
+| CLOUDSAT-L2                  | clw, clivi, clwvi, lwp (Amon)                                                                        |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CowtanWay                    | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -281,7 +281,7 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-AEROSOL               | abs550aer, od550aer, od550aerStderr, od550lt1aer, od870aer, od870aerStderr (aero)                    |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ESACCI-CLOUD                 | clivi, clt, cltStderr, lwp, rlut, rlutcs, rsut, rsutcs, rsdt, rlus, rsus, rsuscs (Amon)              |   2  | NCL             |
+| ESACCI-CLOUD                 | clivi, clt, cltStderr, clwvi, lwp, rlut, rlutcs, rsut, rsutcs, rsdt, rlus, rsus, rsuscs (Amon)       |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-FIRE                  | burntArea (Lmon)                                                                                     |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
