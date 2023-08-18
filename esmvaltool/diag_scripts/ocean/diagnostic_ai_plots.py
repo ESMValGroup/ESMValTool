@@ -1019,7 +1019,7 @@ def multi_model_time_series(
                 anom =  anomalgy_basis[(short_name, dataset, 'r1i')]
             else:
                 print('unalbe to include:', (short_name, dataset, ensemble[:3]) )
-                continue
+                assert 0
             # calculate the single model ensemble diff against the historical anomaly.
             value = np.ma.masked_where(times.mask, values).mean() - anom
             key = (short_name, dataset, scenario)
@@ -3437,19 +3437,8 @@ def main(cfg):
         for plotting in plottings:
             continue
             for single_model in models.keys():
-                continue
-                multi_model_time_series(
-                    cfg,
-                    metadatas,
-                    ts_dict = time_series_fns,
-                    moving_average_str='annual',
-                    hist_time_range = [2000., 2010.],
-                    ssp_time_range = [2040., 2050.],
-                    plotting = plotting,
-                    single_model=single_model,
-                )
-
-            for single_model in ['all', ]: #'not', 'only', 'all']:
+                #continue
+                # pane a standalone
                 multi_model_time_series(
                     cfg,
                     metadatas,
