@@ -464,7 +464,7 @@ def find_hist_cube(hist_cubes, dataset, short_name, scenario, ensemble, return_m
     # Figure out which historical ensemble members exist:
     sets = []
     for d, s, sce, e in hist_cubes.keys():
-        if sce != 'historical': 
+        if sce != 'historical':
             continue
         print('find_hist_cube: hist_cubes:', len(hist_cubes.keys()))
         if d == dataset:
@@ -474,7 +474,7 @@ def find_hist_cube(hist_cubes, dataset, short_name, scenario, ensemble, return_m
     if dataset == 'UKESM1-0-LL':
         ukesm_key = (dataset, short_name, 'historical', ensemble.replace('f2', 'f3'))
         ukesm_hist = hist_cubes.get(ukesm_key, False)
-        if ukesm_hist not in [False, ]: 
+        if ukesm_hist not in [False, ]:
             return ukesm_hist
         print('could not find:', ukesm_hist, 'or', (dataset, short_name, scenario, ensemble), 'but did find ', len(sets), 'ensemble members:', sets)
     elif dataset == 'CNRM-ESM2-1':
@@ -1165,9 +1165,34 @@ def multi_model_time_series(
     #     model_5_95: the range of every model ensmble is shown as a coloured band (or line if only one)
     #     Global_mean: the mean of every model_means is shown as a thick solid line
     #     Global_range: the mean of every model_means is shown as a thick solid line
+    # 'ensemble_anom', 'model_anom', 'mmm_anmom'
 
     for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
-        if 'all' not in plotting: continue
+        if 'all' in plotting or 'ensemble_anom' in plotting:
+            pass
+        else:
+            continue
+        if colour_scheme in ['viridis', 'jet']:
+            if len(metadata) > 1:
+                color = cmap(index / (len(metadata) - 1.))
+            else:
+                color = 'blue'
+
+        if colour_scheme in 'IPCC':
+            color = ipcc_colours[scenario]
+
+        times = [t for t in sorted(data.keys())]
+        values = [data[t] for t in times]
+
+        if 'all' in plotting:
+            plt.plot(times, values, ls='-', c=color, lw=0.4) #, label=dataset)
+        if 'ensemble_anom' in plotting:
+            anom =  anomalgy_basis[ (short_name, dataset, ensemble[:3])]
+            plt.plot(times, np.array(values) - anom, ls='-', c=color, lw=0.4) #, label=dataset)
+
+
+    for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
+        if 'ensemble_anom' not in plotting: continue
         if colour_scheme in ['viridis', 'jet']:
             if len(metadata) > 1:
                 color = cmap(index / (len(metadata) - 1.))
@@ -1886,7 +1911,7 @@ def make_multi_model_profiles_plotpair(
             if dataset in models_to_skip.get(short_name, {}): continue
             if ensemble in ensembles_to_skip.get((dataset, short_name), []):
                 continue
-            if dataset in chl_profile_to_skip: 
+            if dataset in chl_profile_to_skip:
                 continue
             models[dataset] = True
             if single_model == 'all':
@@ -1900,7 +1925,7 @@ def make_multi_model_profiles_plotpair(
             short_name = metadatas[fn]['short_name']
             if short_name == 'chl':
                 threshold=-300.
-                levels =  [0.5, 1.0, 5.0, 10.0, 25., 50.0, 75., 100.0, 125., 150., 175., 200.0, 225., 250.,275.,  300.0, 
+                levels =  [0.5, 1.0, 5.0, 10.0, 25., 50.0, 75., 100.0, 125., 150., 175., 200.0, 225., 250.,275.,  300.0,
                            325., 350., 375., 400.0, 450., 500.0,
                     ]
 
@@ -1963,9 +1988,9 @@ def make_multi_model_profiles_plotpair(
             short_name = metadatas[fn]['short_name']
             ensemble = metadatas[fn]['ensemble']
 
-            if dataset in models_to_skip['all']: 
+            if dataset in models_to_skip['all']:
                 continue
-            if dataset in models_to_skip.get(short_name, {}): 
+            if dataset in models_to_skip.get(short_name, {}):
                 continue
             if ensemble in ensembles_to_skip.get((dataset, short_name), []):
                 continue
@@ -1974,9 +1999,9 @@ def make_multi_model_profiles_plotpair(
                 single_model_means[dataset] = {}
                 single_model_diffs[dataset] = {}
 
-            if single_model == 'all': 
+            if single_model == 'all':
                 pass
-            elif metadata['dataset'] != single_model: 
+            elif metadata['dataset'] != single_model:
                 continue
 
             scenario = metadata['exp']
@@ -2140,8 +2165,8 @@ def make_multi_model_profiles_plotpair(
             ax2, ax3 = plot_z_line(
                 ddict['ddepths'],
                 ddict['anomaly'],
-                ax2, ax3, 
-                ls='-', c=color, lw=2., 
+                ax2, ax3,
+                ls='-', c=color, lw=2.,
                 label = scenario,
                 threshold=threshold)
 
@@ -2492,7 +2517,7 @@ def multi_model_map_figure(
         for fn in filenames:
             print(fn)
             vg = metadatas[fn]['variable_group']
-            if vg != variable_group: 
+            if vg != variable_group:
                  assert 0
             dataset = metadatas[fn]['dataset']
             short_name = metadatas[fn]['short_name']
@@ -3427,12 +3452,13 @@ def main(cfg):
         #     model_5_95: the range of every model ensmble is shown as a coloured band (or line if only one)
         #     Global_mean: the mean of every model_means is shown as a thick solid line
         #     Global_range: the mean of every model_means is shown as a thick solid line
-        plottings = [['all', 'model_means', 'Global_mean' ],
-                     ['model_range',],
-                     ['Global_range', ],
-                     ['model_range', 'Global_mean',],
-                     ['Global_mean', 'Global_range'],
-                     ['model_means', 'Global_range'],
+        plottings = [['ensemble_anom', ], # 'model_anom', 'mmm_anmom'],
+#                  ['all', 'model_means', 'Global_mean' ],
+#                     ['model_range',],
+#                     ['Global_range', ],
+#                     ['model_range', 'Global_mean',],
+#                     ['Global_mean', 'Global_range'],
+#                     ['model_means', 'Global_range'],
                      ] #'medians', 'all_models', 'range',
         for plotting in plottings:
             continue
