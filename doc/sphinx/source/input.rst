@@ -355,8 +355,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MAC-LWP                      | lwp, lwpStderr (Amon)                                                                                |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| MERRA                        | cli, clivi, clt, clw, hur, hus, lwp, pr, prw, ps, psl, rlut, rlutcs, rsdt, rsut, rsutcs, ta, tas, ts |   3  | NCL             |
-|                              | ua, va, wap, zg (Amon)                                                                               |      |                 |
+| MERRA                        | cli, clivi, clt, clw, clwvi, hur, hus, lwp, pr, prw, ps, psl, rlut, rlutcs, rsdt, rsut, rsutcs, ta,  |   3  | NCL             |
+|                              | tas, ts, ua, va, wap, zg (Amon)                                                                      |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MERRA2                       | sm (Lmon)                                                                                            |   3  | Python          |
 |                              | clt, pr, evspsbl, hfss, hfls, huss, prc, prsn, prw, ps, psl, rlds, rldscs, rlus, rlut, rlutcs, rsds, |      |                 |
