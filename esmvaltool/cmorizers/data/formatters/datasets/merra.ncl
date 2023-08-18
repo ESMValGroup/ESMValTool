@@ -17,6 +17,7 @@
 ;       esmvaltool data download --config_file <config-user.yml> MERRA
 ;
 ; Modification history
+;    20230818-lauer_axel: added output of clwvi (iwp + lwp)
 ;    20230201-lauer_axel: written
 ;
 ; #############################################################################
@@ -41,14 +42,14 @@ begin
   ; Selected variable (standard name)
   VAR = (/"zg", "wap", "cli", "clw", "hus", "hur", "ta", "ua", "va",  \
           "ps", "psl",                                                \
-          "clivi", "lwp", "prw",                                      \
+          "clivi", "clwvi");, "lwp", "prw",                             \
           "clt", "rlut", "rlutcs", "rsdt", "rsut", "rsutcs", "ts",    \
           "tas", "pr"/)
 
   ; Name in the raw data
   NAME = (/"H", "OMEGA", "QI", "QL", "QV", "RH", "T", "U", "V",  \  ; 3d asm
            "PS", "SLP",                                          \
-           "TQI", "TQL", "TQV",                                  \  ; 2d int
+           "TQI", "TQI", "TQL", "TQV",                           \  ; 2d int
            "CLDTOT", "LWTUP", "LWTUPCLR", "SWTDN", "SWTNT",      \  ; 2d rad
            "SWTNTCLR", "TS",                                     \
            "T2M", "PRECLSC"/)                                       ; 2d chm
@@ -56,13 +57,13 @@ begin
   ; unit conversion factor
   CONVFAC = (/1.0, 1.0, 1.0, 1.0, 1.0, 100.0, 1.0, 1.0, 1.0,  \  ; 3d asm
              1.0, 1.0,                                        \
-             1.0, 1.0, 1.0,                                   \  ; 2d int
+             1.0, 1.0, 1.0, 1.0,                              \  ; 2d int
              100.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,             \  ; 2d rad
              1.0, 1.0/)                                          ; 2d chm
 
   ; additional attribute "positive" (for radiative fluxes)
   POSITIVE = (/"", "", "", "", "", "", "", "", "", "", "",    \  ; 3d asm
-               "", "", "",                                    \  ; 2d int
+               "", "", "", "",                                \  ; 2d int
                "", "up", "up", "down", "up", "up", "",        \  ; 2d rad
                "", ""/)                                          ; 2d chm
 
@@ -74,7 +75,7 @@ begin
                  "instM_3d_asm_Cp.", "instM_3d_asm_Cp.", \
                  "instM_3d_asm_Cp.",                     \
                  "instM_2d_int_Nx.", "instM_2d_int_Nx.", \  ; 2d int
-                 "instM_2d_int_Nx.",                     \
+                 "instM_2d_int_Nx.", "instM_2d_int_Nx.", \
                  "tavgM_2d_rad_Nx.", "tavgM_2d_rad_Nx.", \  ; 2d rad
                  "tavgM_2d_rad_Nx.", "tavgM_2d_rad_Nx.", \
                  "tavgM_2d_rad_Nx.", "tavgM_2d_rad_Nx.", \
@@ -89,7 +90,7 @@ begin
           "10.5067/YX0AVASQRTNW", "10.5067/YX0AVASQRTNW",  \
           "10.5067/YX0AVASQRTNW",                          \
           "10.5067/QL0PGBK2CYJS", "10.5067/QL0PGBK2CYJS",  \  ; 2d int
-          "10.5067/QL0PGBK2CYJS",                          \
+          "10.5067/QL0PGBK2CYJS", "10.5067/QL0PGBK2CYJS",  \
           "10.5067/6UX3EDUNVUFK", "10.5067/6UX3EDUNVUFK",  \  ; 2d rad
           "10.5067/6UX3EDUNVUFK", "10.5067/6UX3EDUNVUFK",  \
           "10.5067/6UX3EDUNVUFK", "10.5067/6UX3EDUNVUFK",  \
@@ -112,8 +113,8 @@ begin
       "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
       "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
       "/cmip5/Tables/CMIP5_" + MIP,                                \
-      "/cmip5/Tables/CMIP5_" + MIP, "/custom/CMOR_lwp.dat",        \  ; 2d int
-      "/cmip5/Tables/CMIP5_" + MIP,                                \
+      "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \  ; 2d int
+      "/custom/CMOR_lwp.dat", "/cmip5/Tables/CMIP5_" + MIP,        \
       "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \  ; 2d rad
       "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
       "/cmip5/Tables/CMIP5_" + MIP, "/cmip5/Tables/CMIP5_" + MIP,  \
@@ -230,6 +231,16 @@ begin
           output(mm - 1, :, :) = output(mm - 1, :, :) + tmp(0, :, :)
           delete(tmp)
           tmp = f->PRECANV  ; surface precipitation flux from anvils
+          if (isatt(tmp, "scale_factor") .or. isatt(tmp, "add_offset")) then
+            tmp = tmp * tmp@scale_factor + tmp@add_offset
+          end if
+          output(mm - 1, :, :) = output(mm - 1, :, :) + tmp(0, :, :)
+          delete(tmp)
+        end if
+
+        ; calculation of clwvi
+        if (VAR(vv) .eq. "clwvi") then
+          tmp = f->TQL
           if (isatt(tmp, "scale_factor") .or. isatt(tmp, "add_offset")) then
             tmp = tmp * tmp@scale_factor + tmp@add_offset
           end if
