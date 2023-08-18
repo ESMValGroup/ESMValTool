@@ -1,0 +1,100 @@
+
+# The following historical jobs are missing:ts
+diagnostics:
+  diag_timeseries_3:
+    scripts:
+      Model_range_polots: {script: ocean/diagnostic_ai_plots.py}
+    variables:
+      chl_map_hist:
+        additional_datasets:
+        - {dataset: IPSL-CM6A-LR, ensemble: r10i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 1850, end_year: 2014, }
+        end_year: 2010
+        exp: historical
+        grid: gn
+        mip: Omon
+        preprocessor: prep_map_surf
+        project: CMIP6
+        short_name: chl
+        start_year: 2000
+
+# The following historical jobs are missing:profile
+      chl_profile_hist:
+        additional_datasets:
+        - {dataset: IPSL-CM6A-LR, ensemble: r10i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        end_year: 2010
+        exp: historical
+        grid: gn
+        mip: Omon
+        preprocessor: prep_profile_2
+        project: CMIP6
+        short_name: chl
+        start_year: 2000
+        supplementary_variables: &ofx
+                  - {short_name: areacello, mip: Ofx, exp: '*',activity: '*', ensemble: '*'}          
+
+# The following historical jobs are missing:map
+      chl_ts_hist:
+        additional_datasets:
+        - {dataset: IPSL-CM6A-LR, ensemble: r10i1p1f1, grid: gn, exp: historical,  mip: Omon, project: CMIP6, start_year: 2000, end_year: 2010, }
+        end_year: 2014
+        exp: historical
+        grid: gn
+        mip: Omon
+        preprocessor: prep_regional_ts_3d_surface
+        project: CMIP6
+        short_name: chl
+        start_year: 1850
+        supplementary_variables: *ofx 
+
+
+documentation:
+  authors: [demora_lee]
+  description: "Template recipe to produce a generic plot of Chlorophyll for the Ascension Island"
+  maintainer: [demora_lee]
+  projects: [ukesm]
+  references: [demora2018gmd]
+  title: "Ascension Island MPA analysis: Chlorophyll"
+
+preprocessors:
+  # --------------------------------------------------
+  # Time series preprocessors
+  # --------------------------------------------------
+  prep_regional_ts_3d_surface: # For regional fields
+    custom_order: true
+    extract_region: &mpa_region {end_latitude: -5.053, end_longitude: -11.487, start_latitude: -10.813,
+      start_longitude: -17.246} 
+
+    area_statistics:
+      operator: mean
+
+    extract_levels:
+       scheme: nearest_extrapolate
+       levels: [0.5, ]
+
+  # --------------------------------------------------
+  # Map preprocessors
+  # --------------------------------------------------
+  prep_map_surf: # For Global 2D fields
+    custom_order: true
+    extract_levels:
+       scheme: nearest_extrapolate
+       levels: [0.5 ,]
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+  # --------------------------------------------------
+  # Depth-profile preprocessors
+  # --------------------------------------------------
+  prep_profile_2: # For a regional profile
+    custom_order: true
+    extract_region: *mpa_region
+    area_statistics:
+      operator: mean
+    extract_levels:
+      scheme: linear
+      levels: [0.5, 1., 5., 10., 50., 100., 200., 300., 400., 500., 600., 700., 800.,
+        900., 1000., 1500., 2000., 2500., 3000., 3500., 4000., 4500., 5000.]
+

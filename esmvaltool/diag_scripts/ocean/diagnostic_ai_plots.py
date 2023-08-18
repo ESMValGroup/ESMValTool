@@ -183,6 +183,24 @@ anomaly_titles = {
     'o2': 'O'+r'$_{2}$'+' Anomaly, mmol m'+r'$^{-3}$',
 }
 
+#odels_to_skip = ['GISS-E2-1-G', ] #SST is strangely high and there are very few SSP ensembles.
+models_to_skip = {'all': ['GISS-E2-1-G', ], #''MPI-ESM-1-2-HAM',],
+    'chl': ['MPI-ESM1-2-LR', ], #'CESM2',],
+#    'o2': ['MPI-ESM-1-2-HAM', ],
+#    'ph': ['MPI-ESM-1-2-HAM', ],
+    'sal': ['FIO-ESM-2-0'],  #'MPI-ESM-1-2-HAM',
+}
+ensembles_to_skip = {
+     ('UKESM1-0-LL','no3'): ['r5i1p1f3', 'r5i1p1f2'], # Doesn't seem to exist on jasmin.
+     ('MPI-ESM-1-2-HAM', 'intpp'): ['r2i1p1f1', ],
+     ('MPI-ESM-1-2-HAM', 'tos'): ['r2i1p1f1', ],
+     ('MPI-ESM-1-2-HAM', 'thetao'): ['r2i1p1f1', ],
+}
+chl_profile_to_skip = [
+    'CESM2',
+]
+
+# Expand dicts which multiple shortnames.
 for ndict2 in [suptitles, short_suptitles, anomaly_titles]:
     ndict2['thetao'] = ndict2['tos']
     ndict2['mlotst'] = ndict2['mld']
@@ -190,13 +208,6 @@ for ndict2 in [suptitles, short_suptitles, anomaly_titles]:
     ndict2['sos'] = ndict2['sal']
     ndict2['pH'] = ndict2['ph']
 
-#odels_to_skip = ['GISS-E2-1-G', ] #SST is strangely high and there are very few SSP ensembles.
-models_to_skip = {'all': ['GISS-E2-1-G', 'MPI-ESM-1-2-HAM',],
-    'chl': ['MPI-ESM1-2-LR', ],
-    'o2': ['MPI-ESM-1-2-HAM', ],
-    'ph': ['MPI-ESM-1-2-HAM', ],
-    'sal': ['MPI-ESM-1-2-HAM', 'FIO-ESM-2-0',],
-}
 
 # used to
 hard_wired_obs = {
@@ -453,14 +464,24 @@ def find_hist_cube(hist_cubes, dataset, short_name, scenario, ensemble, return_m
     # Figure out which historical ensemble members exist:
     sets = []
     for d, s, sce, e in hist_cubes.keys():
-        if sce != 'historical': continue
-        #print('find_hist_cube: hist_cubes:', len(hist_cubes.keys()))
+        if sce != 'historical': 
+            continue
+        print('find_hist_cube: hist_cubes:', len(hist_cubes.keys()))
         if d == dataset:
-            #print(d, s, sce, e, ('looking for ', ensemble))
+            print(d, s, sce, e, ('looking for ', ensemble))
             sets.append((d, s, sce, e))
 
     if dataset == 'UKESM1-0-LL':
-        return hist_cubes[(dataset, short_name, 'historical', ensemble.replace('f2', 'f3'))]
+        ukesm_key = (dataset, short_name, 'historical', ensemble.replace('f2', 'f3'))
+        ukesm_hist = hist_cubes.get(ukesm_key, False)
+        if ukesm_hist not in [False, ]: 
+            return ukesm_hist
+        print('could not find:', ukesm_hist, 'or', (dataset, short_name, scenario, ensemble), 'but did find ', len(sets), 'ensemble members:', sets)
+    elif dataset == 'CNRM-ESM2-1':
+        f1_key = (dataset, short_name, 'historical', ensemble.replace('f2', 'f1'))
+        f1_hist = hist_cubes.get(f1_key, False)
+        if f1_hist not in [False, ]:
+            return f1_hist
     else:
         print('could not find:', (dataset, short_name, scenario, ensemble), 'but did find ', len(sets), 'ensemble members:', sets)
 
@@ -649,9 +670,11 @@ def multi_model_time_series(
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             dataset = metadatas[fn]['dataset']
             short_name = metadatas[fn]['short_name']
+            ensemble = metadatas[fn]['ensemble']
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
-
+            if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+                continue
             if single_model == 'all': pass
             elif dataset != single_model: continue
             variable_groups[variable_group] = True
@@ -694,6 +717,10 @@ def multi_model_time_series(
                 short_name = metadatas[fn]['short_name']
                 if dataset in models_to_skip['all']: continue
                 if dataset in models_to_skip.get(short_name, {}): continue
+
+                ensemble = metadatas[fn]['ensemble']
+                if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+                    continue
 
                 short_name = metadatas[fn]['short_name']
                 scenario = metadatas[fn]['exp']
@@ -781,15 +808,18 @@ def multi_model_time_series(
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             dataset = metadatas[fn]['dataset']
             short_name = metadatas[fn]['short_name']
+            ensemble = metadatas[fn]['ensemble']
+
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
+            if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+                continue
 
             if single_model == 'all': pass
             elif dataset != single_model: continue
 
             short_name = metadatas[fn]['short_name']
             scenario = metadatas[fn]['exp']
-            ensemble = metadatas[fn]['ensemble']
             nc_index = (variable_group, short_name, dataset, scenario, ensemble)
 
             # if already loaded, then skip.
@@ -1390,8 +1420,12 @@ def multi_model_clim_figure(
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             dataset = metadatas[fn]['dataset']
             short_name = metadatas[fn]['short_name']
+            ensemble = metadatas[fn]['ensemble']
+
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
+            if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+                continue
 
             if single_model == 'all': pass
             elif metadatas[fn]['dataset'] != single_model: continue
@@ -1445,8 +1479,12 @@ def multi_model_clim_figure(
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             dataset = metadatas[fn]['dataset']
             short_name = metadatas[fn]['short_name']
+            ensemble = metadatas[fn]['ensemble']
+
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
+            if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+                continue
 
             #if ukesm == 'only' and dataset != 'UKESM1-0-LL': continue
             if single_model == 'all': pass
@@ -1573,8 +1611,12 @@ def multi_model_clim_figure(
 
             dataset = metadatas[fn]['dataset']
             short_name = metadatas[fn]['short_name']
+            ensemble = metadatas[fn]['ensemble']
+
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
+            if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+                continue
 
             months =  cube['month_number']
             for t, d in zip(months, cube['data']):
@@ -1709,10 +1751,10 @@ def extract_depth_range(data, depths, drange='surface', threshold=-1000.):
     return data
 
 
-def plot_z_line(depths, data, ax0, ax1, ls='-', c='blue', lw=2., label = '', zorder=1):
+def plot_z_line(depths, data, ax0, ax1, ls='-', c='blue', lw=2., label = '', zorder=1, threshold=-1000.):
 
     for ax, drange in zip([ax0, ax1], ['surface', 'depths']):
-        data2 = extract_depth_range(data, depths, drange=drange)
+        data2 = extract_depth_range(data, depths, drange=drange, threshold=threshold)
         if not len(data2.compressed()): continue
         ax.plot(data2, depths,
             lw=lw,
@@ -1722,16 +1764,17 @@ def plot_z_line(depths, data, ax0, ax1, ls='-', c='blue', lw=2., label = '', zor
     return ax0, ax1
 
 
-def plot_z_area(depths, data_min, data_max, ax0, ax1, color='blue', alpha=0.15, label = '', zorder=1):
+def plot_z_area(depths, data_min, data_max, ax0, ax1, color='blue', alpha=0.15, label = '', zorder=1, threshold=-1000.):
     for ax, drange in zip([ax0, ax1], ['surface', 'depths']):
-        data_min2 = extract_depth_range(data_min, depths, drange=drange)
-        data_max2 = extract_depth_range(data_max, depths, drange=drange)
+        data_min2 = extract_depth_range(data_min, depths, drange=drange, threshold=threshold)
+        data_max2 = extract_depth_range(data_max, depths, drange=drange, threshold=threshold)
         ax.fill_betweenx(depths, data_min2, data_max2,
             color=color,
             alpha = alpha,
             label= label,
             zorder=zorder)
     return ax0, ax1
+
 
 def save_profile_csv(cfg, keys, depths, data):
     """
@@ -1774,7 +1817,7 @@ def make_multi_model_profiles_plotpair(
         save = False,
         draw_legend=True,
         single_model = 'all',
-
+        threshold=-1000.,
     ):
     """
     Make a profile plot for an individual model.
@@ -1828,6 +1871,11 @@ def make_multi_model_profiles_plotpair(
     model_cubes_paths = {}
     model_hist_cubes = {}
     debug_txt = ''
+    levels =  [0.5, 1.0, 5.0, 10.0, 50.0, 100.0, 150., 200.0, 250., 300.0, 350., 400.0, 450., 500.0,
+               600.0, 650., 700.0, 750., 800.0, 850., 900.0, 950., 999.0,
+               1001., 1250., 1500.0, 1750., 2000.0, 2250., 2500.0, 2750., 3000.0, 3250., 3500.0, 3750.,
+               4000.0, 4250., 4500.0, 4750., 5000.0]
+
     for variable_group, filenames in profile_fns.items():
         for i, fn in enumerate(filenames):
             dataset = metadatas[fn]['dataset']
@@ -1836,6 +1884,10 @@ def make_multi_model_profiles_plotpair(
             ensemble = metadatas[fn]['ensemble']
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
+            if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+                continue
+            if dataset in chl_profile_to_skip: 
+                continue
             models[dataset] = True
             if single_model == 'all':
                 pass
@@ -1846,12 +1898,17 @@ def make_multi_model_profiles_plotpair(
             try: cube.coord('depth')
             except: continue
             short_name = metadatas[fn]['short_name']
+            if short_name == 'chl':
+                threshold=-300.
+                levels =  [0.5, 1.0, 5.0, 10.0, 25., 50.0, 75., 100.0, 125., 150., 175., 200.0, 225., 250.,275.,  300.0, 
+                           325., 350., 375., 400.0, 450., 500.0,
+                    ]
 
             cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
             if short_name == 'chl':
                 cube = fix_chl(cube)
-                if metadatas[fn]['dataset'] == 'CESM2' and single_model != 'CESM2':
-                     continue
+#                if metadatas[fn]['dataset'] == 'CESM2' and single_model != 'CESM2':
+#                     continue
             scenario = metadatas[fn]['exp']
             debug_txt = ', '.join([debug_txt, 'a', dataset, short_name, exp, ensemble, str(cube[:,9].data.mean()), '\n'])
             print(dataset, short_name, exp, ensemble, cube[:,9].data.mean())
@@ -1871,10 +1928,7 @@ def make_multi_model_profiles_plotpair(
             # ensure everyone uses the same levels:
             cube = extract_levels(cube,
                 scheme='linear',
-                levels =  [0.5, 1.0, 5.0, 10.0, 50.0, 100.0, 150., 200.0, 250., 300.0, 350., 400.0, 450., 500.0,
-                           600.0, 650., 700.0, 750., 800.0, 850., 900.0, 950., 999.0,
-                           1001., 1250., 1500.0, 1750., 2000.0, 2250., 2500.0, 2750., 3000.0, 3250., 3500.0, 3750.,
-                           4000.0, 4250., 4500.0, 4750., 5000.0]
+                levels = levels,
                 )
 
             print(cube.shape)
@@ -1896,56 +1950,60 @@ def make_multi_model_profiles_plotpair(
 
     data_dict = {}
     for variable_group, cubes in model_cubes.items():
-#        data_values = {}
         scenario = ''
         color = ''
         single_model_means = {}
         single_model_diffs = {}
 
+        # Single ensemble member part:
+        for i, cube in enumerate(cubes):
+            fn = model_cubes_paths[variable_group][i]
+            metadata = metadatas[fn]
+            dataset = metadatas[fn]['dataset']
+            short_name = metadatas[fn]['short_name']
+            ensemble = metadatas[fn]['ensemble']
 
+            if dataset in models_to_skip['all']: 
+                continue
+            if dataset in models_to_skip.get(short_name, {}): 
+                continue
+            if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+                continue
 
+            if dataset not in single_model_means.keys():
+                single_model_means[dataset] = {}
+                single_model_diffs[dataset] = {}
 
-    for i, cube in enumerate(cubes):
-        fn = model_cubes_paths[variable_group][i]
-        metadata = metadatas[fn]
-        dataset = metadatas[fn]['dataset']
-        short_name = metadatas[fn]['short_name']
-        ensemble = metadatas[fn]['ensemble']
+            if single_model == 'all': 
+                pass
+            elif metadata['dataset'] != single_model: 
+                continue
 
-        if dataset in models_to_skip['all']: continue
-        if dataset in models_to_skip.get(short_name, {}): continue
+            scenario = metadata['exp']
+            color = ipcc_colours[scenario]
 
-        if dataset not in single_model_means.keys():
-            single_model_means[dataset] = {}
-            single_model_diffs[dataset] = {}
+            depths = -1.* cube.coord('depth').points
 
-        if single_model == 'all': pass
-        elif metadata['dataset'] != single_model: continue
+            # Try to fin historical cube
+            hist_cube = find_hist_cube(model_hist_cubes, dataset, short_name, scenario, ensemble)
 
-        scenario = metadata['exp']
-        color = ipcc_colours[scenario]
+            if 'all_models'  in plotting:
+                 ax0, ax1 = plot_z_line(depths, cube.data, ax0, ax1, ls='-', c=color, lw=0.8, label = scenario, threshold=threshold)
 
-        depths = -1.* cube.coord('depth').points
+            for z, d, hist in zip(depths, cube.data, hist_cube.data):
+                single_model_means[dataset] = add_dict_list(single_model_means[dataset], z, d)
+                single_model_diffs[dataset] = add_dict_list(single_model_diffs[dataset], z, d - hist)
 
-        # Try to fin historical cube
-        hist_cube = find_hist_cube(model_hist_cubes, dataset, short_name, scenario, ensemble)
+            if 'all_models'  in plotting:
+                ax2, ax3 = plot_z_line(depths, cube.data - hist_cube.data, ax2, ax3, ls='-', c=color, lw=0.8, label = scenario, threshold=threshold)
 
-        for z, d in zip(depths, cube.data):
-            single_model_means[dataset] = add_dict_list(single_model_means[dataset], z, d)
-        if 'all_models'  in plotting:
-             ax0, ax1 = plot_z_line(depths, cube.data, ax0, ax1, ls='-', c=color, lw=0.8, label = scenario)
-
-        for z, d, hist in zip(depths, cube.data, hist_cube.data):
-            single_model_diffs[dataset] = add_dict_list(single_model_diffs[dataset], z, d - hist)
-        if 'all_models'  in plotting:
-            ax2, ax3 = plot_z_line(depths, cube.data - hist_cube.data, ax2, ax3, ls='-', c=color, lw=0.8, label = scenario)
-        # ./output_csv/output_csv_*/model_table/ensemble_count_table_*.csv
-            mmm = {}
-
+        # Calculate single model and ensemble means:
+        mmm = {}
         mmm_diff = {}
         header.append('&')
         header.append(scenario)
         num_ens = 0
+
         # ensemble mean:
         for dataset, data_values in single_model_means.items():
 
@@ -2008,7 +2066,7 @@ def make_multi_model_profiles_plotpair(
         data_dict[scenario] = {'mean':mean, 'depths': depths, 'scenario': scenario, 'variable_group': variable_group, 'anomaly':mean_diff, 'ddepths':ddepths}
 
         if 'means' in plotting:
-            ax0, ax1 = plot_z_line(depths, mean, ax0, ax1, ls='-', c=color, lw=2., label = scenario)
+            ax0, ax1 = plot_z_line(depths, mean, ax0, ax1, ls='-', c=color, lw=2., label = scenario, threshold=threshold)
             save_profile_csv(cfg, ['profile', variable_group,single_model, model, scenario, 'means'], depths, mean)
 
         if scenario in ['historical', 'hist']:
@@ -2016,7 +2074,7 @@ def make_multi_model_profiles_plotpair(
         else: zorder=1
 
         if 'means_split' in plotting:
-            ax0, ax1 = plot_z_line(depths, mean, ax0, ax1, ls='-', c=color, lw=2., label = scenario, zorder=zorder)
+            ax0, ax1 = plot_z_line(depths, mean, ax0, ax1, ls='-', c=color, lw=2., label = scenario, zorder=zorder, threshold=threshold)
             save_profile_csv(cfg, ['profile', variable_group, single_model, scenario, 'means_split'], depths, mean)
 
         if 'medians' in plotting:
@@ -2070,11 +2128,11 @@ def make_multi_model_profiles_plotpair(
     #assert 0
     # plot rhs
     #try:
-    hist_data = np.array(data_dict['historical']['mean'])
+    #hist_data = np.array(data_dict['historical']['mean'])
 
     for scenario, ddict in data_dict.items():
-        if not len(hist_data):
-            continue
+        #if not len(hist_data):
+        #    continue
         color = ipcc_colours[scenario]
         if 'means_split' in plotting: # and scenario not in ['historical', 'hist']:
 
@@ -2082,7 +2140,10 @@ def make_multi_model_profiles_plotpair(
             ax2, ax3 = plot_z_line(
                 ddict['ddepths'],
                 ddict['anomaly'],
-                ax2, ax3, ls='-', c=color, lw=2., label = scenario)
+                ax2, ax3, 
+                ls='-', c=color, lw=2., 
+                label = scenario,
+                threshold=threshold)
 
         if '5-95_split' in plotting:
             assert 0
@@ -2101,12 +2162,13 @@ def make_multi_model_profiles_plotpair(
         obs_cube = iris.load_cube(obs_filename)
         obs_depths = -1.* obs_cube.coord('depth').points
         obs_key = 'Observations'
-        ax0, ax1 = plot_z_line(obs_depths, obs_cube.data, ax0, ax1, ls='-', c='k', lw=2.5, label = obs_key)
+        ax0, ax1 = plot_z_line(obs_depths, obs_cube.data, ax0, ax1, ls='-', c='k', lw=2.5, label = obs_key, threshold=threshold)
 
         if plot_obs_diff:
+            hist_data = np.array(data_dict['historical']['mean'])
             # interpolated historical data in obs_depths
             hist_interp = np.interp(obs_depths, depths, hist_data) # calculate histo
-            ax2, ax3 = plot_z_line(obs_depths, obs_cube.data - hist_interp, ax2, ax3, ls='-', c='k', lw=2.5, label = obs_key)
+            ax2, ax3 = plot_z_line(obs_depths, obs_cube.data - hist_interp, ax2, ax3, ls='-', c='k', lw=2.5, label = obs_key, threshold=threshold)
 
     # set x axis limits:
     xlims = np.array([ax0.get_xlim(), ax1.get_xlim()])
@@ -2118,10 +2180,10 @@ def make_multi_model_profiles_plotpair(
     ax3.set_xlim([xlims.min(), xlims.max()])
 
     ylims = np.array([ax0.get_ylim(), ax1.get_ylim(), ax2.get_ylim(), ax3.get_ylim()])
-    ax0.set_ylim([-1000., ylims.max()])
-    ax1.set_ylim([ylims.min(), -1001.])
-    ax2.set_ylim([-1000., ylims.max()])
-    ax3.set_ylim([ylims.min(), -1001.])
+    ax0.set_ylim([threshold, ylims.max()])
+    ax1.set_ylim([ylims.min(), threshold - 1.])
+    ax2.set_ylim([threshold, ylims.max()])
+    ax3.set_ylim([ylims.min(), threshold - 1.])
 
     # hide between pane axes and ticks:
     ax0.spines['bottom'].set_visible(False)
@@ -2140,10 +2202,10 @@ def make_multi_model_profiles_plotpair(
     ax3.yaxis.set_ticklabels([])
 
     # draw a line between figures
-    ax0.axhline(-999., ls='--', lw=1.5, c='black')
-    ax1.axhline(-1001., ls='--', lw=1.5, c='black')
-    ax2.axhline(-999., ls='--', lw=1.5, c='black')
-    ax3.axhline(-1001., ls='--', lw=1.5, c='black')
+    ax0.axhline(threshold+1., ls='--', lw=1.5, c='black')
+    ax1.axhline(threshold-1., ls='--', lw=1.5, c='black')
+    ax2.axhline(threshold+1., ls='--', lw=1.5, c='black')
+    ax3.axhline(threshold-1., ls='--', lw=1.5, c='black')
 
     if pH_log and short_name in ['ph', 'pH']:
 #        #ax0.set_xscale('log')
@@ -2183,6 +2245,7 @@ def make_multi_model_profiles_plotpair(
     # Determine image filename:
     path = diagtools.folder(cfg['plot_dir']+'/profiles_pair')
     path += '_'.join(['multi_model_profile', time_str])
+
     path += '_'+ '_'.join(plotting)
     if single_model == 'all': pass
     else: path += '_'+single_model
@@ -2422,15 +2485,20 @@ def multi_model_map_figure(
     exps = {}
     models = {}
     short_names={}
-    hist_fns = {}
+    map_hist_fns = {}
     # Run through all input files and generate list of details.
     for variable_group, filenames in maps_fns.items():
-        for i, fn in enumerate(filenames):
+        print(variable_group)
+        for fn in filenames:
+            print(fn)
+            vg = metadatas[fn]['variable_group']
+            if vg != variable_group: 
+                 assert 0
             dataset = metadatas[fn]['dataset']
             short_name = metadatas[fn]['short_name']
-            scenario = metadatas[filenames[0]]['exp']
+            scenario = metadatas[fn]['exp']
             exps[scenario] = variable_group
-            ensemble = metadatas[filenames[0]]['ensemble']
+            ensemble = metadatas[fn]['ensemble']
             if dataset in models_to_skip['all']:
                 continue
             if dataset in models_to_skip.get(short_name, {}):
@@ -2441,7 +2509,9 @@ def multi_model_map_figure(
                 continue
             models[dataset] = True
             short_names[metadatas[fn]['short_name']] = True
-            hist_fns[(dataset, short_name, scenario,  ensemble)] = fn
+            print('map_hist_fns', (dataset, short_name, scenario,  ensemble), ':', fn)
+            map_hist_fns[(dataset, short_name, scenario,  ensemble)] = fn
+
     if len(short_names.keys()) == 0:
         if save:
             return
@@ -2470,6 +2540,7 @@ def multi_model_map_figure(
 
             if model_itr in models_to_skip['all']:
                  continue
+
             if single_model == 'all':
                  pass
             elif model_itr != single_model:
@@ -2503,6 +2574,8 @@ def multi_model_map_figure(
                 if model_itr in models_to_skip['all']: continue
                 short_name = metadatas[fn]['short_name']
                 if model in models_to_skip.get(short_name, {}): continue
+                if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+                    continue
 
 
 #                if single_model == 'all': pass
@@ -2629,13 +2702,15 @@ def multi_model_map_figure(
                     continue
                 if model in models_to_skip.get(short_name, {}):
                     continue
+                if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+                    continue
 
-                print('loading:', i, variable_group ,scenario, fn)
+                print('loading:', i, variable_group ,scenario, ensemble, model,fn, )
 
-                cube = prep_cube_map(fn, metadatas[filenames[0]], time_range, region)
+                cube = prep_cube_map(fn, metadatas[fn], time_range, region)
                 cube = regrid_intersect(cube, region)
 
-                hist_fn = find_hist_cube(hist_fns, model, short_name, scenario, ensemble)
+                hist_fn = find_hist_cube(map_hist_fns, model, short_name, scenario, ensemble)
                 hist_cube = prep_cube_map(hist_fn, metadatas[fn], hist_time_range, region)
                 hist_cube = regrid_intersect(hist_cube, region)
 
@@ -3149,17 +3224,26 @@ def add_letter(ax, letter, par=True ):
        transform=ax.transAxes)
     return ax
 
-def find_missing_cubes(metadatas, time_series_fns, profile_fns, maps_fns):
+
+def find_missing_cubes(metadatas, model_hist_cubes, time_series_fns, profile_fns, maps_fns):
     """
     Find missing historical datasets and output them in the ESMValTool recipe format
     """
     missing_cubes = {'ts':{}, 'profile':{}, 'map':{}}
     missing = 0
     short_name = ''
+    print('maps_fns', maps_fns)
+    #assert 0
     for files_dict, models_hists in zip([time_series_fns, profile_fns, maps_fns],
         [model_hist_cubes['ts'], model_hist_cubes['profile'], model_hist_cubes['map']]):
+
+        print('find_missing_cubes:')
+        for key, val in models_hists.items():
+            print('model_hist_cubes:',key, ':', val)
+
         for outer_vg, files in files_dict.items():
             for fn in files:
+                print('find_missing_cubes:', outer_vg, fn)
                 dataset = metadatas[fn]['dataset']
                 short_name = metadatas[fn]['short_name']
                 ensemble = metadatas[fn]['ensemble']
@@ -3172,9 +3256,12 @@ def find_missing_cubes(metadatas, time_series_fns, profile_fns, maps_fns):
                 if variable_group.find('_map_')>-1:
                     vg_type = 'map'
 
+                print('find_missing_cubes:', outer_vg, fn, dataset, short_name, scenario, ensemble)
                 if scenario == 'historical':
                     continue
+
                 hist_cube = find_hist_cube(models_hists, dataset, short_name, scenario, ensemble, return_missing=True)
+                print('returned:', hist_cube)
                 if isinstance(hist_cube, tuple):
                     missing_cubes[vg_type][hist_cube] = fn
 
@@ -3186,28 +3273,33 @@ def find_missing_cubes(metadatas, time_series_fns, profile_fns, maps_fns):
     }
     missing_recipe = ''.join(['recipe_ocean_ai_mpa_', short_name, '_missing.yml'])
     out_txt = ''
+
     for vg_type, missing_tuples in missing_cubes.items():
+        print('find_missing_cubes:', vg_type, missing_tuples)
         if len(missing_tuples):
-            out_txt = '',join([out_txt, '\n# The following historical jobs are missing:', vg_type, '\n''])
-            for miss_tuple, fn in missing_tuples.items():
-                grid = metadatas[fn]['grid']
-                line = ''.join([yml_pre,
-                                'dataset: ', miss_tuple[0],
-                                ', ensemble: ', miss_tuple[3],
-                                ', grid: ', grid,
-                                yml_post[vg_type],
-                                '\n'])
-                #print(line)
-                out_txt = '', join([out_txt, line])
-                missing+=1
-    if missing >0:
+            out_txt = ''.join([out_txt, '\n# The following historical jobs are missing:', vg_type, '\n'])
+        for miss_tuple, fn in missing_tuples.items():
+            grid = metadatas[fn]['grid']
+            line = ''.join([yml_pre,
+                            'dataset: ', miss_tuple[0],
+                            ', ensemble: ', miss_tuple[3],
+                            ', grid: ', grid,
+                            yml_post[vg_type],
+                            '\n'])
+            print(line)
+            out_txt = ''.join([out_txt, line])
+            missing+=1
+
+    if missing > 0:
         print(out_txt)
         out_yml = open(missing_recipe, 'w')
         out_yml.write(out_txt)
         out_yml.close()
         print('written to ', out_txt)
-        raise
         assert 0
+
+    #assert 0
+
 
 def main(cfg):
     """
@@ -3244,9 +3336,12 @@ def main(cfg):
         variable_group = metadata['variable_group']
         dataset = metadata['dataset']
         short_name = metadata['short_name']
+        ensemble = metadata['ensemble']
         if dataset in models_to_skip['all']: continue
         if dataset in models_to_skip.get(short_name, {}): continue
         if dataset in models_to_skip:
+            continue
+        if ensemble in ensembles_to_skip.get((dataset, short_name), []):
             continue
 
         scenario = metadata['exp']
@@ -3279,6 +3374,8 @@ def main(cfg):
 
         if dataset in models_to_skip:
             continue
+        if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+            continue
 
         if dataset in models_without_futures:
             continue
@@ -3288,6 +3385,7 @@ def main(cfg):
         if variable_group.find('_ts_')>-1:
             time_series_fns = add_dict_list(time_series_fns, variable_group, fn)
             model_hist_cubes['ts'][(dataset, short_name, exp, ensemble)] = fn
+
         if variable_group.find('_profile_')>-1:
             profile_fns = add_dict_list(profile_fns, variable_group, fn)
             model_hist_cubes['profile'][(dataset, short_name, exp, ensemble)] = fn
@@ -3296,7 +3394,7 @@ def main(cfg):
             model_hist_cubes['map'][(dataset, short_name, exp, ensemble)] = fn
             maps_fns = add_dict_list(maps_fns, variable_group, fn)
 
-    find_missing_cubes(metadatas, time_series_fns, profile_fns, maps_fns)
+    find_missing_cubes(metadatas, model_hist_cubes, time_series_fns, profile_fns, maps_fns)
 
     #jobs:
     #Make UKESM-only version of everything (or single model?)
@@ -3396,7 +3494,7 @@ def main(cfg):
         # Profile pair
         plottings =  [['all_models',], ['means_split',], ]#['5-95_split',], ['means_split', '5-95_split', ], ['range',] ]
         for plotting in plottings:
-            #continue
+            continue
             for single_model in sorted(models.keys()): # ['all', 'only']:
                 make_multi_model_profiles_plotpair(
                     cfg,
@@ -3415,14 +3513,14 @@ def main(cfg):
                     save = False,
                     draw_legend=True
                 )
-
+        #assert 0
     #print(time_series_fns)
     #print(profile_fns)
     #print(maps_fns)
 
     do_whole_plot = True
-    for single_model in ['all', ]: # sorted(models.keys()): # ['all', 'only']:
-    #for single_model in sorted(models.keys()): # ['all', 'only']:
+    #for single_model in ['all', ]: # sorted(models.keys()): # ['all', 'only']:
+    for single_model in sorted(models.keys()): # ['all', 'only']:
 
         if not  do_whole_plot: continue
         if single_model in models_to_skip['all']: continue
