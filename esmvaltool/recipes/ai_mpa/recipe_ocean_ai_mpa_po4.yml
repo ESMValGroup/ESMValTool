@@ -25,6 +25,7 @@ diagnostics:
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r2i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r3i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r4i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r5i1p1f3, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000 }
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r6i1p1f3, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r7i1p1f3, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r8i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
@@ -205,6 +206,7 @@ diagnostics:
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r2i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r3i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r4i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
+        - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r5i1p1f3, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r6i1p1f3, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r7i1p1f3, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
         - {dataset: UKESM1-0-LL, end_year: 2010, ensemble: r8i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 2000}
@@ -225,7 +227,7 @@ diagnostics:
         short_name: po4
         start_year: 2000
         supplementary_variables: &ofx
-                  - {short_name: areacello, mip: Ofx, exp: '*',activity: '*', ensemble: '*'}          
+                  - {short_name: areacello, mip: Ofx, exp: '*',activity: '*', ensemble: '*'}
       po4_profile_ssp126:
         additional_datasets:
 
@@ -261,7 +263,7 @@ diagnostics:
         project: CMIP6
         short_name: po4
         start_year: 2040
-        supplementary_variables: *ofx   
+        supplementary_variables: *ofx
       po4_profile_ssp245:
         additional_datasets:
 
@@ -286,7 +288,7 @@ diagnostics:
         project: CMIP6
         short_name: po4
         start_year: 2040
-        supplementary_variables: *ofx   
+        supplementary_variables: *ofx
       po4_profile_ssp370:
         additional_datasets:
 
@@ -323,7 +325,7 @@ diagnostics:
         project: CMIP6
         short_name: po4
         start_year: 2040
-        supplementary_variables: *ofx   
+        supplementary_variables: *ofx
       po4_profile_ssp585:
         additional_datasets:
 
@@ -335,7 +337,7 @@ diagnostics:
 #        - {dataset: MIROC-ES2L, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
         - {dataset: MPI-ESM1-2-LR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
         - {dataset: MRI-ESM2-0, end_year: 2050, ensemble: r1i2p1f1, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
-          
+
 #        - {dataset: CMCC-ESM2, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2040}
 #        - {dataset: EC-Earth3-CC, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
 #        - {dataset: IPSL-CM6A-LR, end_year: 2050, ensemble: r1i1p1f1, exp: ssp585, grid: gn, mip: Omon, project: CMIP6, start_year: 2040}
@@ -355,7 +357,7 @@ diagnostics:
         project: CMIP6
         short_name: po4
         start_year: 2040
-        supplementary_variables: *ofx   
+        supplementary_variables: *ofx
       po4_ts_hist:
         additional_datasets:
         - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r10i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
@@ -369,6 +371,7 @@ diagnostics:
         - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r2i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
         - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r3i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
         - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r4i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
+        - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r6i1p1f3, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
         - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r6i1p1f3, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
         - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r7i1p1f3, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
         - {dataset: UKESM1-0-LL, end_year: 2014, ensemble: r8i1p1f2, exp: historical, grid: gn, mip: Omon, project: CMIP6, start_year: 1850}
@@ -406,7 +409,7 @@ diagnostics:
         project: CMIP6
         short_name: po4
         start_year: 1850
-        supplementary_variables: *ofx   
+        supplementary_variables: *ofx
       po4_ts_ssp126:
         additional_datasets:
         - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r10i1p1f2, exp: ssp126, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -443,7 +446,7 @@ diagnostics:
         project: CMIP6
         short_name: po4
         start_year: 2015
-        supplementary_variables: *ofx   
+        supplementary_variables: *ofx
       po4_ts_ssp245:
         additional_datasets:
         - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r1i1p1f2, exp: ssp245, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -468,7 +471,7 @@ diagnostics:
         project: CMIP6
         short_name: po4
         start_year: 2015
-        supplementary_variables: *ofx   
+        supplementary_variables: *ofx
       po4_ts_ssp370:
         additional_datasets:
         - {dataset: UKESM1-0-LL, end_year: 2100, ensemble: r10i1p1f2, exp: ssp370, grid: gn, mip: Omon, project: CMIP6, start_year: 2015}
@@ -504,7 +507,7 @@ diagnostics:
         project: CMIP6
         short_name: po4
         start_year: 2015
-        supplementary_variables: *ofx   
+        supplementary_variables: *ofx
       po4_ts_ssp585:
         additional_datasets:
         # - {dataset: CMCC-ESM2, end_year: 2100, ensemble: r1i1p1f1, exp: ssp585, grid: gn,mip: Omon, project: CMIP6, start_year: 2015}
@@ -535,7 +538,7 @@ diagnostics:
         project: CMIP6
         short_name: po4
         start_year: 2015
-        supplementary_variables: *ofx   
+        supplementary_variables: *ofx
 documentation:
   authors: [demora_lee]
   title: "Ascension Island MPA Phosphate analysis"
@@ -555,32 +558,10 @@ preprocessors:
       start_longitude: -17.246}
     area_statistics:
       operator: mean
- 
     extract_levels:
        scheme: nearest
        levels: [0.5, ]
-    # extract_region: &mpa_region
-    #   start_longitude: -17.25 #14.25W
-    #   end_longitude: -11.25 #
-    #   start_latitude: -10.56 # -7.56
-    #   end_latitude: -4.56 #
-      # fx_variables: &areacello
-#      - {short_name: areacello}
-#            - {activity: CMIP, grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
-#        - {grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
-#
-#    extract_levels:
-#       scheme: nearest
-#       levels: [0.5, ]
-#   extract_region: &mpa_region
-#     start_longitude: -17.25 #14.25W
-#     end_longitude: -11.25 #
-#     start_latitude: -10.56 # -7.56
-#     end_latitude: -4.56 #
-#   area_statistics:
-#     operator: mean
-#     fx_variables: *areacello
-#     - {activity: CMIP, grid: gn, mip: Ofx, short_name: areacello, exp: '*', ensemble: '*'}
+
   # --------------------------------------------------
   # Map preprocessors
   # --------------------------------------------------
