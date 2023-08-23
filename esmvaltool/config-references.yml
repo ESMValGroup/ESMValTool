@@ -680,6 +680,10 @@ authors:
     name: Stevens, Mark
     institute: NCAR, US
     orcid:
+  savage_nick:
+    name: Savage, Nicholas
+    insitute: MetOffice, UK
+    orcid: https://orcid.org/0000-0001-9391-5100
   # Former viewers (not active viewers)
   adeniyi_kemisola:
     name: Adeniyi, Kemisola

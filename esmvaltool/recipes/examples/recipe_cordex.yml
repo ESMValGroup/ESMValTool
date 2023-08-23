@@ -1,0 +1,87 @@
+# ESMValTool
+# recipe_python.yml
+#
+# See https://docs.esmvaltool.org/en/latest/recipes/recipe_examples.html
+# for a description of this recipe.
+#
+# See https://docs.esmvaltool.org/projects/esmvalcore/en/latest/recipe/overview.html
+# for a description of the recipe format.
+---
+documentation:
+  description: |
+    Example recipe that plots a map and timeseries of temperature
+    from a CORDEX Europe Model.
+
+  title: Recipe that runs an example diagnostic for CORDEX.
+
+  authors :
+    - savage_nick
+
+  maintainer:
+    - savage_nick
+
+  projects:
+    - esmval
+
+datasets:
+  - {institute: SMHI, driver: NCC-NorESM1-M, dataset: SMHI-RCA4, exp: historical, project: CORDEX, ensemble: r1i1p1, mip: mon, rcm_version: v1, domain: EUR-11}
+  - {institute: ICTP, driver: NCC-NorESM1-M, dataset: ICTP-RegCM4-6, exp: historical, project: CORDEX, ensemble: r1i1p1, mip: mon, rcm_version: v1, domain: EUR-11}
+
+preprocessors:
+  # See https://docs.esmvaltool.org/projects/esmvalcore/en/latest/recipe/preprocessor.html
+  # for a description of the preprocessor functions.
+
+  to_degrees_c:
+    convert_units:
+      units: degrees_C
+
+  annual_mean_amsterdam:
+    extract_location:
+      location: Amsterdam
+      scheme: linear
+    annual_statistics:
+      operator: mean
+    convert_units:
+      units: degrees_C
+
+diagnostics:
+
+  map:
+    description: Map of European temperature in January 2000.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: to_degrees_c
+        timerange: 2000/P1M
+        caption: |
+          Domain map of {long_name} in January 2000 according to {driver}-{dataset}.
+    scripts:
+      script1:
+        script: examples/diagnostic.py
+        quickplot:
+          plot_type: pcolormesh
+          cmap: Reds
+
+  timeseries:
+    description: Annual mean temperature in Amsterdam and domain mean since 1850.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas_amsterdam:
+        short_name: tas
+        mip: Amon
+        preprocessor: annual_mean_amsterdam
+        timerange: 1970/2005
+        caption: Annual mean {long_name} in Amsterdam according to {driver}-{dataset}.
+    scripts:
+      script1:
+        script: examples/diagnostic.py
+        quickplot:
+          plot_type: plot
+  
