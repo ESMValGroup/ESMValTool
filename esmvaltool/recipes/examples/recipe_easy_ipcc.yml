@@ -1,6 +1,8 @@
 documentation:
   title: Easy IPCC
   description: Reproduce part of IPCC AR6 figure 9.3a.
+  references:
+    - fox-kemper21ipcc
   authors:
     - kalverla_peter
     - andela_bouwe
