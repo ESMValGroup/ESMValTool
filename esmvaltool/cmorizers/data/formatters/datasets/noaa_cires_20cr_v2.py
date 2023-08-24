@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for NOAA-CIRES-20CR data.
+"""ESMValTool CMORizer for NOAA-CIRES-20CR-V2 data.
 
 Tier
     Tier 2: other freely-available dataset.
