@@ -13,8 +13,12 @@ logger = logging.getLogger(Path(__file__).stem)
 def main(cfg):
     """Plot part of figure_9.3a from IPCC AR6."""
     colors = {
-        'historical-ssp126': '#6a798f',
-        'historical-ssp585': '#e6ced3',
+        'historical-ssp126': '#2a3652',
+        'historical-ssp585': '#78333a',
+    }
+    fill_colors = {
+        'historical-ssp126': '#d2d5dc',
+        'historical-ssp585': '#ddced2',
     }
     labels = {
         'historical-ssp126': 'Historical and SSP1-2.6',
@@ -46,7 +50,7 @@ def main(cfg):
             time_axis,
             p17.core_data(),
             p83.core_data(),
-            color=colors.get(exp),
+            color=fill_colors.get(exp),
             label='Likely (17% - 83%) ranges',
         )
 
