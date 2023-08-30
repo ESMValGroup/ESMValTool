@@ -9,12 +9,14 @@
 [scheduling]
    cycling mode = integer
    initial cycle point = 1
-   final cycle point = 5
+   final cycle point = 10
     [[graph]]
-        R1 = """install_cold => configure => process<fast> => compare<fast>
+        R1 = """install_env_file => clone_latest_esmval => configure
+                configure => process<fast> => compare<fast>
                 configure => process<medium> => compare<medium>"""
-        3/P2 = compare<fast>[-P2] => configure => process<fast> => compare<fast>
-        4/P3 = compare<medium>[-P3] => configure => process<medium> => compare<medium>
+        2/P3 = configure[-P1] => process<fast> => compare<fast>
+        3/P3 = configure[-P2] => process<medium> => compare<medium>
+        4/P3 = compare<fast>[-P2] & compare<medium>[-P1] => clone_latest_esmval => configure
 
 [runtime]
     [[root]]
@@ -30,11 +32,15 @@
             ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValTool
             PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
 
-    [[install_cold]]
+    [[install_env_file]]
+        platform = localhost
         [[[environment]]]
             ESMVALCORE_URL = {{ ESMVALCORE_URL }}
             ESMVALTOOL_URL = {{ ESMVALTOOL_URL }}
             SITE = {{ SITE }}
+
+    [[clone_latest_esmval]]
+        platform = localhost
 
     [[configure]]
         pre-script = "mkdir -p ${USER_CONFIG_DIR}"

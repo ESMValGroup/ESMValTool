@@ -2,17 +2,83 @@
 
 import logging
 import os
+import re
 
 import cartopy
 import matplotlib.pyplot as plt
 import yaml
-from esmvalcore._data_finder import _replace_tags
 from iris.analysis import MEAN
 from mapgenerator.plotting.timeseries import PlotSeries
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, names
 
 logger = logging.getLogger(__name__)
+
+
+def _replace_tags(paths, variable):
+    """Replace tags in the config-developer's file with actual values."""
+    if isinstance(paths, str):
+        paths = set((paths.strip('/'), ))
+    else:
+        paths = set(path.strip('/') for path in paths)
+    tlist = set()
+    for path in paths:
+        tlist = tlist.union(re.findall(r'{([^}]*)}', path))
+    if 'sub_experiment' in variable:
+        new_paths = []
+        for path in paths:
+            new_paths.extend(
+                (re.sub(r'(\b{ensemble}\b)', r'{sub_experiment}-\1', path),
+                 re.sub(r'({ensemble})', r'{sub_experiment}-\1', path)))
+            tlist.add('sub_experiment')
+        paths = new_paths
+
+    for tag in tlist:
+        original_tag = tag
+        tag, _, _ = _get_caps_options(tag)
+
+        if tag == 'latestversion':  # handled separately later
+            continue
+        if tag in variable:
+            replacewith = variable[tag]
+        else:
+            raise ValueError(f"Dataset key '{tag}' must be specified for "
+                             f"{variable}, check your recipe entry")
+        paths = _replace_tag(paths, original_tag, replacewith)
+    return paths
+
+
+def _replace_tag(paths, tag, replacewith):
+    """Replace tag by replacewith in paths."""
+    _, lower, upper = _get_caps_options(tag)
+    result = []
+    if isinstance(replacewith, (list, tuple)):
+        for item in replacewith:
+            result.extend(_replace_tag(paths, tag, item))
+    else:
+        text = _apply_caps(str(replacewith), lower, upper)
+        result.extend(p.replace('{' + tag + '}', text) for p in paths)
+    return list(set(result))
+
+
+def _get_caps_options(tag):
+    lower = False
+    upper = False
+    if tag.endswith('.lower'):
+        lower = True
+        tag = tag[0:-6]
+    elif tag.endswith('.upper'):
+        upper = True
+        tag = tag[0:-6]
+    return tag, lower, upper
+
+
+def _apply_caps(original, lower, upper):
+    if lower:
+        return original.lower()
+    if upper:
+        return original.upper()
+    return original
 
 
 class MonitorBase():
@@ -156,6 +222,7 @@ class MonitorBase():
             prov = self.get_provenance_record(
                 ancestor_files=[var_info['filename']],
                 plot_type=plot_type,
+                long_names=[var_info[names.LONG_NAME]],
                 **kwargs,
             )
             provenance_logger.log(filename, prov)

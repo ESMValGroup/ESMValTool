@@ -340,13 +340,27 @@ authors:
     family-names: Kazeroni
     given-names: Rémi
     orcid: "https://orcid.org/0000-0001-7205-9528"
+  -
+    affiliation: "NASA, USA"
+    family-names: Potter
+    given-names: Jerry
+  -
+    affiliation: "DLR, Germany"
+    family-names: Winterstein
+    given-names: Franziska
+    orcid: "https://orcid.org/0000-0002-2406-4936"
+  -
+    affiliation: "ACCESS-NRI, Australia"
+    family-names: Beucher
+    given-names: Romain
+    orcid: "https://orcid.org/0000-0003-3891-5444"
 
 cff-version: 1.2.0
-date-released: 2022-07-25
+date-released: 2023-07-06
 doi: "10.5281/zenodo.3401363"
 license: "Apache-2.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/ESMValGroup/ESMValTool/"
 title: ESMValTool
-version: "v2.6.0"
+version: "v2.9.0"
 ...

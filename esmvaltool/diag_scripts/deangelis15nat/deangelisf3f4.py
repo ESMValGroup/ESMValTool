@@ -129,7 +129,7 @@ def set_grid_pw_reg_obs(cubes, meas_tub_rsnstcsnorm, meas_tub_prw):
     # Observations (one rsnstcsnorm, X PRW data set, DeAngelis contains 3
     data_prw_obs = OrderedDict()
     grid_pw = {}
-    grid_pw["x"] = np.arange(12.0, 59.0, 2, dtype=float)
+    grid_pw["x"] = np.arange(12.0, 59.0, 2, dtype=np.float64)
     grid_pw["yobs"] = OrderedDict()
     reg_prw_obs = OrderedDict()
 
@@ -345,6 +345,8 @@ def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(get_plot_filename('fig3a_' + dataset_name, cfg),
+                              provenance_record)
 
 
 def plot_deangelis_fig4(cfg, data_model, mdrsnstdts, prw):
@@ -457,6 +459,8 @@ def plot_deangelis_fig4(cfg, data_model, mdrsnstdts, prw):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(get_plot_filename('fig4', cfg),
+                              provenance_record)
 
 
 def plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs):
@@ -574,6 +578,8 @@ def plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(get_plot_filename('fig3b', cfg),
+                              provenance_record)
 
     # Fig 4
     plot_deangelis_fig4(cfg, data_model, mdrsnstdts, prw)
@@ -581,7 +587,7 @@ def plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs):
 
 def make_grid_prw(grid_pwx, data_prw_obs, data_rsnstcsnorm_obs):
     """Grid rsnstcsnorm based on prw grid."""
-    gridded_rsnstcsnorm_obs = np.zeros(len(grid_pwx), dtype=float)
+    gridded_rsnstcsnorm_obs = np.zeros(len(grid_pwx), dtype=np.float64)
 
     for jjj, bincenter in enumerate(grid_pwx):
         index_obs = np.where((data_prw_obs >= bincenter - 1.0) &

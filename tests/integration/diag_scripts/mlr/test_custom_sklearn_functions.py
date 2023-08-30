@@ -459,10 +459,18 @@ class MoreTagsEstimator:
         return {"allow_nan": True}
 
 
+class MockBaseEstimator:
+    """Estimator with ``_get_tags``."""
+
+    def _get_tags(self):
+        """Return tags."""
+        return _DEFAULT_TAGS
+
+
 @pytest.mark.parametrize(
     'estimator,err_msg',
     [
-        (BaseEstimator(), 'The key xxx is not defined in _get_tags'),
+        (MockBaseEstimator(), 'The key xxx is not defined in _get_tags'),
         (NoTagsEstimator(), 'The key xxx is not defined in _DEFAULT_TAGS'),
     ],
 )
@@ -480,9 +488,8 @@ def test_safe_tags_error(estimator, err_msg):
         (NoTagsEstimator(), 'allow_nan', _DEFAULT_TAGS['allow_nan']),
         (MoreTagsEstimator(), None, {**_DEFAULT_TAGS, **{'allow_nan': True}}),
         (MoreTagsEstimator(), 'allow_nan', True),
-        (BaseEstimator(), None, _DEFAULT_TAGS),
-        (BaseEstimator(), 'allow_nan', _DEFAULT_TAGS['allow_nan']),
-        (BaseEstimator(), 'allow_nan', _DEFAULT_TAGS['allow_nan']),
+        (MockBaseEstimator(), None, _DEFAULT_TAGS),
+        (MockBaseEstimator(), 'allow_nan', _DEFAULT_TAGS['allow_nan']),
     ],
 )
 def test_safe_tags_no_get_tags(estimator, key, expected_results):
@@ -640,7 +647,7 @@ def test_fit_and_score_weighted_no_weights(scorer, output):
     clf = LinearRegression()
     fit_and_score_weighted_args = [clf, X_DATA, Y_DATA, scorer, TRAIN, TEST]
     fit_and_score_weighted_kwargs = {
-        'parameters': {'normalize': False},
+        'parameters': {'copy_X': True},
         'fit_params': None,
     }
 
@@ -666,7 +673,7 @@ def test_fit_and_score_weighted_weights(scorer, output):
     clf = LinearRegression()
     fit_and_score_weighted_args = [clf, X_DATA, Y_DATA, scorer, TRAIN, TEST]
     fit_and_score_weighted_kwargs = {
-        'parameters': {'normalize': False},
+        'parameters': {'copy_X': True},
         'fit_params': {'sample_weight': SAMPLE_WEIGHTS},
         'sample_weights': SAMPLE_WEIGHTS,
     }

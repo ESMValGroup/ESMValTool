@@ -284,6 +284,8 @@ def plot_zonal_mean(cfg, mean_cube, dataname, titlestr, variable):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(get_plot_filename(figname, cfg),
+                              provenance_record)
 
 
 def plot_zonal_timedev(cfg, mean_cube, dataname, titlestr, variable):
@@ -340,6 +342,8 @@ def plot_zonal_timedev(cfg, mean_cube, dataname, titlestr, variable):
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(get_plot_filename(figname, cfg),
+                              provenance_record)
 
 
 def plot_profiles(cfg, profiles, available_vars_min_tas, available_datasets):
@@ -400,6 +404,8 @@ def plot_profiles(cfg, profiles, available_vars_min_tas, available_datasets):
                     pformat(provenance_record))
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(diagnostic_file, provenance_record)
+            provenance_logger.log(get_plot_filename(figname, cfg),
+                                  provenance_record)
 
 
 def main(cfg):
