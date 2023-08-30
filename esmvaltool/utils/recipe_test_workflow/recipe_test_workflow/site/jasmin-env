@@ -1,6 +1,6 @@
 #!/bin/bash -l
 #
-# Usage metoffice-env COMMAND
+# USAGE jasmin-env COMMAND
 #
 # ENVIRONMENT
 #   MODULE_NAME         The name of the module to load

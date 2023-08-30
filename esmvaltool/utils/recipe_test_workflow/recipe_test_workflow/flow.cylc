@@ -20,7 +20,6 @@
 
 [runtime]
     [[root]]
-        platform = localhost
         script = rose task-run
         env-script = "eval $(rose task-env)"
         [[[environment]]]
@@ -35,14 +34,13 @@
     [[install_env_file]]
         platform = localhost
         [[[environment]]]
-            ESMVALCORE_URL = {{ ESMVALCORE_URL }}
-            ESMVALTOOL_URL = {{ ESMVALTOOL_URL }}
             SITE = {{ SITE }}
 
     [[clone_latest_esmval]]
         platform = localhost
 
     [[configure]]
+        platform = localhost
         pre-script = "mkdir -p ${USER_CONFIG_DIR}"
         [[[environment]]]
             ROSE_TASK_APP = configure
