@@ -36,10 +36,29 @@ preprocessors:
     extract_location:
       location: Amsterdam
       scheme: linear
+    # Fails with 
+    # ValueError: Multi-model statistics failed to merge input cubes into a single array:
+    # 0: air_temperature / (degrees_C)       (time: 36; projection_y_coordinate: 1; projection_x_coordinate: 1)
+    # 1: air_temperature / (degrees_C)       (time: 36; grid_latitude: 1; grid_longitude: 1)
+    #   Coordinates in cube.dim_coords differ: grid_latitude, grid_longitude, projection_x_coordinate, projection_y_coordinate.
+    #   Coordinates in cube.aux_coords (non-scalar) differ: latitude, longitude.
+    # multi_model_statistics:
+    #   statistics:
+    #     - mean
+    #   span: overlap
     annual_statistics:
       operator: mean
     convert_units:
       units: degrees_C
+
+  domain_mean_global:
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    convert_units:
+      units: degrees_C
+
 
 diagnostics:
 
@@ -76,6 +95,14 @@ diagnostics:
         preprocessor: annual_mean_amsterdam
         timerange: 1970/2005
         caption: Annual mean {long_name} in Amsterdam according to {driver}-{dataset}.
+      # the following gives the error:
+      # ERROR   Unable to load CMOR table (project) 'CORDEX' for variable 'areacella' with mip 'mon'
+      # tas_domain:
+      #   short_name: tas
+      #   mip: Amon
+      #   preprocessor: domain_mean_global
+      #   timerange: 1970/2005
+      #   caption: Annual global mean {long_name} according to {driver}-{dataset}.
     scripts:
       script1:
         script: examples/diagnostic.py
