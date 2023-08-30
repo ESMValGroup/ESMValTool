@@ -632,18 +632,35 @@ diagnostics:
     scripts: null
 
 
-  NOAA-CIRES-20CR:
-    description: NOAA-CIRES-20CR check
+  NOAA-CIRES-20CR-V2:
+    description: NOAA-CIRES-20CR-V2 check
     variables:
       clt:
       clwvi:
       hus:
       prw:
-      rsut:
       rlut:
+      rsut:
     additional_datasets:
-      - {dataset: NOAA-CIRES-20CR, project: OBS6, mip: Amon, tier: 2,
+      - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: v2, start_year: 1871, end_year: 2012}
+    scripts: null
+
+
+  NOAA-CIRES-20CR-V3:
+    description: NOAA-CIRES-20CR-V3 check
+    variables:
+      clt:
+      clwvi:
+      hus:
+      prw:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+    additional_datasets:
+      - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: v3, start_year: 1836, end_year: 2015}
     scripts: null
 
 
@@ -1593,6 +1610,38 @@ diagnostics:
     additional_datasets:
       - {dataset: MAC-LWP, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v1, start_year: 1988, end_year: 2016}
+    scripts: null
+
+  MERRA:
+    description: MERRA check
+    variables:
+      cli:
+      clivi:
+      clt:
+      clw:
+      clwvi:
+      hur:
+      hus:
+      lwp:
+      pr:
+      prw:
+      ps:
+      psl:
+      rlut:
+      rlutcs:
+      rsdt:
+      rsut:
+      rsutcs:
+      ta:
+      tas:
+      ts:
+      ua:
+      va:
+      wap:
+      zg:
+    additional_datasets:
+      - {dataset: MERRA, project: OBS, tier: 3, mip: Amon,
+         type: reanaly, version: 5.2.0, start_year: 1979, end_year: 2015}
     scripts: null
 
 
