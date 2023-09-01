@@ -1,4 +1,5 @@
 import logging
+import cf_units
 import iris
 import iris.plot as iplt
 import numpy as np
@@ -24,11 +25,19 @@ def calculate_cube_stats(data_cube):
     mean_cb = eprep.climate_statistics(data_cube, operator='mean')
     std_cb = eprep.climate_statistics(data_cube, operator='std_dev')
     p95_cb = data_cube.collapsed('time', iris.analysis.PERCENTILE, percent=95)
-    skew_cb = mean_cb ; skew_cb.data = scipy.stats.skew(data_cube.data, axis=0)
+    diffs = data_cube - mean_cb
+    sqrt_f = iris.analysis.maths.IFunc(np.sqrt, lambda cube: cf_units.Unit('1'))
+    sqrt_var_cb = sqrt_f(eprep.climate_statistics(diffs**2, operator='mean'))
+    skew_cb = eprep.climate_statistics(diffs**3, operator='mean')/sqrt_var_cb**3
+    skew_cb.standard_name=mean_cb.standard_name
+    skew_cb.long_name=mean_cb.long_name
+    skew_cb.var_name=mean_cb.var_name
+    skew_cb.units=mean_cb.units
+    skew_cb.attributes=mean_cb.attributes
 
     data_dic = { 'mean': mean_cb,
                  'std': std_cb,
-                 'skewnes': skew_cb,
+                 'skew': skew_cb,
                  'p95': p95_cb}
 
     return data_dic
@@ -46,32 +55,40 @@ def plot_maps(data_dic, dataset, cfg, ensemble=None, bias=False):
                 'skew': {'levels': np.linspace(-2.2,2.2,24), 'cbar': 'RdBu'},
                 'p95': {'levels': np.linspace(0,70,20), 'cbar': 'GnBu'}}
     if bias: 
-        plot_dic = {'mean': {'levels': np.linspace(-5,5,20), 'cbar': 'RdBu'}, 
-                    'std': {'levels': np.linspace(-2,2,10), 'cbar': 'RdBu'},
-                    'skew': {'levels': np.linspace(-1,1,20), 'cbar': 'RdBu'},
-                    'p95': {'levels': np.linspace(-5,5,20), 'cbar': 'RdBu'}}        
+        plot_dic = {'mean': {'levels': np.linspace(-20,20,20), 'cbar': 'RdBu'}, 
+                    'std': {'levels': np.linspace(-8,8,15), 'cbar': 'RdBu'},
+                    'skew': {'levels': np.linspace(-2,2,10), 'cbar': 'RdBu'},
+                    'p95': {'levels': np.linspace(-20,20,20), 'cbar': 'RdBu'}}        
         
     fig_maps, ax_maps = plt.subplots(ncols=ncols, nrows=nrows,
                                       subplot_kw={'projection': ccrs.Robinson()})
     ax_maps = ax_maps.flatten()
     
+    n=0
     for nseas, seas in enumerate(data_dic.keys()):
-        n = nseas
         for nstat, stat in enumerate(data_dic[seas].keys()):
-            n = n + nstat
             iplt.contourf(data_dic[seas][stat], axes=ax_maps[n], 
                           levels=plot_dic[stat]['levels'], extend='both', 
                           cmap=plot_dic[stat]['cbar'])
+            ax_maps[n].coastlines(linewidth=0.5)
+            ax_maps[n].set_title(stat)
+            n = n + 1
 
 
-    fig_name = 'wv_'
+    fig_name = 'wv_' ; fig_title = 'Water vapour '
     if bias: 
         fig_name = fig_name + 'bias_'
+        fig_title = fig_title + 'bias '
     fig_name = fig_name + dataset
+    fig_title = fig_title + dataset
     if ensemble != None:
         fig_name = fig_name+ '_' +ensemble
+        fig_title = fig_title + ' ' +ensemble
+    fig_title = fig_title +'('+cfg['time_range']+')'
+    fig_maps.suptitle(fig_title)
     
     fig_maps.savefig(os.path.join(cfg['plot_dir'], fig_name + diagtools.get_image_format(cfg)))
+    plt.close(fig_maps)
 
     return
 
@@ -82,7 +99,7 @@ def main(cfg):
 
     data_groups = list(group_metadata(input_data.values(), 'variable_group').keys())
 
-    ref_dic = {}
+    ref_dic = {} 
 
     ref_dataset = list(group_metadata(input_data.values(), 'reference_dataset').keys())[0]
     for group in data_groups: 
@@ -97,6 +114,7 @@ def main(cfg):
     for dataset in datasets.keys():
         reals = group_metadata(datasets[dataset], 'ensemble')
         for real in reals:
+            data_dic = {}
             for group in data_groups:
                 if real == None:
                     dset_fname = select_metadata(input_data.values(), 
@@ -107,20 +125,15 @@ def main(cfg):
                                             dataset=dataset, ensemble = real,
                                             variable_group=group)[0]['filename']
                 data_cube = iris.load_cube(dset_fname)
-                data_dic = calculate_cube_stats(data_cube)
+                data_dic [group] = calculate_cube_stats(data_cube)
             plot_maps(data_dic, dataset, cfg, real)
             if dataset != ref_dataset: 
                 bias_dic = {}
                 for group in data_groups: 
-                    bias_dic[group] = data_dic[group] - ref_dic[group]
+                    bias_dic[group] = {}
+                    for stat in data_dic[group]:
+                        bias_dic[group][stat] = data_dic[group][stat] - ref_dic[group][stat]
                 plot_maps(data_dic, dataset, cfg, real, bias=True)
-            
-            logger.info("Success")
-
-
-        
-
-
 
 
     logger.info('Success')
