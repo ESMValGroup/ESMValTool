@@ -296,6 +296,23 @@ def read_cmor_config(dataset):
     return cfg
 
 
+def make_time_suffix(mip, tp0, tpn):
+    """Make time suffix for outfiles given first and last time points."""
+    dates = [f"{tp0.year:d}", f"{tpn.year:d}"]
+
+    if any(x in mip for x in ('mon', 'day', 'hr')):
+        dates[0] += f"{tp0.month:02d}"
+        dates[1] += f"{tpn.month:02d}"
+    if any(x in mip for x in ('day', 'hr')):
+        dates[0] += f"{tp0.day:02d}"
+        dates[1] += f"{tpn.day:02d}"
+    if "hr" in mip:
+        dates[0] += f"{tp0.hour:02d}{tp0.minute:02d}"
+        dates[1] += f"{tpn.hour:02d}{tpn.minute:02d}"
+
+    return '-'.join(dates)
+
+
 def save_variable(cube, var, outdir, attrs, **kwargs):
     """Saver function.
 
@@ -326,17 +343,10 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     except iris.exceptions.CoordinateNotFoundError:
         time_suffix = None
     else:
-        if len(time.points) == 1 and "mon" not in cube.attributes.get('mip'):
-            year = str(time.cell(0).point.year)
-            time_suffix = '-'.join([year + '01', year + '12'])
-        else:
-            date1 = (
-                f"{time.cell(0).point.year:d}{time.cell(0).point.month:02d}"
-            )
-            date2 = (
-                f"{time.cell(-1).point.year:d}{time.cell(-1).point.month:02d}"
-            )
-            time_suffix = '-'.join([date1, date2])
+        time_suffix = make_time_suffix(
+            cube.attributes.get('mip'),
+            time.cell(0).point,
+            time.cell(-1).point)
 
     name_elements = [
         attrs['project_id'],
@@ -348,8 +358,8 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     ]
     if time_suffix:
         name_elements.append(time_suffix)
-    file_name = '_'.join(name_elements) + '.nc'
-    file_path = os.path.join(outdir, file_name)
+
+    file_path = os.path.join(outdir, '_'.join(name_elements) + '.nc')
     logger.info('Saving: %s', file_path)
     status = 'lazy' if cube.has_lazy_data() else 'realized'
     logger.info('Cube has %s data [lazy is preferred]', status)
@@ -440,51 +450,52 @@ def fix_bounds(cube, dim_coord):
     return cube
 
 
-def fix_dim_coordnames(cube):
+def fix_dim_coordnames(cube, project_id="OBS6"):
     """Perform a check on dim coordinate names."""
     # first check for CMOR standard coord;
-    for coord in cube.coords():
+    for coord in cube.dim_coords:
         # guess the CMOR-standard x, y, z and t axes if not there
-        coord_type = iris.util.guess_coord_axis(coord)
+        coord_axis = iris.util.guess_coord_axis(coord)
         try:
-            coord = cube.coord(axis=coord_type)
+            coord = cube.coord(axis=coord_axis)
         except iris.exceptions.CoordinateNotFoundError:
             logger.warning(
                 'Multiple coordinates for axis %s. '
                 'This may be an error, specially for regular grids',
-                coord_type)
+                coord_axis)
             continue
 
-        if coord_type == 'T':
-            coord.var_name = 'time'
-            coord.attributes = {}
+        tbl_coords = CMOR_TABLES[project_id].coords
+        coord.attributes = {}
 
-        if coord_type == 'X':
-            coord.var_name = 'lon'
-            coord.standard_name = 'longitude'
-            coord.long_name = 'longitude coordinate'
-            coord.units = Unit('degrees')
-            coord.attributes = {}
+        # Lookup table.
+        axis_to_coordname = {
+            'T': 'time',
+            'X': 'longitude',
+            'Y': 'latitude',
+            'Z': {
+                'depth': ('depth_coord', 'down'),
+                # First plevX coord (named differently across projects).
+                'pressure': (next(
+                        (x for x in tbl_coords.keys() if x.startswith('plev')),
+                        None), 'up')
+                }}
 
-        if coord_type == 'Y':
-            coord.var_name = 'lat'
-            coord.standard_name = 'latitude'
-            coord.long_name = 'latitude coordinate'
-            coord.units = Unit('degrees')
-            coord.attributes = {}
+        match = axis_to_coordname.get(coord_axis)
+        if isinstance(match, dict):
+            nested = match.get(coord.var_name)
+            tindex, coord.attributes['positive'] = (
+                nested if nested else (None, None))
+        else:
+            tindex = match
 
-        if coord_type == 'Z':
-            if coord.var_name == 'depth':
-                coord.standard_name = 'depth'
-                coord.long_name = \
-                    'ocean depth coordinate'
-                coord.var_name = 'lev'
-                coord.attributes['positive'] = 'down'
-            if coord.var_name == 'pressure':
-                coord.standard_name = 'air_pressure'
-                coord.long_name = 'pressure'
-                coord.var_name = 'air_pressure'
-                coord.attributes['positive'] = 'up'
+        if tindex:
+            coord_info = tbl_coords[tindex]
+            coord.var_name = coord_info.out_name
+            coord.standard_name = coord_info.standard_name
+            coord.long_name = coord_info.long_name
+            if tindex in ('longitude', 'latitude'):
+                coord.units = Unit(coord_info.units)
     return cube
 
 
@@ -553,7 +564,7 @@ def unpack_files_in_folder(folder):
                 continue
             if filename.startswith('.'):
                 continue
-            if not filename.endswith(('.gz', '.tgz', '.tar')):
+            if not filename.endswith(('.zip', '.bz2', '.gz', '.tgz', '.tar')):
                 continue
             logger.info('Unpacking %s', filename)
             shutil.unpack_archive(full_path, folder)

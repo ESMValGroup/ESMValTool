@@ -338,6 +338,10 @@
             "affiliation": "DLR, Germany",
             "name": "Kazeroni, Rémi",
             "orcid": "0000-0001-7205-9528"
+        },
+        {
+            "affiliation": "BSC, Spain",
+            "name": "Jodry, Etienne"
         }
     ],
     "description": "ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.",

@@ -11,6 +11,7 @@ import iris.fileformats
 import numpy as np
 import pytest
 from cf_units import Unit
+from cftime import DatetimeGregorian
 
 import esmvaltool.cmorizers.data.utilities as utils
 
@@ -201,8 +202,8 @@ def test_fix_coords():
     assert cube.coord("latitude").var_name == "lat"
     assert cube.coord("longitude").standard_name == "longitude"
     assert cube.coord("latitude").standard_name == "latitude"
-    assert cube.coord("longitude").long_name == "longitude coordinate"
-    assert cube.coord("latitude").long_name == "latitude coordinate"
+    assert cube.coord("longitude").long_name == "Longitude"
+    assert cube.coord("latitude").long_name == "Latitude"
     assert cube.coord("longitude").units == "degrees"
     assert cube.coord("latitude").units == "degrees"
     assert cube.coord("depth").var_name == "lev"
@@ -329,3 +330,18 @@ def test_read_cmor_config():
     assert 'thetao' in cfg['variables']
     assert 'Omon' in cfg['cmor_table'].tables
     assert 'thetao' in cfg['cmor_table'].tables['Omon']
+
+
+def test_make_time_suffix():
+    """Test the making of time suffix."""
+    fct = utils.make_time_suffix
+    # year / month / day / hour / minute
+    tp0 = DatetimeGregorian(2020, 1, 1, 10, 55)
+    tpn = DatetimeGregorian(2023, 4, 6, 20, 15)
+
+    assert fct("yr", tp0, tp0) == "2020-2020"
+    assert fct("yr", tp0, tpn) == "2020-2023"
+    assert fct("mon", tp0, tpn) == "202001-202304"
+    assert fct("day", tp0, tpn) == "20200101-20230406"
+    assert fct("3hr", tp0, tpn) == "202001011055-202304062015"
+    assert fct("subhrPt", tp0, tpn) == "202001011055-202304062015"
