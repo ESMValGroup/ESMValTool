@@ -47,20 +47,6 @@ preprocessors:
 
 diagnostics:
 
-  # Specific instructions:
-  #
-  # The following 4 diagnostic blocks need to produce sensible plots with the
-  # same code. We recommend to comment them in one-by-one so only one is active
-  # at a time. You can use tip (6) from above to only run one diagnostic.
-  # Remember to re-run the entire recipe if you change the recipe file.
-  #
-  # You can copy the method 'create_zonal_mean_profile_plot' to a new method
-  # 'create_hovmoeller_time_vs_lat_or_lon_plot' in the diagnostic script and
-  # relevant other methods to get started.
-  #
-  # Remember to also add some documentation on the new plot type to the top of
-  # the diagnostic file.
-
   time_vs_lat_without_ref:  # this is an arbitrary name
     # Should create a single panel with a time vs. latitude contour plot
     variables:
@@ -77,67 +63,63 @@ diagnostics:
         plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
         plots:
           hovmoeller_time_vs_lat_or_lon:
-            common_cbar: true
-            # plot_func: contourf
+            # common_cbar: true
+            # show_x_minor_ticks: true
+            # show_y_minor_ticks: true
+            # rasterize: true
+            plot_func: contourf
             # plot_kwargs:
             #   levels: 20
 
-  # time_vs_lat_with_ref:  # this is an arbitrary name
-  #   # Should create a three-panel time vs. latitude contour plot for the two
-  #   # datasets and the corresponding bias
-  #   # see https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/recipe_monitor_with_refs_20230704_163457/plots/plot_zonal_mean_profiles_with_references/plot/zonal_mean_profile_ta_EC-Earth3_Amon.png
-  #   variables:
-  #     tas:
-  #       preprocessor: zonal_mean
-  #       mip: Amon
-  #       timerange: '20000101/20030101'
-  #       additional_datasets:
-  #         - {project: ICON,    dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1}
-  #         - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3}
-  #   scripts:
-  #     plot:  # this is an arbitrary name
-  #       script: /work/bd1179/esmvaltool_hackathon/diag_scripts/multi_datasets.py  # MODIFY!!!
-  #       plot_folder: '{plot_dir}'
-  #       plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
-  #       plots:
-  #         hovmoeller_time_vs_lat_or_lon:
-  #           common_cbar: true
+  time_vs_lat_with_ref:
+    variables:
+      tas:
+        preprocessor: zonal_mean
+        mip: Amon
+        timerange: '20000101/20030101'
+        additional_datasets:
+          - {project: ICON,    dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1}
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          hovmoeller_time_vs_lat_or_lon:
+            common_cbar: true
 
-  # time_vs_lon_without_ref:  # this is an arbitrary name
-  #   # Should create a single panel with a time vs. longitude contour plot
-  #   variables:
-  #     tas:
-  #       preprocessor: meridional_mean
-  #       mip: Amon
-  #       timerange: '20000101/20030101'
-  #       additional_datasets:
-  #         - {project: ICON,    dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1}
-  #   scripts:
-  #     plot:  # this is an arbitrary name
-  #       script: /work/bd1179/esmvaltool_hackathon/diag_scripts/multi_datasets.py   # MODIFY!!!
-  #       plot_folder: '{plot_dir}'
-  #       plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
-  #       plots:
-  #         hovmoeller_time_vs_lat_or_lon:
-  #           common_cbar: true
+  time_vs_lon_without_ref:
+    variables:
+      tas:
+        preprocessor: meridional_mean
+        mip: Amon
+        timerange: '20000101/20030101'
+        additional_datasets:
+          - {project: ICON,    dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          hovmoeller_time_vs_lat_or_lon:
+            common_cbar: true
 
-  # time_vs_lon_with_ref:  # this is an arbitrary name
-  #   # Should create a three-panel time vs. longitude contour plot for the two
-  #   # datasets and the corresponding bias
-  #   # see https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/recipe_monitor_with_refs_20230704_163457/plots/plot_zonal_mean_profiles_with_references/plot/zonal_mean_profile_ta_EC-Earth3_Amon.png
-  #   variables:
-  #     tas:
-  #       preprocessor: meridional_mean
-  #       mip: Amon
-  #       timerange: '20000101/20030101'
-  #       additional_datasets:
-  #         - {project: ICON,    dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1}
-  #         - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3}
-  #   scripts:
-  #     plot:  # this is an arbitrary name
-  #       script: /work/bd1179/esmvaltool_hackathon/diag_scripts/multi_datasets.py   # MODIFY!!!
-  #       plot_folder: '{plot_dir}'
-  #       plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
-  #       plots:
-  #         hovmoeller_time_vs_lat_or_lon:
-  #           common_cbar: true
+  time_vs_lon_with_ref:
+    variables:
+      tas:
+        preprocessor: meridional_mean
+        mip: Amon
+        timerange: '20000101/20030101'
+        additional_datasets:
+          - {project: ICON,    dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1}
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          hovmoeller_time_vs_lat_or_lon:
+            common_cbar: true
