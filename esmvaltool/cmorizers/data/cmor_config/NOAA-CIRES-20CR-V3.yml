@@ -1,0 +1,56 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: NOAA-CIRES-20CR-V3
+  project_id: OBS6
+  tier: 2
+  version: 'v3'
+  modeling_realm: reanaly
+  source: 'https://psl.noaa.gov/data/gridded/data.20thC_ReanV3.html'
+  reference: 'noaa-cires-20cr-v3'
+  comment: |
+    ''
+
+# Variables to CMORize
+variables:
+  # monthly frequency
+  clt_month:
+    short_name: clt
+    mip: Amon
+    raw: tcdc
+    file: 'tcdc.eatm.mon.mean.nc'
+  clwvi_month:
+    short_name: clwvi
+    mip: Amon
+    raw: cldwtr
+    file: 'cldwtr.eatm.mon.mean.nc'
+  prw_month:
+    short_name: prw
+    mip: Amon
+    raw: pr_wtr
+    file: 'pr_wtr.eatm.mon.mean.nc'
+  hus_month:
+    short_name: hus
+    mip: Amon
+    raw: shum
+    file: 'shum.mon.mean.nc'
+  rlut_month:
+    short_name: rlut
+    mip: Amon
+    raw: ulwrf
+    file: 'ulwrf.ntat.mon.mean.nc'
+  rsut_month:
+    short_name: rsut
+    mip: Amon
+    raw: uswrf
+    file: 'uswrf.ntat.mon.mean.nc'
+  rlutcs_month:
+    short_name: rlutcs
+    mip: Amon
+    raw: csulf
+    file: 'csulf.ntat.mon.mean.nc'
+  rsutcs_month:
+    short_name: rsutcs
+    mip: Amon
+    raw: csusf
+    file: 'csusf.ntat.mon.mean.nc'

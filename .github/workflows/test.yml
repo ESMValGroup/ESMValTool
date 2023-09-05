@@ -9,6 +9,11 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
+
 jobs:
   linux:
     runs-on: "ubuntu-latest"
@@ -29,36 +34,28 @@ jobs:
           miniforge-version: "latest"
           miniforge-variant: Mambaforge
           use-mamba: true
-      - shell: bash -l {0}
-        run: mkdir -p test_linux_artifacts_python_${{ matrix.python-version }}
+      - run: mkdir -p test_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
-        shell: bash -l {0}
         run: |
           mamba --version 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           python -V 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
           # this is how to export variables to the GITHUB var environment
           echo "pver0=$(python -V)" >> $GITHUB_ENV
       - name: Install ESMValTool
-        shell: bash -l {0}
         run: pip install -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Install Julia dependencies
-        shell: bash -l {0}
         run: esmvaltool install Julia
       - name: Export Python minor version
-        shell: bash -l {0}
         run: echo "pver1=$(python -V)" >> $GITHUB_ENV
       - name: Exit if Python minor version changed
-        shell: bash -l {0}
         if: ${{ env.pver1 != env.pver0}}
         run: |
           echo "Python minor version changed after Julia install"
           python -V
           exit 1
       - name: Run flake8
-        shell: bash -l {0}
         run: flake8
       - name: Run tests
-        shell: bash -l {0}
         run: pytest -n 2 -m "not installation" 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
@@ -88,21 +85,16 @@ jobs:
           use-mamba: true
       # - name: Install libomp with homebrew
       #   run: brew install libomp
-      - shell: bash -l {0}
-        run: mkdir -p test_osx_artifacts_python_${{ matrix.python-version }}
+      - run: mkdir -p test_osx_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
-        shell: bash -l {0}
         run: |
           mamba --version 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           python -V 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
       - name: Install ESMValTool
-        shell: bash -l {0}
         run: pip install -e .[develop] 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Run flake8
-        shell: bash -l {0}
         run: flake8
       - name: Run tests
-        shell: bash -l {0}
         run: pytest -n 2 -m "not installation" 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/test_report.txt
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
