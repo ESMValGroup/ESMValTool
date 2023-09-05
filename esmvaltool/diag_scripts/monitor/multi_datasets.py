@@ -1237,17 +1237,12 @@ class MultiDatasets(MonitorBase):
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
             axes_data.set_ylabel('Time / Year')
-            if "latitude" in dim_coords_dat:
-                axes_data.set_xlabel('Latitude / °N')
-            elif "longitude" in dim_coords_dat:
-                axes_data.set_xlabel('Longitude / °E')
             plt.gca().yaxis.set_major_locator(mdates.YearLocator())
             plt.gca().yaxis.set_major_formatter(mdates.DateFormatter("%Y"))
             if self.plots[plot_type]['show_y_minor_ticks']:
                 plt.gca().yaxis.set_minor_locator(mdates.MonthLocator())
             if self.plots[plot_type]['show_x_minor_ticks']:
                 plt.gca().xaxis.set_minor_locator(AutoMinorLocator())
-            # self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -1442,8 +1437,6 @@ class MultiDatasets(MonitorBase):
     @staticmethod
     def _get_reference_dataset(datasets, short_name):
         """Extract reference dataset."""
-        print("MEMEMME")
-        print(datasets)
         ref_datasets = [d for d in datasets if
                         d.get('reference_for_monitor_diags', False)]
         if len(ref_datasets) > 1:
@@ -1888,7 +1881,6 @@ class MultiDatasets(MonitorBase):
 
         # Create a single plot for each dataset (incl. reference dataset if
         # given)
-
         for dataset in datasets:
             if dataset == ref_dataset:
                 continue
