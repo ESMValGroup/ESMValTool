@@ -1,0 +1,160 @@
+# ESMValTool
+---
+documentation:
+  description: ICON evaluation clouds (climatologies)
+  authors:
+    - lauer_axel
+
+  title: ICON evaluation cloud climatologies
+
+preprocessors:
+
+  pp_global: &global_settings
+#    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    extract_region:
+      start_latitude: -90
+      end_latitude: 90
+      start_longitude: 0
+      end_longitude: 360
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: month
+
+  pp_SEPacific:
+    <<: *global_settings 
+    extract_region:
+      start_longitude: 265
+      end_longitude: 275
+      start_latitude: -25
+      end_latitude: -5
+    mask_landsea:
+      mask_out: land
+
+  pp_SouthernOcean:
+    <<: *global_settings 
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -65
+      end_latitude: -30
+    mask_landsea:
+      mask_out: land
+
+  pp_Tropics:
+    <<: *global_settings 
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
+
+  pp_StormTracks:
+    <<: *global_settings 
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 45
+      end_latitude: 60
+
+
+diagnostics:
+
+  anncyc:
+    description: Plot annual cycles including reference datasets.
+    variables:
+      clt:
+        preprocessor: pp_Tropics
+        mip: Amon
+        frequency: mon
+        timerange: '20000101/20020101'
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2}
+      clivi:
+        preprocessor: pp_Tropics
+        mip: Amon
+        frequency: mon
+        timerange: '20000101/20020101'
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2}
+    additional_datasets:
+      - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1, supplementary_variables: [{short_name: areacella, skip: true}]}
+      - {project: CMIP6, dataset: MIROC6, exp: historical, ensemble: r1i1p1f1, grid: gn, supplementary_variables: [{short_name: areacella, skip: true}]}
+    scripts:
+      Tropics:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        plots:
+          annual_cycle:
+            legend_kwargs:
+              loc: upper right
+            plot_kwargs:
+              'ICON':  # = plot_label since 'facet_used_for_labels: plot_label'
+                color: C0
+              'MIROC6':  # = plot_label since 'facet_used_for_labels: plot_label'
+                color: red
+              'ESACCI-CLOUD':
+                color: blue
+            pyplot_kwargs:
+              title: Tropics
+#              ylim: [40, 80]
+
+  # mon:
+  #   variables:
+  #     tas:
+  #       mip: Amon
+  #       frequency: mon
+  #       timerange: '2000/2001'
+  #       # shift_time: false
+  #       additional_datasets:
+  #         - {project: ICON, dataset: ICON, exp: cool014}
+  #         - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B4_r1v1i1p1l1f1}
+  #         - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1}
+  #   scripts: null
+
+  # day:
+  #   variables:
+  #     tas:
+  #       mip: day
+  #       var_type: atm_echam_2d_ml
+  #       frequency: day
+  #       timerange: '19900329/19900331'
+  #       # shift_time: false
+  #       additional_datasets:
+  #         - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip-rad_R2B5_r2v1i1p1l1f1_TEST}
+  #         - {project: CMIP6, dataset: MIROC6, exp: 1pctCO2, ensemble: r1i1p1f1, grid: gn, timerange: '32000101/32000103'}
+  #   scripts: null
+
+  # 3hr:
+  #   variables:
+  #     tas:
+  #       mip: Amon
+  #       frequency: 3hr
+  #       timerange: '20200210/20200212'
+  #       # shift_time: false
+  #       additional_datasets:
+  #         - {project: ICON, dataset: ICON, exp: atm_amip_R2B5_2020_cov1}
+  #   scripts: null
+
+  # 1hr:
+  #   variables:
+  #     tas:
+  #       mip: Amon
+  #       frequency: hr
+  #       timerange: '19790602/19790604'
+  #       # shift_time: false
+  #       additional_datasets:
+  #         - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip-rad_R2B5_r1v1i1p1l1f1}
+  #     pr:
+  #       mip: E1hr
+  #       timerange: '32000101/32000103'
+  #       additional_datasets:
+  #         - {project: CMIP6, dataset: MIROC6, exp: piControl, ensemble: r1i1p1f1, grid: gn, timerange: '32000101/32000103'}
+  #   scripts: null
