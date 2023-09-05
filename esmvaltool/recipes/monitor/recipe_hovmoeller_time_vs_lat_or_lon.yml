@@ -72,7 +72,7 @@ diagnostics:
           - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1}
     scripts:
       plot:  # this is an arbitrary name
-        script: /work/bd0854/b309169/hackathon/diag_scripts/multi_datasets.py
+        script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
         plots:
