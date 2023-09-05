@@ -44,6 +44,9 @@ Currently supported plot types (use the option ``plots`` to specify them):
       datasets are plotted in one single figure. Input data needs to be 1D with
       single dimension `height` / `air_pressure`
 
+    - Hovmoeller time vs lat or lon (plot type 
+      ``hovmoeller_time_vs_lat_or_lon``): # TODO
+
 Author
 ------
 Manuel Schlund (DLR, Germany)
@@ -62,8 +65,8 @@ figure_kwargs: dict, optional
     default, uses ``constrained_layout: true``.
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
-    must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``
-    or ``1d_profile``.
+    must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``,
+    ``1d_profile`` or ``hovmoeller_time_vs_lat_or_lon``.
     Dictionary values are dictionaries used as options for the corresponding
     plot. The allowed options for the different plot types are given below.
 plot_filename: str, optional
@@ -436,7 +439,8 @@ class MultiDatasets(MonitorBase):
             'annual_cycle',
             'map',
             'zonal_mean_profile',
-            '1d_profile'
+            '1d_profile',
+            'hovmoeller_time_vs_lat_or_lon'
         ]
         for (plot_type, plot_options) in self.plots.items():
             if plot_type not in self.supported_plot_types:
@@ -529,6 +533,34 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault(
                     'show_y_minor_ticklabels', False
                 )
+            if plot_type == 'hovmoeller_time_vs_lat_or_lon':
+                self.plots[plot_type].setdefault('legend_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs', {'levels': 20})
+                self.plots[plot_type].setdefault(
+                    'cbar_label', '{short_name} [{units}]')
+                self.plots[plot_type].setdefault(
+                    'cbar_label_bias', 'Δ{short_name} [{units}]')
+                self.plots[plot_type].setdefault(
+                    'cbar_kwargs', {'orientation': 'vertical'}
+                )
+                self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
+                self.plots[plot_type].setdefault('common_cbar', False)
+                self.plots[plot_type].setdefault('fontsize', 10)
+                self.plots[plot_type].setdefault('log_y', True)
+                self.plots[plot_type].setdefault('plot_func', 'contourf')
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs_bias', {})
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'cmap', 'bwr'
+                )
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+                self.plots[plot_type].setdefault('rasterize', True)
+                self.plots[plot_type].setdefault('show_stats', True)
+                self.plots[plot_type].setdefault(
+                    'show_y_minor_ticklabels', False
+                )
+                self.plots[plot_type].setdefault('x_pos_stats_avg', 0.01)
+                self.plots[plot_type].setdefault('x_pos_stats_bias', 0.7)
 
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
@@ -1105,6 +1137,80 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cube})
 
+    def _plot_hovmoeller_time_vs_lat_or_lon_without_ref(self, plot_func, dataset):
+        """Plot hovmoeller time vs lat/lon for single dataset without reference.
+        """
+        # TODO: imports?
+        import matplotlib.dates as mdates
+        # import iris.plot as iplt
+        import iris.quickplot as qplt
+
+        plot_type = 'hovmoeller_time_vs_lat_or_lon'
+        logger.info("Plotting hovmoeller time vs lat/lon without reference dataset"
+                    " for '%s'",
+                    self._get_label(dataset))
+
+        # Make sure that the data has the correct dimensions
+        cube = dataset['cube']
+        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
+
+        # Create plot with desired settings
+        with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
+            fig = plt.figure(**self.cfg['figure_kwargs'])
+            axes = fig.add_subplot()
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs['axes'] = axes
+            if "longitude" in dim_coords_dat:
+                plot_kwargs['coords'] = ("longitude", "time")
+            elif "latitude" in dim_coords_dat:
+                plot_kwargs['coords'] = ("time", "latitude")
+            plot_hovmoeller_time_latlon = plot_func(cube, **plot_kwargs)
+            # plt.ylabel("Time / years")
+            # plt.xlabel(cube.coords()[1])
+            # plt.axis("tight")
+            plt.gca().xaxis.set_major_locator(mdates.YearLocator())
+            plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+
+        #     # Print statistics if desired
+        #     # TODO: add stats required?
+        #     # self._add_stats(plot_type, axes, dim_coords_dat, dataset)
+
+        #     # Setup colorbar
+        #     fontsize = self.plots[plot_type]['fontsize']
+        #     colorbar = fig.colorbar(plot_hovmoeller_time_latlon, ax=axes,
+        #                             **self._get_cbar_kwargs(plot_type))
+        #     colorbar.set_label(self._get_cbar_label(plot_type, dataset),
+        #                        fontsize=fontsize)
+        #     colorbar.ax.tick_params(labelsize=fontsize)
+
+        #     # Customize plot
+        #     axes.set_title(self._get_label(dataset))
+        #     fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
+        #                  f"{dataset['end_year']})")
+        #     axes.set_xlabel('latitude [°N]')
+        #     z_coord = cube.coord(axis='Z')
+        #     axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
+        #     if self.plots[plot_type]['log_y']:
+        #         axes.set_yscale('log')
+        #         axes.get_yaxis().set_major_formatter(
+        #             FormatStrFormatter('%.1f'))
+        #     if self.plots[plot_type]['show_y_minor_ticklabels']:
+        #         axes.get_yaxis().set_minor_formatter(
+        #             FormatStrFormatter('%.1f'))
+        #     else:
+        #         axes.get_yaxis().set_minor_formatter(NullFormatter())
+        #     self._process_pyplot_kwargs(plot_type, dataset)
+
+        #     # Rasterization
+        #     if self.plots[plot_type]['rasterize']:
+        #         self._set_rasterized([axes])
+
+        # File paths
+        plot_path = self.get_plot_path(plot_type, dataset)
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+
+        return (plot_path, {netcdf_path: cube})
+
     def _process_pyplot_kwargs(self, plot_type, dataset):
         """Process functions for :mod:`matplotlib.pyplot`."""
         pyplot_kwargs = self.plots[plot_type]['pyplot_kwargs']
@@ -1123,6 +1229,7 @@ class MultiDatasets(MonitorBase):
     @staticmethod
     def _check_cube_dimensions(cube, plot_type):
         """Check that cube has correct dimensional variables."""
+        # TODO: add kwarg for custom coord name / short_name?
         expected_dimensions_dict = {
             'annual_cycle': (['month_number'],),
             'map': (['latitude', 'longitude'],),
@@ -1131,7 +1238,8 @@ class MultiDatasets(MonitorBase):
             'timeseries': (['time'],),
             '1d_profile': (['air_pressure'],
                            ['altitude']),
-
+            'hovmoeller_time_vs_lat_or_lon': (['time', 'latitude'],
+                                              ['time', 'longitude']),
         }
         if plot_type not in expected_dimensions_dict:
             raise NotImplementedError(f"plot_type '{plot_type}' not supported")
@@ -1595,6 +1703,88 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
+    def create_hovmoeller_time_vs_lat_or_lon(self, datasets, short_name):
+        """Create zonal mean profile plot."""
+        plot_type = 'hovmoeller_time_vs_lat_or_lon'
+        if plot_type not in self.plots:
+            return
+
+        if not datasets:
+            raise ValueError(f"No input data to plot '{plot_type}' given")
+
+        # Get reference dataset if possible
+        ref_dataset = self._get_reference_dataset(datasets, short_name)
+        if ref_dataset is None:
+            logger.info("Plotting %s without reference dataset", plot_type)
+        else:
+            logger.info("Plotting %s with reference dataset '%s'", plot_type,
+                        self._get_label(ref_dataset))
+
+        # Get plot function
+        plot_func = self._get_plot_func(plot_type)
+        # Create a single plot for each dataset (incl. reference dataset if
+        # given)
+        # TODO: update plot captions
+        for dataset in datasets:
+            if dataset == ref_dataset:
+                continue
+            ancestors = [dataset['filename']]
+            if ref_dataset is None:
+                (plot_path, netcdf_paths) = (
+                    self._plot_hovmoeller_time_vs_lat_or_lon_without_ref(
+                        plot_func,
+                        dataset
+                    )
+                )
+                caption = (  # TODO
+                    f"Zonal mean profile of {dataset['long_name']} of dataset "
+                    f"{dataset['dataset']} (project {dataset['project']}) "
+                    f"from {dataset['start_year']} to {dataset['end_year']}."
+                )
+            else:
+                (plot_path, netcdf_paths) = (
+                    self._plot_zonal_mean_profile_with_ref(plot_func, dataset,
+                                                           ref_dataset)
+                )
+                caption = (
+                    f"Zonal mean profile of {dataset['long_name']} of dataset "
+                    f"{dataset['dataset']} (project {dataset['project']}) "
+                    f"including bias relative to {ref_dataset['dataset']} "
+                    f"(project {ref_dataset['project']}) from "
+                    f"{dataset['start_year']} to {dataset['end_year']}."
+                )
+                ancestors.append(ref_dataset['filename'])
+
+            # If statistics are shown add a brief description to the caption
+            # TODO: update caption
+            if self.plots[plot_type]['show_stats']:
+                caption += (
+                    " The number in the top left corner corresponds to the "
+                    "spatial mean (weighted by grid cell areas).")
+
+            # Save plot
+            plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
+            logger.info("Wrote %s", plot_path)
+            plt.close()
+
+            # Save netCDFs
+            for (netcdf_path, cube) in netcdf_paths.items():
+                io.iris_save(cube, netcdf_path)
+
+            # Provenance tracking
+            # TODO: update provenance
+            provenance_record = {
+                'ancestors': ancestors,
+                'authors': ['schlund_manuel'],
+                'caption': caption,
+                'plot_types': ['vert'],
+                'long_names': [dataset['long_name']],
+            }
+            with ProvenanceLogger(self.cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+                for netcdf_path in netcdf_paths:
+                    provenance_logger.log(netcdf_path, provenance_record)
+
     def compute(self):
         """Plot preprocessed data."""
         for (short_name, datasets) in self.grouped_input_data.items():
@@ -1604,6 +1794,7 @@ class MultiDatasets(MonitorBase):
             self.create_map_plot(datasets, short_name)
             self.create_zonal_mean_profile_plot(datasets, short_name)
             self.create_1d_profile_plot(datasets, short_name)
+            self.create_hovmoeller_time_vs_lat_or_lon(datasets, short_name)
 
 
 def main():
