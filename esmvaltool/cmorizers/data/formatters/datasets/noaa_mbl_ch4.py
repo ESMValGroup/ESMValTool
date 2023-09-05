@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for NOAA MBL CH4 data.
+"""ESMValTool CMORizer for NOAA-MBL-CH4 data.
 
 Tier
     Tier 2: other freely-available dataset.
@@ -12,11 +12,6 @@ Last access
 Download and processing instructions
     Download the file:
     wget https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
-    or
-    use the automatic download script shipped by ESMValTool
-    esmvaltool data download NOAA-MBL-CH4
-    or
-    esmvaltool data prepare NOAA-MBL-CH4
 """
 
 import logging
