@@ -165,7 +165,6 @@ diagnostics:
             plot_kwargs_bias:
               levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
 
-
   plot_1D_profiles_with_references:
     description: Plot 1D profiles including reference datasets.
     variables:
