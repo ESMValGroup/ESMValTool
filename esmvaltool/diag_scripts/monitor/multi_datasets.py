@@ -359,6 +359,35 @@ pyplot_kwargs: dict, optional
 show_y_minor_ticklabels: bool, optional (default: False)
     Show tick labels for the minor ticks on the Y axis.
 
+Configuration options for plot type ``variable_vs_lat``
+-------------------------------------------------------
+gridline_kwargs: dict, optional
+    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
+    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
+    lines.
+legend_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
+    ``legend_kwargs: false`` to not show legends.
+plot_kwargs: dict, optional
+    Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
+    elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
+    ``CMIP6`` if ``facet_used_for_labels: project`` or ``historical`` if
+    ``facet_used_for_labels: exp``. Dictionary values are dictionaries used as
+    keyword arguments for :func:`iris.plot.plot`. String arguments can include
+    facets in curly brackets which will be derived from the corresponding
+    dataset, e.g., ``{project}``, ``{short_name}``, ``{exp}``. Examples:
+    ``default: {linestyle: '-', label: '{project}'}, CMIP6: {color: red,
+    linestyle: '--'}, OBS: {color: black}``.
+pyplot_kwargs: dict, optional
+    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
+    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
+    single argument for these functions. String arguments can include facets in
+    curly brackets which will be derived from the datasets plotted in the
+    corresponding plot, e.g., ``{short_name}``, ``{exp}``. Facets like
+    ``{project}`` that vary between the different datasets will be transformed
+    to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
+    of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+
 .. hint::
 
    Extra arguments given to the recipe are ignored, so it is safe to use yaml
@@ -447,7 +476,7 @@ class MultiDatasets(MonitorBase):
             'map',
             'zonal_mean_profile',
             '1d_profile',
-            'variable_vs_lat'
+            'variable_vs_lat',
         ]
         for (plot_type, plot_options) in self.plots.items():
             if plot_type not in self.supported_plot_types:
