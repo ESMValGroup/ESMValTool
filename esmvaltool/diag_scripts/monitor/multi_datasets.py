@@ -1178,14 +1178,14 @@ class MultiDatasets(MonitorBase):
 
     def _get_reference_dataset(self, datasets):
         """Extract reference dataset."""
+        variable = datasets[0][self.cfg['group_variables_by']]
         ref_datasets = [d for d in datasets if
                         d.get('reference_for_monitor_diags', False)]
         if len(ref_datasets) > 1:
             raise ValueError(
                 f"Expected at most 1 reference dataset (with "
                 f"'reference_for_monitor_diags: true' for variable "
-                f"'{self.cfg['group_variables_by']}', got "
-                f"{len(ref_datasets):d}")
+                f"'{variable}', got {len(ref_datasets):d}")
         if ref_datasets:
             return ref_datasets[0]
         return None
@@ -1234,7 +1234,7 @@ class MultiDatasets(MonitorBase):
         axes.set_title(multi_dataset_facets['long_name'])
         axes.set_xlabel('Time')
         axes.set_ylabel(
-            f"{self.cfg['group_variables_by']} "
+            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
             f"[{multi_dataset_facets['units']}]"
         )
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
@@ -1308,7 +1308,7 @@ class MultiDatasets(MonitorBase):
         axes.set_title(multi_dataset_facets['long_name'])
         axes.set_xlabel('Month')
         axes.set_ylabel(
-            f"{self.cfg['group_variables_by']} "
+            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
             f"[{multi_dataset_facets['units']}]"
         )
         axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
@@ -1538,7 +1538,7 @@ class MultiDatasets(MonitorBase):
         # Default plot appearance
         axes.set_title(multi_dataset_facets['long_name'])
         axes.set_xlabel(
-            f"{self.cfg['group_variables_by']} "
+            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
             f"[{multi_dataset_facets['units']}]"
         )
         z_coord = cube.coord(axis='Z')
