@@ -177,6 +177,11 @@
             "orcid": "0000-0003-2724-709X"
         },
         {
+            "affiliation": "DLR, Germany",
+            "name": "Heuer, Helge",
+            "orcid": "0000-0003-2411-7150"
+        },
+        {
             "affiliation": "BSC, Spain",
             "name": "Hunter, Alasdair",
             "orcid": "0000-0001-8365-3709"
@@ -193,6 +198,10 @@
         {
             "affiliation": "MPI for Biogeochemistry, Germany",
             "name": "Koirala, Sujan"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Kuehbacher, Birgit"
         },
         {
             "affiliation": "BSC, Spain",

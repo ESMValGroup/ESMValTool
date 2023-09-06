@@ -14,8 +14,8 @@ documentation:
 
 datasets:
   # Note: plot_label currently only used by diagnostic plot_multiple_annual_cycles
-  - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, grid: gr, plot_label: 'EC-Earth3 historical'}
-  - {project: CMIP6, dataset: CanESM5,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (CanESM5 historical)', reference_for_monitor_diags: true}
+  - {project: CMIP6, dataset: MPI-ESM1-2-HR,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-HR historical'}
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-LR MPI historical', reference_for_monitor_diags: true}
 
 
 preprocessors:
@@ -67,6 +67,18 @@ preprocessors:
       scheme: linear
       coordinate: air_pressure
 
+  global_mean_pressure:
+    custom_order: true
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev39}
+      scheme: linear
+      coordinate: air_pressure
+    regrid:
+      target_grid: 2x2
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    area_statistics:
+      operator: mean
 
 diagnostics:
 
@@ -168,3 +180,22 @@ diagnostics:
                 color: C0
               CanESM5:
                 color: black
+
+  pressure_vs_time_with_ref:
+    description: Plot hovmoeller z vs time including reference datasets.
+    variables:
+      ta:
+        preprocessor: global_mean_pressure
+        mip: Amon
+        timerange: '2000/2014'
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          hovmoeller_z_vs_time:
+            plot_func: 'contourf'
+            common_cbar: true
+            time_format: '%Y-%m'
+            log_y: true

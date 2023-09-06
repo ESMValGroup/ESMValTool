@@ -32,6 +32,14 @@ Currently supported plot types (use the option ``plots`` to specify them):
       can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
       :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
       needs to be 2D with dimensions `latitude`, `height`/`air_pressure`.
+    - Hovmoeller altitude vs time (plot type ``hovmoeller_z_vs_time``):
+      for each variable and dataset, an individual profile is plotted. If a
+      reference dataset is defined, also include this dataset and a bias plot
+      into the figure. Note that if a reference dataset is defined, all input
+      datasets need to be given on the same horizontal and vertical grid (you
+      can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
+      :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
+      needs to be 2D with dimensions `time`, `height`/`air_pressure`.
 
       .. warning::
 
@@ -119,6 +127,9 @@ pyplot_kwargs: dict, optional
     ``{project}`` that vary between the different datasets will be transformed
     to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
     of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+time_format: str, optional (default: None)
+    Matplotlib strftime format string for the time axis, if None defaults to
+    time units of iris cube
 
 Configuration options for plot type ``annual_cycle``
 ----------------------------------------------------
@@ -312,6 +323,87 @@ x_pos_stats_bias: float, optional (default: 0.7)
     coordinates. Can be adjusted to avoid overlap with the figure. Only
     relevant if ``show_stats: true``.
 
+Configuration options for plot type ``hovmoeller_z_vs_time``
+----------------------------------------------------------
+cbar_label: str, optional (default: '{short_name} [{units}]')
+    Colorbar label. Can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``.
+cbar_label_bias: str, optional (default: 'Δ{short_name} [{units}]')
+    Colorbar label for plotting biases. Can include facets in curly brackets
+    which will be derived from the corresponding dataset, e.g., ``{project}``,
+    ``{short_name}``, ``{exp}``. This option has no effect if no reference
+    dataset is given.
+cbar_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
+    default, uses ``orientation: vertical``.
+cbar_kwargs_bias: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar` for
+    plotting biases. These keyword arguments update (and potentially overwrite)
+    the ``cbar_kwargs`` for the bias plot. This option has no effect if no
+    reference dataset is given.
+common_cbar: bool, optional (default: False)
+    Use a common colorbar for the top panels (i.e., plots of the dataset and
+    the corresponding reference dataset) when using a reference dataset. If
+    neither ``vmin`` and ``vmix`` nor ``levels`` is given in ``plot_kwargs``,
+    the colorbar bounds are inferred from the dataset in the top left panel,
+    which might lead to an inappropriate colorbar for the reference dataset
+    (top right panel). Thus, the use of the ``plot_kwargs`` ``vmin`` and
+    ``vmax`` or ``levels`` is highly recommend when using this ``common_cbar:
+    true``. This option has no effect if no reference dataset is given.
+fontsize: int, optional (default: 10)
+    Fontsize used for ticks, labels and titles. For the latter, use the given
+    fontsize plus 2. Does not affect suptitles.
+log_y: bool, optional (default: True)
+    Use logarithmic Y-axis.
+plot_func: str, optional (default: 'contourf')
+    Plot function used to plot the profiles. Must be a function of
+    :mod:`iris.plot` that supports plotting of 2D cubes with coordinates
+    latitude and height/air_pressure.
+plot_kwargs: dict, optional
+    Optional keyword arguments for the plot function defined by ``plot_func``.
+    Dictionary keys are elements identified by ``facet_used_for_labels`` or
+    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
+    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
+    dictionaries used as keyword arguments for the plot function defined by
+    ``plot_func``. String arguments can include facets in curly brackets which
+    will be derived from the corresponding dataset, e.g., ``{project}``,
+    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
+    {vmin: 200, vmax: 250}``.
+plot_kwargs_bias: dict, optional
+    Optional keyword arguments for the plot function defined by ``plot_func``
+    for plotting biases. These keyword arguments update (and potentially
+    overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
+    if no reference dataset is given. See option ``plot_kwargs`` for more
+    details. By default, uses ``cmap: bwr``.
+pyplot_kwargs: dict, optional
+    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
+    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
+    single argument for these functions. String arguments can include facets in
+    curly brackets which will be derived from the corresponding dataset, e.g.,
+    ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
+    Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+rasterize: bool, optional (default: True)
+    If ``True``, use `rasterization
+    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
+    profile plots to produce smaller files. This is only relevant for vector
+    graphics (e.g., ``output_file_type=pdf,svg,ps``).
+show_stats: bool, optional (default: True)
+    Show basic statistics on the plots.
+show_y_minor_ticklabels: bool, optional (default: False)
+    Show tick labels for the minor ticks on the Y axis.
+x_pos_stats_avg: float, optional (default: 0.01)
+    Text x-position of average (shown on the left) in Axes coordinates. Can be
+    adjusted to avoid overlap with the figure. Only relevant if ``show_stats:
+    true``.
+x_pos_stats_bias: float, optional (default: 0.7)
+    Text x-position of bias statistics (shown on the right) in Axes
+    coordinates. Can be adjusted to avoid overlap with the figure. Only
+    relevant if ``show_stats: true``.
+time_format: str, optional (default: %Y)
+    Matplotlib strftime format string for the time axis, if None defaults to
+    time units of iris cube
+
 Configuration options for plot type ``1d_profile``
 --------------------------------------------------
 aspect_ratio: float, optional (default: 1.5)
@@ -357,7 +449,6 @@ show_y_minor_ticklabels: bool, optional (default: False)
    Extra arguments given to the recipe are ignored, so it is safe to use yaml
    anchors to share the configuration of common arguments with other monitor
    diagnostic script.
-
 """
 import logging
 from copy import deepcopy
@@ -367,6 +458,7 @@ from pprint import pformat
 import cartopy.crs as ccrs
 import iris
 import matplotlib as mpl
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -432,11 +524,8 @@ class MultiDatasets(MonitorBase):
 
         # Check given plot types and set default settings for them
         self.supported_plot_types = [
-            'timeseries',
-            'annual_cycle',
-            'map',
-            'zonal_mean_profile',
-            '1d_profile'
+            'timeseries', 'annual_cycle', 'map', 'zonal_mean_profile',
+            '1d_profile', 'hovmoeller_z_vs_time'
         ]
         for (plot_type, plot_options) in self.plots.items():
             if plot_type not in self.supported_plot_types:
@@ -453,6 +542,7 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('legend_kwargs', {})
                 self.plots[plot_type].setdefault('plot_kwargs', {})
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
+                self.plots[plot_type].setdefault('time_format', None)
 
             if plot_type == 'annual_cycle':
                 self.plots[plot_type].setdefault('gridline_kwargs', {})
@@ -461,13 +551,14 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
 
             if plot_type == 'map':
-                self.plots[plot_type].setdefault(
-                    'cbar_label', '{short_name} [{units}]')
-                self.plots[plot_type].setdefault(
-                    'cbar_label_bias', 'Δ{short_name} [{units}]')
-                self.plots[plot_type].setdefault(
-                    'cbar_kwargs', {'orientation': 'horizontal', 'aspect': 30}
-                )
+                self.plots[plot_type].setdefault('cbar_label',
+                                                 '{short_name} [{units}]')
+                self.plots[plot_type].setdefault('cbar_label_bias',
+                                                 'Δ{short_name} [{units}]')
+                self.plots[plot_type].setdefault('cbar_kwargs', {
+                    'orientation': 'horizontal',
+                    'aspect': 30
+                })
                 self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
                 self.plots[plot_type].setdefault('common_cbar', False)
                 self.plots[plot_type].setdefault('fontsize', 10)
@@ -476,13 +567,11 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('plot_kwargs', {})
                 self.plots[plot_type].setdefault('plot_kwargs_bias', {})
                 self.plots[plot_type]['plot_kwargs_bias'].setdefault(
-                    'cmap', 'bwr'
-                )
+                    'cmap', 'bwr')
                 if 'projection' not in self.plots[plot_type]:
                     self.plots[plot_type].setdefault('projection', 'Robinson')
-                    self.plots[plot_type].setdefault(
-                        'projection_kwargs', {'central_longitude': 10}
-                    )
+                    self.plots[plot_type].setdefault('projection_kwargs',
+                                                     {'central_longitude': 10})
                 else:
                     self.plots[plot_type].setdefault('projection_kwargs', {})
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
@@ -492,13 +581,12 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('x_pos_stats_bias', 0.92)
 
             if plot_type == 'zonal_mean_profile':
-                self.plots[plot_type].setdefault(
-                    'cbar_label', '{short_name} [{units}]')
-                self.plots[plot_type].setdefault(
-                    'cbar_label_bias', 'Δ{short_name} [{units}]')
-                self.plots[plot_type].setdefault(
-                    'cbar_kwargs', {'orientation': 'vertical'}
-                )
+                self.plots[plot_type].setdefault('cbar_label',
+                                                 '{short_name} [{units}]')
+                self.plots[plot_type].setdefault('cbar_label_bias',
+                                                 'Δ{short_name} [{units}]')
+                self.plots[plot_type].setdefault('cbar_kwargs',
+                                                 {'orientation': 'vertical'})
                 self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
                 self.plots[plot_type].setdefault('common_cbar', False)
                 self.plots[plot_type].setdefault('fontsize', 10)
@@ -507,14 +595,12 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('plot_kwargs', {})
                 self.plots[plot_type].setdefault('plot_kwargs_bias', {})
                 self.plots[plot_type]['plot_kwargs_bias'].setdefault(
-                    'cmap', 'bwr'
-                )
+                    'cmap', 'bwr')
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('rasterize', True)
                 self.plots[plot_type].setdefault('show_stats', True)
-                self.plots[plot_type].setdefault(
-                    'show_y_minor_ticklabels', False
-                )
+                self.plots[plot_type].setdefault('show_y_minor_ticklabels',
+                                                 False)
                 self.plots[plot_type].setdefault('x_pos_stats_avg', 0.01)
                 self.plots[plot_type].setdefault('x_pos_stats_bias', 0.7)
 
@@ -526,9 +612,33 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('log_y', True)
                 self.plots[plot_type].setdefault('plot_kwargs', {})
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
-                self.plots[plot_type].setdefault(
-                    'show_y_minor_ticklabels', False
-                )
+                self.plots[plot_type].setdefault('show_y_minor_ticklabels',
+                                                 False)
+
+            if plot_type == 'hovmoeller_z_vs_time':
+                self.plots[plot_type].setdefault('cbar_label',
+                                                 '{short_name} [{units}]')
+                self.plots[plot_type].setdefault('cbar_label_bias',
+                                                 'Δ{short_name} [{units}]')
+                self.plots[plot_type].setdefault('cbar_kwargs',
+                                                 {'orientation': 'vertical'})
+                self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
+                self.plots[plot_type].setdefault('common_cbar', False)
+                self.plots[plot_type].setdefault('fontsize', 10)
+                self.plots[plot_type].setdefault('log_y', False)
+                self.plots[plot_type].setdefault('plot_func', 'contourf')
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs_bias', {})
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'cmap', 'bwr')
+                self.plots[plot_type].setdefault('time_format', '%Y')
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+                self.plots[plot_type].setdefault('rasterize', True)
+                self.plots[plot_type].setdefault('show_stats', True)
+                self.plots[plot_type].setdefault('show_y_minor_ticklabels',
+                                                 False)
+                self.plots[plot_type].setdefault('x_pos_stats_avg', 0.01)
+                self.plots[plot_type].setdefault('x_pos_stats_bias', 0.7)
 
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
@@ -554,7 +664,8 @@ class MultiDatasets(MonitorBase):
         if self.plots[plot_type]['common_cbar']:
             if 'aspect' in cbar_kwargs:
                 cbar_kwargs['aspect'] += 20.0
-            cbar = plt.colorbar(plot_left, ax=[axes_left, axes_right],
+            cbar = plt.colorbar(plot_left,
+                                ax=[axes_left, axes_right],
                                 **cbar_kwargs)
             cbar.set_label(cbar_label_left, fontsize=fontsize)
             cbar.ax.tick_params(labelsize=fontsize)
@@ -568,7 +679,11 @@ class MultiDatasets(MonitorBase):
             cbar_right.set_label(cbar_label_right, fontsize=fontsize)
             cbar_right.ax.tick_params(labelsize=fontsize)
 
-    def _add_stats(self, plot_type, axes, dim_coords, dataset,
+    def _add_stats(self,
+                   plot_type,
+                   axes,
+                   dim_coords,
+                   dataset,
                    ref_dataset=None):
         """Add text to plot that describes basic statistics."""
         if not self.plots[plot_type]['show_stats']:
@@ -590,7 +705,7 @@ class MultiDatasets(MonitorBase):
         if plot_type == 'map':
             x_pos_bias = self.plots[plot_type]['x_pos_stats_bias']
             x_pos = self.plots[plot_type]['x_pos_stats_avg']
-        elif plot_type in ['zonal_mean_profile']:
+        elif plot_type in ['zonal_mean_profile', 'hovmoeller_z_vs_time']:
             x_pos_bias = self.plots[plot_type]['x_pos_stats_bias']
             x_pos = self.plots[plot_type]['x_pos_stats_avg']
         else:
@@ -614,7 +729,8 @@ class MultiDatasets(MonitorBase):
         # Mean
         weights = area_weights(cube)
         if ref_cube is None:
-            mean = cube.collapsed(dim_coords, iris.analysis.MEAN,
+            mean = cube.collapsed(dim_coords,
+                                  iris.analysis.MEAN,
                                   weights=weights)
             logger.info(
                 "Area-weighted mean of %s for %s = %f%s",
@@ -624,7 +740,8 @@ class MultiDatasets(MonitorBase):
                 dataset['units'],
             )
         else:
-            mean = (cube - ref_cube).collapsed(dim_coords, iris.analysis.MEAN,
+            mean = (cube - ref_cube).collapsed(dim_coords,
+                                               iris.analysis.MEAN,
                                                weights=weights)
             logger.info(
                 "Area-weighted bias of %s for %s = %f%s",
@@ -633,16 +750,23 @@ class MultiDatasets(MonitorBase):
                 mean.data,
                 dataset['units'],
             )
-        axes.text(x_pos, y_pos, f"{mean.data:.2f}{cube.units}",
-                  fontsize=fontsize, transform=axes.transAxes)
+        axes.text(x_pos,
+                  y_pos,
+                  f"{mean.data:.2f}{cube.units}",
+                  fontsize=fontsize,
+                  transform=axes.transAxes)
         if ref_cube is None:
             return
 
         # Weighted RMSE
-        rmse = (cube - ref_cube).collapsed(dim_coords, iris.analysis.RMS,
+        rmse = (cube - ref_cube).collapsed(dim_coords,
+                                           iris.analysis.RMS,
                                            weights=weights)
-        axes.text(x_pos_bias, y_pos, f"RMSE={rmse.data:.2f}{cube.units}",
-                  fontsize=fontsize, transform=axes.transAxes)
+        axes.text(x_pos_bias,
+                  y_pos,
+                  f"RMSE={rmse.data:.2f}{cube.units}",
+                  fontsize=fontsize,
+                  transform=axes.transAxes)
         logger.info(
             "Area-weighted RMSE of %s for %s = %f%s",
             dataset['short_name'],
@@ -658,8 +782,11 @@ class MultiDatasets(MonitorBase):
         ref_cube_data = ref_cube.data.ravel()[~mask]
         weights = weights.ravel()[~mask]
         r2_val = r2_score(cube_data, ref_cube_data, sample_weight=weights)
-        axes.text(x_pos_bias, y_pos - 0.1, rf"R$^2$={r2_val:.2f}",
-                  fontsize=fontsize, transform=axes.transAxes)
+        axes.text(x_pos_bias,
+                  y_pos - 0.1,
+                  rf"R$^2$={r2_val:.2f}",
+                  fontsize=fontsize,
+                  transform=axes.transAxes)
         logger.info(
             "Area-weighted R2 of %s for %s = %f",
             dataset['short_name'],
@@ -803,7 +930,9 @@ class MultiDatasets(MonitorBase):
         # Create single figure with multiple axes
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
-            gridspec = GridSpec(5, 4, figure=fig,
+            gridspec = GridSpec(5,
+                                4,
+                                figure=fig,
                                 height_ratios=[1.0, 1.0, 0.4, 1.0, 1.0])
 
             # Options used for all subplots
@@ -847,7 +976,8 @@ class MultiDatasets(MonitorBase):
             bias_cube = cube - ref_cube
             axes_bias = fig.add_subplot(gridspec[3:5, 1:3],
                                         projection=projection)
-            plot_kwargs_bias = self._get_plot_kwargs(plot_type, dataset,
+            plot_kwargs_bias = self._get_plot_kwargs(plot_type,
+                                                     dataset,
                                                      bias=True)
             plot_kwargs_bias['axes'] = axes_bias
             plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
@@ -859,7 +989,8 @@ class MultiDatasets(MonitorBase):
                 pad=3.0,
             )
             cbar_kwargs_bias = self._get_cbar_kwargs(plot_type, bias=True)
-            cbar_bias = fig.colorbar(plot_bias, ax=axes_bias,
+            cbar_bias = fig.colorbar(plot_bias,
+                                     ax=axes_bias,
                                      **cbar_kwargs_bias)
             cbar_bias.set_label(
                 self._get_cbar_label(plot_type, dataset, bias=True),
@@ -880,9 +1011,8 @@ class MultiDatasets(MonitorBase):
 
         # File paths
         plot_path = self.get_plot_path(plot_type, dataset)
-        netcdf_path = (
-            get_diagnostic_filename(Path(plot_path).stem + "_{pos}", self.cfg)
-        )
+        netcdf_path = (get_diagnostic_filename(
+            Path(plot_path).stem + "_{pos}", self.cfg))
         netcdf_paths = {
             netcdf_path.format(pos='top_left'): cube,
             netcdf_path.format(pos='top_right'): ref_cube,
@@ -918,7 +1048,8 @@ class MultiDatasets(MonitorBase):
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']
-            colorbar = fig.colorbar(plot_map, ax=axes,
+            colorbar = fig.colorbar(plot_map,
+                                    ax=axes,
                                     **self._get_cbar_kwargs(plot_type))
             colorbar.set_label(self._get_cbar_label(plot_type, dataset),
                                fontsize=fontsize)
@@ -944,9 +1075,10 @@ class MultiDatasets(MonitorBase):
                                           ref_dataset):
         """Plot zonal mean profile for single dataset with reference."""
         plot_type = 'zonal_mean_profile'
-        logger.info("Plotting zonal mean profile with reference dataset"
-                    " '%s' for '%s'",
-                    self._get_label(ref_dataset), self._get_label(dataset))
+        logger.info(
+            "Plotting zonal mean profile with reference dataset"
+            " '%s' for '%s'", self._get_label(ref_dataset),
+            self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
@@ -957,7 +1089,9 @@ class MultiDatasets(MonitorBase):
         # Create single figure with multiple axes
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
-            gridspec = GridSpec(5, 4, figure=fig,
+            gridspec = GridSpec(5,
+                                4,
+                                figure=fig,
                                 height_ratios=[1.0, 1.0, 0.4, 1.0, 1.0])
 
             # Options used for all subplots
@@ -985,7 +1119,8 @@ class MultiDatasets(MonitorBase):
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
             # plot if a common colorbar is desired
-            axes_ref = fig.add_subplot(gridspec[0:2, 2:4], sharex=axes_data,
+            axes_ref = fig.add_subplot(gridspec[0:2, 2:4],
+                                       sharex=axes_data,
                                        sharey=axes_data)
             plot_kwargs['axes'] = axes_ref
             if self.plots[plot_type]['common_cbar']:
@@ -1002,9 +1137,11 @@ class MultiDatasets(MonitorBase):
 
             # Plot bias (bottom center)
             bias_cube = cube - ref_cube
-            axes_bias = fig.add_subplot(gridspec[3:5, 1:3], sharex=axes_data,
+            axes_bias = fig.add_subplot(gridspec[3:5, 1:3],
+                                        sharex=axes_data,
                                         sharey=axes_data)
-            plot_kwargs_bias = self._get_plot_kwargs(plot_type, dataset,
+            plot_kwargs_bias = self._get_plot_kwargs(plot_type,
+                                                     dataset,
                                                      bias=True)
             plot_kwargs_bias['axes'] = axes_bias
             plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
@@ -1015,7 +1152,8 @@ class MultiDatasets(MonitorBase):
             axes_bias.set_xlabel('latitude [°N]')
             axes_bias.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
             cbar_kwargs_bias = self._get_cbar_kwargs(plot_type, bias=True)
-            cbar_bias = fig.colorbar(plot_bias, ax=axes_bias,
+            cbar_bias = fig.colorbar(plot_bias,
+                                     ax=axes_bias,
                                      **cbar_kwargs_bias)
             cbar_bias.set_label(
                 self._get_cbar_label(plot_type, dataset, bias=True),
@@ -1036,9 +1174,8 @@ class MultiDatasets(MonitorBase):
 
         # File paths
         plot_path = self.get_plot_path(plot_type, dataset)
-        netcdf_path = (
-            get_diagnostic_filename(Path(plot_path).stem + "_{pos}", self.cfg)
-        )
+        netcdf_path = (get_diagnostic_filename(
+            Path(plot_path).stem + "_{pos}", self.cfg))
         netcdf_paths = {
             netcdf_path.format(pos='top_left'): cube,
             netcdf_path.format(pos='top_right'): ref_cube,
@@ -1050,9 +1187,9 @@ class MultiDatasets(MonitorBase):
     def _plot_zonal_mean_profile_without_ref(self, plot_func, dataset):
         """Plot zonal mean profile for single dataset without reference."""
         plot_type = 'zonal_mean_profile'
-        logger.info("Plotting zonal mean profile without reference dataset"
-                    " for '%s'",
-                    self._get_label(dataset))
+        logger.info(
+            "Plotting zonal mean profile without reference dataset"
+            " for '%s'", self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
@@ -1071,7 +1208,8 @@ class MultiDatasets(MonitorBase):
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']
-            colorbar = fig.colorbar(plot_zonal_mean_profile, ax=axes,
+            colorbar = fig.colorbar(plot_zonal_mean_profile,
+                                    ax=axes,
                                     **self._get_cbar_kwargs(plot_type))
             colorbar.set_label(self._get_cbar_label(plot_type, dataset),
                                fontsize=fontsize)
@@ -1105,6 +1243,190 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cube})
 
+    def _plot_hovmoeller_z_vs_time_without_ref(self, plot_func, dataset):
+        """Plot hovmoeller z vs time for single dataset without reference."""
+        plot_type = 'hovmoeller_z_vs_time'
+        logger.info(
+            "Plotting homvoeller z vs time without reference dataset"
+            " for '%s'", self._get_label(dataset))
+
+        # Make sure that the data has the correct dimensions
+        cube = dataset['cube']
+        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
+
+        time_coord = cube.coord(axis='T')
+
+        # Create plot with desired settings
+        with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
+            fig = plt.figure(**self.cfg['figure_kwargs'])
+            axes = fig.add_subplot()
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs['axes'] = axes
+            plot_zonal_mean_profile = plot_func(cube, **plot_kwargs)
+
+            # Print statistics if desired
+            self._add_stats(plot_type, axes, dim_coords_dat, dataset)
+
+            # Setup colorbar
+            fontsize = self.plots[plot_type]['fontsize']
+            colorbar = fig.colorbar(plot_zonal_mean_profile,
+                                    ax=axes,
+                                    **self._get_cbar_kwargs(plot_type))
+            colorbar.set_label(self._get_cbar_label(plot_type, dataset),
+                               fontsize=fontsize)
+            colorbar.ax.tick_params(labelsize=fontsize)
+
+            # Customize plot
+            axes.set_title(self._get_label(dataset))
+            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
+                         f"{dataset['end_year']})")
+            z_coord = cube.coord(axis='Z')
+            axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
+            if self.plots[plot_type]['log_y']:
+                axes.set_yscale('log')
+                axes.get_yaxis().set_major_formatter(
+                    FormatStrFormatter('%.1f'))
+            if self.plots[plot_type]['show_y_minor_ticklabels']:
+                axes.get_yaxis().set_minor_formatter(
+                    FormatStrFormatter('%.1f'))
+            else:
+                axes.get_yaxis().set_minor_formatter(NullFormatter())
+            axes.get_xaxis().set_major_formatter(
+                mdates.DateFormatter(self.plots[plot_type]['time_format']))
+            axes.set_xlabel(f'{time_coord.long_name}')
+            self._process_pyplot_kwargs(plot_type, dataset)
+
+            # Rasterization
+            if self.plots[plot_type]['rasterize']:
+                self._set_rasterized([axes])
+
+        # File paths
+        plot_path = self.get_plot_path(plot_type, dataset)
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+
+        return (plot_path, {netcdf_path: cube})
+
+    def _plot_hovmoeller_z_vs_time_with_ref(self, plot_func, dataset,
+                                            ref_dataset):
+        """Plot hovmoeller z vs time for single dataset with reference."""
+        plot_type = 'hovmoeller_z_vs_time'
+        logger.info(
+            "Plotting hovmoeller z vs time with reference dataset"
+            " '%s' for '%s'", self._get_label(ref_dataset),
+            self._get_label(dataset))
+
+        # Make sure that the data has the correct dimensions
+        cube = dataset['cube']
+        ref_cube = ref_dataset['cube']
+        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
+        dim_coords_ref = self._check_cube_dimensions(ref_cube, plot_type)
+
+        time_coord = cube.coord(axis='T')
+
+        # Create single figure with multiple axes
+        with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
+            fig = plt.figure(**self.cfg['figure_kwargs'])
+            gridspec = GridSpec(5,
+                                4,
+                                figure=fig,
+                                height_ratios=[1.0, 1.0, 0.4, 1.0, 1.0])
+
+            # Options used for all subplots
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            fontsize = self.plots[plot_type]['fontsize']
+
+            # Plot dataset (top left)
+            axes_data = fig.add_subplot(gridspec[0:2, 0:2])
+            plot_kwargs['axes'] = axes_data
+            plot_data = plot_func(cube, **plot_kwargs)
+            axes_data.set_title(self._get_label(dataset), pad=3.0)
+            z_coord = cube.coord(axis='Z')
+            axes_data.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
+            if self.plots[plot_type]['log_y']:
+                axes_data.set_yscale('log')
+                axes_data.get_yaxis().set_major_formatter(
+                    FormatStrFormatter('%.1f'))
+            if self.plots[plot_type]['show_y_minor_ticklabels']:
+                axes_data.get_yaxis().set_minor_formatter(
+                    FormatStrFormatter('%.1f'))
+            else:
+                axes_data.get_yaxis().set_minor_formatter(NullFormatter())
+            axes_data.get_xaxis().set_major_formatter(
+                mdates.DateFormatter(self.plots[plot_type]['time_format']))
+            self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
+
+            # Plot reference dataset (top right)
+            # Note: make sure to use the same vmin and vmax than the top left
+            # plot if a common colorbar is desired
+            axes_ref = fig.add_subplot(gridspec[0:2, 2:4],
+                                       sharex=axes_data,
+                                       sharey=axes_data)
+            plot_kwargs['axes'] = axes_ref
+            if self.plots[plot_type]['common_cbar']:
+                plot_kwargs.setdefault('vmin', plot_data.get_clim()[0])
+                plot_kwargs.setdefault('vmax', plot_data.get_clim()[1])
+            plot_ref = plot_func(ref_cube, **plot_kwargs)
+            axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
+            plt.setp(axes_ref.get_yticklabels(), visible=False)
+            axes_ref.get_xaxis().set_major_formatter(
+                mdates.DateFormatter(self.plots[plot_type]['time_format']))
+            self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
+
+            # Add colorbar(s)
+            self._add_colorbar(plot_type, plot_data, plot_ref, axes_data,
+                               axes_ref, dataset, ref_dataset)
+
+            # Plot bias (bottom center)
+            bias_cube = cube - ref_cube
+            axes_bias = fig.add_subplot(gridspec[3:5, 1:3],
+                                        sharex=axes_data,
+                                        sharey=axes_data)
+            plot_kwargs_bias = self._get_plot_kwargs(plot_type,
+                                                     dataset,
+                                                     bias=True)
+            plot_kwargs_bias['axes'] = axes_bias
+            plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
+            axes_bias.set_title(
+                f"{self._get_label(dataset)} - {self._get_label(ref_dataset)}",
+                pad=3.0,
+            )
+            axes_bias.set_xlabel(time_coord.long_name)
+            axes_bias.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
+            axes_bias.get_xaxis().set_major_formatter(
+                mdates.DateFormatter(self.plots[plot_type]['time_format']))
+            cbar_kwargs_bias = self._get_cbar_kwargs(plot_type, bias=True)
+            cbar_bias = fig.colorbar(plot_bias,
+                                     ax=axes_bias,
+                                     **cbar_kwargs_bias)
+            cbar_bias.set_label(
+                self._get_cbar_label(plot_type, dataset, bias=True),
+                fontsize=fontsize,
+            )
+            cbar_bias.ax.tick_params(labelsize=fontsize)
+            self._add_stats(plot_type, axes_bias, dim_coords_dat, dataset,
+                            ref_dataset)
+
+            # Customize plot
+            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
+                         f"{dataset['end_year']})")
+            self._process_pyplot_kwargs(plot_type, dataset)
+
+            # Rasterization
+            if self.plots[plot_type]['rasterize']:
+                self._set_rasterized([axes_data, axes_ref, axes_bias])
+
+        # File paths
+        plot_path = self.get_plot_path(plot_type, dataset)
+        netcdf_path = (get_diagnostic_filename(
+            Path(plot_path).stem + "_{pos}", self.cfg))
+        netcdf_paths = {
+            netcdf_path.format(pos='top_left'): cube,
+            netcdf_path.format(pos='top_right'): ref_cube,
+            netcdf_path.format(pos='bottom'): bias_cube,
+        }
+
+        return (plot_path, netcdf_paths)
+
     def _process_pyplot_kwargs(self, plot_type, dataset):
         """Process functions for :mod:`matplotlib.pyplot`."""
         pyplot_kwargs = self.plots[plot_type]['pyplot_kwargs']
@@ -1124,14 +1446,14 @@ class MultiDatasets(MonitorBase):
     def _check_cube_dimensions(cube, plot_type):
         """Check that cube has correct dimensional variables."""
         expected_dimensions_dict = {
-            'annual_cycle': (['month_number'],),
-            'map': (['latitude', 'longitude'],),
-            'zonal_mean_profile': (['latitude', 'air_pressure'],
-                                   ['latitude', 'altitude']),
-            'timeseries': (['time'],),
-            '1d_profile': (['air_pressure'],
-                           ['altitude']),
-
+            'annual_cycle': (['month_number'], ),
+            'map': (['latitude', 'longitude'], ),
+            'zonal_mean_profile': (['latitude',
+                                    'air_pressure'], ['latitude', 'altitude']),
+            'timeseries': (['time'], ),
+            '1d_profile': (['air_pressure'], ['altitude']),
+            'hovmoeller_z_vs_time': (['time',
+                                      'air_pressure'], ['time', 'altitude']),
         }
         if plot_type not in expected_dimensions_dict:
             raise NotImplementedError(f"plot_type '{plot_type}' not supported")
@@ -1141,8 +1463,7 @@ class MultiDatasets(MonitorBase):
             if all(cube_dims) and cube.ndim == len(dims):
                 return dims
         expected_dims_str = ' or '.join(
-            [str(dims) for dims in expected_dimensions]
-        )
+            [str(dims) for dims in expected_dimensions])
         raise ValueError(
             f"Expected cube that exactly has the dimensional coordinates "
             f"{expected_dims_str}, got {cube.summary(shorten=True)}")
@@ -1173,8 +1494,9 @@ class MultiDatasets(MonitorBase):
     @staticmethod
     def _get_reference_dataset(datasets, short_name):
         """Extract reference dataset."""
-        ref_datasets = [d for d in datasets if
-                        d.get('reference_for_monitor_diags', False)]
+        ref_datasets = [
+            d for d in datasets if d.get('reference_for_monitor_diags', False)
+        ]
         if len(ref_datasets) > 1:
             raise ValueError(
                 f"Expected at most 1 reference dataset (with "
@@ -1226,7 +1548,13 @@ class MultiDatasets(MonitorBase):
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets['long_name'])
-        axes.set_xlabel('Time')
+        # apply time formatting
+        if self.plots[plot_type]['time_format'] is not None:
+            axes.get_xaxis().set_major_formatter(
+                mdates.DateFormatter(self.plots[plot_type]['time_format']))
+            axes.set_xlabel(f"{short_name}")
+        else:
+            axes.set_xlabel(f"{short_name} [{multi_dataset_facets['units']}]")
         axes.set_ylabel(f"{short_name} [{multi_dataset_facets['units']}]")
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
@@ -1249,7 +1577,8 @@ class MultiDatasets(MonitorBase):
         # Save netCDF file
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
         var_attrs = {
-            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
+            n: datasets[0][n]
+            for n in ('short_name', 'long_name', 'units')
         }
         io.save_1d_data(cubes, netcdf_path, 'time', var_attrs)
 
@@ -1321,7 +1650,8 @@ class MultiDatasets(MonitorBase):
         # Save netCDF file
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
         var_attrs = {
-            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
+            n: datasets[0][n]
+            for n in ('short_name', 'long_name', 'units')
         }
         io.save_1d_data(cubes, netcdf_path, 'month_number', var_attrs)
 
@@ -1366,25 +1696,21 @@ class MultiDatasets(MonitorBase):
                 continue
             ancestors = [dataset['filename']]
             if ref_dataset is None:
-                (plot_path, netcdf_paths) = (
-                    self._plot_map_without_ref(plot_func, dataset)
-                )
+                (plot_path, netcdf_paths) = (self._plot_map_without_ref(
+                    plot_func, dataset))
                 caption = (
                     f"Map plot of {dataset['long_name']} of dataset "
                     f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"from {dataset['start_year']} to {dataset['end_year']}."
-                )
+                    f"from {dataset['start_year']} to {dataset['end_year']}.")
             else:
-                (plot_path, netcdf_paths) = (
-                    self._plot_map_with_ref(plot_func, dataset, ref_dataset)
-                )
+                (plot_path, netcdf_paths) = (self._plot_map_with_ref(
+                    plot_func, dataset, ref_dataset))
                 caption = (
                     f"Map plot of {dataset['long_name']} of dataset "
                     f"{dataset['dataset']} (project {dataset['project']}) "
                     f"including bias relative to {ref_dataset['dataset']} "
                     f"(project {ref_dataset['project']}) from "
-                    f"{dataset['start_year']} to {dataset['end_year']}."
-                )
+                    f"{dataset['start_year']} to {dataset['end_year']}.")
                 ancestors.append(ref_dataset['filename'])
 
             # If statistics are shown add a brief description to the caption
@@ -1442,27 +1768,23 @@ class MultiDatasets(MonitorBase):
                 continue
             ancestors = [dataset['filename']]
             if ref_dataset is None:
-                (plot_path, netcdf_paths) = (
-                    self._plot_zonal_mean_profile_without_ref(plot_func,
-                                                              dataset)
-                )
+                (plot_path,
+                 netcdf_paths) = (self._plot_zonal_mean_profile_without_ref(
+                     plot_func, dataset))
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
                     f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"from {dataset['start_year']} to {dataset['end_year']}."
-                )
+                    f"from {dataset['start_year']} to {dataset['end_year']}.")
             else:
-                (plot_path, netcdf_paths) = (
-                    self._plot_zonal_mean_profile_with_ref(plot_func, dataset,
-                                                           ref_dataset)
-                )
+                (plot_path,
+                 netcdf_paths) = (self._plot_zonal_mean_profile_with_ref(
+                     plot_func, dataset, ref_dataset))
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
                     f"{dataset['dataset']} (project {dataset['project']}) "
                     f"including bias relative to {ref_dataset['dataset']} "
                     f"(project {ref_dataset['project']}) from "
-                    f"{dataset['start_year']} to {dataset['end_year']}."
-                )
+                    f"{dataset['start_year']} to {dataset['end_year']}.")
                 ancestors.append(ref_dataset['filename'])
 
             # If statistics are shown add a brief description to the caption
@@ -1532,11 +1854,9 @@ class MultiDatasets(MonitorBase):
         # apply logarithmic axes
         if self.plots[plot_type]['log_y']:
             axes.set_yscale('log')
-            axes.get_yaxis().set_major_formatter(
-                FormatStrFormatter('%.1f'))
+            axes.get_yaxis().set_major_formatter(FormatStrFormatter('%.1f'))
         if self.plots[plot_type]['show_y_minor_ticklabels']:
-            axes.get_yaxis().set_minor_formatter(
-                FormatStrFormatter('%.1f'))
+            axes.get_yaxis().set_minor_formatter(FormatStrFormatter('%.1f'))
         else:
             axes.get_yaxis().set_minor_formatter(NullFormatter())
         if self.plots[plot_type]['log_x']:
@@ -1576,7 +1896,8 @@ class MultiDatasets(MonitorBase):
         # Save netCDF file
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
         var_attrs = {
-            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
+            n: datasets[0][n]
+            for n in ('short_name', 'long_name', 'units')
         }
         io.save_1d_data(cubes, netcdf_path, z_coord.standard_name, var_attrs)
 
@@ -1595,6 +1916,82 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
+    def create_hovmoeller_z_vs_time_plot(self, datasets, short_name):
+        """Create hovmoeller z vs time plot."""
+        plot_type = 'hovmoeller_z_vs_time'
+        if plot_type not in self.plots:
+            return
+
+        if not datasets:
+            raise ValueError(f"No input data to plot '{plot_type}' given")
+
+        # Get reference dataset if possible
+        ref_dataset = self._get_reference_dataset(datasets, short_name)
+        if ref_dataset is None:
+            logger.info("Plotting %s without reference dataset", plot_type)
+        else:
+            logger.info("Plotting %s with reference dataset '%s'", plot_type,
+                        self._get_label(ref_dataset))
+
+        # Get plot function
+        plot_func = self._get_plot_func(plot_type)
+
+        # Create a single plot for each dataset (incl. reference dataset if
+        # given)
+        for dataset in datasets:
+            if dataset == ref_dataset:
+                continue
+            ancestors = [dataset['filename']]
+            if ref_dataset is None:
+                (plot_path,
+                 netcdf_paths) = (self._plot_hovmoeller_z_vs_time_without_ref(
+                     plot_func, dataset))
+                caption = (
+                    f"Hovmoeller z vs time of {dataset['long_name']}"
+                    f"of dataset "
+                    f"{dataset['dataset']} (project {dataset['project']}) "
+                    f"from {dataset['start_year']} to {dataset['end_year']}.")
+            else:
+                (plot_path,
+                 netcdf_paths) = (self._plot_hovmoeller_z_vs_time_with_ref(
+                     plot_func, dataset, ref_dataset))
+                caption = (
+                    f"Hovmoeller z vs time of {dataset['long_name']}"
+                    f"of dataset "
+                    f"{dataset['dataset']} (project {dataset['project']}) "
+                    f"including bias relative to {ref_dataset['dataset']} "
+                    f"(project {ref_dataset['project']}) from "
+                    f"{dataset['start_year']} to {dataset['end_year']}.")
+                ancestors.append(ref_dataset['filename'])
+
+            # If statistics are shown add a brief description to the caption
+            if self.plots[plot_type]['show_stats']:
+                caption += (
+                    " The number in the top left corner corresponds to the "
+                    "spatial mean (weighted by grid cell areas).")
+
+            # Save plot
+            plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
+            logger.info("Wrote %s", plot_path)
+            plt.close()
+
+            # Save netCDFs
+            for (netcdf_path, cube) in netcdf_paths.items():
+                io.iris_save(cube, netcdf_path)
+
+            # Provenance tracking
+            provenance_record = {
+                'ancestors': ancestors,
+                'authors': ['kuehbacher_birgit', 'heuer_helge'],
+                'caption': caption,
+                'plot_types': ['vert'],
+                'long_names': [dataset['long_name']],
+            }
+            with ProvenanceLogger(self.cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+                for netcdf_path in netcdf_paths:
+                    provenance_logger.log(netcdf_path, provenance_record)
+
     def compute(self):
         """Plot preprocessed data."""
         for (short_name, datasets) in self.grouped_input_data.items():
@@ -1604,6 +2001,7 @@ class MultiDatasets(MonitorBase):
             self.create_map_plot(datasets, short_name)
             self.create_zonal_mean_profile_plot(datasets, short_name)
             self.create_1d_profile_plot(datasets, short_name)
+            self.create_hovmoeller_z_vs_time_plot(datasets, short_name)
 
 
 def main():
