@@ -1532,13 +1532,11 @@ class MultiDatasets(MonitorBase):
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets['long_name'])
+        axes.set_xlabel("Time")
         # apply time formatting
         if self.plots[plot_type]['time_format'] is not None:
             axes.get_xaxis().set_major_formatter(
                 mdates.DateFormatter(self.plots[plot_type]['time_format']))
-            axes.set_xlabel(f"{short_name}")
-        else:
-            axes.set_xlabel(f"{short_name} [{multi_dataset_facets['units']}]")
         axes.set_ylabel(f"{short_name} [{multi_dataset_facets['units']}]")
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
