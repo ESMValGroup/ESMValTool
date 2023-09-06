@@ -301,6 +301,10 @@ authors:
     given-names: Katja
     orcid: "https://orcid.org/0000-0001-6133-7801"
   -
+    affiliation: "DLR, Germany"
+    family-names: Sarauer
+    given-names: Ellen
+  -
     affiliation: "University of Reading, UK"
     family-names: Roberts
     given-names: Charles
