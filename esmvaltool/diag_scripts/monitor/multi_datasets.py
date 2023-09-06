@@ -60,6 +60,9 @@ facet_used_for_labels: str, optional (default: 'dataset')
 figure_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.figure`. By
     default, uses ``constrained_layout: true``.
+group_variables_by: str, optional (default: 'short_name')
+    Facet which is used to create variable groups. For each variable group, an
+    individual plot is created.
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
     must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``
@@ -401,12 +404,15 @@ class MultiDatasets(MonitorBase):
         self.cfg = deepcopy(self.cfg)
         self.cfg.setdefault('facet_used_for_labels', 'dataset')
         self.cfg.setdefault('figure_kwargs', {'constrained_layout': True})
+        self.cfg.setdefault('group_variables_by', 'short_name')
         self.cfg.setdefault('savefig_kwargs', {
             'bbox_inches': 'tight',
             'dpi': 300,
             'orientation': 'landscape',
         })
         self.cfg.setdefault('seaborn_settings', {'style': 'ticks'})
+        logger.info("Using facet '%s' to group variables",
+                    self.cfg['group_variables_by'])
         logger.info("Using facet '%s' to create labels",
                     self.cfg['facet_used_for_labels'])
 
@@ -414,7 +420,7 @@ class MultiDatasets(MonitorBase):
         self.input_data = self._load_and_preprocess_data()
         self.grouped_input_data = group_metadata(
             self.input_data,
-            'short_name',
+            self.cfg['group_variables_by'],
             sort=self.cfg['facet_used_for_labels'],
         )
 
@@ -1170,8 +1176,7 @@ class MultiDatasets(MonitorBase):
                 multi_dataset_facets[key] = f'ambiguous_{key}'
         return multi_dataset_facets
 
-    @staticmethod
-    def _get_reference_dataset(datasets, short_name):
+    def _get_reference_dataset(self, datasets):
         """Extract reference dataset."""
         ref_datasets = [d for d in datasets if
                         d.get('reference_for_monitor_diags', False)]
@@ -1179,12 +1184,13 @@ class MultiDatasets(MonitorBase):
             raise ValueError(
                 f"Expected at most 1 reference dataset (with "
                 f"'reference_for_monitor_diags: true' for variable "
-                f"'{short_name}', got {len(ref_datasets):d}")
+                f"'{self.cfg['group_variables_by']}', got "
+                f"{len(ref_datasets):d}")
         if ref_datasets:
             return ref_datasets[0]
         return None
 
-    def create_timeseries_plot(self, datasets, short_name):
+    def create_timeseries_plot(self, datasets):
         """Create time series plot."""
         plot_type = 'timeseries'
         if plot_type not in self.plots:
@@ -1227,7 +1233,10 @@ class MultiDatasets(MonitorBase):
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets['long_name'])
         axes.set_xlabel('Time')
-        axes.set_ylabel(f"{short_name} [{multi_dataset_facets['units']}]")
+        axes.set_ylabel(
+            f"{self.cfg['group_variables_by']} "
+            f"[{multi_dataset_facets['units']}]"
+        )
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
             axes.grid(**gridline_kwargs)
@@ -1267,7 +1276,7 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_annual_cycle_plot(self, datasets, short_name):
+    def create_annual_cycle_plot(self, datasets):
         """Create annual cycle plot."""
         plot_type = 'annual_cycle'
         if plot_type not in self.plots:
@@ -1298,7 +1307,10 @@ class MultiDatasets(MonitorBase):
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets['long_name'])
         axes.set_xlabel('Month')
-        axes.set_ylabel(f"{short_name} [{multi_dataset_facets['units']}]")
+        axes.set_ylabel(
+            f"{self.cfg['group_variables_by']} "
+            f"[{multi_dataset_facets['units']}]"
+        )
         axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
@@ -1339,7 +1351,7 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_map_plot(self, datasets, short_name):
+    def create_map_plot(self, datasets):
         """Create map plot."""
         plot_type = 'map'
         if plot_type not in self.plots:
@@ -1349,7 +1361,7 @@ class MultiDatasets(MonitorBase):
             raise ValueError(f"No input data to plot '{plot_type}' given")
 
         # Get reference dataset if possible
-        ref_dataset = self._get_reference_dataset(datasets, short_name)
+        ref_dataset = self._get_reference_dataset(datasets)
         if ref_dataset is None:
             logger.info("Plotting %s without reference dataset", plot_type)
         else:
@@ -1415,7 +1427,7 @@ class MultiDatasets(MonitorBase):
                 for netcdf_path in netcdf_paths:
                     provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_zonal_mean_profile_plot(self, datasets, short_name):
+    def create_zonal_mean_profile_plot(self, datasets):
         """Create zonal mean profile plot."""
         plot_type = 'zonal_mean_profile'
         if plot_type not in self.plots:
@@ -1425,7 +1437,7 @@ class MultiDatasets(MonitorBase):
             raise ValueError(f"No input data to plot '{plot_type}' given")
 
         # Get reference dataset if possible
-        ref_dataset = self._get_reference_dataset(datasets, short_name)
+        ref_dataset = self._get_reference_dataset(datasets)
         if ref_dataset is None:
             logger.info("Plotting %s without reference dataset", plot_type)
         else:
@@ -1493,7 +1505,7 @@ class MultiDatasets(MonitorBase):
                 for netcdf_path in netcdf_paths:
                     provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_1d_profile_plot(self, datasets, short_name):
+    def create_1d_profile_plot(self, datasets):
         """Create 1D profile plot."""
         plot_type = '1d_profile'
         if plot_type not in self.plots:
@@ -1525,7 +1537,10 @@ class MultiDatasets(MonitorBase):
 
         # Default plot appearance
         axes.set_title(multi_dataset_facets['long_name'])
-        axes.set_xlabel(f"{short_name} [{multi_dataset_facets['units']}]")
+        axes.set_xlabel(
+            f"{self.cfg['group_variables_by']} "
+            f"[{multi_dataset_facets['units']}]"
+        )
         z_coord = cube.coord(axis='Z')
         axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
 
@@ -1597,13 +1612,13 @@ class MultiDatasets(MonitorBase):
 
     def compute(self):
         """Plot preprocessed data."""
-        for (short_name, datasets) in self.grouped_input_data.items():
-            logger.info("Processing variable %s", short_name)
-            self.create_timeseries_plot(datasets, short_name)
-            self.create_annual_cycle_plot(datasets, short_name)
-            self.create_map_plot(datasets, short_name)
-            self.create_zonal_mean_profile_plot(datasets, short_name)
-            self.create_1d_profile_plot(datasets, short_name)
+        for (var_key, datasets) in self.grouped_input_data.items():
+            logger.info("Processing variable %s", var_key)
+            self.create_timeseries_plot(datasets)
+            self.create_annual_cycle_plot(datasets)
+            self.create_map_plot(datasets)
+            self.create_zonal_mean_profile_plot(datasets)
+            self.create_1d_profile_plot(datasets)
 
 
 def main():
