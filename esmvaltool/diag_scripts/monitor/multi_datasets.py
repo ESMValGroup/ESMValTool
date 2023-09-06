@@ -1234,6 +1234,10 @@ class MultiDatasets(MonitorBase):
             # Plot dataset (top left)
             axes_data = fig.add_subplot(gridspec[0:2, 0:2])
             plot_kwargs['axes'] = axes_data
+            coord_names = [coord[0].name() for coord in cube.dim_coords]
+            if coord_names[0] == "time":
+                coord_names.reverse() 
+            plot_kwargs['coords'] = coord_names
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
             axes_data.set_ylabel('Time / Year')
@@ -1269,6 +1273,7 @@ class MultiDatasets(MonitorBase):
             plot_kwargs_bias = self._get_plot_kwargs(plot_type, dataset,
                                                      bias=True)
             plot_kwargs_bias['axes'] = axes_bias
+            plot_kwargs_bias['coords'] = coord_names
             plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
             axes_bias.set_title(
                 f"{self._get_label(dataset)} - {self._get_label(ref_dataset)}",
@@ -1329,6 +1334,7 @@ class MultiDatasets(MonitorBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
             # Make sure time is on y-axis
+
             plot_kwargs['coords'] = list(reversed(dim_coords_dat))
             plot_hovmoeller = plot_func(cube, **plot_kwargs)
 
