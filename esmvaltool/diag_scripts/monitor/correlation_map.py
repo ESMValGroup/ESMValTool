@@ -19,7 +19,7 @@ from esmvaltool.diag_scripts.shared.plot._plot import global_pcolormesh
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def get_provenance_record(attributes, ancestor_files, plot_type, ref_variable):
+def get_provenance_record(attributes, ancestor_files, ref_variable):
     """Create a provenance record describing the diagnostic data and plot."""
     names = {'long_name': attributes['long_name'],
              'ref_variable': ref_variable,
@@ -31,7 +31,7 @@ def get_provenance_record(attributes, ancestor_files, plot_type, ref_variable):
         'caption': caption,
         'statistics': ['corr'],
         'domains': ['global'],
-        'plot_type': plot_type,
+        'plot_type': ['map'],
         'authors': [
             'malles_jan-hendrik',
             'weigel_katja',
@@ -46,7 +46,6 @@ def get_provenance_record(attributes, ancestor_files, plot_type, ref_variable):
 
 def plot_correlation_map(cube, basename, title, provenance_record, cfg):
     """Create diagnostic data and plot it."""
-
     # Save the data used for the plot
     save_data(basename, provenance_record, cfg, cube)
 
@@ -121,7 +120,6 @@ def main(cfg):
             provenance_record = get_provenance_record(
                 attributes,
                 ancestor_files=[reference_filename, filename],
-                plot_type=cfg.get('plot_type', 'pcolormesh'),
                 ref_variable=cfg['reference_variable'])
             plot_correlation_map(cube, name, title, provenance_record, cfg)
 
