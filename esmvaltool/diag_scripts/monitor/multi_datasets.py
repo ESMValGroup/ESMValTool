@@ -383,7 +383,7 @@ cbar_kwargs_bias: dict, optional
     plotting biases. These keyword arguments update (and potentially overwrite)
     the ``cbar_kwargs`` for the bias plot. This option has no effect if no
     reference dataset is given.
-common_cbar: bool, optional (default: False)  # TODO: not tested
+common_cbar: bool, optional (default: False)
     Use a common colorbar for the top panels (i.e., plots of the dataset and
     the corresponding reference dataset) when using a reference dataset. If
     neither ``vmin`` and ``vmix`` nor ``levels`` is given in ``plot_kwargs``,
@@ -428,9 +428,14 @@ rasterize: bool, optional (default: False)  # TODO: not working
     profile plots to produce smaller files. This is only relevant for vector
     graphics (e.g., ``output_file_type=pdf,svg,ps``).
 show_y_minor_ticks: bool, optional (default: True)
-    Show monthly ticks on the Y axis.
+    Show minor ticks for time on the Y axis.
 show_x_minor_ticklabels: bool, optional (default: True)
     Show minor ticks for latitude or longitude on the X axis.
+time_format: str, optional (default: '%Y')
+    Format for the Y ticks labels. Using datetime syntax: i.e. 
+    %Y for years %m for months. See `datetime docs 
+    <https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior>`_ 
+    for a complete list of formats.
 """
 import logging
 from copy import deepcopy
@@ -625,6 +630,7 @@ class MultiDatasets(MonitorBase):
                 )
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('rasterize', False)
+                self.plots[plot_type].setdefault('time_format', "%Y")
                 self.plots[plot_type].setdefault(
                     'show_y_minor_ticks', True
                 )
@@ -1243,6 +1249,7 @@ class MultiDatasets(MonitorBase):
             axes_data.set_ylabel('Time / Year')
             plt.gca().yaxis.set_major_locator(mdates.YearLocator())
             plt.gca().yaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+            # TODO: %Y = time_format
             if self.plots[plot_type]['show_y_minor_ticks']:
                 plt.gca().yaxis.set_minor_locator(mdates.MonthLocator())
             if self.plots[plot_type]['show_x_minor_ticks']:
@@ -1355,10 +1362,11 @@ class MultiDatasets(MonitorBase):
             elif "longitude" in dim_coords_dat:
                 axes.set_xlabel('Longitude / °E')
             axes.set_ylabel('Time / Year')
-            plt.gca().yaxis.set_major_locator(mdates.YearLocator())
-            plt.gca().yaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+            plt.gca().yaxis.set_major_formatter(mdates.DateFormatter(
+                self.plots[plot_type]['time_format'])
+            )
             if self.plots[plot_type]['show_y_minor_ticks']:
-                plt.gca().yaxis.set_minor_locator(mdates.MonthLocator())
+                plt.gca().yaxis.set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]['show_x_minor_ticks']:
                 plt.gca().xaxis.set_minor_locator(AutoMinorLocator())
             self._process_pyplot_kwargs(plot_type, dataset)
