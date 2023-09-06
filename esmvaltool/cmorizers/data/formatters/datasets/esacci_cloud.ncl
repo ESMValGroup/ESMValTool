@@ -22,7 +22,7 @@
 ;        --reject="index.html*"
 ;        https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/
 ;          CLD_PRODUCTS/v3.0/L3C/AVHRR-PM/
-
+;
 ;    All files are expected in a single directory (no subdirectories
 ;    with years).
 ;
@@ -67,7 +67,7 @@ begin
 
   ; Conversion factor
   CONV = (/100., 1., 0.001, 0.001, 0.001, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, \
-           1.0, 1.0/)
+          1.0, 1.0/)
 
   ; MIP
   MIP = (/"Amon", "Amon", "Amon", "Amon", "Amon", "Amon", "Amon", "Amon", \
