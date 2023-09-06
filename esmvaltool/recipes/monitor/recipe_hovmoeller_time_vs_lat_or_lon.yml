@@ -4,6 +4,8 @@ documentation:
   description: Evaluate ICON simulations with observational products.
   authors:
     - schlund_manuel
+    - kraft_jeremy
+    - ruhe_lukas
 
 preprocessors:
 
