@@ -44,10 +44,10 @@ Currently supported plot types (use the option ``plots`` to specify them):
       datasets are plotted in one single figure. Input data needs to be 1D with
       single dimension `height` / `air_pressure`
 
-    - Hovmoeller time vs lat or lon (plot type 
+    - Hovmoeller time vs lat or lon (plot type
       ``hovmoeller_time_vs_lat_or_lon``): A hovmoeller diagram with time on the
       Y axis is plotted for each dataset. The input data is expected to be
-      preprocessed as zonal or meridional mean. The X axis is set accordingly. 
+      preprocessed as zonal or meridional mean. The X axis is set accordingly.
 
 Author
 ------
@@ -432,9 +432,9 @@ show_y_minor_ticks: bool, optional (default: True)
 show_x_minor_ticklabels: bool, optional (default: True)
     Show minor ticks for latitude or longitude on the X axis.
 time_format: str, optional (default: '%Y')
-    Format for the Y ticks labels. Using datetime syntax: i.e. 
-    %Y for years %m for months. See `datetime docs 
-    <https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior>`_ 
+    Format for the Y ticks labels. Using datetime syntax: i.e.
+    %Y for years %m for months. See `datetime docs
+    <https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior>`_
     for a complete list of formats.
 """
 import logging
@@ -453,7 +453,12 @@ from iris.analysis.cartography import area_weights
 from iris.coord_categorisation import add_year
 from iris.coords import AuxCoord
 from matplotlib.gridspec import GridSpec
-from matplotlib.ticker import FormatStrFormatter, LogLocator, NullFormatter, AutoMinorLocator
+from matplotlib.ticker import (
+    AutoMinorLocator,
+    FormatStrFormatter,
+    LogLocator,
+    NullFormatter,
+)
 from sklearn.metrics import r2_score
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
@@ -1173,7 +1178,7 @@ class MultiDatasets(MonitorBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
             plot_zonal_mean_profile = plot_func(cube, **plot_kwargs)
-            
+
             # Print statistics if desired
             self._add_stats(plot_type, axes, dim_coords_dat, dataset)
 
@@ -1225,7 +1230,7 @@ class MultiDatasets(MonitorBase):
         cube = dataset['cube']
         ref_cube = ref_dataset['cube']
         dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
-        dim_coords_ref = self._check_cube_dimensions(ref_cube, plot_type)
+        self._check_cube_dimensions(ref_cube, plot_type)
 
         # Create single figure with multiple axes
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -1242,7 +1247,7 @@ class MultiDatasets(MonitorBase):
             plot_kwargs['axes'] = axes_data
             coord_names = [coord[0].name() for coord in cube.dim_coords]
             if coord_names[0] == "time":
-                coord_names.reverse() 
+                coord_names.reverse()
             plot_kwargs['coords'] = coord_names
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
