@@ -17,7 +17,6 @@ datasets:
   - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, grid: gr, plot_label: 'EC-Earth3 historical'}
   - {project: CMIP6, dataset: CanESM5,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (CanESM5 historical)', reference_for_monitor_diags: true}
 
-
 preprocessors:
 
   timeseries_regular:
@@ -66,6 +65,16 @@ preprocessors:
       levels: {cmor_table: CMIP6, coordinate: plev39}
       scheme: linear
       coordinate: air_pressure
+
+  var_vs_lat:
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 2x2
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    zonal_statistics:
+      operator: mean
 
 
 diagnostics:
@@ -168,3 +177,16 @@ diagnostics:
                 color: C0
               CanESM5:
                 color: black
+
+  plot_variable_vs_latitude:
+    description: Creates a singel-panel variable plot over Latitude.
+    variables:
+      pr:
+        preprocessor: var_vs_lat
+        mip: Amon
+        timerange: '20000101/20030101'
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plots:
+          variable_vs_lat:
