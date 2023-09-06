@@ -104,7 +104,7 @@ diagnostics:
   plot_lwcre_maps:
     description: Plot lwcre climatology maps including reference datasets.
     variables:
-      swcre_icon:
+      lwcre_icon:
         short_name: lwcre
         mip: Amon
         preprocessor: full_climatology
@@ -112,7 +112,7 @@ diagnostics:
         force_derivation: true
         var_type: atm_2d_ml
         additional_datasets: *datasets_icon
-      swcre_ref:
+      lwcre_ref:
         short_name: lwcre
         mip: Amon
         preprocessor: full_climatology
