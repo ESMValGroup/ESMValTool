@@ -535,7 +535,6 @@ class MultiDatasets(MonitorBase):
                     'show_y_minor_ticklabels', False
                 )
             if plot_type == 'variable_vs_lat':
-                self.plots[plot_type].setdefault('annual_mean_kwargs', {})
                 self.plots[plot_type].setdefault('gridline_kwargs', {})
                 self.plots[plot_type].setdefault('legend_kwargs', {})
                 self.plots[plot_type].setdefault('plot_kwargs', {})
@@ -1143,7 +1142,7 @@ class MultiDatasets(MonitorBase):
             'timeseries': (['time'],),
             '1d_profile': (['air_pressure'],
                            ['altitude']),
-            'variable_vs_lat': (['latitude'],)
+            'variable_vs_lat': (['latitude']),
 
         }
         if plot_type not in expected_dimensions_dict:
@@ -1217,7 +1216,7 @@ class MultiDatasets(MonitorBase):
             cubes[self._get_label(dataset)] = cube
             self._check_cube_dimensions(cube, plot_type)
 
-            # Plot original time series
+            # Plot data
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
             iris.plot.plot(cube, **plot_kwargs)
@@ -1253,11 +1252,11 @@ class MultiDatasets(MonitorBase):
         io.save_1d_data(cubes, netcdf_path, 'latitude', var_attrs)
 
         # Provenance tracking
-        caption = (f"Time series of {multi_dataset_facets['long_name']} for "
+        caption = (f"{multi_dataset_facets['long_name']} vs. latitude for "
                    f"various datasets.")
         provenance_record = {
             'ancestors': ancestors,
-            'authors': ['schlund_manuel'],
+            'authors': ['sarauer_ellen'],
             'caption': caption,
             'plot_types': ['line'],
             'long_names': [var_attrs['long_name']],
