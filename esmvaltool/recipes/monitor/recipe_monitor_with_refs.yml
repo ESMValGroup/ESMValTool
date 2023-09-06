@@ -8,14 +8,19 @@ documentation:
   authors:
     - schlund_manuel
     - winterstein_franziska
+    - kraft_jeremy
+    - ruhe_lukas
   maintainer:
     - schlund_manuel
 
 
 datasets:
   # Note: plot_label currently only used by diagnostic plot_multiple_annual_cycles
-  - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, grid: gr, plot_label: 'EC-Earth3 historical'}
-  - {project: CMIP6, dataset: CanESM5,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (CanESM5 historical)', reference_for_monitor_diags: true}
+  # - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, grid: gr, plot_label: 'EC-Earth3 historical'}
+  # - {project: CMIP6, dataset: CanESM5,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (CanESM5 historical)', reference_for_monitor_diags: true}
+  - {project: CMIP6, dataset: MPI-ESM1-2-HR,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-HR historical'}
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-LR MPI historical', reference_for_monitor_diags: true}
+
 
 
 preprocessors:
@@ -55,6 +60,16 @@ preprocessors:
       coordinate: air_pressure
     zonal_statistics:
       operator: mean
+  
+  zonal_mean_2d:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    zonal_statistics:
+      operator: mean
+
 
   extract_1d_profile:
     custom_order: true
@@ -150,6 +165,7 @@ diagnostics:
             plot_kwargs_bias:
               levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
 
+
   plot_1D_profiles_with_references:
     description: Plot 1D profiles including reference datasets.
     variables:
@@ -168,3 +184,20 @@ diagnostics:
                 color: C0
               CanESM5:
                 color: black
+
+  plot_time_vs_lat_with_references:
+    description: Plot Hovmöller diagram (time vs lon) incl. reference datasets.
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: zonal_mean_2d
+        timerange: '2000/2014'
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          hovmoeller_time_vs_lat_or_lon:
+            common_cbar: true
+            show_x_minor_ticklabels: false

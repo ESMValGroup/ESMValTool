@@ -212,10 +212,10 @@ Zonal mean profile of ta including a reference dataset.
 1D profile of ta including a reference dataset.
 
 
-.. _fig_hovmoeller_time_vs_lon_with_ref:
-.. figure:: /recipes/figures/monitor/hovmoeller_time_vs_lon_with_ref.png
+.. _fig_hovmoeller_time_vs_lot_with_ref:
+.. figure:: /recipes/figures/monitor/hovmoeller_time_vs_lat_with_ref.png
    :align:   center
    :width:   14cm
 
-Hovmoeller diagram (time vs longitude) of near surface temperature including a 
+Hovmoeller diagram (time vs latitude) of near surface temperature including a 
 reference dataset and biases.

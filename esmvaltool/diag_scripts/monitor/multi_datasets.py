@@ -422,7 +422,7 @@ pyplot_kwargs: dict, optional
     curly brackets which will be derived from the corresponding dataset, e.g.,
     ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
     Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
-rasterize: bool, optional (default: False)  # TODO: not working
+rasterize: bool, optional (default: False)
     If ``True``, use `rasterization
     <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
     profile plots to produce smaller files. This is only relevant for vector
@@ -1229,6 +1229,7 @@ class MultiDatasets(MonitorBase):
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
         ref_cube = ref_dataset['cube']
+        print(cube)
         dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
         self._check_cube_dimensions(ref_cube, plot_type)
 
@@ -1252,11 +1253,10 @@ class MultiDatasets(MonitorBase):
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
             axes_data.set_ylabel('Time / Year')
-            plt.gca().yaxis.set_major_locator(mdates.YearLocator())
-            plt.gca().yaxis.set_major_formatter(mdates.DateFormatter("%Y"))
-            # TODO: %Y = time_format
+            plt.gca().yaxis.set_major_formatter(mdates.DateFormatter(
+                self.plots[plot_type]['time_format']))
             if self.plots[plot_type]['show_y_minor_ticks']:
-                plt.gca().yaxis.set_minor_locator(mdates.MonthLocator())
+                plt.gca().yaxis.set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]['show_x_minor_ticks']:
                 plt.gca().xaxis.set_minor_locator(AutoMinorLocator())
 
