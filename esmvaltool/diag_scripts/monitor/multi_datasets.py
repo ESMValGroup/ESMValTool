@@ -365,7 +365,7 @@ show_y_minor_ticklabels: bool, optional (default: False)
 
 
 Configuration options for plot type ``hovmoeller_time_vs_lat_or_lon``
-----------------------------------------------------------
+---------------------------------------------------------------------
 cbar_label: str, optional (default: '{short_name} [{units}]')
     Colorbar label. Can include facets in curly brackets which will be derived
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
