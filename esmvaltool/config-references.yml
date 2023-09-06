@@ -120,10 +120,6 @@ authors:
     institute: DLR, Germany
     orcid: https://orcid.org/0000-0001-7058-5938
     github: LisaBock
-  sarauer_ellen:
-    name: Sarauer, Ellen
-    institute: DLR, Germany
-    github: ellensarauer
   bojovic_dragana:
     name: Bojovic, Dragana
     institute: BSC, Spain
@@ -450,6 +446,10 @@ authors:
     name: Sandstad, Marit
     institute: Cicero, Norway
     orcid:
+  sarauer_ellen:
+    name: Sarauer, Ellen
+    institute: DLR, Germany
+    github: ellensarauer
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
