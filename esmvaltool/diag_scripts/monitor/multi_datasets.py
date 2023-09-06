@@ -481,7 +481,7 @@ class MultiDatasets(MonitorBase):
         """Initialize class member."""
         super().__init__(config)
 
-        # Get default stettings
+        # Get default settings
         self.cfg = deepcopy(self.cfg)
         self.cfg.setdefault('facet_used_for_labels', 'dataset')
         self.cfg.setdefault('figure_kwargs', {'constrained_layout': True})
@@ -1222,7 +1222,7 @@ class MultiDatasets(MonitorBase):
                                                      ref_dataset):
         """Plot the hovmoeller profile for single dataset with reference."""
         plot_type = 'hovmoeller_time_vs_lat_or_lon'
-        logger.info("Plotting zonal mean profile with reference dataset"
+        logger.info("Plotting Hovmoeller plots with reference dataset"
                     " '%s' for '%s'",
                     self._get_label(ref_dataset), self._get_label(dataset))
 
@@ -1331,9 +1331,8 @@ class MultiDatasets(MonitorBase):
                                                         dataset):
         """Plot time vs zonal or meridional Hovmoeller without reference."""
         plot_type = 'hovmoeller_time_vs_lat_or_lon'
-        logger.info("Plotting zonal mean profile without reference dataset"
-                    " for '%s'",
-                    self._get_label(dataset))
+        logger.info("Plotting Hovmoeller plots without reference dataset"
+                    " for '%s'", self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
