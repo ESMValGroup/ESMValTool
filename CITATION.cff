@@ -235,6 +235,11 @@ authors:
     family-names: Lucarini
     given-names: Valerio
   -
+    affiliation: "University of Bremen, Germany"
+    family-names: Malles
+    given-names: Jan-Hendrik
+    orcid: "https://orcid.org/0000-0002-4208-704X"
+  -
     affiliation: "UCLouvain, Belgium"
     family-names: Massonnet
     given-names: François
