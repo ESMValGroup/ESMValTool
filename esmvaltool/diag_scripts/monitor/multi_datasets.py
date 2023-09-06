@@ -1272,7 +1272,6 @@ class MultiDatasets(MonitorBase):
             plot_ref = plot_func(ref_cube, **plot_kwargs)
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
             plt.setp(axes_ref.get_yticklabels(), visible=False)
-            # self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
 
             # Add colorbar(s)
             self._add_colorbar(plot_type, plot_data, plot_ref, axes_data,
@@ -1311,7 +1310,7 @@ class MultiDatasets(MonitorBase):
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
-            if self.plots[plot_type]['rasterize']:  # TODO: not working?
+            if self.plots[plot_type]['rasterize']:
                 self._set_rasterized([axes_data, axes_ref, axes_bias])
 
         # File paths
@@ -1344,8 +1343,8 @@ class MultiDatasets(MonitorBase):
             axes = fig.add_subplot()
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
-            # Make sure time is on y-axis
 
+            # Make sure time is on y-axis
             plot_kwargs['coords'] = list(reversed(dim_coords_dat))
             plot_hovmoeller = plot_func(cube, **plot_kwargs)
 
@@ -1376,7 +1375,6 @@ class MultiDatasets(MonitorBase):
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
-            # TODO: seems not to work
             if self.plots[plot_type]['rasterize']:
                 self._set_rasterized([axes])
 
@@ -1938,12 +1936,11 @@ class MultiDatasets(MonitorBase):
                 io.iris_save(cube, netcdf_path)
 
             # Provenance tracking
-            # TODO: update provenance
             provenance_record = {
                 'ancestors': ancestors,
                 'authors': ['schlund_manuel', 'kraft_jeremy', 'ruhe_lukas'],
                 'caption': caption,
-                'plot_types': ['vert'],
+                'plot_types': ['zonal'],
                 'long_names': [dataset['long_name']],
             }
             with ProvenanceLogger(self.cfg) as provenance_logger:
