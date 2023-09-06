@@ -327,7 +327,7 @@ x_pos_stats_bias: float, optional (default: 0.7)
     relevant if ``show_stats: true``.
 
 Configuration options for plot type ``hovmoeller_z_vs_time``
-----------------------------------------------------------
+------------------------------------------------------------
 cbar_label: str, optional (default: '{short_name} [{units}]')
     Colorbar label. Can include facets in curly brackets which will be derived
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
@@ -1538,7 +1538,7 @@ class MultiDatasets(MonitorBase):
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets['long_name'])
-        axes.set_xlabel("Time")
+        axes.set_xlabel('Time')
         # apply time formatting
         if self.plots[plot_type]['time_format'] is not None:
             axes.get_xaxis().set_major_formatter(
