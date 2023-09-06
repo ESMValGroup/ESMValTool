@@ -324,7 +324,7 @@ x_pos_stats_bias: float, optional (default: 0.7)
     relevant if ``show_stats: true``.
 
 Configuration options for plot type ``hovmoeller_z_vs_time``
-----------------------------------------------------------
+------------------------------------------------------------
 cbar_label: str, optional (default: '{short_name} [{units}]')
     Colorbar label. Can include facets in curly brackets which will be derived
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
