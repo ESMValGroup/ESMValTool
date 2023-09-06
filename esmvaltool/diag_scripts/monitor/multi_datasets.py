@@ -1177,7 +1177,7 @@ class MultiDatasets(MonitorBase):
             'timeseries': (['time'],),
             '1d_profile': (['air_pressure'],
                            ['altitude']),
-            'variable_vs_lat': (['latitude']),
+            'variable_vs_lat': (['latitude'],),
 
         }
         if plot_type not in expected_dimensions_dict:
