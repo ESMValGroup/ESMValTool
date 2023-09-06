@@ -764,13 +764,13 @@ begin
         ; calculate clwvi (lwp+iwp) as sum of output fields for lwp and iwp
         ilev = 2
         grid2d(:, ilev, :, :) = grid2d(:, 0, :, :) \
-                                + grid2d(:, 1, :, :)
+          + grid2d(:, 1, :, :)
         grid2d_avg(:, ilev, :, :) = grid2d_avg(:, 0, :, :) \
-                                    + grid2d_avg(:, 1, :, :)
+          + grid2d_avg(:, 1, :, :)
         grid2d_noprecip(:, ilev, :, :) = grid2d_noprecip(:, 0, :, :) \
-                                         + grid2d_noprecip(:, 1, :, :)
+          + grid2d_noprecip(:, 1, :, :)
         grid2d_avg_noprecip(:, ilev, :, :) = grid2d_avg_noprecip(:, 0, :, :) \
-                                             + grid2d_avg_noprecip(:, 1, :, :)
+          + grid2d_avg_noprecip(:, 1, :, :)
       end if
       end if
       end if
