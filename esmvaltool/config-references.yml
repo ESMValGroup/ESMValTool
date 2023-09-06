@@ -288,6 +288,11 @@ authors:
     name: Koirala, Sujan
     institute: MPI-BGC, Germany
     orcid: https://orcid.org/0000-0001-5681-1986
+  kraft_jeremy:
+    name: Kraft, Jeremy
+    institute: DLR, Germany
+    orcid:
+    github: jeremykraftdlr
   krasting_john:
     name: Krasting, John
     institute: NOAA, USA

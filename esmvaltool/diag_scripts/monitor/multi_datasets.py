@@ -1923,7 +1923,7 @@ class MultiDatasets(MonitorBase):
             # TODO: update provenance
             provenance_record = {
                 'ancestors': ancestors,
-                'authors': ['schlund_manuel'],
+                'authors': ['schlund_manuel', 'kraft_jeremy', 'ruhe_lukas'],
                 'caption': caption,
                 'plot_types': ['vert'],
                 'long_names': [dataset['long_name']],
