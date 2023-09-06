@@ -179,7 +179,7 @@ diagnostics:
                 color: black
 
   plot_variable_vs_latitude:
-    description: Creates a singel-panel variable plot over Latitude.
+    description: Creates a single-panel variable plot over latitude.
     variables:
       pr:
         preprocessor: var_vs_lat
