@@ -1532,7 +1532,7 @@ class MultiDatasets(MonitorBase):
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets['long_name'])
-        axes.set_xlabel("Time")
+        axes.set_xlabel('Time')
         # apply time formatting
         if self.plots[plot_type]['time_format'] is not None:
             axes.get_xaxis().set_major_formatter(
