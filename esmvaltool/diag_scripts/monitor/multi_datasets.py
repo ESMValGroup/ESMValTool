@@ -1258,12 +1258,12 @@ class MultiDatasets(MonitorBase):
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
             axes_data.set_ylabel('Time / Year')
-            plt.gca().yaxis.set_major_formatter(mdates.DateFormatter(
+            axes_data.get_yaxis().set_major_formatter(mdates.DateFormatter(
                 self.plots[plot_type]['time_format']))
             if self.plots[plot_type]['show_y_minor_ticks']:
-                plt.gca().yaxis.set_minor_locator(AutoMinorLocator())
+                axes_data.get_yaxis().set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]['show_x_minor_ticks']:
-                plt.gca().xaxis.set_minor_locator(AutoMinorLocator())
+                axes_data.get_xaxis().set_minor_locator(AutoMinorLocator())
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -1370,13 +1370,13 @@ class MultiDatasets(MonitorBase):
             elif "longitude" in dim_coords_dat:
                 axes.set_xlabel('Longitude / °E')
             axes.set_ylabel('Time / Year')
-            plt.gca().yaxis.set_major_formatter(mdates.DateFormatter(
+            axes.get_yaxis().set_major_formatter(mdates.DateFormatter(
                 self.plots[plot_type]['time_format'])
             )
             if self.plots[plot_type]['show_y_minor_ticks']:
-                plt.gca().yaxis.set_minor_locator(AutoMinorLocator())
+                axes.get_yaxis().set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]['show_x_minor_ticks']:
-                plt.gca().xaxis.set_minor_locator(AutoMinorLocator())
+                axes.get_xaxis().set_minor_locator(AutoMinorLocator())
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
