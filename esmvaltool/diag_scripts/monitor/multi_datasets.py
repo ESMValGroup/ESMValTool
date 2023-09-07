@@ -40,6 +40,10 @@ Currently supported plot types (use the option ``plots`` to specify them):
       can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
       :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
       needs to be 2D with dimensions `time`, `height`/`air_pressure`.
+    - Variable vs. latitude plot (plot type ``variable_vs_lat``):
+      for each variable separately, all datasets are plotted in one
+      single figure. Input data needs to be 1D with single
+      dimension `latitude`.
 
       .. warning::
 
@@ -449,6 +453,35 @@ pyplot_kwargs: dict, optional
 show_y_minor_ticklabels: bool, optional (default: False)
     Show tick labels for the minor ticks on the Y axis.
 
+Configuration options for plot type ``variable_vs_lat``
+-------------------------------------------------------
+gridline_kwargs: dict, optional
+    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
+    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
+    lines.
+legend_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
+    ``legend_kwargs: false`` to not show legends.
+plot_kwargs: dict, optional
+    Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
+    elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
+    ``CMIP6`` if ``facet_used_for_labels: project`` or ``historical`` if
+    ``facet_used_for_labels: exp``. Dictionary values are dictionaries used as
+    keyword arguments for :func:`iris.plot.plot`. String arguments can include
+    facets in curly brackets which will be derived from the corresponding
+    dataset, e.g., ``{project}``, ``{short_name}``, ``{exp}``. Examples:
+    ``default: {linestyle: '-', label: '{project}'}, CMIP6: {color: red,
+    linestyle: '--'}, OBS: {color: black}``.
+pyplot_kwargs: dict, optional
+    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
+    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
+    single argument for these functions. String arguments can include facets in
+    curly brackets which will be derived from the datasets plotted in the
+    corresponding plot, e.g., ``{short_name}``, ``{exp}``. Facets like
+    ``{project}`` that vary between the different datasets will be transformed
+    to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
+    of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+
 .. hint::
 
    Extra arguments given to the recipe are ignored, so it is safe to use yaml
@@ -538,7 +571,8 @@ class MultiDatasets(MonitorBase):
             'map',
             'zonal_mean_profile',
             '1d_profile',
-            'hovmoeller_z_vs_time'
+            'hovmoeller_z_vs_time',
+            'variable_vs_lat'
         ]
         for (plot_type, plot_options) in self.plots.items():
             if plot_type not in self.supported_plot_types:
@@ -632,6 +666,11 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault(
                     'show_y_minor_ticklabels', False
                 )
+            if plot_type == 'variable_vs_lat':
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
+                self.plots[plot_type].setdefault('legend_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
 
             if plot_type == 'hovmoeller_z_vs_time':
                 self.plots[plot_type].setdefault('cbar_label',
@@ -885,7 +924,8 @@ class MultiDatasets(MonitorBase):
                 plot_kwargs[key] = val
 
         # Default settings for different plot types
-        if plot_type in ('timeseries', 'annual_cycle', '1d_profile'):
+        if plot_type in ('timeseries', 'annual_cycle', '1d_profile',
+                         'variable_vs_lat'):
             plot_kwargs.setdefault('label', label)
 
         return deepcopy(plot_kwargs)
@@ -1449,7 +1489,7 @@ class MultiDatasets(MonitorBase):
                            ['altitude']),
             'hovmoeller_z_vs_time': (['time', 'air_pressure'],
                                      ['time', 'altitude']),
-
+            'variable_vs_lat': (['latitude'],)
         }
         if plot_type not in expected_dimensions_dict:
             raise NotImplementedError(f"plot_type '{plot_type}' not supported")
@@ -1501,6 +1541,78 @@ class MultiDatasets(MonitorBase):
         if ref_datasets:
             return ref_datasets[0]
         return None
+
+    def create_variable_vs_lat_plot(self, datasets):
+        """Create Variable as a function of latitude."""
+        plot_type = 'variable_vs_lat'
+        if plot_type not in self.plots:
+            return
+        if not datasets:
+            raise ValueError(f"No input data to plot '{plot_type}' given")
+        logger.info("Plotting %s", plot_type)
+        fig = plt.figure(**self.cfg['figure_kwargs'])
+        axes = fig.add_subplot()
+
+        # Plot all datasets in one single figure
+        ancestors = []
+        cubes = {}
+        for dataset in datasets:
+            ancestors.append(dataset['filename'])
+            cube = dataset['cube']
+            cubes[self._get_label(dataset)] = cube
+            self._check_cube_dimensions(cube, plot_type)
+
+            # Plot data
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs['axes'] = axes
+            iris.plot.plot(cube, **plot_kwargs)
+
+        # Default plot appearance
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+        axes.set_title(multi_dataset_facets['long_name'])
+        axes.set_xlabel('latitude [°N]')
+        axes.set_ylabel(
+            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
+            f"[{multi_dataset_facets['units']}]"
+        )
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
+
+        # Legend
+        legend_kwargs = self.plots[plot_type]['legend_kwargs']
+        if legend_kwargs is not False:
+            axes.legend(**legend_kwargs)
+
+        # Customize plot appearance
+        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+
+        # Save plot
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        fig.savefig(plot_path, **self.cfg['savefig_kwargs'])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+        # Save netCDF file
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        var_attrs = {
+            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
+        }
+        io.save_1d_data(cubes, netcdf_path, 'latitude', var_attrs)
+
+        # Provenance tracking
+        caption = (f"{multi_dataset_facets['long_name']} vs. latitude for "
+                   f"various datasets.")
+        provenance_record = {
+            'ancestors': ancestors,
+            'authors': ['sarauer_ellen'],
+            'caption': caption,
+            'plot_types': ['line'],
+            'long_names': [var_attrs['long_name']],
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
 
     def create_timeseries_plot(self, datasets):
         """Create time series plot."""
@@ -2012,6 +2124,7 @@ class MultiDatasets(MonitorBase):
             self.create_zonal_mean_profile_plot(datasets)
             self.create_1d_profile_plot(datasets)
             self.create_hovmoeller_z_vs_time_plot(datasets)
+            self.create_variable_vs_lat_plot(datasets)
 
 
 def main():

@@ -310,6 +310,10 @@ authors:
     given-names: Katja
     orcid: "https://orcid.org/0000-0001-6133-7801"
   -
+    affiliation: "DLR, Germany"
+    family-names: Sarauer
+    given-names: Ellen
+  -
     affiliation: "University of Reading, UK"
     family-names: Roberts
     given-names: Charles
@@ -363,6 +367,11 @@ authors:
     family-names: Beucher
     given-names: Romain
     orcid: "https://orcid.org/0000-0003-3891-5444"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Bonnet
+    given-names: Pauline
+    orcid: "https://orcid.org/0000-0003-3780-0784"
 
 cff-version: 1.2.0
 date-released: 2023-07-06

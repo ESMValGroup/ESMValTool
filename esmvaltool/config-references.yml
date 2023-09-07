@@ -124,6 +124,11 @@ authors:
     name: Bojovic, Dragana
     institute: BSC, Spain
     orcid: https://orcid.org/0000-0001-7354-1885
+  bonnet_pauline:
+    name: Bonnet, Pauline
+    institute: DLR, Germany
+    orcid: https://orcid.org/0000-0003-3780-0784
+    github: Paulinebonnet111
   brunner_lukas:
     name: Brunner, Lukas
     institute: ETH Zurich, Switzerland
@@ -456,6 +461,11 @@ authors:
     name: Sandstad, Marit
     institute: Cicero, Norway
     orcid:
+  sarauer_ellen:
+    name: Sarauer, Ellen
+    institute: DLR, Germany
+    orcid:
+    github: ellensarauer
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy

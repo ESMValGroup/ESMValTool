@@ -87,6 +87,11 @@
             "orcid": "0000-0001-7058-5938"
         },
         {
+            "affiliation": "DLR, Germany",
+            "name": "Bonnet, Pauline",
+            "orcid": "0000-0003-3780-0784"
+        },
+        {
             "affiliation": "BSC, Spain",
             "name": "Caron, Louis-Philippe",
             "orcid": "0000-0001-5221-0147"
@@ -271,6 +276,10 @@
         {
             "affiliation": "CICERO, Norway",
             "name": "Sandstad, Marit"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Sarauer, Ellen"
         },
         {
             "affiliation": "MetOffice, UK",
