@@ -14,8 +14,13 @@ documentation:
 
 datasets:
   # Note: plot_label currently only used by diagnostic plot_multiple_annual_cycles
+<<<<<<< HEAD
   - {project: CMIP6, dataset: MPI-ESM1-2-HR,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-HR historical'}
   - {project: CMIP6, dataset: MPI-ESM1-2-LR,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-LR MPI historical', reference_for_monitor_diags: true}
+=======
+  - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, grid: gr, plot_label: 'EC-Earth3 historical'}
+  - {project: CMIP6, dataset: CanESM5,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (CanESM5 historical)', reference_for_monitor_diags: true}
+>>>>>>> origin/main
 
 preprocessors:
 
@@ -66,16 +71,23 @@ preprocessors:
       scheme: linear
       coordinate: air_pressure
 
+<<<<<<< HEAD
   global_mean_pressure:
     custom_order: true
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev39}
       scheme: linear
       coordinate: air_pressure
+=======
+  var_vs_lat:
+    climate_statistics:
+      operator: mean
+>>>>>>> origin/main
     regrid:
       target_grid: 2x2
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
+<<<<<<< HEAD
     area_statistics:
       operator: mean
 
@@ -84,6 +96,11 @@ preprocessors:
       operator: mean
     zonal_statistics:
       operator: mean
+=======
+    zonal_statistics:
+      operator: mean
+
+>>>>>>> origin/main
 
 diagnostics:
 

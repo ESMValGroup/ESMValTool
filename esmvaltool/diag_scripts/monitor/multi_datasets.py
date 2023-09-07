@@ -32,6 +32,7 @@ Currently supported plot types (use the option ``plots`` to specify them):
       can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
       :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
       needs to be 2D with dimensions `latitude`, `height`/`air_pressure`.
+<<<<<<< HEAD
     - Hovmoeller altitude vs time (plot type ``hovmoeller_z_vs_time``):
       for each variable and dataset, an individual profile is plotted. If a
       reference dataset is defined, also include this dataset and a bias plot
@@ -40,6 +41,8 @@ Currently supported plot types (use the option ``plots`` to specify them):
       can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
       :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
       needs to be 2D with dimensions `time`, `height`/`air_pressure`.
+=======
+>>>>>>> origin/main
     - Variable vs. latitude plot (plot type ``variable_vs_lat``):
       for each variable separately, all datasets are plotted in one
       single figure. Input data needs to be 1D with single
@@ -688,7 +691,7 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('plot_kwargs_bias', {})
                 self.plots[plot_type]['plot_kwargs_bias'].setdefault(
                     'cmap', 'bwr')
-                self.plots[plot_type].setdefault('time_format', '%Y')
+                self.plots[plot_type].setdefault('time_format', None)
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('rasterize', True)
                 self.plots[plot_type].setdefault('show_stats', True)
