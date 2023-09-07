@@ -557,7 +557,7 @@ rasterize: bool, optional (default: False)
     graphics (e.g., ``output_file_type=pdf,svg,ps``).
 show_y_minor_ticks: bool, optional (default: True)
     Show minor ticks for time on the Y axis.
-show_x_minor_ticklabels: bool, optional (default: True)
+show_x_minor_ticks: bool, optional (default: True)
     Show minor ticks for latitude or longitude on the X axis.
 time_format: str, optional (default: None)
     :func:`~datetime.datetime.strftime` format string that is used to format
@@ -1403,8 +1403,6 @@ class MultiDatasets(MonitorBase):
         cube = dataset['cube']
         dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
 
-        time_coord = cube.coord(axis='T')
-
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
@@ -1443,7 +1441,7 @@ class MultiDatasets(MonitorBase):
             if self.plots[plot_type]['time_format'] is not None:
                 axes.get_xaxis().set_major_formatter(
                     mdates.DateFormatter(self.plots[plot_type]['time_format']))
-            axes.set_xlabel(f'{time_coord.long_name}')
+            axes.set_xlabel('time')
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
@@ -1470,8 +1468,6 @@ class MultiDatasets(MonitorBase):
         ref_cube = ref_dataset['cube']
         dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
         dim_coords_ref = self._check_cube_dimensions(ref_cube, plot_type)
-
-        time_coord = cube.coord(axis='T')
 
         # Create single figure with multiple axes
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -1541,7 +1537,7 @@ class MultiDatasets(MonitorBase):
                 f"{self._get_label(dataset)} - {self._get_label(ref_dataset)}",
                 pad=3.0,
             )
-            axes_bias.set_xlabel(time_coord.long_name)
+            axes_bias.set_xlabel('time')
             axes_bias.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
             cbar_kwargs_bias = self._get_cbar_kwargs(plot_type, bias=True)
             cbar_bias = fig.colorbar(plot_bias,
@@ -1609,7 +1605,7 @@ class MultiDatasets(MonitorBase):
             plot_kwargs['coords'] = coord_names
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
-            axes_data.set_ylabel('Time')
+            axes_data.set_ylabel('time')
             if self.plots[plot_type]['time_format'] is not None:
                 axes_data.get_yaxis().set_major_formatter(mdates.DateFormatter(
                     self.plots[plot_type]['time_format']))
@@ -1650,7 +1646,7 @@ class MultiDatasets(MonitorBase):
                 f"{self._get_label(dataset)} - {self._get_label(ref_dataset)}",
                 pad=3.0,
             )
-            axes_bias.set_ylabel('Time')
+            axes_bias.set_ylabel('time')
             if 'latitude' in dim_coords_dat:
                 axes_bias.set_xlabel('latitude [°N]')
             elif 'longitude' in dim_coords_dat:
@@ -1724,7 +1720,7 @@ class MultiDatasets(MonitorBase):
                 axes.set_xlabel('latitude [°N]')
             elif 'longitude' in dim_coords_dat:
                 axes.set_xlabel('longitude [°E]')
-            axes.set_ylabel('Time')
+            axes.set_ylabel('time')
             if self.plots[plot_type]['time_format'] is not None:
                 axes.get_yaxis().set_major_formatter(mdates.DateFormatter(
                     self.plots[plot_type]['time_format'])
@@ -1869,7 +1865,7 @@ class MultiDatasets(MonitorBase):
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets['long_name'])
-        axes.set_xlabel('Time')
+        axes.set_xlabel('time')
         # apply time formatting
         if self.plots[plot_type]['time_format'] is not None:
             axes.get_xaxis().set_major_formatter(
@@ -2399,7 +2395,7 @@ class MultiDatasets(MonitorBase):
                 for netcdf_path in netcdf_paths:
                     provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_hovmoeller_time_vs_lat_or_lon_plot(self, datasets, short_name):
+    def create_hovmoeller_time_vs_lat_or_lon_plot(self, datasets):
         """Create the Hovmoeller plot with time vs latitude or longitude."""
         plot_type = 'hovmoeller_time_vs_lat_or_lon'
         if plot_type not in self.plots:
@@ -2409,7 +2405,7 @@ class MultiDatasets(MonitorBase):
             raise ValueError(f"No input data to plot '{plot_type}' given")
 
         # Get reference dataset if possible
-        ref_dataset = self._get_reference_dataset(datasets, short_name)
+        ref_dataset = self._get_reference_dataset(datasets)
         if ref_dataset is None:
             logger.info("Plotting %s without reference dataset", plot_type)
         else:
