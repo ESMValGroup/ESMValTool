@@ -257,6 +257,11 @@ authors:
     name: Hempelmann, Nils
     institute: IPSL, France
     orcid:
+  heuer_helge:
+    name: Heuer, Helge
+    institute: DLR, Germany
+    email: helge.heuer@dlr.de
+    orcid: https://orcid.org/0000-0003-2411-7150
   hogan_emma:
     name: Hogan, Emma
     institute: MetOffice, UK
@@ -297,6 +302,11 @@ authors:
     name: Krasting, John
     institute: NOAA, USA
     orcid: https://orcid.org/0000-0002-4650-9844
+  kuehbacher_birgit:
+    name: Kuehbacher, Birgit
+    institute: DLR, Germany
+    email: birgit.kuehbacher@dlr.de
+    orcid:
   lejeune_quentin:
     name: Lejeune, Quentin
     institute: Climate Analytics, Germany

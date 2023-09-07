@@ -8,14 +8,17 @@ documentation:
   authors:
     - schlund_manuel
     - winterstein_franziska
+    - sarauer_ellen
+    - kuehbacher_birgit
+    - heuer_helge
   maintainer:
     - schlund_manuel
 
 
 datasets:
   # Note: plot_label currently only used by diagnostic plot_multiple_annual_cycles
-  - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, grid: gr, plot_label: 'EC-Earth3 historical'}
-  - {project: CMIP6, dataset: CanESM5,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (CanESM5 historical)', reference_for_monitor_diags: true}
+  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-HR historical'}
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (MPI-ESM1-2-LR historical)', reference_for_monitor_diags: true}
 
 preprocessors:
 
@@ -71,9 +74,22 @@ preprocessors:
       operator: mean
     regrid:
       target_grid: 2x2
-      scheme:
-        reference: esmf_regrid.schemes:ESMFAreaWeighted
+      scheme: linear
     zonal_statistics:
+      operator: mean
+    convert_units:
+      units: mm day-1
+
+  global_mean_extract_levels:
+    custom_order: true
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: alt16}
+      scheme: linear
+      coordinate: altitude
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    area_statistics:
       operator: mean
 
 
@@ -96,9 +112,9 @@ diagnostics:
             annual_mean_kwargs:
               linestyle: '--'
             plot_kwargs:
-              EC-Earth3:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
+              MPI-ESM1-2-HR:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
                 color: C0
-              CanESM5:
+              MPI-ESM1-2-LR:
                 color: black
 
   plot_multiple_annual_cycles:
@@ -117,9 +133,9 @@ diagnostics:
             legend_kwargs:
               loc: upper right
             plot_kwargs:
-              'EC-Earth3 historical':  # = plot_label since 'facet_used_for_labels: plot_label'
+              'MPI-ESM1-2-HR historical':  # = plot_label since 'facet_used_for_labels: plot_label'
                 color: C0
-              'Reference (CanESM5 historical)':
+              'Reference (MPI-ESM1-2-LR historical)':
                 color: black
             pyplot_kwargs:
               title: Near-Surface Air Temperature on Northern Hemisphere
@@ -173,9 +189,9 @@ diagnostics:
         plots:
           1d_profile:
             plot_kwargs:
-              EC-Earth3:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
+              MPI-ESM1-2-HR:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
                 color: C0
-              CanESM5:
+              MPI-ESM1-2-LR:
                 color: black
 
   plot_variable_vs_latitude:
@@ -187,6 +203,27 @@ diagnostics:
         timerange: '20000101/20030101'
     scripts:
       plot:
+        <<: *plot_multi_dataset_default
         script: monitor/multi_datasets.py
         plots:
           variable_vs_lat:
+
+  plot_hovmoeller_z_vs_time:
+    description: Plot Hovmoeller Z vs. time including reference datasets.
+    variables:
+      ta:
+        preprocessor: global_mean_extract_levels
+        mip: Amon
+        timerange: '2000/2004'
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          hovmoeller_z_vs_time:
+            plot_func: contourf
+            common_cbar: true
+            time_format: '%Y'
+            log_y: false
+            pyplot_kwargs:
+              ylim: [0, 20000]
