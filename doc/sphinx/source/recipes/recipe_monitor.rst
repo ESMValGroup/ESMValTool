@@ -223,4 +223,11 @@ Zonal mean pr including a reference dataset.
    :align:   center
    :width:   14cm
 
-Hovmoeller plot (pressure vs time) of ta including a reference dataset.
+Hovmoeller plot (pressure vs. time) of ta including a reference dataset.
+
+.. _fig_hovmoeller_time_vs_lat_with_ref:
+.. figure:: /recipes/figures/monitor/hovmoeller_time_vs_lat_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Hovmoeller plot (time vs. latitude) of tas including a reference dataset

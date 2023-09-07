@@ -369,6 +369,15 @@ authors:
     orcid: "https://orcid.org/0000-0003-3891-5444"
   -
     affiliation: "DLR, Germany"
+    family-names: Kraft
+    given-names: Jeremy
+  -
+    affiliation: "University of Bremen, Germany"
+    family-names: Ruhe
+    given-names: Lukas
+    orcid: "https://orcid.org/0000-0001-6349-9118"
+  -
+    affiliation: "DLR, Germany"
     family-names: Bonnet
     given-names: Pauline
     orcid: "https://orcid.org/0000-0003-3780-0784"
