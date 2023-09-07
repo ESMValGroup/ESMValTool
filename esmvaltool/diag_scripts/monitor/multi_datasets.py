@@ -31,22 +31,7 @@ Currently supported plot types (use the option ``plots`` to specify them):
       datasets need to be given on the same horizontal and vertical grid (you
       can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
       :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
-      needs to be 2D with dimensions `latitude`, `height`/`air_pressure`.
-<<<<<<< HEAD
-    - Hovmoeller altitude vs time (plot type ``hovmoeller_z_vs_time``):
-      for each variable and dataset, an individual profile is plotted. If a
-      reference dataset is defined, also include this dataset and a bias plot
-      into the figure. Note that if a reference dataset is defined, all input
-      datasets need to be given on the same horizontal and vertical grid (you
-      can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
-      :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
-      needs to be 2D with dimensions `time`, `height`/`air_pressure`.
-=======
->>>>>>> origin/main
-    - Variable vs. latitude plot (plot type ``variable_vs_lat``):
-      for each variable separately, all datasets are plotted in one
-      single figure. Input data needs to be 1D with single
-      dimension `latitude`.
+      needs to be 2D with dimensions `latitude`, `altitude`/`air_pressure`.
 
       .. warning::
 
@@ -57,7 +42,19 @@ Currently supported plot types (use the option ``plots`` to specify them):
 
     - 1D profiles (plot type ``1d_profile``): for each variable separately, all
       datasets are plotted in one single figure. Input data needs to be 1D with
-      single dimension `height` / `air_pressure`
+      single dimension `altitude` / `air_pressure`
+    - Variable vs. latitude plot (plot type ``variable_vs_lat``):
+      for each variable separately, all datasets are plotted in one
+      single figure. Input data needs to be 1D with single
+      dimension `latitude`.
+    - Hovmoeller Z vs time (plot type ``hovmoeller_z_vs_time``): for each
+      variable and dataset, an individual profile is plotted. If a reference
+      dataset is defined, also include this dataset and a bias plot into the
+      figure. Note that if a reference dataset is defined, all input datasets
+      need to be given on the same horizontal and vertical grid (you can use
+      the preprocessors :func:`esmvalcore.preprocessor.regrid` and
+      :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
+      needs to be 2D with dimensions `time`, `altitude`/`air_pressure`.
 
 Author
 ------
@@ -81,7 +78,7 @@ group_variables_by: str, optional (default: 'short_name')
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
     must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``,
-    ``1d_profile`` or ``hovmoeller_z_vs_time``.
+    ``1d_profile``, ``variable_vs_lat``, or ``hovmoeller_z_vs_time``.
     Dictionary values are dictionaries used as options for the corresponding
     plot. The allowed options for the different plot types are given below.
 plot_filename: str, optional
@@ -138,9 +135,9 @@ pyplot_kwargs: dict, optional
     to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
     of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
 time_format: str, optional (default: None)
-    :func:`~datetime.strftime` format string that is used to format the time
-    axis using :class:`matplotlib.dates.DateFormatter`. If ``None``, use the
-    default formatting imposed by the iris plotting function.
+    :func:`~datetime.datetime.strftime` format string that is used to format
+    the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
+    use the default formatting imposed by the iris plotting function.
 
 Configuration options for plot type ``annual_cycle``
 ----------------------------------------------------
@@ -292,7 +289,7 @@ log_y: bool, optional (default: True)
 plot_func: str, optional (default: 'contourf')
     Plot function used to plot the profiles. Must be a function of
     :mod:`iris.plot` that supports plotting of 2D cubes with coordinates
-    latitude and height/air_pressure.
+    latitude and altitude/air_pressure.
 plot_kwargs: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``.
     Dictionary keys are elements identified by ``facet_used_for_labels`` or
@@ -333,88 +330,6 @@ x_pos_stats_bias: float, optional (default: 0.7)
     Text x-position of bias statistics (shown on the right) in Axes
     coordinates. Can be adjusted to avoid overlap with the figure. Only
     relevant if ``show_stats: true``.
-
-Configuration options for plot type ``hovmoeller_z_vs_time``
-------------------------------------------------------------
-cbar_label: str, optional (default: '{short_name} [{units}]')
-    Colorbar label. Can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``.
-cbar_label_bias: str, optional (default: 'Δ{short_name} [{units}]')
-    Colorbar label for plotting biases. Can include facets in curly brackets
-    which will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. This option has no effect if no reference
-    dataset is given.
-cbar_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
-    default, uses ``orientation: vertical``.
-cbar_kwargs_bias: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar` for
-    plotting biases. These keyword arguments update (and potentially overwrite)
-    the ``cbar_kwargs`` for the bias plot. This option has no effect if no
-    reference dataset is given.
-common_cbar: bool, optional (default: False)
-    Use a common colorbar for the top panels (i.e., plots of the dataset and
-    the corresponding reference dataset) when using a reference dataset. If
-    neither ``vmin`` and ``vmix`` nor ``levels`` is given in ``plot_kwargs``,
-    the colorbar bounds are inferred from the dataset in the top left panel,
-    which might lead to an inappropriate colorbar for the reference dataset
-    (top right panel). Thus, the use of the ``plot_kwargs`` ``vmin`` and
-    ``vmax`` or ``levels`` is highly recommend when using this ``common_cbar:
-    true``. This option has no effect if no reference dataset is given.
-fontsize: int, optional (default: 10)
-    Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles.
-log_y: bool, optional (default: True)
-    Use logarithmic Y-axis.
-plot_func: str, optional (default: 'contourf')
-    Plot function used to plot the profiles. Must be a function of
-    :mod:`iris.plot` that supports plotting of 2D cubes with coordinates
-    latitude and height/air_pressure.
-plot_kwargs: dict, optional
-    Optional keyword arguments for the plot function defined by ``plot_func``.
-    Dictionary keys are elements identified by ``facet_used_for_labels`` or
-    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
-    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
-    dictionaries used as keyword arguments for the plot function defined by
-    ``plot_func``. String arguments can include facets in curly brackets which
-    will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
-    {vmin: 200, vmax: 250}``.
-plot_kwargs_bias: dict, optional
-    Optional keyword arguments for the plot function defined by ``plot_func``
-    for plotting biases. These keyword arguments update (and potentially
-    overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
-    if no reference dataset is given. See option ``plot_kwargs`` for more
-    details. By default, uses ``cmap: bwr``.
-pyplot_kwargs: dict, optional
-    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
-    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    single argument for these functions. String arguments can include facets in
-    curly brackets which will be derived from the corresponding dataset, e.g.,
-    ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
-    Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
-rasterize: bool, optional (default: True)
-    If ``True``, use `rasterization
-    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
-    profile plots to produce smaller files. This is only relevant for vector
-    graphics (e.g., ``output_file_type=pdf,svg,ps``).
-show_stats: bool, optional (default: True)
-    Show basic statistics on the plots.
-show_y_minor_ticklabels: bool, optional (default: False)
-    Show tick labels for the minor ticks on the Y axis.
-x_pos_stats_avg: float, optional (default: 0.01)
-    Text x-position of average (shown on the left) in Axes coordinates. Can be
-    adjusted to avoid overlap with the figure. Only relevant if ``show_stats:
-    true``.
-x_pos_stats_bias: float, optional (default: 0.7)
-    Text x-position of bias statistics (shown on the right) in Axes
-    coordinates. Can be adjusted to avoid overlap with the figure. Only
-    relevant if ``show_stats: true``.
-time_format: str, optional (default: None)
-    :func:`~datetime.strftime` format string that is used to format the time
-    axis using :class:`matplotlib.dates.DateFormatter`. If ``None``, use the
-    default formatting imposed by the iris plotting function.
 
 Configuration options for plot type ``1d_profile``
 --------------------------------------------------
@@ -484,6 +399,88 @@ pyplot_kwargs: dict, optional
     ``{project}`` that vary between the different datasets will be transformed
     to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
     of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+
+Configuration options for plot type ``hovmoeller_z_vs_time``
+------------------------------------------------------------
+cbar_label: str, optional (default: '{short_name} [{units}]')
+    Colorbar label. Can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``.
+cbar_label_bias: str, optional (default: 'Δ{short_name} [{units}]')
+    Colorbar label for plotting biases. Can include facets in curly brackets
+    which will be derived from the corresponding dataset, e.g., ``{project}``,
+    ``{short_name}``, ``{exp}``. This option has no effect if no reference
+    dataset is given.
+cbar_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
+    default, uses ``orientation: vertical``.
+cbar_kwargs_bias: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar` for
+    plotting biases. These keyword arguments update (and potentially overwrite)
+    the ``cbar_kwargs`` for the bias plot. This option has no effect if no
+    reference dataset is given.
+common_cbar: bool, optional (default: False)
+    Use a common colorbar for the top panels (i.e., plots of the dataset and
+    the corresponding reference dataset) when using a reference dataset. If
+    neither ``vmin`` and ``vmix`` nor ``levels`` is given in ``plot_kwargs``,
+    the colorbar bounds are inferred from the dataset in the top left panel,
+    which might lead to an inappropriate colorbar for the reference dataset
+    (top right panel). Thus, the use of the ``plot_kwargs`` ``vmin`` and
+    ``vmax`` or ``levels`` is highly recommend when using this ``common_cbar:
+    true``. This option has no effect if no reference dataset is given.
+fontsize: int, optional (default: 10)
+    Fontsize used for ticks, labels and titles. For the latter, use the given
+    fontsize plus 2. Does not affect suptitles.
+log_y: bool, optional (default: True)
+    Use logarithmic Y-axis.
+plot_func: str, optional (default: 'contourf')
+    Plot function used to plot the profiles. Must be a function of
+    :mod:`iris.plot` that supports plotting of 2D cubes with coordinates
+    latitude and altitude/air_pressure.
+plot_kwargs: dict, optional
+    Optional keyword arguments for the plot function defined by ``plot_func``.
+    Dictionary keys are elements identified by ``facet_used_for_labels`` or
+    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
+    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
+    dictionaries used as keyword arguments for the plot function defined by
+    ``plot_func``. String arguments can include facets in curly brackets which
+    will be derived from the corresponding dataset, e.g., ``{project}``,
+    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
+    {vmin: 200, vmax: 250}``.
+plot_kwargs_bias: dict, optional
+    Optional keyword arguments for the plot function defined by ``plot_func``
+    for plotting biases. These keyword arguments update (and potentially
+    overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
+    if no reference dataset is given. See option ``plot_kwargs`` for more
+    details. By default, uses ``cmap: bwr``.
+pyplot_kwargs: dict, optional
+    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
+    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
+    single argument for these functions. String arguments can include facets in
+    curly brackets which will be derived from the corresponding dataset, e.g.,
+    ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
+    Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+rasterize: bool, optional (default: True)
+    If ``True``, use `rasterization
+    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
+    profile plots to produce smaller files. This is only relevant for vector
+    graphics (e.g., ``output_file_type=pdf,svg,ps``).
+show_stats: bool, optional (default: True)
+    Show basic statistics on the plots.
+show_y_minor_ticklabels: bool, optional (default: False)
+    Show tick labels for the minor ticks on the Y axis.
+x_pos_stats_avg: float, optional (default: 0.01)
+    Text x-position of average (shown on the left) in Axes coordinates. Can be
+    adjusted to avoid overlap with the figure. Only relevant if ``show_stats:
+    true``.
+x_pos_stats_bias: float, optional (default: 0.7)
+    Text x-position of bias statistics (shown on the right) in Axes
+    coordinates. Can be adjusted to avoid overlap with the figure. Only
+    relevant if ``show_stats: true``.
+time_format: str, optional (default: None)
+    :func:`~datetime.datetime.strftime` format string that is used to format
+    the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
+    use the default formatting imposed by the iris plotting function.
 
 .. hint::
 
@@ -757,10 +754,10 @@ class MultiDatasets(MonitorBase):
         # Different options for the different plots types
         fontsize = 6.0
         y_pos = 0.95
-        if plot_type == 'map':
-            x_pos_bias = self.plots[plot_type]['x_pos_stats_bias']
-            x_pos = self.plots[plot_type]['x_pos_stats_avg']
-        elif plot_type in ['zonal_mean_profile', 'hovmoeller_z_vs_time']:
+        if all([
+                'x_pos_stats_avg' in self.plots[plot_type],
+                'x_pos_stats_bias' in self.plots[plot_type],
+        ]):
             x_pos_bias = self.plots[plot_type]['x_pos_stats_bias']
             x_pos = self.plots[plot_type]['x_pos_stats_avg']
         else:
@@ -1295,14 +1292,14 @@ class MultiDatasets(MonitorBase):
             axes = fig.add_subplot()
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
-            plot_zonal_mean_profile = plot_func(cube, **plot_kwargs)
+            plot_hovmoeller = plot_func(cube, **plot_kwargs)
 
             # Print statistics if desired
             self._add_stats(plot_type, axes, dim_coords_dat, dataset)
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']
-            colorbar = fig.colorbar(plot_zonal_mean_profile,
+            colorbar = fig.colorbar(plot_hovmoeller,
                                     ax=axes,
                                     **self._get_cbar_kwargs(plot_type))
             colorbar.set_label(self._get_cbar_label(plot_type, dataset),
@@ -2126,8 +2123,8 @@ class MultiDatasets(MonitorBase):
             self.create_map_plot(datasets)
             self.create_zonal_mean_profile_plot(datasets)
             self.create_1d_profile_plot(datasets)
-            self.create_hovmoeller_z_vs_time_plot(datasets)
             self.create_variable_vs_lat_plot(datasets)
+            self.create_hovmoeller_z_vs_time_plot(datasets)
 
 
 def main():

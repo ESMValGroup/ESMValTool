@@ -14,13 +14,8 @@ documentation:
 
 datasets:
   # Note: plot_label currently only used by diagnostic plot_multiple_annual_cycles
-<<<<<<< HEAD
-  - {project: CMIP6, dataset: MPI-ESM1-2-HR,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-HR historical'}
-  - {project: CMIP6, dataset: MPI-ESM1-2-LR,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-LR MPI historical', reference_for_monitor_diags: true}
-=======
-  - {project: CMIP6, dataset: EC-Earth3, exp: historical, ensemble: r1i1p1f1, grid: gr, plot_label: 'EC-Earth3 historical'}
-  - {project: CMIP6, dataset: CanESM5,   exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (CanESM5 historical)', reference_for_monitor_diags: true}
->>>>>>> origin/main
+  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-HR historical'}
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (MPI-ESM1-2-LR historical)', reference_for_monitor_diags: true}
 
 preprocessors:
 
@@ -71,36 +66,27 @@ preprocessors:
       scheme: linear
       coordinate: air_pressure
 
-<<<<<<< HEAD
-  global_mean_pressure:
+  var_vs_lat:
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    zonal_statistics:
+      operator: mean
+
+  global_mean_extract_levels:
     custom_order: true
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev39}
       scheme: linear
       coordinate: air_pressure
-=======
-  var_vs_lat:
-    climate_statistics:
-      operator: mean
->>>>>>> origin/main
     regrid:
       target_grid: 2x2
-      scheme:
-        reference: esmf_regrid.schemes:ESMFAreaWeighted
-<<<<<<< HEAD
+      scheme: linear
     area_statistics:
       operator: mean
 
-  var_vs_lat:
-    climate_statistics:
-      operator: mean
-    zonal_statistics:
-      operator: mean
-=======
-    zonal_statistics:
-      operator: mean
-
->>>>>>> origin/main
 
 diagnostics:
 
@@ -121,9 +107,9 @@ diagnostics:
             annual_mean_kwargs:
               linestyle: '--'
             plot_kwargs:
-              EC-Earth3:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
+              MPI-ESM1-2-HR:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
                 color: C0
-              CanESM5:
+              MPI-ESM1-2-LR:
                 color: black
 
   plot_multiple_annual_cycles:
@@ -142,9 +128,9 @@ diagnostics:
             legend_kwargs:
               loc: upper right
             plot_kwargs:
-              'EC-Earth3 historical':  # = plot_label since 'facet_used_for_labels: plot_label'
+              'MPI-ESM1-2-HR historical':  # = plot_label since 'facet_used_for_labels: plot_label'
                 color: C0
-              'Reference (CanESM5 historical)':
+              'Reference (MPI-ESM1-2-LR historical)':
                 color: black
             pyplot_kwargs:
               title: Near-Surface Air Temperature on Northern Hemisphere
@@ -198,26 +184,25 @@ diagnostics:
         plots:
           1d_profile:
             plot_kwargs:
-              EC-Earth3:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
+              MPI-ESM1-2-HR:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
                 color: C0
-              CanESM5:
+              MPI-ESM1-2-LR:
                 color: black
 
   pressure_vs_time_with_ref:
     description: Plot hovmoeller z vs time including reference datasets.
     variables:
       ta:
-        preprocessor: global_mean_pressure
+        preprocessor: global_mean_extract_levels
         mip: Amon
-        timerange: '2000/2014'
+        timerange: '2000/2004'
     scripts:
       plot:
+        <<: *plot_multi_dataset_default
         script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
         plots:
           hovmoeller_z_vs_time:
-            plot_func: 'contourf'
+            plot_func: contourf
             common_cbar: true
             time_format: '%Y-%m'
             log_y: true
@@ -231,6 +216,7 @@ diagnostics:
         timerange: '20000101/20030101'
     scripts:
       plot:
+        <<: *plot_multi_dataset_default
         script: monitor/multi_datasets.py
         plots:
           variable_vs_lat:
