@@ -124,6 +124,11 @@ authors:
     name: Bojovic, Dragana
     institute: BSC, Spain
     orcid: https://orcid.org/0000-0001-7354-1885
+  bonnet_pauline:
+    name: Bonnet, Pauline
+    institute: DLR, Germany
+    orcid: https://orcid.org/0000-0003-3780-0784
+    github: Paulinebonnet111
   brunner_lukas:
     name: Brunner, Lukas
     institute: ETH Zurich, Switzerland
@@ -252,6 +257,11 @@ authors:
     name: Hempelmann, Nils
     institute: IPSL, France
     orcid:
+  heuer_helge:
+    name: Heuer, Helge
+    institute: DLR, Germany
+    email: helge.heuer@dlr.de
+    orcid: https://orcid.org/0000-0003-2411-7150
   hogan_emma:
     name: Hogan, Emma
     institute: MetOffice, UK
@@ -292,6 +302,11 @@ authors:
     name: Krasting, John
     institute: NOAA, USA
     orcid: https://orcid.org/0000-0002-4650-9844
+  kuehbacher_birgit:
+    name: Kuehbacher, Birgit
+    institute: DLR, Germany
+    email: birgit.kuehbacher@dlr.de
+    orcid:
   lejeune_quentin:
     name: Lejeune, Quentin
     institute: Climate Analytics, Germany
@@ -446,6 +461,11 @@ authors:
     name: Sandstad, Marit
     institute: Cicero, Norway
     orcid:
+  sarauer_ellen:
+    name: Sarauer, Ellen
+    institute: DLR, Germany
+    orcid:
+    github: ellensarauer
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
