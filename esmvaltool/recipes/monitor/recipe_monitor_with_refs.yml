@@ -8,6 +8,9 @@ documentation:
   authors:
     - schlund_manuel
     - winterstein_franziska
+    - sarauer_ellen
+    - kuehbacher_birgit
+    - heuer_helge
   maintainer:
     - schlund_manuel
 
@@ -74,13 +77,15 @@ preprocessors:
       scheme: linear
     zonal_statistics:
       operator: mean
+    convert_units:
+      units: mm day-1
 
   global_mean_extract_levels:
     custom_order: true
     extract_levels:
-      levels: {cmor_table: CMIP6, coordinate: plev39}
+      levels: {cmor_table: CMIP6, coordinate: alt16}
       scheme: linear
-      coordinate: air_pressure
+      coordinate: altitude
     regrid:
       target_grid: 2x2
       scheme: linear
@@ -204,8 +209,10 @@ diagnostics:
           hovmoeller_z_vs_time:
             plot_func: contourf
             common_cbar: true
-            time_format: '%Y-%m'
-            log_y: true
+            time_format: '%Y'
+            log_y: false
+            pyplot_kwargs:
+              ylim: [0, 20000]
 
   plot_variable_vs_latitude:
     description: Creates a single-panel variable plot over latitude.

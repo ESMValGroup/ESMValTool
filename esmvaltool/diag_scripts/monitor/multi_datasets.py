@@ -47,12 +47,12 @@ Currently supported plot types (use the option ``plots`` to specify them):
       for each variable separately, all datasets are plotted in one
       single figure. Input data needs to be 1D with single
       dimension `latitude`.
-    - Hovmoeller Z vs time (plot type ``hovmoeller_z_vs_time``): for each
+    - Hovmoeller Z vs. time (plot type ``hovmoeller_z_vs_time``): for each
       variable and dataset, an individual profile is plotted. If a reference
       dataset is defined, also include this dataset and a bias plot into the
       figure. Note that if a reference dataset is defined, all input datasets
-      need to be given on the same horizontal and vertical grid (you can use
-      the preprocessors :func:`esmvalcore.preprocessor.regrid` and
+      need to be given on the same temporal and vertical grid (you can use
+      the preprocessors :func:`esmvalcore.preprocessor.regrid_time` and
       :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
       needs to be 2D with dimensions `time`, `altitude`/`air_pressure`.
 
@@ -682,18 +682,18 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
                 self.plots[plot_type].setdefault('common_cbar', False)
                 self.plots[plot_type].setdefault('fontsize', 10)
-                self.plots[plot_type].setdefault('log_y', False)
+                self.plots[plot_type].setdefault('log_y', True)
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
                 self.plots[plot_type].setdefault('plot_kwargs', {})
                 self.plots[plot_type].setdefault('plot_kwargs_bias', {})
                 self.plots[plot_type]['plot_kwargs_bias'].setdefault(
                     'cmap', 'bwr')
-                self.plots[plot_type].setdefault('time_format', None)
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('rasterize', True)
                 self.plots[plot_type].setdefault('show_stats', True)
                 self.plots[plot_type].setdefault('show_y_minor_ticklabels',
                                                  False)
+                self.plots[plot_type].setdefault('time_format', None)
                 self.plots[plot_type].setdefault('x_pos_stats_avg', 0.01)
                 self.plots[plot_type].setdefault('x_pos_stats_bias', 0.7)
 
@@ -990,6 +990,7 @@ class MultiDatasets(MonitorBase):
                 axes_data.gridlines(**gridline_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
             self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
+            self._process_pyplot_kwargs(plot_type, dataset)
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -1006,6 +1007,7 @@ class MultiDatasets(MonitorBase):
                 axes_ref.gridlines(**gridline_kwargs)
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
             self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
+            self._process_pyplot_kwargs(plot_type, ref_dataset)
 
             # Add colorbar(s)
             self._add_colorbar(plot_type, plot_data, plot_ref, axes_data,
@@ -1149,6 +1151,7 @@ class MultiDatasets(MonitorBase):
             else:
                 axes_data.get_yaxis().set_minor_formatter(NullFormatter())
             self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
+            self._process_pyplot_kwargs(plot_type, dataset)
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -1163,6 +1166,7 @@ class MultiDatasets(MonitorBase):
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
             plt.setp(axes_ref.get_yticklabels(), visible=False)
             self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
+            self._process_pyplot_kwargs(plot_type, ref_dataset)
 
             # Add colorbar(s)
             self._add_colorbar(plot_type, plot_data, plot_ref, axes_data,
@@ -1274,10 +1278,10 @@ class MultiDatasets(MonitorBase):
         return (plot_path, {netcdf_path: cube})
 
     def _plot_hovmoeller_z_vs_time_without_ref(self, plot_func, dataset):
-        """Plot hovmoeller z vs time for single dataset without reference."""
+        """Plot Hovmoeller Z vs. time for single dataset without reference."""
         plot_type = 'hovmoeller_z_vs_time'
         logger.info(
-            "Plotting homvoeller z vs time without reference dataset"
+            "Plotting Hovmoeller Z vs. time without reference dataset"
             " for '%s'", self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
@@ -1339,10 +1343,10 @@ class MultiDatasets(MonitorBase):
 
     def _plot_hovmoeller_z_vs_time_with_ref(self, plot_func, dataset,
                                             ref_dataset):
-        """Plot hovmoeller z vs time for single dataset with reference."""
+        """Plot Hovmoeller Z vs. time for single dataset with reference."""
         plot_type = 'hovmoeller_z_vs_time'
         logger.info(
-            "Plotting hovmoeller z vs time with reference dataset"
+            "Plotting Hovmoeller z vs. time with reference dataset"
             " '%s' for '%s'", self._get_label(ref_dataset),
             self._get_label(dataset))
 
@@ -1386,6 +1390,7 @@ class MultiDatasets(MonitorBase):
                 axes_data.get_xaxis().set_major_formatter(
                     mdates.DateFormatter(self.plots[plot_type]['time_format']))
             self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
+            self._process_pyplot_kwargs(plot_type, dataset)
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -1404,6 +1409,7 @@ class MultiDatasets(MonitorBase):
                 axes_ref.get_xaxis().set_major_formatter(
                     mdates.DateFormatter(self.plots[plot_type]['time_format']))
             self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
+            self._process_pyplot_kwargs(plot_type, ref_dataset)
 
             # Add colorbar(s)
             self._add_colorbar(plot_type, plot_data, plot_ref, axes_data,
@@ -2039,7 +2045,7 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(netcdf_path, provenance_record)
 
     def create_hovmoeller_z_vs_time_plot(self, datasets):
-        """Create hovmoeller z vs time plot."""
+        """Create Hovmoeller Z vs. time plot."""
         plot_type = 'hovmoeller_z_vs_time'
         if plot_type not in self.plots:
             return
@@ -2069,7 +2075,7 @@ class MultiDatasets(MonitorBase):
                  netcdf_paths) = (self._plot_hovmoeller_z_vs_time_without_ref(
                      plot_func, dataset))
                 caption = (
-                    f"Hovmoeller z vs time of {dataset['long_name']}"
+                    f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
                     f"of dataset "
                     f"{dataset['dataset']} (project {dataset['project']}) "
                     f"from {dataset['start_year']} to {dataset['end_year']}.")
@@ -2078,7 +2084,7 @@ class MultiDatasets(MonitorBase):
                  netcdf_paths) = (self._plot_hovmoeller_z_vs_time_with_ref(
                      plot_func, dataset, ref_dataset))
                 caption = (
-                    f"Hovmoeller z vs time of {dataset['long_name']}"
+                    f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
                     f"of dataset "
                     f"{dataset['dataset']} (project {dataset['project']}) "
                     f"including bias relative to {ref_dataset['dataset']} "
