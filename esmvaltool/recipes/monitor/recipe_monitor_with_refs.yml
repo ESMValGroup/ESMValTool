@@ -194,8 +194,22 @@ diagnostics:
               MPI-ESM1-2-LR:
                 color: black
 
-  pressure_vs_time_with_ref:
-    description: Plot hovmoeller z vs time including reference datasets.
+  plot_variable_vs_latitude:
+    description: Creates a single-panel variable plot over latitude.
+    variables:
+      pr:
+        preprocessor: var_vs_lat
+        mip: Amon
+        timerange: '20000101/20030101'
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          variable_vs_lat:
+
+  plot_hovmoeller_z_vs_time:
+    description: Plot Hovmoeller Z vs. time including reference datasets.
     variables:
       ta:
         preprocessor: global_mean_extract_levels
@@ -213,17 +227,3 @@ diagnostics:
             log_y: false
             pyplot_kwargs:
               ylim: [0, 20000]
-
-  plot_variable_vs_latitude:
-    description: Creates a single-panel variable plot over latitude.
-    variables:
-      pr:
-        preprocessor: var_vs_lat
-        mip: Amon
-        timerange: '20000101/20030101'
-    scripts:
-      plot:
-        <<: *plot_multi_dataset_default
-        script: monitor/multi_datasets.py
-        plots:
-          variable_vs_lat:
