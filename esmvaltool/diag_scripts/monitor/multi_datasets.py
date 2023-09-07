@@ -131,8 +131,9 @@ pyplot_kwargs: dict, optional
     to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
     of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
 time_format: str, optional (default: None)
-    Matplotlib strftime format string for the time axis, if None defaults to
-    time units of iris cube
+    :func:`~datetime.strftime` format string that is used to format the time
+    axis using :class:`matplotlib.dates.DateFormatter`. If ``None``, use the
+    default formatting imposed by the iris plotting function.
 
 Configuration options for plot type ``annual_cycle``
 ----------------------------------------------------
@@ -403,9 +404,10 @@ x_pos_stats_bias: float, optional (default: 0.7)
     Text x-position of bias statistics (shown on the right) in Axes
     coordinates. Can be adjusted to avoid overlap with the figure. Only
     relevant if ``show_stats: true``.
-time_format: str, optional (default: %Y)
-    Matplotlib strftime format string for the time axis, if None defaults to
-    time units of iris cube
+time_format: str, optional (default: None)
+    :func:`~datetime.strftime` format string that is used to format the time
+    axis using :class:`matplotlib.dates.DateFormatter`. If ``None``, use the
+    default formatting imposed by the iris plotting function.
 
 Configuration options for plot type ``1d_profile``
 --------------------------------------------------
@@ -1279,8 +1281,9 @@ class MultiDatasets(MonitorBase):
                     FormatStrFormatter('%.1f'))
             else:
                 axes.get_yaxis().set_minor_formatter(NullFormatter())
-            axes.get_xaxis().set_major_formatter(
-                mdates.DateFormatter(self.plots[plot_type]['time_format']))
+            if self.plots[plot_type]['time_format'] is not None:
+                axes.get_xaxis().set_major_formatter(
+                    mdates.DateFormatter(self.plots[plot_type]['time_format']))
             axes.set_xlabel(f'{time_coord.long_name}')
             self._process_pyplot_kwargs(plot_type, dataset)
 
@@ -1339,8 +1342,9 @@ class MultiDatasets(MonitorBase):
                     FormatStrFormatter('%.1f'))
             else:
                 axes_data.get_yaxis().set_minor_formatter(NullFormatter())
-            axes_data.get_xaxis().set_major_formatter(
-                mdates.DateFormatter(self.plots[plot_type]['time_format']))
+            if self.plots[plot_type]['time_format'] is not None:
+                axes_data.get_xaxis().set_major_formatter(
+                    mdates.DateFormatter(self.plots[plot_type]['time_format']))
             self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
 
             # Plot reference dataset (top right)
@@ -1356,8 +1360,9 @@ class MultiDatasets(MonitorBase):
             plot_ref = plot_func(ref_cube, **plot_kwargs)
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
             plt.setp(axes_ref.get_yticklabels(), visible=False)
-            axes_ref.get_xaxis().set_major_formatter(
-                mdates.DateFormatter(self.plots[plot_type]['time_format']))
+            if self.plots[plot_type]['time_format'] is not None:
+                axes_ref.get_xaxis().set_major_formatter(
+                    mdates.DateFormatter(self.plots[plot_type]['time_format']))
             self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
 
             # Add colorbar(s)
@@ -1380,8 +1385,9 @@ class MultiDatasets(MonitorBase):
             )
             axes_bias.set_xlabel(time_coord.long_name)
             axes_bias.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
-            axes_bias.get_xaxis().set_major_formatter(
-                mdates.DateFormatter(self.plots[plot_type]['time_format']))
+            if self.plots[plot_type]['time_format'] is not None:
+                axes_bias.get_xaxis().set_major_formatter(
+                    mdates.DateFormatter(self.plots[plot_type]['time_format']))
             cbar_kwargs_bias = self._get_cbar_kwargs(plot_type, bias=True)
             cbar_bias = fig.colorbar(plot_bias,
                                      ax=axes_bias,
@@ -1972,7 +1978,7 @@ class MultiDatasets(MonitorBase):
             if self.plots[plot_type]['show_stats']:
                 caption += (
                     " The number in the top left corner corresponds to the "
-                    "spatial mean (weighted by grid cell areas).")
+                    "spatiotemporal mean.")
 
             # Save plot
             plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
