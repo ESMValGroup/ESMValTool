@@ -1,0 +1,89 @@
+# ESMValTool
+# recipe_correlation_map.yml
+---
+documentation:
+  description: |
+    Calculate the temporal correlation (Pearson's r) on a global map.
+
+  title: |
+    Recipe that computes temporal Pearson-r correlation coefficients globally.
+
+  authors:
+    - malles_jan-hendrik
+    - weigel_katja
+
+  maintainer:
+    - unmaintained
+
+preprocessors:
+  ocean_anomalies:
+    custom_order: true
+    regrid:  # this is a predefined name (see https://docs.esmvaltool.org/projects/ESMValCore/en/latest/recipe/preprocessor.html)
+      target_grid: 5x5
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    anomalies:
+      period: month
+    detrend:
+      dimension: time
+    mask_landsea:
+      mask_out: land
+  ocean_anomalies_level:
+    custom_order: true
+    extract_levels:
+      levels: 50000
+      scheme: linear
+      coordinate: air_pressure
+    regrid:
+      target_grid: 5x5
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    anomalies:
+      period: month
+    detrend:
+      dimension: time
+    mask_landsea:
+      mask_out: land
+
+diagnostics:
+  analyses:
+    description: |
+      Pearsons r correlation coefficient with respect to a reference dataset.
+      Note that a mean over the time coordinate is taken before computing the
+      correlation, because there is no preprocessor function to regrid the
+      time coordinate.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ts: &settings
+        mip: Amon
+        timerange: '2000/2001'
+        preprocessor: ocean_anomalies
+        additional_datasets:
+          - {project: CMIP6, dataset: CanESM5, exp: historical, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+      clt:
+        <<: *settings
+      zg:
+        <<: *settings
+        preprocessor: ocean_anomalies_level
+    scripts:
+      correlation_map:
+        reference_variable: ts
+        script: monitor/correlation_map.py
+        pearsonr:
+          corr_coords:
+            - time
+          mdtol: 1.0
+          common_mask: true
+        # plot_title: Cool Correlation
+        plot_config:
+          cmap: coolwarm
+          vmin: -1
+          vmax: 1
+        colorbar_config:
+          label: Pearson's R
+          ticks: [-1, -0.5, 0, 0.5, 1]
+          center: 0
