@@ -182,6 +182,11 @@ authors:
     given-names: Birgit
     orcid: "https://orcid.org/0000-0003-2724-709X"
   -
+    affiliation: "DLR, Germany"
+    family-names: Heuer
+    given-names: Helge
+    orcid: "https://orcid.org/0000-0003-2411-7150"
+  -
     affiliation: "BSC, Spain"
     family-names: Hunter
     given-names: Alasdair
@@ -199,6 +204,10 @@ authors:
     affiliation: "MPI for Biogeochemistry, Germany"
     family-names: Koirala
     given-names: Sujan
+  -
+    affiliation: "DLR, Germany"
+    family-names: Kuehbacher
+    given-names: Birgit
   -
     affiliation: "BSC, Spain"
     family-names: Lledó
@@ -301,6 +310,10 @@ authors:
     given-names: Katja
     orcid: "https://orcid.org/0000-0001-6133-7801"
   -
+    affiliation: "DLR, Germany"
+    family-names: Sarauer
+    given-names: Ellen
+  -
     affiliation: "University of Reading, UK"
     family-names: Roberts
     given-names: Charles
@@ -363,6 +376,11 @@ authors:
     family-names: Ruhe
     given-names: Lukas
     orcid: "https://orcid.org/0000-0001-6349-9118"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Bonnet
+    given-names: Pauline
+    orcid: "https://orcid.org/0000-0003-3780-0784"
 
 cff-version: 1.2.0
 date-released: 2023-07-06
