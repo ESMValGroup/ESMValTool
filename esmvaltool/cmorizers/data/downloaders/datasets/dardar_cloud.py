@@ -57,10 +57,10 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.connect(user, passwd)
 
     if not start_date:
-        start_date = datetime.datetime(2007, 1, 1)
+        start_date = datetime.datetime(2015, 1, 1)
     if not end_date:
         # end_date = datetime.datetime(2016, 12, 31)
-        end_date = datetime.datetime(2007, 12, 31)
+        end_date = datetime.datetime(2014, 12, 31)
 
     loop_date = start_date
     while loop_date <= end_date:
@@ -82,7 +82,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
             downloader.set_cwd("/SPACEBORNE/CLOUDSAT/2C-PRECIP-COLUMN.C5")
             downloader.download_folder(
                 f'{year}/{year}_{month}_{day}/',
-                sub_folder=f'{year}_PRECIP-test',
+                sub_folder=f'{year}_PRECIP',
                 filter_files='')
         except Exception:
             logger.info('No PRECIP files found for date %d-%s-%s',
