@@ -54,7 +54,7 @@ def main(cfg):
             label='Likely (17% - 83%) ranges',
         )
 
-    plt.title('Global mean sea surface temperature')
+    plt.title('Sea surface temperature anomaly')
     plt.legend(loc='upper left')
 
     filename = 'IPCC_AR6_figure_9.3a_1850-2100'
@@ -67,7 +67,7 @@ def main(cfg):
         'references': ['fox-kemper21ipcc'],
         'ancestors': list(cfg['input_data'].keys()),
     }
-    save_figure(filename, provenance_record, cfg)
+    save_figure(filename, provenance_record, cfg, dpi=300)
 
 
 if __name__ == '__main__':
