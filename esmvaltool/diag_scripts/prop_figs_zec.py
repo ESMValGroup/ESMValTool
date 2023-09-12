@@ -106,9 +106,10 @@ def main(cfg):
         plt.figure(1)
         plt.subplot(nmodel,3,mod_index*3+1)
         plt.plot(year[:],q[:],color='black')
-        plt.ylabel('q (W/$m^2$)')
+        plt.ylabel('Heat flux (W/$m^2$)')
 
         plt.axis([0,150,0,2])
+        plt.text (5,0.9*2,'a',fontweight='bold', va='center')
         if mod_index==nmodel-1:
           plt.xlabel('Year')
         plt.text (20,7,dataset,fontsize =10,fontweight='bold', va='center')
@@ -117,9 +118,10 @@ def main(cfg):
         if mod_index < nmodel-1:
           plt.xticks([])
         plt.subplot(nmodel,3,mod_index*3+2)
-        plt.ylabel('f (PgC/yr)')
+        plt.ylabel('Carbon flux (PgC/yr)')
         plt.plot(year[:],atmos_ocean_flux[:],color='black')
         plt.axis([0,150,0,7])
+        plt.text (5,0.9*7,'b',fontweight='bold', va='center')
         if mod_index == 0:
           plt.title('Carbon flux')
         if mod_index == nmodel-1:
@@ -131,6 +133,7 @@ def main(cfg):
         plt.ylabel('(W/$m^2$)/(PgC/yr)')
         plt.plot(year[:],q[:]/(atmos_ocean_flux[:]),color='black')
         plt.axis([0,150,0,2])
+        plt.text (5,0.9*2,'c',fontweight='bold', va='center')
         if mod_index == 0:
           plt.title('Ratio')
         if mod_index == nmodel-1:
@@ -145,11 +148,12 @@ def main(cfg):
         plt.ylabel('\u0394T (K)')
         if mod_index==nmodel-1:
           plt.xlabel('Year')
-          plt.legend(loc="center left",labelspacing=0.1,borderpad=0.1,fontsize=10)
+#          plt.legend(loc="center left",labelspacing=0.1,borderpad=0.1,fontsize=10)
         plt.text (5,10,dataset,fontsize =10,fontweight='bold', va='center')
         if mod_index ==0:
           plt.title('Warming')
         plt.axis([0,150,0,3])
+        plt.text (15,0.9*3,'a',fontweight='bold', va='center')
         if mod_index < nmodel-1:
             plt.xticks([])
         plt.subplot(nmodel,3,mod_index*3+2)
@@ -161,6 +165,7 @@ def main(cfg):
         if mod_index == 0:
           plt.title('Cumulative emissions')
         plt.axis([0,150,0,2])
+        plt.text (15,0.9*2,'b',fontweight='bold', va='center')
         if mod_index < nmodel-1:
           plt.xticks([])
         plt.subplot(nmodel,3,mod_index*3+3)        
@@ -170,13 +175,14 @@ def main(cfg):
         plt.plot(year[:],tas[:]/emiss,color="black",label='\u0394T/E')
         plt.plot([0,1000],[TCRE[mod_index],TCRE[mod_index]],color="gray")
         plt.axis([0,150,0,4])
+        plt.text (15,0.9*4,'c',fontweight='bold', va='center')
         if mod_index == 0:
           plt.title('Ratios')
         if mod_index < nmodel-1:
           plt.xticks([])
         if mod_index == nmodel-1:        
           plt.xlabel('Year')
-          plt.legend(loc="upper left",labelspacing=0.1,borderpad=0.1,fontsize=10)
+          plt.legend(loc="lower left",labelspacing=0.1,borderpad=0.1,fontsize=10)
 #Write data out to a file, one per model.
         with open(plot_dir+'/gillett23_supp_figs1and2_data_'+dataset+'.csv', mode='w') as file:
           data_writer=csv.writer(file,delimiter=',',quotechar='"', quoting=csv.QUOTE_MINIMAL)

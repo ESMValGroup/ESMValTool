@@ -94,7 +94,7 @@ def main(cfg):
         year=list(np.arange(150))
         mod_index=models.index(dataset)        
 
-#Plot Figure 2 in Gillett (2023)
+#Plot Figure 3 in Gillett (2023)
         plt.figure(1)
         plt.subplot(nmodel,3,mod_index*3+1)
         plt.plot(year[:],q[:],color='black')
@@ -110,8 +110,8 @@ def main(cfg):
 #Begin plotting.
         plt.plot(year[:],q_est[:],color='gray')
         plt.axis([0,150,0,8])
-        plt.text (15,0.9*8,dataset,fontsize =7, va='center')
-        plt.text (5,0.9*8,panel_labels[mod_index*3],fontsize =7,fontweight='bold', va='center')
+        plt.text (20,0.9*8,dataset,fontsize =7, va='center')
+        plt.text (10,0.9*8,panel_labels[mod_index*3],fontsize =7,fontweight='bold', va='center')
         if mod_index==nmodel-1:
           plt.xlabel('Year',fontsize=7)
         if mod_index ==0:
@@ -126,7 +126,7 @@ def main(cfg):
         plt.plot(year[:],atmos_ocean_flux[:],color='black',label='ESM')
         plt.plot(year[:],f_est[:],color='gray',label='Analytical')
         plt.axis([0,150,0,95])
-        plt.text (5,0.9*95,panel_labels[mod_index*3+1],fontsize =7,fontweight='bold', va='center')
+        plt.text (10,0.9*95,panel_labels[mod_index*3+1],fontsize =7,fontweight='bold', va='center')
         if mod_index == 0:
           plt.title('Carbon flux',fontsize=7)
         if mod_index == nmodel-1:
@@ -142,7 +142,7 @@ def main(cfg):
         plt.plot(year[:],q[:]/(atmos_ocean_flux[:]),color='black')
         plt.plot([0,1000],[q0/atmos_ocean_flux[0],q0/atmos_ocean_flux[0]],color='gray')
         plt.axis([0,150,0,2])
-        plt.text (5,0.9*2,panel_labels[mod_index*3+2],fontsize =7,fontweight='bold', va='center')
+        plt.text (10,0.9*2,panel_labels[mod_index*3+2],fontsize =7,fontweight='bold', va='center')
         if mod_index == 0:
           plt.title('Ratio',fontsize=7)
         if mod_index == nmodel-1:
@@ -153,7 +153,7 @@ def main(cfg):
         else:
           plt.xticks(fontsize=7)
 
-#Plot Figure 1 in Gillett (2023)
+#Plot Figure 2 in Gillett (2023)
         plt.figure(2)
         plt.subplot(nmodel,3,mod_index*3+1)
         plt.plot(year[:],tas[:],color="black",label='ESM')#,label='\u0394T')
