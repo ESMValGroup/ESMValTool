@@ -3,6 +3,7 @@ import logging
 import os
 import csv
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
 import iris
 from iris.analysis import MEAN
@@ -56,8 +57,9 @@ def main(cfg):
     ECS=[3.87,5.62,5.16,3.00,2.50] #Schlund et al., 2020, Table A2
     TCRE=[2.02,2.09,2.13,1.65,1.32] #Arora et al. 2020, Table 4. Assume same TCRE for all CESM2 models.
     nmodel=len(models)
-    plt.figure(1,figsize=[7.1,6.7])
-    plt.figure(2,figsize=[7.1,6.7])
+    panel_labels=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o']
+    plt.figure(1,figsize=[7.08,6.7])
+    plt.figure(2,figsize=[7.08,6.7])
 
 #Read in data from pre-processed files.
 #Loop over models. Read and plot everything for one model, then move on to the next.
@@ -96,7 +98,7 @@ def main(cfg):
         plt.figure(1)
         plt.subplot(nmodel,3,mod_index*3+1)
         plt.plot(year[:],q[:],color='black')
-        plt.ylabel('q (W/$m^2$)')
+        plt.ylabel('Heat flux (W/$m^2$)',fontsize=7)
 #Calculate values needed for analytical model to compare with ESMs.
         lambda_=F_4co2[mod_index]/(2*ECS[mod_index]) 
         delta_ca=atmos_co2[0] 
@@ -108,85 +110,109 @@ def main(cfg):
 #Begin plotting.
         plt.plot(year[:],q_est[:],color='gray')
         plt.axis([0,150,0,8])
+        plt.text (15,0.9*8,dataset,fontsize =7, va='center')
+        plt.text (5,0.9*8,panel_labels[mod_index*3],fontsize =7,fontweight='bold', va='center')
         if mod_index==nmodel-1:
-          plt.xlabel('Year')
-        plt.text (20,7,dataset,fontsize =10,fontweight='bold', va='center')
+          plt.xlabel('Year',fontsize=7)
         if mod_index ==0:
-          plt.title('Heat flux')
+          plt.title('Heat flux',fontsize=7)
+        plt.yticks(fontsize=7)
         if mod_index < nmodel-1:
           plt.xticks([])
+        else:
+          plt.xticks(fontsize=7)
         plt.subplot(nmodel,3,mod_index*3+2)
-        plt.ylabel('f (PgC/yr)')
+        plt.ylabel('Carbon flux (PgC/yr)',fontsize=7)
         plt.plot(year[:],atmos_ocean_flux[:],color='black',label='ESM')
         plt.plot(year[:],f_est[:],color='gray',label='Analytical')
         plt.axis([0,150,0,95])
+        plt.text (5,0.9*95,panel_labels[mod_index*3+1],fontsize =7,fontweight='bold', va='center')
         if mod_index == 0:
-          plt.title('Carbon flux')
+          plt.title('Carbon flux',fontsize=7)
         if mod_index == nmodel-1:
-          plt.legend(loc="upper right",labelspacing=0.1,borderpad=0.1,fontsize=10)
-          plt.xlabel('Year')
+          plt.legend(loc="upper right",labelspacing=0.1,borderpad=0.1,fontsize=7)
+          plt.xlabel('Year',fontsize=7)
+        plt.yticks(fontsize=7)
         if mod_index < nmodel-1:
           plt.xticks([])
+        else:
+          plt.xticks(fontsize=7)
         plt.subplot(nmodel,3,mod_index*3+3)
-        plt.ylabel('(W/$m^2$)/(PgC/yr)')
+        plt.ylabel('(W/$m^2$)/(PgC/yr)',fontsize=7)
         plt.plot(year[:],q[:]/(atmos_ocean_flux[:]),color='black')
         plt.plot([0,1000],[q0/atmos_ocean_flux[0],q0/atmos_ocean_flux[0]],color='gray')
         plt.axis([0,150,0,2])
+        plt.text (5,0.9*2,panel_labels[mod_index*3+2],fontsize =7,fontweight='bold', va='center')
         if mod_index == 0:
-          plt.title('Ratio')
+          plt.title('Ratio',fontsize=7)
         if mod_index == nmodel-1:
-          plt.xlabel('Year')
+          plt.xlabel('Year',fontsize=7)
+        plt.yticks(fontsize=7)
         if mod_index < nmodel-1:
           plt.xticks([])
+        else:
+          plt.xticks(fontsize=7)
 
 #Plot Figure 1 in Gillett (2023)
         plt.figure(2)
         plt.subplot(nmodel,3,mod_index*3+1)
         plt.plot(year[:],tas[:],color="black",label='ESM')#,label='\u0394T')
         plt.plot(year[:],(q_est[:]*-1.+F_4co2[mod_index])/lambda_,color="gray",label='Analytical')
-        plt.ylabel('\u0394T (K)')
+        plt.ylabel('\u0394T (K)',fontsize=7)
         if mod_index==nmodel-1:
-          plt.xlabel('Year')
-          plt.legend(loc="center left",labelspacing=0.1,borderpad=0.1,fontsize=10)
-        plt.text (5,10,dataset,fontsize =10,fontweight='bold', va='center')
+          plt.xlabel('Year',fontsize=7)
+          plt.legend(loc="upper right",labelspacing=0.1,borderpad=0.1,fontsize=7)
+        plt.text (15,0.9*11.5,dataset, va='center',fontsize=7)
         if mod_index ==0:
-          plt.title('Warming')
+          plt.title('Warming',fontsize=7)
         plt.axis([0,150,0,11.5])
+        plt.text (5,0.9*11.5,panel_labels[mod_index*3],fontsize =7,fontweight='bold', va='center')
+        plt.yticks(fontsize=7)
         if mod_index < nmodel-1:
             plt.xticks([])
+        else:
+          plt.xticks(fontsize=7)
         plt.subplot(nmodel,3,mod_index*3+2)
         plt.fill_between(year[:],np.zeros(150),atmos_co2[:],color="red")
         plt.fill_between(year[:],atmos_co2[:],atmos_co2[:]+ocean_cumflux,color="blue")
         plt.fill_between(year[:],atmos_co2[:]+ocean_cumflux,atmos_co2[:]+ocean_cumflux+land_cumflux,color="green")
         plt.plot(year[:],emiss[:],color="black",label='Cumulative CO2 emissions')
         plt.plot(year[:],emiss_est[:],color="gray",label='Cumulative CO2 emissions - analytical')
-        plt.ylabel('Carbon (EgC)')
+        plt.ylabel('Carbon (EgC)',fontsize=7)
         print ('atmos,ocean,land fractions:',atmos_co2[149]/emiss[149],ocean_cumflux[149]/emiss[149],land_cumflux[149]/emiss[149])
         print ('emiss_est/ocean_cumflux',emiss_est/ocean_cumflux)
         if mod_index == 0:
-          plt.title('Cumulative emissions')
+          plt.title('Cumulative emissions',fontsize=7)
         if mod_index == nmodel-1:
-          plt.text (65,1.3,'Atmosphere',fontsize =10, va='center')
-          plt.text (65,2.1,'Ocean',fontsize =10, va='center')
-          plt.text (65,2.9,'Land',fontsize =10, va='center')
-          plt.xlabel('Year')
+          plt.text (65,1.3,'Atmosphere',fontsize =7, va='center')
+          plt.text (65,2.1,'Ocean',fontsize =7, va='center')
+          plt.text (65,2.9,'Land',fontsize =7, va='center')
+          plt.xlabel('Year',fontsize=7)
         plt.axis([0,150,0,5.5])
+        plt.text (5,0.9*5.5,panel_labels[mod_index*3+1],fontsize =7,fontweight='bold', va='center')
+        plt.yticks(fontsize=7)
         if mod_index < nmodel-1:
           plt.xticks([])
+        else:
+          plt.xticks(fontsize=7)
         plt.subplot(nmodel,3,mod_index*3+3)        
-        plt.ylabel('Ratios (K/EgC)')
+        plt.ylabel('Ratios (K/EgC)',fontsize =7)
         plt.plot(year[:],0.1*tas[:]/ocean_cumflux[:],color='blue',label='0.1\u0394T/\u0394$C_O$')
         plt.plot(year[:],tas[:]/(ocean_cumflux[:]+atmos_co2[:]),color='red',label='\u0394T/(\u0394$C_O$+\u0394$C_A$)')
         plt.plot(year[:],tas[:]/emiss,color="black",label='\u0394T/E')
         plt.plot([0,1000],[TCRE[mod_index],TCRE[mod_index]],color="gray")#,label='TCRE')
         plt.axis([0,150,0,4])
+        plt.text (5,0.9*4,panel_labels[mod_index*3+2],fontsize =7,fontweight='bold', va='center')
         if mod_index == 0:
-          plt.title('Ratios')
+          plt.title('Ratios',fontsize =7)
+        plt.yticks(fontsize=7)
         if mod_index < nmodel-1:
           plt.xticks([])
+        else:
+          plt.xticks(fontsize=7)
         if mod_index == nmodel-1:        
-          plt.xlabel('Year')
-          plt.legend(loc="upper left",labelspacing=0.1,borderpad=0.1,fontsize=10)
+          plt.xlabel('Year',fontsize =7)
+          plt.legend(loc="upper right",labelspacing=0.1,borderpad=0.1,fontsize=7)
 #Write data out to a file, one per model.
         with open(plot_dir+'/gillett23_figs2and3_data_'+dataset+'.csv', mode='w') as file:
           data_writer=csv.writer(file,delimiter=',',quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -202,12 +228,12 @@ def main(cfg):
 #Finalise plots and write them out and close them.
     plt.figure(1)
     plt.tight_layout(pad=0.1)
-    plt.savefig(plot_dir+'/ocean_fluxes.png')
+    plt.savefig(plot_dir+'/ocean_fluxes.pdf')
     plt.close()
 
     plt.figure(2)
     plt.tight_layout(pad=0.1)
-    plt.savefig(plot_dir+'/tcre.png')
+    plt.savefig(plot_dir+'/tcre.pdf')
     plt.close()
 
                                
