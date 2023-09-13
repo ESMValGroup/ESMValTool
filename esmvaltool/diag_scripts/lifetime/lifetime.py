@@ -291,6 +291,7 @@ from esmvaltool.diag_scripts.shared import (
     io,
     run_diagnostic,
 )
+from esmvalcore.cmor._fixes.shared import add_model_level
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -548,31 +549,23 @@ class CH4Lifetime(LifetimeBase):
                 if cube.coords('time', dim_coords=True):
                     ih.unify_time_coord(cube)
 
-                # Check Z-coordinate
-                print(cube.coord('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True))
-                print(cube.coord('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True).points)
-                sys.exit()
-
                 # Set Z-coordinate
                 if cube.coords('air_pressure', dim_coords=True):
                     self.z_coord = 'air_pressure'
-                elif cube.coords('lev', dim_coords=True):
-                    self.z_coord = 'lev'
-
-                # Fix Z-coordinate if present
-                if cube.coords('air_pressure', dim_coords=True):
                     z_coord = cube.coord('air_pressure', dim_coords=True)
                     z_coord.attributes['positive'] = 'down'
                     z_coord.convert_units('hPa')
+                elif cube.coords('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True):
+                    self.z_coord = 'atmosphere_hybrid_sigma_pressure_coordinate'
+                    z_coord = cube.coord('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True)
+                    z_coord.attributes['positive'] = 'down'
+                    add_model_level(cube)
                 elif cube.coords('altitude', dim_coords=True):
-                    z_coord = cube.coord('altitude')
+                    self.z_coord = 'alititude'
+                    z_coord = cube.coord('altitude', dim_coords=True)
                     z_coord.attributes['positive'] = 'up'
-                # maybe add model levels here?
 
                 # cube for each variable
-                if 'tp' in variable['short_name']:
-                    print(variable['short_name'])
-                    print(variable)
                 variables[variable['short_name']] = cube
 
             rho = self._calculate_rho(variables)
@@ -979,7 +972,6 @@ class CH4Lifetime(LifetimeBase):
             else:
                 getattr(plt, func)(arg)
 
-    @staticmethod
     def _check_cube_dimensions(self, cube, plot_type):
         """Check that cube has correct dimensional variables."""
         expected_dimensions_dict = {
@@ -990,6 +982,7 @@ class CH4Lifetime(LifetimeBase):
             '1d_profile': ([self.z_coord]),
 
         }
+        print(plot_type)
         if plot_type not in expected_dimensions_dict:
             raise NotImplementedError(f"plot_type '{plot_type}' not supported")
         expected_dimensions = expected_dimensions_dict[plot_type]
@@ -1068,6 +1061,9 @@ class CH4Lifetime(LifetimeBase):
             cube.convert_units(self.units)
 
             cubes[label] = cube
+            print(plot_type)
+            print(cube)
+            print(self)
             self._check_cube_dimensions(cube, plot_type)
 
             # Plot original time series

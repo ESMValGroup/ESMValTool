@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import yaml
 from copy import deepcopy
 from iris.analysis import MEAN
+from iris.util import broadcast_to_shape
 from mapgenerator.plotting.timeseries import PlotSeries
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, names
@@ -44,60 +45,40 @@ def extract_region(dataset, region, case='reaction'):
     """
     var = dataset[case]
 
-    plev_4d = broadcast_to_shape(
-        var.coord('air_pressure').points,
-        var.shape,
-        var.coord_dims('air_pressure'),
-    )
     if region in ['TROP', 'STRA']:
+    ## - can I choose the troposphere by the preprocessor?
+        if 'tp_i' in dataset['variables']:
+            tp = dataset['variables']['tp_i']
+            z_coord = 'model_level_number'
+        elif 'tp' in dataset['variables']:
+            tp = dataset['variables']['tp']
+            z_coord = 'air_pressure'
+        else:
+            raise NotImplementedError(
+                "Guessing the tropopause pressure is currently not implemented."
+                " You need to provide a variabel containing the tropopause pressure.")
+
+        z_4d = broadcast_to_shape(
+            var.coord(z_coord).points,
+            var.shape,
+            var.coord_dims(z_coord)
+        )
         tp_4d = broadcast_to_shape(
             tp.data,
             var.shape,
             var.coord_dims('time') + var.coord_dims('latitude') + var.coord_dims('longitude'),
         )
+
         if region == 'TROP':
             var.data = np.ma.array(
                 var.data,
-                mask=(plev_4d < tp_4d),
+                mask=(z_4d < tp_4d),
             )
         elif region == 'STRA':
             var.data = np.ma.array(
                 var.data,
-                mask=(plev_4d >= tp_4d),
+                mask=(z_4d >= tp_4d),
             )
-
-    ## The idea is to be able to choose latitudinal areas like tropics or polar region
-    ## and additionally be able to make a vertical extraction...
-    ## question is:
-    ## - is this necessary? You can choose those regions by the preprocessor
-    ## - can I choose the troposphere by the preprocessor?
-    elif isinstance(region, list):
-        start_lat = region[0]
-        end_lat = region[1]
-        start_lev = region[2]
-        end_lev = region[3]
-
-        tp_upper_4d = broadcast_to_shape(
-            float(end_lev),
-            var.shape,
-            var.coord_dims('time') + var.coord_dims('air_pressure')
-            + var.coord_dims('latitude') + var.coord_dims('longitude'),
-        )
-
-        tp_lower_4d = broadcast_to_shape(
-            float(start_lev),
-            var.shape,
-            var.coord_dims('time') + var.coord_dims('air_pressure')
-            + var.coord_dims('latitude') + var.coord_dims('longitude'),
-        )
-
-        var = esmvalcore.extract_region(var, 0., 360., start_lat, end_lat)
-
-        var.data = np.ma.array(
-            var.data,
-            mask=(tp_lower_4d <= plev_4d < tp_upper_4d),
-        )
-
     else:
         raise NotImplementedError(f"region '{region}' is not supported")
 
@@ -108,9 +89,11 @@ def sum_up_to_plot_dimensions(var, plot_type):
     Returns the cube summed over the appropriate dimensions
     """
     if var.coords('air_pressure', dim_coords=True):
-        z_coord = 'air_pressure'
+        z_coord = var.coords('air_pressure', dim_coords=True)
     elif var.coords('lev', dim_coords=True):
-        z_coord = 'lev'
+        z_coord = var.coords('lev', dim_coords=True)
+    elif var.coords('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True):
+        z_coord = var.coords('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True)[0]
 
     if plot_type == 'timeseries':
         cube = var.collapsed(['longitude', 'latitude', z_coord], iris.analysis.SUM)
@@ -119,6 +102,7 @@ def sum_up_to_plot_dimensions(var, plot_type):
     elif plot_type == '1d_profile':
         cube = var.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
     elif plot_type == 'annual_cycle':
+        # TODO!
         cube = var.collapsed(['longitude', 'latitude', z_coord], iris.analysis.SUM)
 
     return cube
