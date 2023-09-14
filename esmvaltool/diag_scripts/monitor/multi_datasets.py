@@ -769,7 +769,7 @@ class MultiDatasets(MonitorBase):
         for dataset in input_data:
             filename = dataset['filename']
             logger.info("Loading %s", filename)
-            cube = iris.load_cube(filename)
+            cube = iris.load_cube(filename, dataset['variable_group'])
 
             # Fix time coordinate if present
             if cube.coords('time', dim_coords=True):
