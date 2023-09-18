@@ -72,12 +72,12 @@ def extract_region(dataset, region, case='reaction'):
         if region == 'TROP':
             var.data = np.ma.array(
                 var.data,
-                mask=(z_4d < tp_4d),
+                mask=(z_4d <= tp_4d),
             )
         elif region == 'STRA':
             var.data = np.ma.array(
                 var.data,
-                mask=(z_4d >= tp_4d),
+                mask=(z_4d > tp_4d),
             )
     else:
         raise NotImplementedError(f"region '{region}' is not supported")

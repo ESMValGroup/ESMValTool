@@ -982,7 +982,6 @@ class CH4Lifetime(LifetimeBase):
             '1d_profile': ([self.z_coord]),
 
         }
-        print(plot_type)
         if plot_type not in expected_dimensions_dict:
             raise NotImplementedError(f"plot_type '{plot_type}' not supported")
         expected_dimensions = expected_dimensions_dict[plot_type]
@@ -1061,9 +1060,6 @@ class CH4Lifetime(LifetimeBase):
             cube.convert_units(self.units)
 
             cubes[label] = cube
-            print(plot_type)
-            print(cube)
-            print(self)
             self._check_cube_dimensions(cube, plot_type)
 
             # Plot original time series
