@@ -1,0 +1,159 @@
+###############################################################################
+# PYTHON STYLE FILE
+# cmip6.yml
+# created by 'convert_ncl_style.py'.
+###############################################################################
+# This file defines plot attributes for certain datasets.
+#
+# Template:
+#
+# DATASET:
+#   avgstd: 0
+#   color: '#ffffff'
+#   dash: --
+#   facecolor: none
+#   mark: X
+#   thick: 1
+#
+# DATASET:   dataset name (same as given in the main recipe)
+# avgstd:    0 = takes part in the calculation of mean and stddev
+#            1 = does not take part in the calculation of mean and stddev
+#            (usually 0 for models, 1 for observations/reanalysis)
+# color:     hex RGB or RGBA string (e.g. #0f0fa1), see
+#            http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGB
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGBA
+# dash:      matplotlib dash pattern (linestyle)
+# facecolor: Color of the filling (none = no filling)
+# mark:      marker string for markers (used in matplotlib), see
+#            https://matplotlib.org/api/markers_api.html
+#            https://www.ncl.ucar.edu/Document/Graphics/Images/markers.png
+# thick:     line thickness
+###############################################################################
+
+CNRM-CM6-1:
+  avgstd: 0
+  color: '#c0c0c0'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 2
+CNRM-CM6-1-HR:
+  avgstd: 0
+  color: '#c0c0c0'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 2
+CNRM-ESM2-1:
+  avgstd: 0
+  color: '#c0c0c0'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 2
+CanESM5:
+  avgstd: 0
+  color: '#c0c0c0'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 2
+CanESM5-1:
+  avgstd: 0
+  color: '#533A71'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 2
+CanESM5-1(p1):
+  avgstd: 0
+  color: '#533A71'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 2
+CanESM5-1(p2):
+  avgstd: 0
+  color: '#D17B0F'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 2
+ERA5:
+  avgstd: 0
+  color: '#f15574'
+  dash: '-'
+  facecolor: none
+  mark: X
+  thick: 3
+ESACCI-WATERVAPOUR:
+  avgstd: 1
+  color: '#337ca0'
+  dash: '-'
+  facecolor: '#000000'
+  mark: o
+  thick: 3
+HadGEM3-GC31-LL:
+  avgstd: 0
+  color: '#c0c0c0'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 2
+HadGEM3-GC31-MM:
+  avgstd: 0
+  color: '#c0c0c0'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 2
+MIROC6:
+  avgstd: 0
+  color: '#c0c0c0'
+  dash: '-'
+  facecolor: none
+  mark: s
+  thick: 2
+MPI-ESM1-2-LR:
+  avgstd: 0
+  color: '#c0c0c0'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 2
+MultiModelMean:
+  avgstd: 1
+  color: '#ff0000'
+  dash: '-'
+  facecolor: none
+  mark: '*'
+  thick: 3
+NorESM2-LM:
+  avgstd: 0
+  color: '#c0c0c0'
+  dash: ':'
+  facecolor: none
+  mark: o
+  thick: 2
+NorESM2-MM:
+  avgstd: 0
+  color: '#c0c0c0'
+  dash: -.
+  facecolor: none
+  mark: s
+  thick: 2
+UKESM1-0-LL:
+  avgstd: 0
+  color: '#c0c0c0'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 2
+default:
+  avgstd: 0
+  color: '#c0c0c0'
+  dash: '-'
+  facecolor: '#000000'
+  mark: o
+  thick: 1

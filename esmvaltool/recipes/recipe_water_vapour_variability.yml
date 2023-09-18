@@ -11,9 +11,9 @@ documentation:
     - malinina_elizaveta
 
 preprocessors:
-  annual_globe_regrid: &regrid
+  annual_globe: &regrid
     regrid:
-      target_grid: reference_dataset
+      target_grid: 1x1
       scheme: linear
   winter_globe: &winter
     extract_season:
@@ -39,68 +39,154 @@ preprocessors:
   fall_regrid: 
     <<: *regrid
     <<: *fall
+  annual_tropics: &tropics
+    <<: *regrid
+    extract_region: 
+      start_longitude: -180
+      end_longitude: 180
+      start_latitude: -30
+      end_latitude: 30
+  winter_tropics: 
+    <<: *tropics
+    <<: *winter
+  spring_tropics: 
+    <<: *tropics
+    <<: *spring
+  summer_tropics: 
+    <<: *tropics
+    <<: *summer
+  fall_tropics: 
+    <<: *tropics
+    <<: *fall
 
-datasets_cmip_126: &datasets_cmip_126
-  - {dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
-  - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+datasets:
+  - {dataset: CanESM5-1, institute: CCCma, ensemble: "r1i1p(1:2)f1", grid: gn, project: CMIP6}
   - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
   - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
   - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr, project: CMIP6}
   - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
   - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
   - {dataset: MIROC6, ensemble: "r(1:3)i1p1f1", grid: gn, project: CMIP6}
-  - {dataset: MPI-ESM1-2-LR, ensemble: "r(11:30)i1p1f1", grid: gn, project: CMIP6}
+  - {dataset: MPI-ESM1-2-LR, ensemble: "r(11:13)i1p1f1", grid: gn, project: CMIP6} # 14 has weird skewness, for now taken out
+  - {dataset: MPI-ESM1-2-LR, ensemble: "r(15:30)i1p1f1", grid: gn, project: CMIP6}
   - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
   - {dataset: NorESM2-MM, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
   - {dataset: UKESM1-0-LL, ensemble: "r(1:4)i1p1f2", grid: gn, project: CMIP6}
   - {dataset: UKESM1-0-LL, ensemble: "r(8:12)i1p1f2", grid: gn, project: CMIP6}
   - {dataset: UKESM1-0-LL, ensemble: "r(16:19)i1p1f2", grid: gn, project: CMIP6}
-  # - {dataset: CESM2, ensemble: r4i1p1f1, grid: gn} 1 Jan 2015 problem
-  # - {dataset: CESM2, ensemble: "r(10:11)i1p1f1", grid: gn}
-  # - {dataset: CESM2-WACCM, ensemble: r1i1p1f1, grid: gn}
-
-datasets_cmip_245: &datasets_cmip_245
-  - {dataset: GFDL-CM4, institute: NOAA-GFDL, ensemble: r1i1p1f1, grid: gr2, project: CMIP6}
-  - {dataset: MIROC6, ensemble: "r(1:3)i1p1f1", grid: gn, project: CMIP6}
-  - {dataset: MPI-ESM1-2-LR, ensemble: "r(11:30)i1p1f1", grid: gn, project: CMIP6}
-  - {dataset: NorESM2-LM, ensemble: "r(1:3)i1p1f1", grid: gn, project: CMIP6}
-  - {dataset: NorESM2-MM, ensemble: "r(1:2)i1p1f1", grid: gn, project: CMIP6}
-
-dataset_era: &dataset_era
   - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
-
-dataset_obs: &datasets_obs
-  - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat,
-             version: CDR2-L3S-05deg_fv3.1, tier: 3}
+  # - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat,
+  #            version: CDR2_L3C-05deg_fv3.1, tier: 3}
+  # - {dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn, project: CMIP6} too small mean
+  # - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6} too small mean
+  # # - {dataset: CESM2, ensemble: r4i1p1f1, grid: gn} 1 Jan 2015 problem
+  # - {dataset: CESM2, ensemble: "r(10:11)i1p1f1", grid: gn} problem
+  # - {dataset: CESM2-WACCM, ensemble: r1i1p1f1, grid: gn} problem
 
 diagnostics:
-  prw_now:
-    description: Figure for water vapour variability
+  prw_trop:
+    description: Figure for water vapour variability pdfs
     variables:
       annual:
         short_name: prw
-        preprocessor: annual_globe_regrid
+        preprocessor: annual_tropics
         exp: [historical, ssp126]
         start_year: 1980
         end_year: 2022
         mip: Eday
         reference_dataset: ERA5
-        additional_datasets: *dataset_era
-    additional_datasets: *datasets_cmip_126
-      # winter:
-      #   short_name: prw
-      #   exp: [historical, ssp126]
-      #   start_year: 1980
-      #   end_year: 2022
-      #   mip: Eday
-      #   reference_dataset: ERA5
-      #   additional_datasets: *datasets_cmip_126
-      #                        *dataset_era
-        
+      winter:
+        short_name: prw
+        preprocessor: winter_tropics
+        exp: [historical, ssp126]
+        start_year: 1980
+        end_year: 2022
+        mip: Eday
+        reference_dataset: ERA5
+      spring:
+        short_name: prw
+        preprocessor: spring_tropics
+        exp: [historical, ssp126]
+        start_year: 1980
+        end_year: 2022
+        mip: Eday
+        reference_dataset: ERA5
+      summer:
+        short_name: prw
+        preprocessor: summer_tropics
+        exp: [historical, ssp126]
+        start_year: 1980
+        end_year: 2022
+        mip: Eday
+        reference_dataset: ERA5
+      fall:
+        short_name: prw
+        preprocessor: fall_tropics
+        exp: [historical, ssp126]
+        start_year: 1980
+        end_year: 2022
+        mip: Eday
+        reference_dataset: ERA5
+    scripts: 
+      slopes: 
+        script: water_vapour/distribution_moments_slopes.py
+        mpl_style: cccma_wv
+        time_range: 1980-2022
+        region: tropics
+      pdfs: 
+        script: water_vapour/distribution_moments_pdfs.py
+        mpl_style: cccma_wv
+        time_range: 1980-2022
+        region: tropics
+  prw_glob:
+    description: Figure for water vapour variability
+    variables:
+      annual:
+        short_name: prw
+        preprocessor: annual_globe
+        exp: [historical, ssp126]
+        start_year: 1980
+        end_year: 2022
+        mip: Eday
+        reference_dataset: ERA5  
+      winter:
+        short_name: prw
+        preprocessor: winter_regrid
+        exp: [historical, ssp126]
+        start_year: 1980
+        end_year: 2022
+        mip: Eday
+        reference_dataset: ERA5  
+      spring:
+        short_name: prw
+        preprocessor: spring_regrid
+        exp: [historical, ssp126]
+        start_year: 1980
+        end_year: 2022
+        mip: Eday
+        reference_dataset: ERA5  
+      summer:
+        short_name: prw
+        preprocessor: summer_regrid
+        exp: [historical, ssp126]
+        start_year: 1980
+        end_year: 2022
+        mip: Eday
+        reference_dataset: ERA5  
+      fall:
+        short_name: prw
+        preprocessor: fall_regrid
+        exp: [historical, ssp126]
+        start_year: 1980
+        end_year: 2022
+        mip: Eday
+        reference_dataset: ERA5  
     scripts: 
       maps:
         script: water_vapour/distribution_moments_maps.py 
         mpl_style: cccma_wv
-      slopes: 
-        script: water_vapour/distribution_moments_slopes.py
+        time_range: 1980-2022
+      scatter: 
+        script: water_vapour/distribution_moments_scatter.py
         mpl_style: cccma_wv
+        time_range: 1980-2022
