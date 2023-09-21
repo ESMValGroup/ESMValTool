@@ -1,0 +1,134 @@
+# ESMValTool
+# recipe_flato13ipcc_figure_914.yml
+---
+documentation:
+  title: IPCC AR5, chap. 9 diagnostics for 9.14
+
+  description: |
+    Reproducing Fig. 9.14 from IPCC AR5, chap. 9 (Flato et al., 2013).
+    Data sets taken out were part of the original publication but are
+    currently not available on ESGF.
+
+  authors:
+    - bock_lisa
+    - gier_bettina
+    - lauer_axel
+    - schlund_manuel
+    - senftleben_daniel
+    - zimmermann_klaus
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - flato13ipcc
+
+  projects:
+    - embrace
+    - esmval
+    - crescendo
+
+
+preprocessors:
+
+  zonal_mean:
+    custom_order: true
+    climate_statistics:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    zonal_statistics:
+      operator: mean
+    convert_units:
+      units: degC
+
+  equatorial:
+    custom_order: true
+    climate_statistics:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -5.
+      end_latitude: 5.
+    meridional_statistics:
+      operator: mean
+    convert_units:
+      units: degC
+
+diagnostics:
+
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.14
+  # **********************************************************************
+  # SST zonal mean and equatorial, multi model mean
+  # **********************************************************************
+
+  fig09-14:
+    title: Fig. 9.14 (SST)
+    description: |
+      IPCC AR5 Ch. 9, Fig. 9.14 (sst error, zonal mean and equatorial)
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      tos_zm: &fig09_14_settings
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        mip: Omon
+        short_name: tos
+        preprocessor: zonal_mean
+        reference_dataset: HadISST
+        start_year: 1979
+        end_year: 1999
+      tos_eq:
+        <<: *fig09_14_settings
+        preprocessor: equatorial
+    additional_datasets:
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      # - {dataset: bcc-csm1-1-m}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
+      - {dataset: CNRM-CM5}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: EC-EARTH}
+      - {dataset: FGOALS-g2}
+      - {dataset: FIO-ESM}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-R}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+    scripts:
+      fig09-14:
+        script: ipcc_ar5/ch09_fig09_14.py

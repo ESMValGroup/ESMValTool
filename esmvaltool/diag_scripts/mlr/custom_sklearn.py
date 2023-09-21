@@ -86,6 +86,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 _DEFAULT_TAGS = {
+    'array_api_support': False,
     'non_deterministic': False,
     'requires_positive_X': False,
     'requires_positive_y': False,
@@ -728,7 +729,7 @@ class AdvancedRFE(RFE):
             raise ValueError("Step must be >0")
 
         support_ = np.ones(n_features, dtype=bool)
-        ranking_ = np.ones(n_features, dtype=int)
+        ranking_ = np.ones(n_features, dtype=np.int64)
 
         if step_score:
             self.scores_ = []

@@ -197,9 +197,37 @@ Annual cycle of tas including a reference dataset.
 
 Global climatology of tas including a reference dataset.
 
-.. _fig_profile_with_ref:
-.. figure::  /recipes/figures/monitor/profile_with_ref.png
+.. _fig_zonal_mean_profile_with_ref:
+.. figure::  /recipes/figures/monitor/zonalmean_profile_with_ref.png
    :align:   center
    :width:   14cm
 
-Vertical profile of ta including a reference dataset.
+Zonal mean profile of ta including a reference dataset.
+
+.. _fig_1d_profile_with_ref:
+.. figure::  /recipes/figures/monitor/1d_profile_with_ref.png
+   :align:   center
+   :width:   14cm
+
+1D profile of ta including a reference dataset.
+
+.. _fig_variable_vs_lat_with_ref:
+.. figure::  /recipes/figures/monitor/variable_vs_lat_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Zonal mean pr including a reference dataset.
+
+.. _fig_hovmoeller_z_vs_time_with_ref:
+.. figure::  /recipes/figures/monitor/hovmoeller_z_vs_time_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Hovmoeller plot (pressure vs. time) of ta including a reference dataset.
+
+.. _fig_hovmoeller_time_vs_lat_with_ref:
+.. figure:: /recipes/figures/monitor/hovmoeller_time_vs_lat_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Hovmoeller plot (time vs. latitude) of tas including a reference dataset

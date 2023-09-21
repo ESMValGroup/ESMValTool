@@ -288,6 +288,18 @@ diagnostics:
     scripts: null
 
 
+  ESDC:
+    description: ESDC check
+    variables:
+      tas:
+      tasmin:
+      tasmax:
+    additional_datasets:
+      - {dataset: ESDC, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 3.0.1,
+         start_year: 1979, end_year: 2021}
+    scripts: null
+
   ESRL:
     description: ESRL check
     variables:
@@ -404,6 +416,14 @@ diagnostics:
          version: v2018_25-numgauge1, start_year: 1891, end_year: 2016}
     scripts: null
 
+  GPCP-SG:
+    description: GPCP-SG check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: GPCP-SG, project: OBS, mip: Amon, tier: 2, type: atmos,
+         version: 2.3,  start_year: 1979,  end_year: 2022}
+    scripts: null
 
   HadCRUT3:
     description: HadCRUT3 check
@@ -452,7 +472,7 @@ diagnostics:
         mip: OImon
     additional_datasets:
       - {dataset: HadISST, project: OBS, tier: 2,
-         type: reanaly, version: 1, start_year: 1870, end_year: 2017}
+         type: reanaly, version: 1, start_year: 1870, end_year: 2021}
     scripts: null
 
 
@@ -487,7 +507,7 @@ diagnostics:
       rsutcs:
     additional_datasets:
       - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
-         type: reanaly, version: 1, start_year: 1979, end_year: 2013} 
+         type: reanaly, version: 1, start_year: 1979, end_year: 2013}
     scripts: null
 
   Kadow2020:
@@ -532,10 +552,14 @@ diagnostics:
     scripts: null
 
 
-  NCEP:
-    description: NCEP check
+  NCEP-NCAR-R1:
+    description: NCEP-NCAR-R1 check
     variables:
+      clt:
+        mip: Amon
       hur:
+        mip: Amon
+      hurs:
         mip: Amon
       hus:
         mip: Amon
@@ -545,11 +569,33 @@ diagnostics:
       pr_day:
         short_name: pr
         mip: day
-      rlut:
+      prw:
+        mip: Amon
+      psl:
+        mip: Amon
+      rlut_day:
+        short_name: rlut
         mip: day
+      rlut_month:
+        short_name: rlut
+        mip: Amon
+      rlutcs:
+        mip: Amon
+      rsut:
+        mip: Amon
+      rsutcs:
+        mip: Amon
+      sfcWind:
+        mip: Amon
       ta:
         mip: Amon
       tas:
+        mip: Amon
+      tasmax:
+        mip: Amon
+      tasmin:
+        mip: Amon
+      ts:
         mip: Amon
       ua_month:
         short_name: ua
@@ -568,8 +614,53 @@ diagnostics:
       zg:
         mip: Amon
     additional_datasets:
-      - {dataset: NCEP, project: OBS, tier: 2,
-         type: reanaly, version: 1, start_year: 1948, end_year: 2018}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, tier: 2,
+         type: reanaly, version: 1, start_year: 1948, end_year: 2021}
+    scripts: null
+
+
+  NCEP-DOE-R2:
+    description: NCEP-DOE-R2 check
+    variables:
+      clt:
+      hur:
+      prw:
+      ta:
+    additional_datasets:
+      - {dataset: NCEP-DOE-R2, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 2, start_year: 1979, end_year: 2021}
+    scripts: null
+
+
+  NOAA-CIRES-20CR-V2:
+    description: NOAA-CIRES-20CR-V2 check
+    variables:
+      clt:
+      clwvi:
+      hus:
+      prw:
+      rlut:
+      rsut:
+    additional_datasets:
+      - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: v2, start_year: 1871, end_year: 2012}
+    scripts: null
+
+
+  NOAA-CIRES-20CR-V3:
+    description: NOAA-CIRES-20CR-V3 check
+    variables:
+      clt:
+      clwvi:
+      hus:
+      prw:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+    additional_datasets:
+      - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: v3, start_year: 1836, end_year: 2015}
     scripts: null
 
 
@@ -715,6 +806,26 @@ diagnostics:
              type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
           - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
              type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
+    scripts: null
+
+
+  TCOM-CH4:
+    description: TCOM-CH4 check
+    variables:
+      ch4:
+    additional_datasets:
+      - {dataset: TCOM-CH4, project: OBS6, mip: Amon, frequency: day, tier: 2,
+         type: reanaly, version: '1.0', start_year: 1991, end_year: 2021}
+    scripts: null
+
+
+  TCOM-N2O:
+    description: TCOM-N2O check
+    variables:
+      n2o:
+    additional_datasets:
+      - {dataset: TCOM-N2O, project: OBS6, mip: Amon, frequency: day, tier: 2,
+         type: reanaly, version: '1.0', start_year: 1991, end_year: 2021}
     scripts: null
 
 
@@ -1406,7 +1517,7 @@ diagnostics:
         mip: fx
     additional_datasets:
       - {dataset: ERA5, project: native6, tier: 3, type: reanaly,
-         version: 1, start_year: 1990, end_year: 1990}
+         version: v1, start_year: 1990, end_year: 1990}
     scripts: null
 
 
@@ -1499,6 +1610,38 @@ diagnostics:
     additional_datasets:
       - {dataset: MAC-LWP, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v1, start_year: 1988, end_year: 2016}
+    scripts: null
+
+  MERRA:
+    description: MERRA check
+    variables:
+      cli:
+      clivi:
+      clt:
+      clw:
+      clwvi:
+      hur:
+      hus:
+      lwp:
+      pr:
+      prw:
+      ps:
+      psl:
+      rlut:
+      rlutcs:
+      rsdt:
+      rsut:
+      rsutcs:
+      ta:
+      tas:
+      ts:
+      ua:
+      va:
+      wap:
+      zg:
+    additional_datasets:
+      - {dataset: MERRA, project: OBS, tier: 3, mip: Amon,
+         type: reanaly, version: 5.2.0, start_year: 1979, end_year: 2015}
     scripts: null
 
 
@@ -1624,6 +1767,21 @@ diagnostics:
         mip: Amon
       hur_monthly:
         short_name: hur
+        mip: Amon
+      cl_monthly:
+        short_name: cl
+        mip: Amon
+      clw_monthly:
+        short_name: clw
+        mip: Amon
+      cli_monthly:
+        short_name: cli
+        mip: Amon
+      clwvi_monthly:
+        short_name: clwvi
+        mip: Amon
+      clivi_monthly:
+        short_name: clivi
         mip: Amon
     additional_datasets:
       - {dataset: MERRA2, project: OBS6, tier: 3,

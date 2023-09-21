@@ -29,8 +29,6 @@ preprocessors:
   spatial_mean:
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
 
 
 diagnostics:
@@ -80,7 +78,7 @@ diagnostics:
         script: climate_metrics/psi.py
 
   diag_cox18nature:
-    description: Plot emergent relationship between ECS ans psi.
+    description: Plot emergent relationship between ECS and psi.
     scripts:
       cox18nature:
         script: emergent_constraints/cox18nature.py

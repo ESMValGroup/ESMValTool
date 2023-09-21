@@ -20,6 +20,7 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
+        'aiohttp',
         'cartopy',
         'cdo',
         'cdsapi',
@@ -27,25 +28,27 @@ REQUIREMENTS = {
         'cftime',
         'cmocean',
         'dask',
+        'distributed',
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
         'esmvalcore',
-        'esmf-regrid',
+        'esmf-regrid>=0.7.0',
         'fiona',
         'GDAL',
         'jinja2',
         'joblib',
         'lime',
         'mapgenerator>=1.0.5',
-        'matplotlib<3.6.0',  # github.com/ESMValGroup/ESMValTool/issues/2800
+        'matplotlib',
         'natsort',
         'nc-time-axis',
         'netCDF4',
-        'numpy',
+        'numpy!=1.24.3',  # severe masking bug
+        'packaging',
         'openpyxl',
         'pandas',
-        'pyproj',
+        'pyproj>=2.1',
         'pyyaml',
         'progressbar2',
         'psyplot',
@@ -57,14 +60,17 @@ REQUIREMENTS = {
         'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris',
+        # See the following issue for info on the iris pin below:
+        # https://github.com/ESMValGroup/ESMValTool/issues/3239#issuecomment-1613298587
+        'scitools-iris>=3.4.0',
         'seaborn',
         'seawater',
-        'shapely<2.0.0',  # github.com/ESMValGroup/ESMValTool/issues/2965
-        'xarray',
-        'xesmf==0.3.0',
+        'shapely',
+        'xarray>=0.12.0',
+        'xesmf>=0.7.1',
         'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
+        'zarr',
     ],
     # Test dependencies
     # Execute `pip install .[test]` once and the use `pytest` to run tests
@@ -81,8 +87,9 @@ REQUIREMENTS = {
     # Documentation dependencies
     'doc': [
         'autodocsumm>=0.2.2',
-        'sphinx>=5',
-        'sphinx_rtd_theme',
+        'nbsphinx',
+        'sphinx>=6.1.3',
+        'pydata-sphinx-theme',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
@@ -101,6 +108,7 @@ REQUIREMENTS = {
 
 def discover_python_files(paths, ignore):
     """Discover Python files."""
+
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
         return any(re.match(pattern, path) for pattern in ignore)
@@ -208,9 +216,9 @@ setup(
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Atmospheric Science',
         'Topic :: Scientific/Engineering :: GIS',

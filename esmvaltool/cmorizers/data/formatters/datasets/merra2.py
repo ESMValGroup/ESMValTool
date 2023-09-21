@@ -74,6 +74,11 @@ def _var_pairs(cube_list, var_parts, oper):
             cube_1 - cube_2 for cube_1, cube_2 in zip(selected_1, selected_2)
         ]
         selected = iris.cube.CubeList(selected)
+    elif oper == "+":
+        selected = [
+            cube_1 + cube_2 for cube_1, cube_2 in zip(selected_1, selected_2)
+        ]
+        selected = iris.cube.CubeList(selected)
     else:
         raise NotImplementedError(f"Pairwise variables operation {oper} "
                                   "not implemented yet, you can do it "
@@ -139,6 +144,16 @@ def _fix_coordinates(cube, definition):
             coord = cube.coord(axis=axis)
             if axis == 'T':
                 coord.convert_units('days since 1850-1-1 00:00:00.0')
+            elif axis == 'Z':
+                if coord.units == "hPa":
+                    coord.convert_units('Pa')
+                else:
+                    try:
+                        coord.convert_units('Pa')
+                    except ValueError as exc:
+                        logger.error("Attempting to convert units for "
+                                     "coordinate %s to Pa", coord)
+                        raise exc
             coord.standard_name = coord_def.standard_name
             coord.var_name = coord_def.out_name
             coord.long_name = coord_def.long_name
@@ -146,13 +161,14 @@ def _fix_coordinates(cube, definition):
             if len(coord.points) > 1:
                 coord.guess_bounds()
         else:
-            # special case for UV
-            # variable "uv" (raw: "V") comes with "alevel" instead
+            # special case for UV and 3-dim cloud variables:
+            # variables come with "alevel" instead
             # of "plev19" in the table; "alevel" has empty fields for
             # standard_name, out_name etc. so we need to set them; it's safe
             # to do so since the cmor checker/fixer will convert that during
             # preprocessing at cmor fix stage
-            if cube.var_name == "uv" and axis == "Z":
+            specialvars = ('uv', 'cl', 'cli', 'clw')
+            if cube.var_name in specialvars and axis == "Z":
                 coord = cube.coord(axis=axis)
                 coord_def = definition.coordinates.get('alevel')
                 coord.standard_name = "air_pressure"
@@ -161,6 +177,16 @@ def _fix_coordinates(cube, definition):
                 coord.points = coord.core_points().astype('float64')
                 if len(coord.points) > 1:
                     coord.guess_bounds()
+
+                if coord.units == "hPa":
+                    coord.convert_units('Pa')
+                else:
+                    try:
+                        coord.convert_units('Pa')
+                    except ValueError as exc:
+                        logger.error("Attempting to convert units for "
+                                     "coordinate %s to Pa", coord)
+                        raise exc
 
     return cube
 
@@ -251,7 +277,10 @@ def _extract_variable(in_files, var, cfg, out_dir):
     cube = _fix_time_monthly(cube)
 
     logger.debug("Saving cube\n%s", cube)
-    utils.save_variable(cube, cube.var_name, out_dir, attributes)
+    logger.debug("Setting time dimension to UNLIMITED while saving!")
+    utils.save_variable(cube, cube.var_name,
+                        out_dir, attributes,
+                        unlimited_dimensions=['time'])
     logger.info("Finished CMORizing %s", ', '.join(in_files))
 
 

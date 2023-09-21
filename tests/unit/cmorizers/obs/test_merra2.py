@@ -1,6 +1,7 @@
 import iris
 import iris.coord_systems
 import iris.fileformats
+import netCDF4
 import numpy as np
 import pytest
 from cf_units import Unit
@@ -26,7 +27,7 @@ def _create_sample_cube():
     zcoord = iris.coords.DimCoord([0.5, 5., 50.],
                                   long_name='vertical level',
                                   var_name='lev',
-                                  units='m',
+                                  units='hPa',
                                   attributes={'positive': 'down'})
     lons = iris.coords.DimCoord([1.5, 2.5],
                                 standard_name='longitude',
@@ -175,7 +176,7 @@ def test_load_cube_pairwise_vars_wrong_oper(tmp_path):
     iris.save(cubes, str(path_cubes))
     var = {
         'short_name': 'rsut',
-        'mip': 'Amon', 'raw': 'SWTDN+SWTNT',
+        'mip': 'Amon', 'raw': 'SWTDN:SWTNT',
         'file': 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
     }
     in_files = str(tmp_path / "cubes.nc")
@@ -265,7 +266,15 @@ def test_vertical_levels(tmp_path):
     cube_3 = _create_sample_cube()
     cube_3.var_name = "T2M"
     cube_3.units = Unit('K')
-    cubes = iris.cube.CubeList([cube_1, cube_2, cube_3])
+    cube_4 = _create_sample_cube()
+    cube_4.var_name = "H"
+    cube_4.units = Unit('m')
+    cube_4.coord("vertical level").units = "m"
+    cube_5 = _create_sample_cube()
+    cube_5.var_name = "QI"
+    cube_5.units = Unit('1')
+    cube_5.coord("vertical level").units = "hPa"
+    cubes = iris.cube.CubeList([cube_1, cube_2, cube_3, cube_4, cube_5])
     iris.save(cubes, str(path_cubes))
     var_1 = {
         'short_name': 'va',
@@ -282,6 +291,16 @@ def test_vertical_levels(tmp_path):
         'mip': 'Amon', 'raw': 'T2M',
         'file': 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'
     }
+    var_4 = {
+        'short_name': 'zg',
+        'mip': 'Amon', 'raw': 'H',
+        'file': 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+    }
+    var_5 = {
+        'short_name': 'cli',
+        'mip': 'Amon', 'raw': 'QI',
+        'file': 'MERRA2_???.tavgM_3d_cld_Np.{year}??.nc4'
+    }
     in_files = str(tmp_path / "cubes.nc")
     cfg = read_cmor_config("MERRA2")
 
@@ -293,8 +312,12 @@ def test_vertical_levels(tmp_path):
     print(cmorized_cube,
           cmorized_cube.coord("air_pressure"))
     assert cmorized_cube.coord("air_pressure").has_bounds()
+    assert cmorized_cube.coord("air_pressure").units == "Pa"
     np.testing.assert_array_equal(cmorized_cube.coord("air_pressure").points,
-                                  [0.5, 5., 50.])
+                                  [50., 500., 5000.])
+    # test unlimited time dim
+    with netCDF4.Dataset(str(cmorized_data), 'r') as handler:
+        assert handler["va"].get_dims()[0].isunlimited()
 
     # extract uas
     _extract_variable(in_files, var_2, cfg, tmp_path)
@@ -304,6 +327,9 @@ def test_vertical_levels(tmp_path):
     print(cmorized_cube)
     np.testing.assert_array_equal(cmorized_cube.coord("height").points,
                                   [10.])
+    # test unlimited time dim
+    with netCDF4.Dataset(str(cmorized_data), 'r') as handler:
+        assert handler["uas"].get_dims()[0].isunlimited()
 
     # extract tas
     _extract_variable(in_files, var_3, cfg, tmp_path)
@@ -313,3 +339,16 @@ def test_vertical_levels(tmp_path):
     print(cmorized_cube)
     np.testing.assert_array_equal(cmorized_cube.coord("height").points,
                                   [2.])
+
+    # extract zg failed
+    with pytest.raises(ValueError) as exc:
+        _extract_variable(in_files, var_4, cfg, tmp_path)
+    expected_exc = "Unable to convert from 'Unit('m')' to 'Unit('Pa')'"
+    assert expected_exc in str(exc)
+
+    # test unit of vertical coordinate of 3-dim cloud variable
+    _extract_variable(in_files, var_5, cfg, tmp_path)
+    cmorized_data = \
+        tmp_path / "OBS6_MERRA2_reanaly_5.12.4_Amon_cli_198201-198201.nc"
+    cmorized_cube = iris.load_cube(str(cmorized_data))
+    np.testing.assert_equal(cmorized_cube.coord(axis='Z').units, Unit('Pa'))
