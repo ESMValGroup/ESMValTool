@@ -507,6 +507,7 @@ diagnostics:
         output_file_name: ecs_netcre
         xlabel: 'ECS'
         ylabel: 'Net Cloud Feedback (W m$^{-2}$ K$^{-1}$)'
+        x_range: [1.95, 5.7]
         y_range: [-1.0, 1.1]
   
         
