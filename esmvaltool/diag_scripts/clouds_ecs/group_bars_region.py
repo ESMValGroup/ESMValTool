@@ -212,12 +212,16 @@ def create_data_frame(input_data, cfg):
         if var != 'tas':
             logger.info("Processing variable %s", var)
 
+            if var == 'clivi':
+                varname = 'iwp'
+            else:
+                varname = var
+
             for group_names in cfg['group_by']:
                 logger.info("Processing group %s of variable %s", group_names[0], var)
 
                 for dataset in groups[var + "_" + group_names[0]]:
                     dataset_name = dataset['dataset']
-                    #logger.info("Loop dataset %s", dataset_name)
 
                     if dataset_name not in cfg['exclude_datasets']:
                         cube_diff = compute_diff_temp(input_data, group_names, var, dataset)
@@ -227,8 +231,7 @@ def create_data_frame(input_data, cfg):
 
                         group_name = group_names[0].split('_')[1] + " ECS"
 
-                        data_frame.loc[ifile] = [var, group_name, dataset_name, cube_diff.data]
-                        #data_frame.loc[dataset_name] = [var, group_name, cube_diff.data]
+                        data_frame.loc[ifile] = [varname, group_name, dataset_name, cube_diff.data]
                         ifile = ifile + 1
 
 
@@ -291,8 +294,8 @@ def main(cfg):
     csv_path = get_diagnostic_filename(basename, cfg).replace('.nc', '.csv')
     data_frame.to_csv(csv_path)
     logger.info("Wrote %s", csv_path)
-    with pd.option_context(*PANDAS_PRINT_OPTIONS):
-        logger.info("Data:\n%s", data_frame)
+    #with pd.option_context(*PANDAS_PRINT_OPTIONS):
+    #    logger.info("Data:\n%s", data_frame)
 
 #    # Provenance
 #    write_provenance(cfg, csv_path, data_frame, input_files)

@@ -224,10 +224,11 @@ def read_data(groups, cfg):
 def plot_diagnostic(cubes, attributes, cfg):
     """Create diagnostic data and plot it."""
 
-    fig = plt.figure(constrained_layout=True)
-    fig.set_figheight(10)
-    fig.set_figwidth(14)
-    plt.subplots_adjust(left=0.05, bottom=0.21, right=0.95, top=0.94, wspace=0.02, hspace=0.02)
+    #fig = plt.figure(constrained_layout=True)
+    fig = plt.figure(figsize=(14, 9))
+    #fig.set_figheight(10)
+    #fig.set_figwidth(14)
+    plt.subplots_adjust(left=0.05, bottom=0.15, right=0.95, top=0.90, wspace=0.2, hspace=0.05)
 
     cmap = 'bwr' 
     if attributes['short_name'] == 'clt':
@@ -286,9 +287,15 @@ def plot_diagnostic(cubes, attributes, cfg):
 
     title = attributes['long_name']
     fig.suptitle(title, fontsize = 22)
-    cbar_ax = fig.add_axes([0.2, 0.18, 0.6, 0.03])
+    #plt.subplots_adjust(left=0.05, bottom=0.21, right=0.95, top=0.94, wspace=0.01, hspace=0.01)
+    #cbar_ax = fig.add_axes([0.2, 0.18, 0.6, 0.03])
+    cbar_ax = fig.add_axes([0.2, 0.08, 0.6, 0.03])
     colorbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal')
-    colorbar.set_label( cube.var_name + '/' + cube.units.origin, fontsize = 16)
+    if cube.var_name == "clivi":
+        colorbar.set_label('iwp/' + cube.units.origin, fontsize = 16)
+    else:
+        colorbar.set_label(cube.var_name + '/' + cube.units.origin,
+                           fontsize = 16)
     if attributes['short_name'] == 'clt':
         ticks = [10, 20, 30, 40, 50, 60, 70, 80, 90]
     elif attributes['short_name'] == 'clivi':
