@@ -170,7 +170,7 @@ def _xy_plot(x_data, y_data, reg_line=False, **plot_kwargs):
     #reg = linregress(x_data, y_data)
     #y_reg = reg.slope * np.array(x_data) + reg.intercept
     #plt.plot(x_data, y_reg, **plot_kwargs)
-    x, y = pd.Series(x_data, name="x_var"), pd.Series(y_data, name="y_var")
+    #x, y = pd.Series(x_data, name="x_var"), pd.Series(y_data, name="y_var")
     sns.regplot(x=x_data, y=y_data, ci=95, truncate=False,
                 line_kws={"color":"r","alpha":0.7,"lw":5})
 
@@ -227,12 +227,12 @@ def plot_scatter(x_data, y_data, cfg):
 
     _xy_plot(x_data, y_data, True, **plot_kwargs)
 
-    #plt.title(title)
     plt.ylabel(cfg['ylabel'])
     plt.xlabel(cfg['xlabel'])
-    plt.axvline(4.03, color='grey', linestyle='dashed')
-    plt.axvline(2.87, color='grey', linestyle='dashed')
+    plt.axhline(4.03, color='grey', linestyle='dashed')
+    plt.axhline(2.87, color='grey', linestyle='dashed')
 
+    plt.xlim(cfg.get('x_range'))
     plt.ylim(cfg.get('y_range'))
 
     process_pyplot_kwargs(cfg, 'plot_xy')
@@ -257,11 +257,13 @@ def read_data_and_preprocess(cfg):
     for input_file in input_files:
       logger.debug("Loading %s", input_file)
       cube = iris.load_cube(input_file)
-      datasets = cube.coord('dataset').points
-      for item in datasets:
-        datasets1.append(item)
-      for item in cube.data[:]:
-        data1.append(item)
+      grid_areas = iris.analysis.cartography.area_weights(cube)
+
+      cube.data = np.ma.masked_invalid(cube.data)
+      new_cube = cube.collapsed(['longitude', 'latitude'], iris.analysis.MEAN,
+                                weights=grid_areas)
+      data1.append(new_cube.data.item())
+      datasets1.append(cube.attributes['dataset'])
       logger.debug("Reading %s", input_file)
 
     input_files = io.get_all_ancestor_files(cfg, pattern=filename2)
@@ -270,27 +272,25 @@ def read_data_and_preprocess(cfg):
     for input_file in input_files:
       logger.debug("Loading %s", input_file)
       cube = iris.load_cube(input_file)
-      grid_areas = iris.analysis.cartography.area_weights(cube)
-
-      cube.data = np.ma.masked_invalid(cube.data)
-      new_cube = cube.collapsed(['longitude', 'latitude'], iris.analysis.MEAN,
-                                weights=grid_areas)
-      data2.append(new_cube.data.item())
-      datasets2.append(cube.attributes['dataset'])
+      datasets = cube.coord('dataset').points
+      for item in datasets:
+        datasets2.append(item)
+      for item in cube.data[:]:
+        data2.append(item)
       logger.debug("Reading %s", input_file)
 
     x_data = []
     y_data = []
-    for idx, dataset in enumerate(datasets1):
-        if dataset in datasets2:
-            if not np.isnan(data2[datasets2.index(dataset)]):
-                x_data.append(data1[idx])
-                y_data.append(data2[datasets2.index(dataset)])
-        else:
-            logger.debug("Dataset %s is not part of file2", dataset)
     for idx, dataset in enumerate(datasets2):
-        if dataset not in datasets1:
+        if dataset in datasets1:
+            if not np.isnan(data1[datasets1.index(dataset)]):
+                x_data.append(data1[datasets1.index(dataset)])
+                y_data.append(data2[idx])
+        else:
             logger.debug("Dataset %s is not part of file1", dataset)
+    for idx, dataset in enumerate(datasets1):
+        if dataset not in datasets2:
+            logger.debug("Dataset %s is not part of file2", dataset)
 
     return x_data, y_data
 
