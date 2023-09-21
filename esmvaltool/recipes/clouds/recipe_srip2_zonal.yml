@@ -71,13 +71,11 @@ diagnostics:
         mip: Amon
         start_year: 1980
         end_year: 2009
-#        start_year: 2006
-#        end_year: 2009
         additional_datasets:
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
              version: P1-R05-gridbox-average-noprecip,
-#             start_year: 2006, end_year: 2017, mip: Amon, tier: 3}
-             start_year: 2006, end_year: 2009, mip: Amon, tier: 3}
+             start_year: 2006, end_year: 2017, mip: Amon, tier: 3}
+#             start_year: 2006, end_year: 2009, mip: Amon, tier: 3}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
 #          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
@@ -113,21 +111,18 @@ diagnostics:
       cli:
         preprocessor: pp27
         mip: Amon
-#        start_year: 1980
-#        end_year: 2009
-        start_year: 2007
+        start_year: 1980
         end_year: 2009
         reference_dataset: CALIPSO-ICECLOUD
 #        reference_dataset: DARDAR-CLOUD
         mip: Amon
         additional_datasets:
           - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,
-#             mip: Amon, start_year: 2007, end_year: 2015, tier: 3}
-             mip: Amon, start_year: 2007, end_year: 2009, tier: 3}
+             mip: Amon, start_year: 2007, end_year: 2015, tier: 3}
           - {dataset: DARDAR-CLOUD, project: OBS, type: sat, version: v3.10-gridbox-average-noprecip,
-             start_year: 2007, end_year: 2009, tier: 3}
+             start_year: 2007, end_year: 2016, tier: 3}
 #          - {dataset: DARDAR-CLOUD, project: OBS, type: sat, version: v3.10-gridbox-average-all,
-#             start_year: 2007, end_year: 2008, tier: 3}
+#             start_year: 2007, end_year: 2016, tier: 3}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
 #          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
