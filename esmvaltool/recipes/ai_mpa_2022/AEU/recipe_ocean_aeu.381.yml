@@ -1,0 +1,53 @@
+# ESMValTool
+# recipe_ocean_aeu.yml
+---
+documentation:
+  title:
+    Atlantic Equatorial Undercurrent
+  description: |
+    Recipe to produce time series figures of the derived variable, the
+    Atlantic Equatorial Undercurrent (AEU).
+  authors:
+    - demora_lee
+  maintainer:
+    - demora_lee
+  references:
+    - demora2018gmd
+  projects:
+    - ukesm
+
+
+preprocessors:
+  prep_transect:
+    custom_order: true
+    extract_region:
+      start_longitude: -25.
+      end_longitude: -20.
+      start_latitude: -5.
+      end_latitude: 5.
+    extract_volume:
+      z_min: 0.
+      z_max: 500.
+#    annual_statistics:
+#      operator: mean
+    extract_trajectory: # note that preprocessor confuses lat/lons.
+      latitudes: [-5., 5.] 
+      longitudes: [-23.,  -23.]
+      number_points: 20 #with 25 pts some models have double values and Lat not monotonic
+
+diagnostics:
+  diag_aeu:
+    description: atlantic_equatorial_undercurrent
+    variables:
+      aeu:
+        mip: Omon
+        short_name: uo
+        preprocessor: prep_transect
+        additional_datasets:
+
+          - {project: CMIP6, mip: Omon, grid: gn, institute: THU, dataset: CIESM, exp: ssp245, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
+
+    scripts:
+      AMOC_timeseries:
+        script: ocean/diagnostic_aeu_gig.py
+

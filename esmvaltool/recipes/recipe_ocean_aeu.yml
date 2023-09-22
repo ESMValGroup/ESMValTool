@@ -1,0 +1,65 @@
+# ESMValTool
+# recipe_ocean_aeu.yml
+---
+documentation:
+  description: |
+    Recipe to produce time series figures of the derived variable, the
+    Atlantic Equatorial Undercurrent (AEU).
+
+  authors:
+    - demora_lee
+
+  maintainer:
+    - demora_lee
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+
+preprocessors:
+  prep_transect:
+    custom_order: true
+#    extract_region:
+#      start_longitude: -25.
+#      end_longitude: -20.
+#      start_latitude: -5.
+#      end_latitude: 5.
+    extract_volume:
+      z_min: 0.
+      z_max: 500.
+    annual_statistics:
+      operator: mean
+    extract_trajectory: # note that preprocessor confuses lat/lons.
+      latitudes: [-5., 5.] 
+      longitudes: [-23.,  -23.]
+#      latitudes: [-23., -23. ]
+#      longitudes: [-5.,  5.]
+      number_points: 25
+#    extract_transect:
+##     longitude: -23. 
+#      latitude: [-3., 3. ]
+
+diagnostics:
+  diag_aeu:
+    description: atlantic_equatorial_undercurrent
+    variables:
+      aeu:
+        mip: Omon
+        short_name: uo
+        preprocessor: prep_transect
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 2014, }
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: ssp119, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 2015, end_year: 2100, }
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: ssp126, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 2015, end_year: 2100, }
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: ssp245, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 2015, end_year: 2100, }
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: ssp370, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 2015, end_year: 2100, }
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: ssp585, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 2015, end_year: 2100, }
+
+
+    scripts:
+      AMOC_timeseries:
+        script: ocean/diagnostic_aeu.py
+

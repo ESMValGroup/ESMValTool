@@ -1,0 +1,4 @@
+Templates are empty recipes than can be populated with local datasets. 
+
+The ESMValTool tool, recipe_filler can be used to populate these templates. 
+

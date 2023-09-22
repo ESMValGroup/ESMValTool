@@ -1,0 +1,81 @@
+diagnostics:
+  diag_timeseries_3:
+    scripts:
+      Model_range_polots: {script: ocean/diagnostic_ai_plots.py}
+    variables:
+      no3_map_hist: {end_year: 2010, exp: historical, grid: gn, mip: Omon, preprocessor: prep_map_surf,
+        project: CMIP6, short_name: no3, start_year: 2000}
+      no3_map_ssp126: {end_year: 2050, exp: ssp126, grid: gn, mip: Omon, preprocessor: prep_map_surf,
+        project: CMIP6, short_name: no3, start_year: 2040}
+      no3_map_ssp245: {end_year: 2050, exp: ssp245, grid: gn, mip: Omon, preprocessor: prep_map_surf,
+        project: CMIP6, short_name: no3, start_year: 2040}
+      no3_map_ssp370: {end_year: 2050, exp: ssp370, grid: gn, mip: Omon, preprocessor: prep_map_surf,
+        project: CMIP6, short_name: no3, start_year: 2040}
+      no3_map_ssp585: {end_year: 2050, exp: ssp585, grid: gn, mip: Omon, preprocessor: prep_map_surf,
+        project: CMIP6, short_name: no3, start_year: 2040}
+      no3_profile_hist: {end_year: 2010, exp: historical, grid: gn, mip: Omon, preprocessor: prep_profile_2,
+        project: CMIP6, short_name: no3, start_year: 2000}
+      no3_profile_ssp126: {end_year: 2050, exp: ssp126, grid: gn, mip: Omon, preprocessor: prep_profile_2,
+        project: CMIP6, short_name: no3, start_year: 2040}
+      no3_profile_ssp245: {end_year: 2050, exp: ssp245, grid: gn, mip: Omon, preprocessor: prep_profile_2,
+        project: CMIP6, short_name: no3, start_year: 2040}
+      no3_profile_ssp370: {end_year: 2050, exp: ssp370, grid: gn, mip: Omon, preprocessor: prep_profile_2,
+        project: CMIP6, short_name: no3, start_year: 2040}
+      no3_profile_ssp585: {end_year: 2050, exp: ssp585, grid: gn, mip: Omon, preprocessor: prep_profile_2,
+        project: CMIP6, short_name: no3, start_year: 2040}
+      no3_ts_hist: {end_year: 2014, exp: historical, grid: gn, mip: Omon, preprocessor: prep_regional_ts_3d_surface,
+        project: CMIP6, short_name: no3, start_year: 1850}
+      no3_ts_ssp126: {end_year: 2100, exp: ssp126, grid: gn, mip: Omon, preprocessor: prep_regional_ts_3d_surface,
+        project: CMIP6, short_name: no3, start_year: 2015}
+      no3_ts_ssp245: {end_year: 2100, exp: ssp245, grid: gn, mip: Omon, preprocessor: prep_regional_ts_3d_surface,
+        project: CMIP6, short_name: no3, start_year: 2015}
+      no3_ts_ssp370: {end_year: 2100, exp: ssp370, grid: gn, mip: Omon, preprocessor: prep_regional_ts_3d_surface,
+        project: CMIP6, short_name: no3, start_year: 2015}
+      no3_ts_ssp585: {end_year: 2100, exp: ssp585, grid: gn, mip: Omon, preprocessor: prep_regional_ts_3d_surface,
+        project: CMIP6, short_name: no3, start_year: 2015}
+documentation:
+  authors: [demora_lee]
+  description: "Template recipe to produce a generic plot of temperature for the Ascension\
+    \ Islands.\n"
+  maintainer: [demora_lee]
+  projects: [ukesm]
+  references: [demora2018gmd]
+preprocessors:
+  prep_map_1:
+    climate_statistics: {operator: mean}
+    regrid: {scheme: linear, target_grid: 1x1}
+  prep_map_2:
+    climate_statistics: {operator: mean}
+    regrid: {scheme: linear, target_grid: 1x1}
+  prep_map_surf:
+    climate_statistics: {operator: mean}
+    custom_order: true
+    extract_surface: null
+    regrid: {scheme: linear, target_grid: 1x1}
+  prep_profile_2:
+    area_statistics:
+      fx_variables:
+      - {activity: CMIP, ensemble: '*', exp: '*', grid: gn, mip: Ofx, short_name: areacello}
+      operator: mean
+    custom_order: true
+    extract_levels:
+      levels: [0.5, 1.0, 5.0, 10.0, 50.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0,
+        700.0, 800.0, 900.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0, 3500.0, 4000.0,
+        4500.0, 5000.0]
+      scheme: linear
+    extract_region: &id001 {end_latitude: -4.56, end_longitude: -11.25, start_latitude: -10.56,
+      start_longitude: -17.25}
+  prep_regional_ts_2d:
+    area_statistics:
+      fx_variables:
+      - {activity: CMIP, ensemble: '*', exp: '*', grid: gn, mip: Ofx, short_name: areacello}
+      operator: mean
+    extract_region: *id001
+  prep_regional_ts_3d_surface:
+    area_statistics:
+      fx_variables:
+      - {activity: CMIP, ensemble: '*', exp: '*', grid: gn, mip: Ofx, short_name: areacello}
+      operator: mean
+    custom_order: true
+    extract_region: *id001
+    extract_surface: null
