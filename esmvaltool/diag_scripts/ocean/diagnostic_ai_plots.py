@@ -151,21 +151,21 @@ long_name_dict = {
 
 suptitles = {
     'tos': 'Temperature, '+r'$\degree$'+'C',
-	'sal': 'Salinity',
-	'chl': 'Chlorophyll concentration, mg m'+r'$^{-3}$',
-	'ph': 'pH',
-	'intpp': 'Integrated Primary Production, mol m'+r'$^{-2}$'+' d'+r'$^{-1}$',
-	'po4': 'Phosphate Concentration, mmol m'+r'$^{-3}$',
-	'no3': 'Nitrate Concentration, mmol m'+r'$^{-3}$',
-	'mld': 'Mixed Layer Depth, m',
-	'o2': 'Dissolved Oxygen Concentration at 500m, mmol m'r'$^{-3}$',
+    'sal': 'Salinity',
+    'chl': 'Chlorophyll concentration, '+r'$\mu$'+'g m'+r'$^{-3}$',
+    'ph': 'pH',
+    'intpp': 'Integrated Primary Production, mol m'+r'$^{-2}$'+' yr'+r'$^{-1}$',
+    'po4': 'Phosphate Concentration, mmol m'+r'$^{-3}$',
+    'no3': 'Nitrate Concentration, mmol m'+r'$^{-3}$',
+    'mld': 'Mixed Layer Depth, m',
+    'o2': 'Dissolved Oxygen Concentration at 500m, mmol m'r'$^{-3}$',
 }
 short_suptitles = {
     'tos': 'Temperature, '+r'$\degree$'+'C',
     'sal': 'Salinity',
-    'chl': 'Chl., mg m'+r'$^{-3}$',
+    'chl': 'Chl., '+r'$\mu$'+'g m'+r'$^{-3}$',
     'ph': 'pH',
-    'intpp': 'Int PP, mol m'+r'$^{-2}$'+' d'+r'$^{-1}$',
+    'intpp': 'Int PP, mol m'+r'$^{-2}$'+' yr'+r'$^{-1}$',
     'po4': 'PO'+r'$_{4}$'+', mmol m'+r'$^{-3}$',
     'no3': 'NO'+r'$_{3}$'+', mmol m'+r'$^{-3}$',
     'mld': 'MLD, m',
@@ -174,9 +174,9 @@ short_suptitles = {
 anomaly_titles = {
     'tos': 'Temperature Anomaly '+r'$\degree$'+'C',
     'sal': 'Salinity Anomaly',
-    'chl': 'Chl. Anomaly, mg m'+r'$^{-3}$',
+    'chl': 'Chl. Anomaly, '+r'$\mu$'+'g m'+r'$^{-3}$',
     'ph': 'pH Anomaly',
-    'intpp': 'IntPP Anomaly, mol m'+r'$^{-2}$'+' d'+r'$^{-1}$',
+    'intpp': 'IntPP Anomaly, mol m'+r'$^{-2}$'+' yr'+r'$^{-1}$',
     'po4': 'PO'+r'$_{4}$'+' Anomaly, mmol m'+r'$^{-3}$',
     'no3': 'NO'+r'$_{3}$'+' Anomaly, mmol m'+r'$^{-3}$',
     'mld': 'MLD Anomaly, m',
@@ -184,24 +184,40 @@ anomaly_titles = {
 }
 
 #odels_to_skip = ['GISS-E2-1-G', ] #SST is strangely high and there are very few SSP ensembles.
-models_to_skip = {'all': ['GISS-E2-1-G', ], #''MPI-ESM-1-2-HAM',],
+models_to_skip = {
+    'all': ['GISS-E2-1-G', ], #''MPI-ESM-1-2-HAM',],
     'chl': ['MPI-ESM1-2-LR', ], #'CESM2',],
-#    'o2': ['MPI-ESM-1-2-HAM', ],
-#    'ph': ['MPI-ESM-1-2-HAM', ],
-    'sal': ['FIO-ESM-2-0'],  #'MPI-ESM-1-2-HAM',
+    'o2': ['MPI-ESM-1-2-HAM', ],
+    'ph': ['MPI-ESM-1-2-HAM', ],
+    'sal': ['FIO-ESM-2-0', 'MCM-UA-1-0', 'MPI-ESM-1-2-HAM','IPSL-CM5A2-INCA'],
+    'mld': [],
+    'tos': [],
 }
+
 ensembles_to_skip = {
      ('UKESM1-0-LL','no3'): ['r5i1p1f3', 'r5i1p1f2'], # Doesn't seem to exist on jasmin.
      ('MPI-ESM-1-2-HAM', 'intpp'): ['r2i1p1f1', ],
      ('MPI-ESM-1-2-HAM', 'tos'): ['r2i1p1f1', ],
      ('MPI-ESM-1-2-HAM', 'thetao'): ['r2i1p1f1', ],
+     ('MPI-ESM-1-2-HAM', 'o2'): ['r2i1p1f1', ],
 }
+
 chl_profile_to_skip = [
     'CESM2',
 ]
+sal_ts_to_skip = { # These files simply can not be generated on jasmin (by me!)
+    'ACCESS-CM2': ['r2i1p1f1','r3i1p1f1', ],
+    'ACCESS-ESM1-5': ['r2i1p1f1', 'r3i1p1f1', ],
+    'CESM2-WACCM': ['r2i1p1f1', 'r3i1p1f1', ],
+    'EC-Earth3': ['r4i1p1f1', ],
+    'IPSL-CM6A-LR': ['r10i1p1f1', ],	
+    'MCM-UA-1-0': ['r1i1p1f2', ],
+    'MPI-ESM1-2-HR': ['r2i1p1f1', ],	
+    'MPI-ESM1-2-LR': ['r2i1p1f1', 'r3i1p1f1', ],
+}
 
 # Expand dicts which multiple shortnames.
-for ndict2 in [suptitles, short_suptitles, anomaly_titles]:
+for ndict2 in [suptitles, short_suptitles, anomaly_titles, models_to_skip]:
     ndict2['thetao'] = ndict2['tos']
     ndict2['mlotst'] = ndict2['mld']
     ndict2['so'] = ndict2['sal']
@@ -512,8 +528,8 @@ def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table, future_r
     hist_anom_data['no3'] =  hist_anom_data['nit']
     hist_anom_data['pho'] = ['Phosphate', r'$\mu$mol m$^{-3}$',]
     hist_anom_data['po4'] = hist_anom_data['pho']
-    hist_anom_data['chl']  = ['Chlorophyll', r'mg m$^{-3}$', ]
-    hist_anom_data['intpp'] = ['Int. Production', r'mmol m$^{-2}$ d$^{-1}$',]
+    hist_anom_data['chl']  = ['Chlorophyll', r'$\mu$g m$^{-3}$', ]
+    hist_anom_data['intpp'] = ['Int. Production', r'mol m$^{-2}$ yr$^{-1}$',]
 
 
     fig = plt.figure()
@@ -610,9 +626,8 @@ def make_hist_anomaly_figure(cfg, metadatas, short_name, anomaly_table, future_r
         impath+='_mark'
 
     print('Saving:', impath)
-    plt.savefig(impath+diagtools.get_image_format(cfg), dpi=300., transparent=True)
+    plt.savefig(impath+'_trans'+diagtools.get_image_format(cfg), dpi=300., transparent=True)
     plt.savefig(impath+'_white'+diagtools.get_image_format(cfg), dpi=300.) #ransparent=True)
-
     plt.savefig(impath+'.svg', transparent=True)
     plt.close()
 
@@ -658,6 +673,11 @@ def multi_model_time_series(
     impath += diagtools.get_image_format(cfg)
     if not overwrite and os.path.exists(impath): return fig, ax
 
+    if len(set(plotting) & set(['ensemble_anom', 'model_anom', 'mmm_anom', 'model_anom_range'])):
+        plotting_anomaly = True
+    else:
+        plotting_anomaly = False
+
 
     # Determine short name & model list:
     variable_groups = {}
@@ -673,6 +693,8 @@ def multi_model_time_series(
             ensemble = metadatas[fn]['ensemble']
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
+            if short_name in ['sal', 'so', 'sos'] and ensemble in sal_ts_to_skip.get(dataset, []): 
+                    continue
             if ensemble in ensembles_to_skip.get((dataset, short_name), []):
                 continue
             if single_model == 'all': pass
@@ -720,6 +742,9 @@ def multi_model_time_series(
 
                 ensemble = metadatas[fn]['ensemble']
                 if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+                    continue
+
+                if short_name in ['sal', 'so', 'sos'] and ensemble in sal_ts_to_skip.get(dataset, []):
                     continue
 
                 short_name = metadatas[fn]['short_name']
@@ -814,6 +839,9 @@ def multi_model_time_series(
             if dataset in models_to_skip.get(short_name, {}): continue
             if ensemble in ensembles_to_skip.get((dataset, short_name), []):
                 continue
+            if short_name in ['sal', 'so', 'sos'] and ensemble in sal_ts_to_skip.get(dataset, []):
+                continue
+
 
             if single_model == 'all': pass
             elif dataset != single_model: continue
@@ -870,6 +898,17 @@ def multi_model_time_series(
     if make_csvs_data :
         write_csv_ts(cfg,metadatas, data_values, single_model, short_name)
 
+    # calculate anomaly
+    anomaly_basis = {}
+    for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
+        if scenario.lower().find('historical')==-1: continue
+        times = np.ma.array([t for t in sorted(data.keys())])
+        values = np.array([data[t] for t in times])
+        times = np.ma.masked_outside(times, hist_time_range[0], hist_time_range[1])
+        value = np.ma.masked_where(times.mask, values).mean()
+        anomaly_basis[ (short_name, dataset, ensemble[:3])] = value
+        print('anomaly_basis:', (short_name, dataset, ensemble), ':', value)
+
     if make_csvs and single_model=='all':
         # want a table that includes:
         # field: historical mean 2000-2010 +/1 std, each scenario +/- std
@@ -923,15 +962,15 @@ def multi_model_time_series(
         model_values = {}
         ensembles_dict = {}
         model_ensembles_dict={}
-        anomalgy_basis = {}
-        for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
-            if scenario.lower().find('historical')==-1: continue
-            times = np.array([t for t in sorted(data.keys())])
-            values = np.array([data[t] for t in times])
-            times = np.ma.masked_outside(times, 1850., 1900.)
-            value = np.ma.masked_where(times.mask, values).mean()
-            anomalgy_basis[ (short_name, dataset, ensemble[:3])] = value
-            print('anomalgy_basis:', (short_name, dataset, ensemble), ':', value)
+        #anomaly_basis = {}
+        #for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
+        #    if scenario.lower().find('historical')==-1: continue
+        #    times = np.array([t for t in sorted(data.keys())])
+        #    values = np.array([data[t] for t in times])
+        #    times = np.ma.masked_outside(times, 1850., 1900.)
+        #    value = np.ma.masked_where(times.mask, values).mean()
+        #    anomaly_basis[ (short_name, dataset, ensemble[:3])] = value
+        #    print('anomaly_basis:', (short_name, dataset, ensemble), ':', value)
 
         for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
             times = np.array([t for t in sorted(data.keys())])
@@ -941,10 +980,10 @@ def multi_model_time_series(
             else:
                 times = np.ma.masked_outside(times, 2040., 2050.)
 
-            if (short_name, dataset, ensemble[:3]) in  anomalgy_basis:
-                anom =  anomalgy_basis[(short_name, dataset, ensemble[:3])]
-            elif (short_name, dataset, 'r1i') in  anomalgy_basis:
-                anom =  anomalgy_basis[(short_name, dataset, 'r1i')]
+            if (short_name, dataset, ensemble[:3]) in  anomaly_basis:
+                anom =  anomaly_basis[(short_name, dataset, ensemble[:3])]
+            elif (short_name, dataset, 'r1i') in  anomaly_basis:
+                anom =  anomaly_basis[(short_name, dataset, 'r1i')]
             else:
                 print('unalbe to include:', (short_name, dataset, ensemble[:3]) )
                 continue
@@ -991,19 +1030,9 @@ def multi_model_time_series(
         model_values = {}
         ensembles_dict = {}
         model_ensembles_dict={}
-        anomalgy_basis = {}
         # Calculate the anomaly against region (2000-2010 hist)
         #future_range=[2090., 2100.]
         future_range=[2040., 2050.]
-
-        for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
-            if scenario.lower().find('historical')==-1: continue
-            times = np.array([t for t in sorted(data.keys())])
-            values = np.array([data[t] for t in times])
-            times = np.ma.masked_outside(times, 2000., 2010.)
-            value = np.ma.masked_where(times.mask, values).mean()
-            anomalgy_basis[ (short_name, dataset, ensemble[:3])] = value
-            print('anomalgy_basis:', (short_name, dataset, ensemble), ':', value)
 
         for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
             times = np.array([t for t in sorted(data.keys())])
@@ -1013,10 +1042,10 @@ def multi_model_time_series(
             else:
                 times = np.ma.masked_outside(times, future_range[0], future_range[1])
 
-            if (short_name, dataset, ensemble[:3]) in  anomalgy_basis:
-                anom =  anomalgy_basis[(short_name, dataset, ensemble[:3])]
-            elif (short_name, dataset, 'r1i') in  anomalgy_basis:
-                anom =  anomalgy_basis[(short_name, dataset, 'r1i')]
+            if (short_name, dataset, ensemble[:3]) in  anomaly_basis:
+                anom =  anomaly_basis[(short_name, dataset, ensemble[:3])]
+#            elif (short_name, dataset, 'r1i') in  anomaly_basis:
+#                anom =  anomaly_basis[(short_name, dataset, 'r1i')]
             else:
                 print('unalbe to include:', (short_name, dataset, ensemble[:3]) )
                 assert 0
@@ -1165,7 +1194,7 @@ def multi_model_time_series(
     #     model_5_95: the range of every model ensmble is shown as a coloured band (or line if only one)
     #     Global_mean: the mean of every model_means is shown as a thick solid line
     #     Global_range: the mean of every model_means is shown as a thick solid line
-    # 'ensemble_anom', 'model_anom', 'mmm_anmom'
+    # 'ensemble_anom', 'model_anom', 'mmm_anom', model_anom_range
 
     for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
         if 'all' in plotting or 'ensemble_anom' in plotting:
@@ -1186,26 +1215,61 @@ def multi_model_time_series(
 
         if 'all' in plotting:
             plt.plot(times, values, ls='-', c=color, lw=0.4) #, label=dataset)
+
         if 'ensemble_anom' in plotting:
-            anom =  anomalgy_basis[ (short_name, dataset, ensemble[:3])]
+            anom =  anomaly_basis[ (short_name, dataset, ensemble[:3])]
             plt.plot(times, np.array(values) - anom, ls='-', c=color, lw=0.4) #, label=dataset)
 
+    # calculate single model anomaly.
+    single_model_anomalies = {}
+    for dset in datasets:
+        for scen in scenarios:
+            dataset_scen_anom = {}
+            for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
+                if dset != dataset: 
+                    continue
+                if scen != scenario: 
+                    continue
+                anom =  anomaly_basis[ (short_name, dataset, ensemble[:3])]
 
-    for (variable_group, short_name, dataset, scenario, ensemble), data in sorted(data_values.items()):
-        if 'ensemble_anom' not in plotting: continue
-        if colour_scheme in ['viridis', 'jet']:
-            if len(metadata) > 1:
-                color = cmap(index / (len(metadata) - 1.))
-            else:
-                color = 'blue'
+                for t, d in data.items():
+                    dataset_scen_anom = add_dict_list(dataset_scen_anom, t, d - anom)
+            color = ipcc_colours[scen]
+            fill_color = ipcc_colours_dark[scen]
+            alpha = 0.35
 
-        if colour_scheme in 'IPCC':
-            color = ipcc_colours[scenario]
+            times = [t for t in sorted(dataset_scen_anom.keys())]
+            #model_anom_arrs = [np.array(dataset_scen_anom[t]) for t in times]
+            model_anom_mean = [np.mean(dataset_scen_anom[t]) for t in times]
+            model_anom_min = [np.min(dataset_scen_anom[t]) for t in times]
+            model_anom_max = [np.max(dataset_scen_anom[t]) for t in times]
 
-        times = [t for t in sorted(data.keys())]
-        values = [data[t] for t in times]
+            single_model_anomalies[(dataset, scenario)] = {t:d.mean() for t, d in zip(times, model_anom_mean)}
+ 
+            if 'model_anom' in plotting:
+                 plt.plot(times, model_anom_mean, ls='-', c=color, lw=2.) #, label=dataset)
+            if 'model_anom_range' in plotting:
+                plt.fill_between(times, model_anom_min, model_anom_max, color=fill_color, ec=None, alpha=alpha)
 
-        plt.plot(times, values, ls='-', c=color, lw=0.4) #, label=dataset)
+    # MMM anomaly
+    for scen in scenarios:
+        if 'mmm_anom' not in plotting: 
+            continue
+        mmm_anom = {}
+        for (dataset, scenario), single_model_anom in single_model_anomalies.items():
+            if scenario != scen: 
+                continue
+            for t, d in single_model_anom.items():
+                mmm_anom = add_dict_list(mmm_anom, t, d - anom)
+
+        color = ipcc_colours[scen]
+        times = [t for t in sorted(mmm_anom.keys())]
+        mmm_anom_mean = [np.mean(mmm_anom[t]) for t in times]
+        if 'mmm_anom' in plotting:
+            plt.plot(times, mmm_anom_mean, ls='-', c=color, lw=2.) #, label=dataset)
+
+    if plotting_anomaly:
+        plt.axhline(0.,ls='--', lw=1.5, c='black')
 
     datas_ds = {}
     mm_data = {}
@@ -1315,13 +1379,10 @@ def multi_model_time_series(
             mm_data[(variable_group, short_name, 'Multimodel', scenario_x, 'mean')] = {t:d for t,d in zip(times, global_mean)}
 
         if 'Global_range' in plotting:
-            #print(plotting)
-
             times = [t for t in sorted(global_model_means.keys())]
             model_mins = []
             model_maxs = []
             for t, ds in global_model_means.items():
-                #print('global_range',scenario_x, t, ds)
                 model_mins.append(np.min(ds))
                 model_maxs.append(np.max(ds))
 
@@ -1341,10 +1402,9 @@ def multi_model_time_series(
         write_csv_ts(cfg,metadatas, data_values, single_model, short_name)
 
     plot_obs = True
-    if plot_obs:
+    if plot_obs and not plotting_anomaly:
         shpath = get_shelve_path(short_name, 'ts')
         sh = shopen(shpath)
-        # times, data = sh['times'], sh['data']
         if hard_wired_obs.get((short_name, 'timeseries', 'min'), False):
             ctimes = [t for t in hard_wired_obs[(short_name, 'timeseries', 'min')]]
             mins =  [hard_wired_obs[(short_name, 'timeseries', 'min')][t] for t in ctimes]
@@ -1354,7 +1414,6 @@ def multi_model_time_series(
         if 'annual_times' in sh.keys():
             annual_times, annual_data = sh['annual_times'], sh['annual_data']
             plt.plot(annual_times, annual_data, ls='-', c='k', lw=1.5)
-        # clim = sh['clim']
         sh.close()
 
     y_lims = ax.get_ylim()
@@ -1375,7 +1434,10 @@ def multi_model_time_series(
     # Add title, legend to plots
     plt.title(title)
     plt.xlabel('Year') #, fontsize='small')
-    plt.ylabel(short_suptitles[short_name])# , fontsize='small')
+    if plotting_anomaly:
+        plt.ylabel(''.join(['Anomaly:', short_suptitles[short_name]]))# , fontsize='small')
+    else:
+        plt.ylabel(short_suptitles[short_name])# , fontsize='small')
 
     # Saving files:
     if save:
@@ -1451,6 +1513,8 @@ def multi_model_clim_figure(
             if dataset in models_to_skip.get(short_name, {}): continue
             if ensemble in ensembles_to_skip.get((dataset, short_name), []):
                 continue
+            if short_name in ['sal', 'so', 'sos'] and ensemble in sal_ts_to_skip.get(dataset, []):
+                continue
 
             if single_model == 'all': pass
             elif metadatas[fn]['dataset'] != single_model: continue
@@ -1509,6 +1573,9 @@ def multi_model_clim_figure(
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
             if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+                continue
+
+            if short_name in ['sal', 'so', 'sos'] and ensemble in sal_ts_to_skip.get(dataset, []):
                 continue
 
             #if ukesm == 'only' and dataset != 'UKESM1-0-LL': continue
@@ -1641,6 +1708,9 @@ def multi_model_clim_figure(
             if dataset in models_to_skip['all']: continue
             if dataset in models_to_skip.get(short_name, {}): continue
             if ensemble in ensembles_to_skip.get((dataset, short_name), []):
+                continue
+
+            if short_name in ['sal', 'so', 'sos'] and ensemble in sal_ts_to_skip.get(dataset, []):
                 continue
 
             months =  cube['month_number']
@@ -2466,6 +2536,8 @@ def multi_model_map_figure(
             #div_cmap = 'afmhot'
             #div_cmap = 'afmhot_r' #Reds' #mcolors.LinearSegmentedColormap.from_list('colormap', rgb_data_div)
 
+    #if seq_cmap=='viridis_r': assert 0
+
     if figure_style=='five_means':
         subplots_nums = {231: 'historical', 232: 'ssp126', 233: 'ssp245', 235: 'ssp370', 236: 'ssp585'}
         subplot_style = {231: 'hist', 232:'mean', 233: 'mean', 235: 'mean', 236: 'mean'}
@@ -2481,25 +2553,25 @@ def multi_model_map_figure(
         assert 0
 
     gs1 =ax.subgridspec(ncols=3, nrows=2, )
-    subplots = {}
-    subplots['historical'] = fig.add_subplot(gs1[0,0], projection=proj)
-
-    plot_obs = True
-    if plot_obs:
-        subplots['obs'] = fig.add_subplot(gs1[1,0], projection=proj)
-
-    subplots['ssp126'] = fig.add_subplot(gs1[0,1], projection=proj)
-    subplots['ssp245'] = fig.add_subplot(gs1[1,1], projection=proj)
-    subplots['ssp370'] = fig.add_subplot(gs1[0,2], projection=proj)
-    subplots['ssp585'] = fig.add_subplot(gs1[1,2], projection=proj)
-
-    subplots['historical'] = add_letter(subplots['historical'], 'e')
-    if plot_obs:
-        subplots['obs'] = add_letter(subplots['obs'], 'f' )
-    subplots['ssp126'] = add_letter(subplots['ssp126'], 'g')
-    subplots['ssp245'] = add_letter(subplots['ssp245'], 'h')
-    subplots['ssp370'] = add_letter(subplots['ssp370'], 'i')
-    subplots['ssp585'] = add_letter(subplots['ssp585'], 'j')
+#    subplots = {}
+#    subplots['historical'] = fig.add_subplot(gs1[0,0], projection=proj)
+#
+#    plot_obs = True
+#    if plot_obs:
+#        subplots['obs'] = fig.add_subplot(gs1[1,0], projection=proj)
+#
+#    subplots['ssp126'] = fig.add_subplot(gs1[0,1], projection=proj)
+#    subplots['ssp245'] = fig.add_subplot(gs1[1,1], projection=proj)
+#    subplots['ssp370'] = fig.add_subplot(gs1[0,2], projection=proj)
+#    subplots['ssp585'] = fig.add_subplot(gs1[1,2], projection=proj)
+#
+#    subplots['historical'] = add_letter(subplots['historical'], 'e')
+#    if plot_obs:
+#        subplots['obs'] = add_letter(subplots['obs'], 'f' )
+#    subplots['ssp126'] = add_letter(subplots['ssp126'], 'g')
+#    subplots['ssp245'] = add_letter(subplots['ssp245'], 'h')
+#    subplots['ssp370'] = add_letter(subplots['ssp370'], 'i')
+#    subplots['ssp585'] = add_letter(subplots['ssp585'], 'j')
 
     model_cubes = {}
     model_cubes_paths = {}
@@ -2522,7 +2594,6 @@ def multi_model_map_figure(
             dataset = metadatas[fn]['dataset']
             short_name = metadatas[fn]['short_name']
             scenario = metadatas[fn]['exp']
-            exps[scenario] = variable_group
             ensemble = metadatas[fn]['ensemble']
             if dataset in models_to_skip['all']:
                 continue
@@ -2532,6 +2603,7 @@ def multi_model_map_figure(
                 pass
             elif dataset != single_model:
                 continue
+            exps[scenario] = variable_group
             models[dataset] = True
             short_names[metadatas[fn]['short_name']] = True
             print('map_hist_fns', (dataset, short_name, scenario,  ensemble), ':', fn)
@@ -2542,7 +2614,34 @@ def multi_model_map_figure(
             return
         else:
             return fig, ax
+    gs1 =ax.subgridspec(ncols=3, nrows=2, )
+    subplots = {}
 
+    subplots['historical'] = fig.add_subplot(gs1[0,0], projection=proj)
+    subplots['historical'] = add_letter(subplots['historical'], 'e')
+
+    plot_obs = True
+    if plot_obs:
+        subplots['obs'] = fig.add_subplot(gs1[1,0], projection=proj)
+        subplots['obs'] = add_letter(subplots['obs'], 'f' )
+
+    if 'ssp126' in exps:
+        subplots['ssp126'] = fig.add_subplot(gs1[0,1], projection=proj)
+        subplots['ssp126'] = add_letter(subplots['ssp126'], 'g')
+
+    if 'ssp245' in exps:
+        subplots['ssp245'] = fig.add_subplot(gs1[1,1], projection=proj)
+        subplots['ssp245'] = add_letter(subplots['ssp245'], 'h')
+
+    if 'ssp370' in exps:
+        subplots['ssp370'] = fig.add_subplot(gs1[0,2], projection=proj)
+        subplots['ssp370'] = add_letter(subplots['ssp370'], 'i')
+
+    if 'ssp585' in exps:
+        subplots['ssp585'] = fig.add_subplot(gs1[1,2], projection=proj)
+        subplots['ssp585'] = add_letter(subplots['ssp585'], 'j')
+
+        
     if len(short_names) > 1:#
         assert 0
     short_name = list(short_names.keys())[0]
@@ -2906,6 +3005,7 @@ def multi_model_map_figure(
     shared_cmap = {'hist':[], 'ssp':[]}
     shaped_ims = {'hist':[], 'ssp':[]}
     for sbp, exp in subplots_nums.items():
+        if exp not in exps: continue
         ax0 = subplots[exp]
         plt.sca(ax0)
         sbp_style = subplot_style[sbp]
@@ -3284,6 +3384,9 @@ def find_missing_cubes(metadatas, model_hist_cubes, time_series_fns, profile_fns
                 print('find_missing_cubes:', outer_vg, fn, dataset, short_name, scenario, ensemble)
                 if scenario == 'historical':
                     continue
+                if short_name in ['sos', 'so', 'sal'] and vg_type == 'ts' and ensemble in sal_ts_to_skip.get(dataset, []):
+                    continue
+
 
                 hist_cube = find_hist_cube(models_hists, dataset, short_name, scenario, ensemble, return_missing=True)
                 print('returned:', hist_cube)
@@ -3354,8 +3457,10 @@ def main(cfg):
     maps_fns = {}
     models = {'all': True}
     model_scenarios = {}
+    model_scenarios_ensembles = {}
     variable_groups = {}
 
+    
     # This should be the only time that it iterates over metadata.items
     for fn, metadata in metadatas.items():
         variable_group = metadata['variable_group']
@@ -3368,6 +3473,8 @@ def main(cfg):
             continue
         if ensemble in ensembles_to_skip.get((dataset, short_name), []):
             continue
+        if variable_group == 'sos_ts_hist' and ensemble in sal_ts_to_skip.get(dataset, []):
+                continue
 
         scenario = metadata['exp']
         if not model_scenarios.get(dataset, False):
@@ -3375,7 +3482,18 @@ def main(cfg):
         else:
             model_scenarios[dataset][scenario] = True
 
-
+        model_scenarios_ensembles[(dataset, scenario, ensemble)] = True
+    table_dict = {
+        'tos': 'Temperature',
+        'sos': 'Salinity',
+        'mlotst': 'MLD',
+        'o2': 'Oxygen',
+        'ph': 'pH',
+        'no3': 'Nitrate',
+        'po4': 'Phosphate',
+        'chl': 'Chlorophyll',
+        'intpp': 'Int. PP',
+    }
 
     models_without_futures = []
     for model, scenarios in model_scenarios.items():
@@ -3384,6 +3502,50 @@ def main(cfg):
             models_without_futures.append(model)
         else:
             print(model, 'is fine: ', scenarios)
+
+
+    txt=[table_dict[short_name],]
+    header = ' & '.join(['Field', 'Historical', 'SSP1-2.6', 'SSP2-4.5', 'SSP3-7.0', 'SSP5-8.5'])
+    # Create table of model/ensemble counts
+    for scen in ['historical', 'ssp126', 'ssp245', 'ssp370', 'ssp585']:
+        dsets = {}
+        for (d, s, e) in model_scenarios_ensembles.keys():
+            if d in models_without_futures:
+                continue
+            dsets[d] = []
+
+        for (d, s, e) in model_scenarios_ensembles.keys():
+            if s != scen:
+                continue
+
+            if d in models_without_futures:
+                continue
+
+            if e not in dsets[d]:
+                dsets[d].append(e)
+
+        count_ens = 0
+        count_mod = 0
+#       print(dsets)
+        for d, dset in enumerate(sorted(dsets)):
+            ens = dsets[dset]
+            if not len(ens): continue
+            print(d, dset, ens, (count_mod, (count_ens)))
+            count_mod +=1
+            count_ens += len(ens)
+        print(scen, count_mod ,'(', count_ens, ')')
+        txt.append(''.join([str(int(count_mod)),' (', str(int(count_ens)), ')' ]))
+    model_path  = diagtools.folder(cfg['work_dir']+'/model_table_all')
+    model_path += short_name+'_all.csv'
+    model_table = ''.join([header, '\\\\ \n', ' & '.join(txt), '\\\\ \n'])
+    mp_fn = open(model_path, 'w')
+    mp_fn.write(model_table)
+    mp_fn.close()
+    print('output:', model_table)
+    print('saved model path:', model_path)
+
+    #assert 0
+
 
     model_hist_cubes= {'ts':{}, 'profile':{}, 'map':{}}
     for fn, metadata in metadatas.items():
@@ -3394,6 +3556,7 @@ def main(cfg):
         short_name = metadata['short_name']
         exp = metadata['exp']
         ensemble = metadata['ensemble']
+        print('checking:', variable_group, dataset,short_name,exp,ensemble)
         if dataset in models_to_skip['all']: continue
         if dataset in models_to_skip.get(short_name, {}): continue
 
@@ -3402,6 +3565,9 @@ def main(cfg):
         if ensemble in ensembles_to_skip.get((dataset, short_name), []):
             continue
 
+        if variable_group.find('sos_ts_')>-1 and ensemble in sal_ts_to_skip.get(dataset, []):
+                continue
+     
         if dataset in models_without_futures:
             continue
 
@@ -3422,15 +3588,15 @@ def main(cfg):
     find_missing_cubes(metadatas, model_hist_cubes, time_series_fns, profile_fns, maps_fns)
 
     #jobs:
-    #Make UKESM-only version of everything (or single model?)
-    #prepare data for export.
-    #fix chlorophyll map.
-    #add text about Being right for the wrong reason
-    #maybe make some bias correction methods?
+    # Make UKESM-only version of everything (or single model?)
+    # prepare data for export.
+    # fix chlorophyll map.
+    # add text about Being right for the wrong reason
+    # maybe make some bias correction methods?
     #    subtract the time series by the mean of the observatioinal; time range
 
 
-    #for ddict in [time_series_fns, profile_fns, maps_fns]:
+    # for ddict in [time_series_fns, profile_fns, maps_fns]:
     #    for kkey, ffiles in ddict.items():
     #        print(kkey, ffiles)
     #        for fn in ffiles:
@@ -3452,7 +3618,11 @@ def main(cfg):
         #     model_5_95: the range of every model ensmble is shown as a coloured band (or line if only one)
         #     Global_mean: the mean of every model_means is shown as a thick solid line
         #     Global_range: the mean of every model_means is shown as a thick solid line
-        plottings = [['ensemble_anom', ], # 'model_anom', 'mmm_anmom'],
+        plottings = [['ensemble_anom',],
+#                     ['model_anom',], 
+#                     ['mmm_anom'],
+#                     ['model_anom_range', ],
+                     ['model_anom_range', 'mmm_anom'],
 #                  ['all', 'model_means', 'Global_mean' ],
 #                     ['model_range',],
 #                     ['Global_range', ],
@@ -3464,7 +3634,7 @@ def main(cfg):
             continue
             for single_model in models.keys():
                 #continue
-                # pane a standalone
+                # pane a) standalone
                 multi_model_time_series(
                     cfg,
                     metadatas,
@@ -3475,6 +3645,7 @@ def main(cfg):
                     plotting = plotting,
                     single_model=single_model,
                 )
+        #assert 0
 
         # Climatology plot
         plottings =  [['OneModelOneVote',],['means', 'OneModelOneVote',], ['OMOC_modelmeans','OneModelOneVote','OMOC_modelranges'],] # ['all_models',],[ 'means',  '5-95'], ]#  ['means',],  ['5-95',], ['all_models', ]]
@@ -3490,10 +3661,22 @@ def main(cfg):
                 single_model='all',
             )
         # maps:
-        for single_model in ['all', ]: #sorted(models.keys()): # ['all', 'only']:
-            #continue
-            for reg in ['tightmidatlantic', ]: #'midatlantic', 'verytightMPA']:
-              for cmap in ['slev', ]:#'temp', 'prec', 'wind', 'chem', 'cryo', 'standard', 'slev', 'misc1', 'misc2', 'misc3']:
+        for single_model in sorted(models.keys()): # ['all', 'only']:
+            continue
+            cmaps = {
+                'tos': 'temp_1', 'thetao': 'temp_1', # temperature
+                'sos': 'temp', 'so': 'temp',
+                'mld': 'slev', 'mlotst': 'slev',
+                'ph': 'ph', # only one way!
+                'o2' : 'chem',
+                'chl':'prec',
+                'intpp': 'prec', #'misc1',
+                'no3': 'chem',
+                'po4': 'chem',
+            }
+
+            for reg in ['tightmidatlantic', 'global']: #'midatlantic', 'verytightMPA']:
+                cmap=cmaps[short_name]
                 multi_model_map_figure(
                     cfg,
                     metadatas,
@@ -3504,7 +3687,6 @@ def main(cfg):
                     colour_scheme = cmap,
                     region=reg,
                     single_model=single_model )
-            #assert 0
 
         # Profile pair
         plottings =  [['all_models',], ['means_split',], ]#['5-95_split',], ['means_split', '5-95_split', ], ['range',] ]
@@ -3534,7 +3716,7 @@ def main(cfg):
     #print(maps_fns)
 
     do_whole_plot = True
-    #for single_model in ['all', ]: # sorted(models.keys()): # ['all', 'only']:
+    #for single_model in ['all', ]: 
     for single_model in sorted(models.keys()): # ['all', 'only']:
 
         if not  do_whole_plot: continue
