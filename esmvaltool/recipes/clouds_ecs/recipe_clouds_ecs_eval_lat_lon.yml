@@ -335,8 +335,8 @@ diagnostics:
         derive: true
         preprocessor: lat_lon
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
-            tier: 1, start_year: 2000, end_year: 2013}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+            tier: 2, start_year: 2001, end_year: 2022}
 
 
   swcre_lat_lon:
@@ -363,8 +363,8 @@ diagnostics:
         derive: true
         preprocessor: lat_lon
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
-             tier: 1, start_year: 2000, end_year: 2013}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+            tier: 2, start_year: 2001, end_year: 2022}
 
 
   lwcre_lat_lon:
@@ -391,8 +391,8 @@ diagnostics:
         derive: true
         preprocessor: lat_lon
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
-             tier: 1, start_year: 2000, end_year: 2013}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+            tier: 2, start_year: 2001, end_year: 2022}
 
 
   plot_correlation:

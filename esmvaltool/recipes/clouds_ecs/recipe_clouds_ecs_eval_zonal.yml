@@ -489,8 +489,9 @@ diagnostics:
         derive: true
         preprocessor: zonal
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
-             tier: 1, start_year: 2000, end_year: 2013}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2022}
+
 
 
   swcre_zonal:
@@ -558,8 +559,8 @@ diagnostics:
         derive: true
         preprocessor: zonal
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
-             tier: 1, start_year: 2000, end_year: 2013}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2022}
 
 
   lwcre_zonal:
@@ -627,5 +628,5 @@ diagnostics:
         derive: true
         preprocessor: zonal
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
-             tier: 1, start_year: 2000, end_year: 2013}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2022}
