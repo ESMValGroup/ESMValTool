@@ -412,8 +412,8 @@ def bootstrapping(cubes, cube_obs, all_groups, attributes, cfg):
                 rmsd = calculate_rmsd(cube, cube_obs).data
                 corr = calculate_corr(cube, cube_obs).data
                 sample_stat.loc[iboot] = [mean, bias, rmsd, corr]
-                sample_stat[:] = sample_stat[:].astype(str).astype(float)
 
+            sample_stat = sample_stat.astype(float)
             stat = sample_stat.describe()
             basename = "bootstrapping_" + attributes['short_name'] + "_" + group
             csv_path = get_diagnostic_filename(basename, cfg).replace('.nc', '.csv')
