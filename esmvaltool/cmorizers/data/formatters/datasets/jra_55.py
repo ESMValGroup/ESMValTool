@@ -161,19 +161,27 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        short_name = var['short_name']
-
-        if 'file' in var:
-            filename = [os.path.join(in_dir, var['file'])]
-        elif 'files' in var:
+    if start_date is None:
+        start_date = 1958
+    else:
+        start_date = start_date.year
+    if end_date is None:
+        end_date = 2022
+    else:
+        end_date = end_date.year
+    for year in range(start_date, end_date + 1):
+        for (short_name, var) in cfg['variables'].items():
+            short_name = var['short_name']
             filename = []
-            for file in var['files']:
-                filename.append(os.path.join(in_dir, file))
-        else:
-            raise ValueError(f"No input file(s) specified for variable "
-                             f"{short_name}.")
+            if 'file' in var:
+                filename.append(os.path.join(in_dir, var['file'].format(year=year)))
+            elif 'files' in var:
+                for file in var['files']:
+                    filename.append(os.path.join(in_dir, file.format(year=year)))
+            else:
+                raise ValueError(f"No input file(s) specified for variable "
+                                 f"{short_name}.")
 
-        logger.info("CMORizing variable '%s' from file '%s'", short_name,
-                    filename)
-        _extract_variable(short_name, var, filename, cfg, out_dir)
+            logger.info("CMORizing variable '%s' from file '%s'", short_name,
+                        filename)
+            _extract_variable(short_name, var, filename, cfg, out_dir)
