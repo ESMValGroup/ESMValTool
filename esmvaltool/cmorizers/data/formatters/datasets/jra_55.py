@@ -66,6 +66,8 @@ def _load_jra55_grib(filenames, var):
                     tmp_cubes[i].add_aux_coord(time_coord)
                     tmp_cubes[i].remove_coord('originating_centre')
 
+                    print(message.sections[1]['indicatorOfTypeOfLevel'])
+
                     i = i + 1
 
             # Some JRA-55 GRIB files contain two fields: "surface" and
@@ -117,8 +119,7 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
                           f'expects exactly two input variables and two input '
                           f'files')
                 raise ValueError(errmsg)
-            cube = cubes[0]
-            cube -= cubes[1]
+            cube = cubes[0] - cubes[1]
         else:
             oper = var.get('operator')
             raise ValueError(
