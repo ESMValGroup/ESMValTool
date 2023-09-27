@@ -16,12 +16,10 @@ Download and processing instructions
 """
 
 import copy
-import glob
 import logging
 import os
+import xarray as xr
 
-from datetime import datetime
-from iris_grib.message import GribMessage
 from cf_units import Unit
 
 import iris
@@ -33,64 +31,39 @@ logger = logging.getLogger(__name__)
 
 def _load_jra55_grib(filenames, var):
     """Load data from GRIB file and return list of cubes."""
+    leveltype = var.get('typeOfLevel')
     cubelist = []
-    for infile in filenames:
-        tmp_cubes = iris.load(infile)
-        if len(tmp_cubes) > 1:
-            start_element = var.get('start_element')
-            i = 0
-            # create list of files (needed in case 'infile' contains wildcards)
-            # note: list has to be sorted by year (i.e. filename) to be
-            #       compatible with the output of iris.load()
-            listing = sorted(glob.glob(infile), key=os.path.basename)
-            for fname in listing:
-                for message in GribMessage.messages_from_filename(fname):
-                    day = message.sections[1]['day']
-                    month = message.sections[1]['month']
-                    year = (
-                            (message.sections[1][
-                            'centuryOfReferenceTimeOfData']
-                            - 1) * 100 + message.sections[1]['yearOfCentury']
-                    )
-
-                    point = datetime(year=year, month=month, day=day)
-                    time_units = Unit('days since 1950-01-01 00:00:00',
-                                      calendar='standard')
-                    time_coord = iris.coords.DimCoord(
-                        time_units.date2num(point),
-                        var_name='time',
-                        standard_name='time',
-                        long_name='time',
-                        units=time_units)
-
-                    tmp_cubes[i].add_aux_coord(time_coord)
-                    tmp_cubes[i].remove_coord('originating_centre')
-
-                    print(message.sections[1]['indicatorOfTypeOfLevel'])
-
-                    i = i + 1
-
-            # Some JRA-55 GRIB files contain two fields: "surface" and
-            # "top of the atmosphere". As
-            # message.sections[1]['indicatorOfTypeOfLevel'] always gives
-            # 'sfc', a distinction between "surface" and "top of the
-            # atmosphere" is not possible (bug?).
-            # If "start_element" is given in the JRA-55 CMOR config file
-            # (esmvaltool/cmorizers/data/cmor_config/JRA-55.yml), we simply
-            # extract every second cube from the list of cube starting
-            # with field "start_element" as the fields "surface" and "top of
-            # the atmosphere" are alternating in the GRIB file.
-            # If "start_element" is not specified in the JRA-55 CMOR config
-            # file, no selection of cubes is done before merging into a
-            # single cube.
-
-            if start_element is not None:
-                cubelist.append(tmp_cubes[start_element::2].merge_cube())
-            else:
-                cubelist.append(tmp_cubes.merge_cube())
-        else:
-            tmp_cubes[0].remove_coord('originating_centre')
-            cubelist = tmp_cubes
+    if leveltype is not None:
+        dataset = xr.open_mfdataset(filenames, engine="cfgrib",
+                                    filter_by_keys={'typeOfLevel': leveltype})
+    else:
+        dataset = xr.open_mfdataset(filenames, engine="cfgrib")
+    varnames = list(dataset.data_vars)
+    for varname in varnames:
+        da_tmp = dataset[varname]
+        # conversion to Iris cubes requires a valid standard_name
+        da_tmp.attrs['standard_name'] = var['standard_name']
+        cube = da_tmp.to_iris()
+        # remove auxiliary coordinate 'time'
+        cube.remove_coord('time')
+        # rename coordinate from 'forecast_reference_time' to 'time
+        timecoord = cube.dim_coords[0]
+        timecoord.rename("time")
+        # convert unit string to cf_unit object
+        # (calendar (calendar=coord.units.calendar) must be irgnored
+        # or conversion fails
+        timecoord.units = Unit(timecoord.units)
+        # add forecast period to time coordinate to get the actual time
+        # for which the data are valid
+        forecast = cube.coord('forecast_period')  # forecast period in hours
+        timecoord.points = timecoord.points + forecast.points * 3600
+        # remove unneeded scalar variables to prevent warnings
+        auxcoordnames = ['step', 'entireAtmosphere', 'number', 'isobaricLayer',
+                         'surface', 'nominalTop', 'heightAboveGround']
+        for aux_coord in cube.coords(dim_coords=False):
+            if aux_coord.var_name in auxcoordnames:
+                cube.remove_coord(aux_coord)
+        cubelist.append(cube)
 
     return cubelist
 
@@ -98,7 +71,8 @@ def _load_jra55_grib(filenames, var):
 def _extract_variable(short_name, var, in_files, cfg, out_dir):
     """Extract variable."""
     # load data (returns a list of cubes)
-
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    var['standard_name'] = cmor_info.standard_name
     cubes = _load_jra55_grib(in_files, var)
 
     # apply operators (if any)
@@ -129,15 +103,26 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
         cube = cubes[0]
 
     # Fix metadata
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     attrs = copy.deepcopy(cfg['attributes'])
     attrs['mip'] = var['mip']
     utils.fix_var_metadata(cube, cmor_info)
 
-    # fix z-coordinate (if present)
+    if cube.var_name in ['hfls', 'hfss', 'rlus', 'rlut', 'rlutcs', 'rsus',
+                         'rsuscs', 'rsut', 'rsutcs']:
+        attrs['positive'] = 'up'
+
+    if cube.var_name in ['rlds', 'rldscs', 'rsds', 'rsdscs', 'rsdt', 'rtmt',
+                         'tauu', 'tauv']:
+        attrs['positive'] = 'down'
+
+    # fix longitudes and z-coordinate (if present)
 
     for coord in cube.dim_coords:
         coord_type = iris.util.guess_coord_axis(coord)
+        if coord_type == 'X':
+            # -> shift longitude coordinate by one grid box
+            # to match obs4mips/CREATE-IP grid
+            coord.points = coord.points + 360 / len(coord.points)
         if coord_type == 'Z':
             coord.standard_name = 'air_pressure'
             coord.long_name = 'pressure'
@@ -148,7 +133,11 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
             utils.flip_dim_coord(cube, coord.standard_name)
 
     utils.fix_dim_coordnames(cube)
+
     utils.fix_coords(cube)
+    if 'height2m' in cmor_info.dimensions:
+        utils.add_height2m(cube)
+
     utils.set_global_atts(cube, attrs)
 
     # Save variable
@@ -156,7 +145,8 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
                         short_name,
                         out_dir,
                         attrs,
-                        unlimited_dimensions=['time'])
+                        unlimited_dimensions=['time'],
+                        local_keys=['positive'])
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
@@ -170,19 +160,21 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         end_date = 2022
     else:
         end_date = end_date.year
-    for year in range(start_date, end_date + 1):
-        for (short_name, var) in cfg['variables'].items():
-            short_name = var['short_name']
-            filename = []
+    for (short_name, var) in cfg['variables'].items():
+        short_name = var['short_name']
+        filename = []
+        for year in range(start_date, end_date + 1):
             if 'file' in var:
-                filename.append(os.path.join(in_dir, var['file'].format(year=year)))
+                filename.append(os.path.join(in_dir,
+                                var['file'].format(year=year)))
             elif 'files' in var:
                 for file in var['files']:
-                    filename.append(os.path.join(in_dir, file.format(year=year)))
+                    filename.append(os.path.join(in_dir,
+                                    file.format(year=year)))
             else:
                 raise ValueError(f"No input file(s) specified for variable "
                                  f"{short_name}.")
 
-            logger.info("CMORizing variable '%s' from file '%s'", short_name,
-                        filename)
-            _extract_variable(short_name, var, filename, cfg, out_dir)
+        logger.info("CMORizing variable '%s' from file '%s'", short_name,
+                    filename)
+        _extract_variable(short_name, var, filename, cfg, out_dir)
