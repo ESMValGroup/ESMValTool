@@ -502,11 +502,11 @@ diagnostics:
       scatterplot: &scatter_plot
         script: clouds_ecs/scatterplot.py
         ancestors: ['feedback_*_ECS/feedback_parameters', '*/ecs']
-        file1: 'ecs.nc'
-        file2: 'lambda_netcre_vs_latitude-longitude_*_all_150_years.nc'
+        file1: 'lambda_netcre_vs_latitude-longitude_*_all_150_years.nc'
+        file2: 'ecs.nc'
         output_file_name: ecs_netcre
-        xlabel: 'ECS'
-        ylabel: 'Net Cloud Feedback (W m$^{-2}$ K$^{-1}$)'
+        xlabel: 'Net Cloud Feedback (W m$^{-2}$ K$^{-1}$)'
+        ylabel: 'ECS'
         x_range: [-1.0, 1.1]
         y_range: [1.95, 5.7]
   
@@ -517,9 +517,9 @@ diagnostics:
     scripts:
       scatterplot: 
         <<: *scatter_plot
-        file2: 'lambda_swcre_vs_latitude-longitude_*_all_150_years.nc'
+        file1: 'lambda_swcre_vs_latitude-longitude_*_all_150_years.nc'
         output_file_name: ecs_swcre
-        ylabel: 'Shortwave Cloud Feedback (W m$^{-2}$ K$^{-1}$)'
+        xlabel: 'Shortwave Cloud Feedback (W m$^{-2}$ K$^{-1}$)'
   
         
   fig_ecs_lwcre_feedback:
@@ -528,6 +528,6 @@ diagnostics:
     scripts:
       scatterplot: 
         <<: *scatter_plot
-        file2: 'lambda_lwcre_vs_latitude-longitude_*_all_150_years.nc'
+        file1: 'lambda_lwcre_vs_latitude-longitude_*_all_150_years.nc'
         output_file_name: ecs_lwcre
-        ylabel: 'Longwave Cloud Feedback (W m$^{-2}$ K$^{-1}$)'
+        xlabel: 'Longwave Cloud Feedback (W m$^{-2}$ K$^{-1}$)'
