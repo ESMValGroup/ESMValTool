@@ -76,7 +76,6 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
     cubes = _load_jra55_grib(in_files, var)
 
     # apply operators (if any)
-
     if len(cubes) > 1:
         if var.get('operator', '') == 'sum':
             # Multiple variables case using sum operation
@@ -116,7 +115,6 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
         attrs['positive'] = 'down'
 
     # fix longitudes and z-coordinate (if present)
-
     for coord in cube.dim_coords:
         coord_type = iris.util.guess_coord_axis(coord)
         if coord_type == 'X':
@@ -133,11 +131,9 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
             utils.flip_dim_coord(cube, coord.standard_name)
 
     utils.fix_dim_coordnames(cube)
-
     utils.fix_coords(cube)
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
-
     utils.set_global_atts(cube, attrs)
 
     # Save variable
