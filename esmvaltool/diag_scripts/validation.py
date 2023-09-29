@@ -29,9 +29,10 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def _get_provenance_record(cfg, plot_file, caption, loc):
     """Create a provenance record describing the diagnostic data and plot."""
-    all_input_files = [
-        k for k in cfg["input_data"].keys() if k.endswith(".nc")
-    ]
+    all_input_files = {k: cfg["input_data"][k]["alias"]
+                       for k in cfg["input_data"].keys() if k.endswith(".nc")
+                   }
+
     if "_vs_" in plot_file:
         model_1 = plot_file.split("_vs_")[0].split("_")[-1]
         if plot_file.endswith(".png"):
@@ -39,16 +40,16 @@ def _get_provenance_record(cfg, plot_file, caption, loc):
         elif plot_file.endswith(".nc"):
             model_2 = plot_file.split("_vs_")[1].strip(".nc")
         ancestor_1 = [
-            k for k in all_input_files if model_1 in os.path.basename(k)
+            file_name for file_name, alias in all_input_files.items() if model_1 == alias
         ][0]
         ancestor_2 = [
-            k for k in all_input_files if model_2 in os.path.basename(k)
+            file_name for file_name, alias in all_input_files.items() if model_2 == alias
         ][0]
         ancestor_files = [ancestor_1, ancestor_2]
     else:
         model = os.path.basename(plot_file).split("_")[0]
         ancestor_files = [
-            k for k in all_input_files if model in os.path.basename(k)
+            file_name for file_name, alias in all_input_files.items() if model == alias
         ]
     record = {
         'caption': caption,
@@ -179,23 +180,37 @@ def plot_zonal_cubes(cube_1, cube_2, cfg, plot_data):
     # xcoordinate: latotude or longitude (str)
     data_names, xcoordinate, period = plot_data
     var = data_names.split('_')[0]
-    cube_names = [data_names.split('_')[1], data_names.split('_')[3]]
+    cube_names = data_names.replace(var + '_', '').split('_vs_')
     lat_points = cube_1.coord(xcoordinate).points
     plt.plot(lat_points, cube_1.data, label=cube_names[0])
     plt.plot(lat_points, cube_2.data, label=cube_names[1])
+    plt.title('annualclim of ' + var if period == 'alltime' else period + ' of ' + var)
     if xcoordinate == 'latitude':
-        plt.title(period + ' Zonal Mean for ' + var + ' ' + data_names)
+        ax = plt.gca()
+        ax.set_xticks([-60, -30, 0, 30, 60], labels=[f'60\N{DEGREE SIGN} S',
+                                                     f'30\N{DEGREE SIGN} S',
+                                                     f'0\N{DEGREE SIGN}',
+                                                     f'30\N{DEGREE SIGN} N',
+                                                     f'60\N{DEGREE SIGN} N'])
     elif xcoordinate == 'longitude':
-        plt.title(period + ' Meridional Mean for ' + var + ' ' + data_names)
+        ax = plt.gca()
+        ax.set_xticks([0, 60, 120, 180, 240, 300, 360 ], labels=[f'0\N{DEGREE SIGN} E',
+                                                                f'60\N{DEGREE SIGN} E',
+                                                                f'120\N{DEGREE SIGN} E',
+                                                                f'180\N{DEGREE SIGN} E',
+                                                                f'240\N{DEGREE SIGN} E',
+                                                                f'300\N{DEGREE SIGN} E',
+                                                                f'0\N{DEGREE SIGN} E'])
     plt.xlabel(xcoordinate + ' (deg)')
-    plt.ylabel(var)
+    plt.ylabel(var + ' in [' + str(cube_1.units) + ']')
     plt.tight_layout()
     plt.grid()
     plt.legend()
+    png_name = xcoordinate + '_' + period + '_' + data_names + '.png'
     if xcoordinate == 'latitude':
-        png_name = 'Zonal_Mean_' + xcoordinate + '_' + data_names + '.png'
+        png_name = 'Zonal_Mean_' + png_name
     elif xcoordinate == 'longitude':
-        png_name = 'Merid_Mean_' + xcoordinate + '_' + data_names + '.png'
+        png_name = 'Merid_Mean_' + png_name
     plot_file_path = os.path.join(cfg['plot_dir'], period, png_name)
     plt.savefig(plot_file_path)
     save_plotted_cubes(
@@ -229,6 +244,16 @@ def apply_seasons(data_set_dict):
     ]
 
     return season_meaned_cubes
+
+####
+# Workaround to avoid supermeans
+def apply_climmean(data_set_dict):
+    """Apply time mean"""
+    data_file = data_set_dict['filename']
+    data_cube = iris.load_cube(data_file)
+    meaned_cube = data_cube.collapsed('time', iris.analysis.MEAN)
+    return meaned_cube
+####
 
 
 def coordinate_collapse(data_set, cfg):
@@ -371,7 +396,13 @@ def main(cfg):
                                             plot_key_obs)
 
         # apply the supermeans (MEAN on time), collapse a coord and plot
-        ctrl, exper, obs_list = apply_supermeans(ctrl, exper, obs)
+        #ctrl, exper, obs_list = apply_supermeans(ctrl, exper, obs)
+####
+# Workaround to avoid supermeans
+        ctrl = apply_climmean(ctrl)
+        exper = apply_climmean(exper)
+        obs_list = [ apply_climmean(obs_element) for obs_element in obs ]
+####
         ctrl = coordinate_collapse(ctrl, cfg)
         exper = coordinate_collapse(exper, cfg)
         plot_ctrl_exper(ctrl, exper, cfg, plot_key)
