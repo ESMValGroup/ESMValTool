@@ -64,10 +64,11 @@ preprocessors:
       standardize: false
     multi_model_statistics:
       span: full
-      statistics: [percentile, percentile]
-      statistics_kwargs:
-        - {percent: 10}
-        - {percent: 90}
+      statistics:
+        - operator: percentile
+          percent: 10
+        - operator: percentile
+          percent: 90
   preprocessor_local: &extract_NL
     extract_point:
       longitude: 6.25
