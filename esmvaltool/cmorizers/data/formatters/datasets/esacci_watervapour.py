@@ -23,7 +23,7 @@ import logging
 import os
 
 import iris
-from esmvalcore.cmor.check import _get_time_bounds
+from esmvalcore.cmor.fixes import get_time_bounds
 from esmvalcore.preprocessor import concatenate
 
 from ...utilities import (
