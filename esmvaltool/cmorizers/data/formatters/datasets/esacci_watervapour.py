@@ -83,7 +83,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             yearly_cube = concatenate(monthly_cubes)
             # Fix monthly time bounds
             time = yearly_cube.coord('time')
-            time.bounds = _get_time_bounds(time, 'mon')
+            time.bounds = get_time_bounds(time, 'mon')
             save_variable(yearly_cube,
                           var,
                           out_dir,
