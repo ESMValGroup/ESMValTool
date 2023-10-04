@@ -8,8 +8,6 @@ import tempfile
 import pytest
 import yaml
 
-import esmvaltool.utils.recipe_filler as recipe_filler
-from esmvalcore.cmor.table import read_cmor_tables
 from esmvaltool.utils.recipe_filler import run
 
 
