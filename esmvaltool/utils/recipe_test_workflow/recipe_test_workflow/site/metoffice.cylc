@@ -7,11 +7,11 @@
             --ntasks = {{ MAX_PARALLEL_TASKS }}
 
     [[process<fast>]]
+        execution time limit = PT2M
         [[[directives]]]
-            --time = 2
             --mem = 2G
 
     [[process<medium>]]
+        execution time limit = PT6M
         [[[directives]]]
-            --time = 6
             --mem = 2G
