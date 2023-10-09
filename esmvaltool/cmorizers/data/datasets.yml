@@ -875,10 +875,10 @@ datasets:
 
   MOBO-DIC2004-2019:
     tier: 2
-    source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0277099/
-    last_access: 2023-07-18
+    source: https://www.nodc.noaa.gov/archive/arc0211/0277099/2.3/data/0-data/
+    last_access: 2023-10-09
     info: |
-      Download the file MOBO_MPI_DIC_2004-2019_Oct2022.nc
+      Download the file MPI_MOBO-DIC_2004-2019_v2.nc
 
   MODIS:
     tier: 3
@@ -1022,7 +1022,7 @@ datasets:
         miscSI-MO/pr_wtr.eatm.mon.mean.nc
         prsSI-MO/shum.mon.mean.nc
         miscMO/tcdc.eatm.mon.mean.nc
-        ntatFlxSI-MO/ulwrf.ntat.mon.mean.nc  
+        ntatFlxSI-MO/ulwrf.ntat.mon.mean.nc
         ntatFlxSI-MO/uswrf.ntat.mon.mean.nc
         ntatFlxSI-MO/csulf.ntat.mon.mean.nc
         ntatFlxSI-MO/csusf.ntat.mon.mean.nc

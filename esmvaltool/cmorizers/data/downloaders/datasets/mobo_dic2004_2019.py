@@ -33,7 +33,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     )
 
     downloader.download_file(
-        "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0277099/"
-        "MOBO_MPI_DIC_2004-2019_Oct2022.nc",
+        "https://www.nodc.noaa.gov/archive/arc0211/0277099/2.3/data/0-data/"
+        "MPI_MOBO-DIC_2004-2019_v2.nc",
         wget_options=[],
     )

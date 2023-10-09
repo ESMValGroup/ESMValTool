@@ -558,7 +558,7 @@ diagnostics:
       dissic:
     additional_datasets:
       - {dataset: MOBO-DIC2004-2019, project: OBS6, mip: Omon, tier: 2,
-         type: clim, version: '1.2', start_year: 2004, end_year: 2019}
+         type: reanaly, version: '2.3', start_year: 2004, end_year: 2019}
     scripts: null
 
 

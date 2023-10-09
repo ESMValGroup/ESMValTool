@@ -4,13 +4,13 @@ Tier
     Tier 2: other freely-available dataset.
 
 Source
-    https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0277099/
+    https://www.nodc.noaa.gov/archive/arc0211/0277099/2.3/data/0-data/
 
 Last access
-    20230718
+    20231009
 
 Download and processing instructions
-    Download the file MOBO_MPI_DIC_2004-2019_Oct2022.nc
+    Download the file MPI_MOBO-DIC_2004-2019_v2.nc
 
 """
 
