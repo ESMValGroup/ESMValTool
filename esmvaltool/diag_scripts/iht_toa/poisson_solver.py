@@ -68,8 +68,8 @@ def precon_a(xxx, m_w, m_s, m_p, cxxx):
     shp0, shp1 = np.array(cxxx.shape) - 2
     for j in range(1, shp0 + 1):
         for i in range(1, shp1 + 1):
-            cxxx[j, i] = m_p[j, i] * \
-                (xxx[j, i] - m_s[j, i] * cxxx[j - 1, i] -
+            cxxx[j, i] = m_p[j, i] * (xxx[j, i] -
+                 m_s[j, i] * cxxx[j - 1, i] -
                  m_w[j, i] * cxxx[j, i - 1])
 
 
@@ -79,8 +79,8 @@ def precon_b(m_e, m_n, cxxx):
     shp0, shp1 = np.array(cxxx.shape) - 2
     for j in range(shp0, 0, -1):
         for i in range(shp1, 0, -1):
-            cxxx[j, i] = cxxx[j, i] - m_e[j, i] * cxxx[j, i + 1] - \
-                m_n[j, i] * cxxx[j + 1, i]
+            cxxx[j, i] = (cxxx[j, i] - m_e[j, i] * cxxx[j, i + 1] -
+                m_n[j, i] * cxxx[j + 1, i])
 
 
 class SphericalPoisson:
@@ -150,29 +150,29 @@ class SphericalPoisson:
 
         for j in range(1, src_shape[0] + 1):
             for i in range(1, src_shape[1] + 1):
-                m_matrix[2, j, i] = a_matrix[2, j - 1, i - 1] / \
-                    (1.0 + alf * m_matrix[0, j - 1, i])
+                m_matrix[2, j, i] = (a_matrix[2, j - 1, i - 1] /
+                    (1.0 + alf * m_matrix[0, j - 1, i]))
 
-                m_matrix[1, j, i] = a_matrix[1, j - 1, i - 1] / \
-                    (1.0 + alf * m_matrix[3, j, i - 1])
+                m_matrix[1, j, i] = (a_matrix[1, j - 1, i - 1] /
+                    (1.0 + alf * m_matrix[3, j, i - 1]))
 
-                m_matrix[4, j, i] = a_matrix[4, j - 1, i - 1] - \
+                m_matrix[4, j, i] = (a_matrix[4, j - 1, i - 1] -
                     m_matrix[2, j, i] * (m_matrix[3, j - 1, i] -
-                                         alf * m_matrix[0, j - 1, i]) - \
+                                         alf * m_matrix[0, j - 1, i]) -
                     m_matrix[1, j, i] * (m_matrix[0, j, i - 1] -
-                                         alf * m_matrix[3, j, i - 1])
+                                         alf * m_matrix[3, j, i - 1]))
 
                 m_matrix[4, j, i] = 1.0 / m_matrix[4, j, i]
 
-                m_matrix[0, j, i] = (a_matrix[0, j - 1, i - 1] -
+                m_matrix[0, j, i] = ((a_matrix[0, j - 1, i - 1] -
                                      alf * m_matrix[2, j, i] *
-                                     m_matrix[0, j - 1, i]) * \
-                    m_matrix[4, j, i]
+                                     m_matrix[0, j - 1, i]) *
+                    m_matrix[4, j, i])
 
-                m_matrix[3, j, i] = (a_matrix[3, j - 1, i - 1] -
+                m_matrix[3, j, i] = ((a_matrix[3, j - 1, i - 1] -
                                      alf * m_matrix[1, j, i] *
-                                     m_matrix[3, j, i - 1]) * \
-                    m_matrix[4, j, i]
+                                     m_matrix[3, j, i - 1]) *
+                    m_matrix[4, j, i])
 
         self.a_matrix = a_matrix
         self.m_matrix = m_matrix
@@ -275,11 +275,11 @@ class SphericalPoisson:
         axxx = np.zeros(src_shape + 2)
         xxx = swap_bounds(xxx)
         shp0, shp1 = src_shape
-        axxx[1:shp0 + 1, 1:shp1 + 1] = \
-            self.a_matrix[2, 0:shp0, 0:shp1] * xxx[0:shp0, 1:shp1 + 1] + \
-            self.a_matrix[1, 0:shp0, 0:shp1] * xxx[1:shp0 + 1, 0:shp1] + \
-            self.a_matrix[0, 0:shp0, 0:shp1] * xxx[1:shp0 + 1, 2:shp1 + 2] + \
-            self.a_matrix[3, 0:shp0, 0:shp1] * xxx[2:shp0 + 2, 1:shp1 + 1] + \
-            self.a_matrix[4, 0:shp0, 0:shp1] * xxx[1:shp0 + 1, 1:shp1 + 1]
+        axxx[1:shp0 + 1, 1:shp1 + 1] = (
+            self.a_matrix[2, 0:shp0, 0:shp1] * xxx[0:shp0, 1:shp1 + 1] +
+            self.a_matrix[1, 0:shp0, 0:shp1] * xxx[1:shp0 + 1, 0:shp1] +
+            self.a_matrix[0, 0:shp0, 0:shp1] * xxx[1:shp0 + 1, 2:shp1 + 2] +
+            self.a_matrix[3, 0:shp0, 0:shp1] * xxx[2:shp0 + 2, 1:shp1 + 1] +
+            self.a_matrix[4, 0:shp0, 0:shp1] * xxx[1:shp0 + 1, 1:shp1 + 1])
         axxx = swap_bounds(axxx)
         return axxx

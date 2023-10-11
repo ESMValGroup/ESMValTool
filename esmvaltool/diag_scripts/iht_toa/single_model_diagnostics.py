@@ -254,8 +254,8 @@ class ImpliedHeatTransport:
                 rsutcs_rolling_mean = cube.copy()
             if cube.var_name == "rlutcs":
                 rlutcs_rolling_mean = cube.copy()
-        rtntcs_rolling_mean = rsdt_rolling_mean - rsutcs_rolling_mean - \
-            rlutcs_rolling_mean
+        rtntcs_rolling_mean = (rsdt_rolling_mean - rsutcs_rolling_mean -
+            rlutcs_rolling_mean)
         rtntcs_rolling_mean.var_name = "rtntcs"
         rtntcs_rolling_mean.long_name = "radiative_flux_of_rtntcs"
         self.flx_rolling_mean.append(rtntcs_rolling_mean)
