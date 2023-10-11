@@ -263,27 +263,28 @@ class ImpliedHeatTransport:
     def print(self):
         """Print variable names of all cubes in the IHT object."""
         logger.info("=== implied_heat_transport object ===")
-        print(self.mht_clim)
+        logger.info(self.mht_clim)
+        info_message = "Long name: %s; Variable: %s."
         for zzz in self.mht_clim:
-            print(zzz.long_name, zzz.var_name)
+            logger.info(info_message, zzz.long_name, zzz.var_name)
 
-        print(self.efp_clim)
+        logger.info(self.efp_clim)
         for zzz in self.efp_clim:
-            print(zzz.long_name, zzz.var_name)
+            logger.info(info_message, zzz.long_name, zzz.var_name)
 
-        print(self.flx_clim)
+        logger.info(self.flx_clim)
         for zzz in self.flx_clim:
-            print(zzz.long_name, zzz.var_name)
+            logger.info(info_message, zzz.long_name, zzz.var_name)
 
-        print(self.mht_rolling_mean)
+        logger.info(self.mht_rolling_mean)
         for zzz in self.mht_rolling_mean:
-            print(zzz.long_name, zzz.var_name)
+            logger.info(info_message, zzz.long_name, zzz.var_name)
 
-        print(self.symmetry_metric)
+        logger.info(self.symmetry_metric)
         for zzz in self.symmetry_metric:
-            print(zzz.long_name, zzz.var_name)
+            logger.info(info_message, zzz.long_name, zzz.var_name)
 
-        print(self.flx_files)
+        logger.info(self.flx_files)
 
     def mht_symmetry_metrics(self):
         """Calculate symmetry metrics.
