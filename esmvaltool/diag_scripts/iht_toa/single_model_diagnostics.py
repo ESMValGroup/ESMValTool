@@ -115,24 +115,26 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
     sphpo.calc_mht()
     logger.info("Ending spherical_poisson")
 
-    # Energy flux potential (P)
-    p_cube = flux_cube.copy()
-    p_cube.var_name = f"{flux_cube.var_name}_efp"
-    p_cube.long_name = f"energy_flux_potential_of_{flux_cube.var_name}"
-    p_cube.standard_name = None
-    p_cube.units = 'J s-1'
-    p_cube.data = sphpo.efp[1:-1, 1:-1]
+    # Energy flux potential
+    efp_cube = iris.cube.Cube(sphpo.efp[1:-1, 1:-1],
+                   long_name=f"energy_flux_potential_of_{flux_cube.var_name}",
+                   var_name=f"{flux_cube.var_name}_efp", units='J s-1',
+                   dim_coords_and_dims=[(flux_cube.coords()[0], 0),
+                                        (flux_cube.coords()[1], 1)])
 
     # MHT data cube
-    mht_cube = flux_cube.copy()
-    mht_cube = mht_cube.collapsed('longitude', iris.analysis.MEAN)
-    mht_cube.var_name = f"{flux_cube.var_name}_mht"
-    mht_cube.long_name = f"meridional_heat_transport_of_{flux_cube.var_name}"
-    mht_cube.standard_name = None
-    mht_cube.units = 'W'
-    mht_cube.data = sphpo.mht
-
-    return p_cube, mht_cube
+    collapsed_longitude = iris.coords.AuxCoord(180.0,
+                                               bounds=(0.0, 360.0),
+                                               long_name='longitude',
+                                               standard_name='longitude',
+                                               units='degrees')
+    mht_cube = iris.cube.Cube(sphpo.mht,
+                   long_name=f"meridional_heat_transport_of_{flux_cube.var_name}",
+                   var_name=f"{flux_cube.var_name}_mht", units='W',
+                   dim_coords_and_dims=[(flux_cube.coord('latitude'), 0)],
+                   aux_coords_and_dims=[(flux_cube.coord('time'), None),
+                                        (collapsed_longitude, None)])
+    return efp_cube, mht_cube
 
 
 def symmetry_metric(cube):
@@ -232,7 +234,7 @@ class ImpliedHeatTransport:
         for cube in self.flx_clim:
             if cube.var_name == "rlut":
                 dcube = cube.copy()
-                dcube.data = -dcube.data
+                dcube = -dcube
                 dcube.var_name = "rlnt"
                 dcube.long_name = "radiative_flux_of_rlnt"
                 self.flx_clim.append(dcube)
@@ -401,12 +403,14 @@ class ImpliedHeatTransport:
         """Obtain data for one row of plots."""
         efp = self.efp_clim.extract_cube(var_name_constraint(vnames[0]))
         flx = self.flx_clim.extract_cube(var_name_constraint(vnames[1]))
-        efp.data -= np.average(efp.data)  # Arbitrary choice of origin
-        flx.data -= area_average(flx).data
+        # The choice of origin for efp is arbitrary,
+        # we choose the unweighted mean.
+        efp = efp - efp.collapsed(efp.coords(), iris.analysis.MEAN)
+        flx = flx - area_average(flx)
         if change_sign[0]:
-            efp.data = -efp.data
+            efp = -efp
         if change_sign[1]:
-            flx.data = -flx.data
+            flx = -flx
         vvv, uuu = np.gradient(efp.data, 1e14, 1e14)
         uuu = uuu[1:-1, 1:-1]
         vvv = vvv[1:-1, 1:-1]
