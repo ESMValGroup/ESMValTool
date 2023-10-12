@@ -7,10 +7,12 @@ documentation:
     (ongoing) model simulations.
   authors:
     - schlund_manuel
-    - winterstein_franziska
-    - sarauer_ellen
-    - kuehbacher_birgit
     - heuer_helge
+    - kraft_jeremy
+    - kuehbacher_birgit
+    - ruhe_lukas
+    - sarauer_ellen
+    - winterstein_franziska
   maintainer:
     - schlund_manuel
 
@@ -19,6 +21,7 @@ datasets:
   # Note: plot_label currently only used by diagnostic plot_multiple_annual_cycles
   - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-HR historical'}
   - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (MPI-ESM1-2-LR historical)', reference_for_monitor_diags: true}
+
 
 preprocessors:
 
@@ -90,6 +93,13 @@ preprocessors:
       target_grid: 2x2
       scheme: linear
     area_statistics:
+      operator: mean
+
+  zonal_mean_2d:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    zonal_statistics:
       operator: mean
 
 
@@ -175,6 +185,7 @@ diagnostics:
             plot_kwargs_bias:
               levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
 
+
   plot_1D_profiles_with_references:
     description: Plot 1D profiles including reference datasets.
     variables:
@@ -227,3 +238,20 @@ diagnostics:
             log_y: false
             pyplot_kwargs:
               ylim: [0, 20000]
+
+  plot_time_vs_lat_with_references:
+    description: Plot Hovmoeller time vs. latitude including reference datasets.
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: zonal_mean_2d
+        timerange: '2000/2004'
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          hovmoeller_time_vs_lat_or_lon:
+            common_cbar: true
+            show_x_minor_ticks: false
+            time_format: '%Y'
