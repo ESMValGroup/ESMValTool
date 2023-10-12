@@ -413,10 +413,10 @@ class ImpliedHeatTransport:
             efp = -efp
         if change_sign[1]:
             flx = -flx
-        vvv, uuu = np.gradient(efp.data, 1e14, 1e14)
+        efp.convert_units("PW")
+        vvv, uuu = np.gradient(efp.data)
         uuu = uuu[1:-1, 1:-1]
         vvv = vvv[1:-1, 1:-1]
-        efp.convert_units("PW")
         return {'efp': efp, 'flx': flx, 'uuu': uuu, 'vvv': vvv}
 
     def quiver_subplot(self, dargs, title, label, change_sign):
