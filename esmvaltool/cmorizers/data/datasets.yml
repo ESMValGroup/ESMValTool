@@ -187,6 +187,23 @@ datasets:
       Put all files in input_dir_path (no subdirectories with years).
       For orders larger than 2 GB a registration is required.
 
+  CFSR:
+    tier: 2
+    source: https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/reanalysis/NOAA-NCEP/CFSR/CFSR/
+    last_access: 2023-02-15
+    info: |
+      Download the following files:
+        mon/atmos/clt/clt_Amon_reanalysis_CFSR_197901-201912.nc
+        mon/atmos/hur/hur_Amon_reanalysis_CFSR_*01-*12.nc
+        mon/atmos/hus/hus_Amon_reanalysis_CFSR_*01-*12.nc
+        mon/atmos/prw/prw_Amon_reanalysis_CFSR_197901-201912.nc
+        mon/atmos/rlut/rlut_Amon_reanalysis_CFSR_197901-201912.nc
+        mon/atmos/rlutcs/rlutcs_Amon_reanalysis_CFSR_197901-201912.nc
+        mon/atmos/rsut/rsut_Amon_reanalysis_CFSR_197901-201912.nc
+        mon/atmos/rsutcs/rsutcs_Amon_reanalysis_CFSR_197901-201912.nc
+        mon/atmos/ts/ts_Amon_reanalysis_CFSR_197901-201912.nc
+        mon/atmos/wap/wap_Amon_reanalysis_CFSR_*01-*12.nc
+
   CLARA-AVHRR:
     tier: 3
     source: https://wui.cmsaf.eu/
