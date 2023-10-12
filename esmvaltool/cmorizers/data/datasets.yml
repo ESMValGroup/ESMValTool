@@ -836,6 +836,13 @@ datasets:
       individually or by using the option "download all".
       Data is freely available, but a registration is required.
 
+  MERRA:
+    tier: 3
+    source: https://goldsmr3.gesdisc.eosdis.nasa.gov/data/MERRA_MONTHLY/
+    last_access: 2023-02-01
+    info: |
+      Use automatic download. That will download monthly data.
+
   MERRA2:
     tier: 3
     source: https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/ https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
@@ -985,7 +992,7 @@ datasets:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
 
-  NOAA-CIRES-20CR:
+  NOAA-CIRES-20CR-V2:
     tier: 2
     source: ftp.cdc.noaa.gov/Projects/20thC_ReanV2/Monthlies/
     last_access: 2022-11-17
@@ -997,6 +1004,21 @@ datasets:
         gaussian/monolevel/tcdc.eatm.mon.mean.nc
         gaussian/monolevel/ulwrf.ntat.mon.mean.nc
         gaussian/monolevel/uswrf.ntat.mon.mean.nc
+
+  NOAA-CIRES-20CR-V3:
+    tier: 2
+    source: ftp.cdc.noaa.gov/Projects/20thC_ReanV3/Monthlies/
+    last_access: 2023-03-27
+    info: |
+      Download the following files:
+        miscSI-MO/cldwtr.eatm.mon.mean.nc
+        miscSI-MO/pr_wtr.eatm.mon.mean.nc
+        prsSI-MO/shum.mon.mean.nc
+        miscMO/tcdc.eatm.mon.mean.nc
+        ntatFlxSI-MO/ulwrf.ntat.mon.mean.nc  
+        ntatFlxSI-MO/uswrf.ntat.mon.mean.nc
+        ntatFlxSI-MO/csulf.ntat.mon.mean.nc
+        ntatFlxSI-MO/csusf.ntat.mon.mean.nc
 
   NOAAGlobalTemp:
     tier: 2
