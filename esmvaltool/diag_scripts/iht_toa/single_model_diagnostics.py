@@ -100,12 +100,11 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
         flux_cube.coord(longitude).guess_bounds()
 
     # Remove average of flux field to account for storage term
-    data = flux_cube.data.copy()
     grid_areas = iris.analysis.cartography.area_weights(flux_cube)
     data_mean = flux_cube.collapsed(["longitude", "latitude"],
                                     iris.analysis.MEAN,
                                     weights=grid_areas).data
-    data -= data_mean
+    data = flux_cube.data - data_mean
 
     logger.info("Calling spherical_poisson")
     sphpo = SphericalPoisson(logger,
@@ -336,8 +335,9 @@ class ImpliedHeatTransport:
         plt.figure()
         for i, vname in enumerate(var_names):
             mht = self.mht_clim.extract_cube(var_name_constraint(vname))
+            mht.convert_units('PW')
             plt.plot(mht.coord('latitude').points,
-                     mht.data / 1e15,
+                     mht.data,
                      label=legend_label[i])
         plt.hlines(0, -90, 90, color='k', linestyles=':')
         plt.vlines(0, -10, 10, color='k', linestyles=':')
@@ -355,8 +355,9 @@ class ImpliedHeatTransport:
         ax1 = plt.subplot(121)
         for i, vname in enumerate(left['vname']):
             mht = self.mht_clim.extract_cube(var_name_constraint(vname))
+            mht.convert_units('PW')
             ax1.plot(mht.coord('latitude').points,
-                     mht.data / 1e15,
+                     mht.data,
                      label=left['legend'][i])
         ax1.axhline(0, color='k', ls=':')
         ax1.axvline(0, color='k', ls=':')
@@ -375,8 +376,9 @@ class ImpliedHeatTransport:
         col = ['C3', 'C7']
         for i, vname in enumerate(right['vname']):
             mht = self.mht_clim.extract_cube(var_name_constraint(vname))
+            mht.convert_units('PW')
             ax2.plot(mht.coord('latitude').points,
-                     -mht.data / 1e15,
+                     -mht.data,
                      label=right['legend'][i],
                      color=col[i])
         ax2.axhline(0, color='k', ls=':')
