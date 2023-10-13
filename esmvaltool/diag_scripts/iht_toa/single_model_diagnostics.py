@@ -94,6 +94,7 @@ def var_name_constraint(var_name):
 
 def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
     """Top-level function that calls the Poisson solver for source cube."""
+    earth_radius = 6371e3 # Earth's radius in m
     if flux_cube.coord(latitude).bounds is None:
         flux_cube.coord(latitude).guess_bounds()
     if flux_cube.coord(longitude).bounds is None:
@@ -108,7 +109,7 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
 
     logger.info("Calling spherical_poisson")
     sphpo = SphericalPoisson(logger,
-                             source=data * (6371e3**2.0),
+                             source=data * (earth_radius**2.0),
                              tolerance=2.0e-4)
     sphpo.solve()
     sphpo.calc_mht()
@@ -293,6 +294,7 @@ class ImpliedHeatTransport:
         Produce 12-month rolling means for all monthly time time series
         of MHT.
         """
+        petaunit = 1.0e15
         for mht_series in self.mht_rolling_mean:
             time_coord = mht_series.coord('time')
             ntime = time_coord.shape[0]
@@ -304,21 +306,21 @@ class ImpliedHeatTransport:
             # Create the cubes for each metric
             long_name = f"symmetry_hemisphere_of_{mht_series.long_name}"
             var_name = f"s_hem_{mht_series.var_name}"
-            cube_h = iris.cube.Cube(hem / 1.0e15,
+            cube_h = iris.cube.Cube(hem / petaunit,
                                     long_name=long_name,
                                     var_name=var_name,
                                     units="PW",
                                     dim_coords_and_dims=[(time_coord, 0)])
             long_name = f"symmetry_tropics_of_{mht_series.long_name}"
             var_name = f"s_tro_{mht_series.var_name}"
-            cube_t = iris.cube.Cube(trop / 1.0e15,
+            cube_t = iris.cube.Cube(trop / petaunit,
                                     long_name=long_name,
                                     var_name=var_name,
                                     units="PW",
                                     dim_coords_and_dims=[(time_coord, 0)])
             long_name = f"symmetry_extratropics_of_{mht_series.long_name}"
             var_name = f"s_ext_{mht_series.var_name}"
-            cube_e = iris.cube.Cube(extratrop / 1.0e15,
+            cube_e = iris.cube.Cube(extratrop / petaunit,
                                     long_name=long_name,
                                     var_name=var_name,
                                     units="PW",
