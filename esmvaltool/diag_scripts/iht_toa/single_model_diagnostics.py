@@ -90,11 +90,6 @@ def weight_zm(cube, latitude=None):
     return cube.data * cube_areas.data
 
 
-def var_name_constraint(var_name):
-    """Shortcut to create constraint for variable name."""
-    return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
-
-
 def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
     """Top-level function that calls the Poisson solver for source cube."""
     earth_radius = 6371e3 # Earth's radius in m
@@ -327,7 +322,7 @@ class ImpliedHeatTransport:
         """
         plt.figure()
         for i, vname in enumerate(var_names):
-            mht = self.mht_clim.extract_cube(var_name_constraint(vname))
+            mht = self.mht_clim.extract_cube(NameConstraint(var_name=vname))
             mht.convert_units('PW')
             plt.plot(mht.coord('latitude').points,
                      mht.data,
@@ -347,7 +342,7 @@ class ImpliedHeatTransport:
         plt.figure(figsize=(11, 5))
         ax1 = plt.subplot(121)
         for i, vname in enumerate(left['vname']):
-            mht = self.mht_clim.extract_cube(var_name_constraint(vname))
+            mht = self.mht_clim.extract_cube(NameConstraint(var_name=vname))
             mht.convert_units('PW')
             ax1.plot(mht.coord('latitude').points,
                      mht.data,
@@ -368,7 +363,7 @@ class ImpliedHeatTransport:
         ax2 = plt.subplot(122)
         col = ['C3', 'C7']
         for i, vname in enumerate(right['vname']):
-            mht = self.mht_clim.extract_cube(var_name_constraint(vname))
+            mht = self.mht_clim.extract_cube(NameConstraint(var_name=vname))
             mht.convert_units('PW')
             ax2.plot(mht.coord('latitude').points,
                      -mht.data,
@@ -396,8 +391,8 @@ class ImpliedHeatTransport:
 
     def quiver_maps_data(self, vnames, change_sign):
         """Obtain data for one row of plots."""
-        efp = self.efp_clim.extract_cube(var_name_constraint(vnames[0]))
-        flx = self.flx_clim.extract_cube(var_name_constraint(vnames[1]))
+        efp = self.efp_clim.extract_cube(NameConstraint(var_name=vnames[0]))
+        flx = self.flx_clim.extract_cube(NameConstraint(var_name=vnames[1]))
         # The choice of origin for efp is arbitrary,
         # we choose the unweighted mean.
         efp = efp - efp.collapsed(efp.coords(), iris.analysis.MEAN)
@@ -518,9 +513,9 @@ class ImpliedHeatTransport:
         plt.figure(figsize=(6, 12))
         for i, var_name in enumerate(var_list):
             yy0 = self.symmetry_metric.extract_cube(
-                var_name_constraint(var_name[0]))
+                NameConstraint(var_name=var_name[0]))
             yy1 = self.symmetry_metric.extract_cube(
-                var_name_constraint(var_name[1]))
+                NameConstraint(var_name=var_name[1]))
             axx = plt.subplot(3, 1, i + 1)
             dtx = [
                 datetime.datetime.strptime(str(cell[0]), '%Y-%m-%d %H:%M:%S')
