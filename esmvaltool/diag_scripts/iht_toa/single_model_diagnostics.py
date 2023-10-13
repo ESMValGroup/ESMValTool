@@ -127,7 +127,8 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
                                                standard_name='longitude',
                                                units='degrees')
     mht_cube = iris.cube.Cube(sphpo.mht,
-                   long_name=f"meridional_heat_transport_of_{flux_cube.var_name}",
+                   long_name=f"meridional_heat_transport_of"
+                             f"_{flux_cube.var_name}",
                    var_name=f"{flux_cube.var_name}_mht", units='W',
                    dim_coords_and_dims=[(flux_cube.coord('latitude'), 0)],
                    aux_coords_and_dims=[(flux_cube.coord('time'), None),
@@ -230,20 +231,27 @@ class ImpliedHeatTransport:
         rtntcs_rolling_mean: 12-month rolling mean of rtntcs
         """
         # Derived TOA climatologies: rlnt_clim, rtntcs_clim
-        rlnt_clim = -self.flx_clim.extract_cube(NameConstraint(var_name="rlut"))
+        rlnt_clim = -self.flx_clim.extract_cube(
+            NameConstraint(var_name="rlut"))
         rlnt_clim.var_name = "rlnt"
         rlnt_clim.long_name = "radiative_flux_of_rlnt"
         self.flx_clim.append(rlnt_clim)
-        rtntcs_clim = (self.flx_clim.extract_cube(NameConstraint(var_name="rsdt")) -
-                       self.flx_clim.extract_cube(NameConstraint(var_name="rsutcs")) -
-                       self.flx_clim.extract_cube(NameConstraint(var_name="rlutcs")))
+        rtntcs_clim = (self.flx_clim.extract_cube(
+                           NameConstraint(var_name="rsdt")) -
+                       self.flx_clim.extract_cube(
+                           NameConstraint(var_name="rsutcs")) -
+                       self.flx_clim.extract_cube(
+                           NameConstraint(var_name="rlutcs")))
         rtntcs_clim.var_name = "rtntcs"
         rtntcs_clim.long_name = "radiative_flux_of_rtntcs"
         self.flx_clim.append(rtntcs_clim)
         # Annual rolling means clear-sky net total TOA
-        rtntcs_rolling_mean = (self.flx_rolling_mean.extract_cube(NameConstraint(var_name="rsdt")) -
-                               self.flx_rolling_mean.extract_cube(NameConstraint(var_name="rsutcs")) -
-                               self.flx_rolling_mean.extract_cube(NameConstraint(var_name="rlutcs")))
+        rtntcs_rolling_mean = (self.flx_rolling_mean.extract_cube(
+                                   NameConstraint(var_name="rsdt")) -
+                               self.flx_rolling_mean.extract_cube(
+                                   NameConstraint(var_name="rsutcs")) -
+                               self.flx_rolling_mean.extract_cube(
+                                   NameConstraint(var_name="rlutcs")))
         rtntcs_rolling_mean.var_name = "rtntcs"
         rtntcs_rolling_mean.long_name = "radiative_flux_of_rtntcs"
         self.flx_rolling_mean.append(rtntcs_rolling_mean)
