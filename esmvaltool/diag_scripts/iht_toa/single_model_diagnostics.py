@@ -16,6 +16,7 @@ import iris.plot as iplt
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
+from iris import NameConstraint
 from matplotlib import gridspec, rcParams
 from poisson_solver import SphericalPoisson
 
@@ -78,9 +79,11 @@ def weight_zm(cube, latitude=None):
     """Weight zonal-mean by normalised gridbox areas."""
     if cube.coord('latitude').bounds is None:
         cube.coord('latitude').guess_bounds()
-    cube_areas = cube.copy()
-    cube_areas.data = iris.analysis.cartography.area_weights(cube,
-                                                             normalize=True)
+    areas_data = iris.analysis.cartography.area_weights(cube, normalize=True)
+    cube_areas = iris.cube.Cube(areas_data,
+                                long_name="normalised_area",
+                                var_name="area", units="1",
+                                dim_coords_and_dims=[(cube.coords()[0], 0)])
     if latitude is not None:
         cube = cube.intersection(latitude=latitude)
         cube_areas = cube_areas.intersection(latitude=latitude)
@@ -227,37 +230,25 @@ class ImpliedHeatTransport:
     def derived_fluxes(self):
         """Calculate derived radiative fluxes.
 
+        rlnt_clim: climatology net LW TOA
         rtntcs_clim: climatology of clear-sky net TOA
         rtntcs_rolling_mean: 12-month rolling mean of rtntcs
         """
-        # Net LW (change sign to the upwelling flux)
-        for cube in self.flx_clim:
-            if cube.var_name == "rlut":
-                dcube = cube.copy()
-                dcube = -dcube
-                dcube.var_name = "rlnt"
-                dcube.long_name = "radiative_flux_of_rlnt"
-                self.flx_clim.append(dcube)
-            if cube.var_name == "rsdt":
-                rsdt_clim = cube.copy()
-            if cube.var_name == "rsutcs":
-                rsutcs_clim = cube.copy()
-            if cube.var_name == "rlutcs":
-                rlutcs_clim = cube.copy()
-        rtntcs_clim = rsdt_clim - rsutcs_clim - rlutcs_clim
+        # Derived TOA climatologies: rlnt_clim, rtntcs_clim
+        rlnt_clim = -self.flx_clim.extract_cube(NameConstraint(var_name="rlut"))
+        rlnt_clim.var_name = "rlnt"
+        rlnt_clim.long_name = "radiative_flux_of_rlnt"
+        self.flx_clim.append(rlnt_clim)
+        rtntcs_clim = (self.flx_clim.extract_cube(NameConstraint(var_name="rsdt")) -
+                       self.flx_clim.extract_cube(NameConstraint(var_name="rsutcs")) -
+                       self.flx_clim.extract_cube(NameConstraint(var_name="rlutcs")))
         rtntcs_clim.var_name = "rtntcs"
         rtntcs_clim.long_name = "radiative_flux_of_rtntcs"
         self.flx_clim.append(rtntcs_clim)
         # Annual rolling means clear-sky net total TOA
-        for cube in self.flx_rolling_mean:
-            if cube.var_name == "rsdt":
-                rsdt_rolling_mean = cube.copy()
-            if cube.var_name == "rsutcs":
-                rsutcs_rolling_mean = cube.copy()
-            if cube.var_name == "rlutcs":
-                rlutcs_rolling_mean = cube.copy()
-        rtntcs_rolling_mean = (rsdt_rolling_mean - rsutcs_rolling_mean -
-            rlutcs_rolling_mean)
+        rtntcs_rolling_mean = (self.flx_rolling_mean.extract_cube(NameConstraint(var_name="rsdt")) -
+                               self.flx_rolling_mean.extract_cube(NameConstraint(var_name="rsutcs")) -
+                               self.flx_rolling_mean.extract_cube(NameConstraint(var_name="rlutcs")))
         rtntcs_rolling_mean.var_name = "rtntcs"
         rtntcs_rolling_mean.long_name = "radiative_flux_of_rtntcs"
         self.flx_rolling_mean.append(rtntcs_rolling_mean)
