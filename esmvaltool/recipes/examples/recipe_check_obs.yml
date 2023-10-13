@@ -60,6 +60,12 @@ diagnostics:
     additional_datasets:
       - {dataset: CRU, project: OBS, mip: Amon, tier: 2,
          type: reanaly, version: TS4.02, start_year: 1901, end_year: 2017}
+      - {dataset: CRU, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: TS4.06, start_year: 1901, end_year: 2021}
+      - {dataset: CRU, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: TS4.07, start_year: 1901, end_year: 2022}
+      
+
     scripts: null
 
 
