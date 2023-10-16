@@ -1190,3 +1190,12 @@ datasets:
         silicate/netcdf/all/1.00/woa18_all_i00_01.nc
       (To get WOA13, replace filenames prefix woa18 with woa13 and source with
       https://www.ncei.noaa.gov/data/oceans/woa/WOA13/DATAv2)
+
+  Yang2020:
+    tier: 2
+    source: https://datadocs.bco-dmo.org/data/302/Multiple_Scales_N_Cycle/810032/1/data/
+    last_access: 2023-10-16
+    info: |
+      Download the following files:
+        dn2o-mapped-Yang2020.nc
+        n2oFlux-Yang2020.nc
