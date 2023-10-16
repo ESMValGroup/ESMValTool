@@ -1,0 +1,48 @@
+# ESMValTool
+# recipe_my_personal_diagnostic.yml
+---
+documentation:
+  description: |
+    perform a 2D map of a variable
+    after "cdo remapdis" regridding to regular lat/lon grid
+    with temporal mean on period defined by (start, end)
+    and vertical mean defined by (zmin, zmax) if var is 3D 
+
+  authors:
+    - righi_mattia
+
+  title: |
+    Example recipe for running a user-written diagnostic, without installing
+    ESMValTool as developer.
+
+datasets:
+  - {dataset: CNRM-ESM2-1, project: custom, activity: OMIP, exp: omip1, mip: HOMOImon,
+    ensemble: r1i1p1f2, grid: gn, institute: CNRM-CERFACS, frequency: mon, timerange: "1958/2009"}
+  - {dataset: CNRM-ESM2-1, project: custom, activity: CMIP, exp: historical, mip: HOMOImon,
+    ensemble: r1i1p1f2, grid: gn, institute: CNRM-CERFACS, frequency: mon, timerange: "1958/2009"}
+  - {dataset: Yang2020, project: OBS, type: atmos, version: 1, tier: 2, timerange: "1958/2009"}
+
+preprocessors:
+  regrid_and_mean_processor:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    climate_statistics:
+      operator: mean
+      period: full
+
+diagnostics:
+  simple:
+    description: "Simple personal diagnostic"
+    variables:
+      Dpn2o:
+        preprocessor: regrid_and_mean_processor
+    scripts:
+      n2o_plot:
+        # Replace this path with the absolute path to your diagnostic (eg. /path/to/your/my_little_diagnostic.py)
+        script: n2o_emissions/n2o_plot.py
+        quickplot:
+          plot_type: pcolormesh
+          cmap: wbor_r
+          vmin: -140.0
+          vmax: 7.0
