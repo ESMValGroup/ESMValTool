@@ -71,7 +71,10 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'autodocsumm',
+    'sphinxcontrib.mermaid',
 ]
+
+mermaid_version = "10.5.0"
 
 autodoc_default_options = {
     'members': True,
