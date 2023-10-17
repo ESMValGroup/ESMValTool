@@ -19,7 +19,6 @@ documentation:
 datasets:
   - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1,
      supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}]}
-     # - {project: CMIP6, dataset: CanESM5, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'CanESM5'}
 
 
 time: &time_period
