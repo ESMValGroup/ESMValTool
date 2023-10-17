@@ -1,0 +1,20 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: Yang2020
+  version: '1'
+  tier: 2
+  modeling_realm: ocnBgchem
+  project_id: OBS
+  source: 'https://datadocs.bco-dmo.org/data/302/Multiple_Scales_N_Cycle/810032/1/data/'
+  reference: 'yang2020'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  Dpn2o:
+    filename: dn2o-mapped-Yang2020.nc
+    mip: HOMOImon
+  # N2Oflx:
+  #   filename: n2oFlux-Yang2020.nc
+  #   mip: HOMOImon
