@@ -1,0 +1,73 @@
+# ESMValTool
+---
+documentation:
+  description: ICON evaluation zonal precipitation
+  authors:
+    - lauer_axel
+
+  title: ICON evaluation precipitation
+
+
+#datasets:
+#  - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}], var_type: atm_2d_ml}
+#  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}]}
+
+
+preprocessors:
+
+  pp_zonal: &zonal_settings
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    extract_region:
+      start_latitude: -90
+      end_latitude: 90
+      start_longitude: 0
+      end_longitude: 360
+    zonal_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: full
+    convert_units:
+      units: mm day-1
+
+
+diagnostics:
+
+  zonal:
+    description: Plot annual cycles including reference datasets.
+    variables:
+      pr_zonal: &pr_settings
+        preprocessor: pp_zonal
+        short_name: pr
+        mip: Amon
+        frequency: mon
+        timerange: '20000101/20020101'
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+          - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3, tier: 1}
+    additional_datasets:
+      - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}], var_type: atm_2d_ml}
+#      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}]}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        group_variables_by: variable_group
+        plots:
+          variable_vs_lat:
+            legend_kwargs:
+              loc: upper right
+            plot_kwargs:
+              'ICON':  # = plot_label since 'facet_used_for_labels: plot_label'
+                color: green
+              'ERA5':  # = plot_label since 'facet_used_for_labels: plot_label'
+                color: red
+              'GPCP-SG':
+                color: blue
+            pyplot_kwargs:
+              title: '{short_name}'
