@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_my_personal_diagnostic.yml
+# recipe_n2o_emissions.yml
 ---
 documentation:
   description: |
@@ -20,29 +20,37 @@ datasets:
     ensemble: r1i1p1f2, grid: gn, institute: CNRM-CERFACS, frequency: mon, timerange: "1958/2009"}
   - {dataset: CNRM-ESM2-1, project: custom, activity: CMIP, exp: historical, mip: HOMOImon,
     ensemble: r1i1p1f2, grid: gn, institute: CNRM-CERFACS, frequency: mon, timerange: "1958/2009"}
-  - {dataset: Yang2020, project: OBS, type: atmos, version: 1, tier: 2, timerange: "1958/2009"}
+  - {dataset: Yang2020, project: OBS, type: ocnBgchem, version: 1, tier: 2, mip: HOMOImon, frequency: mon}
 
 preprocessors:
   regrid_and_mean_processor:
-    regrid:
-      target_grid: 1x1
-      scheme: linear
+    # Compute mean before regridding for performance
+    custom_order: true
     climate_statistics:
       operator: mean
       period: full
+    regrid:
+      target_grid: 1x1
+      scheme: linear
 
 diagnostics:
-  simple:
-    description: "Simple personal diagnostic"
+  diff_Dpn2o:
+    description: "..."
     variables:
       Dpn2o:
         preprocessor: regrid_and_mean_processor
     scripts:
-      n2o_plot:
-        # Replace this path with the absolute path to your diagnostic (eg. /path/to/your/my_little_diagnostic.py)
-        script: n2o_emissions/n2o_plot.py
-        quickplot:
-          plot_type: pcolormesh
-          cmap: wbor_r
-          vmin: -140.0
-          vmax: 7.0
+      Dpn2o_plot:
+        script: n2o_emissions/dpn2o_plot.py
+        data_plot:
+          plot_type: contourf
+          cmap: wbor
+          vmin: -7.0
+          vmax: 140.0
+          levs: 22
+        diff_plot:
+          plot_type: contourf
+          cmap: GMT_polar
+          vmin: -70.0
+          vmax: 70.0
+          levs: 21
