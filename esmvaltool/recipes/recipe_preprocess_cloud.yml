@@ -50,51 +50,79 @@ preprocessors:
 
 diagnostics:
 
-  south_east_pacific:
+  south_east_pacific_clouds:
     description: Create timeseries.
     variables:
-      clt: &var
+            #clt: &var
+            #  preprocessor: south_east_pacific
+            #  mip: day
+            #  frequency: day
+            #  additional_datasets: *esacci
+            #clwvi:
+            #  <<: *var
+            #  mip: CFday
+            #cod:
+            #  <<: *var
+            #  mip: AERday
+            #ctp:
+            #  <<: *var
+            #  mip: day
+            #reff:
+            #  <<: *var
+            #  mip: day
+            #rlut:
+            #  <<: *var
+            #  mip: day
+      psl: &var2
         preprocessor: south_east_pacific
-        mip: day
         frequency: day
-        additional_datasets: *esacci
-      clwvi:
-        <<: *var
-        mip: CFday
-      cod:
-        <<: *var
-        mip: AERday
-      ctp:
-        <<: *var
-        mip: day
-      prw:
-        <<: *var
-        mip: Eday
-        additional_datasets: *era5
-      psl:
-        <<: *var
         mip: day
         additional_datasets: *era5
-      reff:
-        <<: *var
-        mip: day
-      rlut:
-        <<: *var
-        mip: day
       tos:
-        <<: *var
+        <<: *var2
         mip: day
-        additional_datasets: *era5
       wap500:
-        <<: *var
+        <<: *var2
         mip: CFday
-        additional_datasets: *era5
-      zg500:
-        <<: *var
-        mip: day
-        additional_datasets: *era5
-    scripts: null
-    #timeseries:
-    #    script: examples/diagnostic.py
-    #    quickplot:
-    #      plot_type: plot
+        #zg500:
+        #  <<: *var2
+        #  mip: day
+        #prw:
+        #  <<: *var2
+        #  mip: Eday
+    scripts: 
+      timeseries:
+        script: causal_clouds_timeseries.py
+        quickplot:
+          plot_type: plot
+          #script: seaborn_diag.py
+          #seaborn_func: lineplot
+          #seaborn_kwargs:
+          #  x: time
+          #  y: clt
+        
+
+
+    #  south_east_pacific_ccfactors:
+    #    description: Create timeseries.
+    #    variables:
+    #      prw:
+    #        <<: *var
+    #        mip: Eday
+    #        additional_datasets: *era5
+    #      psl:
+    #        <<: *var
+    #        mip: day
+    #        additional_datasets: *era5
+    #      tos:
+    #        <<: *var
+    #        mip: day
+    #        additional_datasets: *era5
+    #      wap500:
+    #        <<: *var
+    #        mip: CFday
+    #        additional_datasets: *era5
+    #      zg500:
+    #        <<: *var
+    #        mip: day
+    #        additional_datasets: *era5
