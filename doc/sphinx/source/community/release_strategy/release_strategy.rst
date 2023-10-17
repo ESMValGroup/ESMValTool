@@ -30,10 +30,28 @@ Overall Procedure
 Timeline
 ~~~~~~~~~
 
-.. figure::  /figures/release-timeline.png
-   :align:   center
+.. mermaid::
 
-   Example of a Release Timeline (in this case for 2.1.0)
+   gantt
+      title ESMValTool release process for v2.10.0
+      dateFormat YYYY-MM-DD
+      axisFormat %a, %Y-%m-%d
+      tickInterval 1week
+      weekday Monday
+      section ESMValCore
+         Feature Freeze: done, milestone, m1, 2023-10-09, 1h
+         Alpha Testing: a1, after m1, 1w
+         Release Candidate rc1: milestone, m2, after a1, 1h
+         Beta Testing: a2, after m2, 1w
+         Gamma Testing: a3, after a2, 2w
+         Release: milestone, after a3, 1h
+      section ESMValTool 
+         Feature Freeze: milestone, m3, after a2, 1h
+         Alpha Testing: a4, after m3, 1w
+         Release Candidate: milestone, m4, after a4, 1h
+         Beta Testing: a5, after m4, 1w
+         Release: milestone, after a5, 1h
+
 
 1. Contributors assign issues (and pull requests) that they intend to finish before the due date, there is a separate milestone for ESMValCore and ESMValTool
 2. The ESMValCore feature freeze takes place on the ESMValCore due date
