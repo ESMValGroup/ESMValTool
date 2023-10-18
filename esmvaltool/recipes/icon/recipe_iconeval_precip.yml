@@ -19,14 +19,13 @@ documentation:
 datasets:
         #- {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1,
         #- {project: ICON, dataset: ICON, exp: my_atm_amip_R2B5_qv_u_v_cpl, mip: E1hr, plot_label: 'ICON qv_u_v_cpl', 
-  - {project: ICON, dataset: ICON, exp: my_atm_amip_R2B5_qv_cpl, mip: E1hr, plot_label: 'ICON qv_cpl', 
+  - {project: ICON, dataset: ICON, exp: my_atm_amip_R2B5_qv_cpl, plot_label: 'ICON qv_cpl', 
      supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}]}
-  - {project: ICON, dataset: ICON, exp: my_atm_amip_R2B5, mip: E1hr, plot_label: 'ICON',
+  - {project: ICON, dataset: ICON, exp: my_atm_amip_R2B5, plot_label: 'ICON',
      supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}]}
 
 
 time: &time_period
-  #timerange: '20000101/20000201'  # can be specified!
   timerange: '19790101/19790201'  # can be specified!
 
 
@@ -68,13 +67,13 @@ diagnostics:
       pr:
         preprocessor: var_vs_lat
         ensemble: r1i1p1f1
-        mip: day
+        mip: E1hr
         <<: *time_period
         additional_datasets:
                 #- {project: OBS, dataset: GPCP-SG, type: atmos, version: 2.3, tier: 2, reference_for_monitor_diags: true, timerange: '20000101/20000201'}
-                #- {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true, timerange: '20000101/20000201'}
-          - {project: OBS6, dataset: ERA5, type: reanaly, version: 1, tier: 3, plot_label: 'ERA5',
-             reference_for_monitor_diags: true, timerange: '20000101/20000201'}
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, plot_label: 'ERA5', reference_for_monitor_diags: true}
+            #- {project: OBS6, dataset: ERA5, type: reanaly, version: 1, tier: 3, plot_label: 'ERA5',
+            # reference_for_monitor_diags: true, timerange: '20000101/20000201'}
     scripts:
       plot:
         plot_folder: '{plot_dir}'
@@ -83,26 +82,26 @@ diagnostics:
         plots:
           variable_vs_lat:
             plot_kwargs:
-              ICON: {color: red, label: '{plot_label}', linestyle: ['-', '--']}
+              ICON: {color: red, label: '{plot_label}'}
               ICON qv_cpl: {color: red, linestyle: '--', label: '{plot_label}'}
               ICON qv__u_v_cpl: {color: red, linestyle: '--', label: '{plot_label}'}
               GPCP-SG: {color: black, linestyle: '--'}      
               ERA5: {color: black}
 
 
-  plot_maps_with_references_pr_era5:
+  plot_maps_with_references_pr:
     description: Plot climatology maps including reference datasets for pr.
     variables:
       pr:
-        mip: day
+        mip: E1hr
         preprocessor: full_climatology_pr
         ensemble: r1i1p1f1
         <<: *time_period
         additional_datasets:
           # - {project: OBS, dataset: GPCP-SG, type: atmos, version: 2.3, tier: 2, plot_label: 'Reference (GPCP-SG)', reference_for_monitor_diags: true, timerange: '20000101/20000201'}
-          # - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, plot_label: 'Reference (ERA5)', reference_for_monitor_diags: true}
-          - {project: OBS6, dataset: ERA5, type: reanaly, version: 1, tier: 3, plot_label: 'ERA5',
-             reference_for_monitor_diags: true, timerange: '20000101/20000201'}
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, plot_label: 'ERA5', reference_for_monitor_diags: true}
+          #- {project: OBS6, dataset: ERA5, type: reanaly, version: 1, tier: 3, plot_label: 'ERA5',
+          #   reference_for_monitor_diags: true, timerange: '20000101/20000201'}
     scripts:
       plot:
         plot_folder: '{plot_dir}'
