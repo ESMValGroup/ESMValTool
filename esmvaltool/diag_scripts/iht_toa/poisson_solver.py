@@ -19,68 +19,70 @@ import numpy as np
 from numba import jit
 
 
-def swap_bounds(fld):
+def swap_bounds(array):
     """Extend the array by one in all directions.
 
     As the array is periodic it allows for easier computations at
     boundaries.
     """
-    shp0, shp1 = np.array(fld.shape) - 2
-    wrap_pnt = int(shp1 / 2 + 1)
-    for i in range(1, shp1 + 1):
-        fld[0, i] = fld[1, wrap_pnt]
-        fld[shp0 + 1, i] = fld[shp0, wrap_pnt]
-        wrap_pnt += 1
-        if wrap_pnt > shp1:
-            wrap_pnt = 1
+    shape0, shape1 = np.array(array.shape) - 2
+    wrap_point = int(shape1 / 2 + 1)
+    for i in range(1, shape1 + 1):
+        array[0, i] = array[1, wrap_point]
+        array[shape0 + 1, i] = array[shape0, wrap_point]
+        wrap_point += 1
+        if wrap_point > shape1:
+            wrap_point = 1
 
-    fld[:, 0] = fld[:, shp1]
-    fld[:, shp1 + 1] = fld[:, 1]
+    array[:, 0] = array[:, shape1]
+    array[:, shape1 + 1] = array[:, 1]
 
-    return fld
+    return array
 
 
-def dot_prod(xxx, yyy):
+def dot_prod(a_matrix, b_matrix):
     """Calculate dot product of two matrices only over source term size."""
-    shp0, shp1 = np.array(xxx.shape) - 2
-    return (xxx[1:shp0 + 1, 1:shp1 + 1] * yyy[1:shp0 + 1, 1:shp1 + 1]).sum()
+    shape0, shape1 = np.array(a_matrix.shape) - 2
+    return (a_matrix[1:shape0 + 1, 1:shape1 + 1] *
+            b_matrix[1:shape0 + 1, 1:shape1 + 1]).sum()
 
 
 @jit
-def precon(xxx, m_matrix):
+def precon(x_matrix, m_matrix):
     """Preconditioner.
 
     This is a wrapper to two steps that are optimised using jit.
     It implements the preconditioning step of van der Vorst, H. A., 1992.
     https://doi.org/10.1137/0913035.
     """
-    cxxx = np.zeros(np.array(xxx.shape))
-    precon_a(xxx, m_matrix[1], m_matrix[2], m_matrix[4], cxxx)
-    cxxx = swap_bounds(cxxx)
-    precon_b(m_matrix[0], m_matrix[3], cxxx)
-    cxxx = swap_bounds(cxxx)
-    return cxxx
+    cx_matrix = np.zeros(np.array(x_matrix.shape))
+    precon_a(x_matrix, m_matrix[1], m_matrix[2], m_matrix[4], cx_matrix)
+    cx_matrix = swap_bounds(cx_matrix)
+    precon_b(m_matrix[0], m_matrix[3], cx_matrix)
+    cx_matrix = swap_bounds(cx_matrix)
+    return cx_matrix
 
 
 @jit
-def precon_a(xxx, m_w, m_s, m_p, cxxx):
+def precon_a(x_matrix, m_w, m_s, m_p, cx_matrix):
     """First step of preconditioner."""
-    shp0, shp1 = np.array(cxxx.shape) - 2
-    for j in range(1, shp0 + 1):
-        for i in range(1, shp1 + 1):
-            cxxx[j, i] = m_p[j, i] * (xxx[j, i] -
-                 m_s[j, i] * cxxx[j - 1, i] -
-                 m_w[j, i] * cxxx[j, i - 1])
+    shape0, shape1 = np.array(cx_matrix.shape) - 2
+    for j in range(1, shape0 + 1):
+        for i in range(1, shape1 + 1):
+            cx_matrix[j, i] = m_p[j, i] * (x_matrix[j, i] -
+                 m_s[j, i] * cx_matrix[j - 1, i] -
+                 m_w[j, i] * cx_matrix[j, i - 1])
 
 
 @jit
-def precon_b(m_e, m_n, cxxx):
+def precon_b(m_e, m_n, cx_matrix):
     """Second step of preconditioner."""
-    shp0, shp1 = np.array(cxxx.shape) - 2
-    for j in range(shp0, 0, -1):
-        for i in range(shp1, 0, -1):
-            cxxx[j, i] = (cxxx[j, i] - m_e[j, i] * cxxx[j, i + 1] -
-                m_n[j, i] * cxxx[j + 1, i])
+    shape0, shape1 = np.array(cx_matrix.shape) - 2
+    for j in range(shape0, 0, -1):
+        for i in range(shape1, 0, -1):
+            cx_matrix[j, i] = (cx_matrix[j, i] -
+                               m_e[j, i] * cx_matrix[j, i + 1] -
+                               m_n[j, i] * cx_matrix[j + 1, i])
 
 
 class SphericalPoisson:
@@ -260,26 +262,31 @@ class SphericalPoisson:
         """
         deltax = 2.0 * np.pi / self.source.shape[1]
         deltay = np.pi / self.source.shape[0]
-        yyy = np.arange(-0.5 * np.pi + 0.5 * deltay, 0.5 * np.pi, deltay)
+        yvalues = np.arange(-0.5 * np.pi + 0.5 * deltay, 0.5 * np.pi, deltay)
         grad_phi = np.gradient(self.efp, deltay, axis=0)
         grad_phi = grad_phi[1:-1, 1:-1]
-        self.mht = np.sum((grad_phi.T * np.cos(yyy) * deltax).T, axis=1)
+        self.mht = np.sum((grad_phi.T * np.cos(yvalues) * deltax).T, axis=1)
 
-    def calc_ax(self, xxx):
+    def calc_ax(self, x_matrix):
         """Matrix calculation of the Laplacian equation, LHS of Eq.
 
         (9) in Pearce and Bodas-Salcedo (2023).
         """
         # Laplacian equation
         src_shape = np.array(self.source.shape)
-        axxx = np.zeros(src_shape + 2)
-        xxx = swap_bounds(xxx)
-        shp0, shp1 = src_shape
-        axxx[1:shp0 + 1, 1:shp1 + 1] = (
-            self.a_matrix[2, 0:shp0, 0:shp1] * xxx[0:shp0, 1:shp1 + 1] +
-            self.a_matrix[1, 0:shp0, 0:shp1] * xxx[1:shp0 + 1, 0:shp1] +
-            self.a_matrix[0, 0:shp0, 0:shp1] * xxx[1:shp0 + 1, 2:shp1 + 2] +
-            self.a_matrix[3, 0:shp0, 0:shp1] * xxx[2:shp0 + 2, 1:shp1 + 1] +
-            self.a_matrix[4, 0:shp0, 0:shp1] * xxx[1:shp0 + 1, 1:shp1 + 1])
-        axxx = swap_bounds(axxx)
-        return axxx
+        ax_matrix = np.zeros(src_shape + 2)
+        x_matrix = swap_bounds(x_matrix)
+        shape0, shape1 = src_shape
+        ax_matrix[1:shape0 + 1, 1:shape1 + 1] = (
+            self.a_matrix[2, 0:shape0, 0:shape1] *
+            x_matrix[0:shape0, 1:shape1 + 1] +
+            self.a_matrix[1, 0:shape0, 0:shape1] *
+            x_matrix[1:shape0 + 1, 0:shape1] +
+            self.a_matrix[0, 0:shape0, 0:shape1] *
+            x_matrix[1:shape0 + 1, 2:shape1 + 2] +
+            self.a_matrix[3, 0:shape0, 0:shape1] *
+            x_matrix[2:shape0 + 2, 1:shape1 + 1] +
+            self.a_matrix[4, 0:shape0, 0:shape1] *
+            x_matrix[1:shape0 + 1, 1:shape1 + 1])
+        ax_matrix = swap_bounds(ax_matrix)
+        return ax_matrix
