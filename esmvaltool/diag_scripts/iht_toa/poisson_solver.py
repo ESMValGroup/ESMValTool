@@ -89,7 +89,7 @@ class SphericalPoisson:
     """Poisson solver over the sphere.
 
     Solve Poisson equation for a given source term (forcing) and
-    calculate MHT.
+    calculate meridional heat transport (MHT).
     """
 
     def __init__(self, logger, source, tolerance=2.0e-4):
@@ -97,8 +97,8 @@ class SphericalPoisson:
         self.logger = logger
         self.source = source
         self.tolerance = tolerance
-        self.efp = None
-        self.mht = None
+        self.energy_flux_potential = None
+        self.meridional_heat_transport = None
         logger.info("Initialising Poisson solver.")
         self.set_matrices()
 
@@ -251,9 +251,9 @@ class SphericalPoisson:
                 self.logger.error('Poisson solver has not converged.')
                 sys.exit(1)
 
-        self.efp = xxx
+        self.energy_flux_potential = xxx
 
-    def calc_mht(self):
+    def calc_meridional_heat_transport(self):
         """Meridional heat transport of energy flux potential.
 
         Calculate of the meridional heat transport using the gradient of
@@ -263,9 +263,11 @@ class SphericalPoisson:
         deltax = 2.0 * np.pi / self.source.shape[1]
         deltay = np.pi / self.source.shape[0]
         yvalues = np.arange(-0.5 * np.pi + 0.5 * deltay, 0.5 * np.pi, deltay)
-        grad_phi = np.gradient(self.efp, deltay, axis=0)
+        grad_phi = np.gradient(self.energy_flux_potential, deltay, axis=0)
         grad_phi = grad_phi[1:-1, 1:-1]
-        self.mht = np.sum((grad_phi.T * np.cos(yvalues) * deltax).T, axis=1)
+        self.meridional_heat_transport = np.sum((grad_phi.T *
+                                                 np.cos(yvalues) *
+                                                 deltax).T, axis=1)
 
     def calc_ax(self, x_matrix):
         """Matrix calculation of the Laplacian equation, LHS of Eq.

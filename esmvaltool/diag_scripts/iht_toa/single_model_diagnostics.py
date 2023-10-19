@@ -110,11 +110,11 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
                              source=data * (earth_radius**2.0),
                              tolerance=2.0e-4)
     sphpo.solve()
-    sphpo.calc_mht()
+    sphpo.calc_meridional_heat_transport()
     logger.info("Ending spherical_poisson")
 
     # Energy flux potential
-    efp_cube = iris.cube.Cube(sphpo.efp[1:-1, 1:-1],
+    efp_cube = iris.cube.Cube(sphpo.energy_flux_potential[1:-1, 1:-1],
                    long_name=f"energy_flux_potential_of_{flux_cube.var_name}",
                    var_name=f"{flux_cube.var_name}_efp", units='J s-1',
                    dim_coords_and_dims=[(flux_cube.coords()[0], 0),
@@ -126,7 +126,7 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
                                                long_name='longitude',
                                                standard_name='longitude',
                                                units='degrees')
-    mht_cube = iris.cube.Cube(sphpo.mht,
+    mht_cube = iris.cube.Cube(sphpo.meridional_heat_transport,
                    long_name=f"meridional_heat_transport_of"
                              f"_{flux_cube.var_name}",
                    var_name=f"{flux_cube.var_name}_mht", units='W',
@@ -139,24 +139,19 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
 def symmetry_metric(cube):
     """Calculate symmetry metrics.
 
-    A perfectly symmetrical latitude band gives S=0. As coded, the
-    calculation of the symmetry metrics needs the number of latitude
-    points to be multiple of 6, i.e. it needs 30 deg bands. It returns
+    A perfectly symmetrical latitude band gives S=0. It returns
     the metric for 3 regions: globe, tropics and extratropics.
     """
-    # Hemisphere
-    hem = np.abs(
+    hemisphere = np.abs(
         weight_zm(cube, latitude=(0, 90, False, False))[::-1] +
         weight_zm(cube, latitude=(-90, 0, False, False))).sum()
-    # Tropics
-    tro = np.abs(
+    tropics = np.abs(
         weight_zm(cube, latitude=(0, 30, False, False))[::-1] +
         weight_zm(cube, latitude=(-30, 0, False, False))).sum()
-    # Extra-tropics
-    etr = np.abs(
+    extra_tropics = np.abs(
         weight_zm(cube, latitude=(30, 90, False, False))[::-1] +
         weight_zm(cube, latitude=(-90, -30, False, False))).sum()
-    return hem, tro, etr
+    return hemisphere, tropics, extra_tropics
 
 
 def format_plot(axx, label, title):
@@ -170,7 +165,14 @@ def format_plot(axx, label, title):
 
 
 class ImpliedHeatTransport:
-    """Class that solves IHT for a given dataset."""
+    """Class that solves IHT for a given dataset.
+
+       These are the physical meanings of the main acronyms
+       used in the varaible names:
+          FLX: radiative flux
+          EFP: energy flux potential
+          MHT: meridional heat transport
+    """
 
     def __init__(self, flx_files):
         self.flx_files = flx_files
@@ -195,7 +197,8 @@ class ImpliedHeatTransport:
         # Compute derived fluxes
         self.derived_fluxes()
 
-        # Calculate EFP and MHT for each flux
+        # Calculate Energy Flux Potential and Meridional Heat Transport
+        # for each flux component
         self.compute_efp_and_mht()
 
         # Times series of MHT symmetry metric
@@ -292,29 +295,30 @@ class ImpliedHeatTransport:
         for mht_series in self.mht_rolling_mean:
             time_coord = mht_series.coord('time')
             ntime = time_coord.shape[0]
-            hem = np.zeros(ntime)
-            trop = np.zeros(ntime)
-            extratrop = np.zeros(ntime)
+            hemisphere = np.zeros(ntime)
+            tropics = np.zeros(ntime)
+            extra_tropics = np.zeros(ntime)
             for i in np.arange(ntime):
-                hem[i], trop[i], extratrop[i] = symmetry_metric(mht_series[i])
+                hemisphere[i], tropics[i], extra_tropics[i] = (
+                    symmetry_metric(mht_series[i]))
             # Create the cubes for each metric
             long_name = f"symmetry_hemisphere_of_{mht_series.long_name}"
             var_name = f"s_hem_{mht_series.var_name}"
-            cube_h = iris.cube.Cube(hem / petaunit,
+            cube_h = iris.cube.Cube(hemisphere / petaunit,
                                     long_name=long_name,
                                     var_name=var_name,
                                     units="PW",
                                     dim_coords_and_dims=[(time_coord, 0)])
             long_name = f"symmetry_tropics_of_{mht_series.long_name}"
             var_name = f"s_tro_{mht_series.var_name}"
-            cube_t = iris.cube.Cube(trop / petaunit,
+            cube_t = iris.cube.Cube(tropics / petaunit,
                                     long_name=long_name,
                                     var_name=var_name,
                                     units="PW",
                                     dim_coords_and_dims=[(time_coord, 0)])
             long_name = f"symmetry_extratropics_of_{mht_series.long_name}"
             var_name = f"s_ext_{mht_series.var_name}"
-            cube_e = iris.cube.Cube(extratrop / petaunit,
+            cube_e = iris.cube.Cube(extra_tropics / petaunit,
                                     long_name=long_name,
                                     var_name=var_name,
                                     units="PW",
@@ -393,8 +397,7 @@ class ImpliedHeatTransport:
 
     def quiver_start(self, ntot, step):
         """Calculate start point for quiver plot."""
-        nnn = (ntot - 2) // step
-        start = (ntot - 2 - nnn * step) // 2
+        start = (ntot - 2 - ((ntot - 2) // step) * step) // 2
         return start
 
     def quiver_maps_data(self, vnames, change_sign):
@@ -410,10 +413,10 @@ class ImpliedHeatTransport:
         if change_sign[1]:
             flx = -flx
         efp.convert_units("PW")
-        vvv, uuu = np.gradient(efp.data)
-        uuu = uuu[1:-1, 1:-1]
-        vvv = vvv[1:-1, 1:-1]
-        return {'efp': efp, 'flx': flx, 'uuu': uuu, 'vvv': vvv}
+        v_component, u_component = np.gradient(efp.data)
+        u_component = u_component[1:-1, 1:-1]
+        v_component = v_component[1:-1, 1:-1]
+        return {'efp': efp, 'flx': flx, 'uuu': u_component, 'vvv': v_component}
 
     def quiver_subplot(self, dargs, title, label, change_sign):
         """Produce panel with EFPs (left column) and fluxes (right column).
@@ -684,22 +687,23 @@ def main(cfg):
     input_data = group_metadata(input_data, 'dataset', sort='variable_group')
 
     # Arrange input flux files in a 2-level dictionary [model_name][dataset]
-    flx_files = {}
+    flux_files = {}
     for model_name, datasets in input_data.items():
-        flx_files[model_name] = {}
+        flux_files[model_name] = {}
         for dataset in datasets:
-            if dataset['dataset'] in flx_files[model_name]:
-                flx_files[model_name][dataset['dataset']].append(
+            if dataset['dataset'] in flux_files[model_name]:
+                flux_files[model_name][dataset['dataset']].append(
                     dataset['filename'])
             else:
-                flx_files[model_name][dataset['dataset']] = [
+                flux_files[model_name][dataset['dataset']] = [
                     dataset['filename']
                 ]
 
-    # Create dictionary of iht objects. It's a 2-level dictionary
-    # like flx_files. This is where all the calculations are done.
+    # Create dictionary of implied_heat_transport objects.
+    # It's a 2-level dictionary like flux_files.
+    # This is where all the calculations are done.
     iht = {}
-    for model_name, datasets in flx_files.items():
+    for model_name, datasets in flux_files.items():
         logger.info("Model %s", model_name)
         iht[model_name] = {}
         for dataset_name, files in datasets.items():
