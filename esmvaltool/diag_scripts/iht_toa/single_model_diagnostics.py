@@ -264,24 +264,34 @@ class ImpliedHeatTransport:
         logger.info("=== implied_heat_transport object ===")
         logger.info(self.mht_clim)
         info_message = "Long name: %s; Variable: %s."
-        for zzz in self.mht_clim:
-            logger.info(info_message, zzz.long_name, zzz.var_name)
+        for climatology in self.mht_clim:
+            logger.info(info_message,
+                        climatology.long_name,
+                        climatology.var_name)
 
         logger.info(self.efp_clim)
-        for zzz in self.efp_clim:
-            logger.info(info_message, zzz.long_name, zzz.var_name)
+        for climatology in self.efp_clim:
+            logger.info(info_message,
+                        climatology.long_name,
+                        climatology.var_name)
 
         logger.info(self.flx_clim)
-        for zzz in self.flx_clim:
-            logger.info(info_message, zzz.long_name, zzz.var_name)
+        for climatology in self.flx_clim:
+            logger.info(info_message,
+                        climatology.long_name,
+                        climatology.var_name)
 
         logger.info(self.mht_rolling_mean)
-        for zzz in self.mht_rolling_mean:
-            logger.info(info_message, zzz.long_name, zzz.var_name)
+        for rolling_mean in self.mht_rolling_mean:
+            logger.info(info_message,
+                        rolling_mean.long_name,
+                        rolling_mean.var_name)
 
         logger.info(self.symmetry_metric)
-        for zzz in self.symmetry_metric:
-            logger.info(info_message, zzz.long_name, zzz.var_name)
+        for metric in self.symmetry_metric:
+            logger.info(info_message,
+                        metric.long_name,
+                        metric.var_name)
 
         logger.info(self.flx_files)
 
