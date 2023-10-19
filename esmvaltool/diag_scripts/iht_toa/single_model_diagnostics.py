@@ -62,7 +62,25 @@ def get_provenance_record(plot_type, ancestor_files):
 
 
 def area_average(cube, latitude='latitude', longitude='longitude', mdtol=1):
-    """Return area-weighted average of a cube."""
+    """Return area-weighted average of a cube.
+
+    Parameters
+    ----------
+    cube : :class:`iris.cube.Cube`
+        Input cube.
+    latitude : string
+        Name of latitude coordinate in ``cube``.
+    longitude : string
+        Name of longitude coordinate in ``cube``.
+    mdtol : float
+        Tolerance to missing data, between 0 and 1.
+
+
+    Returns
+    -------
+    :class:`iris.cube.Cube`
+        Collapsed cube with the weighted average.
+    """
     if cube.coord(latitude).bounds is None:
         cube.coord(latitude).guess_bounds()
     if cube.coord(longitude).bounds is None:
@@ -76,7 +94,23 @@ def area_average(cube, latitude='latitude', longitude='longitude', mdtol=1):
 
 
 def weight_zm(cube, latitude=None):
-    """Weight zonal-mean by normalised gridbox areas."""
+    """Weight zonal-mean by normalised gridbox areas.
+
+    Parameters
+    ----------
+    cube : :class:`iris.cube.Cube`
+        Input cube.
+    latitude : tuple
+        Four-element tuple defining the latitude range.
+        The last two elements must be False, e.g.
+        latitude=(-90, 0, False, False).
+
+    Returns
+    -------
+    :class:`numpy.array`
+        Zonal-mean in the selected latitude range, weighted
+        by the normalised areas.
+    """
     if cube.coord('latitude').bounds is None:
         cube.coord('latitude').guess_bounds()
     areas_data = iris.analysis.cartography.area_weights(cube, normalize=True)
@@ -91,7 +125,27 @@ def weight_zm(cube, latitude=None):
 
 
 def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
-    """Top-level function that calls the Poisson solver for source cube."""
+    """Call the Poisson solver with the data in ``flux_cube`` as source term.
+       Return the energy flux potential and implied meridional heat transport
+       as cubes.
+
+    Parameters
+    ----------
+    flux_cube : :class:`iris.cube.Cube`
+        Input cube.
+    latitude : string
+        Name of latitude coordinate in ``cube``.
+    longitude : string
+        Name of longitude coordinate in ``cube``.
+
+    Returns
+    -------
+    efp_cube: :class:`iris.cube.Cube`
+        Energy flux potential cube.
+    mht_cube: :class:`iris.cube.Cube`
+        Implied meridional heat transport associated
+        with the source flux field.
+    """
     earth_radius = 6371e3 # Earth's radius in m
     if flux_cube.coord(latitude).bounds is None:
         flux_cube.coord(latitude).guess_bounds()
@@ -137,10 +191,27 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
 
 
 def symmetry_metric(cube):
-    """Calculate symmetry metrics.
+    """Calculate symmetry metrics for a zonal-mean cube.
 
-    A perfectly symmetrical latitude band gives S=0. It returns
-    the metric for 3 regions: globe, tropics and extratropics.
+    It returns the symmetry metric S, as defined in Pearce and
+    Bodas-Salcedo, JClim, 2023, for 3 regions: entire hemisphere,
+    tropics (0 to 30 deg latitude) and extratropics
+    (30 to 90 degrees latitude). Perfectly symmetrical latitude
+    bands give S=0.
+
+    Parameters
+    ----------
+    cube : :class:`iris.cube.Cube`
+        Input cube.
+
+    Returns
+    -------
+    hemisphere: float
+        Metric for the whole hemisphere.
+    tropics: float
+        Metric for the tropics.
+    extra_tropics: float
+        Metric for the extra-tropics.
     """
     hemisphere = np.abs(
         weight_zm(cube, latitude=(0, 90, False, False))[::-1] +
@@ -154,27 +225,46 @@ def symmetry_metric(cube):
     return hemisphere, tropics, extra_tropics
 
 
-def format_plot(axx, label, title):
-    """Format plots in quiver panel."""
-    axx.set_xticks(np.arange(-180, 190, 60))
-    axx.set_xticklabels(['180', '120W', '60W', '0', '60E', '120E', '180'])
-    axx.set_yticks(np.arange(-90, 100, 30))
-    axx.set_yticklabels(['90S', '60S', '30S', 'Eq', '30N', '60N', '90N'])
-    axx.annotate(label, xy=(0, 1.05), xycoords='axes fraction', color='k')
-    axx.set_title(title)
+def format_plot(axes, label, title):
+    """Format plots in quiver panel.
+
+    Parameters
+    ----------
+    axes : :class:`matplotlib.axes.Axes`
+        Input axes.
+    label : string
+        Top-left plot label.
+    title : string
+        Plot title.
+    """
+    axes.set_xticks(np.arange(-180, 190, 60))
+    axes.set_xticklabels(['180', '120W', '60W', '0', '60E', '120E', '180'])
+    axes.set_yticks(np.arange(-90, 100, 30))
+    axes.set_yticklabels(['90S', '60S', '30S', 'Eq', '30N', '60N', '90N'])
+    axes.annotate(label, xy=(0, 1.05), xycoords='axes fraction', color='k')
+    axes.set_title(title)
 
 
 class ImpliedHeatTransport:
-    """Class that solves IHT for a given dataset.
+    """Class that calculates the relevant implied heat
+     transport for an input dataset.
 
        These are the physical meanings of the main acronyms
-       used in the varaible names:
+       used in the variable names:
           FLX: radiative flux
           EFP: energy flux potential
           MHT: meridional heat transport
     """
 
     def __init__(self, flx_files):
+        """Calculate all the diagnostics for all the fluxes
+        listed in ``flx_files``.
+
+        Parameters
+        ----------
+        flx_files : list
+            List of files with input data.
+        """
         self.flx_files = flx_files
 
         # Create cube lists for the different datasets
@@ -209,8 +299,9 @@ class ImpliedHeatTransport:
     def compute_efp_and_mht(self):
         """Calculate Energy Flux Potential and meridional heat transport.
 
-        Calculate EFP and MHT for the climatologies of radiative fluxes
-        and the 12-month rolling means of radiative fluxes.
+        Loop over input data and calculate EFP and MHT of the
+        climatologies of radiative fluxes and the 12-month
+        rolling means of radiative fluxes.
         """
         # Loop over climatologies
         for flx in self.flx_clim:
@@ -229,7 +320,7 @@ class ImpliedHeatTransport:
     def derived_fluxes(self):
         """Calculate derived radiative fluxes.
 
-        rlnt_clim: climatology net LW TOA
+        rlnt_clim: climatology of net LW TOA
         rtntcs_clim: climatology of clear-sky net TOA
         rtntcs_rolling_mean: 12-month rolling mean of rtntcs
         """
@@ -260,7 +351,7 @@ class ImpliedHeatTransport:
         self.flx_rolling_mean.append(rtntcs_rolling_mean)
 
     def print(self):
-        """Print variable names of all cubes in the IHT object."""
+        """Print variable names of all cubes in an IHT object."""
         logger.info("=== implied_heat_transport object ===")
         logger.info(self.mht_clim)
         info_message = "Long name: %s; Variable: %s."
@@ -298,7 +389,7 @@ class ImpliedHeatTransport:
     def mht_symmetry_metrics(self):
         """Calculate symmetry metrics.
 
-        Produce 12-month rolling means for all monthly time time series
+        Produce 12-month rolling means for all monthly time series
         of MHT.
         """
         petaunit = 1.0e15
