@@ -85,7 +85,7 @@ def display_in_md():
 
     # parse different types of recipe outcomes
     recipe_list, failed, missing_dat = parse_output_file()
-    print("### Successfully run recipes\n\n")
+    print("### Successfully ran recipes\n\n")
     print(f"{len(recipe_list)} out of {len(all_recs)}\n")
     for rec in recipe_list:
         print("- " + rec)
