@@ -20,23 +20,23 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * recipe_iht_toa.yml calculates the IHT maps for the following radiative fluxes:
+* recipe_iht_toa.yml calculates the IHT maps for the following radiative fluxes:
 
-        * Total net, SW net, LW net (Figure 2).
-        * Total CRE, SW CRE, LW CRE (Figure 4).
-        * All-sky and clear-sky reflected SW (Figure 5).
-        * The meridional heat transports (MHT) of the fluxes above (Figures 1 and 3).
+    * Total net, SW net, LW net (Figure 2).
+    * Total CRE, SW CRE, LW CRE (Figure 4).
+    * All-sky and clear-sky reflected SW (Figure 5).
+    * The meridional heat transports (MHT) of the fluxes above (Figures 1 and 3).
 
 Diagnostics are stored in esmvaltool/diag_scripts/iht_toa/
 
-    * single_model_diagnostics.py: driver script that produces the plots.
-    * poisson_solver.py: solver that calculates the IHTs.
+* single_model_diagnostics.py: driver script that produces the plots.
+* poisson_solver.py: solver that calculates the IHTs.
 
 .. _`Pearce and Bodas-Salcedo (2023)`:  https://doi.org/10.1175/JCLI-D-22-0149.1
 
 User settings in recipe
 -----------------------
-
+There are no user settings in this recipe.
 
 Variables
 ---------
