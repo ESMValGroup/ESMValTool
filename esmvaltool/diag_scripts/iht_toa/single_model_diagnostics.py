@@ -429,9 +429,18 @@ class ImpliedHeatTransport:
             self.symmetry_metric.append(cube_e)
 
     def mht_plot(self, var_names, legend_label, ylim=(-10, 10)):
-        """Produce a single multi-line plot with MHT.
+        """Produce a single multi-line plot of MHT components.
 
         MHT is presented in PW. Up to three variables are on each plot.
+
+        Parameters
+        ----------
+        var_names : list
+            Variable names to plot, e.g. ["rtnt_mht", "rsnt_mht"].
+        legend_label : list
+            List of labels for each line.
+        ylim : tuple
+            y axis limits.
         """
         plt.figure()
         for i, vname in enumerate(var_names):
@@ -451,7 +460,20 @@ class ImpliedHeatTransport:
         plt.tight_layout()
 
     def cre_mht_plot(self, left, right, ylim=(-1.5, 1.5)):
-        """Produce two multiline plots of MHT."""
+        """Produce two multiline plots of MHT components.
+
+        Parameters
+        ----------
+        left : dictionary
+            Dictionary with variable names and labels for
+            the LHS plot, e.g.
+            {'vname': ['netcre_mht', 'swcre_mht', 'lwcre_mht'],
+            'legend': ['Net CRE', 'SW CRE', 'LW CRE']}
+        right : dictionary
+            As ``left`` but for the RHS plot
+        ylim : tuple
+            y axis limits.
+        """
         plt.figure(figsize=(11, 5))
         ax1 = plt.subplot(121)
         for i, vname in enumerate(left['vname']):
@@ -497,12 +519,30 @@ class ImpliedHeatTransport:
         plt.tight_layout()
 
     def quiver_start(self, ntot, step):
-        """Calculate start point for quiver plot."""
+        """Calculate start point for quiver plot.
+
+        Parameters
+        ----------
+        ntot : int
+            Total number of points of the full vector.
+        step : int
+            Sampling step.
+        """
         start = (ntot - 2 - ((ntot - 2) // step) * step) // 2
         return start
 
     def quiver_maps_data(self, vnames, change_sign):
-        """Obtain data for one row of plots."""
+        """Obtain data for one row of plots.
+
+        Parameters
+        ----------
+        vnames : list
+            Two-element list with the names of the EFP and
+            flux variables.
+        change_sign : list
+            Two-element list of booleans to indicate if
+            the variable has to be plotted with the sign changed.
+        """
         efp = self.efp_clim.extract_cube(NameConstraint(var_name=vnames[0]))
         flx = self.flx_clim.extract_cube(NameConstraint(var_name=vnames[1]))
         # The choice of origin for efp is arbitrary,
@@ -520,11 +560,24 @@ class ImpliedHeatTransport:
         return {'efp': efp, 'flx': flx, 'uuu': u_component, 'vvv': v_component}
 
     def quiver_subplot(self, dargs, title, label, change_sign):
-        """Produce panel with EFPs (left column) and fluxes (right column).
+        """Produce panel with maps of EFPs and fluxes.
 
-        Plot figures with energy flux potential and gradient in the left
-        hand columns and the corresponding source term in the right-hand
-        column.
+        Plot figures with energy flux potential and gradient in the left-hand
+        column and the corresponding source term in the right-hand column.
+
+        Parameters
+        ----------
+        dargs : dictionary
+            Dictionary with variable names and plot configuration
+            data.
+        title : list
+            List of two-element lists with the names of the EFP and
+            flux variables.
+        label : list
+            List of two-element lists with the plot labels.
+        change_sign : list
+            List of two-element list of booleans to indicate if
+            the variable has to be plotted with the sign changed.
         """
         mshgrd = np.meshgrid(self.flx_clim[0].coord('longitude').points,
                              self.flx_clim[0].coord('latitude').points)
@@ -609,7 +662,7 @@ class ImpliedHeatTransport:
         """Produce Figure 6.
 
         All-sky and clear-sky time series of the symmetry metrics for
-        three regions: globe, tropics and extratropics.
+        three regions: globe, tropics and extra-tropics.
         """
         var_list = [["s_hem_rtnt_mht", "s_hem_rtntcs_mht"],
                     ["s_tro_rtnt_mht", "s_tro_rtntcs_mht"],
@@ -652,8 +705,20 @@ class ImpliedHeatTransport:
         plt.tight_layout()
 
 
-def efp_maps(iht, model, experiment, cfg):
-    """Produce Figures 2, 4, and 5."""
+def efp_maps(iht, model, experiment, config):
+    """Produce Figures 2, 4, and 5.
+
+    Parameters
+    ----------
+    iht : :class: ImpliedHeatTransport
+        Object with the recipe datasets.
+    model : string
+        Model name.
+    experiment : string
+        Experiment name.
+    config : dict
+        The ESMValTool configuration.
+    """
     # Figure 2
     iht.quiver_subplot(
         {
@@ -682,7 +747,7 @@ def efp_maps(iht, model, experiment, cfg):
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
     figname = f"figure2_{model}_{experiment}"
-    save_figure(figname, provenance_record, cfg)
+    save_figure(figname, provenance_record, config)
     # Figure 4
     iht.quiver_subplot(
         {
@@ -711,7 +776,7 @@ def efp_maps(iht, model, experiment, cfg):
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
     figname = f"figure4_{model}_{experiment}"
-    save_figure(figname, provenance_record, cfg)
+    save_figure(figname, provenance_record, config)
     # Figure 5
     iht.quiver_subplot(
         {
@@ -731,17 +796,29 @@ def efp_maps(iht, model, experiment, cfg):
     provenance_record = get_provenance_record(plot_type='map',
                                               ancestor_files=iht.flx_files)
     figname = f"figure5_{model}_{experiment}"
-    save_figure(figname, provenance_record, cfg)
+    save_figure(figname, provenance_record, config)
 
 
-def mht_plots(iht, model, experiment, cfg):
-    """Produce Figures 1 and 3."""
+def mht_plots(iht, model, experiment, config):
+    """Produce Figures 1 and 3.
+
+    Parameters
+    ----------
+    iht : :class: ImpliedHeatTransport
+        Object with the recipe datasets.
+    model : string
+        Model name.
+    experiment : string
+        Experiment name.
+    config : dict
+        The ESMValTool configuration.
+    """
     # Figure 1
     iht.mht_plot(["rtnt_mht", "rsnt_mht", "rlnt_mht"], ['Net', 'SW', 'LW'])
     provenance_record = get_provenance_record(plot_type='zonal',
                                               ancestor_files=iht.flx_files)
     figname = f"figure1_{model}_{experiment}"
-    save_figure(figname, provenance_record, cfg)
+    save_figure(figname, provenance_record, config)
     # Figure 3
     iht.cre_mht_plot(
         {
@@ -752,39 +829,61 @@ def mht_plots(iht, model, experiment, cfg):
             'legend': ['-1 x OSR (all-sky)', '-1 x OSR (clear-sky)']
         })
     figname = f"figure3_{model}_{experiment}"
-    save_figure(figname, provenance_record, cfg)
+    save_figure(figname, provenance_record, config)
 
 
-def symmetry_plots(iht, model, experiment, cfg):
-    """Produce Figure 6."""
+def symmetry_plots(iht, model, experiment, config):
+    """Produce Figure 6.
+
+    Parameters
+    ----------
+    iht : :class: ImpliedHeatTransport
+        Object with the recipe datasets.
+    model : string
+        Model name.
+    experiment : string
+        Experiment name.
+    config : dict
+        The ESMValTool configuration.
+    """
     iht.plot_symmetry_time_series()
     provenance_record = get_provenance_record(plot_type='times',
                                               ancestor_files=iht.flx_files)
     figname = f"figure6_{model}_{experiment}"
-    save_figure(figname, provenance_record, cfg)
+    save_figure(figname, provenance_record, config)
 
 
-def plot_single_model_diagnostics(iht_dict, cfg):
+def plot_single_model_diagnostics(iht_dict, config):
     """Produce plots for a single model and experiment.
 
-    iht_dict is a two-level dictionary: iht_dict[model][experiment]
+    Parameters
+    ----------
+    iht_dict : dict
+        iht_dict is a two-level dictionary: iht_dict[model][experiment]
+    config : dict
+        The ESMValTool configuration.
     """
     for model, iht_model in iht_dict.items():
         logger.info("Plotting model: %s", model)
         for experiment, iht_experiment in iht_model.items():
             logger.info("Plotting experiment: %s", experiment)
-            mht_plots(iht_experiment, model, experiment, cfg)
-            efp_maps(iht_experiment, model, experiment, cfg)
-            symmetry_plots(iht_experiment, model, experiment, cfg)
+            mht_plots(iht_experiment, model, experiment, config)
+            efp_maps(iht_experiment, model, experiment, config)
+            symmetry_plots(iht_experiment, model, experiment, config)
 
 
-def main(cfg):
-    """Produce implied heat transport plots.
+def main(config):
+    """Produce all the recipe's plots.
 
     Produce Figures 1 to 6 of Pearce and Bodas-Salcedo (2023) for each
     model and dataset combination.
+
+    Parameters
+    ----------
+    config : dict
+        The ESMValTool configuration.
     """
-    input_data = deepcopy(list(cfg['input_data'].values()))
+    input_data = deepcopy(list(config['input_data'].values()))
     input_data = group_metadata(input_data, 'dataset', sort='variable_group')
 
     # Arrange input flux files in a 2-level dictionary [model_name][dataset]
@@ -813,10 +912,10 @@ def main(cfg):
 
     print(iht)
     # Produce plots
-    plot_single_model_diagnostics(iht, cfg)
+    plot_single_model_diagnostics(iht, config)
 
 
 if __name__ == '__main__':
 
-    with run_diagnostic() as config:
-        main(config)
+    with run_diagnostic() as configuration:
+        main(configuration)
