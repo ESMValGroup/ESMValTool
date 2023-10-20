@@ -1,10 +1,10 @@
 #!jinja2
 [runtime]
     [[COMPUTE]]
-        platform = spice
+        platform = lotus
         [[[directives]]]
             --wckey = RTW
-            --ntasks = {{ MAX_PARALLEL_TASKS }}
+            --ntasks = 1
 
     [[process<fast>]]
         execution time limit = PT2M

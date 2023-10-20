@@ -12,11 +12,29 @@ Quick Start
     cd ESMValTool/esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
     rose edit
 
-* Run the |RTW| at the Met Office, where ``<run-name>`` is a unique run name
-  relevant to the current configuration::
+* Run the |RTW|:
 
-    cylc install --run-name=<run-name> -O metoffice
-    cylc play recipe_test_workflow/<run-name>
+  * at the Met Office::
+
+      export CYLC_VERSION=8
+      cylc vip -O metoffice
+
+  * on JASMIN:
+
+    * add the following line to your ``~/.bashrc`` file to ensure the Cylc and
+      Rose executables can be found::
+
+        export PATH=/apps/jasmin/metomi/bin:$PATH
+
+    * SSH to the Rose and Cylc server::
+
+        ssh -X cylc
+
+    * run the RTW on JASMIN::
+
+        cd ESMValTool/esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
+        export CYLC_VERSION=8
+        cylc vip -O jasmin
 
 * Browse the logs using `Cylc Review`_, a web service for browsing logs via an
   HTTP interface.
