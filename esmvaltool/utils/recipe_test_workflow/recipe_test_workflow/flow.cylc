@@ -11,7 +11,7 @@
    initial cycle point = 1
    final cycle point = 10
     [[graph]]
-        R1 = """install_env_file => clone_latest_esmval => configure
+        R1 = """install_env_file => build_container => configure
                 configure => process<fast> => compare<fast>
                 configure => process<medium> => compare<medium>"""
 
@@ -33,8 +33,8 @@
         [[[environment]]]
             SITE = {{ SITE }}
 
-    [[clone_latest_esmval]]
-        platform = localhost
+    [[build_container]]
+        inherit = None, COMPUTE
 
     [[configure]]
         platform = localhost

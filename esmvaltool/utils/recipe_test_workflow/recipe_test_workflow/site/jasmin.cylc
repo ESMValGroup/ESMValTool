@@ -6,6 +6,11 @@
             --wckey = RTW
             --ntasks = 1
 
+    [[build_container]]
+        execution time limit = PT1H
+        [[[directives]]]
+            --mem = 2G
+
     [[process<fast>]]
         execution time limit = PT2M
         [[[directives]]]
