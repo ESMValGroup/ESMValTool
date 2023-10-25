@@ -7,7 +7,7 @@ documentation:
     - kalverla_peter
     - andela_bouwe
   maintainer:
-    - unmaintained
+    - andela_bouwe
 
 preprocessors:
   easy_ipcc:
@@ -65,7 +65,7 @@ datasets:
   - {dataset: ACCESS-ESM1-5, ensemble: 'r(1:40)i1p1f1', grid: gn}
   - {dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn}
   - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
-  # - {dataset: CAMS-CSM1-0, ensemble: 'r(1:2)i1p1f1', grid: gn} # available data does not cover timerange
+  # - {dataset: CAMS-CSM1-0, ensemble: 'r(1:2)i1p1f1', grid: gn} # available data does not fully cover timerange
   - {dataset: CAS-ESM2-0, ensemble: r1i1p1f1, grid: gn}
   - {dataset: CAS-ESM2-0, ensemble: r3i1p1f1, grid: gn}
   - {dataset: CESM2, ensemble: r4i1p1f1, grid: gn}
@@ -86,7 +86,7 @@ datasets:
   # - {dataset: EC-Earth3, ensemble: r9i1p1f1, grid: gn}  # download failure of ssp585
   - {dataset: EC-Earth3, ensemble: r11i1p1f1, grid: gn}
   - {dataset: EC-Earth3, ensemble: r15i1p1f1, grid: gn}
-  # - {dataset: EC-Earth3, ensemble: 'r(101:150)i1p1f1', grid: gn}  # available data does not cover timerange
+  # - {dataset: EC-Earth3, ensemble: 'r(101:150)i1p1f1', grid: gn}  # available data does not fully cover timerange
   - {dataset: EC-Earth3-Veg, ensemble: 'r(1:4)i1p1f1', grid: gn}
   - {dataset: EC-Earth3-Veg, ensemble: r6i1p1f1, grid: gn}
   # - {dataset: EC-Earth3-Veg-LR, ensemble: 'r(1:3)i1p1f1', grid: gn}  # mismatch between i and j coordinate names between historical and ssp experiment
@@ -102,7 +102,7 @@ datasets:
   - {dataset: GISS-E2-2-G, ensemble: 'r(1:5)i1p3f1', grid: gn, supplementary_variables: [{short_name: areacella, mip: fx, exp: piControl, ensemble: r1i1p1f1}, {short_name: areacello, skip: true}]}
   - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
   - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
-  # - {dataset: IITM-ESM, ensemble: r1i1p1f1, grid: gn}  # available data does not cover timerange
+  # - {dataset: IITM-ESM, ensemble: r1i1p1f1, grid: gn}  # available data does not fully cover timerange
   - {dataset: INM-CM4-8, ensemble: r1i1p1f1, grid: gr1}
   - {dataset: INM-CM5-0, ensemble: r1i1p1f1, grid: gr1}
   - {dataset: IPSL-CM6A-LR, ensemble: 'r(1:4)i1p1f1', grid: gn}
