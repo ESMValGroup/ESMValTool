@@ -4,9 +4,6 @@ import os
 import pprint
 
 import yaml
-from esmvalcore.config._config_object import Config
-
-import esmvaltool
 
 
 def main():
