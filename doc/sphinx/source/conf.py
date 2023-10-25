@@ -25,7 +25,7 @@ from pathlib import Path
 # `conf.py` file.Be aware that `navigation_with_keys = True` has negative
 # accessibility implications:
 # https://github.com/pydata/pydata-sphinx-theme/issues/1492"
-navigation_with_keys=False
+navigation_with_keys = True
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
