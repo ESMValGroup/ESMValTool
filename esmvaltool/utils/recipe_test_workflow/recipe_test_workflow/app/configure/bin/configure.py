@@ -4,29 +4,20 @@ import os
 import pprint
 
 import yaml
-from esmvalcore.config._config_object import Config
-
-import esmvaltool
 
 
 def main():
     """Write the required user configuration file for ESMValTool.
 
-    The default configuration values from the latest version of
-    ESMValTool are updated with the configuration values defined in the
-    environment for the ``configure`` task and the result is written to
-    the file defined by ``USER_CONFIG_PATH`` in the ``flow.cylc`` file.
+    The configuration values defined in the environment for the
+    ``configure`` task are written to the configuration file defined
+    by ``USER_CONFIG_PATH`` in the ``flow.cylc`` file.
     """
-    # Get the default configuration values from the latest version of
-    # ESMValTool.
-    config_values = get_latest_default_conf_vals()
-
     # Get the configuration values defined in the environment for the
     # 'configure' task.
-    config_values_from_task_env = get_config_values_from_task_env()
+    config_values = get_config_values_from_task_env()
 
-    # Update the default configuration values.
-    config_values.update(config_values_from_task_env)
+    # Update the configuration from OS environment.
     user_config_path = os.environ["USER_CONFIG_PATH"]
     config_values["config_file"] = user_config_path
 
@@ -36,30 +27,6 @@ def main():
           "values: ")
     pprint.PrettyPrinter().pprint(config_values)
     write_yaml(user_config_path, config_values)
-
-
-def get_latest_default_conf_vals():
-    """Return the default configuration values from the latest version of
-    ESMValTool."""
-    latest_esmvaltool_dir = os.environ["ESMVALTOOL_DIR"]
-    default_config_file = os.path.join(latest_esmvaltool_dir,
-                                       "config-user-example.yml")
-    # A dictionary is needed here to avoid the config object from
-    # converting paths to 'PosixPath' objects, which causes issues when
-    # writing the YAML file.
-    config_values = dict(Config._load_user_config(default_config_file))
-
-    # Update the type of the value of 'config_developer_file' from a
-    # 'PosixPath' object to a string, to avoid issues when writing the
-    # YAML file (all other paths will be overwritten).
-    config_developer_file = str(config_values["config_developer_file"])
-    config_values["config_developer_file"] = config_developer_file
-
-    print("Default configuration values from the latest version of ESMValTool "
-          f"{esmvaltool.__version__} (from '{default_config_file}'): ")
-    pprint.PrettyPrinter().pprint(config_values)
-
-    return config_values
 
 
 def get_config_values_from_task_env():
