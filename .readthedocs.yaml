@@ -16,7 +16,6 @@ build:
       # update mamba just in case
       - mamba update --yes --quiet --name=base mamba 'zstd=1.5.2'
       - mamba --version
-      - mamba install --name=base mamba zstandard
       - mamba list --name=base
     post_create_environment:
       - conda run -n ${CONDA_DEFAULT_ENV} mamba list
