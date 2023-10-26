@@ -43,20 +43,21 @@ rcParams.update({
 })
 
 
-def get_provenance_record(plot_type, ancestor_files):
-    """Create a provenance record describing the diagnostic data and plot."""
+def get_provenance_record(filenames):
+    """Return a provenance record describing the plot.
+
+    Parameters
+    ----------
+    filenames : list of strings
+        The filenames containing the data used to create the plot.
+
+    Returns
+    -------
+    dictionary
+        The provenance record describing the plot.
+    """
     record = {
-        'statistics': ['mean'],
-        'domains': ['global'],
-        'plot_types': [plot_type],
-        'authors': [
-            'andela_bouwe',
-            'righi_mattia',
-        ],
-        'references': [
-            'acknow_project',
-        ],
-        'ancestors': ancestor_files,
+        'ancestors': filenames,
     }
     return record
 
@@ -744,8 +745,7 @@ def efp_maps(iht, model, experiment, config):
                ['$P_{TOA}^{LW}$', r'$\Delta F_{TOA}^{LW}$']],
         label=[['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
         change_sign=[[False, False], [False, False], [False, False]])
-    provenance_record = get_provenance_record(plot_type='map',
-                                              ancestor_files=iht.flx_files)
+    provenance_record = get_provenance_record(iht.flx_files)
     figname = f"figure2_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
     # Figure 4
@@ -773,8 +773,7 @@ def efp_maps(iht, model, experiment, config):
                ['$P_{TOA}^{LWCRE}$', r'$\Delta CRE_{TOA}^{LW}$']],
         label=[['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
         change_sign=[[False, False], [False, False], [False, False]])
-    provenance_record = get_provenance_record(plot_type='map',
-                                              ancestor_files=iht.flx_files)
+    provenance_record = get_provenance_record(iht.flx_files)
     figname = f"figure4_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
     # Figure 5
@@ -793,8 +792,7 @@ def efp_maps(iht, model, experiment, config):
                ['$P_{TOA}^{SWup, all}$', r'$\Delta F_{TOA}^{SWup, all}$']],
         label=[['(a)', '(b)'], ['(c)', '(d)']],
         change_sign=[[True, True], [True, True]])
-    provenance_record = get_provenance_record(plot_type='map',
-                                              ancestor_files=iht.flx_files)
+    provenance_record = get_provenance_record(iht.flx_files)
     figname = f"figure5_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
 
@@ -815,8 +813,7 @@ def mht_plots(iht, model, experiment, config):
     """
     # Figure 1
     iht.mht_plot(["rtnt_mht", "rsnt_mht", "rlnt_mht"], ['Net', 'SW', 'LW'])
-    provenance_record = get_provenance_record(plot_type='zonal',
-                                              ancestor_files=iht.flx_files)
+    provenance_record = get_provenance_record(iht.flx_files)
     figname = f"figure1_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
     # Figure 3
@@ -847,8 +844,7 @@ def symmetry_plots(iht, model, experiment, config):
         The ESMValTool configuration.
     """
     iht.plot_symmetry_time_series()
-    provenance_record = get_provenance_record(plot_type='times',
-                                              ancestor_files=iht.flx_files)
+    provenance_record = get_provenance_record(iht.flx_files)
     figname = f"figure6_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
 
