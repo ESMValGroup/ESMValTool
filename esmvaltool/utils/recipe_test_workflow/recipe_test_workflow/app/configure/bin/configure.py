@@ -9,10 +9,9 @@ import yaml
 def main():
     """Write the required user configuration file for ESMValTool.
 
-    The default configuration values from the latest version of
-    ESMValTool are updated with the configuration values defined in the
-    environment for the ``configure`` task and the result is written to
-    the file defined by ``USER_CONFIG_PATH`` in the ``flow.cylc`` file.
+    The configuration values defined in the environment for the
+    ``configure`` task are written to the configuration file defined
+    by ``USER_CONFIG_PATH`` in the ``flow.cylc`` file.
     """
     # Get the configuration values defined in the environment for the
     # 'configure' task.
