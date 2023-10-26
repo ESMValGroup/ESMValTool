@@ -30,15 +30,14 @@ The |RTW| performs the following steps:
 
 ``configure``
   :Description:
-     Creates and modifies the |ESMValTool| user configuration file
+     Creates the |ESMValTool| user configuration file
   :Runs on:
      Localhost
   :Executes:
      The ``configure.py`` script from the |Rose| app
   :Details:
-     ``configure`` should run at the start of each cycle after ``clone_latest_esmval``
-     has completed; in the case where the next cycle doesn't happen for a week,
-     the clone could potentially be out of date by the time of the task trigger.
+     ``configure`` should run at the start of each cycle after 
+     ``install_env_file`` has completed.
 
 ``process``
   :Description:
