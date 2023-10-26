@@ -1,6 +1,6 @@
-"""(C) Crown Copyright 2023, the Met Office.
+# (C) Crown Copyright 2023, the Met Office.
+"""Single model diagnostics
 
-Single model diagnostics
 1. Solve the Poisson solver
 2. Produce and save plots
 """
@@ -27,7 +27,7 @@ from esmvaltool.diag_scripts.shared import (
 )
 
 # Initialise logger
-logger = logging.getLogger(Path(__file__).stem)
+logger = logging.getLogger(__name__)
 
 rcParams.update({
     'font.size': 14,
@@ -588,6 +588,9 @@ class ImpliedHeatTransport:
         startx = self.quiver_start(mshgrd[0].shape[1], dxy[0])
         starty = self.quiver_start(mshgrd[0].shape[0], dxy[1])
 
+        # Set grid layout depending on number of rows.
+        # Place figures every grid_step rows in the grid.
+        grid_step = 7
         if nrows == 3:
             plt.figure(figsize=(10, 10))
             grds = gridspec.GridSpec(22, 2)
@@ -604,7 +607,7 @@ class ImpliedHeatTransport:
         cbs = []
         for i in range(nrows):
             data = self.quiver_maps_data(dargs['var_name'][i], change_sign[i])
-            plt.subplot(grds[i * 7:(i * 7) + 7, 0],
+            plt.subplot(grds[i * grid_step:(i * grid_step) + grid_step, 0],
                         projection=ccrs.PlateCarree(central_longitude=0))
             cbs.append(
                 iplt.contourf(data['efp'],
@@ -629,7 +632,7 @@ class ImpliedHeatTransport:
                            color='w')
             format_plot(plt.gca(), label[i][0], title[i][0])
 
-            plt.subplot(grds[i * 7:(i * 7) + 7, 1],
+            plt.subplot(grds[i * grid_step:(i * grid_step) + grid_step, 1],
                         projection=ccrs.PlateCarree(central_longitude=0))
             cbs.append(
                 iplt.contourf(data['flx'],
@@ -677,12 +680,12 @@ class ImpliedHeatTransport:
         legend_label = ["TOA net all-sky", "TOA net clear-sky"]
 
         plt.figure(figsize=(6, 12))
-        for i, var_name in enumerate(var_list):
+        for count, (var_name_1, var_name_2) in enumerate(var_list):
             yy0 = self.symmetry_metric.extract_cube(
-                NameConstraint(var_name=var_name[0]))
+                NameConstraint(var_name=var_name_1))
             yy1 = self.symmetry_metric.extract_cube(
-                NameConstraint(var_name=var_name[1]))
-            axx = plt.subplot(3, 1, i + 1)
+                NameConstraint(var_name=var_name_2))
+            axx = plt.subplot(3, 1, count + 1)
             dtx = [
                 datetime.datetime.strptime(str(cell[0]), '%Y-%m-%d %H:%M:%S')
                 for cell in yy0.coord('time').cells()
@@ -700,8 +703,8 @@ class ImpliedHeatTransport:
             axx.xaxis.set_major_locator(mdates.YearLocator(3, month=1, day=1))
             axx.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
             axx.xaxis.set_minor_locator(mdates.YearLocator())
-            axx.set_title(label[i])
-            if i == 0:
+            axx.set_title(label[count])
+            if count == 0:
                 plt.legend(loc=5)
         plt.tight_layout()
 

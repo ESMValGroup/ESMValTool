@@ -1,5 +1,5 @@
-"""(C) Crown Copyright 2023, the Met Office.
-
+# (C) Crown Copyright 2023, the Met Office.
+"""
 Poisson solver for the full ocean-atmosphere column. The Poisson equation
 is solved by numerically using the biconjugate gradient stabilized (BiCGSTAB)
 method.
@@ -14,7 +14,6 @@ The heat transport is calculated as the gradient of the energy flux potential,
 the output of the Poisson solver.
 """
 
-import sys
 import numpy as np
 from numba import jit
 
@@ -248,8 +247,7 @@ class SphericalPoisson:
             iteration += 1
 
             if iteration == max_iterations:
-                self.logger.error('Poisson solver has not converged.')
-                sys.exit(1)
+                raise RuntimeError('Poisson solver has not converged.')
 
         self.energy_flux_potential = xxx
 
