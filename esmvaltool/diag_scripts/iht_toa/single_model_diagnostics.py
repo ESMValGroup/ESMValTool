@@ -41,8 +41,41 @@ rcParams.update({
     'lines.linewidth': 2
 })
 
+# Figure captions
+caption = {
+    'F1': 'Figure 1. The implied heat transport due to TOA net flux (blue), '
+          'split into the contributions from SW (orange) and LW (green).',
+    'F2': 'Figure 2. The TOA energy flux potentials for (a) TOT, (c) '
+          'SW, and (e) LW net fluxes, alongside maps of the spatial anomalies '
+          'of the input fluxes [(b),(d),(f)]. The implied heat transport is '
+          'the gradient of the energy flus potential, shown by the white '
+          'vector arrows (with the same magnitude scale across all subplots). '
+          'Heat is directed from the blue minima of the potential field to '
+          'yellow maxima, with the magnitude implied by the density of '
+          'contours. All maps of the same type share the same color bar at '
+          'the bottom of the column so that it is possible to directly '
+          'compare the results from different fluxes.',
+    'F3': 'Figure 3. Direct radiative effects of clouds on the meridional '
+          'heat transport. (a) Contributions from TOT CRE (blue), SW CRE '
+          '(orange), and LW CRE (green). (b) Contributions from all-sky and '
+          'clear-sky OSR. Both curves have been multiplied by -1 such that '
+          'positive heat transport is northward.',
+    'F4': 'Figure 4. As in Figure 2, but for cloud radiative effects.',
+    'F5': 'Figure 5. As in Figure 2, but for energy flux potentials and '
+          'spatial radiative anomalies associated with all-sky and clear-sky '
+          'outgoing shortwave radiation. ',
+    'F6': 'Figure 6. A measure of the symmetry between heat transport in the '
+          'Northern and Southern Hemispheres, calculated for the 12-month '
+          'running mean of MHT in (a) the full hemisphere, (b) from the '
+          'equator to 30 deg latitude, and (c) between 30 and 90 deg '
+          'latitude. Symmetry values obtained when including (blue) and '
+          'excluding (orange) the effect of clouds are shown. The '
+          'climatological symmetry values for the two cases are shown as '
+          'black lines in each subplot. The standard deviations of the '
+          'time series are shown in each subplot.',
+}
 
-def get_provenance_record(filenames):
+def get_provenance_record(filenames, caption):
     """Return a provenance record describing the plot.
 
     Parameters
@@ -57,8 +90,33 @@ def get_provenance_record(filenames):
     """
     record = {
         'ancestors': filenames,
+        'caption': caption
     }
     return record
+
+
+def matching_strings(list_of_strings, substrings):
+    """Return the subset of strings that  of files .
+
+    Parameters
+    ----------
+    list_of_strings : list of strings
+        List of strings to be searched.
+    substrings : list of strings
+        The list of search strings.
+
+    Returns
+    -------
+    list
+        The elements in ``list_of_strings`` that contain
+        any of the substrings.
+    """
+    matches = []
+    for element in list_of_strings:
+        for var in substrings:
+            if var in element:
+                matches.append(element)
+    return matches
 
 
 def area_average(cube, latitude='latitude', longitude='longitude', mdtol=1):
@@ -744,7 +802,10 @@ def efp_maps(iht, model, experiment, config):
             'nlevs':
             11
         })
-    provenance_record = get_provenance_record(iht.flx_files)
+    flx_files = matching_strings(iht.flx_files, ['rtnt/',
+                                                 'rsut/',
+                                                 'rlut/'])
+    provenance_record = get_provenance_record(flx_files, caption['F2'])
     figname = f"figure2_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
     # Figure 4
@@ -772,7 +833,10 @@ def efp_maps(iht, model, experiment, config):
             'nlevs':
             11
         })
-    provenance_record = get_provenance_record(iht.flx_files)
+    flx_files = matching_strings(iht.flx_files, ['netcre/',
+                                                 'swcre/',
+                                                 'lwcre/'])
+    provenance_record = get_provenance_record(flx_files, caption['F4'])
     figname = f"figure4_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
     # Figure 5
@@ -793,7 +857,8 @@ def efp_maps(iht, model, experiment, config):
             'vmax': 0.35,
             'nlevs': 11
         })
-    provenance_record = get_provenance_record(iht.flx_files)
+    flx_files = matching_strings(iht.flx_files, ['rsut/', 'rsutcs/'])
+    provenance_record = get_provenance_record(flx_files, caption['F5'])
     figname = f"figure5_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
 
@@ -814,7 +879,8 @@ def mht_plots(iht, model, experiment, config):
     """
     # Figure 1
     iht.mht_plot(["rtnt_mht", "rsnt_mht", "rlnt_mht"], ['Net', 'SW', 'LW'])
-    provenance_record = get_provenance_record(iht.flx_files)
+    flx_files = matching_strings(iht.flx_files, ['rtnt/', 'rsut/', 'rlut/'])
+    provenance_record = get_provenance_record(flx_files, caption['F1'])
     figname = f"figure1_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
     # Figure 3
@@ -826,6 +892,9 @@ def mht_plots(iht, model, experiment, config):
             'vname': ['rsut_mht', 'rsutcs_mht'],
             'legend': ['-1 x OSR (all-sky)', '-1 x OSR (clear-sky)']
         })
+    flx_files = matching_strings(iht.flx_files, ['netcre/', 'swcre/', 'lwcre/',
+                                                 'rsut/', 'rsutcs/'])
+    provenance_record = get_provenance_record(flx_files, caption['F3'])
     figname = f"figure3_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
 
@@ -845,7 +914,11 @@ def symmetry_plots(iht, model, experiment, config):
         The ESMValTool configuration.
     """
     iht.plot_symmetry_time_series()
-    provenance_record = get_provenance_record(iht.flx_files)
+    flx_files = matching_strings(iht.flx_files, ['rtnt_monthly',
+                                                 'rsutcs_monthly',
+                                                 'rlutcs_monthly',
+                                                 'rsdt_monthly'])
+    provenance_record = get_provenance_record(flx_files, caption['F6'])
     figname = f"figure6_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
 
