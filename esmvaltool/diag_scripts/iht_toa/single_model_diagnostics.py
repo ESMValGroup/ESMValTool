@@ -1,7 +1,7 @@
 # (C) Crown Copyright 2023, the Met Office.
 """Single model diagnostics
 
-1. Solve the Poisson solver
+1. Apply Poisson solver
 2. Produce and save plots
 """
 
@@ -126,6 +126,7 @@ def weight_zm(cube, latitude=None):
 
 def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
     """Call the Poisson solver with the data in ``flux_cube`` as source term.
+
        Return the energy flux potential and implied meridional heat transport
        as cubes.
 
@@ -146,7 +147,7 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
         Implied meridional heat transport associated
         with the source flux field.
     """
-    earth_radius = 6371e3 # Earth's radius in m
+    earth_radius = 6371e3  # Earth's radius in m
     if flux_cube.coord(latitude).bounds is None:
         flux_cube.coord(latitude).guess_bounds()
     if flux_cube.coord(longitude).bounds is None:
@@ -169,10 +170,12 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
 
     # Energy flux potential
     efp_cube = iris.cube.Cube(sphpo.energy_flux_potential[1:-1, 1:-1],
-                   long_name=f"energy_flux_potential_of_{flux_cube.var_name}",
-                   var_name=f"{flux_cube.var_name}_efp", units='J s-1',
-                   dim_coords_and_dims=[(flux_cube.coords()[0], 0),
-                                        (flux_cube.coords()[1], 1)])
+                              long_name=f"energy_flux_potential"
+                                        f"_of_{flux_cube.var_name}",
+                              var_name=f"{flux_cube.var_name}_efp",
+                              units='J s-1',
+                              dim_coords_and_dims=[(flux_cube.coords()[0], 0),
+                                                   (flux_cube.coords()[1], 1)])
 
     # MHT data cube
     collapsed_longitude = iris.coords.AuxCoord(180.0,
@@ -180,13 +183,16 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
                                                long_name='longitude',
                                                standard_name='longitude',
                                                units='degrees')
+    dim_coords_and_dims = [(flux_cube.coord('latitude'), 0)]
+    aux_coords_and_dims = [(flux_cube.coord('time'), None),
+                           (collapsed_longitude, None)]
     mht_cube = iris.cube.Cube(sphpo.meridional_heat_transport,
-                   long_name=f"meridional_heat_transport_of"
-                             f"_{flux_cube.var_name}",
-                   var_name=f"{flux_cube.var_name}_mht", units='W',
-                   dim_coords_and_dims=[(flux_cube.coord('latitude'), 0)],
-                   aux_coords_and_dims=[(flux_cube.coord('time'), None),
-                                        (collapsed_longitude, None)])
+                              long_name=f"meridional_heat_transport_of"
+                                        f"_{flux_cube.var_name}",
+                              var_name=f"{flux_cube.var_name}_mht",
+                              units='W',
+                              dim_coords_and_dims=dim_coords_and_dims,
+                              aux_coords_and_dims=aux_coords_and_dims)
     return efp_cube, mht_cube
 
 
@@ -246,8 +252,7 @@ def format_plot(axes, label, title):
 
 
 class ImpliedHeatTransport:
-    """Class that calculates the relevant implied heat
-     transport for an input dataset.
+    """Class that solves implied heat transport for an input dataset.
 
        These are the physical meanings of the main acronyms
        used in the variable names:
@@ -257,8 +262,7 @@ class ImpliedHeatTransport:
     """
 
     def __init__(self, flx_files):
-        """Calculate all the diagnostics for all the fluxes
-        listed in ``flx_files``.
+        """Calculate all the diagnostics for all fluxes in ``flx_files``.
 
         Parameters
         ----------
@@ -331,21 +335,21 @@ class ImpliedHeatTransport:
         rlnt_clim.long_name = "radiative_flux_of_rlnt"
         self.flx_clim.append(rlnt_clim)
         rtntcs_clim = (self.flx_clim.extract_cube(
-                           NameConstraint(var_name="rsdt")) -
+                       NameConstraint(var_name="rsdt")) -
                        self.flx_clim.extract_cube(
-                           NameConstraint(var_name="rsutcs")) -
+                       NameConstraint(var_name="rsutcs")) -
                        self.flx_clim.extract_cube(
-                           NameConstraint(var_name="rlutcs")))
+                       NameConstraint(var_name="rlutcs")))
         rtntcs_clim.var_name = "rtntcs"
         rtntcs_clim.long_name = "radiative_flux_of_rtntcs"
         self.flx_clim.append(rtntcs_clim)
         # Annual rolling means clear-sky net total TOA
         rtntcs_rolling_mean = (self.flx_rolling_mean.extract_cube(
-                                   NameConstraint(var_name="rsdt")) -
+                               NameConstraint(var_name="rsdt")) -
                                self.flx_rolling_mean.extract_cube(
-                                   NameConstraint(var_name="rsutcs")) -
+                               NameConstraint(var_name="rsutcs")) -
                                self.flx_rolling_mean.extract_cube(
-                                   NameConstraint(var_name="rlutcs")))
+                               NameConstraint(var_name="rlutcs")))
         rtntcs_rolling_mean.var_name = "rtntcs"
         rtntcs_rolling_mean.long_name = "radiative_flux_of_rtntcs"
         self.flx_rolling_mean.append(rtntcs_rolling_mean)
@@ -720,11 +724,11 @@ def efp_maps(iht, model, experiment, config):
         {
             'var_name': [['rtnt_efp', 'rtnt'], ['rsnt_efp', 'rsnt'],
                          ['rlnt_efp', 'rlnt']],
-            'title' : [['$P_{TOA}^{TOT}$', r'$\Delta F_{TOA}^{TOT}$'],
-                     ['$P_{TOA}^{SW}$', r'$\Delta F_{TOA}^{SW}$'],
-                     ['$P_{TOA}^{LW}$', r'$\Delta F_{TOA}^{LW}$']],
-            'label' : [['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
-            'change_sign' : [[False, False], [False, False], [False, False]],
+            'title': [['$P_{TOA}^{TOT}$', r'$\Delta F_{TOA}^{TOT}$'],
+                      ['$P_{TOA}^{SW}$', r'$\Delta F_{TOA}^{SW}$'],
+                      ['$P_{TOA}^{LW}$', r'$\Delta F_{TOA}^{LW}$']],
+            'label': [['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
+            'change_sign': [[False, False], [False, False], [False, False]],
             'wmin':
             -180,
             'wmax':
@@ -748,11 +752,11 @@ def efp_maps(iht, model, experiment, config):
         {
             'var_name': [['netcre_efp', 'netcre'], ['swcre_efp', 'swcre'],
                          ['lwcre_efp', 'lwcre']],
-            'title' : [['$P_{TOA}^{TOTCRE}$', r'$\Delta CRE_{TOA}^{TOT}$'],
-                     ['$P_{TOA}^{SWCRE}$', r'$\Delta CRE_{TOA}^{SW}$'],
-                     ['$P_{TOA}^{LWCRE}$', r'$\Delta CRE_{TOA}^{LW}$']],
-            'label' : [['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
-            'change_sign' : [[False, False], [False, False], [False, False]],
+            'title': [['$P_{TOA}^{TOTCRE}$', r'$\Delta CRE_{TOA}^{TOT}$'],
+                      ['$P_{TOA}^{SWCRE}$', r'$\Delta CRE_{TOA}^{SW}$'],
+                      ['$P_{TOA}^{LWCRE}$', r'$\Delta CRE_{TOA}^{LW}$']],
+            'label': [['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
+            'change_sign': [[False, False], [False, False], [False, False]],
             'wmin':
             -60,
             'wmax':
@@ -775,12 +779,12 @@ def efp_maps(iht, model, experiment, config):
     iht.quiver_subplot(
         {
             'var_name': [['rsutcs_efp', 'rsutcs'], ['rsut_efp', 'rsut']],
-            'title' : [['$P_{TOA}^{SWup, clr}$',
-                        r'$\Delta F_{TOA}^{SWup, clr}$'],
-                       ['$P_{TOA}^{SWup, all}$',
-                        r'$\Delta F_{TOA}^{SWup, all}$']],
-            'label' : [['(a)', '(b)'], ['(c)', '(d)']],
-            'change_sign' : [[True, True], [True, True]],
+            'title': [['$P_{TOA}^{SWup, clr}$',
+                       r'$\Delta F_{TOA}^{SWup, clr}$'],
+                      ['$P_{TOA}^{SWup, all}$',
+                       r'$\Delta F_{TOA}^{SWup, all}$']],
+            'label': [['(a)', '(b)'], ['(c)', '(d)']],
+            'change_sign': [[True, True], [True, True]],
             'wmin': -100,
             'wmax': 100,
             'nwlevs': 21,

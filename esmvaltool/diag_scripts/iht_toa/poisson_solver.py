@@ -1,8 +1,8 @@
 # (C) Crown Copyright 2023, the Met Office.
-"""
-Poisson solver for the full ocean-atmosphere column. The Poisson equation
-is solved by numerically using the biconjugate gradient stabilized (BiCGSTAB)
-method.
+"""Poisson solver for the full ocean-atmosphere column.
+
+The Poisson equation is solved by numerically using the bi-conjugate
+gradient stabilized (BiCGSTAB) method.
 
 The solution is achieved when the difference between the input field (radiative
 flux) and the Laplacian of the output field is less than the stated tolerance.
@@ -69,8 +69,8 @@ def precon_a(x_matrix, m_w, m_s, m_p, cx_matrix):
     for j in range(1, shape0 + 1):
         for i in range(1, shape1 + 1):
             cx_matrix[j, i] = m_p[j, i] * (x_matrix[j, i] -
-                 m_s[j, i] * cx_matrix[j - 1, i] -
-                 m_w[j, i] * cx_matrix[j, i - 1])
+                                           m_s[j, i] * cx_matrix[j - 1, i] -
+                                           m_w[j, i] * cx_matrix[j, i - 1])
 
 
 @jit
@@ -152,28 +152,30 @@ class SphericalPoisson:
         for j in range(1, src_shape[0] + 1):
             for i in range(1, src_shape[1] + 1):
                 m_matrix[2, j, i] = (a_matrix[2, j - 1, i - 1] /
-                    (1.0 + alf * m_matrix[0, j - 1, i]))
+                                     (1.0 + alf * m_matrix[0, j - 1, i]))
 
                 m_matrix[1, j, i] = (a_matrix[1, j - 1, i - 1] /
-                    (1.0 + alf * m_matrix[3, j, i - 1]))
+                                     (1.0 + alf * m_matrix[3, j, i - 1]))
 
                 m_matrix[4, j, i] = (a_matrix[4, j - 1, i - 1] -
-                    m_matrix[2, j, i] * (m_matrix[3, j - 1, i] -
-                                         alf * m_matrix[0, j - 1, i]) -
-                    m_matrix[1, j, i] * (m_matrix[0, j, i - 1] -
-                                         alf * m_matrix[3, j, i - 1]))
+                                     m_matrix[2, j, i] *
+                                     (m_matrix[3, j - 1, i] -
+                                     alf * m_matrix[0, j - 1, i]) -
+                                     m_matrix[1, j, i] *
+                                     (m_matrix[0, j, i - 1] -
+                                     alf * m_matrix[3, j, i - 1]))
 
                 m_matrix[4, j, i] = 1.0 / m_matrix[4, j, i]
 
                 m_matrix[0, j, i] = ((a_matrix[0, j - 1, i - 1] -
                                      alf * m_matrix[2, j, i] *
                                      m_matrix[0, j - 1, i]) *
-                    m_matrix[4, j, i])
+                                     m_matrix[4, j, i])
 
                 m_matrix[3, j, i] = ((a_matrix[3, j - 1, i - 1] -
                                      alf * m_matrix[1, j, i] *
                                      m_matrix[3, j, i - 1]) *
-                    m_matrix[4, j, i])
+                                     m_matrix[4, j, i])
 
         self.a_matrix = a_matrix
         self.m_matrix = m_matrix
