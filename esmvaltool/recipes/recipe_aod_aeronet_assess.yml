@@ -21,6 +21,7 @@ documentation:
 datasets:
   - {dataset: UKESM1-0-LL, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f2, grid: gn}
   - {dataset: HadGEM3-GC31-LL, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f3, grid: gn}
+  - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20231021}
 
 preprocessors:
   ma_season_mean:
@@ -38,11 +39,12 @@ diagnostics:
         mip: AERmon
         short_name: od440aer
         preprocessor: ma_season_mean
-        start_year: 1980
+        reference_dataset: AERONET
+        start_year: 1994
         end_year: 2014
-
+  
     scripts:
       script1:
-        script: /home/users/chardacr/esmvaltool_aod/diag_scripts/aod_aeronet_assess.py
+        script: aerosols/aod_aeronet_assess.py
         quickplot:
           plot_type: plot

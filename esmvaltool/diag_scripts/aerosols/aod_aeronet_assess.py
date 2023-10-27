@@ -41,21 +41,20 @@ def get_provenance_record(filenames):
     return record
 
 
-def plot_aod_mod_obs(md_data, obs_data, anet_aod, plot_dict):
+def plot_aod_mod_obs(md_data, obs_data, aeronet_ref_cube, plot_dict):
     """Plot AOD contour overlaid with Aeronet values for given period.
 
     Parameters
     ----------
     md_data : Iris cube
         Model AOD as a cube with latitude and longitude coordinates.
-    od_data : List.
+    obs_data : List.
         Observations of AOD from each AeroNET station.
-    anet_aod : Dictionary.
+    aeronet_ref_cube : Iris cube.
         Contains information about Aeronet measurement stations including
-        station names, station latitude, station longitude and model-obs
-        comparison statistics.
+        station names, station latitude and station longitude.
     plot_dict : Dictionary.
-       Contains plotting settings.
+        Contains plotting settings.
     """
 
     # Plot model data
@@ -64,8 +63,17 @@ def plot_aod_mod_obs(md_data, obs_data, anet_aod, plot_dict):
                             colors=plot_dict["Colours"],
                             extend="max")
 
+    # Latitude and longitude of stations.
+    anet_aod_lats = aeronet_ref_cube.coord("latitude").points
+    anet_aod_lons = (
+        (aeronet_ref_cube.coord("longitude").points + 180) % 360 - 180
+    )
+
     # Loop over stations
-    for istn, stn in enumerate(anet_aod["Stations"]):
+    for istn, stn in enumerate(aeronet_ref_cube.coord("platform_name").points):
+        if obs_data.mask[istn]:
+            continue
+
         # Find position of the observed AOD on the colorscale.
         # np.searchsorted returns index at which inserting new value will
         # maintain a sorted array. We use the color to the left of index.
@@ -76,8 +84,8 @@ def plot_aod_mod_obs(md_data, obs_data, anet_aod, plot_dict):
 
         # Overlay contourf with observations
         plt.plot(
-            anet_aod["Lons"][istn],
-            anet_aod["Lats"][istn],
+            anet_aod_lons[istn],
+            anet_aod_lats[istn],
             color=pcol,
             marker="o",
             markeredgecolor="k",
@@ -188,7 +196,7 @@ def read_aeronet_clim(aeronet_dir, years):
     return anet_aod
 
 
-def aod_analyse(md_data, aeronet_dir, clim_seas, years, wavel):
+def aod_analyse(md_data, aeronet_ref_cube, clim_seas, years, wavel):
     """Evaluates AOD vs Aeronet, generates plots and returns evaluation
     metrics.
 
@@ -225,11 +233,10 @@ def aod_analyse(md_data, aeronet_dir, clim_seas, years, wavel):
     # Add bounds for lat and lon if not present
     md_data = add_bounds(md_data)
 
-    # Read AOD climatology
-    anet_aod = read_aeronet_clim(aeronet_dir, years)
-
     # Co-locate model grid points with measurement sites --func from aero_utils
-    aod_at_anet = extract_pt(md_data, anet_aod["Lats"], anet_aod["Lons"])
+    anet_aod_lats = aeronet_ref_cube.coord("latitude").points.tolist()
+    anet_aod_lons = aeronet_ref_cube.coord("longitude").points.tolist()
+    aod_at_anet = extract_pt(md_data, anet_aod_lats, anet_aod_lons)
 
     # Set up seasonal contour plots
     figures = []
@@ -259,20 +266,18 @@ def aod_analyse(md_data, aeronet_dir, clim_seas, years, wavel):
                                      iris.analysis.MEAN,
                                      weights=grid_areas)
 
-        # Locate valid obs data
-        masked_obs = [ma.getmask(x[iseas]) for x in anet_aod["MA_season"]]
-
         # Extract model and obs data for iseas
-        seas_anet_obs = [x[iseas] for x in anet_aod["MA_season"]]
-        seas_anet_md = [x[iseas] for x in aod_at_anet]
+        seas_anet_obs = aeronet_ref_cube.data[iseas]
+        seas_anet_md = np.array([x[iseas] for x in aod_at_anet])
 
         # Match model data with valid obs data
-        valid_obs = [b for a, b in zip(masked_obs, seas_anet_obs) if not a]
-        valid_md = [b for a, b in zip(masked_obs, seas_anet_md) if not a]
+        valid_indices = ma.where(seas_anet_obs)
+        valid_obs = seas_anet_obs[valid_indices]
+        valid_md = seas_anet_md[valid_indices]
 
         # Model - obs statistics (diff, model mean and RMS, r2)
-        diff = [a - b for a, b in zip(valid_md, valid_obs)]
-        rms_aod = np.sqrt(np.sum([x * x for x in diff]) / len(diff))
+        diff = valid_md - valid_obs
+        rms_aod = np.sqrt(np.mean(diff**2))
         linreg = scipy.stats.linregress(valid_obs, valid_md)
 
         # Populate metric
@@ -312,7 +317,7 @@ def aod_analyse(md_data, aeronet_dir, clim_seas, years, wavel):
             "Title": title,
             "Season": clim_seas[iseas],
         }
-        plot_aod_mod_obs(seas, seas_anet_obs, anet_aod, plot_dict)
+        plot_aod_mod_obs(seas, seas_anet_obs, aeronet_ref_cube, plot_dict)
 
         figures.append(fig_cf)
 
@@ -376,9 +381,6 @@ def main(config):
     # Default wavelength
     wavel = "440"
 
-    # Path to Aeronet climatologies
-    aeronet_dir = ""
-
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.
         # 'group' is a list of dictionaries containing metadata.
@@ -386,6 +388,14 @@ def main(config):
         logger.info(group)
 
         for attributes in group:
+            aeronet_ref = attributes["reference_dataset"]
+            if aeronet_ref == attributes["dataset"]:
+                continue
+
+            aeronet_ref_cube = iris.load_cube(
+                datasets[aeronet_ref][0]["filename"]
+            )
+
             logger.info(attributes["filename"])
 
             input_file = attributes["filename"]
@@ -407,7 +417,7 @@ def main(config):
 
             # Analysis and plotting for model-obs comparison
             figures, fig_scatter = aod_analyse(cube,
-                                               aeronet_dir,
+                                               aeronet_ref_cube,
                                                seasons,
                                                years,
                                                wavel=wavel)
@@ -415,13 +425,13 @@ def main(config):
         # Save the scatter plot
         output_file = plot_file_prefix + "scatter"
         output_path = get_plot_filename(output_file, config)
-        fig_scatter.savefig(output_path, close=True)
+        fig_scatter.savefig(output_path)
 
         # Save the contour plots
         for ifig, seas_fig in enumerate(figures):
             output_file = plot_file_prefix + seasons[ifig]
             output_path = get_plot_filename(output_file, config)
-            seas_fig.savefig(output_path, close=True)
+            seas_fig.savefig(output_path)
 
 
 if __name__ == "__main__":
