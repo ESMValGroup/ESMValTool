@@ -1,8 +1,7 @@
 # (C) Crown Copyright 2023, the Met Office.
-"""Single model diagnostics
+"""Single model diagnostics.
 
-1. Apply Poisson solver
-2. Produce and save plots
+Apply Poisson solver to input fluxes and produce plots.
 """
 
 import datetime
@@ -75,13 +74,16 @@ caption = {
           'time series are shown in each subplot.',
 }
 
-def get_provenance_record(filenames, caption):
+
+def get_provenance_record(filenames, figure_caption):
     """Return a provenance record describing the plot.
 
     Parameters
     ----------
     filenames : list of strings
         The filenames containing the data used to create the plot.
+    figure_caption : string
+        Detailed description of the figure.
 
     Returns
     -------
@@ -90,7 +92,7 @@ def get_provenance_record(filenames, caption):
     """
     record = {
         'ancestors': filenames,
-        'caption': caption
+        'caption': figure_caption
     }
     return record
 
@@ -312,11 +314,11 @@ def format_plot(axes, label, title):
 class ImpliedHeatTransport:
     """Class that solves implied heat transport for an input dataset.
 
-       These are the physical meanings of the main acronyms
-       used in the variable names:
-          FLX: radiative flux
-          EFP: energy flux potential
-          MHT: meridional heat transport
+    These are the physical meanings of the main acronyms
+    used in the variable names:
+       FLX: radiative flux
+       EFP: energy flux potential
+       MHT: meridional heat transport
     """
 
     def __init__(self, flx_files):
