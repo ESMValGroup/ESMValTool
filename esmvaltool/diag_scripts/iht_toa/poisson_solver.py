@@ -46,7 +46,6 @@ def dot_prod(a_matrix, b_matrix):
             b_matrix[1:shape0 + 1, 1:shape1 + 1]).sum()
 
 
-@jit
 def precon(x_matrix, m_matrix):
     """Preconditioner.
 
@@ -62,7 +61,7 @@ def precon(x_matrix, m_matrix):
     return cx_matrix
 
 
-@jit
+@jit(nopython=True)
 def precon_a(x_matrix, m_w, m_s, m_p, cx_matrix):
     """First step of preconditioner."""
     shape0, shape1 = np.array(cx_matrix.shape) - 2
@@ -73,7 +72,7 @@ def precon_a(x_matrix, m_w, m_s, m_p, cx_matrix):
                                            m_w[j, i] * cx_matrix[j, i - 1])
 
 
-@jit
+@jit(nopython=True)
 def precon_b(m_e, m_n, cx_matrix):
     """Second step of preconditioner."""
     shape0, shape1 = np.array(cx_matrix.shape) - 2
