@@ -8,7 +8,6 @@
 import datetime
 import logging
 from copy import deepcopy
-from pathlib import Path
 
 import cartopy.crs as ccrs
 import iris
@@ -326,7 +325,7 @@ class ImpliedHeatTransport:
         rtntcs_rolling_mean: 12-month rolling mean of rtntcs
         """
         # Derived TOA climatologies: rlnt_clim, rtntcs_clim
-        rlnt_clim = -self.flx_clim.extract_cube(
+        rlnt_clim = -1.0 * self.flx_clim.extract_cube(
             NameConstraint(var_name="rlut"))
         rlnt_clim.var_name = "rlnt"
         rlnt_clim.long_name = "radiative_flux_of_rlnt"
@@ -560,7 +559,7 @@ class ImpliedHeatTransport:
         v_component = v_component[1:-1, 1:-1]
         return {'efp': efp, 'flx': flx, 'uuu': u_component, 'vvv': v_component}
 
-    def quiver_subplot(self, dargs, title, label, change_sign):
+    def quiver_subplot(self, dargs):
         """Produce panel with maps of EFPs and fluxes.
 
         Plot figures with energy flux potential and gradient in the left-hand
@@ -571,14 +570,6 @@ class ImpliedHeatTransport:
         dargs : dictionary
             Dictionary with variable names and plot configuration
             data.
-        title : list
-            List of two-element lists with the names of the EFP and
-            flux variables.
-        label : list
-            List of two-element lists with the plot labels.
-        change_sign : list
-            List of two-element list of booleans to indicate if
-            the variable has to be plotted with the sign changed.
         """
         mshgrd = np.meshgrid(self.flx_clim[0].coord('longitude').points,
                              self.flx_clim[0].coord('latitude').points)
@@ -606,7 +597,8 @@ class ImpliedHeatTransport:
 
         cbs = []
         for i in range(nrows):
-            data = self.quiver_maps_data(dargs['var_name'][i], change_sign[i])
+            data = self.quiver_maps_data(dargs['var_name'][i],
+                                         dargs['change_sign'][i])
             plt.subplot(grds[i * grid_step:(i * grid_step) + grid_step, 0],
                         projection=ccrs.PlateCarree(central_longitude=0))
             cbs.append(
@@ -630,7 +622,7 @@ class ImpliedHeatTransport:
                            pivot='mid',
                            scale=qqq.scale,
                            color='w')
-            format_plot(plt.gca(), label[i][0], title[i][0])
+            format_plot(plt.gca(), dargs['label'][i][0], dargs['title'][i][0])
 
             plt.subplot(grds[i * grid_step:(i * grid_step) + grid_step, 1],
                         projection=ccrs.PlateCarree(central_longitude=0))
@@ -640,7 +632,7 @@ class ImpliedHeatTransport:
                                                  dargs['nwlevs']),
                               cmap='RdBu_r'))
             plt.gca().coastlines()
-            format_plot(plt.gca(), label[i][1], title[i][1])
+            format_plot(plt.gca(), dargs['label'][i][1], dargs['title'][i][1])
 
         plt.subplot(grds[-1, 0])
         plt.colorbar(cbs[0],
@@ -728,6 +720,11 @@ def efp_maps(iht, model, experiment, config):
         {
             'var_name': [['rtnt_efp', 'rtnt'], ['rsnt_efp', 'rsnt'],
                          ['rlnt_efp', 'rlnt']],
+            'title' : [['$P_{TOA}^{TOT}$', r'$\Delta F_{TOA}^{TOT}$'],
+                     ['$P_{TOA}^{SW}$', r'$\Delta F_{TOA}^{SW}$'],
+                     ['$P_{TOA}^{LW}$', r'$\Delta F_{TOA}^{LW}$']],
+            'label' : [['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
+            'change_sign' : [[False, False], [False, False], [False, False]],
             'wmin':
             -180,
             'wmax':
@@ -742,12 +739,7 @@ def efp_maps(iht, model, experiment, config):
             1.2,
             'nlevs':
             11
-        },
-        title=[['$P_{TOA}^{TOT}$', r'$\Delta F_{TOA}^{TOT}$'],
-               ['$P_{TOA}^{SW}$', r'$\Delta F_{TOA}^{SW}$'],
-               ['$P_{TOA}^{LW}$', r'$\Delta F_{TOA}^{LW}$']],
-        label=[['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
-        change_sign=[[False, False], [False, False], [False, False]])
+        })
     provenance_record = get_provenance_record(iht.flx_files)
     figname = f"figure2_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
@@ -756,6 +748,11 @@ def efp_maps(iht, model, experiment, config):
         {
             'var_name': [['netcre_efp', 'netcre'], ['swcre_efp', 'swcre'],
                          ['lwcre_efp', 'lwcre']],
+            'title' : [['$P_{TOA}^{TOTCRE}$', r'$\Delta CRE_{TOA}^{TOT}$'],
+                     ['$P_{TOA}^{SWCRE}$', r'$\Delta CRE_{TOA}^{SW}$'],
+                     ['$P_{TOA}^{LWCRE}$', r'$\Delta CRE_{TOA}^{LW}$']],
+            'label' : [['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
+            'change_sign' : [[False, False], [False, False], [False, False]],
             'wmin':
             -60,
             'wmax':
@@ -770,12 +767,7 @@ def efp_maps(iht, model, experiment, config):
             0.3,
             'nlevs':
             11
-        },
-        title=[['$P_{TOA}^{TOTCRE}$', r'$\Delta CRE_{TOA}^{TOT}$'],
-               ['$P_{TOA}^{SWCRE}$', r'$\Delta CRE_{TOA}^{SW}$'],
-               ['$P_{TOA}^{LWCRE}$', r'$\Delta CRE_{TOA}^{LW}$']],
-        label=[['(a)', '(b)'], ['(c)', '(d)'], ['(e)', '(f)']],
-        change_sign=[[False, False], [False, False], [False, False]])
+        })
     provenance_record = get_provenance_record(iht.flx_files)
     figname = f"figure4_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
@@ -783,6 +775,12 @@ def efp_maps(iht, model, experiment, config):
     iht.quiver_subplot(
         {
             'var_name': [['rsutcs_efp', 'rsutcs'], ['rsut_efp', 'rsut']],
+            'title' : [['$P_{TOA}^{SWup, clr}$',
+                        r'$\Delta F_{TOA}^{SWup, clr}$'],
+                       ['$P_{TOA}^{SWup, all}$',
+                        r'$\Delta F_{TOA}^{SWup, all}$']],
+            'label' : [['(a)', '(b)'], ['(c)', '(d)']],
+            'change_sign' : [[True, True], [True, True]],
             'wmin': -100,
             'wmax': 100,
             'nwlevs': 21,
@@ -790,11 +788,7 @@ def efp_maps(iht, model, experiment, config):
             'vmin': -0.35,
             'vmax': 0.35,
             'nlevs': 11
-        },
-        title=[['$P_{TOA}^{SWup, clr}$', r'$\Delta F_{TOA}^{SWup, clr}$'],
-               ['$P_{TOA}^{SWup, all}$', r'$\Delta F_{TOA}^{SWup, all}$']],
-        label=[['(a)', '(b)'], ['(c)', '(d)']],
-        change_sign=[[True, True], [True, True]])
+        })
     provenance_record = get_provenance_record(iht.flx_files)
     figname = f"figure5_{model}_{experiment}"
     save_figure(figname, provenance_record, config)
