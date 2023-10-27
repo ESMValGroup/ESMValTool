@@ -9,6 +9,10 @@ authors:
     given-names: Bouwe
     orcid: "https://orcid.org/0000-0001-9005-8940"
   -
+    affiliation: "MetOffice, UK"
+    family-names: Bodas-Salcedo
+    given-names: Alejandro
+  -
     affiliation: "DLR, Germany"
     family-names: Broetz
     given-names: Bjoern
