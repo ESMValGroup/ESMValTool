@@ -37,10 +37,10 @@ The next sections will detail the procedure to install ESMValTool through each
 of these methods.
 
 There is also a lesson available in the
-`ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
+`ESMValTool tutorial <https://tutorial.esmvaltool.org/>`_
 that describes the installation of the ESMValTool in more detail.
 It can be found
-`here <https://esmvalgroup.github.io/ESMValTool_Tutorial/02-installation/index.html>`_.
+`here <https://tutorial.esmvaltool.org/02-installation/index.html>`_.
 
 See `common installation issues`_ if you run into trouble.
 
@@ -510,11 +510,11 @@ estate, so there is no need to install ESMValTool if you are just running recipe
  - Met Office: `esmvaltool` is available on the Linux estate after login and module loading via `module load`;
    see the ESMValTool Community of Practice SharePoint site for more details.
 
-The ESMValTool Tutorial provides a `quickstart guide <https://esmvalgroup.github.io/ESMValTool_Tutorial/01-quickstart/index.html>`__
+The ESMValTool Tutorial provides a `quickstart guide <https://tutorial.esmvaltool.org/01-quickstart/index.html>`__
 that is particularly suited for new users that have an access to pre-installed version of ESMValTool.
 
 Information on how to request an account at CEDA-JASMIN and DKRZ-Levante and to get started with these HPC clusters
-can be found on the setup page of the tutorial `here <https://esmvalgroup.github.io/ESMValTool_Tutorial/setup.html>`__.
+can be found on the setup page of the tutorial `here <https://tutorial.esmvaltool.org/setup.html>`__.
 
 .. _install_with_docker:
 
