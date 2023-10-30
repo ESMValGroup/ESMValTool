@@ -18,6 +18,8 @@ The |RTW| performs the following steps:
   :Details:
      Runs once at the start of the workflow
 
+.. TODO replace clone_latest with build_container app
+
 ``clone_latest_esmval``
   :Description:
      Checks out the latest versions of |ESMValTool| and |ESMValCore| from GitHub
