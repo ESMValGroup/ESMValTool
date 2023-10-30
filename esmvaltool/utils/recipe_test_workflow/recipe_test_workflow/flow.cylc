@@ -11,9 +11,10 @@
    initial cycle point = 1
    final cycle point = 10
     [[graph]]
-        R1 = """install_env_file => build_container => configure
-                configure => process<fast> => compare<fast>
-                configure => process<medium> => compare<medium>"""
+
+        R1 = """install_env_file => configure & clone_latest_esmval
+                configure & clone_latest_esmval => process<medium> => compare<medium>
+                configure & clone_latest_esmval => process<fast> => compare<fast>"""
 
 [runtime]
     [[root]]
