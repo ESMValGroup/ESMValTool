@@ -92,7 +92,8 @@ def get_provenance_record(filenames, figure_caption):
     """
     record = {
         'ancestors': filenames,
-        'caption': figure_caption
+        'caption': figure_caption,
+        'references': ['pearce23jclim']
     }
     return record
 
