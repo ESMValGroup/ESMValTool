@@ -22,10 +22,10 @@ Recipes are stored in esmvaltool/recipes/
 
 * recipe_iht_toa.yml calculates the IHT maps for the following radiative fluxes:
 
-   * Total net, SW net, LW net (Figure 2).
-   * Total CRE, SW CRE, LW CRE (Figure 4).
-   * All-sky and clear-sky reflected SW (Figure 5).
-   * The meridional heat transports (MHT) of the fluxes above (Figures 1 and 3).
+  * Total net, SW net, LW net (Figure 2).
+  * Total CRE, SW CRE, LW CRE (Figure 4).
+  * All-sky and clear-sky reflected SW (Figure 5).
+  * The meridional heat transports (MHT) of the fluxes above (Figures 1 and 3).
 
 Diagnostics are stored in esmvaltool/diag_scripts/iht_toa/
 
