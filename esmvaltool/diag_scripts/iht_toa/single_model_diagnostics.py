@@ -99,7 +99,7 @@ def get_provenance_record(filenames, figure_caption):
 
 
 def matching_strings(list_of_strings, substrings):
-    """Return the subset of strings that  of files .
+    """Return subset of ``list_of_strings`` with matches in ``substrings``.
 
     Parameters
     ----------
@@ -983,7 +983,6 @@ def main(config):
             logger.info("Dataset %s", dataset_name)
             iht[model_name][dataset_name] = ImpliedHeatTransport(files)
 
-    print(iht)
     # Produce plots
     plot_single_model_diagnostics(iht, config)
 

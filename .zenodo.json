@@ -6,10 +6,6 @@
       "orcid": "0000-0001-9005-8940"
     },
     {
-      "affiliation": "MetOffice, UK",
-      "name": "Bodas-Salcedo, Alejandro"
-    },
-    {
       "affiliation": "DLR, Germany",
       "name": "Broetz, Bjoern"
     },
@@ -89,6 +85,11 @@
       "affiliation": "DLR, Germany",
       "name": "Bock, Lisa",
       "orcid": "0000-0001-7058-5938"
+    },
+    {
+      "affiliation": "MetOffice, UK",
+      "name": "Bodas-Salcedo, Alejandro",
+      "orcid": "0000-0002-7890-2536"
     },
     {
       "affiliation": "BSC, Spain",
