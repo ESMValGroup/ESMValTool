@@ -51,6 +51,9 @@ conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh'
 # Full path to config_file
 # If none, ~/.esmvaltool/config-user.yml is used
 config_file = ''
+# Set max_parallel_tasks
+# If none, read from config_file
+default_max_parallel_tasks = 8
 
 # List of recipes that require non-default SLURM options set above
 SPECIAL_RECIPES = {
@@ -74,10 +77,15 @@ SPECIAL_RECIPES = {
     },
     'recipe_climate_change_hotspot': {
         'partition': '#SBATCH --partition=compute \n',
+        'memory': '#SBATCH --constraint=512G \n',
     },
     'recipe_collins13ipcc': {
         'partition': '#SBATCH --partition=compute \n',
         'time': '#SBATCH --time=08:00:00 \n',
+        'memory': '#SBATCH --constraint=512G \n',
+    },
+    'recipe_daily_era5': {
+        'partition': '#SBATCH --partition=compute \n',
         'memory': '#SBATCH --constraint=512G \n',
     },
     'recipe_eady_growth_rate': {
@@ -125,6 +133,7 @@ SPECIAL_RECIPES = {
     },
     'recipe_ipccwg1ar6ch3_fig_3_43': {
         'partition': '#SBATCH --partition=compute \n',
+        'time': '#SBATCH --time=08:00:00 \n',
     },
     'recipe_lauer22jclim_fig3-4_zonal': {
         'partition': '#SBATCH --partition=compute \n',
@@ -137,6 +146,7 @@ SPECIAL_RECIPES = {
     },
     'recipe_mpqb_xch4': {
         'partition': '#SBATCH --partition=compute \n',
+        'memory': '#SBATCH --constraint=512G \n',
     },
     'recipe_perfmetrics_CMIP5': {
         'partition': '#SBATCH --partition=compute \n',
@@ -164,6 +174,9 @@ SPECIAL_RECIPES = {
     'recipe_schlund20jgr_gpp_change_rcp85': {
         'partition': '#SBATCH --partition=compute \n',
     },
+    'recipe_sea_surface_salinity': {
+        'partition': '#SBATCH --partition=compute \n',
+    },
     'recipe_smpi': {
         'partition': '#SBATCH --partition=compute \n',
     },
@@ -174,6 +187,9 @@ SPECIAL_RECIPES = {
         'partition': '#SBATCH --partition=compute \n',
         'time': '#SBATCH --time=08:00:00 \n',
     },
+    'recipe_thermodyn_diagtool': {
+        'partition': '#SBATCH --partition=compute \n',
+    },
     'recipe_wenzel16jclim': {
         'partition': '#SBATCH --partition=compute \n',
     },
@@ -182,26 +198,28 @@ SPECIAL_RECIPES = {
     },
 }
 
+# These recipes cannot be run with the default number of parallel
+# tasks (max_parallel_tasks=8).
 # These recipes either use CMIP3 input data
 # (see https://github.com/ESMValGroup/ESMValCore/issues/430)
-# and recipes where tasks require the full compute node memory.
-ONE_TASK_RECIPES = [
-    'recipe_bock20jgr_fig_1-4',
-    'recipe_bock20jgr_fig_6-7',
-    'recipe_bock20jgr_fig_8-10',
-    'recipe_flato13ipcc_figure_96',
-    'recipe_flato13ipcc_figures_938_941_cmip3',
-    'recipe_ipccwg1ar6ch3_fig_3_9',
-    'recipe_ipccwg1ar6ch3_fig_3_42_a',
-    'recipe_ipccwg1ar6ch3_fig_3_43',
-    'recipe_check_obs',
-    'recipe_collins13ipcc',
-    'recipe_lauer22jclim_fig3-4_zonal',
-    'recipe_lauer22jclim_fig5_lifrac',
-    'recipe_smpi',
-    'recipe_smpi_4cds',
-    'recipe_wenzel14jgr',
-    ]
+# or require a large fraction of the compute node memory.
+MAX_PARALLEL_TASKS = {
+    'recipe_bock20jgr_fig_1-4': 1,
+    'recipe_bock20jgr_fig_6-7': 1,
+    'recipe_bock20jgr_fig_8-10': 1,
+    'recipe_flato13ipcc_figure_96': 1,
+    'recipe_flato13ipcc_figures_938_941_cmip3': 1,
+    'recipe_ipccwg1ar6ch3_fig_3_9': 1,
+    'recipe_ipccwg1ar6ch3_fig_3_42_a': 1,
+    'recipe_ipccwg1ar6ch3_fig_3_43': 1,
+    'recipe_check_obs': 1,
+    'recipe_collins13ipcc': 1,
+    'recipe_lauer22jclim_fig3-4_zonal': 3,
+    'recipe_lauer22jclim_fig5_lifrac': 3,
+    'recipe_smpi': 1,
+    'recipe_smpi_4cds': 1,
+    'recipe_wenzel14jgr': 1,
+}
 
 
 def generate_submit():
@@ -272,9 +290,12 @@ def generate_submit():
             else:
                 file.write(f'esmvaltool run --config_file '
                            f'{str(config_file)} {str(recipe)}')
-            if recipe.stem in ONE_TASK_RECIPES:
-                file.write(' --max_parallel_tasks=1')
-
+            # set max_parallel_tasks
+            max_parallel_tasks = MAX_PARALLEL_TASKS.get(
+                recipe.stem,
+                default_max_parallel_tasks,
+            )
+            file.write(f' --max_parallel_tasks={max_parallel_tasks}\n')
         if submit:
             subprocess.check_call(['sbatch', filename])
 
