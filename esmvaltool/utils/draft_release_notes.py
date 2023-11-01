@@ -41,23 +41,22 @@ GITHUB_REPO = {
 }
 
 PREVIOUS_RELEASE = {
-    'esmvalcore': datetime.datetime(2022, 10, 13, 18),
+    'esmvalcore': datetime.datetime(2023, 5, 19, 16),
     'esmvaltool': datetime.datetime(2022, 10, 28, 18),
 }
 
-
 LABELS = {
     'esmvalcore': (
+        'backwards incompatible change',  # important, keep at the top
+        'deprecated feature',  # important, keep at the top
+        'bug',  # important, keep at the top
         'api',
-        'backwards incompatible change',
-        'bug',
         'cmor',
         'containerization',
         'community',
+        'dask',
         'deployment',
-        'deprecated feature',
         'documentation',
-        'enhancement',
         'fix for dataset',
         'installation',
         'iris',
@@ -65,20 +64,21 @@ LABELS = {
         'release',
         'testing',
         'UX',
-        'variable derivation'
+        'variable derivation',
+        'enhancement',  # uncategorized, keep at the bottom
     ),
     'esmvaltool': (
-        'backwards incompatible change',
-        'bug',
+        'backwards incompatible change',  # important, keep at the top
+        'deprecated feature',  # important, keep at the top
+        'bug',  # important, keep at the top
         'community',
-        'deprecated feature',
         'documentation',
         'diagnostic',
         'preprocessor',
         'observations',
         'testing',
         'installation',
-        'enhancement',
+        'enhancement',  # uncategorized, keep at the bottom
     )
 }
 
@@ -87,6 +87,7 @@ TITLES = {
     'deprecated feature': 'Deprecations',
     'bug': 'Bug fixes',
     'cmor': 'CMOR standard',
+    'dask': 'Computational performance improvements',
     'diagnostic': 'Diagnostics',
     'fix for dataset': 'Fixes for datasets',
     'observations': 'Observational and re-analysis dataset support',
@@ -210,7 +211,8 @@ def _compose_note(pull):
 
 
 def main():
-    """Entry point for the scrip."""
+    """Entry point for the script."""
+
     def display(lines, out):
         text = "\n".join(lines) + "\n"
         out.write(text)
