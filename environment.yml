@@ -4,7 +4,7 @@ channels:
   # The release candidate channel should only be activated
   # during the rc phase right before the next release of the
   # ESMValCore.
-  # - conda-forge/label/esmvalcore_rc
+  - conda-forge/label/esmvalcore_rc
   - conda-forge
   - nodefaults
 
@@ -24,7 +24,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.9.*
+  - esmvalcore =2.10.0rc1
   - fiona
   - fire
   - gdal
@@ -38,6 +38,7 @@ dependencies:
   - natsort
   - nc-time-axis
   - netCDF4
+  - numba
   - numpy !=1.24.3  # severe masking bug
   - packaging
   - openpyxl
