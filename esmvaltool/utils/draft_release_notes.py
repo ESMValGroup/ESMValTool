@@ -10,6 +10,7 @@ or esmvaltool
 """
 import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import dateutil
 import esmvalcore
@@ -41,8 +42,10 @@ GITHUB_REPO = {
 }
 
 PREVIOUS_RELEASE = {
-    'esmvalcore': datetime.datetime(2023, 5, 19, 16),
-    'esmvaltool': datetime.datetime(2022, 10, 28, 18),
+    'esmvalcore':
+    datetime.datetime(2023, 7, 4, 11, tzinfo=ZoneInfo("CET")),
+    'esmvaltool':
+    datetime.datetime(2022, 10, 28, 18, tzinfo=ZoneInfo("CET")),
 }
 
 LABELS = {
