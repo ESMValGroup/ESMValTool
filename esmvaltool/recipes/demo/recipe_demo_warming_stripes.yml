@@ -1,0 +1,43 @@
+# ESMValTool
+# recipe_demo_warming_stripes.yml
+---
+documentation:
+  description: Reproducing Ed Hawkins' warming stripes visualization
+  title: Reproducing Ed Hawkins' warming stripes visualization.
+  authors:
+    - righi_mattia
+  maintainer:
+    - righi_mattia
+
+datasets:
+  - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis, tier: 2, start_year: 1900, end_year: 2021}
+
+
+preprocessors:
+  global_anomalies:
+    custom_order: true
+    anomalies:
+      period: month
+      reference:
+        start_year: 1901
+        start_month: 1
+        start_day: 1
+        end_year: 2000
+        end_month: 12
+        end_day: 31
+      standardize: false
+    annual_statistics:
+      operator: mean
+    area_statistics:
+      operator: mean
+
+diagnostics:
+  diagnostic_warming_stripes:
+    variables:
+      tas:
+        preprocessor: global_anomalies
+        mip: Amon
+    scripts:
+      warming_stripes_script:
+        script: demo/warming_stripes.py
+        colormap: 'bwr'

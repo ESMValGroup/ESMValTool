@@ -1,0 +1,92 @@
+# recipe_demo_2dmulti.yml
+---
+documentation:
+  title: 2-dim cloud climatologies
+
+  description: |
+    Multi-year cloud properties.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - lauer22jclim
+
+  projects:
+    - mabak
+
+
+preprocessors:
+  clim:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+
+diagnostics:
+
+  demo_clivi_multi:
+    description: 2d cloud diagnostics
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clivi:
+        preprocessor: clim
+        mip: Amon
+        start_year: 1992
+        end_year: 2009
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+#          - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01,
+#             tier: 3, start_year: 1982, end_year: 2018, alias: a02_CLARA-AVHRR}
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+             version: P1-R05-gridbox-average-noprecip, tier: 3,
+             start_year: 2006, end_year: 2017, alias: a03_CLOUDSAT-L2}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016, alias: a04_ESACCI-CLOUD}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+             tier: 3, start_year: 2003, end_year: 2018, alias: a08_MODIS}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3, alias: r03_ERA5}
+    scripts:
+      clim:
+        script: clouds/clouds.ncl
+        projection: Robinson
+        timemean: annualclim
+        showdiff: true
+        multiobs_uncertainty: true
+        multiobs_exclude: ["CFSR", "CFSv2", "ERA-Interim", "ERA5", "JRA-25", "JRA-55", "MERRA","MERRA2", "NCEP-DOE-R2", "NCEP-NCAR-R1", "NOAA-CIRES-20CR-V2", "NOAA-CIRES-20CR-V3"]
+        var: clivi
+      hist:
+        script: mpqb/mpqb_histogram.py
+        vmin: 0
+        vmax: 100
+        number_of_bars: 10
+        logarithmic: False
+      interannual:
+        script: clouds/clouds_interannual.ncl
+        colormap: WhiteBlueGreenYellowRed
+        projection: Robinson
+        timemean: annualclim
+        multiobs_exclude: ["CFSR", "CFSv2", "ERA-Interim", "ERA5", "JRA-25", "JRA-55", "MERRA","MERRA2", "NCEP-DOE-R2", "NCEP-NCAR-R1", "NOAA-CIRES-20CR-V2", "NOAA-CIRES-20CR-V3"]
+        var: clivi
+        epsilon: 1.0
+      seas:
+        script: clouds/clouds_seasonal_cycle.ncl
+        projection: Robinson
+        multiobs_exclude: ["CFSR", "CFSv2", "ERA-Interim", "ERA5", "JRA-25", "JRA-55", "MERRA","MERRA2", "NCEP-DOE-R2", "NCEP-NCAR-R1", "NOAA-CIRES-20CR-V2", "NOAA-CIRES-20CR-V3"]
+        var: clivi
+        epsilon: 1.0
+      taylor:
+        script: clouds/clouds_taylor.ncl
+        multiobs_uncertainty: true
+        multiobs_exclude: ["CFSR", "CFSv2", "ERA-Interim", "ERA5", "JRA-25", "JRA-55", "MERRA","MERRA2", "NCEP-DOE-R2", "NCEP-NCAR-R1", "NOAA-CIRES-20CR-V2", "NOAA-CIRES-20CR-V3"]
+        styleset: srip2
+        timemean: annualclim
+        valid_fraction: 0.5
+        var: clivi
