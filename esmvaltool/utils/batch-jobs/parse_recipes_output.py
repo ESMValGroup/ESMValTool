@@ -7,10 +7,8 @@ results in a convenient Markdown format, to be added to
 a GitHub issue or any other such documentation.
 """
 import datetime
-import os
-
 import glob
-
+import os
 
 # User change needed
 # directory where SLURM output files (.out and .err) are
@@ -81,11 +79,13 @@ def display_in_md():
     todaynow = datetime.datetime.now()
     print(f"## Recipe running session {todaynow}\n")
     with open("all_recipes.txt", "r", encoding='utf-8') as allrecs:
-        all_recs = [rec.strip() for rec in allrecs.readlines()]
+        all_recs = [
+            os.path.basename(rec.strip()) for rec in allrecs.readlines()
+        ]
 
     # parse different types of recipe outcomes
     recipe_list, failed, missing_dat = parse_output_file()
-    print("### Succesfully run recipes\n\n")
+    print("### Successfully ran recipes\n\n")
     print(f"{len(recipe_list)} out of {len(all_recs)}\n")
     for rec in recipe_list:
         print("- " + rec)
