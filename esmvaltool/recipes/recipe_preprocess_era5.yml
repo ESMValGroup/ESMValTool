@@ -58,28 +58,38 @@ diagnostics:
       rename:
         script: cmorizers/era5.py
     variables:
-      prw:
-        mip: E1hr
-        era5_name: total_column_water_vapour
-        era5_freq: hourly
-        preprocessor: daily_mean
-      psl:
-        mip: E1hr
-        era5_name: mean_sea_level_pressure
-        era5_freq: hourly
-        preprocessor: daily_mean
-      tos:
-          mip: E1hr
-          era5_name: sea_surface_temperature
-          era5_freq: hourly
-          preprocessor: daily_mean
+            #prw:
+            #  mip: Eday
+            #  era5_name: total_column_water_vapour
+            #  era5_freq: hourly
+            #  preprocessor: daily_mean
+            #psl:
+            #  mip: day
+            #  era5_name: mean_sea_level_pressure
+            #  era5_freq: hourly
+            #  preprocessor: daily_mean
+            #ta700:
+            #    mip: E1hr #CFday
+            #    era5_name: temperature
+            #    era5_freq: hourly
+            #    preprocessor: daily_mean
+          #ta850:
+          #    mip: E1hr #Eday
+          #    era5_name: temperature
+          #    era5_freq: hourly
+          #    preprocessor: daily_mean
+          #tos:
+          #    mip: Eday
+          #    era5_name: sea_surface_temperature
+          #    era5_freq: hourly
+          #    preprocessor: daily_mean
       wap500:
-          mip: E1hr
+          mip: E1hr #CFday
           era5_name: vertical_velocity
           era5_freq: hourly
           preprocessor: daily_mean
-      zg500:
-          mip: E1hr
-          era5_name: geopotential
-          era5_freq: hourly
-          preprocessor: daily_mean
+          #zg500:
+          #    mip: AERday
+          #    era5_name: geopotential
+          #    era5_freq: hourly
+          #    preprocessor: daily_mean

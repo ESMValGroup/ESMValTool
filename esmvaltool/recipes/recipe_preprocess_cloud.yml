@@ -53,26 +53,26 @@ diagnostics:
   south_east_pacific_clouds:
     description: Create timeseries.
     variables:
-            #clt: &var
-            #  preprocessor: south_east_pacific
-            #  mip: day
-            #  frequency: day
-            #  additional_datasets: *esacci
-            #clwvi:
-            #  <<: *var
-            #  mip: CFday
-            #cod:
-            #  <<: *var
-            #  mip: AERday
-            #ctp:
-            #  <<: *var
-            #  mip: day
-            #reff:
-            #  <<: *var
-            #  mip: day
-            #rlut:
-            #  <<: *var
-            #  mip: day
+      clt: &var
+        preprocessor: south_east_pacific
+        mip: day
+        frequency: day
+        additional_datasets: *esacci
+      clwvi:
+        <<: *var
+        mip: CFday
+      cod:
+        <<: *var
+        mip: AERday
+      ctp:
+        <<: *var
+        mip: day
+      reff:
+        <<: *var
+        mip: day
+      rlut:
+        <<: *var
+        mip: day
       psl: &var2
         preprocessor: south_east_pacific
         frequency: day
