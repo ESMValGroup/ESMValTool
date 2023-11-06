@@ -11,7 +11,7 @@ attributes:
   # project_id: OBS  # v4.02
   project_id: OBS6
   # source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/'
-  # source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.06/'
+  # source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.06/cruts.2205201912.v4.06/'
   source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.07/cruts.2304141047.v4.07/'
   reference: 'cru'
   comment: ''
@@ -21,6 +21,14 @@ variables:
   tas:
     mip: Amon
     raw: tmp
+    raw_units: celsius
+  tasmin:
+    mip: Amon
+    raw: tmn
+    raw_units: celsius
+  tasmax:
+    mip: Amon
+    raw: tmx
     raw_units: celsius
   pr:
     mip: Amon
