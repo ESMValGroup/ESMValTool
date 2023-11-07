@@ -196,7 +196,7 @@ def read_aeronet_clim(aeronet_dir, years):
     return anet_aod
 
 
-def aod_analyse(md_data, aeronet_ref_cube, clim_seas, years, wavel):
+def aod_analyse(md_data, aeronet_ref_cube, clim_seas, wavel):
     """Evaluates AOD vs Aeronet, generates plots and returns evaluation
     metrics.
 
@@ -205,9 +205,10 @@ def aod_analyse(md_data, aeronet_ref_cube, clim_seas, years, wavel):
     md_data : Iris Cube.
         Contains model output of AOD with coordinates; time, latitude and
         longitude.
-    aeronet_dir : String.
-        The file path for the AeroNET observations stored as NetCDF files.
-    seas : List.
+    aeronet_ref_cube : Iris Cube.
+        Contains information about Aeronet measurement stations including
+        station names, station latitude and station longitude.
+    clim_seas : List.
        Strings to denote climate seasons ["DJF", "MAM", "JJA", "SON"]
     wavel : String.
         AOD wavelength, default = 440nm - translates to pseudo-lev.
@@ -405,7 +406,6 @@ def main(config):
 
             # Set up for analysis and plotting
             seasons = ["DJF", "MAM", "JJA", "SON"]
-            years = [attributes["start_year"], attributes["end_year"]]
 
             plot_file_prefix = (model_dataset + "_" + attributes["activity"] +
                                 "_" + attributes["mip"] + "_" +
@@ -419,7 +419,6 @@ def main(config):
             figures, fig_scatter = aod_analyse(cube,
                                                aeronet_ref_cube,
                                                seasons,
-                                               years,
                                                wavel=wavel)
 
         # Save the scatter plot
