@@ -858,7 +858,7 @@ diagnostics:
         mip: Amon
         start_year: 1986
         end_year: 2005
-        reference_dataset: GPCP-v2.2
+        reference_dataset: GPCP-V2.2
         additional_datasets:
           - {dataset: GPCP-v2.2, project: obs4MIPs, level: L3, tier: 1}
     additional_datasets:
