@@ -403,7 +403,7 @@ diagnostics:
         reference_dataset: GPCP-V2.3
         additional_datasets: *cmip6_tas
     additional_datasets:
-      - {dataset: GPCP-V2.3, project: obs4MIPs, level: L3, tier: 1}
+      - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1}
     scripts:
       model_bias:
         <<: *model_bias_settings
@@ -415,14 +415,14 @@ diagnostics:
     variables:
       pr:
         <<: *var_cmip6_bias
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.3
         project: CMIP5
         ensemble: r1i1p1
         start_year: 1985
         end_year: 2004
         additional_datasets: *cmip5_tas
     additional_datasets:
-      - {dataset: GPCP-V2.3, project: obs4MIPs, level: L3, tier: 1}
+      - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1}
     scripts:
       model_bias:
         <<: *model_bias_settings
@@ -445,7 +445,7 @@ diagnostics:
         end_year: 1999
         additional_datasets: *cmip3_tas
     additional_datasets:
-      - {dataset: GPCP-V2.3, project: obs4MIPs, level: L3, tier: 1, mip: Amon, frequency='mon'}
+      - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1, mip: Amon}
     scripts:
       model_bias:
         <<: *model_bias_settings
@@ -460,7 +460,7 @@ diagnostics:
         reference_dataset: GPCP-V2.3
         additional_datasets: *cmip6_highresmip_low
     additional_datasets:
-      - {dataset: GPCP-V2.3, project: obs4MIPs, level: L3, tier: 1}
+      - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1}
     scripts:
       model_bias:
         <<: *model_bias_settings
@@ -472,10 +472,10 @@ diagnostics:
     variables:
       pr:
         <<: *var_cmip6_bias
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.3
         additional_datasets: *cmip6_highresmip_high
     additional_datasets:
-      - {dataset: GPCP-V2.3, project: obs4MIPs, level: L3, tier: 1}
+      - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1}
     scripts:
       model_bias:
         <<: *model_bias_settings
