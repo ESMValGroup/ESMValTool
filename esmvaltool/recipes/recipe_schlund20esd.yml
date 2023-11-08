@@ -921,7 +921,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: GPCP-V2.2
         additional_datasets:
-          - {dataset: GPCP-v2.2, project: obs4MIPs, level: L3, tier: 1}
+          - {dataset: GPCP-V2.2, project: obs4MIPs, level: L3, tier: 1}
     additional_datasets:
       - {dataset: ACCESS-CM2,      ensemble: r1i1p1f1, grid: gn, institute: CSIRO-ARCCSS}
       - {dataset: ACCESS-ESM1-5,   ensemble: r1i1p1f1, grid: gn}
