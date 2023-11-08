@@ -624,7 +624,7 @@ diagnostics:
     variables:
       hus:
         preprocessor: pp400
-        reference_dataset: AIRS
+        reference_dataset: AIRS-2-1
         alternative_dataset: ERA-Interim
         mip: Amon
         project: CMIP5
