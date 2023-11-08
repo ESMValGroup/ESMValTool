@@ -328,7 +328,7 @@ diagnostics:
         start_year: 1980
         end_year: 2005
     additional_datasets:
-      - {dataset: GPCP-V2.2, project: OBS, level: L3, tier: 1}
+      - {dataset: GPCP-V2.2, project: obs4MIPs, tier: 1}
       # - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
     scripts:
       clim:
