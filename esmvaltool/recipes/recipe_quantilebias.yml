@@ -37,7 +37,7 @@ diagnostics:
     variables:
       pr:
         preprocessor: mask_regrid_preproc
-        reference_dataset: "GPCP-v2.3"
+        reference_dataset: "GPCP-V2.3"
         mip: Amon
 
     scripts:
