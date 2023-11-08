@@ -16,6 +16,9 @@ documentation:
     - smeets_stef
     - aerts_jerom
 
+  maintainer:
+    - unmaintained
+
   projects:
     - ewatercycle
 
@@ -25,7 +28,7 @@ documentation:
 datasets:
   - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
   - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-  - {dataset: MSWEP, project: native6, exp: historical, ensemble: r1i1p1, type: reanaly, version: 220, tier: 3}
+  - {dataset: MSWEP, project: native6, exp: historical, ensemble: r1i1p1, type: reanaly, version: v220, tier: 3}
 
 preprocessors:
   daily:

@@ -1,0 +1,39 @@
+# ESMValTool
+#
+# Configuration related to plotting of different ECVs
+# for usage in the different MPQB diagnostics.
+---
+
+datasetnames:
+  CDS-XCH4: CDS-XCH4
+  BCC-CSM2-MR: BCC-CSM2-MR
+  CNRM-ESM2-1: CNRM-ESM2-1
+  UKESM1-0-LL: UKESM1-0-LL
+  BNU-ESM: BNU-ESM
+  FIO-ESM: FIO-ESM
+  MRI-ESM1: MRI-ESM1
+  BCC-ESM1: BCC-ESM1
+  MRI-ESM2-0: MRI-ESM2-0
+  CESM2-WACCM: CESM2-WACCM
+  CESM2-WACCM-FV2: CESM2-WACCM-FV2
+  GFDL-ESM4: GFDL-ESM4
+
+datasetcolors:
+  CDS-XCH4: '#d62728'
+  BCC-CSM2-MR: '#a569bd'
+  CNRM-ESM2-1: '#2ca02c'
+  UKESM1-0-LL: '#1f77b4'
+  BNU-ESM: '#458ef6'
+  FIO-ESM: '#2ca02c'
+  MRI-ESM1: '#1f77b4'
+  BCC-ESM1: '#633974' 
+  MRI-ESM2-0: '#aed6f1'
+  CESM2-WACCM: '#17a589' 
+  CESM2-WACCM-FV2: '#76d7c4'
+  GFDL-ESM4: '#9c640c'
+
+# From:
+# https://stackoverflow.com/questions/42086276/
+# Cycle continues like this:
+#  '#17becf'
+# Hint: use colorbrewer for setting colors.

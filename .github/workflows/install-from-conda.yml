@@ -1,46 +1,47 @@
+---
 name: Install from Conda
 
 # runs on a push on main and at the end of every day
 on:
   push:
     branches:
-    - main
+      - main
   schedule:
     - cron: '0 4 * * *'
+
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
 
 jobs:
   linux:
     runs-on: "ubuntu-latest"
     strategy:
-      matrix:
-        python-version: [3.7, 3.8, 3.9]
-      # fail-fast set to False allows all other tests
-      # in the worflow to run regardless of any fail
       fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
-          miniconda-version: "latest"
-          channels: esmvalgroup,conda-forge
-      - shell: bash -l {0}
-        run: mkdir -p conda_install_linux_artifacts_python_${{ matrix.python-version }}
-      - shell: bash -l {0}
-        run: conda --version 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
-      - shell: bash -l {0}
-        run: which conda 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_path.txt
-      - shell: bash -l {0}
-        run: python -V 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
-      - shell: bash -l {0}
-        run: conda install mamba
-      - shell: bash -l {0}
+          miniforge-version: "latest"
+          miniforge-variant: Mambaforge
+          use-mamba: true
+      - run: mkdir -p conda_install_linux_artifacts_python_${{ matrix.python-version }}
+      - name: Record versions
+        run: |
+          mamba --version 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+          which conda 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_path.txt
+          which mamba 2>&1 | tee -a conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_path.txt
+          python -V 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - name: Install ESMValTool
         run: mamba install esmvaltool 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/install.txt
-      - shell: bash -l {0}
-        run: esmvaltool --help
-      - shell: bash -l {0}
-        run: esmvaltool version 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
+      - name: Verify installation
+        run: |
+          esmvaltool --help
+          esmvaltool version 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
         uses: actions/upload-artifact@v2
@@ -55,7 +56,7 @@ jobs:
 #    runs-on: "macos-latest"
 #    strategy:
 #      matrix:
-#        python-version: [3.7, 3.8, 3.9]
+#        python-version: ["3.9", "3.10", "3.11"]
 #      fail-fast: false
 #    name: OSX Python ${{ matrix.python-version }}
 #    steps:
@@ -64,32 +65,21 @@ jobs:
 #        with:
 #          python-version: ${{ matrix.python-version }}
 #          miniconda-version: "latest"
-#          channels: esmvalgroup,conda-forge
-#      - shell: bash -l {0}
-#        run: mkdir -p conda_install_osx_artifacts_python_${{ matrix.python-version }}
-#      - shell: bash -l {0}
-#        run: conda --version 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_version.txt
-#      - shell: bash -l {0}
-#        run: which conda 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_path.txt
-#      - shell: bash -l {0}
-#        run: python -V 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
+#          channels: conda-forge
+#      - run: mkdir -p conda_install_osx_artifacts_python_${{ matrix.python-version }}
+#      - run: conda --version 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+#      - run: which conda 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_path.txt
+#      - run: python -V 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
 #      # ncurses needs to be from conda-forge and not main channel
 #      # for now it's turned off since we're not testing R/Julia installs
-#      # - shell: bash -l {0}
-#      #   run: conda uninstall -y ncurses
-#      # - shell: bash -l {0}
-#      #   run: conda list ncurses
-#      # - shell: bash -l {0}
-#      #   run: conda install -y conda-forge::ncurses
-#      # - shell: bash -l {0}
-#      #   run: conda list ncurses
-#      - shell: bash -l {0}
-#        #run: conda install esmvaltool --no-update-deps 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
-#        run: conda install esmvaltool-python esmvaltool-ncl 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
-#      - shell: bash -l {0}
-#        run: esmvaltool --help
-#      - shell: bash -l {0}
-#        run: esmvaltool version 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/version.txt
+#      # - run: conda uninstall -y ncurses
+#      # - run: conda list ncurses
+#      # - run: conda install -y conda-forge::ncurses
+#      # - run: conda list ncurses
+#      - run: conda install esmvaltool --no-update-deps 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
+#      - run: conda install esmvaltool-python esmvaltool-ncl 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
+#      - run: esmvaltool --help
+#      - run: esmvaltool version 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/version.txt
 #      - name: Upload artifacts
 #        if: ${{ always() }}  # upload artifacts even if fail
 #        uses: actions/upload-artifact@v2

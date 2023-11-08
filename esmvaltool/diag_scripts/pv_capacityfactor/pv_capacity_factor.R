@@ -283,7 +283,7 @@ for (i in seq(1, length(model_names))) {
     caption = title,
     statistics = list("other"),
     realms = list("atmos"),
-    themes = list("phys"),
+    themes = list("phys")
   )
   provenance[[filepng]] <- xprov
   provenance[[filencdf]] <- xprov

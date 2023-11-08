@@ -246,12 +246,14 @@ output_file_type: str (default: 'png')
 parameters: dict
     Parameters used for the whole pipeline. Have to be given for each step of
     the pipeline separated by two underscores, i.e. ``s__p`` is the parameter
-    ``p`` for step ``s``.
+    ``p`` for step ``s``. ``random_state`` parameters are explicitly allowed
+    here (in contrast to ``parameters_final_regressor``).
 parameters_final_regressor: dict
     Parameters used for the **final** regressor. If these parameters are
     updated using the function :meth:`update_parameters`, the new names have to
     be given for each step of the pipeline separated by two underscores, i.e.
-    ``s__p`` is the parameter ``p`` for step ``s``.
+    ``s__p`` is the parameter ``p`` for step ``s``.  Note: to pass an argument
+    for ``random_state``, use the option ``random_state`` of this class.
 pca: bool (default: False)
     Preprocess numerical input features using PCA. Parameters for this pipeline
     step can be given via the ``parameters`` argument.
@@ -259,10 +261,17 @@ plot_dir: str (default: ~/plots)
     Root directory to save plots.
 plot_units: dict
     Replace specific units (keys) with other text (values) in plots.
+random_state: int or None (default: None)
+    Random seed for :class:`numpy.random.RandomState` that is used by all
+    functionalities of this class that require randomness (e.g., probabilistic
+    ML algorithms like Gradient Boosting Regression models, random train test
+    splits, etc.).  If ``None``, use a random seed. Use an :obj:`int` to get
+    reproducible results. See `<https://scikit-learn.org/stable/
+    common_pitfalls.html#controlling-randomness>`__ for more details.
 savefig_kwargs: dict
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 standardize_data: bool (default: True)
     Linearly standardize numerical input data by removing mean and scaling to
     unit variance.
@@ -272,10 +281,13 @@ test_size: float (default: 0.25)
     If given, randomly exclude the desired fraction of input data from training
     and use it as test data.
 weighted_samples: dict
-    If specified, use weighted samples whenever possible. The given keyword
-    arguments are directly passed to
-    :func:`esmvaltool.diag_scripts.mlr.get_all_weights` to calculate the sample
-    weights. By default, area weights and time weights are used.
+    If specified, use weighted samples in the loss function used for the
+    training of the MLR model. The given keyword arguments are directly passed
+    to :func:`esmvaltool.diag_scripts.mlr.get_all_weights` to calculate the
+    sample weights. By default, no weights are used. Raises errors if the
+    desired weights cannot be calculated for the data, e.g., when
+    ``time_weighted=True`` is used but the data does not contain a dimension
+    ``time``.
 work_dir: str (default: ~/work)
     Root directory to save all other files (mainly ``*.nc`` files).
 
@@ -284,6 +296,7 @@ work_dir: str (default: ~/work)
 import importlib
 import logging
 import os
+import warnings
 from copy import deepcopy
 from inspect import getfullargspec
 from pprint import pformat
@@ -303,7 +316,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.decomposition import PCA
 from sklearn.exceptions import NotFittedError
 from sklearn.impute import SimpleImputer
-from sklearn.inspection import plot_partial_dependence
+from sklearn.inspection import PartialDependenceDisplay
 from sklearn.model_selection import (
     GridSearchCV,
     LeaveOneGroupOut,
@@ -351,8 +364,9 @@ class MLRModel():
                                       os.path.splitext(model_file)[0])
                 try:
                     importlib.import_module(
-                        'esmvaltool.diag_scripts.mlr.models.{}'.format(
-                            module.replace(os.sep, '.')))
+                        f"esmvaltool.diag_scripts.mlr.models."
+                        f"{module.replace(os.sep, '.')}"
+                    )
                 except ImportError:
                     pass
 
@@ -425,8 +439,11 @@ class MLRModel():
         # Set default settings
         self._set_default_settings()
 
+        # Random state
+        self._random_state = np.random.RandomState(self._cfg['random_state'])
+
         # Seaborn
-        sns.set(**self._cfg.get('seaborn_settings', {}))
+        sns.set_theme(**self._cfg.get('seaborn_settings', {}))
 
         # Adapt output directories
         self._cfg['mlr_work_dir'] = os.path.join(self._cfg['work_dir'],
@@ -475,7 +492,7 @@ class MLRModel():
     @property
     def features_after_preprocessing(self):
         """numpy.ndarray: Features of the input data after preprocessing."""
-        x_train = self.get_x_array('train')
+        x_train = self.data['train'].x
         y_train = self.get_y_array('train')
         try:
             self._check_fit_status('Calculating features after preprocessing')
@@ -559,6 +576,11 @@ class MLRModel():
     def parameters(self):
         """dict: Parameters of the complete MLR model pipeline."""
         return self._parameters
+
+    @property
+    def random_state(self):
+        """numpy.random.RandomState: Random state instance."""
+        return self._random_state
 
     def efecv(self, **kwargs):
         """Perform exhaustive feature elimination using cross-validation.
@@ -951,11 +973,14 @@ class MLRModel():
                 **self._get_plot_kwargs(data_type, plot_type='scatter'))
 
         # Plot MLR model
-        x_lin = np.linspace(self.data['all'].x[feature].values.min(),
-                            self.data['all'].x[feature].values.max(),
-                            n_points)
-        y_pred = self._clf.predict(x_lin.reshape(-1, 1))
-        axes.plot(x_lin, y_pred, color='k', linewidth=2,
+        x_lin = pd.DataFrame.from_dict(
+            {feature: np.linspace(self.data['all'].x[feature].values.min(),
+                                  self.data['all'].x[feature].values.max(),
+                                  n_points)}
+        )
+        y_pred = self._clf.predict(x_lin)
+        x_lin_1d = x_lin.values[:, 0]
+        axes.plot(x_lin_1d, y_pred, color='k', linewidth=2,
                   label=self._cfg['mlr_model_name'])
 
         # Plot appearance
@@ -977,7 +1002,7 @@ class MLRModel():
 
         # Save provenance
         cube = mlr.get_1d_cube(
-            x_lin,
+            x_lin_1d,
             y_pred,
             x_kwargs={'var_name': feature,
                       'long_name': feature,
@@ -1012,19 +1037,32 @@ class MLRModel():
             filename = 'partial_dependece_{feature}'
 
         # Plot for every feature
+        # Note: Ignore warnings about missing feature names here because they
+        # are not used.
         x_train = self.get_x_array('train', impute_nans=True)
-        verbosity = self._get_verbosity_parameters(plot_partial_dependence)
+        verbosity = self._get_verbosity_parameters(
+            PartialDependenceDisplay.from_estimator
+        )
         for feature_name in self.features:
             logger.debug("Plotting partial dependence of '%s'", feature_name)
-            display = plot_partial_dependence(
-                self._clf,
-                x_train,
-                features=[feature_name],
-                feature_names=self.features,
-                method='brute',
-                line_kw={'color': 'b'},
-                **verbosity,
-            )
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    'ignore',
+                    message=('X does not have valid feature names, but '
+                             'SimpleImputer was fitted with feature names'),
+                    category=UserWarning,
+                    module='sklearn',
+                )
+                display = PartialDependenceDisplay.from_estimator(
+                    self._clf,
+                    x_train,
+                    features=[feature_name],
+                    feature_names=self.features,
+                    method='brute',
+                    line_kw={'color': 'b'},
+                    random_state=self.random_state,
+                    **verbosity,
+                )
             title = (f"Partial dependence of {self.label} on {feature_name} "
                      f"for MLR model {self._cfg['mlr_model_name']}")
             plt.title(title)
@@ -1616,11 +1654,7 @@ class MLRModel():
 
         # Imputer
         if self._cfg['imputation_strategy'] != 'remove':
-            verbosity = self._get_verbosity_parameters(SimpleImputer)
-            imputer = SimpleImputer(
-                strategy=self._cfg['imputation_strategy'],
-                **verbosity,
-            )
+            imputer = SimpleImputer(strategy=self._cfg['imputation_strategy'])
             steps.append(('imputer', imputer))
 
         # Scaler for numerical features
@@ -1634,7 +1668,8 @@ class MLRModel():
         # PCA for numerical features
         if self._cfg.get('pca'):
             pca = ColumnTransformer(
-                [('', PCA(), numerical_features_idx)],
+                [('', PCA(random_state=self.random_state),
+                  numerical_features_idx)],
                 remainder='passthrough',
             )
             steps.append(('pca', pca))
@@ -1903,13 +1938,17 @@ class MLRModel():
 
     def _check_fit_status(self, text):
         """Check if MLR model is fitted and raise exception otherwise."""
-        x_dummy = np.ones((1, self.features.size), dtype=self._cfg['dtype'])
+        x_dummy = pd.DataFrame(
+            np.ones((1, self.features.size), dtype=self._cfg['dtype']),
+            columns=self.features,
+        )
         try:
             self._clf.predict(x_dummy)
-        except NotFittedError:
+        except NotFittedError as exc:
             raise NotFittedError(
                 f"{text} not possible, MLR model {self._CLF_TYPE} is not "
-                f"fitted yet, call fit(), grid_search_cv() or rfecv() first")
+                f"fitted yet, call fit(), grid_search_cv() or rfecv() "
+                f"first") from exc
 
     def _estimate_mlr_model_error(self, target_length, strategy):
         """Estimate squared error of MLR model (using CV or test data)."""
@@ -2059,13 +2098,12 @@ class MLRModel():
             raise ValueError(
                 f"Excepted one of '{allowed_types}' for 'var_type', got "
                 f"'{var_type}'")
-        x_data = pd.DataFrame(columns=self.features, dtype=self._cfg['dtype'])
+        x_data_for_groups = []
         x_cube = None
         if self._cfg['weighted_samples'] and var_type == 'feature':
-            sample_weights = pd.DataFrame(columns=['sample_weight'],
-                                          dtype=self._cfg['dtype'])
+            sample_weights_for_groups = []
         else:
-            sample_weights = None
+            sample_weights_for_groups = None
 
         # Iterate over datasets
         datasets = select_metadata(datasets, var_type=var_type)
@@ -2084,14 +2122,15 @@ class MLRModel():
             (group_data, x_cube,
              weights) = self._get_x_data_for_group(group_datasets, var_type,
                                                    group_attr)
-            x_data = x_data.append(group_data)
+            x_data_for_groups.append(group_data)
 
             # Append weights if desired
-            if sample_weights is not None:
-                sample_weights = sample_weights.append(weights)
+            if sample_weights_for_groups is not None:
+                sample_weights_for_groups.append(weights)
 
         # Adapt sample_weights if necessary
-        if sample_weights is not None:
+        if sample_weights_for_groups is not None:
+            sample_weights = pd.concat(sample_weights_for_groups)
             sample_weights.index = pd.MultiIndex.from_tuples(
                 sample_weights.index, names=self._get_multiindex_names())
             logger.info(
@@ -2106,8 +2145,11 @@ class MLRModel():
                     "cubes",
                     sample_weights.min().values[0],
                     sample_weights.max().values[0])
+        else:
+            sample_weights = None
 
         # Convert index back to MultiIndex
+        x_data = pd.concat(x_data_for_groups)
         x_data.index = pd.MultiIndex.from_tuples(
             x_data.index, names=self._get_multiindex_names())
 
@@ -2120,7 +2162,7 @@ class MLRModel():
             raise ValueError(
                 f"Excepted one of '{allowed_types}' for 'var_type', got "
                 f"'{var_type}'")
-        y_data = pd.DataFrame(columns=[self.label], dtype=self._cfg['dtype'])
+        y_data_for_groups = []
 
         # Iterate over datasets
         datasets = select_metadata(datasets, var_type=var_type)
@@ -2147,9 +2189,10 @@ class MLRModel():
                 index=self._get_multiindex(cube, group_attr=group_attr),
                 dtype=self._cfg['dtype'],
             )
-            y_data = y_data.append(cube_data)
+            y_data_for_groups.append(cube_data)
 
         # Convert index back to MultiIndex
+        y_data = pd.concat(y_data_for_groups)
         y_data.index = pd.MultiIndex.from_tuples(
             y_data.index, names=self._get_multiindex_names())
 
@@ -2306,11 +2349,11 @@ class MLRModel():
         for coord_name in self._cfg.get('coords_as_features', []):
             try:
                 coord = ref_cube.coord(coord_name)
-            except iris.exceptions.CoordinateNotFoundError:
+            except iris.exceptions.CoordinateNotFoundError as exc:
                 raise iris.exceptions.CoordinateNotFoundError(
                     f"Coordinate '{coord_name}' given in 'coords_as_features' "
                     f"not found in '{var_type}' data for prediction "
-                    f"'{pred_name_str}'")
+                    f"'{pred_name_str}'") from exc
             units[coord_name] = coord.units
             types[coord_name] = 'coordinate'
 
@@ -2351,26 +2394,45 @@ class MLRModel():
     def _get_lime_feature_importance(self, x_pred):
         """Get most important feature given by LIME."""
         logger.info(
-            "Calculating global feature importance using LIME (this may take "
+            "Calculating local feature importance using LIME (this may take "
             "a while...)")
         x_pred = self._impute_nans(x_pred)
 
         # Most important feature for single input
         def _most_important_feature(x_single_pred, explainer, predict_fn):
-            """Get most important feature for single input."""
-            explanation = explainer.explain_instance(x_single_pred, predict_fn)
+            """Get most important feature for single input.
+
+            Note
+            ----
+            Ignore warnings about missing feature names here because they are
+            not used.
+
+            """
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    'ignore',
+                    message=('X does not have valid feature names, but '
+                             'SimpleImputer was fitted with feature names'),
+                    category=UserWarning,
+                    module='sklearn',
+                )
+                explanation = explainer.explain_instance(x_single_pred,
+                                                         predict_fn)
             local_exp = explanation.local_exp[1]
             sorted_exp = sorted(local_exp, key=lambda elem: elem[0])
-            norm = sum([abs(elem[1]) for elem in sorted_exp])
+            norm = sum(abs(elem[1]) for elem in sorted_exp)
             return [abs(elem[1]) / norm for elem in sorted_exp]
 
         # Apply on whole input (using multiple processes)
         parallel = Parallel(n_jobs=self._cfg['n_jobs'])
         lime_feature_importance = parallel(
-            [delayed(_most_important_feature)(x,
-                                              explainer=self._lime_explainer,
-                                              predict_fn=self._clf.predict)
-             for x in x_pred.values]
+            [
+                delayed(_most_important_feature)(
+                    x,
+                    explainer=self._lime_explainer,
+                    predict_fn=self._clf.predict,
+                ) for x in x_pred.values
+            ]
         )
         lime_feature_importance = np.array(lime_feature_importance,
                                            dtype=self._cfg['dtype'])
@@ -2488,9 +2550,9 @@ class MLRModel():
 
     def _get_prediction_dtype(self):
         """Get ``dtype`` of the output of final regressor's ``predict()``."""
-        x_data = self.get_x_array('train')[0].reshape(1, -1)
+        x_data = self.data['train'].x.iloc[:1]
         y_pred = self._clf.predict(x_data)
-        return y_pred.dtype
+        return y_pred.values.dtype
 
     def _get_prediction_properties(self):
         """Get important properties of prediction input."""
@@ -2556,7 +2618,11 @@ class MLRModel():
         }
         parameters = {}
         for (param, log_levels) in verbosity_params.items():
-            if param in getfullargspec(function).args:
+            all_params = (
+                getfullargspec(function).args +
+                getfullargspec(function).kwonlyargs
+            )
+            if param in all_params:
                 parameters[param] = log_levels.get(self._cfg['log_level'],
                                                    log_levels['default'])
                 if boolean:
@@ -2661,17 +2727,17 @@ class MLRModel():
             if 'x' in data_frame.columns:
                 if support is not None:
                     data_frame.x.values[:, support] = transform(
-                        data_frame.x.values[:, support])
+                        data_frame.x.iloc[:, support])
                     data_frame = data_frame.fillna(data_frame.mean())
                 else:
-                    data_frame.x.values[:] = transform(data_frame.x.values)
+                    data_frame.x.values[:] = transform(data_frame.x)
             else:
                 if support is not None:
                     data_frame.values[:, support] = transform(
-                        data_frame.values[:, support])
+                        data_frame.iloc[:, support])
                     data_frame = data_frame.fillna(data_frame.mean())
                 else:
-                    data_frame.values[:] = transform(data_frame.values)
+                    data_frame.values[:] = transform(data_frame)
         return data_frame
 
     def _is_ready_for_plotting(self):
@@ -2744,9 +2810,11 @@ class MLRModel():
         # Split train/test data if desired
         test_size = self._cfg['test_size']
         if test_size:
-            (self._data['train'],
-             self._data['test']) = train_test_split(self._data['all'].copy(),
-                                                    test_size=test_size)
+            (self._data['train'], self._data['test']) = train_test_split(
+                self._data['all'].copy(),
+                test_size=test_size,
+                random_state=self.random_state,
+            )
             self._data['train'] = self._data['train'].sort_index()
             self._data['test'] = self._data['test'].sort_index()
             for data_type in ('train', 'test'):
@@ -2767,10 +2835,14 @@ class MLRModel():
     def _load_final_parameters(self):
         """Load parameters for final regressor."""
         parameters = self._cfg.get('parameters_final_regressor', {})
-        logger.debug("Using parameter(s) for final regressor: %s", parameters)
+
+        # Update parameters
+        self._update_random_state_parameter(self._CLF_TYPE, parameters)
         verbosity_params = self._get_verbosity_parameters(self._CLF_TYPE)
         for (param, verbosity) in verbosity_params.items():
             parameters.setdefault(param, verbosity)
+
+        logger.debug("Using parameter(s) for final regressor: %s", parameters)
         return parameters
 
     def _load_input_datasets(self, input_datasets):
@@ -2856,8 +2928,7 @@ class MLRModel():
         y_train = self.get_y_array('train', impute_nans=True)
         verbosity = self._get_verbosity_parameters(LimeTabularExplainer,
                                                    boolean=True)
-        for param in verbosity:
-            verbosity[param] = False
+        verbosity = {param: False for param in verbosity}
         categorical_features_idx = [
             int(np.where(self.features == tag)[0][0])
             for tag in self.categorical_features
@@ -2870,6 +2941,7 @@ class MLRModel():
             categorical_features=categorical_features_idx,
             discretize_continuous=False,
             sample_around_instance=True,
+            random_state=self.random_state,
             **verbosity,
         )
         logger.debug(
@@ -2985,8 +3057,8 @@ class MLRModel():
         if pred_type is None:
             attributes['var_type'] = 'prediction_output'
         elif isinstance(pred_type, int):
-            var_name += '_{:d}'.format(pred_type)
-            long_name += ' {:d}'.format(pred_type)
+            var_name += f'_{pred_type:d}'
+            long_name += f' {pred_type:d}'
             logger.warning("Got unknown prediction type with index %i",
                            pred_type)
             attributes['var_type'] = 'prediction_output_misc'
@@ -3062,8 +3134,23 @@ class MLRModel():
         # Propagated error for single input
         def _propagated_error(x_single_pred, x_single_err, explainer,
                               predict_fn, features, categorical_features):
-            """Get propagated prediction input error for single input."""
-            exp = explainer.explain_instance(x_single_pred, predict_fn)
+            """Get propagated prediction input error for single input.
+
+            Note
+            ----
+            Ignore warnings about missing feature names here because they are
+            not used.
+
+            """
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    'ignore',
+                    message=('X does not have valid feature names, but '
+                             'SimpleImputer was fitted with feature names'),
+                    category=UserWarning,
+                    module='sklearn',
+                )
+                exp = explainer.explain_instance(x_single_pred, predict_fn)
             x_single_err = np.nan_to_num(x_single_err)
             x_err_scaled = x_single_err / explainer.scaler.scale_
             squared_error = 0.0
@@ -3124,7 +3211,7 @@ class MLRModel():
         logger.debug("Creating output cubes")
         for (pred_type, y_pred) in pred_dict.items():
             y_pred = self._mask_prediction_array(y_pred, x_cube)
-            if y_pred.size == np.prod(x_cube.shape, dtype=np.int):
+            if y_pred.size == np.prod(x_cube.shape, dtype=np.int64):
                 pred_cube = x_cube.copy(y_pred.reshape(x_cube.shape))
             else:
                 dim_coords = []
@@ -3183,8 +3270,7 @@ class MLRModel():
 
     def _set_default_settings(self):
         """Set default (non-``False``) keyword arguments."""
-        self._cfg.setdefault('weighted_samples',
-                             {'area_weighted': True, 'time_weighted': True})
+        self._cfg.setdefault('weighted_samples', {})
         self._cfg.setdefault('cache_intermediate_results', True)
         self._cfg.setdefault('dtype', 'float64')
         self._cfg.setdefault('fit_kwargs', {})
@@ -3198,6 +3284,7 @@ class MLRModel():
         self._cfg.setdefault('plot_dir',
                              os.path.expanduser(os.path.join('~', 'plots')))
         self._cfg.setdefault('plot_units', {})
+        self._cfg.setdefault('random_state', None)
         self._cfg.setdefault('savefig_kwargs', {
             'bbox_inches': 'tight',
             'dpi': 300,
@@ -3263,7 +3350,10 @@ class MLRModel():
                     f"'{param_name}'")
 
         # Add sample weights if possible
-        allowed_fit_kwargs = getfullargspec(self._CLF_TYPE.fit).args
+        allowed_fit_kwargs = (
+            getfullargspec(self._CLF_TYPE.fit).args +
+            getfullargspec(self._CLF_TYPE.fit).kwonlyargs
+        )
         for kwarg in ('sample_weight', 'sample_weights'):
             if kwarg not in allowed_fit_kwargs:
                 continue
@@ -3277,6 +3367,29 @@ class MLRModel():
             break
 
         return new_fit_kwargs
+
+    def _update_random_state_parameter(self, function, parameters):
+        """Update ``random_state`` parameter if necessary."""
+        all_params = (
+            getfullargspec(function).args +
+            getfullargspec(function).kwonlyargs
+        )
+        if 'random_state' in all_params:
+            if 'random_state' in parameters:
+                logger.warning(
+                    "Parameter 'random_state=%s' is ignored for '%s', use the "
+                    "'random_state' option to initialize the MLRModel class "
+                    "instead",
+                    parameters['random_state'],
+                    self._CLF_TYPE,
+                )
+            parameters['random_state'] = self.random_state
+            logger.debug(
+                "Updated 'random_state' parameter of '%s' to '%s'",
+                self._CLF_TYPE,
+                self.random_state,
+            )
+        return parameters
 
     def _write_plot_provenance(self, cube, plot_path, **additional_info):
         """Write provenance information for plots."""
@@ -3305,10 +3418,10 @@ class MLRModel():
                      new_units)
         try:
             cube.convert_units(new_units)
-        except ValueError:
+        except ValueError as exc:
             raise ValueError(
                 f"Cannot convert units{msg} from '{cube.units}' to "
-                f"'{new_units}'")
+                f"'{new_units}'") from exc
 
     @staticmethod
     def _convert_units_in_metadata(datasets):
@@ -3320,10 +3433,11 @@ class MLRModel():
             units_to = Unit(dataset['convert_units_to'])
             try:
                 units_from.convert(0.0, units_to)
-            except ValueError:
+            except ValueError as exc:
                 raise ValueError(
                     f"Cannot convert units of {dataset['var_type']} "
-                    f"'{dataset['tag']}' from '{units_from}' to '{units_to}'")
+                    f"'{dataset['tag']}' from '{units_from}' to "
+                    f"'{units_to}'") from exc
             dataset['units'] = dataset['convert_units_to']
 
     @staticmethod
@@ -3352,10 +3466,10 @@ class MLRModel():
             return 0.0
         try:
             coord = ref_cube.coord(tag)
-        except iris.exceptions.CoordinateNotFoundError:
+        except iris.exceptions.CoordinateNotFoundError as exc:
             raise iris.exceptions.CoordinateNotFoundError(
                 f"Coordinate '{tag}' given in 'coords_as_features' not found "
-                f"in reference cube for '{var_type}'{msg}")
+                f"in reference cube for '{var_type}'{msg}") from exc
         coord_array = np.ma.filled(coord.points, np.nan)
         coord_dims = ref_cube.coord_dims(coord)
         if coord_dims == ():

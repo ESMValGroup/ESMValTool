@@ -12,6 +12,9 @@ documentation:
     - davini_paolo
     - arnone_enrico
 
+  maintainer:
+    - unmaintained
+
   references:
     - davini18
     - davini12jclim

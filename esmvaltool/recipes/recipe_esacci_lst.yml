@@ -1,0 +1,67 @@
+# Recipe to call ESA CCI LST diagnostic.
+---
+documentation:
+  title: ESA CCI LST diagnostic
+  description: |
+    Please add description here
+  authors:
+    - king_robert
+
+  maintainer:
+    - king_robert
+
+  references:
+    - esacci_lst
+
+  projects:
+    - cmug
+
+datasets:
+  - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r(2:3)i1p1f1,
+     start_year: 2004, end_year: 2005, grid: gn}
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical,
+     ensemble: r(1:2)i1p1f2, start_year: 2004, end_year: 2005, grid: gn}
+  - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2,
+     start_year: 2004, end_year: 2005, version: '1.00'}
+
+preprocessors:
+
+  lst_preprocessor:
+    regrid:
+      target_grid: UKESM1-0-LL
+      scheme: linear
+
+    extract_region:
+      start_longitude: 35
+      end_longitude: 175
+      start_latitude: 55
+      end_latitude: 70
+
+    mask_landsea:
+      mask_out: sea
+
+    area_statistics:
+      operator: mean
+
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, std_dev]
+      exclude: [ESACCI-LST]
+
+
+diagnostics:
+
+  timeseries:
+    description: ESACCI LST difference to model historical ensemble average
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      ts:
+        mip: Amon
+        preprocessor: lst_preprocessor
+
+    scripts:
+      script1:
+        script: lst/lst.py

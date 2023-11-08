@@ -10,7 +10,7 @@ or esmvaltool
 """
 import datetime
 from pathlib import Path
-from typing import DefaultDict
+from zoneinfo import ZoneInfo
 
 import dateutil
 import esmvalcore
@@ -24,7 +24,8 @@ except ImportError:
     print("Please `pip install pygithub`")
 
 try:
-    GITHUB_API_KEY = Path("~/.github_api_key").expanduser().read_text().strip()
+    GITHUB_API_KEY = Path("~/.github_api_key").expanduser().read_text(
+        encoding='utf-8').strip()
 except FileNotFoundError:
     print("Please create an access token and store it in the file "
           "~/.github_api_key, see:\nhttps://help.github.com/en/github/"
@@ -41,39 +42,55 @@ GITHUB_REPO = {
 }
 
 PREVIOUS_RELEASE = {
-    'esmvalcore': datetime.datetime(2021, 7, 23, 00),
-    'esmvaltool': datetime.datetime(2021, 7, 27, 00),
+    'esmvalcore':
+    datetime.datetime(2023, 7, 4, 11, tzinfo=ZoneInfo("CET")),
+    'esmvaltool':
+    datetime.datetime(2022, 10, 28, 18, tzinfo=ZoneInfo("CET")),
 }
+
 LABELS = {
     'esmvalcore': (
-        'bug',
-        'deprecated feature',
+        'backwards incompatible change',  # important, keep at the top
+        'deprecated feature',  # important, keep at the top
+        'bug',  # important, keep at the top
+        'api',
+        'cmor',
+        'containerization',
+        'community',
+        'dask',
+        'deployment',
         'documentation',
         'fix for dataset',
-        'cmor',
-        'preprocessor',
-        'api',
-        'testing',
         'installation',
-        'enhancement',
+        'iris',
+        'preprocessor',
+        'release',
+        'testing',
+        'UX',
+        'variable derivation',
+        'enhancement',  # uncategorized, keep at the bottom
     ),
     'esmvaltool': (
-        'bug',
-        'deprecated feature',
+        'backwards incompatible change',  # important, keep at the top
+        'deprecated feature',  # important, keep at the top
+        'bug',  # important, keep at the top
+        'community',
         'documentation',
         'diagnostic',
         'preprocessor',
         'observations',
         'testing',
         'installation',
-        'enhancement',
+        'enhancement',  # uncategorized, keep at the bottom
     )
 }
 
 TITLES = {
-    'bug': 'Bug fixes',
+    'backwards incompatible change': 'Backwards incompatible changes',
     'deprecated feature': 'Deprecations',
+    'bug': 'Bug fixes',
     'cmor': 'CMOR standard',
+    'dask': 'Computational performance improvements',
     'diagnostic': 'Diagnostics',
     'fix for dataset': 'Fixes for datasets',
     'observations': 'Observational and re-analysis dataset support',
@@ -106,15 +123,21 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
 
     pulls = _get_pull_requests(project)
 
-    lines = DefaultDict(list)
+    lines = {label: [] for label in labels}
     labelless_pulls = []
+    print(f"The following PRs (updated after {previous_release_date}) are "
+          f"considered in the changelog")
+    print(f"Note: Unmerged PRs or PRs that have been merged before "
+          f"{previous_release_date} are not shown\n")
     for pull in pulls:
-        print(pull.updated_at, pull.merged_at, pull.number, pull.title)
         if pull.updated_at < previous_release_date:
             break
         if not pull.merged or pull.merged_at < previous_release_date:
             continue
+        print(pull.updated_at, pull.merged_at, pull.number, pull.title)
         pr_labels = {label.name for label in pull.labels}
+        if 'automatedPR' in pr_labels:
+            continue
         for label in labels:
             if label in pr_labels:
                 break
@@ -126,22 +149,35 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
     # Warn about label-less PR:
     _list_labelless_pulls(labelless_pulls)
 
-    # Create sections
+    # Format lines to a human readable changelog
+    format_notes(lines, VERSION[project])
+
+
+def format_notes(lines, version):
+    """Format release notes."""
     sections = [
-        VERSION[project],
-        '-' * len(VERSION[project]),
+        version,
+        '-' * len(version),
+        'Highlights',
+        '',
+        'TODO: add highlights',
         '',
         "This release includes",
     ]
-    for label in labels:
+    for label in lines:
         try:
             entries = sorted(lines[label])  # sort by merge time
         except KeyError:
             continue
         title = TITLES.get(label, label.title())
-        sections.append('\n'.join(['', title, '~' * len(title), '']))
-        sections.append('\n'.join(entry for _, entry in entries))
+        if entries:
+            sections.append('\n'.join(['', title, '~' * len(title), '']))
+            if label == 'backwards incompatible change':
+                sections.append(
+                    'TODO: add examples of how to deal with these changes\n')
+            sections.append('\n'.join(entry for _, entry in entries))
     notes = '\n'.join(sections)
+    print("Copy the following lines to changelog.rst:\n")
     print(notes)
 
 
@@ -152,6 +188,7 @@ def _get_pull_requests(project):
         state='closed',
         sort='updated',
         direction='desc',
+        base='main',
     )
     return pulls
 
@@ -162,6 +199,8 @@ def _list_labelless_pulls(labelless_pulls):
         for pull in labelless_pulls:
             print(pull.html_url)
         print('\n')
+    else:
+        print('\nNo PR has missing labels!\n')
 
 
 def _compose_note(pull):
@@ -175,7 +214,8 @@ def _compose_note(pull):
 
 
 def main():
-    """Entry point for the scrip."""
+    """Entry point for the script."""
+
     def display(lines, out):
         text = "\n".join(lines) + "\n"
         out.write(text)

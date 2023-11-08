@@ -21,8 +21,6 @@ documentation:
     - vegas-regidor_javier
 
 datasets:
-  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical,
-     ensemble: r1i1p1, start_year: 1979, end_year: 2005}
   - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical,
      ensemble: r1i1p1, start_year: 1979, end_year: 2005}
 

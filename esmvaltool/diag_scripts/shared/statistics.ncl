@@ -1278,9 +1278,10 @@ function calculate_metric(var:numeric,
 ;    dimensionality.
 ;
 ; Modification history
+;    20190312-A_bock_lisa: added calculation of RMSDxy
 ;    20140313-righi_mattia: implemented weights calculation within the
 ;                           function, depending on dimensionality.
-;    20140120-frank_franziska: written.
+;    20140120-winterstein_franziska: written.
 ;
 local funcname, scriptname, dims_var, dims_ref, ii, dim_names, mdays, sdays, \
   weights, var1d, ref1d, wgt1d, avg_var, avg_ref, p1, p2, p3, var3d, wgt3d, \
@@ -1352,27 +1353,31 @@ begin
       time_weights = 1.
     end if
 
-    if (dim_names(1).eq."lat" .and. dim_names(2).eq."lon") then
-      area_weights = map_area(var&lat, var&lon)
-    end if
+    if (metric .eq. "RMSDxy") then
+      weights = time_weights
+    else
+      if (dim_names(1).eq."lat" .and. dim_names(2).eq."lon") then
+        area_weights = map_area(var&lat, var&lon)
+      end if
 
-    if (dim_names(1).eq."plev" .and. dim_names(2).eq."lat") then
-      areas = map_area(ref&lat, (/1.0, 2.0/))
-      nlev = dimsizes(ref&plev)
-      ptop = ref&plev(nlev - 1) - \
-        0.5 * (ref&plev(nlev - 2) - ref&plev(nlev - 1))
-      delta_p = dpres_plevel(ref&plev, 101325., ptop, 0)
-      area_weights = new((/nlev, dimsizes(ref&lat)/), float)
-      wdims = dimsizes(area_weights)
-      area_weights = conform_dims(wdims, delta_p, 0) * \
-        conform_dims(wdims, areas(:, 0), 1)
-    end if
+      if (dim_names(1).eq."plev" .and. dim_names(2).eq."lat") then
+        areas = map_area(ref&lat, (/1.0, 2.0/))
+        nlev = dimsizes(ref&plev)
+        ptop = ref&plev(nlev - 1) - \
+          0.5 * (ref&plev(nlev - 2) - ref&plev(nlev - 1))
+        delta_p = dpres_plevel(ref&plev, 101325., ptop, 0)
+        area_weights = new((/nlev, dimsizes(ref&lat)/), float)
+        wdims = dimsizes(area_weights)
+        area_weights = conform_dims(wdims, delta_p, 0) * \
+          conform_dims(wdims, areas(:, 0), 1)
+      end if
 
-    if (isdefined("time_weights").and.isdefined("area_weights")) then
-      weights = new(dimsizes(var), float)
-      do ii = 0, dimsizes(time_weights) - 1
-        weights(ii, :, :) = time_weights(ii) * area_weights
-      end do
+      if (isdefined("time_weights").and.isdefined("area_weights")) then
+        weights = new(dimsizes(var), float)
+        do ii = 0, dimsizes(time_weights) - 1
+          weights(ii, :, :) = time_weights(ii) * area_weights
+        end do
+      end if
     end if
   end if
 
@@ -1392,13 +1397,23 @@ begin
     wgt1d = 1.0
   end if
 
-  ; Calculate weighted averages
-  avg_var = dim_avg_wgt_Wrap(var1d, wgt1d, 1)
-  avg_ref = dim_avg_wgt_Wrap(ref1d, wgt1d, 1)
+  if (isStrSubset(metric, "stddev_ratio") .or. \
+      isStrSubset(metric, "correlation")) then
+    ; Calculate weighted averages
+    avg_var = dim_avg_wgt_Wrap(var1d, wgt1d, 1)
+    avg_ref = dim_avg_wgt_Wrap(ref1d, wgt1d, 1)
+  end if
 
   ; RMSD
   if (metric.eq."RMSD") then
     out = sqrt(dim_avg_wgt_Wrap((var1d - ref1d) ^ 2, wgt1d, 1))
+    leave_msg(scriptname, funcname)
+    return(out)
+  end if
+
+  ; RMSD
+  if (metric.eq."RMSDxy") then
+    out = sqrt(dim_avg_wgt_n_Wrap((var - ref) ^ 2, weights, 1, 0))
     leave_msg(scriptname, funcname)
     return(out)
   end if
@@ -1516,7 +1531,7 @@ function normalize_metric(var:numeric,
 ;
 ; Modification history
 ;    20140609-righi_mattia: absolute value added to "mean" normalization.
-;    20140120-frank_franziska: written.
+;    20140120-winterstein_franziska: written.
 ;
 local funcname, scriptname, val_var, norm, stdv, p1
 begin

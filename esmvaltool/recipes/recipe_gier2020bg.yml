@@ -1,18 +1,26 @@
 # ESMValTool
 # recipe_gier2020bg.yml
-# Diagnostic with growing season temperature requires MODIS Land Cover map in
+# Diagnostic with growing season temperature requires MODIS Land Cover 1 degree map in
 # auxiliary data directory, download from:
 # https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=968 or
 # https://thredds.daac.ornl.gov/thredds/catalog/ornldaac/968/catalog.html
+# NOTE:
+# Commented out datasets and options reflect the exact settings used in the paper creation,
+# datasets commented out require additional preprocessing e.g. converting from hybrid coordinates to
+# pressure coordinates, or are otherwise currently not available on the DKRZ ESGF node,
+# but may be available on other ESGF nodes, if the user turns on automatic download in the run configuration.
 ---
 documentation:
 
   description: |
     Analysis of column-averaged CO2 (XCO2) emission driven model data in
     comparison to satellite data (Gier et al., 2020).
+
   title: Column-averaged CO2 emission (model vs satellite data)
+
   authors:
     - gier_bettina
+
 
   maintainer:
     - gier_bettina
@@ -81,6 +89,7 @@ diagnostics:
     description: figure 3
     variables:
       xco2:
+        preprocessor: conv_units
         project: CMIP6
         mip: Amon
         exp: esm-hist
@@ -91,17 +100,17 @@ diagnostics:
         additional_datasets:
           - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
              tier: 3, derive: false}
-          #- {dataset: ACCESS-ESM1-5, ensemble: r(1:3)i1p1f1, grid: gn}
+          # - {dataset: ACCESS-ESM1-5, ensemble: r(1:3)i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r(1:7)i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r(9:10)i1p1f1, grid: gn}
-          - {dataset: CanESM5-CanOE, ensemble: r(1:3)i1p2f1, grid: gn}
+          # - {dataset: CanESM5-CanOE, ensemble: r(1:3)i1p2f1, grid: gn}
           - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
-          - {dataset: MIROC-ES2L, ensemble: r(1:3)i1p1f2, grid: gn}
+          # - {dataset: MIROC-ES2L, ensemble: r(1:3)i1p1f2, grid: gn}
           - {dataset: MPI-ESM1-2-LR, ensemble: r(1:10)i1p1f1, grid: gn}
-          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
-          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+          # - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          # - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
     scripts:
       main_ensemble:
         script: xco2_analysis/main.ncl
@@ -134,16 +143,16 @@ diagnostics:
         additional_datasets:
           - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
              tier: 3, derive: false}
-          #- {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+          # - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
           - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
-          - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+          # - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
           - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
-          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+          # - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          # - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
     scripts:
       maps:
         script: xco2_analysis/global_maps.ncl
@@ -221,16 +230,16 @@ diagnostics:
         additional_datasets:
           - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
              tier: 3, derive: false}
-          #- {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+          # - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
           - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
-          - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+          # - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
           - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
-          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+          # - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          # - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
       tas:
         preprocessor: mmm_2x2
         project: CMIP6
@@ -239,16 +248,16 @@ diagnostics:
         start_year: 2003
         end_year: 2014
         additional_datasets:
-          #- {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+          # - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
           - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
-          - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+          # - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
           - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
-          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+          # - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          # - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
       tasa:
         mip: Amon
         start_year: 2003
@@ -281,16 +290,16 @@ diagnostics:
         additional_datasets:
           - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
              tier: 3, derive: false}
-          #- {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+          # - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
           - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
-          - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+          # - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
           - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
-          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+          # - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          # - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
       co2:
         preprocessor: mmm
         project: CMIP6
@@ -299,16 +308,16 @@ diagnostics:
         start_year: 2003
         end_year: 2014
         additional_datasets:
-          #- {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+          # - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
           - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
-          - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+          # - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
           - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
-          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+          # - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          # - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
       co2s_obs:
         preprocessor: conv_units
         short_name: co2s
@@ -320,7 +329,7 @@ diagnostics:
           - {dataset: ESRL, project: OBS, type: ground, version: ASK, tier: 2}
           - {dataset: ESRL, project: OBS, type: ground, version: CGO, tier: 2}
           - {dataset: ESRL, project: OBS, type: ground, version: HUN, tier: 2}
-          - {dataset: ESRL, project: OBS, type: ground, version: LEF, tier: 2}
+          # - {dataset: ESRL, project: OBS, type: ground, version: LEF, tier: 2}
           - {dataset: ESRL, project: OBS, type: ground, version: WIS, tier: 2}
     scripts:
       station_comparison:
@@ -330,8 +339,8 @@ diagnostics:
         var_plotnames: ["XCO~B~2~N~", "CO~B~2~N~"]
         # Overwrite station altitudes in case timeseries considered uses a
         # different altitude than the current one
-        overwrite_altitudes: [2710, 94, 248, 868, 482]
-        output_map: true
+        overwrite_altitudes: [2710, 94, 248, 482]  # LEF altitude: 868 to be inserted before 482
+        output_map: false  # true
 
   # CMIP5
   cmip5_analysis:
@@ -356,7 +365,7 @@ diagnostics:
           - {dataset: CESM1-BGC}
           - {dataset: GFDL-ESM2G}
           - {dataset: GFDL-ESM2M}
-          - {dataset: FIO-ESM}
+          # - {dataset: FIO-ESM}
           - {dataset: MIROC-ESM}
           - {dataset: MPI-ESM-LR}
           - {dataset: MRI-ESM1}
@@ -416,7 +425,7 @@ diagnostics:
           - {dataset: CESM1-BGC}
           - {dataset: GFDL-ESM2G}
           - {dataset: GFDL-ESM2M}
-          - {dataset: FIO-ESM}
+          # - {dataset: FIO-ESM}
           - {dataset: MIROC-ESM}
           - {dataset: MPI-ESM-LR}
           - {dataset: MRI-ESM1}
@@ -435,7 +444,7 @@ diagnostics:
           - {dataset: CESM1-BGC}
           - {dataset: GFDL-ESM2G}
           - {dataset: GFDL-ESM2M}
-          - {dataset: FIO-ESM}
+          # - {dataset: FIO-ESM}
           - {dataset: MIROC-ESM}
           - {dataset: MPI-ESM-LR}
           - {dataset: MRI-ESM1}
@@ -478,7 +487,7 @@ diagnostics:
           - {dataset: CESM1-BGC}
           - {dataset: GFDL-ESM2G}
           - {dataset: GFDL-ESM2M}
-          - {dataset: FIO-ESM}
+          # - {dataset: FIO-ESM}
           - {dataset: MIROC-ESM}
           - {dataset: MPI-ESM-LR}
           - {dataset: MRI-ESM1}
@@ -497,7 +506,7 @@ diagnostics:
           - {dataset: CESM1-BGC}
           - {dataset: GFDL-ESM2G}
           - {dataset: GFDL-ESM2M}
-          - {dataset: FIO-ESM}
+          # - {dataset: FIO-ESM}
           - {dataset: MIROC-ESM}
           - {dataset: MPI-ESM-LR}
           - {dataset: MRI-ESM1}
@@ -513,7 +522,7 @@ diagnostics:
           - {dataset: ESRL, project: OBS, type: ground, version: ASK, tier: 2}
           - {dataset: ESRL, project: OBS, type: ground, version: CGO, tier: 2}
           - {dataset: ESRL, project: OBS, type: ground, version: HUN, tier: 2}
-          - {dataset: ESRL, project: OBS, type: ground, version: LEF, tier: 2}
+          # - {dataset: ESRL, project: OBS, type: ground, version: LEF, tier: 2}
           - {dataset: ESRL, project: OBS, type: ground, version: WIS, tier: 2}
     scripts:
       station_comparison:
@@ -523,5 +532,5 @@ diagnostics:
         var_plotnames: ["XCO~B~2~N~", "CO~B~2~N~"]
         # Overwrite station altitudes in case timeseries considered uses a
         # different altitude than the current one
-        overwrite_altitudes: [2710, 94, 248, 868, 482]
-        output_map: true
+        overwrite_altitudes: [2710, 94, 248, 482]  # LEF altitude: 868 to be inserted before 482
+        output_map: false  # true # map only when all OBS data available

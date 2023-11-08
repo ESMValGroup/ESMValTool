@@ -57,6 +57,7 @@ import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -132,8 +133,8 @@ def moving_average(cube, window):
             'days', 'day', 'dy', 'months', 'month', 'mn', 'years', 'yrs',
             'year', 'yr'
     ]:
-        raise ValueError("Moving average window units not recognised: " +
-                         "{}".format(win_units))
+        raise ValueError(
+            f'Moving average window units not recognised: {win_units}')
 
     times = cube.coord('time').units.num2date(cube.coord('time').points)
 
@@ -244,6 +245,10 @@ def make_time_series_plots(
                     'start_year', 'end_year'
                 ],
             )
+            caption = ' '.join([
+                'Time series of', metadata["dataset"], metadata["long_name"],
+                'with MultiModel value',
+            ])
 
         else:
             path = diagtools.get_image_path(
@@ -251,14 +256,26 @@ def make_time_series_plots(
                 metadata,
                 suffix='timeseries_' + str(layer_index) + image_extention,
             )
+            caption = ' '.join([
+                'Time series of', metadata["dataset"], metadata["long_name"],
+            ])
 
-        # Saving files:
-        if cfg['write_plots']:
-
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
-
+        # Saving files
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
         plt.close()
+
+        provenance_record = diagtools.prepare_provenance_record(
+            cfg,
+            caption=caption,
+            statistics=['mean'],
+            domain=['global'],
+            plot_type=['times'],
+            ancestors=filename,
+        )
+
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
 
 def multi_model_time_series(
@@ -363,18 +380,17 @@ def multi_model_time_series(
         plt.ylabel(str(model_cubes[filename][layer].units))
 
         # Saving files:
-        if cfg['write_plots']:
-            path = diagtools.get_image_path(
-                cfg,
-                metadata[filename],
-                prefix='MultipleModels_',
-                suffix='_'.join(['timeseries',
-                                 str(layer) + image_extention]),
-                metadata_id_list=[
-                    'field', 'short_name', 'preprocessor', 'diagnostic',
-                    'start_year', 'end_year'
-                ],
-            )
+        path = diagtools.get_image_path(
+            cfg,
+            metadata[filename],
+            prefix='MultipleModels_',
+            suffix='_'.join(['timeseries',
+                             str(layer) + image_extention]),
+            metadata_id_list=[
+                'field', 'short_name', 'preprocessor', 'diagnostic',
+                'start_year', 'end_year'
+            ],
+        )
 
         # Resize and add legend outside thew axes.
         plt.gcf().set_size_inches(9., 6.)
@@ -384,6 +400,18 @@ def multi_model_time_series(
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
         plt.close()
+
+        provenance_record = diagtools.prepare_provenance_record(
+            cfg,
+            caption=f'Time series of {title}',
+            statistics=['mean'],
+            domain=['global'],
+            plot_type=['times'],
+            ancestors=list(metadata.keys()),
+        )
+
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
 
 def main(cfg):

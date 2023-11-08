@@ -556,9 +556,9 @@ def get_catch_avg(catchments, sim_cube):
     avg = {}
     for river, rid in catchments['catchments'].items():
         data_catch = np.ma.masked_where(
-            catchments['cube'].data.astype(np.int) != rid, sim_cube.data)
+            catchments['cube'].data.astype(np.int64) != rid, sim_cube.data)
         area_catch = np.ma.masked_where(
-            catchments['cube'].data.astype(np.int) != rid,
+            catchments['cube'].data.astype(np.int64) != rid,
             catchments['area'].data)
         avg[river] = (data_catch * (area_catch / area_catch.sum())).sum()
     return avg
@@ -658,9 +658,8 @@ def main(cfg):
     for model, mcube in allcubes.items():
         filepath = os.path.join(cfg[diag.names.WORK_DIR],
                                 '_'.join(['postproc', model]) + '.nc')
-        if cfg[diag.names.WRITE_NETCDF]:
-            iris.save(mcube, filepath)
-            logger.info("Writing %s", filepath)
+        iris.save(mcube, filepath)
+        logger.info("Writing %s", filepath)
 
     # Write plotdata as ascii files for user information
     write_plotdata(cfg, plotdata, my_catch)

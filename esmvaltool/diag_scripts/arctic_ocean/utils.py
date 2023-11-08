@@ -13,8 +13,8 @@ import pyproj
 import seawater as sw
 from cdo import Cdo
 from cmocean import cm as cmo
-from matplotlib import cm
 from matplotlib import pylab as plt
+from matplotlib.colors import LinearSegmentedColormap
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
@@ -47,8 +47,8 @@ def genfilename(basedir,
         name of the region
     data_type: str
         type of the data, for example `timmean`
-    extention: str
-        fiel extention, for example `nc`
+    extension: str
+        file extension, for example `nc`
     basis: str
         basis name that can be used for series of
         diagnostics
@@ -192,8 +192,11 @@ def shiftedcolormap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
         cdict['blue'].append((shii, blue, blue))
         cdict['alpha'].append((shii, alpha, alpha))
 
-    newcmap = mpl.colors.LinearSegmentedColormap(name, cdict)
-    cm.register_cmap(cmap=newcmap)
+    try:
+        newcmap = mpl.colors.LinearSegmentedColormap(name, cdict)
+        mpl.colormaps.register(cmap=newcmap)
+    except ValueError:
+        logger.info("A colormap named %s is already registered.", name)
 
     return newcmap
 
@@ -219,15 +222,19 @@ def get_cmap(cmap_name):
     Additional custom colormap for salinity is provided:
     - "custom_salinity1"
     """
-    cm.register_cmap(name='cubehelix3',
-                     data=mpl._cm.cubehelix(gamma=1.0, s=2.0, r=1.0, h=3))
+    try:
+        mpl.colormaps.register(cmap=LinearSegmentedColormap(
+            'cubehelix3', mpl._cm.cubehelix(gamma=1.0, s=2.0, r=1.0, h=3)),
+            name="new_cubehelix3", force=False)
+    except ValueError:
+        logger.info('Colormap new_cubehelix3 is already registered.')
 
     if cmap_name in cmo.cmapnames:
         colormap = cmo.cmap_d[cmap_name]
     elif cmap_name in plt.colormaps():
         colormap = plt.get_cmap(cmap_name)
     elif cmap_name == "custom_salinity1":
-        colormap = shiftedcolormap(cm.get_cmap("cubehelix3"),
+        colormap = shiftedcolormap(mpl.colormaps.get_cmap("new_cubehelix3"),
                                    start=0,
                                    midpoint=0.89,
                                    stop=0.9,
@@ -265,8 +272,9 @@ def point_distance(lon_s4new, lat_s4new):
 def get_series_lenght(datafile, cmor_var):
     """Get the length of the series.
 
-    Fix for climatology, ESMValTool reduces the dimentions
-    if one of the dimentions is empty."""
+    Fix for climatology, ESMValTool reduces the dimensions if one of the
+    dimensions is empty.
+    """
     if datafile.variables[cmor_var].ndim < 4:
         series_lenght = 1
     else:

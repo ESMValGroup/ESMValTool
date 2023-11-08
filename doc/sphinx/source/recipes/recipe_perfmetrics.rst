@@ -53,6 +53,7 @@ User settings in recipe
    * calc_grading: calculates grading metrics (default: False)
    * stippling: uses stippling to mark statistically significant differences (default: False = mask out non-significant differences in gray)
    * show_global_avg: diplays the global avaerage of the input field as string at the top-right of lat-lon plots (default: False)
+   * annots: choose the annotation style, e.g. ```alias``` which would display the alias of the dataset as title (applies to plot_type zonal and cycle_zonal)
    * metric: chosen grading metric(s) (if calc_grading is True)
    * normalization: metric normalization (for RMSD and BIAS metrics only)
    * abs_levs: list of contour levels for absolute plot
@@ -61,6 +62,34 @@ User settings in recipe
    * zonal_ymin: for plot_type zonal only, minimum pressure level on the y-axis (default: 5. hPa)
    * latlon_cmap: for plot_type latlon only, chosen color table (default: "amwg_blueyellowred")
    * plot_units: plotting units (if different from standard CMOR units)
+   * add_tropopause: adds an outline of a climatological tropopause to the zonal plot (default: False)
+
+   *Special optional plot configurations*
+
+   It is possible to make some specific customizations to the plots (zonal
+   only).
+
+   This includes for example specific tickmark labels of the axes.
+
+   Those special customizations can be done by adding ncl plotting resources
+   combined with prefix ``res_`` as optional settings of the main script in the
+   recipe.
+
+   Note that this requires to be familiar with the ncl plotting routines for
+   pressure vs height plots
+   (https://www.ncl.ucar.edu/Document/Graphics/Interfaces/gsn_csm_pres_hgt.shtml)
+   and the corresponding resources.
+
+   The following shows an example on customizing the latitude tickmarks so
+   that a degree sign and and empty space is used for the labels:
+
+   .. code-block:: yaml
+
+	# copernicus style of latitude tickmarks
+        res_tmXBMode: "Explicit"
+        res_tmXBValues: [-60, -30, 0, 30, 60]
+        res_tmXBLabels: ["60~F35~J~F21~ S", "30~F35~J~F21~ S", "0~F35~J", "30~F35~J~F21~ N", "60~F35~J~F21~ N"]
+
 
    *Required settings (variables)*
 
@@ -128,35 +157,35 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4MIPs data can be used directly without any reformating. For non-obs4MIPs data see headers of cmorization scripts (in `/esmvaltool/cmorizers/obs/
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/obs/>`_) for downloading and processing instructions.
+The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4MIPs data can be used directly without any reformating. For non-obs4MIPs data use `esmvaltool data info DATASET` or see headers of cmorization scripts (in `/esmvaltool/cmorizers/data/formatters/datasets/
+<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/cmorizers/data/formatters/datasets/>`_) for downloading and processing instructions.
 #.  recipe_perfmetrics_CMIP5.yml
 
     * AIRS (hus - obs4MIPs)
     * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4MIPs)
-    * ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
-    * ESACCI-AEROSOL (od550aer, od870aer, od550abs, od550lt1aer - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-AEROSOL.ncl)
-    * ESACCI-CLOUD (clt - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-CLOUD.ncl)
-    * ESACCI-OZONE (toz - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-OZONE.ncl)
-    * ESACCI-SOILMOISTURE (sm - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-SOILMOISTURE.ncl)
-    * ESACCI-SST (ts - esmvaltool/ucmorizers/obs/cmorize_obs_ESACCI-SST.ncl)
+    * ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/data/formatters/datasets/era-interim.py)
+    * ESACCI-AEROSOL (od550aer, od870aer, od550abs, od550lt1aer - esmvaltool/cmorizers/data/formatters/datasets/esacci-aerosol.ncl)
+    * ESACCI-CLOUD (clt - esmvaltool/cmorizers/data/formatters/datasets/esacci-cloud.ncl)
+    * ESACCI-OZONE (toz - esmvaltool/cmorizers/data/formatters/datasets/esacci-ozone.ncl)
+    * ESACCI-SOILMOISTURE (sm - esmvaltool/cmorizers/data/formatters/datasets/esacci_soilmoisture.ncl)
+    * ESACCI-SST (ts - esmvaltool/ucmorizers/data/formatters/datasets/esacci-sst.py)
     * GPCP-SG (pr - obs4MIPs)
-    * HadISST (ts - esmvaltool/cmorizers/obs/cmorize_obs_HadISST.ncl)
-    * MODIS (od550aer - esmvaltool/cmorizers/obs/cmorize_obs_MODIS.ncl)
-    * NCEP (tas, ta, ua, va, zg - esmvaltool/cmorizers/obs/cmorize_obs_NCEP.ncl)
-    * NIWA-BS (toz - esmvaltool/cmorizers/obs/cmorize_obs_NIWA-BS.ncl)
-    * PATMOS-x (clt - esmvaltool/cmorizers/obs/cmorize_obs_PATMOS-x.ncl)
+    * HadISST (ts - esmvaltool/cmorizers/data/formatters/datasets/hadisst.ncl)
+    * MODIS (od550aer - esmvaltool/cmorizers/data/formatters/datasets/modis.ncl)
+    * NCEP-NCAR-R1 (tas, ta, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep_ncar_r1.py)
+    * NIWA-BS (toz - esmvaltool/cmorizers/data/formatters/datasets/niwa_bs.ncl)
+    * PATMOS-x (clt - esmvaltool/cmorizers/data/formatters/datasets/patmos_x.ncl)
 
 #. recipe_perfmetrics_land_CMIP5.yml
 
     * CERES-EBAF (rlus, rlds, rsus, rsds - obs4MIPs)
-    * ESACCI-SOILMOISTURE (sm - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-SOILMOISTURE.ncl)
-    * FLUXCOM (gpp - esmvaltool/cmorizers/obs/cmorize_obs_fluxcom.py)
-    * JMA-TRANSCOM (nbp, fgco2 - esmvaltool/cmorizers/obs/cmorize_obs_jma_transcom.py)
-    * LAI3d (lai - esmvaltool/cmorizers/obs/cmorize_obs_lai3g.py)
-    * LandFlux-EVAL (et - esmvaltool/cmorizers/obs/cmorize_obs_landflux_eval.py)
-    * Landschuetzer2016 (fgco2 - esmvaltool/cmorizers/obs/cmorize_obs_landschuetzer2016.py)
-    * MTE (gpp - esmvaltool/cmorizers/obs/cmorize_obs_mte.py)
+    * ESACCI-SOILMOISTURE (sm - esmvaltool/cmorizers/data/formatters/datasets/esacci_soilmoisture.ncl)
+    * FLUXCOM (gpp - esmvaltool/cmorizers/data/formatters/datasets/fluxcom.py)
+    * JMA-TRANSCOM (nbp, fgco2 - esmvaltool/cmorizers/data/formatters/datasets/jma_transcom.py)
+    * LAI3d (lai - esmvaltool/cmorizers/data/formatters/datasets/lai3g.py)
+    * LandFlux-EVAL (et - esmvaltool/cmorizers/data/formatters/datasets/landflux_eval.py)
+    * Landschuetzer2016 (fgco2 - esmvaltool/cmorizers/data/formatters/datasets/landschuetzer2016.py)
+    * MTE (gpp - esmvaltool/cmorizers/data/formatters/datasets/mte.py)
 
 References
 ----------
@@ -171,7 +200,7 @@ Example plots
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_1.png
    :width: 90%
 
-   Annual cycle of globally averaged temperature at 850 hPa (time period 1980-2005) for different CMIP5 models (historical simulation) (thin colored lines) in comparison to ERA-Interim (thick yellow line) and NCEP (thick black dashed line) reanalysis data.
+   Annual cycle of globally averaged temperature at 850 hPa (time period 1980-2005) for different CMIP5 models (historical simulation) (thin colored lines) in comparison to ERA-Interim (thick yellow line) and NCEP-NCAR-R1 (thick black dashed line) reanalysis data.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_2.png
    :width: 90%

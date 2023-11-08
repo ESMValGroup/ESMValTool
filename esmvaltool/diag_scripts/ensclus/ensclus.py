@@ -49,7 +49,6 @@ def get_provenance_record(gatt, vatt, ancestor_files):
 def main(cfg):
     """Ensemble Clustering Diagnostics."""
     out_dir = cfg['work_dir']
-    write_plots = cfg['write_plots']
     input_data = cfg['input_data'].values()
     input_data = sorted_metadata(input_data, sort='recipe_dataset_index')
     files_dict = group_metadata(input_data, 'filename',
@@ -100,13 +99,10 @@ def main(cfg):
         cfg, list(files_dict.values())[0][0], ancestor_files=filenames_cat)
 
     # ###################### PLOT AND SAVE FIGURES ##########################
-    if write_plots:
-        plotfiles = ens_plots(out_dir, cfg['plot_dir'], name_outputs,
-                              cfg['numclus'], 'anomalies',
-                              cfg['output_file_type'], cfg['season'],
-                              cfg['area'], cfg['extreme'], max_plot_panels)
-    else:
-        plotfiles = []
+    plotfiles = ens_plots(out_dir, cfg['plot_dir'], name_outputs,
+                          cfg['numclus'], 'anomalies',
+                          cfg['output_file_type'], cfg['season'],
+                          cfg['area'], cfg['extreme'], max_plot_panels)
 
     for file in outfiles + plotfiles:
         with ProvenanceLogger(cfg) as provenance_logger:

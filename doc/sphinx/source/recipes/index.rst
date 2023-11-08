@@ -3,8 +3,27 @@
 Recipes
 -------
 
+A website displaying results produced with the latest release of
+ESMValTool for all available recipes can be accessed `here
+<https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/>`_.
+
 .. toctree::
    :maxdepth: 1
+
+.. _general_purpose_diags:
+
+General-purpose diagnostics
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Recipes that use highly customizable diagnostics which are designed to plot a
+large variety of input data.
+
+.. toctree::
+   :maxdepth: 1
+
+   recipe_monitor
+   recipe_psyplot
+   recipe_seaborn
 
 Atmosphere
 ^^^^^^^^^^
@@ -13,20 +32,23 @@ Atmosphere
 
    recipe_miles
    recipe_clouds
+   recipe_cmug_h2o
    recipe_crem
-   recipe_combined_climate_extreme_index
    recipe_consecdrydays
    recipe_deangelis15nat
    recipe_diurnal_temperature_index
    recipe_eady_growth_rate
    recipe_extreme_events
+   recipe_extreme_index
    recipe_eyring06jgr
    recipe_eyring13jgr
    recipe_gier20bg
    recipe_heatwaves_coldwaves
    recipe_hyint
+   recipe_iht_toa
    recipe_impact
    recipe_modes_of_variability
+   recipe_mpqb_xch4
    recipe_quantilebias
    recipe_bock20jgr
    recipe_spei
@@ -38,6 +60,7 @@ Atmosphere
    recipe_zmnam
    recipe_thermodyn_diagtool
    recipe_validation
+   recipe_radiation_budget
 
 Climate metrics
 ^^^^^^^^^^^^^^^
@@ -66,14 +89,18 @@ Future projections
    recipe_wenzel16jclim
    recipe_wenzel16nat
    recipe_tcr
+   recipe_tebaldi21esd
+   recipe_climate_change_hotspot
 
 IPCC
 ^^^^
 .. toctree::
    :maxdepth: 1
 
-   recipe_flato13ipcc
+   recipe_ipccwg1ar6ch3
+   recipe_ipccwg1ar5ch9
    recipe_collins13ipcc
+   recipe_examples
 
 Land
 ^^^^
@@ -96,7 +123,9 @@ Ocean
    recipe_arctic_ocean
    recipe_cvdp
    recipe_combined_indices
+   recipe_esacci_oc
    recipe_oceans
+   recipe_sea_surface_salinity
    recipe_russell18jgr
 
 Other
@@ -104,15 +133,26 @@ Other
 .. toctree::
    :maxdepth: 1
 
-   recipe_examples
    recipe_capacity_factor
    recipe_cmorizers
    recipe_ensclus
+   recipe_esacci_lst
+   recipe_examples
+   recipe_galytska23jgr
    recipe_multimodel_products
-   recipe_rainfarm
    recipe_pv_capacity_factor
-   recipe_seaice_feedback
+   recipe_rainfarm
    recipe_seaice
    recipe_seaice_drift
+   recipe_seaice_feedback
    recipe_shapeselect
+   recipes_testing
    recipe_toymodel
+
+Broken recipe list
+^^^^^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 1
+
+   broken_recipe_list
