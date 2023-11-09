@@ -12,9 +12,9 @@
    final cycle point = 10
     [[graph]]
 
-        R1 = """install_env_file => configure & build_container
-                configure & build_container => process<medium> => compare<medium>
-                configure & build_container => process<fast> => compare<fast>"""
+        R1 = """install_env_file => build_container => configure
+                configure => process<medium> => compare<medium>
+                configure => process<fast> => compare<fast>"""
 
 [runtime]
     [[root]]
@@ -38,7 +38,7 @@
         inherit = None, COMPUTE
 
     [[configure]]
-        platform = localhost
+        inherit = None, COMPUTE
         pre-script = "mkdir -p ${USER_CONFIG_DIR}"
         [[[environment]]]
             ROSE_TASK_APP = configure
