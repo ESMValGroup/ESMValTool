@@ -10,6 +10,7 @@ or esmvaltool
 """
 import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import dateutil
 import esmvalcore
@@ -41,23 +42,24 @@ GITHUB_REPO = {
 }
 
 PREVIOUS_RELEASE = {
-    'esmvalcore': datetime.datetime(2022, 7, 15, 18),
-    'esmvaltool': datetime.datetime(2022, 7, 25, 18),
+    'esmvalcore':
+    datetime.datetime(2023, 7, 4, 11, tzinfo=ZoneInfo("CET")),
+    'esmvaltool':
+    datetime.datetime(2022, 10, 28, 18, tzinfo=ZoneInfo("CET")),
 }
-
 
 LABELS = {
     'esmvalcore': (
+        'backwards incompatible change',  # important, keep at the top
+        'deprecated feature',  # important, keep at the top
+        'bug',  # important, keep at the top
         'api',
-        'backwards incompatible change',
-        'bug',
         'cmor',
         'containerization',
         'community',
+        'dask',
         'deployment',
-        'deprecated feature',
         'documentation',
-        'enhancement',
         'fix for dataset',
         'installation',
         'iris',
@@ -65,20 +67,21 @@ LABELS = {
         'release',
         'testing',
         'UX',
-        'variable derivation'
+        'variable derivation',
+        'enhancement',  # uncategorized, keep at the bottom
     ),
     'esmvaltool': (
-        'backwards incompatible change',
-        'bug',
+        'backwards incompatible change',  # important, keep at the top
+        'deprecated feature',  # important, keep at the top
+        'bug',  # important, keep at the top
         'community',
-        'deprecated feature',
         'documentation',
         'diagnostic',
         'preprocessor',
         'observations',
         'testing',
         'installation',
-        'enhancement',
+        'enhancement',  # uncategorized, keep at the bottom
     )
 }
 
@@ -87,6 +90,7 @@ TITLES = {
     'deprecated feature': 'Deprecations',
     'bug': 'Bug fixes',
     'cmor': 'CMOR standard',
+    'dask': 'Computational performance improvements',
     'diagnostic': 'Diagnostics',
     'fix for dataset': 'Fixes for datasets',
     'observations': 'Observational and re-analysis dataset support',
@@ -184,6 +188,7 @@ def _get_pull_requests(project):
         state='closed',
         sort='updated',
         direction='desc',
+        base='main',
     )
     return pulls
 
@@ -209,7 +214,8 @@ def _compose_note(pull):
 
 
 def main():
-    """Entry point for the scrip."""
+    """Entry point for the script."""
+
     def display(lines, out):
         text = "\n".join(lines) + "\n"
         out.write(text)

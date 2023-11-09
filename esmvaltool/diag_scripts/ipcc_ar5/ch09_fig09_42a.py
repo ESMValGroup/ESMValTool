@@ -28,7 +28,7 @@ matplotlib_style : str, optional
 save : dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 
 """
 
@@ -164,7 +164,7 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
 
 def main(cfg):
     """Run the diagnostic."""
-    sns.set(**cfg.get('seaborn_settings', {}))
+    sns.set_theme(**cfg.get('seaborn_settings', {}))
     input_data = deepcopy(list(cfg['input_data'].values()))
     input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
     project = list(group_metadata(input_data, 'project').keys())

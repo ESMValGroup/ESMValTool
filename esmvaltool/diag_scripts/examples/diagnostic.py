@@ -20,8 +20,10 @@ logger = logging.getLogger(Path(__file__).stem)
 
 def get_provenance_record(attributes, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-    caption = ("Average {long_name} between {start_year} and {end_year} "
-               "according to {dataset}.".format(**attributes))
+    # Associated recipe uses contains a caption string with placeholders
+    # like {long_name} that are now populated from attributes dictionary.
+    # Note that for simple recipes, caption can be set here as a simple string
+    caption = attributes['caption'].format(**attributes)
 
     record = {
         'caption': caption,
@@ -96,6 +98,8 @@ def main(cfg):
             output_basename = Path(input_file).stem
             if group_name != attributes['short_name']:
                 output_basename = group_name + '_' + output_basename
+            if "caption" not in attributes:
+                attributes['caption'] = input_file
             provenance_record = get_provenance_record(
                 attributes, ancestor_files=[input_file])
             plot_diagnostic(cube, output_basename, provenance_record, cfg)

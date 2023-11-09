@@ -64,7 +64,11 @@ preprocessors:
       standardize: false
     multi_model_statistics:
       span: full
-      statistics: [p10, p90]
+      statistics:
+        - operator: percentile
+          percent: 10
+        - operator: percentile
+          percent: 90
   preprocessor_local: &extract_NL
     extract_point:
       longitude: 6.25
@@ -91,7 +95,7 @@ diagnostics:
       global_matching:
         script: kcs/global_matching.py
         scenario_years: [2050, 2085]
-        scenario_percentiles: [P10, P90]
+        scenario_percentiles: [Percentile10, Percentile90]
 
   local_resampling:
     description: >

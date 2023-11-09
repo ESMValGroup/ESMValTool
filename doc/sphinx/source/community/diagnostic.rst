@@ -179,6 +179,10 @@ and finally it will store provenance information. Provenance information is stor
 and provided that the provenance tree is small, also plotted in an SVG file for
 human inspection.
 In addition to provenance information, a caption is also added to the plots.
+
+Provenance information from the recipe is automatically recorded by ESMValCore, whereas
+diagnostic scripts must include code specifically to record provenance. See below for 
+documentation of provenance attributes that can be included in a recipe.
 When contributing a diagnostic, please make sure it records the provenance,
 and that no warnings related to provenance are generated when running the recipe.
 To allow the ESMValCore to keep track of provenance (e.g. which input files
@@ -226,26 +230,32 @@ It is also possible to add more information for the implemented diagnostics usin
 - :code:`domains` a list of spatial coverage of the dataset
 - :code:`plot_types` a list of plot types if the diagnostic created a plot, e.g. error bar
 - :code:`statistics` a list of types of the statistic, e.g. anomaly
+- :code:`long_names` a list of long names of used variables, e.g. Air Temperature
 
 Arbitrarily named other items are also supported.
 
 Please see the (installed version of the) file
 `esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/config-references.yml>`_
 for all available information on each item, see :ref:`esmvalcore:config-ref` for
-an introduction.
-In this file, the information is written in the form of ``key: value``.
-Note that we add the keys to the diagnostics.
-The keys will automatically be replaced by their values in the final provenance records.
-For example, in the ``config-references.yml`` there is a category for types of the plots:
+an introduction. It is also possible to add custom provenance information by adding items to each category in this file.
+In this file, the information is written in the form
+
+.. code-block:: console
+
+  key:
+    value: description
+
+for example
 
 .. code-block:: console
 
   plot_types:
     errorbar: error bar plot
 
-In the diagnostics, we add the key as:
-:code:`plot_types: [errorbar]`
-It is also possible to add custom provenance information by adding items to each category in this file.
+To use these items, include them in the provenance record dictionary in the form 
+:code:`key: [value]`
+i.e. for the example above as
+:code:`'plot_types': ['errorbar']`.
 
 In order to communicate with the diagnostic script, two interfaces have been defined,
 which are described in the `ESMValCore documentation <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/interfaces.html>`_.
@@ -257,7 +267,7 @@ see the instructions and examples below on how to add provenance information:
 
 Recording provenance in a Python diagnostic script
 --------------------------------------------------
-Always use :meth:`esmvaltool.diag_scripts.shared.run_diagnostic` at the end of your script:
+Always use :func:`esmvaltool.diag_scripts.shared.run_diagnostic` at the end of your script:
 
 .. code-block:: python
 
@@ -265,16 +275,9 @@ Always use :meth:`esmvaltool.diag_scripts.shared.run_diagnostic` at the end of y
     with run_diagnostic() as config:
         main(config)
 
-And make use of a :class:`esmvaltool.diag_scripts.shared.ProvenanceLogger` to log provenance:
-
-.. code-block:: python
-
-  with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(diagnostic_file, provenance_record)
-
-The ``diagnostic_file`` can be obtained using :class:`esmvaltool.diag_scripts.shared.get_diagnostic_filename`.
-
-The ``provenance_record`` is a dictionary of provenance items, for example:
+Create a ``provenance_record`` for each diagnostic file (i.e. image or data 
+file) that the diagnostic script outputs. The ``provenance_record`` is a 
+dictionary of provenance items, for example:
 
 .. code-block:: python
 
@@ -293,9 +296,24 @@ The ``provenance_record`` is a dictionary of provenance items, for example:
         'statistics': ['mean'],
       }
 
+To save a matplotlib figure, use the convenience function 
+:func:`esmvaltool.diag_scripts.shared.save_figure`. Similarly, to save Iris cubes use 
+:func:`esmvaltool.diag_scripts.shared.save_data`. Both of these functions take
+``provenance_record`` as an argument and log the provenance accordingly.
 Have a look at the example Python diagnostic in
 `esmvaltool/diag_scripts/examples/diagnostic.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.py>`_
 for a complete example.
+
+For any other files created, you will need to make use of a 
+:class:`esmvaltool.diag_scripts.shared.ProvenanceLogger` to log provenance. Include the
+following code directly after the file is saved:
+
+.. code-block:: python
+
+  with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
+
+The full path of a ``diagnostic_file`` can be obtained using :class:`esmvaltool.diag_scripts.shared.get_diagnostic_filename`.
 
 Recording provenance in an NCL diagnostic script
 ------------------------------------------------

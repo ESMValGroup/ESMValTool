@@ -416,6 +416,14 @@ diagnostics:
          version: v2018_25-numgauge1, start_year: 1891, end_year: 2016}
     scripts: null
 
+  GPCP-SG:
+    description: GPCP-SG check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: GPCP-SG, project: OBS, mip: Amon, tier: 2, type: atmos,
+         version: 2.3,  start_year: 1979,  end_year: 2022}
+    scripts: null
 
   HadCRUT3:
     description: HadCRUT3 check
@@ -499,7 +507,7 @@ diagnostics:
       rsutcs:
     additional_datasets:
       - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
-         type: reanaly, version: 1, start_year: 1979, end_year: 2013} 
+         type: reanaly, version: 1, start_year: 1979, end_year: 2013}
     scripts: null
 
   Kadow2020:
@@ -544,6 +552,16 @@ diagnostics:
     scripts: null
 
 
+  MOBO-DIC2004-2019:
+    description: MOBO-DIC2004-2019 check
+    variables:
+      dissic:
+    additional_datasets:
+      - {dataset: MOBO-DIC2004-2019, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: '2.3', start_year: 2004, end_year: 2019}
+    scripts: null
+
+
   NCEP-NCAR-R1:
     description: NCEP-NCAR-R1 check
     variables:
@@ -583,9 +601,9 @@ diagnostics:
         mip: Amon
       tas:
         mip: Amon
-      tasmax:  
+      tasmax:
         mip: Amon
-      tasmin:  
+      tasmin:
         mip: Amon
       ts:
         mip: Amon
@@ -616,7 +634,7 @@ diagnostics:
     variables:
       clt:
       hur:
-      prw: 
+      prw:
       ta:
     additional_datasets:
       - {dataset: NCEP-DOE-R2, project: OBS6, mip: Amon, tier: 2,
@@ -624,18 +642,43 @@ diagnostics:
     scripts: null
 
 
-  NOAA-CIRES-20CR:
-    description: NOAA-CIRES-20CR check
+  NOAA-CIRES-20CR-V2:
+    description: NOAA-CIRES-20CR-V2 check
     variables:
       clt:
       clwvi:
       hus:
       prw:
-      rsut:
       rlut:
+      rsut:
     additional_datasets:
-      - {dataset: NOAA-CIRES-20CR, project: OBS6, mip: Amon, tier: 2,
+      - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: v2, start_year: 1871, end_year: 2012}
+    scripts: null
+
+  NOAA-MBL-CH4:
+    description: NOAA marine boundary layer CH4 check
+    variables:
+      ch4s:
+    additional_datasets:
+      - {dataset: NOAA-MBL-CH4, project: OBS6, mip: Amon, type: atmos, version: 1.0, tier: 2,
+         start_year: 1983, end_year: 2023}
+    scripts: null
+
+  NOAA-CIRES-20CR-V3:
+    description: NOAA-CIRES-20CR-V3 check
+    variables:
+      clt:
+      clwvi:
+      hus:
+      prw:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+    additional_datasets:
+      - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: v3, start_year: 1836, end_year: 2015}
     scripts: null
 
 
@@ -1587,6 +1630,38 @@ diagnostics:
          type: sat, version: v1, start_year: 1988, end_year: 2016}
     scripts: null
 
+  MERRA:
+    description: MERRA check
+    variables:
+      cli:
+      clivi:
+      clt:
+      clw:
+      clwvi:
+      hur:
+      hus:
+      lwp:
+      pr:
+      prw:
+      ps:
+      psl:
+      rlut:
+      rlutcs:
+      rsdt:
+      rsut:
+      rsutcs:
+      ta:
+      tas:
+      ts:
+      ua:
+      va:
+      wap:
+      zg:
+    additional_datasets:
+      - {dataset: MERRA, project: OBS, tier: 3, mip: Amon,
+         type: reanaly, version: 5.2.0, start_year: 1979, end_year: 2015}
+    scripts: null
+
 
   MERRA2:
     description: MERRA2 check
@@ -1710,6 +1785,21 @@ diagnostics:
         mip: Amon
       hur_monthly:
         short_name: hur
+        mip: Amon
+      cl_monthly:
+        short_name: cl
+        mip: Amon
+      clw_monthly:
+        short_name: clw
+        mip: Amon
+      cli_monthly:
+        short_name: cli
+        mip: Amon
+      clwvi_monthly:
+        short_name: clwvi
+        mip: Amon
+      clivi_monthly:
+        short_name: clivi
         mip: Amon
     additional_datasets:
       - {dataset: MERRA2, project: OBS6, tier: 3,

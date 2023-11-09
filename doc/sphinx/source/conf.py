@@ -32,6 +32,17 @@ on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
 # This is used for linking and such so we link to the thing we're building
 rtd_version = os.environ.get("READTHEDOCS_VERSION", "latest")
+if on_rtd:
+    # On Readthedocs, the conda environment used for building the documentation
+    # is not `activated`. As a consequence, a few critical environment variables
+    # are not set. Here, we hardcode them instead.
+    # In a normal environment, i.e. a local build of the documentation, the
+    # normal environment activation takes care of this.
+    rtd_project = os.environ.get("READTHEDOCS_PROJECT")
+    rtd_conda_prefix = f"/home/docs/checkouts/readthedocs.org/user_builds/{rtd_project}/conda/{rtd_version}"
+    os.environ["ESMFMKFILE"] = f"{rtd_conda_prefix}/lib/esmf.mk"
+    os.environ["PROJ_DATA"] = f"{rtd_conda_prefix}/share/proj"
+    os.environ["PROJ_NETWORK"] = "OFF"
 if rtd_version not in ["latest", "stable", "doc"]:
     rtd_version = "latest"
 
@@ -137,12 +148,21 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'pydata_sphinx_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-# html_theme_options = {}
+#
+# Avoid the following warning issued by pydata_sphinx_theme:
+#
+# "WARNING: The default value for `navigation_with_keys` will change to `False`
+# in the next release. If you wish to preserve the old behavior for your site,
+# set `navigation_with_keys=True` in the `html_theme_options` dict in your
+# `conf.py` file.Be aware that `navigation_with_keys = True` has negative
+# accessibility implications:
+# https://github.com/pydata/pydata-sphinx-theme/issues/1492"
+html_theme_options = {"navigation_with_keys": False}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []

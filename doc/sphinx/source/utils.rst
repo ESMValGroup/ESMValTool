@@ -116,24 +116,31 @@ Running multiple recipes
 ========================
 
 It is possible to run more than one recipe in one go.
+
 This can for example be achieved by using ``rose`` and/or ``cylc``, tools
-that may be available at your local HPC cluster.
+that may be available at your local HPC cluster. 
+
+In the case in which neither ``rose`` nor ``cylc`` are available at your HPC cluster,
+it is possible to automatically generate job submission scripts, as well as a summary of the
+job outputs using the scripts available in 
+`esmvaltool/utils/batch-jobs <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs>`__.
 
 Using cylc
 ----------
 
 A cylc suite for running all recipes is available in
-`esmvaltool/utils/testing/regression <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/testing/regression>`__
+`esmvaltool/utils/testing/regression <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/testing/regression>`__.
+This suite is configured to work with versions of cylc older than 8.0.0 .
 
 To prepare for using this tool:
 
-#. Log in to Mistral or another system that uses `slurm <https://slurm.schedmd.com/quickstart.html>`_
+#. Log in to a system that uses `slurm <https://slurm.schedmd.com/quickstart.html>`_
 #. Make sure the required CMIP and observational datasets are available and configured in config-user.yml
 #. Make sure the required auxiliary data is available (see :ref:`recipe documentation <recipes>`)
 #. Install ESMValTool
 #. Update config-user.yml so it points to the right data locations
 
-Next, get started with `cylc <https://cylc.github.io/cylc-doc/stable/html/tutorial.html>`_:
+Next, get started with `cylc <https://cylc.github.io/cylc-doc/7.9.3/html/index.html>`_:
 
 #. Run ``module load cylc``
 #. Register the suite with cylc ``cylc register run-esmvaltool-recipes ~/ESMValTool/esmvaltool/utils/testing/regression``
@@ -142,7 +149,8 @@ Next, get started with `cylc <https://cylc.github.io/cylc-doc/stable/html/tutori
 #. Run all recipes ``cylc run run-esmvaltool-recipes``
 #. View progress ``cylc log run-esmvaltool-recipes``, use e.g. ``cylc log run-all-esmvaltool-recipes examples-recipe_python_yml.1 --stdout`` to see the log of an individual esmvaltool run. Once the suite has finished running, you will see the message "WARNING - suite stalled" in the log.
 #. Stop the cylc run once everything is done ``cylc stop run-esmvaltool-recipes``.
-#. Create the index.html overview page by running ``python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/``
+
+To generate an overview page of the recipe runs, use the ``summarize.py`` :ref:`utility script <overview_page>`.
 
 Using Rose and cylc
 -------------------
@@ -204,6 +212,108 @@ A practical actual example of running the tool can be found on JASMIN:
 There you will find the run shell: ``run_example``, as well as an example
 how to set the configuration file. If you don't have Met Office credentials,
 a copy of `u-bd684` is always located in ``/home/users/valeriu/roses/u-bd684`` on Jasmin.
+
+.. _utils_batch_jobs:
+
+Using the scripts in `utils/batch-jobs`
+---------------------------------------
+
+In `utils/batch-jobs <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs>`_, 
+you can find a script to generate slurm submission scripts for all available recipes in ESMValTool,
+as well as a script to parse the job outputs.
+
+.. _utils_generate:
+
+Using `generate.py`
+...................
+
+The script `generate.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs/generate.py>`_, 
+is a simple python script that creates slurm submission scripts, and
+if configured, submits them to the HPC cluster. It has been tested in `DKRZ's Levante cluster <https://docs.dkrz.de/doc/levante/index.html>`_.
+
+The following parameters have to be set in the script in order to make it run:
+
+* ``env``, *str*: Name of the conda environment in which `esmvaltool` is installed.
+* ``mail``, *bool*: Whether or not to recieve mail notifications when a submitted job fails or finishes successfully. Default is ``False``.
+* ``submit``, *bool*: Wheter or not to automatically submit the job after creating the launch script. Default value is ``False``.
+* ``account``, *str*: Name of the DKRZ account in which the job will be billed.
+* ``outputs``, *str*: Name of the directory in which the job outputs (.out and .err files) are going to be saved. The outputs will be saved in `/home/user/<outputs>`.
+* ``conda_path``, *str*: Full path to the `mambaforge/etc/profile.d/conda.sh` executable.
+
+Optionally, the following parameters can be edited:
+
+* ``config_file``, *str*: Path to ``config-user.yml`` if default ``~/.esmvaltool/config-user.yml`` not used.
+* ``partition``, *str*: Name of the DKRZ partition used to run jobs. Default is ``interactive`` to minimize computing cost compared to ``compute`` for which nodes cannot be shared.
+* ``memory``, *str*: Amount of memory requested for each run. Default is ``64G`` to allow to run 4 recipes on the same node in parallel.
+* ``time``, *str*: Time limit. Default is ``04:00:00`` to increase the job priority. Jobs can run for up to 8 hours and 12 hours on the compute and interactive partitions, respectively.
+* ``default_max_parallel_tasks``, *int*: Default is ``8`` which works for most recipes. For other cases, an entry needs to be made to the ``MAX_PARALLEL_TASKS`` dictionary (see below).
+  
+The script will generate a submission script for all recipes using by default the ``interactive`` queue and with a time limit of 4h. In case a recipe
+may require of additional resources, they can be defined in the ``SPECIAL_RECIPES`` dictionary. The recipe name has to be given as a ``key`` in which the
+values are another dictionary. 
+The latter are used to specify the ``partition`` in which to submit the recipe, the new ``time`` limit and other ``memory`` requirements
+given by the slurm flags ``--mem``, ``--constraint`` or ``--ntasks``. In general, an entry in ``SPECIAL_RECIPES`` should be set as:
+
+.. code-block:: python
+
+   SPECIAL_RECIPES = {
+    'recipe_name': {
+        'partition': '#SBATCH --partition=<name_of_the_partition>',
+        'time': '#SBATCH --time=<custom_time_limit>',
+        'memory': '#SBATCH --mem=<custom_memory_requirement>' # --constraint or --nstasks can be used instead.
+        },
+   }
+
+Some recipes can only be run with a number of tasks less than ``default_max_parallel_tasks`` for various reasons (memory issues, diagnostic issues, CMIP3 data used).
+These recipes need to be added to the ``MAX_PARALLEL_TASKS`` dictionary with a specific ``max_parallel_tasks`` value.
+
+Note that the script has been optimized to use standard SLURM settings to run most recipes while minimizing the computational cost of the jobs and tailored runtime settings for resource-intensive recipes.
+It is only necessary to edit this script for recipes that have been added since the last release and cannot be run with the default settings.
+
+In the case in which ``submit`` is set to ``True``, but you want to exclude certain recipes from being submitted, their name can be added in the ``exclude`` list:
+
+.. code-block:: python
+
+   exclude = ['recipe_to_be_excluded_1', 'recipe_to_be_excluded_2']
+
+.. _utils_parse:
+
+Using `parse_recipes_outputs`
+.............................
+
+You can run this script (simply as a standalone Python script) after all recipes have been run, to gather a bird's eye view
+of the run status for each recipe; running the script provides you with a Markdown-formatted list of recipes that succeeded,
+recipes that failed due to a diagnostic error, and recipes that failed due to missing data (the two most common causes for
+recipe run failure). You should add a ``SLURM_OUT_DIR`` e.g. ``SLURM_OUT_DIR = "/home/b/b382109/output_v270"`` - this is the
+physical location of your SLURM output, after all recipes have finished running and a ``GLOB_PATTERN``, a glob pattern, 
+which is reccommended to be set to the ``*.out`` extension, so that the script finds all the ``.out`` files.
+
+To keep the script execution fast, it is recommended to use ``log_level: info`` in your config-user.yml file so that SLURM
+output files are rather small. This script also requires a list of recipes stored in a ``all_recipes.txt`` file, which can
+be obtained by running:
+
+.. code-block:: bash
+
+   for recipe in $(esmvaltool recipes list | grep '\.yml$'); do echo "$recipe"; done > all_recipes.txt
+
+.. _overview_page:
+
+Overview of recipe runs
+=======================
+
+To create overview webpages of a set of recipe runs, run:
+
+.. code-block:: python
+
+   python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/
+
+This will generate 2 html files:
+
+-  ``index.html`` that displays a summary of each recipe run, with a title and
+   a representative plot, a short description of the aim of the recipe, and
+   links to each individual run.
+-  ``debug.html`` that provides an overview table of successful and failed runs
+   with links to each individual run, and computing resources used for each run.
 
 .. _compare_recipe_runs:
 

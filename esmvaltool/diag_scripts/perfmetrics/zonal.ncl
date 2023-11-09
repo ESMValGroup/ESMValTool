@@ -1,6 +1,6 @@
 ; #############################################################################
 ; PROCEDURE FOR THE ZONAL PLOT OF THE PERFORMANCE METRICS
-; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
+; Authors: Mattia Righi (DLR, Germany) and Franziska Winterstein (DLR, Germany)
 ; ESMVal project
 ; #############################################################################
 
@@ -14,7 +14,13 @@ begin
   modidx = ispan(0, nDatasets - 1, 1)
   modidx := array_append_record(ref_ind, modidx(ind(modidx.ne.ref_ind)), 0)
 
-  annots = project_style(info_items, diag_script_info, "annots")
+  if (isatt(diag_script_info, "annots")) then
+    annots = metadata_att_as_array(info_items, diag_script_info@annots)
+  else
+    annots = project_style(info_items, diag_script_info, "annots")
+  end if
+
+  print(annots)
 
   ; Loop over datasets
   do ii = 0, dimsizes(modidx) - 1
@@ -128,7 +134,8 @@ begin
                    (/"mean", "stddev"/), \
                    diag_script_info@region, \
                    "zonal", \
-                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
+                   (/"winterstein_franziska", "righi_mattia", \
+                     "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 
@@ -203,7 +210,8 @@ begin
                    (/"mean", "stddev", "diff"/), \
                    diag_script_info@region, \
                    "zonal", \
-                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
+                   (/"winterstein_franziska", "righi_mattia", \
+                     "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 

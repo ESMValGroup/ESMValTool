@@ -91,6 +91,11 @@ authors:
     given-names: Lisa
     orcid: "https://orcid.org/0000-0001-7058-5938"
   -
+    affiliation: "MetOffice, UK"
+    family-names: Bodas-Salcedo
+    given-names: Alejandro
+    orcid: "https://orcid.org/0000-0002-7890-2536"
+  -
     affiliation: "BSC, Spain"
     family-names: Caron
     given-names: Louis-Philippe
@@ -182,6 +187,11 @@ authors:
     given-names: Birgit
     orcid: "https://orcid.org/0000-0003-2724-709X"
   -
+    affiliation: "DLR, Germany"
+    family-names: Heuer
+    given-names: Helge
+    orcid: "https://orcid.org/0000-0003-2411-7150"
+  -
     affiliation: "BSC, Spain"
     family-names: Hunter
     given-names: Alasdair
@@ -199,6 +209,10 @@ authors:
     affiliation: "MPI for Biogeochemistry, Germany"
     family-names: Koirala
     given-names: Sujan
+  -
+    affiliation: "DLR, Germany"
+    family-names: Kuehbacher
+    given-names: Birgit
   -
     affiliation: "BSC, Spain"
     family-names: Lledó
@@ -301,6 +315,10 @@ authors:
     given-names: Katja
     orcid: "https://orcid.org/0000-0001-6133-7801"
   -
+    affiliation: "DLR, Germany"
+    family-names: Sarauer
+    given-names: Ellen
+  -
     affiliation: "University of Reading, UK"
     family-names: Roberts
     given-names: Charles
@@ -349,13 +367,32 @@ authors:
     family-names: Winterstein
     given-names: Franziska
     orcid: "https://orcid.org/0000-0002-2406-4936"
+  -
+    affiliation: "ACCESS-NRI, Australia"
+    family-names: Beucher
+    given-names: Romain
+    orcid: "https://orcid.org/0000-0003-3891-5444"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Kraft
+    given-names: Jeremy
+  -
+    affiliation: "University of Bremen, Germany"
+    family-names: Ruhe
+    given-names: Lukas
+    orcid: "https://orcid.org/0000-0001-6349-9118"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Bonnet
+    given-names: Pauline
+    orcid: "https://orcid.org/0000-0003-3780-0784"
 
 cff-version: 1.2.0
-date-released: 2022-10-28
+date-released: 2023-07-06
 doi: "10.5281/zenodo.3401363"
 license: "Apache-2.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/ESMValGroup/ESMValTool/"
 title: ESMValTool
-version: "v2.7.0"
+version: "v2.9.0"
 ...
