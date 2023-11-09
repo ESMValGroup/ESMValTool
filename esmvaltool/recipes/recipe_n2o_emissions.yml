@@ -39,6 +39,7 @@ diagnostics:
     variables:
       Dpn2o:
         preprocessor: regrid_and_mean_processor
+        reference_dataset: Yang2020
     scripts:
       Dpn2o_plot:
         script: n2o_emissions/dpn2o_plot.py
