@@ -38,3 +38,7 @@ variables:
     mip: Emon
     raw: pet
     raw_units: kg m-2 day-1
+  clt:
+    mip: Amon
+    raw: cld
+    raw_units: percent

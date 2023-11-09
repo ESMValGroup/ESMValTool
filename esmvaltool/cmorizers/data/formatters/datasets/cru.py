@@ -15,7 +15,7 @@ Last access
 
 Download and processing instructions
     Download the following files:
-    ``{raw_name}/cru_ts4.0{x}.1901.{end_year}.{raw_name}.dat.nc.gz`` 
+    ``{raw_name}/cru_ts4.{X}.1901.{end_year}.{raw_name}.dat.nc.gz``
     where ``{raw_name}`` is the name of the desired variable(s) or run
     ``esmvaltool data download CRU`` for the latest version
 """
@@ -37,8 +37,10 @@ logger = logging.getLogger(__name__)
 
 
 def _center_timecoord(cube):
-    """CRU timepoints are not in the center of the month.
-    Added bounds by utils.fix_coords are incorrect. #1981
+    """Set time coordinates to exact center of each month
+
+    CRU timepoints are not in the center of the month and
+    added bounds by utils.fix_coords are incorrect. #1981
     """
     time = cube.coord("time")
     times = time.units.num2date(time.points)
@@ -61,8 +63,8 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     version = cfg["attributes"]["version"]
     cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
-    # Add stations
-    if not version in ["TS4.02"]:
+    # Add stations for most versions
+    if version not in ["TS4.02"]:
         try:
             stations = iris.load_cube(filepath, NameConstraint(var_name="stn"))
             stn_coord = AuxCoord(
