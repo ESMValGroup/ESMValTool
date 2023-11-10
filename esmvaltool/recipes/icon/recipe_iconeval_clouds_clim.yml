@@ -1,0 +1,269 @@
+# ESMValTool
+---
+documentation:
+  description: ICON evaluation clouds (climatologies)
+  authors:
+    - lauer_axel
+
+  title: ICON evaluation cloud climatologies
+
+
+#datasets:
+#  - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}], var_type: atm_2d_ml}
+#  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}]}
+
+
+preprocessors:
+
+  pp_global: &global_settings
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    extract_region:
+      start_latitude: -90
+      end_latitude: 90
+      start_longitude: 0
+      end_longitude: 360
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: month
+
+  pp_SEPacific: &sep_settings
+    <<: *global_settings 
+    extract_region:
+      start_longitude: 265
+      end_longitude: 275
+      start_latitude: -25
+      end_latitude: -5
+    mask_landsea:
+      mask_out: land
+
+  pp_SouthernOcean: &so_settings
+    <<: *global_settings 
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -65
+      end_latitude: -30
+    mask_landsea:
+      mask_out: land
+
+  pp_Tropics: &trop_settings
+    <<: *global_settings 
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
+
+  pp_StormTracks: &st_settings
+    <<: *global_settings 
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 45
+      end_latitude: 60
+
+  pp_diurn_Tropics:
+    <<: *trop_settings 
+    climate_statistics:
+      period: hour
+
+  pp_diurn_SEPacific:
+    <<: *sep_settings 
+    climate_statistics:
+      period: hour
+
+
+diagnostics:
+
+  anncyc:
+    description: Plot annual cycles including reference datasets.
+    variables:
+      clt_global: &clt_settings
+        preprocessor: pp_global
+        short_name: clt
+        mip: Amon
+        frequency: mon
+        timerange: '20000101/20020101'
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2}
+      clt_tropics:
+        <<: *clt_settings
+      clt_sepacific:
+        <<: *clt_settings
+        preprocessor: pp_SEPacific
+      clt_southerocean:
+        <<: *clt_settings
+        preprocessor: pp_SouthernOcean
+      clt_stormtracks:
+        <<: *clt_settings
+        preprocessor: pp_StormTracks
+      clivi_global: &clivi_settings
+        preprocessor: pp_global
+        short_name: clivi
+        mip: Amon
+        frequency: mon
+        timerange: '20000101/20020101'
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2}
+      clivi_tropics:
+        <<: *clivi_settings
+      clivi_sepacific:
+        <<: *clivi_settings
+        preprocessor: pp_SEPacific
+      clivi_southerocean:
+        <<: *clivi_settings
+        preprocessor: pp_SouthernOcean
+      clivi_stormtracks:
+        <<: *clivi_settings
+        preprocessor: pp_StormTracks
+      lwp_global: &lwp_settings
+        preprocessor: pp_global
+        short_name: lwp
+        derive: true
+        mip: Amon
+        frequency: mon
+        timerange: '20000101/20020101'
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2}
+      lwp_tropics:
+        <<: *lwp_settings
+      lwp_sepacific:
+        <<: *lwp_settings
+        preprocessor: pp_SEPacific
+      lwp_southerocean:
+        <<: *lwp_settings
+        preprocessor: pp_SouthernOcean
+      lwp_stormtracks:
+        <<: *lwp_settings
+        preprocessor: pp_StormTracks
+      swcre_global: &swcre_settings
+        preprocessor: pp_global
+        short_name: swcre
+        derive: true
+        force_derivation: true
+        mip: Amon
+        frequency: mon
+        timerange: '20000101/20020101'
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2}
+      swcre_tropics:
+        <<: *swcre_settings
+      swcre_sepacific:
+        <<: *swcre_settings
+        preprocessor: pp_SEPacific
+      swcre_southerocean:
+        <<: *swcre_settings
+        preprocessor: pp_SouthernOcean
+      swcre_stormtracks:
+        <<: *swcre_settings
+        preprocessor: pp_StormTracks
+      lwcre_global: &lwcre_settings
+        preprocessor: pp_global
+        short_name: lwcre
+        derive: true
+        force_derivation: true
+        mip: Amon
+        frequency: mon
+        timerange: '20000101/20020101'
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2}
+      lwcre_tropics:
+        <<: *lwcre_settings
+      lwcre_sepacific:
+        <<: *lwcre_settings
+        preprocessor: pp_SEPacific
+      lwcre_southerocean:
+        <<: *lwcre_settings
+        preprocessor: pp_SouthernOcean
+      lwcre_stormtracks:
+        <<: *lwcre_settings
+        preprocessor: pp_StormTracks
+    additional_datasets:
+      - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1v1i1p1l1f1, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}], var_type: atm_2d_ml}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}]}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        group_variables_by: variable_group
+        plots:
+          annual_cycle:
+            legend_kwargs:
+              loc: upper right
+            plot_kwargs:
+              'ICON':  # = plot_label since 'facet_used_for_labels: plot_label'
+                color: green
+              'MPI-ESM1-2-LR':  # = plot_label since 'facet_used_for_labels: plot_label'
+                color: red
+              'ESACCI-CLOUD':
+                color: blue
+            pyplot_kwargs:
+              title: '{short_name}'
+
+  diurncyc:
+    description: Plot diurnal cycles including reference datasets.
+    variables:
+      clt_tropics: &clt_settings
+        preprocessor: pp_diurn_Tropics
+        short_name: clt
+        mip: Amon
+        frequency: 1hr
+        timerange: '19790602/19790604'
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2}
+      clt_sepacific:
+        <<: *clt_settings
+        preprocessor: pp_SEPacific
+      clt_southerocean:
+        <<: *clt_settings
+        preprocessor: pp_SouthernOcean
+      clt_stormtracks:
+        <<: *clt_settings
+        preprocessor: pp_StormTracks
+      clivi_tropics: &clivi_settings
+        preprocessor: pp_Tropics
+        short_name: clivi
+        mip: Amon
+        frequency: mon
+        timerange: '20000101/20020101'
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2}
+      clivi_sepacific:
+        <<: *clivi_settings
+        preprocessor: pp_SEPacific
+      clivi_southerocean:
+        <<: *clivi_settings
+        preprocessor: pp_SouthernOcean
+      clivi_stormtracks:
+        <<: *clivi_settings
+        preprocessor: pp_StormTracks
+    additional_datasets:
+      - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip-rad_R2B5_r1v1i1p1l1f1, supplementary_variables: [{short_name: areacella, skip: true}]}
+##      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, supplementary_variables: [{short_name: areacella, skip: true}]}
+    scripts: null
+#      allplots:
+#        script: monitor/multi_datasets.py
+#        plot_folder: '{plot_dir}'
+#        plot_filename: '{plot_type}_{real_name}_{mip}'
+#        plots:
+#          annual_cycle:
+#            legend_kwargs:
+#              loc: upper right
+#            plot_kwargs:
+#              'ICON':  # = plot_label since 'facet_used_for_labels: plot_label'
+#                color: C0
+#              'MPI-ESM1-2-LR':  # = plot_label since 'facet_used_for_labels: plot_label'
+#                color: red
+#              'ESACCI-CLOUD':
+#                color: blue
