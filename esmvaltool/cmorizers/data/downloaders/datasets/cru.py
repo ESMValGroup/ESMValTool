@@ -33,13 +33,18 @@ def download_dataset(
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
-    for var in ['tmp', 'pre', 'pet', 'tmn', 'tmx',
-        'cld', 
-    ]:
+    for var in ['tmp', 'pre', 'pet', 'tmn', 'tmx', 'cld']:
         downloader.download_file(
             "https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.07/"
             f"cruts.2304141047.v4.07/{var}/"
             f"cru_ts4.07.1901.2022.{var}.dat.nc.gz",
             wget_options=[],
         )
+    # for var in ['tmp', 'pre']:  # v TS4.02
+    #     downloader.download_file(
+    #         "https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/"
+    #         f"cruts.1811131722.v4.02/{var}/"
+    #         f"cru_ts4.02.1901.2017.{var}.dat.nc.gz",
+    #         wget_options=[],
+    #     )
     unpack_files_in_folder(downloader.local_folder)

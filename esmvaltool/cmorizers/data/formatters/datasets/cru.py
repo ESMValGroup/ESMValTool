@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 
 def _center_timecoord(cube):
-    """Set time coordinates to exact center of each month
+    """Set time coordinates to exact center of each month.
 
     CRU timepoints are not in the center of the month and
     added bounds by utils.fix_coords are incorrect. #1981
@@ -92,7 +92,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     utils.fix_coords(cube)
     if "height2m" in cmor_info.dimensions:
         utils.add_height2m(cube)
-    if not version in ["TS4.02"]:
+    if version not in ["TS4.02"]:
         _center_timecoord(cube)
 
     # Fix metadata

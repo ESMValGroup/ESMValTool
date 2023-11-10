@@ -1,10 +1,12 @@
 ---
 # Filename (will be extended by variable name)
+# filename: 'cru_ts4.02.1901.2017.{raw_name}.dat.nc'
 filename: 'cru_ts4.07.1901.2022.{raw_name}.dat.nc'
 
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: CRU
+  # version: TS4.02
   version: 'TS4.07'
   tier: 2
   modeling_realm: reanaly
