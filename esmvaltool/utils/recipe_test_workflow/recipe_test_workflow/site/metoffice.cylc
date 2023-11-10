@@ -6,6 +6,11 @@
             --wckey = RTW
             --ntasks = {{ MAX_PARALLEL_TASKS }}
 
+    [[build_container]]
+        execution time limit = PT30M
+        [[[directives]]]
+            --mem = 2G
+
     [[process<fast>]]
         execution time limit = PT2M
         [[[directives]]]

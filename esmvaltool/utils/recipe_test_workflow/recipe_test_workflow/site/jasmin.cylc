@@ -6,8 +6,14 @@
             --wckey = RTW
             --ntasks = 1
 
+    #TODO explore inheriting fast/slow into flow.cylc instead of defining build and config here
     [[build_container]]
-        execution time limit = PT1H
+        execution time limit = PT30M
+        [[[directives]]]
+            --mem = 2G
+
+    [[configure]]
+        execution time limit = PT2M
         [[[directives]]]
             --mem = 2G
 
