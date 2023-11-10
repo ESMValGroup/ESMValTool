@@ -32,7 +32,7 @@ preprocessors:
       period: month
 
   pp_SEPacific: &sep_settings
-    <<: *global_settings 
+    <<: *global_settings
     extract_region:
       start_longitude: 265
       end_longitude: 275
@@ -42,7 +42,7 @@ preprocessors:
       mask_out: land
 
   pp_SouthernOcean: &so_settings
-    <<: *global_settings 
+    <<: *global_settings
     extract_region:
       start_longitude: 0
       end_longitude: 360
@@ -52,7 +52,7 @@ preprocessors:
       mask_out: land
 
   pp_Tropics: &trop_settings
-    <<: *global_settings 
+    <<: *global_settings
     extract_region:
       start_longitude: 0
       end_longitude: 360
@@ -60,7 +60,7 @@ preprocessors:
       end_latitude: 30
 
   pp_StormTracks: &st_settings
-    <<: *global_settings 
+    <<: *global_settings
     extract_region:
       start_longitude: 0
       end_longitude: 360
@@ -68,12 +68,12 @@ preprocessors:
       end_latitude: 60
 
   pp_diurn_Tropics:
-    <<: *trop_settings 
+    <<: *trop_settings
     climate_statistics:
       period: hour
 
   pp_diurn_SEPacific:
-    <<: *sep_settings 
+    <<: *sep_settings
     climate_statistics:
       period: hour
 
@@ -208,62 +208,3 @@ diagnostics:
                 color: blue
             pyplot_kwargs:
               title: '{short_name}'
-
-  diurncyc:
-    description: Plot diurnal cycles including reference datasets.
-    variables:
-      clt_tropics: &clt_settings
-        preprocessor: pp_diurn_Tropics
-        short_name: clt
-        mip: Amon
-        frequency: 1hr
-        timerange: '19790602/19790604'
-        additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-             version: AVHRR-AMPM-fv3.0, tier: 2}
-      clt_sepacific:
-        <<: *clt_settings
-        preprocessor: pp_SEPacific
-      clt_southerocean:
-        <<: *clt_settings
-        preprocessor: pp_SouthernOcean
-      clt_stormtracks:
-        <<: *clt_settings
-        preprocessor: pp_StormTracks
-      clivi_tropics: &clivi_settings
-        preprocessor: pp_Tropics
-        short_name: clivi
-        mip: Amon
-        frequency: mon
-        timerange: '20000101/20020101'
-        additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-             version: AVHRR-AMPM-fv3.0, tier: 2}
-      clivi_sepacific:
-        <<: *clivi_settings
-        preprocessor: pp_SEPacific
-      clivi_southerocean:
-        <<: *clivi_settings
-        preprocessor: pp_SouthernOcean
-      clivi_stormtracks:
-        <<: *clivi_settings
-        preprocessor: pp_StormTracks
-    additional_datasets:
-      - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip-rad_R2B5_r1v1i1p1l1f1, supplementary_variables: [{short_name: areacella, skip: true}]}
-##      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, supplementary_variables: [{short_name: areacella, skip: true}]}
-    scripts: null
-#      allplots:
-#        script: monitor/multi_datasets.py
-#        plot_folder: '{plot_dir}'
-#        plot_filename: '{plot_type}_{real_name}_{mip}'
-#        plots:
-#          annual_cycle:
-#            legend_kwargs:
-#              loc: upper right
-#            plot_kwargs:
-#              'ICON':  # = plot_label since 'facet_used_for_labels: plot_label'
-#                color: C0
-#              'MPI-ESM1-2-LR':  # = plot_label since 'facet_used_for_labels: plot_label'
-#                color: red
-#              'ESACCI-CLOUD':
-#                color: blue
