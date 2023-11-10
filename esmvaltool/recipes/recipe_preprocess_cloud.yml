@@ -41,11 +41,11 @@ preprocessors:
       mask_out: land
     anomalies:
       period: daily
-      #area_statistics: &area_mean
-      #  operator: mean
-    regrid:
-      scheme: area_weighted
-      target_grid: 1x1      
+    area_statistics: &area_mean
+      operator: mean
+      #regrid:
+      #  scheme: area_weighted
+      #  target_grid: 1x1      
 
 
 diagnostics:
@@ -53,37 +53,47 @@ diagnostics:
   south_east_pacific_clouds:
     description: Create timeseries.
     variables:
-      clt: &var
+            #clt: &var
+            #  preprocessor: south_east_pacific
+            #  mip: day
+            #  frequency: day
+            #  additional_datasets: *esacci
+            #clwvi:
+            #  <<: *var
+            #  mip: CFday
+            #cod:
+            #  <<: *var
+            #  mip: AERday
+            #ctp:
+            #  <<: *var
+            #  mip: day
+            #reff:
+            #  <<: *var
+            #  mip: day
+            #rlut:
+            #  <<: *var
+            #  mip: day
+            #psl: &var2
+            #  preprocessor: south_east_pacific
+            #  frequency: day
+            #  mip: day
+            #  additional_datasets: *era5
+      ta700: 
         preprocessor: south_east_pacific
-        mip: day
         frequency: day
-        additional_datasets: *esacci
-      clwvi:
-        <<: *var
-        mip: CFday
-      cod:
-        <<: *var
-        mip: AERday
-      ctp:
-        <<: *var
-        mip: day
-      reff:
-        <<: *var
-        mip: day
-      rlut:
-        <<: *var
-        mip: day
-      psl: &var2
-        preprocessor: south_east_pacific
-        frequency: day
-        mip: day
+        mip: CFday 
         additional_datasets: *era5
-      tos:
-        <<: *var2
-        mip: day
-      wap500:
-        <<: *var2
-        mip: CFday
+      ta850: 
+        preprocessor: south_east_pacific
+        frequency: day
+        mip: Eday 
+        additional_datasets: *era5
+        #tos:
+        #  <<: *var2
+        #  mip: day
+        #wap500:
+        #  <<: *var2
+        #  mip: CFday
         #zg500:
         #  <<: *var2
         #  mip: day
@@ -93,13 +103,9 @@ diagnostics:
     scripts: 
       timeseries:
         script: causal_clouds_timeseries.py
-        quickplot:
-          plot_type: plot
-          #script: seaborn_diag.py
-          #seaborn_func: lineplot
-          #seaborn_kwargs:
-          #  x: time
-          #  y: clt
+        compute:
+          - theta700
+          - theta850
         
 
 

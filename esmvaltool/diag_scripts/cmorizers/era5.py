@@ -22,7 +22,7 @@ def main(cfg):
         basename = stem.replace('native', 'OBS')
 
         if info['diagnostic'] == 'daily':
-            for mip in ['day', 'Eday', 'CFday']:
+            for mip in ['day', 'Eday', 'CFday', 'AERday']:
                 if CMOR_TABLES['CMIP6'].get_variable(mip, info['short_name']):
                     basename = basename.replace('E1hr', mip)
             basename = basename.replace('E1hr', 'day')

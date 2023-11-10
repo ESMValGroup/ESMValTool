@@ -30,7 +30,7 @@ datasets:
 preprocessors:
   add_one_day: &add_one_day
     extract_time:
-      start_year: 2004
+      start_year: 2000
       start_month: 1
       start_day: 1
       end_year: 2005
@@ -59,37 +59,37 @@ diagnostics:
         script: cmorizers/era5.py
     variables:
             #prw:
-            #  mip: Eday
+            #  mip: E1hr
             #  era5_name: total_column_water_vapour
             #  era5_freq: hourly
             #  preprocessor: daily_mean
             #psl:
-            #  mip: day
+            #  mip: E1hr
             #  era5_name: mean_sea_level_pressure
             #  era5_freq: hourly
             #  preprocessor: daily_mean
-            #ta700:
-            #    mip: E1hr #CFday
-            #    era5_name: temperature
-            #    era5_freq: hourly
-            #    preprocessor: daily_mean
-          #ta850:
-          #    mip: E1hr #Eday
-          #    era5_name: temperature
-          #    era5_freq: hourly
-          #    preprocessor: daily_mean
+      ta700:
+          mip: E1hr
+          era5_name: temperature
+          era5_freq: hourly
+          preprocessor: daily_mean
+      ta850:
+          mip: E1hr
+          era5_name: temperature
+          era5_freq: hourly
+          preprocessor: daily_mean
           #tos:
-          #    mip: Eday
+          #    mip: E1hr
           #    era5_name: sea_surface_temperature
           #    era5_freq: hourly
           #    preprocessor: daily_mean
-      wap500:
-          mip: E1hr #CFday
-          era5_name: vertical_velocity
-          era5_freq: hourly
-          preprocessor: daily_mean
+          # wap500:
+          #     mip: E1hr
+          #     era5_name: vertical_velocity
+          #     era5_freq: hourly
+          #     preprocessor: daily_mean
           #zg500:
-          #    mip: AERday
+          #    mip: E1hr
           #    era5_name: geopotential
           #    era5_freq: hourly
           #    preprocessor: daily_mean

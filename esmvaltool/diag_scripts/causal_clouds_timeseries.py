@@ -27,21 +27,16 @@ def get_provenance_record(attributes, ancestor_files):
     record = {
         'caption': caption,
         'statistics': ['mean'],
-        'domains': ['global'],
-        'plot_types': ['zonal'],
-        'authors': [
-            'andela_bouwe',
-            'righi_mattia',
-        ],
-        'references': [
-            'acknow_project',
-        ],
+        'domains': ['regional'],
+        'plot_types': ['times'],
+        'authors': ['bock_lisa'],
+        'references': ['cmug'],
         'ancestors': ancestor_files,
     }
     return record
 
 
-def compute_diagnostic(filename):
+def read_data(filename):
     """Compute an example diagnostic."""
     logger.debug("Loading %s", filename)
     cube = iris.load_cube(filename)
@@ -80,43 +75,104 @@ def plot_diagnostic(cube, basename, provenance_record, cfg):
 
     save_figure(basename, provenance_record, cfg)
 
+
+def potential_temperature(temperature, plev):
+    """Compute potential temperature.
+
+    Parameters
+    ----------
+    temperature: iris.cube.Cube
+        Cube of air temperature ta.
+    plev: iris.coords.Coord
+        Pressure level coordinates
+
+    Returns
+    -------
+    theta: iris.cube.Cube
+        Cube of potential temperature theta.
+    """
+
+    """Reference Pressure [hPa]."""
+    reference_pressure = 1000.
+    pressure = (reference_pressure / plev)**(2 / 7)
+    theta = temperature * pressure
+    theta.long_name = 'potential_air_temperature'
+
+    return theta
+    
+
+def calculate_theta(var, input_data, cfg):
+    # This function calculates the potential temperature for one level.
+
+    t_data = select_metadata(input_data, short_name = 'ta'+var[-3:])
+    t_file = t_data[0]['filename']
+    temperature = read_data(t_file)
+
+    pressure = float(var[-3:])
+
+    theta_x = potential_temperature(temperature, pressure)  
+
+    # Write output
+    logger.info("Saving data.")
+    basename = var
+    if "caption" not in t_data[0]:
+        t_data[0]['caption'] = t_file
+    provenance_record = get_provenance_record(
+        t_data[0], ancestor_files=[t_file])
+    save_data(basename, provenance_record, cfg, theta_x)
+
+    return theta_x
+
+
 def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
-    # Demonstrate use of metadata access convenience functions.
-    selection = select_metadata(input_data, short_name='tas', project='CMIP5')
-    logger.info("Example of how to select only CMIP5 temperature data:\n%s",
-                pformat(selection))
+    ## Demonstrate use of metadata access convenience functions.
+    #selection = select_metadata(input_data, short_name='tas', project='CMIP5')
+    #logger.info("Example of how to select only CMIP5 temperature data:\n%s",
+    #            pformat(selection))
 
-    selection = sorted_metadata(selection, sort='dataset')
-    logger.info("Example of how to sort this selection by dataset:\n%s",
-                pformat(selection))
+    #selection = sorted_metadata(selection, sort='dataset')
+    #logger.info("Example of how to sort this selection by dataset:\n%s",
+    #            pformat(selection))
 
-    grouped_input_data = group_metadata(input_data,
-                                        'variable_group',
-                                        sort='dataset')
-    logger.info(
-        "Example of how to group and sort input data by variable groups from "
-        "the recipe:\n%s", pformat(grouped_input_data))
+    #grouped_input_data = group_metadata(input_data,
+    #                                    'variable_group',
+    #                                    sort='dataset')
+    #logger.info(
+    #    "Example of how to group and sort input data by variable groups from "
+    #    "the recipe:\n%s", pformat(grouped_input_data))
 
-    # Example of how to loop over variables/datasets in alphabetical order
-    groups = group_metadata(input_data, 'variable_group', sort='dataset')
-    for group_name in groups:
-        logger.info("Processing variable %s", group_name)
-        for attributes in groups[group_name]:
-            logger.info("Processing dataset %s", attributes['dataset'])
-            input_file = attributes['filename']
-            cube = compute_diagnostic(input_file)
+    ## Example of how to loop over variables/datasets in alphabetical order
+    #groups = group_metadata(input_data, 'variable_group', sort='dataset')
+    #for group_name in groups:
+    #    logger.info("Processing variable %s", group_name)
+    #    for attributes in groups[group_name]:
+    #        logger.info("Processing dataset %s", attributes['dataset'])
+    #        input_file = attributes['filename']
+    #        cube = compute_diagnostic(input_file)
 
-            output_basename = Path(input_file).stem
-            if group_name != attributes['short_name']:
-                output_basename = group_name + '_' + output_basename
-            if "caption" not in attributes:
-                attributes['caption'] = input_file
-            provenance_record = get_provenance_record(
-                attributes, ancestor_files=[input_file])
-            plot_diagnostic(cube, output_basename, provenance_record, cfg)
+    #        output_basename = Path(input_file).stem
+    #        if group_name != attributes['short_name']:
+    #            output_basename = group_name + '_' + output_basename
+    #        if "caption" not in attributes:
+    #            attributes['caption'] = input_file
+    #        provenance_record = get_provenance_record(
+    #            attributes, ancestor_files=[input_file])
+    #        if cfg.get('plot_timeseries'):
+    #            plot_diagnostic(cube, output_basename, provenance_record, cfg)
+
+    if cfg.get('compute'):
+        for var in cfg['compute']:
+            print(var)
+            if var not in ['theta700', 'theta850']:
+                logger.error('Computation of %s is not available...', var)
+            if 'theta' in var:
+                theta = calculate_theta(var, input_data, cfg)
+
+
+
 
 
 if __name__ == '__main__':
