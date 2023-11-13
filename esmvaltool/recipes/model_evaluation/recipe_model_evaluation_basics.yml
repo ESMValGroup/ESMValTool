@@ -28,7 +28,6 @@ timerange_for_models: &time_period
 preprocessors:
 
   timeseries_regular: &pp_timeseries_regular
-    custom_order: true
     regrid:
       target_grid: 2x2
       scheme:
@@ -60,7 +59,6 @@ preprocessors:
       units: mm day-1
 
   zonal_mean:
-    custom_order: true
     climate_statistics:
       period: full
     extract_levels:
@@ -83,9 +81,9 @@ diagnostics:
     description: Plot climatology maps including reference datasets for tas.
     variables:
       tas:
+        <<: *time_period
         mip: Amon
         preprocessor: full_climatology
-        <<: *time_period
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
     scripts:
@@ -96,16 +94,14 @@ diagnostics:
         plots:
           map:
             common_cbar: true
-            plot_kwargs_bias:
-              levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
 
   plot_maps_with_references_pr:
     description: Plot climatology maps including reference datasets for pr.
     variables:
       pr:
+        <<: *time_period
         mip: Amon
         preprocessor: full_climatology_pr
-        <<: *time_period
         additional_datasets:
           - {project: OBS, dataset: GPCP-SG, type: atmos, version: 2.3, tier: 2, reference_for_monitor_diags: true}
     scripts:
@@ -115,8 +111,6 @@ diagnostics:
         plots:
           map:
             common_cbar: true
-            plot_kwargs_bias:
-              levels: [-5.0, -2.5, -1.0, 0.0, 1.0, 2.5, 5.0]
             plot_kwargs:
               default:
                 cmap: Blues
@@ -127,9 +121,9 @@ diagnostics:
     description: Plot 2D zonal mean profiles including reference datasets.
     variables:
       ta:
+        <<: *time_period
         mip: Amon
         preprocessor: zonal_mean
-        <<: *time_period
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
     scripts:
@@ -139,16 +133,14 @@ diagnostics:
         plots:
           zonal_mean_profile:
             common_cbar: true
-            plot_kwargs_bias:
-              levels: [-12.5, -10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0, 12.5]
 
   plot_zonal_mean_profiles_with_references_ua:
     description: Plot 2D zonal mean profiles including reference datasets.
     variables:
       ua:
+        <<: *time_period
         mip: Amon
         preprocessor: zonal_mean
-        <<: *time_period
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
     scripts:
@@ -158,8 +150,6 @@ diagnostics:
         plots:
           zonal_mean_profile:
             common_cbar: true
-            plot_kwargs_bias:
-              levels: [-15.0, -10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0, 15.0]
             plot_kwargs:
               default:
                 cmap: Blues
@@ -168,9 +158,9 @@ diagnostics:
     description: Plot 2D zonal mean profiles including reference datasets.
     variables:
       hus:
+        <<: *time_period
         mip: Amon
         preprocessor: zonal_mean
-        <<: *time_period
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
     scripts:
@@ -180,8 +170,6 @@ diagnostics:
         plots:
           zonal_mean_profile:
             common_cbar: true
-            plot_kwargs_bias:
-              levels: [-0.0010, -0.00075, -0.0005, -0.00025, 0.0, 0.00025, 0.0005, 0.00075, 0.0010]
             plot_kwargs:
               default:
                 cmap: Blues
@@ -192,27 +180,27 @@ diagnostics:
     description: Plot time series including reference datasets.
     variables:
       tas:
+        <<: *time_period
         mip: Amon
         preprocessor: timeseries_regular
-        <<: *time_period
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
       clt:
+        <<: *time_period
         mip: Amon
         preprocessor: timeseries_regular
-        <<: *time_period
         additional_datasets:
           - {project: OBS, dataset: ESACCI-CLOUD, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, reference_for_monitor_diags: true}
       rsut:
+        <<: *time_period
         mip: Amon
         preprocessor: timeseries_regular
-        <<: *time_period
         additional_datasets:
           - {project: OBS, dataset: CERES-EBAF, type: sat, version: Ed4.1, tier: 2, reference_for_monitor_diags: true}
       rlut:
+        <<: *time_period
         mip: Amon
         preprocessor: timeseries_regular
-        <<: *time_period
         additional_datasets:
           - {project: OBS, dataset: CERES-EBAF, type: sat, version: Ed4.1, tier: 2, reference_for_monitor_diags: true}
       rtnt:
@@ -253,9 +241,9 @@ diagnostics:
     description: Plot time series including reference datasets.
     variables:
       pr:
+        <<: *time_period
         mip: Amon
         preprocessor: timeseries_regular_pr
-        <<: *time_period
         additional_datasets:
           - {project: OBS, dataset: GPCP-SG, type: atmos, version: 2.3, tier: 2, reference_for_monitor_diags: true}
     scripts:

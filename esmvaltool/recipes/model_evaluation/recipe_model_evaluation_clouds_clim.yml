@@ -11,7 +11,7 @@ documentation:
     - hassler_birgit
     - schlund_manuel
   maintainer:
-    - hassler_birgit
+    - lauer_axel
 
 
 # Note: the following models are just examples
@@ -41,7 +41,6 @@ preprocessors:
       units: mm day-1
 
   zonal_mean:
-    custom_order: true
     climate_statistics:
       period: full
     extract_levels:
@@ -62,9 +61,9 @@ diagnostics:
     description: Plot clt climatology maps including reference datasets.
     variables:
       clt:
+        <<: *time_period
         mip: Amon
         preprocessor: full_climatology
-        <<: *time_period
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, reference_for_monitor_diags: true}
     scripts:
@@ -75,17 +74,14 @@ diagnostics:
         plots:
           map:
             common_cbar: true
-            plot_kwargs_bias:
-              levels: [-40., -32., -24., -16., -8., 0., 8., 16., 24., 32., 40.]
-              extend: both
 
   plot_lwcre_maps:
     description: Plot lwcre climatology maps including reference datasets.
     variables:
       lwcre:
+        <<: *time_period
         mip: Amon
         preprocessor: full_climatology
-        <<: *time_period
         derive: true
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, timerange: '2001/2010', tier: 1, reference_for_monitor_diags: true}
@@ -100,9 +96,9 @@ diagnostics:
     description: Plot swcre climatology maps including reference datasets.
     variables:
       swcre:
+        <<: *time_period
         mip: Amon
         preprocessor: full_climatology
-        <<: *time_period
         derive: true
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1, timerange: '2001/2010', reference_for_monitor_diags: true}
@@ -117,9 +113,9 @@ diagnostics:
     description: Plot lwp climatology maps including reference datasets.
     variables:
       lwp:
+        <<: *time_period
         mip: Amon
         preprocessor: full_climatology
-        <<: *time_period
         derive: true
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
@@ -129,21 +125,15 @@ diagnostics:
         plots:
           map:
             common_cbar: true
-            plot_kwargs:
-              default:
-                levels: [0.00, 0.03, 0.06, 0.09, 0.12, 0.15, 0.18, 0.21, 0.24, 0.27, 0.30]
-            plot_kwargs_bias:
-              levels: [-0.12, -0.09, -0.06, -0.03, 0.00, 0.03, 0.06, 0.09, 0.12]
-              extend: both
-              fontsize: 6
+            fontsize: 6
 
   plot_clivi_maps:
     description: Plot clivi climatology maps including reference datasets.
     variables:
       clivi:
+        <<: *time_period
         mip: Amon
         preprocessor: full_climatology
-        <<: *time_period
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
     scripts:
@@ -152,20 +142,14 @@ diagnostics:
         plots:
           map:
             common_cbar: true
-            plot_kwargs:
-              default:
-                levels: [0.00, 0.025, 0.050, 0.075, 0.100, 0.150, 0.175]
-            plot_kwargs_bias:
-              levels: [-0.15, -0.12, -0.09, -0.06, -0.03, 0.0, 0.03, 0.06, 0.09, 0.12, 0.15]
-              extend: both
 
   plot_prw_maps:
     description: Plot prw climatology maps including reference datasets.
     variables:
       prw:
+        <<: *time_period
         mip: Amon
         preprocessor: full_climatology
-        <<: *time_period
         additional_datasets:
           - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat, version: CDR2-L3S-05deg_fv3.1, tier: 3, timerange: '2003/2017', reference_for_monitor_diags: true}
     scripts:
@@ -174,16 +158,14 @@ diagnostics:
         plots:
           map:
             common_cbar: true
-            plot_kwargs_bias:
-              levels: [-10., -8., -6., -4., -2., 0., 2., 4., 6., 8., 10.]
 
   plot_pr_maps:
     description: Plot prw climatology maps including reference datasets.
     variables:
       pr:
+        <<: *time_period
         mip: Amon
         preprocessor: full_climatology_pr
-        <<: *time_period
         additional_datasets:
           - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
              timerange: '2003/2017', reference_for_monitor_diags: true}
@@ -198,9 +180,9 @@ diagnostics:
     description: Plot clw vertical profiles including reference datasets.
     variables:
       clw:
+        <<: *time_period
         mip: Amon
         preprocessor: zonal_mean
-        <<: *time_period
         additional_datasets:
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip, timerange: '2006/2017', tier: 3, reference_for_monitor_diags: true}
     scripts:
@@ -214,9 +196,9 @@ diagnostics:
     description: Plot cli vertical profiles including reference datasets.
     variables:
       cli:
+        <<: *time_period
         mip: Amon
         preprocessor: zonal_mean
-        <<: *time_period
         additional_datasets:
           - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, timerange: '2007/2015', tier: 3, reference_for_monitor_diags: true}
     scripts:
@@ -230,9 +212,9 @@ diagnostics:
     description: Plot cl vertical profiles including reference datasets.
     variables:
       cl:
+        <<: *time_period
         mip: Amon
         preprocessor: zonal_mean
-        <<: *time_period
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
     scripts:

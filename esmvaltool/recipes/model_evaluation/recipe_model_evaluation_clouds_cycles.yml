@@ -25,16 +25,10 @@ timerange_for_models: &time_period
 preprocessors:
 
   pp_global: &global_settings
-    custom_order: true
     regrid:
       target_grid: 2x2
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
-    extract_region:
-      start_latitude: -90
-      end_latitude: 90
-      start_longitude: 0
-      end_longitude: 360
     area_statistics:
       operator: mean
     climate_statistics:
@@ -75,10 +69,10 @@ diagnostics:
     description: Plot annual cycles including reference datasets.
     variables:
       clt_global: &clt_settings
+        <<: *time_period
         preprocessor: pp_global
         short_name: clt
         mip: Amon
-        frequency: mon
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
       clt_tropics:
@@ -93,10 +87,10 @@ diagnostics:
         <<: *clt_settings
         preprocessor: pp_StormTracks
       clivi_global: &clivi_settings
+        <<: *time_period
         preprocessor: pp_global
         short_name: clivi
         mip: Amon
-        frequency: mon
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
       clivi_tropics:
@@ -111,11 +105,11 @@ diagnostics:
         <<: *clivi_settings
         preprocessor: pp_StormTracks
       lwp_global: &lwp_settings
+        <<: *time_period
         preprocessor: pp_global
         short_name: lwp
         derive: true
         mip: Amon
-        frequency: mon
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
       lwp_tropics:
@@ -130,11 +124,11 @@ diagnostics:
         <<: *lwp_settings
         preprocessor: pp_StormTracks
       swcre_global: &swcre_settings
+        <<: *time_period
         preprocessor: pp_global
         short_name: swcre
         derive: true
         mip: Amon
-        frequency: mon
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2}
       swcre_tropics:
@@ -149,11 +143,11 @@ diagnostics:
         <<: *swcre_settings
         preprocessor: pp_StormTracks
       lwcre_global: &lwcre_settings
+        <<: *time_period
         preprocessor: pp_global
         short_name: lwcre
         derive: true
         mip: Amon
-        frequency: mon
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2}
       lwcre_tropics:
@@ -182,7 +176,7 @@ diagnostics:
                 color: C0
               MPI-ESM1-2-LR:
                 color: C1
-              'ESACCI-CLOUD':
+              ESACCI-CLOUD:
                 color: black
             pyplot_kwargs:
               title: '{short_name}'
