@@ -551,7 +551,7 @@ plot_kwargs_bias: dict, optional
     for plotting biases. These keyword arguments update (and potentially
     overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
     if no reference dataset is given. See option ``plot_kwargs`` for more
-    details. By default, uses ``cmap: bwr`` and ``norm=centered``.
+    details. By default, uses ``cmap: bwr`` and ``norm: centered``.
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
