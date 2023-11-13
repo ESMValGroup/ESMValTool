@@ -253,7 +253,7 @@ pyplot_kwargs: dict, optional
 rasterize: bool, optional (default: True)
     If ``True``, use rasterization_ for map plots to produce smaller files.
     This is only relevant for vector graphics (e.g.,
-    ``output_file_type=pdf,svg,ps``).
+    ``output_file_type: pdf,svg,ps``).
 show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
 x_pos_stats_avg: float, optional (default: 0.0)
