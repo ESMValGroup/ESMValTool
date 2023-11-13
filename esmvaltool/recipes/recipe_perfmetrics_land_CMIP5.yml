@@ -460,7 +460,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: CERES-EBAF_Surface, project: obs4MIPs, level: L3B, tier: 1, start_year: 2001, end_year: 2015}
+      - {dataset: CERES-EBAF_Surface, project: obs4MIPs, level: L3B, tier: 1, start_year: 2001, end_year: 2013}
     scripts:
       grading:
         <<: *grading_settings
