@@ -312,7 +312,7 @@ plot_kwargs: dict, optional
     will be derived from the corresponding dataset, e.g., ``{project}``,
     ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
     {vmin: 200, vmax: 250}``. In addition to the normalization_ options
-    supported by the plot function, the option ``norm=centered``. In this case,
+    supported by the plot function, the option ``norm: centered``. In this case,
     the keywords ``vcenter`` and ``halfrange`` should be used instead of
     ``vmin`` or ``vmax`` (see :class:`~matplotlib.colors.CenteredNorm`).
 plot_kwargs_bias: dict, optional
