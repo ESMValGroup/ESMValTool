@@ -246,7 +246,8 @@ Optionally, the following parameters can be edited:
 * ``partition``, *str*: Name of the DKRZ partition used to run jobs. Default is ``interactive`` to minimize computing cost compared to ``compute`` for which nodes cannot be shared.
 * ``memory``, *str*: Amount of memory requested for each run. Default is ``64G`` to allow to run 4 recipes on the same node in parallel.
 * ``time``, *str*: Time limit. Default is ``04:00:00`` to increase the job priority. Jobs can run for up to 8 hours and 12 hours on the compute and interactive partitions, respectively.
-
+* ``default_max_parallel_tasks``, *int*: Default is ``8`` which works for most recipes. For other cases, an entry needs to be made to the ``MAX_PARALLEL_TASKS`` dictionary (see below).
+  
 The script will generate a submission script for all recipes using by default the ``interactive`` queue and with a time limit of 4h. In case a recipe
 may require of additional resources, they can be defined in the ``SPECIAL_RECIPES`` dictionary. The recipe name has to be given as a ``key`` in which the
 values are another dictionary. 
@@ -263,8 +264,8 @@ given by the slurm flags ``--mem``, ``--constraint`` or ``--ntasks``. In general
         },
    }
 
-Some recipes can only be run with ``--max_parallel_tasks=1`` for various reasons (memory issues, diagnostic issues, CMIP3 data used).
-These recipes need to be added to the ``ONE_TASK_RECIPES`` list.
+Some recipes can only be run with a number of tasks less than ``default_max_parallel_tasks`` for various reasons (memory issues, diagnostic issues, CMIP3 data used).
+These recipes need to be added to the ``MAX_PARALLEL_TASKS`` dictionary with a specific ``max_parallel_tasks`` value.
 
 Note that the script has been optimized to use standard SLURM settings to run most recipes while minimizing the computational cost of the jobs and tailored runtime settings for resource-intensive recipes.
 It is only necessary to edit this script for recipes that have been added since the last release and cannot be run with the default settings.
