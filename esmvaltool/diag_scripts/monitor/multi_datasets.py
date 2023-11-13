@@ -1070,7 +1070,6 @@ class MultiDatasets(MonitorBase):
                          'variable_vs_lat'):
             plot_kwargs.setdefault('label', label)
 
-        # Handle norm='centered' correctly
         if plot_kwargs.get('norm') == 'centered':
             norm = CenteredNorm(
                 vcenter=plot_kwargs.pop('vcenter', 0.0),
