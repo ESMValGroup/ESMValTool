@@ -226,9 +226,10 @@ plot_kwargs: dict, optional
     will be derived from the corresponding dataset, e.g., ``{project}``,
     ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
     {vmin: 200, vmax: 250}``. In addition to the normalization_ options
-    supported by the plot function, the option ``norm: centered``. In this case,
-    the keywords ``vcenter`` and ``halfrange`` should be used instead of
-    ``vmin`` or ``vmax`` (see :class:`~matplotlib.colors.CenteredNorm`).
+    supported by the plot function, the option ``norm: centered`` can be
+    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
+    be used instead of ``vmin`` or ``vmax`` (see
+    :class:`~matplotlib.colors.CenteredNorm`).
 plot_kwargs_bias: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``
     for plotting biases. These keyword arguments update (and potentially
@@ -252,8 +253,8 @@ pyplot_kwargs: dict, optional
     Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
 rasterize: bool, optional (default: True)
     If ``True``, use rasterization_ for map plots to produce smaller files.
-    This is only relevant for vector graphics (e.g.,
-    ``output_file_type: pdf,svg,ps``).
+    This is only relevant for vector graphics (e.g., ``output_file_type:
+    pdf,svg,ps``).
 show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
 x_pos_stats_avg: float, optional (default: 0.0)
@@ -312,9 +313,10 @@ plot_kwargs: dict, optional
     will be derived from the corresponding dataset, e.g., ``{project}``,
     ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
     {vmin: 200, vmax: 250}``. In addition to the normalization_ options
-    supported by the plot function, the option ``norm: centered``. In this case,
-    the keywords ``vcenter`` and ``halfrange`` should be used instead of
-    ``vmin`` or ``vmax`` (see :class:`~matplotlib.colors.CenteredNorm`).
+    supported by the plot function, the option ``norm: centered`` can be
+    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
+    be used instead of ``vmin`` or ``vmax`` (see
+    :class:`~matplotlib.colors.CenteredNorm`).
 plot_kwargs_bias: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``
     for plotting biases. These keyword arguments update (and potentially
@@ -330,8 +332,8 @@ pyplot_kwargs: dict, optional
     Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
 rasterize: bool, optional (default: True)
     If ``True``, use rasterization_ for profile plots to produce smaller files.
-    This is only relevant for vector graphics (e.g.,
-    ``output_file_type: pdf,svg,ps``).
+    This is only relevant for vector graphics (e.g., ``output_file_type:
+    pdf,svg,ps``).
 show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
 show_y_minor_ticklabels: bool, optional (default: False)
@@ -461,9 +463,10 @@ plot_kwargs: dict, optional
     will be derived from the corresponding dataset, e.g., ``{project}``,
     ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
     {vmin: 200, vmax: 250}``. In addition to the normalization_ options
-    supported by the plot function, the option ``norm: centered``. In this case,
-    the keywords ``vcenter`` and ``halfrange`` should be used instead of
-    ``vmin`` or ``vmax`` (see :class:`~matplotlib.colors.CenteredNorm`).
+    supported by the plot function, the option ``norm: centered`` can be
+    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
+    be used instead of ``vmin`` or ``vmax`` (see
+    :class:`~matplotlib.colors.CenteredNorm`).
 plot_kwargs_bias: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``
     for plotting biases. These keyword arguments update (and potentially
@@ -479,8 +482,8 @@ pyplot_kwargs: dict, optional
     Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
 rasterize: bool, optional (default: True)
     If ``True``, use rasterization_ for profile plots to produce smaller files.
-    This is only relevant for vector graphics (e.g.,
-    ``output_file_type: pdf,svg,ps``).
+    This is only relevant for vector graphics (e.g., ``output_file_type:
+    pdf,svg,ps``).
 show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
 show_y_minor_ticklabels: bool, optional (default: False)
@@ -543,9 +546,10 @@ plot_kwargs: dict, optional
     will be derived from the corresponding dataset, e.g., ``{project}``,
     ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
     {vmin: 200, vmax: 250}``. In addition to the normalization_ options
-    supported by the plot function, the option ``norm: centered``. In this case,
-    the keywords ``vcenter`` and ``halfrange`` should be used instead of
-    ``vmin`` or ``vmax`` (see :class:`~matplotlib.colors.CenteredNorm`).
+    supported by the plot function, the option ``norm: centered`` can be
+    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
+    be used instead of ``vmin`` or ``vmax`` (see
+    :class:`~matplotlib.colors.CenteredNorm`).
 plot_kwargs_bias: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``
     for plotting biases. These keyword arguments update (and potentially
@@ -561,8 +565,8 @@ pyplot_kwargs: dict, optional
     Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
 rasterize: bool, optional (default: True)
     If ``True``, use rasterization_ for profile plots to produce smaller files.
-    This is only relevant for vector graphics (e.g.,
-    ``output_file_type: pdf,svg,ps``).
+    This is only relevant for vector graphics (e.g., ``output_file_type:
+    pdf,svg,ps``).
 show_y_minor_ticks: bool, optional (default: True)
     Show minor ticks for time on the Y axis.
 show_x_minor_ticks: bool, optional (default: True)
