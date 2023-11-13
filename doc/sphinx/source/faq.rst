@@ -117,6 +117,11 @@ Recipe :ref:`recipe_monitor` allows for the plotting of any preprocessed model.
 The plotting parameters are set through a yaml configuration file, and the
 type of plots to be generated are determined in the recipe.
 
+Furthermore, :ref:`recipe_model_evaluation` provides a recipes that can be used
+for a basic climate model evaluation with observational data.
+This is especially useful to get a rough idea about the performance of a
+simulation.
+
 Moreover, recipe :ref:`recipes_psyplot_diag` and the corresponding diagnostic
 :ref:`psyplot_diag.py <api.esmvaltool.diag_scripts.psyplot_diag>` provide a
 high-level interface to the `Psyplot <https://psyplot.github.io/>`__ package
