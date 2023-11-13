@@ -562,7 +562,7 @@ pyplot_kwargs: dict, optional
 rasterize: bool, optional (default: True)
     If ``True``, use rasterization_ for profile plots to produce smaller files.
     This is only relevant for vector graphics (e.g.,
-    ``output_file_type=pdf,svg,ps``).
+    ``output_file_type: pdf,svg,ps``).
 show_y_minor_ticks: bool, optional (default: True)
     Show minor ticks for time on the Y axis.
 show_x_minor_ticks: bool, optional (default: True)
