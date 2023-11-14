@@ -86,3 +86,10 @@ Time series of the global mean top-of-the-atmosphere net radiative flux.
    :width:   14cm
 
 Profile of zonal mean precipitation.
+
+.. _fig_5:
+.. figure::  /recipes/figures/model_evaluation/annual_cycle_clt_southerocean_Amon.jpg
+   :align:   center
+   :width:   14cm
+
+Annual cycle of Southern Ocean total cloud cover.
