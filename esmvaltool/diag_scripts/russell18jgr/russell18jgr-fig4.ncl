@@ -368,7 +368,7 @@ begin
     delete(totaltransport)
     ; Call provenance logger
     log_provenance(ncdf_outfile, \
-                   plotpath, \
+                   plotpath  + "." + file_type, \
                    "Russell et al 2018 figure 4", \
                    "mean", \
                    "sh", \
