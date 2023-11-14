@@ -1271,7 +1271,7 @@ diagnostics:
     variables:
       pr:
         preprocessor: ppNOLEV1
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.2
         mip: Amon
         project: CMIP5
         exp: historical
