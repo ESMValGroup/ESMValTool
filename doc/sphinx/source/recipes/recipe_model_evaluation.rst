@@ -27,8 +27,8 @@ Recipes are stored in `recipes/model_evaluation`
 Diagnostics are stored in `diag_scripts/monitor/`
 
 * :ref:`multi_datasets.py
-   <api.esmvaltool.diag_scripts.monitor.multi_datasets>`:
-   Monitoring diagnostic to show multiple datasets in one plot (incl. biases).
+  <api.esmvaltool.diag_scripts.monitor.multi_datasets>`:
+  Monitoring diagnostic to show multiple datasets in one plot (incl. biases).
 
 
 User settings
