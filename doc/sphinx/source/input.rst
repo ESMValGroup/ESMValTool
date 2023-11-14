@@ -115,9 +115,9 @@ ESMValTool currently supports two ways to perform this reformatting (aka
 A collection of readily CMORized OBS and OBS6 datasets can be accessed directly on CEDA/JASMIN and DKRZ. At CEDA/JASMIN
 OBS and OBS6 data is stored in the `esmeval` Group Workspace (GWS), and to be granted read (and execute) permissions to the
 GWS, one must apply at https://accounts.jasmin.ac.uk/services/group_workspaces/esmeval/ ; after permission has been granted, the user
-is encouraged to use the data in `/gws/nopw/j04/esmeval/obsdata-v2` locally, but not move it to minimize both data transfers and
-stale disk usage; to note that Tier 3 data is subject to data protection restrictions;
-the GWS is adminstered by [Valeriu Predoi](mailto:valeriu.predoi@ncas.ac.uk) for further inquiries.
+is encouraged to use the data locally, and not move it elsewhere, to minimize both data transfers and
+stale disk usage; to note that Tier 3 data is subject to data protection restrictions; for further inquiries,
+the GWS is adminstered by [Valeriu Predoi](mailto:valeriu.predoi@ncas.ac.uk).
 
 Using a CMORizer script
 -----------------------
