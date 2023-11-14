@@ -2000,4 +2000,4 @@ diagnostics:
       taylor:
         script: perfmetrics/collect.ncl
         ancestors: ['*/grading']
-        metric: taylor 
+        metric: taylor
