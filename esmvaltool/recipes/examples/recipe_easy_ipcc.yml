@@ -29,12 +29,14 @@ preprocessors:
       units: 'degrees_C'
     ensemble_statistics:
       statistics:
-        - mean
+        - operator: mean
     multi_model_statistics:
       statistics:
-        - mean
-        - p17
-        - p83
+        - operator: mean
+        - operator: percentile
+          percent: 17
+        - operator: percentile
+          percent: 83
       span: full
       keep_input_datasets: false
       ignore_scalar_coords: true
