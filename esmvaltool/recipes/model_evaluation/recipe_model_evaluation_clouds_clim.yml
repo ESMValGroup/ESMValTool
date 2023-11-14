@@ -22,7 +22,7 @@ datasets:
 # Note: for some observational datasets, we use preset time ranges due to
 # their limited temporal availability
 timerange_for_models: &time_period
-  timerange: '1995/2014'  # can be specified!
+  timerange: '2005/2014'  # can be specified, this is just an example
 
 
 preprocessors:
@@ -41,6 +41,7 @@ preprocessors:
       units: mm day-1
 
   zonal_mean:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
     climate_statistics:
       period: full
     extract_levels:
