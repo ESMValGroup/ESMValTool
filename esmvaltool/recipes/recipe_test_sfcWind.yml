@@ -1,0 +1,37 @@
+# ESMValTool
+# recipe_test_sfcWind.yml
+---
+documentation:
+  description: |
+    Recipe that demonstrates various uses of the preprocessor derive functionality.
+
+  title: Example recipe running various aspects of the derive preprocessor.
+
+  authors:
+    - malinina_elizaveta
+
+  maintainer:
+    - malinina_elizaveta
+
+preprocessors:
+  custom_order_prep:
+    custom_order: true
+    annual_statistics: 
+      operator: mean
+    derive: true  
+
+diagnostics:
+  cmip6:
+    description: Test variable derivation for CMIP6 models.
+    variables:
+      sfcWind:
+        preprocessor: custom_order_prep
+        project: CMIP6
+        mip: 3hr
+        exp: highresSST-future    
+        derive: true
+        start_year: 2015
+        end_year: 2016
+        additional_datasets:
+          - {dataset: GFDL-CM4C192, ensemble: r1i1p1f1, grid: gr3}
+    scripts: null

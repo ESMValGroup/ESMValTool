@@ -1,0 +1,145 @@
+# ESMValTool
+# recipe_extremes_wind_fiona.yml
+---
+documentation:
+
+  title: 2022 Atlantic Canada storm
+
+  description: This is a recipe for analysing 2022 Atlantic Canada storm Fiona. 
+
+  authors:
+    - malinina_elizaveta
+
+preprocessors:
+  preproc_cmip: &preproc_cmip 
+    custom_order: True
+    extract_season:
+      season: JJASO
+    extract_shape:
+      shapefile: pei_ns_nb_newfoundland.shp
+      method: contains
+      crop: True
+    # derive:
+    #   true
+    area_statistics:
+      operator: max
+    annual_statistics:
+      operator: max
+
+  preproc_ano:
+    <<: *preproc_cmip
+    climate_statistics: 
+      operator: mean
+      period: full
+
+  preproc_era_gsat:
+    custom_order: True  
+    area_statistics:
+      operator: mean    
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference:
+        start_year: 1950
+        start_month: 1
+        start_day: 1
+        end_year: 1969
+        end_month: 12
+        end_day: 31
+
+datasets_highresmip_3hr: &datasets_highresmip_3hr
+  # - {dataset: HadGEM3-GC31-HM, ensemble: "r1i(1:3)p1f1", grid: gn} # needs fixes
+  # - {dataset: MRI-AGCM3-2-S, ensemble: r1i1p1f1, grid: gn} # needs fixes
+  - {dataset: GFDL-CM4C192, ensemble: r1i1p1f1, grid: gr3} 
+  - {dataset: MRI-AGCM3-2-H, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: NICAM16-7S, ensemble: r1i1p1f1, grid: gr} 
+  - {dataset: NICAM16-8S, ensemble: r1i1p1f1, grid: gr} 
+  - {dataset: EC-Earth3P-HR, ensemble: "r(2:3)i1p1f1", grid: gr} 
+
+datasets_highresmip: &datasets_highresmip
+  - {dataset: CMCC-CM2-VHR4, ensemble: r1i1p1f1, grid: gn} # res 0.25d 
+  - {dataset: CNRM-CM6-1-HR, ensemble: "r(1:10)i1p1f2", grid: gr} # res 0.25d 
+  - {dataset: EC-Earth3P-HR, ensemble: r(2:3)i1p1f1, grid: gr} # res 40km 
+  - {dataset: NICAM16-7S, ensemble: r1i1p1f1, grid: gr} # res 56km 
+  - {dataset: NICAM16-8S, ensemble: r1i1p1f1, grid: gr} # res 28km 
+  - {dataset: HadGEM3-GC31-HM, ensemble: "r1i(2:3)p1f1", grid: gn} # res 0.23° × 0.35° 
+  - {dataset: MRI-AGCM3-2-H, ensemble: r1i1p1f1, grid: gn} # res 0.19° × 0.19° 
+  - {dataset: MRI-AGCM3-2-S, ensemble: r1i1p1f1, grid: gn} # res 0.56° × 0.56° 
+  - {dataset: GFDL-CM4C192, ensemble: r1i1p1f1, grid: gr3} #  res 0.56
+
+
+dataset_era: &dataset_era
+  - {dataset: ERA5, project: OBS6, type: reanaly, tier: 3}
+
+diagnostics:
+  wind:
+    description: Figure for NA wind storms
+    variables:
+      wind_now:
+        short_name: sfcWindmax
+        # derive: True
+        exp: [highresSST-present, highresSST-future]
+        start_year: 2011
+        end_year: 2030
+        project: CMIP6
+        mip: day
+        preprocessor: preproc_cmip
+        additional_datasets: *datasets_highresmip      
+      wind_nat: 
+        short_name: sfcWindmax
+        # derive: True
+        exp: highresSST-present
+        start_year: 1950
+        end_year: 1969
+        project: CMIP6
+        mip: day
+        preprocessor: preproc_cmip
+        additional_datasets: *datasets_highresmip
+      wind_fut: 
+        short_name: sfcWindmax
+        # derive: True
+        exp: highresSST-future
+        start_year: 2031
+        end_year: 2050
+        project: CMIP6
+        mip: day
+        preprocessor: preproc_cmip
+        additional_datasets: *datasets_highresmip
+      wind_ano: 
+        short_name: sfcWindmax
+        # derive: True
+        exp: highresSST-present
+        start_year: 1950
+        end_year: 1969
+        project: CMIP6
+        mip: day
+        preprocessor: preproc_ano
+        additional_datasets: *datasets_highresmip
+      obs_gsat:
+        short_name: tas
+        start_year: 1940
+        end_year: 2022
+        mip: Amon
+        version: v1
+        preprocessor: preproc_era_gsat 
+        additional_datasets: *dataset_era       
+    scripts:
+      attr_analysis:
+        script: winds/extremes_wind_3hr.py
+        mpl_style: ipcc_ar6_fgd
+        shape_region: pei_ns_nb_newfoundland.shp
+        reference_period: [1950, 1969]
+        model_weighting: False # determines, if each realisation gets a weight of 1 (false) or 1/number of relisation
+        name_wind_now: 2011-2030 # this is needed for legend, it's name_{name of a group}
+        name_wind_nat: 1950-1969 
+        name_wind_fut: 2031-2050
+        ERA_wind_loc: /space/hall5/sitestore/eccc/crd/ccrn/users/emr001/OBS/Tier3/ERA5/E1hr/sfcWind/
+        region: Atlantic Canada # needed for the figure title
+        season: JJASO
+        ax_var_label: windspeed # needed for axis name
+        title_var_label: Wind speed # needed for title name
+        var_units: m/s 
+        analysis_year: 2022
+        smooth_gsat_years: 4
+

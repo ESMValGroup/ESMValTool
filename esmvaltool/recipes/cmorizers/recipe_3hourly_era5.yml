@@ -1,0 +1,60 @@
+# ESMValTool
+# recipe_daily_era5.yml
+---
+documentation:
+  description: Create daily ERA5 data
+
+  title: Daily ERA5 data CMORization and creation
+
+  authors:
+    - andela_bouwe
+    - kalverla_peter
+    - alidoost_sarah
+
+  maintainer:
+    - unmaintained
+
+  references:
+    - acknow_project
+    - hersbach20rmets
+
+  projects:
+    - ewatercycle
+
+datasets:
+  # For the daily diagnostic, always add the next year, otherwise the last day is not cmor compatible
+  - {dataset: ERA5, project: OBS6, type: reanaly, mip: E1hr, version: v1, tier: 3}
+
+preprocessors:
+  add_one_day: &add_one_day
+    extract_time:
+      start_year: 1990
+      start_month: 1
+      start_day: 1
+      end_year: 1991
+      end_month: 1
+      end_day: 1
+
+  sfcwind_from_3h:
+    custom_order: true
+    hourly_statistics:
+      hours: 3 
+      operator: mean
+    derive: true 
+
+diagnostics:
+  3hourly:
+    description: Create daily ERA5 data
+    scripts:
+      rename:
+        script: cmorizers/era5.py
+    variables:
+      sfcWind:
+        preprocessor: sfcwind_from_3h
+        derive: true
+        start_year: 1990
+        start_month: 1
+        start_day: 1
+        end_year: 1990
+        end_month: 12
+        end_day: 31

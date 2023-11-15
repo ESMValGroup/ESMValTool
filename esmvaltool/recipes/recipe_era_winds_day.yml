@@ -1,0 +1,55 @@
+# ESMValTool
+# recipe_daily_era5.yml
+---
+documentation:
+  description: Create daily ERA5 data
+
+  title: Daily ERA5 data CMORization and creation
+
+  authors:
+    - malinina_elizaveta
+
+  maintainer:
+    - malinina_elizaveta
+
+datasets:
+  - {dataset: ERA5, project: OBS6, type: reanaly, mip: E1hr, version: v1, tier: 3}
+
+preprocessors:
+  sfcwind_from_day:
+    custom_order: true
+    daily_statistics:
+      operator: mean
+    derive: true  
+  day_sfcwind:
+    daily_statistics:
+      operator: mean
+
+diagnostics:
+  era_compare:
+    description: Compare wind speed derivation for ERA5.
+    scripts: 
+      era_compare:
+        script: winds/winds_biases.py
+        hours: Daily
+    variables:
+      sfcwind_from_day:
+        short_name: sfcWind
+        preprocessor: sfcwind_from_day
+        derive: true
+        start_year: 1940
+        start_month: 1
+        start_day: 1
+        end_year: 1940
+        end_month: 12
+        end_day: 31
+      day_sfcwind:
+        preprocessor: day_sfcwind
+        short_name: sfcWind
+        derive: true
+        start_year: 1940
+        start_month: 1
+        start_day: 1
+        end_year: 1940
+        end_month: 12
+        end_day: 31

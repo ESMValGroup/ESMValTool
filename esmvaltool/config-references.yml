@@ -713,6 +713,10 @@ authors:
     name: Tilmes, Simone
     institute: NCAR, US
     orcid:
+  garcia_perdomo_karen:
+    name: Garcia Perdomo, Karen
+    institute: NCAR, US
+    orcid:
   # If no maintainer is available for a recipe, the following entry is used
   unmaintained:
     name: No maintainer available

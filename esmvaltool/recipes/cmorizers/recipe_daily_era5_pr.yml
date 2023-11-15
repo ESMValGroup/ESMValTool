@@ -1,0 +1,54 @@
+# ESMValTool
+# recipe_daily_era5.yml
+---
+documentation:
+  description: Create daily ERA5 data
+
+  title: Daily ERA5 data CMORization and creation
+
+  authors:
+    - andela_bouwe
+    - kalverla_peter
+    - alidoost_sarah
+
+  maintainer:
+    - unmaintained
+
+  references:
+    - acknow_project
+    - hersbach20rmets
+
+  projects:
+    - ewatercycle
+
+datasets:
+  # For the daily diagnostic, always add the next year, otherwise the last day is not cmor compatible
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 2022, end_year: 2023}
+
+preprocessors:
+  add_one_day: &add_one_day
+    extract_time:
+      start_year: 2022
+      start_month: 1
+      start_day: 1
+      end_year: 2023
+      end_month: 1
+      end_day: 1
+
+  daily_mean:
+    <<: *add_one_day
+    daily_statistics:
+      operator: mean
+
+diagnostics:
+  daily:
+    description: Create daily ERA5 data
+    scripts:
+      rename:
+        script: cmorizers/era5.py
+    variables:
+      pr:
+        mip: E1hr
+        era5_name: total_precipitation
+        era5_freq: hourly
+        preprocessor: daily_mean
