@@ -3,8 +3,7 @@
 # USAGE jasmin-env COMMAND
 #
 # ENVIRONMENT
-#TODO: update docstring
-#   MODULE_NAME         The name of the module to load
+#   MODULE_NAME         The name of the container being used
 #   PYTHONPATH_PREPEND  The path to prepend to PYTHONPATH after loading the
 #                       module
 #   QUIET_MODE          Don't print confirmation messages
