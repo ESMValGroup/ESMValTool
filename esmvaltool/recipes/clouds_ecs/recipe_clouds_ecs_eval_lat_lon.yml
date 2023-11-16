@@ -217,11 +217,106 @@ preprocessors:
 
 diagnostics:
 
-  clt_lat_lon: &lat_lon_diag
+        #  clt_lat_lon: &lat_lon_diag
+        #    description: comparison of lat_lon mean
+        #    variables:
+        #      ECS_high: &var_clt
+        #        short_name: clt
+        #        preprocessor: lat_lon_mmm
+        #        mip: Amon
+        #        project: CMIP6
+        #        exp: historical
+        #        ensemble: r1i1p1f1
+        #        grid: gr
+        #        <<: *years_hist
+        #        additional_datasets: *datasets_ecs_high
+        #      ECS_med:
+        #        <<: *var_clt
+        #        additional_datasets: *datasets_ecs_med
+        #      ECS_low:
+        #        <<: *var_clt
+        #        additional_datasets: *datasets_ecs_low
+        #        #OBS:
+        #        #  <<: *var_clt
+        #        #  <<: *years_hist
+        #        #  preprocessor: lat_lon
+        #        #  additional_datasets:
+        #        #    - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+        #        #       start_year: 1992, end_year: 2016,
+        #        #       version: AVHRR-AMPM-fv3.0, tier: 2}
+        #    scripts:
+        #      lat_lon:
+        #        script: clouds_ecs/group_lat_lon_wo_OBS.py
+        #        group_by: variable_group
+        #        plot_each_model: false
+        #
+        #
+        #  lwp_lat_lon:
+        #    <<: *lat_lon_diag
+        #    variables:
+        #      ECS_high:
+        #        <<: *var_clt
+        #        short_name: lwp
+        #        derive: true
+        #        additional_datasets: *datasets_ecs_high
+        #      ECS_med:
+        #        <<: *var_clt
+        #        short_name: lwp
+        #        derive: true
+        #        additional_datasets: *datasets_ecs_med
+        #      ECS_low:
+        #        <<: *var_clt
+        #        short_name: lwp
+        #        derive: true
+        #        additional_datasets: *datasets_ecs_low
+        #        #OBS:
+        #        #  <<: *var_clt
+        #        #  <<: *years_hist
+        #        #  short_name: lwp
+        #        #  derive: true
+        #        #  preprocessor: lat_lon
+        #        #  additional_datasets:
+        #        #    - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+        #        #       start_year: 1992, end_year: 2016,
+        #        #       version: AVHRR-AMPM-fv3.0, tier: 2}
+        #        #       #- {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip,
+        #        #       #   tier: 3, start_year: 2006, end_year: 2017}
+        #
+        #
+        #  iwp_lat_lon:
+        #    <<: *lat_lon_diag
+        #    variables:
+        #      ECS_high:
+        #        <<: *var_clt
+        #        short_name: clivi
+        #        additional_datasets: *datasets_ecs_high
+        #      ECS_med:
+        #        <<: *var_clt
+        #        short_name: clivi
+        #        additional_datasets: *datasets_ecs_med
+        #      ECS_low:
+        #        <<: *var_clt
+        #        short_name: clivi
+        #        additional_datasets: *datasets_ecs_low
+        #        #OBS:
+        #        #  <<: *var_clt
+        #        #  <<: *years_hist
+        #        #  short_name: clivi
+        #        #  preprocessor: lat_lon
+        #        #  additional_datasets:
+        #        #    - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+        #        #       start_year: 1992, end_year: 2016,
+        #        #       version: AVHRR-AMPM-fv3.0, tier: 2}
+        #        #       #- {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip,
+        #        #       #   tier: 3, start_year: 2006, end_year: 2017}
+
+
+  netcre_lat_lon: &lat_lon_cre
     description: comparison of lat_lon mean
     variables:
-      ECS_high: &var_clt
-        short_name: clt
+      ECS_high: &var_cre
+        short_name: netcre
+        derive: true
         preprocessor: lat_lon_mmm
         mip: Amon
         project: CMIP6
@@ -231,19 +326,17 @@ diagnostics:
         <<: *years_hist
         additional_datasets: *datasets_ecs_high
       ECS_med:
-        <<: *var_clt
+        <<: *var_cre
         additional_datasets: *datasets_ecs_med
       ECS_low:
-        <<: *var_clt
+        <<: *var_cre
         additional_datasets: *datasets_ecs_low
       OBS:
-        <<: *var_clt
-        <<: *years_hist
+        <<: *var_cre
         preprocessor: lat_lon
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-             start_year: 1992, end_year: 2016,
-             version: AVHRR-AMPM-fv3.0, tier: 2}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2022}
     scripts:
       lat_lon:
         script: clouds_ecs/group_lat_lon.py
@@ -251,116 +344,24 @@ diagnostics:
         plot_each_model: false
 
 
-  lwp_lat_lon:
-    <<: *lat_lon_diag
-    variables:
-      ECS_high:
-        <<: *var_clt
-        short_name: lwp
-        derive: true
-        additional_datasets: *datasets_ecs_high
-      ECS_med:
-        <<: *var_clt
-        short_name: lwp
-        derive: true
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *var_clt
-        short_name: lwp
-        derive: true
-        additional_datasets: *datasets_ecs_low
-      OBS:
-        <<: *var_clt
-        <<: *years_hist
-        short_name: lwp
-        derive: true
-        preprocessor: lat_lon
-        additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-             start_year: 1992, end_year: 2016,
-             version: AVHRR-AMPM-fv3.0, tier: 2}
-             #- {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip,
-             #   tier: 3, start_year: 2006, end_year: 2017}
-
-
-  iwp_lat_lon:
-    <<: *lat_lon_diag
-    variables:
-      ECS_high:
-        <<: *var_clt
-        short_name: clivi
-        additional_datasets: *datasets_ecs_high
-      ECS_med:
-        <<: *var_clt
-        short_name: clivi
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *var_clt
-        short_name: clivi
-        additional_datasets: *datasets_ecs_low
-      OBS:
-        <<: *var_clt
-        <<: *years_hist
-        short_name: clivi
-        preprocessor: lat_lon
-        additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-             start_year: 1992, end_year: 2016,
-             version: AVHRR-AMPM-fv3.0, tier: 2}
-             #- {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip,
-             #   tier: 3, start_year: 2006, end_year: 2017}
-
-
-  netcre_lat_lon:
-    <<: *lat_lon_diag
-    variables:
-      ECS_high:
-        <<: *var_clt
-        short_name: netcre
-        derive: true
-        additional_datasets: *datasets_ecs_high
-      ECS_med:
-        <<: *var_clt
-        short_name: netcre
-        derive: true
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *var_clt
-        short_name: netcre
-        derive: true
-        additional_datasets: *datasets_ecs_low
-      OBS:
-        <<: *var_clt
-        short_name: netcre
-        derive: true
-        preprocessor: lat_lon
-        additional_datasets:
-          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
-            tier: 2, start_year: 2001, end_year: 2022}
-
-
   swcre_lat_lon:
-    <<: *lat_lon_diag
+    <<: *lat_lon_cre
     variables:
       ECS_high:
-        <<: *var_clt
+        <<: *var_cre
         short_name: swcre
-        derive: true
         additional_datasets: *datasets_ecs_high
       ECS_med:
-        <<: *var_clt
+        <<: *var_cre
         short_name: swcre
-        derive: true
         additional_datasets: *datasets_ecs_med
       ECS_low:
-        <<: *var_clt
+        <<: *var_cre
         short_name: swcre
-        derive: true
         additional_datasets: *datasets_ecs_low
       OBS:
-        <<: *var_clt
+        <<: *var_cre
         short_name: swcre
-        derive: true
         preprocessor: lat_lon
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
@@ -368,39 +369,35 @@ diagnostics:
 
 
   lwcre_lat_lon:
-    <<: *lat_lon_diag
+    <<: *lat_lon_cre
     variables:
       ECS_high:
-        <<: *var_clt
+        <<: *var_cre
         short_name: lwcre
-        derive: true
         additional_datasets: *datasets_ecs_high
       ECS_med:
-        <<: *var_clt
+        <<: *var_cre
         short_name: lwcre
-        derive: true
         additional_datasets: *datasets_ecs_med
       ECS_low:
-        <<: *var_clt
+        <<: *var_cre
         short_name: lwcre
-        derive: true
         additional_datasets: *datasets_ecs_low
       OBS:
-        <<: *var_clt
+        <<: *var_cre
         short_name: lwcre
-        derive: true
         preprocessor: lat_lon
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
             tier: 2, start_year: 2001, end_year: 2022}
 
 
-  plot_correlation:
-    title: Collection of correlation values
-    description: Collect and plot correlations
-    scripts:
-      plot_corr:
-        script: clouds_ecs/plot_pattern_corr.py
-        ancestors: ['*_lat_lon/lat_lon']
-        patterns: 'statistic_all_'
-        diag_order: ['clt', 'clivi', 'lwp', 'netcre', 'swcre', 'lwcre']
+            #  plot_correlation:
+            #    title: Collection of correlation values
+            #    description: Collect and plot correlations
+            #    scripts:
+            #      plot_corr:
+            #        script: clouds_ecs/plot_pattern_corr.py
+            #        ancestors: ['*_lat_lon/lat_lon']
+            #        patterns: 'statistic_all_'
+            #        diag_order: ['clt', 'clivi', 'lwp', 'netcre', 'swcre', 'lwcre']

@@ -543,7 +543,10 @@ def main(cfg):
       plt.yticks([1000., 800., 600., 400., 300., 200., 100.], [1000, 800, 600, 400, 300, 200, 100])
       title = 'Vertical mean of ' + dataset['long_name']
     elif plot_type == 'zonal':
-      title = 'Zonal mean of ' + dataset['long_name']
+      if dataset['long_name']=='Total Cloud Cover Percentage':
+          title = 'Zonal mean of Total Cloud Fraction'
+      else:
+          title = 'Zonal mean of ' + dataset['long_name']
     else:
       title = dataset['long_name']
 

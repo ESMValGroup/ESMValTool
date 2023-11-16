@@ -251,6 +251,21 @@ preprocessors:
     area_statistics: *area_mean
     climate_statistics: *clim_mean
 
+  stratocumulus:
+    custom_order: true
+    extract_shape:
+      shapefile: shapefiles/sc_regions.shp
+      crop: true
+      decomposed: false
+      ids:
+        sc:
+          - SEP
+          - NEP
+          - SEA
+    mask_landsea: *mask_land
+    area_statistics: *area_mean
+    climate_statistics: *clim_mean
+
   south_east_pacific:
     custom_order: true
     extract_region:
@@ -765,6 +780,158 @@ diagnostics:
         <<: *boxplot_settings
         filename_attach: 'ssp585_paitcz'
         title: 'Pacific ITCZ'
+
+
+  diag_stratocumulus:
+    description: compare field means
+    variables:
+      clt_ECS_high_hist: &var_clt_str
+        <<: *var_settings
+        preprocessor: stratocumulus
+        additional_datasets: *datasets_ecs_high
+      clt_ECS_med_hist:
+        <<: *var_clt_str
+        additional_datasets: *datasets_ecs_med
+      clt_ECS_low_hist:
+        <<: *var_clt_str
+        additional_datasets: *datasets_ecs_low
+      clt_ECS_high_scen:
+        <<: *var_clt_str
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_high_scenario
+      clt_ECS_med_scen:
+        <<: *var_clt_str
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_med_scenario
+      clt_ECS_low_scen:
+        <<: *var_clt_str
+        <<: *years_scen
+        additional_datasets: *datasets_ecs_low_scenario
+      clivi_ECS_high_hist:
+        <<: *var_clt_str
+        short_name: clivi
+        additional_datasets: *datasets_ecs_high
+      clivi_ECS_med_hist:
+        <<: *var_clt_str
+        short_name: clivi
+        additional_datasets: *datasets_ecs_med
+      clivi_ECS_low_hist:
+        <<: *var_clt_str
+        short_name: clivi
+        additional_datasets: *datasets_ecs_low
+      clivi_ECS_high_scen:
+        <<: *var_clt_str
+        <<: *years_scen
+        short_name: clivi
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      clivi_ECS_med_scen:
+        <<: *var_clt_str
+        <<: *years_scen
+        short_name: clivi
+        additional_datasets: *datasets_ecs_med_scenario
+      clivi_ECS_low_scen:
+        <<: *var_clt_str
+        <<: *years_scen
+        short_name: clivi
+        additional_datasets: *datasets_ecs_low_scenario
+      lwp_ECS_high_hist:
+        <<: *var_clt_str
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_high
+      lwp_ECS_med_hist:
+        <<: *var_clt_str
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_med
+      lwp_ECS_low_hist:
+        <<: *var_clt_str
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_low
+      lwp_ECS_high_scen:
+        <<: *var_clt_str
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      lwp_ECS_med_scen:
+        <<: *var_clt_str
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_med_scenario
+      lwp_ECS_low_scen:
+        <<: *var_clt_str
+        <<: *years_scen
+        short_name: lwp
+        derive: true
+        additional_datasets: *datasets_ecs_low_scenario
+      netcre_ECS_high_hist:
+        <<: *var_clt_str
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_high
+      netcre_ECS_med_hist:
+        <<: *var_clt_str
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_med
+      netcre_ECS_low_hist:
+        <<: *var_clt_str
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_low
+      netcre_ECS_high_scen:
+        <<: *var_clt_str
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      netcre_ECS_med_scen:
+        <<: *var_clt_str
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_med_scenario
+      netcre_ECS_low_scen:
+        <<: *var_clt_str
+        <<: *years_scen
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_low_scenario
+      tas_ECS_high_hist: &var_tas_str
+        <<: *var_clt_str
+        short_name: tas
+      tas_ECS_med_hist:
+        <<: *var_tas_str
+        additional_datasets: *datasets_ecs_med
+      tas_ECS_low_hist:
+        <<: *var_tas_str
+        additional_datasets: *datasets_ecs_low
+      tas_ECS_high_scen:
+        <<: *var_tas_str
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_high_scenario
+      tas_ECS_med_scen:
+        <<: *var_tas_str
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_med_scenario
+      tas_ECS_low_scen:
+        <<: *var_tas_str
+        <<: *years_scen
+        exp: ssp585
+        additional_datasets: *datasets_ecs_low_scenario
+    scripts:
+      barplot:
+        <<: *boxplot_settings
+        filename_attach: 'ssp585_stratocumulus'
+        title: 'Stratocumulus regione'
 
 
   diag_south_east_pacific:
