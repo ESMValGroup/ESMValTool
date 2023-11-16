@@ -1,5 +1,10 @@
 #!jinja2
 [runtime]
+    [[root]]
+        [[[environment]]]
+            ESMVALCORE_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValCore
+            ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValTool
+            
     [[COMPUTE]]
         platform = spice
         [[[directives]]]

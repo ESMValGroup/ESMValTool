@@ -1,5 +1,11 @@
 #!jinja2
 [runtime]
+    [[root]]
+        [[[environment]]]
+            #TODO make this robust to changes in python version?
+            ESMVALCORE_DIR = /opt/conda/envs/esmvaltool/lib/python3.11/site-packages
+            ESMVALTOOL_DIR = /opt/conda/envs/esmvaltool/lib/python3.11/site-packages
+            
     [[COMPUTE]]
         platform = lotus
         [[[directives]]]
