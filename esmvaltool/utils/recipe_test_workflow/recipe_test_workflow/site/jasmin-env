@@ -4,8 +4,6 @@
 #
 # ENVIRONMENT
 #   MODULE_NAME         The name of the container being used
-#   PYTHONPATH_PREPEND  The path to prepend to PYTHONPATH after loading the
-#                       module
 #   QUIET_MODE          Don't print confirmation messages
 #
 # OPTIONS
@@ -22,13 +20,6 @@ export NUMEXPR_NUM_THREADS=1
 
 # Ensure '~/.local' isn't added to 'sys.path'.
 export PYTHONNOUSERSITE=True
-
-# If PYTHONPATH_PREPEND has been set, prepend it to PYTHONPATH to extend the
-# Python environment.
-if [[ ! -z ${PYTHONPATH_PREPEND:-} ]]; then
-    echo "[INFO] Prepending the following to PYTHONPATH: ${PYTHONPATH_PREPEND}"
-    export PYTHONPATH=${PYTHONPATH_PREPEND}:${PYTHONPATH:-}
-fi
 
 WORKFLOW_RUN_BIN_DIR="${CYLC_WORKFLOW_RUN_DIR}/bin"
 WORKFLOW_SHARE_BIN_DIR="${CYLC_WORKFLOW_SHARE_DIR}/cycle/bin"

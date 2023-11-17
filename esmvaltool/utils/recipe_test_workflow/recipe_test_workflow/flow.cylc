@@ -27,7 +27,7 @@
             OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/${CYLC_TASK_CYCLE_POINT}
             ESMVALCORE_DIR = {{""}}
             ESMVALTOOL_DIR = {{""}}
-            PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
+            PYTHONPATH_PREPEND = {{""}}
 
     [[install_env_file]]
         platform = localhost
