@@ -2,6 +2,7 @@
 observations."""
 
 import logging
+import os
 
 import iris
 import iris.plot as iplt
@@ -10,13 +11,14 @@ import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
-from aero_utils import AeroAnsError, add_bounds, extract_pt
+from aero_utils import add_bounds, extract_pt
 from matplotlib import colors, gridspec
 from numpy import ma
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
 
+logger = logging.getLogger(os.path.basename(__file__))
 fontsizedict = {"title": 25, "axis": 20, "legend": 18, "ticklabel": 18}
 
 
@@ -41,7 +43,7 @@ def get_provenance_record(filenames):
     return record
 
 
-def plot_aod_mod_obs(md_data, obs_data, aeronet_ref_cube, plot_dict):
+def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
     """Plot AOD contour overlaid with Aeronet values for given period.
 
     Parameters
@@ -50,7 +52,7 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_ref_cube, plot_dict):
         Model AOD as a cube with latitude and longitude coordinates.
     obs_data : List.
         Observations of AOD from each AeroNET station.
-    aeronet_ref_cube : Iris cube.
+    aeronet_obs_cube : Iris cube.
         Contains information about Aeronet measurement stations including
         station names, station latitude and station longitude.
     plot_dict : Dictionary.
@@ -64,13 +66,13 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_ref_cube, plot_dict):
                             extend="max")
 
     # Latitude and longitude of stations.
-    anet_aod_lats = aeronet_ref_cube.coord("latitude").points
+    anet_aod_lats = aeronet_obs_cube.coord("latitude").points
     anet_aod_lons = (
-        (aeronet_ref_cube.coord("longitude").points + 180) % 360 - 180
+        (aeronet_obs_cube.coord("longitude").points + 180) % 360 - 180
     )
 
     # Loop over stations
-    for istn, stn in enumerate(aeronet_ref_cube.coord("platform_name").points):
+    for istn, stn in enumerate(aeronet_obs_cube.coord("platform_name").points):
         if obs_data.mask[istn]:
             continue
 
@@ -110,93 +112,7 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_ref_cube, plot_dict):
     )
 
 
-def read_aeronet_clim(aeronet_dir, years):
-    """Read in pre-processed AERONET AOD values.
-
-    Method
-    ------
-        The processed AERONET data is held as NetCDF files. An
-        individual file contains a time series of pre-processed monthly
-        mean AOD data from AeroNET observations at a single station.
-        The meta data holds information about data's provenance, the Station
-        (e.g. name, altitude) and about AeroNet. The filenames have the
-        structure: OBS_AERONET_ground_*_AERmon_od440aer_199301-202201.nc
-        where * = the station id, e.g. Mauna_Loa.
-
-    Parameters
-    ----------
-    aeronet_dir : String. The file path to the AeroNET observation data files.
-    years : List of strings for the start and end year of the time series of
-        interest
-
-    Returns
-    -------
-    anet_aod : Dictionary.
-        Contains station names, station latitude, station longitude and
-        multiannual seasonal mean AOD climatologies for each AeroNET station.
-    """
-
-    # Open observational AOD data files
-    try:
-        cubes = iris.load(aeronet_dir + "*")
-
-    except AeroAnsError:
-        print('READ_AERONET:Error loading Aeronet data: "{}"'.format(
-            aeronet_dir))
-
-    # Lists to hold station data
-    stnlist = []
-    lats = []
-    lons = []
-    aod_seas = []
-
-    # Set up time constraint
-    start_yr = int(years[0]) - 1
-    end_yr = int(years[1])
-    pdt1 = iris.time.PartialDateTime(year=start_yr, month=11, day=1)
-    pdt2 = iris.time.PartialDateTime(year=end_yr, month=12, day=1)
-    time_constr = iris.Constraint(time=lambda cell: pdt1 < cell.point < pdt2)
-
-    # Loop over station files
-    for cube in cubes:
-
-        cube = iris.util.squeeze(cube)
-
-        # Mask missing data
-        masked_data = ma.masked_equal(cube.data, -999.0, copy=True)
-        points_to_mask = ma.getmask(masked_data)
-        iris.util.mask_cube(cube, points_to_mask)
-
-        # Extract station name and lat lon
-        stnlist.append(cube.attributes["station_id"])
-        lats.append(cube.coord("latitude").points[0])
-        lons.append(cube.coord("longitude").points[0])
-
-        # Add coordinates to obs data
-        iris.coord_categorisation.add_season(cube, "time", name="clim_season")
-        iris.coord_categorisation.add_season_year(cube,
-                                                  "time",
-                                                  name="season_year")
-
-        # Extract time period of interest
-        cube = cube.extract(time_constr)
-
-        # Calculate multi-annual seasonal means
-        season = cube.aggregated_by(["clim_season"], iris.analysis.MEAN)
-        aod_seas.append(season.data)
-
-    # Analyse and plot the AOD metrics
-    anet_aod = {
-        "Stations": stnlist,
-        "Lats": lats,
-        "Lons": lons,
-        "MA_season": aod_seas,
-    }
-
-    return anet_aod
-
-
-def aod_analyse(md_data, aeronet_ref_cube, clim_seas, wavel):
+def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
     """Evaluates AOD vs Aeronet, generates plots and returns evaluation
     metrics.
 
@@ -205,7 +121,7 @@ def aod_analyse(md_data, aeronet_ref_cube, clim_seas, wavel):
     md_data : Iris Cube.
         Contains model output of AOD with coordinates; time, latitude and
         longitude.
-    aeronet_ref_cube : Iris Cube.
+    aeronet_obs_cube : Iris Cube.
         Contains information about Aeronet measurement stations including
         station names, station latitude and station longitude.
     clim_seas : List.
@@ -235,8 +151,8 @@ def aod_analyse(md_data, aeronet_ref_cube, clim_seas, wavel):
     md_data = add_bounds(md_data)
 
     # Co-locate model grid points with measurement sites --func from aero_utils
-    anet_aod_lats = aeronet_ref_cube.coord("latitude").points.tolist()
-    anet_aod_lons = aeronet_ref_cube.coord("longitude").points.tolist()
+    anet_aod_lats = aeronet_obs_cube.coord("latitude").points.tolist()
+    anet_aod_lons = aeronet_obs_cube.coord("longitude").points.tolist()
     aod_at_anet = extract_pt(md_data, anet_aod_lats, anet_aod_lons)
 
     # Set up seasonal contour plots
@@ -259,7 +175,7 @@ def aod_analyse(md_data, aeronet_ref_cube, clim_seas, wavel):
 
     # Loop over seasons
     for iseas, seas in enumerate(md_data.slices_over("season_number")):
-        print("Analysing AOD for ", md_id, ":", clim_seas[iseas])
+        logger.info(f"Analysing AOD for {md_id}: {clim_seas[iseas]}")
 
         # Generate statistics required - area-weighted mean
         grid_areas = iris.analysis.cartography.area_weights(seas)
@@ -268,7 +184,7 @@ def aod_analyse(md_data, aeronet_ref_cube, clim_seas, wavel):
                                      weights=grid_areas)
 
         # Extract model and obs data for iseas
-        seas_anet_obs = aeronet_ref_cube.data[iseas]
+        seas_anet_obs = aeronet_obs_cube.data[iseas]
         seas_anet_md = np.array([x[iseas] for x in aod_at_anet])
 
         # Match model data with valid obs data
@@ -318,7 +234,7 @@ def aod_analyse(md_data, aeronet_ref_cube, clim_seas, wavel):
             "Title": title,
             "Season": clim_seas[iseas],
         }
-        plot_aod_mod_obs(seas, seas_anet_obs, aeronet_ref_cube, plot_dict)
+        plot_aod_mod_obs(seas, seas_anet_obs, aeronet_obs_cube, plot_dict)
 
         figures.append(fig_cf)
 
@@ -357,6 +273,16 @@ def aod_analyse(md_data, aeronet_ref_cube, clim_seas, wavel):
     return figures, fig_scatter
 
 
+def preprocess_aod_observational_dataset(obs_dataset):
+    obs_cube = iris.load_cube(obs_dataset[0]["filename"])
+
+    #
+    # Calculate observational climatology here.
+    #
+
+    return obs_cube
+
+
 def main(config):
     """Produce the AOD climatology metric from ground-based AeroNet
     observations.
@@ -373,14 +299,16 @@ def main(config):
     config : dict
         The ESMValTool configuration.
     """
-
-    logger = logging.getLogger(__name__)
-
     input_data = config["input_data"]
     datasets = group_metadata(input_data.values(), "dataset")
 
     # Default wavelength
     wavel = "440"
+
+    # Produce climatology for observational dataset
+    obs_dataset_name = config["observational_dataset"]
+    obs_dataset = datasets.pop(obs_dataset_name)
+    obs_cube = preprocess_aod_observational_dataset(obs_dataset)
 
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.
@@ -389,14 +317,6 @@ def main(config):
         logger.info(group)
 
         for attributes in group:
-            aeronet_ref = attributes["reference_dataset"]
-            if aeronet_ref == attributes["dataset"]:
-                continue
-
-            aeronet_ref_cube = iris.load_cube(
-                datasets[aeronet_ref][0]["filename"]
-            )
-
             logger.info(attributes["filename"])
 
             input_file = attributes["filename"]
@@ -417,7 +337,7 @@ def main(config):
 
             # Analysis and plotting for model-obs comparison
             figures, fig_scatter = aod_analyse(cube,
-                                               aeronet_ref_cube,
+                                               obs_cube,
                                                seasons,
                                                wavel=wavel)
 
