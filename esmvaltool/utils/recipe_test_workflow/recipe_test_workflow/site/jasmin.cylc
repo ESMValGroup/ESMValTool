@@ -2,8 +2,7 @@
 [runtime]
     [[root]]
         [[[environment]]]
-            #TODO make this robust to changes in python version?
-            ESMVALCORE_DIR = /opt/conda/envs/esmvaltool/lib/python3.11/site-packages
+            # Warning: fragile assumption of location of esmvaltool code, see #TODO raise issue
             ESMVALTOOL_DIR = /opt/conda/envs/esmvaltool/lib/python3.11/site-packages
             
     [[COMPUTE]]
@@ -12,7 +11,6 @@
             --wckey = RTW
             --ntasks = 1
 
-    #TODO explore inheriting fast/slow into flow.cylc instead of defining build and config here
     [[build_container]]
         execution time limit = PT30M
         [[[directives]]]
