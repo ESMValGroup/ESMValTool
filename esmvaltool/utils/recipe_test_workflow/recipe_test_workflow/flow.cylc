@@ -34,11 +34,7 @@
         [[[environment]]]
             SITE = {{ SITE }}
 
-    [[build_container]]
-        inherit = None, COMPUTE
-
     [[configure]]
-        inherit = None, COMPUTE
         pre-script = "mkdir -p ${USER_CONFIG_DIR}"
         [[[environment]]]
             ROSE_TASK_APP = configure

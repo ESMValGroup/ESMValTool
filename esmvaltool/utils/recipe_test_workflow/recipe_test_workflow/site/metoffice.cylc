@@ -12,7 +12,11 @@
             --wckey = RTW
             --ntasks = {{ MAX_PARALLEL_TASKS }}
 
+    [[configure]]
+        platform = localhost
+
     [[build_container]]
+        platform = localhost
         execution time limit = PT30M
         [[[directives]]]
             --mem = 2G
