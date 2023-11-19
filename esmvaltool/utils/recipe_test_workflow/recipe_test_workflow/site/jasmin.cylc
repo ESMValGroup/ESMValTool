@@ -11,7 +11,7 @@
             --wckey = RTW
             --ntasks = 1
 
-    [[build_container]]
+    [[get_esmval]]
         inherit = None, COMPUTE
         execution time limit = PT30M
         [[[directives]]]

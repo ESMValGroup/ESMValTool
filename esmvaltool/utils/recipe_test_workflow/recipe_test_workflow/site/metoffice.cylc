@@ -15,7 +15,7 @@
     [[configure]]
         platform = localhost
 
-    [[build_container]]
+    [[get_esmval]]
         platform = localhost
         execution time limit = PT30M
         [[[directives]]]

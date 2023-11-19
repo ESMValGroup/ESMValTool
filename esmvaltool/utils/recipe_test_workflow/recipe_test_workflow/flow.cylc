@@ -12,7 +12,7 @@
    final cycle point = 10
     [[graph]]
 
-        R1 = """install_env_file => build_container => configure
+        R1 = """install_env_file => get_esmval => configure
                 configure => process<medium> => compare<medium>
                 configure => process<fast> => compare<fast>"""
 
@@ -33,6 +33,11 @@
         platform = localhost
         [[[environment]]]
             SITE = {{ SITE }}
+
+    [[get_esmval]]
+        script = rose task-run
+        [[[environment]]]
+            ROSE_APP_OPT_CONF_KEYS = {{ SITE }}
 
     [[configure]]
         pre-script = "mkdir -p ${USER_CONFIG_DIR}"
