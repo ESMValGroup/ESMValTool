@@ -1,0 +1,51 @@
+# ESMValTool
+# recipe_canada_fwi.yml
+---
+documentation:
+  description: Calculate 2023 FWI for Canadian ecozones
+
+  title: Canada 2023 FWI calculations
+
+  authors:
+    - malinina_elizaveta
+
+  maintainer:
+    - malinina_elizaveta
+
+preprocessors:
+  preproc_canada:
+    extract_shape:
+      shapefile: atlantic_maritime.shp
+      method: contains
+      crop: True
+    extract_time:
+      start_year: 1941
+      start_month: 1
+      start_day: 1 
+      end_year: 2023
+      end_month: 11
+      end_day: 10
+
+datasets:
+  - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3, 
+      mip: day, start_year: 1941, start_month: 1, start_day: 1, 
+      end_year: 2023, end_month: 11, end_day: 10}
+
+diagnostics:
+  calculate_fwi:
+    description: Calculate FWI
+    scripts: 
+      calculate:
+        script: fwi/calculate_fwi.py
+        region: atlantic_maritime
+    variables:
+      tasmin:
+        preprocessor: preproc_canada
+      tasmax:
+        preprocessor: preproc_canada
+      pr:
+        preprocessor: preproc_canada
+      hurs:
+        preprocessor: preproc_canada
+      sfcWind:
+        preprocessor: preproc_canada
