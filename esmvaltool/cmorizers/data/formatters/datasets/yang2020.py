@@ -16,22 +16,13 @@ from esmvaltool.cmorizers.data import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def build_cube(dataset):
-    # dn2o -> Dpn2o:
-    #    N2O disequilibrium or N2O partial pressure difference across
-    #    the ocean–atmosphere interface
-    #    (units difference? ppm vs natm, -1.0 factor)
-    #    (-> Pa?)
-    #
+def build_cube(var, var_info, dataset):
+    var_data = dataset.variables[var_info["raw"]][:, :, :]
+    var_data *= var_info["factor"]
 
-    dpn2o = dataset.variables["dn2o_EnsMean_natm"][:, :, :]  # natm
     lonobs = dataset.variables["lon"][:]
     latobs = dataset.variables["lat"][:]
 
-    # It's a bit unclear which time period the climatology covers, best guess
-    # is 1979-01-01 to 2019-01-01, see section 'Methods & Sampling' here:
-    # https://www.bco-dmo.org/dataset/810032
-    #
     time_units = Unit("days since 1950-01-01 00:00:00", calendar="standard")
     time_points = time_units.date2num(
         [datetime(1999, m, 15) for m in range(1, 13)],
@@ -73,20 +64,20 @@ def build_cube(dataset):
         (lon_coord, 2),
     ]
     cube = iris.cube.Cube(
-        dpn2o,
-        var_name="Dpn2o",
+        var_data,
+        var_name=var,
         dim_coords_and_dims=coord_spec,
-        units="natm",
+        units=var_info["units"],
     )
     return cube
 
 
-def extract_variable(var, cmor_table, attrs, filepath, out_dir):
+def extract_variable(var, var_info, cmor_table, attrs, filepath, out_dir):
     """Extract variable."""
     cmor_info = cmor_table.get_variable(var, var)
 
     with netCDF4.Dataset(filepath, "r") as dataset:
-        cube = build_cube(dataset)
+        cube = build_cube(var, var_info, dataset)
         utils.fix_var_metadata(cube, cmor_info)
         utils.convert_timeunits(cube, 1950)
         utils.fix_coords(cube)
@@ -109,4 +100,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         filepath = pathlib.Path(in_dir) / var_info["filename"]
         logger.info(f"CMORizing variable {var} from {filepath}")
         glob_attrs["mip"] = var_info["mip"]
-        extract_variable(var, cmor_table, glob_attrs, filepath, out_dir)
+        extract_variable(
+            var, var_info, cmor_table, glob_attrs, filepath, out_dir
+        )

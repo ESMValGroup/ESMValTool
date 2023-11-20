@@ -15,6 +15,14 @@ variables:
   Dpn2o:
     filename: dn2o-mapped-Yang2020.nc
     mip: HOMOImon
-  # N2Oflx:
-  #   filename: n2oFlux-Yang2020.nc
-  #   mip: HOMOImon
+    raw: dn2o_EnsMean_natm
+    factor: 1
+    units: natm
+  N2Oflx:
+    filename: n2oFlux-Yang2020.nc
+    mip: HOMOImon
+    raw: n2oFlux_EnsMean_g-pm2-pyr
+    # Conversion factor g m-2 y-1 -> mol m-2 s-1
+    # 1 / (3600 * 24 * 365 * (-1) * 14)
+    factor: -2.26498514e-09
+    units: "mol m-2 s-1"
