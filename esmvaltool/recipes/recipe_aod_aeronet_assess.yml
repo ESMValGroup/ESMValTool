@@ -35,7 +35,6 @@ diagnostics:
         short_name: od440aer
         start_year: 1994
         end_year: 2014
-        preprocessor: ma_season_mean  # Remove this line when climatology calculation implemented in diagnostic
         additional_datasets:
           - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20231021}
 

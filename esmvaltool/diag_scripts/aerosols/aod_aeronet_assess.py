@@ -279,6 +279,11 @@ def preprocess_aod_observational_dataset(obs_dataset):
     #
     # Calculate observational climatology here.
     #
+    from esmvalcore.preprocessor import climate_statistics
+
+    obs_cube = climate_statistics(
+        obs_cube, "mean", "season", ["DJF", "MAM", "JJA", "SON"]
+    )
 
     return obs_cube
 
