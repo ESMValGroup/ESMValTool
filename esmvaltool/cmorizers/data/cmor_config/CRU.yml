@@ -1,6 +1,5 @@
 ---
 # Filename (will be extended by variable name)
-# filename: 'cru_ts4.02.1901.2017.{raw_name}.dat.nc'
 filename: 'cru_ts4.07.1901.2022.{raw_name}.dat.nc'
 
 # Common global attributes for Cmorizer output
@@ -12,8 +11,6 @@ attributes:  &attributes
   modeling_realm: reanaly
   # project_id: OBS  # v4.02
   project_id: OBS6
-  # source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/'
-  # source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.06/cruts.2205201912.v4.06/'
   source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.07/cruts.2304141047.v4.07/'
   reference: 'cru'
   comment: ''
@@ -49,12 +46,14 @@ variables:
 # TODO: use update function on each key or recursive or just 
 # duplicate some settings? could also be shortened using yaml aliases
 versions:
-  ts4.06:
+  TS4.06:
+    filename: 'cru_ts4.06.1901.2019.{raw_name}.dat.nc'
     attributes:
       <<: *attributes
       version: 'TS4.06'
       source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.06/cruts.2205201912.v4.06/'
-  ts4.02:
+  TS4.02:
+    filename: 'cru_ts4.02.1901.2017.{raw_name}.dat.nc'
     attributes:
       <<: *attributes
       version: TS4.02
