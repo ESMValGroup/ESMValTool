@@ -20,6 +20,7 @@ try:
     import imagehash
 except ImportError:
     print("Please `pip install imagehash`")
+    raise
 
 IGNORE_FILES: tuple[str, ...] = (
     '*_citation.bibtex',
