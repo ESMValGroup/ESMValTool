@@ -36,13 +36,15 @@ preprocessors:
 diagnostics:
   diff_Dpn2o:
     description: "..."
+
     variables:
       Dpn2o:
         preprocessor: regrid_and_mean_processor
-        reference_dataset: Yang2020
+
     scripts:
       Dpn2o_plot:
-        script: n2o_emissions/dpn2o_plot.py
+        script: n2o_emissions/n2o_diff_plot.py
+        reference_dataset: Yang2020
         data_plot:
           plot_type: contourf
           cmap: wbor
@@ -54,4 +56,28 @@ diagnostics:
           cmap: GMT_polar
           vmin: -70.0
           vmax: 70.0
+          levs: 21
+
+  diff_N2Oflx:
+    description: "..."
+
+    variables:
+      N2Oflx:
+        preprocessor: regrid_and_mean_processor
+
+    scripts:
+      N2O_plot:
+        script: n2o_emissions/n2o_diff_plot.py
+        reference_dataset: Yang2020
+        data_plot:
+          plot_type: contourf
+          cmap: wbor
+          vmin: -1.812e-10
+          vmax: 2.265e-12
+          levs: 22
+        diff_plot:
+          plot_type: contourf
+          cmap: GMT_polar
+          vmin: -1.1325e-10
+          vmax: 1.1325e-10
           levs: 21

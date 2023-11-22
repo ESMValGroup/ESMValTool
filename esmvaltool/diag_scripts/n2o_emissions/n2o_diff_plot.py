@@ -133,26 +133,24 @@ def main(cfg):
 
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg["input_data"].values()
+    datasets = group_metadata(input_data, "dataset")
+
+    # Extract reference dataset
+    ref_dataset = datasets.pop(cfg["reference_dataset"])
+    ref_filename = ref_dataset[0]["filename"]
+    ref_cube = iris.load_cube(ref_filename)
+    plot_dataset(ref_cube, ref_filename, cfg)
 
     # Loop over datasets.
-    datasets = group_metadata(input_data, "dataset")
     for model_dataset, group in datasets.items():
         logger.info(f"Processing dataset {model_dataset}")
         logger.info(group)
 
         for attributes in group:
-            ref_dataset = attributes["reference_dataset"]
-            ref_filename = datasets[ref_dataset][0]["filename"]
-            ref_cube = iris.load_cube(ref_filename)
-
-            if ref_dataset == attributes["dataset"]:
-                plot_dataset(ref_cube, ref_filename, cfg)
-
-            else:
-                filename = attributes["filename"]
-                cube = iris.load_cube(filename)
-                plot_dataset(cube, filename, cfg)
-                plot_diff(cube, filename, ref_cube, ref_filename, cfg)
+            filename = attributes["filename"]
+            cube = iris.load_cube(filename)
+            plot_dataset(cube, filename, cfg)
+            plot_diff(cube, filename, ref_cube, ref_filename, cfg)
 
 
 if __name__ == "__main__":
