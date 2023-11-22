@@ -232,7 +232,7 @@ begin
     ncdf_outfile = ncdf_write(dataset, nc_filename)
     delete(dataset)
     log_provenance(ncdf_outfile, \
-                   plotpath, \
+                   plotpath + "." + output_type(), \
                    "Russell et al 2018 polar plot " + var0, \
                    "mean", \
                    "sh", \
