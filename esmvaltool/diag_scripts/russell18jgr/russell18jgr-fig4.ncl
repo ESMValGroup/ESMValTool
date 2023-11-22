@@ -366,6 +366,16 @@ begin
     delete(var_final)
     delete(exact_lon)
     delete(totaltransport)
+    ; Call provenance logger
+    log_provenance(ncdf_outfile, \
+                   plotpath + "." + file_type, \
+                   "Russell et al 2018 figure 4", \
+                   "mean", \
+                   "sh", \
+                   "geo", \
+                   "russell_joellen", \
+                   "russell18jgr", \
+                   (/inputfile_paths(iii), volfile_paths(iii)/))
 
   end do
 
