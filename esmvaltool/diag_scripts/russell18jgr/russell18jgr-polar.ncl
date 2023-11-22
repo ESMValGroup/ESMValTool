@@ -231,13 +231,6 @@ begin
 
     ncdf_outfile = ncdf_write(dataset, nc_filename)
     delete(dataset)
-  end do
-
-    ; Draw the panel
-    pres = True
-    pres@gsnPanelLabelBar = False
-    outfile = panelling(wks, plots, nvert, nhori, pres)
-
     log_provenance(ncdf_outfile, \
                    plotpath + "." + output_type(), \
                    "Russell et al 2018 polar plot " + var0, \
@@ -247,4 +240,10 @@ begin
                    "russell_joellen", \
                    "russell18jgr", \
                    inputfile_paths)
-end
+  end do
+
+    ; Draw the panel
+    pres = True
+    pres@gsnPanelLabelBar = False
+    outfile = panelling(wks, plots, nvert, nhori, pres)
+    end

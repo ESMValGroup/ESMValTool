@@ -224,6 +224,17 @@ begin
         overlay(plots(0), plots(iii))
     end if
 
+    ; Call provenance logger
+    log_provenance(ncdf_outfile, \
+                   plotpath + "." + output_type(), \
+                   "Russell et al 2018 figure 5g", \
+                   "mean", \
+                   "sh",   \
+                   "times",  \
+                   "russell_joellen", \
+                   "russell18jgr", \
+                   infile_path)
+
   end do
 
   draw(plots(0))
@@ -249,18 +260,3 @@ begin
               "coordinates had a manual calculation of areacello this is " + \
               "not an error, no responce is needed by user for plotting ")
   end if
-
-  frame(wks)
-
-  ; Call provenance logger
-  log_provenance(ncdf_outfile, \
-                 plotpath + "." + output_type(), \
-                 "Russell et al 2018 figure 5g", \
-                 "mean", \
-                 "sh",   \
-                 "times",  \
-                 "russell_joellen", \
-                 "russell18jgr", \
-                 infile_path)
-
-end
