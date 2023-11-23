@@ -1,0 +1,40 @@
+---
+# filename: 'agcd_v1-0-1_precip_total_r005_monthly_.*.nc'
+filename: 'agcd_{version}_{variable}_{raw_calc}_r005_{freq}_.*.nc'
+
+attributes:
+  project_id: OBS6
+  dataset_id: AGCD
+  version: 'v2-0-1'
+  tier: 3
+  modeling_realm: ground
+  resolution: '005'
+  source: 'https://dx.doi.org/10.25914/rses-zh67 Australian Bureau of Meteorology (2023),
+           \Australian Gridded Climate Data ( AGCD ) ; v2.0.1 Snapshot (1900-01-01 to 2022-12-31)'
+  reference: 'agcd-v201'
+  comment: 'hosted on NCI'
+
+variables:
+  pr:
+    mip: Amon
+    raw_long: Lwe Thickness Of Precipitation Amount (mm)
+    raw_calc: total
+    freq: monthly  # convert daily ?
+    raw: precip
+
+  # variables in AGCD v1
+  # tasmax:
+  #   mip: Amon
+  #   raw_long: Daily maximum air temperature, degrees_Celsius, monthly, mean
+  #   raw_calc: mean
+  #   freq: monthly
+  #   raw: tmax
+  # tasmin:
+  #   mip: Amon
+  #   raw_calc: mean
+  #   freq: monthly
+  #   raw: tmin
+  # huss:
+  #   mip: Amon
+  #   raw_calc: mean #hPa
+  #   raw: vapourpres_h15 ## 3pm reading, use 9am as well to average

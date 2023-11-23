@@ -1,6 +1,14 @@
 # Dataset information
 ---
 datasets:
+  AGCD:
+    tier: 3
+    source: "https://dx.doi.org/10.25914/hjqj-0x55"
+    last_access: 2023-11-21
+    info: |
+      Data from National Computing Infrastructure(NCI) project requiring an NCI account and access to Gadi, processing is done on Gadi.
+      Cmorizer looks in subdirectories.
+
   APHRO-MA:
     tier: 3
     source: "http://aphrodite.st.hirosaki-u.ac.jp/download/"
