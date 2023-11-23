@@ -17,7 +17,7 @@ import xarray as xr
 from PIL import Image
 
 try:
-    import imagehash
+    import imagehash  #noqa
 except ImportError as exc:
     print("Please `pip install imagehash`")
     raise exc
