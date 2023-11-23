@@ -23,7 +23,7 @@ datasets:
   - {dataset: Yang2020, project: OBS, type: ocnBgchem, version: 1, tier: 2, mip: HOMOImon, frequency: mon}
 
 preprocessors:
-  regrid_and_mean_processor:
+  regrid_and_mean_processor: &regrid_and_mean
     # Compute mean before regridding for performance
     custom_order: true
     climate_statistics:
@@ -32,6 +32,10 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
+  prep_n2oflx:
+    <<: *regrid_and_mean
+    convert_units:
+      units: "pmol m-2 s-1"
 
 diagnostics:
   diff_Dpn2o:
@@ -63,7 +67,7 @@ diagnostics:
 
     variables:
       N2Oflx:
-        preprocessor: regrid_and_mean_processor
+        preprocessor: prep_n2oflx
 
     scripts:
       N2O_plot:
@@ -72,12 +76,12 @@ diagnostics:
         data_plot:
           plot_type: contourf
           cmap: wbor
-          vmin: -1.812e-10
-          vmax: 2.265e-12
+          vmin: -10
+          vmax: 200
           levs: 22
         diff_plot:
           plot_type: contourf
           cmap: GMT_polar
-          vmin: -1.1325e-10
-          vmax: 1.1325e-10
+          vmin: -100
+          vmax: 100
           levs: 21

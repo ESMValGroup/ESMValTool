@@ -87,6 +87,14 @@ def prep_config(cfg):
                 plot_cfg["extend"] = "both"
 
 
+def get_preprocessed_cube(filename):
+    cube = iris.load_cube(filename)
+    if cube.long_name == "surface_upward_mole_flux_of_nitrous_oxide":
+        cube.data *= -1
+        cube.long_name = "surface_downward_mole_flux_of_nitrous_oxide"
+    return cube
+
+
 def save_data_plot(cube, basename, provenance_record, plot_type, cfg):
     """Save diagnostic data and plot figure."""
     save_data(basename, provenance_record, cfg, cube)
@@ -108,7 +116,9 @@ def plot_diff(cube, input_file, obs_cube, obs_input_file, cfg):
     # Compute difference and plot.
     cube_diff = cube - obs_cube
     output_basename = f"diff_{input_file_stem}_{obs_input_file_stem}"
-    save_data_plot(cube_diff, output_basename, provenance_record, "diff_plot", cfg)
+    save_data_plot(
+        cube_diff, output_basename, provenance_record, "diff_plot", cfg
+    )
 
 
 def plot_dataset(cube, input_file, cfg):
@@ -138,7 +148,7 @@ def main(cfg):
     # Extract reference dataset
     ref_dataset = datasets.pop(cfg["reference_dataset"])
     ref_filename = ref_dataset[0]["filename"]
-    ref_cube = iris.load_cube(ref_filename)
+    ref_cube = get_preprocessed_cube(ref_filename)
     plot_dataset(ref_cube, ref_filename, cfg)
 
     # Loop over datasets.
@@ -148,7 +158,7 @@ def main(cfg):
 
         for attributes in group:
             filename = attributes["filename"]
-            cube = iris.load_cube(filename)
+            cube = get_preprocessed_cube(filename)
             plot_dataset(cube, filename, cfg)
             plot_diff(cube, filename, ref_cube, ref_filename, cfg)
 
