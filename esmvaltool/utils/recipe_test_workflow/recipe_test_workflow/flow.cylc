@@ -35,7 +35,6 @@
             SITE = {{ SITE }}
 
     [[get_esmval]]
-        script = rose task-run
         [[[environment]]]
             ROSE_APP_OPT_CONF_KEYS = {{ SITE }}
 
