@@ -63,15 +63,6 @@ logger = logging.getLogger(__name__)
 CFG = {}
 
 
-# standard libs from esmvalcore ported here to avoid private func import
-def load_config_developer(cfg_file=None):
-    """Load the config developer file and initialize CMOR tables."""
-    cfg_developer = read_config_developer_file(cfg_file)
-    for key, value in cfg_developer.items():
-        CFG[key] = value
-    read_cmor_tables(CFG)
-
-
 def _purge_file_handlers(cfg: dict) -> None:
     """Remove handlers with filename set.
 
@@ -258,7 +249,7 @@ def read_config_user_file(config_file, folder_name, options=None):
     cfg['run_dir'] = os.path.join(cfg['output_dir'], 'run')
 
     # Read developer configuration file
-    load_config_developer(cfg['config_developer_file'])
+    read_cmor_tables(cfg['config_developer_file'])
 
     return cfg
 

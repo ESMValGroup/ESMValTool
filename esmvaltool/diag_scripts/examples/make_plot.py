@@ -42,8 +42,8 @@ def main(cfg):
             label=labels.get(exp, exp),
         )
 
-        p17 = iris.load_cube(group['MultiModelP17'])
-        p83 = iris.load_cube(group['MultiModelP83'])
+        p17 = iris.load_cube(group['MultiModelPercentile17'])
+        p83 = iris.load_cube(group['MultiModelPercentile83'])
         time_coord = mean.coord('time')
         time_axis = time_coord.units.num2date(time_coord.core_points())
         plt.fill_between(
