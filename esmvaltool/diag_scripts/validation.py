@@ -211,7 +211,7 @@ def plot_zonal_cubes(cube_1, cube_2, cfg, plot_data):
     plt.tight_layout()
     plt.grid()
     plt.legend()
-    png_name = xcoordinate + '_' + period + '_' + data_names + '.png'
+    png_name = f'{xcoordinate}_{period}_{data_names}.png'
     if xcoordinate == 'latitude':
         png_name = 'Zonal_Mean_' + png_name
     elif xcoordinate == 'longitude':
