@@ -30,9 +30,12 @@ def load_xr_da(metadata, var):
 
 
 def hursmin_fun(hussmax_sat_xr, hussmin_sat_xr, hurs_xr):
-
+    
+    # calculating the mean saturation wv pressure 
     hussday_sat_xr = (hussmin_sat_xr + hussmax_sat_xr)/2
+    # calculate mean wv pressure
     huss_xr = hurs_xr/100 * hussday_sat_xr 
+    # assuming hursmin occurs during tasmax 
     hursmin_xr = huss_xr/hussmax_sat_xr * 100
 
     return hursmin_xr
@@ -76,6 +79,24 @@ def determine_filename(metadata, fwi_idx, cfg):
 
     return filename
 
+def create_forest_mask(cfg, data_xr):
+
+    # loading forested area mask, filename comes from the recipe
+    mask_f = os.path.join(cfg['auxiliary_data_dir'], cfg['forest_mask'])
+    mask_xr = xr.open_dataarray(mask_f).sel(band=1)
+
+    # mask comes in m, need to put on lat/lon grid
+    lat_lon_mask = mask_xr.rio.reproject("EPSG:4326")
+    # adding projection to the data data
+    data_xr.rio.write_crs(4326, inplace=True)
+
+    # matching the projection of mask and the data
+    mask_matched = lat_lon_mask.rio.reproject_match(data_xr.rio.set_spatial_dims(x_dim='lon', y_dim='lat'))
+    # renaming the dimensions to match data
+    mask_matched = mask_matched.rename({'x': 'lon', 'y': 'lat'})
+
+    return mask_matched
+
 def main(cfg):
 
     input_data = cfg['input_data']
@@ -84,6 +105,8 @@ def main(cfg):
     datasets = group_metadata(input_data.values(), 'dataset', sort=True)
 
     for dataset in datasets.keys(): 
+        # loading data and converting the data to the units 
+        # needed by xclim to calculate FWIs
         hurs_xr = load_xr_da(datasets[dataset], var='hurs')
         sfcwind_xr = load_xr_da(datasets[dataset], var='sfcWind')
         sfcwind_xr = convert_units_to(sfcwind_xr, 'km/h')
@@ -94,18 +117,23 @@ def main(cfg):
         tasmin_xr = load_xr_da(datasets[dataset], var='tasmin')
         tasmin_xr = convert_units_to(tasmin_xr, 'degC')
 
-        xr_list = [hurs_xr, sfcwind_xr, pr_xr, tasmax_xr, tasmin_xr]
+        # creating forested area mask from the GFS geotiff 
+        forest_mask = create_forest_mask(cfg, tasmax_xr)
 
+        # creating one dataset from all the loaded data
+        xr_list = [hurs_xr, sfcwind_xr, pr_xr, tasmax_xr, tasmin_xr]
         raw_dt = concatenate_xr_dt(xr_list)
 
         hursmin_xr = derive_hursmin(raw_dt.hurs, raw_dt.tasmax, raw_dt.tasmin)
 
         raw_dt = xr.merge([raw_dt, hursmin_xr])
     
+        # deriving fire season mask
         fire_season_mask = fire_season(raw_dt.tasmax, method='WF93', freq=None,  
                                     temp_start_thresh='12 degC', temp_end_thresh='5 degC', 
                                     temp_condition_days=3).rename('fire_season_mask') 
-        
+
+        # saving fire season mask, first determing the filename
         fwi_filename = determine_filename(datasets[dataset], 'FSM', cfg)
         fire_season_mask.to_netcdf(os.path.join(work_dir, fwi_filename))
 
@@ -122,12 +150,16 @@ def main(cfg):
                                     prec_thresh=1.5, 
                                     dmc_dry_factor=1.2)
 
+        # no need to save winter precip, so removing from the dic 
         del(fwi_dict['winter_pr'])
 
         for fwi_idx in fwi_dict.keys():
-            fwi_filename = fwi_filename = determine_filename(datasets[dataset], fwi_idx, cfg)
+            fwi_filename = determine_filename(datasets[dataset], fwi_idx, cfg)
             fwi_dict[fwi_idx].to_netcdf(os.path.join(work_dir, fwi_filename))
-        
+            assert np.all(fwi_dict[fwi_idx].lat == forest_mask.lat), 'Latitudes of mask and FWI files are different'
+            assert np.all(fwi_dict[fwi_idx].lon == forest_mask.lon), 'Longitudes of mask and FWI files are different'
+            # masking fwi file to the forest mask
+            fwi_dict[fwi_idx].where(forest_mask>=0.1).to_netcdf(os.path.join(work_dir, 'masked_'+fwi_filename))
 
     logger.info('Success')
 

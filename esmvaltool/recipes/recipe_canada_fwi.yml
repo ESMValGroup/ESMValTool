@@ -15,7 +15,7 @@ documentation:
 preprocessors:
   preproc_canada:
     extract_shape:
-      shapefile: atlantic_maritime.shp
+      shapefile: canada.shp
       method: contains
       crop: True
     extract_time:
@@ -37,7 +37,8 @@ diagnostics:
     scripts: 
       calculate:
         script: fwi/calculate_fwi.py
-        region: atlantic_maritime
+        region: canada
+        forest_mask: CAN_AK_forest_3km.tif
     variables:
       tasmin:
         preprocessor: preproc_canada
