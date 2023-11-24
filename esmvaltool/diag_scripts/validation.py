@@ -186,8 +186,8 @@ def plot_zonal_cubes(cube_1, cube_2, cfg, plot_data):
     lat_points = cube_1.coord(xcoordinate).points
     plt.plot(lat_points, cube_1.data, label=cube_names[0])
     plt.plot(lat_points, cube_2.data, label=cube_names[1])
-    plt.title('annualclim of ' + var if period == 'alltime'
-              else period + ' of ' + var)
+    plt.title(f'Annual Climatology of {var}' if period == 'alltime'
+              else f'{period} of {var}')
     if xcoordinate == 'latitude':
         axis = plt.gca()
         axis.set_xticks([-60, -30, 0, 30, 60],
