@@ -207,7 +207,7 @@ def plot_zonal_cubes(cube_1, cube_2, cfg, plot_data):
                                 '300\N{DEGREE SIGN} E',
                                 '0\N{DEGREE SIGN} E'])
     plt.xlabel(xcoordinate + ' (deg)')
-    plt.ylabel(var + ' in [' + str(cube_1.units) + ']')
+    plt.ylabel(f'{var} [{str(cube_1.units)}]')
     plt.tight_layout()
     plt.grid()
     plt.legend()
