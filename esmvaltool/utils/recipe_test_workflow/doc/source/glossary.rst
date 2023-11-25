@@ -24,6 +24,9 @@ Glossary
      routine evaluation of |ESMs| in |CMIP|, see the
      `ESMValTool Documentation`_.
 
+   KGO
+     Known good output
+
    Rose
      Rose is a toolkit for writing, editing and running application
      configurations, see the `Rose Documentation`_.
