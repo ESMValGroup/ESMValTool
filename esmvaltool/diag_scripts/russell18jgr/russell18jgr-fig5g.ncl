@@ -226,7 +226,7 @@ begin
 
     ; Call provenance logger
     log_provenance(ncdf_outfile, \
-                   plotpath, \
+                   plotpath + "." + output_type(), \
                    "Russell et al 2018 figure 5g", \
                    "mean", \
                    "sh",   \
