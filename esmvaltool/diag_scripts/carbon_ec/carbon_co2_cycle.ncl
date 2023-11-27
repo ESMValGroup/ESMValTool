@@ -492,11 +492,7 @@ begin
   ; Write NetCDF output
   ncdf_outfile = ncdf_write(CO2var, new_path)
 
-  if (file_type .ne. "png") then
-    plotname = plot_dir + plot_file + "." + file_type
-  else
-    plotname = plot_dir + plot_file + ".000001.png"
-  end if
+  plotname = plot_dir + plot_file + "." + file_type
 
   ; -----------------------------------------------------------
   ; Call provenance logger
