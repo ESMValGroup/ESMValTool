@@ -113,9 +113,9 @@ a symbolic link to it so it gets picked up at every re-run iteration:
 Can ESMValTool plot arbitrary model output?
 ===========================================
 
-:ref:`recipe_model_evaluation` provides a recipes that can be used for a basic
+:ref:`recipe_model_evaluation` provides a set of recipes that can be used for a basic
 climate model evaluation with observational data.
-This is especially useful to get a rough idea about the performance of a
+This is especially useful to get an overview of the general performance of a
 simulation.
 
 Furthermore, recipe :ref:`recipe_monitor` allows for the plotting of any

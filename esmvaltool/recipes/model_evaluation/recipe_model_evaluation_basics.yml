@@ -4,7 +4,7 @@ documentation:
   title: Basic Model Evaluation.
   description: >
     Show plots of several variables that can be used for basic model
-    evaluations (sanity checks).
+    evaluations ("sanity checks").
   authors:
     - hassler_birgit
     - lauer_axel
