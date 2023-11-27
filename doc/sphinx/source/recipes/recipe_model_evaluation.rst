@@ -8,7 +8,7 @@ Overview
 
 These recipes and diagnostics provide a basic climate model evaluation with
 observational data.
-This is especially useful to get a rough idea about the performance of a
+This is especially useful to get an overview of the performance of a
 simulation.
 The diagnostics used here allow plotting arbitrary preprocessor output, i.e.,
 arbitrary variables from arbitrary datasets.
@@ -35,7 +35,7 @@ User settings
 -------------
 
 It is recommended to use a vector graphic file type (e.g., SVG) for the output
-files when running this recipe, i.e., run the recipe with the command line
+format when running this recipe, i.e., run the recipe with the command line
 option ``--output_file_type=svg`` or use ``output_file_type: svg`` in your
 :ref:`esmvalcore:user configuration file`.
 Note that map and profile plots are rasterized by default.
@@ -85,7 +85,7 @@ Time series of the global mean top-of-the-atmosphere net radiative flux.
    :align:   center
    :width:   14cm
 
-Profile of zonal mean precipitation.
+Zonal mean precipitation.
 
 .. _fig_5:
 .. figure::  /recipes/figures/model_evaluation/annual_cycle_clt_southerocean_Amon.jpg
