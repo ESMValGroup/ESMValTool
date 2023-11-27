@@ -47,13 +47,16 @@ Recipe settings
 ~~~~~~~~~~~~~~~
 
 A list of all possible configuration options that can be specified in the
-recipe is given for each diagnostic individually (see previous section).
+recipe is given for each diagnostic individually (see links given for the
+available diagnostics in the previous section).
 
 
 Variables
 ---------
 
-Any, but the variables' number of dimensions should match the ones expected by each plot.
+Any, but the variables' number of dimensions should match the ones expected by
+each diagnostic (see links given for the available diagnostics in the previous
+section).
 
 
 Example plots
