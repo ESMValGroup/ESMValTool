@@ -40,7 +40,7 @@ def _get_filepaths(in_dir, basename):
 
 
 def fix_data_var(cube, var):
-
+    """Convert units in cube for the variable"""
     if var == 'pr':
         cube = cube / (30 * 86400)  # ~ 30 days in month
         cube.units = 'kg m-2 s-1'
@@ -49,7 +49,7 @@ def fix_data_var(cube, var):
         cube.units = 'K'
         utils.add_height2m(cube)
     else:
-        logger.info(f"Variable {var} not converted")
+        logger.info("Variable %s not converted", var)
 
     return cube
 
@@ -76,19 +76,18 @@ def _extract_variable(cmor_info, attrs, filepath, out_dir):
                             unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
+def cmorization(in_dir, out_dir, cfg):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
 
     ver = cfg['attributes']['version']
-    logger.info(cfg, cfg_user)
 
     # Run the cmorization #multiple variables
     for (var, var_info) in cfg['variables'].items():
 
         glob_attrs['mip'] = var_info['mip']
-        logger.info(f"CMORizing variable '{var}', {var_info['mip']}")
+        logger.info("CMORizing variable '%s', %s", var, var_info['mip'])
 
         raw_filename = cfg['filename'].format(version=ver,
                                               variable=var_info['raw'],
@@ -97,8 +96,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         filepaths = _get_filepaths(in_dir, raw_filename)
 
         if len(filepaths) == 0:
-            logger.info(f"no files for {var}. pattern:{raw_filename}")
-            logger.info(f"directory:{in_dir}")
+            logger.info("no files for %s. pattern:%s", var, raw_filename)
+            logger.info("directory:%s", in_dir)
         for inputfile in filepaths:
             logger.info("Found input file '%s'", inputfile)
 

@@ -1899,3 +1899,13 @@ diagnostics:
       - {dataset: UWisc, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v2, start_year: 1988, end_year: 2007}
     scripts: null
+
+
+  AGCD:
+    description:
+    variables:
+      pr:
+    additional_datasets:
+      - {project: OBS6, dataset: AGCD, mip: Amon, tier: 3, 
+        type: ground, version: v2-0-1}
+    scripts: null
