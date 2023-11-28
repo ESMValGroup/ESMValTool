@@ -10,7 +10,7 @@ Last access
     20231121
 
 Download and processing instructions
-    Data from NCI project requiring an NCI account and access to GADI
+    Data from NCI project requiring an NCI account and access to Gadi
     Processing is done on GADI
 
 """

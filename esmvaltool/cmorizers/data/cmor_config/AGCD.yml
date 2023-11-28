@@ -22,7 +22,7 @@ variables:
     freq: monthly  # convert daily as well
     raw: precip
 
-  # variables in AGCD v1
+## variables in AGCD v1
   # tasmax:
   #   mip: Amon
   #   raw_long: Daily maximum air temperature, degrees_Celsius, monthly, mean
