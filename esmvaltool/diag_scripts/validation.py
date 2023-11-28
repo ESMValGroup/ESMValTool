@@ -30,7 +30,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 def _get_provenance_record(cfg, plot_file, caption, loc):
     """Create a provenance record describing the diagnostic data and plot."""
     all_input_files = {
-        f: d['alias'] for (f, d) in cfg['input_data'].items() if f.endswith('.nc')
+        f: d['alias'] for (f, d) in cfg['input_data'].items()
+        if f.endswith('.nc')
     }
 
     if "_vs_" in plot_file:
