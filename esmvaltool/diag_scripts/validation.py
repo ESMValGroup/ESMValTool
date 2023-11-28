@@ -392,6 +392,7 @@ def main(cfg):
                     plot_ctrl_exper_seasons(ctrl_seasons, obs_seasons, cfg,
                                             plot_key_obs)
 
+        # apply the supermeans (MEAN on time), collapse a coord and plot
         ctrl, exper, obs_list = apply_supermeans(ctrl, exper, obs)
         ctrl = coordinate_collapse(ctrl, cfg)
         exper = coordinate_collapse(exper, cfg)
