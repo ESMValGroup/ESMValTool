@@ -29,32 +29,11 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def _get_provenance_record(cfg, plot_file, caption, loc):
     """Create a provenance record describing the diagnostic data and plot."""
-    all_input_files = {
-        f: d['alias'] for (f, d) in cfg['input_data'].items()
-        if f.endswith('.nc')
-    }
-
-    if "_vs_" in plot_file:
-        model_1 = plot_file.split("_vs_")[0].split("_")[-1]
-        if plot_file.endswith(".png"):
-            model_2 = plot_file.split("_vs_")[1].strip(".png")
-        elif plot_file.endswith(".nc"):
-            model_2 = plot_file.split("_vs_")[1].strip(".nc")
-        ancestor_1 = [
-            file_name for file_name, alias in all_input_files.items()
-            if model_1 == alias
-        ][0]
-        ancestor_2 = [
-            file_name for file_name, alias in all_input_files.items()
-            if model_2 == alias
-        ][0]
-        ancestor_files = [ancestor_1, ancestor_2]
-    else:
-        model = os.path.basename(plot_file).split("_")[0]
-        ancestor_files = [
-            file_name for file_name, alias in all_input_files.items()
-            if model == alias
-        ]
+    ancestor_files = []
+    for dataset in cfg['input_data'].values():
+        if (dataset['alias'] in plot_file and
+                dataset['short_name'] in plot_file):
+            ancestor_files.append(dataset['filename'])
     record = {
         'caption': caption,
         'statistics': ['mean'],
@@ -77,9 +56,9 @@ def _get_provenance_record(cfg, plot_file, caption, loc):
 def plot_contour(cube, cfg, plt_title, file_name):
     """Plot a contour with iris.quickplot (qplot)."""
     if len(cube.shape) == 2:
-        qplt.contourf(cube, cmap='RdYlBu_r', bbox_inches='tight')
+        qplt.contourf(cube, cmap='RdYlBu_r')
     else:
-        qplt.contourf(cube[0], cmap='RdYlBu_r', bbox_inches='tight')
+        qplt.contourf(cube[0], cmap='RdYlBu_r')
     plt.title(plt_title)
     plt.gca().coastlines()
     plt.tight_layout()
@@ -143,7 +122,10 @@ def plot_latlon_cubes(cube_1,
     # plot each cube
     var = data_names.split('_')[0]
     if not obs_name:
-        cube_names = [data_names.split('_')[1], data_names.split('_')[3]]
+        cube_names = [
+            data_names.replace(f'{var}_', '').split('_vs_')[i] for i in
+            range(2)
+        ]
         for cube, cube_name in zip(cubes, cube_names):
             if not season:
                 plot_file_path = os.path.join(
