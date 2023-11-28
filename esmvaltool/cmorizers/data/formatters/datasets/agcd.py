@@ -42,9 +42,9 @@ def _get_filepaths(in_dir, basename):
 def fix_data_var(cube, var):
 
     if var == 'pr':
-        cube = cube / (30 * 86400)
+        cube = cube / (30 * 86400)  # ~ 30 days in month
         cube.units = 'kg m-2 s-1'
-    elif var.startswith('tas'):
+    elif var.startswith('tas'):  # other variables in v1
         cube = cube + 273.15
         cube.units = 'K'
         utils.add_height2m(cube)

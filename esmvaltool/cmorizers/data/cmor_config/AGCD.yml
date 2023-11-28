@@ -19,7 +19,7 @@ variables:
     mip: Amon
     raw_long: Lwe Thickness Of Precipitation Amount (mm)
     raw_calc: total
-    freq: monthly  # convert daily ?
+    freq: monthly  # convert daily as well
     raw: precip
 
   # variables in AGCD v1
@@ -34,7 +34,3 @@ variables:
   #   raw_calc: mean
   #   freq: monthly
   #   raw: tmin
-  # huss:
-  #   mip: Amon
-  #   raw_calc: mean #hPa
-  #   raw: vapourpres_h15 ## 3pm reading, use 9am as well to average
