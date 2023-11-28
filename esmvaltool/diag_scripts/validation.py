@@ -17,6 +17,7 @@ import numpy as np
 from esmvalcore.preprocessor import extract_region, extract_season
 
 from esmvaltool.diag_scripts.shared import (
+    apply_supermeans,
     get_control_exper_obs,
     group_metadata,
     run_diagnostic,
@@ -251,17 +252,6 @@ def apply_seasons(data_set_dict):
     return season_meaned_cubes
 
 
-def apply_climmean(data_set_dict):
-    """Apply time mean.
-
-    This is a workaround to avoid supermeans
-    """
-    data_file = data_set_dict['filename']
-    data_cube = iris.load_cube(data_file)
-    meaned_cube = data_cube.collapsed('time', iris.analysis.MEAN)
-    return meaned_cube
-
-
 def coordinate_collapse(data_set, cfg):
     """Perform coordinate-specific collapse and (if) area slicing and mask."""
     # see what analysis needs performing
@@ -401,11 +391,7 @@ def main(cfg):
                     plot_ctrl_exper_seasons(ctrl_seasons, obs_seasons, cfg,
                                             plot_key_obs)
 
-        # Workaround to avoid supermeans
-        ctrl = apply_climmean(ctrl)
-        exper = apply_climmean(exper)
-        obs_list = [apply_climmean(obs_element) for obs_element in obs]
-
+        ctrl, exper, obs_list = apply_supermeans(ctrl, exper, obs)
         ctrl = coordinate_collapse(ctrl, cfg)
         exper = coordinate_collapse(exper, cfg)
         plot_ctrl_exper(ctrl, exper, cfg, plot_key)
