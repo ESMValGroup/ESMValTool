@@ -3,11 +3,19 @@
 datasets:
   AGCD:
     tier: 3
-    source: "https://dx.doi.org/10.25914/hjqj-0x55"
+    source: "http://dx.doi.org/10.25914/6009600786063"
     last_access: 2023-11-21
     info: |
-      Data from National Computing Infrastructure(NCI) project requiring an NCI account and access to Gadi, processing is done on Gadi.
-      Cmorizer looks in subdirectories.
+      Australian Gridded Climate Data (AGCD) version 2 is the Bureau of Meteorology's official dataset for climate
+      analyses covering analysis of monthly rainfall. The dataset provides consistent temporal and spatial analyses
+      across Australia for each observed data variable. This accounts for spatial and temporal gaps in observations.
+      Where possible, the gridded analysis techniques provide useful estimates in data-sparse regions
+      such as central Australia. 
+      
+      Time coverage: Site-based data are used to provide gridded climate data at the monthly timescale for rainfall (1900+).
+      Reference: Evans, A., Jones, D.A., Smalley, R., and Lellyett, S. 2020. An enhanced gridded rainfall analysis scheme
+      for Australia. Bureau of Meteorology Research Report. No. 41.
+      National Computational Infrastructure (NCI) - Catalogue Record: http://dx.doi.org/10.25914/6009600786063.
 
   APHRO-MA:
     tier: 3
