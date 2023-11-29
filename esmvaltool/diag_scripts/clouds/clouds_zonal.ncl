@@ -1040,6 +1040,7 @@ begin
           xres@cnMissingValFillColor = -1
           xres@cnLevelSelectionMode = "ExplicitLevels"
           xres@cnLevels = 0.5
+          xres@cnConstFLabelString = ""
           xres@cnFillColors = (/"black", "transparent"/)
           xres@cnFillPattern = 17  ; 10 = hatching, 17 = stippling
           xres@cnFillOn       = True      ; color plot desired
@@ -1102,6 +1103,7 @@ begin
         tres@cnLevelSelectionMode = "ExplicitLevels"
         tres@cnLevels = 0.95
 ;        tres@cnFillColors = (/"gray70", "transparent"/)
+        tres@cnConstFLabelString = ""
         tres@cnFillColors = (/"black", "transparent"/)
         tres@cnFillPattern = 17
         tres@cnFillOn       = True      ; color plot desired
