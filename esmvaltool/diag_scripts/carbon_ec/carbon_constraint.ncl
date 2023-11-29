@@ -331,7 +331,7 @@ begin
 
   ; Call provenance logger
   log_provenance(ncdf_outfile, \
-                 output_dir + "." + file_type, \
+                 output_dir + plot_file + "." + file_type, \
                  XStg + " vs " + YStg, \
                  (/"anomaly", "corr", "stddev"/), \
                  (/"trop", "global"/),\
