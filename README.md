@@ -53,11 +53,11 @@ ESMValTool can run with the following types of [data as input](https://docs.esmv
 
 # Getting started
 
-Please see [getting started](https://docs.esmvaltool.org/en/latest/quickstart/index.html) on readthedocs as well as [ESMValTool tutorial](https://tutorial.esmvaltool.org/index.html). The tutorial is a set of lessons that together teach skills needed to work with ESMValTool in climate-related domains.
+Please see [getting started](https://docs.esmvaltool.org/en/latest/quickstart/index.html) on our instance of Read the Docs as well as [ESMValTool tutorial](https://tutorial.esmvaltool.org/index.html). The tutorial is a set of lessons that together teach skills needed to work with ESMValTool in climate-related domains.
 
 ## Getting help
 
-The easiest way to get help if you cannot find the answer in the documentation on [readthedocs](https://docs.esmvaltool.org), is to open an [issue on GitHub](https://github.com/ESMValGroup/ESMValTool/issues).
+The easiest way to get help, if you cannot find the answer in the documentation in our [docs](https://docs.esmvaltool.org), is to open an [issue on GitHub](https://github.com/ESMValGroup/ESMValTool/issues).
 
 ## Contributing
 
