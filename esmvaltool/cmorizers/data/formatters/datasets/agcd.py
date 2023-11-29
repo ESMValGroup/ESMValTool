@@ -27,8 +27,8 @@ logger = logging.getLogger(__name__)
 
 def _get_filepaths(in_dir, basename):
     """Find correct name of file (extend basename with timestamp).
-
-        Search sub folders of raw data directory"""
+        Search sub folders of raw data directory
+        """
     regex = re.compile(basename)
     return_files = []
     for root, _, files in os.walk(in_dir, followlinks=True):
