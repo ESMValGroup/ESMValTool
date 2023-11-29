@@ -43,6 +43,7 @@ dependencies:
   - openpyxl
   - pandas
   - progressbar2
+  - proj >=9.3.0
   - prov
   - psyplot
   - psy-maps
