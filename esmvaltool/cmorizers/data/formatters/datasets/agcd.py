@@ -27,10 +27,11 @@ logger = logging.getLogger(__name__)
 
 def _get_filepaths(in_dir, basename):
     """Find correct name of file (extend basename with timestamp).
+
         Search sub folders of raw data directory"""
     regex = re.compile(basename)
     return_files = []
-    for root, dir, files in os.walk(in_dir, followlinks=True):
+    for root, _, files in os.walk(in_dir, followlinks=True):
 
         for filename in files:
             if regex.match(filename):
@@ -40,7 +41,7 @@ def _get_filepaths(in_dir, basename):
 
 
 def fix_data_var(cube, var):
-    """Convert units in cube for the variable"""
+    """Convert units in cube for the variable."""
     if var == 'pr':
         cube = cube / (30 * 86400)  # ~ 30 days in month
         cube.units = 'kg m-2 s-1'
