@@ -10,8 +10,11 @@ Last access
     20231121
 
 Download and processing instructions
-    Data from NCI (National Computing Infrastructure Australia https://nci.org.au/), 
-    requiring an NCI account and access to Gadi (Supercomputer in Australia) and the dataset project.
+    Data from NCI (National Computing Infrastructure Australia) 
+    https://nci.org.au/,
+    requiring an NCI account and access to Gadi(Supercomputer in Australia)
+      and the dataset project found in 
+      catalogue record https://dx.doi.org/10.25914/rses-zh67.
     Access can be requested through NCI.
     NCI is an ESGF node: (https://esgf.nci.org.au/projects/esgf-nci/)
     Processing is done on Gadi.
@@ -43,11 +46,12 @@ def _get_filepaths(in_dir, basename):
 
 def fix_data_var(cube, var):
     """Convert units in cube for the variable."""
-    monthdays = {1:31, 2:28, 3:31, 4:30, 5:31, 6:30, 7:31, 8:31, 9:30, 10:31, 11:30, 12:31}
+    monthdays = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 
+                 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
     if var == 'pr':
         newcubels = []
         for i, m_cube in enumerate(cube.slices(['latitude','longitude'])):
-            m_cube = m_cube / (monthdays[i+1] * 86400)  # days in month, calc for each month.
+            m_cube = m_cube / (monthdays[i+1] * 86400)  # days in month
             newcubels.append(m_cube)
 
         cube = iris.cube.CubeList(newcubels).merge()[0]
@@ -57,7 +61,7 @@ def fix_data_var(cube, var):
         cube = cube + 273.15
         cube.units = 'K'
         utils.add_height2m(cube)
-        
+
     else:
         logger.info("Variable %s not converted", var)
 
