@@ -4,14 +4,17 @@ Tier
     Tier 3: restricted dataset.
 
 Source
-    https://dx.doi.org/10.25914/hjqj-0x55
+    https://dx.doi.org/10.25914/rses-zh67
 
 Last access
     20231121
 
 Download and processing instructions
-    Data from NCI project requiring an NCI account and access to Gadi
-    Processing is done on GADI
+    Data from NCI (National Computing Infrastructure Australia https://nci.org.au/), 
+    requiring an NCI account and access to Gadi (Supercomputer in Australia) and the dataset project.
+    Access can be requested through NCI.
+    NCI is an ESGF node: (https://esgf.nci.org.au/projects/esgf-nci/)
+    Processing is done on Gadi.
 
 """
 import logging
@@ -41,9 +44,9 @@ def _get_filepaths(in_dir, basename):
 def fix_data_var(cube, var):
     """Convert units in cube for the variable."""
     if var == 'pr':
-        cube = cube / (30 * 86400)  # ~ 30 days in month
+        cube = cube / (30 * 86400)  # ~ 30 days in month / calc for each month.
         cube.units = 'kg m-2 s-1'
-    elif var.startswith('tas'):  # other variables in v1
+    elif var in ['tas', 'tasmin', 'tasmax']:  # other variables in v1
         cube = cube + 273.15
         cube.units = 'K'
         utils.add_height2m(cube)
@@ -94,7 +97,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                               freq=var_info['freq'])
         filepaths = _get_filepaths(in_dir, raw_filename)
 
-        if len(filepaths) == 0:
+        if not filepaths:
             logger.info("no files for %s. pattern:%s", var, raw_filename)
             logger.info("directory:%s", in_dir)
         for inputfile in filepaths:
