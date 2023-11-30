@@ -24,7 +24,7 @@ import os
 import iris
 from cf_units import Unit
 
-from . import utilities as utils
+from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,7 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
                         unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
