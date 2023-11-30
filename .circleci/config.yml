@@ -40,7 +40,8 @@ commands:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            pytest -n 4 --junitxml=test-reports/report.xml
+            mamba --version
+            pytest -n 4
             esmvaltool version
             esmvaltool -- --help
             ncl -V
@@ -265,7 +266,7 @@ jobs:
             # Install prerequisites
             mkdir /logs
             # Install ESMValTool in a new conda environment
-            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.10' >> /logs/conda.txt 2>&1
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.11' >> /logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
             # install the Julia dependencies
