@@ -502,8 +502,9 @@ begin
   domains = (/"global"/)
 
   ; Call provenance logger
-  log_provenance(ncdf_outfile, plotpath, caption, statistics, domains, \
-                 plottype, authors, references, data_files)
+  log_provenance(ncdf_outfile, plotpath + "." + file_type, caption, \
+                 statistics, domains, plottype, authors, references, \
+                 data_files)
 
   leave_msg(DIAG_SCRIPT, "")
 

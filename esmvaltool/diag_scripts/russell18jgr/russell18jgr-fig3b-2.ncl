@@ -274,7 +274,7 @@ begin
     delete(last_index)
     delete(out_var)
     log_provenance(ncdf_outfile, \
-                   plotpath, \
+                   plotpath + "." + output_type(), \
                    "Russell et al 2018 figure 3b part 2", \
                    "mean", \
                    "sh",   \
