@@ -12,7 +12,7 @@ attributes:
   source: 'https://dx.doi.org/10.25914/rses-zh67 Australian Bureau of Meteorology (2023),
            \Australian Gridded Climate Data ( AGCD ) ; v2.0.1 Snapshot (1900-01-01 to 2022-12-31)'
   reference: 'agcd-v201'
-  comment: 'hosted on NCI (National Computing INfrastructure Australia)'
+  comment: 'hosted on NCI (National Computing Infrastructure Australia)'
 
 variables:
   pr:

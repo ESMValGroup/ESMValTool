@@ -16,6 +16,9 @@ datasets:
       Reference: Evans, A., Jones, D.A., Smalley, R., and Lellyett, S. 2020. An enhanced gridded rainfall analysis scheme
       for Australia. Bureau of Meteorology Research Report. No. 41.
       National Computational Infrastructure (NCI) - Catalogue Record: http://dx.doi.org/10.25914/6009600786063.
+      Data from NCI (National Computing Infrastructure Australia https://nci.org.au/), 
+      requires an NCI account and access to Gadi(Supercomputer in Canberra) and the project found in catalogue record.
+      Access can be requested through NCI. NCI is an ESGF node (https://esgf.nci.org.au/projects/esgf-nci/)
 
   APHRO-MA:
     tier: 3
