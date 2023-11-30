@@ -4,11 +4,11 @@ filename: 'ersst.v3b.185401-202002.nc'
 
 # Common global attributes for Cmorizer output
 attributes:
+  project_id: OBS6
   dataset_id: NOAA-ERSSTv3b
   version: 'v3b'
   tier: 2
   modeling_realm: reanaly
-  project_id: OBS6
   source: 'https://doi.org/10.1175/1520-0442-16.10.1495'
   reference: 'ersstv3b'
   comment: ''

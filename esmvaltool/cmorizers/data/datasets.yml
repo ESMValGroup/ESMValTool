@@ -1027,6 +1027,24 @@ datasets:
         ntatFlxSI-MO/csulf.ntat.mon.mean.nc
         ntatFlxSI-MO/csusf.ntat.mon.mean.nc
 
+  NOAA-ERSSTv3b:
+    tier: 2
+    source: https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf/
+    last_access: 2022-11-17
+    info: |
+      Download the following files:
+        ersst.v3b.1854-2019.nc
+        ersst.v3b.fldmean.1854-2019.nc
+
+  NOAA-ERSSTv5:
+    tier: 2
+    source: https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/netcdf/
+    last_access: 2022-11-17
+    info: |
+      Download the following files:
+        ersst.v5.1854-2019.nc
+        ersst.v5.fldmean.1854-2019.nc
+
   NOAAGlobalTemp:
     tier: 2
     source: https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/v5/access/
