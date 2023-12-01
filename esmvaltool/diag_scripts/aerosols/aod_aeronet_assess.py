@@ -177,27 +177,22 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
     for season in aeronet_obs_cube.slices_over("clim_season"):
 
         # Match Aeronet obs season with model season number
-        if season.coord('clim_season') == 'djf':
-            md_sn = 0 
-
-        elif season.coord('clim_season') == 'mam':
-            md_sn = 1
-
-        elif season.coord('clim_season') == 'jja':
-            md_sn = 2
-
-        elif season.coord('clim_season') == 'son':
-            md_sn = 3 
+        md_sn = [c.lower() for c in clim_seas].index(
+            season.coord("clim_season").points[0]
+        )
+        md_season = md_data[md_sn]
 
         logger.info(f"Analysing AOD for {md_id}: {clim_seas[md_sn]}")
 
         # Generate statistics required - area-weighted mean
-        grid_areas = iris.analysis.cartography.area_weights(seas)
-        global_mean = seas.collapsed(["latitude", "longitude"],
-                                     iris.analysis.MEAN,
-                                     weights=grid_areas)
+        grid_areas = iris.analysis.cartography.area_weights(md_season)
+        global_mean = md_season.collapsed(
+            ["latitude", "longitude"],
+            iris.analysis.MEAN,
+            weights=grid_areas,
+        )
 
-        # Extract model and obs data for iseas
+        # Extract model and obs data for season number (md_sn)
         seas_anet_obs = season.data
         seas_anet_md = np.array([x[md_sn] for x in aod_at_anet])
 
@@ -228,7 +223,7 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
                 color="w",
                 label=label,
                 markersize=15,
-                markerfacecolor=col_scatter[iseas],
+                markerfacecolor=col_scatter[md_sn],
             ))
 
         # Plot contours overlaid with obs for this run and season
@@ -248,7 +243,7 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
             "Title": title,
             "Season": clim_seas[md_sn],
         }
-        plot_aod_mod_obs(seas, seas_anet_obs, aeronet_obs_cube, plot_dict)
+        plot_aod_mod_obs(md_season, seas_anet_obs, aeronet_obs_cube, plot_dict)
 
         figures.append(fig_cf)
 
@@ -290,15 +285,6 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
 def preprocess_aod_observational_dataset(obs_dataset):
     obs_cube = iris.load_cube(obs_dataset[0]["filename"])
 
-    #
-    # Calculate observational climatology here.
-    #
-#    from esmvalcore.preprocessor import climate_statistics
-#
-#    obs_cube = climate_statistics(
-#        obs_cube, "mean", "season", ["DJF", "MAM", "JJA", "SON"]
-#    )
-
     # Set up thresholds for generating the multi annual seasonal mean
     min_days_per_mon = 1
     min_mon_per_seas = 3
@@ -313,100 +299,54 @@ def preprocess_aod_observational_dataset(obs_dataset):
     iris.coord_categorisation.add_season_year(
         obs_cube, 'time', name='season_year')
 
-    # Aggregate by seasonal and climate-year
-    annual_seasonal_mean = obs_cube.aggregated_by(
-        ['clim_season', 'season_year'], iris.analysis.MEAN
+    # Copy obs cube and mask all months with fewer
+    # "Number of days" than given threshold.
+    #
+    num_days_var = obs_cube.ancillary_variable("Number of days")
+    masked_months_obs_cube = obs_cube.copy(
+        data=ma.masked_where(
+            num_days_var.data < min_days_per_mon, obs_cube.data
         )
+    )
 
+    # Aggregate (mean) by season.
+    # The number of unmasked months per season is counted,
+    #   and where there are fewer unmasked months than the
+    #   given threshold, the computed mean is masked.
+    #
+    annual_seasonal_mean = masked_months_obs_cube.aggregated_by(
+        ['clim_season', 'season_year'],
+        iris.analysis.MEAN,
+    )
+    annual_seasonal_count = masked_months_obs_cube.aggregated_by(
+        ['clim_season', 'season_year'],
+        iris.analysis.COUNT,
+        function=lambda values: ~ma.getmask(values),
+    )
+    annual_seasonal_mean.data = ma.masked_where(
+        annual_seasonal_count.data < min_mon_per_seas,
+        annual_seasonal_mean.data,
+    )
+
+    # Aggregate (mean) by multi-annual season.
+    # The number of unmasked seasons per multi-annual season
+    #   is counted, and where there are fewer unmasked seasons
+    #   than the given threshold, the computed multi-annual
+    #   season is masked.
+    #
     multi_annual_seasonal_mean = annual_seasonal_mean.aggregated_by(
-        'clim_season', iris.analysis.MEAN
-        )
-
-    logger.info(obs_cube)
-
-    # Loop over stations
-    platform_names = obs_cube.coord('platform_name').points
-
-    for istn, station in enumerate(platform_names):
-
-        # Set up an array to hold flags for valid mean data
-        valid_asm = annual_seasonal_mean.data * 0.0
-
-        # Loop over the years in the time series
-        for isy, (season, year) in enumerate(zip(
-            annual_seasonal_mean.coord('clim_season').points,
-            annual_seasonal_mean.coord('season_year').points)):
-
-            logger.info(station)
-
-            # Extract data for climate season and year
-            season_constraint = iris.Constraint(clim_season=season)
-            year_constraint = iris.Constraint(season_year=year)
-            season_data = obs_cube[:, istn].extract(
-                season_constraint & year_constraint
-                )
-
-            logger.info(season_data)
-
-            # Check that the annual seasonal mean is valid
-            if len(season_data.coord('clim_season').points) < 2:
-                valid_asm[isy, istn] = 0.0
-
-            else:
-                n_valid = ma.count(season_data.data)
-
-                if n_valid < min_mon_per_seas:
-                    valid_asm[isy, istn] = 0.0
-
-                else:
-                    valid_asm[isy, istn] = 1.0
-
-        #  Create a mask for the valid annual seasonal means
-        valid_asm_masked = ma.masked_where(
-            valid_asm[:, istn] == 0.0, valid_asm[:, istn]
-            )
-
-        # Mask the annual seasonal mean data that is not valid
-        annual_seasonal_mean.data[:, istn] = ma.masked_where(
-            ma.getmask(valid_asm_masked), annual_seasonal_mean.data[:, istn]
-            )
-
-        # Set up array to hold flags for valid multiannual seasonal mean data
-        valid_masm = multi_annual_seasonal_mean.data * 0.0
-
-        # Loop over the seasons
-        for iseas, season in enumerate(
-            multi_annual_seasonal_mean.coord('clim_season').points
-            ):
-
-            # Extract annual mean seasonal data for season
-            season_constraint = iris.Constraint(clim_season=season)
-            season_mean = annual_seasonal_mean[:, istn].extract(
-                season_constraint
-                )
-
-            # Check if there are enough seasonal mean data points to
-            # calculate a multi annual seasonal mean
-            n_valid = ma.count(season_mean.data)
-
-            if n_valid < min_seas_per_clim:
-                valid_masm[iseas, istn] = 0.0
-
-                # Create a mask for the valid annual seasonal means
-                valid_masm_masked = ma.masked_where(
-                    valid_masm[iseas, istn] == 0.0, valid_masm[iseas, istn]
-                    )
-
-                multi_annual_seasonal_mean.data[iseas, istn] = ma.masked_where(
-                    ma.getmask(valid_masm_masked),
-                    multi_annual_seasonal_mean.data[iseas, istn]
-                    )
-
-            else:
-                multi_annual_seasonal_mean.data[iseas, istn] = np.mean(
-                    season_mean.data
-                    )
-
+        'clim_season',
+        iris.analysis.MEAN,
+    )
+    multi_annual_seasonal_count = annual_seasonal_mean.aggregated_by(
+        'clim_season',
+        iris.analysis.COUNT,
+        function=lambda values: ~ma.getmask(values),
+    )
+    multi_annual_seasonal_mean.data = ma.masked_where(
+        multi_annual_seasonal_count.data < min_seas_per_clim,
+        multi_annual_seasonal_mean.data,
+    )
 
     return multi_annual_seasonal_mean
 
