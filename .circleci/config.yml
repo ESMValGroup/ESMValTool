@@ -41,7 +41,7 @@ commands:
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             mamba --version
-            pytest -n 4
+            pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
             ncl -V
