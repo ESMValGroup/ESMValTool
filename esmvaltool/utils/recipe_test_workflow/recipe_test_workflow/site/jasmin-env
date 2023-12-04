@@ -5,6 +5,7 @@
 # ENVIRONMENT
 #   MODULE_NAME         The name of the container being used
 #   QUIET_MODE          Don't print confirmation messages
+#   PYTHONPATH_PREPEND  The path to prepend to PYTHONPATH
 #
 # OPTIONS
 #   COMMAND             The command to execute with options
@@ -42,6 +43,14 @@ export SINGULARITYENV_PREPEND_PATH="/opt/conda/envs/esmvaltool/bin"
 
 # Include Rose/Cylc workflow directories in container PATH
 export SINGULARITYENV_APPEND_PATH="${WORKFLOW_RUN_BIN_DIR}:${WORKFLOW_SHARE_BIN_DIR}:${ROSE_APP_BIN_DIR}"
+
+# If PYTHONPATH_PREPEND has been set, prepend it to PYTHONPATH to extend the
+# Python environment.
+if [[ ! -z ${PYTHONPATH_PREPEND:-} ]]; then
+    echo "[INFO] Prepending the following to PYTHONPATH: ${PYTHONPATH_PREPEND}"
+    export PYTHONPATH=${PYTHONPATH_PREPEND}:${PYTHONPATH:-}
+fi
+
 
 if [[ -z ${QUIET_MODE:-} ]]; then
     echo "[INFO] Using the ${MODULE_NAME} container"
