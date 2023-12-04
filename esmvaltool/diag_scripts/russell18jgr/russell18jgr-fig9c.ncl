@@ -331,7 +331,7 @@ begin
     ncdf_outfile = ncdf_write(outvar, nc_filename)
 
     log_provenance(ncdf_outfile, \
-                   plotpath, \
+                   plotpath + "." + output_type(), \
                    "Russell et al 2018 figure 9c", \
                    "mean", \
                    "sh", \
