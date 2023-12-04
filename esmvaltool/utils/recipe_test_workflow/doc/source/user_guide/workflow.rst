@@ -28,7 +28,7 @@ The |RTW| performs the following steps:
      ``process`` jobs will run on SPICE
   :Executes:
      The ``clone_latest_esmval.sh`` script (if cloning), or a ``singularity build``
-    command (if getting container) from the |Rose| app
+     command (if getting container) from the |Rose| app
   :Details:
      Runs at the start of each cycle
 
