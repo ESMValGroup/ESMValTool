@@ -81,7 +81,7 @@ def get_config_values_from_task_env():
 
 
 def write_yaml(file_path, contents):
-    """Write ``contents`` to the YAML file.
+    """Write ``contents`` to the YAML file ``file_path``.
 
     Parameters
     ----------
