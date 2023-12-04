@@ -24,7 +24,8 @@ The |RTW| performs the following steps:
      or gets the latest container image from DockerHub and converts to a singularity
      image, depending on ``SITE``.
   :Runs on:
-     Localhost (if cloning), or compute node (if getting container).
+     ``COMPUTE``, which depends on the ``SITE``; at the Met Office, the
+     ``process`` jobs will run on SPICE
   :Executes:
      The ``clone_latest_esmval.sh`` script from the |Rose| appi (if cloning),
      or ``singularity build`` (if getting container)
