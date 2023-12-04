@@ -1,6 +1,6 @@
 ---
 # Filename
-filename: 'ersst.v3b.185401-202002.nc'
+filename: 'ersst.*.nc'
 
 # Common global attributes for Cmorizer output
 attributes:
@@ -9,7 +9,7 @@ attributes:
   version: 'v3b'
   tier: 2
   modeling_realm: reanaly
-  source: 'https://doi.org/10.1175/1520-0442-16.10.1495'
+  source: https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf/'
   reference: 'ersstv3b'
   comment: ''
 

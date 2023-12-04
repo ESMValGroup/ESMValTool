@@ -1,6 +1,6 @@
 ---
 # Filename
-filename: 'ersstv5.188001_201612.nc'
+filename: 'ersst.v5.*.nc'
 
 # Common global attributes for Cmorizer output
 attributes:

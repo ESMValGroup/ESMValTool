@@ -40,7 +40,7 @@ Download and processing instructions
 """
 
 import logging
-import os
+import os, re
 
 import iris
 
@@ -48,6 +48,17 @@ from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
+def _get_filepaths(in_dir, basename):
+    """Find correct name of file (extend basename with timestamp).
+        Search sub folders of raw data directory"""
+    regex = re.compile(basename)
+    return_files = []
+    for files in os.listdir(in_dir):
+
+        if regex.match(files):
+            return_files.append(os.path.join(in_dir, files))
+
+    return return_files
 
 def _fix_time_coord(cube):
     """Set time points to central day of month."""
@@ -60,7 +71,7 @@ def _fix_time_coord(cube):
 def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
-    cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
+    cube = iris.load_cube(filepath, raw_var)
     cube = iris.util.squeeze(cube)
     _fix_time_coord(cube)
     utils.fix_var_metadata(cube, cmor_info)
@@ -76,13 +87,21 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
-    filepath = os.path.join(in_dir, cfg['filename'])
-    logger.info("Found input file '%s'", filepath)
 
+    filepaths = _get_filepaths(in_dir,cfg['filename'])
+    # filepath = os.path.join(in_dir, cfg['filename'])
+
+    if len(filepaths)>0:
+        logger.info("Found %d input files in '%s'", len(filepaths), in_dir)
+    else:
+        logger.info("No files found, basename: %s", cfg['filename'])
+
+    for filepath in filepaths:
+        logger.info("Found input file '%s'", filepath)
     # Run the cmorization
-    for (var, var_info) in cfg['variables'].items():
-        logger.info("CMORizing variable '%s'", var)
-        glob_attrs['mip'] = var_info['mip']
-        cmor_info = cmor_table.get_variable(var_info['mip'], var)
-        raw_var = var_info.get('raw', var)
-        _extract_variable(raw_var, cmor_info, glob_attrs, filepath, out_dir)
+        for (var, var_info) in cfg['variables'].items():
+            logger.info("CMORizing variable '%s'", var)
+            glob_attrs['mip'] = var_info['mip']
+            cmor_info = cmor_table.get_variable(var_info['mip'], var)
+            raw_var = var_info.get('raw', var)
+            _extract_variable(raw_var, cmor_info, glob_attrs, filepath, out_dir)
