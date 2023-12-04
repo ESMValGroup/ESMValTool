@@ -297,13 +297,13 @@ def _get_site_rootpath(cmip_era):
     with open(config_yml, 'r') as yamf:
         yamlconf = yaml.safe_load(yamf)
     drs = yamlconf['drs'][cmip_era]
-    rootdir = [yamlconf['rootpath'][cmip_era], 
+    rootdir = [yamlconf['rootpath'][cmip_era],
                '/'.join([yamlconf['download_dir'], cmip_era])]
     logger.debug("%s root directory %s", cmip_era, rootdir)
     if drs == 'default' and 'default' in yamlconf['rootpath']:
-        rootdir = [yamlconf['rootpath']['default'], 
+        rootdir = [yamlconf['rootpath']['default'],
                    '/'.join([yamlconf['download_dir'], cmip_era])
-                  ]
+                   ]
         logger.debug("Using drs default and "
                      "default: %s data directory", rootdir)
 
