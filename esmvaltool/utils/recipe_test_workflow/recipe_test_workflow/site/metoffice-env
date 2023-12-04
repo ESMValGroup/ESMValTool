@@ -3,7 +3,7 @@
 # USAGE metoffice-env COMMAND
 #
 # ENVIRONMENT
-#   MODULE_NAME         The name of the module to load
+#   ENV_NAME         The name of the module to load
 #   PYTHONPATH_PREPEND  The path to prepend to PYTHONPATH after loading the
 #                       module
 #   QUIET_MODE          Don't print confirmation messages
@@ -38,7 +38,7 @@ export NUMEXPR_NUM_THREADS=1
 # Ensure '~/.local' isn't added to 'sys.path'.
 export PYTHONNOUSERSITE=True
 
-safe_load "${MODULE_NAME}"
+safe_load "${ENV_NAME}"
 
 # If PYTHONPATH_PREPEND has been set, prepend it to PYTHONPATH to extend the
 # Python environment.
