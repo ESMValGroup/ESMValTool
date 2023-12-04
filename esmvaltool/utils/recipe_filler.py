@@ -292,9 +292,9 @@ base_dict = {
 
 
 def _get_download_dir(yamlconf, cmip_era):
-    """Get the Download Directory from user config"""
+    """Get the Download Directory from user config file."""
     if 'download_dir' in yamlconf:
-        return '/'.join([yamlconf['download_dir'], cmip_era])
+        return os.path.join(yamlconf['download_dir'], cmip_era)
     return False
 
 
