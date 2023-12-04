@@ -309,7 +309,7 @@ def _get_site_rootpath(cmip_era):
     rootdir = [yamlconf['rootpath'][cmip_era], ]
 
     if download_dir:
-       rootdir.append(download_dir)
+        rootdir.append(download_dir)
     logger.debug("%s root directory %s", cmip_era, rootdir)
     if drs == 'default' and 'default' in yamlconf['rootpath']:
         rootdir = [yamlconf['rootpath']['default'], ]
