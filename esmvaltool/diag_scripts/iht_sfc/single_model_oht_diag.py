@@ -45,8 +45,7 @@ rcParams.update({
 caption = {
     'F1': 'Figure 1. The implied heat transport in the global ocean'
           'and in individual basins.',
-    'F2': 'Figure 2.',
-    'F3': 'Figure 3. ',
+    'F2': 'Figure 2.'
 }
 
 
@@ -95,6 +94,38 @@ def matching_strings(list_of_strings, substrings):
             if var in element:
                 matches.append(element)
     return matches
+
+
+def area_average(cube, latitude='latitude', longitude='longitude', mdtol=1):
+    """Return area-weighted average of a cube.
+
+    Parameters
+    ----------
+    cube : :class:`iris.cube.Cube`
+        Input cube.
+    latitude : string
+        Name of latitude coordinate in ``cube``.
+    longitude : string
+        Name of longitude coordinate in ``cube``.
+    mdtol : float
+        Tolerance to missing data, between 0 and 1.
+
+
+    Returns
+    -------
+    :class:`iris.cube.Cube`
+        Collapsed cube with the weighted average.
+    """
+    if cube.coord(latitude).bounds is None:
+        cube.coord(latitude).guess_bounds()
+    if cube.coord(longitude).bounds is None:
+        cube.coord(longitude).guess_bounds()
+    grid_areas = iris.analysis.cartography.area_weights(cube)
+    cube_avg = cube.collapsed([longitude, latitude],
+                              iris.analysis.MEAN,
+                              weights=grid_areas,
+                              mdtol=mdtol)
+    return cube_avg
 
 
 def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
@@ -167,6 +198,26 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
                               dim_coords_and_dims=dim_coords_and_dims,
                               aux_coords_and_dims=aux_coords_and_dims)
     return efp_cube, mht_cube
+
+
+def format_plot(axes, label, title):
+    """Format plots in quiver panel.
+
+    Parameters
+    ----------
+    axes : :class:`matplotlib.axes.Axes`
+        Input axes.
+    label : string
+        Top-left plot label.
+    title : string
+        Plot title.
+    """
+    axes.set_xticks(np.arange(-180, 190, 60))
+    axes.set_xticklabels(['180', '120W', '60W', '0', '60E', '120E', '180'])
+    axes.set_yticks(np.arange(-90, 100, 30))
+    axes.set_yticklabels(['90S', '60S', '30S', 'Eq', '30N', '60N', '90N'])
+    axes.annotate(label, xy=(0, 1.05), xycoords='axes fraction', color='k')
+    axes.set_title(title)
 
 
 class OceanHeatTransport:
@@ -314,6 +365,129 @@ class OceanHeatTransport:
         start = (ntot - 2 - ((ntot - 2) // step) * step) // 2
         return start
 
+    def quiver_maps_data(self, vnames, change_sign):
+        """Obtain data for one row of plots.
+
+        Parameters
+        ----------
+        vnames : list
+            Two-element list with the names of the EFP and
+            flux variables.
+        change_sign : list
+            Two-element list of booleans to indicate if
+            the variable has to be plotted with the sign changed.
+        """
+        efp = self.efp_clim.extract_cube(NameConstraint(var_name=vnames[0]))
+        flx = self.flx_clim.extract_cube(NameConstraint(var_name=vnames[1]))
+        # The choice of origin for efp is arbitrary,
+        # we choose the unweighted mean.
+        efp = efp - efp.collapsed(efp.coords(), iris.analysis.MEAN)
+        flx = flx - area_average(flx)
+        if change_sign[0]:
+            efp = -efp
+        if change_sign[1]:
+            flx = -flx
+        efp.convert_units("PW")
+        v_component, u_component = np.gradient(efp.data)
+        u_component = u_component[1:-1, 1:-1]
+        v_component = v_component[1:-1, 1:-1]
+        return {'efp': efp, 'flx': flx, 'uuu': u_component, 'vvv': v_component}
+
+    def quiver_subplot(self, dargs):
+        """Produce panel with maps of EFPs and fluxes.
+
+        Plot figures with energy flux potential and gradient in the left-hand
+        column and the corresponding source term in the right-hand column.
+
+        Parameters
+        ----------
+        dargs : dictionary
+            Dictionary with variable names and plot configuration
+            data.
+        """
+        mshgrd = np.meshgrid(self.flx_clim[0].coord('longitude').points,
+                             self.flx_clim[0].coord('latitude').points)
+        nrows = len(dargs['var_name'])
+        # Calculate sampling for vector plot
+        dxy = [mshgrd[0].shape[1] // 20, mshgrd[0].shape[0] // 10]
+        startx = self.quiver_start(mshgrd[0].shape[1], dxy[0])
+        starty = self.quiver_start(mshgrd[0].shape[0], dxy[1])
+
+        # Set grid layout depending on number of rows.
+        # Place figures every grid_step rows in the grid.
+        grid_step = 7
+        if nrows == 3:
+            plt.figure(figsize=(10, 10))
+            grds = gridspec.GridSpec(22, 2)
+            grds.update(wspace=0.25, hspace=1.5)
+        elif nrows == 2:
+            plt.figure(figsize=(10, 6.5))
+            grds = gridspec.GridSpec(15, 2)
+            grds.update(wspace=0.25, hspace=1.5)
+        elif nrows == 1:
+            plt.figure(figsize=(12, 4))
+            grds = gridspec.GridSpec(8, 2)
+            grds.update(wspace=0.25, hspace=1.5)
+
+        cbs = []
+        for i in range(nrows):
+            data = self.quiver_maps_data(dargs['var_name'][i],
+                                         dargs['change_sign'][i])
+            plt.subplot(grds[i * grid_step:(i * grid_step) + grid_step, 0],
+                        projection=ccrs.PlateCarree(central_longitude=0))
+            cbs.append(
+                iplt.contourf(data['efp'],
+                              levels=np.linspace(dargs['vmin'], dargs['vmax'],
+                                                 dargs['nlevs'])))
+            plt.gca().coastlines()
+            if i == 0:
+                qqq = plt.quiver(mshgrd[0][starty::dxy[1], startx::dxy[0]],
+                                 mshgrd[1][starty::dxy[1], startx::dxy[0]],
+                                 data['uuu'][starty::dxy[1], startx::dxy[0]],
+                                 data['vvv'][starty::dxy[1], startx::dxy[0]],
+                                 pivot='mid',
+                                 color='w',
+                                 width=0.005)
+            else:
+                plt.quiver(mshgrd[0][starty::dxy[1], startx::dxy[0]],
+                           mshgrd[1][starty::dxy[1], startx::dxy[0]],
+                           data['uuu'][starty::dxy[1], startx::dxy[0]],
+                           data['vvv'][starty::dxy[1], startx::dxy[0]],
+                           pivot='mid',
+                           scale=qqq.scale,
+                           color='w')
+            format_plot(plt.gca(), dargs['label'][i][0], dargs['title'][i][0])
+
+            plt.subplot(grds[i * grid_step:(i * grid_step) + grid_step, 1],
+                        projection=ccrs.PlateCarree(central_longitude=0))
+            cbs.append(
+                iplt.contourf(data['flx'],
+                              levels=np.linspace(dargs['wmin'], dargs['wmax'],
+                                                 dargs['nwlevs']),
+                              cmap='RdBu_r'))
+            plt.gca().coastlines()
+            format_plot(plt.gca(), dargs['label'][i][1], dargs['title'][i][1])
+
+        plt.subplot(grds[-1, 0])
+        plt.colorbar(cbs[0],
+                     cax=plt.gca(),
+                     orientation='horizontal',
+                     label='Energy flux potential (PW)')
+        plt.subplot(grds[-1, 1])
+        plt.colorbar(cbs[1],
+                     cax=plt.gca(),
+                     orientation='horizontal',
+                     label=r'Flux (Wm$^{-2}$)',
+                     ticks=np.linspace(dargs['wmin'], dargs['wmax'],
+                                       dargs['nwlevs'])[1::dargs['wlevstep']])
+
+        if nrows == 3:
+            plt.subplots_adjust(left=0.1, right=0.94, top=1.0, bottom=0.11)
+        elif nrows == 2:
+            plt.subplots_adjust(left=0.11, right=0.9, top=1.0, bottom=0.13)
+        elif nrows == 1:
+            plt.subplots_adjust(left=0.11, right=0.9, top=1.0, bottom=0.20)
+
 
 def masks(cfg):
     mask = iris.load_cube(cfg['mask'])
@@ -337,13 +511,54 @@ def masks(cfg):
     # Return wrapped mask
     return mask
 
+def efp_maps(iht, model, experiment, config):
+    """Produce Figure 2.
+
+    Parameters
+    ----------
+    iht : :class: OceanHeatTransport
+        Object with the recipe datasets.
+    model : string
+        Model name.
+    experiment : string
+        Experiment name.
+    config : dict
+        The ESMValTool configuration.
+    """
+    # Figure 2
+    iht.quiver_subplot(
+        {
+            'var_name': [['nsf_efp', 'nsf']],
+            'title': [['$P_{SFC}^{TOT}$', r'$\Delta F_{SFC}^{TOT}$']],
+            'label': [['(a)', '(b)']],
+            'change_sign': [[False, False]],
+            'wmin':
+            -180,
+            'wmax':
+            180,
+            'nwlevs':
+            19,
+            'wlevstep':
+            4,
+            'vmin':
+            -1.2,
+            'vmax':
+            1.2,
+            'nlevs':
+            11
+        })
+    flx_files = matching_strings(iht.flx_files, ['nsf/'])
+    provenance_record = get_provenance_record(flx_files, caption['F2'])
+    figname = f"figure2_{model}_{experiment}"
+    save_figure(figname, provenance_record, config)
+
 
 def mht_plots(iht, model, experiment, config):
     """Produce Figures 1 and 3.
 
     Parameters
     ----------
-    iht : :class: ImpliedHeatTransport
+    iht : :class: OceanHeatTransport
         Object with the recipe datasets.
     model : string
         Model name.
@@ -375,7 +590,7 @@ def plot_single_model_diagnostics(iht_dict, config):
         for experiment, iht_experiment in iht_model.items():
             logger.info("Plotting experiment: %s", experiment)
             mht_plots(iht_experiment, model, experiment, config)
-            #efp_maps(iht_experiment, model, experiment, config)
+            efp_maps(iht_experiment, model, experiment, config)
 
 
 def main(config):
