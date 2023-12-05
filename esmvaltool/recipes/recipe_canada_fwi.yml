@@ -24,12 +24,12 @@ preprocessors:
       start_day: 1 
       end_year: 2023
       end_month: 11
-      end_day: 10
+      end_day: 26
 
 datasets:
   - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3, 
       mip: day, start_year: 1941, start_month: 1, start_day: 1, 
-      end_year: 2023, end_month: 11, end_day: 10}
+      end_year: 2023, end_month: 11, end_day: 26}
 
 diagnostics:
   calculate_fwi:

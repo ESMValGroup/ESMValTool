@@ -1,21 +1,13 @@
-import cartopy.crs as ccrs 
-import esmvalcore.preprocessor as eprep
-import iris
 import xarray as xr
 import logging
-import matplotlib.pyplot as plt
 import os
 import numpy as np
 from xclim.indices.fire import fire_weather_ufunc, fire_season
 from xclim.core.units import convert_units_to
 from xclim.indices import saturation_vapor_pressure
-import glob
 
 # import internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import run_diagnostic, select_metadata, group_metadata, get_diagnostic_filename, save_data, ProvenanceLogger
-import esmvaltool.diag_scripts.shared.plot as eplot
-from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import ProvenanceLogger
+from esmvaltool.diag_scripts.shared import run_diagnostic, select_metadata, group_metadata
 
 # # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -102,7 +94,7 @@ def main(cfg):
     input_data = cfg['input_data']
     work_dir = cfg['work_dir']
 
-    datasets = group_metadata(input_data.values(), 'dataset', sort=True)
+    datasets = group_metadata(input_data.values(), 'alias', sort=True)
 
     for dataset in datasets.keys(): 
         # loading data and converting the data to the units 
