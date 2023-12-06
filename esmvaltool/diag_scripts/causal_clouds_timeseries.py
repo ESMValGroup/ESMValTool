@@ -20,14 +20,12 @@ import matplotlib.pyplot as plt
 logger = logging.getLogger(Path(__file__).stem)
 
 
-def get_provenance_record(attributes, ancestor_files):
+def get_provenance_record(caption, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-    caption = attributes['caption'].format(**attributes)
-
     record = {
         'caption': caption,
         'statistics': ['mean'],
-        'domains': ['regional'],
+        'domains': ['reg'],
         'plot_types': ['times'],
         'authors': ['bock_lisa'],
         'references': ['cmug'],
@@ -104,11 +102,13 @@ def potential_temperature(temperature, plev):
 def calculate_theta(var, input_data, cfg):
     # This function calculates the potential temperature for one level.
 
-    t_data = select_metadata(input_data, short_name = 'ta'+var[-3:])
+    print(input_data)
+    t_data = select_metadata(input_data, short_name='ta'+var[5:])
+    print(t_data)
     t_file = t_data[0]['filename']
     temperature = read_data(t_file)
 
-    pressure = float(var[-3:])
+    pressure = float(var[5:])
 
     theta_x = potential_temperature(temperature, pressure)  
 
@@ -118,10 +118,32 @@ def calculate_theta(var, input_data, cfg):
     if "caption" not in t_data[0]:
         t_data[0]['caption'] = t_file
     provenance_record = get_provenance_record(
-        t_data[0], ancestor_files=[t_file])
+        t_data[0]['caption'], ancestor_files=[t_file])
     save_data(basename, provenance_record, cfg, theta_x)
 
-    return theta_x
+    return theta_x, t_file
+
+
+def calculate_lts(var, input_data, cfg):
+    # This function calculates the potential temperature for one level.
+
+    theta_700, file_1  = calculate_theta('theta700', input_data, cfg)
+
+    theta_1000, file_2  = calculate_theta('theta1000', input_data, cfg)
+
+    lts = theta_700 - theta_1000
+
+    lts.long_name = 'lower tropospheric stability'
+
+    # Write output
+    logger.info("Saving data.")
+    basename = var
+    caption = 'lower_tropospheric_stability' 
+    provenance_record = get_provenance_record(
+        caption, ancestor_files=[file_1, file_2])
+    save_data(basename, provenance_record, cfg, lts)
+
+    return lts
 
 
 def main(cfg):
@@ -145,7 +167,7 @@ def main(cfg):
     #    "the recipe:\n%s", pformat(grouped_input_data))
 
     ## Example of how to loop over variables/datasets in alphabetical order
-    #groups = group_metadata(input_data, 'variable_group', sort='dataset')
+    groups = group_metadata(input_data, 'variable_group', sort='dataset')
     #for group_name in groups:
     #    logger.info("Processing variable %s", group_name)
     #    for attributes in groups[group_name]:
@@ -166,10 +188,18 @@ def main(cfg):
     if cfg.get('compute'):
         for var in cfg['compute']:
             print(var)
-            if var not in ['theta700', 'theta850']:
+            if var not in ['LTS', 'theta700', 'theta850']:
                 logger.error('Computation of %s is not available...', var)
             if 'theta' in var:
-                theta = calculate_theta(var, input_data, cfg)
+                theta, file_theta = calculate_theta(var, input_data, cfg)
+            if var == 'LTS':
+                print('groups')
+                print(groups)
+                for ivar in ['ta700', 'ta1000']:
+                    if ivar not in groups:
+                        logger.error('Variable %s is needed to calculate LTS but is not available', ivar)
+                lts = calculate_lts(var, input_data, cfg)
+                #lts = calculate_lts(var, groups, cfg)
 
 
 
