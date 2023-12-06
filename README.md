@@ -8,7 +8,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/79bf6932c2e844eea15d0fb1ed7e415c)](https://www.codacy.com/gh/ESMValGroup/ESMValTool?utm_source=github.com&utm_medium=referral&utm_content=ESMValGroup/ESMValTool&utm_campaign=Badge_Coverage)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/79bf6932c2e844eea15d0fb1ed7e415c)](https://www.codacy.com/gh/ESMValGroup/ESMValTool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ESMValGroup/ESMValTool&amp;utm_campaign=Badge_Grade)
 [![Docker Build Status](https://img.shields.io/docker/cloud/build/esmvalgroup/esmvaltool.svg)](https://hub.docker.com/r/esmvalgroup/esmvaltool/)
-[![Anaconda-Server Badge](https://img.shields.io/badge/Install_with-Anaconda-blue)](https://anaconda.org/conda-forge/esmvaltool)
+[![Anaconda-Server Badge](https://img.shields.io/conda/vn/conda-forge/ESMValTool?color=blue&label=conda-forge&logo=conda-forge&logoColor=white)](https://anaconda.org/conda-forge/esmvaltool)
 ![stand with Ukraine](https://badgen.net/badge/stand%20with/UKRAINE/?color=0057B8&labelColor=FFD700)
 
 ![esmvaltoollogo](https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/doc/sphinx/source/figures/ESMValTool-logo-2.png)
