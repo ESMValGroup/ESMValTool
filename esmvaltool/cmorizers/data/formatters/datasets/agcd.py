@@ -51,7 +51,7 @@ def fix_data_var(cube, var):
     if var == 'pr':
         newcubels = []
         for i, m_cube in enumerate(cube.slices(['latitude', 'longitude'])):
-            m_cube = m_cube / (monthdays[i+1] * 86400)  # days in month
+            m_cube = m_cube / (monthdays[i + 1] * 86400)  # days in month
             newcubels.append(m_cube)
 
         cube = iris.cube.CubeList(newcubels).merge()[0]
