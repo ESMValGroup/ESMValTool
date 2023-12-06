@@ -53,6 +53,7 @@ logger = logging.getLogger(__name__)
 
 def _get_filepaths(in_dir, basename):
     """Find correct name of file (extend basename with timestamp).
+
         return 2 lists as files differ from 2008"""
     # load all files in folder get sst into one cube, each have 1 time
     regex = re.compile(basename)
@@ -61,8 +62,8 @@ def _get_filepaths(in_dir, basename):
     for file in os.listdir(in_dir):
 
         if regex.match(file):
-            yr = file.split('.')[2][:4]  # ersst.v5.$yr$nm.nc
-            if int(yr) < 2008:
+            year = file.split('.')[2][:4]  # ersst.v5.$yr$nm.nc
+            if int(year) < 2008:
                 return_files.append(os.path.join(in_dir, file))
             else:
                 return_files_gr08.append(os.path.join(in_dir, file))
@@ -70,8 +71,9 @@ def _get_filepaths(in_dir, basename):
     return return_files, return_files_gr08
 
 
-def _fix_time_coord(cube, field, filename):
+def _fix_time_coord(cube, _, _filename):
     """Set time points to central day of month.
+
        Standardise time units so data can be merged."""
     t_coord = cube.coord('time')
     _unit = t_coord.units
