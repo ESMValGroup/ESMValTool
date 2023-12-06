@@ -31,9 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 def _get_filepaths(in_dir, basename):
-    """Find correct name of file (extend basename with timestamp).
-
-        Returned files to be concatenated."""
+    """Find correct name of file (extend basename with timestamp)."""
     regex = re.compile(basename)
     return_files = []
     for files in os.listdir(in_dir):
@@ -55,7 +53,7 @@ def _fix_time_coord(cube, _field, _filename):
 
 
 def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
-    """Extract variable."""
+    """Extract variable from all files."""
     var = cmor_info.short_name
     cubes = iris.load(filepath, raw_var, _fix_time_coord)
     iris.util.equalise_attributes(cubes)

@@ -52,10 +52,7 @@ logger = logging.getLogger(__name__)
 
 
 def _get_filepaths(in_dir, basename):
-    """Find correct name of file (extend basename with timestamp).
-
-        return 2 lists as files differ from 2008"""
-    # load all files in folder get sst into one cube, each have 1 time
+    """Find correct name of file (extend basename with timestamp)."""
     regex = re.compile(basename)
     return_files = []
     return_files_gr08 = []
@@ -63,7 +60,8 @@ def _get_filepaths(in_dir, basename):
 
         if regex.match(file):
             year = file.split('.')[2][:4]  # ersst.v5.$yr$nm.nc
-            if int(year) < 2008:
+            # return 2 lists as files differ from 2008
+            if int(year) < 2008:  
                 return_files.append(os.path.join(in_dir, file))
             else:
                 return_files_gr08.append(os.path.join(in_dir, file))
@@ -72,9 +70,7 @@ def _get_filepaths(in_dir, basename):
 
 
 def _fix_time_coord(cube, _, _filename):
-    """Set time points to central day of month.
-
-       Standardise time units so data can be merged."""
+    """Set time points to central day of month and standardise time units."""
     t_coord = cube.coord('time')
     _unit = t_coord.units
     new_time = [d.replace(day=15) for d in _unit.num2date(t_coord.points)]
@@ -84,7 +80,7 @@ def _fix_time_coord(cube, _, _filename):
 
 
 def _extract_variable(raw_var, cmor_info, attrs, filepaths, out_dir):
-    """Extract variable."""
+    """Extract variable and concatenate months."""
     var = cmor_info.short_name
 
     cubels = iris.load(filepaths, raw_var, _fix_time_coord)
