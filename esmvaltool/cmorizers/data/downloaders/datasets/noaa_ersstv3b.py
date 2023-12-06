@@ -32,7 +32,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         start_date = datetime(1854, 1, 1)
     if end_date is None:
         end_date = datetime(2020, 1, 1)
-    
+
     loop_date = start_date
 
     downloader = WGetDownloader(
@@ -41,7 +41,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
-    base_path = ("https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf/ersst.{year}{month:02d}.nc")
+    base_path = ("https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf"
+                 "/ersst.{year}{month:02d}.nc")
 
     while loop_date <= end_date:
         downloader.download_folder(

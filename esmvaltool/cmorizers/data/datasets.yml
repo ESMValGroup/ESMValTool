@@ -1043,7 +1043,7 @@ datasets:
     info: |
       Download the following files:
         ersst.v5.yyyymm.nc 
-        for years 1854 to 2023
+        for years 1854 onwards
 
   NOAAGlobalTemp:
     tier: 2

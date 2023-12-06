@@ -19,7 +19,8 @@ Download and processing instructions
 """
 
 import logging
-import os,re
+import os
+import re
 
 import iris
 from cf_units import Unit
@@ -28,9 +29,10 @@ from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
+
 def _get_filepaths(in_dir, basename):
     """Find correct name of file (extend basename with timestamp).
-        Search sub folders of raw data directory"""
+        Returned files to be concatenated."""
     regex = re.compile(basename)
     return_files = []
     for files in os.listdir(in_dir):
@@ -39,6 +41,7 @@ def _get_filepaths(in_dir, basename):
             return_files.append(os.path.join(in_dir, files))
 
     return return_files
+
 
 def _fix_time_coord(cube, _field, _filename):
     """Set time points to central day of month."""
@@ -53,7 +56,7 @@ def _fix_time_coord(cube, _field, _filename):
 def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
-    cubes = iris.load(filepath, raw_var, _fix_time_coord)  # utils.var_name_constraint()
+    cubes = iris.load(filepath, raw_var, _fix_time_coord)
     iris.util.equalise_attributes(cubes)
     cube = cubes.concatenate_cube()
     cube = iris.util.squeeze(cube)
@@ -72,10 +75,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
 
-    filepaths = _get_filepaths(in_dir,cfg['filename'])
-    # filepath = os.path.join(in_dir, cfg['filename'])
+    filepaths = _get_filepaths(in_dir, cfg['filename'])
 
-    if len(filepaths)>0:
+    if len(filepaths) > 0:
         logger.info("Found %d input files in '%s'", len(filepaths), in_dir)
     else:
         logger.info("No files found, basename: %s", cfg['filename'])
