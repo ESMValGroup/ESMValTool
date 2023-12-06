@@ -27,6 +27,7 @@ commands:
           name: Log versions
           command: |
             . /opt/conda/etc/profile.d/conda.sh
+            conda env export --name base > /logs/base_environment.yml
             conda activate esmvaltool
             esmvaltool version
             dpkg -l > /logs/versions.txt
