@@ -40,7 +40,7 @@ def _get_filepaths(in_dir, basename):
 
     return return_files
 
-def _fix_time_coord(cube):
+def _fix_time_coord(cube, _field, _filename):
     """Set time points to central day of month."""
     time_coord = cube.coord('time')
     new_unit = Unit('days since 1850-01-01 00:00:00', calendar='standard')
@@ -53,8 +53,11 @@ def _fix_time_coord(cube):
 def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
-    cube = iris.load_cube(filepath, raw_var)  # utils.var_name_constraint()
+    cubes = iris.load(filepath, raw_var, _fix_time_coord)  # utils.var_name_constraint()
+    iris.util.equalise_attributes(cubes)
+    cube = cubes.concatenate_cube()
     cube = iris.util.squeeze(cube)
+
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
     utils.save_variable(cube,
@@ -77,12 +80,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     else:
         logger.info("No files found, basename: %s", cfg['filename'])
 
-    for filepath in filepaths:
-        logger.info("Found input file '%s'", filepath)
-        # Run the cmorization
-        for (var, var_info) in cfg['variables'].items():
-            logger.info("CMORizing variable '%s'", var)
-            glob_attrs['mip'] = var_info['mip']
-            cmor_info = cmor_table.get_variable(var_info['mip'], var)
-            raw_var = var_info.get('raw', var)
-            _extract_variable(raw_var, cmor_info, glob_attrs, filepath, out_dir)
+    for (var, var_info) in cfg['variables'].items():
+        logger.info("CMORizing variable '%s'", var)
+        glob_attrs['mip'] = var_info['mip']
+        cmor_info = cmor_table.get_variable(var_info['mip'], var)
+        raw_var = var_info.get('raw', var)
+        _extract_variable(raw_var, cmor_info, glob_attrs, filepaths, out_dir)

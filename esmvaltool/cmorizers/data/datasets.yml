@@ -1030,20 +1030,20 @@ datasets:
   NOAA-ERSSTv3b:
     tier: 2
     source: https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf/
-    last_access: 2022-11-17
+    last_access: 2023-12-04
     info: |
       Download the following files:
-        ersst.v3b.1854-2019.nc
-        ersst.v3b.fldmean.1854-2019.nc
+        ersst.yyyymm.nc 
+        for years 1854 to 2020
 
   NOAA-ERSSTv5:
     tier: 2
     source: https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/netcdf/
-    last_access: 2022-11-17
+    last_access: 2023-12-04
     info: |
       Download the following files:
-        ersst.v5.1854-2019.nc
-        ersst.v5.fldmean.1854-2019.nc
+        ersst.v5.yyyymm.nc 
+        for years 1854 to 2023
 
   NOAAGlobalTemp:
     tier: 2
