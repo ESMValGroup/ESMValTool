@@ -61,7 +61,7 @@ def _get_filepaths(in_dir, basename):
         if regex.match(file):
             year = file.split('.')[2][:4]  # ersst.v5.$yr$nm.nc
             # return 2 lists as files differ from 2008
-            if int(year) < 2008:  
+            if int(year) < 2008:
                 return_files.append(os.path.join(in_dir, file))
             else:
                 return_files_gr08.append(os.path.join(in_dir, file))
