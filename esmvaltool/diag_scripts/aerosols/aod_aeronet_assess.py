@@ -104,11 +104,12 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
 
     # Statistics on plot
     plt.figtext(
-        0.25,
-        0.30,
-        "MEAN: {0:6.3f}. RMSE v Aeronet: {1:6.3f} ".format(
-            plot_dict["Mean_aod"], plot_dict["RMS_aod"]),
-        size=20,
+        0.12,
+        0.27,
+        "Global mean AOD={0:6.3f}; RMSE={1:6.3f}; Stn mean: md={2:6.3f}; obs={3:6.3f}".format(
+            plot_dict["Mean_aod"], plot_dict["RMS_aod"],
+            plot_dict["Stn_mn_md"], plot_dict["Stn_mn_obs"]),
+        size=16,
     )
 
 
@@ -140,9 +141,6 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
 
     # Convert wave length nm -> um
     wv_mi = str(float(wavel) / 1000.0)
-
-    # Dictionary for output metric/s
-    metric = {}
 
     # Get model run id
     md_id = md_data.attributes["parent_source_id"]
@@ -203,12 +201,10 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
 
         # Model - obs statistics (diff, model mean and RMS, r2)
         diff = valid_md - valid_obs
+        stn_mn_obs = np.mean(valid_obs)
+        stn_mn_md = np.mean(valid_md)
         rms_aod = np.sqrt(np.mean(diff**2))
         linreg = scipy.stats.linregress(valid_obs, valid_md)
-
-        # Populate metric
-        metric["Aerosol optical depth at " + wv_mi + " um " +
-               clim_seas[md_sn]] = rms_aod
 
         # Plot scatter of co-located model and obs data
         ax_scatter.scatter(valid_obs, valid_md, color=col_scatter[md_sn])
@@ -230,12 +226,15 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
         fig_cf = plt.figure(figsize=(11, 8), dpi=300)
 
         n_stn = str(len(valid_obs))
-        title = (md_id + ", N stations = " + n_stn + ", " + clim_seas[md_sn] +
-                 "\nTotal Aerosol Optical Depth at " + wv_mi + " microns")
+        title = ("\nTotal Aerosol Optical Depth at " + wv_mi + " microns" +
+                     "\n" + md_id + ", " + clim_seas[md_sn] +
+                     ", N stations=" + n_stn)
 
         # Plot dictionary
         plot_dict = {
             "Mean_aod": global_mean.data,
+            "Stn_mn_obs": stn_mn_obs,
+            "Stn_mn_md": stn_mn_md,
             "RMS_aod": rms_aod,
             "Levels": clevs,
             "Colours": colours,
@@ -288,7 +287,9 @@ def preprocess_aod_observational_dataset(obs_dataset):
     # Set up thresholds for generating the multi annual seasonal mean
     min_days_per_mon = 1
     min_mon_per_seas = 3
+    min_seas_per_year = 4
     min_seas_per_clim = 5
+
 
     # Add the clim_season and season_year coordinates.
     iris.coord_categorisation.add_year(obs_cube, 'time', name='year')
@@ -347,6 +348,23 @@ def preprocess_aod_observational_dataset(obs_dataset):
         multi_annual_seasonal_count.data < min_seas_per_clim,
         multi_annual_seasonal_mean.data,
     )
+    multi_annual_seasonal_year_agg = multi_annual_seasonal_mean.aggregated_by(
+        'year',
+        iris.analysis.MEAN,
+    )
+    multi_annual_seasonal_yragg_count = multi_annual_seasonal_mean.aggregated_by(
+        'year',
+        iris.analysis.COUNT,
+        function=lambda values: ~ma.getmask(values),
+    )
+
+    counter = range(len(multi_annual_seasonal_mean.coord('clim_season').points))
+    for iseas in counter:
+        multi_annual_seasonal_mean.data[iseas, :] = ma.masked_where(
+            multi_annual_seasonal_yragg_count.data[0, :] < min_seas_per_year,
+            multi_annual_seasonal_mean.data[iseas, :],
+    )
+
 
     return multi_annual_seasonal_mean
 
