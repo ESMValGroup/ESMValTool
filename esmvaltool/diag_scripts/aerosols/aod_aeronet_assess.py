@@ -67,9 +67,8 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
 
     # Latitude and longitude of stations.
     anet_aod_lats = aeronet_obs_cube.coord("latitude").points
-    anet_aod_lons = (
-        (aeronet_obs_cube.coord("longitude").points + 180) % 360 - 180
-    )
+    anet_aod_lons = ((aeronet_obs_cube.coord("longitude").points + 180) % 360 -
+                     180)
 
     # Loop over stations
     for istn, stn in enumerate(aeronet_obs_cube.coord("platform_name").points):
@@ -106,9 +105,13 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
     plt.figtext(
         0.12,
         0.27,
-        "Global mean AOD={0:6.3f}; RMSE={1:6.3f}; Stn mean: md={2:6.3f}; obs={3:6.3f}".format(
-            plot_dict["Mean_aod"], plot_dict["RMS_aod"],
-            plot_dict["Stn_mn_md"], plot_dict["Stn_mn_obs"]),
+        ("Global mean AOD={0:6.3f}; "
+         "RMSE={1:6.3f}; Stn mean: "
+         "md={2:6.3f}; obs={3:6.3f}".format(
+             plot_dict["Mean_aod"],
+             plot_dict["RMS_aod"],
+             plot_dict["Stn_mn_md"],
+             plot_dict["Stn_mn_obs"])),
         size=16,
     )
 
@@ -175,9 +178,8 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
     for season in aeronet_obs_cube.slices_over("clim_season"):
 
         # Match Aeronet obs season with model season number
-        md_sn = [c.lower() for c in clim_seas].index(
-            season.coord("clim_season").points[0]
-        )
+        md_sn = [c.lower() for c in clim_seas
+                 ].index(season.coord("clim_season").points[0])
         md_season = md_data[md_sn]
 
         logger.info(f"Analysing AOD for {md_id}: {clim_seas[md_sn]}")
@@ -227,8 +229,8 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
 
         n_stn = str(len(valid_obs))
         title = ("\nTotal Aerosol Optical Depth at " + wv_mi + " microns" +
-                     "\n" + md_id + ", " + clim_seas[md_sn] +
-                     ", N stations=" + n_stn)
+                 "\n" + md_id + ", " + clim_seas[md_sn] + ", N stations=" +
+                 n_stn)
 
         # Plot dictionary
         plot_dict = {
@@ -290,25 +292,21 @@ def preprocess_aod_observational_dataset(obs_dataset):
     min_seas_per_year = 4
     min_seas_per_clim = 5
 
-
     # Add the clim_season and season_year coordinates.
     iris.coord_categorisation.add_year(obs_cube, 'time', name='year')
 
-    iris.coord_categorisation.add_season(
-        obs_cube, 'time', name='clim_season')
+    iris.coord_categorisation.add_season(obs_cube, 'time', name='clim_season')
 
-    iris.coord_categorisation.add_season_year(
-        obs_cube, 'time', name='season_year')
+    iris.coord_categorisation.add_season_year(obs_cube,
+                                              'time',
+                                              name='season_year')
 
     # Copy obs cube and mask all months with fewer
     # "Number of days" than given threshold.
     #
     num_days_var = obs_cube.ancillary_variable("Number of days")
-    masked_months_obs_cube = obs_cube.copy(
-        data=ma.masked_where(
-            num_days_var.data < min_days_per_mon, obs_cube.data
-        )
-    )
+    masked_months_obs_cube = obs_cube.copy(data=ma.masked_where(
+        num_days_var.data < min_days_per_mon, obs_cube.data))
 
     # Aggregate (mean) by season.
     # The number of unmasked months per season is counted,
@@ -339,32 +337,28 @@ def preprocess_aod_observational_dataset(obs_dataset):
         'clim_season',
         iris.analysis.MEAN,
     )
-    multi_annual_seasonal_count = annual_seasonal_mean.aggregated_by(
+    clim_season_agg_count = annual_seasonal_mean.aggregated_by(
         'clim_season',
         iris.analysis.COUNT,
         function=lambda values: ~ma.getmask(values),
     )
     multi_annual_seasonal_mean.data = ma.masked_where(
-        multi_annual_seasonal_count.data < min_seas_per_clim,
+        clim_season_agg_count.data < min_seas_per_clim,
         multi_annual_seasonal_mean.data,
     )
-    multi_annual_seasonal_year_agg = multi_annual_seasonal_mean.aggregated_by(
-        'year',
-        iris.analysis.MEAN,
-    )
-    multi_annual_seasonal_yragg_count = multi_annual_seasonal_mean.aggregated_by(
+    year_agg_count = multi_annual_seasonal_mean.aggregated_by(
         'year',
         iris.analysis.COUNT,
         function=lambda values: ~ma.getmask(values),
     )
 
-    counter = range(len(multi_annual_seasonal_mean.coord('clim_season').points))
+    counter = range(len(
+        multi_annual_seasonal_mean.coord('clim_season').points))
     for iseas in counter:
         multi_annual_seasonal_mean.data[iseas, :] = ma.masked_where(
-            multi_annual_seasonal_yragg_count.data[0, :] < min_seas_per_year,
+            year_agg_count.data[0, :] < min_seas_per_year,
             multi_annual_seasonal_mean.data[iseas, :],
-    )
-
+        )
 
     return multi_annual_seasonal_mean
 
