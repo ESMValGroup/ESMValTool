@@ -45,8 +45,8 @@ preprocessors:
       end_longitude: 285.
     mask_landsea: &mask_land
       mask_out: land
-      #anomalies:
-      #  period: daily
+    anomalies:
+      period: daily
     area_statistics: &area_mean
       operator: mean
       #regrid:
