@@ -8,24 +8,28 @@ Overview
 
 This diagnostic evaluates model aerosol optical depth (AOD) against ground
 based observations from the AeroNET measurement network. Monthly mean AOD
-data is downloaded from the AeroNET website and formatted (CMORIZed) using the
+data is downloaded from the AeroNET website and formatted (CMORized) using the
 AERONET downloader and formatter within ESMValTool.
 
 Multiannual seasonal means are calculated from the model output and compared
 with a multiannual seasonal mean climatology generated from AeroNET
 observational data. At each AeroNET station the data are screened for validity
 according to the following default criteria:
-1. Monthly means must be generated from at least one AOD observation in that
-month.
-2. Seasonal means for DJF, MAM, JJA and SON must be calculated from three 
-monthly means, i.e. a monthly mean from December January and Feburary.
-3. For a given year to be valid, there must be a seasonal mean for each climate
-season i.e. DJF, MAM, JJA and SON.
-4. For a multiannual seasonal means there must be at least five seasonaal means
-over the time range of interest.
+
+  * 1. Monthly means must be generated from at least one AOD observation in that
+    month.
+
+  * 2. Seasonal means for DJF, MAM, JJA and SON must be calculated from three 
+    monthly means, i.e. a monthly mean from December January and Feburary.
+
+  * 3. For a given year to be valid, there must be a seasonal mean for each climate
+    season i.e. DJF, MAM, JJA and SON.
+
+  * 4. For a multiannual seasonal means there must be at least five seasonaal means
+    over the time range of interest.
 
 NOTE: The code is designed to be flexible and the default criteria can be 
-changes according to the users requirements (see the user settings below).  
+changed according to the user's requirements (see the user settings below).  
 
 The evaluation is visualised by plotting model output as 2D filled contours and
 overlaying AeroNET observations at model grid cells co-located with the AeroNET
@@ -97,15 +101,16 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* Note: (1) obs4MIPs data can be used directly without any preprocessing;
-  (2) see headers of reformat scripts for non-obs4MIPs data for download
-  instructions.
+* Note:
+  * (1) obs4MIPs data can be used directly without any preprocessing;
+  * (2) see headers of reformat scripts for non-obs4MIPs data for download
+    instructions.
 
 * The AeroNET data is downloaded from the AeroNET website using the downloader:
-  $ esmvaltool data download AERONET.
+  * $ esmvaltool data download AERONET.
 
 * The AeroNET data is formatteed (CMORized) using the formatter:
-  $ esmvaltool data format AERONET.
+  * $ esmvaltool data format AERONET.
 
 
 
