@@ -101,9 +101,9 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* Note: (1) obs4MIPs data can be used directly without any preprocessing;
- (2) see headers of reformat scripts for non-obs4MIPs data for download
- instructions.
+* Note: (1) obs4MIPs data can be used directly without any preprocessing; (2) 
+  see headers of reformat scripts for non-obs4MIPs data for download
+  instructions.
 
 * The AeroNET data is downloaded from the AeroNET website using the downloader:
 
