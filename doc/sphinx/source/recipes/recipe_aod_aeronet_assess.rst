@@ -1,4 +1,4 @@
-.. _recipes_aod_aeronet_assess:
+.. _recipe_aod_aeronet_assess:
 
 AOD AeroNET Assess
 ==================
@@ -7,12 +7,29 @@ Overview
 --------
 
 This diagnostic evaluates model aerosol optical depth (AOD) against ground
-based observations from the AeroNET measurement network. Multiannual seasonal
-means are calculated from the model output and compared with a multiannual
-seasonal mean climatology generated from AeroNET observational data.
+based observations from the AeroNET measurement network. Monthly mean AOD
+data is downloaded from the AeroNET website and formatted (CMORIZed) using the
+AERONET downloader and formatter within ESMValTool.
+
+Multiannual seasonal means are calculated from the model output and compared
+with a multiannual seasonal mean climatology generated from AeroNET
+observational data. At each AeroNET station the data are screened for validity
+according to the following default criteria:
+1. Monthly means must be generated from at least one AOD observation in that
+month.
+2. Seasonal means for DJF, MAM, JJA and SON must be calculated from three 
+monthly means, i.e. a monthly mean from December January and Feburary.
+3. For a given year to be valid, there must be a seasonal mean for each climate
+season i.e. DJF, MAM, JJA and SON.
+4. For a multiannual seasonal means there must be at least five seasonaal means
+over the time range of interest.
+
+NOTE: The code is designed to be flexible and the default criteria can be 
+changes according to the users requirements (see the user settings below).  
 
 The evaluation is visualised by plotting model output as 2D filled contours and
-overlaying AeroNET observations at model grid cells co-located with the AeroNET measurement stations. Statistical data (root mean square error) is generated
+overlaying AeroNET observations at model grid cells co-located with the AeroNET
+measurement stations. Statistical data (root mean square error) is generated
 using AeroNET observations at model grid cells co-located with the AeroNET
 measurement stations.
 
@@ -36,8 +53,15 @@ User settings in recipe
 
    *Required settings for script*
 
-   * wavel: The wavelength of interest for the evaluation, currently set up for 440nm.
-   * aeronet_dir: String. Location of the observational AeroNET climatology.
+   * wavel: The wavelength of interest for the evaluation, currently set up for 440nm
+   * min_days_per_mon: The minimum number of days used to calculate the AOD monthly mean
+   * min_mon_per_seas: The minimum number of seasons used to calculate each
+     seasonal mean. This must be between 1 and 3.
+   * min_seas_per_year: The minimum number of seasonal means in each year. This
+     must be between 1 and 4.
+   * min_seas_per_clim: The minimum number of seasonal means used to calculate
+     the multiannual seasonal mean. This must be btween 1 and the number of years
+     of available AeroNET data.
 
    *Optional settings for script*
 
@@ -73,12 +97,16 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4MIPs data can be used directly without any preprocessing;
-(2) see headers of reformat scripts for non-obs4MIPs data for download
-instructions.*
+* Note: (1) obs4MIPs data can be used directly without any preprocessing;
+  (2) see headers of reformat scripts for non-obs4MIPs data for download
+  instructions.
 
-* Pre-processed AOD climatologies are located in ''. Observations from AeroNET
-stations are saved in individual NetCDF files with filenames of the format 'OBS_AERONET_ground_STATION_NAME_AERmon_od440aer_199301-201401.nc'.
+* The AeroNET data is downloaded from the AeroNET website using the downloader:
+  $ esmvaltool data download AERONET.
+
+* The AeroNET data is formatteed (CMORized) using the formatter:
+  $ esmvaltool data format AERONET.
+
 
 
 References
@@ -93,31 +121,31 @@ Example plots
 -------------
 
 .. _fig_aod_aeronet_assess_1:
-.. figure::  /recipes/figures/aod_aeronet_assess/UKESM1-0-LL_CMIP_AERmon_historical_od440aer_gn_1988_2008_DJF.png
+.. figure::  /recipes/figures/aod_aeronet_assess/UKESM1-0-LL_CMIP_AERmon_historical_od440aer_gn_1994_2014_DJF.png
    :align:   center
 
-   Evaluation of AOD at 440 nm from UKESM1 historical ensemble member r1i1p1f2 against the AeroNET climatology from ground-based observations for Dec-Jan-Feb. The multiannual seasonal mean is calculated for the model data for the period 1998-2008. The model output is overlaid with the observational climatology.
+   Evaluation of AOD at 440 nm from UKESM1 historical ensemble member r1i1p1f2 against the AeroNET climatology from ground-based observations for Dec-Jan-Feb. The multiannual seasonal mean is calculated for the model data for the period 1994-2014. The model output is overlaid with the observational climatology.
 
 .. _fig_aod_aeronet_assess_2:
-.. figure::  /recipes/figures/aod_aeronet_assess/UKESM1-0-LL_CMIP_AERmon_historical_od440aer_gn_1988_2008_MAM.png
+.. figure::  /recipes/figures/aod_aeronet_assess/UKESM1-0-LL_CMIP_AERmon_historical_od440aer_gn_1994_2014_MAM.png
    :align:   center
 
-   Evaluation of AOD at 440 nm from UKESM1 historical ensemble member r1i1p1f2 against the AeroNET climatology from ground-based observations for Mar_Apr_May. The multiannual seasonal mean is calculated for the model data for the period 1998-2008. The model output is overlaid with the observational climatology.
+   Evaluation of AOD at 440 nm from UKESM1 historical ensemble member r1i1p1f2 against the AeroNET climatology from ground-based observations for Mar_Apr_May. The multiannual seasonal mean is calculated for the model data for the period 1994-2014. The model output is overlaid with the observational climatology.
 
 .. _fig_aod_aeronet_assess_3:
-.. figure::  /recipes/figures/aod_aeronet_assess/UKESM1-0-LL_CMIP_AERmon_historical_od440aer_gn_1988_2008_JJA.png
+.. figure::  /recipes/figures/aod_aeronet_assess/UKESM1-0-LL_CMIP_AERmon_historical_od440aer_gn_1994_2014_JJA.png
    :align:   center
 
-   Evaluation of AOD at 440 nm from UKESM1 historical ensemble member r1i1p1f2 against the AeroNET climatology from ground-based observations for Jun-Jul-Aug. The multiannual seasonal mean is calculated for the model data for the period 1998-2008. The model output is overlaid with the observational climatology.
+   Evaluation of AOD at 440 nm from UKESM1 historical ensemble member r1i1p1f2 against the AeroNET climatology from ground-based observations for Jun-Jul-Aug. The multiannual seasonal mean is calculated for the model data for the period 1994-2014. The model output is overlaid with the observational climatology.
 
 .. _fig_aod_aeronet_assess_4:
-.. figure::  /recipes/figures/aod_aeronet_assess/UKESM1-0-LL_CMIP_AERmon_historical_od440aer_gn_1988_2008_SON.png
+.. figure::  /recipes/figures/aod_aeronet_assess/UKESM1-0-LL_CMIP_AERmon_historical_od440aer_gn_1994_2014_SON.png
    :align:   center
 
-   Evaluation of AOD at 440 nm from UKESM1 historical ensemble member r1i1p1f2 against the AeroNET climatology from ground-based observations for Sep-Oct-Nov. The multiannual seasonal mean is calculated for the model data for the period 1998-2008. The model output is overlaid with the observational climatology.
+   Evaluation of AOD at 440 nm from UKESM1 historical ensemble member r1i1p1f2 against the AeroNET climatology from ground-based observations for Sep-Oct-Nov. The multiannual seasonal mean is calculated for the model data for the period 1994-2014. The model output is overlaid with the observational climatology.
 
 .. _fig_aod_aeronet_assess_5:
-.. figure::  /recipes/figures/aod_aeronet_assess/UKESM1-0-LL_CMIP_AERmon_historical_od440aer_gn_1988_2008_scatter.png
+.. figure::  /recipes/figures/aod_aeronet_assess/UKESM1-0-LL_CMIP_AERmon_historical_od440aer_gn_1994_2014_scatter.png
    :align:   center
 
-   Evaluation of AOD at 440 nm from UKESM1 historical ensemble member r1i1p1f2 against the AeroNET climatology from ground-based observations for Dec-Jan-Feb, Mar_Apr_May, Jun-Jul-Aug and Sep-Oct-Nov. The multiannual seasonal mean is calculated for the model data for the period 1998-2008.
+   Evaluation of AOD at 440 nm from UKESM1 historical ensemble member r1i1p1f2 against the AeroNET climatology from ground-based observations for Dec-Jan-Feb, Mar_Apr_May, Jun-Jul-Aug and Sep-Oct-Nov. The multiannual seasonal mean is calculated for the model data for the period 1994-2014.

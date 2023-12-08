@@ -108,10 +108,8 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
         ("Global mean AOD={0:6.3f}; "
          "RMSE={1:6.3f}; Stn mean: "
          "md={2:6.3f}; obs={3:6.3f}".format(
-             plot_dict["Mean_aod"],
-             plot_dict["RMS_aod"],
-             plot_dict["Stn_mn_md"],
-             plot_dict["Stn_mn_obs"])),
+             plot_dict["Mean_aod"], plot_dict["RMS_aod"],
+             plot_dict["Stn_mn_md"], plot_dict["Stn_mn_obs"])),
         size=16,
     )
 
