@@ -101,16 +101,21 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* Note:
-  * (1) obs4MIPs data can be used directly without any preprocessing;
-  * (2) see headers of reformat scripts for non-obs4MIPs data for download
-    instructions.
+* Note: (1) obs4MIPs data can be used directly without any preprocessing;
+ (2) see headers of reformat scripts for non-obs4MIPs data for download
+ instructions.
 
 * The AeroNET data is downloaded from the AeroNET website using the downloader:
-  * $ esmvaltool data download AERONET.
+
+  .. code-block:: yaml
+
+        $ esmvaltool data download AERONET.
 
 * The AeroNET data is formatteed (CMORized) using the formatter:
-  * $ esmvaltool data format AERONET.
+
+  .. code-block:: yaml
+
+        $ esmvaltool data format AERONET.
 
 
 
