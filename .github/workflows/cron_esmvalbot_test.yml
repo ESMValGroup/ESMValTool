@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - cron_esmvalbot_test
-  # scheduled every three days
+  # scheduled once every week
   schedule:
-    - cron: '0 4 */3 * *'
+    - cron: '0 4 */7 * *'
 
 # Required shell entrypoint to have properly configured bash shell
 defaults:
@@ -34,7 +34,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Empty commit
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          committer: Valeriu Predoi <valeriu.predoi@gmail.com>
+          author: Valeriu Predoi <valeriu.predoi@gmail.com> # ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           signoff: false
           branch: run-esmvalbot
           delete-branch: true
