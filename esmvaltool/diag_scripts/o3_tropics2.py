@@ -23,10 +23,12 @@ from esmvaltool.diag_scripts.shared._base import (
 
 logger = logging.getLogger(Path(__file__).stem)
 
+
 def calculate_ozone(cube):
     """Calculate ozone anomalies."""
     ozone_cube = cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN)
     return ozone_cube
+
 
 def main(cfg):
     for name, dataset in cfg['input_data'].items():
@@ -37,22 +39,21 @@ def main(cfg):
 
         #Preprocess data
         cube = anomalies(cube, period='monthly')
-        cube = area_statistics(cube, operator='mean', start_latitude=-20., end_latitude=20., start_longitude=0., end_longitude=360., pressure=100)
+        cube = area_statistics(cube, operator='mean', start_latitude=-20., end_latitude=20.,
+ start_longitude=0., end_longitude=360., pressure=100)
 
         #Calculation of ozone anomalies
         ozone_anomalies = calculate_ozone(cube)
 
         #Plotting
         fig, ax = plt.subplots()
-        
-        #Adjusting the x-axis to match the time points
         time_points = cube.coord('time').points
         plt.plot(time_points, ozone_anomalies.data)
-        
         ax.set_xlabel('Time')
         ax.set_ylabel('Ozone Anomalies')
 
         save_figure(fig, "o3_figure")
+
 
 if __name__ == '__main__':
     with run_diagnostics() as config:
