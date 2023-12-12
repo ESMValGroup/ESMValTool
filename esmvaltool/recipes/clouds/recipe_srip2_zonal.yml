@@ -75,7 +75,6 @@ diagnostics:
           - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
              version: P1-R05-gridbox-average-noprecip,
              start_year: 2006, end_year: 2017, mip: Amon, tier: 3}
-#             start_year: 2006, end_year: 2009, mip: Amon, tier: 3}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
 #          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
@@ -101,54 +100,55 @@ diagnostics:
         rel_diff: false
         t_test: true
 
-  cli_zonal:
-    description: cloud ice content zonal mean
-    themes:
-      - phys
-    realms:
-      - atmos
-    variables:
-      cli:
-        preprocessor: pp27
-        mip: Amon
-        start_year: 1980
-        end_year: 2009
-        reference_dataset: CALIPSO-ICECLOUD
-#        reference_dataset: DARDAR-CLOUD
-        mip: Amon
-        additional_datasets:
-          - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,
-             mip: Amon, start_year: 2007, end_year: 2015, tier: 3}
-          - {dataset: DARDAR-CLOUD, project: OBS, type: sat, version: v3.10-gridbox-average-noprecip,
-             start_year: 2007, end_year: 2016, tier: 3}
-#          - {dataset: DARDAR-CLOUD, project: OBS, type: sat, version: v3.10-gridbox-average-all,
+#  cli_zonal:
+#    description: cloud ice content zonal mean
+#    themes:
+#      - phys
+#    realms:
+#      - atmos
+#    variables:
+#      cli:
+#        preprocessor: pp27
+#        mip: Amon
+#        start_year: 1980
+#        end_year: 2009
+#        reference_dataset: CALIPSO-ICECLOUD
+##        reference_dataset: DARDAR-CLOUD
+#        mip: Amon
+#        additional_datasets:
+#          - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,
+#             mip: Amon, start_year: 2007, end_year: 2015, tier: 3}
+#          - {dataset: DARDAR-CLOUD, project: OBS, type: sat, version: v3.10-gridbox-average-noprecip,
 #             start_year: 2007, end_year: 2016, tier: 3}
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
-          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
-#          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
-          - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2}
-          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3}
-          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
-#          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2}
-#          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
-#          - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, type: reanaly, version: 'v2', tier: 2}
-#          - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, type: reanaly, version: 'v3', tier: 2}
-    scripts:
-      zonal:
-        script: clouds/clouds_zonal.ncl
-        timemean: annualclim
-        explicit_cn_levels: [0., 0.002, 0.004, 0.006, 0.008, 0.01, 0.012, 0.014,
-                             0.016, 0.018, 0.02, 0.022, 0.024, 0.026, 0.028]
-        explicit_cn_dlevels: [-0.01, -0.008, -0.006, -0.004, -0.002, 0., 0.002,
-                              0.004, 0.006, 0.008, 0.01]
-        extralegend: false
-        panel_labels: true
-        showdiff: true
-        t_test: true
-        rel_diff: false
-        units_to: g/kg
-        multiobs_uncertainty: true
-        multiobs_exclude: ["CFSR", "ERA-Interim", "ERA5", "JRA-25", "JRA-55", "MERRA","MERRA2", "NCEP-DOE-R2", "NCEP-NCAR-R1", "NOAA-CIRES-20CR-V2", "NOAA-CIRES-20CR-V2"]
+##          - {dataset: DARDAR-CLOUD, project: OBS, type: sat, version: v3.10-gridbox-average-all,
+##             start_year: 2007, end_year: 2016, tier: 3}
+#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+#          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+##          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
+#          - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2}
+#          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3}
+#          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
+##          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2}
+##          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
+##          - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, type: reanaly, version: 'v2', tier: 2}
+##          - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, type: reanaly, version: 'v3', tier: 2}
+#    scripts:
+#      zonal:
+#        script: clouds/clouds_zonal.ncl
+#        timemean: annualclim
+#        explicit_cn_levels: [0., 0.002, 0.004, 0.006, 0.008, 0.01, 0.012, 0.014,
+#                             0.016, 0.018, 0.02, 0.022, 0.024, 0.026, 0.028]
+#        explicit_cn_dlevels: [-0.01, -0.008, -0.006, -0.004, -0.002, 0., 0.002,
+#                              0.004, 0.006, 0.008, 0.01]
+#        extralegend: false
+#        panel_labels: true
+#        showdiff: true
+#        t_test: true
+#        rel_diff: false
+#        units_to: g/kg
+#        multiobs_uncertainty: true
+#        multiobs_exclude: ["CFSR", "ERA-Interim", "ERA5", "JRA-25", "JRA-55", "MERRA","MERRA2", "NCEP-DOE-R2", "NCEP-NCAR-R1", "NOAA-CIRES-20CR-V2", "NOAA-CIRES-20CR-V2"]
+
 #  cl_zonal:
 #    description: 3-dim cloud cover, zonal mean
 #    themes:

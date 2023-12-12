@@ -25,8 +25,8 @@ preprocessors:
       units: "Pa min-1"
     mask_landsea:
       mask_out: land
-      fx_variables:
-        sftlf:
+#      fx_variables:
+#        sftlf:
     extract_levels:
       levels: 50000
       scheme: linear
@@ -37,8 +37,8 @@ preprocessors:
   clim_ocean:
     mask_landsea:
       mask_out: land
-      fx_variables:
-        sftlf:
+#      fx_variables:
+#        sftlf:
     regrid:
       target_grid: 2x2
       scheme: linear
@@ -67,7 +67,7 @@ diagnostics:
 #        reference_dataset: ERA5
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-             version: AVHRR-AMPM-fv3.0, tier: 2, start_year: 1992, end_year: 2016, alias: ESACCI-CLOUD}
+             version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
 #          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2}
 #          - {dataset: CFSv2, project: OBS6, type: reanaly, version: '1', tier: 2}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3, alias: ERA-Interim}
@@ -89,7 +89,7 @@ diagnostics:
         reference_dataset: ERA5ref
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1',
-             tier: 3, start_year: 1992, end_year: 2016, alias: ERA5ref}
+             tier: 3, alias: ERA5ref}
 #          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2}
 #          - {dataset: CFSv2, project: OBS6, type: reanaly, version: '1', tier: 2}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3, alias: ERA-Interim}
@@ -111,7 +111,7 @@ diagnostics:
         reference_dataset: ERA5ref
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1',
-             tier: 3, start_year: 1992, end_year: 2016, alias: ERA5ref}
+             tier: 3, alias: ERA5ref}
 #          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2}
 #          - {dataset: CFSv2, project: OBS6, type: reanaly, version: '1', tier: 2}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3, alias: ERA-Interim}
@@ -124,51 +124,51 @@ diagnostics:
           - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2, alias: NCEP-NCAR-R1}
 #          - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, type: reanaly, version: 'v2', tier: 2}
 #          - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, type: reanaly, version: 'v3', tier: 2}
-#      clivi:
-#        preprocessor: clim_ocean
-#        mip: Amon
-#        exp: historical
-#        start_year: 2000
-#        end_year: 2001
-##        reference_dataset: ESACCI-CLOUD
-#        reference_dataset: ERA5
-#        additional_datasets:
-##          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-##             version: AVHRR-AMPM-fv3.0, tier: 2,
-##             start_year: 1992, end_year: 2016}
-##          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2}
-#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
-#          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
-##          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
-##          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1}
-#          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3}
-##          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
-##          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2}
-##          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
-##          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
-#      lwp:
-#        preprocessor: clim_ocean
-#        mip: Amon
-#        exp: historical
-#        start_year: 1986
-#        end_year: 2005
-#        derive: true
-##        reference_dataset: ESACCI-CLOUD
-#        reference_dataset: ERA5
-#        additional_datasets:
-##          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-##             version: AVHRR-AMPM-fv3.0, tier: 2,
-##             start_year: 1992, end_year: 2016}
-##          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2}
-#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
-#          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
-##          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
-##          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1}
-#          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3}
-##          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
-##          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2}
-##          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
-##          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
+      clivi:
+        preprocessor: clim_ocean
+        mip: Amon
+        exp: historical
+        start_year: 2000
+        end_year: 2009
+#        reference_dataset: ESACCI-CLOUD
+        reference_dataset: ERA5
+        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+#             version: AVHRR-AMPM-fv3.0, tier: 2,
+#             start_year: 1992, end_year: 2016}
+#          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+#          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
+#          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3}
+#          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
+#          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2}
+#          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
+#          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
+      lwp:
+        preprocessor: clim_ocean
+        mip: Amon
+        exp: historical
+        start_year: 2000
+        end_year: 2009
+        derive: true
+#        reference_dataset: ESACCI-CLOUD
+        reference_dataset: ERA5
+        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+#             version: AVHRR-AMPM-fv3.0, tier: 2,
+#             start_year: 1992, end_year: 2016}
+#          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+#          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2}
+#          - {dataset: JRA-55, project: ana4mips, mip: Amon, type: reanalysis, tier: 1}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3}
+#          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3}
+#          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2}
+#          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2}
+#          - {dataset: NOAA-CIRES-20CR, project: OBS6, type: reanaly, version: 'v2', tier: 2}
     scripts:
       dynclt:
         script: clouds/clouds_dyn_matrix.ncl
@@ -188,20 +188,20 @@ diagnostics:
         ylabel: omega500
         clevels: [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 100,
                   130, 160, 190]
-#      dyntcwp:
-#        script: clouds/clouds_dyn_matrix.ncl
-#        var_x: ts
-#        var_y: wap
-#        var_z: totalcwp
-#        xmin: 275
-#        xmax: 305
-#        ymin: -10
-#        ymax: 10
-#        zmin: 0.05
-#        zmax: 0.5
-#        zdmin: -0.09
-#        zdmax: 0.09
-#        xlabel: SST
-#        ylabel: omega500
-#        clevels: [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 100, 130,
-#                  160, 190]
+      dyntcwp:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: totalcwp
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.05
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        xlabel: SST
+        ylabel: omega500
+        clevels: [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 100, 130,
+                  160, 190]
