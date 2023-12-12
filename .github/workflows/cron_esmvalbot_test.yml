@@ -15,7 +15,7 @@ defaults:
 
 jobs:
   create-lock-file:
-    name: Create conda lock file for latest Python
+    name: run Esmvalbot
     runs-on: 'ubuntu-latest'
     steps:
       - uses: actions/checkout@v3
@@ -27,7 +27,7 @@ jobs:
           git config user.email 'valeriu.predoi@gmail.com'
           git commit --allow-empty -m "create empty commit"
       # Automated PR where we run "@esmvalbot please run examples/recipe_python.yml"
-      # in the PR description comment
+      # as comment in the PR
       # see https://github.com/marketplace/actions/create-pull-request
       - name: Create Auto PR
         uses: peter-evans/create-pull-request@v5
@@ -40,7 +40,7 @@ jobs:
           branch: run-esmvalbot
           delete-branch: true
           title: '[EsmvalbotTest] Run esmvalbot test'
-          body: "@esmvalbot please run examples/recipe_python.yml"
+          body: Automatic PR
           labels: |
             testing
             esmvalbot
@@ -48,3 +48,8 @@ jobs:
           assignees: valeriupredoi
           reviewers: valeriupredoi
           draft: false
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            "@esmvalbot please run examples/recipe_python.yml"
