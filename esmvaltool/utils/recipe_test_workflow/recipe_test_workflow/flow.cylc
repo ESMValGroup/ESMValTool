@@ -11,33 +11,34 @@
    initial cycle point = 1
    final cycle point = 10
     [[graph]]
-        R1 = """install_env_file => configure & clone_latest_esmval
-                configure & clone_latest_esmval => process<medium> => compare<medium>
-                configure & clone_latest_esmval => process<fast> => compare<fast>"""
+
+        R1 = """install_env_file => get_esmval => configure
+                configure => process<medium> => compare<medium>
+                configure => process<fast> => compare<fast>"""
 
 [runtime]
     [[root]]
         script = rose task-run
         env-script = "eval $(rose task-env)"
         [[[environment]]]
-            MODULE_NAME = {{ MODULE_NAME }}
+            ENV_NAME = {{ ENV_NAME }}
             USER_CONFIG_DIR = ${CYLC_WORKFLOW_RUN_DIR}/etc
             USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
             OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/${CYLC_TASK_CYCLE_POINT}
-            ESMVALCORE_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValCore
-            ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValTool
-            PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
+            ESMVALCORE_DIR = ""
+            ESMVALTOOL_DIR = ""
+            PYTHONPATH_PREPEND = ""
 
     [[install_env_file]]
         platform = localhost
         [[[environment]]]
             SITE = {{ SITE }}
 
-    [[clone_latest_esmval]]
-        platform = localhost
+    [[get_esmval]]
+        [[[environment]]]
+            ROSE_APP_OPT_CONF_KEYS = {{ SITE }}
 
     [[configure]]
-        platform = localhost
         pre-script = "mkdir -p ${USER_CONFIG_DIR}"
         [[[environment]]]
             ROSE_TASK_APP = configure

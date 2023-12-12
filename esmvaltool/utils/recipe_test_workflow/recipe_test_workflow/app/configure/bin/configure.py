@@ -30,8 +30,7 @@ def main():
 
 
 def get_config_values_from_task_env():
-    """Return the configuration values defined in the environment for the
-    ``configure`` task."""
+    """Get configuration values from environment for configure task."""
     # Note that 'auxiliary_data_dir' and 'download_dir' are set to empty
     # values and cannot currently be configured. 'auxiliary_data_dir' is
     # used by some recipes to look for additional datasets, so may need
@@ -82,8 +81,7 @@ def get_config_values_from_task_env():
 
 
 def write_yaml(file_path, contents):
-    """Write the contents specified by ``contents`` to the YAML file specified
-    by ``file_path``.
+    """Write ``contents`` to the YAML file ``file_path``.
 
     Parameters
     ----------
@@ -92,7 +90,7 @@ def write_yaml(file_path, contents):
     contents: dictionary
         The contents to write to the YAML file.
     """
-    with open(file_path, "w") as file_handle:
+    with open(file_path, "w", encoding="utf-8") as file_handle:
         yaml.dump(contents, file_handle, default_flow_style=False)
 
 

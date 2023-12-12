@@ -18,13 +18,18 @@ The |RTW| performs the following steps:
   :Details:
      Runs once at the start of the workflow
 
-``clone_latest_esmval``
+``get_esmval``
   :Description:
-     Checks out the latest versions of |ESMValTool| and |ESMValCore| from GitHub
+     Either clones the latest versions of |ESMValTool| and |ESMValCore| from GitHub, 
+     or gets the latest container image from DockerHub and converts to a singularity
+     image, depending on ``SITE``.
   :Runs on:
-     Localhost
+     Localhost (if cloning), or ``COMPUTE`` (if getting container), which
+     depends on the ``SITE``; on JASMIN, the ``get_esmval`` jobs will run on
+     LOTUS
   :Executes:
-     The ``clone_latest_esmval.sh`` script from the |Rose| app
+     The ``clone_latest_esmval.sh`` script (if cloning), or a ``singularity build``
+     command (if getting container) from the |Rose| app
   :Details:
      Runs at the start of each cycle
 
