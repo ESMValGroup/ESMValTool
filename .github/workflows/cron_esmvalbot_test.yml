@@ -25,7 +25,6 @@ jobs:
         run: |
           git config user.name 'Valeriu Predoi'
           git config user.email 'valeriu.predoi@gmail.com'
-          git checkout -b run-esmvalbot
           git commit --allow-empty -m "create empty commit"
       # Automated PR where we run "@esmvalbot please run examples/recipe_python.yml"
       # in the PR description comment
