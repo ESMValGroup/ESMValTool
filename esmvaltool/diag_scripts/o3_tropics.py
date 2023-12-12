@@ -83,7 +83,9 @@ def main(cfg):
             if "caption" not in attributes:
                 attributes['caption'] = input_file
              provenance_record = get_provenance_record(
-                 attributes, ancestor_files=[input_file])
+                 attributes,
+                 ancestor_files=[input_file]
+)
              plot_diagnostic(cube, output_basename, provenance_record, cfg)
 
 if __name__ == '__main__':
