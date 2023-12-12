@@ -42,7 +42,7 @@ def main(cfg):
         #Calculation of ozone anomalies
         ozone_anomalies = calculate_ozone(cube)
 
-        #Plotting and saving figure
+        #Plotting
         fig, ax = plt.subplots()
         
         #Adjusting the x-axis to match the time points
