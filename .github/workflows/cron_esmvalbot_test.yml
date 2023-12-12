@@ -33,7 +33,8 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: @esmvalbot please run examples/recipe_python.yml
+          commit-message: |
+            @esmvalbot please run examples/recipe_python.yml
           committer: Valeriu Predoi <valeriu.predoi@gmail.com>
           author: Valeriu Predoi <valeriu.predoi@gmail.com> # ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           signoff: false
