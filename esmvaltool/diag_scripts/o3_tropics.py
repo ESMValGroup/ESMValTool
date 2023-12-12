@@ -65,22 +65,9 @@ def plot_timeseries(dictionary, var, cfg):
 
 def main(cfg):
 
-    """Compute the time average for each input dataset."""
+    """Compute the time average for input dataset."""
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
-    # Demonstrate use of metadata access convenience functions.
-    selection = select_metadata(input_data, short_name='tas', project='CMIP5')
-    logger.info("Example of how to select only CMIP5 temperature data:\n%s"
-                pformat(selection))
-    selection = sorted_metadata(selection, sort='dataset')
-    logger.info("Example of how to sort this selection by dataset:\n%s",
-                pformat(selection))
-    grouped_input_data = group_metadata(input_data,
-                                        'variable_group',
-                                        sort='dataset')
-    logger.info(
-        "Example of how to group and sort input data by variable groups from "
-        "the recipe:\n%s", pformat(grouped_input_data))
     # Example of how to loop over variables/datasets in alphabetical order
     groups = group_metadata(input_data, 'variable_group', sort='dataset')
     for group_name in groups:
