@@ -234,7 +234,7 @@ jobs:
     # Test building documentation
     docker:
       - image: condaforge/mambaforge:latest
-    resource_class: small
+    resource_class: medium
     steps:
       - checkout
       - run:
