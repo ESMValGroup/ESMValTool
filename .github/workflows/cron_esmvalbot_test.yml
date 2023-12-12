@@ -18,16 +18,15 @@ jobs:
     name: Create conda lock file for latest Python
     runs-on: 'ubuntu-latest'
     steps:
-      - name: Create an empty commit
-        uses: velocibear/create-empty-commit@v1.0.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          email: "valeriu.predoi@gmail.com"
-          name: "Valeriu Predoi"
-          message: empty commit
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Create empty commit on branch
+        run: |
+          git config user.name 'Valeriu Predoi'
+          git config user.email 'valeriu.predoi@gmail.com'
+          git checkout -b run-esmvalbot
+          git commit --allow-empty -m "create empty commit"
       # Automated PR where we run "@esmvalbot please run examples/recipe_python.yml"
       # in the PR description comment
       # see https://github.com/marketplace/actions/create-pull-request
