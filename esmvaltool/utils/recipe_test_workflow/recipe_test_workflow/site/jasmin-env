@@ -3,7 +3,7 @@
 # USAGE jasmin-env COMMAND
 #
 # ENVIRONMENT
-#   ENV_NAME         The name of the container being used
+#   ENV_NAME            The name of the container being used
 #   QUIET_MODE          Don't print confirmation messages
 #   PYTHONPATH_PREPEND  The path to prepend to PYTHONPATH
 #

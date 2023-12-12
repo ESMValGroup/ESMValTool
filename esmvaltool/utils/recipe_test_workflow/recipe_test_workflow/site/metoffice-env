@@ -3,7 +3,7 @@
 # USAGE metoffice-env COMMAND
 #
 # ENVIRONMENT
-#   ENV_NAME         The name of the module to load
+#   ENV_NAME            The name of the module to load
 #   PYTHONPATH_PREPEND  The path to prepend to PYTHONPATH after loading the
 #                       module
 #   QUIET_MODE          Don't print confirmation messages
