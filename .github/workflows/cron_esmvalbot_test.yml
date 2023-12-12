@@ -25,7 +25,7 @@ jobs:
         run: |
           git config user.name 'Valeriu Predoi'
           git config user.email 'valeriu.predoi@gmail.com'
-          git commit --allow-empty -m "create empty commit"
+          git commit --allow-empty -m "@esmvalbot please run examples/recipe_python.yml"
       # Automated PR where we run "@esmvalbot please run examples/recipe_python.yml"
       # as comment in the PR
       # see https://github.com/marketplace/actions/create-pull-request
@@ -33,8 +33,7 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: |
-            @esmvalbot please run examples/recipe_python.yml
+          commit-message: empty message
           committer: Valeriu Predoi <valeriu.predoi@gmail.com>
           author: Valeriu Predoi <valeriu.predoi@gmail.com> # ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           signoff: false
