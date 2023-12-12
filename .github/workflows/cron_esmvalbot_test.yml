@@ -53,3 +53,4 @@ jobs:
         with:
           message: |
             "@esmvalbot please run examples/recipe_python.yml"
+          pr_number: ${{env.PULL_REQUEST_NUMBER}}
