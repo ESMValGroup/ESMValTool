@@ -1,4 +1,4 @@
-"""Phyton diagnostics example for ozone variability."""
+"""Diagnostics example for ozone variability."""
 
 import logging
 from pathlib import Path
