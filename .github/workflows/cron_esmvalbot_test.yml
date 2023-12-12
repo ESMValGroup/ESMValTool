@@ -34,7 +34,7 @@ jobs:
           branch: run-esmvalbot
           delete-branch: true
           title: '[EsmvalbotTest] Run esmvalbot test'
-          body: @esmvalbot please run examples/recipe_python.yml
+          body: "@esmvalbot please run examples/recipe_python.yml"
           labels: |
             testing
             esmvalbot
