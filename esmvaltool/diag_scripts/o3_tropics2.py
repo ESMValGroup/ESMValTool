@@ -12,9 +12,9 @@ from esmvalcore.preprocessor import (
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostics,
-   # save_data,
+    save_data,
     save_figure,
-   # select_metadata,
+    select_metadata,
 )
 from esmvaltool.diag_scripts.shared._base import (
     get_plot_filename, )
@@ -39,8 +39,15 @@ def main(cfg):
 
         #Preprocess data
         cube = anomalies(cube, period='monthly')
-        cube = area_statistics(cube, operator='mean', start_latitude=-20., end_latitude=20.,
- start_longitude=0., end_longitude=360., pressure=100)
+        cube = area_statistics(
+            cube,
+            operator='mean',
+            start_latitude=-20.,
+            end_latitude=20.,
+            start_longitude=0.,
+            end_longitude=360.,
+            pressure=100
+)
 
         #Calculation of ozone anomalies
         ozone_anomalies = calculate_ozone(cube)
@@ -58,4 +65,3 @@ def main(cfg):
 if __name__ == '__main__':
     with run_diagnostics() as config:
         main(config)
-
