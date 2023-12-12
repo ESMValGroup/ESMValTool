@@ -40,7 +40,7 @@ jobs:
           branch: run-esmvalbot
           delete-branch: true
           title: '[EsmvalbotTest] Run esmvalbot test'
-          body: Automatic PR
+          body: Automatic PR: please DO NOT merge! This is for testing Esmvalbot only.
           labels: |
             testing
             esmvalbot
@@ -52,5 +52,5 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            "@esmvalbot please run examples/recipe_python.yml"
+            @esmvalbot please run examples/recipe_python.yml
           pr_number: ${{env.PULL_REQUEST_NUMBER}}
