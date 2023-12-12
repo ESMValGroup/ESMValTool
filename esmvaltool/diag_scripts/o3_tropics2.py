@@ -3,7 +3,7 @@
 import logging
 from pathlib import Path
 import matplotlib.pyplot as plt
-import numpy as np
+#import numpy as np
 import iris
 from esmvalcore.preprocessor import (
     anomalies,
@@ -12,14 +12,14 @@ from esmvalcore.preprocessor import (
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostics,
-    save_data,
+   # save_data,
     save_figure,
-    select_metadata,
+   # select_metadata,
 )
 from esmvaltool.diag_scripts.shared._base import (
     get_plot_filename, )
 
-from esmvaltool.diag_scripts.shared.plot import quickplot
+#from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(Path(__file__).stem)
 
