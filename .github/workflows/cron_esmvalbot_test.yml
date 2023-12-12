@@ -1,0 +1,47 @@
+name: Run Esmvalbot Test
+
+on:
+  push:
+    branches:
+      - cron_esmvalbot_test
+  # scheduled every three days
+  schedule:
+    - cron: '0 4 */3 * *'
+
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  create-lock-file:
+    name: Create conda lock file for latest Python
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      # Automated PR where we run "@esmvalbot please run examples/recipe_python.yml"
+      # in the PR description comment
+      # see https://github.com/marketplace/actions/create-pull-request
+      - name: Create Auto PR
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Empty commit
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: run-esmvalbot
+          delete-branch: true
+          title: '[EsmvalbotTest] Run esmvalbot test'
+          body: @esmvalbot please run examples/recipe_python.yml
+          labels: |
+            testing
+            esmvalbot
+            automatedPR
+          assignees: valeriupredoi
+          reviewers: valeriupredoi
+          team-reviewers: |
+            owners
+            maintainers
+          draft: false
