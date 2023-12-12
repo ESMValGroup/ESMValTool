@@ -30,11 +30,11 @@ jobs:
       # in the PR description comment
       # see https://github.com/marketplace/actions/create-pull-request
       - name: Create Auto PR
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Empty commit
-          committer: Valeriu Predoi <valeriu.predoi@gmail.com>
+          # committer: Valeriu Predoi <valeriu.predoi@gmail.com>
           author: Valeriu Predoi <valeriu.predoi@gmail.com> # ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           signoff: false
           branch: run-esmvalbot
