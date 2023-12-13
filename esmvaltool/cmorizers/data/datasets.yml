@@ -845,6 +845,13 @@ datasets:
       individually or by using the option "download all".
       Data is freely available, but a registration is required.
 
+  MERRA:
+    tier: 3
+    source: https://goldsmr3.gesdisc.eosdis.nasa.gov/data/MERRA_MONTHLY/
+    last_access: 2023-02-01
+    info: |
+      Use automatic download. That will download monthly data.
+
   MERRA2:
     tier: 3
     source: https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/ https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
@@ -874,6 +881,13 @@ datasets:
     last_access: 2022-11-03
     info: |
       Download the file MOBO-DIC_MPIM_monthly_clim.nc
+
+  MOBO-DIC2004-2019:
+    tier: 2
+    source: https://www.nodc.noaa.gov/archive/arc0211/0277099/2.3/data/0-data/
+    last_access: 2023-10-09
+    info: |
+      Download the file MPI_MOBO-DIC_2004-2019_v2.nc
 
   MODIS:
     tier: 3
@@ -1017,7 +1031,7 @@ datasets:
         miscSI-MO/pr_wtr.eatm.mon.mean.nc
         prsSI-MO/shum.mon.mean.nc
         miscMO/tcdc.eatm.mon.mean.nc
-        ntatFlxSI-MO/ulwrf.ntat.mon.mean.nc  
+        ntatFlxSI-MO/ulwrf.ntat.mon.mean.nc
         ntatFlxSI-MO/uswrf.ntat.mon.mean.nc
         ntatFlxSI-MO/csulf.ntat.mon.mean.nc
         ntatFlxSI-MO/csusf.ntat.mon.mean.nc
@@ -1029,6 +1043,14 @@ datasets:
     info: |
       Download the following files:
       [SOURCE]/gridded/NOAAGlobalTemp_v5.0.0_gridded_s188001_e202205_c20220608T133245.nc
+
+  NOAA-MBL-CH4:
+    tier: 2
+    source: https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
+    last_access: 2023-07-17
+    info: |
+      Download the following file:
+      https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
 
   NSIDC-0116-sh:
     tier: 3

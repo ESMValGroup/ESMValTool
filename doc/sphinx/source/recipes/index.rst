@@ -21,6 +21,7 @@ large variety of input data.
 .. toctree::
    :maxdepth: 1
 
+   recipe_model_evaluation
    recipe_monitor
    recipe_psyplot
    recipe_seaborn
@@ -45,6 +46,7 @@ Atmosphere
    recipe_gier20bg
    recipe_heatwaves_coldwaves
    recipe_hyint
+   recipe_iht_toa
    recipe_impact
    recipe_modes_of_variability
    recipe_mpqb_xch4
@@ -99,6 +101,7 @@ IPCC
    recipe_ipccwg1ar6ch3
    recipe_ipccwg1ar5ch9
    recipe_collins13ipcc
+   recipe_examples
 
 Land
 ^^^^

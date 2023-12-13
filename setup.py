@@ -45,6 +45,7 @@ REQUIREMENTS = {
         'natsort',
         'nc-time-axis',
         'netCDF4',
+        'numba',
         'numpy!=1.24.3',  # severe masking bug
         'packaging',
         'openpyxl',
