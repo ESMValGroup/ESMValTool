@@ -299,8 +299,8 @@ def _plot_obs(trends, axx, maxh):
                 plotobscol = (0.8, 0.4, 0.1, 1)  
             if obsname == 'ERA5':
                 # obscol = [(0.8, 0.4, 0.1, 1), (1, 0, 0.2, 1), (0.8, 0.1, 0.4, 1), (1, 0.6, 0, 1)]
-                plotobscol = (1, 0, 0.2, 1)
-                # plotobscol = (128 / 255.0, 54 / 255.0, 168 / 255.0,)
+                # plotobscol = (1, 0, 0.2, 1)
+                plotobscol = (128 / 255.0, 54 / 255.0, 168 / 255.0,)
                 # obsnamep = 'ERA5.1'
             if obsname == 'MERRA2':
                 plotobscol = (0.8, 0.1, 0.4, 1)            
