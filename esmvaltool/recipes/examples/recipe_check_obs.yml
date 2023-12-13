@@ -1113,6 +1113,26 @@ diagnostics:
     scripts: null
 
 
+  DARDAR-CLOUD:
+    description: DARDAR-CLOUD check
+    variables:
+      cli:
+    additional_datasets:
+      - {dataset: DARDAR-CLOUD, project: OBS, tier: 3, type: sat,
+         version: v3.10-gridbox-average-all, mip: Amon, start_year: 2007,
+         end_year: 2016}
+      - {dataset: DARDAR-CLOUD, project: OBS, tier: 3, type: sat,
+         version: v3.10-gridbox-average-noprecip, mip: Amon, start_year: 2007,
+         end_year: 2016}
+      - {dataset: DARDAR-CLOUD, project: OBS, tier: 3, type: sat,
+         version: v3.10-in-cloud-all, mip: Amon, start_year: 2007,
+         end_year: 2016}
+      - {dataset: DARDAR-CLOUD, project: OBS, tier: 3, type: sat,
+         version: v3.10-in-cloud-noprecip, mip: Amon, start_year: 2007,
+         end_year: 2016}
+    scripts: null
+
+
   ERA-Interim:
     description: ERA-Interim check
     variables:
