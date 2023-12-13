@@ -93,8 +93,8 @@ class NASADownloader(WGetDownloader):
         """
         if wget_options is None:
             wget_options = []
-        wget_options = self._wget_common_options + ["-np", "--accept=nc,nc4,HDF5"
-                                                    ] + wget_options
+        wget_options = self._wget_common_options + [
+            "-np", "--accept=nc,nc4,hdf,HDF5"] + wget_options
         super().download_folder(server_path, wget_options, out_folder)
 
     def download_file(self, server_path, wget_options=None, out_folder=''):

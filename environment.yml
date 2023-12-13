@@ -24,7 +24,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.9.*
+  - esmvalcore =2.10.0rc1
   - fiona
   - fire
   - gdal
@@ -39,6 +39,7 @@ dependencies:
   - natsort
   - nc-time-axis
   - netCDF4
+  - numba
   - numpy !=1.24.3  # severe masking bug
   - packaging
   - openpyxl
