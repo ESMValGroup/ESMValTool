@@ -64,17 +64,17 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
     # Add stations for most versions
-    if version not in ["TS4.02"]:
-        try:
-            stations = iris.load_cube(filepath, NameConstraint(var_name="stn"))
-            stn_coord = AuxCoord(
-                stations.data,
-                long_name="Number of stations",
-                var_name="stations",
-            )
-            cube.add_aux_coord(stn_coord, data_dims=[0, 1, 2])
-        except iris.exceptions.ConstraintMismatchError:
-            logger.info("No station data available for: %s", short_name)
+    # if version not in ["TS4.02"]:
+    #     try:
+    #         stations = iris.load_cube(filepath, NameConstraint(var_name="stn"))
+    #         stn_coord = AuxCoord(
+    #             stations.data,
+    #             long_name="Number of stations",
+    #             var_name="stations",
+    #         )
+    #         cube.add_aux_coord(stn_coord, data_dims=[0, 1, 2])
+    #     except iris.exceptions.ConstraintMismatchError:
+    #         logger.info("No station data available for: %s", short_name)
 
     # Fix units
     if "raw_units" in var:
