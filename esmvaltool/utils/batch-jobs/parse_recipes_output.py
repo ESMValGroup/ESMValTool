@@ -61,18 +61,15 @@ def parse_output_file(slurm_out_dir: str) -> dict[str, list[str]]:
                 if not file.with_suffix('.err').exists():
                     results['unknown'].append(recipe)
                 else:
-                    with file.with_suffix('.err').open(
-                            encoding='utf-8') as errfile:
-                        for line in errfile:
-                            if "killed by the cgroup out-of-memory" in line:
-                                results['out of memory'].append(recipe)
-                                break
-                            if re.match("CANCELLED AT .* DUE TO TIME LIMIT",
-                                        line):
-                                results['out of time'].append(recipe)
-                                break
-                        else:
-                            results['unknown'].append(recipe)
+                    err = file.with_suffix('.err').read_text(encoding='utf-8')
+                    if "killed by the cgroup out-of-memory" in err:
+                        results['out of memory'].append(recipe)
+                    elif "step tasks have been OOM Killed" in err:
+                        results['out of memory'].append(recipe)
+                    elif re.match(".* CANCELLED AT .* DUE TO TIME LIMIT", err):
+                        results['out of time'].append(recipe)
+                    else:
+                        results['unknown'].append(recipe)
 
     results = {k: sorted(v) for k, v in results.items()}
 
