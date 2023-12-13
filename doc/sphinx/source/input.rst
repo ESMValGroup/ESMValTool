@@ -355,6 +355,9 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MAC-LWP                      | lwp, lwpStderr (Amon)                                                                                |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| MERRA                        | cli, clivi, clt, clw, clwvi, hur, hus, lwp, pr, prw, ps, psl, rlut, rlutcs, rsdt, rsut, rsutcs, ta,  |   3  | NCL             |
+|                              | tas, ts, ua, va, wap, zg (Amon)                                                                      |      |                 |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MERRA2                       | sm (Lmon)                                                                                            |   3  | Python          |
 |                              | clt, pr, evspsbl, hfss, hfls, huss, prc, prsn, prw, ps, psl, rlds, rldscs, rlus, rlut, rlutcs, rsds, |      |                 |
 |                              | rsdscs, rsdt, tas, tasmin, tasmax, tauu, tauv, ts, uas, vas, rsus, rsuscs, rsut, rsutcs, ta, ua, va, |      |                 |
@@ -363,6 +366,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | MLS-AURA                     | hur, hurStderr (day)                                                                                 |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MOBO-DIC_MPIM                | dissic (Omon)                                                                                        |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| MOBO-DIC2004-2019            | dissic (Omon)                                                                                        |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MODIS                        | cliwi, clt, clwvi, iwpStderr, lwpStderr (Amon), od550aer (aero)                                      |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -380,11 +385,15 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NIWA-BS                      | toz, tozStderr (Amon)                                                                                |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| NOAA-CIRES-20CR              | clt, clwvi, hus, prw, rlut, rsut (Amon)                                                              |   2  | Python          |
+| NOAA-CIRES-20CR-V2           | clt, clwvi, hus, prw, rlut, rsut (Amon)                                                              |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| NOAA-CIRES-20CR-V3           | clt, clwvi, hus, prw, rlut, rlutcs, rsut, rsutcs (Amon)                                              |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| NOAA-MBL-CH4                 | ch4s (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NOAAGlobalTemp               | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| NSIDC-0116-[nh|sh]           | usi, vsi (day)                                                                                       |   3  | Python          |
+| NSIDC-0116-[nh|sh] [#note4]_ | usi, vsi (day)                                                                                       |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | OceanSODA-ETHZ               | areacello (Ofx), co3os, dissicos, fgco2, phos, spco2, talkos (Omon)                                  |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -424,6 +433,10 @@ A list of the datasets for which a CMORizers is available is provided in the fol
             can be found in the corresponding section of `recipe_check_obs.yml
             <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_check_obs.yml>`__.
 
+.. [#note4] The cmoriser requires PROJ>=9.3. Previous version of PROJ will return an error:
+            ``Internal Proj Error: proj_create: unhandled axis direction: UNKNOWN)``
+            You can check the version of PROJ in your conda environment by running:
+            ``conda list PROJ``.
 
 .. _inputdata_native_datasets:
 
