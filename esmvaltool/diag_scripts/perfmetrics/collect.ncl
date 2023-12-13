@@ -351,9 +351,9 @@ begin
       end if
       if (n_proj .gt. 1) then
         id2 = ind(projectnames.eq.diag_script_info@project_order(1))
-        id2_mm = (/ind(data_all&models(id2) .eq. \
+        id2_mm = (/ind(data_temp&models(id2) .eq. \
                   diag_script_info@project_order(1) + "_mean"), \
-                  ind(data_all&models(id2) .eq. \
+                  ind(data_temp&models(id2) .eq. \
                   diag_script_info@project_order(1) + "_median") /)
         if (any(ismissing(id2_mm))) then
           id2_mm = -1
@@ -368,9 +368,9 @@ begin
         end if
         if (n_proj .gt. 2) then
           id3 = ind(projectnames.eq.diag_script_info@project_order(2))
-          id3_mm = (/ind(data_all&models(id3) .eq. \
+          id3_mm = (/ind(data_temp&models(id3) .eq. \
                     diag_script_info@project_order(2) + "_mean"), \
-                    ind(data_all&models(id3) .eq. \
+                    ind(data_temp&models(id3) .eq. \
                     diag_script_info@project_order(2) + "_median") /)
           if (any(ismissing(id3_mm))) then
             id3_mm = -1
@@ -502,8 +502,9 @@ begin
   domains = (/"global"/)
 
   ; Call provenance logger
-  log_provenance(ncdf_outfile, plotpath, caption, statistics, domains, \
-                 plottype, authors, references, data_files)
+  log_provenance(ncdf_outfile, plotpath + "." + file_type, caption, \
+                 statistics, domains, plottype, authors, references, \
+                 data_files)
 
   leave_msg(DIAG_SCRIPT, "")
 

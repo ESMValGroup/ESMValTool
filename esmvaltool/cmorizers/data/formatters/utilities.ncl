@@ -209,11 +209,11 @@ begin
     ; Reset date (middle of the month)
     tt = 0
     do yy = year1, year2
-      date(tt, 0) = yy
       yy@calendar = calendar
       m1 = where(yy.eq.year1, month1, 1)
       m2 = where(yy.eq.year2, month2, 12)
       do mm = m1, m2
+        date(tt, 0) = yy
         date(tt, 1) = mm
         dm = days_in_month(yy, mm) / 2. + 1
         date(tt, 2) = toint(dm)
@@ -245,14 +245,14 @@ begin
     ; Reset date (middle of the day)
     tt = 0
     do yy = year1, year2
-      date(tt, 0) = yy
       m1 = where(yy.eq.year1, month1, 1)
       m2 = where(yy.eq.year2, month2, 12)
       do mm = m1, m2
-        date(tt, 1) = mm
         d1 = where(yy.eq.year1 .and. mm.eq.m1, day1, 1)
         d2 = where(yy.eq.year2 .and. mm.eq.m2, day2, days_in_month(yy, mm))
         do dd = d1, d2
+          date(tt, 0) = yy
+          date(tt, 1) = mm
           date(tt, 2) = dd
           tt = tt + 1
         end do
