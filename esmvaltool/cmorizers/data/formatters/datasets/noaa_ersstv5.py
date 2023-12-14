@@ -74,7 +74,7 @@ def _fix_time_coord(cube, _, _filename):
     t_coord = cube.coord('time')
     _unit = t_coord.units
     new_time = [d.replace(day=15) for d in _unit.num2date(t_coord.points)]
-    t_coord.points = _unit.date2num(new_time)
+    t_coord.points = _unit.date2num(new_time).astype('float64')
     t_coord.units = cf_units.Unit(t_coord.units.origin, calendar='standard')
     t_coord.long_name = 'Time'
 
