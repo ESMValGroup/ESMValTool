@@ -103,7 +103,7 @@ begin
   outfile = var0 + "_ts_line_" + syears(0) + "_" + eyears(nperiods - 1)
   wks_type = 0
   wks_type@wkPaperSize = "A4"
-  wks = get_wks(wks_type, outfile)
+  wks = get_wks(wks_type, DIAG_SCRIPT, outfile)
   if(isatt(diag_script_info, "colormap")) then
     colormap = RGBtoCmap(diag_script_info@colormap)
   else
