@@ -26,9 +26,8 @@ from iris.util import equalise_attributes
 
 from dateutil import relativedelta
 
-from esmvaltool.cmorizers.data import utilities as utils
-
 from esmvalcore.preprocessor import extract_levels
+from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +80,7 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
 
     try:
         cube.convert_units(cmor_info.units)
-    except Exception as ex:
+    except Exception as ex: # pylint: disable=broad-except
         logger.warning('Warning: could not convert units from %s to %s (%r)',
                        cube.units, cmor_info.units, ex)
 
