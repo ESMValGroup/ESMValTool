@@ -112,6 +112,13 @@ ESMValTool currently supports two ways to perform this reformatting (aka
    checks and fixes').  Details on this second method are given at the
    :ref:`end of this chapter <inputdata_native_datasets>`.
 
+A collection of readily CMORized OBS and OBS6 datasets can be accessed directly on CEDA/JASMIN and DKRZ. At CEDA/JASMIN
+OBS and OBS6 data is stored in the `esmeval` Group Workspace (GWS), and to be granted read (and execute) permissions to the
+GWS, one must apply at https://accounts.jasmin.ac.uk/services/group_workspaces/esmeval/ ; after permission has been granted, the user
+is encouraged to use the data locally, and not move it elsewhere, to minimize both data transfers and
+stale disk usage; to note that Tier 3 data is subject to data protection restrictions; for further inquiries,
+the GWS is adminstered by [Valeriu Predoi](mailto:valeriu.predoi@ncas.ac.uk).
+
 Using a CMORizer script
 -----------------------
 
@@ -397,7 +404,7 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NOAAGlobalTemp               | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| NSIDC-0116-[nh|sh]           | usi, vsi (day)                                                                                       |   3  | Python          |
+| NSIDC-0116-[nh|sh] [#note4]_ | usi, vsi (day)                                                                                       |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | OceanSODA-ETHZ               | areacello (Ofx), co3os, dissicos, fgco2, phos, spco2, talkos (Omon)                                  |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -437,6 +444,10 @@ A list of the datasets for which a CMORizers is available is provided in the fol
             can be found in the corresponding section of `recipe_check_obs.yml
             <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_check_obs.yml>`__.
 
+.. [#note4] The cmoriser requires PROJ>=9.3. Previous version of PROJ will return an error:
+            ``Internal Proj Error: proj_create: unhandled axis direction: UNKNOWN)``
+            You can check the version of PROJ in your conda environment by running:
+            ``conda list PROJ``.
 
 .. _inputdata_native_datasets:
 
