@@ -130,11 +130,9 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     if start_date is None:
-#        start_date = datetime(2006, 1, 1)
-        start_date = datetime(2006, 8, 1)
+        start_date = datetime(2006, 1, 1)
     if end_date is None:
-#        end_date = datetime(2006, 12, 31)
-        end_date = datetime(2006, 8, 31)
+        end_date = datetime(2006, 12, 31)
     loop_date = start_date
 
     while loop_date <= end_date:

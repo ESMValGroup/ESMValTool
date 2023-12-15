@@ -110,4 +110,5 @@ class NASADownloader(WGetDownloader):
         if wget_options is None:
             wget_options = []
         super().download_file(server_path,
-                              self._wget_common_options + wget_options, out_folder)
+                              self._wget_common_options + wget_options,
+                              out_folder)
