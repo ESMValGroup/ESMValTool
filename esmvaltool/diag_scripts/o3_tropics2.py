@@ -23,8 +23,7 @@ from esmvaltool.diag_scripts.shared._base import (
 logger = logging.getLogger(Path(__file__).stem)
 
 def calculate_ozone(dict_item):
-    """Calculation of ozone."""
-     
+    """Calculation of ozone."""     
     var = iris.load_cube(dict_item['filename'])
     var = var.collapsed('o3', iris.analysis.MEAN)
     return var
@@ -42,6 +41,7 @@ def main(cfg):
         #Plotting
         fig, ax = plt.subplots()
         time_points = cube.coord('time').points
+        
         plt.plot(time_points, ozone_anomalies.data)
         ax.set_xlabel('Time')
         ax.set_ylabel('Ozone Anomalies')
