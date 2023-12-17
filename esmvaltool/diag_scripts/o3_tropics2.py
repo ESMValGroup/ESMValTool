@@ -3,7 +3,6 @@
 import logging
 from pathlib import Path
 import matplotlib.pyplot as plt
-#import numpy as np
 import iris
 from esmvalcore.preprocessor import (
     anomalies,
@@ -43,7 +42,6 @@ def main(cfg):
 
         save_figure(fig, "o3_figure")
 
-#https://docs.esmvaltool.org/projects/ESMValCore/en/latest/api/esmvalcore.preprocessor.html#esmvalcore.preprocessor.extract_levels
 if __name__ == '__main__':
     with run_diagnostics() as config:
         main(config)
