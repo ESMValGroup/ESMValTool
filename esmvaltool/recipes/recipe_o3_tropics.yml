@@ -22,17 +22,17 @@ preprocessors:
       end_latitude: 20.
       start_longitude: 0.
       end_longitude: 360.
+    extract_levels:
+      levels: [10000., 7000.]
+      scheme: linear
     area_statistics:
       operator: mean
-      pressure: 100
 
 diagnostics:
-  description:
+  description: Analyze ozone variability over time
   variables:
     o3:
       preprocessor: global_anomalies
       short_name: o3
       mip: Amon
-  scripts:
-    o3_tropics:
-      script: o3_tropics2.py
+  scripts: null
