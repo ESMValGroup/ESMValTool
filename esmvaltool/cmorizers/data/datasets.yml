@@ -1069,6 +1069,14 @@ datasets:
       Download daily data from:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
+   
+  NSIDC-G02202-sh:
+    tier: 3
+    source: https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday
+    last_access: 2023-05-13
+    info: |
+      Download monthly data. 
+      Login required for download, and also requires citation only to use
 
   OceanSODA-ETHZ:
     tier: 2

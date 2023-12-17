@@ -1,0 +1,57 @@
+"""Script to download NSIDC-G02202-sh"""
+import logging
+from datetime import datetime
+from dateutil import relativedelta
+
+from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
+
+logger = logging.getLogger(__name__)
+
+
+def download_dataset(config, dataset, dataset_info, start_date, end_date,
+                     overwrite):
+    """Download dataset.
+
+    Parameters
+    ----------
+    config : dict
+        ESMValTool's user configuration
+    dataset : str
+        Name of the dataset
+    dataset_info : dict
+         Dataset information from the datasets.yml file
+    start_date : datetime
+        Start of the interval to download
+    end_date : datetime
+        End of the interval to download
+    overwrite : bool
+        Overwrite already downloaded files
+    """
+    if start_date is None:
+        start_date = datetime(1979, 1, 1)
+    if end_date is None:
+        end_date = datetime(2023, 1, 1)
+
+    loop_date = start_date
+
+    downloader = WGetDownloader(
+        config=config,
+        dataset=dataset,
+        dataset_info=dataset_info,
+        overwrite=overwrite,
+    )
+    # base_path = ("https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf"
+    #              "/ersst.{year}{month:02d}.nc")
+
+    # !wget --ftp-user=anonymous -nc ftp://sidads.colorado.edu/DATASETS/seaice/polar-stereo/tools/pss25area_v3.dat
+    anc_path = 'https://noaadata.apps.nsidc.org/NOAA/G02202_V4/ancillary/G02202-cdr-ancillary-sh.nc'
+    downloader.download_folder(anc_path, [])
+
+    # https://polarwatch.noaa.gov/erddap/files/nsidcG02202v4shmday/seaice_conc_monthly_sh_197901_n07_v04r00.nc
+    base_path = ('https://noaadata.apps.nsidc.org/NOAA/G02202_V4/south/monthly'
+                 '/seaice_conc_monthly_sh_{year}{month:02d}_.*_v04r00.nc') # regex for n07 changes to f08..? need rules
+
+    while loop_date <= end_date:
+        downloader.download_folder(
+            base_path.format(year=loop_date.year, month=loop_date.month), [])
+        loop_date += relativedelta.relativedelta(months=1)
