@@ -22,6 +22,12 @@ from esmvaltool.diag_scripts.shared._base import (
 
 logger = logging.getLogger(Path(__file__).stem)
 
+def calculate_ozone(dict_item):
+    """Calculation of ozone."""
+     
+    var = iris.load_cube(dict_item['filename'])
+    var = var.collapsed('o3', iris.analysis.MEAN)
+    return var
 
 def main(cfg):
     for name, dataset in cfg['input_data'].items():
