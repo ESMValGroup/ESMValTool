@@ -54,6 +54,20 @@ class WGetDownloader(BaseDownloader):
         logger.debug(command)
         subprocess.check_output(command)
 
+    def login(self, server_path, wget_options):
+        """Login.
+
+        Parameters
+        ----------
+        server_path: str
+            Path to remote file
+        wget_options: list(str)
+            Extra options for wget
+        """
+        command = ['wget'] + wget_options + [server_path]
+        logger.debug(command)
+        subprocess.check_output(command)
+
     @property
     def overwrite_options(self):
         """Get overwrite options as configured in downloader."""

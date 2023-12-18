@@ -49,6 +49,7 @@ dependencies:
   - psy-maps
   - psy-reg
   - psy-simple
+  - pygrib
   - pyproj >=2.1
   - python-cdo
   - python-dateutil

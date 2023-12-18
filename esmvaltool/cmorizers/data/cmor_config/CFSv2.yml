@@ -1,0 +1,91 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: CFSv2
+  version: '1'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'https://rda.ucar.edu/datasets/ds094.2/'
+  reference: 'cfsv2'
+  comment: |
+    '' 
+
+# Variables to cmorize
+variables:
+  clwvi:
+    short_name: clwvi
+    mip: Amon
+    raw: cwat
+    level: atmosphereSingleLayer
+    file: pgbhnl.gdas.*.grib2
+  
+  clt:
+    short_name: clt
+    mip: Amon
+    raw: tcc
+    level: atmosphereSingleLayer
+    file: flxf01.gdas.*.grib2
+
+  prw:
+    short_name: prw
+    mip: Amon
+    raw: pwat
+    level: atmosphereSingleLayer
+    file: pgbhnl.gdas.*.grib2
+
+  rlus:
+    short_name: rlus
+    mip: Amon
+    raw: ulwrf
+    level: surface
+    file: flxf01.gdas.*.grib2
+    
+  rlut:
+    short_name: rlut
+    mip: Amon
+    raw: ulwrf
+    level: nominalTop
+    file: flxf01.gdas.*.grib2
+    
+  rlutcs:
+    short_name: rlutcs
+    mip: Amon
+    raw: csulf
+    level: nominalTop
+    file: flxf01.gdas.*.grib2
+
+  rsus:
+    short_name: rsus
+    mip: Amon
+    raw: uswrf
+    level: surface
+    file: flxf01.gdas.*.grib2
+
+  rsuscs:
+    short_name: rsuscs
+    mip: Amon
+    raw: csusf
+    level: nominalTop
+    file: flxf01.gdas.*.grib2
+
+  rsut:
+    short_name: rsut
+    mip: Amon
+    raw: uswrf
+    level: nominalTop
+    file: flxf01.gdas.*.grib2
+
+  rsutcs:
+    short_name: rsutcs
+    mip: Amon
+    raw: csusf
+    level: nominalTop
+    file: flxf01.gdas.*.grib2
+
+  tas:
+    short_name: tas
+    mip: Amon
+    raw: 2t
+    level: heightAboveGround
+    file: flxf01.gdas.*.grib2
