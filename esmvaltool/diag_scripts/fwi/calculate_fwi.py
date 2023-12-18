@@ -18,6 +18,11 @@ def load_xr_da(metadata, var):
     var_fil = select_metadata(metadata, short_name=var)[0]['filename']
     var_xr = xr.open_dataset(var_fil)[var]
 
+    # to avoid issues with merging later on, drop  height which is scalar
+    var_coords = var_xr.coords
+    if 'height' in var_coords:
+        var_xr = var_xr.drop('height')
+
     return var_xr
 
 
@@ -27,6 +32,24 @@ def hursmin_fun(hussmax_sat_xr, hussmin_sat_xr, hurs_xr):
     hussday_sat_xr = (hussmin_sat_xr + hussmax_sat_xr)/2
     # calculate mean wv pressure
     huss_xr = hurs_xr/100 * hussday_sat_xr 
+    # assuming hursmin occurs during tasmax 
+    hursmin_xr = huss_xr/hussmax_sat_xr * 100
+
+    return hursmin_xr
+
+
+def huss_fun(hussmax_sat_xr, hussmin_sat_xr, hurs_xr):
+    
+    # calculating the mean saturation wv pressure 
+    hussday_sat_xr = (hussmin_sat_xr + hussmax_sat_xr)/2
+    # calculate mean wv pressure
+    huss_xr = hurs_xr/100 * hussday_sat_xr 
+
+    return huss_xr
+
+
+def hursmin_fun(hussmax_sat_xr, huss_xr):
+    
     # assuming hursmin occurs during tasmax 
     hursmin_xr = huss_xr/hussmax_sat_xr * 100
 
@@ -44,19 +67,35 @@ def concatenate_xr_dt(xr_list):
 
     return data_xr_dt 
 
-def derive_hursmin(hurs_xr, tasmax_xr, tasmin_xr):
+
+def derive_hursmin(hurs_xr, tasmax_xr, tasmin_xr, dataset, cfg):
 
     hussmax_sat_xr = xr.map_blocks(saturation_vapor_pressure, 
                      tasmax_xr, kwargs={"method": "wmo08"}).rename("hussmax") 
     hussmin_sat_xr = xr.map_blocks(saturation_vapor_pressure, 
                      tasmin_xr, kwargs={"method": "wmo08"}).rename("hussmin")
 
-    hursmin_xr = xr.apply_ufunc(hursmin_fun, hussmax_sat_xr, hussmin_sat_xr, 
-                   hurs_xr, dask="parallelized", vectorize=True).rename("hursmin")
+    # calculate water vapor saturation pressure
+    huss_xr = xr.apply_ufunc(huss_fun, hussmax_sat_xr, hussmin_sat_xr, 
+                   hurs_xr, dask="parallelized", vectorize=True).rename("huss")
 
+    # deriving hursmin
+    hursmin_xr = xr.apply_ufunc(hursmin_fun, hussmax_sat_xr, huss_xr,
+                              dask="parallelized", vectorize=True).rename("hursmin")
     hursmin_xr = xr.where(hursmin_xr > 100, 100, hursmin_xr)
 
+    # saving vapor pressure deficit have as an area burned predictor
+    vpd_filename = determine_filename(dataset, 'vpd', cfg)
+    vpd_xr = hussmax_sat_xr - huss_xr
+    vpd_xr.rename("vpd").to_netcdf(os.path.join(cfg['work_dir'], vpd_filename))
+
+    # saving the 'mean' temperature as an area burned predictor
+    tmean_filename = determine_filename(dataset, 'tmean', cfg)
+    tmean_xr = (tasmax_xr + tasmin_xr)/2
+    tmean_xr.rename("tmean").to_netcdf(os.path.join(cfg['work_dir'], tmean_filename))
+
     return hursmin_xr 
+
 
 def determine_filename(metadata, fwi_idx, cfg):
 
@@ -116,7 +155,8 @@ def main(cfg):
         xr_list = [hurs_xr, sfcwind_xr, pr_xr, tasmax_xr, tasmin_xr]
         raw_dt = concatenate_xr_dt(xr_list)
 
-        hursmin_xr = derive_hursmin(raw_dt.hurs, raw_dt.tasmax, raw_dt.tasmin)
+        hursmin_xr = derive_hursmin(raw_dt.hurs, raw_dt.tasmax, raw_dt.tasmin, 
+                                    datasets[dataset], cfg)
 
         raw_dt = xr.merge([raw_dt, hursmin_xr])
     
