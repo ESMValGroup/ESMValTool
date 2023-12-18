@@ -224,8 +224,10 @@ MAX_PARALLEL_TASKS = {
 }
 
 DISTRIBUTED_RECIPES = [
-    'recipe_easy_ipcc', 'recipe_daily_era5', 'recipe_marrmot',
-    'recipe_pcrglobwb'
+    'recipe_easy_ipcc',
+    'recipe_daily_era5',
+    'recipe_marrmot',
+    'recipe_pcrglobwb',
 ]
 
 DEFAULT_DASK_FILE = f"""
@@ -262,6 +264,7 @@ def generate_submit():
     dir_recipes = Path('/'.join((esmvaltool.__path__[0], 'recipes')))
 
     for recipe in Path(dir_recipes).rglob('*.yml'):
+        recipe = recipe.relative_to(dir_recipes)
         filename = f'launch_{recipe.stem}.sh'
         if recipe.stem in exclude:
             continue
