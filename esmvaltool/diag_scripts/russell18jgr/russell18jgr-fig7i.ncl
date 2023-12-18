@@ -220,6 +220,8 @@ begin
   end create
   draw(legend)
 
+  frame(wks)
+
   log_provenance(ncdf_outfile, \
                  plotpath + "." + output_type(), \
                  "Russell et al 2018 figure 7i", \

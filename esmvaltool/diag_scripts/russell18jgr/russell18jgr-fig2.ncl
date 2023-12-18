@@ -182,6 +182,8 @@ begin
   end create
   draw(legend)
 
+  frame(wks)
+
   ; Call provenance logger
   log_provenance(ncdf_outfile, \
                  plotpath + "." + output_type(), \

@@ -250,6 +250,8 @@ begin
               "not an error, no responce is needed by user for plotting ")
   end if
 
+  frame(wks)
+
   ; Call provenance logger
   log_provenance(ncdf_outfile, \
                  plotpath + "." + output_type(), \

@@ -297,6 +297,8 @@ begin
   end create
   draw(legend)
 
+  frame(wks)
+
   do idd = 0, dimsizes(lat_width) - 1
     nc_filename = config_user_info@work_dir + "russell18jgr_fig9a_" \
                   + annots(idd) + "_" + (start_years_data(idd)) + "-" \
