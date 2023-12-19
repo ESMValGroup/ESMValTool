@@ -27,7 +27,7 @@ Highlights
    See :ref:`supported_datasets` and :ref:`inputdata_observations` for more
    information.
 
--  Many recipes now have up to date obs4MIPs dataset names so required data can
+-  Many recipes now have up-to-date obs4MIPs dataset names so required data can
    automatically be downloaded from ESGF.
 
 This release includes
