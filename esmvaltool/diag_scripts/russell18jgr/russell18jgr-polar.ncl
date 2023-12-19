@@ -231,15 +231,6 @@ begin
 
     ncdf_outfile = ncdf_write(dataset, nc_filename)
     delete(dataset)
-    log_provenance(ncdf_outfile, \
-                   plotpath + "." + output_type(), \
-                   "Russell et al 2018 polar plot " + var0, \
-                   "mean", \
-                   "sh", \
-                   "geo", \
-                   "russell_joellen", \
-                   "russell18jgr", \
-                   inputfile_paths(iii))
   end do
 
     ; Draw the panel
