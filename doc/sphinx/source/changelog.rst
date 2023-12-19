@@ -105,7 +105,7 @@ Automatic testing
 Installation
 ~~~~~~~~~~~~
 
--  Use ESMValCore v2.10.0 release candidates (`#3404 <https://github.com/ESMValGroup/ESMValTool/pull/3404>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
+-  Use ESMValCore v2.10 (`#3486 <https://github.com/ESMValGroup/ESMValTool/pull/3486>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 
 Improvements
 ~~~~~~~~~~~~
