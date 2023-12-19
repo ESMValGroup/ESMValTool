@@ -287,6 +287,8 @@ These are the detailed steps to take to make a release.
    - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
    - Update the :ref:`list of broken recipes <broken-recipe-list>` with new recipes that could not be run successfully during the testing.
      Open a separate GitHub issue for each failing recipe and assign the next milestone.
+     Open an overview issue, see :issue:`3484` for an example, and review past overview issues.
+     Take action to ensure that the broken recipe policy is followed.
 
 
 #. ESMValCore release
@@ -339,7 +341,7 @@ Glossary
 
 Feature freeze
 ~~~~~~~~~~~~~~
-The date on which no new features may be submitted for the upcoming release. 
+The date on which no new features may be submitted for the upcoming release.
 After this date, only critical bug fixes can still be included to the :ref:`release_branch`.
 Development work can continue in the main branch.
 If you are unsure whether new developments could interfere with the release, check with the :ref:`release_manager`.
@@ -411,7 +413,7 @@ All tests should pass before making a release (branch).
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The version number is automatically generated from the information provided by
-git using [setuptools-scm](https://pypi.org/project/setuptools-scm/), but a
+git using `setuptools-scm <https://pypi.org/project/setuptools-scm/>`__, but a
 static version number is stored in ``CITATION.cff``.
 Make sure to update the version number and release date in ``CITATION.cff``.
 See https://semver.org for more information on choosing a version number.
@@ -464,8 +466,8 @@ and create the new release from the release branch (i.e. not from ``main``).
 The release tag always starts with the letter ``v`` followed by the version
 number, e.g. ``v2.1.0``.
 
-6. Mark the release in the main branch
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+6. Merge the release branch back into the main branch
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When the (pre-)release is tagged, it is time to merge the release branch back into `main`.
 We do this for two reasons, namely, one, to mark the point up to which commits in `main`
