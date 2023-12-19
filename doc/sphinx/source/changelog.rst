@@ -7,24 +7,28 @@ v2.10.0
 -------
 Highlights
 
-- Add a realistic IPCC example recipe that reproduces figure 9.3 from AR6. It
-  computes the mean sea-surface temperature anomaly between 1850-2100 over all
-  available CMIP6 models. See the :ref:`recipe documentation <recipe_examples>`
-  or read the `blog post <https://blog.esciencecenter.nl/easy-ipcc-powered-by-esmvalcore-19a0b6366ea7>`__
-  for more information.
+-  Add a realistic IPCC example recipe that reproduces figure 9.3 from AR6. It
+   computes the mean sea-surface temperature anomaly between 1850-2100 over all
+   available CMIP6 models. See the :ref:`recipe documentation <recipe_examples>`
+   or read the `blog post <https://blog.esciencecenter.nl/easy-ipcc-powered-by-esmvalcore-19a0b6366ea7>`__
+   for more information.
 
-- Added more plot types to monitoring diagnostic: Hovmoeller Z vs. time,
-  Hovmoeller time vs latlon, variable vs. latitude are now available. See the
-  :ref:`recipe documentation <recipe_monitor>` for more information.
+-  Added more plot types to monitoring diagnostic: Hovmoeller Z vs. time,
+   Hovmoeller time vs latlon, variable vs. latitude are now available. See the
+   :ref:`recipe documentation <recipe_monitor>` for more information.
 
-- Add support for 4 new datasets:
-  `NOAA-CIRES-20CR v3 reanalysis <https://github.com/ESMValGroup/ESMValTool/pull/3137>`__,
-  `NASA MERRA reanalysis <https://github.com/ESMValGroup/ESMValTool/pull/3039>`__,
-  `NOAA marine boundary layer data for CH4 <https://github.com/ESMValGroup/ESMValTool/pull/3301>`__,
-  and `MOBO-DIC2004-2019 <https://github.com/ESMValGroup/ESMValTool/pull/3297>`__.
+-  Add support for 4 new datasets:
 
-- Many recipes now have up to date obs4MIPs dataset names so required data can
-  automatically be downloaded from ESGF.
+   - NOAA-CIRES-20CR v3 reanalysis
+   - NASA MERRA reanalysis
+   - NOAA marine boundary layer data for CH4
+   - MOBO-DIC2004-2019
+
+   See :ref:`supported_datasets` and :ref:`inputdata_observations` for more
+   information.
+
+-  Many recipes now have up to date obs4MIPs dataset names so required data can
+   automatically be downloaded from ESGF.
 
 This release includes
 
