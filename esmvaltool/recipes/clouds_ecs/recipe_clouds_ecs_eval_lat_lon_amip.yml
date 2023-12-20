@@ -40,7 +40,7 @@ DATASETS_ECS_HIGH: &datasets_ecs_high
   - {dataset: HadGEM3-GC31-LL, grid: gn, ensemble: r1i1p1f3}
   - {dataset: HadGEM3-GC31-MM, grid: gn, ensemble: r1i1p1f3}
   - {dataset: IPSL-CM6A-LR}
-  - {dataset: KACE-1-0-G}
+    #  - {dataset: KACE-1-0-G}
   - {dataset: NESM3, grid: gn}
   - {dataset: TaiESM1, grid: gn}
     #noAMIP  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn} 
@@ -341,7 +341,7 @@ diagnostics:
         preprocessor: lat_lon
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
-             tier: 2}
+             tier: 2, start_year: 2001, end_year: 2022}
              #tier: 2, start_year: 2001, end_year: 2022}
     scripts:
       lat_lon:
