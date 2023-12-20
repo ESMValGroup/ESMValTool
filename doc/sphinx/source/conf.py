@@ -446,11 +446,29 @@ intersphinx_mapping = {
 # See https://www.sphinx-doc.org/en/master/usage/extensions/extlinks.html
 
 extlinks = {
-    "issue": ("https://github.com/ESMValGroup/ESMValTool/issues/%s", "Issue #%s"),
-    "pull": ("https://github.com/ESMValGroup/ESMValTool/pull/%s", "Pull request #%s"),
     "discussion": (
         "https://github.com/ESMValGroup/ESMValTool/discussions/%s",
-        "Discussion #%s",
+        "discussion #%s",
+    ),
+    "issue": (
+        "https://github.com/ESMValGroup/ESMValTool/issues/%s",
+        "issue #%s",
+    ),
+    "pull": (
+        "https://github.com/ESMValGroup/ESMValTool/pull/%s",
+        "pull request #%s",
+    ),
+    "release": (
+        "https://github.com/ESMValGroup/ESMValTool/releases/%s",
+         "%s",
+    ),
+    "team": (
+        "https://github.com/ESMValGroup/ESMValTool/teams/%s",
+         "@%s team",
+    ),
+    "user": (
+        "https://github.com/%s",
+         "@%s",
     ),
 }
 

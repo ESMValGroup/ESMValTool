@@ -211,12 +211,9 @@ def _list_labelless_pulls(labelless_pulls):
 
 def _compose_note(pull):
     user = pull.user
-    username = user.login if user.name is None else user.name
     title = pull.title
     title = title[0].upper() + title[1:]
-    return (f"-  {title} (`#{pull.number} "
-            f"<{pull.html_url}>`__) "
-            f"`{username} <https://github.com/{user.login}>`__")
+    return (f"-  {title} (:pull:`{pull.number}`) by :user:`{user.login}`")
 
 
 def main():
