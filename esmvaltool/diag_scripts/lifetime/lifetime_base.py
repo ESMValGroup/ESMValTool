@@ -4,6 +4,8 @@ import logging
 import os
 import re
 
+from pprint import pprint
+
 import sys
 import cartopy
 import iris
@@ -39,35 +41,64 @@ def calculate_lifetime(dataset, plot_type, region):
 def extract_region(dataset, region, case='reaction'):
     """Return cube with everything outside region set to zero.
 
+    If z_coord is defined as:
+    - air_pressure, use:
+                      - ptp and air_pressure
+                      - tp_clim and air_pressure
+    - atmosphere_hybrid_sigma_pressure_coordinate, use:
+                      - tp_i and model_level_number
+                      - ptp and (derived) air_pressure
+                      - tp_clim and (derived) air_pressure
+
     Current aware regions:
     - TROP: troposphere (excl. tropopause), requires tropopause pressure
     - STRA: stratosphere (incl. tropopause), requires tropopause pressure
     """
     var = dataset[case]
+    z_coord = dataset['z_coord']
+
+    pprint(dataset)
+
+    if not 'ptp' in dataset['variables'] and not 'tp_i' in dataset['variables']:
+        tp_clim = climatological_tropopause(broadcast_to_shape(
+                    var.coord('latitude').points,
+                    var.shape,
+                    var.coord_dims(z_coord)
+        ))
 
     if region in ['TROP', 'STRA']:
     ## - can I choose the troposphere by the preprocessor?
-        if 'tp_i' in dataset['variables']:
-            tp = dataset['variables']['tp_i']
-            z_coord = 'model_level_number'
-        elif 'tp' in dataset['variables']:
-            tp = dataset['variables']['tp']
-            z_coord = 'air_pressure'
-        else:
-            raise NotImplementedError(
-                "Guessing the tropopause pressure is currently not implemented."
-                " You need to provide a variabel containing the tropopause pressure.")
+
+        use_z_coord = 'air_pressure'
+        if z_coord.name() == 'air_pressure':
+            if 'ptp' in dataset['variables']:
+                tp = dataset['variables']['ptp']
+            else:
+                tp = tp_clim
+        elif z_coord.name() == 'atmosphere_hybrid_sigma_pressure_coordinate':
+            if 'tp_i' in dataset['variables']:
+                tp = dataset['variables']['tp_i']
+                use_z_coord = 'model_level_number'
+            elif 'ptp' in dataset['variables']:
+                tp = dataset['variables']['ptp']
+            else:
+                tp = tp_clim
 
         z_4d = broadcast_to_shape(
-            var.coord(z_coord).points,
+            var.coord(use_z_coord).points,
             var.shape,
-            var.coord_dims(z_coord)
+            var.coord_dims(use_z_coord)
         )
-        tp_4d = broadcast_to_shape(
-            tp.data,
-            var.shape,
-            var.coord_dims('time') + var.coord_dims('latitude') + var.coord_dims('longitude'),
-        )
+        # Problem: ValueError: dim_map must have an entry for every dimension of the input array
+        # Maybe there is a more elegant way to do this
+        if not var.shape == tp.shape:
+            tp_4d = broadcast_to_shape(
+                tp.data,
+                var.shape,
+                var.coord_dims('time') + var.coord_dims('latitude') + var.coord_dims('longitude'),
+            )
+        else:
+            tp_4d = tp
 
         if region == 'TROP':
             var.data = np.ma.array(
@@ -84,16 +115,25 @@ def extract_region(dataset, region, case='reaction'):
 
     return var
 
+def climatological_tropopause(latitude):
+    """Return cube with climatological tropopause pressure.
+
+    """
+    tp_clim = 300. - 215. * (np.cos(latitude) ** 2)
+
+    return tp_clim
+
 def sum_up_to_plot_dimensions(var, plot_type):
     """
     Returns the cube summed over the appropriate dimensions
     """
-    if var.coords('air_pressure', dim_coords=True):
-        z_coord = var.coords('air_pressure', dim_coords=True)
-    elif var.coords('lev', dim_coords=True):
-        z_coord = var.coords('lev', dim_coords=True)
-    elif var.coords('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True):
-        z_coord = var.coords('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True)[0]
+    if plot_type in ['timeseries', 'annual_cycle']:
+        if var.coords('air_pressure', dim_coords=True):
+            z_coord = var.coords('air_pressure', dim_coords=True)
+        elif var.coords('lev', dim_coords=True):
+            z_coord = var.coords('lev', dim_coords=True)
+        elif var.coords('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True):
+            z_coord = var.coords('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True)[0]
 
     if plot_type == 'timeseries':
         cube = var.collapsed(['longitude', 'latitude', z_coord], iris.analysis.SUM)
@@ -103,7 +143,11 @@ def sum_up_to_plot_dimensions(var, plot_type):
         cube = var.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
     elif plot_type == 'annual_cycle':
         # TODO!
-        cube = var.collapsed(['longitude', 'latitude', z_coord], iris.analysis.SUM)
+        # not iris.analysis.SUM but some kind of mean
+        #cube = var.collapsed(['longitude', 'latitude', z_coord], iris.analysis.SUM)
+        raise NotImplementedError(f"The sum to plot dimensions for plot_type {plot_type}"
+                                  " is currently not implemented")
+
 
     return cube
 

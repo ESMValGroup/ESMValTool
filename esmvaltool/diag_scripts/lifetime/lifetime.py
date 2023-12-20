@@ -273,6 +273,7 @@ import seaborn as sns
 # from iris.analysis.cartography import area_weights
 # from iris.analysis.maths import log, exp
 from iris.coord_categorisation import add_year
+from iris.util import broadcast_to_shape
 # from iris.coords import AuxCoord
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import FormatStrFormatter, LogLocator, NullFormatter
@@ -549,21 +550,6 @@ class CH4Lifetime(LifetimeBase):
                 if cube.coords('time', dim_coords=True):
                     ih.unify_time_coord(cube)
 
-                # Set Z-coordinate
-                if cube.coords('air_pressure', dim_coords=True):
-                    self.z_coord = 'air_pressure'
-                    z_coord = cube.coord('air_pressure', dim_coords=True)
-                    z_coord.attributes['positive'] = 'down'
-                    z_coord.convert_units('hPa')
-                elif cube.coords('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True):
-                    self.z_coord = 'atmosphere_hybrid_sigma_pressure_coordinate'
-                    z_coord = cube.coord('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True)
-                    z_coord.attributes['positive'] = 'down'
-                    add_model_level(cube)
-                elif cube.coords('altitude', dim_coords=True):
-                    self.z_coord = 'alititude'
-                    z_coord = cube.coord('altitude', dim_coords=True)
-                    z_coord.attributes['positive'] = 'up'
 
                 # cube for each variable
                 variables[variable['short_name']] = cube
@@ -572,13 +558,37 @@ class CH4Lifetime(LifetimeBase):
 
             oxidant = {ox: variables[ox] for ox in name_oxidant}
 
-            input_data_dataset[dataset]['variables'] = variables
-            input_data_dataset[dataset]['reaction'] = (
+            reaction = (
                 self._calculate_reaction(oxidant,
                                          rho,
                                          variables['ta'],
                                          name_reactant))
-            input_data_dataset[dataset]['weight'] = self._define_weight(variables)
+
+            weight = self._define_weight(variables)
+
+            # Set Z-coordinate
+            if reaction.coords('air_pressure', dim_coords=True):
+                self.z_coord = 'air_pressure'
+                z_coord = reaction.coord('air_pressure', dim_coords=True)
+                z_coord.attributes['positive'] = 'down'
+                z_coord.convert_units('hPa')
+            elif reaction.coords('atmosphere_hybrid_sigma_pressure_coordinate',
+                                 dim_coords=True):
+                self.z_coord = 'atmosphere_hybrid_sigma_pressure_coordinate'
+                z_coord = reaction.coord('atmosphere_hybrid_sigma_pressure_coordinate',
+                                         dim_coords=True)
+                z_coord.attributes['positive'] = 'down'
+                add_model_level(reaction)
+                add_model_level(weight)
+            else:
+                raise NotImplementedError(f"Lifetime calculation is not implemented"
+                                          " for the present type of vertical coordinate.")
+
+            input_data_dataset[dataset]['z_coord'] = z_coord
+
+            input_data_dataset[dataset]['variables'] = variables
+            input_data_dataset[dataset]['reaction'] = reaction
+            input_data_dataset[dataset]['weight'] = weight
 
         return input_data_dataset
 
@@ -622,16 +632,17 @@ class CH4Lifetime(LifetimeBase):
         Calculate number density with respect to the given input
         variables.
         """
+        # model levels
         if 'grmassdry' in variables and 'grvol' in variables:
-        #if self.z_coord == 'lev' and 'grmassdry' in variables and 'grvol' in variables:
+            #if self.z_coord == 'atmosphere_hybrid_sigma_pressure_coordinate'
+            # and 'grmassdry' in variables and 'grvol' in variables:
             rho = self._number_density_dryair_by_grid(
                 variables['grmassdry'],
                 variables['grvol'])
-        elif ('press' in variables and
-              'ta' in variables and
+        # pressure levels
+        elif ('ta' in variables and
               'hus' in variables):
             rho = self._number_density_dryair_by_press(
-                variables['press'],
                 variables['ta'],
                 variables['hus'])
         else:
@@ -640,7 +651,7 @@ class CH4Lifetime(LifetimeBase):
                          "Provide either:\n"
                          " - grmassdry and grvol\n"
                          " or\n"
-                         " - press, ta and hus")
+                         " - ta and hus")
             # dummy
             rho = variables['press']
 
@@ -664,13 +675,17 @@ class CH4Lifetime(LifetimeBase):
 
         return reaction
 
-    def _number_density_dryair_by_press(self, press, ta, hus):
+    def _number_density_dryair_by_press(self, ta, hus, press=None):
         """
         Calculate number density of dry air.
 
         Used to convert from mol / mol_dry into molec / cm3
-        by using present pressure, temperature and
-        humidity.
+        by using present temperature and humidity.
+
+        ##qqq
+        Should there be an option to provide the simulated pressure field
+        rather than the derived pressure from interpolation?
+        ###
 
         Used constants:
         - N_A    Avogrado constant from scipy
@@ -678,6 +693,13 @@ class CH4Lifetime(LifetimeBase):
         - m_air   Molarmass of Air
         - m_h2o   Molarmass of watervapor
         """
+
+        if not press:
+            press = broadcast_to_shape(
+                ta.coord('air_pressure').points,
+                ta.shape,
+                ta.coord_dims('air_pressure')
+            )
         rho = ((press * N_A * 10**(-6)) /
                (R * ta * (1. + (self.m_air / self.m_h2o - 1.) * hus)))
         # correct metadata
@@ -729,7 +751,7 @@ class CH4Lifetime(LifetimeBase):
             reaction_rate.data = coeff_a * np.exp(coeff_b * np.log(ta.data)
                                                   - (coeff_er / ta.data))
 
-        # standard reaction rate
+        # standard reaction rate (arrhenius)
         else:
             reaction_rate.data = coeff_a * np.exp(-(coeff_er / ta.data))
 
@@ -1065,6 +1087,11 @@ class CH4Lifetime(LifetimeBase):
             # Plot original time series
             plot_kwargs = self._get_plot_kwargs(plot_type, base_datasets[label])
             plot_kwargs['axes'] = axes
+
+            if self.plots[plot_type]['display_mean'] is not False:
+                mean = cube.collapsed('time', iris.analysis.MEAN)
+                plot_kwargs['label'] = f"{plot_kwargs['label']} ({mean.data:.2f})"
+
             iris.plot.plot(cube, **plot_kwargs)
 
             # Plot annual means if desired
