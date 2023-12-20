@@ -24,6 +24,7 @@ to the SLURM scheduler.
 """
 import os
 import subprocess
+import textwrap
 from pathlib import Path
 
 import esmvaltool
@@ -230,28 +231,27 @@ DISTRIBUTED_RECIPES = [
     'recipe_pcrglobwb',
 ]
 
-DEFAULT_DASK_FILE = f"""
-cluster:
-  type: dask_jobqueue.SLURMCluster
-  queue: compute
-  account: {account}
-  cores: 128
-  memory: 256GiB
-  processes: 32
-  interface: ib0
-  local_directory: /scratch/{os.getlogin()[0]}/{os.getlogin()}/dask-tmp
-  n_workers: 32
-  walltime: '8:00:00'
-"""
-
 
 def generate_submit():
     """Generate and submit scripts."""
     print("It is recommended that you run the following recipes with the "
           "configuration in dask.yml in ~/.esmvaltool/dask.yml:")
+    default_dask_config_file = textwrap.dedent(f"""
+    cluster:
+      type: dask_jobqueue.SLURMCluster
+      queue: compute
+      account: {account}
+      cores: 128
+      memory: 256GiB
+      processes: 32
+      interface: ib0
+      local_directory: /scratch/{os.getlogin()[0]}/{os.getlogin()}/dask-tmp
+      n_workers: 32
+      walltime: '8:00:00'
+    """)
     for recipe in DISTRIBUTED_RECIPES:
         print(f"- {recipe}.yml")
-    Path('dask.yml').write_text(DEFAULT_DASK_FILE, encoding='utf-8')
+    Path('dask.yml').write_text(default_dask_config_file, encoding='utf-8')
 
     home = os.path.expanduser('~')
     # Fill the list with the names of the recipes to be excluded
