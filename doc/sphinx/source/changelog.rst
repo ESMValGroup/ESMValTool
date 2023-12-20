@@ -3,8 +3,8 @@
 Changelog
 =========
 
-:release:`v2.10.0`
-------------------
+v2.10.0
+-------
 Highlights
 
 -  Add a realistic IPCC example recipe that reproduces figure 9.3 from AR6. It

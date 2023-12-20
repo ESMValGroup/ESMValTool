@@ -448,27 +448,31 @@ intersphinx_mapping = {
 extlinks = {
     "discussion": (
         "https://github.com/ESMValGroup/ESMValTool/discussions/%s",
-        "discussion #%s",
+        "Discussion #%s",
     ),
     "issue": (
         "https://github.com/ESMValGroup/ESMValTool/issues/%s",
-        "issue #%s",
+        "Issue #%s",
     ),
     "pull": (
         "https://github.com/ESMValGroup/ESMValTool/pull/%s",
-        "pull request #%s",
+        "Pull request #%s",
     ),
     "release": (
-        "https://github.com/ESMValGroup/ESMValTool/releases/%s",
-         "%s",
+        "https://github.com/ESMValGroup/ESMValTool/releases/tag/%s",
+        "ESMValTool %s",
+    ),
+    "esmvalcore-release": (
+        "https://github.com/ESMValGroup/ESMValCore/releases/tag/%s",
+        "ESMValCore %s",
     ),
     "team": (
-        "https://github.com/ESMValGroup/ESMValTool/teams/%s",
-         "@%s team",
+        "https://github.com/orgs/ESMValGroup/teams/%s",
+        "@ESMValGroup/%s",
     ),
     "user": (
         "https://github.com/%s",
-         "@%s",
+        "@%s",
     ),
 }
 
