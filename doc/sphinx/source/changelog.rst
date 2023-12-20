@@ -3,6 +3,116 @@
 Changelog
 =========
 
+v2.10.0
+-------
+Highlights
+
+-  Add a realistic IPCC example recipe that reproduces figure 9.3 from AR6. It
+   computes the mean sea-surface temperature anomaly between 1850-2100 over all
+   available CMIP6 models. See the :ref:`recipe documentation <recipe_examples>`
+   or read the `blog post <https://blog.esciencecenter.nl/easy-ipcc-powered-by-esmvalcore-19a0b6366ea7>`__
+   for more information.
+
+-  Added more plot types to monitoring diagnostic: Hovmoeller Z vs. time,
+   Hovmoeller time vs latlon, variable vs. latitude are now available. See the
+   :ref:`recipe documentation <recipe_monitor>` for more information.
+
+-  Add support for 4 new datasets:
+
+   - NOAA-CIRES-20CR v3 reanalysis
+   - NASA MERRA reanalysis
+   - NOAA marine boundary layer data for CH4
+   - MOBO-DIC2004-2019
+
+   See :ref:`supported_datasets` and :ref:`inputdata_observations` for more
+   information.
+
+-  Many recipes now have up-to-date obs4MIPs dataset names so required data can
+   automatically be downloaded from ESGF.
+
+This release includes
+
+Bug fixes
+~~~~~~~~~
+
+-  Update recipe shapeselect to work with shapely v2 (`#3283 <https://github.com/ESMValGroup/ESMValTool/pull/3283>`__) `Lukas <https://github.com/lukruh>`__
+-  Correctly handle ``~`` when reading ``plot_folder`` option of monitoring diagnostic (`#3449 <https://github.com/ESMValGroup/ESMValTool/pull/3449>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Fixed provenance tracking for NCL multipanel PNGs (`#3332 <https://github.com/ESMValGroup/ESMValTool/pull/3332>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Fixed plot paths in NCL provenance tracking (`#3422 <https://github.com/ESMValGroup/ESMValTool/pull/3422>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Fix erroneous file_type handling in certain NCL diagnostics (`#3474 <https://github.com/ESMValGroup/ESMValTool/pull/3474>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
+-  Fix NCL provenance tracking (`#3477 <https://github.com/ESMValGroup/ESMValTool/pull/3477>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Fix plots and provenance in Russell diagnostics (`#3479 <https://github.com/ESMValGroup/ESMValTool/pull/3479>`__) `Manuel Schlund <https://github.com/schlunma>`__
+
+Documentation
+~~~~~~~~~~~~~
+
+-  Add merge instructions to release instructions (`#3292 <https://github.com/ESMValGroup/ESMValTool/pull/3292>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Update release schedule after release of v2.9.0 (`#3289 <https://github.com/ESMValGroup/ESMValTool/pull/3289>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Add list of failing recipes for v2.9.0 release (`#3294 <https://github.com/ESMValGroup/ESMValTool/pull/3294>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Update ``mamba`` version in readthedocs configuration docs builds (`#3310 <https://github.com/ESMValGroup/ESMValTool/pull/3310>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Add Romain Beucher to citation file as contributor (`#3318 <https://github.com/ESMValGroup/ESMValTool/pull/3318>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Removed recipe_carvalhais14nat from list of broken recipes (`#3319 <https://github.com/ESMValGroup/ESMValTool/pull/3319>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Add `OBS-maintainers <https://github.com/orgs/ESMValGroup/teams/obs-maintainers>`__ team to documentation on OBS data maintenance and CMORizer reviews (`#3335 <https://github.com/ESMValGroup/ESMValTool/pull/3335>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Add Pauline Bonnet to citation file (`#3347 <https://github.com/ESMValGroup/ESMValTool/pull/3347>`__) `Paulinebonnet111 <https://github.com/Paulinebonnet111>`__
+-  Ensure compatible zstandard and zstd in readthedocs builds (`#3362 <https://github.com/ESMValGroup/ESMValTool/pull/3362>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
+-  Fix documentation build (`#3397 <https://github.com/ESMValGroup/ESMValTool/pull/3397>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Minor updates to release tools (`#3216 <https://github.com/ESMValGroup/ESMValTool/pull/3216>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Enhance provenance documentation (`#3305 <https://github.com/ESMValGroup/ESMValTool/pull/3305>`__) `Alistair Sellar <https://github.com/alistairsellar>`__
+-  Re-add communities and grants in zenodo file (`#3416 <https://github.com/ESMValGroup/ESMValTool/pull/3416>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Update Anconda badge in README (`#3375 <https://github.com/ESMValGroup/ESMValTool/pull/3375>`__, `#3453 <https://github.com/ESMValGroup/ESMValTool/pull/3453>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+
+Diagnostics
+~~~~~~~~~~~
+
+-  Slight refactoring of diagnostic script ``galytska23/select_variables_for_tigramite.py`` for generality and portability (`#3298 <https://github.com/ESMValGroup/ESMValTool/pull/3298>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__ and `Evgenia Galytska <https://github.com/egalytska>`__
+-  Allow custom variable grouping in diagnostic script ``monitor/multi_datasets.py`` (`#3343 <https://github.com/ESMValGroup/ESMValTool/pull/3343>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Extended monitor diagnostic with plot type variable vs. latitude (`#3340 <https://github.com/ESMValGroup/ESMValTool/pull/3340>`__) `ellensarauer <https://github.com/ellensarauer>`__
+-  Add Hovmoeller Z vs. time plot to monitoring diagnostic (`#3345 <https://github.com/ESMValGroup/ESMValTool/pull/3345>`__) `cubeme <https://github.com/cubeme>`__ and `helgehr <https://github.com/helgehr>`__
+-  Adding Hovmoeller time vs latlon plots to monitoring recipes (`#3341 <https://github.com/ESMValGroup/ESMValTool/pull/3341>`__) `Lukas <https://github.com/lukruh>`__ and `jeremykraftdlr <https://github.com/jeremykraftdlr>`__
+-  Implied heat transport new diagnostic (`#3177 <https://github.com/ESMValGroup/ESMValTool/pull/3177>`__) `Alejandro Bodas <https://github.com/mo-abodas>`__
+-  Recipe changes for new statistics preprocessors (percentiles) (`#3351 <https://github.com/ESMValGroup/ESMValTool/pull/3351>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Add a realistic example recipe (`#3356 <https://github.com/ESMValGroup/ESMValTool/pull/3356>`__) `Peter9192 <https://github.com/Peter9191>`__ and `Bouwe Andela <https://github.com/bouweandela>`__
+-  Support ``CenteredNorm`` in diagnostic monitor/multidatasets.py (`#3415 <https://github.com/ESMValGroup/ESMValTool/pull/3415>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Use new preprocessor statistics calling convention for recipe_easy_ipcc.yml (`#3418 <https://github.com/ESMValGroup/ESMValTool/pull/3418>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Adapt to changed style scheme name in matplotlib (`#3475 <https://github.com/ESMValGroup/ESMValTool/pull/3475>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
+-  Add version to dataset in python example recipe to avoid "Unknown file format" issue on JASMIN (`#3322 <https://github.com/ESMValGroup/ESMValTool/pull/3322>`__) `Emma Hogan <https://github.com/ehogan>`__
+-  Add the dataset version in the heatwaves_coldwaves recipe to avoid the "Unknown file format" issue on JASMIN (`#3373 <https://github.com/ESMValGroup/ESMValTool/pull/3373>`__) `Emma Hogan <https://github.com/ehogan>`__
+
+Observational and re-analysis dataset support
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Cmorizer for NOAA-CIRES-20CR v3 reanalysis (clt, clwvi, hus, prw, rlut, rlutcs, rsut, rsutcs) (`#3137 <https://github.com/ESMValGroup/ESMValTool/pull/3137>`__) `Lisa Bock <https://github.com/LisaBock>`__
+-  CMORizer for NASA MERRA reanalysis (`#3039 <https://github.com/ESMValGroup/ESMValTool/pull/3039>`__) `Axel Lauer <https://github.com/axel-lauer>`__
+-  Download and formatting of NOAA marine boundary layer data for CH4 (NOAA-MBL-CH4) (`#3301 <https://github.com/ESMValGroup/ESMValTool/pull/3301>`__) `FranziskaWinterstein <https://github.com/FranziskaWinterstein>`__
+-  Added CMORizer for MOBO-DIC2004-2019 (`#3297 <https://github.com/ESMValGroup/ESMValTool/pull/3297>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Update obs4MIPs dataset names in quantilebias recipe (`#3330 <https://github.com/ESMValGroup/ESMValTool/pull/3330>`__) `Romain Beucher <https://github.com/rbeucher>`__
+-  Update obs4MIPs dataset names in Schlund20esd recipe (`#3329 <https://github.com/ESMValGroup/ESMValTool/pull/3329>`__) `Romain Beucher <https://github.com/rbeucher>`__
+-  Update obs4MIPs dataset names in flatoipcc recipes (`#3328 <https://github.com/ESMValGroup/ESMValTool/pull/3328>`__) `Romain Beucher <https://github.com/rbeucher>`__
+-  Update obs4mips dataset names in clouds recipes (`#3326 <https://github.com/ESMValGroup/ESMValTool/pull/3326>`__) `Romain Beucher <https://github.com/rbeucher>`__
+-  Update Obs4MIPs dataset names in ECS recipes (`#3327 <https://github.com/ESMValGroup/ESMValTool/pull/3327>`__) `Romain Beucher <https://github.com/rbeucher>`__
+-  Update obs4mips dataset names in Bock et al recipes (`#3324 <https://github.com/ESMValGroup/ESMValTool/pull/3324>`__, `#3389 <https://github.com/ESMValGroup/ESMValTool/pull/3389>`__ and `#3473 <https://github.com/ESMValGroup/ESMValTool/pull/3473>`__) `Romain Beucher <https://github.com/rbeucher>`__ and `Bouwe Andela <https://github.com/bouweandela>`__
+-  Update obs4mips dataset names in radiation budget recipe (`#3323 <https://github.com/ESMValGroup/ESMValTool/pull/3323>`__) `Romain Beucher <https://github.com/rbeucher>`__
+-  Update Obs4MIPs dataset names in perfmetrics CMIP5 recipe (`#3325 <https://github.com/ESMValGroup/ESMValTool/pull/3325>`__) `Romain Beucher <https://github.com/rbeucher>`__
+
+Automatic testing
+~~~~~~~~~~~~~~~~~
+
+-  Made sklearn test backwards-compatible with sklearn < 1.3 (`#3285 <https://github.com/ESMValGroup/ESMValTool/pull/3285>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Update conda lock creation Github Action workflow and ship updated conda-lock file (`#3307 <https://github.com/ESMValGroup/ESMValTool/pull/3307>`__, `#3407 <https://github.com/ESMValGroup/ESMValTool/pull/3407>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Compress all bash shell setters into one default option per GitHub Action workflow (`#3315 <https://github.com/ESMValGroup/ESMValTool/pull/3315>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Remove deprecated option ``offline`` from CI configuration (`#3367 <https://github.com/ESMValGroup/ESMValTool/pull/3367>`__) `Manuel Schlund <https://github.com/schlunma>`__
+
+Installation
+~~~~~~~~~~~~
+
+-  Use ESMValCore v2.10 (`#3486 <https://github.com/ESMValGroup/ESMValTool/pull/3486>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+
+Improvements
+~~~~~~~~~~~~
+
+-  Merge v2.9.x into main  (`#3286 <https://github.com/ESMValGroup/ESMValTool/pull/3286>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Allow NCL unit conversion `kg s-1` -> `GtC y-1` (`#3300 <https://github.com/ESMValGroup/ESMValTool/pull/3300>`__) `Manuel Schlund <https://github.com/schlunma>`__
+
 .. _changelog-v2-9-0:
 
 v2.9.0
