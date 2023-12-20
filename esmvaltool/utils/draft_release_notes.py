@@ -213,7 +213,7 @@ def _compose_note(pull):
     user = pull.user
     title = pull.title
     title = title[0].upper() + title[1:]
-    return (f"-  {title} (:pull:`{pull.number}`) by :user:`{user.login}`")
+    return f"-  {title} (:pull:`{pull.number}`) by :user:`{user.login}`"
 
 
 def main():
