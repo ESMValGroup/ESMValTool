@@ -632,6 +632,7 @@ class CH4Lifetime(LifetimeBase):
         Calculate number density with respect to the given input
         variables.
         """
+        logger.info("Calculate number density (rho)")
         # model levels
         if 'grmassdry' in variables and 'grvol' in variables:
             #if self.z_coord == 'atmosphere_hybrid_sigma_pressure_coordinate'
@@ -693,15 +694,36 @@ class CH4Lifetime(LifetimeBase):
         - m_air   Molarmass of Air
         - m_h2o   Molarmass of watervapor
         """
+        logger.info('Calculate number density of dry air by pressure')
 
         if not press:
-            press = broadcast_to_shape(
-                ta.coord('air_pressure').points,
-                ta.shape,
-                ta.coord_dims('air_pressure')
-            )
+            logger.info('Pressure not given')
+
+            if ta.coord('air_pressure').points.shape == ta.shape:
+                press = ta.coord('air_pressure').points
+            else:
+                press = broadcast_to_shape(
+                    ta.coord('air_pressure').points,
+                    ta.shape,
+                    ta.coord_dims('air_pressure')
+                )
+        print(press)
+        print('nominator')
+        nominator = (press * N_A * 10**(-6))
+        print(nominator)
+        print('denominator')
+        denominator = (R * ta * (1. + (self.m_air / self.m_h2o - 1.) * hus))
+        print(denominator)
+        print('rho')
+        rho = nominator / denominator
+        print(rho)
+        sys.exit(1)
+
         rho = ((press * N_A * 10**(-6)) /
                (R * ta * (1. + (self.m_air / self.m_h2o - 1.) * hus)))
+
+        print(rho)
+
         # correct metadata
         rho.var_name = 'rho'
         rho.units = 'cm-3'
@@ -724,6 +746,7 @@ class CH4Lifetime(LifetimeBase):
         - N_A    Avogrado constant from scipy
         - m_air   Molarmass of Air
         """
+        logger.info('Calculate number density of dry air by grid information')
         rho = ((grmassdry / grvol)
                * (N_A / self.m_air) * 10**(-3))  # [ 1 / cm^3 ]
         # correct metadata
