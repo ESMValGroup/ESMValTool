@@ -274,6 +274,7 @@ import seaborn as sns
 # from iris.analysis.maths import log, exp
 from iris.coord_categorisation import add_year
 from iris.util import broadcast_to_shape
+import iris.common
 # from iris.coords import AuxCoord
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import FormatStrFormatter, LogLocator, NullFormatter
@@ -571,7 +572,7 @@ class CH4Lifetime(LifetimeBase):
                 self.z_coord = 'air_pressure'
                 z_coord = reaction.coord('air_pressure', dim_coords=True)
                 z_coord.attributes['positive'] = 'down'
-                z_coord.convert_units('hPa')
+                z_coord.convert_units('Pa')
             elif reaction.coords('atmosphere_hybrid_sigma_pressure_coordinate',
                                  dim_coords=True):
                 self.z_coord = 'atmosphere_hybrid_sigma_pressure_coordinate'
@@ -633,6 +634,7 @@ class CH4Lifetime(LifetimeBase):
         variables.
         """
         logger.info("Calculate number density (rho)")
+
         # model levels
         if 'grmassdry' in variables and 'grvol' in variables:
             #if self.z_coord == 'atmosphere_hybrid_sigma_pressure_coordinate'
@@ -698,31 +700,23 @@ class CH4Lifetime(LifetimeBase):
 
         if not press:
             logger.info('Pressure not given')
+            resolver = iris.common.resolve.Resolve(ta,ta)
 
+            #press = ta.copy()
             if ta.coord('air_pressure').points.shape == ta.shape:
-                press = ta.coord('air_pressure').points
+                press = resolver.cube(ta.coord('air_pressure').points)
             else:
-                press = broadcast_to_shape(
+                press = resolver.cube(broadcast_to_shape(
                     ta.coord('air_pressure').points,
                     ta.shape,
                     ta.coord_dims('air_pressure')
-                )
-        print(press)
-        print('nominator')
-        nominator = (press * N_A * 10**(-6))
-        print(nominator)
-        print('denominator')
-        denominator = (R * ta * (1. + (self.m_air / self.m_h2o - 1.) * hus))
-        print(denominator)
-        print('rho')
-        rho = nominator / denominator
-        print(rho)
-        sys.exit(1)
+                ))
+            press.long_name = 'air_pressure'
+            press.units = 'Pa'
 
-        rho = ((press * N_A * 10**(-6)) /
-               (R * ta * (1. + (self.m_air / self.m_h2o - 1.) * hus)))
-
-        print(rho)
+        rho = (N_A / 10.**6)
+        rho = rho * iris.analysis.maths.divide(press, R * ta)
+        rho = rho * iris.analysis.maths.divide(1. - hus, 1. + hus * (self.m_air / self.m_h2o - 1.))
 
         # correct metadata
         rho.var_name = 'rho'

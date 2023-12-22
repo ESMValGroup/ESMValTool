@@ -57,14 +57,10 @@ def extract_region(dataset, region, case='reaction'):
     var = dataset[case]
     z_coord = dataset['z_coord']
 
-    pprint(dataset)
+    print(var.coords('air_pressure'))
 
     if not 'ptp' in dataset['variables'] and not 'tp_i' in dataset['variables']:
-        tp_clim = climatological_tropopause(broadcast_to_shape(
-                    var.coord('latitude').points,
-                    var.shape,
-                    var.coord_dims(z_coord)
-        ))
+        tp_clim = climatological_tropopause(var[:,0,:,:])
 
     if region in ['TROP', 'STRA']:
     ## - can I choose the troposphere by the preprocessor?
@@ -89,16 +85,12 @@ def extract_region(dataset, region, case='reaction'):
             var.shape,
             var.coord_dims(use_z_coord)
         )
-        # Problem: ValueError: dim_map must have an entry for every dimension of the input array
-        # Maybe there is a more elegant way to do this
-        if not var.shape == tp.shape:
-            tp_4d = broadcast_to_shape(
-                tp.data,
-                var.shape,
-                var.coord_dims('time') + var.coord_dims('latitude') + var.coord_dims('longitude'),
-            )
-        else:
-            tp_4d = tp
+
+        tp_4d = broadcast_to_shape(
+            tp.data,
+            var.shape,
+            var.coord_dims('time') + var.coord_dims('latitude') + var.coord_dims('longitude'),
+        )
 
         if region == 'TROP':
             var.data = np.ma.array(
@@ -113,13 +105,28 @@ def extract_region(dataset, region, case='reaction'):
     else:
         raise NotImplementedError(f"region '{region}' is not supported")
 
+    print(var.coords('air_pressure'))
     return var
 
-def climatological_tropopause(latitude):
+def climatological_tropopause(cube):
     """Return cube with climatological tropopause pressure.
 
     """
-    tp_clim = 300. - 215. * (np.cos(latitude) ** 2)
+    if not cube.coords('latitude', dim_coords=True):
+        raise NotImplementedError("The provided cube must"
+                                  " have a latitude cooridnate")
+
+    latitude = broadcast_to_shape(
+        cube.coord('latitude').points,
+        cube.shape,
+        cube.coord_dims('latitude')
+    )
+
+    tp_clim = cube.copy()
+    tp_clim.data = (300. - 215. * (np.cos(np.deg2rad(latitude)) ** 2)) * 100.
+    tp_clim.var_name = 'tp_clim'
+    tp_clim.long_name = 'climatological tropopause pressure'
+    tp_clim.units = 'Pa'
 
     return tp_clim
 
@@ -129,9 +136,9 @@ def sum_up_to_plot_dimensions(var, plot_type):
     """
     if plot_type in ['timeseries', 'annual_cycle']:
         if var.coords('air_pressure', dim_coords=True):
-            z_coord = var.coords('air_pressure', dim_coords=True)
+            z_coord = var.coords('air_pressure', dim_coords=True)[0]
         elif var.coords('lev', dim_coords=True):
-            z_coord = var.coords('lev', dim_coords=True)
+            z_coord = var.coords('lev', dim_coords=True)[0]
         elif var.coords('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True):
             z_coord = var.coords('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True)[0]
 
