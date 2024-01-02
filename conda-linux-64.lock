@@ -180,7 +180,7 @@ https://conda.anaconda.org/conda-forge/noarch/alabaster-0.7.13-pyhd8ed1ab_0.cond
 https://conda.anaconda.org/conda-forge/noarch/antlr-python-runtime-4.11.1-pyhd8ed1ab_0.tar.bz2#15109c4977d39ad7aa3423f57243e286
 https://conda.anaconda.org/conda-forge/noarch/asciitree-0.3.3-py_2.tar.bz2#c0481c9de49f040272556e2cedf42816
 https://conda.anaconda.org/conda-forge/linux-64/atk-1.0-2.38.0-hd4edc92_1.tar.bz2#6c72ec3e660a51736913ef6ea68c454b
-https://conda.anaconda.org/conda-forge/noarch/attrs-23.1.0-pyh71513ae_1.conda#3edfead7cedd1ab4400a6c588f3e75f8
+https://conda.anaconda.org/conda-forge/noarch/attrs-23.2.0-pyh71513ae_0.conda#5e4c0743c70186509d1412e03c2d8dfa
 https://conda.anaconda.org/conda-forge/linux-64/aws-c-event-stream-0.3.1-h9599702_1.conda#a8820ce2dbe6f7d54f6540d9a3a0028a
 https://conda.anaconda.org/conda-forge/linux-64/aws-c-http-0.7.11-hbe98c3e_0.conda#067641478d8f706b80a5a434a22b82be
 https://conda.anaconda.org/conda-forge/linux-64/backports.zoneinfo-0.2.1-py311h38be061_8.conda#5384590f14dfe6ccd02811236afc9f8e
@@ -356,7 +356,7 @@ https://conda.anaconda.org/conda-forge/linux-64/postgresql-15.3-hd458b1d_1.conda
 https://conda.anaconda.org/conda-forge/linux-64/proj-9.2.1-ha643af7_0.conda#e992387307f4403ba0ec07d009032550
 https://conda.anaconda.org/conda-forge/noarch/pydocstyle-6.3.0-pyhd8ed1ab_0.conda#7e23a61a7fbaedfef6eb0e1ac775c8e5
 https://conda.anaconda.org/conda-forge/noarch/pyproject_hooks-1.0.0-pyhd8ed1ab_0.conda#21de50391d584eb7f4441b9de1ad773f
-https://conda.anaconda.org/conda-forge/noarch/pytest-7.4.3-pyhd8ed1ab_0.conda#5bdca0aca30b0ee62bb84854e027eae0
+https://conda.anaconda.org/conda-forge/noarch/pytest-7.4.4-pyhd8ed1ab_0.conda#a9d145de8c5f064b5fa68fb34725d9f4
 https://conda.anaconda.org/conda-forge/noarch/python-dateutil-2.8.2-pyhd8ed1ab_0.tar.bz2#dd999d1cc9f79e67dbb855c8924c7984
 https://conda.anaconda.org/conda-forge/noarch/python-utils-3.8.1-pyhd8ed1ab_0.conda#4dc77041fea14c63ecea50ce0eb92873
 https://conda.anaconda.org/conda-forge/noarch/referencing-0.32.0-pyhd8ed1ab_0.conda#a7b5a535cd614e384594530aee7e6061
