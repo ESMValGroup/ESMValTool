@@ -31,6 +31,6 @@
             --mem = 2G
 
     [[process<medium>]]
-        execution time limit = PT10M
+        execution time limit = PT20M
         [[[directives]]]
-            --mem = 2G
+            --mem = 3G
