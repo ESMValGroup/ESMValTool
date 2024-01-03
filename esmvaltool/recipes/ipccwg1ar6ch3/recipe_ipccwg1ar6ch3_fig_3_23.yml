@@ -1,0 +1,225 @@
+# ESMValTool
+# recipe_ipccwg1ar6ch3_ocean.yml
+---
+documentation:
+
+  title: IPCC AR6 WG1 Chapter 3 Figure 3.23
+
+  description: |
+    Producing Fig. 3.23 in the IPCC Working Group I Contribution to the Sixth
+    Assessment Report: Chapter 3
+
+  authors:
+    - bock_lisa
+    - eyring_veronika
+
+  maintainer:
+    - bock_lisa
+
+  projects:
+    - ipcc_ar6
+
+  references:
+    - eyring21ipcc
+
+
+preprocessors:
+
+  preproc_map:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+  clim:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+
+models_cmip6_historical_woa: &models_cmip6_historical_woa
+  - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
+  - {dataset: BCC-CSM2-MR, grid: gn}
+  - {dataset: BCC-ESM1, grid: gn}
+  - {dataset: CanESM5, grid: gn}
+  - {dataset: CanESM5-CanOE, ensemble: r3i1p2f1, grid: gn}
+  - {dataset: CESM2, grid: gn}
+  - {dataset: CESM2-FV2, grid: gn, institute: NCAR}
+  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+  - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+  - {dataset: CIESM}
+  - {dataset: CMCC-CM2-HR4, grid: gn}
+  - {dataset: CMCC-CM2-SR5, grid: gn}
+  - {dataset: CMCC-ESM2, grid: gn}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
+  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2}
+  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
+  - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr}
+  - {dataset: E3SM-1-1, grid: gr, institute: E3SM-Project}
+  - {dataset: E3SM-1-1-ECA, grid: gr, institute: E3SM-Project}
+  - {dataset: EC-Earth3-AerChem}
+  - {dataset: EC-Earth3-CC}
+  - {dataset: EC-Earth3-Veg}
+  - {dataset: GFDL-CM4}
+  - {dataset: GFDL-ESM4}
+  - {dataset: GISS-E2-1-G, grid: gn}
+  - {dataset: GISS-E2-1-H, grid: gn}
+  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
+  - {dataset: INM-CM4-8, grid: gr1}
+  - {dataset: INM-CM5-0, grid: gr1}
+  - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: IPSL-CM6A-LR}
+  - {dataset: KIOST-ESM, grid: gr1}
+  - {dataset: MIROC6, grid: gn}
+  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: MPI-ESM-1-2-HAM, grid: gn}
+  - {dataset: MPI-ESM1-2-HR, grid: gn}
+  - {dataset: MPI-ESM1-2-LR, grid: gn}
+  - {dataset: MRI-ESM2-0, grid: gn}
+  - {dataset: NESM3, grid: gn}
+  - {dataset: NorCPM1, institute: NCC}
+  - {dataset: NorESM2-LM, institute: NCC}
+  - {dataset: NorESM2-MM, institute: NCC}
+  - {dataset: SAM0-UNICON, grid: gn}
+  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: WOA, project: OBS6, type: clim, version: 2018, tier: 2,
+     start_year: 2000, end_year: 2000}
+
+
+models_cmip6_piControl: &models_cmip6_piControl
+  - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS, start_year: 950,
+     end_year: 1149}
+  - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO, start_year: 101,
+     end_year: 1000}
+  - {dataset: BCC-CSM2-MR, grid: gn, start_year: 1850, end_year: 2449}
+  - {dataset: BCC-ESM1, grid: gn, start_year: 1850, end_year: 2014}
+  - {dataset: CanESM5, grid: gn, start_year: 5201, end_year: 6200}
+  - {dataset: CESM2, grid: gn, start_year: 1, end_year: 1200}
+  - {dataset: CESM2-FV2, institute: NCAR, grid: gn, start_year: 1,
+     end_year: 500}
+  - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, start_year: 1,
+     end_year: 499}
+  - {dataset: CESM2-WACCM-FV2, institute: NCAR, grid: gn, start_year: 1,
+     end_year: 500}
+  - {dataset: CMCC-CM2-SR5, grid: gn, start_year: 1850, end_year: 2349}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, start_year: 1850, end_year: 2349}
+  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, start_year: 1850,
+     end_year: 2149}
+  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, start_year: 1850,
+     end_year: 2349}
+  - {dataset: GFDL-CM4, start_year: 151, end_year: 650}
+  - {dataset: GFDL-ESM4, start_year: 151, end_year: 500}
+  - {dataset: GISS-E2-1-G, grid: gn, start_year: 4150, end_year: 5000}
+  - {dataset: GISS-E2-1-H, grid: gn, start_year: 3180, end_year: 3980}
+  - {dataset: GISS-E2-2-G, institute: NASA-GISS, grid: gn, start_year: 2000,
+     end_year: 2150}
+  - {dataset: HadGEM3-GC31-LL, grid: gn, start_year: 1850, end_year: 2349}
+  - {dataset: HadGEM3-GC31-MM, grid: gn, start_year: 1850, end_year: 2349}
+  - {dataset: INM-CM4-8, grid: gr1, start_year: 1850, end_year: 2380}
+  - {dataset: INM-CM5-0, grid: gr1, start_year: 1996, end_year: 3196}
+  - {dataset: IPSL-CM6A-LR, start_year: 3050, end_year: 3849}
+  - {dataset: MIROC6, grid: gn, start_year: 3200, end_year: 3999}
+  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, start_year: 1850,
+     end_year: 2349}
+  - {dataset: MPI-ESM-1-2-HAM, grid: gn, start_year: 1850, end_year: 2629}
+  - {dataset: MPI-ESM1-2-HR, grid: gn, start_year: 1850, end_year: 2349}
+  - {dataset: MPI-ESM1-2-LR, grid: gn, start_year: 1850, end_year: 2849}
+  - {dataset: MRI-ESM2-0, grid: gn, start_year: 1850, end_year: 2550}
+  - {dataset: NESM3, grid: gn, start_year: 1000, end_year: 1499}
+  - {dataset: NorCPM1, institute: NCC, start_year: 1, end_year: 500}
+  - {dataset: NorESM1-F, institute: NCC, start_year: 1501, end_year: 1700}
+  - {dataset: NorESM2-MM, institute: NCC, start_year: 1200, end_year: 1699}
+  - {dataset: SAM0-UNICON, grid: gn, start_year: 1, end_year: 700}
+
+
+diagnostics:
+
+  # **********************************************************************
+  # IPCC WGI AR6, chap. 3
+  # Sect. 3.3
+  # Fig. 3.23
+  # **********************************************************************
+  # Multi mean bias of sea surface temperature and salinity
+  # **********************************************************************
+
+  IAV_calc_tos_cmip6: &diag_IAV
+    description: Calculate temperature interannual variability
+                 for stippling significance
+    themes:
+      - varmodes
+    realms:
+      - ocean
+    variables:
+      tos:
+        preprocessor: preproc_map
+        project: CMIP6
+        mip: Omon
+        exp: piControl
+        ensemble: r1i1p1f1
+        grid: gn
+        additional_datasets: *models_cmip6_piControl
+    scripts:
+      calc_IAV_for_stippandhatch: &IAV_script
+        script: ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl
+        time_avg: annualclim
+        periodlength: 20.
+        iavmode: mmm
+
+
+  IAV_calc_sos_cmip6:
+    <<: *diag_IAV
+    variables:
+      sos:
+        preprocessor: preproc_map
+        project: CMIP6
+        mip: Omon
+        exp: piControl
+        ensemble: r1i1p1f1
+        grid: gn
+    additional_datasets: *models_cmip6_piControl
+
+
+  fig_3_23_tos: &diag_bias
+    description: IPCC AR6 Ch. 3, Fig. 3.23
+    variables:
+      tos: &var
+        preprocessor: clim
+        reference_dataset: WOA
+        mip: Omon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gn
+        start_year: 1995
+        end_year: 2014
+    additional_datasets: *models_cmip6_historical_woa
+    scripts:
+      fig_3_23:
+        script: ipcc_ar6/model_bias.ncl
+        ancestors: ['tos', 'IAV_calc_tos_cmip6/calc_IAV_for_stippandhatch']
+        projection: Robinson
+        mean_caption: "CMIP6 Sea Surface Temperature"
+        bias_caption: "CMIP6 Sea Surface Temperature Bias"
+        panel_num: ['a)', 'a)']
+        stippandhatch: true
+
+
+  fig_3_23_sos:
+    <<: *diag_bias
+    variables:
+      sos:
+        <<: *var
+    scripts:
+      fig_3_23:
+        script: ipcc_ar6/model_bias.ncl
+        ancestors: ['sos', 'IAV_calc_sos_cmip6/calc_IAV_for_stippandhatch']
+        projection: Robinson
+        mean_caption: "CMIP6 Sea Surface Salinity"
+        bias_caption: "CMIP6 Sea Surface Salinity Bias"
+        panel_num: ['b)', 'b)']
+        stippandhatch: true
