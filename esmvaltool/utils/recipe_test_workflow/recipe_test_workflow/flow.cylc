@@ -7,7 +7,7 @@
     medium = ensclus, heatwaves_coldwaves
 
 [scheduling]
-    initial cycle point = 2023-12-31
+    initial cycle point = 2024-01-03
     [[graph]]
         R1 = "install_env_file => get_esmval"
         P1D = """@wall_clock => get_esmval => configure
