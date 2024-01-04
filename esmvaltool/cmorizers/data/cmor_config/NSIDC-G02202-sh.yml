@@ -1,4 +1,5 @@
 ---
+filename: seaice_conc_monthly_sh_{year}.*.nc
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: NSIDC-G02202-sh
@@ -14,13 +15,11 @@ attributes:
 variables:
   siconc:
     mip: SImon
-    raw: sea_ice_x_velocity
+    raw: cdr_seaice_conc_monthly ## make yearly?
     compress: true
-  # vsi:
-  #   mip: day
-  #   raw: sea_ice_y_velocity
-  #   compress: true
 
-# custom:
-#   create_areacello: true
-#   grid_cell_size: 25067.53
+
+custom:
+  create_areacello: true
+  area_file: pss25area_v3.dat
+  # grid_cell_size: 25067.53
