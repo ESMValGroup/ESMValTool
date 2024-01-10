@@ -1,0 +1,63 @@
+# ESMValTool
+# This is basic example for ozone variability in the tropics
+# recipe_o3_tropics.yml
+
+documentation:
+  title: Ozone variability over tropics
+
+  description: "Recipe to analyze and visualize ozone variability in the tropics"
+
+  authors:
+    - gulletutan_gulcin  
+
+datasets:
+        - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2010, end_year: 2014, grid: gn}
+        - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r2i1p1f1, start_year: 2010, end_year: 2014, grid: gn}
+        - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r3i1p1f1, start_year: 2010, end_year: 2014, grid: gn}
+        - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2010, end_year: 2014, grid: gn}
+          #     - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r2i1p1f1, start_year: 2010, end_year: 2014, grid: gn}
+          # - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r3i1p1f1, start_year: 2010, end_year: 2014, grid: gn}
+        - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2010, end_year: 2014, grid: gr1}
+        - {dataset: GFDL-ESM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2010, end_year: 2014, grid: gr1}
+        - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r10i1p1f2, start_year: 2010, end_year: 2014, grid: gr}
+        - {dataset: AWI-ESM-1-1-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2010, end_year: 2014, grid: gn}
+        - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r10i1p1f2, start_year: 2010, end_year: 2014, grid: gr}  
+        - {dataset: E3SM-1-1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2010, end_year: 2014, grid: gr}
+        - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: historical, ensemble: r2i1p1f1, start_year: 2010, end_year: 2014, grid: gn}
+          # - {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 2010, end_year: 2014, grid: gr}
+
+preprocessors:
+  tropics_anomalies:
+    anomalies:
+      period: monthly
+    extract_region:
+      start_latitude: -20.
+      end_latitude: 20.
+      start_longitude: 0.
+      end_longitude: 360.
+    extract_levels:
+      levels: [10000.] 
+      scheme: linear
+    area_statistics:
+      operator: mean
+
+diagnostics:
+  diagnostic_o3:
+    description: Analyze variables for ozone time series
+    variables:
+      ozone_tropics:
+        preprocessor: tropics_anomalies
+        short_name: o3
+        mip: Amon
+      ua:
+        preprocessor: tropics_anomalies 
+        short_name: ua
+        mip: Amon
+      ta:
+        preprocessor: tropics_anomalies
+        short_name: ta
+        mip: Amon   
+    scripts:
+      tropics_anomalies_script:
+        script:  o3_jan.py
+
