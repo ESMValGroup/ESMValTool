@@ -21,7 +21,7 @@ def plotting_support(cube, key, linestyle='-', marker=None, color=None):
         ih.unify_time_coord(cube)
 
     plt.plot(cube.coord('time').points, cube.data, label=key,
- linestyle=linestyle, marker=marker, color=color)
+             linestyle=linestyle, marker=marker, color=color)
 
 def plot_anomalies(input_file, name, variable_group, color=None):
     """
@@ -37,7 +37,7 @@ def plot_anomalies(input_file, name, variable_group, color=None):
 
         # Plotting using the provided plotting_support function
         plotting_support(cube, key=name, linestyle='-',
- marker=None, color=color)
+                         marker=None, color=color)
 
         return {'cube': cube, 'name': name}
 
@@ -45,11 +45,13 @@ def plot_anomalies(input_file, name, variable_group, color=None):
         logger.error(f"Error plotting: {e}")
         return None
 
+
 def create_subplot(ax, data_list, variable_group, min_time, max_time):
     """Plot subplot by considering min & max time."""
     for i, data in enumerate(data_list):
         color = plt.cm.tab10(i % 10)  
-        plotting_support(data['cube'], key=data['name'], linestyle='-', marker=None, color=color)
+        plotting_support(data['cube'], key=data['name'], linestyle='-',
+                         marker=None, color=color)
 
     ax.set_ylabel(f"{data_list[0]['cube'].var_name.upper()} Anomalies, " + str(data_list[0]['cube'].units))
     ax.set_title(f"Time series of monthly mean {data_list[0]['cube'].var_name.upper()} anomalies - {variable_group}")
@@ -82,16 +84,19 @@ def main(cfg, start_year, end_year):
         # Select color for the dataset
         color = plt.cm.tab10(i % 10)
         # Plotting function for each variable and append data to the dictionary
-        data = plot_anomalies(input_file=input_file, name=name, variable_group=variable_group, color=color)
+        data = plot_anomalies(input_file=input_file, name=name,
+                              variable_group=variable_group, color=color)
 
         if data:
             data_by_variable_group[variable_group].append(data)
 
     # Minimum and maximum time values across all datasets
     min_time = min(data['cube'].coord('time').points.min()
- for data_list in data_by_variable_group.values() for data in data_list)
+                   for data_list in data_by_variable_group.values()
+                   for data in data_list)
     max_time = max(data['cube'].coord('time').points.max()
- for data_list in data_by_variable_group.values() for data in data_list)
+                   for data_list in data_by_variable_group.values()
+                   for data in data_list)
 
 
     for variable_group, data_list in data_by_variable_group.items():
@@ -101,7 +106,7 @@ def main(cfg, start_year, end_year):
         plt.figure(figsize=(8, 6))
 
         create_subplot(plt.gca(), data_list,
- variable_group, min_time, max_time)
+                       variable_group, min_time, max_time)
 
         # Save the figures for each variable
         plt.savefig(f'plot_{variable_group}.png')
