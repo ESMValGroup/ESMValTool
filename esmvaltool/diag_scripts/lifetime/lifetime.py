@@ -16,7 +16,7 @@ Currently supported plot types (use the option ``plots`` to specify them):
       single figure.
     - Annual cycle (plot type ``annual_cycle``): all datasets are plotted in
       one single figure.
-    - Zonal mean profiles (plot type ``zonal_mean_profile``):
+    - Zonal mean profiles (plot type ``zonalmean``):
       for each dataset, an individual profile is plotted. If a reference
       dataset    is defined, also include this dataset and a bias plot
       into the figure. Note that if a reference dataset is defined, all input
@@ -45,7 +45,7 @@ figure_kwargs: dict, optional
     default, uses ``constrained_layout: true``.
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
-    must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``
+    must be ``timeseries``, ``annual_cycle``, ``map``, ``zonalmean``
     or ``1d_profile``.
     Dictionary values are dictionaries used as options for the corresponding
     plot. The allowed options for the different plot types are given below.
@@ -133,7 +133,7 @@ pyplot_kwargs: dict, optional
     of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
 
 
-Configuration options for plot type ``zonal_mean_profile``
+Configuration options for plot type ``zonalmean``
 ----------------------------------------------------------
 cbar_label: str, optional (default: '{short_name} [{units}]')
     Colorbar label. Can include facets in curly brackets which will be derived
@@ -270,7 +270,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-# from iris.analysis.cartography import area_weights
+from iris.analysis.cartography import area_weights
+from iris.analysis.calculus import cube_delta
 # from iris.analysis.maths import log, exp
 from iris.coord_categorisation import add_year
 from iris.util import broadcast_to_shape
@@ -279,12 +280,14 @@ import iris.common
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import FormatStrFormatter, LogLocator, NullFormatter
 # from sklearn.metrics import r2_score
-from scipy.constants import N_A, R  # , G
+from scipy.constants import N_A, R, G
 
+from esmvalcore.cmor._fixes.shared import add_model_level
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.lifetime.lifetime_base import (
     LifetimeBase,
-    calculate_lifetime
+    calculate_lifetime,
+    calculate_reaction_rate
 )
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -293,7 +296,7 @@ from esmvaltool.diag_scripts.shared import (
     io,
     run_diagnostic,
 )
-from esmvalcore.cmor._fixes.shared import add_model_level
+
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -320,28 +323,28 @@ class CH4Lifetime(LifetimeBase):
                     self.cfg['facet_used_for_labels'])
         self.cfg.setdefault('regions', ['TROP'])
 
-        # set molarmass of air
-        self.m_air = 28.970  # [g_air/mol_air]
-        self.m_h2o = 18.02   # [g_h2o/mol_h2o]
+        # set default molarmasses
+        self.cfg.setdefault('m_air', 28.970)  # [g_air/mol_air]
+        self.cfg.setdefault('m_h2o', 18.02)   # [g_h2o/mol_h2o]
 
         # Load input data
-        self.input_data_dataset = self._load_data_and_calculate_coefficients()
-
-        # Define regions
-        self.regions = self.cfg['regions']
+        self.input_data_dataset = self._calculate_coefficients()
 
         # name
-        self.short_name = f"tau_{self._get_name('reactant').upper()}"
-        self.long_name = (f"Lifetime of {self._get_name('reactant').upper()}"
-                          " with respect to"
-                          f" {', '.join([ox.upper() for ox in self._get_name('oxidant')])}")
+        self.names = {'short_name':
+                      f"tau_{self._get_name('reactant').upper()}"}
+        oxidants = [ox.upper() for ox in self._get_name('oxidant')]
+        self.names['long_name'] = ("Lifetime of"
+                                   f" {self._get_name('reactant').upper()}"
+                                   " with respect to"
+                                   f" {', '.join(oxidants)}")
         self.units = self.cfg['units']
 
         # Check given plot types and set default settings for them
         self.supported_plot_types = [
             'timeseries',
             'annual_cycle',
-            'zonal_mean_profile',
+            'zonalmean',
             '1d_profile'
         ]
         for (plot_type, plot_options) in self.plots.items():
@@ -366,7 +369,7 @@ class CH4Lifetime(LifetimeBase):
                 self.plots[plot_type].setdefault('plot_kwargs', {})
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
 
-            if plot_type == 'zonal_mean_profile':
+            if plot_type == 'zonalmean':
                 self.plots[plot_type].setdefault(
                     'cbar_label', '{short_name} [{units}]')
                 self.plots[plot_type].setdefault(
@@ -524,7 +527,7 @@ class CH4Lifetime(LifetimeBase):
 
         return deepcopy(plot_kwargs)
 
-    def _load_data_and_calculate_coefficients(self):
+    def _calculate_coefficients(self):
         """Load data and calculate coefficients."""
         self.input_data = list(self.cfg['input_data'].values())
 
@@ -538,7 +541,8 @@ class CH4Lifetime(LifetimeBase):
         input_data_dataset = {}
         for dataset in list_of_datasets:
             input_data_dataset[dataset] = {}
-            input_data_dataset[dataset]['dataset_data'] = self._get_dataset_data(dataset)
+            input_data_dataset[dataset]['dataset_data'] = (
+                self._get_dataset_data(dataset))
             variables = {}
 
             for variable in input_data_dataset[dataset]['dataset_data']:
@@ -551,21 +555,19 @@ class CH4Lifetime(LifetimeBase):
                 if cube.coords('time', dim_coords=True):
                     ih.unify_time_coord(cube)
 
-
                 # cube for each variable
                 variables[variable['short_name']] = cube
 
             rho = self._calculate_rho(variables)
 
             oxidant = {ox: variables[ox] for ox in name_oxidant}
+            self._set_oxidant_defaults(oxidant)
 
             reaction = (
                 self._calculate_reaction(oxidant,
                                          rho,
                                          variables['ta'],
                                          name_reactant))
-
-            weight = self._define_weight(variables)
 
             # Set Z-coordinate
             if reaction.coords('air_pressure', dim_coords=True):
@@ -576,23 +578,46 @@ class CH4Lifetime(LifetimeBase):
             elif reaction.coords('atmosphere_hybrid_sigma_pressure_coordinate',
                                  dim_coords=True):
                 self.z_coord = 'atmosphere_hybrid_sigma_pressure_coordinate'
-                z_coord = reaction.coord('atmosphere_hybrid_sigma_pressure_coordinate',
-                                         dim_coords=True)
+                z_coord = reaction.coord(
+                    'atmosphere_hybrid_sigma_pressure_coordinate',
+                    dim_coords=True)
                 z_coord.attributes['positive'] = 'down'
-                add_model_level(reaction)
-                add_model_level(weight)
             else:
-                raise NotImplementedError(f"Lifetime calculation is not implemented"
-                                          " for the present type of vertical coordinate.")
+                raise NotImplementedError(
+                    "Lifetime calculation is not implemented"
+                    " for the present type of vertical coordinate."
+                )
+
+            weight = self._define_weight(variables)
+
+            if reaction.coords('atmosphere_hybrid_sigma_pressure_coordinate',
+                               dim_coords=True):
+                add_model_level(weight)
+                add_model_level(reaction)
 
             input_data_dataset[dataset]['z_coord'] = z_coord
-
             input_data_dataset[dataset]['variables'] = variables
             input_data_dataset[dataset]['reaction'] = reaction
             input_data_dataset[dataset]['weight'] = weight
 
         return input_data_dataset
 
+    def _set_oxidant_defaults(self, oxidant):
+        """Set the defaults for the oxidant reaction rates."""
+        for name, _ in oxidant.items():
+            # set default reaction
+            if name == 'oh':
+                self.cfg['oxidant'][name].setdefault('A', 1.85e-20)
+                self.cfg['oxidant'][name].setdefault('ER', 987.0)
+                self.cfg['oxidant'][name].setdefault('b', 2.82)
+            else:
+                if (
+                        'A' not in self.cfg['oxidant'][name]
+                        or 'ER' not in self.cfg['oxidant'][name]
+                ):
+                    raise KeyError("No sufficient reaction coefficients"
+                                   " are given")
+                self.cfg['oxidant'][name].setdefault('b', None)
 
     def _get_all_datasets(self, input_data):
         """Return (sorted) list of datasets."""
@@ -604,7 +629,7 @@ class CH4Lifetime(LifetimeBase):
         return datasets
 
     def _get_dataset_data(self, dataset):
-        """Return input data corresponding to the chosen dataset"""
+        """Return input data corresponding to the chosen dataset."""
         input_data = []
         for data in self.input_data:
             if data[self.cfg['facet_used_for_labels']] == dataset:
@@ -637,8 +662,6 @@ class CH4Lifetime(LifetimeBase):
 
         # model levels
         if 'grmassdry' in variables and 'grvol' in variables:
-            #if self.z_coord == 'atmosphere_hybrid_sigma_pressure_coordinate'
-            # and 'grmassdry' in variables and 'grvol' in variables:
             rho = self._number_density_dryair_by_grid(
                 variables['grmassdry'],
                 variables['grvol'])
@@ -649,36 +672,39 @@ class CH4Lifetime(LifetimeBase):
                 variables['ta'],
                 variables['hus'])
         else:
-            logger.error("The necessary variables to calculate number"
-                         " density of dry air are not provided.\n"
-                         "Provide either:\n"
-                         " - grmassdry and grvol\n"
-                         " or\n"
-                         " - ta and hus")
-            # dummy
-            rho = variables['press']
+            raise NotImplementedError("The necessary variables"
+                                      " to calculate number"
+                                      " density of dry air"
+                                      " are not provided.\n"
+                                      "Provide either:\n"
+                                      " - grmassdry and grvol\n"
+                                      " or\n"
+                                      " - ta and hus")
 
         return rho
 
-    def _calculate_reaction(self, oxidant, rho, ta, name_reactant):
+    def _calculate_reaction(self, oxidant, rho, temp, name_reactant):
         """Calculate product of reaction rate and oxidant."""
         reaction = 0.
-        for name, ox in oxidant.items():
-            ox_in_molec = ox * rho
+        for name, oxid in oxidant.items():
+            oxid_in_molec = oxid * rho
             reaction = (reaction
-                        + self._calculate_reaction_rate(ta,
-                                                        name,
-                                                        name_reactant)
-                        * ox_in_molec)
+                        + calculate_reaction_rate(
+                            temp,
+                            f"{name_reactant.upper()}+{name.upper()}",
+                            self.cfg['oxidant'][name]['A'],
+                            self.cfg['oxidant'][name]['ER'],
+                            self.cfg['oxidant'][name]['b'])
+                        * oxid_in_molec)
 
         # test for correct units
         if not reaction.units == 's-1':
-            raise ValueError("The units of the reaction rate is not consistent."
-                             " Check input variables.")
+            raise ValueError("The units of the reaction rate is"
+                             " not consistent. Check input variables.")
 
         return reaction
 
-    def _number_density_dryair_by_press(self, ta, hus, press=None):
+    def _number_density_dryair_by_press(self, temp, hus, press=None):
         """
         Calculate number density of dry air.
 
@@ -700,23 +726,14 @@ class CH4Lifetime(LifetimeBase):
 
         if not press:
             logger.info('Pressure not given')
-            resolver = iris.common.resolve.Resolve(ta,ta)
+            press = self._create_press(temp)
 
-            #press = ta.copy()
-            if ta.coord('air_pressure').points.shape == ta.shape:
-                press = resolver.cube(ta.coord('air_pressure').points)
-            else:
-                press = resolver.cube(broadcast_to_shape(
-                    ta.coord('air_pressure').points,
-                    ta.shape,
-                    ta.coord_dims('air_pressure')
-                ))
-            press.long_name = 'air_pressure'
-            press.units = 'Pa'
-
-        rho = (N_A / 10.**6)
-        rho = rho * iris.analysis.maths.divide(press, R * ta)
-        rho = rho * iris.analysis.maths.divide(1. - hus, 1. + hus * (self.m_air / self.m_h2o - 1.))
+        rho = N_A / 10.**6
+        rho = rho * iris.analysis.maths.divide(press, R * temp)
+        rho = rho * iris.analysis.maths.divide(1. - hus,
+                                               1. + hus *
+                                               (self.cfg['m_air']
+                                                / self.cfg['m_h2o'] - 1.))
 
         # correct metadata
         rho.var_name = 'rho'
@@ -724,6 +741,23 @@ class CH4Lifetime(LifetimeBase):
         # [ 1 / cm^3 ]
 
         return rho
+
+    def _create_press(self, var):
+        """Create a pressure variable."""
+        resolver = iris.common.resolve.Resolve(var, var)
+        if var.coord('air_pressure').points.shape == var.shape:
+            press = resolver.cube(var.coord('air_pressure').points)
+        else:
+            press = resolver.cube(broadcast_to_shape(
+                var.coord('air_pressure').points,
+                var.shape,
+                var.coord_dims('air_pressure')
+            ))
+        press.long_name = 'air_pressure'
+        press.var_name = 'air_pressure'
+        press.units = 'Pa'
+
+        return press
 
     def _number_density_dryair_by_grid(self, grmassdry, grvol):
         """
@@ -742,42 +776,12 @@ class CH4Lifetime(LifetimeBase):
         """
         logger.info('Calculate number density of dry air by grid information')
         rho = ((grmassdry / grvol)
-               * (N_A / self.m_air) * 10**(-3))  # [ 1 / cm^3 ]
+               * (N_A / self.cfg['m_air']) * 10**(-3))  # [ 1 / cm^3 ]
         # correct metadata
         rho.var_name = 'rho'
         rho.units = 'cm-3'
 
         return rho
-
-    def _calculate_reaction_rate(self, ta, ox, re):
-        """Calculate the reaction rate.
-
-        Calculated in Arrhenius form or in a given special form
-        depending on the oxidation partner.
-        """
-        coeff_a = self.cfg['oxidant'][ox]['A']
-        coeff_er = self.cfg['oxidant'][ox]['ER']
-
-        reaction_type = f"{re.upper()}+{ox.upper()}"
-
-        reaction_rate = deepcopy(ta)
-
-        # special reaction rate
-        if reaction_type == 'CH4+OH':
-            coeff_b = self.cfg['oxidant'][ox]['b']
-            reaction_rate.data = coeff_a * np.exp(coeff_b * np.log(ta.data)
-                                                  - (coeff_er / ta.data))
-
-        # standard reaction rate (arrhenius)
-        else:
-            reaction_rate.data = coeff_a * np.exp(-(coeff_er / ta.data))
-
-        # set units
-        reaction_rate.units = 'cm3 s-1'
-        reaction_rate.var_name = 'reaction_rate'
-        reaction_rate.long_name = f'Reaction rate of {reaction_type}'
-
-        return reaction_rate
 
     def _define_weight(self, variables):
         """Define used weights in the lifetime calculation.
@@ -799,35 +803,64 @@ class CH4Lifetime(LifetimeBase):
         """Convert to kg per gridbox.
 
         Used constants:
-        G  gravitational constant from scipy
         m_var Molarmass of current species
         """
         # molar mass constants
         m_var = self.cfg['molarmass']
 
-        if 'grmassdry' not in variables:
-            # calculate gridmassdry
-            # - delta pressure dp
-            # - grid area
-            # - delta mass: dm = dp / G
-            # - gridmass moist air: dGM = area*dm
-            # - mol/mol -> kg
-            #   gridmassdry = M/m_air * dGM * (1-hus)
-            #   var = var * gridmassdry
-            raise NotImplementedError("The conversion to mass is not"
-                                      " implemented without"
-                                      " variable grmassdry.")
-        else:
+        if 'grmassdry' in variables:
             grmassdry = variables['grmassdry']
+        else:
+            hus = variables['hus']
+            if 'press' not in variables:
+                press = self._create_press(hus)
+            else:
+                press = variables['press']
 
-        var = variables[varname] * grmassdry * m_var / self.m_air
+            grmassdry = self._calculate_gridmassdry(press,
+                                                    hus)
+            # raise NotImplementedError("The conversion to mass is not"
+            #                           " implemented without"
+            #                           " variable grmassdry.")
+
+        var = variables[varname] * grmassdry * m_var / self.cfg['m_air']
 
         return var
 
-    def _plot_zonal_mean_profile_with_ref(self, plot_func, dataset,
-                                          ref_dataset):
+    def _calculate_gridmassdry(self, press, hus):
+        """Calculate the dry gridmass according to pressure and humidity.
+
+        Used constants:
+        G  gravitational constant from scipy
+        """
+        # delta pressure > kg m-1 s-2
+        # cube delta has problems that
+        # 'atmosphere_hybrid_sigma_pressure_coordinate'
+        # exists both as dim_coord and aux_coord
+        # I do not know how to remove aux_coord, but I could remove dim_coord
+        press.remove_coord(press.coords(self.z_coord, dim_coords=True)[0])
+        delta_p = cube_delta(press, press.coords(self.z_coord)[0])
+        print(delta_p)
+        sys.exit(2)
+        # grid mass per square meter > kg m-2
+        delta_m = delta_p / G
+        print(delta_m)
+        # grid area > m2
+        area = area_weights(press[0, :, :], normalize=False)
+        print(area)
+        # grid mass per grid > kg
+        delta_gm = area * delta_m
+        print(delta_gm)
+        # to dry air
+        gridmassdry = delta_gm * (1 - hus)
+        print(gridmassdry)
+
+        return gridmassdry
+
+    def plot_zonalmean_with_ref(self, plot_func, dataset,
+                                ref_dataset):
         """Plot zonal mean profile for single dataset with reference."""
-        plot_type = 'zonal_mean_profile'
+        plot_type = 'zonalmean'
         logger.info("Plotting zonal mean profile with reference dataset"
                     " '%s' for '%s'",
                     self._get_label(ref_dataset), self._get_label(dataset))
@@ -931,10 +964,10 @@ class CH4Lifetime(LifetimeBase):
 
         return (plot_path, netcdf_paths)
 
-    def _plot_zonal_mean_profile_without_ref(self, plot_func, dataset, region,
-                                             base_dataset):
+    def plot_zonalmean_without_ref(self, plot_func, dataset, region,
+                                   base_dataset):
         """Plot zonal mean profile for single dataset without reference."""
-        plot_type = 'zonal_mean_profile'
+        plot_type = 'zonalmean'
         logger.info("Plotting zonal mean profile without reference dataset"
                     " for '%s'",
                     self._get_label(dataset))
@@ -947,22 +980,22 @@ class CH4Lifetime(LifetimeBase):
         # convert units
         cube.convert_units(self.units)
 
-        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
-
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
             axes = fig.add_subplot()
             plot_kwargs = self._get_plot_kwargs(plot_type, base_dataset)
             plot_kwargs['axes'] = axes
-            plot_zonal_mean_profile = plot_func(cube, **plot_kwargs)
+            plot_zonalmean = plot_func(cube, **plot_kwargs)
 
             # Print statistics if desired
-            self._add_stats(plot_type, axes, dim_coords_dat, dataset)
+            self._add_stats(plot_type, axes,
+                            self._check_cube_dimensions(cube, plot_type),
+                            dataset)
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']
-            colorbar = fig.colorbar(plot_zonal_mean_profile, ax=axes,
+            colorbar = fig.colorbar(plot_zonalmean, ax=axes,
                                     **self._get_cbar_kwargs(plot_type))
             colorbar.set_label(self._get_cbar_label(plot_type, dataset),
                                fontsize=fontsize)
@@ -1016,7 +1049,7 @@ class CH4Lifetime(LifetimeBase):
         expected_dimensions_dict = {
             'annual_cycle': (['month_number'],),
             'map': (['latitude', 'longitude'],),
-            'zonal_mean_profile': (['latitude', self.z_coord]),
+            'zonalmean': (['latitude', self.z_coord]),
             'timeseries': (['time'],),
             '1d_profile': ([self.z_coord]),
 
@@ -1089,8 +1122,8 @@ class CH4Lifetime(LifetimeBase):
         ancestors = []
         cubes = {}
         for label, dataset in input_data.items():
-            _ = [ ancestors.append(variable['filename'])
-                  for variable in dataset['dataset_data']]
+            _ = [ancestors.append(variable['filename'])
+                 for variable in dataset['dataset_data']]
 
             cube = calculate_lifetime(dataset,
                                       plot_type,
@@ -1102,12 +1135,14 @@ class CH4Lifetime(LifetimeBase):
             self._check_cube_dimensions(cube, plot_type)
 
             # Plot original time series
-            plot_kwargs = self._get_plot_kwargs(plot_type, base_datasets[label])
+            plot_kwargs = self._get_plot_kwargs(plot_type,
+                                                base_datasets[label])
             plot_kwargs['axes'] = axes
 
             if self.plots[plot_type]['display_mean'] is not False:
                 mean = cube.collapsed('time', iris.analysis.MEAN)
-                plot_kwargs['label'] = f"{plot_kwargs['label']} ({mean.data:.2f})"
+                plot_kwargs['label'] = (f"{plot_kwargs['label']}"
+                                        f" ({mean.data:.2f})")
 
             iris.plot.plot(cube, **plot_kwargs)
 
@@ -1124,10 +1159,12 @@ class CH4Lifetime(LifetimeBase):
                 iris.plot.plot(annual_mean_cube, **plot_kwargs)
 
         # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(list(base_datasets.values()))
-        axes.set_title(f'{self.long_name} in region {region}')
+        multi_dataset_facets = self._get_multi_dataset_facets(
+            list(base_datasets.values()))
+        axes.set_title(f'{self.names["long_name"]} in region {region}')
         axes.set_xlabel('Time')
-        axes.set_ylabel(f"{chr(964)}({self._get_name('reactant').upper()}) [{self.units}]")
+        axes.set_ylabel(f"{chr(964)}({self._get_name('reactant').upper()})"
+                        f" [{self.units}]")
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
             axes.grid(**gridline_kwargs)
@@ -1149,8 +1186,8 @@ class CH4Lifetime(LifetimeBase):
         # Save netCDF file
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
         var_attrs = {
-            'short_name': self.short_name,
-            'long_name': self.long_name,
+            'short_name': self.names['short_name'],
+            'long_name': self.names['long_name'],
             'units': self.units
         }
         io.save_1d_data(cubes, netcdf_path, 'time', var_attrs)
@@ -1186,8 +1223,8 @@ class CH4Lifetime(LifetimeBase):
         ancestors = []
         cubes = {}
         for label, dataset in input_data.items():
-            _ = [ ancestors.append(variable['filename'])
-                  for variable in dataset['dataset_data']]
+            _ = [ancestors.append(variable['filename'])
+                 for variable in dataset['dataset_data']]
 
             cube = calculate_lifetime(dataset,
                                       plot_type,
@@ -1199,15 +1236,18 @@ class CH4Lifetime(LifetimeBase):
             self._check_cube_dimensions(cube, plot_type)
 
             # Plot annual cycle
-            plot_kwargs = self._get_plot_kwargs(plot_type, base_datasets[label])
+            plot_kwargs = self._get_plot_kwargs(plot_type,
+                                                base_datasets[label])
             plot_kwargs['axes'] = axes
             iris.plot.plot(cube, **plot_kwargs)
 
         # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(list(base_datasets.values()))
-        axes.set_title(f'{self.long_name} in region {region}')
+        multi_dataset_facets = self._get_multi_dataset_facets(
+            list(base_datasets.values()))
+        axes.set_title(f'{self.names["long_name"]} in region {region}')
         axes.set_xlabel('Month')
-        axes.set_ylabel(f"$\tau$({self._get_name('reactant').upper()}) [{self.units}]")
+        axes.set_ylabel(f"$\tau$({self._get_name('reactant').upper()})"
+                        " [{self.units}]")
         axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
@@ -1230,14 +1270,14 @@ class CH4Lifetime(LifetimeBase):
         # Save netCDF file
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
         var_attrs = {
-            'short_name': self.short_name,
-            'long_name': self.long_name,
+            'short_name': self.names['short_name'],
+            'long_name': self.names['long_name'],
             'units': self.units
         }
         io.save_1d_data(cubes, netcdf_path, 'month_number', var_attrs)
 
         # Provenance tracking
-        caption = (f"Annual cycle of {self.long_name} for "
+        caption = (f"Annual cycle of {self.names['long_name']} for "
                    f"various datasets.")
         provenance_record = {
             'ancestors': ancestors,
@@ -1250,40 +1290,42 @@ class CH4Lifetime(LifetimeBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_zonal_mean_profile_plot(self, region, input_data, base_datasets):
+    def create_zonalmean_plot(self, region, input_data,
+                              base_datasets):
         """Create zonal mean profile plot."""
-        plot_type = 'zonal_mean_profile'
+        plot_type = 'zonalmean'
         if plot_type not in self.plots:
             return
 
         if not base_datasets:
             raise ValueError(f"No input data to plot '{plot_type}' given")
 
-        # TODO
-        # # Get reference dataset if possible
-        # ref_dataset = self._get_reference_dataset(datasets, short_name)
-        # if ref_dataset is None:
-        #     logger.info("Plotting %s without reference dataset", plot_type)
-        # else:
-        #     logger.info("Plotting %s with reference dataset '%s'", plot_type,
-        #                 self._get_label(ref_dataset))
+        # Get reference dataset if possible
+        ref_dataset = self._get_reference_dataset(base_datasets, 'lifetime')
+        if ref_dataset is None:
+            logger.info("Plotting %s without reference dataset", plot_type)
+        else:
+            logger.info("Plotting %s with reference dataset '%s'", plot_type,
+                        self._get_label(ref_dataset))
 
         # Get plot function
         plot_func = self._get_plot_func(plot_type)
 
         # Create a single plot for each dataset (incl. reference dataset if
         # given)
-        for label, dataset in input_data.items():
+        ancestors = []
+        for _, dataset in input_data.items():
             if dataset == ref_dataset:
                 continue
-            _ = [ ancestors.append(variable['filename'])
-                  for variable in dataset['dataset_data']]
+            _ = [ancestors.append(variable['filename'])
+                 for variable in dataset['dataset_data']]
 
             if ref_dataset is None:
                 (plot_path, netcdf_paths) = (
-                    self._plot_zonal_mean_profile_without_ref(plot_func,
-                                                              dataset, region,
-                                                              base_datasets['label'])
+                    self.plot_zonalmean_without_ref(
+                        plot_func,
+                        dataset, region,
+                        base_datasets['label'])
                 )
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
@@ -1293,8 +1335,8 @@ class CH4Lifetime(LifetimeBase):
             # ToDo
             else:
                 (plot_path, netcdf_paths) = (
-                    self._plot_zonal_mean_profile_with_ref(plot_func, dataset,
-                                                           ref_dataset, region)
+                    self.plot_zonalmean_with_ref(plot_func, dataset,
+                                                 ref_dataset, region)
                 )
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
@@ -1350,8 +1392,8 @@ class CH4Lifetime(LifetimeBase):
         ancestors = []
         cubes = {}
         for label, dataset in input_data.items():
-            _ = [ ancestors.append(variable['filename'])
-                  for variable in dataset['dataset_data']]
+            _ = [ancestors.append(variable['filename'])
+                 for variable in dataset['dataset_data']]
 
             cube = calculate_lifetime(dataset,
                                       plot_type,
@@ -1363,15 +1405,18 @@ class CH4Lifetime(LifetimeBase):
             self._check_cube_dimensions(cube, plot_type)
 
             # Plot 1D profile
-            plot_kwargs = self._get_plot_kwargs(plot_type, base_datasets[label])
+            plot_kwargs = self._get_plot_kwargs(plot_type,
+                                                base_datasets[label])
             plot_kwargs['axes'] = axes
 
             iris.plot.plot(cube, **plot_kwargs)
 
         # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(list(base_datasets.values()))
-        axes.set_title(f'{self.long_name} in region {region}')
-        axes.set_xlabel(f"$\tau$({self._get_name('reactant').upper()}) [{self.units}]")
+        multi_dataset_facets = self._get_multi_dataset_facets(
+            list(base_datasets.values()))
+        axes.set_title(f'{self.names["long_name"]} in region {region}')
+        axes.set_xlabel(f"$\tau$({self._get_name('reactant').upper()})"
+                        f" [{self.units}]")
         z_coord = cube.coord(axis='Z')
         axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
 
@@ -1422,15 +1467,15 @@ class CH4Lifetime(LifetimeBase):
         # Save netCDF file
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
         var_attrs = {
-            'short_name': self.short_name,
-            'long_name': self.long_name,
+            'short_name': self.names['short_name'],
+            'long_name': self.names['long_name'],
             'units': self.units
         }
         io.save_1d_data(cubes, netcdf_path, z_coord.standard_name, var_attrs)
 
         # Provenance tracking
         caption = ("Vertical one-dimensional profile of "
-                   f"{self.long_name}"
+                   f"{self.names['long_name']}"
                    " for various datasets.")
         provenance_record = {
             'ancestors': ancestors,
@@ -1445,14 +1490,15 @@ class CH4Lifetime(LifetimeBase):
 
     def compute(self):
         """Plot preprocessed data."""
-        for region in self.regions:
+        for region in self.cfg['regions']:
             logger.info("Plotting lifetime for region %s", region)
             input_data = self.input_data_dataset
             base_datasets = {label: dataset['dataset_data'][0]
                              for label, dataset in input_data.items()}
             self.create_timeseries_plot(region, input_data, base_datasets)
             self.create_annual_cycle_plot(region, input_data, base_datasets)
-            self.create_zonal_mean_profile_plot(region, input_data, base_datasets)
+            self.create_zonalmean_plot(region, input_data,
+                                       base_datasets)
             self.create_1d_profile_plot(region, input_data, base_datasets)
 
 

@@ -4,15 +4,15 @@ import logging
 import os
 import re
 
-from pprint import pprint
+# from pprint import pprint
 
-import sys
-import cartopy
+# import sys
+from copy import deepcopy
+# import cartopy
 import iris
 import numpy as np
 import matplotlib.pyplot as plt
 import yaml
-from copy import deepcopy
 from iris.analysis import MEAN
 from iris.util import broadcast_to_shape
 from mapgenerator.plotting.timeseries import PlotSeries
@@ -21,9 +21,9 @@ from esmvaltool.diag_scripts.shared import ProvenanceLogger, names
 
 logger = logging.getLogger(__name__)
 
+
 def calculate_lifetime(dataset, plot_type, region):
-    """Calculate the lifetime for the given plot_type and region.
-    """
+    """Calculate the lifetime for the given plot_type and region."""
     # extract region from weights and reaction
     reaction = extract_region(dataset, region, case='reaction')
     weight = extract_region(dataset, region, case='weight')
@@ -37,6 +37,7 @@ def calculate_lifetime(dataset, plot_type, region):
     division = nominator / denominator
 
     return division
+
 
 def extract_region(dataset, region, case='reaction'):
     """Return cube with everything outside region set to zero.
@@ -59,26 +60,27 @@ def extract_region(dataset, region, case='reaction'):
 
     print(var.coords('air_pressure'))
 
-    if not 'ptp' in dataset['variables'] and not 'tp_i' in dataset['variables']:
-        tp_clim = climatological_tropopause(var[:,0,:,:])
+    if ('ptp' not in dataset['variables'] and
+        'tp_i' not in dataset['variables']
+    ):
+        tp_clim = climatological_tropopause(var[:, 0, :, :])
 
     if region in ['TROP', 'STRA']:
-    ## - can I choose the troposphere by the preprocessor?
-
+        # - can I choose the troposphere by the preprocessor?
         use_z_coord = 'air_pressure'
         if z_coord.name() == 'air_pressure':
             if 'ptp' in dataset['variables']:
-                tp = dataset['variables']['ptp']
+                tropopause = dataset['variables']['ptp']
             else:
-                tp = tp_clim
+                tropopause = tp_clim
         elif z_coord.name() == 'atmosphere_hybrid_sigma_pressure_coordinate':
             if 'tp_i' in dataset['variables']:
-                tp = dataset['variables']['tp_i']
+                tropopause = dataset['variables']['tp_i']
                 use_z_coord = 'model_level_number'
             elif 'ptp' in dataset['variables']:
-                tp = dataset['variables']['ptp']
+                tropopause = dataset['variables']['ptp']
             else:
-                tp = tp_clim
+                tropopause = tp_clim
 
         z_4d = broadcast_to_shape(
             var.coord(use_z_coord).points,
@@ -87,9 +89,11 @@ def extract_region(dataset, region, case='reaction'):
         )
 
         tp_4d = broadcast_to_shape(
-            tp.data,
+            tropopause.data,
             var.shape,
-            var.coord_dims('time') + var.coord_dims('latitude') + var.coord_dims('longitude'),
+            var.coord_dims('time')
+            + var.coord_dims('latitude')
+            + var.coord_dims('longitude'),
         )
 
         if region == 'TROP':
@@ -108,10 +112,9 @@ def extract_region(dataset, region, case='reaction'):
     print(var.coords('air_pressure'))
     return var
 
-def climatological_tropopause(cube):
-    """Return cube with climatological tropopause pressure.
 
-    """
+def climatological_tropopause(cube):
+    """Return cube with climatological tropopause pressure."""
     if not cube.coords('latitude', dim_coords=True):
         raise NotImplementedError("The provided cube must"
                                   " have a latitude cooridnate")
@@ -130,20 +133,22 @@ def climatological_tropopause(cube):
 
     return tp_clim
 
+
 def sum_up_to_plot_dimensions(var, plot_type):
-    """
-    Returns the cube summed over the appropriate dimensions
-    """
+    """Return the cube summed over the appropriate dimensions."""
     if plot_type in ['timeseries', 'annual_cycle']:
         if var.coords('air_pressure', dim_coords=True):
             z_coord = var.coords('air_pressure', dim_coords=True)[0]
         elif var.coords('lev', dim_coords=True):
             z_coord = var.coords('lev', dim_coords=True)[0]
-        elif var.coords('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True):
-            z_coord = var.coords('atmosphere_hybrid_sigma_pressure_coordinate', dim_coords=True)[0]
+        elif var.coords('atmosphere_hybrid_sigma_pressure_coordinate',
+                        dim_coords=True):
+            z_coord = var.coords('atmosphere_hybrid_sigma_pressure_coordinate',
+                                 dim_coords=True)[0]
 
     if plot_type == 'timeseries':
-        cube = var.collapsed(['longitude', 'latitude', z_coord], iris.analysis.SUM)
+        cube = var.collapsed(['longitude', 'latitude', z_coord],
+                             iris.analysis.SUM)
     elif plot_type == 'zonal_mean_profile':
         cube = var.collapsed(['longitude'], iris.analysis.SUM)
     elif plot_type == '1d_profile':
@@ -151,12 +156,38 @@ def sum_up_to_plot_dimensions(var, plot_type):
     elif plot_type == 'annual_cycle':
         # TODO!
         # not iris.analysis.SUM but some kind of mean
-        #cube = var.collapsed(['longitude', 'latitude', z_coord], iris.analysis.SUM)
-        raise NotImplementedError(f"The sum to plot dimensions for plot_type {plot_type}"
-                                  " is currently not implemented")
-
+        # cube = var.collapsed(['longitude', 'latitude', z_coord],
+        #                      iris.analysis.SUM)
+        raise NotImplementedError("The sum to plot dimensions for plot_type"
+                                  f" {plot_type} is currently not implemented")
 
     return cube
+
+
+def calculate_reaction_rate(temp, reaction_type,
+                            coeff_a, coeff_er, coeff_b=None):
+    """Calculate the reaction rate.
+
+    Calculated in Arrhenius form or in a given special form
+    depending on the oxidation partner.
+    """
+    reaction_rate = deepcopy(temp)
+
+    # special reaction rate
+    if coeff_b is not None:
+        reaction_rate.data = coeff_a * np.exp(coeff_b * np.log(temp.data)
+                                              - (coeff_er / temp.data))
+        # standard reaction rate (arrhenius)
+    else:
+        reaction_rate.data = coeff_a * np.exp(-(coeff_er / temp.data))
+
+    # set units
+    reaction_rate.units = 'cm3 s-1'
+    reaction_rate.var_name = 'reaction_rate'
+    reaction_rate.long_name = f'Reaction rate of {reaction_type}'
+
+    return reaction_rate
+
 
 def _replace_tags(paths, variable):
     """Replace tags in the config-developer's file with actual values."""
@@ -247,10 +278,11 @@ class LifetimeBase():
         self.plots = config.get('plots', {})
         default_config = os.path.join(os.path.dirname(__file__),
                                       "lifetime_config.yml")
-        cartopy_data_dir = config.get('cartopy_data_dir', None)
+        # cartopy_data_dir = config.get('cartopy_data_dir', None)
         # if cartopy_data_dir:
         #     cartopy.config['data_dir'] = cartopy_data_dir
-        with open(config.get('config_file', default_config)) as config_file:
+        with open(config.get('config_file', default_config),
+                  encoding='utf-8') as config_file:
             self.config = yaml.safe_load(config_file)
 
     def _add_file_extension(self, filename):
