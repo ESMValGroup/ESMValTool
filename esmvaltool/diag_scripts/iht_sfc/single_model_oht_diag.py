@@ -28,18 +28,18 @@ from esmvaltool.diag_scripts.shared import (
 # Initialise logger
 logger = logging.getLogger(__name__)
 
-rcParams.update({
-    'font.size': 14,
-    'xtick.major.pad': 10,
-    'ytick.major.pad': 10,
-    'xtick.major.size': 10,
-    'ytick.major.size': 10,
-    'xtick.minor.size': 5,
-    'ytick.minor.size': 5,
-    'axes.linewidth': 2,
-    'lines.markersize': 8,
-    'lines.linewidth': 2
-})
+# rcParams.update({
+#     'font.size': 14,
+#     'xtick.major.pad': 10,
+#     'ytick.major.pad': 10,
+#     'xtick.major.size': 10,
+#     'ytick.major.size': 10,
+#     'xtick.minor.size': 5,
+#     'ytick.minor.size': 5,
+#     'axes.linewidth': 2,
+#     'lines.markersize': 8,
+#     'lines.linewidth': 2
+# })
 
 # Figure captions
 caption = {
@@ -127,8 +127,15 @@ def area_average(cube, latitude='latitude', longitude='longitude', mdtol=1):
                               mdtol=mdtol)
     return cube_avg
 
+def plot_array(x,figname):
+    plt.figure()
+    plt.pcolormesh(x)
+    plt.colorbar()
+    plt.savefig(figname)
+    print(figname)
+    print(x.min(), x.max(), x.mean())
 
-def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
+def call_poisson(flux_cube, mask, latitude='latitude', longitude='longitude'):
     """Call the Poisson solver with the data in ``flux_cube`` as source term.
 
        Return the energy flux potential and implied meridional heat transport
@@ -158,15 +165,17 @@ def call_poisson(flux_cube, latitude='latitude', longitude='longitude'):
         flux_cube.coord(longitude).guess_bounds()
 
     # Remove average of flux field to account for storage term
-    grid_areas = iris.analysis.cartography.area_weights(flux_cube)
-    data_mean = flux_cube.collapsed(["longitude", "latitude"],
-                                    iris.analysis.MEAN,
-                                    weights=grid_areas).data
+    grid_areas = iris.analysis.cartography.area_weights(flux_cube, normalize=True)
+    data_mean = np.average(flux_cube.data,
+                           weights=np.ma.array(grid_areas, mask=(1-mask)))
     data = flux_cube.data - data_mean
+    data *= mask
+    plot_array(data, "data.png")
 
     logger.info("Calling spherical_poisson")
     sphpo = SphericalPoisson(logger,
                              source=data * (earth_radius**2.0),
+                             mask=mask,
                              tolerance=2.0e-4)
     sphpo.solve()
     sphpo.calc_meridional_heat_transport()
@@ -230,7 +239,7 @@ class OceanHeatTransport:
        MHT: meridional heat transport
     """
 
-    def __init__(self, flx_files):
+    def __init__(self, flx_files, config):
         """Calculate all the diagnostics for all fluxes in ``flx_files``.
 
         Parameters
@@ -249,6 +258,9 @@ class OceanHeatTransport:
         for flx_file in flx_files:
             flx = iris.load_cube(flx_file)
             self.flx_clim.append(flx)
+
+        # Read in mask
+        self.mask = masks(config)
 
         # Compute derived fluxes
         self.derived_fluxes()
@@ -277,9 +289,10 @@ class OceanHeatTransport:
             NameConstraint(var_name="hfss"))
         hfls_clim = self.flx_clim.extract_cube(
             NameConstraint(var_name="hfls"))
-        nsf_clim = (rsds_clim - rsus_clim +
-                    rlds_clim - rlus_clim -
-                    hfss_clim - hfls_clim)
+        nsf_clim = (rsds_clim - rsus_clim) + \
+                   (rlds_clim - rlus_clim) - \
+                   (hfss_clim + hfls_clim)
+        nsf_clim = rlus_clim.copy() # Hack
         nsf_clim.var_name = "nsf"
         nsf_clim.long_name = "downward_heat_flux_in_air"
         self.flx_clim.append(nsf_clim)
@@ -291,11 +304,15 @@ class OceanHeatTransport:
         climatologies of radiative fluxes and the 12-month
         rolling means of radiative fluxes.
         """
-        # Loop over climatologies
-        for flx in self.flx_clim:
-            efp, mht = call_poisson(flx)
-            self.efp_clim.append(efp)
-            self.mht_clim.append(mht)
+        hfls_clim = self.flx_clim.extract_cube(NameConstraint(var_name="nsf"))
+        efp, mht = call_poisson(hfls_clim, self.mask)
+        self.efp_clim.append(efp)
+        self.mht_clim.append(mht)
+        # # Loop over climatologies
+        # for flx in self.flx_clim:
+        #     efp, mht = call_poisson(flx, self.mask)
+        #     self.efp_clim.append(efp)
+        #     self.mht_clim.append(mht)
 
     def print(self):
         """Print variable names of all cubes in an IHT object."""
@@ -489,13 +506,8 @@ class OceanHeatTransport:
             plt.subplots_adjust(left=0.11, right=0.9, top=1.0, bottom=0.20)
 
 
-def masks(cfg):
-    mask = iris.load_cube(cfg['mask'])
-
-    plt.figure()
-    plt.contourf(mask.data)
-    plt.colorbar()
-    plt.savefig('tst.png')
+def masks(config):
+    mask = iris.load_cube(config['mask'])
 
     # Close any seas not connected to the oceans
     # e.g. Mediterranean Sea at some resolutions
@@ -504,12 +516,21 @@ def masks(cfg):
     wrap_mask[:, 1:-1] = mask.data
     wrap_mask[:, 0] = mask.data[:, -1]
     wrap_mask[:, -1] = mask.data[:, 0]
-
     wrap_mask = binary_fill_holes(wrap_mask)
-    mask.data = wrap_mask[:, 1:-1]
+    #wrap_mask[:,:] = 0
 
-    # Return wrapped mask
-    return mask
+    plt.figure()
+    plt.pcolormesh(mask.data)
+    plt.colorbar()
+    plt.savefig('mask.png')
+
+    plt.figure()
+    plt.pcolormesh(wrap_mask)
+    plt.colorbar()
+    plt.savefig('wrap_mask.png')
+
+    wrap_mask = 1 - wrap_mask
+    return wrap_mask[:, 1:-1]
 
 def efp_maps(iht, model, experiment, config):
     """Produce Figure 2.
@@ -626,7 +647,7 @@ def main(config):
         oht[model_name] = {}
         for dataset_name, files in datasets.items():
             logger.info("Dataset %s", dataset_name)
-            oht[model_name][dataset_name] = OceanHeatTransport(files)
+            oht[model_name][dataset_name] = OceanHeatTransport(files, config)
 
     # Produce plots
     plot_single_model_diagnostics(oht, config)

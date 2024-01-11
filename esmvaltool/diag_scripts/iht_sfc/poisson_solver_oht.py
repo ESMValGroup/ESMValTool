@@ -21,6 +21,7 @@ method with exceptions at the land-sea boundaries.
 
 import numpy as np
 from numba import jit
+import matplotlib.pyplot as plt
 from scipy.ndimage import binary_fill_holes
 
 
@@ -60,9 +61,9 @@ def precon(x_matrix, m_matrix):
     https://doi.org/10.1137/0913035.
     """
     cx_matrix = np.zeros(np.array(x_matrix.shape))
-    precon_a(x_matrix, m_matrix[1], m_matrix[2], m_matrix[4], cx_matrix)
+    precon_a(x_matrix, m_matrix[0], m_matrix[2], m_matrix[4], cx_matrix)
     cx_matrix = swap_bounds(cx_matrix)
-    precon_b(m_matrix[0], m_matrix[3], cx_matrix)
+    precon_b(m_matrix[1], m_matrix[3], cx_matrix)
     cx_matrix = swap_bounds(cx_matrix)
     return cx_matrix
 
@@ -96,14 +97,18 @@ class SphericalPoisson:
     calculate meridional heat transport (MHT).
     """
 
-    def __init__(self, logger, source, tolerance=2.0e-4):
+    def __init__(self, logger, source, mask, tolerance=2.0e-4):
         """Initialise solver with source field, metrics and matrices."""
         self.logger = logger
+        logger.info("Initialising Poisson solver.")
         self.source = source
         self.tolerance = tolerance
         self.energy_flux_potential = None
         self.meridional_heat_transport = None
-        logger.info("Initialising Poisson solver.")
+        self.mask_with_halo = np.zeros((mask.shape[0] + 2, mask.shape[1] + 2))
+        self.mask_with_halo[1:-1, 1:-1] = mask
+        self.mask_with_halo = swap_bounds(self.mask_with_halo)
+        plot_array(self.mask_with_halo, "mask_with_halo.png")
         self.set_matrices()
 
     def set_matrices(self):
@@ -111,7 +116,7 @@ class SphericalPoisson:
 
         A is the matrix that defines the five-point stencil (Eq. 8). The
         A_matrix are the values are the contributions from each of the
-        four neighbouring cells: e,w,s,n,p.
+        four neighbouring cells: w,e,s,n,p.
         """
         # Calculate metrics hpi and hvj
         src_shape = np.array(self.source.shape)
@@ -138,7 +143,7 @@ class SphericalPoisson:
 
         # First calculate the Poisson equations 5-point stencil
         # A_w is the contribution from i-1, A_e is from i+1,
-        # A_s is j-1, A_n is j+1, and A_p is the diagonal
+        # A_s is j-1, A_n is j+1, and A_p is the j,i
         for j in range(0, src_shape[0]):
             txa = aaa / hpi[j]**2.0
             tyb = bbb / hpi[j]
@@ -150,40 +155,53 @@ class SphericalPoisson:
                 a_matrix[3, j, i] = tyb * hvj[j + 1]
                 a_matrix[4, j, i] = -a_matrix[0:4, j, i].sum()
 
+# Deleting this: doesn't converge
+# Original indenting: doesn't converge
+            if self.mask_with_halo[j + 1, i + 1] == 0:
+                a_matrix[0, j, i] = 0.0
+                a_matrix[1, j, i] = 0.0
+                a_matrix[2, j, i] = 0.0
+                a_matrix[3, j, i] = 0.0
+                a_matrix[4, j, i] = 1.0
+
         # ILU/SIP preconditioner factors: alf = 0.0 is ILU
         alf = 0.9
         m_matrix[4] += 1.0
 
+        # w - 0 , e - 1, s - 2, n - 3, p - 4
+        # Preconditioner only needs to act at the domain where the fluxes are defined
         for j in range(1, src_shape[0] + 1):
             for i in range(1, src_shape[1] + 1):
-                m_matrix[2, j, i] = (a_matrix[2, j - 1, i - 1] /
-                                     (1.0 + alf * m_matrix[0, j - 1, i]))
+                if self.mask_with_halo[j, i] == 1:
+                    m_matrix[2, j, i] = (a_matrix[2, j - 1, i - 1] /
+                                         (1.0 + alf * m_matrix[1, j - 1, i]))
 
-                m_matrix[1, j, i] = (a_matrix[1, j - 1, i - 1] /
-                                     (1.0 + alf * m_matrix[3, j, i - 1]))
+                    m_matrix[0, j, i] = (a_matrix[0, j - 1, i - 1] /
+                                         (1.0 + alf * m_matrix[3, j, i - 1]))
 
-                m_matrix[4, j, i] = (a_matrix[4, j - 1, i - 1] -
-                                     m_matrix[2, j, i] *
-                                     (m_matrix[3, j - 1, i] -
-                                     alf * m_matrix[0, j - 1, i]) -
-                                     m_matrix[1, j, i] *
-                                     (m_matrix[0, j, i - 1] -
-                                     alf * m_matrix[3, j, i - 1]))
+                    m_matrix[4, j, i] = (a_matrix[4, j - 1, i - 1] -
+                                         m_matrix[2, j, i] *
+                                         (m_matrix[3, j - 1, i] -
+                                         alf * m_matrix[1, j - 1, i]) -
+                                         m_matrix[0, j, i] *
+                                         (m_matrix[1, j, i - 1] -
+                                         alf * m_matrix[3, j, i - 1]))
 
-                m_matrix[4, j, i] = 1.0 / m_matrix[4, j, i]
+                    m_matrix[4, j, i] = 1.0 / m_matrix[4, j, i]
 
-                m_matrix[0, j, i] = ((a_matrix[0, j - 1, i - 1] -
-                                     alf * m_matrix[2, j, i] *
-                                     m_matrix[0, j - 1, i]) *
-                                     m_matrix[4, j, i])
+                    m_matrix[1, j, i] = ((a_matrix[1, j - 1, i - 1] -
+                                         alf * m_matrix[2, j, i] *
+                                         m_matrix[1, j - 1, i]) *
+                                         m_matrix[4, j, i])
 
-                m_matrix[3, j, i] = ((a_matrix[3, j - 1, i - 1] -
-                                     alf * m_matrix[1, j, i] *
-                                     m_matrix[3, j, i - 1]) *
-                                     m_matrix[4, j, i])
+                    m_matrix[3, j, i] = ((a_matrix[3, j - 1, i - 1] -
+                                         alf * m_matrix[0, j, i] *
+                                         m_matrix[3, j, i - 1]) *
+                                         m_matrix[4, j, i])
 
         self.a_matrix = a_matrix
         self.m_matrix = m_matrix
+
 
     def solve(self, max_iterations=1000):
         """Solve equation for the source term.
@@ -200,6 +218,8 @@ class SphericalPoisson:
         xxx = np.zeros(np.array(self.source.shape) + 2)
         bbb[1:-1, 1:-1] = self.source
         bbb = swap_bounds(bbb)
+        plot_array(self.source, "source.png")
+        plot_array(bbb, "bbb.png")
 
         sc_err = dot_prod(bbb, bbb)
 
@@ -217,28 +237,39 @@ class SphericalPoisson:
 
         iteration = 0
         while iteration < max_iterations:
+            print("solve: iteration ",iteration)
             rho = dot_prod(stv['rrr'], stv['crrr'])
+            print("rho ",rho)
 
             bet = (rho / stv['nrm']) * (stv['alf'] / stv['omg'])
+            print("bet ",bet)
 
             ttt = stv['rrr'] - bet * stv['omg'] * vvv
+            print("ttt ",ttt)
 
             sss = precon(ttt, self.m_matrix)
+
             ppp = sss + bet * ppp
 
             vvv = self.calc_ax(ppp)
+            # plot_array(vvv, "vvv.png")
+
             stv['nrm'] = dot_prod(stv['crrr'], vvv)
 
             stv['alf'] = rho / stv['nrm']
             sss = stv['rrr'] - stv['alf'] * vvv
+            # plot_array(sss, "sss.png")
 
             csss = precon(sss, self.m_matrix)
             ttt = self.calc_ax(csss)
+            # plot_array(ttt, "ttt.png")
 
             stv['omg'] = dot_prod(ttt, sss) / dot_prod(ttt, ttt)
 
             xxx = xxx + stv['alf'] * ppp + stv['omg'] * csss
             stv['rrr'] = sss - stv['omg'] * ttt
+            # plot_array(xxx, "xxx.png")
+            plot_array(stv['rrr'], "rrr.png")
 
             stv['nrm'] = rho
 
@@ -247,6 +278,7 @@ class SphericalPoisson:
                 break
 
             err = np.sqrt(dot_prod(stv['rrr'], stv['rrr']) / sc_err)
+            print(err)
             if err < self.tolerance:
                 self.logger.info('Poisson solver has converged.')
                 break
@@ -284,16 +316,75 @@ class SphericalPoisson:
         ax_matrix = np.zeros(src_shape + 2)
         x_matrix = swap_bounds(x_matrix)
         shape0, shape1 = src_shape
-        ax_matrix[1:shape0 + 1, 1:shape1 + 1] = (
-            self.a_matrix[2, 0:shape0, 0:shape1] *
-            x_matrix[0:shape0, 1:shape1 + 1] +
-            self.a_matrix[1, 0:shape0, 0:shape1] *
-            x_matrix[1:shape0 + 1, 0:shape1] +
-            self.a_matrix[0, 0:shape0, 0:shape1] *
-            x_matrix[1:shape0 + 1, 2:shape1 + 2] +
-            self.a_matrix[3, 0:shape0, 0:shape1] *
-            x_matrix[2:shape0 + 2, 1:shape1 + 1] +
-            self.a_matrix[4, 0:shape0, 0:shape1] *
-            x_matrix[1:shape0 + 1, 1:shape1 + 1])
+        # # w - 0, e - 1, s - 2, n - 3, p - 4
+        # ax_matrix[1:shape0 + 1, 1:shape1 + 1] = (
+        #     self.mask_with_halo[0:shape0, 1:shape1 + 1] *
+        #     self.a_matrix[2, 0:shape0, 0:shape1] *
+        #     x_matrix[0:shape0, 1:shape1 + 1] +
+        #     self.mask_with_halo[1:shape0 + 1, 0:shape1] *
+        #     self.a_matrix[1, 0:shape0, 0:shape1] *
+        #     x_matrix[1:shape0 + 1, 0:shape1] +
+        #     self.mask_with_halo[1:shape0 + 1, 2:shape1 + 2] *
+        #     self.a_matrix[0, 0:shape0, 0:shape1] *
+        #     x_matrix[1:shape0 + 1, 2:shape1 + 2] +
+        #     self.mask_with_halo[2:shape0 + 2, 1:shape1 + 1] *
+        #     self.a_matrix[3, 0:shape0, 0:shape1] *
+        #     x_matrix[2:shape0 + 2, 1:shape1 + 1] +
+        #     self.mask_with_halo[1:shape0 + 1, 1:shape1 + 1] *
+        #     self.a_matrix[4, 0:shape0, 0:shape1] *
+        #     x_matrix[1:shape0 + 1, 1:shape1 + 1])
+
+        for j in range(1, shape0 + 1):
+            for i in range(1, shape1 + 1):
+                if self.mask_with_halo[j, i] == 1:
+                    ax_matrix[j, i] = self.mask_with_halo[j - 1, i] * self.a_matrix[2, j - 1, i - 1] * (x_matrix[j - 1, i] - x_matrix[j, i]) + \
+                               self.mask_with_halo[j, i - 1] * self.a_matrix[0, j - 1, i - 1] * (x_matrix[j, i - 1] - x_matrix[j, i]) + \
+                               self.mask_with_halo[j, i + 1] * self.a_matrix[1, j - 1, i - 1] * (x_matrix[j, i + 1] - x_matrix[j, i]) + \
+                               self.mask_with_halo[j + 1, i] * self.a_matrix[3, j - 1, i - 1] * (x_matrix[j + 1, i] - x_matrix[j, i])
+
+
+
+
+        # Ax = np.zeros([M + 2, N + 2])
+        #
+        # x = swap_bounds(x)
+        # for j in range(1, M + 1):
+        #     for i in range(1, N + 1):
+        #         if mask[j, i] == 1:
+        #             Ax[j, i] = mask[j - 1, i] * A_s[j - 1, i - 1] * (x[j - 1, i] - x[j, i]) + \
+        #                        mask[j, i - 1] * A_w[j - 1, i - 1] * (x[j, i - 1] - x[j, i]) + \
+        #                        mask[j, i + 1] * A_e[j - 1, i - 1] * (x[j, i + 1] - x[j, i]) + \
+        #                        mask[j + 1, i] * A_n[j - 1, i - 1] * (x[j + 1, i] - x[j, i])
+        #
+        # Ax = swap_bounds(Ax)
+
+        # ax_matrix[1:shape0 + 1, 1:shape1 + 1] = (
+        #     self.mask_with_halo[1:shape0 + 1, 1:shape1 + 1] *
+        #     self.a_matrix[2, 0:shape0, 0:shape1] *
+        #     x_matrix[0:shape0, 1:shape1 + 1] +
+        #     self.mask_with_halo[1:shape0 + 1, 1:shape1 + 1] *
+        #     self.a_matrix[1, 0:shape0, 0:shape1] *
+        #     x_matrix[1:shape0 + 1, 0:shape1] +
+        #     self.mask_with_halo[1:shape0 + 1, 1:shape1 + 1] *
+        #     self.a_matrix[0, 0:shape0, 0:shape1] *
+        #     x_matrix[1:shape0 + 1, 2:shape1 + 2] +
+        #     self.mask_with_halo[1:shape0 + 1, 1:shape1 + 1] *
+        #     self.a_matrix[3, 0:shape0, 0:shape1] *
+        #     x_matrix[2:shape0 + 2, 1:shape1 + 1] +
+        #     self.mask_with_halo[1:shape0 + 1, 1:shape1 + 1] *
+        #     self.a_matrix[4, 0:shape0, 0:shape1] *
+        #     x_matrix[1:shape0 + 1, 1:shape1 + 1])
+
+
+
         ax_matrix = swap_bounds(ax_matrix)
+
         return ax_matrix
+
+def plot_array(x,figname):
+    plt.figure()
+    plt.pcolormesh(x)
+    plt.colorbar()
+    plt.savefig(figname)
+    print(figname)
+    print(x.min(), x.max(), x.mean())
