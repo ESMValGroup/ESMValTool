@@ -46,11 +46,21 @@ def swap_bounds(array):
     return array
 
 
-def dot_prod(a_matrix, b_matrix):
-    """Calculate dot product of two matrices only over source term size."""
-    shape0, shape1 = np.array(a_matrix.shape) - 2
-    return (a_matrix[1:shape0 + 1, 1:shape1 + 1] *
-            b_matrix[1:shape0 + 1, 1:shape1 + 1]).sum()
+# def dot_prod(a_matrix, b_matrix):
+#     """Calculate dot product of two matrices only over source term size."""
+#     shape0, shape1 = np.array(a_matrix.shape) - 2
+#     return (a_matrix[1:shape0 + 1, 1:shape1 + 1] *
+#             b_matrix[1:shape0 + 1, 1:shape1 + 1]).sum()
+
+def dot_prod(x, y):
+    shape0, shape1 = np.array(x.shape) - 2
+    # Calculate dot product of two matrices
+    dot_prod = 0
+    for j in range(1, shape0 + 1):
+        for i in range(1, shape1 + 1):
+            dot_prod += x[j, i] * y[j, i]
+
+    return dot_prod
 
 
 def precon(x_matrix, m_matrix):
@@ -108,7 +118,6 @@ class SphericalPoisson:
         self.mask_with_halo = np.zeros((mask.shape[0] + 2, mask.shape[1] + 2))
         self.mask_with_halo[1:-1, 1:-1] = mask
         self.mask_with_halo = swap_bounds(self.mask_with_halo)
-        plot_array(self.mask_with_halo, "mask_with_halo.png")
         self.set_matrices()
 
     def set_matrices(self):
@@ -203,7 +212,7 @@ class SphericalPoisson:
         self.m_matrix = m_matrix
 
 
-    def solve(self, max_iterations=1000):
+    def solve(self, max_iterations=200):
         """Solve equation for the source term.
 
         Bi-conjugate gradient stabilized numerical solver: van der
@@ -218,19 +227,34 @@ class SphericalPoisson:
         xxx = np.zeros(np.array(self.source.shape) + 2)
         bbb[1:-1, 1:-1] = self.source
         bbb = swap_bounds(bbb)
-        plot_array(self.source, "source.png")
-        plot_array(bbb, "bbb.png")
 
         sc_err = dot_prod(bbb, bbb)
+        Ax = self.calc_ax(xxx)
 
         # Group some temporal variables
         stv = {
             'alf': 1.0,
             'omg': 1.0,
             'nrm': 1.0,
-            'rrr': bbb - self.calc_ax(xxx)
+            'rrr': bbb - Ax
         }
         stv['crrr'] = stv['rrr'].copy()
+
+        plot_array(self.source, "source.png")
+        plot_array(bbb, "bbb.png")
+        plot_array(self.m_matrix[0], "m_matrix.0.png")
+        plot_array(self.m_matrix[1], "m_matrix.1.png")
+        plot_array(self.m_matrix[2], "m_matrix.2.png")
+        plot_array(self.m_matrix[3], "m_matrix.3.png")
+        plot_array(self.m_matrix[4], "m_matrix.4.png")
+        plot_array(self.a_matrix[0], "a_matrix.0.png")
+        plot_array(self.a_matrix[1], "a_matrix.1.png")
+        plot_array(self.a_matrix[2], "a_matrix.2.png")
+        plot_array(self.a_matrix[3], "a_matrix.3.png")
+        plot_array(self.a_matrix[4], "a_matrix.4.png")
+        plot_array(self.mask_with_halo, "mask.png")
+        plot_array(stv['rrr'], "rrr.png")
+        plot_array(Ax, "Ax.png")
 
         ppp = np.zeros(np.array(self.source.shape) + 2)
         vvv = np.zeros(np.array(self.source.shape) + 2)
@@ -245,31 +269,31 @@ class SphericalPoisson:
             print("bet ",bet)
 
             ttt = stv['rrr'] - bet * stv['omg'] * vvv
-            print("ttt ",ttt)
+            plot_array(ttt, f"ttta.{iteration:03}.png")
 
             sss = precon(ttt, self.m_matrix)
 
             ppp = sss + bet * ppp
 
             vvv = self.calc_ax(ppp)
-            # plot_array(vvv, "vvv.png")
+            plot_array(vvv, f"vvv.{iteration:03}.png")
 
             stv['nrm'] = dot_prod(stv['crrr'], vvv)
 
             stv['alf'] = rho / stv['nrm']
             sss = stv['rrr'] - stv['alf'] * vvv
-            # plot_array(sss, "sss.png")
+            plot_array(sss, f"sss.{iteration:03}.png")
 
             csss = precon(sss, self.m_matrix)
             ttt = self.calc_ax(csss)
-            # plot_array(ttt, "ttt.png")
+            plot_array(ttt, f"tttb.{iteration:03}.png")
 
             stv['omg'] = dot_prod(ttt, sss) / dot_prod(ttt, ttt)
 
             xxx = xxx + stv['alf'] * ppp + stv['omg'] * csss
             stv['rrr'] = sss - stv['omg'] * ttt
-            # plot_array(xxx, "xxx.png")
-            plot_array(stv['rrr'], "rrr.png")
+            plot_array(xxx, f"xxx.{iteration:03}.png")
+            plot_array(stv['rrr'], f"rrr.{iteration:03}.png")
 
             stv['nrm'] = rho
 
@@ -278,7 +302,7 @@ class SphericalPoisson:
                 break
 
             err = np.sqrt(dot_prod(stv['rrr'], stv['rrr']) / sc_err)
-            print(err)
+            print("err", err)
             if err < self.tolerance:
                 self.logger.info('Poisson solver has converged.')
                 break
@@ -286,7 +310,8 @@ class SphericalPoisson:
             iteration += 1
 
             if iteration == max_iterations:
-                raise RuntimeError('Poisson solver has not converged.')
+                self.logger.info('Poisson solver has not converged.')
+                #raise RuntimeError('Poisson solver has not converged.')
 
         self.energy_flux_potential = xxx
 

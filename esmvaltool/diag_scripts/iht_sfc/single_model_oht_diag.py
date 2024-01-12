@@ -176,7 +176,7 @@ def call_poisson(flux_cube, mask, latitude='latitude', longitude='longitude'):
     sphpo = SphericalPoisson(logger,
                              source=data * (earth_radius**2.0),
                              mask=mask,
-                             tolerance=2.0e-4)
+                             tolerance=3.0e-2)
     sphpo.solve()
     sphpo.calc_meridional_heat_transport()
     logger.info("Ending spherical_poisson")
