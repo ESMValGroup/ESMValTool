@@ -21,6 +21,8 @@ documentation:
 
 datasets:
   - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r2i1p1f1, grid: gn}
+  - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r3i1p1f1, grid: gn}
 
 
 preprocessors:
@@ -75,7 +77,7 @@ diagnostics:
         start_year: 1850
         end_year: 2000
       predictand:
-        short_name: tas
+        short_name: ps
         mip: Amon
         preprocessor: predictand_preproc
         start_year: 1850
