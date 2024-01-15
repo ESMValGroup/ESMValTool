@@ -270,7 +270,6 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from iris.analysis.cartography import area_weights
 from iris.analysis.calculus import cube_delta
 # from iris.analysis.maths import log, exp
 from iris.coord_categorisation import add_year
@@ -286,6 +285,8 @@ from esmvalcore.cmor._fixes.shared import add_model_level
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.lifetime.lifetime_base import (
     LifetimeBase,
+    create_press,
+    calculate_gridmassdry,
     calculate_lifetime,
     calculate_reaction_rate
 )
@@ -726,7 +727,7 @@ class CH4Lifetime(LifetimeBase):
 
         if not press:
             logger.info('Pressure not given')
-            press = self._create_press(temp)
+            press = create_press(temp)
 
         rho = N_A / 10.**6
         rho = rho * iris.analysis.maths.divide(press, R * temp)
@@ -741,23 +742,6 @@ class CH4Lifetime(LifetimeBase):
         # [ 1 / cm^3 ]
 
         return rho
-
-    def _create_press(self, var):
-        """Create a pressure variable."""
-        resolver = iris.common.resolve.Resolve(var, var)
-        if var.coord('air_pressure').points.shape == var.shape:
-            press = resolver.cube(var.coord('air_pressure').points)
-        else:
-            press = resolver.cube(broadcast_to_shape(
-                var.coord('air_pressure').points,
-                var.shape,
-                var.coord_dims('air_pressure')
-            ))
-        press.long_name = 'air_pressure'
-        press.var_name = 'air_pressure'
-        press.units = 'Pa'
-
-        return press
 
     def _number_density_dryair_by_grid(self, grmassdry, grvol):
         """
@@ -812,13 +796,17 @@ class CH4Lifetime(LifetimeBase):
             grmassdry = variables['grmassdry']
         else:
             hus = variables['hus']
-            if 'press' not in variables:
-                press = self._create_press(hus)
-            else:
+            if 'press' in variables:
                 press = variables['press']
+            else:
+                if self.z_coord == 'air_pressure':
+                    press = hus.coords('air_pressure').points
+                else:
+                    press = create_press(hus)
 
-            grmassdry = self._calculate_gridmassdry(press,
-                                                    hus)
+            grmassdry = calculate_gridmassdry(press,
+                                              hus,
+                                              self.z_coord)
             # raise NotImplementedError("The conversion to mass is not"
             #                           " implemented without"
             #                           " variable grmassdry.")
@@ -826,36 +814,6 @@ class CH4Lifetime(LifetimeBase):
         var = variables[varname] * grmassdry * m_var / self.cfg['m_air']
 
         return var
-
-    def _calculate_gridmassdry(self, press, hus):
-        """Calculate the dry gridmass according to pressure and humidity.
-
-        Used constants:
-        G  gravitational constant from scipy
-        """
-        # delta pressure > kg m-1 s-2
-        # cube delta has problems that
-        # 'atmosphere_hybrid_sigma_pressure_coordinate'
-        # exists both as dim_coord and aux_coord
-        # I do not know how to remove aux_coord, but I could remove dim_coord
-        press.remove_coord(press.coords(self.z_coord, dim_coords=True)[0])
-        delta_p = cube_delta(press, press.coords(self.z_coord)[0])
-        print(delta_p)
-        sys.exit(2)
-        # grid mass per square meter > kg m-2
-        delta_m = delta_p / G
-        print(delta_m)
-        # grid area > m2
-        area = area_weights(press[0, :, :], normalize=False)
-        print(area)
-        # grid mass per grid > kg
-        delta_gm = area * delta_m
-        print(delta_gm)
-        # to dry air
-        gridmassdry = delta_gm * (1 - hus)
-        print(gridmassdry)
-
-        return gridmassdry
 
     def plot_zonalmean_with_ref(self, plot_func, dataset,
                                 ref_dataset):
