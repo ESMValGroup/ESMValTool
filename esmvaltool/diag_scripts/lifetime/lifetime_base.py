@@ -6,7 +6,7 @@ import re
 
 # from pprint import pprint
 
-# import sys
+import sys
 from copy import deepcopy
 # import cartopy
 import iris
@@ -16,11 +16,170 @@ import yaml
 from iris.analysis import MEAN
 from iris.util import broadcast_to_shape
 from mapgenerator.plotting.timeseries import PlotSeries
+from scipy.constants import G
+from iris.analysis.cartography import area_weights
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, names
 
 logger = logging.getLogger(__name__)
 
+def create_press(var):
+    """Create a pressure variable."""
+    resolver = iris.common.resolve.Resolve(var, var)
+    if var.coord('air_pressure').points.shape == var.shape:
+        press = resolver.cube(var.coord('air_pressure').points)
+    else:
+        press = resolver.cube(broadcast_to_shape(
+            var.coord('air_pressure').points,
+            var.shape,
+            var.coord_dims('air_pressure')
+        ))
+    press.long_name = 'air_pressure'
+    press.var_name = 'air_pressure'
+    press.units = 'Pa'
+
+    return press
+
+def calculate_gridmassdry(press, hus, z_coord):
+    """Calculate the dry gridmass according to pressure and humidity.
+
+    Used constants:
+    G  gravitational constant from scipy
+    """
+    # calculate minimum in cubes
+    if type(press) == iris.cube.Cube:
+        #pmin = press.collapsed(press.coords(), iris.analysis.MIN).data
+        pmin = np.nanmin(press.data)
+    else:
+        pmin = np.nanmin(press)
+
+    # surface air pressure as cube
+    pmax = press[:,0,:,:].copy()
+    pmax.data = press.coord('surface_air_pressure').points
+
+    # delta pressure > kg m-1 s-2
+    delta_p = dpres_plevel_4d(press,
+                              pmin,
+                              pmax,
+                              z_coord=z_coord)
+    # grid mass per square meter > kg m-2
+    delta_m = delta_p / G
+    print(delta_m)
+    # grid area > m2
+    area = area_weights(hus[0, 0, :, :], normalize=False)
+    print(area)
+    # grid mass per grid > kg
+    delta_gm = area * delta_m
+    print(delta_gm)
+    # to dry air
+    gridmassdry = delta_gm * (1 - hus)
+    print(gridmassdry)
+
+    return gridmassdry
+
+def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
+    """Calculate delta pressure levels.
+
+    The delta pressure levels are based
+    on the given pressure level as a
+    four dimensional cube.
+
+    """
+    cubelist_dplev = [plev_slice.copy() for plev_slice in plev.slices(['time', 'latitude', 'longitude'])]
+    cubelist_plev = [plev_slice.copy() for plev_slice in plev.slices(['time', 'latitude', 'longitude'])]
+
+    increasing = (plev.coord(z_coord, dim_coords=True).attributes['positive'] == 'down')
+    last = plev.coords(z_coord)[0].shape[0] - 1
+
+    for i, lev in enumerate(cubelist_plev):
+        if increasing:
+            increment = [i + 1, i - 1]
+        else:
+            increment = [i - 1, i + 1]
+
+        if i == 0:
+            cube = (cubelist_plev[increment[0]] - lev) / 2. + (lev - pmin)
+            cubelist_dplev[i].data = cube.data
+        elif i == last:
+            print(pmax)
+            cube = (pmax - lev) + (lev - cubelist_plev[increment[1]]) / 2.
+            cubelist_dplev[i].data = cube.data
+        else:
+            cube = (cubelist_plev[increment[0]] - lev) / 2. + (lev - cubelist_plev[increment[1]]) / 2.
+            cubelist_dplev[i].data = cube.data
+
+        cubelist_dplev[i].add_aux_coord(iris.coords.AuxCoord(lev.coords(z_coord)[0].points[0]))
+
+    dplev = iris.cube.CubeList(cubelist_dplev).merge_cube()
+    return dplev
+
+def dpres_plevel_1d(plev, pmin, pmax):
+    """Calculate delta pressure levels.
+
+    The delta pressure levels are based
+    on the given pressure level coordinate
+    as numpy array (one-dimensional).
+
+    pmax can be set as float or as a multidimensional
+    cube. The output of dpres_plevel will have the
+    same dimensionality.
+
+    """
+
+    increasing = (np.diff(plev) >= 0).all()
+    decreasing = (np.diff(plev) <= 0).all()
+
+    if type(pmax) == float:
+
+        dplev = plev.copy()
+
+        for i, lev in enumerate(plev):
+            if increasing:
+                if lev == min(plev):
+                    dplev[i] = (plev[i+1] - lev) / 2. + (lev - pmin)
+                elif lev == max(plev):
+                    dplev[i] = (pmax - lev) + (lev - plev[i-1]) / 2.
+                else:
+                    dplev[i] = (plev[i+1] - lev) / 2. + (lev - plev[i-1]) / 2.
+            elif decreasing:
+                if lev == min(plev):
+                    dplev[i] = (lev - pmin) + (plev[i-1] - lev) / 2.
+                elif lev == max(plev):
+                    dplev[i] = (lev - plev[i+1]) / 2. + (pmax - lev)
+                else:
+                    dplev[i] = (lev - plev[i+1]) / 2. + (plev[i-1] - lev) / 2.
+
+    elif type(pmax) == iris.cube.Cube:
+
+        cubelist = [ pmax.copy() for lev in plev ]
+
+        for i, lev in enumerate(plev):
+            if increasing:
+                if lev == min(plev):
+                    cubelist[i].data = (lev - pmin) + (plev[i+1] - lev) / 2.
+                    cubelist[i] = ((lev - pmin) + (plev[i+1] - lev) / 2.) * cubelist[i] / cubelist[i]
+                elif lev == max(plev):
+                    cubelist[i] = (pmax - lev) + (lev - plev[i-1]) / 2.
+                else:
+                    cubelist[i] = ((plev[i+1] - lev) / 2. + (lev - plev[i-1]) / 2.) *  cubelist[i] / cubelist[i]
+            elif decreasing:
+                if lev == min(plev):
+                    cubelist[i] = ((lev - pmin) + (plev[i-1] - lev) / 2.) * cubelist[i] / cubelist[i]
+                elif lev == max(plev):
+                    cubelist[i] = (lev - plev[i+1]) / 2. + (pmax - lev)
+                else:
+                    cubelist[i] = ((lev - plev[i+1]) / 2. + (plev[i-1] - lev) / 2.) * cubelist[i] / cubelist[i]
+            cubelist[i].units = 'Pa'
+            cubelist[i].var_name = 'air_pressure'
+            cubelist[i].add_aux_coord(iris.coords.AuxCoord(lev))
+        # merge to single cube
+        dplev = iris.cube.CubeList(cubelist).merge_cube()
+
+    else:
+        raise NotImplementedError(f"Function not implemented for type {type(pmax)}")
+
+
+    return dplev
 
 def calculate_lifetime(dataset, plot_type, region):
     """Calculate the lifetime for the given plot_type and region."""
