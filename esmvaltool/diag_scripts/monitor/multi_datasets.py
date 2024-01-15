@@ -674,6 +674,7 @@ class MultiDatasets(MonitorBase):
         self.supported_plot_types = [
             'timeseries',
             'annual_cycle',
+            'diurnal_cycle',
             'map',
             'zonal_mean_profile',
             '1d_profile',
@@ -699,6 +700,12 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('time_format', None)
 
             elif plot_type == 'annual_cycle':
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
+                self.plots[plot_type].setdefault('legend_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+
+            elif plot_type == 'diurnal_cycle':
                 self.plots[plot_type].setdefault('gridline_kwargs', {})
                 self.plots[plot_type].setdefault('legend_kwargs', {})
                 self.plots[plot_type].setdefault('plot_kwargs', {})
@@ -1070,7 +1077,7 @@ class MultiDatasets(MonitorBase):
                 plot_kwargs[key] = val
 
         # Default settings for different plot types
-        if plot_type in ('timeseries', 'annual_cycle', '1d_profile',
+        if plot_type in ('timeseries', 'annual_cycle', 'diurnal_cycle', '1d_profile',
                          'variable_vs_lat'):
             plot_kwargs.setdefault('label', label)
 
@@ -1798,6 +1805,7 @@ class MultiDatasets(MonitorBase):
         """Check that cube has correct dimensional variables."""
         expected_dimensions_dict = {
             'annual_cycle': (['month_number'],),
+            'diurnal_cycle': (['hour'],),
             'map': (['latitude', 'longitude'],),
             'zonal_mean_profile': (['latitude', 'air_pressure'],
                                    ['latitude', 'altitude']),
@@ -1815,6 +1823,7 @@ class MultiDatasets(MonitorBase):
         expected_dimensions = expected_dimensions_dict[plot_type]
         for dims in expected_dimensions:
             cube_dims = [cube.coords(dim, dim_coords=True) for dim in dims]
+            print(cube_dims)
             if all(cube_dims) and cube.ndim == len(dims):
                 return dims
         expected_dims_str = ' or '.join(
@@ -2025,6 +2034,82 @@ class MultiDatasets(MonitorBase):
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_diurnal_cycle_plot(self, datasets):
+        """Create annual cycle plot."""
+        plot_type = 'diurnal_cycle'
+        if plot_type not in self.plots:
+            return
+
+        if not datasets:
+            raise ValueError(f"No input data to plot '{plot_type}' given")
+
+        logger.info("Plotting %s", plot_type)
+        fig = plt.figure(**self.cfg['figure_kwargs'])
+        axes = fig.add_subplot()
+
+        # Plot all datasets in one single figure
+        ancestors = []
+        cubes = {}
+        for dataset in datasets:
+            ancestors.append(dataset['filename'])
+            cube = dataset['cube']
+            cubes[self._get_label(dataset)] = cube
+            self._check_cube_dimensions(cube, plot_type)
+
+            # Plot annual cycle
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs['axes'] = axes
+            iris.plot.plot(cube, **plot_kwargs)
+
+        # Default plot appearance
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+        axes.set_title(multi_dataset_facets['long_name'])
+        axes.set_xlabel('Hour')
+        axes.set_ylabel(
+            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
+            f"[{multi_dataset_facets['units']}]"
+        )
+        axes.set_xticks(range(0, 24), [str(m) for m in range(0, 24)])
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
+
+        # Legend
+        legend_kwargs = self.plots[plot_type]['legend_kwargs']
+        if legend_kwargs is not False:
+            axes.legend(**legend_kwargs)
+
+        # Customize plot appearance
+        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+
+        # Save plot
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        fig.savefig(plot_path, **self.cfg['savefig_kwargs'])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+        # Save netCDF file
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        var_attrs = {
+            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
+        }
+        io.save_1d_data(cubes, netcdf_path, 'hour', var_attrs)
+
+        # Provenance tracking
+        caption = (f"Diurnal cycle of {multi_dataset_facets['long_name']} for "
+                   f"various datasets.")
+        provenance_record = {
+            'ancestors': ancestors,
+            'authors': ['schlund_manuel'],
+            'caption': caption,
+            'plot_types': ['seas'],
+            'long_names': [var_attrs['long_name']],
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
+
 
     def create_map_plot(self, datasets):
         """Create map plot."""
@@ -2512,6 +2597,7 @@ class MultiDatasets(MonitorBase):
             logger.info("Processing variable %s", var_key)
             self.create_timeseries_plot(datasets)
             self.create_annual_cycle_plot(datasets)
+            self.create_diurnal_cycle_plot(datasets)
             self.create_map_plot(datasets)
             self.create_zonal_mean_profile_plot(datasets)
             self.create_1d_profile_plot(datasets)
