@@ -30,16 +30,16 @@ from pathlib import Path
 import esmvaltool
 
 # Name of the conda environment in which esmvaltool is installed
-env = 'coretool26rc4'
+env = 'esmvaltool_sweden'
 # Mail notifications when a submitted job fails or finishes
 mail = False
 # Name of the conda environment in which esmvaltool is installed
 submit = False
 # Name of the DKRZ account in which the job will be billed
-account = ''  # Select a compute project to be billed
+account = 'bd1083'  # Select a compute project to be billed
 # Name of the directory in which the job outputs files) are saved.
 # The outputs will be saved in /home/user/<outputs>
-outputs = 'output_rc4'
+outputs = '/work/bd1083/b380971/output/daily_ozone/'
 # Default Levante computing partition used
 partition = 'interactive'
 # Default amount of memory used
@@ -48,7 +48,7 @@ memory = '64G'
 time = '04:00:00'
 # Full path to the mambaforge/etc/profile.d/conda.sh executable
 # Set the path to conda
-conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh'
+conda_path = '/work/bd0854/b380971/python/mambaforge/etc/profile.d/conda.sh'
 # Full path to config_file
 # If none, ~/.esmvaltool/config-user.yml is used
 config_file = ''

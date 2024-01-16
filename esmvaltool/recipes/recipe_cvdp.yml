@@ -22,9 +22,7 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 1855}
-  - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r2i1p1,  start_year: 1850,  end_year: 1855}
-  - {dataset: MPI-ESM-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 1855}
+  - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1970,  end_year: 2021}
 
 diagnostics:
 
@@ -33,12 +31,12 @@ diagnostics:
     variables:
       ts:
         mip: Amon
-      tas:
-        mip: Amon
-      pr:
-        mip: Amon
-      psl:
-        mip: Amon
+      # tas:
+      #   mip: Amon
+      # pr:
+      #   mip: Amon
+      # psl:
+      #   mip: Amon
     scripts:
       cvdp:
         script: cvdp/cvdp_wrapper.py

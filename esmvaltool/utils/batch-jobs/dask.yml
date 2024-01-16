@@ -1,0 +1,12 @@
+
+cluster:
+  type: dask_jobqueue.SLURMCluster
+  queue: compute
+  account: bd1083
+  cores: 128
+  memory: 256GiB
+  processes: 32
+  interface: ib0
+  local_directory: /scratch/b/b380971/dask-tmp
+  n_workers: 32
+  walltime: '8:00:00'

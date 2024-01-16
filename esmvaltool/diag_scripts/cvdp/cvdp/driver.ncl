@@ -55,10 +55,10 @@
                          
   max_num_tasks = 4      ; if run_parallel = "parallel", how many CVDP NCL scripts can be called at once? (If unsure set to 3)     
   
-  modular = "False"      ; True = Run only those CVDP scripts specified in modular_list.
+  modular = "True"      ; True = Run only those CVDP scripts specified in modular_list.
                          ; False = Run all CVDP scripts (Default)
 
-  modular_list = "pdo,aice.trends_timeseries,sst.indices"  ; When modular = "True" list the CVDP scripts that will be run. 
+  modular_list = "sst.indices,ipo"  ; When modular = "True" list the CVDP scripts that will be run. 
                                            ; Example: modular_list = "amoc,amo,pr.trends_timeseries"
                                            ; For a list of available scripts see complete_list at line 72. 
 
