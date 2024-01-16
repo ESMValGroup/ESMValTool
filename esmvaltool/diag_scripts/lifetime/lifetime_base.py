@@ -16,7 +16,7 @@ import yaml
 from iris.analysis import MEAN
 from iris.util import broadcast_to_shape
 from mapgenerator.plotting.timeseries import PlotSeries
-from scipy.constants import G
+from scipy.constants import g
 from iris.analysis.cartography import area_weights
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, names
@@ -44,7 +44,7 @@ def calculate_gridmassdry(press, hus, z_coord):
     """Calculate the dry gridmass according to pressure and humidity.
 
     Used constants:
-    G  gravitational constant from scipy
+    g  standard acceleration of gravity from scipy
     """
     # calculate minimum in cubes
     if type(press) == iris.cube.Cube:
@@ -63,19 +63,87 @@ def calculate_gridmassdry(press, hus, z_coord):
                               pmax,
                               z_coord=z_coord)
     # grid mass per square meter > kg m-2
-    delta_m = delta_p / G
-    print(delta_m)
+    delta_m = delta_p / g
     # grid area > m2
-    area = area_weights(hus[0, 0, :, :], normalize=False)
-    print(area)
+    #area = area_weights(hus[0, 0, :, :], normalize=False)
+    area = calculate_area(hus.coord('latitude'),
+                          hus.coord('longitude'))
     # grid mass per grid > kg
     delta_gm = area * delta_m
-    print(delta_gm)
     # to dry air
-    gridmassdry = delta_gm * (1 - hus)
-    print(gridmassdry)
+    gridmassdry = delta_gm * (1. - hus)
+    # attach metadata
+    gridmassdry.long_name = 'gridmassdry'
+    gridmassdry.var_name = 'gridmassdry'
+    gridmassdry.units = 'kg'
 
     return gridmassdry
+
+def guess_interfaces(coordinate):
+    """
+    Calculate the interfaces of a coordinate given its midpoints.
+
+    Parameters
+    ----------
+    coordinate : iris.cube
+        The coordinate array.
+
+    Returns
+    -------
+    numpy.array
+        An array with the lenght of the coordinate plus one.
+    """
+    interfaces = 0.5 * (coordinate[0:-1] + coordinate[1:])
+    first = 0.5 * (3 * coordinate[0] - coordinate[1])
+    last = 0.5 * (3 * coordinate[-1] - coordinate[-2])
+
+    # Check limits
+    # if coordinate.name.lower() in ['lat', 'latitude']:
+    #     first = np.sign(first) * min([abs(first), 90.])
+    #     last = np.sign(last) * min([abs(last), 90.])
+
+    interfaces = np.insert(interfaces, 0, first)
+    interfaces = np.append(interfaces, last)
+
+    return interfaces
+
+def calculate_area(latitude, longitude):
+    """
+    Calculate the area of each grid cell on a rectangular grid.
+
+    Parameters
+    ----------
+    latitude : iris.cube.Coord
+        The latitude coordinate of the grid.
+
+    longitude : iris.cube.Coord
+        The longitude coordinate of the grid.
+
+    Returns
+    -------
+    iris.cube
+        An array with the area (in m2) and the input latitude and longitude as
+        coordinates.
+    """
+    r_earth = 6378100.0  # from astropy.constants
+
+    lat_i = np.deg2rad(guess_interfaces(latitude.points))
+    lon_i = np.deg2rad(guess_interfaces(longitude.points))
+
+    delta_x = abs(lon_i[1:] - lon_i[:-1])
+    delta_y = abs(np.sin(lat_i[1:]) - np.sin(lat_i[:-1]))
+
+    output = np.outer(delta_y, delta_x) * r_earth**2
+    output = output.astype('float32')
+
+    result = iris.cube.Cube(output,
+                            standard_name='cell_area',
+                            long_name='cell_area',
+                            var_name='cell_area',
+                            units='m2',
+                            dim_coords_and_dims=[(latitude, 0), (longitude, 1)])
+
+    return result
 
 def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
     """Calculate delta pressure levels.
@@ -85,8 +153,10 @@ def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
     four dimensional cube.
 
     """
-    cubelist_dplev = [plev_slice.copy() for plev_slice in plev.slices(['time', 'latitude', 'longitude'])]
-    cubelist_plev = [plev_slice.copy() for plev_slice in plev.slices(['time', 'latitude', 'longitude'])]
+    cubelist_dplev = [plev_slice.copy() for plev_slice in plev.slices(['time', 'latitude', 'longitude'],
+                                                                      ordered=True)]
+    cubelist_plev = [plev_slice.copy() for plev_slice in plev.slices(['time', 'latitude', 'longitude'],
+                                                                     ordered=True)]
 
     increasing = (plev.coord(z_coord, dim_coords=True).attributes['positive'] == 'down')
     last = plev.coords(z_coord)[0].shape[0] - 1
@@ -101,16 +171,18 @@ def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
             cube = (cubelist_plev[increment[0]] - lev) / 2. + (lev - pmin)
             cubelist_dplev[i].data = cube.data
         elif i == last:
-            print(pmax)
             cube = (pmax - lev) + (lev - cubelist_plev[increment[1]]) / 2.
             cubelist_dplev[i].data = cube.data
         else:
-            cube = (cubelist_plev[increment[0]] - lev) / 2. + (lev - cubelist_plev[increment[1]]) / 2.
+            #cube = (cubelist_plev[increment[0]] - lev) / 2. + (lev - cubelist_plev[increment[1]]) / 2.
+            cube = (lev - cubelist_plev[increment[0]]) / 2. + (cubelist_plev[increment[1]] - lev) / 2.
             cubelist_dplev[i].data = cube.data
 
         cubelist_dplev[i].add_aux_coord(iris.coords.AuxCoord(lev.coords(z_coord)[0].points[0]))
 
     dplev = iris.cube.CubeList(cubelist_dplev).merge_cube()
+    dplev.transpose(new_order=[1,0,2,3])
+    dplev = iris.util.reverse(dplev, 1)
     return dplev
 
 def dpres_plevel_1d(plev, pmin, pmax):
@@ -177,7 +249,6 @@ def dpres_plevel_1d(plev, pmin, pmax):
 
     else:
         raise NotImplementedError(f"Function not implemented for type {type(pmax)}")
-
 
     return dplev
 
