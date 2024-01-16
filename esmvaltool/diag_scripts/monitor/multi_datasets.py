@@ -17,6 +17,9 @@ Currently supported plot types (use the option ``plots`` to specify them):
     - Annual cycle (plot type ``annual_cycle``): for each variable separately,
       all datasets are plotted in one single figure. Input data needs to be 1D
       with single dimension `month_number`.
+    - Diurnal cycle (plot type ``diurnal_cycle``): for each variable
+      separately, all datasets are plotted in one single figure. Input data
+      needs to be 1D with single dimension `hour`.
     - Maps (plot type ``map``): for each variable and dataset, an individual
       map is plotted. If a reference dataset is defined, also include this
       dataset and a bias plot into the figure. Note that if a reference dataset
@@ -149,8 +152,8 @@ time_format: str, optional (default: None)
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
     use the default formatting imposed by the iris plotting function.
 
-Configuration options for plot type ``annual_cycle``
-----------------------------------------------------
+Configuration options for plot type ``annual_cycle`` and ``diurnal_cycle``
+--------------------------------------------------------------------------
 gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
@@ -1077,8 +1080,8 @@ class MultiDatasets(MonitorBase):
                 plot_kwargs[key] = val
 
         # Default settings for different plot types
-        if plot_type in ('timeseries', 'annual_cycle', 'diurnal_cycle', '1d_profile',
-                         'variable_vs_lat'):
+        if plot_type in ('timeseries', 'annual_cycle', 'diurnal_cycle',
+                         '1d_profile', 'variable_vs_lat'):
             plot_kwargs.setdefault('label', label)
 
         if plot_kwargs.get('norm') == 'centered':
@@ -2035,8 +2038,9 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
+
     def create_diurnal_cycle_plot(self, datasets):
-        """Create annual cycle plot."""
+        """Create diurnal cycle plot."""
         plot_type = 'diurnal_cycle'
         if plot_type not in self.plots:
             return
@@ -2057,7 +2061,7 @@ class MultiDatasets(MonitorBase):
             cubes[self._get_label(dataset)] = cube
             self._check_cube_dimensions(cube, plot_type)
 
-            # Plot annual cycle
+            # Plot diurnal cycle
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
             iris.plot.plot(cube, **plot_kwargs)
@@ -2070,7 +2074,8 @@ class MultiDatasets(MonitorBase):
             f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
             f"[{multi_dataset_facets['units']}]"
         )
-        axes.set_xticks(range(0, 24), [str(m) for m in range(0, 24)])
+        axes.set_xticks(range(0, 24), minor=True)
+        axes.set_xticks(range(0, 24, 3), [str(m) for m in range(0, 24, 3)])
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
             axes.grid(**gridline_kwargs)
