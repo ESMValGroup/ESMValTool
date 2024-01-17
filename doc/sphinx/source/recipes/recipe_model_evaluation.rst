@@ -96,3 +96,10 @@ Zonal mean precipitation.
    :width:   14cm
 
 Annual cycle of Southern Ocean total cloud cover.
+
+.. _fig_6:
+.. figure::  /recipes/figures/model_evaluation/diurnal_cycle_clt_sepacific_3hr.png
+   :align:   center
+   :width:   14cm
+
+Diurnal cycle of Southeast Pacific total cloud cover.
