@@ -811,8 +811,8 @@ class CH4Lifetime(LifetimeBase):
             #                           " implemented without"
             #                           " variable grmassdry.")
 
-        print(variables['grmassdry'][0,:,45,90].data)
-        sys.exit(2)
+        # print(variables['grmassdry'][0,:,45,90].data)
+        # sys.exit(2)
         # hus = variables['hus']
         # if 'press' in variables:
         #     press = variables['press']

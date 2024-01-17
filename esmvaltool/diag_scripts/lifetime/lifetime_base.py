@@ -405,8 +405,16 @@ def calculate_reaction_rate(temp, reaction_type,
 
     # special reaction rate
     if coeff_b is not None:
-        reaction_rate.data = coeff_a * np.exp(coeff_b * np.log(temp.data)
-                                              - (coeff_er / temp.data))
+        reaction_rate = coeff_a * iris.analysis.maths.exp(coeff_b *
+                                                          iris.analysis.maths.log(temp, in_place=True)
+                                                          - (coeff_er / temp), in_place=True)
+
+        data = coeff_a * np.exp(coeff_b * np.log(temp.data)
+                                - (coeff_er / temp.data))
+
+        print(reaction_rate.data[0,:,:,90])
+        print(data[0,:,:,90])
+        sys.exit(2)
         # standard reaction rate (arrhenius)
     else:
         reaction_rate.data = coeff_a * np.exp(-(coeff_er / temp.data))
