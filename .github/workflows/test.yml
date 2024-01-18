@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - main
-      - fix_recipe_filler_bkwds_incompatibility
+      - python312
   schedule:
     - cron: '0 0 * * *'
 
@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v3
@@ -69,7 +69,7 @@ jobs:
     runs-on: "macos-latest"
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
       fail-fast: false
     name: OSX Python ${{ matrix.python-version }}
     steps:
