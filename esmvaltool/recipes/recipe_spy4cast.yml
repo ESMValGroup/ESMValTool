@@ -20,257 +20,245 @@ documentation:
     - proyecto_off
 
 datasets:
-  - dataset: ACCESS-CM2
-    ensemble: r(1:3)i1p1f1
-    institute: CSIRO-ARCCSS
-  # - dataset: ACCESS-ESM1-5
-  #   ensemble: r(1:6)i1p1f1
-  #   institute: CSIRO
-  # - dataset: ACCESS-ESM1-5
-  #   ensemble: r(8:10)i1p1f1
-  #   institute: CSIRO
-  # - dataset: CAS-ESM2-0
-  #   ensemble: r1i1p1f1
-  #   institute: CAS
-  # - dataset: CESM2
-  #   ensemble: r(1:11)i1p1f1
-  #   institute: NCAR
-  # - dataset: CESM2-FV2
-  #   ensemble: r(1:3)i1p1f1
-  #   institute: NCAR
-  # - dataset: CESM2-WACCM
-  #   ensemble: r(1:3)i1p1f1
-  #   institute: NCAR
-  # - dataset: CESM2-WACCM-FV2
-  #   ensemble: r(1:3)i1p1f1
-  #   institute: NCAR
-  # - dataset: CanESM5
-  #   ensemble: r(1:25)i1p1f1
-  #   institute: CCCma
-  # - dataset: CanESM5-CanOE
-  #   ensemble: r(1:3)i1p2f1
-  #   institute: CCCma
-  # - dataset: HadGEM3-GC31-LL
-  #   ensemble: r(1:4)i1p1f3
-  #   institute: MOHC
-  # - dataset: MIROC-ES2L
-  #   ensemble: r(1:3)i1p1f2
-  #   institute: MIROC
-  # - dataset: MIROC6
-  #   ensemble: r(1:50)i1p1f1
-  #   institute: MIROC
-  # - dataset: MPI-ESM-1-2-HAM
-  #   ensemble: r(1:3)i1p1f1
-  #   institute: HAMMOZ-Consortium
-  # - dataset: MPI-ESM1-2-HR
-  #   ensemble: r(1:10)i1p1f1
-  #   institute: MPI-M
-  # - dataset: MPI-ESM1-2-LR
-  #   ensemble: r1i2000p1f1
-  #   institute: MPI-M
-  # - dataset: MPI-ESM1-2-LR
-  #   ensemble: r(1:50)i1p1f1
-  #   institute: MPI-M
-  # - dataset: MRI-ESM2-0
-  #   ensemble: r1i1000p1f1
-  #   institute: MRI
-  # - dataset: MRI-ESM2-0
-  #   ensemble: r(1:5)i1p1f1
-  #   institute: MRI
-  # - dataset: NorESM2-LM
-  #   ensemble: r(1:3)i1p1f1
-  #   institute: NCC
-  # - dataset: NorESM2-MM
-  #   ensemble: r(1:2)i1p1f1
-  #   institute: NCC
-  # - dataset: UKESM1-0-LL
-  #   ensemble: r(1:4)i1p1f2
-  #   institute: MOHC
-  # - dataset: UKESM1-0-LL
-  #   ensemble: r(5:7)i1p1f3
-  #   institute: MOHC
-  # - dataset: UKESM1-0-LL
-  #   ensemble: r(8:12)i1p1f2
-  #   institute: MOHC
-  # - dataset: UKESM1-0-LL
-  #   ensemble: r(16:19)i1p1f2
-  #   institute: MOHC
+- dataset: ACCESS-CM2
+  ensemble: r(1:3)i1p1f1
+  grid: gn
+  institute: CSIRO-ARCCSS
 
-  # Issue when reading all data:
+# Mask land fails
+# - dataset: AWI-CM-1-1-MR
+#   ensemble: r(1:5)i1p1f1
+#   grid: gn
+#   institute: AWI
+# - dataset: AWI-ESM-1-1-LR
+#   ensemble: r1i1p1f1
+#   grid: gn
+#   institute: AWI
 
-  # - dataset: HadGEM3-GC31-MM
-  #   ensemble: r(1:4)i1p1f3
-  #   institute: MOHC
+# Bad sftof
+# - dataset: BCC-CSM2-MR
+#   ensemble: r(1:3)i1p1f1
+#   grid: gn
+#   institute: BCC
+# - dataset: BCC-ESM1
+#   ensemble: r(1:3)i1p1f1
+#   grid: gn
+#   institute: BCC
 
+# Missing sftof
+# - dataset: CAMS-CSM1-0
+#   ensemble: r1i1p1f2
+#   grid: gn
+#   institute: CAMS
+# - dataset: CAMS-CSM1-0
+#   ensemble: r(1:2)i1p1f1
+#   grid: gn
+#   institute: CAMS
 
-  # Can not find gn data:
-  # - dataset: CIESM
-  #   ensemble: r(1:3)i1p1f1
-  #   institute: THU
-  # - dataset: CNRM-CM6-1
-  #   ensemble: r(1:30)i1p1f2
-  #   institute: CNRM-CERFACS
-  # - dataset: CNRM-CM6-1-HR
-  #   ensemble: r1i1p1f2
-  #   institute: CNRM-CERFACS
-  # - dataset: CNRM-ESM2-1
-  #   ensemble: r(1:11)i1p1f2
-  #   institute: CNRM-CERFACS
-  # - dataset: CanESM5
-  #   ensemble: r(1:40)i1p2f1
-  #   institute: CCCma
-  # - dataset: EC-Earth3
-  #   ensemble: r(1:4)i1p1f1
-  #   institute: EC-Earth-Consortium
-  # - dataset: EC-Earth3
-  #   ensemble: r(6:7)i1p1f1
-  #   institute: EC-Earth-Consortium
-  # - dataset: EC-Earth3
-  #   ensemble: r(9:25)i1p1f1
-  #   institute: EC-Earth-Consortium
-  # - dataset: EC-Earth3
-  #   ensemble: r(101:150)i1p1f1
-  #   institute: EC-Earth-Consortium
-  # - dataset: EC-Earth3-AerChem
-  #   ensemble: r1i1p1f1
-  #   institute: EC-Earth-Consortium
-  # - dataset: EC-Earth3-AerChem
-  #   ensemble: r4i1p1f1
-  #   institute: EC-Earth-Consortium
-  # - dataset: EC-Earth3-CC
-  #   ensemble: r1i1p1f1
-  #   institute: EC-Earth-Consortium
-  # - dataset: EC-Earth3-Veg
-  #   ensemble: r(1:6)i1p1f1
-  #   institute: EC-Earth-Consortium
-  # - dataset: EC-Earth3-Veg
-  #   ensemble: r10i1p1f1
-  #   institute: EC-Earth-Consortium
-  # - dataset: EC-Earth3-Veg
-  #   ensemble: r14i1p1f1
-  #   institute: EC-Earth-Consortium
-  # - dataset: EC-Earth3-Veg-LR
-  #   ensemble: r(1:3)i1p1f1
-  #   institute: EC-Earth-Consortium
-  # - dataset: FGOALS-f3-L
-  #   ensemble: r(1:3)i1p1f1
-  #   institute: CAS
-  # - dataset: IITM-ESM
-  #   ensemble: r1i1p1f1
-  #   institute: CCCR-IITM
-  # - dataset: IPSL-CM5A2-INCA
-  #   ensemble: r1i1p1f1
-  #   institute: IPSL
-  # - dataset: IPSL-CM6A-LR
-  #   ensemble: r(1:32)i1p1f1
-  #   institute: IPSL
-  # - dataset: NorCPM1
-  #   ensemble: r(1:30)i1p1f1
-  #   institute: NCC
-  # - dataset: GFDL-CM4
-  #   ensemble: r1i1p1f1
-  #   institute: NOAA-GFDL
-  # - dataset: GFDL-ESM4
-  #   ensemble: r(1:3)i1p1f1
-  #   institute: NOAA-GFDL
-  # - dataset: GISS-E2-1-G
-  #   ensemble: r(1:4)i1p5f1
-  #   institute: NASA-GISS
-  # - dataset: GISS-E2-1-G
-  #   ensemble: r(1:5)i1p1f3
-  #   institute: NASA-GISS
-  # - dataset: GISS-E2-1-G
-  #   ensemble: r(1:10)i1p1f1
-  #   institute: NASA-GISS
-  # - dataset: GISS-E2-1-G
-  #   ensemble: r(1:6)i1p3f1
-  #   institute: NASA-GISS
-  # - dataset: GISS-E2-1-G
-  #   ensemble: r(8:10)i1p3f1
-  #   institute: NASA-GISS
-  # - dataset: GISS-E2-1-G
-  #   ensemble: r(1:11)i1p1f2
-  #   institute: NASA-GISS
-  # - dataset: GISS-E2-1-G
-  #   ensemble: r(6:10)i1p5f1
-  #   institute: NASA-GISS
-  # - dataset: GISS-E2-1-G
-  #   ensemble: r(101:102)i1p1f1
-  #   institute: NASA-GISS
-  # - dataset: GISS-E2-1-G-CC
-  #   ensemble: r1i1p1f1
-  #   institute: NASA-GISS
-  # - dataset: GISS-E2-1-H
-  #   ensemble: r(1:5)i1p1f2
-  #   institute: NASA-GISS
-  # - dataset: GISS-E2-1-H
-  #   ensemble: r(1:5)i1p3f1
-  #   institute: NASA-GISS
-  # - dataset: GISS-E2-1-H
-  #   ensemble: r(1:5)i1p5f1
-  #   institute: NASA-GISS
+- dataset: CAS-ESM2-0
+  ensemble: r1i1p1f1
+  grid: gn
+  institute: CAS
 
-  # Preprocessing errors
-  # - dataset: ICON-ESM-LR
-  #   ensemble: r(1:5)i1p1f1
-  #   institute: MPI-M
+- dataset: CESM2
+  ensemble: r(1:11)i1p1f1
+  grid: gn
+  institute: NCAR
 
-  # Can not mask land:
-  # - dataset: AWI-CM-1-1-MR
-  # ensemble: r(1:5)i1p1f1
-  # institute: AWI
-  # - dataset: AWI-ESM-1-1-LR
-  # ensemble: r1i1p1f1
-  # institute: AWI
+- dataset: CESM2-FV2
+  ensemble: r(1:3)i1p1f1
+  grid: gn
+  institute: NCAR
 
-  # Bad sftof
-  # - dataset: BCC-CSM2-MR
-  # ensemble: r(1:3)i1p1f1
-  # institute: BCC
-  # - dataset: BCC-ESM1
-  # ensemble: r(1:3)i1p1f1
-  # institute: BCC
+- dataset: CESM2-WACCM
+  ensemble: r(1:3)i1p1f1
+  grid: gn
+  institute: NCAR
 
-  # Missing sftof
-  # - dataset: CAMS-CSM1-0
-  #   ensemble: r1i1p1f2
-  #   institute: CAMS
-  # - dataset: CAMS-CSM1-0
-  #   ensemble: r(1:2)i1p1f1
-  #   institute: CAMS
-  # - dataset: CMCC-CM2-HR4
-  # ensemble: r1i1p1f1
-  # institute: CMCC
-  # - dataset: CMCC-CM2-SR5
-  # ensemble: r1i1p1f1
-  # institute: CMCC
-  # - dataset: CMCC-ESM2
-  # ensemble: r1i1p1f1
-  # institute: CMCC
-  # - dataset: FGOALS-g3
-  #   ensemble: r(4:6)i1p1f1
-  #   institute: CAS
-  # - dataset: FIO-ESM-2-0
-  #   ensemble: r(1:3)i1p1f1
-  #   institute: FIO-QLNM
-  # - dataset: GISS-E2-1-H
-  #   ensemble: r(1:10)i1p1f1
-  #   institute: NASA-GISS
-  # - dataset: NESM3
-  # ensemble: r(1:5)i1p1f1
-  # institute: NUIST
-  # - dataset: SAM0-UNICON
-  #   ensemble: r1i1p1f1
-  #   institute: SNU
-  # - dataset: TaiESM1
-  #   ensemble: r1i1p1f1
-  #   institute: AS-RCEC
-  # - dataset: MCM-UA-1-0
-  # ensemble: r1i1p1f(1:2)
-  # institute: UA
-    # - dataset: UKESM1-0-LL
-    # ensemble: r13i1p1f2
-    # institute: NIMS-KMA
+- dataset: CESM2-WACCM-FV2
+  ensemble: r(1:3)i1p1f1
+  grid: gn
+  institute: NCAR
+
+# Missing sftof
+# - dataset: CMCC-CM2-HR4
+#   ensemble: r1i1p1f1
+#   grid: gn
+#   institute: CMCC
+# - dataset: CMCC-CM2-SR5
+#   ensemble: r1i1p1f1
+#   grid: gn
+#   institute: CMCC
+# - dataset: CMCC-ESM2
+#   ensemble: r1i1p1f1
+#   grid: gn
+#   institute: CMCC
+
+- dataset: CanESM5
+  ensemble: r(1:25)i1p1f1
+  grid: gn
+  institute: CCCma
+
+- dataset: CanESM5-CanOE
+  ensemble: r(1:3)i1p2f1
+  grid: gn
+  institute: CCCma
+
+- dataset: E3SM-1-0
+  ensemble: r(1:5)i1p1f1
+  grid: gr
+  institute: E3SM-Project
+
+- dataset: E3SM-1-1
+  ensemble: r1i1p1f1
+  grid: gr
+  institute: E3SM-Project
+
+- dataset: E3SM-1-1-ECA
+  ensemble: r1i1p1f1
+  grid: gr
+  institute: E3SM-Project
+
+# Missing sftof
+# - dataset: FIO-ESM-2-0
+#   ensemble: r(1:3)i1p1f1
+#   grid: gn
+#   institute: FIO-QLNM
+
+# Bad sftof
+# - dataset: GISS-E2-1-G
+#   ensemble: r(101:102)i1p1f1
+#   grid: gn
+#   institute: NASA-GISS
+
+- dataset: GISS-E2-1-H
+  ensemble: r(1:10)i1p1f1
+  grid: gn
+  institute: NASA-GISS
+
+- dataset: HadGEM3-GC31-LL
+  ensemble: r(1:4)i1p1f3
+  grid: gn
+  institute: MOHC
+
+# Issue when reading all data
+# - dataset: HadGEM3-GC31-MM
+#   ensemble: r(1:4)i1p1f3
+#   grid: gn
+#   institute: MOHC
+
+# Unestructured grid, regrid fails
+# - dataset: ICON-ESM-LR
+#   ensemble: r(1:5)i1p1f1q
+#   grid: gn
+#   institute: MPI-M
+
+- dataset: INM-CM4-8
+  ensemble: r1i1p1f1
+  grid: gr1
+  institute: INM
+
+- dataset: INM-CM5-0
+  ensemble: r(1:10)i1p1f1
+  grid: gr1
+  institute: INM
+
+# No sftof
+# - dataset: KACE-1-0-G
+#   ensemble: r(1:3)i1p1f1
+#   grid: gr
+#   institute: NIMS-KMA
+
+- dataset: KIOST-ESM
+  ensemble: r1i1p1f1
+  grid: gr1
+  institute: KIOST
+
+- dataset: MCM-UA-1-0
+  ensemble: r1i1p1f(1:2)
+  grid: gn
+  institute: UA
+
+- dataset: MIROC6
+  ensemble: r(1:50)i1p1f1
+  grid: gn
+  institute: MIROC
+
+- dataset: MPI-ESM-1-2-HAM
+  ensemble: r(1:3)i1p1f1
+  grid: gn
+  institute: HAMMOZ-Consortium
+
+- dataset: MPI-ESM1-2-HR
+  ensemble: r(1:10)i1p1f1
+  grid: gn
+  institute: MPI-M
+
+- dataset: MPI-ESM1-2-LR
+  ensemble: r1i2000p1f1
+  grid: gn
+  institute: MPI-M
+
+- dataset: MPI-ESM1-2-LR
+  ensemble: r(1:50)i1p1f1
+  grid: gn
+  institute: MPI-M
+
+- dataset: MRI-ESM2-0
+  ensemble: r1i1000p1f1
+  grid: gn
+  institute: MRI
+
+- dataset: MRI-ESM2-0
+  ensemble: r(1:5)i1p1f1
+  grid: gn
+  institute: MRI
+
+# No sftof
+# - dataset: NESM3
+#   ensemble: r(1:5)i1p1f1
+#   grid: gn
+#   institute: NUIST
+
+- dataset: NorCPM1
+  ensemble: r10i1p1f1
+  grid: gn
+  institute: NCC
+  # timerange: 185001/202912
+- dataset: NorESM2-LM
+  ensemble: r(1:3)i1p1f1
+  grid: gn
+  institute: NCC
+
+# No sftof
+# - dataset: SAM0-UNICON
+#   ensemble: r1i1p1f1
+#   grid: gn
+#   institute: SNU
+# - dataset: TaiESM1
+#   ensemble: r1i1p1f1
+#   grid: gn
+#   institute: AS-RCEC
+
+- dataset: UKESM1-0-LL
+  ensemble: r(1:4)i1p1f2
+  grid: gn
+  institute: MOHC
+
+- dataset: UKESM1-0-LL
+  ensemble: r(5:7)i1p1f3
+  grid: gn
+  institute: MOHC
+
+- dataset: UKESM1-0-LL
+  ensemble: r(8:12)i1p1f2
+  grid: gn
+  institute: MOHC
+
+- dataset: UKESM1-0-LL
+  ensemble: r(16:19)i1p1f2
+  grid: gn
+  institute: MOHC
 
 
 preprocessors:
@@ -281,8 +269,8 @@ preprocessors:
         end_longitude: 280
         start_latitude: 30
         end_latitude: 60
-        step_longitude: 0.5
-        step_latitude: 0.5
+        step_longitude: 2
+        step_latitude: 2
       scheme: linear
     extract_season:
       season: nd
@@ -301,8 +289,8 @@ preprocessors:
         end_longitude: 40
         start_latitude: 20
         end_latitude: 60
-        step_longitude: 0.5
-        step_latitude: 0.5
+        step_longitude: 2
+        step_latitude: 2
       scheme: linear
     extract_season:
       season: nd
@@ -324,26 +312,476 @@ diagnostics:
         short_name: tos
         mip: Omon
         preprocessor: predictor_preproc
-        start_year: 1850
-        end_year: 2010
         project: CMIP6
         exp: historical
-        grid: gn
+        timerange: 185001/201412
         supplementary_variables:
         - short_name: sftof
           mip: Ofx
           activity: '*'
           ensemble: '*'
           exp: '*'
+        additional_datasets:
+        - dataset: ACCESS-ESM1-5
+          ensemble: r(1:6)i1p1f1
+          grid: gn
+          institute: CSIRO
+
+        - dataset: ACCESS-ESM1-5
+          ensemble: r(8:20)i1p1f1
+          grid: gn
+          institute: CSIRO
+
+        - dataset: CESM2
+          ensemble: r(1:11)i1p1f1
+          grid: gr
+          institute: NCAR
+
+        - dataset: CESM2-FV2
+          ensemble: r(1:3)i1p1f1
+          grid: gr
+          institute: NCAR
+
+        - dataset: CESM2-WACCM
+          ensemble: r(1:3)i1p1f1
+          grid: gr
+          institute: NCAR
+
+        - dataset: CESM2-WACCM-FV2
+          ensemble: r(1:3)i1p1f1
+          grid: gr
+          institute: NCAR
+
+        - dataset: CIESM
+          ensemble: r(1:3)i1p1f1
+          grid: gn
+          institute: THU
+
+        # No sftof
+        # - dataset: CNRM-CM6-1
+        #   ensemble: r(1:30)i1p1f2
+        #   grid: gn
+        #   institute: CNRM-CERFACS
+
+        - dataset: CNRM-CM6-1
+          ensemble: r(1:6)i1p1f2
+          grid: gr1
+          institute: CNRM-CERFACS
+
+        - dataset: CNRM-CM6-1
+          ensemble: r(11:30)i1p1f2
+          grid: gr1
+          institute: CNRM-CERFACS
+
+        # No sftof
+        # - dataset: CNRM-CM6-1-HR
+        #   ensemble: r1i1p1f2
+        #   grid: gn
+        #   institute: CNRM-CERFACS
+
+        # No sftof
+        # - dataset: CNRM-ESM2-1
+        #   ensemble: r(1:11)i1p1f2
+        #   grid: gn
+        #   institute: CNRM-CERFACS
+
+        - dataset: CNRM-ESM2-1
+          ensemble: r(1:3)i1p1f2
+          grid: gr1
+          institute: CNRM-CERFACS
+
+        - dataset: CanESM5
+          ensemble: r(1:40)i1p2f1
+          grid: gn
+          institute: CCCma
+
+        - dataset: EC-Earth3
+          ensemble: r(1:4)i1p1f1
+          grid: gn
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3
+          ensemble: r(6:7)i1p1f1
+          grid: gn
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3
+          ensemble: r(9:25)i1p1f1
+          grid: gn
+          institute: EC-Earth-Consortium
+
+        # - dataset: EC-Earth3
+        #   ensemble: r(101:150)i1p1f1
+        #   grid: gn
+        #   institute: EC-Earth-Consortium
+        #   timerange: 197001/201412
+
+        # Duplicated
+        # - dataset: EC-Earth3
+        #   ensemble: r2i1p1f1
+        #   grid: gr
+        #   institute: EC-Earth-Consortium
+        # - dataset: EC-Earth3
+        #   ensemble: r7i1p1f1
+        #   grid: gr
+        #   institute: EC-Earth-Consortium
+        # - dataset: EC-Earth3
+        #   ensemble: r10i1p1f1
+        #   grid: gr
+        #   institute: EC-Earth-Consortium
+        # - dataset: EC-Earth3
+        #   ensemble: r12i1p1f1
+        #   grid: gr
+        #   institute: EC-Earth-Consortium
+        # - dataset: EC-Earth3
+        #   ensemble: r14i1p1f1
+        #   grid: gr
+        #   institute: EC-Earth-Consortium
+        # - dataset: EC-Earth3
+        #   ensemble: r(16:25)i1p1f1
+        #   grid: gr
+        #   institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-AerChem
+          ensemble: r1i1p1f1
+          grid: gn
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-AerChem
+          ensemble: r4i1p1f1
+          grid: gn
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-CC
+          ensemble: r1i1p1f1
+          grid: gn
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-Veg
+          ensemble: r(1:6)i1p1f1
+          grid: gn
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-Veg
+          ensemble: r14i1p1f1
+          grid: gn
+          institute: EC-Earth-Consortium
+
+        # No sftof
+        # - dataset: EC-Earth3-Veg
+        #   ensemble: r12i1p1f1
+        #   grid: gr
+        #   institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-Veg-LR
+          ensemble: r1i1p1f1
+          grid: gn
+          institute: EC-Earth-Consortium
+
+        # Can not concatenate
+        # - dataset: EC-Earth3-Veg-LR
+        #   ensemble: r2i1p1f1
+        #   grid: gn
+        #   institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-Veg-LR
+          ensemble: r3)i1p1f1
+          grid: gn
+          institute: EC-Earth-Consortium
+
+        # No sftof
+        # - dataset: FGOALS-f3-L
+        #   ensemble: r(1:3)i1p1f1
+        #   grid: gn
+        #   institute: CAS
+        # - dataset: FGOALS-g3
+        #   ensemble: r(1:6)i1p1f1
+        #   grid: gn
+        #   institute: CAS
+
+        - dataset: GFDL-CM4
+          ensemble: r1i1p1f1
+          grid: gn
+          institute: NOAA-GFDL
+
+        - dataset: GFDL-CM4
+          ensemble: r1i1p1f1
+          grid: gr
+          institute: NOAA-GFDL
+
+        # No sftof
+        # - dataset: GFDL-ESM4
+        #   ensemble: r(1:3)i1p1f1
+        #   grid: gn
+        #   institute: NOAA-GFDL
+
+        - dataset: GFDL-ESM4
+          ensemble: r(1:3)i1p1f1
+          grid: gr
+          institute: NOAA-GFDL
+
+        # bad sftof
+        # - dataset: GISS-E2-1-G
+        #   ensemble: r(1:4)i1p5f1
+        #   grid: gn
+        #   institute: NASA-GISS
+        # - dataset: GISS-E2-1-G
+        #   ensemble: r(1:5)i1p1f3
+        #   grid: gn
+        #   institute: NASA-GISS
+        # - dataset: GISS-E2-1-G
+        #   ensemble: r(1:10)i1p1f1
+        #   grid: gn
+        #   institute: NASA-GISS
+        # - dataset: GISS-E2-1-G
+        #   ensemble: r(1:6)i1p3f1
+        #   grid: gn
+        #   institute: NASA-GISS
+        # - dataset: GISS-E2-1-G
+        #   ensemble: r(8:10)i1p3f1
+        #   grid: gn
+        #   institute: NASA-GISS
+        # - dataset: GISS-E2-1-G
+        #   ensemble: r(1:11)i1p1f2
+        #   grid: gn
+        #   institute: NASA-GISS
+        # - dataset: GISS-E2-1-G
+        #   ensemble: r(6:10)i1p5f1
+        #   grid: gn
+        #   institute: NASA-GISS
+
+        - dataset: GISS-E2-1-G-CC
+          ensemble: r1i1p1f1
+          grid: gn
+          institute: NASA-GISS
+
+        - dataset: GISS-E2-1-H
+          ensemble: r(1:5)i1p1f2
+          grid: gn
+          institute: NASA-GISS
+
+        - dataset: GISS-E2-1-H
+          ensemble: r(1:5)i1p3f1
+          grid: gn
+          institute: NASA-GISS
+
+        - dataset: GISS-E2-1-H
+          ensemble: r(1:5)i1p5f1
+          grid: gn
+          institute: NASA-GISS
+
+        # - dataset: IITM-ESM
+        #   ensemble: r1i1p1f1
+        #   grid: gn
+        #   institute: CCCR-IITM
+        #   timerange: 190001/201412
+
+        # no sftof
+        # - dataset: IPSL-CM5A2-INCA
+        #   ensemble: r1i1p1f1
+        #   grid: gn
+        #   institute: IPSL
+        # - dataset: IPSL-CM6A-LR
+        #   ensemble: r(1:32)i1p1f1
+        #   grid: gn
+        #   institute: IPSL
+
+        - dataset: MIROC-ES2L
+          ensemble: r(1:10)i1p1f2
+          grid: gn
+          institute: MIROC
+
+        - dataset: MIROC-ES2L
+          ensemble: r(1:10)i1p1f2
+          grid: gr1
+          institute: MIROC
+
+        - dataset: MRI-ESM2-0
+          ensemble: r1i2p1f1
+          grid: gr
+          institute: MRI
+
+        - dataset: MRI-ESM2-0
+          ensemble: r1i1000p1f1
+          grid: gr
+          institute: MRI
+
+        - dataset: MRI-ESM2-0
+          ensemble: r(1:5)i1p1f1
+          grid: gr
+          institute: MRI
+
+        - dataset: NorCPM1
+          ensemble: r(2:9)i1p1f1
+          grid: gn
+          institute: NCC
+
+        - dataset: NorCPM1
+          ensemble: r(11:30)i1p1f1
+          grid: gn
+          institute: NCC
+
+        - dataset: NorCPM1
+          ensemble: r1i1p1f1
+          grid: gn
+          institute: NCC
+
+        - dataset: NorESM2-MM
+          ensemble: r(1:2)i1p1f1
+          grid: gn
+          institute: NCC
+
+        # Predictand missing
+        # - dataset: NorESM2-MM
+        #   ensemble: r(1:2)i1p1f1
+        #   grid: gn
+        #   institute: NCC
+
+        # No sftof
+        # - dataset: UKESM1-0-LL
+        #   ensemble: r13i1p1f2
+        #   grid: gn
+        #   institute: NIMS-KMA
+
       predictand:
         short_name: ps
         mip: Amon
         preprocessor: predictand_preproc
-        start_year: 1850
-        end_year: 2010
         project: CMIP6
         exp: historical
-        grid: gn
+        timerange: 185001/201412
+        additional_datasets:
+        - dataset: ACCESS-ESM1-5
+          ensemble: r(1:10)i1p1f1
+          grid: gn
+          institute: CSIRO
+
+        - dataset: CIESM
+          ensemble: r(1:3)i1p1f1
+          grid: gr
+          institute: THU
+
+        - dataset: CNRM-CM6-1
+          ensemble: r(1:18)i1p1f2
+          grid: gr
+          institute: CNRM-CERFACS
+
+        - dataset: CNRM-CM6-1-HR
+          ensemble: r1i1p1f2
+          grid: gr
+          institute: CNRM-CERFACS
+
+        - dataset: CNRM-ESM2-1
+          ensemble: r(1:5)i1p1f2
+          grid: gr
+          institute: CNRM-CERFACS
+
+        - dataset: CNRM-ESM2-1
+          ensemble: r(7:10)i1p1f2
+          grid: gr
+          institute: CNRM-CERFACS
+
+        - dataset: CanESM5
+          ensemble: r(1:10)i1p2f1
+          grid: gn
+          institute: CCCma
+
+        - dataset: CanESM5
+          ensemble: r22i1p2f1
+          grid: gn
+          institute: CCCma
+
+        - dataset: EC-Earth3
+          ensemble: r1i1p1f1
+          grid: gr
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-AerChem
+          ensemble: r1i1p1f1
+          grid: gr
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-CC
+          ensemble: r1i1p1f1
+          grid: gr
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-Veg
+          ensemble: r1i1p1f1
+          grid: gr
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-Veg-LR
+          ensemble: r1i1p1f1
+          grid: gr
+          institute: EC-Earth-Consortium
+
+        - dataset: FGOALS-f3-L
+          ensemble: r(1:3)i1p1f1
+          grid: gr
+          institute: CAS
+
+        - dataset: FGOALS-g3
+          ensemble: r(1:6)i1p1f1
+          grid: gn
+          institute: CAS
+
+        - dataset: GFDL-CM4
+          ensemble: r1i1p1f1
+          grid: gr1
+          institute: NOAA-GFDL
+
+        - dataset: GFDL-ESM4
+          ensemble: r(1:3)i1p1f1
+          grid: gr1
+          institute: NOAA-GFDL
+
+        - dataset: GISS-E2-1-G
+          ensemble: r(1:10)i1p1f(1:2)
+          grid: gn
+          institute: NASA-GISS
+
+        - dataset: IPSL-CM5A2-INCA
+          ensemble: r1i1p1f1
+          grid: gr
+          institute: IPSL
+
+        - dataset: IPSL-CM6A-LR
+          ensemble: r(1:32)i1p1f1
+          grid: gr
+          institute: IPSL
+
+        # - dataset: MIROC-ES2H
+        #   ensemble: r1i1p1f2
+        #   grid: gn
+        #   institute: MIROC
+        #   timerange: 185001/185012
+        - dataset: MIROC-ES2H
+          ensemble: r1i1p4f2
+          grid: gn
+          institute: MIROC
+
+        - dataset: MIROC-ES2L
+          ensemble: r(1:3)i1p1f2
+          grid: gn
+          institute: MIROC
+
+        - dataset: NorCPM1
+          ensemble: r1i1p1f1
+          grid: gn
+          institute: NCC
+
+        - dataset: NorESM2-MM
+          ensemble: r(1:2)i1p1f1
+          grid: gn
+          institute: NCC
+
+        # No predictor available
+        # - dataset: UKESM1-0-LL
+        #   ensemble: r(13:14)i1p1f2
+        #   grid: gn
+        #   institute: NIMS-KMA
+
     scripts:
       mca:
         script: spy4cast/mca.py

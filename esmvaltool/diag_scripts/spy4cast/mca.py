@@ -56,8 +56,10 @@ def main(cfg):
 
     groups = group_metadata(input_data, 'alias', sort='alias')
     for dataset in groups:
-        logger.info("Processing dataset %s", dataset)
+        # logger.info("Processing dataset %s", dataset)
         variables = group_metadata(groups[dataset], 'variable_group')
+        if 'predictor' not in variables or 'predictand' not in variables:
+            logger.info(f"Dataset {dataset} incomplete: variables: {variables.keys()}")
         if 'predictor' not in variables:
             continue
         predictor = variables['predictor'][0]

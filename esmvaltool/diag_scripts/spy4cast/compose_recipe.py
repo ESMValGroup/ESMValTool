@@ -1,7 +1,7 @@
 from esmvalcore.config import CFG
 from esmvalcore.dataset import Dataset, datasets_to_recipe
 import yaml
-dataset_template = Dataset(
+tos_template = Dataset(
     short_name='tos',
     mip='Omon',
     project='CMIP6',
@@ -9,10 +9,11 @@ dataset_template = Dataset(
     institute='*',
     ensemble='*',
     exp='historical',
-    grid='gn',
-    timerange='1850/2000',
+    grid='*',
+    timerange='*',
 )
-datasets = list(dataset_template.from_files())
+ps_template =  tos_template.copy(short_name='ps', mip='Amon')
+datasets = list(tos_template.from_files()) + list(ps_template.from_files())
 len(datasets)
 for dataset in datasets:
     dataset.facets['diagnostic'] = 'mca'
