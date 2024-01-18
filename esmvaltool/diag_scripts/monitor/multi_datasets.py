@@ -2038,7 +2038,6 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-
     def create_diurnal_cycle_plot(self, datasets):
         """Create diurnal cycle plot."""
         plot_type = 'diurnal_cycle'
@@ -2114,7 +2113,6 @@ class MultiDatasets(MonitorBase):
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
-
 
     def create_map_plot(self, datasets):
         """Create map plot."""
