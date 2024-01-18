@@ -22,7 +22,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.10.*
+  # - esmvalcore 2.10.*
   - fiona
   - fire
   - gdal
@@ -86,7 +86,7 @@ dependencies:
   - docformatter
   - isort
   - pre-commit
-  - prospector
+  # - prospector
   - pyroma
   # - vprof not on conda-forge
   - yamllint
