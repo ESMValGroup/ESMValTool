@@ -265,9 +265,9 @@ preprocessors:
   predictor_preproc:
     regrid:
       target_grid:
-        start_longitude: 120
-        end_longitude: 280
-        start_latitude: 30
+        start_longitude: -200
+        end_longitude: -60
+        start_latitude: -30
         end_latitude: 60
         step_longitude: 2
         step_latitude: 2
@@ -785,7 +785,6 @@ diagnostics:
     scripts:
       mca:
         script: spy4cast/mca.py
-        cross_validation: False
+        cross_validation: True
         modes: 3
         alpha: 0.1  # Significance level
-        season: ND
