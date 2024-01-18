@@ -22,7 +22,8 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1970,  end_year: 2021}
+  # - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1970,  end_year: 2021}
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 1990,  end_year: 1991}
 
 diagnostics:
 
