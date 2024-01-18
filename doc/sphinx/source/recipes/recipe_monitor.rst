@@ -190,7 +190,7 @@ Timeseries of tas including a reference dataset.
 Annual cycle of tas including a reference dataset.
 
 .. _fig_diurnal_cycle:
-.. figure::  /recipes/figures/monitor/diurnalcycle_pr_tropics_MPI-ESM1-2-LR-3hr_historical_r1i1p1f1.png
+.. figure::  /recipes/figures/monitor/diurnalcycle_pr_tropics_MPI-ESM1-2-LR_3hr_historical_r1i1p1f1.png
    :align:   center
    :width:   14cm
 
