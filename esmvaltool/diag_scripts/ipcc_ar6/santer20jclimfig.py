@@ -202,7 +202,7 @@ def _plot_extratrends(cfg, extratrends, trends, period):
     if 'histmin' in cfg.keys():
         histmin = cfg['histmin']
     else:
-        histmin = 0
+       histmin = 0
 
     if 'histmax' in cfg.keys():
         histmax = cfg['histmax']
@@ -319,7 +319,16 @@ def _plot_trends(cfg, trends, valid_datasets, period):
     if 'histmin' in cfg.keys():
         histmin = cfg['histmin']
     else:
-        histmin = 0
+        histmin = 1000
+        if trends['cmip5']:
+            histmin = np.min(np.array([histmin, np.min(np.fromiter(trends['cmip5'].values(),
+                                           dtype=float))]))
+        if trends['cmip6']:
+            histmin = np.min(np.array([histmin, np.min(np.fromiter(trends['cmip6'].values(),
+                                           dtype=float))]))
+        if trends['obs']:
+            histmin = np.min(np.array([histmin, np.min(np.fromiter(trends['obs'].values(),
+                                           dtype=float))]))
         
     if 'histmax' in cfg.keys():
         histmax = cfg['histmax']
