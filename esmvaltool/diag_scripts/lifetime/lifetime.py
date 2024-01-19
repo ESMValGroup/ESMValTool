@@ -71,6 +71,10 @@ seaborn_settings: dict, optional
 
 Configuration options for plot type ``timeseries``
 --------------------------------------------------
+annual_mean: str, optional
+    Optional switch to turn on annual means to be displayed  'only' or
+    additional 'both' to the original timeseries. If not set or set to 'False'
+    only the original timeseries is shown.
 annual_mean_kwargs: dict, optional
     Optional keyword arguments for :func:`iris.plot.plot` for plotting annual
     means. These keyword arguments update (and potentially overwrite) the
@@ -358,6 +362,7 @@ class CH4Lifetime(LifetimeBase):
 
             # Default options for the different plot types
             if plot_type == 'timeseries':
+                self.plots[plot_type].setdefault('annual_mean', False)
                 self.plots[plot_type].setdefault('annual_mean_kwargs', {})
                 self.plots[plot_type].setdefault('gridline_kwargs', {})
                 self.plots[plot_type].setdefault('legend_kwargs', {})
@@ -689,15 +694,14 @@ class CH4Lifetime(LifetimeBase):
         reaction = 0.
         for name, oxid in oxidant.items():
             oxid_in_molec = oxid * rho
-            reaction = (reaction
-                        + calculate_reaction_rate(
+            reaction_rate = calculate_reaction_rate(
                             temp,
                             f"{name_reactant.upper()}+{name.upper()}",
                             self.cfg['oxidant'][name]['A'],
                             self.cfg['oxidant'][name]['ER'],
                             self.cfg['oxidant'][name]['b'])
-                        * oxid_in_molec)
-
+            reaction = (reaction
+                        + reaction_rate * oxid_in_molec)
         # test for correct units
         if not reaction.units == 's-1':
             raise ValueError("The units of the reaction rate is"
@@ -1121,19 +1125,24 @@ class CH4Lifetime(LifetimeBase):
                 plot_kwargs['label'] = (f"{plot_kwargs['label']}"
                                         f" ({mean.data:.2f})")
 
-            iris.plot.plot(cube, **plot_kwargs)
 
             # Plot annual means if desired
-            annual_mean_kwargs = self.plots[plot_type]['annual_mean_kwargs']
-            if annual_mean_kwargs is not False:
+            annual_mean = self.plots[plot_type]['annual_mean']
+            if annual_mean in [False, 'both']:
+                iris.plot.plot(cube, **plot_kwargs)
+            elif annual_mean in ['both', 'only']:
                 logger.debug("Plotting annual means")
                 if not cube.coords('year'):
                     add_year(cube, 'time')
                 annual_mean_cube = cube.aggregated_by('year',
                                                       iris.analysis.MEAN)
+
                 plot_kwargs.pop('label', None)
-                plot_kwargs.update(annual_mean_kwargs)
+                plot_kwargs.update(self.plots[plot_type]['annual_mean_kwargs'])
                 iris.plot.plot(annual_mean_cube, **plot_kwargs)
+            else:
+                raise ValueError(f"uknown option for annual_mean."
+                                 "Choose False, 'both', or 'only'.")
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(
