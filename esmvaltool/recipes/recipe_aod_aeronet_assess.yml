@@ -20,10 +20,16 @@ documentation:
 
 preprocessors:
   ma_season_mean:
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: nearest
     climate_statistics:
       operator: mean
       period: season
       seasons: ['DJF', 'MAM', 'JJA', 'SON']
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
 
 diagnostics:
   od440aer_climatologies:
@@ -44,6 +50,10 @@ diagnostics:
         additional_datasets:
           - {dataset: UKESM1-0-LL, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f2, grid: gn}
           - {dataset: HadGEM3-GC31-LL, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f3, grid: gn}
+          - {dataset: EC-Earth3-AerChem, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#          - {dataset: NorESM2-LM, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: GFDL-ESM4, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f1, grid: gn}
 
     scripts:
       script1:

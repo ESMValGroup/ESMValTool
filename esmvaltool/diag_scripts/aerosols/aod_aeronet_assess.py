@@ -144,7 +144,10 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
     wv_mi = str(float(wavel) / 1000.0)
 
     # Get model run id
-    md_id = md_data.attributes["parent_source_id"]
+    if "parent_source_id" in md_data.attributes:
+        md_id = md_data.attributes["parent_source_id"]
+    else:
+        md_id = "Multi-Model-Mean"
 
     # Add bounds for lat and lon if not present
     md_data = add_bounds(md_data)
@@ -409,7 +412,7 @@ def main(config):
                                 "_" + attributes["mip"] + "_" +
                                 attributes["exp"] + "_" +
                                 attributes["short_name"] + "_" +
-                                attributes["grid"] + "_" +
+#                                attributes["grid"] + "_" +
                                 str(attributes["start_year"]) + "_" +
                                 str(attributes["end_year"]) + "_")
 
