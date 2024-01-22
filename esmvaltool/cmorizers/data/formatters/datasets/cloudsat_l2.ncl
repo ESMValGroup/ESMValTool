@@ -58,6 +58,7 @@
 ;                  --end=2015 CLOUDSAT-L2
 ;
 ; Modification history
+;    20230904-lauer_axel: added output of clwvi (iwp + lwp)
 ;    20220809-lauer_axel: adapted CMORizer to new format introduced in
 ;                         ESMValTool v2.5.0 and added info message
 ;    20210924-lauer_axel: added processing of lwp and iwp
@@ -100,12 +101,13 @@ begin
   end if
 
   ; output variable (standard name)
-  outvar = (/"clw", "lwp", "clivi"/)
+  outvar = (/"clw", "lwp", "clivi", "clwvi"/)
 
   ; input variables
   var = (/"LO_RO_liquid_water_content_2B_CWC_RO", \
           "LO_RO_liquid_water_path_2B_CWC_RO",    \
-          "IO_RO_ice_water_path_2B_CWC_RO"/)
+          "IO_RO_ice_water_path_2B_CWC_RO",       \
+          "dummy"/)
 
   var_flag = "Precip_flag_2C_PRECIP_COLUMN"
 
@@ -120,6 +122,7 @@ begin
   CMOR_TABLE = getenv("cmor_tables") + \
     (/"/cmip5/Tables/CMIP5_" + mip, \
       "/custom/CMOR_lwp.dat", \
+      "/cmip5/Tables/CMIP5_" + mip, \
       "/cmip5/Tables/CMIP5_" + mip/)
 
   ; Type
@@ -168,26 +171,26 @@ begin
   grid = new((/nt, nz, ny, nx/), float)
   gridpts = new((/nt, nz, ny, nx/), integer)
 
-  grid2d = new((/nt, 2, ny, nx/), float)
-  gridpts2d = new((/nt, 2, ny, nx/), integer)
+  grid2d = new((/nt, 3, ny, nx/), float)
+  gridpts2d = new((/nt, 3, ny, nx/), integer)
 
   ; "grid-box average" (all points)
   grid_avg = new((/nt, nz, ny, nx/), float)
   gridpts_avg = new((/nt, nz, ny, nx/), integer)
-  grid2d_avg = new((/nt, 2, ny, nx/), float)
-  gridpts2d_avg = new((/nt, 2, ny, nx/), integer)
+  grid2d_avg = new((/nt, 3, ny, nx/), float)
+  gridpts2d_avg = new((/nt, 3, ny, nx/), integer)
 
   ; "in-cloud" (no precipitation)
   grid_noprecip = new((/nt, nz, ny, nx/), float)
   gridpts_noprecip = new((/nt, nz, ny, nx/), integer)
-  grid2d_noprecip = new((/nt, 2, ny, nx/), float)
-  gridpts2d_noprecip = new((/nt, 2, ny, nx/), integer)
+  grid2d_noprecip = new((/nt, 3, ny, nx/), float)
+  gridpts2d_noprecip = new((/nt, 3, ny, nx/), integer)
 
   ; "grid-box average" (no precipitation)
   grid_avg_noprecip = new((/nt, nz, ny, nx/), float)
   gridpts_avg_noprecip = new((/nt, nz, ny, nx/), integer)
-  grid2d_avg_noprecip = new((/nt, 2, ny, nx/), float)
-  gridpts2d_avg_noprecip = new((/nt, 2, ny, nx/), integer)
+  grid2d_avg_noprecip = new((/nt, 3, ny, nx/), float)
+  gridpts2d_avg_noprecip = new((/nt, 3, ny, nx/), integer)
 
   ; boundaries of vertical (height) bins
 
@@ -491,21 +494,27 @@ begin
         delete(lon_ext)
         delete(hgt1d)
 
-        ; ===================================
-        ; 2-dim cloud liquid / ice water path
-        ; ===================================
+        ; ============================================================
+        ; 2-dim cloud liquid / ice water path / total cloud water path
+        ; ============================================================
 
-        do ivar = 1, 2
+        do ivar = 1, 3
           if (outvar(ivar) .eq. "lwp") then
             x = l1d
             ilev = 0
           else if (outvar(ivar) .eq. "clivi") then
             x = i1d
             ilev = 1
+          else if (outvar(ivar) .eq. "clwvi") then
+            ; clwvi is calculated from the *output* fields of lwp and iwp
+            ; to make sure it is the sum of the two (masking, etc.)
+            ; --> nothing to do here
+            continue
           else
             log_info("Warning: output variable unknown: " + outvar(ivar) + \
                      ", skipping variable " + outvar(ivar) + ".")
             continue
+          end if
           end if
           end if
 
@@ -746,11 +755,23 @@ begin
 
     ; save results to files
 
-    do ivar = 1, 2
+    do ivar = 1, 3
       if (outvar(ivar) .eq. "lwp") then
         ilev = 0
       else if (outvar(ivar) .eq. "clivi") then
         ilev = 1
+      else if (outvar(ivar) .eq. "clwvi") then
+        ; calculate clwvi (lwp+iwp) as sum of output fields for lwp and iwp
+        ilev = 2
+        grid2d(:, ilev, :, :) = grid2d(:, 0, :, :) \
+          + grid2d(:, 1, :, :)
+        grid2d_avg(:, ilev, :, :) = grid2d_avg(:, 0, :, :) \
+          + grid2d_avg(:, 1, :, :)
+        grid2d_noprecip(:, ilev, :, :) = grid2d_noprecip(:, 0, :, :) \
+          + grid2d_noprecip(:, 1, :, :)
+        grid2d_avg_noprecip(:, ilev, :, :) = grid2d_avg_noprecip(:, 0, :, :) \
+          + grid2d_avg_noprecip(:, 1, :, :)
+      end if
       end if
       end if
 
@@ -842,7 +863,7 @@ begin
     write_nc(fout, outvar(ivar), output, bounds, gAtt)
     delete(output)
     delete(gAtt)
-    end do  ; loop over implemented 2-dim variables (lwp, iwp)
+    end do  ; loop over implemented 2-dim variables (lwp, iwp, lwp+iwp)
   end do  ; loop over years
 
 end

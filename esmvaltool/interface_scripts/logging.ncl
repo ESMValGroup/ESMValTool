@@ -336,6 +336,12 @@ begin
   if (outfile .ne. "n/a") then
     suffix = get_file_suffix(outfile, 0)
 
+    if (ismissing(suffix)) then
+      error_msg("f", scriptname, funcname, "got invalid value for outfile " + \
+                "(path to figure): '" + outfile + "'; expected path to a " + \
+                "file or 'n/a'")
+    end if
+
     ; For PNGs, additionally check for existence of files like
     ; "plot_file.000001.png", "plot_file.000002.png", etc. and save
     ; provenance record for each of them
@@ -354,7 +360,10 @@ begin
           break
         end if
       end do
-    else
+    end if
+
+    ; For all other cases, use outfile
+    if (.not. isvar("all_outfiles")) then
       all_outfiles = outfile
     end if
 
@@ -362,6 +371,13 @@ begin
     original_entry = outstring
     do outfile_idx = 0, dimsizes(all_outfiles) - 1
       file_to_add := all_outfiles(outfile_idx)
+      if (.not. fileexists(file_to_add)) then
+        error_msg("f", scriptname, funcname, "outfile (path to figure) '" + \
+                  file_to_add + "' does not exist (for PNGs, this " + \
+                  "function also searches for 'FILE.000001.png', " + \
+                  "'FILE.000002.png', etc.); if no plot file is available " + \
+                  "use 'n/a'")
+      end if
       new_entry = (/original_entry/)
       new_entry(0) = "? " + file_to_add
       outstring := array_append_record(outstring, new_entry, 0)
