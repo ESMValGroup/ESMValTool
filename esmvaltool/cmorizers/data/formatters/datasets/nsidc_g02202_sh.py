@@ -96,14 +96,17 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir,latlon):
 def _create_areacello(cfg, in_dir, sample_cube, glob_attrs, out_dir):
     if not cfg['custom'].get('create_areacello', False):
         return
-    var_info = cfg['cmor_table'].get_variable('fx', 'areacello')
-    glob_attrs['mip'] = 'fx'
+    var_info = cfg['cmor_table'].get_variable('Ofx', 'areacello') #O
+    glob_attrs['mip'] = 'Ofx'
     lat_coord = sample_cube.coord('latitude')
 
     area_file = os.path.join(in_dir,cfg['custom']['area_file'])
     datFile=open(area_file, 'rb')
-    ardata = np.fromfile(datFile, dtype=np.int32).reshape(lat_coord.shape)
+    areasDmNd = np.fromfile(datFile, dtype=np.int32).reshape(lat_coord.shape)
     
+    #Divide by 1000 to get km2 then *1e6 to m2 ...*1000
+    ardata=areasDmNd*1000
+
     cube = iris.cube.Cube(ardata,
         standard_name=var_info.standard_name,
         long_name=var_info.long_name,
