@@ -1808,7 +1808,9 @@ class MultiDatasets(MonitorBase):
             'hovmoeller_z_vs_time': (['time', 'air_pressure'],
                                      ['time', 'altitude']),
             'hovmoeller_time_vs_lat_or_lon': (['time', 'latitude'],
-                                              ['time', 'longitude']),
+                                              ['time', 'longitude'],
+                                              ['month_number', 'latitude'],
+                                              ['month_number', 'longitude']),
         }
         if plot_type not in expected_dimensions_dict:
             raise NotImplementedError(f"plot_type '{plot_type}' not supported")

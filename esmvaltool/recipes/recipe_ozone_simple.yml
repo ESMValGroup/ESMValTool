@@ -1,0 +1,148 @@
+# ESMValTool
+---
+documentation:
+  title: Ozone test diags
+  description: >
+    Test recipe for simple ozone diagnostics..
+  authors:
+    - lauer_axel
+  maintainer:
+    - lauer_axel
+
+
+# Note: the following models are just examples
+datasets:
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 2000, end_year: 2005}
+
+
+preprocessors:
+
+  pp_climatology:
+    climate_statistics:
+      period: full
+    convert_units:
+      units: DU
+
+  pp_hovmoeller:
+    climate_statistics:
+      period: month
+    zonal_statistics:
+      operator: mean
+
+  pp_profile:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
+    climate_statistics:
+      period: full
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev19}
+      scheme: linear
+      coordinate: air_pressure
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -20
+      end_latitude: 20
+    area_statistics:
+      operator: mean
+
+  pp_timeseries:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -20
+      end_latitude: 20
+    area_statistics:
+      operator: mean
+    convert_units:
+      units: DU
+
+  zonal_mean:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
+    climate_statistics:
+      period: full
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev19}
+      scheme: linear
+      coordinate: air_pressure
+    zonal_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  toz_maps:
+    description: Plot total ozone column climatology maps.
+    variables:
+      toz:
+        derive: true
+        mip: Amon
+        preprocessor: pp_climatology
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          map:
+            common_cbar: true
+
+  toz_timeseries:
+    description: Plot total ozone column time series.
+    variables:
+      toz:
+        derive: true
+        mip: Amon
+        preprocessor: pp_timeseries
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          timeseries:
+
+  o3_zonalmean:
+    description: Plot ozone zonal mean profiles.
+    variables:
+      o3:
+        mip: Amon
+        preprocessor: zonal_mean
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          profile:
+            common_cbar: true
+
+  o3_profiles:
+    description: Plot ozone vertical profiles.
+    variables:
+      o3:
+        mip: Amon
+        preprocessor: pp_profile
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          1d_profile:
+
+  toz_hovmoeller:
+    description: Plot total ozone column Hovmoeller diagrams.
+    variables:
+      toz:
+        derive: true
+        mip: Amon
+        preprocessor: pp_hovmoeller
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          hovmoeller_time_vs_lat_or_lon:
+            common_cbar: true
