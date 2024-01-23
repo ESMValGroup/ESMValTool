@@ -13,29 +13,8 @@ Last access
     20200520
 
 Download and processing instructions
-    The data is available via an ftp-server provided by NOAA. The script
-    below can be used to automate the process.
-
-.. code-block:: bash
-
-    #!/bin/env bash
-
-    url=ftp://ftp.ncdc.noaa.gov/pub/data/cmb/ersst/v5/netcdf
-    yr=1854
-    while [ $yr -le 2019 ]
-    do
-        nm=1
-        while [ $nm -le 12 ]
-        do
-            if [ $nm -lt 10 ]
-            then
-                nm=0$nm
-            fi
-            wget $url/ersst.v5.$yr$nm.nc
-            nm=$(expr $nm + 1)
-        done
-        yr=$(expr $yr + 1)
-    done
+    The data is provided by NOAA at:
+    https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/netcdf/
 
 """
 
