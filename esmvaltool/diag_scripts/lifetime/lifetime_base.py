@@ -258,6 +258,12 @@ def calculate_lifetime(dataset, plot_type, region):
     reaction = extract_region(dataset, region, case='reaction')
     weight = extract_region(dataset, region, case='weight')
 
+    print(reaction)
+    print(weight)
+    sys.exit(2)
+    print(iris.analysis.maths.multiply(weight, reaction))
+    print(reaction*weight)
+
     # calculate nominator and denominator
     # and sum of nominator and denominator via plot_type dimensions
     nominator = sum_up_to_plot_dimensions(weight, plot_type)
@@ -288,8 +294,6 @@ def extract_region(dataset, region, case='reaction'):
     var = dataset[case]
     z_coord = dataset['z_coord']
 
-    print(var.coords('air_pressure'))
-
     if ('ptp' not in dataset['variables'] and
         'tp_i' not in dataset['variables']
     ):
@@ -311,6 +315,8 @@ def extract_region(dataset, region, case='reaction'):
                 tropopause = dataset['variables']['ptp']
             else:
                 tropopause = tp_clim
+
+
 
         z_4d = broadcast_to_shape(
             var.coord(use_z_coord).points,
@@ -336,10 +342,10 @@ def extract_region(dataset, region, case='reaction'):
                 var.data,
                 mask=(z_4d > tp_4d),
             )
+        sys.exit(2)
     else:
         raise NotImplementedError(f"region '{region}' is not supported")
 
-    print(var.coords('air_pressure'))
     return var
 
 
@@ -349,14 +355,14 @@ def climatological_tropopause(cube):
         raise NotImplementedError("The provided cube must"
                                   " have a latitude cooridnate")
 
-    latitude = broadcast_to_shape(
-        cube.coord('latitude').points,
+    tpp = (300. - 215. * (np.cos(np.deg2rad(cube.coord('latitude').points)) ** 2)) * 100.
+
+    tp_clim = cube.copy()
+    tp_clim.data = broadcast_to_shape(
+        tpp,
         cube.shape,
         cube.coord_dims('latitude')
     )
-
-    tp_clim = cube.copy()
-    tp_clim.data = (300. - 215. * (np.cos(np.deg2rad(latitude)) ** 2)) * 100.
     tp_clim.var_name = 'tp_clim'
     tp_clim.long_name = 'climatological tropopause pressure'
     tp_clim.units = 'Pa'

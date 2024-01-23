@@ -1130,6 +1130,7 @@ class CH4Lifetime(LifetimeBase):
             annual_mean = self.plots[plot_type]['annual_mean']
             if annual_mean in [False, 'both']:
                 iris.plot.plot(cube, **plot_kwargs)
+                plot_kwargs.pop('label', None)
             elif annual_mean in ['both', 'only']:
                 logger.debug("Plotting annual means")
                 if not cube.coords('year'):
@@ -1137,7 +1138,6 @@ class CH4Lifetime(LifetimeBase):
                 annual_mean_cube = cube.aggregated_by('year',
                                                       iris.analysis.MEAN)
 
-                plot_kwargs.pop('label', None)
                 plot_kwargs.update(self.plots[plot_type]['annual_mean_kwargs'])
                 iris.plot.plot(annual_mean_cube, **plot_kwargs)
             else:
