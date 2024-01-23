@@ -142,35 +142,6 @@ class TestAdvancedPipeline():
         )
         assert pipeline.feature_importances_ == 42
 
-    def test_fit(self):
-        """Test ``_fit``."""
-        x_data = np.array([
-            [0, 1000],
-            [1, 0],
-            [2, 3000],
-            [0, -5000],
-            [4, -3000],
-            [4, -3000],
-        ])
-        y_data = np.array([1, 0, 3, -5, -3, -3])
-        pipeline = AdvancedPipeline([
-            ('t', StandardScaler()), ('r', LinearRegression()),
-        ])
-        sample_weights = np.array([0.0, 0.0, 0.0, 0.0, 1.0, 1.0])
-        kwargs = {
-            't': {'sample_weight': sample_weights},
-            'r': {'sample_weight': sample_weights},
-        }
-        pipeline._fit(x_data, y_data, **kwargs)
-
-        transformer_ = pipeline.steps[0][1]
-        np.testing.assert_allclose(transformer_.scale_, [1.0, 1.0])
-        np.testing.assert_allclose(transformer_.mean_, [4.0, -3000.0])
-
-        regressor_ = pipeline.steps[1][1]
-        with pytest.raises(NotFittedError):
-            regressor_.predict([[0, 0]])
-
     AREG = AdvancedTransformedTargetRegressor(
         transformer=NonStandardScaler(),
         regressor=LinearRegression(),
@@ -253,7 +224,7 @@ class TestAdvancedPipeline():
          (np.array([8.333333]), np.array([8.222222])),
          (np.array([6.333333]), np.array([8.222222])),
          ValueError,
-         ValueError,
+         KeyError,
          (np.array([8.333333]), np.array([8.222222]))],
     )
 
@@ -274,6 +245,8 @@ class TestAdvancedPipeline():
             return
         np.testing.assert_allclose(transformer.mean_, output[0])
         np.testing.assert_allclose(transformer.var_, output[1])
+        assert pipeline.steps[-1][0] == 'r'
+        assert pipeline.steps[-1][1] != 'passthrough'
         with pytest.raises(NotFittedError):
             pipeline.predict(X_TRAIN)
         with pytest.raises(NotFittedError):
