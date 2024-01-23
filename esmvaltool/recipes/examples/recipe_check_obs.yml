@@ -167,6 +167,7 @@ diagnostics:
       clivi:
       clt:
       cltStderr:
+      clwvi:
       lwp:
       rlut:
       rlutcs:
@@ -1083,6 +1084,8 @@ diagnostics:
         mip: Amon
       clivi:
         mip: Amon
+      clwvi:
+        mip: Amon
       lwp:
         mip: Amon
     additional_datasets:
@@ -1096,6 +1099,7 @@ diagnostics:
     variables:
       clivi:
       clw:
+      clwvi:
       lwp:
     additional_datasets:
       - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
