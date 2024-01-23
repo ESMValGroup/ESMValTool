@@ -7,6 +7,7 @@ on:
     branches:
       - main
       - fix_recipe_filler_bkwds_incompatibility
+      - fix_sklearn_tests
   schedule:
     - cron: '0 0 * * *'
 
