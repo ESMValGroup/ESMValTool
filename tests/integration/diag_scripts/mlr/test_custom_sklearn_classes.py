@@ -455,8 +455,11 @@ class TestAdvancedRFE():
         np.testing.assert_array_equal(rfe.support_, [False, False, True])
         est = rfe.estimator_
         assert isinstance(est, AdvancedPipeline)
-        assert est.steps[0][1].transformers_ == [
-            ('passthrough', 'passthrough', [0])]
+        assert len(est.steps[0][1].transformers_) == 1
+        transformer = est.steps[0][1].transformers_[0]
+        assert transformer[0] == 'passthrough'
+        assert isinstance(transformer[1], FunctionTransformer)
+        assert transformer[2] == [0]
         np.testing.assert_allclose(est.steps[1][1].coef_, [1.0])
         np.testing.assert_allclose(est.steps[1][1].intercept_, 0.0, atol=1e-10)
         pred = rfe.predict(self.X_PRED)
@@ -473,8 +476,11 @@ class TestAdvancedRFE():
         np.testing.assert_array_equal(rfe.support_, [True, False, False])
         est = rfe.estimator_
         assert isinstance(est, AdvancedPipeline)
-        assert est.steps[0][1].transformers_ == [
-            ('passthrough', 'passthrough', [0])]
+        assert len(est.steps[0][1].transformers_) == 1
+        transformer = est.steps[0][1].transformers_[0]
+        assert transformer[0] == 'passthrough'
+        assert isinstance(transformer[1], FunctionTransformer)
+        assert transformer[2] == [0]
         np.testing.assert_allclose(est.steps[1][1].coef_, [0.5])
         np.testing.assert_allclose(est.steps[1][1].intercept_, 0.0, atol=1e-10)
         pred = rfe.predict(self.X_PRED)
