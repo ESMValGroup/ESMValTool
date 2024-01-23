@@ -296,7 +296,6 @@ def extract_region(dataset, region, case='reaction'):
         tp_clim = climatological_tropopause(var[:, 0, :, :])
 
     if region in ['TROP', 'STRA']:
-        # - can I choose the troposphere by the preprocessor?
         use_z_coord = 'air_pressure'
         if z_coord.name() == 'air_pressure':
             if 'ptp' in dataset['variables']:
