@@ -62,7 +62,7 @@ REQUIREMENTS = {
         'requests',
         'ruamel.yaml',
         'scikit-image',
-        'scikit-learn',
+        'scikit-learn>=1.4.0',  # github.com/ESMValGroup/ESMValTool/issues/3504
         'scipy',
         'scitools-iris>=3.6.1',
         'seaborn',
