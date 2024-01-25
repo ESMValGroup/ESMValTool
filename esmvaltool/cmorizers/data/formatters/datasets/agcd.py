@@ -1,7 +1,7 @@
 """ESMValTool CMORizer for AGCD data.
 
 Tier
-    Tier 3: restricted dataset.
+    Tier 2: other freely available dataset.
 
 Source
     https://dx.doi.org/10.25914/rses-zh67
@@ -27,6 +27,7 @@ import re
 import iris
 
 from esmvaltool.cmorizers.data import utilities as utils
+from esmvalcore.cmor._fixes.shared import get_time_bounds
 
 logger = logging.getLogger(__name__)
 
@@ -80,6 +81,8 @@ def _extract_variable(cmor_info, attrs, filepath, out_dir):
         utils.fix_var_metadata(cube, cmor_info)
 
         utils.fix_coords(cube)
+        bounds = get_time_bounds(cube.coords('time')[0],'mon')
+        cube.coords('time')[0].bounds = bounds
         utils.set_global_atts(cube, attrs)
 
         logger.info("Saving file")

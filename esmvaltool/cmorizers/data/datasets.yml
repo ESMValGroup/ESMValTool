@@ -2,7 +2,7 @@
 ---
 datasets:
   AGCD:
-    tier: 3
+    tier: 2
     source: "http://dx.doi.org/10.25914/6009600786063"
     last_access: 2023-11-21
     info: |
