@@ -26,8 +26,8 @@ import re
 
 import iris
 
-from esmvaltool.cmorizers.data import utilities as utils
 from esmvalcore.cmor._fixes.shared import get_time_bounds
+from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +81,7 @@ def _extract_variable(cmor_info, attrs, filepath, out_dir):
         utils.fix_var_metadata(cube, cmor_info)
 
         utils.fix_coords(cube)
-        bounds = get_time_bounds(cube.coords('time')[0],'mon')
+        bounds = get_time_bounds(cube.coords('time')[0], 'mon')
         cube.coords('time')[0].bounds = bounds
         utils.set_global_atts(cube, attrs)
 
