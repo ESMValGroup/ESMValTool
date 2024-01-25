@@ -1,0 +1,76 @@
+# ESMValTool
+---
+documentation:
+  title: Benchmarking of a single model.
+  description: >
+    Benchmarking: map plots.
+  authors:
+    - lauer_axel
+    - schlund_manuel
+  maintainer:
+    - lauer_axel
+
+
+# Note: the following models are just examples
+datasets:
+#  - {project: CMIP6, dataset: IPSL-CM6A-LR, exp: historical, ensemble: r1i1p1f1, grid: gr}
+#  - {project: CMIP6, dataset: MIROC6, exp: historical, ensemble: r1i1p1f1, grid: gn, reference_for_metric: true}
+#  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#  - {project: CMIP6, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: bcc-csm1-1, version: v1, project: CMIP5, exp: historical, ensemble: r1i1p1, reference_for_metric: true}
+
+
+preprocessors:
+
+  pp_pr:
+    custom_order: true
+#    climate_statistics:
+#      period: month
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    convert_units:
+      units: mm day-1
+    distance_metric:
+      metric: rmse
+      coords: [time]
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, std_dev]
+      exclude: [reference_dataset]
+
+
+diagnostics:
+
+  benchmarking_maps:
+    description: Plot diurnal cycles including reference datasets.
+    variables:
+      pr:
+        timerange: '2001/2002'  # can be specified, this is just an example
+        preprocessor: pp_pr
+        mip: Amon
+        reference_dataset: bcc-csm1-1
+#        reference_dataset: GPCP-SG
+#        additional_datasets:
+#          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2, reference_for_metric: true}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+#        script: monitor/monitor.py
+        plot_folder: '{plot_dir}'
+#        plot_filename: '{plot_type}_{real_name}_{mip}'
+        group_variables_by: variable_group
+        plots:
+          map:
+#            legend_kwargs:
+#              loc: upper right
+#            plot_kwargs:
+#              MPI-ESM1-2-HR:
+#                color: C0
+#              MPI-ESM1-2-LR:
+#                color: C1
+#              GPM-IMERG:
+#                color: black
+#            pyplot_kwargs:
+#              title: '{short_name}'
