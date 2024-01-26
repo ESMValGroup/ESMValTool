@@ -22,19 +22,19 @@ years: &years
   #start_year: 2000
   #end_year: 2004
   timerange: 200001/200412
+  #timerange: 198201/201612
 
 
 ESACCI_CLOUD_datasets: &esacci
         - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2}
 ERA5_datasets: &era5
         - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
-          #- {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2, timerange: 200001/200008}
 
 
 preprocessors:
 
   south_east_pacific:
-    custom_order: true
+    #custom_order: true
     extract_region:
       #start_latitude: -30.
       start_latitude: -25.
@@ -45,13 +45,32 @@ preprocessors:
       end_longitude: 285.
     mask_landsea: &mask_land
       mask_out: land
-    anomalies:
-      period: daily
     area_statistics: &area_mean
-      operator: mean
+      operator: mean    
+    anomalies:
+      period: day
       #regrid:
       #  scheme: area_weighted
       #  target_grid: 5x5      
+
+  annual_cycle:
+    custom_order: true 
+    extract_region:
+      start_latitude: -25.
+      end_latitude: -20.
+      start_longitude: 280.
+      end_longitude: 285.
+    mask_landsea:
+      mask_out: land
+    area_statistics:
+      operator: mean    
+    climate_statistics:
+      operator: mean
+      period: day
+      #rolling_window_statistics:
+      #  coordinate: day_of_year
+      #  operator: mean
+      #  window_length: 30
 
 
 diagnostics:
@@ -60,7 +79,8 @@ diagnostics:
     description: Create timeseries.
     variables:
       clt: &var
-        preprocessor: south_east_pacific
+        #preprocessor: south_east_pacific
+        preprocessor: annual_cycle
         mip: day
         frequency: day
         additional_datasets: *esacci
@@ -76,38 +96,26 @@ diagnostics:
       reff:
         <<: *var
         mip: day
-        #rlut:
-        #  <<: *var
-        #  mip: day
       psl: &var2
-        preprocessor: south_east_pacific
+        #preprocessor: south_east_pacific
+        preprocessor: annual_cycle
         frequency: day
         mip: day
+        <<: *years
         additional_datasets: *era5
       ta700: 
-        preprocessor: south_east_pacific
-        frequency: day
+        <<: *var2
         mip: CFday 
-        <<: *years
-        additional_datasets: *era5
       ta1000: 
-        preprocessor: south_east_pacific
-        frequency: day
-        mip: day 
-        <<: *years
-        additional_datasets: *era5
+        <<: *var2
       tos:
         <<: *var2
-        mip: day
       wap700:
         <<: *var2
-        mip: day
-        #zg500:
-        #  <<: *var2
-        #  mip: day
       prw:
         <<: *var2
         mip: Eday
+        timerange: 199501/199912
     scripts: 
       timeseries:
         script: causal_clouds_timeseries.py
@@ -115,29 +123,5 @@ diagnostics:
           #- theta700
           #- theta850
           - LTS
-        
-
-
-    #  south_east_pacific_ccfactors:
-    #    description: Create timeseries.
-    #    variables:
-    #      prw:
-    #        <<: *var
-    #        mip: Eday
-    #        additional_datasets: *era5
-    #      psl:
-    #        <<: *var
-    #        mip: day
-    #        additional_datasets: *era5
-    #      tos:
-    #        <<: *var
-    #        mip: day
-    #        additional_datasets: *era5
-    #      wap500:
-    #        <<: *var
-    #        mip: CFday
-    #        additional_datasets: *era5
-    #      zg500:
-    #        <<: *var
-    #        mip: day
-    #        additional_datasets: *era5
+        plot_timeseries:
+          plot_type: plot

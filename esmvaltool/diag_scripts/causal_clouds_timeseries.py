@@ -48,29 +48,29 @@ def plot_diagnostic(cube, basename, provenance_record, cfg):
     """Create diagnostic data and plot it."""
 
     # Save the data used for the plot
-    save_data(basename, provenance_record, cfg, cube)
+    #save_data(basename, provenance_record, cfg, cube)
 
     #if cfg.get('quickplot'):
-    #    # Create the plot
-    #    quickplot(cube, **cfg['quickplot'])
-    #    # And save the plot
+    # Create the plot
+    quickplot(cube, **cfg['plot_timeseries'])
 
-    fig, axs = plt.subplots(25, sharex=True)
-    fig.suptitle(cube.var_name)
+    #fig, axs = plt.subplots(25, sharex=True)
+    #fig.suptitle(cube.var_name)
 
-    ipoint = 0
-    time = cube.coord('time').points
+    #ipoint = 0
+    #time = cube.coord('time').points
 
-    for ilat, lat in enumerate(cube.coord('latitude')):
-        for ilon, lon in enumerate(cube.coord('longitude')):
-            #if cube.data[0,ilat,ilon] > 0.:
-            if cube.data[0,ilat,ilon] == cube.data[0,ilat,ilon]:
-                print(ipoint, lat.points, lon.points, cube.data[:,ilat,ilon])
-                axs[ipoint].plot(time, cube.data[:,ilat,ilon], linewidth=0.5)
-                axs[ipoint].set_ylim(bottom=np.min(cube.data[:,:,:]), top=np.max(cube.data[:,:,:]))
-                axs[ipoint].tick_params(axis="y", labelsize=5)
-                ipoint = ipoint + 1
+    #for ilat, lat in enumerate(cube.coord('latitude')):
+    #    for ilon, lon in enumerate(cube.coord('longitude')):
+    #        #if cube.data[0,ilat,ilon] > 0.:
+    #        if cube.data[0,ilat,ilon] == cube.data[0,ilat,ilon]:
+    #            print(ipoint, lat.points, lon.points, cube.data[:,ilat,ilon])
+    #            axs[ipoint].plot(time, cube.data[:,ilat,ilon], linewidth=0.5)
+    #            axs[ipoint].set_ylim(bottom=np.min(cube.data[:,:,:]), top=np.max(cube.data[:,:,:]))
+    #            axs[ipoint].tick_params(axis="y", labelsize=5)
+    #            ipoint = ipoint + 1
 
+    # And save the plot
     save_figure(basename, provenance_record, cfg)
 
 
@@ -142,6 +142,8 @@ def calculate_lts(var, input_data, cfg):
     provenance_record = get_provenance_record(
         caption, ancestor_files=[file_1, file_2])
     save_data(basename, provenance_record, cfg, lts)
+    if cfg.get('plot_timeseries'):
+        plot_diagnostic(lts, basename, provenance_record, cfg)
 
     return lts
 
@@ -168,33 +170,30 @@ def main(cfg):
 
     ## Example of how to loop over variables/datasets in alphabetical order
     groups = group_metadata(input_data, 'variable_group', sort='dataset')
-    #for group_name in groups:
-    #    logger.info("Processing variable %s", group_name)
-    #    for attributes in groups[group_name]:
-    #        logger.info("Processing dataset %s", attributes['dataset'])
-    #        input_file = attributes['filename']
-    #        cube = compute_diagnostic(input_file)
+    for group_name in groups:
+        logger.info("Processing variable %s", group_name)
+        for attributes in groups[group_name]:
+            logger.info("Processing dataset %s", attributes['dataset'])
+            input_file = attributes['filename']
+            cube = read_data(input_file)
 
-    #        output_basename = Path(input_file).stem
-    #        if group_name != attributes['short_name']:
-    #            output_basename = group_name + '_' + output_basename
-    #        if "caption" not in attributes:
-    #            attributes['caption'] = input_file
-    #        provenance_record = get_provenance_record(
-    #            attributes, ancestor_files=[input_file])
-    #        if cfg.get('plot_timeseries'):
-    #            plot_diagnostic(cube, output_basename, provenance_record, cfg)
+            output_basename = Path(input_file).stem
+            if group_name != attributes['short_name']:
+                output_basename = group_name + '_' + output_basename
+            if "caption" not in attributes:
+                attributes['caption'] = input_file
+            provenance_record = get_provenance_record(
+                attributes, ancestor_files=[input_file])
+            if cfg.get('plot_timeseries'):
+                plot_diagnostic(cube, output_basename, provenance_record, cfg)
 
     if cfg.get('compute'):
         for var in cfg['compute']:
-            print(var)
             if var not in ['LTS', 'theta700', 'theta850']:
                 logger.error('Computation of %s is not available...', var)
             if 'theta' in var:
                 theta, file_theta = calculate_theta(var, input_data, cfg)
             if var == 'LTS':
-                print('groups')
-                print(groups)
                 for ivar in ['ta700', 'ta1000']:
                     if ivar not in groups:
                         logger.error('Variable %s is needed to calculate LTS but is not available', ivar)
