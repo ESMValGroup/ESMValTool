@@ -35,10 +35,10 @@ diagnostics:
         mip: Amon
       tas:
         mip: Amon
-      pr:
-        mip: Amon
-      psl:
-        mip: Amon
+#      pr:
+#        mip: Amon
+#      psl:
+#        mip: Amon
     scripts:
       cvdp:
         script: cvdp/cvdp_wrapper.py
