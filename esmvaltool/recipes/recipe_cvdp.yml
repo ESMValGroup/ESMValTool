@@ -21,16 +21,18 @@ documentation:
     - esmval
     - c3s-magic
 
+
 datasets:
   - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2010, end_year: 2014, grid: gn}
   - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2010, end_year: 2014, grid: gn}
+
 diagnostics:
 
   diagnostic1:
     description: Run the NCAR CVDPackage.
     variables:
       ts:
-        mip: Amon
+        mip: Amon #EG: you can check if the script is tunning f variables like pr, psl are commented out
       tas:
         mip: Amon
 #      pr:
