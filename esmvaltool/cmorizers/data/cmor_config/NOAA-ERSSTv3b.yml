@@ -1,0 +1,20 @@
+---
+# Filename
+filename: 'ersst.*.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  project_id: OBS6
+  dataset_id: NOAA-ERSSTv3b
+  version: 'v3b'
+  tier: 2
+  modeling_realm: reanaly
+  source: https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf/'
+  reference: 'ersstv3b'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  tos:
+    mip: Omon
+    raw: sst

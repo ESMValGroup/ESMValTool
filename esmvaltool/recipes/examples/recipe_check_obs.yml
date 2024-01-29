@@ -167,6 +167,7 @@ diagnostics:
       clivi:
       clt:
       cltStderr:
+      clwvi:
       lwp:
       rlut:
       rlutcs:
@@ -656,6 +657,24 @@ diagnostics:
          type: reanaly, version: v2, start_year: 1871, end_year: 2012}
     scripts: null
 
+  NOAA-ERSSTv5:
+    description: NOAA-ERSSTv5 check
+    variables:
+      tos:
+    additional_datasets:
+      - {dataset: NOAA-ERSSTv5, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: v5, start_year: 1854, end_year: 2000}
+    scripts: null
+
+  NOAA-ERSSTv3b:
+    description: NOAA-ERSSTv3b check
+    variables:
+      tos:
+    additional_datasets:
+      - {dataset: NOAA-ERSSTv3b, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: v3b, start_year: 1854, end_year: 2019}
+    scripts: null
+
   NOAA-MBL-CH4:
     description: NOAA marine boundary layer CH4 check
     variables:
@@ -1083,6 +1102,8 @@ diagnostics:
         mip: Amon
       clivi:
         mip: Amon
+      clwvi:
+        mip: Amon
       lwp:
         mip: Amon
     additional_datasets:
@@ -1096,6 +1117,7 @@ diagnostics:
     variables:
       clivi:
       clw:
+      clwvi:
       lwp:
     additional_datasets:
       - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
