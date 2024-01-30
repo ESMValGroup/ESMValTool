@@ -1,6 +1,22 @@
 """ESMValTool CMORizer for Sea Ice Concentration CDR.
+Tier
+   Tier 3: restricted dataset.
 
-https://nsidc.org/sites/default/files/g02202-v004-userguide_1_1.pdf
+Source
+   https://nsidc.org/data/g02202/versions/4
+
+Last access
+   20231213
+
+Download and processing instructions
+    Download data from:
+    https://noaadata.apps.nsidc.org/NOAA/G02202_V4/south/monthly
+    lat and lon from:
+    https://noaadata.apps.nsidc.org/NOAA/G02202_V4/ancillary/
+    area file:
+    ftp://sidads.colorado.edu/DATASETS/seaice/polar-stereo/tools/pss25area_v3.dat
+
+    https://nsidc.org/sites/default/files/g02202-v004-userguide_1_1.pdf
 
 """
 

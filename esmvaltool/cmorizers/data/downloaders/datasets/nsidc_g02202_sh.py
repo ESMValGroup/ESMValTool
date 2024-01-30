@@ -40,11 +40,11 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
-    # base_path = ("https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf"
-    #              "/ersst.{year}{month:02d}.nc")
 
     # !wget --ftp-user=anonymous -nc ftp://sidads.colorado.edu/DATASETS/seaice/polar-stereo/tools/pss25area_v3.dat
-    # need above as well
+    # need above area file
+    area_dat = 'ftp://sidads.colorado.edu/DATASETS/seaice/polar-stereo/tools/pss25area_v3.dat'
+    downloader.download_folder(area_dat, [])
 
     anc_path = 'https://noaadata.apps.nsidc.org/NOAA/G02202_V4/ancillary/G02202-cdr-ancillary-sh.nc'
     downloader.download_folder(anc_path, [])
