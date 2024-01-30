@@ -69,7 +69,7 @@ dependencies:
   - zarr
   # Python packages needed for testing
   - flake8
-  - pytest >=3.9,!=6.0.0rc1,!=6.0.0
+  - pytest >=3.9,!=6.0.0rc1,!=6.0.0, <8.0.0  # github.com/conda-forge/pytest-feedstock/issues/170 and github.com/ESMValGroup/ESMValTool/issues/3513
   - pytest-cov
   - pytest-env
   - pytest-html !=2.1.0
