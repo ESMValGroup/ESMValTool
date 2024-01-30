@@ -1,6 +1,5 @@
 ---
-# filename: 'agcd_v1-0-1_precip_total_r005_monthly_.*.nc'
-filename: 'ANUClimate_{version}_{raw}_{freq}_.*.nc'
+filename: 'ANUClimate_{version}_{raw}_{freq}_.*.nc' #yyyymm
 
 attributes:
   project_id: OBS6
@@ -8,39 +7,31 @@ attributes:
   version: 'v2-0'
   tier: 3
   modeling_realm: reanaly
-  # resolution: '005'
+  # resolution: '0.01 degree'
   source: 'https://dx.doi.org/10.25914/60a10aa56dd1b'
-  reference: ''
+  reference: 'anuclimate2'
   comment: 'hosted on NCI'
 
 variables:
   pr:
     mip: Amon
-    freq: monthly  # 
+    freq: monthly  # daily available
     raw: rain
 
   tasmax:
     mip: Amon
-  #   raw_long: Daily maximum air temperature, degrees_Celsius, monthly, mean
-  #   raw_calc: mean
     freq: monthly
     raw: tmax
   tasmin:
     mip: Amon
-  #   raw_calc: mean
     freq: monthly
     raw: tmin
   tas:
     mip: Amon
-  #   raw_calc: mean
     freq: monthly
     raw: tavg
 
-  evspsbl: #?
-    mip: Amon
-    freq: monthly
-    raw: evap
-  # huss: #solar radiation
+  # evspsbl: #?
   #   mip: Amon
-  #   raw_calc: mean #hPa
-  #   raw: srad
+  #   freq: monthly
+  #   raw: evap
