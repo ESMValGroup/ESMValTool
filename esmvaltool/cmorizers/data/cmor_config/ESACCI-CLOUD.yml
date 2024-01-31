@@ -12,7 +12,7 @@ attributes:
   reference: 'esacci_cloud'
   comment: ''
   start_year: 2000
-  end_year: 2004
+  end_year: 2007
 
 # Variables to cmorize
 variables:

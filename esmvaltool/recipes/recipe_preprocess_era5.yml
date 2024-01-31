@@ -24,16 +24,16 @@ documentation:
 
 datasets:
   # For the daily diagnostic, always add the next year, otherwise the last day is not cmor compatible
-  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 2000, end_year: 2005}
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 2000, end_year: 2008}
 
 
 preprocessors:
   add_one_day: &add_one_day
     extract_time:
-      start_year: 2004
+      start_year: 2000
       start_month: 1
       start_day: 1
-      end_year: 2005
+      end_year: 2008
       end_month: 1
       end_day: 1
 
@@ -58,46 +58,46 @@ diagnostics:
       rename:
         script: cmorizers/era5.py
     variables:
-            #prw:
-            #  mip: E1hr
-            #  era5_name: total_column_water_vapour
-            #  era5_freq: hourly
-            #  preprocessor: daily_mean
-            #psl:
-            #  mip: E1hr
-            #  era5_name: mean_sea_level_pressure
-            #  era5_freq: hourly
-            #  preprocessor: daily_mean
-            #ta700:
-            #    mip: E1hr
-            #    era5_name: temperature
-            #    era5_freq: hourly
-            #    preprocessor: daily_mean
-            #ta850:
-            #    mip: E1hr
-            #    era5_name: temperature
-            #    era5_freq: hourly
-            #    preprocessor: daily_mean
-            #ta1000:
-            #    mip: E1hr
-            #    era5_name: temperature
-            #    era5_freq: hourly
-            #    preprocessor: daily_mean
-          #tos:
+      prw:
+        mip: E1hr
+        era5_name: total_column_water_vapour
+        era5_freq: hourly
+        preprocessor: daily_mean
+      psl:
+        mip: E1hr
+        era5_name: mean_sea_level_pressure
+        era5_freq: hourly
+        preprocessor: daily_mean
+      ta700:
+          mip: E1hr
+          era5_name: temperature
+          era5_freq: hourly
+          preprocessor: daily_mean
+          #ta850:
           #    mip: E1hr
-          #    era5_name: sea_surface_temperature
+          #    era5_name: temperature
           #    era5_freq: hourly
           #    preprocessor: daily_mean
-          # wap500:
-          #     mip: E1hr
-          #     era5_name: vertical_velocity
-          #     era5_freq: hourly
-          #     preprocessor: daily_mean
-        wap700:
-            mip: E1hr
-            era5_name: vertical_velocity
-            era5_freq: hourly
-            preprocessor: daily_mean
+      ta1000:
+          mip: E1hr
+          era5_name: temperature
+          era5_freq: hourly
+          preprocessor: daily_mean
+      tos:
+          mip: E1hr
+          era5_name: sea_surface_temperature
+          era5_freq: hourly
+          preprocessor: daily_mean
+          #wap500:
+          #    mip: E1hr
+          #    era5_name: vertical_velocity
+          #    era5_freq: hourly
+          #    preprocessor: daily_mean
+      wap700:
+          mip: E1hr
+          era5_name: vertical_velocity
+          era5_freq: hourly
+          preprocessor: daily_mean
           #zg500:
           #    mip: E1hr
           #    era5_name: geopotential
