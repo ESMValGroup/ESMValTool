@@ -34,7 +34,7 @@ from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
-# https://polarwatch.noaa.gov/erddap/files/nsidcG02202v4shmday/seaice_conc_monthly_sh_197901_n07_v04r00.nc
+
 def _get_filepaths(in_dir, basename, yyyy):
     """Find correct name of file (extend basename with timestamp)."""
     f_name = basename.format(year=yyyy)
@@ -57,10 +57,10 @@ def _fix_time_coord(cube, _field, _filename):
     new_time = [d.replace(day=15) for d in old_time]
     time_coord.points = new_unit.date2num(new_time)
 
+
 def _prom_dim_coord(cube, _field, _filename):
     iris.util.promote_aux_coord_to_dim_coord(cube, 'time')
-    # iris.util.promote_aux_coord_to_dim_coord(cube, 'projection_y_coordinate')
-    # iris.util.promote_aux_coord_to_dim_coord(cube, 'projection_x_coordinate')
+
 
 def _create_coord(cubes, var_name, standard_name):
     cube = cubes.extract_cube(standard_name)
@@ -69,11 +69,12 @@ def _create_coord(cubes, var_name, standard_name):
         standard_name=standard_name,
         long_name=cube.long_name,
         var_name=var_name,
-        units='degrees' #cube.units,
+        units='degrees'  # cube.units,
     )
     return coord
 
-def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir,latlon):
+
+def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir, latlon):
     """Extract variable from all files."""
     var = cmor_info.short_name
     cubes = iris.load(filepath, raw_var, _prom_dim_coord)
@@ -84,14 +85,14 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir,latlon):
     iris.util.promote_aux_coord_to_dim_coord(cube, 'projection_x_coordinate')
     cube.coord('projection_y_coordinate').rename('y')
     cube.coord('projection_x_coordinate').rename('x')
-    # cube = iris.util.squeeze(cube)
 
-    cube.add_aux_coord(latlon[0], (1,2))
-    cube.add_aux_coord(latlon[1], (1,2))
+    cube.add_aux_coord(latlon[0], (1, 2))
+    cube.add_aux_coord(latlon[1], (1, 2))
     # add coord typesi
-    area_type = AuxCoord([1.0],standard_name='area_type',var_name='type',long_name='Sea Ice area type')
+    area_type = AuxCoord([1.0], standard_name='area_type', var_name='type', 
+                         long_name='Sea Ice area type')
     cube.add_aux_coord(area_type)
-    
+
     # cube.convert_units(cmor_info.units)
     cube.units = '%'
     cube.data[cube.data > 100] = np.nan
@@ -112,36 +113,38 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir,latlon):
 def _create_areacello(cfg, in_dir, sample_cube, glob_attrs, out_dir):
     if not cfg['custom'].get('create_areacello', False):
         return
-    var_info = cfg['cmor_table'].get_variable('Ofx', 'areacello') #O
+    var_info = cfg['cmor_table'].get_variable('Ofx', 'areacello')
     glob_attrs['mip'] = 'Ofx'
     lat_coord = sample_cube.coord('latitude')
 
     area_file = os.path.join(in_dir,cfg['custom']['area_file'])
-    datFile=open(area_file, 'rb')
-    areasDmNd = np.fromfile(datFile, dtype=np.int32).reshape(lat_coord.shape)
-    
-    #Divide by 1000 to get km2 then *1e6 to m2 ...*1000
-    ardata=areasDmNd*1000
+    datfile=open(area_file, 'rb')
+    areasdmnd = np.fromfile(datfile, dtype = np.int32).reshape(lat_coord.shape)
+
+    # Divide by 1000 to get km2 then *1e6 to m2 ...*1000
+    ardata=areasdmnd*1000
 
     cube = iris.cube.Cube(ardata,
-        standard_name=var_info.standard_name,
-        long_name=var_info.long_name,
-        var_name=var_info.short_name,
-        units='m2',
-        dim_coords_and_dims=[(sample_cube.coord('y'), 0), (sample_cube.coord('x'), 1)]
-    )
+                          standard_name=var_info.standard_name,
+                          long_name=var_info.long_name,
+                          var_name=var_info.short_name,
+                          units='m2',
+                          dim_coords_and_dims=[(sample_cube.coord('y'), 0), 
+                                               (sample_cube.coord('x'), 1)])
     cube.add_aux_coord(lat_coord, (0, 1))
     cube.add_aux_coord(sample_cube.coord('longitude'), (0, 1))
     utils.fix_var_metadata(cube, var_info)
     utils.set_global_atts(cube, glob_attrs)
-    utils.save_variable(cube, var_info.short_name, out_dir, glob_attrs, zlib=True)
+    utils.save_variable(cube, var_info.short_name, out_dir, glob_attrs, 
+                        zlib=True)
+
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
 
-    ## get aux nc file
+    # get aux nc file
     cubesaux = iris.load(os.path.join(in_dir,'G02202-cdr-ancillary-sh.nc'))
     lat_coord = _create_coord(cubesaux, 'lat', 'latitude')
     lon_coord = _create_coord(cubesaux, 'lon', 'longitude')
@@ -153,8 +156,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         filepaths = _get_filepaths(in_dir, cfg['filename'], yr)
 
         if len(filepaths) > 0:
-            logger.info("Found %d input files in '%s'", len(filepaths), in_dir)
-        
+            logger.info("Found %d files in '%s'", len(filepaths), in_dir)
+
             for (var, var_info) in cfg['variables'].items():
                 logger.info("CMORizing variable '%s'", var)
                 glob_attrs['mip'] = var_info['mip']
@@ -165,7 +168,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
         else:
             logger.info("No files found, year: %d basename: %s", yr, cfg['filename'])
-
 
         yr += 1
 
