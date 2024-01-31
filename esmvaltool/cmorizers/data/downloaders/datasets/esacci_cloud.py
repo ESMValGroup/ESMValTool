@@ -31,9 +31,9 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         Overwrite already downloaded files
     """
     if start_date is None:
-        start_date = datetime(2002, 1, 1)
+        start_date = datetime(2005, 7, 1)
     if end_date is None:
-        end_date = datetime(2004, 12, 31)
+        end_date = datetime(2007, 12, 31)
     loop_date = start_date
 
     downloader = WGetDownloader(
@@ -43,18 +43,23 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         overwrite=overwrite,
     )
 
-    #200001-200103
-    #base_path = 'https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/L3U/AVHRR-PM/AVHRR_NOAA-14/'
-    #200104-200412
-    base_path = 'https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/L3U/AVHRR-PM/AVHRR_NOAA-16/'
+    base_path = 'https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/L3U/AVHRR-PM/'
 
     wget_options = ['-r', '-nH', '-e', 'robots=off', '--cut-dirs=9', '--no-parent', '--reject="index.html*"']
 
     while loop_date <= end_date:
         year = loop_date.year
         month = loop_date.month
-        folder = base_path + f'{year}/{month:02}'
-        print(folder)
+        date = f'{year}{month:02}'
+        if int(date) in range(200001, 200104):
+            sat = 'AVHRR_NOAA-14/'
+        elif int(date) in range(200104, 200509):
+            sat = 'AVHRR_NOAA-16/'
+        elif int(date) in range(200509, 200906):
+            sat = 'AVHRR_NOAA-18/'
+        else:
+            logger.error("Number of instrument is not defined for date %s", date)
+        folder = base_path + sat + f'{year}/{month:02}'
         logger.info("Download folder %s", folder) 
         downloader.download_folder(folder, wget_options)
         os.remove(os.path.join(downloader.local_folder, f'{month:02}'))

@@ -3,7 +3,7 @@
 
 attributes:
   dataset_id: ESACCI-WATERVAPOUR
-  version: '3.1'
+  version: 'CDR2-3.1'
   tier: 2
   modeling_realm: sat
   project_id: OBS6
