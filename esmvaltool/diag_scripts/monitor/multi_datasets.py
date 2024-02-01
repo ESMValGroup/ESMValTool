@@ -64,6 +64,10 @@ Currently supported plot types (use the option ``plots`` to specify them):
       :func:`esmvalcore.preprocessor.regrid_time` and
       :func:`esmvalcore.preprocessor.regrid` for this). Input data
       needs to be 2D with dimensions `time`, `latitude`/`longitude`.
+      
+    Benchmarking plots
+    ------------------
+    - maps (``benchmarking_map``): 
 
 Author
 ------
@@ -576,6 +580,9 @@ time_format: str, optional (default: None)
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
     use the default formatting imposed by the iris plotting function.
 
+Configuration options for plot type ``benchmarking_map``
+--------------------------------------------------------
+
 .. hint::
 
    Extra arguments given to the recipe are ignored, so it is safe to use yaml
@@ -680,6 +687,7 @@ class MultiDatasets(MonitorBase):
             'variable_vs_lat',
             'hovmoeller_z_vs_time',
             'hovmoeller_time_vs_lat_or_lon',
+            'benchmarking_map',
         ]
         for (plot_type, plot_options) in self.plots.items():
             if plot_type not in self.supported_plot_types:
@@ -709,6 +717,40 @@ class MultiDatasets(MonitorBase):
                     'cbar_label', '{short_name} [{units}]')
                 self.plots[plot_type].setdefault(
                     'cbar_label_bias', 'Δ{short_name} [{units}]')
+                self.plots[plot_type].setdefault(
+                    'cbar_kwargs', {'orientation': 'horizontal', 'aspect': 30}
+                )
+                self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
+                self.plots[plot_type].setdefault('common_cbar', False)
+                self.plots[plot_type].setdefault('fontsize', 10)
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
+                self.plots[plot_type].setdefault('plot_func', 'contourf')
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs_bias', {})
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'cmap', 'bwr'
+                )
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'norm', 'centered'
+                )
+                if 'projection' not in self.plots[plot_type]:
+                    self.plots[plot_type].setdefault('projection', 'Robinson')
+                    self.plots[plot_type].setdefault(
+                        'projection_kwargs', {'central_longitude': 10}
+                    )
+                else:
+                    self.plots[plot_type].setdefault('projection_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+                self.plots[plot_type].setdefault('rasterize', True)
+                self.plots[plot_type].setdefault('show_stats', True)
+                self.plots[plot_type].setdefault('x_pos_stats_avg', 0.0)
+                self.plots[plot_type].setdefault('x_pos_stats_bias', 0.92)
+
+            elif plot_type == 'benchmarking_map':
+                self.plots[plot_type].setdefault(
+                    'cbar_label', '{short_name} [{units}]')
+                self.plots[plot_type].setdefault(
+                    'cbar_label_bias', '{short_name} [{units}]')
                 self.plots[plot_type].setdefault(
                     'cbar_kwargs', {'orientation': 'horizontal', 'aspect': 30}
                 )
@@ -1021,6 +1063,20 @@ class MultiDatasets(MonitorBase):
     def _get_map_projection(self):
         """Get projection used for map plots."""
         plot_type = 'map'
+        projection = self.plots[plot_type]['projection']
+        projection_kwargs = self.plots[plot_type]['projection_kwargs']
+
+        # Check if desired projection is valid
+        if not hasattr(ccrs, projection):
+            raise AttributeError(
+                f"Got invalid projection '{projection}' for plotting "
+                f"{plot_type}, expected class of cartopy.crs")
+
+        return getattr(ccrs, projection)(**projection_kwargs)
+
+    def _get_benchmarking_map_projection(self):
+        """Get projection used for benchmarking map plots."""
+        plot_type = 'benchmarking_map'
         projection = self.plots[plot_type]['projection']
         projection_kwargs = self.plots[plot_type]['projection_kwargs']
 
@@ -1778,6 +1834,55 @@ class MultiDatasets(MonitorBase):
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
         return (plot_path, {netcdf_path: cube})
 
+    def _plot_benchmarking_map(self, plot_func, dataset):
+        """Plot map plot for single dataset without a reference dataset."""
+        plot_type = 'benchmarking_map'
+        logger.info("Plotting benchmarking map for '%s'",
+                    self._get_label(dataset))
+
+        # Make sure that the data has the correct dimensions
+        cube = dataset['cube']
+        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
+
+        # Create plot with desired settings
+        with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
+            fig = plt.figure(**self.cfg['figure_kwargs'])
+            axes = fig.add_subplot(projection=self._get_benchmarking_map_projection())
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs['axes'] = axes
+            plot_map = plot_func(cube, **plot_kwargs)
+            axes.coastlines()
+            gridline_kwargs = self._get_gridline_kwargs(plot_type)
+            if gridline_kwargs is not False:
+                axes.gridlines(**gridline_kwargs)
+
+            # Print statistics if desired
+            self._add_stats(plot_type, axes, dim_coords_dat, dataset)
+
+            # Setup colorbar
+            fontsize = self.plots[plot_type]['fontsize']
+            colorbar = fig.colorbar(plot_map, ax=axes,
+                                    **self._get_cbar_kwargs(plot_type))
+            colorbar.set_label(self._get_cbar_label(plot_type, dataset),
+                               fontsize=fontsize)
+            colorbar.ax.tick_params(labelsize=fontsize)
+
+            # Customize plot
+            axes.set_title(self._get_label(dataset))
+            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
+                         f"{dataset['end_year']})")
+            self._process_pyplot_kwargs(plot_type, dataset)
+
+            # Rasterization
+            if self.plots[plot_type]['rasterize']:
+                self._set_rasterized([axes])
+
+        # File paths
+        plot_path = self.get_plot_path(plot_type, dataset)
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+
+        return (plot_path, {netcdf_path: cube})
+
     def _process_pyplot_kwargs(self, plot_type, dataset):
         """Process functions for :mod:`matplotlib.pyplot`."""
         pyplot_kwargs = self.plots[plot_type]['pyplot_kwargs']
@@ -1799,6 +1904,7 @@ class MultiDatasets(MonitorBase):
         expected_dimensions_dict = {
             'annual_cycle': (['month_number'],),
             'map': (['latitude', 'longitude'],),
+            'benchmarking_map': (['latitude', 'longitude'],),
             'zonal_mean_profile': (['latitude', 'air_pressure'],
                                    ['latitude', 'altitude']),
             'timeseries': (['time'],),
@@ -2073,6 +2179,75 @@ class MultiDatasets(MonitorBase):
                     f"{dataset['start_year']} to {dataset['end_year']}."
                 )
                 ancestors.append(ref_dataset['filename'])
+
+            # If statistics are shown add a brief description to the caption
+            if self.plots[plot_type]['show_stats']:
+                caption += (
+                    " The number in the top left corner corresponds to the "
+                    "spatial mean (weighted by grid cell areas).")
+
+            # Save plot
+            plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
+            logger.info("Wrote %s", plot_path)
+            plt.close()
+
+            # Save netCDFs
+            for (netcdf_path, cube) in netcdf_paths.items():
+                io.iris_save(cube, netcdf_path)
+
+            # Provenance tracking
+            provenance_record = {
+                'ancestors': ancestors,
+                'authors': ['schlund_manuel'],
+                'caption': caption,
+                'plot_types': ['map'],
+                'long_names': [dataset['long_name']],
+            }
+            with ProvenanceLogger(self.cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+                for netcdf_path in netcdf_paths:
+                    provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_benchmarking_map_plot(self, datasets):
+        """Create benchmarking map plot."""
+        plot_type = 'benchmarking_map'
+        if plot_type not in self.plots:
+            return
+
+        if not datasets:
+            raise ValueError(f"No input data to plot '{plot_type}' given")
+
+        # Get reference dataset if possible
+        ref_dataset = self._get_reference_dataset(datasets)
+        if ref_dataset is None:
+            logger.info("Plotting %s without reference dataset", plot_type)
+        else:
+            logger.info("Plotting %s with reference dataset '%s'", plot_type,
+                        self._get_label(ref_dataset))
+
+        # Get plot function
+        plot_func = self._get_plot_func(plot_type)
+        print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+        print(plot_func)
+        print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+
+        # Create a single plot for each dataset (incl. reference dataset if
+        # given)
+        for dataset in datasets:
+            if dataset == ref_dataset:
+                continue
+            ancestors = [dataset['filename']]
+            print(ref_dataset)
+            print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+            (plot_path, netcdf_paths) = (
+                self._plot_benchmarking_map(plot_func, dataset)
+            )
+            caption = (
+                f"Map plot of {dataset['long_name']} of dataset "
+                f"{dataset['dataset']} (project {dataset['project']}) "
+                f"from {dataset['start_year']} to {dataset['end_year']}."
+            )
+            ancestors.append(ref_dataset['filename'])
 
             # If statistics are shown add a brief description to the caption
             if self.plots[plot_type]['show_stats']:
@@ -2513,6 +2688,7 @@ class MultiDatasets(MonitorBase):
             self.create_timeseries_plot(datasets)
             self.create_annual_cycle_plot(datasets)
             self.create_map_plot(datasets)
+            self.create_benchmarking_map_plot(datasets)
             self.create_zonal_mean_profile_plot(datasets)
             self.create_1d_profile_plot(datasets)
             self.create_variable_vs_lat_plot(datasets)
