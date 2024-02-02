@@ -6,7 +6,11 @@ Trends in Water Vapour Path
 Overview
 --------
 
-This recipe plots the probability density function (PDF) for the linear trend of the Water Vapour Path. It displays the result separately for CMIP5 and CMI6 model results and ensemble members of single models compared to observation and reanalysis data. A filter to use the sampling of observational data on the model results can be applied. It is based on the methods used in Santer et al. 2021.
+This recipe plots the probability density function (PDF) for the linear trend of the Water Vapour Path. 
+It displays the result separately for CMIP5 and CMIP6 model results and ensemble members of single models compared to observation and reanalysis data. 
+A filter to use the sampling of observational data on the model results can be applied. 
+It is based on the methods used in `Santer et al. 2021`_.
+
 
 The following plots are reproduced:
 
@@ -14,24 +18,25 @@ The following plots are reproduced:
 
 * PDF for the linear trends of the water vapour path for given ensemble members of chosen models compared to observations and reanalysis data (tested for RSS and ERA5)
 
-.. _`Santer et al. 2021`: submitted, but not published, yet
+.. _Santer et al. 2021: <https://journals.ametsoc.org/view/journals/clim/34/15/JCLI-D-20-0768.1.xml>
 
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in esmvaltool/recipes/
+Recipes are stored in esmvaltool/recipes/ipccwg1ar6ch3/
 
 * recipe_ipccwg1ar6ch3_santer20jclim.yml
 
-Diagnostics are stored in esmvaltool/diag_scripts/santer20jclim/
+Diagnostics are stored in esmvaltool/diag_scripts/ipcc_ar6/
 
-* santer20jclim/santer20jclimfig.py
+* santer20jclimfig.py
 
 User settings in recipe
 -----------------------
 #. Preprocessor
 
-  * ``tropical_ocean`` : Mask out land, regridding on RSS grid and extract region between 20S and 20N
+    * ``tropical_ocean`` : Mask out land, regridding on RSS grid and extract region between 50S and 50N
+    .. 50S and 50N currently
 
 
 #. Script <santer20jclimfig.py>
