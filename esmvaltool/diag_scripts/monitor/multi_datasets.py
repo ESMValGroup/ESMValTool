@@ -631,6 +631,8 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
+from esmvalcore.preprocessor import multi_model_statistics
+
 logger = logging.getLogger(Path(__file__).stem)
 
 
@@ -1835,7 +1837,7 @@ class MultiDatasets(MonitorBase):
         return (plot_path, {netcdf_path: cube})
 
     def _plot_benchmarking_map(self, plot_func, dataset):
-        """Plot map plot for single dataset without a reference dataset."""
+        """Plot benchmarking map plot for all non-reference datasets."""
         plot_type = 'benchmarking_map'
         logger.info("Plotting benchmarking map for '%s'",
                     self._get_label(dataset))
@@ -1962,6 +1964,20 @@ class MultiDatasets(MonitorBase):
             raise ValueError(
                 f"Expected at most 1 reference dataset (with "
                 f"'reference_for_monitor_diags: true' for variable "
+                f"'{variable}', got {len(ref_datasets):d}")
+        if ref_datasets:
+            return ref_datasets[0]
+        return None
+
+    def _get_benchmarking_reference_dataset(self, datasets):
+        """Extract reference dataset for calculation of benchmarking metric."""
+        variable = datasets[0][self.cfg['group_variables_by']]
+        ref_datasets = [d for d in datasets if
+                        d.get('reference_for_metric', False)]
+        if len(ref_datasets) > 1:
+            raise ValueError(
+                f"Expected at most 1 reference dataset (with "
+                f"'reference_for_metric: true' for variable "
                 f"'{variable}', got {len(ref_datasets):d}")
         if ref_datasets:
             return ref_datasets[0]
@@ -2218,7 +2234,7 @@ class MultiDatasets(MonitorBase):
             raise ValueError(f"No input data to plot '{plot_type}' given")
 
         # Get reference dataset if possible
-        ref_dataset = self._get_reference_dataset(datasets)
+        ref_dataset = self._get_benchmarking_reference_dataset(datasets)
         if ref_dataset is None:
             logger.info("Plotting %s without reference dataset", plot_type)
         else:
@@ -2227,18 +2243,51 @@ class MultiDatasets(MonitorBase):
 
         # Get plot function
         plot_func = self._get_plot_func(plot_type)
-        print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-        print(plot_func)
-        print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+
+        # generate list of datasets with reference dataset removed
+        datasets_no_ref = datasets.copy()
+        for idx, dataset in enumerate(datasets):
+            if dataset == ref_dataset:
+                datasets_no_ref.pop(idx)
+                break
 
         # Create a single plot for each dataset (incl. reference dataset if
         # given)
-        for dataset in datasets:
-            if dataset == ref_dataset:
-                continue
+        for idx, dataset in enumerate(datasets_no_ref):
+            # create list of datasets w/o reference dataset and w/o current
+            # dataset to be plotted
+            datasetlist = datasets_no_ref.copy()
+            datasetlist.pop(idx)
+
             ancestors = [dataset['filename']]
-            print(ref_dataset)
-            print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+
+            # load data
+            
+            inputdata = []
+            
+            for dataset_to_load in datasetlist:
+                filename = dataset_to_load['filename']
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                print(filename)
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                logger.info("Loading %s", filename)
+                cube = iris.load_cube(filename)
+                inputdata.append(cube)
+
+            print("8888888888888888888888888888888888888888888888888888")
+            print(inputdata)
+            print(len(inputdata))
+            print("8888888888888888888888888888888888888888888888888888")
+
+            # calculate percentiles for stippling and hatching
+            statistics = {
+                'operator': "percentile",
+                'percent': 5,
+            }
+            percentiles = multi_model_statistics(inputdata, 'overlap', [{'operator': 'percentilen', 'percent':
+        20}]) 
+            print(percentiles)
+            
             (plot_path, netcdf_paths) = (
                 self._plot_benchmarking_map(plot_func, dataset)
             )
