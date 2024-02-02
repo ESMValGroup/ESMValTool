@@ -1,0 +1,49 @@
+# ESMValTool
+# This is basic example for ozone variability in the tropics
+# recipe_o3_Jan.yml
+
+documentation:
+  title: Ozone variability over tropics
+
+  description: "Recipe to analyze and visualize ozone variability in the tropics"
+
+  authors:
+    - gulletutan_gulcin  
+
+datasets:
+  - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1970, end_year: 2014, grid: gn}
+
+preprocessors:
+  tropics_anomalies:
+    anomalies:
+      period: monthly
+    extract_region:
+      start_latitude: -20.
+      end_latitude: 20.
+      start_longitude: 0.
+      end_longitude: 360.
+    extract_levels:
+      levels: [10000.] 
+      scheme: linear
+    area_statistics:
+      operator: mean
+
+diagnostics:
+  diagnostic_o3:
+    description: Analyze variables for ozone time series
+    variables:
+      ozone_tropics:
+        preprocessor: tropics_anomalies
+        short_name: o3
+        mip: Amon
+      
+      methane:
+        preprocessor: tropics_anomalies 
+        short_name: ch4
+        mip: Amon
+      
+    scripts:
+      tropics_anomalies_script:
+        script:  o3_29jan.py
+
+
