@@ -1,0 +1,67 @@
+#ESMValTool
+# It is for extracting nino34 from recipe_cvdp.yml
+---
+documentation:
+  title: Climate Variability Diagnostics Package
+
+  description: |
+    Recipe for executing the NCAR CVDP package in the ESMValTool framework.
+
+  authors:
+    - phillips_adam
+    - broetz_bjoern
+
+  maintainer:
+    - broetz_bjoern
+
+  references:
+    - phillips14eos
+
+  projects:
+    - esmval
+    - c3s-magic
+
+datasets:
+  - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1970, end_year: 2014, grid: gn}
+
+preprocessors:
+  tropics_anomalies:
+    anomalies:
+      period: monthly
+    extract_region:
+      start_latitude: -20.
+      end_latitude: 20.
+      start_longitude: 0.
+      end_longitude: 360.
+    extract_levels:
+      levels: [10000.] 
+      scheme: linear
+    area_statistics:
+      operator: mean
+
+diagnostics:
+
+  diagnostic1:
+    description: Run the NCAR CVDPackage.
+    variables:
+      ts:
+        mip: Amon
+        reference_dataset: ERA5
+        start_year: 1970
+        end_year: 2014
+ 
+      tas:
+        mip: Amon
+        reference_dataset: ERA5
+        start_year: 1970
+        end_year: 2014
+     # pr:
+     #   mip: Amon
+     # psl:
+     #   mip: Amon
+    scripts:
+      cvdp:
+        script: cvdp/cvdp_wrapper.py
+        quickplot:
+          plot_type: pcolormesh
+
