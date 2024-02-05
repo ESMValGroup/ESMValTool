@@ -122,11 +122,11 @@ def _create_areacello(cfg, in_dir, sample_cube, glob_attrs, out_dir):
 
     area_file = os.path.join(in_dir, cfg['custom']['area_file'])
     with open(area_file, 'rb') as datfile:
-        areasdmnd = np.fromfile(datfile, 
+        areasdmnd = np.fromfile(datfile,
                                 dtype=np.int32).reshape(lat_coord.shape)
 
     # Divide by 1000 to get km2 then multiply by 1e6 to m2 ...*1000
-    ardata = areasdmnd*1000
+    ardata = areasdmnd * 1000
 
     cube = iris.cube.Cube(ardata,
                           standard_name=var_info.standard_name,
