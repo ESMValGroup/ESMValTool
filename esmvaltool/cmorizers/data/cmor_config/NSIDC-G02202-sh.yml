@@ -11,15 +11,13 @@ attributes:
   reference: 'nsidc-g02202'
   comment: ''
 
-# Variables to cmorize
 variables:
   siconc:
     mip: SImon
-    raw: cdr_seaice_conc_monthly ## make yearly?
+    raw: cdr_seaice_conc_monthly 
     compress: true
 
 
 custom:
   create_areacello: true
   area_file: pss25area_v3.dat
-  # grid_cell_size: 25067.53

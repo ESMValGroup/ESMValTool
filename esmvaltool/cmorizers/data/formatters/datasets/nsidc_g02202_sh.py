@@ -14,7 +14,8 @@ Download and processing instructions
     lat and lon from:
     https://noaadata.apps.nsidc.org/NOAA/G02202_V4/ancillary/
     area file:
-    ftp://sidads.colorado.edu/DATASETS/seaice/polar-stereo/tools/pss25area_v3.dat
+    ftp://sidads.colorado.edu/DATASETS/seaice/polar-stereo/tools/
+    pss25area_v3.dat
 
     https://nsidc.org/sites/default/files/g02202-v004-userguide_1_1.pdf
 
@@ -119,10 +120,10 @@ def _create_areacello(cfg, in_dir, sample_cube, glob_attrs, out_dir):
     lat_coord = sample_cube.coord('latitude')
 
     area_file = os.path.join(in_dir, cfg['custom']['area_file'])
-    datfile = open(area_file, 'rb')
-    areasdmnd = np.fromfile(datfile, dtype=np.int32).reshape(lat_coord.shape)
+    with open(area_file, 'rb') as datfile:
+        areasdmnd = np.fromfile(datfile, dtype=np.int32).reshape(lat_coord.shape)
 
-    # Divide by 1000 to get km2 then *1e6 to m2 ...*1000
+    # Divide by 1000 to get km2 then multiply by 1e6 to m2 ...*1000
     ardata = areasdmnd*1000
 
     cube = iris.cube.Cube(ardata,
@@ -149,12 +150,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     cubesaux = iris.load(os.path.join(in_dir, 'G02202-cdr-ancillary-sh.nc'))
     lat_coord = _create_coord(cubesaux, 'lat', 'latitude')
     lon_coord = _create_coord(cubesaux, 'lon', 'longitude')
-    yr = 1978
+    year = 1978
     # split by year..
     sample_cube = None
-    while yr <= 2020:
+    while year <= 2020:
 
-        filepaths = _get_filepaths(in_dir, cfg['filename'], yr)
+        filepaths = _get_filepaths(in_dir, cfg['filename'], year)
 
         if len(filepaths) > 0:
             logger.info("Found %d files in '%s'", len(filepaths), in_dir)
@@ -166,15 +167,14 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 raw_var = var_info.get('raw', var)
                 sample_cube = _extract_variable(raw_var, cmor_info,
                                                 glob_attrs, filepaths,
-                                                out_dir, [lat_coord, 
+                                                out_dir, [lat_coord,
                                                           lon_coord])
 
         else:
-            logger.info("No files found ",
-                        "year: %d basename: %s", yr, cfg['filename'])
+            logger.info("No files found ")
+            logger.info("year: %d basename: %s", year, cfg['filename'])
 
-        yr += 1
+        year += 1
 
         if sample_cube is not None:
             _create_areacello(cfg, in_dir, sample_cube, glob_attrs, out_dir)
-            

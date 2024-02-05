@@ -1,4 +1,4 @@
-"""Script to download NSIDC-G02202-sh"""
+"""Script to download NSIDC-G02202-sh."""
 import logging
 from datetime import datetime
 from dateutil import relativedelta
@@ -56,8 +56,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     # regex for n07 changes to f08.. file names
     # bins #{'197811':'n07','198708':'f08',
     # '199201':'f11','199510':'f13', '200801':'f17'}
-    datels = [datetime(1978, 11, 1), datetime(1987, 7, 30), 
-              datetime(1991, 12, 30), datetime(1995, 9, 30), 
+    datels = [datetime(1978, 11, 1), datetime(1987, 7, 30),
+              datetime(1991, 12, 30), datetime(1995, 9, 30),
               datetime(2007, 12, 30), end_date]
     suffls = ['n07', 'f08', 'f11', 'f13', 'f17']
     isuf = 0
@@ -70,7 +70,6 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     while loop_date <= end_date:
 
         if loop_date > datels[isuf]:
-            logging.info('... index {}..'.format(isuf))
             suffix = suffls[isuf]
             isuf += 1
 
