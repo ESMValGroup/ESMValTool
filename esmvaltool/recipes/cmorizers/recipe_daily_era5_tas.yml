@@ -22,18 +22,9 @@ documentation:
     - ewatercycle
 
 preprocessors:
-  daily_sfcwind:
-    custom_order: true
-    derive: true
+  daily_tas:
     daily_statistics:
       operator: mean
-    # extract_time:
-    #   start_year: 2023
-    #   start_month: 1
-    #   start_day: 1
-    #   end_year: 2023
-    #   end_month: 12
-    #   end_day: 31
 
 datasets:
   # For the daily diagnostic, always add the next year, otherwise the last day is not cmor compatible
@@ -46,12 +37,13 @@ diagnostics:
       rename:
         script: cmorizers/era5.py
     variables:
-      sfcWind:
-        preprocessor: daily_sfcwind
-        derive: true
-        start_year: 2023
+      tas:
+        era5_name: 2m_temperature
+        era5_freq: hourly
+        preprocessor: daily_tas
+        start_year: 1990
         start_month: 1
         start_day: 1
-        end_year: 2023
+        end_year: 1990
         end_month: 12
         end_day: 31

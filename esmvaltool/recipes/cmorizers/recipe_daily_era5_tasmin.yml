@@ -21,37 +21,34 @@ documentation:
   projects:
     - ewatercycle
 
-preprocessors:
-  daily_sfcwind:
-    custom_order: true
-    derive: true
-    daily_statistics:
-      operator: mean
-    # extract_time:
-    #   start_year: 2023
-    #   start_month: 1
-    #   start_day: 1
-    #   end_year: 2023
-    #   end_month: 12
-    #   end_day: 31
-
 datasets:
   # For the daily diagnostic, always add the next year, otherwise the last day is not cmor compatible
-  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, mip: E1hr}
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 2023, end_year: 2024}
+
+preprocessors:
+  add_one_day: &add_one_day
+    extract_time:
+      start_year: 2023
+      start_month: 1
+      start_day: 1
+      end_year: 2024
+      end_month: 1
+      end_day: 1
+
+  daily_min:
+    <<: *add_one_day
+    daily_statistics:
+      operator: min
 
 diagnostics:
   daily:
     description: Create daily ERA5 data
-    scripts: 
+    scripts:
       rename:
         script: cmorizers/era5.py
     variables:
-      sfcWind:
-        preprocessor: daily_sfcwind
-        derive: true
-        start_year: 2023
-        start_month: 1
-        start_day: 1
-        end_year: 2023
-        end_month: 12
-        end_day: 31
+      tasmin:
+        mip: E1hr
+        era5_name: minimum_2m_temperature_since_previous_post_processing
+        era5_freq: hourly
+        preprocessor: daily_min

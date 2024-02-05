@@ -23,15 +23,15 @@ documentation:
 
 datasets:
   # For the daily diagnostic, always add the next year, otherwise the last day is not cmor compatible
-  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 2022, end_year: 2023}
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 2023, end_year: 2024}
 
 preprocessors:
   add_one_day: &add_one_day
     extract_time:
-      start_year: 2022
+      start_year: 2023
       start_month: 1
       start_day: 1
-      end_year: 2023
+      end_year: 2024
       end_month: 1
       end_day: 1
 
