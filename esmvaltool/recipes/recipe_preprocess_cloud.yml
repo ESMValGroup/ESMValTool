@@ -21,12 +21,16 @@ documentation:
 years: &years
   #start_year: 2000
   #end_year: 2004
-  timerange: 200001/200412
+  timerange: 200301/200712
   #timerange: 198201/201612
 
 
 ESACCI_CLOUD_datasets: &esacci
         - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2}
+ESACCI_WATERVAPOUR_datasets: &esacci_wv
+        - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat, version: 3.1, tier: 2}
+CERES-EBAF_datasets: &ceres-ebaf
+        - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1}
 ERA5_datasets: &era5
         - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
 
@@ -47,8 +51,8 @@ preprocessors:
       mask_out: land
     area_statistics: &area_mean
       operator: mean    
-    anomalies:
-      period: day
+      #anomalies:
+      #  period: day
       #regrid:
       #  scheme: area_weighted
       #  target_grid: 5x5      
@@ -79,10 +83,11 @@ diagnostics:
     description: Create timeseries.
     variables:
       clt: &var
-        #preprocessor: south_east_pacific
-        preprocessor: annual_cycle
+        preprocessor: south_east_pacific
+        #preprocessor: annual_cycle
         mip: day
         frequency: day
+        <<: *years
         additional_datasets: *esacci
       clwvi:
         <<: *var
@@ -96,12 +101,17 @@ diagnostics:
       reff:
         <<: *var
         mip: day
+        #rsdt:
+        #  <<: *var
+        #  mip: Amon
+        #  frequency: mon
+        #  additional_datasets: *ceres-ebaf
+      prw:
+        <<: *var
+        mip: Eday
+        additional_datasets: *esacci_wv
       psl: &var2
-        #preprocessor: south_east_pacific
-        preprocessor: annual_cycle
-        frequency: day
-        mip: day
-        <<: *years
+        <<: *var
         additional_datasets: *era5
       ta700: 
         <<: *var2
@@ -112,10 +122,11 @@ diagnostics:
         <<: *var2
       wap700:
         <<: *var2
-      prw:
+      prw_era5:
         <<: *var2
+        short_name: prw
         mip: Eday
-        timerange: 199501/199912
+        #timerange: 199501/199912
     scripts: 
       timeseries:
         script: causal_clouds_timeseries.py
