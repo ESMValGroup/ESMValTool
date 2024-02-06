@@ -64,10 +64,10 @@ Currently supported plot types (use the option ``plots`` to specify them):
       :func:`esmvalcore.preprocessor.regrid_time` and
       :func:`esmvalcore.preprocessor.regrid` for this). Input data
       needs to be 2D with dimensions `time`, `latitude`/`longitude`.
-      
+
     Benchmarking plots
     ------------------
-    - maps (``benchmarking_map``): 
+    - maps (``benchmarking_map``):
 
 Author
 ------
@@ -631,8 +631,6 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-from esmvalcore.preprocessor import multi_model_statistics
-
 logger = logging.getLogger(Path(__file__).stem)
 
 
@@ -756,20 +754,12 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault(
                     'cbar_kwargs', {'orientation': 'horizontal', 'aspect': 30}
                 )
-                #self.plots[plot_type].setdefault('cmap', 'cool')
                 self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
                 self.plots[plot_type].setdefault('common_cbar', False)
                 self.plots[plot_type].setdefault('fontsize', 10)
                 self.plots[plot_type].setdefault('gridline_kwargs', {})
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
                 self.plots[plot_type].setdefault('plot_kwargs', {})
-                #self.plots[plot_type].setdefault('plot_kwargs_bias', {})
-                #self.plots[plot_type]['plot_kwargs_bias'].setdefault(
-                #    'cmap', 'bwr'
-                #)
-                #self.plots[plot_type]['plot_kwargs_bias'].setdefault(
-                #    'norm', 'centered'
-                #)
                 if 'projection' not in self.plots[plot_type]:
                     self.plots[plot_type].setdefault('projection', 'Robinson')
                     self.plots[plot_type].setdefault(
@@ -1845,14 +1835,15 @@ class MultiDatasets(MonitorBase):
 
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
-        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
+        # dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
 
         mask_cube = cube.copy()
 
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
-            axes = fig.add_subplot(projection=self._get_benchmarking_map_projection())
+            axes = fig.add_subplot(
+                projection=self._get_benchmarking_map_projection())
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
             plot_map = plot_func(cube, **plot_kwargs)
@@ -1865,37 +1856,17 @@ class MultiDatasets(MonitorBase):
 
             mask_cube.data = mask
 
-            hatching = plot_func(
+            plot_func(
                mask_cube,
                colors='none',
                levels=[.5, 1.5],
                hatches=['......', None],
             )
 
-            #mpl.rcParams['hatch.linewidth'] = 1
-            
-#            # apply hatching (slashes) to data below lower percentile
-#            # given by 'percentile_dataset[]'
-#
-#            mask = np.where((cube.data <= percentile_dataset[0].data) &
-#                            (cube.data <= percentile_dataset[1].data), 1, 0)
-#
-#            mask_cube.data = mask
-#
-#            hatching = plot_func(
-#               mask_cube,
-#               colors='none',
-#               levels=[.5, 1.5],
-#               hatches=['/////', None],
-#            )
-            
             axes.coastlines()
-            #gridline_kwargs = self._get_gridline_kwargs(plot_type)
-            #if gridline_kwargs is not False:
-            #    axes.gridlines(**gridline_kwargs)
-
-            # Print statistics if desired
-            #self._add_stats(plot_type, axes, dim_coords_dat, dataset)
+            # gridline_kwargs = self._get_gridline_kwargs(plot_type)
+            # if gridline_kwargs is not False:
+            #     axes.gridlines(**gridline_kwargs)
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']
@@ -2023,7 +1994,7 @@ class MultiDatasets(MonitorBase):
         """Get dataset to be benchmarked."""
         variable = datasets[0][self.cfg['group_variables_by']]
         benchmark_datasets = [d for d in datasets if
-                        d.get('benchmark_dataset', False)]
+                              d.get('benchmark_dataset', False)]
         if len(benchmark_datasets) == 1:
             return benchmark_datasets[0]
         else:
@@ -2044,7 +2015,7 @@ class MultiDatasets(MonitorBase):
                     percentiles.append(d)
 
         if len(percentiles) == 2:
-            return(percentiles)
+            return percentiles
         else:
             raise ValueError(
                 f"Expected exactly 2 percentile datasets (created "
@@ -2304,43 +2275,14 @@ class MultiDatasets(MonitorBase):
 
         # Get reference dataset
         ref_dataset = self._get_benchmarking_reference_dataset(datasets)
-        #if ref_dataset is None:
-        #    logger.info("Plotting %s without reference dataset", plot_type)
-        #else:
-        #    logger.info("Plotting %s with reference dataset '%s'", plot_type,
-        #                self._get_label(ref_dataset))
         # Get dataset to be benchmarked
         dataset = self._get_benchmark_dataset(datasets)
-
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
 
         # Get plot function
         plot_func = self._get_plot_func(plot_type)
 
-        # generate list of datasets with reference dataset removed
-        #datasets_no_ref = datasets.copy()
-        #for idx, dataset in enumerate(datasets):
-        #    if dataset == ref_dataset:
-        #        datasets_no_ref.pop(idx)
-        #        break
-        #
-        #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        #print(datasets_no_ref)
-        #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        #exit
-
-        # Create a single plot for dataset benchmark_dataset
-#        for idx, dataset in enumerate(datasets_no_ref):
-#            # create list of datasets w/o reference dataset and w/o current
-#            # dataset to be plotted
-#            datasetlist = datasets_no_ref.copy()
-#            datasetlist.pop(idx)
-#
         ancestors = [dataset['filename']]
 
         # load data
@@ -2353,20 +2295,6 @@ class MultiDatasets(MonitorBase):
             cube = iris.load_cube(filename)
             percentile_data.append(cube)
 
-#            print("8888888888888888888888888888888888888888888888888888")
-#            print(inputdata)
-#            print(len(inputdata))
-#            print("8888888888888888888888888888888888888888888888888888")
-#
-#            # calculate percentiles for stippling and hatching
-#            statistics = {
-#                'operator': "percentile",
-#                'percent': 5,
-#            }
-#            percentiles = multi_model_statistics(inputdata, 'overlap', [{'operator': 'percentilen', 'percent':
-#        20}]) 
-#            print(percentiles)
-            
         (plot_path, netcdf_paths) = (
             self._plot_benchmarking_map(plot_func, dataset, percentile_data)
         )
