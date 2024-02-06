@@ -756,19 +756,20 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault(
                     'cbar_kwargs', {'orientation': 'horizontal', 'aspect': 30}
                 )
+                #self.plots[plot_type].setdefault('cmap', 'cool')
                 self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
                 self.plots[plot_type].setdefault('common_cbar', False)
                 self.plots[plot_type].setdefault('fontsize', 10)
                 self.plots[plot_type].setdefault('gridline_kwargs', {})
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
                 self.plots[plot_type].setdefault('plot_kwargs', {})
-                self.plots[plot_type].setdefault('plot_kwargs_bias', {})
-                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
-                    'cmap', 'bwr'
-                )
-                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
-                    'norm', 'centered'
-                )
+                #self.plots[plot_type].setdefault('plot_kwargs_bias', {})
+                #self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                #    'cmap', 'bwr'
+                #)
+                #self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                #    'norm', 'centered'
+                #)
                 if 'projection' not in self.plots[plot_type]:
                     self.plots[plot_type].setdefault('projection', 'Robinson')
                     self.plots[plot_type].setdefault(
@@ -1836,7 +1837,7 @@ class MultiDatasets(MonitorBase):
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
         return (plot_path, {netcdf_path: cube})
 
-    def _plot_benchmarking_map(self, plot_func, dataset):
+    def _plot_benchmarking_map(self, plot_func, dataset, percentile_dataset):
         """Plot benchmarking map plot for all non-reference datasets."""
         plot_type = 'benchmarking_map'
         logger.info("Plotting benchmarking map for '%s'",
@@ -1846,6 +1847,8 @@ class MultiDatasets(MonitorBase):
         cube = dataset['cube']
         dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
 
+        mask_cube = cube.copy()
+
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
@@ -1853,13 +1856,46 @@ class MultiDatasets(MonitorBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
             plot_map = plot_func(cube, **plot_kwargs)
+
+            # apply stippling (dots) to all grid cells that do not exceed
+            # the upper percentile given by 'percentile_dataset[]'
+
+            mask = np.where((cube.data >= percentile_dataset[0].data) &
+                            (cube.data >= percentile_dataset[1].data), 0, 1)
+
+            mask_cube.data = mask
+
+            hatching = plot_func(
+               mask_cube,
+               colors='none',
+               levels=[.5, 1.5],
+               hatches=['......', None],
+            )
+
+            #mpl.rcParams['hatch.linewidth'] = 1
+            
+#            # apply hatching (slashes) to data below lower percentile
+#            # given by 'percentile_dataset[]'
+#
+#            mask = np.where((cube.data <= percentile_dataset[0].data) &
+#                            (cube.data <= percentile_dataset[1].data), 1, 0)
+#
+#            mask_cube.data = mask
+#
+#            hatching = plot_func(
+#               mask_cube,
+#               colors='none',
+#               levels=[.5, 1.5],
+#               hatches=['/////', None],
+#            )
+            
             axes.coastlines()
-            gridline_kwargs = self._get_gridline_kwargs(plot_type)
-            if gridline_kwargs is not False:
-                axes.gridlines(**gridline_kwargs)
+            #gridline_kwargs = self._get_gridline_kwargs(plot_type)
+            #if gridline_kwargs is not False:
+            #    axes.gridlines(**gridline_kwargs)
 
             # Print statistics if desired
-            self._add_stats(plot_type, axes, dim_coords_dat, dataset)
+            #self._add_stats(plot_type, axes, dim_coords_dat, dataset)
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']
@@ -1974,13 +2010,46 @@ class MultiDatasets(MonitorBase):
         variable = datasets[0][self.cfg['group_variables_by']]
         ref_datasets = [d for d in datasets if
                         d.get('reference_for_metric', False)]
-        if len(ref_datasets) > 1:
+        if len(ref_datasets) == 1:
+            return ref_datasets[0]
+        else:
             raise ValueError(
-                f"Expected at most 1 reference dataset (with "
+                f"Expected exactly 1 reference dataset (with "
                 f"'reference_for_metric: true' for variable "
                 f"'{variable}', got {len(ref_datasets):d}")
-        if ref_datasets:
-            return ref_datasets[0]
+        return None
+
+    def _get_benchmark_dataset(self, datasets):
+        """Get dataset to be benchmarked."""
+        variable = datasets[0][self.cfg['group_variables_by']]
+        benchmark_datasets = [d for d in datasets if
+                        d.get('benchmark_dataset', False)]
+        if len(benchmark_datasets) == 1:
+            return benchmark_datasets[0]
+        else:
+            raise ValueError(
+                f"Expected exactly 1 benchmark dataset (with "
+                f"'benchmark_dataset: true' for variable "
+                f"'{variable}'), got {len(benchmark_datasets):d}")
+        return None
+
+    def _get_benchmark_percentiles(self, datasets):
+        """Get percentile datasets from multi-model statistics preprocessor."""
+        variable = datasets[0][self.cfg['group_variables_by']]
+        percentiles = []
+        for d in datasets:
+            statistics = d.get('multi_model_statistics')
+            if statistics:
+                if "Percentile" in statistics:
+                    percentiles.append(d)
+
+        if len(percentiles) == 2:
+            return(percentiles)
+        else:
+            raise ValueError(
+                f"Expected exactly 2 percentile datasets (created "
+                f"'with multi-model statistics preprocessor for variable "
+                f"'{variable}'), got {len(percentiles):d}")
         return None
 
     def create_timeseries_plot(self, datasets):
@@ -2233,98 +2302,108 @@ class MultiDatasets(MonitorBase):
         if not datasets:
             raise ValueError(f"No input data to plot '{plot_type}' given")
 
-        # Get reference dataset if possible
+        # Get reference dataset
         ref_dataset = self._get_benchmarking_reference_dataset(datasets)
-        if ref_dataset is None:
-            logger.info("Plotting %s without reference dataset", plot_type)
-        else:
-            logger.info("Plotting %s with reference dataset '%s'", plot_type,
-                        self._get_label(ref_dataset))
+        #if ref_dataset is None:
+        #    logger.info("Plotting %s without reference dataset", plot_type)
+        #else:
+        #    logger.info("Plotting %s with reference dataset '%s'", plot_type,
+        #                self._get_label(ref_dataset))
+        # Get dataset to be benchmarked
+        dataset = self._get_benchmark_dataset(datasets)
+
+        # Get percentiles from multi-model statistics
+        percentile_dataset = self._get_benchmark_percentiles(datasets)
 
         # Get plot function
         plot_func = self._get_plot_func(plot_type)
 
         # generate list of datasets with reference dataset removed
-        datasets_no_ref = datasets.copy()
-        for idx, dataset in enumerate(datasets):
-            if dataset == ref_dataset:
-                datasets_no_ref.pop(idx)
-                break
+        #datasets_no_ref = datasets.copy()
+        #for idx, dataset in enumerate(datasets):
+        #    if dataset == ref_dataset:
+        #        datasets_no_ref.pop(idx)
+        #        break
+        #
+        #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        #print(datasets_no_ref)
+        #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        #exit
 
-        # Create a single plot for each dataset (incl. reference dataset if
-        # given)
-        for idx, dataset in enumerate(datasets_no_ref):
-            # create list of datasets w/o reference dataset and w/o current
-            # dataset to be plotted
-            datasetlist = datasets_no_ref.copy()
-            datasetlist.pop(idx)
+        # Create a single plot for dataset benchmark_dataset
+#        for idx, dataset in enumerate(datasets_no_ref):
+#            # create list of datasets w/o reference dataset and w/o current
+#            # dataset to be plotted
+#            datasetlist = datasets_no_ref.copy()
+#            datasetlist.pop(idx)
+#
+        ancestors = [dataset['filename']]
 
-            ancestors = [dataset['filename']]
+        # load data
 
-            # load data
+        percentile_data = []
+
+        for dataset_to_load in percentile_dataset:
+            filename = dataset_to_load['filename']
+            logger.info("Loading %s", filename)
+            cube = iris.load_cube(filename)
+            percentile_data.append(cube)
+
+#            print("8888888888888888888888888888888888888888888888888888")
+#            print(inputdata)
+#            print(len(inputdata))
+#            print("8888888888888888888888888888888888888888888888888888")
+#
+#            # calculate percentiles for stippling and hatching
+#            statistics = {
+#                'operator': "percentile",
+#                'percent': 5,
+#            }
+#            percentiles = multi_model_statistics(inputdata, 'overlap', [{'operator': 'percentilen', 'percent':
+#        20}]) 
+#            print(percentiles)
             
-            inputdata = []
-            
-            for dataset_to_load in datasetlist:
-                filename = dataset_to_load['filename']
-                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                print(filename)
-                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                logger.info("Loading %s", filename)
-                cube = iris.load_cube(filename)
-                inputdata.append(cube)
+        (plot_path, netcdf_paths) = (
+            self._plot_benchmarking_map(plot_func, dataset, percentile_data)
+        )
+        caption = (
+            f"Map plot of {dataset['long_name']} of dataset "
+            f"{dataset['dataset']} (project {dataset['project']}) "
+            f"from {dataset['start_year']} to {dataset['end_year']}."
+        )
+        ancestors.append(ref_dataset['filename'])
 
-            print("8888888888888888888888888888888888888888888888888888")
-            print(inputdata)
-            print(len(inputdata))
-            print("8888888888888888888888888888888888888888888888888888")
+        # If statistics are shown add a brief description to the caption
+        if self.plots[plot_type]['show_stats']:
+            caption += (
+                " The number in the top left corner corresponds to the "
+                "spatial mean (weighted by grid cell areas).")
 
-            # calculate percentiles for stippling and hatching
-            statistics = {
-                'operator': "percentile",
-                'percent': 5,
-            }
-            percentiles = multi_model_statistics(inputdata, 'overlap', [{'operator': 'percentilen', 'percent':
-        20}]) 
-            print(percentiles)
-            
-            (plot_path, netcdf_paths) = (
-                self._plot_benchmarking_map(plot_func, dataset)
-            )
-            caption = (
-                f"Map plot of {dataset['long_name']} of dataset "
-                f"{dataset['dataset']} (project {dataset['project']}) "
-                f"from {dataset['start_year']} to {dataset['end_year']}."
-            )
-            ancestors.append(ref_dataset['filename'])
+        # Save plot
+        plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
 
-            # If statistics are shown add a brief description to the caption
-            if self.plots[plot_type]['show_stats']:
-                caption += (
-                    " The number in the top left corner corresponds to the "
-                    "spatial mean (weighted by grid cell areas).")
+        # Save netCDFs
+        for (netcdf_path, cube) in netcdf_paths.items():
+            io.iris_save(cube, netcdf_path)
 
-            # Save plot
-            plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
-            logger.info("Wrote %s", plot_path)
-            plt.close()
-
-            # Save netCDFs
-            for (netcdf_path, cube) in netcdf_paths.items():
-                io.iris_save(cube, netcdf_path)
-
-            # Provenance tracking
-            provenance_record = {
-                'ancestors': ancestors,
-                'authors': ['schlund_manuel'],
-                'caption': caption,
-                'plot_types': ['map'],
-                'long_names': [dataset['long_name']],
-            }
-            with ProvenanceLogger(self.cfg) as provenance_logger:
-                provenance_logger.log(plot_path, provenance_record)
-                for netcdf_path in netcdf_paths:
-                    provenance_logger.log(netcdf_path, provenance_record)
+        # Provenance tracking
+        provenance_record = {
+            'ancestors': ancestors,
+            'authors': ['schlund_manuel'],
+            'caption': caption,
+            'plot_types': ['map'],
+            'long_names': [dataset['long_name']],
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            for netcdf_path in netcdf_paths:
+                provenance_logger.log(netcdf_path, provenance_record)
 
     def create_zonal_mean_profile_plot(self, datasets):
         """Create zonal mean profile plot."""
