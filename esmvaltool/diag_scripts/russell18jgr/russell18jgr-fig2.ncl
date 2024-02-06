@@ -156,17 +156,6 @@ begin
     delete(var_lon_avg)
     delete(dataset)
 
-  ; Call provenance logger
-  log_provenance(ncdf_outfile, \
-                 plotpath + "." + output_type(), \
-                 "Russell et al 2018 figure 2", \
-                 "mean", \
-                 "sh", \
-                 "geo", \
-                 "russell_joellen", \
-                 "russell18jgr", \
-                 infile_path)
-
     if (iii .ne. 0) then
         overlay(plot(0), plot(iii))
     end if

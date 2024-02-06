@@ -263,15 +263,6 @@ begin
     delete(e)
     delete(last_index)
     delete(out_var)
-    log_provenance(ncdf_outfile, \
-                   plotpath + "." + output_type(), \
-                   "Russell et al 2018 figure 3b", \
-                   "mean", \
-                   "sh", \
-                   "geo", \
-                   "russell_joellen", \
-                   "russell18jgr", \
-                   inputfile_paths(iii))
   end do
   draw(plot(0))
 
@@ -290,3 +281,17 @@ begin
   "lgMonoLineLabelFontColor" : True                    ; one label color
   end create
   draw(legend)
+
+  frame(wks)
+
+  log_provenance(ncdf_outfile, \
+                 plotpath + "." + output_type(), \
+                 "Russell et al 2018 figure 3b", \
+                 "mean", \
+                 "sh", \
+                 "geo", \
+                 "russell_joellen", \
+                 "russell18jgr", \
+                 inputfile_paths)
+
+end

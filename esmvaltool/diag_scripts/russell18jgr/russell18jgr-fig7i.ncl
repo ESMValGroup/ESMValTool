@@ -201,16 +201,6 @@ begin
       overlay(plot(0), plot(iii))
     end if
 
-    log_provenance(ncdf_outfile, \
-                   plotpath + "." + output_type(), \
-                   "Russell et al 2018 figure 7i", \
-                   "mean", \
-                   "sh", \
-                   "zonal", \
-                   "russell_joellen", \
-                   "russell18jgr", \
-                   infile_path)
-
   end do
   draw(plot(0))
 
@@ -229,3 +219,17 @@ begin
   "lgMonoLineLabelFontColor" : True                   ; one label color
   end create
   draw(legend)
+
+  frame(wks)
+
+  log_provenance(ncdf_outfile, \
+                 plotpath + "." + output_type(), \
+                 "Russell et al 2018 figure 7i", \
+                 "mean", \
+                 "sh", \
+                 "zonal", \
+                 "russell_joellen", \
+                 "russell18jgr", \
+                 infile_path)
+
+end
