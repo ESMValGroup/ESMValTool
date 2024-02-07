@@ -607,6 +607,7 @@ import matplotlib as mpl
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 from iris.analysis.cartography import area_weights
 from iris.coord_categorisation import add_year
@@ -630,6 +631,9 @@ from esmvaltool.diag_scripts.shared import (
     io,
     run_diagnostic,
 )
+from esmvaltool.diag_scripts.seaborn_diag import (
+     _get_dataframe,
+)
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -643,9 +647,14 @@ class MultiDatasets(MonitorBase):
 
         # Get default settings
         self.cfg = deepcopy(self.cfg)
+        self.cfg.setdefault('add_ancillary_variables', False)
+        self.cfg.setdefault('add_aux_coords', False)
+        self.cfg.setdefault('add_cell_measures', False)
         self.cfg.setdefault('facet_used_for_labels', 'dataset')
+        self.cfg.setdefault('facets_as_columns', [])
         self.cfg.setdefault('figure_kwargs', {'constrained_layout': True})
         self.cfg.setdefault('group_variables_by', 'short_name')
+        self.cfg.setdefault('groupby_facet', 'short_name')
         self.cfg.setdefault('savefig_kwargs', {
             'bbox_inches': 'tight',
             'dpi': 300,
@@ -688,6 +697,7 @@ class MultiDatasets(MonitorBase):
             'hovmoeller_z_vs_time',
             'hovmoeller_time_vs_lat_or_lon',
             'benchmarking_map',
+            'benchmarking_boxplot',
         ]
         for (plot_type, plot_options) in self.plots.items():
             if plot_type not in self.supported_plot_types:
@@ -711,6 +721,9 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('legend_kwargs', {})
                 self.plots[plot_type].setdefault('plot_kwargs', {})
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
+
+            elif plot_type == 'benchmarking_boxplot':
+                self.plots[plot_type].setdefault('plot_kwargs', {})
 
             elif plot_type == 'map':
                 self.plots[plot_type].setdefault(
@@ -1912,6 +1925,7 @@ class MultiDatasets(MonitorBase):
         """Check that cube has correct dimensional variables."""
         expected_dimensions_dict = {
             'annual_cycle': (['month_number'],),
+            'benchmarking_boxplot': (['']),
             'map': (['latitude', 'longitude'],),
             'benchmarking_map': (['latitude', 'longitude'],),
             'zonal_mean_profile': (['latitude', 'air_pressure'],
@@ -2003,6 +2017,14 @@ class MultiDatasets(MonitorBase):
                 f"'benchmark_dataset: true' for variable "
                 f"'{variable}'), got {len(benchmark_datasets):d}")
         return None
+
+    def _get_benchmark_group(self, datasets):
+        """Get datasets for benchmarking."""
+        variable = datasets[0][self.cfg['group_variables_by']]
+        benchmark_datasets = [d for d in datasets if not
+                              (d.get('benchmark_dataset', False) or
+                               d.get('reference_for_metric', False))]
+        return benchmark_datasets
 
     def _get_benchmark_percentiles(self, datasets):
         """Get percentile datasets from multi-model statistics preprocessor."""
@@ -2187,6 +2209,112 @@ class MultiDatasets(MonitorBase):
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_benchmarking_boxplot_plot(self, datasets):
+        """Create boxplot."""
+        plot_type = 'benchmarking_boxplot'
+        if plot_type not in self.plots:
+            return
+
+        if not datasets:
+            raise ValueError(f"No input data to plot '{plot_type}' given")
+
+        # Get dataset to be benchmarked
+        benchmark_dataset = self._get_benchmark_dataset(datasets)
+        logger.info("Plotting %s for dataset %s", plot_type, benchmark_dataset['dataset'])
+
+        # Get datasets for benchmarking
+        benchmark_group = self._get_benchmark_group(datasets)
+        logger.info("Benchmarking group of %i datasets.", len(benchmark_group))
+
+        print(benchmark_group)
+
+        var_key = benchmark_dataset['variable_group']
+
+        #df_group =_get_dataframe(self.cfg)
+
+        df = pd.DataFrame(columns=['Dataset', var_key])
+        ifile = 0
+        ancestors = []
+
+        for dataset in benchmark_group:
+            dataset_name = dataset['dataset']
+            cube = iris.load_cube(dataset['filename'])
+            df.loc[ifile] = [dataset_name, cube.data]
+            ifile = ifile + 1
+
+            ancestors.append(dataset['filename'])
+
+        df[var_key] = df[var_key].astype(str).astype(float)
+
+        fig = plt.figure(**self.cfg['figure_kwargs'])
+
+        cube_b = iris.load_cube(benchmark_dataset['filename'])
+
+        plt.scatter(0, cube_b.data, marker='x', s=200, color="red", linewidths = 3)
+
+        plt.ylabel('RMSE (' + benchmark_dataset['units'] + ')')
+
+        sns.boxplot(data=df)
+
+        # Save plot
+        plot_path = self.get_plot_path(plot_type, benchmark_dataset)
+        #plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        fig.savefig(plot_path, **self.cfg['savefig_kwargs'])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+        # Save netCDF file
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        var_attrs = {
+            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
+        }
+        #io.save_1d_data(cube, netcdf_path, 'month_number', var_attrs)
+
+        # Provenance tracking
+        caption = (f"Boxplot.")
+        provenance_record = {
+            'ancestors': ancestors,
+            'authors': ['bock_lisa', 'schlund_manuel'],
+            'caption': caption,
+            'plot_types': ['box'],
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
+        #df = create_data_frame(input_data, cfg) 
+
+#
+#        (plot_path, netcdf_paths) = (
+#            self._plot_boxplot_with_ref(plot_func, datasets, dataset)
+#        )
+#        caption = (
+#            f"Boxplot of {dataset['long_name']} of dataset "
+#            f"{dataset['dataset']} (project {dataset['project']}) "
+#            f"from {dataset['start_year']} to {dataset['end_year']}."
+#        )
+#        ancestors.append(dataset['filename'])
+#
+#        # Save plot
+#        plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
+#        logger.info("Wrote %s", plot_path)
+#        plt.close()
+#
+#        # Save netCDFs
+#        for (netcdf_path, cube) in netcdf_paths.items():
+#            io.iris_save(cube, netcdf_path)
+#
+#        # Provenance tracking
+#        provenance_record = {
+#            'ancestors': ancestors,
+#            'authors': ['bock_lisa', 'schlund_manuel'],
+#            'caption': caption,
+#            'plot_types': ['box'],
+#        }
+#        with ProvenanceLogger(self.cfg) as provenance_logger:
+#            provenance_logger.log(plot_path, provenance_record)
+#            for netcdf_path in netcdf_paths:
+#                provenance_logger.log(netcdf_path, provenance_record)
 
     def create_map_plot(self, datasets):
         """Create map plot."""
@@ -2743,6 +2871,7 @@ class MultiDatasets(MonitorBase):
             logger.info("Processing variable %s", var_key)
             self.create_timeseries_plot(datasets)
             self.create_annual_cycle_plot(datasets)
+            self.create_benchmarking_boxplot_plot(datasets)
             self.create_map_plot(datasets)
             self.create_benchmarking_map_plot(datasets)
             self.create_zonal_mean_profile_plot(datasets)
