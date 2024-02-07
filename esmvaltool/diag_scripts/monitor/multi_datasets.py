@@ -724,6 +724,8 @@ class MultiDatasets(MonitorBase):
 
             elif plot_type == 'benchmarking_boxplot':
                 self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+                self.plots[plot_type].setdefault('fontsize', 10)
 
             elif plot_type == 'map':
                 self.plots[plot_type].setdefault(
@@ -1905,6 +1907,57 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cube})
 
+    def _plot_benchmarking_boxplot(self, benchmark_dataset, benchmark_group):
+        """Plot benchmarking boxplot."""
+        plot_type = 'benchmarking_boxplot'
+        logger.info("Plotting benchmarking boxplot for '%s'",
+                    self._get_label(benchmark_dataset))
+
+        var_key = benchmark_dataset['variable_group']
+
+        df = pd.DataFrame(columns=['Dataset', var_key])
+        ifile = 0
+
+        for dataset in benchmark_group:
+            dataset_name = dataset['dataset']
+            cube = iris.load_cube(dataset['filename'])
+            df.loc[ifile] = [dataset_name, cube.data]
+            ifile = ifile + 1
+
+        df[var_key] = df[var_key].astype(str).astype(float)
+
+        cube = benchmark_dataset['cube']
+
+        # Create plot with desired settings
+        with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
+            fig = plt.figure(**self.cfg['figure_kwargs'])
+            axes = fig.add_subplot()
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs['axes'] = axes
+
+            plot_boxplot = sns.boxplot(data=df)
+            plot_boxplot.set(xticklabels=[])
+            #plot_map = plot_func(cube, **plot_kwargs)
+
+            plt.scatter(0, cube.data, marker='x', s=200, color="red", linewidths = 3)
+
+            plt.ylabel(benchmark_dataset['units'])
+
+            # Setup colorbar
+            fontsize = self.plots[plot_type]['fontsize']
+
+            # Customize plot
+            axes.set_title(self._get_label(benchmark_dataset))
+            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
+                         f"{dataset['end_year']})")
+            self._process_pyplot_kwargs(plot_type, dataset)
+
+        # File paths
+        plot_path = self.get_plot_path(plot_type, dataset)
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+
+        return (plot_path, {netcdf_path: cube})
+
     def _process_pyplot_kwargs(self, plot_type, dataset):
         """Process functions for :mod:`matplotlib.pyplot`."""
         pyplot_kwargs = self.plots[plot_type]['pyplot_kwargs']
@@ -2226,53 +2279,30 @@ class MultiDatasets(MonitorBase):
         # Get datasets for benchmarking
         benchmark_group = self._get_benchmark_group(datasets)
         logger.info("Benchmarking group of %i datasets.", len(benchmark_group))
-
         print(benchmark_group)
 
-        var_key = benchmark_dataset['variable_group']
-
-        #df_group =_get_dataframe(self.cfg)
-
-        df = pd.DataFrame(columns=['Dataset', var_key])
-        ifile = 0
-        ancestors = []
-
+        ancestors = [benchmark_dataset['filename']]
         for dataset in benchmark_group:
-            dataset_name = dataset['dataset']
-            cube = iris.load_cube(dataset['filename'])
-            df.loc[ifile] = [dataset_name, cube.data]
-            ifile = ifile + 1
-
             ancestors.append(dataset['filename'])
 
-        df[var_key] = df[var_key].astype(str).astype(float)
-
-        fig = plt.figure(**self.cfg['figure_kwargs'])
-
-        cube_b = iris.load_cube(benchmark_dataset['filename'])
-
-        plt.scatter(0, cube_b.data, marker='x', s=200, color="red", linewidths = 3)
-
-        plt.ylabel('RMSE (' + benchmark_dataset['units'] + ')')
-
-        sns.boxplot(data=df)
+        (plot_path, netcdf_paths) = (
+            self._plot_benchmarking_boxplot(benchmark_dataset, benchmark_group)
+        )
 
         # Save plot
-        plot_path = self.get_plot_path(plot_type, benchmark_dataset)
-        #plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        fig.savefig(plot_path, **self.cfg['savefig_kwargs'])
+        plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
         logger.info("Wrote %s", plot_path)
         plt.close()
 
         # Save netCDF file
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-        var_attrs = {
-            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
-        }
-        #io.save_1d_data(cube, netcdf_path, 'month_number', var_attrs)
+        for (netcdf_path, cube) in netcdf_paths.items():
+            io.iris_save(cube, netcdf_path)
 
         # Provenance tracking
-        caption = (f"Boxplot.")
+        caption = (
+            f"Boxplot of {dataset['long_name']} of dataset "
+            f"{dataset['dataset']} (project {dataset['project']}) "
+            f"from {dataset['start_year']} to {dataset['end_year']}."
         provenance_record = {
             'ancestors': ancestors,
             'authors': ['bock_lisa', 'schlund_manuel'],
@@ -2282,39 +2312,8 @@ class MultiDatasets(MonitorBase):
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
-        #df = create_data_frame(input_data, cfg) 
 
-#
-#        (plot_path, netcdf_paths) = (
-#            self._plot_boxplot_with_ref(plot_func, datasets, dataset)
-#        )
-#        caption = (
-#            f"Boxplot of {dataset['long_name']} of dataset "
-#            f"{dataset['dataset']} (project {dataset['project']}) "
-#            f"from {dataset['start_year']} to {dataset['end_year']}."
-#        )
-#        ancestors.append(dataset['filename'])
-#
-#        # Save plot
-#        plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
-#        logger.info("Wrote %s", plot_path)
-#        plt.close()
-#
-#        # Save netCDFs
-#        for (netcdf_path, cube) in netcdf_paths.items():
-#            io.iris_save(cube, netcdf_path)
-#
-#        # Provenance tracking
-#        provenance_record = {
-#            'ancestors': ancestors,
-#            'authors': ['bock_lisa', 'schlund_manuel'],
-#            'caption': caption,
-#            'plot_types': ['box'],
-#        }
-#        with ProvenanceLogger(self.cfg) as provenance_logger:
-#            provenance_logger.log(plot_path, provenance_record)
-#            for netcdf_path in netcdf_paths:
-#                provenance_logger.log(netcdf_path, provenance_record)
+            self._plot_boxplot_with_ref(plot_func, datasets, dataset)
 
     def create_map_plot(self, datasets):
         """Create map plot."""
