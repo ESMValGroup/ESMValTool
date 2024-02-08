@@ -84,7 +84,7 @@ def plot_patterns(cube_list, plot_path):
     fig.savefig(plot_path + "Patterns Timeseries")
 
 
-def plot_patterns_timeseries_and_maps(cubelist, plot_path):
+def plot_patterns_timeseries(cubelist, plot_path):
     """Plot timeseries and maps of climatologies, anomalies and patterns.
 
     Parameters
@@ -98,7 +98,7 @@ def plot_patterns_timeseries_and_maps(cubelist, plot_path):
     -------
     None
     """
-    fig, ax = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
+    fig, axs = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
     fig.suptitle("Patterns from a random grid-cell", fontsize=18, y=0.98)
 
     plt.figure(figsize=(14, 12))
@@ -111,11 +111,11 @@ def plot_patterns_timeseries_and_maps(cubelist, plot_path):
 
         months = np.arange(1, 13)
         # avg_cube = sf.area_avg(cube, return_cube=False)
-        ax[x_pos, y_pos].plot(months, cube[:, 50, 50].data)
-        ax[x_pos, y_pos].set_ylabel(
+        axs[x_pos, y_pos].plot(months, cube[:, 50, 50].data)
+        axs[x_pos, y_pos].set_ylabel(
             str(cube.var_name) + " / " + str(cube.units))
         if j > 5:
-            ax[x_pos, y_pos].set_xlabel("Time")
+            axs[x_pos, y_pos].set_xlabel("Time")
 
         # January patterns
         plt.subplot(3, 3, j + 1)
@@ -143,7 +143,7 @@ def plot_anomalies_timeseries(cubelist, plot_path):
     -------
     None
     """
-    fig, ax = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
+    fig, axs = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
     fig.suptitle("Anomaly Timeseries, 1850-2100", fontsize=18, y=0.98)
 
     for j, cube in enumerate(cubelist):
@@ -153,11 +153,11 @@ def plot_anomalies_timeseries(cubelist, plot_path):
 
         # anomaly timeseries
         avg_cube = sf.area_avg(cube, return_cube=False)
-        ax[x_pos, y_pos].plot(yrs, avg_cube)
-        ax[x_pos,
+        axs[x_pos, y_pos].plot(yrs, avg_cube)
+        axs[x_pos,
             y_pos].set_ylabel(cube.long_name + " / " + str(cube.units))
         if j > 5:
-            ax[x_pos, y_pos].set_xlabel("Time")
+            axs[x_pos, y_pos].set_xlabel("Time")
 
     fig.tight_layout()
     fig.savefig(plot_path + "Anomalies")
@@ -177,7 +177,7 @@ def plot_climatologies_timeseries(cubelist, plot_path):
     -------
     None
     """
-    fig, ax = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
+    fig, axs = plt.subplots(3, 3, figsize=(14, 12), sharex=True)
     fig.suptitle("40 Year Climatologies, 1850-1889", fontsize=18, y=0.98)
 
     for j, cube in enumerate(cubelist):
@@ -186,11 +186,11 @@ def plot_climatologies_timeseries(cubelist, plot_path):
         yrs = (1850 + np.arange(cube.shape[0])).astype("float")
 
         avg_cube = sf.area_avg(cube, return_cube=False)
-        ax[x_pos, y_pos].plot(yrs, avg_cube)
-        ax[x_pos,
+        axs[x_pos, y_pos].plot(yrs, avg_cube)
+        axs[x_pos,
             y_pos].set_ylabel(cube.long_name + " / " + str(cube.units))
         if j > 5:
-            ax[x_pos, y_pos].set_xlabel("Time")
+            axs[x_pos, y_pos].set_xlabel("Time")
 
     fig.tight_layout()
     fig.savefig(plot_path + "Climatologies")
