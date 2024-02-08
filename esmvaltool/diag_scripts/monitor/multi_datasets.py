@@ -1953,7 +1953,7 @@ class MultiDatasets(MonitorBase):
             self._process_pyplot_kwargs(plot_type, dataset)
 
         # File paths
-        plot_path = self.get_plot_path(plot_type, dataset)
+        plot_path = self.get_plot_path(plot_type, benchmark_dataset)
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
 
         return (plot_path, {netcdf_path: cube})
@@ -2303,6 +2303,7 @@ class MultiDatasets(MonitorBase):
             f"Boxplot of {dataset['long_name']} of dataset "
             f"{dataset['dataset']} (project {dataset['project']}) "
             f"from {dataset['start_year']} to {dataset['end_year']}."
+            )
         provenance_record = {
             'ancestors': ancestors,
             'authors': ['bock_lisa', 'schlund_manuel'],
@@ -2313,7 +2314,6 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-            self._plot_boxplot_with_ref(plot_func, datasets, dataset)
 
     def create_map_plot(self, datasets):
         """Create map plot."""
