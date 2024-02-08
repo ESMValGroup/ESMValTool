@@ -557,7 +557,7 @@ def cube_saver(list_of_cubelists, work_path, name_list, mode):
 def save_outputs(
     cfg,
     list_of_cubelists,
-    cube_initial
+    model
 ):
     """Save data and plots to relevant directories.
 
@@ -567,17 +567,15 @@ def save_outputs(
         Dictionary passed in by ESMValTool preprocessors
     list_of_cubelists: list
         List of cubelists to save
-    plot_path : str
-        path to plot_dir
-    work_path : str
-        path to work_dir
+    model : str
+        model name
 
     Returns
     -------
     None
     """
     work_path, plot_path = sf.make_model_dirs(
-        cube_initial, cfg
+        cfg, model
     )
 
     name_list = [
@@ -692,8 +690,8 @@ def extract_data_from_cfg(cfg, model):
 
     if cfg["area"] == 'land':
         return clim_list, ts_list, sftlf
-    else:
-        return clim_list, ts_list, None
+
+    return clim_list, ts_list, None
 
 
 def patterns(model, cfg):

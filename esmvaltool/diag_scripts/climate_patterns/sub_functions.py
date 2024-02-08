@@ -192,10 +192,10 @@ def make_model_dirs(cfg, model):
 
     Parameters
     ----------
-    cube_initial : cube
-        initial input cube used to retrieve model name
     cfg: dict
         Dictionary passed in by ESMValTool preprocessors
+    model : str
+        model name
 
     Returns
     -------
@@ -238,11 +238,11 @@ def parallelise(function, processes=None):
         processes = 1
 
     def easy_parallise(func, sequence, cfg):
-        with mp.Pool(processes=processes) as p:
+        with mp.Pool(processes=processes) as pool:
             config_wrapper = partial(func, cfg=cfg)
-            result = p.map_async(config_wrapper, sequence).get()
-            p.close()
-            p.join()
+            result = pool.map_async(config_wrapper, sequence).get()
+            pool.close()
+            pool.join()
             return result
 
     return partial(easy_parallise, function)
