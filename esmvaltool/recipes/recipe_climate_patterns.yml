@@ -246,5 +246,4 @@ diagnostics:
         imogen_mode: on # options: on, off
         output_r2_scores: on # options: on, off
         parallelise: on # options: on, off
-        parallel_threads: 38 # int, optional
         area: global # options global, land. If land, uncomment landfrac recipe settings

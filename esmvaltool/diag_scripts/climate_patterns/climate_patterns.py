@@ -764,7 +764,6 @@ def main(cfg):
     """
     input_data = cfg["input_data"].values()
     parallelise = cfg["parallelise"]
-    threads = cfg["parallel_threads"]
 
     models = []
     for mod in input_data:
@@ -773,7 +772,7 @@ def main(cfg):
             models.append(model)
 
     if parallelise is True:
-        sf.parallelise(patterns, threads)(models, cfg)
+        sf.parallelise(patterns)(models, cfg)
     else:
         for model in models:
             patterns(model, cfg)
