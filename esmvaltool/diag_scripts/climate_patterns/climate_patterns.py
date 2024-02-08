@@ -280,7 +280,7 @@ def calculate_anomaly(clim_list, ts_list):
     return clim_list_final, anom_list_final
 
 
-def regression(tas, cube_data, ocean_frac, land_frac, area="global"):
+def regression(tas, cube_data, area, ocean_frac=None, land_frac=None):
     """Calculate coeffs of regression between global surf temp and variable.
 
     Parameters
@@ -313,7 +313,8 @@ def regression(tas, cube_data, ocean_frac, land_frac, area="global"):
         tas_data = sf.area_avg_landsea(
             tas, ocean_frac, land_frac, land=True, return_cube=False
         )
-    else:
+        
+    if area == 'global':
         # calculate global average warming
         tas_data = sf.area_avg(tas, return_cube=False)
 
@@ -354,7 +355,53 @@ def regression_units(tas, cube):
     return units
 
 
-def calculate_regressions(anom_list, ocean_frac, land_frac, area, yrs=85):
+def create_cube(tas_cube, ssp_cube, array, month_number, units=None):
+    """Create a new cube from existing metadata, and new aray data.
+    
+    Parameters
+    ----------
+    tas_cube: cube
+        near-surface air temperature
+    ssp_cube: cube
+        cube of a given variable
+    array: array
+        output array from regression
+    month_number: int
+        month related to the regression array
+    units: str
+        units related to the regression variable
+        
+    Returns
+    -------
+    cube: cube
+        cube filled with regression array and metadata
+    
+    """
+    # assigning dim_coords
+    coord1 = tas_cube.coord(contains_dimension=1)
+    coord2 = tas_cube.coord(contains_dimension=2)
+    dim_coords_and_dims = [(coord1, 0), (coord2, 1)]
+
+    # assigning aux_coord
+    coord_month = iris.coords.AuxCoord(month_number, var_name="imogen_drive")
+    aux_coords_and_dims = [(coord_month, ())]
+
+    cube = rename_regression_variables(ssp_cube)
+
+    # creating cube 
+    cube = iris.cube.Cube(
+        array,
+        units=units,
+        dim_coords_and_dims=dim_coords_and_dims,
+        aux_coords_and_dims=aux_coords_and_dims,
+        var_name=cube.var_name,
+        standard_name=cube.standard_name,
+    )
+    
+    return cube
+
+
+def calculate_regressions(anom_list, area, ocean_frac=None, land_frac=None, yrs=86):
     """Facilitate the calculation of regression coeffs (climate patterns).
 
     Also creates of a new cube of patterns per variable.
@@ -399,50 +446,32 @@ def calculate_regressions(anom_list, ocean_frac, land_frac, area, yrs=85):
             month_cube_ssp = cube_ssp.extract(month_constraint)
             month_tas = tas.extract(month_constraint)
 
-            regr_array, score_array = regression(
-                month_tas,
-                month_cube_ssp.data,
-                ocean_frac,
-                land_frac,
-                area=area
-            )
-
-            # re-creating cube
+            if area == 'land':
+                regr_array, score_array = regression(
+                    month_tas,
+                    month_cube_ssp.data,
+                    area=area,
+                    ocean_frac=ocean_frac,
+                    land_frac=land_frac,
+                )
+            
+            if area == 'global':
+                regr_array, score_array = regression(
+                    month_tas,
+                    month_cube_ssp.data,
+                    area=area,
+                )
+                
             if cube.var_name in ("swdown_anom", "lwdown_anom"):
                 units = "W m-2 K-1"
             else:
                 units = regression_units(tas, cube_ssp)
-
-            # assigning dim_coords
-            coord1 = tas.coord(contains_dimension=1)
-            coord2 = tas.coord(contains_dimension=2)
-            dim_coords_and_dims = [(coord1, 0), (coord2, 1)]
-
-            # assigning aux_coord
-            coord_month = iris.coords.AuxCoord(i, var_name="imogen_drive")
-            aux_coords_and_dims = [(coord_month, ())]
-
-            cube = rename_regression_variables(cube)
-
+                
             # creating cube of regression values
-            regr_cube = iris.cube.Cube(
-                regr_array,
-                units=units,
-                dim_coords_and_dims=dim_coords_and_dims,
-                aux_coords_and_dims=aux_coords_and_dims,
-                var_name=cube.var_name,
-                standard_name=cube.standard_name,
-            )
+            regr_cube = create_cube(tas, cube_ssp, regr_array, i, units=units)
 
             # calculating cube of r2 scores
-            score_cube = iris.cube.Cube(
-                score_array,
-                units="R2",
-                dim_coords_and_dims=dim_coords_and_dims,
-                aux_coords_and_dims=aux_coords_and_dims,
-                var_name=cube.var_name,
-                standard_name=cube.standard_name,
-            )
+            score_cube = create_cube(tas, cube_ssp, score_array, i, units="R2")
 
             month_list.append(regr_cube)
             score_month_list.append(score_cube)
@@ -520,31 +549,18 @@ def cube_saver(list_of_cubelists, work_path, name_list, mode):
 
 
 def save_outputs(
-    clim_list_final,
-    anom_list_final,
-    regressions,
-    scores,
-    imogen_mode,
-    r2_scores,
-    plot_path,
-    work_path,
+    cfg,
+    list_of_cubelists,
+    cube_initial
 ):
     """Save data and plots to relevant directories.
 
     Parameters
     ----------
-    clim_list_final : cubelist
-        cube list of all variable climatologies
-    anom_list_final : cubelist
-        cube list of all variable anomalies
-    regressions : cubelist
-        cube list of all variable regression slopes
-    scores : cubelist
-        cube list of all variable regression scores
-    imogen_mode : bool
-        imogen_mode on or off
-    r2_scores : bool
-        determinant output on or off
+    cfg: dict
+        Dictionary passed in by ESMValTool preprocessors
+    list_of_cubelists: list
+        List of cubelists to save
     plot_path : str
         path to plot_dir
     work_path : str
@@ -554,7 +570,10 @@ def save_outputs(
     -------
     None
     """
-    list_of_cubelists = [clim_list_final, anom_list_final, regressions, scores]
+    work_path, plot_path = sf.make_model_dirs(
+        cube_initial, cfg
+    )
+    
     name_list = [
         "climatology_variables.nc",
         "anomaly_variables.nc",
@@ -563,10 +582,10 @@ def save_outputs(
     ]
 
     # saving data + plotting
-    if imogen_mode is True:
-        if r2_scores is True:
+    if cfg["imogen_mode"] is True:
+        if cfg["output_r2_scores"] is True:
             plot_scores(list_of_cubelists[3], plot_path)
-            write_scores(scores, work_path)
+            write_scores(list_of_cubelists[3], work_path)
             plot_cp_timeseries(list_of_cubelists, plot_path)
             cube_saver(
                 list_of_cubelists,
@@ -580,9 +599,9 @@ def save_outputs(
             cube_saver(list_of_cubelists, work_path, name_list, mode="imogen")
 
     else:
-        if r2_scores is True:
+        if cfg["output_r2_scores"] is True:
             plot_scores(list_of_cubelists[3], plot_path)
-            write_scores(scores, work_path)
+            write_scores(list_of_cubelists[3], work_path)
             plot_patterns(list_of_cubelists[2], plot_path)
             cube_saver(list_of_cubelists, work_path, name_list, mode="scores")
 
@@ -615,39 +634,36 @@ def get_provenance_record():
     return record
 
 
-def patterns(model, cfg):
-    """Driving function for script, taking in model data and saving parameters.
-
+def extract_data_from_cfg(cfg, model):
+    """Extract model data from the cfg.
+    
     Parameters
     ----------
-    model : str
-        model name
     cfg: dict
         Dictionary passed in by ESMValTool preprocessors
-
+    model : str
+        model name
+        
     Returns
     -------
-    None
+    clim_list: cubelist
+        cubelist of climatologies
+    ts_list: cubelist
+        cubelist of spatial timeseries
+    sftlf: cube
+        land fraction cube
     """
-    input_data = cfg["input_data"].values()
-    grid_spec = cfg["grid"]
-    imogen_mode = cfg["imogen_mode"]
-    r2_scores = cfg["output_r2_scores"]
-    work_path = cfg["work_dir"] + "/"
-    plot_path = cfg["plot_dir"] + "/"
-    area = cfg["area"]
-
     clim_list = iris.cube.CubeList([])
     ts_list = iris.cube.CubeList([])
 
-    for dataset in input_data:
+    for dataset in cfg["input_data"].values():
         if dataset["dataset"] == model:
             input_file = dataset["filename"]
 
             # preparing single cube
             cube_initial = sf.load_cube(input_file)
 
-            if grid_spec == "constrained":
+            if cfg["grid"] == "constrained":
                 cube = constrain_latitude(cube_initial)
             else:
                 cube = cube_initial
@@ -667,9 +683,32 @@ def patterns(model, cfg):
                 # making climatology
                 clim_cube = climatology(cube)
                 clim_list.append(clim_cube)
+                
+    if cfg["area"] == 'land':       
+        return clim_list, ts_list, sftlf
+    else:
+        return clim_list, ts_list, None
 
-    # calculate land/ocean_fracs
-    ocean_frac, land_frac = sf.ocean_fraction_calc(sftlf)
+
+def patterns(model, cfg):
+    """Driving function for script, taking in model data and saving parameters.
+
+    Parameters
+    ----------
+    model : str
+        model name
+    cfg: dict
+        Dictionary passed in by ESMValTool preprocessors
+
+    Returns
+    -------
+    None
+    """
+    clim_list, ts_list, sftlf = extract_data_from_cfg(cfg, model)
+
+    if cfg["area"] == 'land':
+        # calculate land/ocean_fracs
+        ocean_frac, land_frac = sf.ocean_fraction_calc(sftlf)
 
     # calculate anomaly over historical + ssp timeseries
     clim_list_final, anom_list_final = calculate_anomaly(clim_list, ts_list)
@@ -678,23 +717,22 @@ def patterns(model, cfg):
         rename_clim_variables(cube)
         rename_anom_variables(anom_list_final[i])
 
-    regressions, scores = calculate_regressions(
-        anom_list_final.copy(), ocean_frac, land_frac, area
-    )
+    if cfg["area"] == 'land':
+        regressions, scores = calculate_regressions(
+            anom_list_final.copy(), cfg["area"], ocean_frac=ocean_frac, land_frac=land_frac
+        )
+    if cfg["area"] == 'global':
+        regressions, scores = calculate_regressions(
+            anom_list_final.copy(), cfg["area"]
+        )
+        
+    list_of_cubelists = [clim_list_final, anom_list_final, regressions, scores]
 
-    model_work_dir, model_plot_dir = sf.make_model_dirs(
-        cube_initial, work_path, plot_path
-    )
-
-    save_outputs(
-        clim_list_final,
-        anom_list_final,
-        regressions,
-        scores,
-        imogen_mode,
-        r2_scores,
-        model_plot_dir,
-        model_work_dir,
+    save_outputs(cfg, list_of_cubelists, model)
+    
+    model_work_dir, _ = sf.make_model_dirs(
+        cfg, 
+        model
     )
 
     provenance_record = get_provenance_record()

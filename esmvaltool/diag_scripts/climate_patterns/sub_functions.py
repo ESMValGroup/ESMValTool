@@ -187,18 +187,16 @@ def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
     return cube2.data
 
 
-def make_model_dirs(cube_initial, work_path, plot_path):
+def make_model_dirs(cfg, model):
     """Create directories for each input model for saving.
 
     Parameters
     ----------
     cube_initial : cube
         initial input cube used to retrieve model name
-    work_path : path
-        path to work_dir
-    plot_path : path
-        path to plot_dir
-
+    cfg: dict
+        Dictionary passed in by ESMValTool preprocessors
+        
     Returns
     -------
     model_work_dir : path
@@ -206,8 +204,10 @@ def make_model_dirs(cube_initial, work_path, plot_path):
     model_plot_dir : path
         path to specific plot directory in plot_dir
     """
-    w_path = os.path.join(work_path, cube_initial.attributes["source_id"])
-    p_path = os.path.join(plot_path, cube_initial.attributes["source_id"])
+    work_path = cfg["work_dir"] + "/"
+    plot_path = cfg["plot_dir"] + "/"
+    w_path = os.path.join(work_path, model)
+    p_path = os.path.join(plot_path, model)
     os.mkdir(w_path)
     os.mkdir(p_path)
 
@@ -238,11 +238,11 @@ def parallelise(function, processes=None):
         processes = 1
 
     def easy_parallise(func, sequence, cfg):
-        pool = mp.Pool(processes=processes)
-        config_wrapper = partial(func, cfg=cfg)
-        result = pool.map_async(config_wrapper, sequence).get()
-        pool.close()
-        pool.join()
-        return result
+        with mp.Pool(processes=processes) as p:
+            config_wrapper = partial(func, cfg=cfg)
+            result = p.map_async(config_wrapper, sequence).get()
+            p.close()
+            p.join()
+            return result
 
     return partial(easy_parallise, function)
