@@ -196,7 +196,7 @@ def make_model_dirs(cfg, model):
         initial input cube used to retrieve model name
     cfg: dict
         Dictionary passed in by ESMValTool preprocessors
-        
+
     Returns
     -------
     model_work_dir : path
