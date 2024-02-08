@@ -43,7 +43,13 @@ import iris.cube
 import numpy as np
 import sklearn.linear_model
 import sub_functions as sf
-from plotting import plot_cp_timeseries, plot_patterns, plot_scores
+from plotting import (
+    plot_patterns_timeseries_and_maps,
+    plot_anomalies_timeseries,
+    plot_climatologies_timeseries,
+    plot_patterns,
+    plot_scores
+)
 from rename_variables import (
     rename_anom_variables,
     rename_clim_variables,
@@ -590,7 +596,9 @@ def save_outputs(
         if cfg["output_r2_scores"] is True:
             plot_scores(list_of_cubelists[3], plot_path)
             write_scores(list_of_cubelists[3], work_path)
-            plot_cp_timeseries(list_of_cubelists, plot_path)
+            plot_climatologies_timeseries(list_of_cubelists[0], plot_path)
+            plot_anomalies_timeseries(list_of_cubelists[1], plot_path)
+            plot_patterns_timeseries_and_maps(list_of_cubelists[2], plot_path)
             cube_saver(
                 list_of_cubelists,
                 work_path,
@@ -599,7 +607,9 @@ def save_outputs(
             )
 
         else:
-            plot_cp_timeseries(list_of_cubelists, plot_path)
+            plot_climatologies_timeseries(list_of_cubelists[0], plot_path)
+            plot_anomalies_timeseries(list_of_cubelists[1], plot_path)
+            plot_patterns_timeseries_and_maps(list_of_cubelists[2], plot_path)
             cube_saver(list_of_cubelists, work_path, name_list, mode="imogen")
 
     else:
