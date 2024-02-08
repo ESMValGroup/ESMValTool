@@ -313,7 +313,7 @@ def regression(tas, cube_data, area, ocean_frac=None, land_frac=None):
         tas_data = sf.area_avg_landsea(
             tas, ocean_frac, land_frac, land=True, return_cube=False
         )
-        
+
     if area == 'global':
         # calculate global average warming
         tas_data = sf.area_avg(tas, return_cube=False)
@@ -357,7 +357,7 @@ def regression_units(tas, cube):
 
 def create_cube(tas_cube, ssp_cube, array, month_number, units=None):
     """Create a new cube from existing metadata, and new aray data.
-    
+
     Parameters
     ----------
     tas_cube: cube
@@ -370,12 +370,12 @@ def create_cube(tas_cube, ssp_cube, array, month_number, units=None):
         month related to the regression array
     units: str
         units related to the regression variable
-        
+
     Returns
     -------
     cube: cube
         cube filled with regression array and metadata
-    
+
     """
     # assigning dim_coords
     coord1 = tas_cube.coord(contains_dimension=1)
@@ -388,7 +388,7 @@ def create_cube(tas_cube, ssp_cube, array, month_number, units=None):
 
     cube = rename_regression_variables(ssp_cube)
 
-    # creating cube 
+    # creating cube
     cube = iris.cube.Cube(
         array,
         units=units,
@@ -397,11 +397,17 @@ def create_cube(tas_cube, ssp_cube, array, month_number, units=None):
         var_name=cube.var_name,
         standard_name=cube.standard_name,
     )
-    
+
     return cube
 
 
-def calculate_regressions(anom_list, area, ocean_frac=None, land_frac=None, yrs=86):
+def calculate_regressions(
+    anom_list,
+    area,
+    ocean_frac=None,
+    land_frac=None,
+    yrs=86
+):
     """Facilitate the calculation of regression coeffs (climate patterns).
 
     Also creates of a new cube of patterns per variable.
@@ -454,19 +460,19 @@ def calculate_regressions(anom_list, area, ocean_frac=None, land_frac=None, yrs=
                     ocean_frac=ocean_frac,
                     land_frac=land_frac,
                 )
-            
+
             if area == 'global':
                 regr_array, score_array = regression(
                     month_tas,
                     month_cube_ssp.data,
                     area=area,
                 )
-                
+
             if cube.var_name in ("swdown_anom", "lwdown_anom"):
                 units = "W m-2 K-1"
             else:
                 units = regression_units(tas, cube_ssp)
-                
+
             # creating cube of regression values
             regr_cube = create_cube(tas, cube_ssp, regr_array, i, units=units)
 
@@ -573,7 +579,7 @@ def save_outputs(
     work_path, plot_path = sf.make_model_dirs(
         cube_initial, cfg
     )
-    
+
     name_list = [
         "climatology_variables.nc",
         "anomaly_variables.nc",
@@ -636,14 +642,14 @@ def get_provenance_record():
 
 def extract_data_from_cfg(cfg, model):
     """Extract model data from the cfg.
-    
+
     Parameters
     ----------
     cfg: dict
         Dictionary passed in by ESMValTool preprocessors
     model : str
         model name
-        
+
     Returns
     -------
     clim_list: cubelist
@@ -683,8 +689,8 @@ def extract_data_from_cfg(cfg, model):
                 # making climatology
                 clim_cube = climatology(cube)
                 clim_list.append(clim_cube)
-                
-    if cfg["area"] == 'land':       
+
+    if cfg["area"] == 'land':
         return clim_list, ts_list, sftlf
     else:
         return clim_list, ts_list, None
@@ -719,19 +725,22 @@ def patterns(model, cfg):
 
     if cfg["area"] == 'land':
         regressions, scores = calculate_regressions(
-            anom_list_final.copy(), cfg["area"], ocean_frac=ocean_frac, land_frac=land_frac
+            anom_list_final.copy(),
+            cfg["area"],
+            ocean_frac=ocean_frac,
+            land_frac=land_frac
         )
     if cfg["area"] == 'global':
         regressions, scores = calculate_regressions(
             anom_list_final.copy(), cfg["area"]
         )
-        
+
     list_of_cubelists = [clim_list_final, anom_list_final, regressions, scores]
 
     save_outputs(cfg, list_of_cubelists, model)
-    
+
     model_work_dir, _ = sf.make_model_dirs(
-        cfg, 
+        cfg,
         model
     )
 
