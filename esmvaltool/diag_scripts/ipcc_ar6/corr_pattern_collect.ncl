@@ -216,18 +216,16 @@ begin
   ; Calculating necessary values
   ; Number of Projects needed to determine span
   ; For now just CMIP projects
+  c_projects = str_match_ic(data_all&models@project, "CMIP")
+  projects = get_unique_entries(c_projects)
   if (isatt(diag_script_info, "project_order")) then
-    projects = diag_script_info@project_order
-    do iproj = 0, dimsizes(projects) -1
-      if (.not. any(data_all&models@project .eq. projects(iproj))) then
-        error_msg("w", DIAG_SCRIPT, "", "specified order of groups " + \
-                  "cannot be applied, group" + projects(iproj) + \
-                  " is not defined")
-      end if
-    end do
-  else
-    c_projects = str_match_ic(data_all&models@project, "CMIP")
-    projects = get_unique_entries(c_projects)
+    project_order = diag_script_info@project_order
+    if (dimsizes(project_order) .eq. dimsizes(projects)) then
+      projects := project_order
+    else
+      error_msg("w", DIAG_SCRIPT, "", "specified order of projects " + \
+                "cannot be applied, invalid number of projects")
+    end if
   end if
   n_var = dimsizes(data_all&vars)
 
@@ -457,6 +455,10 @@ d_proj = 1.   ; offset
   ; Draw Legend
   do iproj = 0, dimsizes(projects)-1
     res_text@txFontColor = fcolors(iproj, :)
+    ; CMIP5 label has to be reduced to CMIP5 sometimes
+    if str_match_ind_ic(plabel, "CMIP5").eq.iproj then
+      plabel(iproj) = "CMIP5"
+    end if
     plot@$unique_string("dum_l")$ = gsn_add_text(wks, plot, plabel(iproj),\
                                                  x_val(0)-0.5, y_min_label + \
                                                  lb_stride*(iproj+1.2), \

@@ -12,8 +12,7 @@
 ;     none
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
-;     group_by: attribute of datasets for grouping
-;               (for now: project (default), tag) 
+;     none
 ;
 ; Required variable_info attributes (variable specific)
 ;     reference_dataset: name of reference observation
@@ -37,21 +36,11 @@ load "$diag_scripts/shared/statistics.ncl"
 begin
   enter_msg(DIAG_SCRIPT, "")
 
-  ; Set default values for non-required diag_script_info attributes
-  set_default_att(diag_script_info, "group_by", "projectÂ")
-
   var0 = variable_info[0]@short_name
   info_items = select_metadata_by_name(input_file_info, var0)
   infiles = metadata_att_as_array(info_items, "filename")
   datasetnames = metadata_att_as_array(info_items, "dataset")
-  group_by = diag_script_info@group_by
-  if (group_by .eq. "tag") then
-    groupnames = metadata_att_as_array(info_items, "tag")
-    groupnames = where(ismissing(groupnames), "None", groupnames) 
-  else
-    groupnames = metadata_att_as_array(info_items, "project")
-  end if
-  ;groupnames = metadata_att_as_array(info_items, group_by)
+  projectnames = metadata_att_as_array(info_items, "project")
   dim_MOD = ListCount(info_items)
   dim_VAR = ListCount(variable_info)
 
@@ -127,8 +116,7 @@ begin
       data_ref = mean_years
     else
       ; Since ref model processed first, move all models up one spot
-      ;all_cor(iloop-1) = pattern_cor(data_ref, mean_years, 1.0, 0)
-      all_cor(iloop-1) = calculate_metric(mean_years, data_ref, "correlation")
+      all_cor(iloop-1) = pattern_cor(data_ref, mean_years, 1.0, 0)
     end if
     delete(mean_years)
     delete(var)
@@ -139,7 +127,7 @@ begin
   ; *************************************
 
   datasetnames := datasetnames(mod_ind_woref)
-  groupnames := groupnames(mod_ind_woref)
+  projectnames := projectnames(mod_ind_woref)
 
   ndim := dimsizes(datasetnames)
   ensemble_assign = new(ndim, integer)
@@ -154,7 +142,7 @@ begin
   all_cor_em = all_cor(:max(ensemble_assign)-1)
   all_cor_em = all_cor_em@_FillValue
   datasetnames_em = datasetnames(:max(ensemble_assign)-1)
-  groupnames_em = groupnames(:max(ensemble_assign)-1)
+  projectnames_em = projectnames(:max(ensemble_assign)-1)
 
   do gg = 1, max(ensemble_assign)     ; calculate ensemble means
     wind := ind(ensemble_assign.eq.gg)
@@ -162,12 +150,12 @@ begin
       all_cor_em(gg-1) = (/ all_cor(wind) /)
       all_cor_em&models(gg-1) =  datasetnames(wind)
       datasetnames_em(gg-1) = datasetnames(wind)
-      groupnames_em(gg-1) = groupnames(wind)
+      projectnames_em(gg-1) = projectnames(wind)
     else
       all_cor_em(gg-1) = (/ dim_avg_n(all_cor(wind), 0) /)
       all_cor_em&models(gg-1) =  datasetnames(wind(0))
       datasetnames_em(gg-1) = datasetnames(wind(0))
-      groupnames_em(gg-1) = groupnames(wind(0))
+      projectnames_em(gg-1) = projectnames(wind(0))
     end if
   end do
 
@@ -196,7 +184,7 @@ begin
 
   ; Write list of models with project (arrays get squished as attributes)
   modnames = datasetnames_em
-  projnames = groupnames_em
+  projnames = projectnames_em
   modproj = (/modnames, projnames/)
   asciiwrite(modproj_dir, modproj)
 
