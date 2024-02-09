@@ -82,8 +82,6 @@ preprocessors:
       span: overlap
       statistics:
         - operator: percentile
-          percent: 10
-        - operator: percentile
           percent: 90
       exclude: [reference_dataset, MIROC6]
 

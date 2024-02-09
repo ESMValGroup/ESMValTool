@@ -68,6 +68,7 @@ Currently supported plot types (use the option ``plots`` to specify them):
     Benchmarking plots
     ------------------
     - maps (``benchmarking_map``):
+    - Zonal mean profiles (plot type ``benchmarking_zonal``):
 
 Author
 ------
@@ -583,6 +584,9 @@ time_format: str, optional (default: None)
 Configuration options for plot type ``benchmarking_map``
 --------------------------------------------------------
 
+Configuration options for plot type ``benchmarking_zonal``
+----------------------------------------------------------
+
 .. hint::
 
    Extra arguments given to the recipe are ignored, so it is safe to use yaml
@@ -696,8 +700,9 @@ class MultiDatasets(MonitorBase):
             'variable_vs_lat',
             'hovmoeller_z_vs_time',
             'hovmoeller_time_vs_lat_or_lon',
-            'benchmarking_map',
             'benchmarking_boxplot',
+            'benchmarking_map',
+            'benchmarking_zonal',
         ]
         for (plot_type, plot_options) in self.plots.items():
             if plot_type not in self.supported_plot_types:
@@ -789,6 +794,36 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('x_pos_stats_bias', 0.92)
 
             elif plot_type == 'zonal_mean_profile':
+                self.plots[plot_type].setdefault(
+                    'cbar_label', '{short_name} [{units}]')
+                self.plots[plot_type].setdefault(
+                    'cbar_label_bias', 'Δ{short_name} [{units}]')
+                self.plots[plot_type].setdefault(
+                    'cbar_kwargs', {'orientation': 'vertical'}
+                )
+                self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
+                self.plots[plot_type].setdefault('common_cbar', False)
+                self.plots[plot_type].setdefault('fontsize', 10)
+                self.plots[plot_type].setdefault('log_y', True)
+                self.plots[plot_type].setdefault('plot_func', 'contourf')
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs_bias', {})
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'cmap', 'bwr'
+                )
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'norm', 'centered'
+                )
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+                self.plots[plot_type].setdefault('rasterize', True)
+                self.plots[plot_type].setdefault('show_stats', True)
+                self.plots[plot_type].setdefault(
+                    'show_y_minor_ticklabels', False
+                )
+                self.plots[plot_type].setdefault('x_pos_stats_avg', 0.01)
+                self.plots[plot_type].setdefault('x_pos_stats_bias', 0.7)
+
+            elif plot_type == 'benchmarking_zonal':
                 self.plots[plot_type].setdefault(
                     'cbar_label', '{short_name} [{units}]')
                 self.plots[plot_type].setdefault(
@@ -1842,8 +1877,9 @@ class MultiDatasets(MonitorBase):
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
         return (plot_path, {netcdf_path: cube})
 
-    def _plot_benchmarking_map(self, plot_func, dataset, percentile_dataset):
-        """Plot benchmarking map plot for all non-reference datasets."""
+    def _plot_benchmarking_map(self, plot_func, dataset, percentile_dataset,
+                               metric):
+        """Plot benchmarking map plot."""
         plot_type = 'benchmarking_map'
         logger.info("Plotting benchmarking map for '%s'",
                     self._get_label(dataset))
@@ -1851,8 +1887,6 @@ class MultiDatasets(MonitorBase):
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
         # dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
-
-        mask_cube = cube.copy()
 
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -1866,10 +1900,8 @@ class MultiDatasets(MonitorBase):
             # apply stippling (dots) to all grid cells that do not exceed
             # the upper percentile given by 'percentile_dataset[]'
 
-            mask = np.where((cube.data >= percentile_dataset[0].data) &
-                            (cube.data >= percentile_dataset[1].data), 0, 1)
-
-            mask_cube.data = mask
+            mask_cube = self._get_benchmark_mask(cube, percentile_dataset,
+                                                 metric)
 
             plot_func(
                mask_cube,
@@ -1958,6 +1990,76 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cube})
 
+    def _plot_benchmarking_zonal(self, plot_func, dataset, percentile_dataset,
+                                 metric):
+        """Plot benchmarking zonal mean profile."""
+        plot_type = 'benchmarking_zonal'
+        logger.info("Plotting benchmarking zonal mean profile"
+                    " for '%s'",
+                    self._get_label(dataset))
+
+        # Make sure that the data has the correct dimensions
+        cube = dataset['cube']
+
+        # Create plot with desired settings
+        with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
+            fig = plt.figure(**self.cfg['figure_kwargs'])
+            axes = fig.add_subplot()
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs['axes'] = axes
+            plot_benchmarking_zonal = plot_func(cube, **plot_kwargs)
+
+            # apply stippling (dots) to all grid cells that do not exceed
+            # the upper percentile given by 'percentile_dataset[]'
+            
+            mask_cube = self._get_benchmark_mask(cube, percentile_dataset,
+                                                 metric)
+            plot_func(
+               mask_cube,
+               colors='none',
+               levels=[.5, 1.5],
+               hatches=['......', None],
+            )
+
+            # Print statistics if desired
+            # self._add_stats(plot_type, axes, dim_coords_dat, dataset)
+
+            # Setup colorbar
+            fontsize = self.plots[plot_type]['fontsize']
+            colorbar = fig.colorbar(plot_benchmarking_zonal, ax=axes,
+                                    **self._get_cbar_kwargs(plot_type))
+            colorbar.set_label(self._get_cbar_label(plot_type, dataset),
+                               fontsize=fontsize)
+            colorbar.ax.tick_params(labelsize=fontsize)
+
+            # Customize plot
+            axes.set_title(self._get_label(dataset))
+            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
+                         f"{dataset['end_year']})")
+            axes.set_xlabel('latitude [°N]')
+            z_coord = cube.coord(axis='Z')
+            axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
+            if self.plots[plot_type]['log_y']:
+                axes.set_yscale('log')
+                axes.get_yaxis().set_major_formatter(
+                    FormatStrFormatter('%.1f'))
+            if self.plots[plot_type]['show_y_minor_ticklabels']:
+                axes.get_yaxis().set_minor_formatter(
+                    FormatStrFormatter('%.1f'))
+            else:
+                axes.get_yaxis().set_minor_formatter(NullFormatter())
+            self._process_pyplot_kwargs(plot_type, dataset)
+
+            # Rasterization
+            if self.plots[plot_type]['rasterize']:
+                self._set_rasterized([axes])
+
+        # File paths
+        plot_path = self.get_plot_path(plot_type, dataset)
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+
+        return (plot_path, {netcdf_path: cube})
+
     def _process_pyplot_kwargs(self, plot_type, dataset):
         """Process functions for :mod:`matplotlib.pyplot`."""
         pyplot_kwargs = self.plots[plot_type]['pyplot_kwargs']
@@ -1981,6 +2083,8 @@ class MultiDatasets(MonitorBase):
             'benchmarking_boxplot': (['']),
             'map': (['latitude', 'longitude'],),
             'benchmarking_map': (['latitude', 'longitude'],),
+            'benchmarking_zonal': (['latitude', 'air_pressure'],
+                                   ['latitude', 'altitude']),
             'zonal_mean_profile': (['latitude', 'air_pressure'],
                                    ['latitude', 'altitude']),
             'timeseries': (['time'],),
@@ -2051,10 +2155,17 @@ class MultiDatasets(MonitorBase):
         if len(ref_datasets) == 1:
             return ref_datasets[0]
         else:
-            raise ValueError(
-                f"Expected exactly 1 reference dataset (with "
-                f"'reference_for_metric: true' for variable "
-                f"'{variable}', got {len(ref_datasets):d}")
+            # try variable attribute "reference_dataset"
+            for d in datasets:
+                print(d.get('reference_dataset'))
+                print(d.get('dataset'))
+                if (d.get('reference_dataset') == d.get('dataset')):
+                    ref_datasets = d
+                    break
+            if len(ref_datasets) != 1:
+                raise ValueError(
+                    f"Expected exactly 1 reference dataset for variable "
+                    f"'{variable}', got {len(ref_datasets):d}")
         return None
 
     def _get_benchmark_dataset(self, datasets):
@@ -2079,6 +2190,47 @@ class MultiDatasets(MonitorBase):
                                d.get('reference_for_metric', False))]
         return benchmark_datasets
 
+    def _get_benchmark_mask(self, cube, percentile_dataset, metric):
+        """Create mask for benchmarking cube depending on metric."""
+        mask_cube = cube.copy()
+        
+        if metric == 'bias':
+            sgn_p_up = np.where((percentile_dataset[0].data >= 0), 1, -1)
+            sgn_p_dn = np.where((percentile_dataset[1].data >= 0), 1, -1)
+            mask = np.where((sgn_p_up == 1) &
+                            (cube.data >= percentile_dataset[0].data) |
+                            (sgn_p_dn == -1) &
+                            (cube.data <= percentile_dataset[1].data), 0, 1)
+        elif metric == 'emd':
+            mask = np.where(cube.data >= percentile_dataset[0].data, 0, 1)
+        elif metric == 'pearsonr':
+            mask = np.where(cube.data <= percentile_dataset[0].data, 0, 1)
+        elif metric == 'rmse':
+            mask = np.where(cube.data >= percentile_dataset[0].data, 0, 1)
+        else:
+            raise ValueError(
+                f"Could not create benchmarking mask, unknown benchmarking "
+                f"metric: '{metric}'")
+
+        mask_cube.data = mask
+        return mask_cube
+
+    def _get_benchmark_metric(self, datasets):
+        """Get benchmarking metric."""
+        short_name = datasets[0].get('short_name')
+        if 'rmse' in short_name:
+            metric = 'rmse'
+        elif 'pearsonr' in short_name:
+            metric = 'pearsonr'
+        elif 'emd' in short_name:
+            metric = 'emd'
+        else:
+            metric = 'bias'  # default
+            logger.info(
+                f"Could not determine metric from short_name, "
+                f"assuming benchmarking metric = %s", metric)
+        return metric
+
     def _get_benchmark_percentiles(self, datasets):
         """Get percentile datasets from multi-model statistics preprocessor."""
         variable = datasets[0][self.cfg['group_variables_by']]
@@ -2088,12 +2240,43 @@ class MultiDatasets(MonitorBase):
             if statistics:
                 if "Percentile" in statistics:
                     percentiles.append(d)
+                    
+        # sort percentiles by size
+        
+        # get percentiles as integers
+        iperc = []
+        for d in percentiles:
+            stat = d.get('multi_model_statistics')
+            perc = stat.replace('MultiModelPercentile', '')
+            iperc.append(int(perc))
 
-        if len(percentiles) == 2:
+        idx = list(range(len(percentiles)))
+        # sort list of percentile datasets by percentile with highest
+        # percentiles first (descending)
+        zipped_pairs = zip(iperc, idx)
+        z = [x for _, x in sorted(zipped_pairs, reverse=True)]
+        perc_sorted = [percentiles[i] for i in z]
+
+        # get number of percentiles expected depending on benchmarking metric
+
+        metric = self._get_benchmark_metric(datasets)
+        
+        if (metric == 'bias'):
+            numperc = 2
+        elif (metric == 'rmse'):
+            numperc = 1
+        elif (metric == 'pearsonr'):
+            numperc = 1
+        elif (metric == 'emd'):
+            numperc = 1
+        else:
+            raise ValueError(f"Unknown benchmarking metric: '{metric}'.")
+
+        if len(percentiles) == numperc:
             return percentiles
         else:
             raise ValueError(
-                f"Expected exactly 2 percentile datasets (created "
+                f"Expected exactly '{numperc}' percentile datasets (created "
                 f"'with multi-model statistics preprocessor for variable "
                 f"'{variable}'), got {len(percentiles):d}")
         return None
@@ -2406,6 +2589,8 @@ class MultiDatasets(MonitorBase):
         dataset = self._get_benchmark_dataset(datasets)
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
+        # Get benchmarking metric
+        metric = self._get_benchmark_metric(datasets)
 
         # Get plot function
         plot_func = self._get_plot_func(plot_type)
@@ -2423,7 +2608,8 @@ class MultiDatasets(MonitorBase):
             percentile_data.append(cube)
 
         (plot_path, netcdf_paths) = (
-            self._plot_benchmarking_map(plot_func, dataset, percentile_data)
+            self._plot_benchmarking_map(plot_func, dataset, percentile_data,
+                                        metric)
         )
         caption = (
             f"Map plot of {dataset['long_name']} of dataset "
@@ -2537,6 +2723,80 @@ class MultiDatasets(MonitorBase):
                 provenance_logger.log(plot_path, provenance_record)
                 for netcdf_path in netcdf_paths:
                     provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_benchmarking_zonal_plot(self, datasets):
+        """Create benchmarking zonal mean profile plot."""
+        plot_type = 'benchmarking_zonal'
+        if plot_type not in self.plots:
+            return
+
+        if not datasets:
+            raise ValueError(f"No input data to plot '{plot_type}' given")
+
+        # Get reference dataset
+        # ref_dataset = self._get_benchmarking_reference_dataset(datasets)
+        # Get dataset to be benchmarked
+        dataset = self._get_benchmark_dataset(datasets)
+        # Get percentiles from multi-model statistics
+        percentile_dataset = self._get_benchmark_percentiles(datasets)
+        # Get benchmarking metric
+        metric = self._get_benchmark_metric(datasets)
+
+        # Get plot function
+        plot_func = self._get_plot_func(plot_type)
+
+        # Create a single plot for each dataset (incl. reference dataset if
+        # given)
+        ancestors = [dataset['filename']]
+        
+        # load data
+
+        percentile_data = []
+
+        for dataset_to_load in percentile_dataset:
+            filename = dataset_to_load['filename']
+            logger.info("Loading %s", filename)
+            cube = iris.load_cube(filename)
+            percentile_data.append(cube)
+
+        (plot_path, netcdf_paths) = (
+            self._plot_benchmarking_zonal(plot_func, dataset,
+                                          percentile_data, metric)
+        )
+        caption = (
+            f"Zonal mean profile of {dataset['long_name']} of dataset "
+            f"{dataset['dataset']} (project {dataset['project']}) from "
+            f"{dataset['start_year']} to {dataset['end_year']}."
+        )
+        # ancestors.append(ref_dataset['filename'])
+
+        # If statistics are shown add a brief description to the caption
+        # if self.plots[plot_type]['show_stats']:
+        #    caption += (
+        #         " The number in the top left corner corresponds to the "
+        #         "spatial mean (weighted by grid cell areas).")
+
+        # Save plot
+        plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+        # Save netCDFs
+        for (netcdf_path, cube) in netcdf_paths.items():
+            io.iris_save(cube, netcdf_path)
+
+        # Provenance tracking
+        provenance_record = {
+            'ancestors': ancestors,
+            'authors': ['schlund_manuel'],
+            'caption': caption,
+            'plot_types': ['vert'],
+            'long_names': [dataset['long_name']],
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            for netcdf_path in netcdf_paths:
+                provenance_logger.log(netcdf_path, provenance_record)
 
     def create_1d_profile_plot(self, datasets):
         """Create 1D profile plot."""
@@ -2871,8 +3131,9 @@ class MultiDatasets(MonitorBase):
             self.create_timeseries_plot(datasets)
             self.create_annual_cycle_plot(datasets)
             self.create_benchmarking_boxplot_plot(datasets)
-            self.create_map_plot(datasets)
             self.create_benchmarking_map_plot(datasets)
+            self.create_benchmarking_zonal_plot(datasets)
+            self.create_map_plot(datasets)
             self.create_zonal_mean_profile_plot(datasets)
             self.create_1d_profile_plot(datasets)
             self.create_variable_vs_lat_plot(datasets)
