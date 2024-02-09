@@ -44,7 +44,7 @@ import numpy as np
 import sklearn.linear_model
 import sub_functions as sf
 from plotting import (
-    plot_patterns_timeseries_and_maps,
+    plot_patterns_timeseries,
     plot_anomalies_timeseries,
     plot_climatologies_timeseries,
     plot_patterns,
@@ -598,7 +598,7 @@ def save_outputs(
             write_scores(list_of_cubelists[3], work_path)
             plot_climatologies_timeseries(list_of_cubelists[0], plot_path)
             plot_anomalies_timeseries(list_of_cubelists[1], plot_path)
-            plot_patterns_timeseries_and_maps(list_of_cubelists[2], plot_path)
+            plot_patterns_timeseries(list_of_cubelists[2], plot_path)
             cube_saver(
                 list_of_cubelists,
                 work_path,
@@ -609,7 +609,7 @@ def save_outputs(
         else:
             plot_climatologies_timeseries(list_of_cubelists[0], plot_path)
             plot_anomalies_timeseries(list_of_cubelists[1], plot_path)
-            plot_patterns_timeseries_and_maps(list_of_cubelists[2], plot_path)
+            plot_patterns_timeseries(list_of_cubelists[2], plot_path)
             cube_saver(list_of_cubelists, work_path, name_list, mode="imogen")
 
     else:
