@@ -1907,56 +1907,54 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cube})
 
-    def _plot_benchmarking_boxplot(self, benchmark_dataset, benchmark_group):
+    def _plot_benchmarking_boxplot(self, df, cubes, variables, datasets):
         """Plot benchmarking boxplot."""
         plot_type = 'benchmarking_boxplot'
         logger.info("Plotting benchmarking boxplot for '%s'",
-                    self._get_label(benchmark_dataset))
+                    self._get_label(datasets[0]))
 
-        var_key = benchmark_dataset['variable_group']
-
-        df = pd.DataFrame(columns=['Dataset', var_key])
-        ifile = 0
-
-        for dataset in benchmark_group:
-            dataset_name = dataset['dataset']
-            cube = iris.load_cube(dataset['filename'])
-            df.loc[ifile] = [dataset_name, cube.data]
-            ifile = ifile + 1
-
-        df[var_key] = df[var_key].astype(str).astype(float)
-
-        cube = benchmark_dataset['cube']
 
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
-            axes = fig.add_subplot()
-            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            plot_kwargs['axes'] = axes
+            fig.suptitle(self._get_label(datasets[0]) + f" ({datasets[0]['start_year']} - "
+                         f"{datasets[0]['end_year']})")
 
-            plot_boxplot = sns.boxplot(data=df)
-            plot_boxplot.set(xticklabels=[])
-            #plot_map = plot_func(cube, **plot_kwargs)
+            sns.set_style('darkgrid')
+            #sns.axes_style("whitegrid")
 
-            plt.scatter(0, cube.data, marker='x', s=200, color="red", linewidths = 3)
+            for i, var in enumerate(variables):
+                axes = plt.subplot(1, len(variables), i+1)
+                plot_kwargs = self._get_plot_kwargs(plot_type, datasets[i])
+                plot_kwargs['axes'] = axes
 
-            plt.ylabel(benchmark_dataset['units'])
+                print(df)
+                print(datasets[i])
 
-            # Setup colorbar
-            fontsize = self.plots[plot_type]['fontsize']
+                plot_boxplot = sns.boxplot(data=df[df['Variable'] == var])
+                plot_boxplot.set(xticklabels=[])
+                #plot_map = plot_func(cube, **plot_kwargs)
 
-            # Customize plot
-            axes.set_title(self._get_label(benchmark_dataset))
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
-            self._process_pyplot_kwargs(plot_type, dataset)
+                plt.scatter(0, cubes[i].data, marker='x', s=200, color="red", linewidths = 3)
+
+                plt.ylabel(datasets[i]['units'])
+                plt.xlabel(var)
+
+                # Setup fontsize
+                fontsize = self.plots[plot_type]['fontsize']
+
+                # Customize plot
+                #axes.set_title(f"{datasets[i]['long_name']} ({datasets[i]['start_year']}-"
+                #               f"{datasets[i]['end_year']})")
+                #axes.set_title(f"{len(df[df['Variable'] == var])} models", 
+                #                  ha='right')
+                self._process_pyplot_kwargs(plot_type, datasets[i])
 
         # File paths
-        plot_path = self.get_plot_path(plot_type, benchmark_dataset)
+        plot_path = self.get_plot_path(plot_type, datasets[0])
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
 
-        return (plot_path, {netcdf_path: cube})
+        return (plot_path, {netcdf_path: cubes[0]})
 
     def _process_pyplot_kwargs(self, plot_type, dataset):
         """Process functions for :mod:`matplotlib.pyplot`."""
@@ -2263,30 +2261,54 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_benchmarking_boxplot_plot(self, datasets):
+    def create_benchmarking_boxplot_plot(self):
         """Create boxplot."""
         plot_type = 'benchmarking_boxplot'
         if plot_type not in self.plots:
             return
 
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
+        df = pd.DataFrame(columns=['Variable', 'Dataset', 'Value'])
+        ifile = 0
 
-        # Get dataset to be benchmarked
-        benchmark_dataset = self._get_benchmark_dataset(datasets)
-        logger.info("Plotting %s for dataset %s", plot_type, benchmark_dataset['dataset'])
+        #cubes = []
+        cubes = iris.cube.CubeList()
+        benchmark_datasets = []
+        variables = []
 
-        # Get datasets for benchmarking
-        benchmark_group = self._get_benchmark_group(datasets)
-        logger.info("Benchmarking group of %i datasets.", len(benchmark_group))
-        print(benchmark_group)
+        for (var_key, datasets) in self.grouped_input_data.items():
+            logger.info("Processing variable %s", var_key)
 
-        ancestors = [benchmark_dataset['filename']]
-        for dataset in benchmark_group:
-            ancestors.append(dataset['filename'])
+            if not datasets:
+                raise ValueError(f"No input data to plot '{plot_type}' given")
+
+            # Get dataset to be benchmarked
+            benchmark_dataset = self._get_benchmark_dataset(datasets)
+            logger.info("Plotting %s for dataset %s", plot_type, benchmark_dataset['dataset'])
+
+            # Get datasets for benchmarking
+            benchmark_group = self._get_benchmark_group(datasets)
+            logger.info("Benchmarking group of %i datasets.", len(benchmark_group))
+            print(benchmark_group)
+
+            ancestors = [benchmark_dataset['filename']]
+            for dataset in benchmark_group:
+                ancestors.append(dataset['filename'])
+
+            for dataset in benchmark_group:
+                dataset_name = dataset['dataset']
+                cube = iris.load_cube(dataset['filename'])
+                df.loc[ifile] = [var_key, dataset_name, cube.data]
+                ifile = ifile + 1
+
+            df['Value'] = df['Value'].astype(str).astype(float)
+
+            cubes.append(benchmark_dataset['cube'])
+            benchmark_datasets.append(benchmark_dataset)
+            variables.append(var_key)
+
 
         (plot_path, netcdf_paths) = (
-            self._plot_benchmarking_boxplot(benchmark_dataset, benchmark_group)
+            self._plot_benchmarking_boxplot(df, cubes, variables, benchmark_datasets) 
         )
 
         # Save plot
@@ -2300,9 +2322,10 @@ class MultiDatasets(MonitorBase):
 
         # Provenance tracking
         caption = (
-            f"Boxplot of {dataset['long_name']} of dataset "
-            f"{dataset['dataset']} (project {dataset['project']}) "
-            f"from {dataset['start_year']} to {dataset['end_year']}."
+            f"Boxplot."
+            #f"Boxplot of {dataset['long_name']} of dataset "
+            #f"{dataset['dataset']} (project {dataset['project']}) "
+            #f"from {dataset['start_year']} to {dataset['end_year']}."
             )
         provenance_record = {
             'ancestors': ancestors,
@@ -2866,11 +2889,11 @@ class MultiDatasets(MonitorBase):
 
     def compute(self):
         """Plot preprocessed data."""
+        self.create_benchmarking_boxplot_plot()
         for (var_key, datasets) in self.grouped_input_data.items():
             logger.info("Processing variable %s", var_key)
             self.create_timeseries_plot(datasets)
             self.create_annual_cycle_plot(datasets)
-            self.create_benchmarking_boxplot_plot(datasets)
             self.create_map_plot(datasets)
             self.create_benchmarking_map_plot(datasets)
             self.create_zonal_mean_profile_plot(datasets)

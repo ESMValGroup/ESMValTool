@@ -14,21 +14,54 @@ documentation:
 
 
 datasets:
-    - {dataset: '*', institute: '*', ensemble: r1i1p1f1, grid: '*'}
-        #    - {dataset: ACCESS-CM2, ensemble: r1i1p1f1, grid: gn}
-        #    - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
-        #    - {dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn}
-        #    - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
-        #    - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
-        #    - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
-        #    - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
-        #    - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
-        #    - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-        #    - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
-        #    - {dataset: CESM2-FV2, ensemble: r1i1p1f1, grid: gn}
-        #    - {dataset: CESM2-WACCM, ensemble: r1i1p1f1, grid: gn}
-        #    - {dataset: GFDL-ESM4, grid: gr1, ensemble: r1i1p1f1}
-    - {dataset: ACCESS1-0, ensemble: r1i1p1, project: CMIP5, benchmark_dataset: true}
+  #- {dataset: '*', institute: '*', ensemble: r1i1p1f1, grid: '*'}
+  # CMIP6
+  - &cmip6 {dataset: ACCESS-CM2, grid: gn,
+            ensemble: r1i1p1f1, project: CMIP6}
+  - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
+  - {<<: *cmip6, dataset: AWI-CM-1-1-MR}
+  - {<<: *cmip6, dataset: AWI-ESM-1-1-LR}
+  - {<<: *cmip6, dataset: BCC-CSM2-MR}
+  - {<<: *cmip6, dataset: CAMS-CSM1-0}
+  - {<<: *cmip6, dataset: CanESM5}
+  - {<<: *cmip6, dataset: CanESM5-CanOE, ensemble: r1i1p2f1}
+  - {<<: *cmip6, dataset: CESM2}
+  - {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
+  - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
+  - {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
+  - {<<: *cmip6, dataset: CIESM, grid: gr}
+  - {<<: *cmip6, dataset: CMCC-CM2-HR4}
+  - {<<: *cmip6, dataset: CMCC-CM2-SR5}
+  - {<<: *cmip6, dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+  - {<<: *cmip6, dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+  - {<<: *cmip6, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+  - {<<: *cmip6, dataset: EC-Earth3-Veg-LR, grid: gr}
+  - {<<: *cmip6, dataset: FGOALS-f3-L, grid: gr}
+  - {<<: *cmip6, dataset: FGOALS-g3}
+  - {<<: *cmip6, dataset: GFDL-CM4, grid: gr1}
+  - {<<: *cmip6, dataset: GISS-E2-1-G}
+  - {<<: *cmip6, dataset: GISS-E2-1-H}
+  - {<<: *cmip6, dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
+  - {<<: *cmip6, dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3}
+  - {<<: *cmip6, dataset: IITM-ESM}
+  - {<<: *cmip6, dataset: INM-CM4-8, grid: gr1}
+  - {<<: *cmip6, dataset: INM-CM5-0, grid: gr1}
+  - {<<: *cmip6, dataset: IPSL-CM6A-LR, grid: gr}
+  - {<<: *cmip6, dataset: MIROC6}
+  - {<<: *cmip6, dataset: MIROC-ES2L, ensemble: r1i1p1f2}
+  - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM}
+  - {<<: *cmip6, dataset: MPI-ESM1-2-LR}
+  - {<<: *cmip6, dataset: MPI-ESM1-2-HR}
+  - {<<: *cmip6, dataset: MRI-ESM2-0}
+  - {<<: *cmip6, dataset: NESM3}
+  - {<<: *cmip6, dataset: NorCPM1, institute: NCC, ensemble: r10i1p1f1}
+  - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+  - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+  - {<<: *cmip6, dataset: SAM0-UNICON}
+  - {<<: *cmip6, dataset: TaiESM1}
+  - {<<: *cmip6, dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
+  # Dataset to be benchmarked
+  - {dataset: ACCESS1-0, ensemble: r1i1p1, project: CMIP5, benchmark_dataset: true}
 
 
 preprocessors:
@@ -39,7 +72,17 @@ preprocessors:
       operator: mean
     regrid:
       target_grid: 2x2
-      #scheme: linear
+      scheme: nearest
+    distance_metric:
+      metric: rmse
+      coords: [latitude, longitude]
+
+  rmse_pr:
+    custom_order: true
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 2x2
       scheme: nearest
     convert_units:
       units: mm day-1
@@ -83,21 +126,62 @@ diagnostics:
   plot_boxplots:
     description: Plot boxplots for different variables.
     variables:
-      pr:
+      tas: &var
         preprocessor: rmse
         project: CMIP6
         mip: Amon
         exp: historical
-        timerange: '1979/2004'
-            #pr:
-            #  mip: day
-            #  preprocessor: extract_ar6_regions
-            #  project: CMIP6
-            #  exp: historical
-            #  timerange: '2005/2014'
-            #    scripts: null
+        ensemble: r1i1p1f1
+        grid: gn
+        timerange: '1985/2004'
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2, reference_for_metric: true}
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, reference_for_metric: true}
+            #hus400:
+            #  <<: *var
+            #  additional_datasets:
+            #    - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+      lwcre:
+        <<: *var
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
+      pr:
+        <<: *var
+        preprocessor: rmse_pr
+        additional_datasets:
+          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
+             reference_for_metric: true}
+      psl:
+        <<: *var
+        additional_datasets:
+          - {dataset: JRA-55, project: ana4mips, type: reanalysis, tier: 1,
+             reference_for_metric: true}
+      rlut:
+        <<: *var
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
+      rsut:
+        <<: *var
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
+      swcre:
+        <<: *var
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
+      ts:
+        <<: *var
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, reference_for_metric: true}
+            #zg500:
+            #  <<: *var
+            #  additional_datasets:
+            #    - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
