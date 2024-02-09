@@ -208,8 +208,11 @@ def make_model_dirs(cfg, model):
     plot_path = cfg["plot_dir"] + "/"
     w_path = os.path.join(work_path, model)
     p_path = os.path.join(plot_path, model)
-    os.mkdir(w_path)
-    os.mkdir(p_path)
+    
+    if not os.path.exists(w_path):
+        os.mkdir(w_path)
+    if not os.path.exists(p_path):
+        os.mkdir(p_path)
 
     model_work_dir = w_path + "/"
     model_plot_dir = p_path + "/"
