@@ -155,7 +155,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     year = 1978
     # split by year..
     sample_cube = None
-    while year <= 2020:
+    while year <= 2022:
 
         filepaths = _get_filepaths(in_dir, cfg['filename'], year)
 
