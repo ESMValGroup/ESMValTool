@@ -40,7 +40,7 @@ VARIABLE_SETTINGS: &var_settings
   <<: *years_hist
 
 BOXPLOT_SETTINGS: &boxplot_settings
-  script: clouds_ecs/group_bars_region.py
+  script: clouds/clouds_ecs_group_boxplots.py
   group_by: [['ECS_low_hist', 'ECS_low_scen'],
              ['ECS_med_hist', 'ECS_med_scen'],
              ['ECS_high_hist', 'ECS_high_scen']]
