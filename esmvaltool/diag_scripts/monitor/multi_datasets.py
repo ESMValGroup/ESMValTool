@@ -67,6 +67,7 @@ Currently supported plot types (use the option ``plots`` to specify them):
 
     Benchmarking plots
     ------------------
+    - box plots (``benchmarking_boxplot``)
     - maps (``benchmarking_map``):
     - Zonal mean profiles (plot type ``benchmarking_zonal``):
 
@@ -580,6 +581,9 @@ time_format: str, optional (default: None)
     :func:`~datetime.datetime.strftime` format string that is used to format
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
     use the default formatting imposed by the iris plotting function.
+
+Configuration options for plot type ``benchmarking_boxplot``
+------------------------------------------------------------
 
 Configuration options for plot type ``benchmarking_map``
 --------------------------------------------------------
@@ -1892,6 +1896,7 @@ class MultiDatasets(MonitorBase):
                 projection=self._get_benchmarking_map_projection())
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
+            plot_kwargs['extend'] ="both"
             plot_map = plot_func(cube, **plot_kwargs)
 
             # apply stippling (dots) to all grid cells that do not exceed
@@ -2004,6 +2009,7 @@ class MultiDatasets(MonitorBase):
             axes = fig.add_subplot()
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
+            plot_kwargs['extend'] ="both"
             plot_benchmarking_zonal = plot_func(cube, **plot_kwargs)
 
             # apply stippling (dots) to all grid cells that do not exceed
@@ -2190,20 +2196,23 @@ class MultiDatasets(MonitorBase):
     def _get_benchmark_mask(self, cube, percentile_dataset, metric):
         """Create mask for benchmarking cube depending on metric."""
         mask_cube = cube.copy()
+        
+        i0 = 0  # index largest percentile 
+        i1 = len(percentile_dataset) - 1  # index smallest percentile
 
         if metric == 'bias':
-            sgn_p_up = np.where((percentile_dataset[0].data >= 0), 1, -1)
-            sgn_p_dn = np.where((percentile_dataset[1].data >= 0), 1, -1)
+            sgn_p_up = np.where((percentile_dataset[i0].data >= 0), 1, -1)
+            sgn_p_dn = np.where((percentile_dataset[i1].data >= 0), 1, -1)
             mask = np.where((sgn_p_up == 1) &
-                            (cube.data >= percentile_dataset[0].data) |
+                            (cube.data >= percentile_dataset[i0].data) |
                             (sgn_p_dn == -1) &
-                            (cube.data <= percentile_dataset[1].data), 0, 1)
+                            (cube.data <= percentile_dataset[i1].data), 0, 1)
         elif metric == 'emd':
-            mask = np.where(cube.data >= percentile_dataset[0].data, 0, 1)
+            mask = np.where(cube.data >= percentile_dataset[i0].data, 0, 1)
         elif metric == 'pearsonr':
-            mask = np.where(cube.data <= percentile_dataset[0].data, 0, 1)
+            mask = np.where(cube.data <= percentile_dataset[i0].data, 0, 1)
         elif metric == 'rmse':
-            mask = np.where(cube.data >= percentile_dataset[0].data, 0, 1)
+            mask = np.where(cube.data >= percentile_dataset[i0].data, 0, 1)
         else:
             raise ValueError(
                 f"Could not create benchmarking mask, unknown benchmarking "
@@ -2249,7 +2258,7 @@ class MultiDatasets(MonitorBase):
 
         idx = list(range(len(percentiles)))
         # sort list of percentile datasets by percentile with highest
-        # percentiles first (descending)
+        # percentile first (descending order)
         zipped_pairs = zip(iperc, idx)
         z = [x for _, x in sorted(zipped_pairs, reverse=True)]
         perc_sorted = [percentiles[i] for i in z]
