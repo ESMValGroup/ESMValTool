@@ -1,28 +1,20 @@
 """Python diagnostic for plotting zonal averages."""
 import logging
-import os
 from copy import deepcopy
 from pathlib import Path
-from pprint import pformat
 
 import iris
-import iris.plot as iplt
 import iris.quickplot as qplt
-import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
 
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
-    get_plot_filename,
     save_data,
     save_figure,
     select_metadata,
-    sorted_metadata,
-    io,
 )
-from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -133,11 +125,7 @@ def compute_diagnostic(filename):
     logger.debug("Loading %s", filename)
     cube = iris.load_cube(filename)
 
-    if cube.var_name == 'pr':
-      cube.units = cube.units / 'kg m-3'
-      cube.data = cube.core_data() / 1000.
-      cube.convert_units('mm day-1')
-    elif cube.var_name == 'cli':
+    if cube.var_name == 'cli':
         cube.convert_units('g/kg')
     elif cube.var_name == 'clw':
         cube.convert_units('g/kg')
@@ -153,14 +141,7 @@ def compute_diff(filename1, filename2):
     cube1 = iris.load_cube(filename1)
     cube2 = iris.load_cube(filename2)
 
-    if cube1.var_name == 'pr':
-      cube1.units = cube.units / 'kg m-3'
-      cube1.data = cube.core_data() / 1000.
-      cube1.convert_units('mm day-1')
-      cube2.units = cube.units / 'kg m-3'
-      cube2.data = cube.core_data() / 1000.
-      cube2.convert_units('mm day-1')
-    elif cube1.var_name == 'cli':
+    if cube1.var_name == 'cli':
         cube1.convert_units('g/kg')
         cube2.convert_units('g/kg')
     elif cube1.var_name == 'clw':
@@ -170,11 +151,10 @@ def compute_diff(filename1, filename2):
     cube = cube2 - cube1
     cube.metadata = cube1.metadata
     cube = iris.util.squeeze(cube)
-    #print(cube)
     return cube
 
 
-def compute_diff_temp(input_data, group, dataset, plot_type, cfg):
+def compute_diff_temp(input_data, group, dataset, plot_type):
     """Compute relative change per temperture change."""
 
     dataset_name = dataset['dataset']
@@ -193,29 +173,31 @@ def compute_diff_temp(input_data, group, dataset, plot_type, cfg):
     input_file_2 = var_data_2[0]['filename']
 
     if plot_type == 'zonal':
-      ta_data_1 = select_metadata(input_data,
-                                short_name='tas',
-                                dataset=dataset_name,
-                                variable_group='tas_'+group[0]) 
-      ta_data_2 = select_metadata(input_data,
-                                short_name='tas',
-                                dataset=dataset_name,
-                                variable_group='tas_'+group[1]) 
+        ta_data_1 = select_metadata(input_data,
+                                  short_name='tas',
+                                  dataset=dataset_name,
+                                  variable_group='tas_'+group[0]) 
+        ta_data_2 = select_metadata(input_data,
+                                  short_name='tas',
+                                  dataset=dataset_name,
+                                  variable_group='tas_'+group[1]) 
     elif plot_type == 'height':
-      ta_data_1 = select_metadata(input_data,
-                                short_name='ta',
-                                dataset=dataset_name,
-                                variable_group='ta_'+group[0]) 
-      ta_data_2 = select_metadata(input_data,
-                                short_name='ta',
-                                dataset=dataset_name,
-                                variable_group='ta_'+group[1]) 
+        ta_data_1 = select_metadata(input_data,
+                                  short_name='ta',
+                                  dataset=dataset_name,
+                                  variable_group='ta_'+group[0]) 
+        ta_data_2 = select_metadata(input_data,
+                                  short_name='ta',
+                                  dataset=dataset_name,
+                                  variable_group='ta_'+group[1]) 
     if not ta_data_1:
         raise ValueError(
-            f"No temperature data for '{dataset_name}' in '{group[0]}' available")
+            f"No temperature data for '{dataset_name}' "
+            f"in '{group[0]}' available")
     if not ta_data_2:
         raise ValueError(
-            f"No temperature data for '{dataset_name}' in '{group[1]}' available")
+            f"No temperature data for '{dataset_name}' "
+            f"in '{group[1]}' available")
     input_file_ta_1 = ta_data_1[0]['filename']
     input_file_ta_2 = ta_data_2[0]['filename']
 
@@ -232,7 +214,8 @@ def compute_diff_temp(input_data, group, dataset, plot_type, cfg):
 
     cube_ta_diff.data[cube_ta_diff.data < 1.] = np.nan
 
-    cube_diff = 100. * (cube_diff / iris.analysis.maths.abs(cube)) / cube_ta_diff
+    cube_diff = (100. * (cube_diff / iris.analysis.maths.abs(cube))
+                 / cube_ta_diff)
 
     cube_diff.metadata = cube.metadata
 
@@ -253,68 +236,60 @@ def compute_diff_temp(input_data, group, dataset, plot_type, cfg):
     return cube_diff
 
 
-def plot_diagnostic(cube, legend, plot_type, cfg):
+def plot_diagnostic(cube, legend, plot_type):
     """Create diagnostic data and plot it."""
 
-    if cfg.get('quickplot'):
-        # Create the plot
-        quickplot(cube, **cfg['quickplot'])
+    cube_label = legend
+    line_color = LINE_COLOR.get(legend, legend)
+    line_dash = LINE_DASH.get(legend, legend)
+
+    plt.subplot(211)
+
+    if plot_type == 'height':
+        cube.coord('air_pressure').convert_units('hPa')
+        y_axis = cube.coord('air_pressure')
+        qplt.plot(cube, y_axis, label=cube_label, color=line_color, 
+                  linestyle=line_dash)
     else:
-        cube_label = legend
-        line_color = LINE_COLOR.get(legend, legend)
-        line_dash = LINE_DASH.get(legend, legend)
+        lat = cube.coord('latitude')
+        qplt.plot(lat, cube, label=cube_label, color=line_color,
+                  linestyle=line_dash)
 
-        plt.subplot(211)
-
-        if plot_type == 'height':
-          cube.coord('air_pressure').convert_units('hPa')
-          y_axis = cube.coord('air_pressure')
-          qplt.plot(cube, y_axis, label=cube_label, color=line_color, 
-                    linestyle=line_dash)
-        else:
-          lat = cube.coord('latitude')
-          qplt.plot(lat, cube, label=cube_label, color=line_color,
-                    linestyle=line_dash)
-
-        logger.info("Plotting %s", legend)
+    logger.info("Plotting %s", legend)
 
 
-def plot_diagnostic_diff(cube, legend, plot_type, cfg):
+def plot_diagnostic_diff(cube, legend, plot_type):
     """Create diagnostic data and plot it."""
 
-    if cfg.get('quickplot'):
-        # Create the plot
-        quickplot(cube, **cfg['quickplot'])
+    cube_label = LINE_LEGEND.get(legend, legend)
+    line_color = LINE_COLOR.get(legend, legend)
+    line_dash = LINE_DASH.get(legend, legend)
+
+    plt.subplot(212)
+
+    if cube.var_name == 'pr':
+        cube.units = cube.units / 'kg m-3'
+        cube.data = cube.core_data() / 1000.
+        cube.convert_units('mm day-1')
+    elif cube.var_name == 'cli':
+        cube.convert_units('g/kg')
+    elif cube.var_name == 'clw':
+        cube.convert_units('g/kg')
+
+    if plot_type == 'height':
+        cube.coord('air_pressure').convert_units('hPa')
+        y_axis = cube.coord('air_pressure')
+        qplt.plot(cube, y_axis, label=cube_label, color=line_color, 
+                  linestyle=line_dash)
     else:
-        cube_label = LINE_LEGEND.get(legend, legend)
-        line_color = LINE_COLOR.get(legend, legend)
-        line_dash = LINE_DASH.get(legend, legend)
+        lat = cube.coord('latitude')
+        qplt.plot(lat, cube, label=cube_label, color=line_color,
+                  linestyle=line_dash)
 
-        plt.subplot(212)
-
-        if cube.var_name == 'pr':
-          cube.units = cube.units / 'kg m-3'
-          cube.data = cube.core_data() / 1000.
-          cube.convert_units('mm day-1')
-        elif cube.var_name == 'cli':
-            cube.convert_units('g/kg')
-        elif cube.var_name == 'clw':
-            cube.convert_units('g/kg')
-
-        if plot_type == 'height':
-          cube.coord('air_pressure').convert_units('hPa')
-          y_axis = cube.coord('air_pressure')
-          qplt.plot(cube, y_axis, label=cube_label, color=line_color, 
-                    linestyle=line_dash)
-        else:
-          lat = cube.coord('latitude')
-          qplt.plot(lat, cube, label=cube_label, color=line_color,
-                    linestyle=line_dash)
-
-        logger.info("Plotting %s", legend)
+    logger.info("Plotting %s", legend)
 
 
-def plot_errorband(cube1, cube2, legend, plot_type, cfg):
+def plot_errorband(cube1, cube2, legend, plot_type):
     """Create diagnostic data and plot it."""
 
     line_color = LINE_COLOR.get(legend, legend)
@@ -323,12 +298,12 @@ def plot_errorband(cube1, cube2, legend, plot_type, cfg):
     plt.subplot(211)
 
     if cube1.var_name == 'pr':
-      cube1.units = cube1.units / 'kg m-3'
-      cube1.data = cube1.core_data() / 1000.
-      cube1.convert_units('mm day-1')
-      cube2.units = cube2.units / 'kg m-3'
-      cube2.data = cube2.core_data() / 1000.
-      cube2.convert_units('mm day-1')
+        cube1.units = cube1.units / 'kg m-3'
+        cube1.data = cube1.core_data() / 1000.
+        cube1.convert_units('mm day-1')
+        cube2.units = cube2.units / 'kg m-3'
+        cube2.data = cube2.core_data() / 1000.
+        cube2.convert_units('mm day-1')
     elif cube1.var_name == 'cli':
         cube1.convert_units('g/kg')
         cube2.convert_units('g/kg')
@@ -337,31 +312,26 @@ def plot_errorband(cube1, cube2, legend, plot_type, cfg):
         cube2.convert_units('g/kg')
 
     if plot_type == 'height':
-      cube1.coord('air_pressure').convert_units('hPa')
-      cube2.coord('air_pressure').convert_units('hPa')
-      y_axis = cube1.coord('air_pressure').points
-      plt.fill_betweenx(y_axis, cube1.data, cube2.data, color=line_color,
-                        linestyle=line_dash, alpha=.1)
+        cube1.coord('air_pressure').convert_units('hPa')
+        cube2.coord('air_pressure').convert_units('hPa')
+        y_axis = cube1.coord('air_pressure').points
+        plt.fill_betweenx(y_axis, cube1.data, cube2.data, color=line_color,
+                          linestyle=line_dash, alpha=.1)
     else:
-      lat = cube1.coord('latitude').points
-      plt.fill_between(lat, cube1.data, cube2.data, color=line_color,
-                       linestyle=line_dash, alpha=.1)
+        lat = cube1.coord('latitude').points
+        plt.fill_between(lat, cube1.data, cube2.data, color=line_color,
+                         linestyle=line_dash, alpha=.1)
     logger.info("Plotting %s", legend)
 
 
 def main(cfg):
     """Run diagnostic."""
     cfg = deepcopy(cfg)
-    cfg.setdefault('title_key', 'dataset')
     cfg.setdefault('filename_attach', 'base')
-    cfg.setdefault('plot_each_model', False)
-    logger.info("Using key '%s' to create titles for datasets",
-                cfg['title_key'])
 
     plot_type = cfg['plot_type']
 
     input_data = list(cfg['input_data'].values())
-    all_vars = list(group_metadata(input_data, 'short_name'))
 
     groups = group_metadata(input_data, 'variable_group', sort='dataset')
 
@@ -379,7 +349,8 @@ def main(cfg):
                 dataset_name = dataset['dataset']
                 var = dataset['short_name']
 
-                if dataset_name not in ['MultiModelMean', 'MultiModelP5', 'MultiModelP95']:
+                if dataset_name not in ['MultiModelMean', 'MultiModelP5',
+                                        'MultiModelP95']:
 
                     logger.info("Loop dataset %s", dataset_name)
 
@@ -389,35 +360,39 @@ def main(cfg):
                     if plot_type == 'zonal':
                         cube = cube.collapsed('longitude', iris.analysis.MEAN)
                     elif plot_type == 'height':
-                        grid_areas = iris.analysis.cartography.area_weights(cube)
-                        cube = cube.collapsed(['longitude', 'latitude'], iris.analysis.MEAN,
-                                                  weights=grid_areas)
+                        grid_areas = (
+                          iris.analysis.cartography.area_weights(cube))
+                        cube = cube.collapsed(['longitude', 'latitude'],
+                                              iris.analysis.MEAN,
+                                              weights=grid_areas)
                     else:
-                        raise ValueError(f"Plot type {plot_type} is not implemented.")
+                        raise ValueError(
+                                f"Plot type {plot_type} is not implemented.")
 
                     cubes[dataset_name] = cube
 
             cube_mmm = _get_multi_model_mean(cubes, var)
 
-            plot_diagnostic(cube_mmm, group_name, plot_type, cfg)
+            plot_diagnostic(cube_mmm, group_name, plot_type)
 
             cube_p5  = _get_multi_model_quantile(cubes, var, 0.05)
             cube_p95 = _get_multi_model_quantile(cubes, var, 0.95)
 
-            plot_errorband(cube_p5, cube_p95, group_name, plot_type, cfg)
+            plot_errorband(cube_p5, cube_p95, group_name, plot_type)
 
     if plot_type == 'height':
-      plt.ylim(1000.,100.)
-      plt.yscale('log')
-      plt.yticks([1000., 800., 600., 400., 300., 200., 100.], [1000, 800, 600, 400, 300, 200, 100])
-      title = 'Vertical mean of ' + dataset['long_name']
+        plt.ylim(1000.,100.)
+        plt.yscale('log')
+        plt.yticks([1000., 800., 600., 400., 300., 200., 100.],
+                   [1000, 800, 600, 400, 300, 200, 100])
+        title = 'Vertical mean of ' + dataset['long_name']
     elif plot_type == 'zonal':
-      if dataset['long_name']=='Total Cloud Cover Percentage':
-          title = 'Zonal mean of Total Cloud Fraction'
-      else:
-          title = 'Zonal mean of ' + dataset['long_name']
+        if dataset['long_name']=='Total Cloud Cover Percentage':
+            title = 'Zonal mean of Total Cloud Fraction'
+        else:
+            title = 'Zonal mean of ' + dataset['long_name']
     else:
-      title = dataset['long_name']
+        title = dataset['long_name']
 
     plt.title(title)
     plt.legend(ncol=1)
@@ -434,30 +409,33 @@ def main(cfg):
             dataset_name = dataset['dataset']
             var = dataset['short_name']
 
-            if dataset_name not in ['MultiModelMean', 'MultiModelP5', 'MultiModelP95']:
+            if dataset_name not in ['MultiModelMean', 'MultiModelP5',
+                                    'MultiModelP95']:
                 logger.info("Loop dataset %s", dataset_name)
                 dataset_names.append(dataset_name)
 
-                cube_diff = compute_diff_temp(input_data, group_name, dataset, plot_type, cfg)
+                cube_diff = compute_diff_temp(input_data, group_name, dataset,
+                                              plot_type)
 
                 cubes_diff[dataset_name] = cube_diff
 
         cube_mmm = _get_multi_model_mean(cubes_diff, var)
 
-        plot_diagnostic_diff(cube_mmm, group_name[0], plot_type, cfg)
+        plot_diagnostic_diff(cube_mmm, group_name[0], plot_type)
 
     if plot_type == 'height':
-      plt.xlim(0., 1.)
-      plt.ylim(1000.,100.)
-      plt.yscale('log')
-      plt.yticks([1000., 800., 600., 400., 300., 200., 100.], [1000, 800, 600, 400, 300, 200, 100])
-      plt.axvline(x=0, ymin=0., ymax=1., color='black', linewidth=3)
-      title = 'Difference of vertical mean of ' + dataset['long_name']
+        plt.xlim(0., 1.)
+        plt.ylim(1000.,100.)
+        plt.yscale('log')
+        plt.yticks([1000., 800., 600., 400., 300., 200., 100.],
+                   [1000, 800, 600, 400, 300, 200, 100])
+        plt.axvline(x=0, ymin=0., ymax=1., color='black', linewidth=3)
+        title = 'Difference of vertical mean of ' + dataset['long_name']
     elif plot_type == 'zonal':
-      plt.axhline(y=0, xmin=-90., xmax=90., color='black', linewidth=3)
-      title = 'Difference of zonal mean of ' + dataset['long_name']
+        plt.axhline(y=0, xmin=-90., xmax=90., color='black', linewidth=3)
+        title = 'Difference of zonal mean of ' + dataset['long_name']
     else:
-      title = dataset['long_name']
+        title = dataset['long_name']
 
     plt.title(title)
     plt.legend(ncol=1)
@@ -467,16 +445,17 @@ def main(cfg):
         dataset, ancestor_files=cfg['input_files'])
 
     if plot_type == 'height':
-      basename = 'level_diff_' + dataset['short_name'] + '_' + cfg['filename_attach']
+        basename = ('level_diff_' + dataset['short_name'] + '_'
+                    + cfg['filename_attach'])
     else:
-      basename = 'zonal_diff_' + dataset['short_name'] + '_' + cfg['filename_attach']
+        basename = ('zonal_diff_' + dataset['short_name'] + '_'
+                    + cfg['filename_attach'])
 
     # Save the data used for the plot
     save_data(basename, provenance_record, cfg, cube_mmm)
 
     # And save the plot
     save_figure(basename, provenance_record, cfg)
-
 
 
 if __name__ == '__main__':
