@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import iris
 import matplotlib.pyplot as plt
-from iris import Constraint
+from iris.coords import Coord
 from esmvalcore.preprocessor import (
     extract_levels,
     anomalies,
@@ -22,21 +22,16 @@ def plotting_support(cube, key, linestyle='-', marker=None, color=None):
 
     plt.plot(cube.coord('time').points, cube.data, label=key, linestyle=linestyle, marker=marker, color=color)
 
-def extract_region(cube):
 
-#    latitude_constraint = iris.Constraint(
-#        latitude=lambda cell: extract_region['start latitude'] <= cell <= extract_region['end latitude']
-#    longitude_constraint = iris.Constraint(
-#        longitude=lambda cell: extract_region['start longitude'] <= cell <= extract_region['end longitude']
+def extract_region(cube, start_latitude, end_latitude):
 
-#    cube = cube.extract(latitude_constraint & longitude_constraint)
-
-    cube = cube.extract(iris.Constraint(latitude=lambda cell: -20 <= cell <= 20),
-                       iris.Constraint(longitude=lambda cell: 0 <= cell <= 360))
-
-
-    return cube
-
+    new_cube = cube.intersection(
+        latitude=(float(start_latitude), float(end_latitude)),
+        ignore_bounds=True,
+    )
+    
+    return new_cube
+    
 def plot_anomalies(input_file, name, variable_group, color=None):
     """
     Plot anomalies over time using the provided plotting support function.
@@ -48,20 +43,17 @@ def plot_anomalies(input_file, name, variable_group, color=None):
         # Extract time and anomalies
         if cube.coords('time', dim_coords=True):
             ih.unify_time_coord(cube)
-        
-        # extract region
-        cube = extract_region(cube)
-
+    
         # Plotting function by using the plotting_support function
-        plotting_support(cube, key=name, linestyle='-', marker=None, color=color)
+        plotting_support(extracted_cube, key=name, linestyle='-', marker=None, color=color)
 
-        return {'cube': cube, 'name': name}
+        return {'cube': extracted_cube, 'name': name}
 
     except Exception as e:
         logger.error(f"Error plotting: {e}")
         return None
 
-def create_subplot(ax, data_list, variable_group, min_time, max_time):
+def create_subplot(ax, data_list, variable_group):
     """Plot subplot over time considering minimum and maximum time across dataset."""
     for i, data in enumerate(data_list):
         color = plt.cm.tab10(i % 10)
@@ -82,15 +74,25 @@ def main(cfg):
 
     # Dictionary to store data for each variable_group
     data_by_variable_group = {}
+    
 
     # loop for variables/dataset
     for i, dataset in enumerate(input_data):
-        
+       
+
         # Load data
         input_file = dataset['filename']
         name = dataset['dataset']
         variable_group = dataset['variable_group']
-
+        
+        # extract region
+        cube = iris.load_cube(input_file)
+        start_latitude = -20
+        end_latitude = 20
+        extracted_cube = extract_region(cube, start_latitude, end_latitude)
+        file_name = cfg["work_dir"] + f"/extracted_region_{variable_group}.nc"
+        iris.save(extracted_cube, file_name)
+        
         # Check whether variable_group is alreadypresent
         if variable_group not in data_by_variable_group:
             data_by_variable_group[variable_group] = []
@@ -100,21 +102,28 @@ def main(cfg):
 
         # Plotting function for each variable and appending data to the dictionary
         data = plot_anomalies(input_file=input_file, name=name, variable_group=variable_group, color=color)
-
+        
+     
+       
         if data:
             data_by_variable_group[variable_group].append(data)
+            
+   
 
     # Check the data_list
     for variable_group, data_list in data_by_variable_group.items():
         if not data_list:
             continue
 
+    
         plt.figure(figsize=(8, 6))
 
         create_subplot(plt.gca(), data_list, variable_group)
          
         # Save separate figures for each variable
         plt.savefig(f'plot_{variable_group}.png')
+        
+        
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
