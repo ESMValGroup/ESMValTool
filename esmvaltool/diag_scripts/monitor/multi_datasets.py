@@ -635,9 +635,6 @@ from esmvaltool.diag_scripts.shared import (
     io,
     run_diagnostic,
 )
-from esmvaltool.diag_scripts.seaborn_diag import (
-     _get_dataframe,
-)
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -1945,15 +1942,15 @@ class MultiDatasets(MonitorBase):
         logger.info("Plotting benchmarking boxplot for '%s'",
                     self._get_label(datasets[0]))
 
-
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
-            fig.suptitle(self._get_label(datasets[0]) + f" ({datasets[0]['start_year']} - "
+            fig.suptitle(self._get_label(datasets[0]) +
+                         f" ({datasets[0]['start_year']} - "
                          f"{datasets[0]['end_year']})")
 
             sns.set_style('darkgrid')
-            #sns.axes_style("whitegrid")
+            # sns.axes_style("whitegrid")
 
             for i, var in enumerate(variables):
                 axes = plt.subplot(1, len(variables), i+1)
@@ -1965,21 +1962,23 @@ class MultiDatasets(MonitorBase):
 
                 plot_boxplot = sns.boxplot(data=df[df['Variable'] == var])
                 plot_boxplot.set(xticklabels=[])
-                #plot_map = plot_func(cube, **plot_kwargs)
+                # plot_map = plot_func(cube, **plot_kwargs)
 
-                plt.scatter(0, cubes[i].data, marker='x', s=200, color="red", linewidths = 3)
+                plt.scatter(0, cubes[i].data, marker='x', s=200,
+                            color="red", linewidths=3)
 
                 plt.ylabel(datasets[i]['units'])
                 plt.xlabel(var)
 
                 # Setup fontsize
-                fontsize = self.plots[plot_type]['fontsize']
+                # fontsize = self.plots[plot_type]['fontsize']
 
                 # Customize plot
-                #axes.set_title(f"{datasets[i]['long_name']} ({datasets[i]['start_year']}-"
-                #               f"{datasets[i]['end_year']})")
-                #axes.set_title(f"{len(df[df['Variable'] == var])} models", 
-                #                  ha='right')
+                # axes.set_title(f"{datasets[i]['long_name']} "
+                #                f"({datasets[i]['start_year']}-"
+                #                f"{datasets[i]['end_year']})")
+                # axes.set_title(f"{len(df[df['Variable'] == var])} models",
+                #                   ha='right')
                 self._process_pyplot_kwargs(plot_type, datasets[i])
 
         # File paths
@@ -2009,7 +2008,7 @@ class MultiDatasets(MonitorBase):
 
             # apply stippling (dots) to all grid cells that do not exceed
             # the upper percentile given by 'percentile_dataset[]'
-            
+
             mask_cube = self._get_benchmark_mask(cube, percentile_dataset,
                                                  metric)
             plot_func(
@@ -2182,7 +2181,7 @@ class MultiDatasets(MonitorBase):
 
     def _get_benchmark_group(self, datasets):
         """Get datasets for benchmarking."""
-        variable = datasets[0][self.cfg['group_variables_by']]
+        # variable = datasets[0][self.cfg['group_variables_by']]
         benchmark_datasets = [d for d in datasets if not
                               (d.get('benchmark_dataset', False) or
                                d.get('reference_for_metric', False))]
@@ -2191,7 +2190,7 @@ class MultiDatasets(MonitorBase):
     def _get_benchmark_mask(self, cube, percentile_dataset, metric):
         """Create mask for benchmarking cube depending on metric."""
         mask_cube = cube.copy()
-        
+
         if metric == 'bias':
             sgn_p_up = np.where((percentile_dataset[0].data >= 0), 1, -1)
             sgn_p_dn = np.where((percentile_dataset[1].data >= 0), 1, -1)
@@ -2226,7 +2225,7 @@ class MultiDatasets(MonitorBase):
             metric = 'bias'  # default
             logger.info(
                 f"Could not determine metric from short_name, "
-                f"assuming benchmarking metric = %s", metric)
+                f"assuming benchmarking metric = '{metric}'")
         return metric
 
     def _get_benchmark_percentiles(self, datasets):
@@ -2238,9 +2237,9 @@ class MultiDatasets(MonitorBase):
             if statistics:
                 if "Percentile" in statistics:
                     percentiles.append(d)
-                    
-        # sort percentiles by size
-        
+
+        # *** sort percentiles by size ***
+
         # get percentiles as integers
         iperc = []
         for d in percentiles:
@@ -2254,11 +2253,12 @@ class MultiDatasets(MonitorBase):
         zipped_pairs = zip(iperc, idx)
         z = [x for _, x in sorted(zipped_pairs, reverse=True)]
         perc_sorted = [percentiles[i] for i in z]
+        percentiles = perc_sorted
 
         # get number of percentiles expected depending on benchmarking metric
 
         metric = self._get_benchmark_metric(datasets)
-        
+
         if (metric == 'bias'):
             numperc = 2
         elif (metric == 'rmse'):
@@ -2453,7 +2453,6 @@ class MultiDatasets(MonitorBase):
         df = pd.DataFrame(columns=['Variable', 'Dataset', 'Value'])
         ifile = 0
 
-        #cubes = []
         cubes = iris.cube.CubeList()
         benchmark_datasets = []
         variables = []
@@ -2466,11 +2465,13 @@ class MultiDatasets(MonitorBase):
 
             # Get dataset to be benchmarked
             benchmark_dataset = self._get_benchmark_dataset(datasets)
-            logger.info("Plotting %s for dataset %s", plot_type, benchmark_dataset['dataset'])
+            logger.info("Plotting %s for dataset %s",
+                        plot_type, benchmark_dataset['dataset'])
 
             # Get datasets for benchmarking
             benchmark_group = self._get_benchmark_group(datasets)
-            logger.info("Benchmarking group of %i datasets.", len(benchmark_group))
+            logger.info("Benchmarking group of %i datasets.",
+                        len(benchmark_group))
             print(benchmark_group)
 
             ancestors = [benchmark_dataset['filename']]
@@ -2489,9 +2490,9 @@ class MultiDatasets(MonitorBase):
             benchmark_datasets.append(benchmark_dataset)
             variables.append(var_key)
 
-
         (plot_path, netcdf_paths) = (
-            self._plot_benchmarking_boxplot(df, cubes, variables, benchmark_datasets) 
+            self._plot_benchmarking_boxplot(df, cubes, variables,
+                                            benchmark_datasets)
         )
 
         # Save plot
@@ -2505,10 +2506,10 @@ class MultiDatasets(MonitorBase):
 
         # Provenance tracking
         caption = (
-            f"Boxplot."
-            #f"Boxplot of {dataset['long_name']} of dataset "
-            #f"{dataset['dataset']} (project {dataset['project']}) "
-            #f"from {dataset['start_year']} to {dataset['end_year']}."
+            "Boxplot."
+            # f"Boxplot of {dataset['long_name']} of dataset "
+            # f"{dataset['dataset']} (project {dataset['project']}) "
+            # f"from {dataset['start_year']} to {dataset['end_year']}."
             )
         provenance_record = {
             'ancestors': ancestors,
@@ -2519,7 +2520,6 @@ class MultiDatasets(MonitorBase):
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
-
 
     def create_map_plot(self, datasets):
         """Create map plot."""
@@ -2771,7 +2771,7 @@ class MultiDatasets(MonitorBase):
         # Create a single plot for each dataset (incl. reference dataset if
         # given)
         ancestors = [dataset['filename']]
-        
+
         # load data
 
         percentile_data = []
@@ -3154,7 +3154,6 @@ class MultiDatasets(MonitorBase):
             logger.info("Processing variable %s", var_key)
             self.create_timeseries_plot(datasets)
             self.create_annual_cycle_plot(datasets)
-            self.create_benchmarking_boxplot_plot(datasets)
             self.create_benchmarking_map_plot(datasets)
             self.create_benchmarking_zonal_plot(datasets)
             self.create_map_plot(datasets)
