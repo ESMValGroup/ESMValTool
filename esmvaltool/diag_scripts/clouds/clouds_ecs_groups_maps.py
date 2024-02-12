@@ -65,13 +65,12 @@ def get_provenance_record(attributes, ancestor_files):
         'caption': caption,
         'statistics': ['mean'],
         'domains': ['global'],
-        'plot_types': ['zonal'],
+        'plot_types': ['map'],
         'authors': [
-            'andela_bouwe',
-            'righi_mattia',
+            'bock_lisa',
         ],
         'references': [
-            'acknow_project',
+            'bock24acp',
         ],
         'ancestors': ancestor_files,
     }
