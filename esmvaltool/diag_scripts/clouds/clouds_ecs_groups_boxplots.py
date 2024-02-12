@@ -1,14 +1,8 @@
 """Python diagnostic for plotting boxplots for different regions."""
 import logging
-import os
-from copy import deepcopy
 from pathlib import Path
-from pprint import pformat
 
 import iris
-import iris.plot as iplt
-import iris.quickplot as qplt
-import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -22,10 +16,7 @@ from esmvaltool.diag_scripts.shared import (
     save_data,
     save_figure,
     select_metadata,
-    sorted_metadata,
-    io,
 )
-from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -63,23 +54,6 @@ def get_provenance_record(attributes, ancestor_files):
     }
     return record
 
-
-def _get_cube_list(input_files):
-    """Get :class:`iris.cube.CubeList` of input files."""
-    cubes = iris.cube.CubeList()
-
-    # Input files
-    for filename in input_files:
-        logger.info("Loading '%s'", filename)
-        cube = _load_cube_with_dataset_coord(filename)
-        cube.attributes['filename'] = filename
-        cubes.append(cube)
-
-    # Check metadata of cubes
-    for cube in cubes:
-        check_metadata(cube.attributes)
-
-    return cubes
 
 def _get_multi_model_mean(cubes, var):
     """Compute multi-model mean."""
@@ -179,18 +153,6 @@ def compute_diff_temp(input_data, group, var, dataset):
     return cube_diff
 
 
-def check_cube(cube, filename):
-    """Check properties of cube."""
-    if cube.ndim != 1:
-        raise ValueError(
-            f"Expected 1D data in file '{filename}', got {cube.ndim:d} cube")
-    try:
-        cube.coord('dataset')
-    except iris.exceptions.CoordinateNotFoundError:
-        raise iris.exceptions.CoordinateNotFoundError(
-            f"Necessary coordinate 'dataset' not found in file '{filename}'")
-
-
 def create_data_frame(input_data, cfg):
     """Create data frame."""
     data_frame = pd.DataFrame(columns=['Variable', 'Group', 'Dataset', 'Data'])
@@ -260,7 +222,6 @@ def main(cfg):
 
     # Get input data
     input_data = list(cfg['input_data'].values())
-    groups = group_metadata(input_data, 'variable_group', sort='dataset')
 
     # Create data frame
     data_frame = create_data_frame(input_data, cfg)
