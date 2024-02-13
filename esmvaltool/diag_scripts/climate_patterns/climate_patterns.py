@@ -21,9 +21,6 @@ imogen_mode: bool, optional (default: off)
     options: on, off
     def: outputs extra data (anomaly, climatology) per variable
          to drive JULES-IMOGEN configuration
-output_r2_scores: bool, optional (default: off)
-    options: on, off
-    def: outputs determinant values per variable to measure pattern robustness
 parallelise: bool, optional (default: off)
     options: on, off
     def: parallelises code to run N models at once
@@ -47,8 +44,7 @@ from plotting import (
     plot_patterns_timeseries,
     plot_anomalies_timeseries,
     plot_climatologies_timeseries,
-    plot_patterns,
-    plot_scores
+    plot_patterns
 )
 from rename_variables import (
     rename_anom_variables,
@@ -58,6 +54,7 @@ from rename_variables import (
 )
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
+from esmvalcore.preprocessor import area_statistics
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -307,13 +304,7 @@ def regression(tas, cube_data, area, ocean_frac=None, land_frac=None):
     slope_array : arr
         array of grid cells with same shape as initial cube,
         containing the regression slope
-    score_array : arr
-        array of grid cells with same shape as initial cube,
-        containing the regression score as a measure of robustness
     """
-    slope_array = np.full(tas.data.shape[1:], np.nan)
-    score_array = np.full(tas.data.shape[1:], np.nan)
-
     if area == "land":
         # calculate average warming over land
         tas_data = sf.area_avg_landsea(
@@ -322,23 +313,24 @@ def regression(tas, cube_data, area, ocean_frac=None, land_frac=None):
 
     if area == 'global':
         # calculate global average warming
-        tas_data = sf.area_avg(tas, return_cube=False)
+        tas_data = area_statistics(tas, 'mean').data
 
-    for i in range(tas.data.shape[1]):
-        for j in range(tas.data.shape[2]):
-            if tas.data[0, i, j] is not np.ma.masked:
-                model = sklearn.linear_model.LinearRegression(
-                    fit_intercept=False, copy_X=True
-                )
+    # Reshape cube for regression
+    cube_reshaped = cube_data.reshape(cube_data.shape[0], -1)
 
-                x_val = tas_data.reshape(-1, 1)
-                y_val = cube_data[:, i, j]
+    # Perform linear regression on valid values
+    model = sklearn.linear_model.LinearRegression(
+        fit_intercept=False, copy_X=True
+    )
+    model.fit(tas_data.reshape(-1, 1), cube_reshaped)
 
-                model.fit(x_val, y_val)
-                slope_array[i, j] = model.coef_
-                score_array[i, j] = model.score(x_val, y_val)
+    # Extract regression coefficients
+    slopes = model.coef_
 
-    return slope_array, score_array
+    # Reshape the regression coefficients back to the shape of the grid cells
+    slope_array = slopes.reshape(cube_data.shape[1:])
+
+    return slope_array
 
 
 def regression_units(tas, cube):
@@ -435,11 +427,8 @@ def calculate_regressions(
     -------
     regr_var_list : cubelist
         cube list of newly created regression slope value cubes, for each var
-    score_list : cubelist
-        cube list of newly created regression score cubes, for each var
     """
     regr_var_list = iris.cube.CubeList([])
-    score_list = iris.cube.CubeList([])
     months = yrs * 12
 
     for cube in anom_list:
@@ -450,7 +439,6 @@ def calculate_regressions(
     for cube in anom_list:
         cube_ssp = cube[-months:]
         month_list = iris.cube.CubeList([])
-        score_month_list = iris.cube.CubeList([])
 
         # extracting months, regressing, and merging
         for i in range(1, 13):
@@ -459,7 +447,7 @@ def calculate_regressions(
             month_tas = tas.extract(month_constraint)
 
             if area == 'land':
-                regr_array, score_array = regression(
+                regr_array = regression(
                     month_tas,
                     month_cube_ssp.data,
                     area=area,
@@ -468,7 +456,7 @@ def calculate_regressions(
                 )
 
             if area == 'global':
-                regr_array, score_array = regression(
+                regr_array = regression(
                     month_tas,
                     month_cube_ssp.data,
                     area=area,
@@ -482,44 +470,12 @@ def calculate_regressions(
             # creating cube of regression values
             regr_cube = create_cube(tas, cube_ssp, regr_array, i, units=units)
 
-            # calculating cube of r2 scores
-            score_cube = create_cube(tas, cube_ssp, score_array, i, units="R2")
-
             month_list.append(regr_cube)
-            score_month_list.append(score_cube)
 
         conc_cube = month_list.merge_cube()
         regr_var_list.append(conc_cube)
 
-        conc_score_cube = score_month_list.merge_cube()
-        score_list.append(conc_score_cube)
-
-    return regr_var_list, score_list
-
-
-def write_scores(scores, work_path):
-    """Save the global average regression scores per variable in a text file.
-
-    Parameters
-    ----------
-    scores : cubelist
-        cube list of regression score cubes, for each variable
-    work_path : path
-        path to work_dir, to save scores
-
-    Returns
-    -------
-    None
-    """
-    for cube in scores:
-        score = sf.area_avg(cube, return_cube=False)
-        mean_score = np.mean(score)
-        data = f"{mean_score:10.3f}"
-        name = cube.var_name
-        # saving scores
-        with open(work_path + "scores", "a", encoding='utf-8') as file:
-            file.write(name + ": " + data + "\n")
-            file.close()
+    return regr_var_list
 
 
 def cube_saver(list_of_cubelists, work_path, name_list, mode):
@@ -540,18 +496,8 @@ def cube_saver(list_of_cubelists, work_path, name_list, mode):
     -------
     None
     """
-    if mode == "imogen_scores":
-        for i in range(0, 4):
-            iris.save(list_of_cubelists[i], work_path + name_list[i])
-
     if mode == "imogen":
         for i in range(0, 3):
-            iris.save(list_of_cubelists[i], work_path + name_list[i])
-
-    if mode == "scores":
-        for i in range(2, 4):
-            for cube in list_of_cubelists[i]:
-                rename_variables_base(cube)
             iris.save(list_of_cubelists[i], work_path + name_list[i])
 
     if mode == "base":
@@ -588,40 +534,18 @@ def save_outputs(
         "climatology_variables.nc",
         "anomaly_variables.nc",
         "patterns.nc",
-        "scores.nc",
     ]
 
     # saving data + plotting
     if cfg["imogen_mode"] is True:
-        if cfg["output_r2_scores"] is True:
-            plot_scores(list_of_cubelists[3], plot_path)
-            write_scores(list_of_cubelists[3], work_path)
-            plot_climatologies_timeseries(list_of_cubelists[0], plot_path)
-            plot_anomalies_timeseries(list_of_cubelists[1], plot_path)
-            plot_patterns_timeseries(list_of_cubelists[2], plot_path)
-            cube_saver(
-                list_of_cubelists,
-                work_path,
-                name_list,
-                mode="imogen_scores"
-            )
-
-        else:
-            plot_climatologies_timeseries(list_of_cubelists[0], plot_path)
-            plot_anomalies_timeseries(list_of_cubelists[1], plot_path)
-            plot_patterns_timeseries(list_of_cubelists[2], plot_path)
-            cube_saver(list_of_cubelists, work_path, name_list, mode="imogen")
+        plot_climatologies_timeseries(list_of_cubelists[0], plot_path)
+        plot_anomalies_timeseries(list_of_cubelists[1], plot_path)
+        plot_patterns_timeseries(list_of_cubelists[2], plot_path)
+        cube_saver(list_of_cubelists, work_path, name_list, mode="imogen")
 
     else:
-        if cfg["output_r2_scores"] is True:
-            plot_scores(list_of_cubelists[3], plot_path)
-            write_scores(list_of_cubelists[3], work_path)
-            plot_patterns(list_of_cubelists[2], plot_path)
-            cube_saver(list_of_cubelists, work_path, name_list, mode="scores")
-
-        else:
-            plot_patterns(list_of_cubelists[2], plot_path)
-            cube_saver(list_of_cubelists, work_path, name_list, mode="base")
+        plot_patterns(list_of_cubelists[2], plot_path)
+        cube_saver(list_of_cubelists, work_path, name_list, mode="base")
 
 
 def get_provenance_record():
@@ -732,18 +656,18 @@ def patterns(model, cfg):
         rename_anom_variables(anom_list_final[i])
 
     if cfg["area"] == 'land':
-        regressions, scores = calculate_regressions(
+        regressions = calculate_regressions(
             anom_list_final.copy(),
             cfg["area"],
             ocean_frac=ocean_frac,
             land_frac=land_frac
         )
     if cfg["area"] == 'global':
-        regressions, scores = calculate_regressions(
+        regressions = calculate_regressions(
             anom_list_final.copy(), cfg["area"]
         )
 
-    list_of_cubelists = [clim_list_final, anom_list_final, regressions, scores]
+    list_of_cubelists = [clim_list_final, anom_list_final, regressions]
 
     save_outputs(cfg, list_of_cubelists, model)
 

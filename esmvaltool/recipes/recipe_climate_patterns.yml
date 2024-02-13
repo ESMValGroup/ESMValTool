@@ -114,7 +114,7 @@ CMIP6_FULL: &cmip6_full
   - {dataset: EC-Earth3-CC,    exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2100}
   - {dataset: EC-Earth3-Veg,   exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2100}
   # - {dataset: FGOALS-f3-L,     exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2100} # No tasmin/tasmax
-  - {dataset: FGOALS-g3,       exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  # - {dataset: FGOALS-g3,       exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
   - {dataset: FIO-ESM-2-0,     exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
   - {dataset: GFDL-CM4,        exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 2100}
   - {dataset: GFDL-ESM4,       exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 2100}
@@ -244,6 +244,5 @@ diagnostics:
         script: climate_patterns/climate_patterns.py
         grid: constrained # options: constrained, full
         imogen_mode: on # options: on, off
-        output_r2_scores: on # options: on, off
         parallelise: on # options: on, off
         area: global # options global, land. If land, uncomment landfrac recipe settings

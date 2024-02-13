@@ -39,40 +39,6 @@ def load_cube(filename):
     return cube
 
 
-def area_avg(cube, return_cube=None):
-    """Calculate the global mean of a variable in a cube, area-weighted.
-
-    Parameters
-    ----------
-    cube : cube
-        input cube
-    return_cube : bool
-        option to return a cube or array
-
-    Returns
-    -------
-    cube2 : cube
-        cube with collapsed lat-lons, global mean over time
-    cube2.data : arr
-        array with collapsed lat-lons, global mean over time
-    """
-    if not cube.coord("latitude").has_bounds():
-        cube.coord("latitude").guess_bounds()
-    if not cube.coord("longitude").has_bounds():
-        cube.coord("longitude").guess_bounds()
-    area = iris.analysis.cartography.area_weights(cube, normalize=False)
-    cube2 = cube.collapsed(
-        ["latitude", "longitude"],
-        iris.analysis.MEAN,
-        weights=area
-    )
-
-    if return_cube:
-        return cube2
-
-    return cube2.data
-
-
 def ocean_fraction_calc(sftlf):
     """Calculate gridded land and ocean fractions.
 
@@ -208,7 +174,7 @@ def make_model_dirs(cfg, model):
     plot_path = cfg["plot_dir"] + "/"
     w_path = os.path.join(work_path, model)
     p_path = os.path.join(plot_path, model)
-    
+
     if not os.path.exists(w_path):
         os.mkdir(w_path)
     if not os.path.exists(p_path):
