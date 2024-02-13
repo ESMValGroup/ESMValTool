@@ -53,8 +53,8 @@ from rename_variables import (
     rename_variables_base,
 )
 
-from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 from esmvalcore.preprocessor import area_statistics
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 
 logger = logging.getLogger(Path(__file__).stem)
 
