@@ -150,7 +150,7 @@ def plot_anomalies_timeseries(cubelist, plot_path):
         yrs = (1850 + np.arange(cube.shape[0])).astype("float")
 
         # anomaly timeseries
-        avg_cube = area_statistics(cube, 'mean')
+        avg_cube = area_statistics(cube, 'mean').data
         axs[x_pos, y_pos].plot(yrs, avg_cube)
         axs[x_pos,
             y_pos].set_ylabel(cube.long_name + " / " + str(cube.units))
@@ -183,7 +183,7 @@ def plot_climatologies_timeseries(cubelist, plot_path):
         x_pos, y_pos = subplot_positions(j)
         yrs = (1850 + np.arange(cube.shape[0])).astype("float")
 
-        avg_cube = area_statistics(cube, 'mean')
+        avg_cube = area_statistics(cube, 'mean').data
         axs[x_pos, y_pos].plot(yrs, avg_cube)
         axs[x_pos,
             y_pos].set_ylabel(cube.long_name + " / " + str(cube.units))

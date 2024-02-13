@@ -43,7 +43,6 @@ User settings in recipe
 
    * grid: whether you want to remove Antarctic latitudes or not
    * imogen_mode: output imogen-specific var names + .nc files
-   * output_r2_scores: output measures of pattern robustness (adds runtime)
    * parallelise: parallelise over models or not
    * parallel_threads: if you want to paralellise, how many threads you want
 
@@ -104,12 +103,3 @@ Example plots
 
    Patterns generated for CMIP6 models, gridded view. Patterns are shown per
    variable, for the month of January.
-
-.. _fig_climate_patterns_3:
-.. figure::  /recipes/figures/climate_patterns/score_timeseries.png
-   :align:   center
-   :width: 80%
-
-   R2 scores of patterns fitting per variable. Diversity of scores sits in the
-   literatures' range: with temperature, specific humidity and longwave
-   downwelling radiation being the most robust fits.
