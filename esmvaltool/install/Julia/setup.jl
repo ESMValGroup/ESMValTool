@@ -7,6 +7,7 @@ end
 
 
 Pkg.activate(@__DIR__)
+Pkg.resolve()
 Pkg.instantiate()
 
 @info "Installed Julia packages:"
