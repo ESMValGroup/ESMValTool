@@ -1,5 +1,5 @@
 ---
-# Common global attributes for Cmorizer output
+# Common global attributes for CMORizer output
 attributes:
   dataset_id: ESACCI-SNOW
   version: 'v2.0'
@@ -10,17 +10,17 @@ attributes:
   reference: "esacci-snow"
   comment: ""
 
-# Variables to cmorize (here use only filename prefix)
+# Variables to CMORize
 variables:
   snc:
     mip: day
     raw: scfg
-    file: 'scfg/{year}010?-ESACCI-L3C_SNOW-SCFG-AVHRR_MERGED-fv2.0.nc'
+    file: 'scfg/{year}????-ESACCI-L3C_SNOW-SCFG-AVHRR_MERGED-fv2.0.nc'
 #  snc_unc:
 #    mip: day
 #    raw: scfg_unc
 #    file: 'scfg/{year}????-ESACCI-L3C_SNOW-SCFG-AVHRR_MERGED-fv2.0.nc'
-#  snw:
-#    mip: day
-#    raw: swe
-#    file: 'swe/{year}????--ESACCI-L3C_SNOW-SWE-SMMR-NIMBUS7-fv2.0.nc'
+  snw:
+    mip: day
+    raw: swe
+    file: 'swe/{year}????-ESACCI-L3C_SNOW-SWE-SMMR-NIMBUS7-fv2.0.nc'
