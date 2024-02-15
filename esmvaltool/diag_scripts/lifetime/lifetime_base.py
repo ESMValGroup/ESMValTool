@@ -4,9 +4,6 @@ import logging
 import os
 import re
 
-# from pprint import pprint
-
-import sys
 from copy import deepcopy
 # import cartopy
 import iris
@@ -17,11 +14,11 @@ from iris.analysis import MEAN
 from iris.util import broadcast_to_shape
 from mapgenerator.plotting.timeseries import PlotSeries
 from scipy.constants import g
-from iris.analysis.cartography import area_weights
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, names
 
 logger = logging.getLogger(__name__)
+
 
 def create_press(var):
     """Create a pressure variable."""
@@ -40,6 +37,7 @@ def create_press(var):
 
     return press
 
+
 def calculate_gridmassdry(press, hus, z_coord):
     """Calculate the dry gridmass according to pressure and humidity.
 
@@ -48,13 +46,12 @@ def calculate_gridmassdry(press, hus, z_coord):
     """
     # calculate minimum in cubes
     if type(press) == iris.cube.Cube:
-        #pmin = press.collapsed(press.coords(), iris.analysis.MIN).data
         pmin = np.nanmin(press.data)
     else:
         pmin = np.nanmin(press)
 
     # surface air pressure as cube
-    pmax = press[:,0,:,:].copy()
+    pmax = press[:, 0, :, :].copy()
     pmax.data = press.coord('surface_air_pressure').points
 
     # delta pressure > kg m-1 s-2
@@ -65,7 +62,6 @@ def calculate_gridmassdry(press, hus, z_coord):
     # grid mass per square meter > kg m-2
     delta_m = delta_p / g
     # grid area > m2
-    #area = area_weights(hus[0, 0, :, :], normalize=False)
     area = calculate_area(hus.coord('latitude'),
                           hus.coord('longitude'))
     # grid mass per grid > kg
@@ -78,6 +74,7 @@ def calculate_gridmassdry(press, hus, z_coord):
     gridmassdry.units = 'kg'
 
     return gridmassdry
+
 
 def guess_interfaces(coordinate):
     """
@@ -106,6 +103,7 @@ def guess_interfaces(coordinate):
     interfaces = np.append(interfaces, last)
 
     return interfaces
+
 
 def calculate_area(latitude, longitude):
     """
@@ -141,9 +139,11 @@ def calculate_area(latitude, longitude):
                             long_name='cell_area',
                             var_name='cell_area',
                             units='m2',
-                            dim_coords_and_dims=[(latitude, 0), (longitude, 1)])
+                            dim_coords_and_dims=[(latitude, 0),
+                                                 (longitude, 1)])
 
     return result
+
 
 def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
     """Calculate delta pressure levels.
@@ -153,12 +153,19 @@ def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
     four dimensional cube.
 
     """
-    cubelist_dplev = [plev_slice.copy() for plev_slice in plev.slices(['time', 'latitude', 'longitude'],
-                                                                      ordered=True)]
-    cubelist_plev = [plev_slice.copy() for plev_slice in plev.slices(['time', 'latitude', 'longitude'],
-                                                                     ordered=True)]
+    cubelist_dplev = [plev_slice.copy()
+                      for plev_slice in plev.slices(['time',
+                                                     'latitude',
+                                                     'longitude'],
+                                                    ordered=True)]
+    cubelist_plev = [plev_slice.copy()
+                     for plev_slice in plev.slices(['time',
+                                                    'latitude',
+                                                    'longitude'],
+                                                   ordered=True)]
 
-    increasing = (plev.coord(z_coord, dim_coords=True).attributes['positive'] == 'down')
+    increasing = (plev.coord(z_coord,
+                             dim_coords=True).attributes['positive'] == 'down')
     last = plev.coords(z_coord)[0].shape[0] - 1
 
     for i, lev in enumerate(cubelist_plev):
@@ -174,16 +181,18 @@ def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
             cube = (pmax - lev) + (lev - cubelist_plev[increment[1]]) / 2.
             cubelist_dplev[i].data = cube.data
         else:
-            #cube = (cubelist_plev[increment[0]] - lev) / 2. + (lev - cubelist_plev[increment[1]]) / 2.
-            cube = (lev - cubelist_plev[increment[0]]) / 2. + (cubelist_plev[increment[1]] - lev) / 2.
+            cube = ((lev - cubelist_plev[increment[0]]) / 2.
+                    + (cubelist_plev[increment[1]] - lev) / 2.)
             cubelist_dplev[i].data = cube.data
 
-        cubelist_dplev[i].add_aux_coord(iris.coords.AuxCoord(lev.coords(z_coord)[0].points[0]))
+        cubelist_dplev[i].add_aux_coord(iris.coords.AuxCoord(
+            lev.coords(z_coord)[0].points[0]))
 
     dplev = iris.cube.CubeList(cubelist_dplev).merge_cube()
-    dplev.transpose(new_order=[1,0,2,3])
+    dplev.transpose(new_order=[1, 0, 2, 3])
     dplev = iris.util.reverse(dplev, 1)
     return dplev
+
 
 def dpres_plevel_1d(plev, pmin, pmax):
     """Calculate delta pressure levels.
@@ -223,24 +232,32 @@ def dpres_plevel_1d(plev, pmin, pmax):
 
     elif type(pmax) == iris.cube.Cube:
 
-        cubelist = [ pmax.copy() for lev in plev ]
+        cubelist = [pmax.copy() for lev in plev]
 
         for i, lev in enumerate(plev):
             if increasing:
                 if lev == min(plev):
                     cubelist[i].data = (lev - pmin) + (plev[i+1] - lev) / 2.
-                    cubelist[i] = ((lev - pmin) + (plev[i+1] - lev) / 2.) * cubelist[i] / cubelist[i]
+                    cubelist[i] = (((lev - pmin)
+                                   + (plev[i+1] - lev) / 2.)
+                                   * cubelist[i] / cubelist[i])
                 elif lev == max(plev):
                     cubelist[i] = (pmax - lev) + (lev - plev[i-1]) / 2.
                 else:
-                    cubelist[i] = ((plev[i+1] - lev) / 2. + (lev - plev[i-1]) / 2.) *  cubelist[i] / cubelist[i]
+                    cubelist[i] = (((plev[i+1] - lev) / 2.
+                                   + (lev - plev[i-1]) / 2.)
+                                   * cubelist[i] / cubelist[i])
             elif decreasing:
                 if lev == min(plev):
-                    cubelist[i] = ((lev - pmin) + (plev[i-1] - lev) / 2.) * cubelist[i] / cubelist[i]
+                    cubelist[i] = (((lev - pmin)
+                                   + (plev[i-1] - lev) / 2.)
+                                   * cubelist[i] / cubelist[i])
                 elif lev == max(plev):
                     cubelist[i] = (lev - plev[i+1]) / 2. + (pmax - lev)
                 else:
-                    cubelist[i] = ((lev - plev[i+1]) / 2. + (plev[i-1] - lev) / 2.) * cubelist[i] / cubelist[i]
+                    cubelist[i] = (((lev - plev[i+1]) / 2.
+                                   + (plev[i-1] - lev) / 2.)
+                                   * cubelist[i] / cubelist[i])
             cubelist[i].units = 'Pa'
             cubelist[i].var_name = 'air_pressure'
             cubelist[i].add_aux_coord(iris.coords.AuxCoord(lev))
@@ -248,21 +265,17 @@ def dpres_plevel_1d(plev, pmin, pmax):
         dplev = iris.cube.CubeList(cubelist).merge_cube()
 
     else:
-        raise NotImplementedError(f"Function not implemented for type {type(pmax)}")
+        raise NotImplementedError("Function not implemented"
+                                  f" for type {type(pmax)}")
 
     return dplev
+
 
 def calculate_lifetime(dataset, plot_type, region):
     """Calculate the lifetime for the given plot_type and region."""
     # extract region from weights and reaction
     reaction = extract_region(dataset, region, case='reaction')
     weight = extract_region(dataset, region, case='weight')
-
-    print(reaction)
-    print(weight)
-    sys.exit(2)
-    print(iris.analysis.maths.multiply(weight, reaction))
-    print(reaction*weight)
 
     # calculate nominator and denominator
     # and sum of nominator and denominator via plot_type dimensions
@@ -294,9 +307,9 @@ def extract_region(dataset, region, case='reaction'):
     var = dataset[case]
     z_coord = dataset['z_coord']
 
-    if ('ptp' not in dataset['variables'] and
-        'tp_i' not in dataset['variables']
-    ):
+    if (
+            'ptp' not in dataset['variables']
+            and 'tp_i' not in dataset['variables']):
         tp_clim = climatological_tropopause(var[:, 0, :, :])
 
     if region in ['TROP', 'STRA']:
@@ -314,8 +327,6 @@ def extract_region(dataset, region, case='reaction'):
                 tropopause = dataset['variables']['ptp']
             else:
                 tropopause = tp_clim
-
-
 
         z_4d = broadcast_to_shape(
             var.coord(use_z_coord).points,
@@ -341,7 +352,6 @@ def extract_region(dataset, region, case='reaction'):
                 var.data,
                 mask=(z_4d > tp_4d),
             )
-        sys.exit(2)
     else:
         raise NotImplementedError(f"region '{region}' is not supported")
 
@@ -354,7 +364,8 @@ def climatological_tropopause(cube):
         raise NotImplementedError("The provided cube must"
                                   " have a latitude cooridnate")
 
-    tpp = (300. - 215. * (np.cos(np.deg2rad(cube.coord('latitude').points)) ** 2)) * 100.
+    tpp = (300. - 215. * (
+        np.cos(np.deg2rad(cube.coord('latitude').points)) ** 2)) * 100.
 
     tp_clim = cube.copy()
     tp_clim.data = broadcast_to_shape(
@@ -411,12 +422,17 @@ def calculate_reaction_rate(temp, reaction_type,
 
     # special reaction rate
     if coeff_b is not None:
-        reaction_rate = coeff_a * iris.analysis.maths.exp(coeff_b *
-                                                          iris.analysis.maths.log(reaction_rate)
-                                                          - (coeff_er / reaction_rate))
+        reaction_rate = (coeff_a
+                         * iris.analysis.maths.exp(coeff_b *
+                                                   iris.analysis.maths.log(
+                                                       reaction_rate)
+                                                   - (
+                                                       coeff_er
+                                                       / reaction_rate)))
     else:
         # standard reaction rate (arrhenius)
-        reaction_rate = coeff_a * iris.analysis.maths.exp(coeff_er / reaction_rate)
+        reaction_rate = coeff_a * iris.analysis.maths.exp(
+            coeff_er / reaction_rate)
 
     # set units
     reaction_rate.units = 'cm3 s-1'

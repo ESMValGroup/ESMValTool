@@ -267,23 +267,16 @@ from copy import deepcopy
 from pathlib import Path
 from pprint import pformat
 
-import sys
-# import cartopy.crs as ccrs
 import iris
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from iris.analysis.calculus import cube_delta
-# from iris.analysis.maths import log, exp
 from iris.coord_categorisation import add_year
-from iris.util import broadcast_to_shape
 import iris.common
-# from iris.coords import AuxCoord
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import FormatStrFormatter, LogLocator, NullFormatter
-# from sklearn.metrics import r2_score
-from scipy.constants import N_A, R, G
+from scipy.constants import N_A, R
 
 from esmvalcore.cmor._fixes.shared import add_model_level
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
@@ -297,7 +290,6 @@ from esmvaltool.diag_scripts.lifetime.lifetime_base import (
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     get_diagnostic_filename,
-    #    group_metadata,
     io,
     run_diagnostic,
 )
@@ -1125,7 +1117,6 @@ class CH4Lifetime(LifetimeBase):
                 plot_kwargs['label'] = (f"{plot_kwargs['label']}"
                                         f" ({mean.data:.2f})")
 
-
             # Plot annual means if desired
             annual_mean = self.plots[plot_type]['annual_mean']
             if annual_mean in [False, 'both']:
@@ -1141,7 +1132,7 @@ class CH4Lifetime(LifetimeBase):
                 plot_kwargs.update(self.plots[plot_type]['annual_mean_kwargs'])
                 iris.plot.plot(annual_mean_cube, **plot_kwargs)
             else:
-                raise ValueError(f"uknown option for annual_mean."
+                raise ValueError("Unknown option for annual_mean."
                                  "Choose False, 'both', or 'only'.")
 
         # Default plot appearance
