@@ -803,28 +803,6 @@ class CH4Lifetime(LifetimeBase):
             grmassdry = calculate_gridmassdry(press,
                                               hus,
                                               self.z_coord)
-            # raise NotImplementedError("The conversion to mass is not"
-            #                           " implemented without"
-            #                           " variable grmassdry.")
-
-        # print(variables['grmassdry'][0,:,45,90].data)
-        # sys.exit(2)
-        # hus = variables['hus']
-        # if 'press' in variables:
-        #     press = variables['press']
-        # else:
-        #     if self.z_coord == 'air_pressure':
-        #         press = hus.coords('air_pressure').points
-        #     else:
-        #         press = create_press(hus)
-
-        # grmassdry = calculate_gridmassdry(press,
-        #                                   hus,
-        #                                   self.z_coord)
-
-        # yy = variables['grmassdry'] - grmassdry
-        # print(yy.collapsed(yy.coords(), iris.analysis.MEAN).data)
-        # sys.exit(2)
 
         var = variables[varname] * grmassdry * m_var / self.cfg['m_air']
 
