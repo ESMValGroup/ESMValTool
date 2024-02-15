@@ -1,10 +1,8 @@
 ---
 # Common global attributes for Cmorizer output
-# Note that the filename says version 'v2021a', but the file attribute and the
-# documentation says 'v2021e'. Therefore, we use 'v2021e' here.
 attributes:
   dataset_id: OceanSODA-ETHZ
-  version: v2021e
+  version: v2023
   tier: 2
   modeling_realm: reanaly
   project_id: OBS6
