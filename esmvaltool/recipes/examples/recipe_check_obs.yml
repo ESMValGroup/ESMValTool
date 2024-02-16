@@ -730,7 +730,7 @@ diagnostics:
         mip: Omon
     additional_datasets:
       - {dataset: OceanSODA-ETHZ, project: OBS6, tier: 2, type: reanaly,
-         version: v2021e, start_year: 1982, end_year: 2020}
+         version: v2023, start_year: 1982, end_year: 2022}
     scripts: null
 
 
@@ -1911,6 +1911,17 @@ diagnostics:
          type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
     scripts: null
 
+  NSIDC-G02202:
+    description: NSIDC-G02202 check
+    variables:
+      areacello:
+        mip: Ofx
+      siconc:
+        mip: SImon
+    additional_datasets:
+      - {dataset: NSIDC-G02202-sh, project: OBS6, tier: 3,
+        type: reanaly, version: 4, start_year: 1979, end_year: 2022}
+    scripts: null
 
   UWisc:
     description: UWisc check
