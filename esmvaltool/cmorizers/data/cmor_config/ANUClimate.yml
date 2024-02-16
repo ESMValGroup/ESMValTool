@@ -30,8 +30,3 @@ variables:
     mip: Amon
     freq: monthly
     raw: tavg
-
-  # evspsbl: #?
-  #   mip: Amon
-  #   freq: monthly
-  #   raw: evap

@@ -17,6 +17,7 @@ Download and processing instructions
 import logging
 import os
 import re
+import calendar
 
 import iris
 
@@ -29,29 +30,28 @@ def _get_filepaths(in_dir, basename):
     """Find correct name of file (extend basename with timestamp).
         Search sub folders of raw data directory"""
     regex = re.compile(basename)
-    return_files = {} #[]
-    for root, dir, files in os.walk(in_dir, followlinks=True):
+    return_files = {}
+    for root, _dir, files in os.walk(in_dir, followlinks=True):
 
         for filename in files:
             if regex.match(filename):
-                # return_files.append(os.path.join(root, filename)) ## dir? group by year - dict
-                year = root.split('/')[-1] # if list not exists
+                # dir by year. group by year - dict
+                year = root.split('/')[-1]
                 if year in return_files.keys():
                     return_files[year].append(os.path.join(root, filename))
                 else:
                     return_files[year] = [os.path.join(root, filename)]
-                # logger.info("year: %s, filename: %s", year, filename)
 
     return return_files
 
 
-def fix_data_var(cube, var, month):
+def fix_data_var(cube, var, year, month):
     """Convert units in cube for the variable."""
-    monthdays = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30,
-                 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
-    if var == 'pr': #month separate files
+    no_ofdays = calendar.monthrange(year,month)[1]
+    logger.info(f"year:{year}, month:{month}. number of days:{no_ofdays}")
+    if var == 'pr':
 
-        cube = cube / (monthdays[month] * 86400)  # days in month
+        cube = cube / (no_ofdays * 86400)  # days in month
         cube.units = 'kg m-2 s-1'
 
     elif var in ['tas', 'tasmin', 'tasmax']:  # other variables in v1
@@ -65,18 +65,16 @@ def fix_data_var(cube, var, month):
     return cube
 
 
-def _extract_variable(cmor_info, attrs, filepaths, out_dir):
+def _extract_variable(cmor_info, attrs, year, filepaths, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
     logger.info("Var is %s", var)
     cbls = iris.cube.CubeList()
     for filepath in filepaths:
-        cubes = iris.load(filepath) #load by year? list
-        month = filepath[-5:-3]
-        # logger.info("month number: %s", month)
-    # for cube in cubes: ## ls of filepaths? for year
+        cubes = iris.load(filepath)
+        month = filepath[-5:-3]  # get year and month
 
-        cube = fix_data_var(cubes[0], var, int(month))
+        cube = fix_data_var(cubes[0], var, int(year), int(month))
 
         utils.fix_var_metadata(cube, cmor_info)
 
@@ -86,7 +84,7 @@ def _extract_variable(cmor_info, attrs, filepaths, out_dir):
     iris.util.equalise_attributes(cbls)
     cubesave = cbls.concatenate_cube()
     utils.fix_coords(cube)
-    logger.info("Saving file") #merge cubes
+    logger.info("Saving file")
     utils.save_variable(cubesave,
                         var,
                         out_dir,
@@ -102,7 +100,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     ver = cfg['attributes']['version']
     logger.info(cfg, cfg_user)
 
-    # Run the cmorization #multiple variables
+    # Run the cmorization, multiple variables
     for (var, var_info) in cfg['variables'].items():
 
         glob_attrs['mip'] = var_info['mip']
@@ -111,14 +109,15 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         raw_filename = cfg['filename'].format(version=ver,
                                               raw=var_info['raw'],
                                               freq=var_info['freq'])
-        filepaths = _get_filepaths(in_dir, raw_filename) #dict
+        filepaths = _get_filepaths(in_dir, raw_filename)  # dict
 
         if len(filepaths) == 0:
             logger.info(f"no files for {var}. pattern:{raw_filename}")
             logger.info(f"directory:{in_dir}")
-        # for inputfile in filepaths:
+
         for year,inputfiles in filepaths.items():
-            logger.info("Found input file '%s', count %s", year, len(inputfiles))
+            logger.info("Found files '%s', count %s", year, len(inputfiles))
 
             cmor_info = cmor_table.get_variable(var_info['mip'], var)
-            _extract_variable(cmor_info, glob_attrs, inputfiles, out_dir)
+            _extract_variable(cmor_info, glob_attrs, year, 
+                              inputfiles, out_dir)
