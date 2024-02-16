@@ -1834,7 +1834,7 @@ class MultiDatasets(MonitorBase):
         multi_dataset_facets = {}
         for key in all_keys:
             if all(d.get(key) == datasets[0].get(key) for d in datasets):
-                multi_dataset_facets[key] = datasets[0][key]
+                multi_dataset_facets[key] = datasets[0].get(key)
             else:
                 multi_dataset_facets[key] = f'ambiguous_{key}'
         return multi_dataset_facets
