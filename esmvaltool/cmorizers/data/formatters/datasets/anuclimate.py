@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 def _get_filepaths(in_dir, basename):
     """Find correct name of file (extend basename with timestamp).
+
         Search sub folders of raw data directory"""
     regex = re.compile(basename)
     return_files = {}
@@ -37,7 +38,7 @@ def _get_filepaths(in_dir, basename):
             if regex.match(filename):
                 # dir by year. group by year - dict
                 year = root.split('/')[-1]
-                if year in return_files.keys():
+                if year in return_files:
                     return_files[year].append(os.path.join(root, filename))
                 else:
                     return_files[year] = [os.path.join(root, filename)]
@@ -48,7 +49,7 @@ def _get_filepaths(in_dir, basename):
 def fix_data_var(cube, var, year, month):
     """Convert units in cube for the variable."""
     no_ofdays = calendar.monthrange(year, month)[1]
-    logger.info(f"year:{year}, month:{month}. number of days:{no_ofdays}")
+    # logger.info(f"year:{year}, month:{month}. number of days:{no_ofdays}")
     if var == 'pr':
 
         cube = cube / (no_ofdays * 86400)  # days in month
@@ -104,7 +105,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     for (var, var_info) in cfg['variables'].items():
 
         glob_attrs['mip'] = var_info['mip']
-        logger.info(f"CMORizing variable '{var}', {var_info['mip']}")
 
         raw_filename = cfg['filename'].format(version=ver,
                                               raw=var_info['raw'],
@@ -112,8 +112,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         filepaths = _get_filepaths(in_dir, raw_filename)  # dict
 
         if len(filepaths) == 0:
-            logger.info(f"no files for {var}. pattern:{raw_filename}")
-            logger.info(f"directory:{in_dir}")
+            logger.info("no files for %s pattern: %s", var, raw_filename)
+            logger.info("directory: %s", in_dir)
 
         for year, inputfiles in filepaths.items():
             logger.info("Found files '%s', count %s", year, len(inputfiles))
