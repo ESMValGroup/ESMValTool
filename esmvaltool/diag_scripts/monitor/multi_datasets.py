@@ -1826,7 +1826,6 @@ class MultiDatasets(MonitorBase):
         expected_dimensions = expected_dimensions_dict[plot_type]
         for dims in expected_dimensions:
             cube_dims = [cube.coords(dim, dim_coords=True) for dim in dims]
-            print(cube_dims)
             if all(cube_dims) and cube.ndim == len(dims):
                 return dims
         expected_dims_str = ' or '.join(

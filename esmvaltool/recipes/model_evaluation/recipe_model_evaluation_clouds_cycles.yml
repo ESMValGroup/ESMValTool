@@ -22,7 +22,7 @@ timerange_for_models: &time_period
   timerange: '2000/2014'  # can be specified, this is just an example
 
 timerange_diurnal: &time_diurnal_period
-  timerange: '2006/2006'  # can be specified, this is just an example
+  timerange: '20060101/20060201'  # can be specified, this is just an example
 
 
 preprocessors:
@@ -231,6 +231,8 @@ diagnostics:
               MPI-ESM1-2-LR:
                 color: C1
               ESACCI-CLOUD:
+                color: black
+              CERES-EBAF:
                 color: black
             pyplot_kwargs:
               title: '{short_name}'
