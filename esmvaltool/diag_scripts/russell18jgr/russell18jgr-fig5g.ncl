@@ -249,7 +249,7 @@ begin
               "coordinates had a manual calculation of areacello this is " + \
               "not an error, no responce is needed by user for plotting ")
   end if
-  
+
   frame(wks)
 
   ; Call provenance logger
