@@ -1000,9 +1000,9 @@ class CH4Lifetime(LifetimeBase):
         expected_dimensions_dict = {
             'annual_cycle': (['month_number'],),
             'map': (['latitude', 'longitude'],),
-            'zonalmean': (['latitude', self.z_coord]),
+            'zonalmean': (['latitude', self.z_coord],),
             'timeseries': (['time'],),
-            '1d_profile': ([self.z_coord]),
+            '1d_profile': ([self.z_coord],),
 
         }
         if plot_type not in expected_dimensions_dict:
@@ -1073,8 +1073,8 @@ class CH4Lifetime(LifetimeBase):
         ancestors = []
         cubes = {}
         for label, dataset in input_data.items():
-            _ = [ancestors.append(variable['filename'])
-                 for variable in dataset['dataset_data']]
+            ancestors.extend(variable['filename']
+                             for variable in dataset['dataset_data'])
 
             cube = calculate_lifetime(dataset,
                                       plot_type,
@@ -1178,8 +1178,8 @@ class CH4Lifetime(LifetimeBase):
         ancestors = []
         cubes = {}
         for label, dataset in input_data.items():
-            _ = [ancestors.append(variable['filename'])
-                 for variable in dataset['dataset_data']]
+            ancestors.extend(variable['filename']
+                             for variable in dataset['dataset_data'])
 
             cube = calculate_lifetime(dataset,
                                       plot_type,
@@ -1272,8 +1272,8 @@ class CH4Lifetime(LifetimeBase):
         for _, dataset in input_data.items():
             if dataset == ref_dataset:
                 continue
-            _ = [ancestors.append(variable['filename'])
-                 for variable in dataset['dataset_data']]
+            ancestors.extend(variable['filename']
+                             for variable in dataset['dataset_data'])
 
             if ref_dataset is None:
                 (plot_path, netcdf_paths) = (
@@ -1347,8 +1347,8 @@ class CH4Lifetime(LifetimeBase):
         ancestors = []
         cubes = {}
         for label, dataset in input_data.items():
-            _ = [ancestors.append(variable['filename'])
-                 for variable in dataset['dataset_data']]
+            ancestors.extend(variable['filename']
+                             for variable in dataset['dataset_data'])
 
             cube = calculate_lifetime(dataset,
                                       plot_type,
