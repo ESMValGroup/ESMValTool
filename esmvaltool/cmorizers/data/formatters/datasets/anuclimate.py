@@ -47,7 +47,7 @@ def _get_filepaths(in_dir, basename):
 
 def fix_data_var(cube, var, year, month):
     """Convert units in cube for the variable."""
-    no_ofdays = calendar.monthrange(year,month)[1]
+    no_ofdays = calendar.monthrange(year, month)[1]
     logger.info(f"year:{year}, month:{month}. number of days:{no_ofdays}")
     if var == 'pr':
 
@@ -115,9 +115,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             logger.info(f"no files for {var}. pattern:{raw_filename}")
             logger.info(f"directory:{in_dir}")
 
-        for year,inputfiles in filepaths.items():
+        for year, inputfiles in filepaths.items():
             logger.info("Found files '%s', count %s", year, len(inputfiles))
 
             cmor_info = cmor_table.get_variable(var_info['mip'], var)
-            _extract_variable(cmor_info, glob_attrs, year, 
+            _extract_variable(cmor_info, glob_attrs, year,
                               inputfiles, out_dir)
