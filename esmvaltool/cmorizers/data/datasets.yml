@@ -1027,6 +1027,24 @@ datasets:
         ntatFlxSI-MO/csulf.ntat.mon.mean.nc
         ntatFlxSI-MO/csusf.ntat.mon.mean.nc
 
+  NOAA-ERSSTv3b:
+    tier: 2
+    source: https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf/
+    last_access: 2023-12-04
+    info: |
+      Download the following files:
+        ersst.yyyymm.nc 
+        for years 1854 to 2020
+
+  NOAA-ERSSTv5:
+    tier: 2
+    source: https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/netcdf/
+    last_access: 2023-12-04
+    info: |
+      Download the following files:
+        ersst.v5.yyyymm.nc 
+        for years 1854 onwards
+
   NOAAGlobalTemp:
     tier: 2
     source: https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/v5/access/
@@ -1051,13 +1069,21 @@ datasets:
       Download daily data from:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
+   
+  NSIDC-G02202-sh:
+    tier: 3
+    source: https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday
+    last_access: 2023-05-13
+    info: |
+      Download monthly data. 
+      Login required for download, and also requires citation only to use
 
   OceanSODA-ETHZ:
     tier: 2
     source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0220059/
-    last_access: 2022-11-03
+    last_access: 2024-02-15
     info: |
-      Download the file OceanSODA-ETHZ_GRaCER_v2021a_1982-2020.nc
+      Download the file OceanSODA_ETHZ-v2023.OCADS.01_1982-2022.nc
 
   OSI-450-nh:
     tier: 2
