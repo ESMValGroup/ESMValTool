@@ -946,7 +946,7 @@ class MultiDatasets(MonitorBase):
                 mean.data,
                 dataset['units'],
             )
-        if mean.data >= 0.1:
+        if np.abs(mean.data) >= 0.1:
             mean_val = f"{mean.data:.2f} {cube.units}"
         else:
             mean_val = f"{mean.data:.2e} {cube.units}"
@@ -959,10 +959,10 @@ class MultiDatasets(MonitorBase):
         # Weighted RMSE
         rmse = (cube - ref_cube).collapsed(dim_coords, iris.analysis.RMS,
                                            weights=weights)
-        if rmse.data >= 0.1:
+        if np.abs(rmse.data) >= 0.1:
             rmse_val = f"{rmse.data:.2f} {cube.units}"
         else:
-            rmse_val = f"{mean.data:.2e} {cube.units}"
+            rmse_val = f"{rmse.data:.2e} {cube.units}"
         axes.text(x_pos_bias, y_pos, f"RMSE={rmse_val}",
                   fontsize=fontsize, transform=axes.transAxes)
         logger.info(
