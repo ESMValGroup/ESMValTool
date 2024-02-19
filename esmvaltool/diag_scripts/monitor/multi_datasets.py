@@ -946,15 +946,24 @@ class MultiDatasets(MonitorBase):
                 mean.data,
                 dataset['units'],
             )
-        axes.text(x_pos, y_pos, f"{mean.data:.2f}{cube.units}",
-                  fontsize=fontsize, transform=axes.transAxes)
+        if mean.data >= 0.1:
+            mean_val = f"{mean.data:.3f}{cube.units}"
+        else:
+            mean_val = f"{mean.data:e}{cube.units}"
+        axes.text(
+            x_pos, y_pos, mean_val, fontsize=fontsize, transform=axes.transAxes
+        )
         if ref_cube is None:
             return
 
         # Weighted RMSE
         rmse = (cube - ref_cube).collapsed(dim_coords, iris.analysis.RMS,
                                            weights=weights)
-        axes.text(x_pos_bias, y_pos, f"RMSE={rmse.data:.2f}{cube.units}",
+        if rmse.data >= 0.1:
+            rmse_val = f"{rmse.data:.3f}{cube.units}"
+        else:
+            rmse_val = f"{mean.data:e}{cube.units}"
+        axes.text(x_pos_bias, y_pos, f"RMSE={rmse_val}",
                   fontsize=fontsize, transform=axes.transAxes)
         logger.info(
             "Area-weighted RMSE of %s for %s = %f%s",
@@ -971,7 +980,7 @@ class MultiDatasets(MonitorBase):
         ref_cube_data = ref_cube.data.ravel()[~mask]
         weights = weights.ravel()[~mask]
         r2_val = r2_score(cube_data, ref_cube_data, sample_weight=weights)
-        axes.text(x_pos_bias, y_pos - 0.1, rf"R$^2$={r2_val:.2f}",
+        axes.text(x_pos_bias, y_pos - 0.1, rf"R$^2$={r2_val:.3f}",
                   fontsize=fontsize, transform=axes.transAxes)
         logger.info(
             "Area-weighted R2 of %s for %s = %f",
