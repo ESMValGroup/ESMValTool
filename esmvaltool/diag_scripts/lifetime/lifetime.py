@@ -278,7 +278,7 @@ from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import FormatStrFormatter, LogLocator, NullFormatter
 from scipy.constants import N_A, R
 
-from esmvalcore.cmor._fixes.shared import add_model_level
+from esmvalcore.cmor.fixes import add_model_level
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.lifetime.lifetime_base import (
     LifetimeBase,
