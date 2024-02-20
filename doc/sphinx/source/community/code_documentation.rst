@@ -442,7 +442,10 @@ name to the list of authors in ``CITATION.cff`` and generate the entry for the
 ::
 
    pip install cffconvert
-   cffconvert --format zenodo --outfile .zenodo.json
+   cffconvert --infile CITATION.cff --format zenodo --outfile .zenodo.json
+
+Presently, this method unfortunately discards entries `communities`
+and `grants` from that file; please restore them manually.
 
 Note that authors of recipes and/or diagnostics also need to be added to the file
 `esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/config-references.yml>`__,
