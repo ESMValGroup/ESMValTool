@@ -26,19 +26,44 @@ from copy import deepcopy
 from datetime import datetime
 from dateutil import relativedelta
 
+import cf_units
 import iris
 from dask import array as da
-from iris.util import equalise_attributes, unify_time_units
 from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import regrid
 
 from esmvaltool.cmorizers.data.utilities import (
-    fix_var_metadata,
     save_variable,
-    set_global_atts,
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _load_callback(raw_cube, field, _):
+    """Use this callback to fix anything Iris tries to break."""
+    # Remove ancilliary variables that cause issues with merging
+    # and concatenation.
+    # Using a callback function is faster than removing the ancillary
+    # variables later.
+    for ancillary_variable in raw_cube.ancillary_variables():
+        raw_cube.remove_ancillary_variable(ancillary_variable.standard_name)
+
+
+def _create_nan_cube(cube, year, month, day):
+    """Create cube containing only nan from existing cube."""
+    nan_cube = cube.copy()
+    nan_cube.data = da.ma.masked_greater(cube.core_data(), -1e20)
+
+    # Read dataset time unit and calendar from file
+    dataset_time_unit = str(nan_cube.coord('time').units)
+    dataset_time_calender = nan_cube.coord('time').units.calendar
+    # Convert datetime
+    newtime = datetime(year=year, month=month, day=day)
+    newtime = cf_units.date2num(newtime, dataset_time_unit,
+                                dataset_time_calender)
+    nan_cube.coord('time').points = float(newtime)
+
+    return nan_cube
 
 
 def _fix_coordinates(cube, definition):
@@ -63,7 +88,8 @@ def _fix_coordinates(cube, definition):
 
     return cube
 
-def _extract_variable(in_files, var, cfg, out_dir):
+
+def _extract_variable(in_files, var, cfg, out_dir, year):
     logger.info("CMORizing variable '%s' from input files '%s'",
                 var['short_name'], ', '.join(in_files))
     attributes = deepcopy(cfg['attributes'])
@@ -74,15 +100,17 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
     # load all input files (1 year) into 1 cube
     # --> drop attributes that differ among input files
-    cube_list = iris.load_raw(in_files, var['raw'])
+    cube_list = iris.load(in_files, var['raw'], callback=_load_callback)
     # global attributes to remove
     drop_attrs = [
         'source', 'date_created', 'history', 'tracking_id',
-        'id', 'time_coverage_start', 'time_coverage_end', 'platform'
+        'id', 'time_coverage_start', 'time_coverage_end', 'platform',
+        'sensor', 'keywords'
     ]
     # variable attributes to remove
     drop_var_attrs = [
-        'flag_meanings', 'flag_values', 'grid_mapping', 'actual_range'
+        'flag_meanings', 'flag_values', 'grid_mapping', 'actual_range',
+        'ancillary_variables'
     ]
     for cube in cube_list:
         for attr in drop_attrs:
@@ -92,14 +120,41 @@ def _extract_variable(in_files, var, cfg, out_dir):
             if attr in cube.attributes.keys():
                 cube.attributes.pop(attr)
 
-    # Remove ancillary data in all cubes to allow concatenating cubes
-    for cube in cube_list:
-        for ancillary_variable in cube.ancillary_variables():
-            cube.remove_ancillary_variable(ancillary_variable)
-                
-    iris.util.unify_time_units(cube_list)
-    cube = cube_list.concatenate_cube()
+    # make sure there is one cube for every day of the year
+    # (print debug info about missing days and add cube with
+    # nan to fill gaps
 
+    full_list = iris.cube.CubeList()
+    loop_date = datetime(year, 1, 1)
+    time_list = []
+
+    # create list of available days ('time_list')
+
+    for cube in cube_list:
+        timecoord = cube.coord('time')
+        cubetime = timecoord.units.num2date(timecoord.points)
+        time_list.append(cubetime)
+
+    # create cube list for every day of the year by adding
+    # cubes containing only nan to fill possible gaps
+
+    while loop_date <= datetime(year, 12, 31):
+        date_available = False
+        for idx, cubetime in enumerate(time_list):
+            if loop_date == cubetime:
+                date_available = True
+                break
+        if date_available:
+            full_list.append(cube_list[idx])
+        else:
+            logger.debug(f"No data available for {loop_date}")
+            nan_cube = _create_nan_cube(cube_list[0], loop_date.year,
+                                        loop_date.month, loop_date.day)
+            full_list.append(nan_cube)
+        loop_date += relativedelta.relativedelta(days=1)
+
+    iris.util.unify_time_units(full_list)
+    cube = full_list.concatenate_cube()
     cube.coord('time').points = cube.coord('time').core_points().astype(
         'float64')
 
@@ -129,27 +184,25 @@ def _extract_variable(in_files, var, cfg, out_dir):
     cube.coord('longitude').attributes = None
 
     # remove flags and other invalid points
-    missingvalue = 1e20
     if cube.var_name == 'snc':
-        cube.data = da.where(cube.data > 100, missingvalue, cube.data)
+        cube.data = da.ma.masked_greater(cube.core_data(), 100)
     elif cube.var_name == 'snw':
-        cube.data = da.where(cube.data < 0, missingvalue, cube.data)
+        cube.data = da.ma.masked_less(cube.core_data(), 0)
 
     # regridding from 0.05x0.05 to 0.5x0.5 to save space
-    #cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
+    cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
     cube.attributes.update({"geospatial_lon_resolution": "0.5",
                             "geospatial_lat_resolution": "0.5",
                             "spatial_resolution": "0.5"})
 
     # Save results
-    attributes['fill_value'] = missingvalue
     logger.debug("Saving cube\n%s", cube)
     logger.debug("Setting time dimension to UNLIMITED while saving!")
     save_variable(cube, cube.var_name,
                   out_dir, attributes,
-                  unlimited_dimensions=['time']
-                 )
+                  unlimited_dimensions=['time'])
     logger.info("Finished CMORizing %s", ', '.join(in_files))
+
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize ESACCI-SNOW dataset."""
@@ -179,6 +232,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 logger.info(f'{loop_date.year}: no data not found for '
                             f'variable {short_name}')
             else:
-                _extract_variable(in_files, var, cfg, out_dir)
+                _extract_variable(in_files, var, cfg, out_dir, loop_date.year)
 
             loop_date += relativedelta.relativedelta(years=1)
