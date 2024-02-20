@@ -29,6 +29,7 @@ def test_formatters_have_required_interface():
         except AssertionError:
             print(f'Bad args in {os.path.join(formatters_folder, formatter)}: '
                   f'{spec.args}')
+            print(f"Expected {arg_names}.")
             error = True
     assert not error
 
