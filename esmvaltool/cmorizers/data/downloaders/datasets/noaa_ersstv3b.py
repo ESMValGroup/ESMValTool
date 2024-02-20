@@ -1,5 +1,7 @@
-"""Script to download OceanSODA-ETHZ."""
+"""Script to download NOAA-ERSST-v3b."""
 import logging
+from datetime import datetime
+from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
@@ -25,15 +27,23 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     overwrite : bool
         Overwrite already downloaded files
     """
+    if start_date is None:
+        start_date = datetime(1854, 1, 1)
+    if end_date is None:
+        end_date = datetime(2020, 1, 1)
+
+    loop_date = start_date
+
     downloader = WGetDownloader(
         config=config,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
+    base_path = ("https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf"
+                 "/ersst.{year}{month:02d}.nc")
 
-    downloader.download_file(
-        "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0220059/"
-        "OceanSODA_ETHZ-v2023.OCADS.01_1982-2022.nc",
-        wget_options=[],
-    )
+    while loop_date <= end_date:
+        downloader.download_folder(
+            base_path.format(year=loop_date.year, month=loop_date.month), [])
+        loop_date += relativedelta.relativedelta(months=1)

@@ -34,6 +34,7 @@
 ;    7) Untar all .tar files into a single directory.
 ;
 ; Modification history
+;    20230818-lauer_axel: added output of clwvi (in addition to iwp, lwp)
 ;    20210506-lauer_axel: output of lwp instead of clwvi
 ;    20210323-lauer_axel: written.
 ;
@@ -57,30 +58,31 @@ begin
   YEAR2 = 2018
 
   ; Selected variable (standard name)
-  VAR = (/"clt", "clivi", "lwp"/)
+  VAR = (/"clt", "clivi", "lwp", "clwvi"/)
 
   ; Name in the raw data
-  NAME = (/"cfc", "iwp_allsky", "lwp_allsky"/)
+  NAME = (/"cfc", "iwp_allsky", "lwp_allsky", "iwp_allsky"/)
 
   ; Filename base
-  FNBASE = (/"CFCmm", "IWPmm", "LWPmm"/)
+  FNBASE = (/"CFCmm", "IWPmm", "LWPmm", "IWPmm"/)
 
   ; Conversion factor
   ; Remark: total cloud cover (CFC) is reported as "1" but is actually "%"
   ; IWP and LWP use scale_factor to convert to kg/m2
-  ; CONV = (/1., 1., 1./)
+  ; CONV = (/1., 1., 1., 1./)
 
   ; MIP
-  MIP = (/"Amon", "Amon", "Amon"/)
+  MIP = (/"Amon", "Amon", "Amon", "Amon"/)
 
   ; Frequency
-  FREQ = (/"mon", "mon", "mon"/)
+  FREQ = (/"mon", "mon", "mon", "mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("cmor_tables") + \
     (/"/cmip5/Tables/CMIP5_Amon", \
       "/cmip5/Tables/CMIP5_Amon", \
-      "/custom/CMOR_lwp.dat"/)
+      "/custom/CMOR_lwp.dat",    \
+      "/cmip5/Tables/CMIP5_Amon"/)
 
   ; Type
   TYPE = "sat"
@@ -159,17 +161,56 @@ begin
           output&lat = f->lat
           output!2 = "lon"
           output&lon = f->lon
+          fillval = xx@_FillValue
         end if
         output(ind(toint(yy * 100 + mm).eq.date), :, :) = (/xx/)
 
         delete(fname)
         delete(f)
+        delete(xx)
 
+        ; *** calculate clwvi (lwp + iwp) ***
+
+        if (VAR(vv) .eq. "clwvi") then
+          fname = systemfunc("ls " + input_dir_path + "LWPmm" + \
+                             syear + smonth + "01*.nc")
+
+          ; No files found
+          if (ismissing(fname)) then
+            log_info("Warning: input data incomplete for variable " + \
+                     VAR(vv) + " (" + syear + smonth + ")")
+            continue
+          end if
+
+          ; Extract data
+          f = addfile(fname, "r")
+          val = f->lwp_allsky
+          if (isatt(val, "scale_factor")) then
+            scalefac = tofloat(val@scale_factor)
+          else
+            scalefac = 1.0
+          end if
+          if (isatt(val, "add_offset")) then
+            offset = tofloat(val@add_offset)
+          else
+            offset = 0.0
+          end if
+          xx = tofloat(val) * scalefac + offset
+          delete(val)
+
+          idx = ind(toint(yy * 100 + mm).eq.date)
+          output(idx, :, :) = output(idx, :, :) + (/xx(0, :, :)/)
+
+          delete(idx)
+          delete(xx)
+          delete(fname)
+          delete(f)
+        end if  ; if VAR(vv) .eq. "clwvi"
       end do
     end do
 
     ; Set fill value
-    output = where(output.eq.xx@_FillValue, output@_FillValue, output)
+    output = where(output.eq.fillval, output@_FillValue, output)
 
     ; Format coordinates
     output!0 = "time"
