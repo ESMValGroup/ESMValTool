@@ -18,6 +18,16 @@ diagnostics:
 
   ### TIER 2 ##################################################################
 
+  AGCD:
+    description:
+    variables:
+      pr:
+    additional_datasets:
+      - {project: OBS6, dataset: AGCD, mip: Amon, tier: 3, 
+        type: ground, version: v2-0-1}
+    scripts: null
+
+
   BerkeleyEarth:
     description: BerkeleyEarth check
     variables:
@@ -167,6 +177,7 @@ diagnostics:
       clivi:
       clt:
       cltStderr:
+      clwvi:
       lwp:
       rlut:
       rlutcs:
@@ -656,6 +667,24 @@ diagnostics:
          type: reanaly, version: v2, start_year: 1871, end_year: 2012}
     scripts: null
 
+  NOAA-ERSSTv5:
+    description: NOAA-ERSSTv5 check
+    variables:
+      tos:
+    additional_datasets:
+      - {dataset: NOAA-ERSSTv5, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: v5, start_year: 1854, end_year: 2000}
+    scripts: null
+
+  NOAA-ERSSTv3b:
+    description: NOAA-ERSSTv3b check
+    variables:
+      tos:
+    additional_datasets:
+      - {dataset: NOAA-ERSSTv3b, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: v3b, start_year: 1854, end_year: 2019}
+    scripts: null
+
   NOAA-MBL-CH4:
     description: NOAA marine boundary layer CH4 check
     variables:
@@ -711,7 +740,7 @@ diagnostics:
         mip: Omon
     additional_datasets:
       - {dataset: OceanSODA-ETHZ, project: OBS6, tier: 2, type: reanaly,
-         version: v2021e, start_year: 1982, end_year: 2020}
+         version: v2023, start_year: 1982, end_year: 2022}
     scripts: null
 
 
@@ -1083,6 +1112,8 @@ diagnostics:
         mip: Amon
       clivi:
         mip: Amon
+      clwvi:
+        mip: Amon
       lwp:
         mip: Amon
     additional_datasets:
@@ -1096,6 +1127,7 @@ diagnostics:
     variables:
       clivi:
       clw:
+      clwvi:
       lwp:
     additional_datasets:
       - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
@@ -1889,6 +1921,17 @@ diagnostics:
          type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
     scripts: null
 
+  NSIDC-G02202:
+    description: NSIDC-G02202 check
+    variables:
+      areacello:
+        mip: Ofx
+      siconc:
+        mip: SImon
+    additional_datasets:
+      - {dataset: NSIDC-G02202-sh, project: OBS6, tier: 3,
+        type: reanaly, version: 4, start_year: 1979, end_year: 2022}
+    scripts: null
 
   UWisc:
     description: UWisc check

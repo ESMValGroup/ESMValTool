@@ -136,8 +136,8 @@ Recipe output can be copied by doing from the VM:
 
 .. code-block:: bash
 
-  nohup rsync -rlt /path_to_testing/esmvaltool_output/* /shared/esmvaltool/v2.x.x/
-  
+  nohup rsync --exclude preproc/ -rlt /path_to_testing/esmvaltool_output/* /shared/esmvaltool/v2.x.x/
+
 By copying the debug.html and index.html files into /shared/esmvaltool/v2.x.x/, the output
 becomes available online, see for `example
 <https://esmvaltool.dkrz.de/shared/esmvaltool/v2.7.0>`_.
@@ -151,13 +151,13 @@ Link the overview webpage to the release issue.
 This makes it much easier to ask for feedback from recipe developers and analyse failures.
 
 Results produced with the final ESMValCore release candidate should be put in a VM directory
-named after the version number, e.g. ``v2.x.x``. 
+named after the version number, e.g. ``v2.x.x``.
 Once the release process is over, test results produced with previous release candidates can be deleted to save space on the VM.
 
 .. note::
 
   If you wrote recipe runs output to Levante's `/scratch` partition, be aware that
-  the data will be removed after two weeks, so you will have to quickly move the 
+  the data will be removed after two weeks, so you will have to quickly move the
   output data to the VM, using the ``nohup`` command above.
 
 Running the comparison
@@ -189,15 +189,15 @@ The steps to running the compare tool on the VM are the following:
 - prerequisite - install `imagehash`: `pip install imagehash`
 - reference run (v2.7.0; previous stable release): `export reference_dir=/work/bd0854/b382109/v270` (contains `preproc/` dirs too, 122 recipes)
 - current run (v2.8.0): `export current_dir=path_to_current_run`
-- run the :ref:`comparison script<compare_recipe_runs>` with: 
+- run the :ref:`comparison script<compare_recipe_runs>` with:
 
 .. code-block:: bash
 
   nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt
 
 Copy the comparison txt file to the release issue.
-Some of the recipes will appear as having identical output to the one from previous release. 
-However, others will need human inspection. 
+Some of the recipes will appear as having identical output to the one from previous release.
+However, others will need human inspection.
 Ask the recipe maintainers (`@ESMValGroup/esmvaltool-recipe-maintainers`_) and ESMValTool Development Team (`@ESMValGroup/esmvaltool-developmentteam`_) to provide assistance in checking the results.
 Here are some guidelines on how to perform the human inspection:
 
