@@ -18,9 +18,8 @@ from PIL import Image
 
 try:
     import imagehash
-except ImportError as exc:
+except ImportError:
     print("Please `pip install imagehash`")
-    raise exc
 
 IGNORE_FILES: tuple[str, ...] = (
     '*_citation.bibtex',
