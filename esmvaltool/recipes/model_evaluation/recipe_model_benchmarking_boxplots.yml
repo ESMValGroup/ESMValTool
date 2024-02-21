@@ -16,52 +16,61 @@ documentation:
 datasets:
   #- {dataset: '*', institute: '*', ensemble: r1i1p1f1, grid: '*'}
   # CMIP6
-  - &cmip6 {dataset: ACCESS-CM2, grid: gn,
-            ensemble: r1i1p1f1, project: CMIP6}
-  - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
-  - {<<: *cmip6, dataset: AWI-CM-1-1-MR}
-  - {<<: *cmip6, dataset: AWI-ESM-1-1-LR}
-  - {<<: *cmip6, dataset: BCC-CSM2-MR}
-  - {<<: *cmip6, dataset: CAMS-CSM1-0}
-  - {<<: *cmip6, dataset: CanESM5}
-  - {<<: *cmip6, dataset: CanESM5-CanOE, ensemble: r1i1p2f1}
-  - {<<: *cmip6, dataset: CESM2}
-  - {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
-  - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
-  - {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
-  - {<<: *cmip6, dataset: CIESM, grid: gr}
-  - {<<: *cmip6, dataset: CMCC-CM2-HR4}
-  - {<<: *cmip6, dataset: CMCC-CM2-SR5}
-  - {<<: *cmip6, dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
-  - {<<: *cmip6, dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
-  - {<<: *cmip6, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
-  - {<<: *cmip6, dataset: EC-Earth3-Veg-LR, grid: gr}
-  - {<<: *cmip6, dataset: FGOALS-f3-L, grid: gr}
-  - {<<: *cmip6, dataset: FGOALS-g3}
-  - {<<: *cmip6, dataset: GFDL-CM4, grid: gr1}
-  - {<<: *cmip6, dataset: GISS-E2-1-G}
-  - {<<: *cmip6, dataset: GISS-E2-1-H}
-  - {<<: *cmip6, dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
-  - {<<: *cmip6, dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3}
-  - {<<: *cmip6, dataset: IITM-ESM}
-  - {<<: *cmip6, dataset: INM-CM4-8, grid: gr1}
-  - {<<: *cmip6, dataset: INM-CM5-0, grid: gr1}
-  - {<<: *cmip6, dataset: IPSL-CM6A-LR, grid: gr}
-  - {<<: *cmip6, dataset: MIROC6}
-  - {<<: *cmip6, dataset: MIROC-ES2L, ensemble: r1i1p1f2}
-  - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM}
-  - {<<: *cmip6, dataset: MPI-ESM1-2-LR}
-  - {<<: *cmip6, dataset: MPI-ESM1-2-HR}
-  - {<<: *cmip6, dataset: MRI-ESM2-0}
-  - {<<: *cmip6, dataset: NESM3}
-  - {<<: *cmip6, dataset: NorCPM1, institute: NCC, ensemble: r10i1p1f1}
-  - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
-  - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
-  - {<<: *cmip6, dataset: SAM0-UNICON}
-  - {<<: *cmip6, dataset: TaiESM1}
-  - {<<: *cmip6, dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
+  - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
+  - {dataset: AWI-CM-1-1-MR, grid: gn}
+  - {dataset: AWI-ESM-1-1-LR, grid: gn}
+  - {dataset: BCC-CSM2-MR, grid: gn}
+  - {dataset: BCC-ESM1, grid: gn}
+  - {dataset: CAMS-CSM1-0, grid: gn}
+  - {dataset: CanESM5, grid: gn}
+  - {dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
+  - {dataset: CESM2, grid: gn}
+  - {dataset: CESM2-FV2, grid: gn, institute: NCAR}
+  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+  - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+  - {dataset: CIESM}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
+  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2}
+  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
+  - {dataset: E3SM-1-0}
+  - {dataset: E3SM-1-1, institute: E3SM-Project}
+  - {dataset: EC-Earth3-Veg}
+  - {dataset: FGOALS-f3-L}
+  - {dataset: FGOALS-g3, grid: gn}
+  - {dataset: FIO-ESM-2-0, grid: gn}
+  - {dataset: GFDL-ESM4, grid: gr1}
+  - {dataset: GISS-E2-1-G, grid: gn}
+  - {dataset: GISS-E2-1-H, grid: gn}
+  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
+  - {dataset: INM-CM4-8, grid: gr1}
+  - {dataset: INM-CM5-0, grid: gr1}
+  - {dataset: IPSL-CM6A-LR}
+  - {dataset: KACE-1-0-G}
+  - {dataset: MCM-UA-1-0, grid: gn}
+  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: MPI-ESM-1-2-HAM, grid: gn}
+  - {dataset: MPI-ESM1-2-HR, grid: gn}
+  - {dataset: MPI-ESM1-2-LR, grid: gn}
+  - {dataset: MRI-ESM2-0, grid: gn}
+  - {dataset: NESM3, grid: gn}
+  - {dataset: NorESM2-LM, grid: gn, institute: NCC}
+  - {dataset: NorESM2-MM, grid: gn, institute: NCC}
+  - {dataset: SAM0-UNICON, grid: gn}
+  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
   # Dataset to be benchmarked
-  - {dataset: ACCESS1-0, ensemble: r1i1p1, project: CMIP5, benchmark_dataset: true}
+  - {<<: *cmip6, dataset: MIROC6, benchmark_dataset: true}
+    #- {dataset: ACCESS1-0, ensemble: r1i1p1, project: CMIP5, benchmark_dataset: true}
+
+
+VAR_SETTINGS: &var_settings
+  project: CMIP6
+  mip: Amon
+  exp: historical
+  ensemble: r1i1p1f1
+  grid: gn
+  timerange: '2000/2009'
 
 
 preprocessors:
@@ -90,57 +99,19 @@ preprocessors:
       metric: rmse
       coords: [latitude, longitude]
 
-  global_mean:
-    area_statistics:
-      operator: mean
-    climate_statistics:
-      operator: mean
-
-  extract_ar6_regions:
-    regrid:
-      target_grid: 5x5
-      scheme: linear
-    extract_shape:
-      shapefile: ar6
-      crop: true
-      decomposed: true
-      ids:
-        Name: &regions_to_extract
-          - N.Europe
-            #- West&Central-Europe
-            #- Mediterranean
-            #- Equatorial.Pacific-Ocean
-            #- Equatorial.Atlantic-Ocean
-            #- Equatorial.Indic-Ocean
-    convert_units:
-      units: mm day-1
-    area_statistics:
-      operator: mean
-    climate_statistics: 
-      operator: mean
-
-
 
 diagnostics:
 
-  plot_boxplots:
+  plot_boxplots_rmse:
     description: Plot boxplots for different variables.
     variables:
       tas: &var
+        <<: *var_settings
         preprocessor: rmse
-        project: CMIP6
-        mip: Amon
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gn
-        timerange: '1985/2004'
         additional_datasets:
-          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, reference_for_metric: true}
-            #hus400:
-            #  <<: *var
-            #  additional_datasets:
-            #    - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+                #- {dataset: ERA5, project: native6, type: reanaly, version: v1,
+                #   tier: 3, reference_for_metric: true}
+          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis, tier: 2}
       lwcre:
         <<: *var
         derive: true
@@ -156,8 +127,10 @@ diagnostics:
       psl:
         <<: *var
         additional_datasets:
-          - {dataset: JRA-55, project: ana4mips, type: reanalysis, tier: 1,
-             reference_for_metric: true}
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, reference_for_metric: true}
+             #- {dataset: JRA-55, project: ana4mips, type: reanalysis, tier: 1,
+             #   reference_for_metric: true}
       rlut:
         <<: *var
         additional_datasets:
@@ -178,10 +151,6 @@ diagnostics:
         <<: *var
         additional_datasets:
           - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, reference_for_metric: true}
-            #zg500:
-            #  <<: *var
-            #  additional_datasets:
-            #    - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
@@ -189,35 +158,4 @@ diagnostics:
         group_variables_by: variable_group
         plots:
           benchmarking_boxplot:
-
-
-
-
-        #seaborn_func: boxplot
-        #        groupby_facet: var
-        #seaborn_kwargs:
-        #  kind: hist
-        #  stat: density
-        #  bins: 300
-        #  y: pr
-        #  col: shape_id
-        #  col_order: *regions_to_extract
-        #  col_wrap: 3
-        #  hue: alias
-        #  facet_kws:
-        #    sharey: false
-        #add_aux_coords: true
-        #dropna_kwargs:
-        #  axis: 0
-        #  how: any
-        #legend_title: Model
-        #plot_object_methods:
-        #  set:
-        #    xlabel: 'Precipitation [mm/day]'
-        #    xlim: [0, 30]
-        #  set_titles: '{col_name}'
-        #seaborn_settings:
-        #  style: ticks
-        #  rc:
-        #    axes.titlepad: 15.0
-        #suptitle: Summary plot.
+            var_order: ['tas', 'ts', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
