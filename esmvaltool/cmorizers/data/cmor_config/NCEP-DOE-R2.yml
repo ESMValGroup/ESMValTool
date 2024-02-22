@@ -34,3 +34,8 @@ variables:
     mip: Amon
     raw: air
     file: 'air\.mon\.mean\.nc'
+  wap_month:
+    short_name: wap
+    mip: Amon
+    raw: omega
+    file: 'omega\.mon\.mean\.nc'
