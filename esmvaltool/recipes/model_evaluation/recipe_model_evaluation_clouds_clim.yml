@@ -3,8 +3,8 @@
 documentation:
   title: Model evaluation with focus on clouds.
   description: >
-    Plot climatologies several cloud-related variables of multi-year
-    simulations.
+    Plot climatologies and zonal mean profiles of several cloud-related
+    variables of multi-year simulations.
   authors:
     - bonnet_pauline
     - lauer_axel
