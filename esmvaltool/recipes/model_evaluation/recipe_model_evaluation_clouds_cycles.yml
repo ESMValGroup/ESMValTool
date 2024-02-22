@@ -3,7 +3,8 @@
 documentation:
   title: Model evaluation with focus on clouds.
   description: >
-    Plot annual cycles of several cloud-related variables of multi-year simulations.
+    Plot annual cycles of several cloud-related variables of multi-year
+    simulations.
   authors:
     - lauer_axel
     - schlund_manuel
