@@ -304,6 +304,7 @@ fontsize: int, optional (default: 10)
     Fontsize used for ticks, labels and titles. For the latter, use the given
     fontsize plus 2. Does not affect suptitles.
 log_y: bool, optional (default: True)
+                variables = var_order
     Use logarithmic Y-axis.
 plot_func: str, optional (default: 'contourf')
     Plot function used to plot the profiles. Must be a function of
@@ -731,6 +732,8 @@ class MultiDatasets(MonitorBase):
             elif plot_type == 'benchmarking_boxplot':
                 self.plots[plot_type].setdefault('plot_kwargs', {})
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
+                self.plots[plot_type].setdefault('var_order', None)
+                self.plots[plot_type].setdefault('label', [])
                 self.plots[plot_type].setdefault('fontsize', 10)
 
             elif plot_type == 'map':
@@ -1950,40 +1953,33 @@ class MultiDatasets(MonitorBase):
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
-            fig.suptitle(self._get_label(datasets[0]) +
+            #fig.suptitle(cubes[0].long_name.split()[0] + 
+            fig.suptitle(cubes[0].long_name.partition("of")[0] + 
+                         f"of " +
+                         self._get_label(datasets[0]) +
                          f" ({datasets[0]['start_year']} - "
                          f"{datasets[0]['end_year']})")
 
             sns.set_style('darkgrid')
-            # sns.axes_style("whitegrid")
 
             for i, var in enumerate(variables):
                 axes = plt.subplot(1, len(variables), i+1)
                 plot_kwargs = self._get_plot_kwargs(plot_type, datasets[i])
                 plot_kwargs['axes'] = axes
 
-                print(df)
-                print(datasets[i])
-
                 plot_boxplot = sns.boxplot(data=df[df['Variable'] == var])
                 plot_boxplot.set(xticklabels=[])
                 # plot_map = plot_func(cube, **plot_kwargs)
 
-                plt.scatter(0, cubes[i].data, marker='x', s=200,
-                            color="red", linewidths=3)
+                plt.scatter(0, cubes[i].data, marker='x', s=200, linewidths=3, color = "red")
 
-                plt.ylabel(datasets[i]['units'])
+                plt.ylabel(cubes[i].units)
                 plt.xlabel(var)
 
                 # Setup fontsize
                 # fontsize = self.plots[plot_type]['fontsize']
 
                 # Customize plot
-                # axes.set_title(f"{datasets[i]['long_name']} "
-                #                f"({datasets[i]['start_year']}-"
-                #                f"{datasets[i]['end_year']})")
-                # axes.set_title(f"{len(df[df['Variable'] == var])} models",
-                #                   ha='right')
                 self._process_pyplot_kwargs(plot_type, datasets[i])
 
         # File paths
@@ -2481,7 +2477,6 @@ class MultiDatasets(MonitorBase):
             benchmark_group = self._get_benchmark_group(datasets)
             logger.info("Benchmarking group of %i datasets.",
                         len(benchmark_group))
-            print(benchmark_group)
 
             ancestors = [benchmark_dataset['filename']]
             for dataset in benchmark_group:
@@ -2498,6 +2493,19 @@ class MultiDatasets(MonitorBase):
             cubes.append(benchmark_dataset['cube'])
             benchmark_datasets.append(benchmark_dataset)
             variables.append(var_key)
+
+        # order of variables
+        if self.plots[plot_type]['var_order']:
+            var_order = self.plots[plot_type]['var_order']
+            if set(variables) == set(var_order):
+                ind = [variables.index(var_order[i]) for i in range(len(variables))]
+                cubes = iris.cube.CubeList([cubes[i] for i in ind])
+                benchmark_datasets = [benchmark_datasets[i] for i in ind]
+                variables = var_order
+            else:
+                raise ValueError(f"List of ordered variables do not agree with"
+                                 f" processed variables")
+
 
         (plot_path, netcdf_paths) = (
             self._plot_benchmarking_boxplot(df, cubes, variables,
