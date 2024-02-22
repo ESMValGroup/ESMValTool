@@ -2,25 +2,21 @@
 
 Tier
    Tier 3: CDR2 requires registration at EUMETSAT CM SAF.
-   Tier 2: CDR1 freely available at CEDA Archive.
 
 Source
-   CDR2 https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
-   CDR1 https://data.ceda.ac.uk/neodc/esacci/water_vapour/
-                                                    data/TCWV-land/L3/v3.1/
+   https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
 
 Last access
-   20230705
+   20240221
 
 Download and processing instructions
    CDR2 requires registration at EUMETSAT CM SAF, the information on how to
         download the order will be emailed once the order is ready.
-   CDR1 can be downloaded directly from CEDA.
    All files need to be in one directory, not in yearly subdirectories.
 
 Modification history
-   20230705-malinina_elizaveta: Adjust for daily cmorization and updated
-                                filenames.
+   20240221-malinina_elizaveta: Adjust for daily cmorization and updated
+                                filenames, remove CDR1 due to irrelevance.
    20210607-weigel_katja: Fix for monthly time bounds.
    20210408-weigel_katja: written.
 """
@@ -90,7 +86,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             yearly_cube = concatenate(data_cubes)
             # Fix monthly time bounds
             time = yearly_cube.coord('time')
-            time.bounds = _get_time_bounds(time, vals['frequency'])
+            time.bounds = get_time_bounds(time, vals['frequency'])
             save_variable(yearly_cube,
                           var,
                           out_dir,

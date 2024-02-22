@@ -535,11 +535,10 @@ datasets:
   ESACCI-WATERVAPOUR:
     tier: 3
     source: https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
-    last_access: 2023-07-05
+    last_access: 2024-02-21
     info: |
       CDR2 requires registration at EUMETSAT CM SAF, the information on how to 
           download the order will be emailed once the order is ready.
-      CDR1 can be downloaded directly from CEDA.
       All files need to be in one directory, not in yearly subdirectories.
 
   ESDC:
