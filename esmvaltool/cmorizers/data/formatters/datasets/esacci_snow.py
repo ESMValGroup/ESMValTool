@@ -28,6 +28,7 @@ from dateutil import relativedelta
 
 import cf_units
 import iris
+import numpy as np
 from dask import array as da
 from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import regrid
@@ -127,6 +128,14 @@ def _extract_variable(in_files, var, cfg, out_dir, year):
     full_list = iris.cube.CubeList()
     loop_date = datetime(year, 1, 1)
     time_list = []
+
+    for cube in cube_list:
+        loncoord = cube.coord('longitude')
+        latcoord = cube.coord('latitude')
+#        loncoord.points = da.round(loncoord.core_points(), 3)
+#        latcoord.points = da.round(latcoord.core_points(), 3)
+        loncoord.points = np.round(loncoord.core_points(), 3)
+        latcoord.points = np.round(latcoord.core_points(), 3)
 
     # create list of available days ('time_list')
 

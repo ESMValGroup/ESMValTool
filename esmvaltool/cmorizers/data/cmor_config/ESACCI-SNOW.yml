@@ -23,4 +23,4 @@ variables:
   snw:
     mip: day
     raw: swe
-    file: 'swe/{year}????-ESACCI-L3C_SNOW-SWE-SMMR-NIMBUS7-fv2.0.nc'
+    file: 'swe/{year}????-ESACCI-L3C_SNOW-SWE-*-fv2.0.nc'
