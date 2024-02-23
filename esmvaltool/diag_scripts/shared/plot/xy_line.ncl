@@ -1744,7 +1744,6 @@ begin
 
 end
 
-
 ; #############################################################################
 undef("xy_line_anom")
 procedure xy_line_anom(wks[1],
@@ -1804,6 +1803,19 @@ begin
   annots = project_style(items, diag_script_info, "annots")
   avgstd = project_style(items, diag_script_info, "avgstd")
 
+  do i = 0, dimsizes(annots)-1
+    tmp := str_split(annots(i), "_")
+    annots(i) = tmp(0)
+  end do
+  labels = get_unique_values(annots)
+  ind_end = ind(labels .eq. source@ref .or. \
+                labels .eq. "MultiModelMean")
+  labels_old = labels
+  labels := labels(sort_alphabetically(labels, ind_end, "end"))
+  label_ind = get1Dindex(annots, labels)
+  labels_lb := labels_old(sort_alphabetically(labels_old, ind_end, "begin"))
+  label_ind_lb = get1Dindex(annots, labels_lb)
+
   ; ************************************************
   ; plotting parameters
   ; ************************************************
@@ -1842,9 +1854,9 @@ begin
   res0@tmXBMinorLengthF = 0.003
   res0@tmYLMinorLengthF = 0.003
 
-  res0@xyDashPatterns    = dashes
-  res0@xyLineThicknesses = thicks
-  res0@xyLineColors      = colors
+  res0@xyDashPatterns    = dashes(label_ind)
+  res0@xyLineThicknesses = thicks(label_ind)
+  res0@xyLineColors      = colors(label_ind)
 
   copy_VarMeta(res0_in, res0)  ; copy passed resources
 
@@ -1876,37 +1888,30 @@ begin
   res@tiXAxisString = ""
   res@gsnStringFontHeightF = 0.016
 
-  res@xyDashPatterns    = dashes
-  res@xyLineThicknesses = thicks  ; make 2nd lines thicker
-  res@xyLineColors      = colors  ; change line color
+  res@xyDashPatterns    = dashes(label_ind)
+  res@xyLineThicknesses = thicks(label_ind)  ; make 2nd lines thicker
+  res@xyLineColors      = colors(label_ind)  ; change line color
 
   copy_VarMeta(res_in, res)  ; copy passed resources
 
-  plot(0) = gsn_csm_xy(wks, source_x, source, res)  ; create plot
+  plot(0) = gsn_csm_xy(wks, source_x, source(label_ind, :), res)  ; create plot
 
   ; ---------------------------------------------------------------------
+  ; grey shading of reference period
+  ; ---------------------------------------------------------------------
+  gsres                = True
+  gsres@gsFillColor    = "Grey70"
+  gsres@gsFillOpacityF = 0.1
+  xbox = (/ref_start, ref_end, ref_end, ref_start, ref_start/)
+  ybox = (/res@trYMinF, res@trYMinF, res@trYMaxF, res@trYMaxF, res@trYMinF/)
+  newplot00 = gsn_add_polygon(wks, plot(0), xbox, ybox, gsres)
 
-  if (diag_script_info@ts_anomaly .eq. "anom") then
-
-    ; ---------------------------------------------------------------------
-    ; yellow shading of reference period
-    ; ---------------------------------------------------------------------
-    gsres                = True
-    gsres@gsFillColor    = "Grey70"
-    gsres@gsFillOpacityF = 0.1
-    xbox = (/ref_start, ref_end, ref_end, ref_start, ref_start/)
-    ybox = (/res@trYMinF, res@trYMinF, res@trYMaxF, res@trYMaxF, res@trYMinF/)
-    newplot00 = gsn_add_polygon(wks, plot(0), xbox, ybox, gsres)
-
-    txtres               = True
-    txtres@txFont        = "helvetica-bold"
-    txtres@txFontColor   = "Grey40"
-    txtres@txFontHeightF = 0.013
-    ref_txt = gsn_add_text(wks, plot, "reference period", \
-                           0.5*(ref_start + ref_end), res@trYMinF + 0.1, \
-                           txtres)
-
-  end if
+  txtres               = True
+  txtres@txFont        = "helvetica-bold"
+  txtres@txFontColor   = "Grey40"
+  txtres@txFontHeightF = 0.013
+  ref_txt = gsn_add_text(wks, plot, "reference period", \
+                         0.5*(ref_start + ref_end), res@trYMaxF - 0.15, txtres)
 
   ; ---------------------------------------------------------------------
   ; add lines and names for volcanic eruptions
@@ -1924,7 +1929,7 @@ begin
 
     yy = (/res@trYMinF, res@trYMaxF/)
 
-    vol_name1 = gsn_add_text(wks, plot, "Krakatoa", 1885, res@trYMaxF - 0.4, \
+    vol_name1 = gsn_add_text(wks, plot, "Krakatoa", 1885, res@trYMaxF - 0.6, \
                              txres)
     xx = (/1883.0, 1883.0/)
     vol1 = gsn_add_polyline(wks, plot(0), xx, yy, vres)
@@ -1959,7 +1964,9 @@ begin
   yy = (/0.0, 0.0/)
   dum0 = gsn_add_polyline(wks, plot(0), xx, yy, res_lines)
 
+  ; ---------------------------------------------------------------------
   ; Add right panel with mean values in anomaly plot
+  ; ---------------------------------------------------------------------
   if (diag_script_info@ref_value) then
     var = fspan(0., 2., 3)
     mean = new((/dimsizes(source_mean), 3/), double)
@@ -1967,7 +1974,7 @@ begin
     mean(:, 1) = source_mean(:)
     mean(:, 2) = source_mean(:)
 
-    plot2 = gsn_csm_xy(wks, var, mean, res0)  ; create plot
+    plot2 = gsn_csm_xy(wks, var, mean(label_ind, :), res0)  ; create plot
 
     getvalues plot2
       "trXMinF"   : xmin
@@ -1983,6 +1990,7 @@ begin
     gnres@gsFillColor     = "Gray70"
     gnres@gsFillOpacityF = 0.1
     gnres@tfPolyDrawOrder = "PreDraw"
+
     plot@$unique_string("box")$ = gsn_add_polygon(wks, plot2, xbox1, \
                                                   ybox1, gnres)
 
@@ -1995,25 +2003,24 @@ begin
 
   lgres                    = True
   lgres@lgItemType         = "Lines"   ; show lines only (default)
-  lgres@lgLabelFontHeightF = .05       ; set the legend label font thickness
-  lgres@vpWidthF           = 0.15      ; width of legend (NDC)
-  lgres@vpHeightF          = 0.5       ; height of legend (NDC)
+  lgres@lgLabelFontHeightF = .04       ; set the legend label font thickness
+  lgres@vpWidthF           = 0.3      ; width of legend (NDC)
+  lgres@vpHeightF          = 1.       ; height of legend (NDC)
   lgres@lgPerimColor       = "gray"    ; draw the box perimeter in orange
   lgres@lgPerimThicknessF  = 1.0       ; thicken the box perimeter
 
-  lgres@lgLineColors      = colors
-  lgres@lgDashIndexes     = dashes
+  lgres@lgLineColors      = colors(label_ind_lb)
+  lgres@lgDashIndexes     = dashes(label_ind_lb)
   lgres@lgLineThicknessF = 3
-  labels = annots
   nitems = dimsizes(labels)
   lgres@lgItemOrder = ispan(nitems - 1, 0, 1)
 
   ; Create legend
-  lbid = gsn_create_legend(wks, nitems, labels, lgres)
+  lbid = gsn_create_legend(wks, nitems, labels_lb, lgres)
 
   amres = True
-  amres@amParallelPosF   = 0.81
-  amres@amOrthogonalPosF = 0.0
+  amres@amParallelPosF   = 0.9
+  amres@amOrthogonalPosF = 0.5
   annoid1 = gsn_add_annotation(plot(0), lbid, amres)
 
   resP = True
@@ -2478,7 +2485,7 @@ function cycle_plot(wks_in[1],
 ; Caveats
 ;
 ; Modification history
-;    20131206-frank_franziska: written.
+;    20131206-winterstein_franziska: written.
 ;
 local funcname, scriptname, wks_out, wks_in, data, source, res, atts, base, \
   varname

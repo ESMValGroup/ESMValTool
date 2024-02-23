@@ -1,144 +1,70 @@
 .. _recipe_monitor:
 
 Monitor
-#######
+=======
 
 Overview
-========
+--------
+
+These recipes and diagnostics allow plotting arbitrary preprocessor output,
+i.e., arbitrary variables from arbitrary datasets.
+In addition, a :ref:`base class
+<api.esmvaltool.diag_scripts.monitor.monitor_base>` is provided that allows a
+convenient interface for all monitoring diagnostics.
+
 
 Available recipes and diagnostics
-=================================
+---------------------------------
 
-Recipes are stored in `recipes/`
+Recipes are stored in `recipes/monitor`
 
-  - recipe_monitor.yml
+* recipe_monitor.yml
+* recipe_monitor_with_refs.yml
 
 Diagnostics are stored in `diag_scripts/monitor/`
 
-  - monitor.py:
-    Plots preprocessor output directly from the preprocessor.
-  - compute_eofs.py:
-    An example on how to use the monitor structure to show other metrics.
-    Computes and plots the map of the first EOF and the associated PC timeseries.
+* :ref:`monitor.py <api.esmvaltool.diag_scripts.monitor.monitor>`:
+  Monitoring diagnostic to plot arbitrary preprocessor output.
+* :ref:`compute_eofs.py <api.esmvaltool.diag_scripts.monitor.compute_eofs>`:
+  Monitoring diagnostic to plot EOF maps and associated PC timeseries.
+* :ref:`multi_datasets.py
+  <api.esmvaltool.diag_scripts.monitor.multi_datasets>`:
+  Monitoring diagnostic to show multiple datasets in one plot (incl. biases).
 
-
-List of plot types available in monitor.py
-------------------------------------------
-
-- Climatology (plot_type `clim`): Plots climatology. Supported coordinates:
-  (`latitude`, `longitude`, `month_number`).
-
-- Seasonal climatologies (plot_type `seasonclim`): It produces a multi panel (2x2) plot
-  with the seasonal climatologies. Supported coordinates:
-  (`latitude`, `longitude`, `month_number`).
-
-- Monthly climatologies (plot_type `monclim`): It produces a multi panel (3x4) plot with
-  the monthly climatologies. Can be customized to show only certain months
-  and to rearrange the number of columns and rows. Supported coordinates:
-  (`latitude`, `longitude`, `month_number`).
-
-- Time series (plot_type `timeseries`): Generate time series plots. It will always
-  generate the full period time series, but if the period is longer than 75
-  years, it will also generate two extra time series for the first and last 50
-  years. It will produce multi panel plots for data with `shape_id` or `region`
-  coordinates of length > 1. Supported coordinates: `time`, `shape_id`
-  (optional) and `region` (optional).
-
-- Annual cycle (plot_type `annual_cycle`): Generate an annual cycle plot (timeseries
-  like climatological from January to December). It will produce multi panel
-  plots for data with `shape_id` or `region` coordinates of length > 1.
-  Supported coordinates: `time`, `shape_id` (optional) and `region` (optional).
 
 User settings
-=============
+-------------
 
-User setting files are stored in recipes and in a dedicated yaml config file.
+It is recommended to use a vector graphic file type (e.g., SVG) for the output
+files when running this recipe, i.e., run the recipe with the command line
+option ``--output_file_type=svg`` or use ``output_file_type: svg`` in your
+:ref:`esmvalcore:user configuration file`.
+Note that map and profile plots are rasterized by default.
+Use ``rasterize_maps: false`` or ``rasterize: false`` (see `Recipe settings`_)
+in the recipe to disable this.
 
-In the variable definitions, users can set the attribute `plot_name` to fix
-the variable name that will be used for the plot's title. If it is not set,
-mapgenerator will try to choose a sensible one from the standard name
-attributes (`long_name`, `standard_name` and `var_name`).
+Recipe settings
+~~~~~~~~~~~~~~~
 
-monitor.py
-----------
+A list of all possible configuration options that can be specified in the
+recipe is given for each diagnostic individually (see previous section).
 
-  * plots:
-    a dictionary containing the plots to make, with its own options.
-    Available types of plot are listed in section `List of plot types available in monitor.py`_.
-  * cartopy_data_dir:
-    Path to cartopy data dir. Defaults to None.
-    See https://scitools.org.uk/cartopy/docs/latest/cartopy.html.
-  * plot_folder:
-    Path to the folder to store the figures. It is defined as the
-    input paths in ``config-developer.yml``. See
-    https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to ``~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}``.
-  * plot_filename:
-    Filename pattern for the plots. It is defined as the input
-    files in in ``config-developer.yml``. See
-    https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
-  * config_file:
-    Path to the monitor config file. Defaults to
-    ``monitor_config.yml`` in the same folder as the diagnostic script.
+.. _monitor_config_file:
 
-Plot specific options:
-^^^^^^^^^^^^^^^^^^^^^^
+Monitor configuration file
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- monclim:
-   + maps:
-     List of maps to plot, as defined in the config file. Defaults to ``[global]``.
-   + months:
-     Select only specific months. Defaults to ``None`` (i.e. it does not select any month).
-   + plot_size:
-     Size of each individual figure. Default's to ``(5, 4)``.
-   + columns:
-     Number of columns in the plot. Defaults to ``3``.
-   + rows:
-     Number of rows in the plot. Defaults to ``4``.
-- seasonclim:
-   + maps:
-     List of maps to plot, as defined in the config file. Defaults to ``[global]``.
-- clim:
-   + maps:
-     List of maps to plot, as defined in the config file. Defaults to ``[global]``.
-- annual_cycle: No options.
-- timeseries: No options.
+In addition, the following diagnostics support the use of a dedicated monitor
+configuration file:
 
-compute_eofs.py
----------------
+   * monitor.py
+   * compute_eofs.py
 
-  * cartopy_data_dir:
-    Path to cartopy data dir. Defaults to None.
-    See https://scitools.org.uk/cartopy/docs/latest/cartopy.html.
-  * plot_folder:
-    Path to the folder to store the figures. It is defined as the
-    input paths in ``config-developer.yml``. See
-    https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to ``~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}``.
-  * plot_filename:
-    Filename pattern for the plots. It is defined as the input
-    files in in ``config-developer.yml``. See
-    https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
-  * config_file:
-    Path to the monitor config file. Defaults to
-    ``monitor_config.yml`` in the same folder as the diagnostic script.
+This file is a yaml file that contains map and variable specific options in two
+dictionaries ``maps`` and ``variables``.
 
-.. hint::
-
-   Extra arguments are ignored, so it is safe to use yaml anchors to share the
-   configuration of common arguments with the `monitor.py` diagnostic script.
-
-monitor_config.yml
-------------------
-
-A yaml file containing map and variable specific options.
-
-Contains two dictionaries, ``maps`` and ``variables``.
-
-Each entry in ``maps`` corresponds to a map definition. See below for a sample with
-comments to define each option
+Each entry in ``maps`` corresponds to a map definition.
+Example:
 
 .. code-block:: yaml
 
@@ -154,9 +80,9 @@ comments to define each option
          extent: null # If defined, restrict the projection to a region. Format [lon1, lon2, lat1, lat2]
          suptitle_pos: 0.87 # Title position in the figure.
 
-Each entry in ``variable`` corresponds to a variable definition.
+Each entry in ``variables`` corresponds to a variable definition.
 Use the default entry to apply generic options to all variables.
-See below a sample with comments to define each option
+Example:
 
 .. code-block:: yaml
 
@@ -207,12 +133,12 @@ See below a sample with comments to define each option
          lon: [-120, -60, 0, 60, 120, 180]
 
 Variables
-=========
+---------
 
-* Any, but the variables' number of dimensions should match the ones expected by each plot.
+Any, but the variables' number of dimensions should match the ones expected by each plot.
 
 Example plots
-=============
+-------------
 
 .. _fig_climglobal:
 .. figure::  /recipes/figures/monitor/clim.png
@@ -248,3 +174,59 @@ Timeseries of Niño 3.4 index, computed directly with the preprocessor.
    :width:   14cm
 
 Annual cycle of tas.
+
+.. _fig_timeseries_with_ref:
+.. figure::  /recipes/figures/monitor/timeseries_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Timeseries of tas including a reference dataset.
+
+.. _fig_annual_cycle_with_ref:
+.. figure::  /recipes/figures/monitor/annualcycle_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Annual cycle of tas including a reference dataset.
+
+.. _fig_map_with_ref:
+.. figure::  /recipes/figures/monitor/map_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Global climatology of tas including a reference dataset.
+
+.. _fig_zonal_mean_profile_with_ref:
+.. figure::  /recipes/figures/monitor/zonalmean_profile_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Zonal mean profile of ta including a reference dataset.
+
+.. _fig_1d_profile_with_ref:
+.. figure::  /recipes/figures/monitor/1d_profile_with_ref.png
+   :align:   center
+   :width:   14cm
+
+1D profile of ta including a reference dataset.
+
+.. _fig_variable_vs_lat_with_ref:
+.. figure::  /recipes/figures/monitor/variable_vs_lat_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Zonal mean pr including a reference dataset.
+
+.. _fig_hovmoeller_z_vs_time_with_ref:
+.. figure::  /recipes/figures/monitor/hovmoeller_z_vs_time_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Hovmoeller plot (pressure vs. time) of ta including a reference dataset.
+
+.. _fig_hovmoeller_time_vs_lat_with_ref:
+.. figure:: /recipes/figures/monitor/hovmoeller_time_vs_lat_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Hovmoeller plot (time vs. latitude) of tas including a reference dataset

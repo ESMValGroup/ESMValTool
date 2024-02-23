@@ -8,6 +8,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
+from iris import NameConstraint
 
 import esmvaltool.diag_scripts.land_carbon_cycle.plot_utils as plut
 from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
@@ -18,7 +19,6 @@ from esmvaltool.diag_scripts.land_carbon_cycle.shared import (
     _apply_common_mask,
     _load_variable,
     _remove_invalid,
-    _var_name_constraint,
 )
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -230,7 +230,7 @@ def _get_obs_data(diag_config):
     for v_ind in range(nvars):
         var_obs = var_list[v_ind]
         all_data['coords'] = {}
-        variable_constraint = _var_name_constraint(var_obs)
+        variable_constraint = NameConstraint(var_name=var_obs)
         cube = iris.load_cube(input_files, constraint=variable_constraint)
         all_data['grid'][var_obs] = cube
         all_data['global'][var_obs] = fig_config['obs_global']
@@ -275,7 +275,7 @@ def _fix_map(axis_obj):
     """
     axis_obj.set_global()
     axis_obj.coastlines(linewidth=0.4, color='grey')
-    plt.gca().outline_patch.set_visible(False)
+    plt.gca().spines["geo"].set_visible(False)
     return axis_obj
 
 
@@ -737,7 +737,12 @@ def main(diag_config):
         tau_global = ctotal_global / gpp_global
         tau_global.convert_units('yr')
 
-        global_tau_mod['global'][model_name] = float(tau_global.core_data())
+        # since dask=2023.3 there is an issue with converting the core_data()
+        # to float; I have not managed to pinpoint the issue neither in dask
+        # nor in iris, since minimal test cases are not reproducing it
+        # this is a scalar cube so no big mem issue by realizing the data
+        # global_tau_mod['global'][model_name] = float(tau_global.core_data())
+        global_tau_mod['global'][model_name] = float(tau_global.data)
 
         base_name_mod = (
             'global_{title}_{source_label}_'

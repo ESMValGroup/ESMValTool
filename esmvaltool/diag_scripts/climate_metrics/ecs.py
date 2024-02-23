@@ -34,7 +34,7 @@ read_external_file : str, optional
 savefig_kwargs : dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 sep_year : int, optional (default: 20)
     Year to separate regressions of complex Gregory plot. Only effective if
     ``complex_gregory_plot`` is ``True``.
@@ -71,6 +71,7 @@ from esmvaltool.diag_scripts.shared import (
     io,
     run_diagnostic,
     select_metadata,
+    sorted_metadata,
     variables_available,
 )
 
@@ -309,6 +310,7 @@ def check_input_data(cfg):
 def preprocess_data(cfg):
     """Extract input data."""
     input_data = deepcopy(list(cfg['input_data'].values()))
+    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
     if not input_data:
         return ([], [])
 
@@ -411,9 +413,10 @@ def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
 
     # Save plot
     plot_path = get_plot_filename(dataset_name, cfg)
-    plt.savefig(plot_path,
-                additional_artists=[legend],
-                **cfg['savefig_kwargs'])
+    savefig_kwargs = dict(cfg['savefig_kwargs'])
+    if legend is not None:
+        savefig_kwargs['bbox_extra_artists'] = [legend]
+    plt.savefig(plot_path, **savefig_kwargs)
     logger.info("Wrote %s", plot_path)
     plt.close()
 
@@ -471,8 +474,9 @@ def write_data(cfg, ecs_data, feedback_parameter_data, ancestor_files):
     else:
         attrs = {}
     if RTMT_DATASETS:
+        rtmt_datasets = sorted(list(RTMT_DATASETS))
         attrs['net_toa_radiation'] = (
-            f"For datasets {RTMT_DATASETS}, 'rtmt' (net top of model "
+            f"For datasets {rtmt_datasets}, 'rtmt' (net top of model "
             f"radiation) instead of 'rtnt' (net top of atmosphere radiation) "
             f"is used due to lack of data. These two variables might differ.")
     attrs.update(cfg.get('output_attributes', {}))
@@ -498,7 +502,7 @@ def write_data(cfg, ecs_data, feedback_parameter_data, ancestor_files):
 def main(cfg):
     """Run the diagnostic."""
     cfg = set_default_cfg(cfg)
-    sns.set(**cfg.get('seaborn_settings', {}))
+    sns.set_theme(**cfg.get('seaborn_settings', {}))
 
     # Read external file if desired
     if cfg.get('read_external_file'):

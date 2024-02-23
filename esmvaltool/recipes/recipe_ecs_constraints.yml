@@ -74,8 +74,6 @@ preprocessors:
   spatial_mean:
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
 
   tropical_mean:
     extract_region:
@@ -85,8 +83,6 @@ preprocessors:
       end_longitude: 360
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
     climate_statistics:
       operator: mean
 
@@ -98,8 +94,6 @@ preprocessors:
       end_longitude: 360
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
     climate_statistics:
       operator: mean
 
@@ -528,9 +522,9 @@ diagnostics:
         mip: Amon
         start_year: 1986
         end_year: 2005
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.2
         additional_datasets:
-          - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2, tier: 1}
+          - {dataset: GPCP-V2.2, project: obs4MIPs, level: L3, tier: 1}
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -599,9 +593,9 @@ diagnostics:
         mip: Amon
         start_year: 2003
         end_year: 2005
-        reference_dataset: AIRS
+        reference_dataset: AIRS-2-1
         additional_datasets:
-          - {dataset: AIRS, project: obs4MIPs, level: L3, version: RetStd-v5, tier: 1}
+          - {dataset: AIRS-2-1, project: obs4MIPs, level: L3, tier: 1}
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -761,7 +755,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1}
       rsutcs:
         <<: *var_settings_cmip5
         preprocessor: default
@@ -770,7 +764,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1}
       rsdt:
         <<: *var_settings_cmip5
         preprocessor: default
@@ -779,7 +773,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: CERES-EBAF
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1}
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -1181,9 +1175,9 @@ diagnostics:
         exp: [historical, rcp85]
         start_year: 2005
         end_year: 2010
-        reference_dataset: 'AIRS-2-0|MLS-AURA'
+        reference_dataset: AIRS-2-0|MLS-AURA
         additional_datasets:
-          - {dataset: AIRS-2-0, project: obs4MIPs, level: L3, version: v2, tier: 1}
+          - {dataset: AIRS-2-0, project: obs4MIPs, level: L3, tier: 1}
           - {dataset: MLS-AURA, project: OBS6, type: sat, version: '004', tier: 3}
     additional_datasets:
       - {dataset: ACCESS1-0}

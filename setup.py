@@ -8,9 +8,6 @@ from pathlib import Path
 
 from setuptools import Command, setup
 
-sys.path.insert(0, os.path.dirname(__file__))
-from esmvaltool import __version__  # noqa: E402
-
 PACKAGES = [
     'esmvaltool',
 ]
@@ -23,6 +20,7 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
+        'aiohttp',
         'cartopy',
         'cdo',
         'cdsapi',
@@ -30,11 +28,14 @@ REQUIREMENTS = {
         'cftime',
         'cmocean',
         'dask',
+        'distributed',
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
         'esmvalcore',
+        'esmf-regrid>=0.7.0',
         'fiona',
+        'fire',
         'GDAL',
         'jinja2',
         'joblib',
@@ -44,49 +45,62 @@ REQUIREMENTS = {
         'natsort',
         'nc-time-axis',
         'netCDF4',
-        'numpy',
+        'numba',
+        'numpy!=1.24.3',  # severe masking bug
         'openpyxl',
+        'packaging',
         'pandas',
-        'pyproj',
-        'pyyaml',
         'progressbar2',
+        'psyplot',
+        'psy-maps',
+        'psy-reg',
+        'psy-simple',
+        'pyproj>=2.1',
+        'python-dateutil',
+        'pyyaml',
         'rasterio',
+        'requests',
         'ruamel.yaml',
         'scikit-image',
-        'scikit-learn',
+        'scikit-learn>=1.4.0',  # github.com/ESMValGroup/ESMValTool/issues/3504
         'scipy',
-        'scitools-iris',
+        'scitools-iris>=3.6.1',
         'seaborn',
         'seawater',
-        'shapely',
-        'xarray',
-        'xesmf',
-        'xgboost',
+        'shapely>=2',
+        'xarray>=0.12.0',
+        'xesmf>=0.7.1',
+        'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
+        'zarr',
     ],
     # Test dependencies
     # Execute `pip install .[test]` once and the use `pytest` to run tests
     'test': [
-        'flake8<4',
+        'flake8',
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
         'pytest-cov>=2.10.1',
         'pytest-env',
-        'pytest-flake8>=1.0.6',
         'pytest-html!=2.1.0',
         'pytest-metadata>=1.5.1',
+        'pytest-mock',
         'pytest-xdist',
+    ],
+    # Documentation dependencies
+    'doc': [
+        'autodocsumm>=0.2.2',
+        'nbsphinx',
+        'sphinx>=6.1.3',
+        'pydata-sphinx-theme',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
-        'autodocsumm>=0.2.2',
         'codespell',
         'docformatter',
         'isort',
         'pre-commit',
         'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
-        'sphinx>2',
-        'sphinx_rtd_theme',
         'vprof',
         'yamllint',
         'yapf',
@@ -96,6 +110,7 @@ REQUIREMENTS = {
 
 def discover_python_files(paths, ignore):
     """Discover Python files."""
+
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
         return any(re.match(pattern, path) for pattern in ignore)
@@ -188,7 +203,6 @@ def read_description(filename):
 
 setup(
     name='ESMValTool',
-    version=__version__,
     author=read_authors('.zenodo.json'),
     description=read_description('.zenodo.json'),
     long_description=Path('README.md').read_text(),
@@ -204,9 +218,9 @@ setup(
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Atmospheric Science',
         'Topic :: Scientific/Engineering :: GIS',
@@ -220,8 +234,10 @@ setup(
     install_requires=REQUIREMENTS['install'],
     tests_require=REQUIREMENTS['test'],
     extras_require={
-        'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test']) -
-                    {'pycodestyle'}),
+        'develop':
+        REQUIREMENTS['develop'] + REQUIREMENTS['test'] + REQUIREMENTS['doc'],
+        'doc':
+        REQUIREMENTS['doc'],
         'test':
         REQUIREMENTS['test'],
     },

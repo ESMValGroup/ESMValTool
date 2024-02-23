@@ -47,28 +47,20 @@ import logging.config
 import os
 import shutil
 import time
-import warnings
 from glob import glob
 from pathlib import Path
 
-import yaml
-from ruamel.yaml import YAML
-
 import esmvalcore
+import yaml
+
+from esmvalcore import __version__ as core_ver
 from esmvalcore.cmor.table import CMOR_TABLES, read_cmor_tables
+from packaging import version as pkg_version
+from ruamel.yaml import YAML
 
 logger = logging.getLogger(__name__)
 
 CFG = {}
-
-
-# standard libs from esmvalcore ported here to avoid private func import
-def load_config_developer(cfg_file=None):
-    """Load the config developer file and initialize CMOR tables."""
-    cfg_developer = read_config_developer_file(cfg_file)
-    for key, value in cfg_developer.items():
-        CFG[key] = value
-    read_cmor_tables(CFG)
 
 
 def _purge_file_handlers(cfg: dict) -> None:
@@ -136,8 +128,10 @@ def configure_logging(cfg_file: str = None,
     """
     if cfg_file is None:
         cfg_loc = Path(esmvalcore.__file__ + "esmvalcore")
-        # TODO change to new location of config module in 2.3.0
-        cfg_file = cfg_loc.parents[0] / '_config' / 'config-logging.yml'
+        if pkg_version.parse(core_ver) < pkg_version.parse('2.8.0'):
+            cfg_file = cfg_loc.parents[0] / '_config' / 'config-logging.yml'
+        else:
+            cfg_file = cfg_loc.parents[0] / 'config' / 'config-logging.yml'
 
     cfg_file = Path(cfg_file).absolute()
 
@@ -202,32 +196,10 @@ def read_config_user_file(config_file, folder_name, options=None):
     with open(config_file, 'r') as file:
         cfg = yaml.safe_load(file)
 
-    # DEPRECATED: remove in v2.4
-    for setting in ('write_plots', 'write_netcdf'):
-        if setting in cfg:
-            msg = (
-                f"Using '{setting}' in {config_file} is deprecated and will "
-                "be removed in ESMValCore version 2.4. For diagnostics "
-                "that support this setting, it should be set in the "
-                "diagnostic script section of the recipe instead. "
-                f"Remove the setting from {config_file} to get rid of this "
-                "warning message.")
-            print(f"Warning: {msg}")
-            warnings.warn(DeprecationWarning(msg))
-
     if options is None:
         options = dict()
     for key, value in options.items():
         cfg[key] = value
-        # DEPRECATED: remove in v2.4
-        if key in ('write_plots', 'write_netcdf'):
-            msg = (
-                f"Setting '{key}' from the command line is deprecated and "
-                "will be removed in ESMValCore version 2.4. For diagnostics "
-                "that support this setting, it should be set in the "
-                "diagnostic script section of the recipe instead.")
-            print(f"Warning: {msg}")
-            warnings.warn(DeprecationWarning(msg))
 
     # set defaults
     defaults = {
@@ -243,9 +215,6 @@ def read_config_user_file(config_file, folder_name, options=None):
         'profile_diagnostic': False,
         'config_developer_file': None,
         'drs': {},
-        # DEPRECATED: remove default settings below in v2.4
-        'write_plots': True,
-        'write_netcdf': True,
     }
 
     for key in defaults:
@@ -280,7 +249,7 @@ def read_config_user_file(config_file, folder_name, options=None):
     cfg['run_dir'] = os.path.join(cfg['output_dir'], 'run')
 
     # Read developer configuration file
-    load_config_developer(cfg['config_developer_file'])
+    read_cmor_tables(cfg['config_developer_file'])
 
     return cfg
 
@@ -322,16 +291,31 @@ base_dict = {
 }
 
 
+def _get_download_dir(yamlconf, cmip_era):
+    """Get the Download Directory from user config file."""
+    if 'download_dir' in yamlconf:
+        return os.path.join(yamlconf['download_dir'], cmip_era)
+    return False
+
+
 def _get_site_rootpath(cmip_era):
     """Get site (drs) from config-user.yml."""
     config_yml = get_args().config_file
     with open(config_yml, 'r') as yamf:
         yamlconf = yaml.safe_load(yamf)
     drs = yamlconf['drs'][cmip_era]
-    rootdir = yamlconf['rootpath'][cmip_era]
+
+    download_dir = _get_download_dir(yamlconf, cmip_era)
+    rootdir = [yamlconf['rootpath'][cmip_era], ]
+
+    if download_dir:
+        rootdir.append(download_dir)
     logger.debug("%s root directory %s", cmip_era, rootdir)
     if drs == 'default' and 'default' in yamlconf['rootpath']:
-        rootdir = yamlconf['rootpath']['default']
+        rootdir = [yamlconf['rootpath']['default'], ]
+        if download_dir:
+            rootdir.append(download_dir)
+
         logger.debug("Using drs default and "
                      "default: %s data directory", rootdir)
 
@@ -358,6 +342,7 @@ def _determine_basepath(cmip_era):
         rootpaths = _get_site_rootpath(cmip_era)[1]
     else:
         rootpaths = [_get_site_rootpath(cmip_era)[1]]
+
     basepaths = []
     for rootpath in rootpaths:
         if _get_input_dir(cmip_era) != os.path.sep:
@@ -478,11 +463,14 @@ def filter_years(files, start_year, end_year, overlap=False):
 
 def _resolve_latestversion(dirname_template):
     """Resolve the 'latestversion' tag."""
-    if '{latestversion}' not in dirname_template:
+    for version_separator in ['{latestversion}', '{version}']:
+        if version_separator in dirname_template:
+            break
+    else:
         return dirname_template
 
     # Find latest version
-    part1, part2 = dirname_template.split('{latestversion}')
+    part1, part2 = dirname_template.split(version_separator)
     part2 = part2.lstrip(os.sep)
     part1_contents = glob(part1)
     if part1_contents:
@@ -500,7 +488,7 @@ def list_all_files(file_dict, cmip_era):
     """
     List all files that match the dataset dictionary.
 
-    Function that returnes all files that are determined by a
+    Function that returns all files that are determined by a
     file_dict dictionary; file_dict is keyed on usual parameters
     like `dataset`, `project`, `mip` etc; glob.glob is used
     to find files; speedup is achieved by replacing wildcards

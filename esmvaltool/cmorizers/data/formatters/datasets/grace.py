@@ -39,6 +39,7 @@ import xarray as xr
 from cf_units import Unit
 from dateutil import relativedelta
 from esmvalcore.preprocessor import regrid_time
+from iris import NameConstraint
 
 from ... import utilities as utils
 
@@ -126,7 +127,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
 
     cube = iris.load_cube(str(in_file),
-                          constraint=utils.var_name_constraint(var['raw']))
+                          constraint=NameConstraint(var_name=var['raw']))
 
     # Set correct names
     cube.var_name = definition.short_name
@@ -158,7 +159,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cfg['work_dir'] = cfg_user['work_dir']
+    cfg['work_dir'] = cfg_user.work_dir
     # Pass on some parameters to cfg file
     cfg['rawobsdir'] = cfg_user['rootpath']['RAWOBS'][0]
     cfg['in_dir'] = in_dir

@@ -10,6 +10,7 @@ or esmvaltool
 """
 import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import dateutil
 import esmvalcore
@@ -40,35 +41,47 @@ GITHUB_REPO = {
     'esmvaltool': "ESMValGroup/ESMValTool",
 }
 
+TIMEZONE = ZoneInfo("CET")
+
 PREVIOUS_RELEASE = {
-    'esmvalcore': datetime.datetime(2021, 11, 8, 00),
-    'esmvaltool': datetime.datetime(2021, 11, 9, 00),
+    'esmvalcore': datetime.datetime(2023, 6, 6, 0, tzinfo=TIMEZONE),
+    'esmvaltool': datetime.datetime(2023, 6, 20, 0, tzinfo=TIMEZONE),
 }
+
 LABELS = {
     'esmvalcore': (
-        'backwards incompatible change',
-        'bug',
-        'deprecated feature',
+        'backwards incompatible change',  # important, keep at the top
+        'deprecated feature',  # important, keep at the top
+        'bug',  # important, keep at the top
+        'api',
+        'cmor',
+        'containerization',
+        'community',
+        'dask',
+        'deployment',
         'documentation',
         'fix for dataset',
-        'cmor',
-        'preprocessor',
-        'api',
-        'testing',
         'installation',
-        'enhancement',
+        'iris',
+        'preprocessor',
+        'release',
+        'testing',
+        'UX',
+        'variable derivation',
+        'enhancement',  # uncategorized, keep at the bottom
     ),
     'esmvaltool': (
-        'backwards incompatible change',
-        'bug',
-        'deprecated feature',
+        'backwards incompatible change',  # important, keep at the top
+        'deprecated feature',  # important, keep at the top
+        'bug',  # important, keep at the top
+        'community',
         'documentation',
         'diagnostic',
         'preprocessor',
         'observations',
         'testing',
         'installation',
-        'enhancement',
+        'enhancement',  # uncategorized, keep at the bottom
     )
 }
 
@@ -77,6 +90,7 @@ TITLES = {
     'deprecated feature': 'Deprecations',
     'bug': 'Bug fixes',
     'cmor': 'CMOR standard',
+    'dask': 'Computational performance improvements',
     'diagnostic': 'Diagnostics',
     'fix for dataset': 'Fixes for datasets',
     'observations': 'Observational and re-analysis dataset support',
@@ -116,12 +130,20 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
     print(f"Note: Unmerged PRs or PRs that have been merged before "
           f"{previous_release_date} are not shown\n")
     for pull in pulls:
-        if pull.updated_at < previous_release_date:
+        if pull.updated_at.astimezone(TIMEZONE) < previous_release_date:
             break
-        if not pull.merged or pull.merged_at < previous_release_date:
+        if (not pull.merged or
+                pull.merged_at.astimezone(TIMEZONE) < previous_release_date):
             continue
-        print(pull.updated_at, pull.merged_at, pull.number, pull.title)
+        print(
+            pull.updated_at.astimezone(TIMEZONE),
+            pull.merged_at.astimezone(TIMEZONE),
+            pull.number,
+            pull.title,
+        )
         pr_labels = {label.name for label in pull.labels}
+        if 'automatedPR' in pr_labels:
+            continue
         for label in labels:
             if label in pr_labels:
                 break
@@ -172,6 +194,7 @@ def _get_pull_requests(project):
         state='closed',
         sort='updated',
         direction='desc',
+        base='main',
     )
     return pulls
 
@@ -188,16 +211,14 @@ def _list_labelless_pulls(labelless_pulls):
 
 def _compose_note(pull):
     user = pull.user
-    username = user.login if user.name is None else user.name
     title = pull.title
     title = title[0].upper() + title[1:]
-    return (f"-  {title} (`#{pull.number} "
-            f"<{pull.html_url}>`__) "
-            f"`{username} <https://github.com/{user.login}>`__")
+    return f"-  {title} (:pull:`{pull.number}`) by :user:`{user.login}`"
 
 
 def main():
-    """Entry point for the scrip."""
+    """Entry point for the script."""
+
     def display(lines, out):
         text = "\n".join(lines) + "\n"
         out.write(text)

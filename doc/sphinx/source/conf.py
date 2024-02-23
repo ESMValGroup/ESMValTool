@@ -32,7 +32,18 @@ on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
 # This is used for linking and such so we link to the thing we're building
 rtd_version = os.environ.get("READTHEDOCS_VERSION", "latest")
-if rtd_version not in ["latest", "doc"]:  # TODO: add "stable" once we have it
+if on_rtd:
+    # On Readthedocs, the conda environment used for building the documentation
+    # is not `activated`. As a consequence, a few critical environment variables
+    # are not set. Here, we hardcode them instead.
+    # In a normal environment, i.e. a local build of the documentation, the
+    # normal environment activation takes care of this.
+    rtd_project = os.environ.get("READTHEDOCS_PROJECT")
+    rtd_conda_prefix = f"/home/docs/checkouts/readthedocs.org/user_builds/{rtd_project}/conda/{rtd_version}"
+    os.environ["ESMFMKFILE"] = f"{rtd_conda_prefix}/lib/esmf.mk"
+    os.environ["PROJ_DATA"] = f"{rtd_conda_prefix}/share/proj"
+    os.environ["PROJ_NETWORK"] = "OFF"
+if rtd_version not in ["latest", "stable", "doc"]:
     rtd_version = "latest"
 
 # Generate gallery
@@ -52,6 +63,7 @@ generate_gallery.main()
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
+    'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
@@ -69,22 +81,6 @@ autodoc_default_options = {
     'show-inheritance': True,
     'autosummary': True,
 }
-
-autodoc_mock_imports = [
-    'cartopy',
-    'cftime',
-    'cf_units',
-    'ESMPy',
-    'esmvalcore',
-    'GDAL',
-    'iris',
-    'psutil',
-    'rasterio',
-    'scipy',
-    'sklearn',
-    'xesmf',
-    'xgboost',
-]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -153,12 +149,21 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'pydata_sphinx_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-# html_theme_options = {}
+#
+# Avoid the following warning issued by pydata_sphinx_theme:
+#
+# "WARNING: The default value for `navigation_with_keys` will change to `False`
+# in the next release. If you wish to preserve the old behavior for your site,
+# set `navigation_with_keys=True` in the `html_theme_options` dict in your
+# `conf.py` file.Be aware that `navigation_with_keys = True` has negative
+# accessibility implications:
+# https://github.com/pydata/pydata-sphinx-theme/issues/1492"
+html_theme_options = {"navigation_with_keys": False}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -420,6 +425,7 @@ numfig = True
 
 # Configuration for intersphinx
 intersphinx_mapping = {
+    'cartopy': ('https://scitools.org.uk/cartopy/docs/latest/', None),
     'cf_units': ('https://cf-units.readthedocs.io/en/latest/', None),
     'esmvalcore':
     (f'https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/',
@@ -427,13 +433,47 @@ intersphinx_mapping = {
     'esmvaltool': (f'https://docs.esmvaltool.org/en/{rtd_version}/', None),
     'iris': ('https://scitools-iris.readthedocs.io/en/latest/', None),
     'lime': ('https://lime-ml.readthedocs.io/en/latest/', None),
-    'matplotlib': ('https://matplotlib.org/', None),
+    'matplotlib': ('https://matplotlib.org/stable/', None),
     'numpy': ('https://numpy.org/doc/stable/', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
     'python': ('https://docs.python.org/3/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/', None),
     'seaborn': ('https://seaborn.pydata.org/', None),
     'sklearn': ('https://scikit-learn.org/stable', None),
+}
+
+# -- Extlinks extension -------------------------------------------------------
+# See https://www.sphinx-doc.org/en/master/usage/extensions/extlinks.html
+
+extlinks = {
+    "discussion": (
+        "https://github.com/ESMValGroup/ESMValTool/discussions/%s",
+        "Discussion #%s",
+    ),
+    "issue": (
+        "https://github.com/ESMValGroup/ESMValTool/issues/%s",
+        "Issue #%s",
+    ),
+    "pull": (
+        "https://github.com/ESMValGroup/ESMValTool/pull/%s",
+        "Pull request #%s",
+    ),
+    "release": (
+        "https://github.com/ESMValGroup/ESMValTool/releases/tag/%s",
+        "ESMValTool %s",
+    ),
+    "esmvalcore-release": (
+        "https://github.com/ESMValGroup/ESMValCore/releases/tag/%s",
+        "ESMValCore %s",
+    ),
+    "team": (
+        "https://github.com/orgs/ESMValGroup/teams/%s",
+        "@ESMValGroup/%s",
+    ),
+    "user": (
+        "https://github.com/%s",
+        "@%s",
+    ),
 }
 
 # -- Custom Document processing ----------------------------------------------

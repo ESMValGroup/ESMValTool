@@ -42,6 +42,7 @@ from esmvaltool.diag_scripts.shared import (
     plot,
     run_diagnostic,
     select_metadata,
+    sorted_metadata,
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -80,7 +81,7 @@ def _get_ancestor_files(cfg, obs_name, projects=None):
             select_metadata(cfg['input_data'].values(), project=project))
     datasets.extend(
         select_metadata(cfg['input_data'].values(), dataset=obs_name))
-    return [d['filename'] for d in datasets]
+    return sorted([d['filename'] for d in datasets])
 
 
 def _get_model_color(model, lambda_cube):
@@ -133,20 +134,16 @@ def _get_project(cfg):
     projects = [p for p in projects if 'obs' not in p.lower()]
     if len(projects) == 1:
         return projects[0]
-    return projects
+    return sorted(projects)
 
 
 def _save_fig(cfg, basename, legend=None):
     """Save matplotlib figure."""
     path = get_plot_filename(basename, cfg)
-    if legend is None:
-        legend = []
-    else:
-        legend = [legend]
-    FIG.savefig(path,
-                additional_artists=legend,
-                bbox_inches='tight',
-                orientation='landscape')
+    savefig_kwargs = dict(bbox_inches='tight', orientation='landscape')
+    if legend is not None:
+        savefig_kwargs['bbox_extra_artists'] = [legend]
+    FIG.savefig(path, **savefig_kwargs)
     logger.info("Wrote %s", path)
     AXES.cla()
     return path
@@ -156,6 +153,7 @@ def get_external_cubes(cfg):
     """Get external cubes for psi, ECS and lambda."""
     cubes = iris.cube.CubeList()
     input_data = list(cfg['input_data'].values())
+    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
     for filename in ('psi.nc', 'ecs.nc', 'lambda.nc'):
         filepath = io.get_ancestor_file(cfg, filename)
         cube = iris.load_cube(filepath)
@@ -509,6 +507,7 @@ def main(cfg):
     input_data = (
         select_metadata(cfg['input_data'].values(), short_name='tas') +
         select_metadata(cfg['input_data'].values(), short_name='tasa'))
+    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
     if not input_data:
         raise ValueError("This diagnostics needs 'tas' or 'tasa' variable")
 

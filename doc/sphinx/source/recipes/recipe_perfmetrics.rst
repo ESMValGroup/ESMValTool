@@ -16,7 +16,7 @@ Available recipes and diagnostics
 Recipes are stored in recipes/
 
 * recipe_perfmetrics_CMIP5.yml
-* recipe_perfmetrics_CMIP5_cds.yml
+* recipe_perfmetrics_CMIP5_4cds.yml
 * recipe_perfmetrics_land_CMIP5.yml
 
 Diagnostics are stored in diag_scripts/perfmetrics/
@@ -53,6 +53,7 @@ User settings in recipe
    * calc_grading: calculates grading metrics (default: False)
    * stippling: uses stippling to mark statistically significant differences (default: False = mask out non-significant differences in gray)
    * show_global_avg: diplays the global avaerage of the input field as string at the top-right of lat-lon plots (default: False)
+   * annots: choose the annotation style, e.g. ```alias``` which would display the alias of the dataset as title (applies to plot_type zonal and cycle_zonal)
    * metric: chosen grading metric(s) (if calc_grading is True)
    * normalization: metric normalization (for RMSD and BIAS metrics only)
    * abs_levs: list of contour levels for absolute plot
@@ -61,6 +62,34 @@ User settings in recipe
    * zonal_ymin: for plot_type zonal only, minimum pressure level on the y-axis (default: 5. hPa)
    * latlon_cmap: for plot_type latlon only, chosen color table (default: "amwg_blueyellowred")
    * plot_units: plotting units (if different from standard CMOR units)
+   * add_tropopause: adds an outline of a climatological tropopause to the zonal plot (default: False)
+
+   *Special optional plot configurations*
+
+   It is possible to make some specific customizations to the plots (zonal
+   only).
+
+   This includes for example specific tickmark labels of the axes.
+
+   Those special customizations can be done by adding ncl plotting resources
+   combined with prefix ``res_`` as optional settings of the main script in the
+   recipe.
+
+   Note that this requires to be familiar with the ncl plotting routines for
+   pressure vs height plots
+   (https://www.ncl.ucar.edu/Document/Graphics/Interfaces/gsn_csm_pres_hgt.shtml)
+   and the corresponding resources.
+
+   The following shows an example on customizing the latitude tickmarks so
+   that a degree sign and and empty space is used for the labels:
+
+   .. code-block:: yaml
+
+	# copernicus style of latitude tickmarks
+        res_tmXBMode: "Explicit"
+        res_tmXBValues: [-60, -30, 0, 30, 60]
+        res_tmXBLabels: ["60~F35~J~F21~ S", "30~F35~J~F21~ S", "0~F35~J", "30~F35~J~F21~ N", "60~F35~J~F21~ N"]
+
 
    *Required settings (variables)*
 
@@ -143,7 +172,7 @@ The following list shows the currently used observational data sets for this rec
     * GPCP-SG (pr - obs4MIPs)
     * HadISST (ts - esmvaltool/cmorizers/data/formatters/datasets/hadisst.ncl)
     * MODIS (od550aer - esmvaltool/cmorizers/data/formatters/datasets/modis.ncl)
-    * NCEP (tas, ta, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep.ncl)
+    * NCEP-NCAR-R1 (tas, ta, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep_ncar_r1.py)
     * NIWA-BS (toz - esmvaltool/cmorizers/data/formatters/datasets/niwa_bs.ncl)
     * PATMOS-x (clt - esmvaltool/cmorizers/data/formatters/datasets/patmos_x.ncl)
 
@@ -171,7 +200,7 @@ Example plots
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_1.png
    :width: 90%
 
-   Annual cycle of globally averaged temperature at 850 hPa (time period 1980-2005) for different CMIP5 models (historical simulation) (thin colored lines) in comparison to ERA-Interim (thick yellow line) and NCEP (thick black dashed line) reanalysis data.
+   Annual cycle of globally averaged temperature at 850 hPa (time period 1980-2005) for different CMIP5 models (historical simulation) (thin colored lines) in comparison to ERA-Interim (thick yellow line) and NCEP-NCAR-R1 (thick black dashed line) reanalysis data.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_2.png
    :width: 90%

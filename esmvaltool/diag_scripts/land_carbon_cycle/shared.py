@@ -1,7 +1,9 @@
 """Provide shared functions for land carbon cycle diagnostic."""
 import os
+
 import iris
 import numpy as np
+from iris import NameConstraint
 
 from esmvaltool.diag_scripts.shared import select_metadata
 
@@ -30,7 +32,7 @@ def _apply_common_mask(*args):
     mask_where = np.ma.getmask(np.ma.masked_less(dat_mask, 1.))
     odat = []
     for arg_ in range(nargs):
-        _dat = args[arg_].astype(np.float)
+        _dat = args[arg_].astype(np.float64)
         _dat[mask_where] = np.nan
         odat = np.append(odat, np.ma.masked_invalid(_dat))
     odat = odat.reshape(nargs, _dat.shape[0], _dat.shape[1])
@@ -82,7 +84,7 @@ def _get_obs_data_zonal(diag_config):
     nvars = len(var_list)
     for v_ind in range(nvars):
         var_obs = var_list[v_ind]
-        variable_constraint = _var_name_constraint(var_obs)
+        variable_constraint = NameConstraint(var_name=var_obs)
         cube = iris.load_cube(input_files, constraint=variable_constraint)
         all_data[var_obs] = cube
     for coord in cube.coords():
@@ -123,8 +125,3 @@ def _remove_invalid(tmp, fill_value=-9999.):
     where_inf = np.isinf(tmp)
     tmp[where_inf] = fill_value
     return tmp
-
-
-def _var_name_constraint(var_name):
-    """:mod:`iris.Constraint` using `var_name` of a :mod:`iris.cube.Cube`."""
-    return iris.Constraint(cube_func=lambda c: c.var_name == var_name)

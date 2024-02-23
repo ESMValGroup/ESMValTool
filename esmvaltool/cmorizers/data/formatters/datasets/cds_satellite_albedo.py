@@ -35,6 +35,7 @@ from warnings import catch_warnings, filterwarnings
 import cf_units
 import iris
 from esmvalcore.preprocessor import regrid
+from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -72,7 +73,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
 
     cube = iris.load_cube(str(in_file),
-                          constraint=utils.var_name_constraint(var['raw']))
+                          constraint=NameConstraint(var_name=var['raw']))
 
     # Set correct names
     cube.var_name = definition.short_name
@@ -116,8 +117,8 @@ def _regrid_dataset(in_dir, var, cfg):
                 module='iris',
             )
             cube = iris.load_cube(infile,
-                                  constraint=utils.var_name_constraint(
-                                      var['raw']))
+                                  constraint=NameConstraint(
+                                      var_name=var['raw']))
         cube = regrid(cube, cfg['custom']['regrid_resolution'], 'nearest')
         logger.info("Saving: %s", outfile)
 
@@ -166,7 +167,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     # run the cmorization
     # Pass on the workdir to the cfg dictionary
-    cfg['work_dir'] = cfg_user['work_dir']
+    cfg['work_dir'] = cfg_user.work_dir
     # If it doesn't exist, create it
     if not os.path.isdir(cfg['work_dir']):
         logger.info("Creating working directory for regridding: %s",

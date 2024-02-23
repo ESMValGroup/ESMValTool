@@ -10,6 +10,9 @@ documentation:
     - hassler_birgit
     - mueller_benjamin
 
+  maintainer:
+    - unmaintained
+
 
 ################################################
 # Define some default parameters using anchors #
@@ -40,8 +43,6 @@ global_mon: &global_mon
   mask_multimodel:
   area_statistics:
     operator: mean
-    fx_variables:
-      areacella:
   monthly_statistics:
     operator: mean
 
@@ -51,8 +52,6 @@ global_ann: &global_ann
   mask_multimodel:
   area_statistics:
     operator: mean
-    fx_variables:
-      areacella:
   annual_statistics:
     operator: mean
 
@@ -63,8 +62,6 @@ sh_mon: &sh_mon
   mask_multimodel:
   area_statistics:
     operator: mean
-    fx_variables:
-      areacella:
   monthly_statistics:
     operator: mean
 
@@ -75,8 +72,6 @@ sh_ann: &sh_ann
   mask_multimodel:
   area_statistics:
     operator: mean
-    fx_variables:
-      areacella:
   annual_statistics:
     operator: mean
 
@@ -87,8 +82,6 @@ nh_mon: &nh_mon
   mask_multimodel:
   area_statistics:
     operator: mean
-    fx_variables:
-      areacella:
   monthly_statistics:
     operator: mean
 
@@ -99,8 +92,6 @@ nh_ann: &nh_ann
   mask_multimodel:
   area_statistics:
     operator: mean
-    fx_variables:
-      areacella:
   annual_statistics:
     operator: mean
 

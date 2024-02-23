@@ -58,6 +58,7 @@ import matplotlib.pyplot as plt
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -197,8 +198,19 @@ def make_profiles_plots(
     # Saving files:
     logger.info('Saving plots to %s', path)
     plt.savefig(path)
-
     plt.close()
+
+    provenance_record = diagtools.prepare_provenance_record(
+        cfg,
+        caption=f'Profiles of {title}',
+        statistics=['mean'],
+        domain=['global'],
+        plot_type=['vert'],
+        ancestors=[filename, obs_filename],
+    )
+
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(path, provenance_record)
 
 
 def main(cfg):
