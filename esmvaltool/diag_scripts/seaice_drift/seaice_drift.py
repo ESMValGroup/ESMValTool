@@ -540,7 +540,8 @@ class InsidePolygonFactory(AuxCoordFactory):
 
         polygon.append(polygon[0])
         self.transformer = Transformer.from_crs("WGS84",
-                                                "North_Pole_Stereographic")
+                                                "North_Pole_Stereographic",
+                                                always_xy=True)
 
         transformed = []
         for lon_val, lat_val in polygon:
