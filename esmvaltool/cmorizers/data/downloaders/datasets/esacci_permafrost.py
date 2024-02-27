@@ -1,0 +1,66 @@
+"""Script to download ESACCI-PERMAFROST."""
+
+import logging
+from datetime import datetime
+
+from dateutil import relativedelta
+
+from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
+
+logger = logging.getLogger(__name__)
+
+
+def download_dataset(config, dataset, dataset_info, start_date, end_date,
+                     overwrite):
+    """Download dataset.
+
+    Parameters
+    ----------
+    config : dict
+        ESMValTool's user configuration
+    dataset : str
+        Name of the dataset
+    dataset_info : dict
+         Dataset information from the datasets.yml file
+    start_date : datetime
+        Start of the interval to download
+    end_date : datetime
+        End of the interval to download
+    overwrite : bool
+        Overwrite already downloaded files
+    """
+    if start_date is None:
+        start_date = datetime(1997, 1, 1)
+    else:
+        start_date = start_date
+    if end_date is None:
+        end_date = datetime(2019, 12, 31)
+    else:
+        end_date = end_date
+
+    downloader = CCIDownloader(
+        config=config,
+        dataset=dataset,
+        dataset_info=dataset_info,
+        overwrite=overwrite,
+    )
+
+#    downloader.connect()
+
+    version = 'v03.0'
+
+    vars = ['active_layer_thickness', 'ground_temperature',
+            'permafrost_extent']
+
+    # download active layer thickness
+    loop_date = start_date
+    while loop_date <= end_date:
+        for var in vars:
+            fn = (f'{var}/L4/area4/pp/{version}/'
+                  f'ESACCI-PERMAFROST-L4-*-{loop_date.year}-f{version}.nc')
+            if downloader.exists(f'{fn}'):
+                downloader.download_file(f'{fn}')
+            else:
+                logger.info(f'{loop_date.year}:'
+                            f' no data for {var} {version}')
+        loop_date += relativedelta.relativedelta(years=1)
