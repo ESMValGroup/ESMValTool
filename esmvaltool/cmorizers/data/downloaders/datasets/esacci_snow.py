@@ -39,8 +39,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         end_date_scfg = datetime(2018, 12, 31)
         end_date_swe = datetime(2019, 12, 31)
     else:
-        start_date_scfg = start_date
-        start_date_swe = start_date
+        end_date_scfg = end_date
+        end_date_swe = end_date
 
     downloader = CCIDownloader(
         config=config,
