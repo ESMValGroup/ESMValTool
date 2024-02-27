@@ -38,8 +38,6 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     if end_date is None:
         end_date_scfg = datetime(2018, 12, 31)
         end_date_swe = datetime(2019, 12, 31)
-#        end_date_scfg = datetime(1982, 12, 1)
-#        end_date_swe = datetime(1979, 12, 1)
     else:
         start_date_scfg = start_date
         start_date_swe = start_date
