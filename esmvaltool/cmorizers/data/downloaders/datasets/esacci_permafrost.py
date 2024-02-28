@@ -52,10 +52,10 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     loop_date = start_date
     while loop_date <= end_date:
         for var in ccivars:
-            fname = (f'{var}/L4/area4/pp/{version}/'
-                     f'ESACCI-PERMAFROST-L4-*-{loop_date.year}-f{version}.nc')
-            if downloader.exists(fname):
-                downloader.download_file(name)
+            pathname = f'{var}/L4/area4/pp/{version}/'
+            fname = f'ESACCI-PERMAFROST-L4-*-{loop_date.year}-f{version}.nc'
+            if downloader.file_exists(fname, pathname):
+                downloader.download_file(fname, pathname)
             else:
                 logger.info('%d: no data for %s %s',
                             loop_date.year, var, version)

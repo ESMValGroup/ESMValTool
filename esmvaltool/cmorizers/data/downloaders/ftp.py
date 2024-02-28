@@ -1,5 +1,6 @@
 """Downloader for FTP repositories."""
 
+import fnmatch
 import ftplib
 import logging
 import os
@@ -206,6 +207,26 @@ class CCIDownloader(FTPDownloader):
         """
         return self.dataset.lower().replace('-', '_')
 
+    def download_file(self, filename, path=None):
+        """Download file(s).
+
+        Parameters:
+        -----------
+        filename : str
+            Name of file (w/o path) to download (wildcards are allowed)
+        path : str
+            Path of file to check (optional)
+        """
+        if path is not None:
+            self.set_cwd(path)
+        files = self._client.nlst()
+        matching_files = fnmatch.filter(files, filename)
+        if len(matching_files) != 0:
+            for file in matching_files:
+                super().download_file(file)            
+        else:
+            logger.info('No files %s found.', filename)
+
     def download_year(self, year):
         """Download a specific year.
 
@@ -215,3 +236,22 @@ class CCIDownloader(FTPDownloader):
             Year to download
         """
         self.download_folder(str(year))
+
+    def file_exists(self, filename, path=None):
+        """Check if a file exists.
+
+        Parameters:
+        -----------
+        filename : str
+            Name of file (w/o path) to check (wildcards are allowed)
+        path : str
+            Path of file to check (optional)
+        """
+        if path is not None:
+            self.set_cwd(path)
+        files = self._client.nlst()
+        matching_files = fnmatch.filter(files, filename)
+        if len(matching_files) != 0:
+            return True
+        else:
+            return False
