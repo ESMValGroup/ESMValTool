@@ -31,12 +31,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     """
     if start_date is None:
         start_date = datetime(1997, 1, 1)
-    else:
-        start_date = start_date
     if end_date is None:
         end_date = datetime(2019, 12, 31)
-    else:
-        end_date = end_date
 
     downloader = CCIDownloader(
         config=config,
@@ -45,22 +41,22 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         overwrite=overwrite,
     )
 
-#    downloader.connect()
+    downloader.connect()
 
     version = 'v03.0'
 
-    vars = ['active_layer_thickness', 'ground_temperature',
-            'permafrost_extent']
+    ccivars = ['active_layer_thickness', 'ground_temperature',
+               'permafrost_extent']
 
     # download active layer thickness
     loop_date = start_date
     while loop_date <= end_date:
-        for var in vars:
-            fn = (f'{var}/L4/area4/pp/{version}/'
-                  f'ESACCI-PERMAFROST-L4-*-{loop_date.year}-f{version}.nc')
-            if downloader.exists(f'{fn}'):
-                downloader.download_file(f'{fn}')
+        for var in ccivars:
+            fname = (f'{var}/L4/area4/pp/{version}/'
+                     f'ESACCI-PERMAFROST-L4-*-{loop_date.year}-f{version}.nc')
+            if downloader.exists(fname):
+                downloader.download_file(name)
             else:
-                logger.info(f'{loop_date.year}:'
-                            f' no data for {var} {version}')
+                logger.info('%d: no data for %s %s',
+                            loop_date.year, var, version)
         loop_date += relativedelta.relativedelta(years=1)
