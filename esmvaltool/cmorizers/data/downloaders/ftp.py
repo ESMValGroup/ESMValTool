@@ -207,7 +207,7 @@ class CCIDownloader(FTPDownloader):
         """
         return self.dataset.lower().replace('-', '_')
 
-    def download_file(self, filename, path=None):
+    def download_files(self, filename, path=None):
         """Download file(s).
 
         Parameters:
@@ -223,7 +223,7 @@ class CCIDownloader(FTPDownloader):
         matching_files = fnmatch.filter(files, filename)
         if len(matching_files) != 0:
             for file in matching_files:
-                super().download_file(file)            
+                super().download_file(file)
         else:
             logger.info('No files %s found.', filename)
 
@@ -253,5 +253,4 @@ class CCIDownloader(FTPDownloader):
         matching_files = fnmatch.filter(files, filename)
         if len(matching_files) != 0:
             return True
-        else:
-            return False
+        return False
