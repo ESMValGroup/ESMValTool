@@ -16,7 +16,7 @@ Available recipes and diagnostics
 Recipes are stored in recipes/
 
 * recipe_perfmetrics_CMIP5.yml
-* recipe_perfmetrics_CMIP5_cds.yml
+* recipe_perfmetrics_CMIP5_4cds.yml
 * recipe_perfmetrics_land_CMIP5.yml
 
 Diagnostics are stored in diag_scripts/perfmetrics/
