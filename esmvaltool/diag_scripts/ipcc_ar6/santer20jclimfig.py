@@ -11,7 +11,7 @@ EVal4CMIP ans 4C project
 
 Description
 -----------
-    Water Vapor Path trends following Santer et al. (2020).
+    Water Vapor Path trends following Santer et al. (2021). https://doi.org/10.1175/JCLI-D-20-0768.1
 
 Configuration options
 ---------------------
@@ -197,29 +197,15 @@ def _get_valid_datasets(input_data):
     return valid_datasets, number_of_subdata, period
 
 
-def _plot_extratrends(cfg, extratrends, trends, period):
+def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
     """Plot trends for ensembles."""
-    if 'histmin' in cfg.keys():
-        histmin = cfg['histmin']
-    else:
-       histmin = 0
 
-    if 'histmax' in cfg.keys():
-        histmax = cfg['histmax']
-    else:
-        histmax = 4
-    
-    if 'ymax' in cfg.keys():
-        ymax = cfg['ymax']
-    else:
-        ymax = 2.5
 
-    res_ar = {'xhist': np.linspace(histmin, histmax, 41),
-              'artrend': {},
-              'kde1': {}}
-    # xhist = np.linspace(0, 4, 41)
-    # artrend = {}
-    # kde1 = {}
+    res_ar = {'xhist': np.linspace(axx_lim['histmin'], 
+                                   axx_lim['histmax'], 41),
+                                   'artrend': {},'kde1': {}}
+    res_ar['xval'] = axx_lim['xval']
+    res_ar['xhist'] = axx_lim['xhist']
     fig, axx = plt.subplots(figsize=(8, 6))
 
     valid_datasets = []
@@ -240,16 +226,17 @@ def _plot_extratrends(cfg, extratrends, trends, period):
                                                 dtype=float)
         res_ar['kde1'][xtrmdl] = stats.gaussian_kde(res_ar['artrend'][xtrmdl],
                                                     bw_method="scott")
-        axx.hist(res_ar['artrend'][xtrmdl], bins=res_ar['xhist'], density=True,
-                 edgecolor=style['color'],
-                 facecolor=style['facecolor'])
-        axx.plot(res_ar['xhist'], res_ar['kde1'][xtrmdl](res_ar['xhist']),
+        N, b, p = axx.hist(res_ar['artrend'][xtrmdl], bins=res_ar['xhist'], 
+                           density=True,
+                           edgecolor=style['color'],
+                           facecolor=style['facecolor'])
+        axx.plot(res_ar['xval'], res_ar['kde1'][xtrmdl](res_ar['xval']),
                  color=style['color'],
                  linewidth=3,
                  label=xtrmdl)
-
-    caption = _plot_obs(trends, axx, ymax)
-    caption = _plot_settings(cfg, axx, fig, 'fig2', period) + caption
+    axx_lim['maxh'] = (1.0 + 0.5*axx_lim['factor'])*np.max(N)
+    caption = _plot_obs(trends, axx, axx_lim)
+    caption = _plot_settings(cfg, axx, fig, 'fig2', period, axx_lim) + caption
     plt.close()
 
     caption = 'Probability density function of the decadal trend in ' + \
@@ -274,7 +261,7 @@ def _plot_extratrends(cfg, extratrends, trends, period):
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
-def _plot_obs(trends, axx, maxh):
+def _plot_obs(trends, axx, axx_lim):
     """Plot observational or reanalysis data as vertical line."""
     obs_str = ''
     # IPCC colors for obs from
@@ -296,17 +283,18 @@ def _plot_obs(trends, axx, maxh):
                 plotobscol = (221 / 255.0, 84 / 255.0, 46 / 255.0,)
                 # obsnamep = 'RSS'
             if obsname == 'CRU':
-                plotobscol = (0.8, 0.4, 0.1, 1)  
+                plotobscol = (0.8, 0.4, 0.1, 1)
             if obsname == 'ERA5':
-                # obscol = [(0.8, 0.4, 0.1, 1), (1, 0, 0.2, 1), (0.8, 0.1, 0.4, 1), (1, 0.6, 0, 1)]
+                # obscol = [(0.8, 0.4, 0.1, 1), (1, 0, 0.2, 1), 
+                #          (0.8, 0.1, 0.4, 1), (1, 0.6, 0, 1)]
                 # plotobscol = (1, 0, 0.2, 1)
                 plotobscol = (128 / 255.0, 54 / 255.0, 168 / 255.0,)
                 # obsnamep = 'ERA5.1'
             if obsname == 'MERRA2':
-                plotobscol = (0.8, 0.1, 0.4, 1)            
+                plotobscol = (0.8, 0.1, 0.4, 1)
             if obsname == 'NCEP-NCAR-R1':
                 plotobscol = (1, 0.6, 0, 1)
-            axx.vlines(trends['obs'][obsname], 0, maxh,
+            axx.vlines(trends['obs'][obsname], 0, axx_lim['maxh'],
                        colors=plotobscol,
                        linewidth=3,
                        label=obsname)
@@ -314,32 +302,85 @@ def _plot_obs(trends, axx, maxh):
     return obs_str
 
 
-def _plot_trends(cfg, trends, valid_datasets, period):
-    """Plot probability density function of trends."""
+def _get_ax_limits(cfg, trends):
+    """ If histmin and histmax are not given in recipe, 
+        automatically find the axis limits. 
+        If limits are not given, the limits for the x-axis are determined by
+        the width of the histograms (plus offset).
+    """
+
+    axx_lim = dict(factor = 0.3)
+    # factor determines offset between limits of histogram and x-axis 
+    # depending on the histogram width
+
     if 'histmin' in cfg.keys():
         histmin = cfg['histmin']
     else:
         histmin = 1000
         if trends['cmip5']:
-            histmin = np.min(np.array([histmin, np.min(np.fromiter(trends['cmip5'].values(),
+            histmin = np.min(np.array([histmin,
+                                       np.min(np.fromiter(
+                                           trends['cmip5'].values(),
                                            dtype=float))]))
         if trends['cmip6']:
-            histmin = np.min(np.array([histmin, np.min(np.fromiter(trends['cmip6'].values(),
-                                           dtype=float))]))
+            histmin = np.min(np.array([histmin,
+                             np.min(np.fromiter(trends['cmip6'].values(),
+                                                dtype=float))]))
         if trends['obs']:
-            histmin = np.min(np.array([histmin, np.min(np.fromiter(trends['obs'].values(),
-                                           dtype=float))]))
-        
+            histmin = np.min(np.array([histmin,
+                             np.min(np.fromiter(trends['obs'].values(),
+                                                          dtype=float))]))
+            
     if 'histmax' in cfg.keys():
         histmax = cfg['histmax']
     else:
-        histmax = 4
+        histmax = -1000
+        if trends['cmip5']:
+            histmax = np.max(np.array([histmax,
+                             np.max(np.fromiter(trends['cmip5'].values(),
+                                                dtype=float))]))
+        if trends['cmip6']:
+            histmax = np.max(np.array([histmax,
+                             np.max(np.fromiter(trends['cmip6'].values(),
+                                                dtype=float))]))
+        if trends['obs']:
+            histmax = np.max(np.array([histmax,
+                             np.max(np.fromiter(trends['obs'].values(),
+                                                dtype=float))]))
 
-    if 'ymax' in cfg.keys():
-        ymax = cfg['ymax']
+    if 'histmin' in cfg.keys():
+        histmin = cfg['histmin']
+        xmin = histmin
     else:
-        ymax = 2.5
-    res_ar = {'xhist': np.linspace(histmin, histmax, 41)}
+        xmin = histmin - axx_lim['factor']*abs(abs(histmax)-abs(histmin))
+
+    if 'histmax' in cfg.keys():
+        histmax = cfg['histmax']
+        xmax = histmax
+    else:
+        xmax = histmax + axx_lim['factor']*abs(abs(histmax)-abs(histmin))
+
+
+    # Saving values in dictionary axx_lim:
+    axx_lim['xmin'] = xmin
+    axx_lim['xmax'] = xmax
+    axx_lim['histmin'] = histmin
+    axx_lim['histmax'] = histmax
+    # axx_lim['ymax'] = ymax
+    axx_lim['xhist'] = np.linspace(histmin, histmax, 41)
+    axx_lim['xval'] = np.linspace(xmin, xmax, 41)
+
+    return axx_lim
+
+
+def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
+    """Plot probability density function of trends.
+       The probability density function is estimated by using Gaussian kernel density estimation. 
+       The models are weighted by their respective number of realisations.
+       Trends are depicted in a histogram, the probability density function as a curve."""
+    
+    res_ar = dict(xval = axx_lim['xval'])
+    res_ar['xhist'] = axx_lim['xhist']
     fig, axx = plt.subplots(figsize=(8, 6))
 
     # IPCC colors for CMIP5 and CMIP6 from
@@ -355,11 +396,13 @@ def _plot_trends(cfg, trends, valid_datasets, period):
         res_ar['kde1_c5'] = stats.gaussian_kde(res_ar['artrend_c5'],
                                                weights=res_ar['weights_c5'],
                                                bw_method="scott")
-        axx.hist(res_ar['artrend_c5'], bins=res_ar['xhist'], density=True,
-                 weights=res_ar['weights_c5'],
-                 edgecolor=(37 / 250.0, 81 / 255.0, 204 / 255.0, 1.0),
-                 facecolor=(37 / 250.0, 81 / 255.0, 204 / 255.0, 0.2))
-        axx.plot(res_ar['xhist'], res_ar['kde1_c5'](res_ar['xhist']),
+
+        N1, b, p = axx.hist(res_ar['artrend_c5'], bins=res_ar['xhist'], 
+                            density=True,
+                            weights=res_ar['weights_c5'],
+                            edgecolor=(37 / 250.0, 81 / 255.0, 204 / 255.0, 1.0),
+                            facecolor=(37 / 250.0, 81 / 255.0, 204 / 255.0, 0.2))
+        axx.plot(res_ar['xval'], res_ar['kde1_c5'](res_ar['xval']),
                  color=(37 / 250.0, 81 / 255.0, 204 / 255.0, 1),
                  linewidth=3,
                  label="CMIP5")
@@ -375,17 +418,22 @@ def _plot_trends(cfg, trends, valid_datasets, period):
         res_ar['kde1_c6'] = stats.gaussian_kde(res_ar['artrend_c6'],
                                                weights=res_ar['weights_c6'],
                                                bw_method="scott")
-        axx.hist(res_ar['artrend_c6'], bins=res_ar['xhist'], density=True,
-                 weights=res_ar['weights_c6'],
-                 edgecolor=(204 / 250.0, 35 / 255.0, 35 / 255.0, 1.0),
-                 facecolor=(204 / 250.0, 35 / 255.0, 35 / 255.0, 0.2))
-        axx.plot(res_ar['xhist'], res_ar['kde1_c6'](res_ar['xhist']),
+        N2, b, p = axx.hist(res_ar['artrend_c6'], bins=res_ar['xhist'], 
+                            density=True,
+                            weights=res_ar['weights_c6'],
+                            edgecolor=(204 / 250.0, 35 / 255.0, 35 / 255.0, 1.0),
+                            facecolor=(204 / 250.0, 35 / 255.0, 35 / 255.0, 0.2))
+        axx.plot(res_ar['xval'], res_ar['kde1_c6'](res_ar['xval']),
                  color=(204 / 250.0, 35 / 255.0, 35 / 255.0, 1),
                  linewidth=3,
                  label="CMIP6")
         # maxh = np.max(kde1_c6(xhist))
-    caption = _plot_obs(trends, axx, ymax)
-    caption = _plot_settings(cfg, axx, fig, 'fig1', period) + caption
+    
+    # Find the highest bin in the histograms for the y-axis limit
+    axx_lim['maxh'] = (1.0 + 0.5*axx_lim['factor'])*np.max([np.max(N1),
+                                                        np.max(N2)])
+    caption = _plot_obs(trends, axx, axx_lim)
+    caption = _plot_settings(cfg, axx, fig, 'fig1', period, axx_lim) + caption
     plt.close()
 
     caption = 'Probability density function of the decadal trend in ' + \
@@ -449,7 +497,7 @@ def _plot_trends(cfg, trends, valid_datasets, period):
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
-def _plot_settings(cfg, axx, fig, figname, period):
+def _plot_settings(cfg, axx, fig, figname, period, axx_lim):
     """Define Settings for pdf figures."""
     for spine in ["top", "right"]:
         axx.spines[spine].set_visible(False)
@@ -458,7 +506,7 @@ def _plot_settings(cfg, axx, fig, figname, period):
     if 'ymax' in cfg.keys():
         ymax = cfg['ymax']
     else:
-        ymax = 2.5
+        ymax = axx_lim['maxh']
     axx.set_ylim([0, ymax])
     axx.set_ylabel('Probability density')
     add = '.'
@@ -477,6 +525,8 @@ def _plot_settings(cfg, axx, fig, figname, period):
         var = ' ' + var
     axx.set_title('Trends in' + var + add)
     axx.set_xlabel('Trend (%/decade)')
+
+    axx.set_xlim(axx_lim['xmin'], axx_lim['xmax'])
     fig.tight_layout()
     fig.savefig(get_plot_filename(figname, cfg), dpi=300)
 
@@ -575,7 +625,7 @@ def main(cfg):
     ###########################################################################
 
     # Dataset data containers
-    input_data = (cfg['input_data'].values())
+    input_data = cfg['input_data'].values()
 
     if not variables_available(cfg, ['prw']):
         logger.warning("This diagnostic was written and tested only for prw.")
@@ -654,9 +704,10 @@ def main(cfg):
 
     # f_c5.close()
     # f_c6.close()
-    _plot_trends(cfg, trends, valid_datasets, period)
+    axx_lim = _get_ax_limits(cfg, trends)
+    _plot_trends(cfg, trends, valid_datasets, period, axx_lim)
     if 'add_model_dist' in cfg:
-        _plot_extratrends(cfg, extratrends, trends, period)
+        _plot_extratrends(cfg, extratrends, trends, period, axx_lim)
 
     ###########################################################################
     # Process data
