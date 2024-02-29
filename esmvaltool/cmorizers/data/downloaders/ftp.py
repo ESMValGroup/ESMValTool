@@ -215,7 +215,7 @@ class CCIDownloader(FTPDownloader):
         filename : str
             Name of file (w/o path) to download (wildcards are allowed)
         path : str
-            Path of file to check (optional)
+            Path of file(s) to download (optional)
         """
         if path is not None:
             self.set_cwd(path)
