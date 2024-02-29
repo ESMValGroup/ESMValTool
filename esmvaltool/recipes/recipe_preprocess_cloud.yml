@@ -55,7 +55,13 @@ preprocessors:
       #  period: day
       #regrid:
       #  scheme: area_weighted
-      #  target_grid: 5x5      
+      #3  target_grid: 5x5      
+      #timeseries_filter:
+      #  window: 5  # 3-monthly filter window
+      #  span: 30   # weights computed on the first month
+      #  filter_type: lowpass  # low-pass filter
+      #  filter_stats: mean    # 3-monthly mean lowpass filter
+
 
   annual_cycle:
     custom_order: true 
@@ -113,6 +119,8 @@ diagnostics:
       psl: &var2
         <<: *var
         additional_datasets: *era5
+      hfss: 
+        <<: *var2
       ta700: 
         <<: *var2
         mip: CFday 
@@ -122,11 +130,10 @@ diagnostics:
         <<: *var2
       wap700:
         <<: *var2
-      prw_era5:
-        <<: *var2
-        short_name: prw
-        mip: Eday
-        #timerange: 199501/199912
+        #prw_era5:
+        #  <<: *var2
+        #  short_name: prw
+        #  mip: Eday
     scripts: 
       timeseries:
         script: causal_clouds_timeseries.py
