@@ -57,10 +57,11 @@ LINE_DASH = {
 }
 
 
-def get_provenance_record(attributes, ancestor_files):
+def get_provenance_record(short_name, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-    caption = ("Average {long_name} between {start_year} and {end_year} "
-               "according to {dataset}.".format(**attributes))
+    caption = (f"Zonally averaged group means of {short_name} in the upper"
+                "panel and the corresponding relative differences in lower"
+                "panel.") 
 
     record = {
         'caption': caption,
@@ -442,7 +443,7 @@ def main(cfg):
     plt.grid(True)
 
     provenance_record = get_provenance_record(
-        dataset, ancestor_files=cfg['input_files'])
+        dataset['short_name'], ancestor_files=cfg['input_files'])
 
     if plot_type == 'height':
         basename = ('level_diff_' + dataset['short_name'] + '_'

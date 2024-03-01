@@ -9,12 +9,11 @@ import pandas as pd
 import seaborn as sns
 
 from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
     group_metadata,
     run_diagnostic,
     get_diagnostic_filename,
     get_plot_filename,
-    save_data,
-    save_figure,
     select_metadata,
 )
 
@@ -30,13 +29,12 @@ PALETTE = {
     'med ECS': 'green',
     'low ECS': 'orange',
 }
-PANDAS_PRINT_OPTIONS = ['display.max_rows', None, 'display.max_colwidth', -1]
 
 
-def get_provenance_record(attributes, ancestor_files):
+def get_provenance_record(ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-    caption = ("Average {short_name} between {start_year} and {end_year} "
-               "according to {dataset}.".format(**attributes))
+    caption = ("Relative change per degree of warming averaged over the"
+               "chosen region.")
 
     record = {
         'caption': caption,
@@ -44,11 +42,10 @@ def get_provenance_record(attributes, ancestor_files):
         'domains': ['global'],
         'plot_types': ['zonal'],
         'authors': [
-            'andela_bouwe',
-            'righi_mattia',
+            'bock_lisa',
         ],
         'references': [
-            'acknow_project',
+            'bock24acp',
         ],
         'ancestors': ancestor_files,
     }
@@ -106,6 +103,7 @@ def compute_diff(filename1, filename2):
     cube = cube2 - cube1
     cube.metadata = cube1.metadata
     return cube
+
 
 def compute_diff_temp(input_data, group, var, dataset):
     """Compute relative change per temperture change."""
@@ -205,11 +203,17 @@ def plot_boxplot(data_frame, cfg):
         plt.ylim(cfg.get('y_range'))
     plt.title(cfg['title'])
 
+    provenance_record = get_provenance_record(
+            ancestor_files=cfg['input_files'])
+
     # Save plot
     plot_path = get_plot_filename('boxplot'+ '_' + cfg['filename_attach'], cfg)
     plt.savefig(plot_path)
     logger.info("Wrote %s", plot_path)
     plt.close()
+
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_path, provenance_record)
 
 
 def main(cfg):
@@ -234,11 +238,6 @@ def main(cfg):
     csv_path = get_diagnostic_filename(basename, cfg).replace('.nc', '.csv')
     data_frame.to_csv(csv_path)
     logger.info("Wrote %s", csv_path)
-    #with pd.option_context(*PANDAS_PRINT_OPTIONS):
-    #    logger.info("Data:\n%s", data_frame)
-
-#    # Provenance
-#    write_provenance(cfg, csv_path, data_frame, input_files)
 
 
 if __name__ == '__main__':
