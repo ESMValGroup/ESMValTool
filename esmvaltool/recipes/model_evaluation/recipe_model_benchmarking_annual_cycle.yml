@@ -3,7 +3,7 @@
 documentation:
   title: Benchmarking of a single model.
   description: >
-    Benchmarking: time series.
+    Benchmarking: annual cycle.
   authors:
     - lauer_axel
     - schlund_manuel
@@ -13,10 +13,10 @@ documentation:
 
 # Note: the following models are just examples
 datasets:
-#  - {project: CMIP6, dataset: IPSL-CM6A-LR, exp: historical, ensemble: r1i1p1f1, grid: gr}
-#  - {project: CMIP6, dataset: MIROC6, exp: historical, ensemble: r1i1p1f1, grid: gn, benchmark_dataset: true}
-#  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#  - {project: CMIP6, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, grid: gn}
+#  - {project: CMIP6, dataset: IPSL-CM6A-LR, grid: gr}
+#  - {project: CMIP6, dataset: MIROC6, grid: gn, benchmark_dataset: true}
+#  - {project: CMIP6, dataset: MPI-ESM1-2-LR, grid: gn}
+#  - {project: CMIP6, dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
   - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
   - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
   - {dataset: AWI-CM-1-1-MR, grid: gn}
@@ -64,22 +64,6 @@ datasets:
 
 preprocessors:
 
-  pp_tas:
-    regrid:
-      target_grid: 2x2
-      scheme: linear
-    anomalies:
-      period: month
-      reference:
-        start_year: 1980
-        start_month: 1
-        start_day: 1
-        end_year: 1999
-        end_month: 12
-        end_day: 31
-    area_statistics:
-      operator: mean
-
   pp_tas_metric:
     custom_order: true
     regrid_time:
@@ -87,15 +71,8 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
-    anomalies:
+    climate_statistics:
       period: month
-      reference:
-        start_year: 1980
-        start_month: 1
-        start_day: 1
-        end_year: 1999
-        end_month: 12
-        end_day: 31
     distance_metric:
       metric: rmse
       coords: [longitude, latitude]
@@ -111,53 +88,8 @@ preprocessors:
 
 diagnostics:
 
-  timeseries:
-    description: Plot "classical" time series of global mean anomalies including a reference dataset.
-    variables:
-      tas:
-        timerange: '1980/2014'
-        preprocessor: pp_tas
-        project: CMIP6
-        mip: Amon
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        reference_dataset: HadCRUT5
-        additional_datasets:
-          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis, tier: 2, reference_for_metric: true}
-    scripts:
-      allplots:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-#        plot_filename: '{plot_type}_{real_name}_{mip}'
-        group_variables_by: variable_group
-#        facet_used_for_labels: project
-        plots:
-          timeseries:
-            annual_mean_kwargs: False
-#            legend_kwargs: False
-            plot_kwargs:
-              MIROC6:
-                color: red
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 2
-                zorder: 3
-              HadCRUT5:
-                color: black
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 2
-                zorder: 2
-              default:
-                color: lightgray
-                label: null
-                linestyle: '-'
-                linewidth: 1
-                zorder: 1
-
   benchmarking_timeseries:
-    description: Plot "benchmarking" time series of global mean anomalies.
+    description: Plot "benchmarking" annual cycle plot.
     variables:
       tas:
         timerange: '1980/2014'
@@ -178,7 +110,7 @@ diagnostics:
         group_variables_by: variable_group
 #        facet_used_for_labels: project
         plots:
-          benchmarking_timeseries:
+          benchmarking_annual_cycle:
             plot_kwargs:
             annual_mean_kwargs: False
 #            legend_kwargs: False

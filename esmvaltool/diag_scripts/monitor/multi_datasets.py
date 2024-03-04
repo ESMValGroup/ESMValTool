@@ -67,9 +67,10 @@ Currently supported plot types (use the option ``plots`` to specify them):
 
     Benchmarking plots
     ------------------
+    - annual cycles (``benchmarking_annual_cycle``)
     - box plots (``benchmarking_boxplot``)
     - maps (``benchmarking_map``)
-    - time series (plot type ``benchmarking_timeseries``)
+    - time series (``benchmarking_timeseries``)
     - zonal mean profiles (plot type ``benchmarking_zonal``)
 
 Author
@@ -584,6 +585,9 @@ time_format: str, optional (default: None)
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
     use the default formatting imposed by the iris plotting function.
 
+Configuration options for plot type ``benchmarking_annual_cycle``
+-----------------------------------------------------------------
+
 Configuration options for plot type ``benchmarking_boxplot``
 ------------------------------------------------------------
 
@@ -706,6 +710,7 @@ class MultiDatasets(MonitorBase):
             'variable_vs_lat',
             'hovmoeller_z_vs_time',
             'hovmoeller_time_vs_lat_or_lon',
+            'benchmarking_annual_cycle',
             'benchmarking_boxplot',
             'benchmarking_map',
             'benchmarking_timeseries',
@@ -737,6 +742,12 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('time_format', None)
 
             elif plot_type == 'annual_cycle':
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
+                self.plots[plot_type].setdefault('legend_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+
+            elif plot_type == 'benchmarking_annual_cycle':
                 self.plots[plot_type].setdefault('gridline_kwargs', {})
                 self.plots[plot_type].setdefault('legend_kwargs', {})
                 self.plots[plot_type].setdefault('plot_kwargs', {})
@@ -1186,7 +1197,8 @@ class MultiDatasets(MonitorBase):
                 plot_kwargs[key] = val
 
         # Default settings for different plot types
-        if plot_type in ('timeseries', 'annual_cycle', '1d_profile',
+        if plot_type in ('timeseries', 'annual_cycle',
+                         'benchmarking_annual_cycle','1d_profile',
                          'variable_vs_lat', 'benchmarking_timeseries'):
             plot_kwargs.setdefault('label', label)
 
@@ -2095,6 +2107,7 @@ class MultiDatasets(MonitorBase):
             'annual_cycle': (['month_number'],),
             'benchmarking_boxplot': (['']),
             'map': (['latitude', 'longitude'],),
+            'benchmarking_annual_cycle': (['month_number'],),
             'benchmarking_map': (['latitude', 'longitude'],),
             'benchmarking_timeseries': (['time'],),
             'benchmarking_zonal': (['latitude', 'air_pressure'],
@@ -2436,7 +2449,7 @@ class MultiDatasets(MonitorBase):
 
         iris.plot.fill_between(dataset['cube'].coord('time'), y1, y2,
                                facecolor='lightgray', edgecolor='lightgray',
-                               linewidth=3)
+                               linewidth=3, zorder=1)
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
@@ -2549,6 +2562,97 @@ class MultiDatasets(MonitorBase):
         var_attrs = {
             n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
         }
+        io.save_1d_data(cubes, netcdf_path, 'month_number', var_attrs)
+
+        # Provenance tracking
+        caption = (f"Annual cycle of {multi_dataset_facets['long_name']} for "
+                   f"various datasets.")
+        provenance_record = {
+            'ancestors': ancestors,
+            'authors': ['schlund_manuel'],
+            'caption': caption,
+            'plot_types': ['seas'],
+            'long_names': [var_attrs['long_name']],
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_benchmarking_annual_cycle_plot(self, datasets):
+        """Create benchmarking annual cycle plot."""
+        plot_type = 'benchmarking_annual_cycle'
+        if plot_type not in self.plots:
+            return
+
+        if not datasets:
+            raise ValueError(f"No input data to plot '{plot_type}' given")
+
+        logger.info("Plotting %s", plot_type)
+
+        # Get dataset to be benchmarked
+        dataset = self._get_benchmark_dataset(datasets)
+        # Get percentiles from multi-model statistics
+        percentile_dataset = self._get_benchmark_percentiles(datasets)
+
+        fig = plt.figure(**self.cfg['figure_kwargs'])
+        axes = fig.add_subplot()
+
+        # Plot all datasets in one single figure
+        ancestors = []
+        cubes = {}
+
+        # Plot annual cycle
+        cube = dataset['cube']
+        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+        plot_kwargs['axes'] = axes
+        iris.plot.plot(cube, **plot_kwargs)
+
+        y2 = percentile_dataset[0]['cube']
+        if len(percentile_dataset) > 1:
+            idx = len(percentile_dataset) - 1
+            y1 = percentile_dataset[idx]['cube']
+        else:
+            y1 = y2.copy()
+            ymin, ymax = axes.get_ylim()
+            y1.data = np.full(len(y1.data), ymin)
+
+        iris.plot.fill_between(cube.coord('month_number'), y1, y2,
+                               facecolor='lightgray', edgecolor='lightgray',
+                               linewidth=3, zorder=1)
+
+        # Default plot appearance
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+        axes.set_title(multi_dataset_facets['long_name'])
+        axes.set_xlabel('Month')
+        axes.set_ylabel(
+            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
+            f"[{multi_dataset_facets['units']}]"
+        )
+        axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
+
+        # Legend
+        legend_kwargs = self.plots[plot_type]['legend_kwargs']
+        if legend_kwargs is not False:
+            axes.legend(**legend_kwargs)
+
+        # Customize plot appearance
+        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+
+        # Save plot
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        fig.savefig(plot_path, **self.cfg['savefig_kwargs'])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+        # Save netCDF file
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        var_attrs = {
+            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
+        }
+        cubes[self._get_label(dataset)] = dataset['cube']
         io.save_1d_data(cubes, netcdf_path, 'month_number', var_attrs)
 
         # Provenance tracking
@@ -3287,6 +3391,7 @@ class MultiDatasets(MonitorBase):
             logger.info("Processing variable %s", var_key)
             self.create_timeseries_plot(datasets)
             self.create_annual_cycle_plot(datasets)
+            self.create_benchmarking_annual_cycle_plot(datasets)
             self.create_benchmarking_map_plot(datasets)
             self.create_benchmarking_timeseries_plot(datasets)
             self.create_benchmarking_zonal_plot(datasets)
