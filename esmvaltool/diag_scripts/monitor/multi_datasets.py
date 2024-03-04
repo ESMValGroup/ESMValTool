@@ -68,8 +68,9 @@ Currently supported plot types (use the option ``plots`` to specify them):
     Benchmarking plots
     ------------------
     - box plots (``benchmarking_boxplot``)
-    - maps (``benchmarking_map``):
-    - Zonal mean profiles (plot type ``benchmarking_zonal``):
+    - maps (``benchmarking_map``)
+    - time series (plot type ``benchmarking_timeseries``)
+    - zonal mean profiles (plot type ``benchmarking_zonal``)
 
 Author
 ------
@@ -589,6 +590,9 @@ Configuration options for plot type ``benchmarking_boxplot``
 Configuration options for plot type ``benchmarking_map``
 --------------------------------------------------------
 
+Configuration options for plot type ``benchmarking_timeseries``
+--------------------------------------------------------
+
 Configuration options for plot type ``benchmarking_zonal``
 ----------------------------------------------------------
 
@@ -704,6 +708,7 @@ class MultiDatasets(MonitorBase):
             'hovmoeller_time_vs_lat_or_lon',
             'benchmarking_boxplot',
             'benchmarking_map',
+            'benchmarking_timeseries',
             'benchmarking_zonal',
         ]
         for (plot_type, plot_options) in self.plots.items():
@@ -716,6 +721,14 @@ class MultiDatasets(MonitorBase):
 
             # Default options for the different plot types
             if plot_type == 'timeseries':
+                self.plots[plot_type].setdefault('annual_mean_kwargs', {})
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
+                self.plots[plot_type].setdefault('legend_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+                self.plots[plot_type].setdefault('time_format', None)
+
+            elif plot_type == 'benchmarking_timeseries':
                 self.plots[plot_type].setdefault('annual_mean_kwargs', {})
                 self.plots[plot_type].setdefault('gridline_kwargs', {})
                 self.plots[plot_type].setdefault('legend_kwargs', {})
@@ -1174,7 +1187,7 @@ class MultiDatasets(MonitorBase):
 
         # Default settings for different plot types
         if plot_type in ('timeseries', 'annual_cycle', '1d_profile',
-                         'variable_vs_lat'):
+                         'variable_vs_lat', 'benchmarking_timeseries'):
             plot_kwargs.setdefault('label', label)
 
         if plot_kwargs.get('norm') == 'centered':
@@ -1899,7 +1912,7 @@ class MultiDatasets(MonitorBase):
                 projection=self._get_benchmarking_map_projection())
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
-            plot_kwargs['extend'] ="both"
+            plot_kwargs['extend'] = "both"
             plot_map = plot_func(cube, **plot_kwargs)
 
             # apply stippling (dots) to all grid cells that do not exceed
@@ -1953,12 +1966,12 @@ class MultiDatasets(MonitorBase):
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
-            #fig.suptitle(cubes[0].long_name.split()[0] + 
-            fig.suptitle(cubes[0].long_name.partition("of")[0] + 
-                         f"of " +
+            # fig.suptitle(cubes[0].long_name.split()[0] +
+            fig.suptitle(cubes[0].long_name.partition("of")[0] +
+                         "of " +
                          self._get_label(datasets[0]) +
-                         f" ({datasets[0]['start_year']} - "
-                         f"{datasets[0]['end_year']})")
+                         " ({datasets[0]['start_year']} - "
+                         "{datasets[0]['end_year']})")
 
             sns.set_style('darkgrid')
 
@@ -1971,7 +1984,8 @@ class MultiDatasets(MonitorBase):
                 plot_boxplot.set(xticklabels=[])
                 # plot_map = plot_func(cube, **plot_kwargs)
 
-                plt.scatter(0, cubes[i].data, marker='x', s=200, linewidths=3, color = "red")
+                plt.scatter(0, cubes[i].data, marker='x', s=200, linewidths=3,
+                            color="red")
 
                 plt.ylabel(cubes[i].units)
                 plt.xlabel(var)
@@ -2005,7 +2019,7 @@ class MultiDatasets(MonitorBase):
             axes = fig.add_subplot()
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
-            plot_kwargs['extend'] ="both"
+            plot_kwargs['extend'] = "both"
             plot_benchmarking_zonal = plot_func(cube, **plot_kwargs)
 
             # apply stippling (dots) to all grid cells that do not exceed
@@ -2082,6 +2096,7 @@ class MultiDatasets(MonitorBase):
             'benchmarking_boxplot': (['']),
             'map': (['latitude', 'longitude'],),
             'benchmarking_map': (['latitude', 'longitude'],),
+            'benchmarking_timeseries': (['time'],),
             'benchmarking_zonal': (['latitude', 'air_pressure'],
                                    ['latitude', 'altitude']),
             'zonal_mean_profile': (['latitude', 'air_pressure'],
@@ -2192,8 +2207,8 @@ class MultiDatasets(MonitorBase):
     def _get_benchmark_mask(self, cube, percentile_dataset, metric):
         """Create mask for benchmarking cube depending on metric."""
         mask_cube = cube.copy()
-        
-        i0 = 0  # index largest percentile 
+
+        i0 = 0  # index largest percentile
         i1 = len(percentile_dataset) - 1  # index smallest percentile
 
         if metric == 'bias':
@@ -2374,6 +2389,107 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
+    def create_benchmarking_timeseries_plot(self, datasets):
+        """Create time series benchmarking plot."""
+        plot_type = 'benchmarking_timeseries'
+        if plot_type not in self.plots:
+            return
+
+        if not datasets:
+            raise ValueError(f"No input data to plot '{plot_type}' given")
+
+        logger.info("Plotting %s", plot_type)
+
+        # Get dataset to be benchmarked
+        dataset = self._get_benchmark_dataset(datasets)
+        # Get percentiles from multi-model statistics
+        percentile_dataset = self._get_benchmark_percentiles(datasets)
+
+        fig = plt.figure(**self.cfg['figure_kwargs'])
+        axes = fig.add_subplot()
+
+        # load data
+
+        percentile_data = []
+
+        for dataset_to_load in percentile_dataset:
+            filename = dataset_to_load['filename']
+            logger.info("Loading %s", filename)
+            cube = iris.load_cube(filename)
+            percentile_data.append(cube)
+
+        # Plot all datasets in one single figure
+        ancestors = []
+        cubes = {}
+
+        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+        iris.plot.plot(dataset['cube'], **plot_kwargs)
+
+        y2 = percentile_dataset[0]['cube']
+        if len(percentile_dataset) > 1:
+            idx = len(percentile_dataset) - 1
+            y1 = percentile_dataset[idx]['cube']
+        else:
+            y1 = y2.copy()
+            ymin, ymax = axes.get_ylim()
+            y1.data = np.full(len(y1.data), ymin)
+
+        iris.plot.fill_between(dataset['cube'].coord('time'), y1, y2,
+                               facecolor='lightgray', edgecolor='lightgray',
+                               linewidth=3)
+
+        # Default plot appearance
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+        axes.set_title(multi_dataset_facets['long_name'])
+        axes.set_xlabel('time')
+        # apply time formatting
+        if self.plots[plot_type]['time_format'] is not None:
+            axes.get_xaxis().set_major_formatter(
+                mdates.DateFormatter(self.plots[plot_type]['time_format']))
+        axes.set_ylabel(
+            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
+            f"[{multi_dataset_facets['units']}]"
+        )
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
+
+        # Legend
+        legend_kwargs = self.plots[plot_type]['legend_kwargs']
+        if legend_kwargs is not False:
+            axes.legend(**legend_kwargs)
+
+        # Customize plot appearance
+        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+
+        # Save plot
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        fig.savefig(plot_path, **self.cfg['savefig_kwargs'])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+        # Save netCDF file
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        var_attrs = {
+            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
+        }
+        cubes[self._get_label(dataset)] = dataset['cube']
+        io.save_1d_data(cubes, netcdf_path, 'time', var_attrs)
+
+        # Provenance tracking
+        caption = (f"Time series of {multi_dataset_facets['long_name']} for "
+                   f"various datasets.")
+        provenance_record = {
+            'ancestors': ancestors,
+            'authors': ['schlund_manuel'],
+            'caption': caption,
+            'plot_types': ['line'],
+            'long_names': [var_attrs['long_name']],
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
+
     def create_annual_cycle_plot(self, datasets):
         """Create annual cycle plot."""
         plot_type = 'annual_cycle'
@@ -2498,14 +2614,14 @@ class MultiDatasets(MonitorBase):
         if self.plots[plot_type]['var_order']:
             var_order = self.plots[plot_type]['var_order']
             if set(variables) == set(var_order):
-                ind = [variables.index(var_order[i]) for i in range(len(variables))]
+                ind = [variables.index(var_order[i])
+                       for i in range(len(variables))]
                 cubes = iris.cube.CubeList([cubes[i] for i in ind])
                 benchmark_datasets = [benchmark_datasets[i] for i in ind]
                 variables = var_order
             else:
-                raise ValueError(f"List of ordered variables do not agree with"
-                                 f" processed variables")
-
+                raise ValueError("List of ordered variables do not agree with"
+                                 " processed variables")
 
         (plot_path, netcdf_paths) = (
             self._plot_benchmarking_boxplot(df, cubes, variables,
@@ -3172,6 +3288,7 @@ class MultiDatasets(MonitorBase):
             self.create_timeseries_plot(datasets)
             self.create_annual_cycle_plot(datasets)
             self.create_benchmarking_map_plot(datasets)
+            self.create_benchmarking_timeseries_plot(datasets)
             self.create_benchmarking_zonal_plot(datasets)
             self.create_map_plot(datasets)
             self.create_zonal_mean_profile_plot(datasets)
