@@ -20,32 +20,22 @@ Download and processing instructions
 import glob
 import logging
 import os
+import os.path
+
 from copy import deepcopy
 from datetime import datetime
 from dateutil import relativedelta
-
 from netCDF4 import Dataset
-from cdo import *
-import os.path
+from cdo import Cdo
 
-import cf_units
 import iris
 import numpy as np
-from dask import array as da
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvalcore.preprocessor import regrid
-#from esmvalcore.preprocessor.regrid_schemes import (
-#    ESMPyAreaWeighted, ESMPyLinear, ESMPyNearest, UnstructuredNearest)
-#from esmf_regrid.schemes import ESMFAreaWeighted, ESMFBilinear
-
 from esmvaltool.cmorizers.data.utilities import (
     save_variable, set_global_atts)
-
-#from iris import NameConstraint
-from iris.cube import Cube
+#from iris.cube import Cube
 
 logger = logging.getLogger(__name__)
-#cdo = Cdo()
 
 
 def _fix_coordinates(cube, definition):
@@ -111,9 +101,9 @@ def _regrid_infile(infile, outfile, weightsfile):
     esagrid_file = "./esacci_grid.txt"
 
     # write grid description to ASCII file
-    file = open(esagrid_file, "w")
-    file.write(esagrid)
-    file.close()
+    with open(esagrid_file, "w", encoding="ascii") as file:
+        file.write(esagrid)
+        file.close()
 
     # define dimensions of target grid (regular lat-lon grid)
     target_dimx = 720  # delta_lon = 0.5 deg
@@ -132,7 +122,7 @@ def _regrid_infile(infile, outfile, weightsfile):
         src = weights.variables['src_grid_dims']
         dst = weights.variables['dst_grid_dims']
         if (xsize == src[0] and ysize == src[1] and
-            target_dimx == dst[0] and target_dimy == dst[1]):
+                target_dimx == dst[0] and target_dimy == dst[1]):
             logger.info("Using matching weights file %s for regridding.",
                         weightsfile)
             weightsfile_ok = True
@@ -158,8 +148,6 @@ def _regrid_infile(infile, outfile, weightsfile):
     # delete temporary file
     os.remove(esagrid_file)
 
-    return
-
 
 def _extract_variable(in_file, var, cfg, out_dir, year):
     logger.info("CMORizing variable '%s' from input file '%s'",
@@ -177,7 +165,7 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
 
     # regrid input file using cdo
     # (using the preprocessor (ESMF) is too slow)
-    
+
     regridded_file = f"./{year}_{var['short_name']}.nc"
     weights_file = f"{weights_dir}/{year}_{var['short_name']}_weights.nc"
     _regrid_infile(in_file, regridded_file, weights_file)
@@ -212,13 +200,15 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
             cube.attributes.pop('actual_max')
         tmp_cube = cubes.merge_cube()
         # setting the attribute 'positive' is needed for Iris to recognize
-        # this coordinate as 'Z' axis 
+        # this coordinate as 'Z' axis
         tmp_cube.coord('depth').attributes['positive'] = "down"
         # swap coordinates 'depth' and 'time':
         #     (depth, time, lat, lon) --> (time, depth, lat, lon)
         flipped_data = np.swapaxes(tmp_cube.core_data(), 1, 0)
-        coord_spec = [(tmp_cube.coord('time'), 0), (tmp_cube.coord('depth'), 1),
-                      (tmp_cube.coord('latitude'), 2), (tmp_cube.coord('longitude'), 3)]
+        coord_spec = [(tmp_cube.coord('time'), 0),
+                      (tmp_cube.coord('depth'), 1),
+                      (tmp_cube.coord('latitude'), 2),
+                      (tmp_cube.coord('longitude'), 3)]
         cube = iris.cube.Cube(flipped_data, dim_coords_and_dims=coord_spec)
         cube.metadata = tmp_cube.metadata
         # change units string so unit conversion from deg C --> K will work
@@ -249,7 +239,6 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
 
     set_global_atts(cube, attributes)
 
-#    iris.util.unify_time_units(cube)
     cube.coord('time').points = cube.coord('time').core_points().astype(
         'float64')
 
@@ -270,69 +259,6 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
     # Fix coordinates
     cube = _fix_coordinates(cube, definition)
 
-
-# -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
-
-#    cube.coord('latitude').attributes = None
-#    cube.coord('longitude').attributes = None
-
-#    cube.coord('projection_y_coordinate').standard_name = "latitude"
-#    cube.coord('projection_x_coordinate').standard_name = "longitude"
-#    print(cube)
-
-#    dlon = 0.5
-#    dlat = 0.5
-#    mid_dlon, mid_dlat = dlon / 2, dlat / 2
-#
-#    latdata = np.linspace(-90.0, 90.0, int(180.0 / dlat) + 1)
-#    londata = np.linspace(0.0, 360.0 - dlon, int(360.0 / dlon))
-#
-#    lats = iris.coords.DimCoord(latdata,
-#                                standard_name='latitude',
-#                                units='degrees_north',
-#                                var_name='lat',
-#                                circular=False)
-#
-#    lons = iris.coords.DimCoord(londata,
-#                                standard_name='longitude',
-#                                units='degrees_east',
-#                                var_name='lon',
-#                                circular=False)
-#
-#    lats.guess_bounds()
-#    lons.guess_bounds()
-#
-#    # Construct the resultant stock cube, with dummy data.
-#    shape = (latdata.size, londata.size)
-#    dummy = np.empty(shape, dtype=np.dtype('int8'))
-#    coords_spec = [(lats, 0), (lons, 1)]
-#    target_grid_cube = Cube(dummy, dim_coords_and_dims=coords_spec)
-#
-#    regridded_cube = cube.regrid(target_grid_cube, ESMPyLinear())
-#    regridded_cube = cube.regrid(target_grid_cube, ESMPyAreaWeighted())
-#    regridded_cube = cube.regrid(target_grid_cube, ESMPyNearest())
-#    regridded_cube = cube.regrid(target_grid_cube, ESMFAreaWeighted())
-#    regridded_cube = cube.regrid(target_grid_cube, ESMFBilinear())
-#    regridded_cube = cube.regrid(target_grid_cube, iris.analysis.PointInCell())
-#    regridded_cube = cube.regrid(target_grid_cube, iris.analysis.Nearest())
-#    regridded_cube = cube.regrid(target_grid_cube, iris.analysis.UnstructuredNearest())
-#    regridded_cube = cube.regrid(target_grid_cube, UnstructuredNearest())
-
-#    # regridding from polar stereographic to 0.5x0.5
-#    cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
-#    cube = regrid(cube, target_grid='0.5x0.5', scheme='nearest')
-#    cube = regrid(cube, target_grid='0.5x0.5', scheme='linear')
-
-#    cube.attributes.update({"geospatial_lon_resolution": "0.5",
-#                            "geospatial_lat_resolution": "0.5",
-#                            "spatial_resolution": "0.5"})
-
-# -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
-
     # Save results
     logger.debug("Saving cube\n%s", cube)
     logger.debug("Setting time dimension to UNLIMITED while saving!")
@@ -341,7 +267,7 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
                   unlimited_dimensions=['time'])
     os.remove(regridded_file)  # delete temporary file
     logger.info("Finished CMORizing %s", in_file)
-    
+
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """CMORize ESACCI-PERMAFROST dataset."""
@@ -369,8 +295,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 )
             in_file = glob.glob(filepattern)[0]
             if not in_file:
-                logger.info(f'{loop_date.year}: no data not found for '
-                            f'variable {short_name}')
+                logger.info("%d: no data not found for variable %s",
+                            loop_date.year, short_name)
             else:
                 _extract_variable(in_file, var, cfg, out_dir, loop_date.year)
 
