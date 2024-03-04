@@ -50,8 +50,8 @@ logger = logging.getLogger(__name__)
 
 def _fix_coordinates(cube, definition):
     """Fix coordinates."""
-    axis2def = {'T': 'time', 'X': 'longitude', 'Y': 'latitude'}
-    axes = ['T', 'X', 'Y']
+    axis2def = {'T': 'time', 'X': 'longitude', 'Y': 'latitude', 'Z': 'sdepth'}
+    axes = ['T', 'X', 'Y', 'Z']
 
     for axis in axes:
         coord_def = definition.coordinates.get(axis2def[axis])
@@ -204,19 +204,27 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
                 sdepth = 999.0
                 logger.info("Could not determin depth. Check results.")
             cube.add_aux_coord(iris.coords.AuxCoord(sdepth,
-                               long_name='sdepth', units="m"))
+                               standard_name='depth',
+                               long_name='depth', units="m"))
             cube.var_name = "gst"
             cube.standard_name = "soil_temperature"  # "valid" standard name
             cube.attributes.pop('actual_min')
             cube.attributes.pop('actual_max')
         tmp_cube = cubes.merge_cube()
-        # swap coordinates 'sdepth' and 'time'
-        # (sdepth, time, lat, lon) --> (time, sdepth, lat, lon)
+        # setting the attribute 'positive' is needed for Iris to recognize
+        # this coordinate as 'Z' axis 
+        tmp_cube.coord('depth').attributes['positive'] = "down"
+        # swap coordinates 'depth' and 'time':
+        #     (depth, time, lat, lon) --> (time, depth, lat, lon)
         flipped_data = np.swapaxes(tmp_cube.core_data(), 1, 0)
-        coord_spec = [(tmp_cube.coord('time'), 0), (tmp_cube.coord('sdepth'), 1),
+        coord_spec = [(tmp_cube.coord('time'), 0), (tmp_cube.coord('depth'), 1),
                       (tmp_cube.coord('latitude'), 2), (tmp_cube.coord('longitude'), 3)]
         cube = iris.cube.Cube(flipped_data, dim_coords_and_dims=coord_spec)
         cube.metadata = tmp_cube.metadata
+        # change units string so unit conversion from deg C --> K will work
+        cube.units = 'celsius'
+        # convert units from degC to K
+        cube.convert_units('K')
     else:
         cube = cubes[0]
 
@@ -253,11 +261,8 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
     # Fix units
     # input variable for pfr reports 'percent' --> rename to '%'
     # input variable for alt reports 'metres' --> rename to 'm'
-    # input variable for gtd reports 'degrees celsius' --> convert to 'K'
-    print(cube.units)
-    print(definition.units)
-####    cube.convert_units(definition.units)
-#    cube.units = definition.units
+    # input variable for gtd has been converted to 'K' --> nothing to do
+    cube.units = definition.units
 
     # Fix data type
     cube.data = cube.core_data().astype('float32')
@@ -350,9 +355,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 glob_attrs['version'])
 
     if start_date is None:
-        start_date = datetime(2003, 1, 1)  # (1997, 1, 1)
+        start_date = datetime(1997, 1, 1)
     if end_date is None:
-        end_date = datetime(2003, 12, 31)  # 2019, 12, 31)
+        end_date = datetime(2019, 12, 31)
 
     loop_date = start_date
     while loop_date <= end_date:
