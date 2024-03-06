@@ -1578,7 +1578,7 @@ diagnostics:
       prw:
     additional_datasets:
       - {dataset: ESACCI-WATERVAPOUR, project: OBS, mip: Amon, tier: 3,
-         type: sat, version: CDR2-L3S-05deg_fv3.1,
+         type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
          start_year: 2003, end_year: 2017}
     scripts: null
 
