@@ -76,7 +76,7 @@ begin
   colors = project_style(input_file_info, diag_script_info, "colors")
   dashes = project_style(input_file_info, diag_script_info, "dashes")
   thicks = project_style(input_file_info, diag_script_info, "thicks")
-  plotpath = config_user_info@plot_dir + "/russell18jgr_fig2_"  \
+  plotpath = config_user_info@plot_dir + "russell18jgr_fig2_"  \
     + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
     + sprinti("%0.4i", max(toint(end_years_data)))
 
@@ -156,17 +156,6 @@ begin
     delete(var_lon_avg)
     delete(dataset)
 
-  ; Call provenance logger
-  log_provenance(ncdf_outfile, \
-                 plotpath, \
-                 "Russell et al 2018 figure 2", \
-                 "mean", \
-                 "sh", \
-                 "geo", \
-                 "russell_joellen", \
-                 "russell18jgr", \
-                 infile_path)
-
     if (iii .ne. 0) then
         overlay(plot(0), plot(iii))
     end if
@@ -192,4 +181,17 @@ begin
   "lgLineDashSegLenF"        : 0.11
   end create
   draw(legend)
+
+  frame(wks)
+
+  ; Call provenance logger
+  log_provenance(ncdf_outfile, \
+                 plotpath + "." + output_type(), \
+                 "Russell et al 2018 figure 2", \
+                 "mean", \
+                 "sh", \
+                 "geo", \
+                 "russell_joellen", \
+                 "russell18jgr", \
+                 infile_path)
 end

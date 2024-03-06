@@ -731,7 +731,7 @@ begin
   if (output) then
     work_dir := output@work_dir
     opt = diag_script_info
-    plot_path = "missing"
+    plot_path = "n/a"
     plot_type = ""
 
     ; Iterate over all desired diagnostics

@@ -120,6 +120,10 @@ authors:
     institute: DLR, Germany
     orcid: https://orcid.org/0000-0001-7058-5938
     github: LisaBock
+  bodas-salcedo_alejandro:
+    name: Bodas-Salcedo, Alejandro
+    institute: MetOffice, UK
+    orcid:
   bojovic_dragana:
     name: Bojovic, Dragana
     institute: BSC, Spain
@@ -357,7 +361,7 @@ authors:
   malinina_elizaveta:
     name: Malinina, Elizaveta
     institute: CCCma, Canada
-    orchid: https://orcid.org/0000-0002-4102-2877
+    orcid: https://orcid.org/0000-0002-4102-2877
     github: malininae
   maloney_eric:
     name: Maloney, Eric
@@ -410,6 +414,10 @@ authors:
   pandde_amarjiit:
     name: Pandde, Amarjiit
     institute: Univ. of Arizona, USA
+    orcid:
+  pearce_francesca:
+    name: Pearce, Francesca
+    institute: MetOffice, UK
     orcid:
   perez-zanon_nuria:
     name: Perez-Zanon, Nuria
