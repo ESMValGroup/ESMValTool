@@ -1,6 +1,6 @@
 # ESMValTool
 # This is basic example for ozone variability in the tropics
-# DETRENDED DATA
+# DETRENDED DATA- 7 variables
 
 documentation:
   title: Ozone variability over tropics
@@ -38,12 +38,23 @@ diagnostics:
         preprocessor: tropics_anomalies
         short_name: ho2
         mip: AERmonZ
+      h2o:
+        preprocessor: tropics_anomalies
+        short_name: h2o
+        mip: AERmonZ
       meanage:
         preprocessor: tropics_anomalies
         short_name: meanage
         mip: AERmonZ
+      geo_pot_height:
+        preprocessor: tropics_anomalies
+        short_name: zg
+        mip: AERmonZ
+      zonal_wind:
+        preprocessor: tropics_anomalies
+        short_name: ua
+        mip: AERmonZ
 
     scripts:
       tropics_anomalies_script:
-        script: o3_feb_extract_region.py
-
+        script: o3_extract_region_mean.py                                                                                                    
