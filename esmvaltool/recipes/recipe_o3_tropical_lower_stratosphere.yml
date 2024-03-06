@@ -21,7 +21,7 @@ preprocessors:
       levels: [10000.]
       scheme: linear
     detrend:
-      method: linear
+      method: linear       
 diagnostics:
   diagnostic_o3:
     description: Analyze variables for ozone time series
@@ -42,7 +42,7 @@ diagnostics:
         preprocessor: tropics_anomalies
         short_name: h2o
         mip: AERmonZ
-      meanage:
+      meanage: # E.G.: As far as I remember those calculations of meanage were not correct and u had to load data outside the ESMValTool. Can u fix this?
         preprocessor: tropics_anomalies
         short_name: meanage
         mip: AERmonZ
