@@ -585,7 +585,7 @@ time_format: str, optional (default: None)
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
     use the default formatting imposed by the iris plotting function.
 
-Configuration options for plot type ``benchmarking_annual_cycle`` 
+Configuration options for plot type ``benchmarking_annual_cycle``
 -----------------------------------------------------------------
 
 Configuration options for plot type ``benchmarking_boxplot``
@@ -593,7 +593,7 @@ Configuration options for plot type ``benchmarking_boxplot``
 
 Configuration options for plot type ``benchmarking_diurnal_cycle``
 ------------------------------------------------------------------
-Same as for ``benchmarking_annual_cycle``. 
+Same as for ``benchmarking_annual_cycle``.
 
 Configuration options for plot type ``benchmarking_map``
 --------------------------------------------------------
@@ -1209,7 +1209,7 @@ class MultiDatasets(MonitorBase):
 
         # Default settings for different plot types
         if plot_type in ('timeseries', 'annual_cycle',
-                         'benchmarking_annual_cycle','1d_profile',
+                         'benchmarking_annual_cycle', '1d_profile',
                          'benchmarking_diurnal_cycle',
                          'variable_vs_lat', 'benchmarking_timeseries'):
             plot_kwargs.setdefault('label', label)
@@ -2192,20 +2192,21 @@ class MultiDatasets(MonitorBase):
         variable = datasets[0][self.cfg['group_variables_by']]
         ref_datasets = [d for d in datasets if
                         d.get('reference_for_metric', False)]
+
         if len(ref_datasets) == 1:
             return ref_datasets[0]
-        else:
-            # try variable attribute "reference_dataset"
-            for d in datasets:
-                print(d.get('reference_dataset'))
-                print(d.get('dataset'))
-                if (d.get('reference_dataset') == d.get('dataset')):
-                    ref_datasets = d
-                    break
-            if len(ref_datasets) != 1:
-                raise ValueError(
-                    f"Expected exactly 1 reference dataset for variable "
-                    f"'{variable}', got {len(ref_datasets):d}")
+
+        # try variable attribute "reference_dataset"
+        for d in datasets:
+            print(d.get('reference_dataset'))
+            print(d.get('dataset'))
+            if d.get('reference_dataset') == d.get('dataset'):
+                ref_datasets = d
+                break
+        if len(ref_datasets) != 1:
+            raise ValueError(
+                f"Expected exactly 1 reference dataset for variable "
+                f"'{variable}', got {len(ref_datasets):d}")
         return None
 
     def _get_benchmark_dataset(self, datasets):
@@ -2234,22 +2235,22 @@ class MultiDatasets(MonitorBase):
         """Create mask for benchmarking cube depending on metric."""
         mask_cube = cube.copy()
 
-        i0 = 0  # index largest percentile
-        i1 = len(percentile_dataset) - 1  # index smallest percentile
+        idx0 = 0  # index largest percentile
+        idx1 = len(percentile_dataset) - 1  # index smallest percentile
 
         if metric == 'bias':
-            sgn_p_up = np.where((percentile_dataset[i0].data >= 0), 1, -1)
-            sgn_p_dn = np.where((percentile_dataset[i1].data >= 0), 1, -1)
+            sgn_p_up = np.where((percentile_dataset[idx0].data >= 0), 1, -1)
+            sgn_p_dn = np.where((percentile_dataset[idx1].data >= 0), 1, -1)
             mask = np.where((sgn_p_up == 1) &
-                            (cube.data >= percentile_dataset[i0].data) |
+                            (cube.data >= percentile_dataset[idx0].data) |
                             (sgn_p_dn == -1) &
-                            (cube.data <= percentile_dataset[i1].data), 0, 1)
+                            (cube.data <= percentile_dataset[idx1].data), 0, 1)
         elif metric == 'emd':
-            mask = np.where(cube.data >= percentile_dataset[i0].data, 0, 1)
+            mask = np.where(cube.data >= percentile_dataset[idx0].data, 0, 1)
         elif metric == 'pearsonr':
-            mask = np.where(cube.data <= percentile_dataset[i0].data, 0, 1)
+            mask = np.where(cube.data <= percentile_dataset[idx0].data, 0, 1)
         elif metric == 'rmse':
-            mask = np.where(cube.data >= percentile_dataset[i0].data, 0, 1)
+            mask = np.where(cube.data >= percentile_dataset[idx0].data, 0, 1)
         else:
             raise ValueError(
                 f"Could not create benchmarking mask, unknown benchmarking "
@@ -2270,26 +2271,26 @@ class MultiDatasets(MonitorBase):
         else:
             metric = 'bias'  # default
             logger.info(
-                f"Could not determine metric from short_name, "
-                f"assuming benchmarking metric = '{metric}'")
+                "Could not determine metric from short_name, "
+                "assuming benchmarking metric = %s", metric)
         return metric
 
     def _get_benchmark_percentiles(self, datasets):
         """Get percentile datasets from multi-model statistics preprocessor."""
         variable = datasets[0][self.cfg['group_variables_by']]
         percentiles = []
-        for d in datasets:
-            statistics = d.get('multi_model_statistics')
+        for dataset in datasets:
+            statistics = dataset.get('multi_model_statistics')
             if statistics:
                 if "Percentile" in statistics:
-                    percentiles.append(d)
+                    percentiles.append(dataset)
 
         # *** sort percentiles by size ***
 
         # get percentiles as integers
         iperc = []
-        for d in percentiles:
-            stat = d.get('multi_model_statistics')
+        for dataset in percentiles:
+            stat = dataset.get('multi_model_statistics')
             perc = stat.replace('MultiModelPercentile', '')
             iperc.append(int(perc))
 
@@ -2297,33 +2298,32 @@ class MultiDatasets(MonitorBase):
         # sort list of percentile datasets by percentile with highest
         # percentile first (descending order)
         zipped_pairs = zip(iperc, idx)
-        z = [x for _, x in sorted(zipped_pairs, reverse=True)]
-        perc_sorted = [percentiles[i] for i in z]
+        zval = [x for _, x in sorted(zipped_pairs, reverse=True)]
+        perc_sorted = [percentiles[i] for i in zval]
         percentiles = perc_sorted
 
         # get number of percentiles expected depending on benchmarking metric
 
         metric = self._get_benchmark_metric(datasets)
 
-        if (metric == 'bias'):
+        if metric == 'bias':
             numperc = 2
-        elif (metric == 'rmse'):
+        elif metric == 'rmse':
             numperc = 1
-        elif (metric == 'pearsonr'):
+        elif metric == 'pearsonr':
             numperc = 1
-        elif (metric == 'emd'):
+        elif metric == 'emd':
             numperc = 1
         else:
             raise ValueError(f"Unknown benchmarking metric: '{metric}'.")
 
         if len(percentiles) >= numperc:
             return percentiles
-        else:
-            raise ValueError(
-                f"Expected at least '{numperc}' percentile datasets (created "
-                f"'with multi-model statistics preprocessor for variable "
-                f"'{variable}'), got {len(percentiles):d}")
-        return None
+
+        raise ValueError(
+            f"Expected at least '{numperc}' percentile datasets (created "
+            f"'with multi-model statistics preprocessor for variable "
+            f"'{variable}'), got {len(percentiles):d}")
 
     def create_timeseries_plot(self, datasets):
         """Create time series plot."""
@@ -2451,16 +2451,16 @@ class MultiDatasets(MonitorBase):
         plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
         iris.plot.plot(dataset['cube'], **plot_kwargs)
 
-        y2 = percentile_dataset[0]['cube']
+        yval2 = percentile_dataset[0]['cube']
         if len(percentile_dataset) > 1:
             idx = len(percentile_dataset) - 1
-            y1 = percentile_dataset[idx]['cube']
+            yval1 = percentile_dataset[idx]['cube']
         else:
-            y1 = y2.copy()
+            yval1 = yval2.copy()
             ymin, ymax = axes.get_ylim()
-            y1.data = np.full(len(y1.data), ymin)
+            yval1.data = np.full(len(yval1.data), ymin)
 
-        iris.plot.fill_between(dataset['cube'].coord('time'), y1, y2,
+        iris.plot.fill_between(dataset['cube'].coord('time'), yval1, yval2,
                                facecolor='lightblue', edgecolor='lightblue',
                                linewidth=3, zorder=1, alpha=0.8)
 
@@ -2620,16 +2620,16 @@ class MultiDatasets(MonitorBase):
         plot_kwargs['axes'] = axes
         iris.plot.plot(cube, **plot_kwargs)
 
-        y2 = percentile_dataset[0]['cube']
+        yval2 = percentile_dataset[0]['cube']
         if len(percentile_dataset) > 1:
             idx = len(percentile_dataset) - 1
-            y1 = percentile_dataset[idx]['cube']
+            yval1 = percentile_dataset[idx]['cube']
         else:
-            y1 = y2.copy()
+            yval1 = yval2.copy()
             ymin, ymax = axes.get_ylim()
-            y1.data = np.full(len(y1.data), ymin)
+            yval1.data = np.full(len(yval1.data), ymin)
 
-        iris.plot.fill_between(cube.coord('month_number'), y1, y2,
+        iris.plot.fill_between(cube.coord('month_number'), yval1, yval2,
                                facecolor='lightblue',
                                linewidth=0, zorder=1, alpha=0.8)
 
@@ -2800,16 +2800,16 @@ class MultiDatasets(MonitorBase):
         plot_kwargs['axes'] = axes
         iris.plot.plot(cube, **plot_kwargs)
 
-        y2 = percentile_dataset[0]['cube']
+        yval2 = percentile_dataset[0]['cube']
         if len(percentile_dataset) > 1:
             idx = len(percentile_dataset) - 1
-            y1 = percentile_dataset[idx]['cube']
+            yval1 = percentile_dataset[idx]['cube']
         else:
-            y1 = y2.copy()
+            yval1 = yval2.copy()
             ymin, ymax = axes.get_ylim()
-            y1.data = np.full(len(y1.data), ymin)
+            yval1.data = np.full(len(yval1.data), ymin)
 
-        iris.plot.fill_between(cube.coord('hour'), y1, y2,
+        iris.plot.fill_between(cube.coord('hour'), yval1, yval2,
                                facecolor='lightblue',
                                linewidth=0,
                                zorder=1, alpha=0.8)
