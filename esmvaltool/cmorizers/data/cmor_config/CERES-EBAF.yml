@@ -1,6 +1,6 @@
 ---
 # Filename
-filename: 'CERES_EBAF-TOA_Ed4.2_Subset_200003-202306.nc'
+filename: 'CERES_EBAF-TOA_Ed4.2_Subset_200003-202311.nc'
 
 # Common global attributes for Cmorizer output
 attributes:
@@ -27,3 +27,12 @@ variables:
   rlutcs:
     mip: Amon
     raw: toa_lw_clr_c_mon
+  rsdt:
+    mip: Amon
+    raw: solar_mon
+  rtmt:
+    mip: Amon
+    raw: toa_net_all_mon
+  rtnt:
+    mip: Amon
+    raw: toa_net_all_mon
