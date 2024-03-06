@@ -1,3 +1,5 @@
+#Diagnostics file for ozone changes in tropical lower stratosphere
+
 import logging
 from pathlib import Path
 import iris
@@ -43,11 +45,11 @@ def plot_anomalies(input_file, name, variable_group, color=None):
         # Extract time and anomalies
         if cube.coords('time', dim_coords=True):
             ih.unify_time_coord(cube)
-    
+        
         # Plotting function by using the plotting_support function
         plotting_support(extracted_cube, key=name, linestyle='-', marker=None, color=color)
 
-        return {'cube': extracted_cube, 'name': name}
+        return {'cube': mean_cube, 'name': name}
 
     except Exception as e:
         logger.error(f"Error plotting: {e}")
@@ -76,7 +78,7 @@ def main(cfg):
     data_by_variable_group = {}
     
 
-    # loop for variables/dataset
+    # Loop for variables/dataset
     for i, dataset in enumerate(input_data):
        
 
@@ -90,8 +92,9 @@ def main(cfg):
         start_latitude = -20
         end_latitude = 20
         extracted_cube = extract_region(cube, start_latitude, end_latitude)
-        file_name = cfg["work_dir"] + f"/extracted_region_{variable_group}.nc"
-        iris.save(extracted_cube, file_name)
+        mean_cube = extracted_cube.collapsed('latitude', iris.analysis.MEAN)
+        file_name = cfg["work_dir"] + f"/mean_extracted_region_{variable_group}.nc"
+        iris.save(mean_cube, file_name)
         
         # Check whether variable_group is alreadypresent
         if variable_group not in data_by_variable_group:
@@ -128,6 +131,3 @@ def main(cfg):
 if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
-
-
-
