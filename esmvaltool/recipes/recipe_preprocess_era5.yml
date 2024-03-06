@@ -24,13 +24,13 @@ documentation:
 
 datasets:
   # For the daily diagnostic, always add the next year, otherwise the last day is not cmor compatible
-  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 2005, end_year: 2008}
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 2003, end_year: 2008}
 
 
 preprocessors:
   add_one_day: &add_one_day
     extract_time:
-      start_year: 2007
+      start_year: 2003
       start_month: 1
       start_day: 1
       end_year: 2008
@@ -68,9 +68,17 @@ diagnostics:
             #  era5_name: mean_sea_level_pressure
             #  era5_freq: hourly
             #  preprocessor: daily_mean
-      hfss:
+            #hfss:
+            #  mip: E1hr
+            #  era5_name: mean_surface_sensible_heat_flux
+            #  era5_freq: hourly
+            #  preprocessor: daily_mean
+      sfcWind:
         mip: E1hr
-        era5_name: mean_surface_sensible_heat_flux
+        derive: true
+        era5_name: 
+          - 10m_u_component_of_wind
+          - 10m_v_component_of_wind
         era5_freq: hourly
         preprocessor: daily_mean
         #ta700:

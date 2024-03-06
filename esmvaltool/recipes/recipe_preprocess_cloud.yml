@@ -19,10 +19,7 @@ documentation:
 
 
 years: &years
-  #start_year: 2000
-  #end_year: 2004
   timerange: 200301/200712
-  #timerange: 198201/201612
 
 
 ESACCI_CLOUD_datasets: &esacci
@@ -37,31 +34,71 @@ ERA5_datasets: &era5
 
 preprocessors:
 
-  south_east_pacific:
-    #custom_order: true
+  south_east_pacific_5x5: &sep_pp_5x5
     extract_region:
-      #start_latitude: -30.
       start_latitude: -25.
-      #end_latitude: -10.
       end_latitude: -20.
-      #start_longitude: 265.
       start_longitude: 280.
       end_longitude: 285.
-    mask_landsea: &mask_land
+    mask_landsea:
       mask_out: land
-    area_statistics: &area_mean
-      operator: mean    
-      #anomalies:
-      #  period: day
-      #regrid:
-      #  scheme: area_weighted
-      #3  target_grid: 5x5      
-      #timeseries_filter:
-      #  window: 5  # 3-monthly filter window
-      #  span: 30   # weights computed on the first month
-      #  filter_type: lowpass  # low-pass filter
-      #  filter_stats: mean    # 3-monthly mean lowpass filter
 
+  south_east_pacific: &sep_pp
+    extract_region:
+      start_latitude: -30.
+      end_latitude: -10.
+      start_longitude: 265.
+      end_longitude: 285.
+    mask_landsea:
+      mask_out: land
+
+  mean_pp_5x5:
+    <<: *sep_pp_5x5
+    area_statistics:
+       operator: mean
+
+  anomaly_pp_5x5:
+    <<: *sep_pp_5x5
+    area_statistics:
+      operator: mean
+    anomalies:
+      period: day
+
+  mean_filter_pp_5x5:
+    <<: *sep_pp_5x5
+    area_statistics:
+       operator: mean
+    timeseries_filter: &filter
+      window: 5  # 3-monthly filter window
+      span: 30   # weights computed on the first month
+      filter_type: lowpass  # low-pass filter
+      filter_stats: mean    # 3-monthly mean lowpass filter
+
+  anomaly_filter_pp_5x5:
+    <<: *sep_pp_5x5
+    area_statistics:
+      operator: mean
+    timeseries_filter:
+      window: 5  # 3-monthly filter window
+      span: 30   # weights computed on the first month
+      filter_type: lowpass  # low-pass filter
+      filter_stats: mean    # 3-monthly mean lowpass filter
+    anomalies:
+      period: day
+
+  mean_pp:
+    <<: *sep_pp
+    regrid: &regrid
+      scheme: area_weighted
+      target_grid: 5x5      
+
+  anomaly_pp:
+    <<: *sep_pp
+    regrid:
+      scheme: area_weighted
+      target_grid: 5x5      
+    anomalies:
+      period: day
 
   annual_cycle:
     custom_order: true 
@@ -89,8 +126,8 @@ diagnostics:
     description: Create timeseries.
     variables:
       clt: &var
-        preprocessor: south_east_pacific
-        #preprocessor: annual_cycle
+        preprocessor: mean_filter_pp_5x5
+        #preprocessor: mean_pp
         mip: day
         frequency: day
         <<: *years
@@ -107,11 +144,11 @@ diagnostics:
       reff:
         <<: *var
         mip: day
-        #rsdt:
-        #  <<: *var
-        #  mip: Amon
-        #  frequency: mon
-        #  additional_datasets: *ceres-ebaf
+      rsdt:
+        <<: *var
+        mip: Amon
+        frequency: mon
+        additional_datasets: *ceres-ebaf
       prw:
         <<: *var
         mip: Eday
@@ -121,6 +158,8 @@ diagnostics:
         additional_datasets: *era5
       hfss: 
         <<: *var2
+      sfcWind: 
+        <<: *var2
       ta700: 
         <<: *var2
         mip: CFday 
@@ -128,12 +167,9 @@ diagnostics:
         <<: *var2
       tos:
         <<: *var2
+        preprocessor: anomaly_filter_pp_5x5
       wap700:
         <<: *var2
-        #prw_era5:
-        #  <<: *var2
-        #  short_name: prw
-        #  mip: Eday
     scripts: 
       timeseries:
         script: causal_clouds_timeseries.py
@@ -141,5 +177,5 @@ diagnostics:
           #- theta700
           #- theta850
           - LTS
-        plot_timeseries:
-          plot_type: plot
+            #plot_timeseries:
+            #  plot_type: plot
