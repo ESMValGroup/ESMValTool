@@ -124,7 +124,7 @@ def main(cfg):
         create_subplot(plt.gca(), data_list, variable_group)
          
         # Save separate figures for each variable
-        plt.savefig(f'plot_{variable_group}.png')
+        plt.savefig(f'plot_{variable_group}.png')  # E.G. Are the figures properly plotted? If not, please, make sure that its fixed.
         
         
 
