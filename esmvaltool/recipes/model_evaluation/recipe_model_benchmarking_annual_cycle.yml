@@ -64,6 +64,23 @@ datasets:
 
 preprocessors:
 
+  pp_tas:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    climate_statistics:
+      period: month
+    area_statistics:
+      operator: mean
+    multi_model_statistics:
+      span: overlap
+      statistics:
+        - operator: percentile
+          percent: 10
+        - operator: percentile
+          percent: 90
+      exclude: [reference_dataset, MIROC6]
+
   pp_tas_metric:
     custom_order: true
     regrid_time:
@@ -88,11 +105,68 @@ preprocessors:
 
 diagnostics:
 
-  benchmarking_timeseries:
-    description: Plot "benchmarking" annual cycle plot.
+  annual_cycle:
+    description: Create "classical" annual cycle plot including a reference dataset.
     variables:
       tas:
-        timerange: '1980/2014'
+        timerange: '2000/2009'
+        preprocessor: pp_tas
+        project: CMIP6
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        reference_dataset: HadCRUT5
+        additional_datasets:
+          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis, tier: 2}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+#        plot_filename: '{plot_type}_{real_name}_{mip}'
+        group_variables_by: variable_group
+#        facet_used_for_labels: project
+        plots:
+          annual_cycle:
+            annual_mean_kwargs: False
+#            legend_kwargs: False
+            plot_kwargs:
+              MIROC6:
+                color: red
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+              HadCRUT5:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              MultiModelPercentile10:
+                color: gray
+                label: '{dataset}'
+                linestyle: '--'
+                linewidth: 1
+                zorder: 2
+              MultiModelPercentile90:
+                color: gray
+                label: '{dataset}'
+                linestyle: '--'
+                linewidth: 1
+                zorder: 2
+              default:
+                color: lightgray
+                label: null
+                linestyle: '-'
+                linewidth: 1
+                zorder: 1
+
+  benchmarking_annual_cycle:
+    description: Create "benchmarking" annual cycle plot.
+    variables:
+      tas:
+        timerange: '2000/2009'
         preprocessor: pp_tas_metric
         project: CMIP6
         mip: Amon

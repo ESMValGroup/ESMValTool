@@ -13,10 +13,10 @@ documentation:
 
 # Note: the following models are just examples
 datasets:
-#  - {dataset: GFDL-CM4, grid: gr1}
-#  - {dataset: IPSL-CM6A-LR, grid: gr}
-#  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
-#  - {dataset: MPI-ESM1-2-LR, grid: gn}
+##  - {dataset: GFDL-CM4, grid: gr1}
+##  - {dataset: IPSL-CM6A-LR, grid: gr}
+##  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
+##  - {dataset: MPI-ESM1-2-LR, grid: gn}
   - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
   - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
   - {dataset: AWI-CM-1-1-MR, grid: gn}
@@ -26,7 +26,7 @@ datasets:
 #  - {dataset: CAMS-CSM1-0, grid: gn}
 #  - {dataset: CanESM5, grid: gn}
 #  - {dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
-#  - {dataset: CESM2, grid: gn}
+#  - {dataset: CESM2, grid: gn, ensemble: r10i1p1f1}
 #  - {dataset: CESM2-FV2, grid: gn, institute: NCAR}
 #  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
 #  - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
@@ -37,7 +37,7 @@ datasets:
 #  - {dataset: E3SM-1-0}
 #  - {dataset: E3SM-1-1, institute: E3SM-Project}
   - {dataset: EC-Earth3-Veg}
-  - {dataset: FGOALS-f3-L}
+#  - {dataset: FGOALS-f3-L}
   - {dataset: FGOALS-g3, grid: gn}
 #  - {dataset: FIO-ESM-2-0, grid: gn}
 #  - {dataset: GFDL-ESM4, grid: gr1}
@@ -67,6 +67,8 @@ preprocessors:
 
   pp_diurn_Tropics:
     custom_order: true
+#    regrid_time:
+#       frequency: 3hr
     resample_hours:
       interval: 3
       offset: 1
@@ -79,6 +81,8 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
+    mask_landsea:
+      mask_out: land
     climate_statistics:
       period: hourly
     distance_metric:
@@ -101,7 +105,7 @@ diagnostics:
     variables:
       clt_tropics:
         project: CMIP6
-        timerange: 20060101/20060201
+        timerange: 20000101/20001231
         preprocessor: pp_diurn_Tropics
         short_name: clt
         exp: historical
@@ -112,6 +116,10 @@ diagnostics:
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', frequency: 1hr,
              tier: 3, reference_for_metric: true}
+#        reference_dataset: ISCCP-H
+#        additional_datasets:
+#          - {dataset: ISCCP-H, project: OBS6, type: sat, version: 'v01r00',
+#             mip: CF3hr, tier: 2, reference_for_metric: true}
     scripts:
       allplots:
         script: monitor/multi_datasets.py

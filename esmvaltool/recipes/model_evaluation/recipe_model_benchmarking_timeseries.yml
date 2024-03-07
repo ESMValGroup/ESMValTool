@@ -79,6 +79,14 @@ preprocessors:
         end_day: 31
     area_statistics:
       operator: mean
+    multi_model_statistics:
+      span: overlap
+      statistics:
+        - operator: percentile
+          percent: 10
+        - operator: percentile
+          percent: 90
+      exclude: [reference_dataset, MIROC6]
 
   pp_tas_metric:
     custom_order: true
@@ -142,12 +150,24 @@ diagnostics:
                 label: '{dataset}'
                 linestyle: '-'
                 linewidth: 2
-                zorder: 3
+                zorder: 4
               HadCRUT5:
-                color: black
+                color: darkblue
                 label: '{dataset}'
                 linestyle: '-'
                 linewidth: 2
+                zorder: 3
+              MultiModelPercentile10:
+                color: gray
+                label: '{dataset}'
+                linestyle: '--'
+                linewidth: 1
+                zorder: 2
+              MultiModelPercentile90:
+                color: gray
+                label: '{dataset}'
+                linestyle: '--'
+                linewidth: 1
                 zorder: 2
               default:
                 color: lightgray
