@@ -12,6 +12,7 @@ documentation:
 
 datasets:
   - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 1970, end_year: 2014, grid: gnz}
+  # - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, mip: AERmonZ, start_year: 1970, end_year: 2014, grid: gnz} I suggested to enter mip: AERmonZ already here.
 
 preprocessors:
   tropics_anomalies:
@@ -29,11 +30,11 @@ diagnostics:
       ozone_tropics:
         preprocessor: tropics_anomalies
         short_name: o3
-        mip: AERmonZ
+        mip: AERmonZ #E.G. u can remove this entry if u follow my suggestion above.
       oh:
         preprocessor: tropics_anomalies
         short_name: oh
-        mip: AERmonZ
+        mip: AERmonZ #E.G. Same here and below for all variables
       ho2:
         preprocessor: tropics_anomalies
         short_name: ho2
@@ -41,7 +42,7 @@ diagnostics:
       h2o:
         preprocessor: tropics_anomalies
         short_name: h2o
-        mip: AERmonZ
+        mip: AERmonZ 
       meanage: # E.G.: As far as I remember those calculations of meanage were not correct and u had to load data outside the ESMValTool. Can u fix this?
         preprocessor: tropics_anomalies
         short_name: meanage
