@@ -105,7 +105,7 @@ diagnostics:
     variables:
       clt_tropics:
         project: CMIP6
-        timerange: 20000101/20001231
+        timerange: 20060101/20061231
         preprocessor: pp_diurn_Tropics
         short_name: clt
         exp: historical
@@ -131,7 +131,11 @@ diagnostics:
             legend_kwargs:
               loc: upper right
             plot_kwargs:
-              ERA5:
-                color: black
+              MIROC6:
+                color: red
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
             pyplot_kwargs:
               title: '{short_name}'

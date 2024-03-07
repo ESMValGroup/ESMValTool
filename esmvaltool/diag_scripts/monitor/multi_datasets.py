@@ -1156,7 +1156,7 @@ class MultiDatasets(MonitorBase):
 
         return getattr(ccrs, projection)(**projection_kwargs)
 
-    def _get_benchmarking_map_projection(self):
+    def _get_benchmarking_projection(self):
         """Get projection used for benchmarking map plots."""
         plot_type = 'benchmarking_map'
         projection = self.plots[plot_type]['projection']
@@ -1933,7 +1933,7 @@ class MultiDatasets(MonitorBase):
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
             axes = fig.add_subplot(
-                projection=self._get_benchmarking_map_projection())
+                projection=self._get_benchmarking_projection())
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
             plot_kwargs['extend'] = "both"
@@ -2187,7 +2187,7 @@ class MultiDatasets(MonitorBase):
             return ref_datasets[0]
         return None
 
-    def _get_benchmarking_reference_dataset(self, datasets):
+    def _get_benchmarking_reference(self, datasets):
         """Extract reference dataset for calculation of benchmarking metric."""
         variable = datasets[0][self.cfg['group_variables_by']]
         ref_datasets = [d for d in datasets if
@@ -2197,16 +2197,16 @@ class MultiDatasets(MonitorBase):
             return ref_datasets[0]
 
         # try variable attribute "reference_dataset"
-        for d in datasets:
-            print(d.get('reference_dataset'))
-            print(d.get('dataset'))
-            if d.get('reference_dataset') == d.get('dataset'):
-                ref_datasets = d
+        for dataset in datasets:
+            print(dataset.get('reference_dataset'))
+            print(dataset.get('dataset'))
+            if dataset.get('reference_dataset') == dataset.get('dataset'):
+                ref_datasets = dataset
                 break
         if len(ref_datasets) != 1:
             raise ValueError(
                 f"Expected exactly 1 reference dataset for variable "
-                f"'{variable}', got {len(ref_datasets):d}")
+                f"'{variable}', got {len(ref_datasets)}")
         return None
 
     def _get_benchmark_dataset(self, datasets):
@@ -2216,12 +2216,11 @@ class MultiDatasets(MonitorBase):
                               d.get('benchmark_dataset', False)]
         if len(benchmark_datasets) == 1:
             return benchmark_datasets[0]
-        else:
-            raise ValueError(
-                f"Expected exactly 1 benchmark dataset (with "
-                f"'benchmark_dataset: true' for variable "
-                f"'{variable}'), got {len(benchmark_datasets):d}")
-        return None
+
+        raise ValueError(
+            f"Expected exactly 1 benchmark dataset (with "
+            f"'benchmark_dataset: true' for variable "
+            f"'{variable}'), got {len(benchmark_datasets):d}")
 
     def _get_benchmark_group(self, datasets):
         """Get datasets for benchmarking."""
@@ -2415,7 +2414,7 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_benchmarking_timeseries_plot(self, datasets):
+    def create_benchmarking_timeseries(self, datasets):
         """Create time series benchmarking plot."""
         plot_type = 'benchmarking_timeseries'
         if plot_type not in self.plots:
@@ -2591,7 +2590,7 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_benchmarking_annual_cycle_plot(self, datasets):
+    def create_benchmarking_annual(self, datasets):
         """Create benchmarking annual cycle plot."""
         plot_type = 'benchmarking_annual_cycle'
         if plot_type not in self.plots:
@@ -2771,7 +2770,7 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_benchmarking_diurnal_cycle_plot(self, datasets):
+    def create_benchmarking_diurnal(self, datasets):
         """Create benchmarking diurnal cycle plot."""
         plot_type = 'benchmarking_diurnal_cycle'
         if plot_type not in self.plots:
@@ -2950,7 +2949,7 @@ class MultiDatasets(MonitorBase):
             raise ValueError(f"No input data to plot '{plot_type}' given")
 
         # Get reference dataset
-        ref_dataset = self._get_benchmarking_reference_dataset(datasets)
+        ref_dataset = self._get_benchmarking_reference(datasets)
         # Get dataset to be benchmarked
         dataset = self._get_benchmark_dataset(datasets)
         # Get percentiles from multi-model statistics
@@ -3100,7 +3099,7 @@ class MultiDatasets(MonitorBase):
             raise ValueError(f"No input data to plot '{plot_type}' given")
 
         # Get reference dataset
-        # ref_dataset = self._get_benchmarking_reference_dataset(datasets)
+        # ref_dataset = self._get_benchmarking_reference(datasets)
         # Get dataset to be benchmarked
         dataset = self._get_benchmark_dataset(datasets)
         # Get percentiles from multi-model statistics
@@ -3497,10 +3496,10 @@ class MultiDatasets(MonitorBase):
             logger.info("Processing variable %s", var_key)
             self.create_timeseries_plot(datasets)
             self.create_annual_cycle_plot(datasets)
-            self.create_benchmarking_annual_cycle_plot(datasets)
-            self.create_benchmarking_diurnal_cycle_plot(datasets)
+            self.create_benchmarking_annual(datasets)
+            self.create_benchmarking_diurnal(datasets)
             self.create_benchmarking_map_plot(datasets)
-            self.create_benchmarking_timeseries_plot(datasets)
+            self.create_benchmarking_timeseries(datasets)
             self.create_benchmarking_zonal_plot(datasets)
             self.create_map_plot(datasets)
             self.create_zonal_mean_profile_plot(datasets)
