@@ -57,8 +57,8 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     # Fix metadata
     attrs = cfg['attributes']
     attrs['mip'] = var['mip']
-    utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
+    utils.fix_var_metadata(cube, cmor_info)
 
     # Save variable
     with warnings.catch_warnings():
