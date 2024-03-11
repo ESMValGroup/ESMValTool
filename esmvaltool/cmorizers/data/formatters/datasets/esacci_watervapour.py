@@ -1,6 +1,7 @@
 """ESMValTool CMORizer for ESACCI-WATERVAPOUR data.
 
 Tier
+<<<<<<< HEAD
     Tier 2: other freely-available dataset.
 
 Source
@@ -20,6 +21,29 @@ Download and processing instructions
 """
 
 import copy
+=======
+   Tier 3: CDR2 requires registration at EUMETSAT CM SAF.
+
+Source
+   https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
+
+Last access
+   20240221
+
+Download and processing instructions
+   CDR2 requires registration at EUMETSAT CM SAF, the information on how to
+        download the order will be emailed once the order is ready.
+   All files need to be in one directory, not in yearly subdirectories.
+
+Modification history
+   20240221-malinina_elizaveta: Adjust for daily cmorization and updated
+                                filenames, remove CDR1 due to irrelevance.
+   20210607-weigel_katja: Fix for monthly time bounds.
+   20210408-weigel_katja: written.
+"""
+
+import glob
+>>>>>>> public/main
 import logging
 import os
 
@@ -92,85 +116,34 @@ def load_cube(var, ifile):
     return cube
 
 
-def _extract_daily_variable(var, cfg, inpfile, years, months, out_dir):
-    """Extract variable."""
-
-    fill_cube = None
-
-    for year in years:
-        for month in months:
-            cubes = iris.cube.CubeList()
-            num_days = monthrange(year, int(month))[1]
-            print(num_days)
-            days = ["0" + str(da) for da in range(1, 10)] + [str(da) for da in range(10, num_days+1)]
-            for day in days:
-                ifile = inpfile.format(year=year, month=month, day=day)
-                logger.info("CMORizing var %s from file type %s", var, ifile)
-
-                if os.path.exists(ifile):
-                    logger.info("CMORizing file %s", ifile)
-
-                    # load data
-                    daily_cube = load_cube(var, ifile)
-
-                    if fill_cube is None:
-                        fill_cube = daily_cube
-
-                else:
-                    logger.info("Fill missing day %s in month %s and year %s", day, month, year)
-                    daily_cube = _create_nan_cube(fill_cube, year, month, day)
-
-                cubes.append(daily_cube)
-
-            cube = cubes.concatenate_cube()
-
-            save_data(var, cfg, cube, out_dir)
-
-
-def _extract_monthly_variable(var, cfg, inpfile, years, months, out_dir):
-    """Extract variable."""
-
-    for year in years:
-        cubes = iris.cube.CubeList()
-        for month in months:
-            ifile = inpfile.format(year=year, month=month)
-            logger.info("CMORizing var %s from file type %s", var, ifile)
-
-            logger.info("CMORizing file %s", ifile)
-
-            # load data
-            monthly_cube = load_cube(var, ifile)
-
-            cubes.append(monthly_cube)
-
-        cube = cubes.concatenate_cube()
-
-        save_data(var, cfg, cube, out_dir)
-
-
-def _cmorize_variable(short_name, var, cfg, in_dir,
-                      out_dir):
-    """Extract variable."""
-
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
+    """Cmorize data."""
     glob_attrs = cfg['attributes']
 
-    years = range(var['start_year'], var['end_year'] + 1)
-    months = ["0" + str(mo) for mo in range(1, 10)] + ["10", "11", "12"]
-
-    inpfile = os.path.join(in_dir, var['filename'])
-
-    if 'day' in var['mip']:
-        _extract_daily_variable(var, cfg, inpfile, years, months, out_dir)
-    else:
-        _extract_monthly_variable(var, cfg, inpfile, years, months, out_dir)
-       
-
-
-def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
-    """Cmorization func call."""
-    # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        if 'short_name' not in var:
-            var['short_name'] = short_name
-        logger.info("CMORizing variable '%s'", short_name)
-        _cmorize_variable(short_name, var, cfg, in_dir, out_dir)
+    # run the cmorization
+    for var_name, vals in cfg['variables'].items():
+        var = vals['short_name']
+        var_info = cfg['cmor_table'].get_variable(vals['mip'], var)
+        glob_attrs['mip'] = vals['mip']
+        raw_info = {'name': vals['raw']}
+        inpfile_pattern = os.path.join(in_dir, vals['filename'])
+        logger.info("CMORizing var %s from file type %s", var, inpfile_pattern)
+        for year in range(vals['start_year'], vals['end_year'] + 1):
+            data_cubes = []
+            year_inpfile_pattern = inpfile_pattern.format(year=year)
+            inpfiles = sorted(glob.glob(year_inpfile_pattern))
+            for inpfile in inpfiles:
+                raw_info['file'] = inpfile
+                logger.info("CMORizing var %s from file type %s", var,
+                            raw_info['file'])
+                data_cubes.append(
+                    extract_variable(var_info, raw_info, glob_attrs, year))
+            yearly_cube = concatenate(data_cubes)
+            # Fix monthly time bounds
+            time = yearly_cube.coord('time')
+            time.bounds = get_time_bounds(time, vals['frequency'])
+            save_variable(yearly_cube,
+                          var,
+                          out_dir,
+                          glob_attrs,
+                          unlimited_dimensions=['time'])

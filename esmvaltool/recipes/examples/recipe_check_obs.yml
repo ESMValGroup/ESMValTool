@@ -299,24 +299,6 @@ diagnostics:
     scripts: null
 
 
-  ESACCI-WATERVAPOUR:
-    description: ESACCI-WATERVAPOUR check
-    variables:
-      prw:
-        mip: Amon
-        start_year: 2003
-        end_year: 2017
-      prw_day:
-        short_name: prw
-        mip: Eday
-        start_year: 2003
-        end_year: 2007
-    additional_datasets:
-      - {dataset: ESACCI-WATERVAPOUR, project: OBS6, tier: 2,
-         type: sat, version: 3.1}
-    scripts: null
-
-
   ESDC:
     description: ESDC check
     variables:
@@ -1587,6 +1569,20 @@ diagnostics:
     additional_datasets:
       - {dataset: ERA5, project: native6, tier: 3, type: reanaly,
          version: v1, start_year: 1990, end_year: 1990}
+    scripts: null
+
+
+  ESACCI-WATERVAPOUR:
+    description: ESACCI-WV check
+    variables:
+      prw:
+    additional_datasets:
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS6, mip: Amon, tier: 3,
+         type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
+         start_year: 2003, end_year: 2017}
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS6, mip: Eday, tier: 3,
+         type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
+         start_year: 2003, end_year: 2017}
     scripts: null
 
 

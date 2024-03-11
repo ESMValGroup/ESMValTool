@@ -534,14 +534,12 @@ datasets:
 
   ESACCI-WATERVAPOUR:
     tier: 3
-    source: Marc Schröder, ftp.brockmann-consult.de
-    last_access: 2021-03-29
+    source: https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
+    last_access: 2024-02-21
     info: |
-      Currently still restricted because preliminary.
-      Download and processing instructions:
-        FTP server: ftp.brockmann-consult.de, access currently restricted
-                    data/tcwv/dataset3_1/CDR-*/...
-        All files need to be in one directory, not in yearly subdirectories.
+      CDR2 requires registration at EUMETSAT CM SAF, the information on how to 
+          download the order will be emailed once the order is ready.
+      All files need to be in one directory, not in yearly subdirectories.
 
   ESDC:
     tier: 2
