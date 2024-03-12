@@ -1,0 +1,210 @@
+# ESMValTool
+---
+documentation:
+  title: Basic Model Evaluation.
+  description: >
+    Show plots of several variables that can be used for basic model
+    evaluations ("sanity checks").
+  authors:
+    - hassler_birgit
+    - lauer_axel
+    - bonnet_pauline
+    - schlund_manuel
+  maintainer:
+    - hassler_birgit
+
+
+# Note: The following models are just examples
+datasets:
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+
+# Note: for some observational datasets, we use preset time ranges due to
+# their limited temporal availability
+timerange_for_models: &time_period
+  timerange: '2003/2005'  # can be specified, this is just an example
+
+
+preprocessors:
+
+  profile_60n:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
+    climate_statistics:
+      period: full
+    regrid:
+      scheme: linear
+      target_grid: 1x1
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: 59.
+      end_latitude: 61.
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev39}
+      scheme: linear
+      coordinate: air_pressure
+    area_statistics:
+      operator: mean
+
+  profile_60s:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
+    climate_statistics:
+      period: full
+    regrid:
+      scheme: linear
+      target_grid: 1x1
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -61.
+      end_latitude: -59.
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev39}
+      scheme: linear
+      coordinate: air_pressure
+    area_statistics:
+      operator: mean
+
+  natlantic_mean:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
+    annual_statistics:
+      operator: mean
+    extract_shape:
+      # Relative paths are relative to 'auxiliary_data_dir' as configured in
+      # the config-user.yml file.
+      # The example shapefile can be downloaded from
+      # https://marineregions.org/download_file.php?name=World_Seas_IHO_v3.zip
+      # but any shapefile can be used
+      shapefile: World_Seas_IHO_v3/World_Seas_IHO_v3.shp
+      decomposed: True
+      method: contains
+      crop: False
+      ids:
+        - North Atlantic Ocean
+    area_statistics:
+      operator: mean
+
+  southernocean_mean:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
+    annual_statistics:
+      operator: mean
+    extract_shape:
+      # Relative paths are relative to 'auxiliary_data_dir' as configured in
+      # the config-user.yml file.
+      # The example shapefile can be downloaded from
+      # https://marineregions.org/download_file.php?name=World_Seas_IHO_v3.zip
+      # but any shapefile can be used
+      shapefile: World_Seas_IHO_v3/World_Seas_IHO_v3.shp
+      decomposed: True
+      method: contains
+      crop: False
+      ids:
+        - Southern Ocean
+    area_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  # vertical profiles (zonal wind speed)
+  
+  uwind_60n:
+    description: Plot time series of zonal surface stress.
+    variables:
+      ua:
+        <<: *time_period
+        mip: Amon
+        preprocessor: profile_60n
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      60n:
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        group_variables_by: variable_group
+        script: monitor/multi_datasets.py
+        plots:
+          1d_profile:
+            plot_kwargs:
+              MPI-ESM1-2-LR:
+                color: C1
+              ERA5:
+                color: black
+
+  uwind_60s:
+    description: Plot time series of zonal surface stress.
+    variables:
+      ua:
+        <<: *time_period
+        mip: Amon
+        preprocessor: profile_60s
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      60s:
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        group_variables_by: variable_group
+        script: monitor/multi_datasets.py
+        plots:
+          1d_profile:
+            plot_kwargs:
+              MPI-ESM1-2-LR:
+                color: C1
+              ERA5:
+                color: black
+
+  # time series (surface wind stress)
+
+  surface_stress_na:
+    description: Plot time series of zonal surface stress.
+    variables:
+      tauu:
+        <<: *time_period
+        mip: Amon
+        preprocessor: natlantic_mean
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+          - {project: OBS6, dataset: ERA-Interim, type: reanaly, version: 1, tier: 3}
+    scripts:
+      north_atlantic:
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        group_variables_by: variable_group
+        script: monitor/multi_datasets.py
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            plot_kwargs:
+              MPI-ESM1-2-LR:
+                color: C1
+              ERA5:
+                color: black
+              ERA-Interim:
+                color: blue
+
+  surface_stress_so:
+    description: Plot time series of zonal surface stress.
+    variables:
+      tauu:
+        <<: *time_period
+        mip: Amon
+        preprocessor: southernocean_mean
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+          - {project: OBS6, dataset: ERA-Interim, type: reanaly, version: 1, tier: 3}
+    scripts:
+      southern_ocean:
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        group_variables_by: variable_group
+        script: monitor/multi_datasets.py
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            plot_kwargs:
+              MPI-ESM1-2-LR:
+                color: C1
+              ERA5:
+                color: black
+              ERA-Interim:
+                color: blue
