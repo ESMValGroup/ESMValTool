@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 def create_press(var):
     """Create a pressure variable."""
-    resolver = iris.common.resolve.Resolve(var, var)
+o    resolver = iris.common.resolve.Resolve(var, var)
     if var.coord('air_pressure').points.shape == var.shape:
         press = resolver.cube(var.coord('air_pressure').points)
     else:
@@ -221,14 +221,16 @@ def dpres_plevel_1d(plev, pmin, pmax):
                 elif lev == max(plev):
                     dplev[i] = (pmax - lev) + (lev - plev[i - 1]) / 2.
                 else:
-                    dplev[i] = (plev[i + 1] - lev) / 2. + (lev - plev[i - 1]) / 2.
+                    dplev[i] = ((plev[i + 1] - lev) / 2.
+                                + (lev - plev[i - 1]) / 2.)
             elif decreasing:
                 if lev == min(plev):
                     dplev[i] = (lev - pmin) + (plev[i - 1] - lev) / 2.
                 elif lev == max(plev):
                     dplev[i] = (lev - plev[i + 1]) / 2. + (pmax - lev)
                 else:
-                    dplev[i] = (lev - plev[i + 1]) / 2. + (plev[i - 1] - lev) / 2.
+                    dplev[i] = ((lev - plev[i + 1]) / 2.
+                                + (plev[i - 1] - lev) / 2.)
 
     elif isinstance(pmax, iris.cube.Cube):
 
@@ -413,7 +415,6 @@ def sum_up_to_plot_dimensions(var, plot_type):
 def calculate_reaction_rate(temp, reaction_type,
                             coeff_a, coeff_er, coeff_b=None):
     """Calculate the reaction rate.
-
     Calculated in Arrhenius form or in a given special form
     depending on the oxidation partner.
     """

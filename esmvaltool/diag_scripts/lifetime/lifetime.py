@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Lifetime diagnostic to show multiple datasets in one plot.
 
@@ -687,11 +686,11 @@ class CH4Lifetime(LifetimeBase):
         for name, oxid in oxidant.items():
             oxid_in_molec = oxid * rho
             reaction_rate = calculate_reaction_rate(
-                            temp,
-                            f"{name_reactant.upper()}+{name.upper()}",
-                            self.cfg['oxidant'][name]['A'],
-                            self.cfg['oxidant'][name]['ER'],
-                            self.cfg['oxidant'][name]['b'])
+                temp,
+                f"{name_reactant.upper()}+{name.upper()}",
+                self.cfg['oxidant'][name]['A'],
+                self.cfg['oxidant'][name]['ER'],
+                self.cfg['oxidant'][name]['b'])
             reaction = (reaction
                         + reaction_rate * oxid_in_molec)
         # test for correct units
