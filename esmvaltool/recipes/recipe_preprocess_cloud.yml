@@ -100,6 +100,32 @@ preprocessors:
     anomalies:
       period: day
 
+  mean_pp_filter:
+    custom_order: true 
+    <<: *sep_pp
+    regrid:
+      scheme: area_weighted
+      target_grid: 5x5      
+    timeseries_filter:
+      window: 5  # 3-monthly filter window
+      span: 30   # weights computed on the first month
+      filter_type: lowpass  # low-pass filter
+      filter_stats: mean    # 3-monthly mean lowpass filter
+
+  anomaly_pp_filter:
+    custom_order: true 
+    <<: *sep_pp
+    regrid:
+      scheme: area_weighted
+      target_grid: 5x5      
+    timeseries_filter:
+      window: 5  # 3-monthly filter window
+      span: 30   # weights computed on the first month
+      filter_type: lowpass  # low-pass filter
+      filter_stats: mean    # 3-monthly mean lowpass filter
+    anomalies:
+      period: day
+
   annual_cycle:
     custom_order: true 
     extract_region:
@@ -126,8 +152,7 @@ diagnostics:
     description: Create timeseries.
     variables:
       clt: &var
-        preprocessor: mean_filter_pp_5x5
-        #preprocessor: mean_pp
+        preprocessor: mean_pp_filter
         mip: day
         frequency: day
         <<: *years
@@ -167,7 +192,7 @@ diagnostics:
         <<: *var2
       tos:
         <<: *var2
-        preprocessor: anomaly_filter_pp_5x5
+        preprocessor: anomaly_pp_filter
       wap700:
         <<: *var2
     scripts: 
