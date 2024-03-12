@@ -30,6 +30,9 @@ Four recipes are available to evaluate cloud climatologies from CMIP models.
    estimated as the relative temporal standard deviation from multi-year timeseries
    of data with the temporal standard deviations calculated from monthly anomalies
    after subtracting the climatological mean seasonal cycle.
+   Note that the satellite observations used in the original recipe (UWisc) is not
+   maintained anymore and has been superseeded by MAC-LWP (`Elsaesser et al., 2017`_).
+   We recommend using MAC-LWP.
 
 4) Recipe family recipe_lauer22jclim_*.yml is an extension of
    recipe_lauer13jclim.yml for evaluation of cloud radiative forcing
@@ -49,6 +52,7 @@ Four recipes are available to evaluate cloud climatologies from CMIP models.
 .. _`Flato et al., 2013`: https://www.ipcc.ch/site/assets/uploads/2018/02/WG1AR5_Chapter09_FINAL.pdf
 .. _`Lauer and Hamilton (2013)`: https://journals.ametsoc.org/view/journals/clim/26/11/jcli-d-12-00451.1.xml
 .. _`Lauer et al. (2023)`: https://journals.ametsoc.org/view/journals/clim/36/2/JCLI-D-22-0181.1.xml
+.. _`Elsaesser et al., 2017`: https://journals.ametsoc.org/view/journals/clim/30/24/jcli-d-16-0902.1.xml
 
 
 Available recipes and diagnostics
