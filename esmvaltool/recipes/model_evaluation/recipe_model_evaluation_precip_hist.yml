@@ -53,9 +53,4 @@ diagnostics:
         plot_global: true
         plot_kwargs:
           alpha: 0.75
-          xlim: (0, 0.1)
-          bins: [0,0.1,0.2]
         plot_properties:
-          # ylim: (0, 0.45)
-          xlim: (0, 0.1)
-          xscale: log
