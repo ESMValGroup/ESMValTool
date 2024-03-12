@@ -161,6 +161,7 @@ def plot_histogram(cfg, splits, output, group, fit=True):
     # For log-scale
     # plt.gca().set(xscale='log') 
     # plt.gca().set(yscale='log')
+    # To Do: xlabel, ylabel #!
     roi = cfg.get("highlight_region", [-2, +2])
     if roi is not None:
         ylim = plt.gca().get_ylim()[1]
