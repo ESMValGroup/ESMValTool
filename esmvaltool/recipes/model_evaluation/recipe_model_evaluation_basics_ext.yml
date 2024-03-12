@@ -75,9 +75,8 @@ preprocessors:
       # https://marineregions.org/download_file.php?name=World_Seas_IHO_v3.zip
       # but any shapefile can be used
       shapefile: World_Seas_IHO_v3/World_Seas_IHO_v3.shp
-      decomposed: True
       method: contains
-      crop: False
+      crop: True
       ids:
         - North Atlantic Ocean
     area_statistics:
@@ -94,9 +93,8 @@ preprocessors:
       # https://marineregions.org/download_file.php?name=World_Seas_IHO_v3.zip
       # but any shapefile can be used
       shapefile: World_Seas_IHO_v3/World_Seas_IHO_v3.shp
-      decomposed: True
       method: contains
-      crop: False
+      crop: True
       ids:
         - Southern Ocean
     area_statistics:
