@@ -45,7 +45,7 @@ def calculate_gridmassdry(press, hus, z_coord):
     g  standard acceleration of gravity from scipy
     """
     # calculate minimum in cubes
-    if type(press) == iris.cube.Cube:
+    if isinstance(press, iris.cube.Cube):
         pmin = np.nanmin(press.data)
     else:
         pmin = np.nanmin(press)
@@ -210,53 +210,53 @@ def dpres_plevel_1d(plev, pmin, pmax):
     increasing = (np.diff(plev) >= 0).all()
     decreasing = (np.diff(plev) <= 0).all()
 
-    if type(pmax) == float:
+    if isinstance(pmax, float):
 
         dplev = plev.copy()
 
         for i, lev in enumerate(plev):
             if increasing:
                 if lev == min(plev):
-                    dplev[i] = (plev[i+1] - lev) / 2. + (lev - pmin)
+                    dplev[i] = (plev[i + 1] - lev) / 2. + (lev - pmin)
                 elif lev == max(plev):
-                    dplev[i] = (pmax - lev) + (lev - plev[i-1]) / 2.
+                    dplev[i] = (pmax - lev) + (lev - plev[i - 1]) / 2.
                 else:
-                    dplev[i] = (plev[i+1] - lev) / 2. + (lev - plev[i-1]) / 2.
+                    dplev[i] = (plev[i + 1] - lev) / 2. + (lev - plev[i - 1]) / 2.
             elif decreasing:
                 if lev == min(plev):
-                    dplev[i] = (lev - pmin) + (plev[i-1] - lev) / 2.
+                    dplev[i] = (lev - pmin) + (plev[i - 1] - lev) / 2.
                 elif lev == max(plev):
-                    dplev[i] = (lev - plev[i+1]) / 2. + (pmax - lev)
+                    dplev[i] = (lev - plev[i + 1]) / 2. + (pmax - lev)
                 else:
-                    dplev[i] = (lev - plev[i+1]) / 2. + (plev[i-1] - lev) / 2.
+                    dplev[i] = (lev - plev[i + 1]) / 2. + (plev[i - 1] - lev) / 2.
 
-    elif type(pmax) == iris.cube.Cube:
+    elif isinstance(pmax, iris.cube.Cube):
 
         cubelist = [pmax.copy() for lev in plev]
 
         for i, lev in enumerate(plev):
             if increasing:
                 if lev == min(plev):
-                    cubelist[i].data = (lev - pmin) + (plev[i+1] - lev) / 2.
+                    cubelist[i].data = (lev - pmin) + (plev[i + 1] - lev) / 2.
                     cubelist[i] = (((lev - pmin)
-                                   + (plev[i+1] - lev) / 2.)
+                                   + (plev[i + 1] - lev) / 2.)
                                    * cubelist[i] / cubelist[i])
                 elif lev == max(plev):
-                    cubelist[i] = (pmax - lev) + (lev - plev[i-1]) / 2.
+                    cubelist[i] = (pmax - lev) + (lev - plev[i - 1]) / 2.
                 else:
-                    cubelist[i] = (((plev[i+1] - lev) / 2.
-                                   + (lev - plev[i-1]) / 2.)
+                    cubelist[i] = (((plev[i + 1] - lev) / 2.
+                                   + (lev - plev[i - 1]) / 2.)
                                    * cubelist[i] / cubelist[i])
             elif decreasing:
                 if lev == min(plev):
                     cubelist[i] = (((lev - pmin)
-                                   + (plev[i-1] - lev) / 2.)
+                                   + (plev[i - 1] - lev) / 2.)
                                    * cubelist[i] / cubelist[i])
                 elif lev == max(plev):
-                    cubelist[i] = (lev - plev[i+1]) / 2. + (pmax - lev)
+                    cubelist[i] = (lev - plev[i + 1]) / 2. + (pmax - lev)
                 else:
-                    cubelist[i] = (((lev - plev[i+1]) / 2.
-                                   + (plev[i-1] - lev) / 2.)
+                    cubelist[i] = (((lev - plev[i + 1]) / 2.
+                                   + (plev[i - 1] - lev) / 2.)
                                    * cubelist[i] / cubelist[i])
             cubelist[i].units = 'Pa'
             cubelist[i].var_name = 'air_pressure'
