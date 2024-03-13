@@ -13,16 +13,20 @@ import yaml
 from iris.analysis import MEAN
 from iris.util import broadcast_to_shape
 from mapgenerator.plotting.timeseries import PlotSeries
-from scipy.constants import g
+from scipy.constants import g, N_A, R
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, names
+
+# set standard molar masses
+m_air = 28.970 # [g_air/mol_air]
+m_h2o = 18.02  # [g_air/mol_air]
 
 logger = logging.getLogger(__name__)
 
 
 def create_press(var):
     """Create a pressure variable."""
-o    resolver = iris.common.resolve.Resolve(var, var)
+    resolver = iris.common.resolve.Resolve(var, var)
     if var.coord('air_pressure').points.shape == var.shape:
         press = resolver.cube(var.coord('air_pressure').points)
     else:
@@ -75,6 +79,99 @@ def calculate_gridmassdry(press, hus, z_coord):
 
     return gridmassdry
 
+
+def calculate_rho(variables):
+    """Calculate number density (rho).
+
+    Calculate number density with respect to the given input
+    variables.
+    """
+    logger.info("Calculate number density (rho)")
+
+    # model levels
+    if 'grmassdry' in variables and 'grvol' in variables:
+        rho = _number_density_dryair_by_grid(
+            variables['grmassdry'],
+            variables['grvol'])
+    # pressure levels
+    elif ('ta' in variables and
+          'hus' in variables):
+        rho = _number_density_dryair_by_press(
+            variables['ta'],
+            variables['hus'])
+    else:
+        raise NotImplementedError("The necessary variables"
+                                  " to calculate number"
+                                  " density of dry air"
+                                  " are not provided.\n"
+                                  "Provide either:\n"
+                                  " - grmassdry and grvol\n"
+                                  " or\n"
+                                  " - ta and hus")
+
+    return rho
+
+def _number_density_dryair_by_press(temp, hus, press=None):
+    """
+    Calculate number density of dry air.
+
+    Used to convert from mol / mol_dry into molec / cm3
+    by using present temperature and humidity.
+
+    ##qqq
+    Should there be an option to provide the simulated pressure field
+    rather than the derived pressure from interpolation?
+    ###
+
+    Used constants:
+    - N_A    Avogrado constant from scipy
+    - R      gas constant from scipy
+    - m_air   Molarmass of Air
+    - m_h2o   Molarmass of watervapor
+    """
+    logger.info('Calculate number density of dry air by pressure')
+
+    if not press:
+        logger.info('Pressure not given')
+        press = create_press(temp)
+
+    rho = N_A / 10.**6
+    rho = rho * iris.analysis.maths.divide(press, R * temp)
+    rho = rho * iris.analysis.maths.divide(1. - hus,
+                                           1. + hus *
+                                           (m_air
+                                            / m_h2o - 1.))
+
+    # correct metadata
+    rho.var_name = 'rho'
+    rho.units = 'cm-3'
+    # [ 1 / cm^3 ]
+
+    return rho
+
+def _number_density_dryair_by_grid(grmassdry, grvol):
+    """
+    Calculate number density of dry air.
+
+    Used to convert from mol / mol_dry into molec / cm3
+    by using present gridmass of dry air and gridvolume.
+
+    Since gridvolume might not be appropriate after interpolation
+    to pressure coordinates, this version should only be used
+    on model levels.
+
+    Used constants:
+    - N_A    Avogrado constant from scipy
+    - m_air   Molarmass of Air
+    """
+    logger.info('Calculate number density of dry air by grid information')
+    rho = ((grmassdry / grvol)
+           * (N_A / m_air) * 10**(-3))  # [ 1 / cm^3 ]
+    # correct metadata
+    rho.var_name = 'rho'
+    rho.units = 'cm-3'
+
+    return rho
 
 def guess_interfaces(coordinate):
     """

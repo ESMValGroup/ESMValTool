@@ -275,7 +275,6 @@ from iris.coord_categorisation import add_year
 import iris.common
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import FormatStrFormatter, LogLocator, NullFormatter
-from scipy.constants import N_A, R
 
 from esmvalcore.cmor.fixes import add_model_level
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
@@ -284,7 +283,8 @@ from esmvaltool.diag_scripts.lifetime.lifetime_base import (
     create_press,
     calculate_gridmassdry,
     calculate_lifetime,
-    calculate_reaction_rate
+    calculate_reaction_rate,
+    calculate_rho
 )
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -321,7 +321,6 @@ class CH4Lifetime(LifetimeBase):
 
         # set default molarmasses
         self.cfg.setdefault('m_air', 28.970)  # [g_air/mol_air]
-        self.cfg.setdefault('m_h2o', 18.02)   # [g_h2o/mol_h2o]
 
         # Load input data
         self.input_data_dataset = self._calculate_coefficients()
@@ -555,7 +554,7 @@ class CH4Lifetime(LifetimeBase):
                 # cube for each variable
                 variables[variable['short_name']] = cube
 
-            rho = self._calculate_rho(variables)
+            rho = calculate_rho(variables)
 
             oxidant = {ox: variables[ox] for ox in name_oxidant}
             self._set_oxidant_defaults(oxidant)
@@ -649,37 +648,6 @@ class CH4Lifetime(LifetimeBase):
 
         return name
 
-    def _calculate_rho(self, variables):
-        """Calculate number density (rho).
-
-        Calculate number density with respect to the given input
-        variables.
-        """
-        logger.info("Calculate number density (rho)")
-
-        # model levels
-        if 'grmassdry' in variables and 'grvol' in variables:
-            rho = self._number_density_dryair_by_grid(
-                variables['grmassdry'],
-                variables['grvol'])
-        # pressure levels
-        elif ('ta' in variables and
-              'hus' in variables):
-            rho = self._number_density_dryair_by_press(
-                variables['ta'],
-                variables['hus'])
-        else:
-            raise NotImplementedError("The necessary variables"
-                                      " to calculate number"
-                                      " density of dry air"
-                                      " are not provided.\n"
-                                      "Provide either:\n"
-                                      " - grmassdry and grvol\n"
-                                      " or\n"
-                                      " - ta and hus")
-
-        return rho
-
     def _calculate_reaction(self, oxidant, rho, temp, name_reactant):
         """Calculate product of reaction rate and oxidant."""
         reaction = 0.
@@ -699,68 +667,6 @@ class CH4Lifetime(LifetimeBase):
                              " not consistent. Check input variables.")
 
         return reaction
-
-    def _number_density_dryair_by_press(self, temp, hus, press=None):
-        """
-        Calculate number density of dry air.
-
-        Used to convert from mol / mol_dry into molec / cm3
-        by using present temperature and humidity.
-
-        ##qqq
-        Should there be an option to provide the simulated pressure field
-        rather than the derived pressure from interpolation?
-        ###
-
-        Used constants:
-        - N_A    Avogrado constant from scipy
-        - R      gas constant from scipy
-        - m_air   Molarmass of Air
-        - m_h2o   Molarmass of watervapor
-        """
-        logger.info('Calculate number density of dry air by pressure')
-
-        if not press:
-            logger.info('Pressure not given')
-            press = create_press(temp)
-
-        rho = N_A / 10.**6
-        rho = rho * iris.analysis.maths.divide(press, R * temp)
-        rho = rho * iris.analysis.maths.divide(1. - hus,
-                                               1. + hus *
-                                               (self.cfg['m_air']
-                                                / self.cfg['m_h2o'] - 1.))
-
-        # correct metadata
-        rho.var_name = 'rho'
-        rho.units = 'cm-3'
-        # [ 1 / cm^3 ]
-
-        return rho
-
-    def _number_density_dryair_by_grid(self, grmassdry, grvol):
-        """
-        Calculate number density of dry air.
-
-        Used to convert from mol / mol_dry into molec / cm3
-        by using present gridmass of dry air and gridvolume.
-
-        Since gridvolume might not be appropriate after interpolation
-        to pressure coordinates, this version should only be used
-        on model levels.
-
-        Used constants:
-        - N_A    Avogrado constant from scipy
-        - m_air   Molarmass of Air
-        """
-        logger.info('Calculate number density of dry air by grid information')
-        rho = ((grmassdry / grvol)
-               * (N_A / self.cfg['m_air']) * 10**(-3))  # [ 1 / cm^3 ]
-        # correct metadata
-        rho.var_name = 'rho'
-        rho.units = 'cm-3'
-
-        return rho
 
     def _define_weight(self, variables):
         """Define used weights in the lifetime calculation.
@@ -1286,7 +1192,6 @@ class CH4Lifetime(LifetimeBase):
                     f"{dataset['dataset']} (project {dataset['project']}) "
                     f"from {dataset['start_year']} to {dataset['end_year']}."
                 )
-            # ToDo
             else:
                 (plot_path, netcdf_paths) = (
                     self.plot_zonalmean_with_ref(plot_func, dataset,
