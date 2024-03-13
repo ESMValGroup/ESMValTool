@@ -24,11 +24,17 @@ diagnostics:
   index:
     variables:
       tasmin:
-        mip: Amon
+        mip: day
       tasmax:
-        mip: Amon
+        mip: day
       pr:
-        mip: Amon
+        mip: day
     scripts:
       xclim:
         script: xclim/diag_xclim.py
+        indicator: "potential_evapotranspiration"
+        realm: "atmos"
+        input: ["tasmax", "tasmin"]  # all by default
+        kwargs: 
+          method: "HG85"
+
