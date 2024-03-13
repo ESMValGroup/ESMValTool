@@ -1,0 +1,93 @@
+# ESMValTool
+# recipe_proportionality_zec.yml
+---
+documentation:
+  title: Comparison of ocean heat and carbon uptake
+  
+  description: |
+    Recipe to produce figures comparing ocean heat and carbon uptake in zero emissions simulation esm-1pct-brch-1000PgC.
+    Produces figures in supplement to Gillett (2023).
+
+  authors:
+    - gillett_nathan
+
+preprocessors:
+
+ 
+  global_land:
+    weighting_landsea_fraction:
+      area_type: land
+    area_statistics:
+      operator: sum
+    annual_statistics:
+      operator: mean
+
+
+  global_ocean:
+    weighting_landsea_fraction:
+      area_type: sea
+    area_statistics:
+      operator: sum
+      fx_variables:
+        areacello:
+    annual_statistics:
+      operator: mean
+
+  global_mean:
+    area_statistics:
+      operator: mean
+      fx_variables:
+        areacella:
+    annual_statistics:
+      operator: mean
+
+
+
+diagnostics:
+  diag_prop_figs:
+    variables:
+      tas: &var_tas
+        preprocessor: global_mean
+        project: CMIP6
+        mip: Amon
+        grid: gn
+        additional_datasets:  &datasets
+          - {dataset: CanESM5, institute: CCCma, exp: [1pctCO2], ensemble: r1i1p2f1, start_year: 1850, end_year: 1910}
+          - {dataset: CanESM5, institute: CCCma, exp: [esm-1pct-brch-1000PgC], ensemble: r1i1p2f1, start_year: 1911, end_year: 2015}
+          - {dataset: CanESM5, institute: CCCma, exp: piControl, ensemble: r1i1p2f1, start_year: 5550, end_year: 5715}
+
+
+      co2:
+        preprocessor: global_mean
+        project: CMIP6
+        mip: Amon
+        grid: gn
+        additional_datasets:  *datasets
+
+      nbp:
+        preprocessor: global_land
+        project: CMIP6
+        mip: Lmon
+        grid: gn
+        additional_datasets: *datasets
+
+      fgco2:
+        preprocessor: global_ocean
+        project: CMIP6
+        mip: Omon
+        grid: gn
+        additional_datasets: *datasets
+
+      hfds:
+        preprocessor: global_ocean
+        project: CMIP6
+        mip: Omon
+        grid: gn
+        additional_datasets: *datasets
+
+
+    scripts:
+      fig_proportionality:
+        script: prop_figs_zec.py
+  
+ 
