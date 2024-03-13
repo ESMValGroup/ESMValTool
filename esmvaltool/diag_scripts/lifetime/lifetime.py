@@ -724,8 +724,6 @@ class CH4Lifetime(LifetimeBase):
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
         ref_cube = ref_dataset['cube']
-        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
-        dim_coords_ref = self._check_cube_dimensions(ref_cube, plot_type)
 
         # Create single figure with multiple axes
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -753,7 +751,6 @@ class CH4Lifetime(LifetimeBase):
                     FormatStrFormatter('%.1f'))
             else:
                 axes_data.get_yaxis().set_minor_formatter(NullFormatter())
-            self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -767,7 +764,6 @@ class CH4Lifetime(LifetimeBase):
             plot_ref = plot_func(ref_cube, **plot_kwargs)
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
             plt.setp(axes_ref.get_yticklabels(), visible=False)
-            self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
 
             # Add colorbar(s)
             self._add_colorbar(plot_type, plot_data, plot_ref, axes_data,
@@ -795,8 +791,6 @@ class CH4Lifetime(LifetimeBase):
                 fontsize=fontsize,
             )
             cbar_bias.ax.tick_params(labelsize=fontsize)
-            self._add_stats(plot_type, axes_bias, dim_coords_dat, dataset,
-                            ref_dataset)
 
             # Customize plot
             fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
@@ -843,11 +837,6 @@ class CH4Lifetime(LifetimeBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, base_dataset)
             plot_kwargs['axes'] = axes
             plot_zonalmean = plot_func(cube, **plot_kwargs)
-
-            # Print statistics if desired
-            self._add_stats(plot_type, axes,
-                            self._check_cube_dimensions(cube, plot_type),
-                            dataset)
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']

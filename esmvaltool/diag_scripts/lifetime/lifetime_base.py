@@ -18,8 +18,8 @@ from scipy.constants import g, N_A, R
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, names
 
 # set standard molar masses
-m_air = 28.970 # [g_air/mol_air]
-m_h2o = 18.02  # [g_air/mol_air]
+M_AIR = 28.970  # [g_air/mol_air]
+M_H2O = 18.02   # [g_air/mol_air]
 
 logger = logging.getLogger(__name__)
 
@@ -111,6 +111,7 @@ def calculate_rho(variables):
 
     return rho
 
+
 def _number_density_dryair_by_press(temp, hus, press=None):
     """
     Calculate number density of dry air.
@@ -126,8 +127,8 @@ def _number_density_dryair_by_press(temp, hus, press=None):
     Used constants:
     - N_A    Avogrado constant from scipy
     - R      gas constant from scipy
-    - m_air   Molarmass of Air
-    - m_h2o   Molarmass of watervapor
+    - M_AIR   Molarmass of Air
+    - M_H2O   Molarmass of watervapor
     """
     logger.info('Calculate number density of dry air by pressure')
 
@@ -139,8 +140,8 @@ def _number_density_dryair_by_press(temp, hus, press=None):
     rho = rho * iris.analysis.maths.divide(press, R * temp)
     rho = rho * iris.analysis.maths.divide(1. - hus,
                                            1. + hus *
-                                           (m_air
-                                            / m_h2o - 1.))
+                                           (M_AIR
+                                            / M_H2O - 1.))
 
     # correct metadata
     rho.var_name = 'rho'
@@ -148,6 +149,7 @@ def _number_density_dryair_by_press(temp, hus, press=None):
     # [ 1 / cm^3 ]
 
     return rho
+
 
 def _number_density_dryair_by_grid(grmassdry, grvol):
     """
@@ -162,16 +164,17 @@ def _number_density_dryair_by_grid(grmassdry, grvol):
 
     Used constants:
     - N_A    Avogrado constant from scipy
-    - m_air   Molarmass of Air
+    - M_AIR   Molarmass of Air
     """
     logger.info('Calculate number density of dry air by grid information')
     rho = ((grmassdry / grvol)
-           * (N_A / m_air) * 10**(-3))  # [ 1 / cm^3 ]
+           * (N_A / M_AIR) * 10**(-3))  # [ 1 / cm^3 ]
     # correct metadata
     rho.var_name = 'rho'
     rho.units = 'cm-3'
 
     return rho
+
 
 def guess_interfaces(coordinate):
     """
@@ -301,9 +304,7 @@ def dpres_plevel_1d(plev, pmin, pmax):
     pmax can be set as float or as a multidimensional
     cube. The output of dpres_plevel will have the
     same dimensionality.
-
     """
-
     increasing = (np.diff(plev) >= 0).all()
     decreasing = (np.diff(plev) <= 0).all()
 
@@ -512,6 +513,7 @@ def sum_up_to_plot_dimensions(var, plot_type):
 def calculate_reaction_rate(temp, reaction_type,
                             coeff_a, coeff_er, coeff_b=None):
     """Calculate the reaction rate.
+
     Calculated in Arrhenius form or in a given special form
     depending on the oxidation partner.
     """
