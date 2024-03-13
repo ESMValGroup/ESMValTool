@@ -1,0 +1,34 @@
+# ESMValTool
+---
+documentation:
+  title: Extreme Event and Climate Indices
+
+  description: |
+    Recipe for calculating indices supported by xclim.
+    
+  authors:
+    - ruhe_lukas
+    # - pacal_aytach
+
+  maintainer:
+    - ruhe_lukas
+
+  projects:
+    - esmval
+
+datasets:
+  - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r2i1p1,  start_year: 1850,  end_year: 1855}
+  - {dataset: MPI-ESM-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 1855}
+
+diagnostics:
+  index:
+    variables:
+      tasmin:
+        mip: Amon
+      tasmax:
+        mip: Amon
+      pr:
+        mip: Amon
+    scripts:
+      xclim:
+        script: xclim/diag_xclim.py
