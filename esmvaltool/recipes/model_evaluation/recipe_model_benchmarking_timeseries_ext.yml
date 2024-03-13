@@ -96,7 +96,7 @@ diagnostics:
     variables:
       tas:
         timerange: '2000/2009'
-        preprocessor: pp_std
+        preprocessor: pp_def
         project: CMIP6
         mip: Amon
         exp: historical
@@ -153,6 +153,12 @@ diagnostics:
                 linestyle: '-'
                 linewidth: 2
                 zorder: 4
+              CLARA-AVHRR:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: '-.'
+                linewidth: 1
+                zorder: 3
               CRU:
                 color: darkblue
                 label: '{dataset}'
@@ -163,6 +169,12 @@ diagnostics:
                 color: darkblue
                 label: '{dataset}'
                 linestyle: '--'
+                linewidth: 1
+                zorder: 3
+              ESACCI-CLOUD:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: '-'
                 linewidth: 1
                 zorder: 3
               GPCC:
@@ -177,22 +189,16 @@ diagnostics:
                 linestyle: '-'
                 linewidth: 1
                 zorder: 3
-              PERSIANN-CDR:
+              HadCRUT5:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: ':'
+                linewidth: 1
+                zorder: 3
+              MERRA2:
                 color: darkblue
                 label: '{dataset}'
                 linestyle: '-.'
-                linewidth: 1
-                zorder: 3
-              CLARA-AVHRR:
-                color: darkblue
-                label: '{dataset}'
-                linestyle: '-.'
-                linewidth: 1
-                zorder: 3
-              ESACCI-CLOUD:
-                color: darkblue
-                label: '{dataset}'
-                linestyle: '-'
                 linewidth: 1
                 zorder: 3
               MODIS:
@@ -201,17 +207,23 @@ diagnostics:
                 linestyle: '--'
                 linewidth: 1
                 zorder: 3
+              obsMean:
+                color: darkblue
+                label: 'multi-obs-mean'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
               PATMOS-x:
                 color: darkblue
                 label: '{dataset}'
                 linestyle: ':'
                 linewidth: 1
                 zorder: 3
-              obsMean:
+              PERSIANN-CDR:
                 color: darkblue
-                label: 'multi-obs-mean'
-                linestyle: '-'
-                linewidth: 2
+                label: '{dataset}'
+                linestyle: '-.'
+                linewidth: 1
                 zorder: 3
               default:
                 color: lightgray
