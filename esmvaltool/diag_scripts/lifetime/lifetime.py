@@ -713,8 +713,8 @@ class CH4Lifetime(LifetimeBase):
 
         return var
 
-    def plot_zonalmean_with_ref(self, plot_func, dataset,
-                                ref_dataset):
+    def plot_zonalmean_with_ref(self, plot_func, region,
+                                dataset, ref_dataset):
         """Plot zonal mean profile for single dataset with reference."""
         plot_type = 'zonalmean'
         logger.info("Plotting zonal mean profile with reference dataset"
@@ -722,8 +722,15 @@ class CH4Lifetime(LifetimeBase):
                     self._get_label(ref_dataset), self._get_label(dataset))
 
         # Make sure that the data has the correct dimensions
-        cube = dataset['cube']
-        ref_cube = ref_dataset['cube']
+        cube = calculate_lifetime(dataset,
+                                  plot_type,
+                                  region)
+        ref_cube = calculate_lifetime(ref_dataset,
+                                      plot_type,
+                                      region)
+
+        # convert units
+        cube.convert_units(self.units)
 
         # Create single figure with multiple axes
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -814,7 +821,7 @@ class CH4Lifetime(LifetimeBase):
 
         return (plot_path, netcdf_paths)
 
-    def plot_zonalmean_without_ref(self, plot_func, dataset, region,
+    def plot_zonalmean_without_ref(self, plot_func, region, dataset,
                                    base_dataset):
         """Plot zonal mean profile for single dataset without reference."""
         plot_type = 'zonalmean'
@@ -1172,8 +1179,8 @@ class CH4Lifetime(LifetimeBase):
             if ref_dataset is None:
                 (plot_path, netcdf_paths) = (
                     self.plot_zonalmean_without_ref(
-                        plot_func,
-                        dataset, region,
+                        plot_func, region,
+                        dataset,
                         base_datasets['label'])
                 )
                 caption = (
@@ -1183,8 +1190,8 @@ class CH4Lifetime(LifetimeBase):
                 )
             else:
                 (plot_path, netcdf_paths) = (
-                    self.plot_zonalmean_with_ref(plot_func, dataset,
-                                                 ref_dataset, region)
+                    self.plot_zonalmean_with_ref(plot_func, region,
+                                                 dataset, ref_dataset)
                 )
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
