@@ -1,0 +1,68 @@
+# ESMValTool
+#
+# General instructions:
+#
+# (1) Copy the configuration file
+#     /work/bd1179/hackathons/202403_department/config/config-user.yml
+#     to $HOME/.esmvaltool/config-user.yml ($HOME is YOUR home directory) and
+#     modify the 'output_dir' key (we recommend your scratch directory
+#     /scratch/$USER/).
+# (2) Copy all diagnostics in
+#     /work/bd1179/hackathons/202403_department/diag_scripts/diag_scripts
+#     to a location of your choice.
+# (3) Copy this recipe to a location of your choice.
+# (4) Modify the diagnostics paths in this recipe ('script: xxx.py') to point
+#     to your copy of the diagnostic scripts (see (2)).
+# (5) Run ESMValTool by 'esmvaltool run /path/to/your/copy/of/this/recipe.yml.'
+# (6) To re-run a single diagnostic wihtout invoking ESMValTool over and over,
+#     look for "To re-run this diagnostic ..." lines in the output log and
+#     copy-paste the relevant command to your shell, add a '-f' flag at the end
+#     and run it. Remember: if you change the recipe, you NEED to re-run the
+#     entire recipe!
+#
+---
+documentation:
+  title: ICON Evaluation.
+  description: Evaluate ICON simulations with observational products.
+  authors:
+    - ruhe_lukas
+    # - pacal_aytac
+  maintainer: unmaintained
+
+preprocessors:
+  global: 
+    custom_order: true
+    # extract_levels:
+    #   levels: {cmor_table: CMIP6, coordinate: plev39}
+    #   scheme: linear
+    #   coordinate: air_pressure
+    regrid:  # this is a predefined name (see https://docs.esmvaltool.org/projects/ESMValCore/en/latest/recipe/preprocessor.html)
+      target_grid: 2x2
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    # area_statistics:
+    #   operator: mean
+
+# daily: /work/bd1179/b309170/icon-ml_models/icon-a-ml/experiments/ag_atm_amip_r2b4_cfm
+# hourly: /work/bd1179/experiments/icon-2.6.1_atm_amip-rad_R2B5_r1v1i1p1l1f1  # NOTE: isnt it monthly?
+datasets:
+  - {dataset: bcc-csm1-1-m, project: CMIP5, mip: day, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1982}
+
+diagnostics:
+  dry_days:
+    description: Calculating number of dry days.
+    variables:
+      pr:
+        preprocessor: global
+        mip: day
+        timerange: '19800101/19820101'
+        additional_datasets:
+          - {project: ICON, dataset: ICON, exp: ag_atm_amip_r2b4_cfm, supplementary_variables: [{short_name: areacella, skip: true}]}
+    scripts:
+      consecutive_dry_days:
+        script: droughtindex/diag_cdd.py
+        dryindex: 'cdd'
+        plim: 1
+        frlim: 5
+        plot:
+          cmap: rain
