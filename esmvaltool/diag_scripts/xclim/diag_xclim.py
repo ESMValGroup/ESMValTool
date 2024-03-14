@@ -12,7 +12,7 @@
 import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.shared import (
     # ProvenanceLogger,
-    get_plot_filename,
+    get_diagnostic_filename,
     group_metadata,
     select_metadata,
 )
@@ -20,6 +20,8 @@ import logging
 
 import xarray
 import xclim
+import os
+import yaml
 log = logging.getLogger()
 
 
@@ -52,6 +54,19 @@ def calculate_indicator(cfg, metas, **kwargs):
     indicator = ind_func(**input_kwargs)
     print(indicator)
     # Calculate the index
+
+
+def save_results(cfg, meta, indicator):
+    basename = indicator.name
+    fname = get_diagnostic_filename(basename, cfg)
+    log.info("Saving results to %s", fname)
+    indicator.to_netcdf(fname)
+    meta["filename"] = fname
+    meta["short_name"] = indicator.short_name
+    metadata_file = os.path.join(os.path.dirname(fname), "metadata.yml")
+    with open(metadata_file, "w") as f:
+        yaml.dump(meta, f)
+
 
 
 def main(cfg):
