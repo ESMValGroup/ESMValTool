@@ -3,11 +3,11 @@
     UTC mode = True
 
 [task parameters]
-    fast = radiation_budget
+    fast = radiation_budget, albedolandcover
     medium = ensclus, heatwaves_coldwaves
 
 [scheduling]
-    initial cycle point = 2024-01-03
+    initial cycle point = 2024-03-09
     [[graph]]
         R1 = "install_env_file => get_esmval"
         P1D = """@wall_clock => get_esmval => configure
