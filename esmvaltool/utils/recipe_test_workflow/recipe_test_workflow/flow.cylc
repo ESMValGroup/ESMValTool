@@ -4,10 +4,10 @@
 
 [task parameters]
     fast = radiation_budget, albedolandcover
-    medium = ensclus, heatwaves_coldwaves
+    medium = ensclus, heatwaves_coldwaves, autoassess_landsurface_soilmoisture
 
 [scheduling]
-    initial cycle point = 2024-03-09
+    initial cycle point = 2024-03-14
     [[graph]]
         R1 = "install_env_file => get_esmval"
         P1D = """@wall_clock => get_esmval => configure
