@@ -15,62 +15,154 @@ documentation:
 
 preprocessors:
 
-  extract_time: &extract_time
+
+  default:
     custom_order: true
     extract_time:
       start_year: 1990
       start_month: 1
       start_day: 1
-      end_year: 1995
+      end_year: 1992
       end_month: 12
       end_day: 31
     regrid:
-      target_grid: 2x2
+      target_grid: 3x3
       scheme: nearest
+    regrid_time:
+      calendar: standard
+      frequency: mon
     distance_metric:
       metric: pearsonr
-      coords: null
+      # coords: null
 
 
+cmip6_default: &cmip6
+  grid: gn
+  ensemble: r1i1p1f1
+  project: CMIP6
+  timerange: '1990/1992'
+
+datasets:
+  # ICON
+  # - {project: ICON,
+  #    timerange: '1991/1992', 
+  #    dataset: ICON-Seamless,
+  #    exp: hist001,
+  #    horizontal_grid: /work/pd1295/ICON/grids/public/edzw/icon_grid_0030_R02B05_G.nc,
+  #    supplementary_variables: [
+  #     {short_name: areacella, skip: true},
+  #     {short_name: areacello, skip: true},
+  #     {short_name: sftlf, skip: true},
+  #     {short_name: sftof, skip: true},
+  #    ],
+  #    ugrid: false,
+  #   }
+  # - {project: ICON,
+  #     timerange: '1991/1992',
+  #    dataset: ICON-Seamless,
+  #    exp: hist002,
+  #    horizontal_grid: /work/pd1295/ICON/grids/public/edzw/icon_grid_0030_R02B05_G.nc,
+  #    supplementary_variables: [
+  #     {short_name: areacella, skip: true},
+  #     {short_name: areacello, skip: true},
+  #     {short_name: sftlf, skip: true},
+  #     {short_name: sftof, skip: true},
+  #    ],
+  #    ugrid: false,
+  #   }
+  # CMIP6
+  # - {<<: *cmip6, dataset: ACCESS-CM2, reference_for_metric: true}
+  - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
+  - {<<: *cmip6, dataset: AWI-CM-1-1-MR}
+  - {<<: *cmip6, dataset: AWI-ESM-1-1-LR}
+
+  - {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
+  - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
+  - {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
+  - {<<: *cmip6, dataset: CIESM, grid: gr}
+  - {<<: *cmip6, dataset: CMCC-CM2-HR4}
+  # # - {<<: *cmip6, dataset: CMCC-CM2-SR5}
+  # - {<<: *cmip6, dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+  # # - {<<: *cmip6, dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+  # # - {<<: *cmip6, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+  # # - {<<: *cmip6, dataset: EC-Earth3-Veg-LR, grid: gr}
+  # - {<<: *cmip6, dataset: FGOALS-f3-L, grid: gr}
+  # - {<<: *cmip6, dataset: FGOALS-g3}
+  # - {<<: *cmip6, dataset: GFDL-CM4, grid: gr1}
+  # - {<<: *cmip6, dataset: GISS-E2-1-G}
+  # - {<<: *cmip6, dataset: GISS-E2-1-H}
+  # - {<<: *cmip6, dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
+  # - {<<: *cmip6, dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3}
 
 
-cmip6_default: &cmip6 {dataset: ACCESS-CM2, grid: gn,
-            ensemble: r1i1p1f1, project: CMIP6, timerange: '1980/1999'}
+  # - {<<: *cmip6, dataset: IITM-ESM}
+  # - {<<: *cmip6, dataset: INM-CM4-8, grid: gr1}
+  # - {<<: *cmip6, dataset: INM-CM5-0, grid: gr1}
+  # - {<<: *cmip6, dataset: IPSL-CM6A-LR, grid: gr}
+  # - {<<: *cmip6, dataset: MIROC6, reference_for_metric: true}
+  # - {<<: *cmip6, dataset: MIROC-ES2L, ensemble: r1i1p1f2}
+  # - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM}
+  # - {<<: *cmip6, dataset: MPI-ESM1-2-LR}
+  # - {<<: *cmip6, dataset: MPI-ESM1-2-HR}
+  # - {<<: *cmip6, dataset: MRI-ESM2-0}
+  # - {<<: *cmip6, dataset: NESM3}
+  # - {<<: *cmip6, dataset: NorCPM1, institute: NCC, ensemble: r10i1p1f1}
+  # - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+  # - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+  # - {<<: *cmip6, dataset: SAM0-UNICON}
+  # - {<<: *cmip6, dataset: TaiESM1}
+  # - {<<: *cmip6, dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
+
+
 diagnostics:
   perfmetric:
     description: perfmetric in python
     variables:
       pr: &var_default
-        preprocessor: extract_time
+        preprocessor: default
         mip: Amon
         exp: historical
         # ensemble: r1i1p1
         # alternative_dataset: GHCN
       tas:
         <<: *var_default
-      clt: 
+      # rlut: 
+      #   <<: *var_default
+      ps:
         <<: *var_default
+      # sfcWind:
+      #   <<: *var_default
+      clt:
+        <<: *var_default
+      # rlut:
+      #   <<: *var_default
       psl:
         <<: *var_default
+
 
     additional_datasets:
       # - {dataset: ERA5, project: native6, type: reanaly, 
       #   version: v1, tier: 3, reference_for_metric: true}
+
       - {<<: *cmip6, dataset: BCC-ESM1, reference_for_metric: true}
       - {<<: *cmip6, dataset: CMCC-ESM2}
       - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
       - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
       - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      # - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
-      # - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
-      # - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
-      # - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
       - {<<: *cmip6, dataset: GFDL-ESM4, grid: gr1}
-      - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+      
+      # grid wrong? missing data
+      # - {<<: *cmip6, dataset: MCM-UA-1-0}
+      # - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
       # - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
       # - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
+
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
-      - {<<: *cmip6, dataset: MCM-UA-1-0}
+      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+      - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
+
     scripts:
       python:
         script: perfmetrics/main.py
