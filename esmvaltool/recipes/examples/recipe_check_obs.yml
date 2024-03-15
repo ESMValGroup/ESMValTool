@@ -229,6 +229,16 @@ diagnostics:
          start_year: 2003, end_year: 2018}
     scripts: null
 
+  ESACCI-PERMAFROST:
+    description: ESACCI-PERMAFROST check
+    variables:
+      alt:
+      gtd:
+      pfr:
+    additional_datasets:
+      - {dataset: ESACCI-PERMAFROST, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v3.0,
+         start_year: 1997, end_year: 2019}
+    scripts: null
 
   ESACCI-OC:
     description: ESACCI-OC check
@@ -238,7 +248,6 @@ diagnostics:
       - {dataset: ESACCI-OC, project: OBS6, mip: Omon, tier: 2,
          type: sat, version: fv5.0, start_year: 1998, end_year: 2020}
     scripts: null
-
 
   ESACCI-OZONE:
     description: ESACCI-OZONE check
