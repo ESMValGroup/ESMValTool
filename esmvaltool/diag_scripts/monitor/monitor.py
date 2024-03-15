@@ -27,6 +27,11 @@ Currently supported plot types (use the option ``plots`` to specify them):
       produce multi panel plots for data with `shape_id` or `region`
       coordinates of length > 1. Supported coordinates: `time`, `shape_id`
       (optional) and `region` (optional).
+    - Diurnal cycle (plot type ``diurnal_cycle``): Generate a diurnal cycle
+      plot (timeseries like climatological from 0 to 24 hours). It will
+      produce multi panel plots for data with `shape_id` or `region`
+      coordinates of length > 1. Supported coordinates: `time`, `shape_id`
+      (optional) and `region` (optional).
 
 Configuration options in recipe
 -------------------------------
@@ -39,10 +44,10 @@ config_file: str, optional
     monitor configuration file can be found :ref:`here <monitor_config_file>`.
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
-    must be ``clim``, ``seasonclim``, ``monclim``, ``timeseries`` or
-    ``annual_cycle``. Dictionary values are dictionaries used as options for
-    the corresponding plot. The allowed options for the different plot types
-    are given below.
+    must be ``clim``, ``seasonclim``, ``monclim``, ``timeseries``,
+    ``annual_cycle`` or ``diurnal_cycle``. Dictionary values are dictionaries
+    used as options for the corresponding plot. The allowed options for the
+    different plot types are given below.
 plot_filename: str, optional
     Filename pattern for the plots.
     Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
@@ -96,6 +101,10 @@ None
 
 Configuration options for plot type ``annual_cycle``
 ----------------------------------------------------
+None
+
+Configuration options for plot type ``diurnal_cycle``
+-----------------------------------------------------
 None
 
 .. hint::
@@ -166,6 +175,7 @@ class Monitor(MonitorBase):
 
                 self.timeseries(cube, var_info)
                 self.plot_annual_cycle(cube, var_info)
+                self.plot_diurnal_cycle(cube, var_info)
                 self.plot_monthly_climatology(cube, var_info)
                 self.plot_seasonal_climatology(cube, var_info)
                 self.plot_climatology(cube, var_info)
@@ -277,6 +287,57 @@ class Monitor(MonitorBase):
             self.get_plot_path('annualcycle', var_info),
             var_info,
             'Annual cycle',
+            caption=caption,
+        )
+
+    def plot_diurnal_cycle(self, cube, var_info):
+        """Plot the diurnal cycle according to configuration.
+
+        The key 'diurnal_cycle' must be passed to the 'plots' option in the
+        configuration.
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+            Data to plot. Must be 1D with time or 2D with an extra 'shape_id'
+            or 'region' coordinate. In that case, the plot will be a multiple
+            one with one figure for each region
+        var_info: dict
+            Variable's metadata from ESMValTool
+
+        Warning
+        -------
+        The hourly climatology is done inside the function so the users can
+        plot both the timeseries and the diurnal cycle in one go
+        """
+        if 'diurnal_cycle' not in self.plots:
+            return
+        cube = climate_statistics(cube, period='hour')
+
+        plotter = PlotSeries()
+        plotter.outdir = self.get_plot_folder(var_info)
+        plotter.img_template = self.get_plot_path('diurnalcycle', var_info,
+                                                  add_ext=False)
+        plotter.filefmt = self.cfg['output_file_type']
+        region_coords = ('shape_id', 'region')
+        options = {
+            'xlabel': '',
+            'xlimits': None,
+            'suptitle': 'Diurnal cycle',
+        }
+        for region_coord in region_coords:
+            if cube.coords(region_coord):
+                plotter.multiplot_cube(cube, 'month', region_coord, **options)
+                return
+        plotter.plot_cube(cube, 'hour', **options)
+        caption = (f"Diurnal cycle of {var_info[n.LONG_NAME]} of "
+                   f"dataset {var_info[n.DATASET]} (project "
+                   f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} to "
+                   f"{var_info[n.END_YEAR]}.")
+        self.record_plot_provenance(
+            self.get_plot_path('diurnalcycle', var_info),
+            var_info,
+            'Diurnal cycle',
             caption=caption,
         )
 
