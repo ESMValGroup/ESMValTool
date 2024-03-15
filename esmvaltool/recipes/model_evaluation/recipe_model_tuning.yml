@@ -1,0 +1,575 @@
+# ESMValTool
+---
+documentation:
+  title: Basic metrics for ICON-A tuning.
+  description: >
+    Calculate basic metrics for assessing tuning runs with ICON-A.
+  authors:
+    - lauer_axel
+  maintainer:
+    - lauer_axel
+
+
+# Note: The following models are just examples
+datasets:
+#  - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
+#  - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
+#  - {dataset: AWI-CM-1-1-MR, grid: gn}
+#  - {dataset: AWI-ESM-1-1-LR, grid: gn}
+#  - {dataset: BCC-CSM2-MR, grid: gn}
+#  - {dataset: BCC-ESM1, grid: gn}
+#  - {dataset: CAMS-CSM1-0, grid: gn}
+#  - {dataset: CanESM5, grid: gn}
+#  - {dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
+#  - {dataset: CESM2, grid: gn}
+#  - {dataset: CESM2-FV2, grid: gn, institute: NCAR}
+#  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+#  - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+#  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
+#  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2}
+#  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
+#  - {dataset: E3SM-1-0}
+#  - {dataset: E3SM-1-1, institute: E3SM-Project}
+#  - {dataset: EC-Earth3-Veg}
+#  - {dataset: FGOALS-f3-L}
+#  - {dataset: FGOALS-g3, grid: gn}
+#  - {dataset: GFDL-ESM4, grid: gr1}
+#  - {dataset: GISS-E2-1-G, grid: gn}
+#  - {dataset: GISS-E2-1-H, grid: gn}
+#  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+#  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
+#  - {dataset: INM-CM4-8, grid: gr1}
+#  - {dataset: INM-CM5-0, grid: gr1}
+#  - {dataset: IPSL-CM6A-LR}
+#  - {dataset: KACE-1-0-G}
+  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
+#  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+#  - {dataset: MPI-ESM-1-2-HAM, grid: gn}
+#  - {dataset: MPI-ESM1-2-HR, grid: gn}
+##  - {dataset: MPI-ESM1-2-LR, grid: gn}
+#  - {dataset: MRI-ESM2-0, grid: gn}
+#  - {dataset: NESM3, grid: gn}
+#  - {dataset: NorESM2-LM, grid: gn, institute: NCC}
+#  - {dataset: NorESM2-MM, grid: gn, institute: NCC}
+#  - {dataset: SAM0-UNICON, grid: gn}
+#  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+
+timerange_for_models: &time_period
+  timerange: '2000/2009'
+
+
+preprocessors:
+
+  globalmean:
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+
+  zonalmean:
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+
+  profile_60n:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
+    climate_statistics:
+      period: full
+    regrid:
+      scheme: linear
+      target_grid: 1x1
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: 59.
+      end_latitude: 61.
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev39}
+      scheme: linear
+      coordinate: air_pressure
+    area_statistics:
+      operator: mean
+
+  profile_60s:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
+    climate_statistics:
+      period: full
+    regrid:
+      scheme: linear
+      target_grid: 1x1
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -61.
+      end_latitude: -59.
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev39}
+      scheme: linear
+      coordinate: air_pressure
+    area_statistics:
+      operator: mean
+
+  natlantic_mean:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
+    annual_statistics:
+      operator: mean
+    extract_shape:
+      # Relative paths are relative to 'auxiliary_data_dir' as configured in
+      # the config-user.yml file.
+      # The example shapefile can be downloaded from
+      # https://marineregions.org/download_file.php?name=World_Seas_IHO_v3.zip
+      # but any shapefile can be used
+      shapefile: World_Seas_IHO_v3/World_Seas_IHO_v3.shp
+      method: contains
+      crop: True
+      ids:
+        - North Atlantic Ocean
+    area_statistics:
+      operator: mean
+
+  southernocean_mean:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
+    annual_statistics:
+      operator: mean
+    extract_shape:
+      # Relative paths are relative to 'auxiliary_data_dir' as configured in
+      # the config-user.yml file.
+      # The example shapefile can be downloaded from
+      # https://marineregions.org/download_file.php?name=World_Seas_IHO_v3.zip
+      # but any shapefile can be used
+      shapefile: World_Seas_IHO_v3/World_Seas_IHO_v3.shp
+      method: contains
+      crop: True
+      ids:
+        - Southern Ocean
+    area_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  # *** global annual means ***
+
+  globmeans:
+    description: time series of global annual means including reference dataset(s)
+    variables:
+      asr:
+        <<: *time_period
+        preprocessor: globalmean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2021}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
+             tier: 2, start_year: 1984, end_year: 2016}
+#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+#             tier: 3, start_year: 1979, end_year: 2016}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2020}
+      clivi:
+        <<: *time_period
+        preprocessor: globalmean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+             version: P1-R05-gridbox-average-noprecip,
+             start_year: 2006, end_year: 2017, tier: 3}
+          - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01,
+             tier: 3, start_year: 1982, end_year: 2018}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+             tier: 3, start_year: 2003, end_year: 2018}
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, start_year: 1979, end_year: 2019}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2020}
+      clt:
+        <<: *time_period
+        preprocessor: globalmean
+        project: CMIP6
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2, tag: 'obs', start_year: 1992, end_year: 2016}
+          - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01,
+             tier: 3, tag: 'obs', start_year: 1982, end_year: 2018}
+          - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA,
+             tier: 2, tag: 'obs', start_year: 1982, end_year: 2016}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+             tier: 3, start_year: 2003, tag: 'obs', start_year: 2003, end_year: 2018}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             start_year: 1979, end_year: 2020}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2020}
+      lwcre:
+        <<: *time_period
+        preprocessor: globalmean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2021}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
+             tier: 2, start_year: 1984, end_year: 2016}
+#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+#             tier: 3, start_year: 1979, end_year: 2020}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2020}
+      lwp:
+        <<: *time_period
+        preprocessor: globalmean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        derive: true
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+          - {dataset: CLARA-AVHRR, project: OBS, type: sat,
+             version: V002_01, tier: 3,
+             start_year: 1982, end_year: 2018}
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+             version: P1-R05-gridbox-average-noprecip,
+             start_year: 2006, end_year: 2017, tier: 3}
+          # MAC-LWP is ocean only
+#          - {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
+#             tier: 3, start_year: 1988, end_year: 2016}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+             tier: 3, start_year: 2003, end_year: 2018}
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, start_year: 1979, end_year: 2019}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2020}
+      netcre:
+        <<: *time_period
+        preprocessor: globalmean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2021}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
+             tier: 2, start_year: 1984, end_year: 2016}
+#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+#             tier: 3, start_year: 1979, end_year: 2020}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2020}
+      prw:
+        <<: *time_period
+        preprocessor: globalmean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        additional_datasets:
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat,
+             version: CDR2-L3-COMBI-05deg-fv3.1, tier: 3, start_year: 2003,
+             end_year: 2017}
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
+             start_year: 1984, end_year: 2016}
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, start_year: 1979, end_year: 2020}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3, 
+             start_year: 1980, end_year: 2020}
+      rlut:
+        <<: *time_period
+        preprocessor: globalmean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2021}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
+             tier: 2, start_year: 1984, end_year: 2016}
+#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+#             tier: 3, start_year: 1979, end_year: 2020}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2020}
+      rtnt:
+        <<: *time_period
+        preprocessor: globalmean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        derive: true
+      swcre:
+        <<: *time_period
+        preprocessor: globalmean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2021}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016}
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
+             tier: 2, start_year: 1984, end_year: 2016}
+#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+#             tier: 3, start_year: 1979, end_year: 2020}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2020}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: variable_group
+        plots:
+          timeseries:
+            annual_mean_kwargs: False
+            plot_kwargs:
+              MIROC6:
+                color: red
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+              CERES-EBAF:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: '-.'
+                linewidth: 1
+                zorder: 3
+              CLARA-AVHRR:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: '-.'
+                linewidth: 1
+                zorder: 3
+              CLOUDSAT-L2:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: ':'
+                linewidth: 1
+                zorder: 3
+              CRU:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: ':'
+                linewidth: 1
+                zorder: 3
+              ERA5:
+                color: darkgreen
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 1
+                zorder: 3
+              ESACCI-CLOUD:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 1
+                zorder: 3
+              GPCC:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 1
+                zorder: 3
+              GPCP-SG:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 1
+                zorder: 3
+              HadCRUT5:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: ':'
+                linewidth: 1
+                zorder: 3
+              ISCCP-FH:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: ':'
+                linewidth: 1
+                zorder: 3
+              MERRA2:
+                color: darkgreen
+                label: '{dataset}'
+                linestyle: '--'
+                linewidth: 1
+                zorder: 3
+              MODIS:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: '--'
+                linewidth: 1
+                zorder: 3
+              obsMean:
+                color: darkblue
+                label: 'multi-obs-mean'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              PATMOS-x:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: ':'
+                linewidth: 1
+                zorder: 3
+              PERSIANN-CDR:
+                color: darkblue
+                label: '{dataset}'
+                linestyle: '-.'
+                linewidth: 1
+                zorder: 3
+              default:
+                color: lightgray
+                label: null
+                linestyle: '-'
+                linewidth: 1
+                zorder: 1
+
+
+  # *** vertical profiles (zonal wind speed) ***
+  
+#  uwind_60n:
+#    description: Plot time series of zonal surface stress.
+#    variables:
+#      ua:
+#        <<: *time_period
+#        mip: Amon
+#        preprocessor: profile_60n
+#        additional_datasets:
+#          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+#    scripts:
+#      60n:
+#        plot_folder: '{plot_dir}'
+#        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+#        group_variables_by: variable_group
+#        script: monitor/multi_datasets.py
+#        plots:
+#          1d_profile:
+#            plot_kwargs:
+#              MPI-ESM1-2-LR:
+#                color: C1
+#              ERA5:
+#                color: black
+
+#  uwind_60s:
+#    description: Plot time series of zonal surface stress.
+#    variables:
+#      ua:
+#        <<: *time_period
+#        mip: Amon
+#        preprocessor: profile_60s
+#        additional_datasets:
+#          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+#    scripts:
+#      60s:
+#        plot_folder: '{plot_dir}'
+#        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+#        group_variables_by: variable_group
+#        script: monitor/multi_datasets.py
+#        plots:
+#          1d_profile:
+#            plot_kwargs:
+#              MPI-ESM1-2-LR:
+#                color: C1
+#              ERA5:
+#                color: black
+
+  # *** time series (surface wind stress) - for coupled simulations ***
+
+#  surface_stress_na:
+#    description: Plot time series of zonal surface stress.
+#    variables:
+#      tauu:
+#        <<: *time_period
+#        mip: Amon
+#        preprocessor: natlantic_mean
+#        additional_datasets:
+#          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+#          - {project: OBS6, dataset: ERA-Interim, type: reanaly, version: 1, tier: 3}
+#    scripts:
+#      north_atlantic:
+#        plot_folder: '{plot_dir}'
+#        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+#        group_variables_by: variable_group
+#        script: monitor/multi_datasets.py
+#        plots:
+#          timeseries:
+#            annual_mean_kwargs: false
+#            plot_kwargs:
+#              MPI-ESM1-2-LR:
+#                color: C1
+#              ERA5:
+#                color: black
+#              ERA-Interim:
+#                color: blue
+#
+#  surface_stress_so:
+#    description: Plot time series of zonal surface stress.
+#    variables:
+#      tauu:
+#        <<: *time_period
+#        mip: Amon
+#        preprocessor: southernocean_mean
+#        additional_datasets:
+#          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+#          - {project: OBS6, dataset: ERA-Interim, type: reanaly, version: 1, tier: 3}
+#    scripts:
+#      southern_ocean:
+#        plot_folder: '{plot_dir}'
+#        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+#        group_variables_by: variable_group
+#        script: monitor/multi_datasets.py
+#        plots:
+#          timeseries:
+#            annual_mean_kwargs: false
+#            plot_kwargs:
+#              MPI-ESM1-2-LR:
+#                color: C1
+#              ERA5:
+#                color: black
+#              ERA-Interim:
+#                color: blue
