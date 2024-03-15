@@ -11,7 +11,8 @@ EVal4CMIP ans 4C project
 
 Description
 -----------
-    Water Vapor Path trends following Santer et al. (2021). https://doi.org/10.1175/JCLI-D-20-0768.1
+    Water Vapor Path trends following Santer et al. (2021).
+    https://doi.org/10.1175/JCLI-D-20-0768.1
 
 Configuration options
 ---------------------
@@ -132,10 +133,10 @@ def _check_full_data(dataset_path, cube):
     check = 0
     if start_year == cstart_year and end_year == cend_year:
         check = 1
-        print("Full time series:")
+        print('Full time series:')
         print(start_year, cstart_year, end_year, cend_year)
     else:
-        print("FAILED:")
+        print('FAILED:')
         print(start_year, cstart_year, end_year, cend_year)
 
     return check
@@ -199,11 +200,10 @@ def _get_valid_datasets(input_data):
 
 def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
     """Plot trends for ensembles."""
-
-
-    res_ar = {'xhist': np.linspace(axx_lim['histmin'], 
+    res_ar = {'xhist': np.linspace(axx_lim['histmin'],
                                    axx_lim['histmax'], 41),
-                                   'artrend': {},'kde1': {}}
+              'artrend': {},
+              'kde1': {}}
     res_ar['xval'] = axx_lim['xval']
     res_ar['xhist'] = axx_lim['xhist']
     fig, axx = plt.subplots(figsize=(8, 6))
@@ -219,22 +219,22 @@ def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
         elif alias in trends['cmip5'].keys():
             style = plot.get_dataset_style(xtrmdl, style_file='cmip5')
         else:
-            style = {'facecolor': (0, 0, 1, 0.2),
+            style = {'facecolor': (0, 0, 1, 0.2), 
                      'color': (0, 0, 1, 1.0)}
 
         res_ar['artrend'][xtrmdl] = np.fromiter(extratrends[xtrmdl].values(),
                                                 dtype=float)
         res_ar['kde1'][xtrmdl] = stats.gaussian_kde(res_ar['artrend'][xtrmdl],
-                                                    bw_method="scott")
-        N, b, p = axx.hist(res_ar['artrend'][xtrmdl], bins=res_ar['xhist'], 
-                           density=True,
-                           edgecolor=style['color'],
-                           facecolor=style['facecolor'])
+                                                    bw_method='scott')
+        hbin, b, p = axx.hist(res_ar['artrend'][xtrmdl], bins=res_ar['xhist'],
+                              density=True,
+                              edgecolor=style['color'],
+                              facecolor=style['facecolor'])
         axx.plot(res_ar['xval'], res_ar['kde1'][xtrmdl](res_ar['xval']),
                  color=style['color'],
                  linewidth=3,
                  label=xtrmdl)
-    axx_lim['maxh'] = (1.0 + 0.5*axx_lim['factor'])*np.max(N)
+    axx_lim['maxh'] = (1.0 + 0.5 * axx_lim['factor']) * np.max(hbin)
     caption = _plot_obs(trends, axx, axx_lim)
     caption = _plot_settings(cfg, axx, fig, 'fig2', period, axx_lim) + caption
     plt.close()
@@ -248,14 +248,14 @@ def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
 
     diagnostic_file = get_diagnostic_filename('fig2', cfg)
 
-    logger.info("Saving analysis results to %s", diagnostic_file)
+    logger.info('Saving analysis results to %s', diagnostic_file)
 
     iris.save(cube_to_save_vars(_write_list_dict(cfg,
                                                  trends,
                                                  res_ar)),
               target=diagnostic_file)
 
-    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+    logger.info('Recording provenance of %s:\n%s', diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
@@ -285,7 +285,7 @@ def _plot_obs(trends, axx, axx_lim):
             if obsname == 'CRU':
                 plotobscol = (0.8, 0.4, 0.1, 1)
             if obsname == 'ERA5':
-                # obscol = [(0.8, 0.4, 0.1, 1), (1, 0, 0.2, 1), 
+                # obscol = [(0.8, 0.4, 0.1, 1), (1, 0, 0.2, 1),
                 #          (0.8, 0.1, 0.4, 1), (1, 0.6, 0, 1)]
                 # plotobscol = (1, 0, 0.2, 1)
                 plotobscol = (128 / 255.0, 54 / 255.0, 168 / 255.0,)
@@ -303,70 +303,48 @@ def _plot_obs(trends, axx, axx_lim):
 
 
 def _get_ax_limits(cfg, trends):
-    """ If histmin and histmax are not given in recipe, 
-        automatically find the axis limits. 
-        If limits are not given, the limits for the x-axis are determined by
-        the width of the histograms (plus offset).
-    """
-
-    axx_lim = dict(factor = 0.3)
-    # factor determines offset between limits of histogram and x-axis 
+    """ Automatically find plot bounds, if 'histmin' and 'histmax' not given.
+        The limits for the x-axis are then determined by
+        the width of the histograms (plus offset)."""
+    axx_lim = {'factor':0.3}
+    # factor determines offset between limits of histogram and x-axis
     # depending on the histogram width
-
-    if 'histmin' in cfg.keys():
-        histmin = cfg['histmin']
-    else:
-        histmin = 1000
-        if trends['cmip5']:
-            histmin = np.min(np.array([histmin,
-                                       np.min(np.fromiter(
-                                           trends['cmip5'].values(),
-                                           dtype=float))]))
-        if trends['cmip6']:
-            histmin = np.min(np.array([histmin,
-                             np.min(np.fromiter(trends['cmip6'].values(),
-                                                dtype=float))]))
-        if trends['obs']:
-            histmin = np.min(np.array([histmin,
-                             np.min(np.fromiter(trends['obs'].values(),
-                                                          dtype=float))]))
-            
-    if 'histmax' in cfg.keys():
-        histmax = cfg['histmax']
-    else:
-        histmax = -1000
-        if trends['cmip5']:
-            histmax = np.max(np.array([histmax,
-                             np.max(np.fromiter(trends['cmip5'].values(),
-                                                dtype=float))]))
-        if trends['cmip6']:
-            histmax = np.max(np.array([histmax,
-                             np.max(np.fromiter(trends['cmip6'].values(),
-                                                dtype=float))]))
-        if trends['obs']:
-            histmax = np.max(np.array([histmax,
-                             np.max(np.fromiter(trends['obs'].values(),
-                                                dtype=float))]))
 
     if 'histmin' in cfg.keys():
         histmin = cfg['histmin']
         xmin = histmin
     else:
-        xmin = histmin - axx_lim['factor']*abs(abs(histmax)-abs(histmin))
+        histmin = 1000
+        for label in ['cmip5', 'cmip6', 'obs']:
+            if trends[label]:
+                histmin = np.min(np.array([histmin,
+                                           np.min(np.fromiter(
+                                               trends[label].values(),
+                                               dtype=float))]))
 
     if 'histmax' in cfg.keys():
         histmax = cfg['histmax']
         xmax = histmax
     else:
-        xmax = histmax + axx_lim['factor']*abs(abs(histmax)-abs(histmin))
+        histmax = -1000
+        for label in ['cmip5', 'cmip6', 'obs']:
+            if trends[label]:
+                histmax = np.max(np.array([histmax,
+                                           np.max(np.fromiter(
+                                               trends[label].values(),
+                                               dtype=float))]))
 
+    if 'histmin' not in cfg.keys():
+        xmin = histmin - axx_lim['factor'] * abs(abs(histmax)-abs(histmin))
+
+    if 'histmax' not in cfg.keys():
+        xmax = histmax + axx_lim['factor'] * abs(abs(histmax) - abs(histmin))
 
     # Saving values in dictionary axx_lim:
     axx_lim['xmin'] = xmin
     axx_lim['xmax'] = xmax
     axx_lim['histmin'] = histmin
     axx_lim['histmax'] = histmax
-    # axx_lim['ymax'] = ymax
     axx_lim['xhist'] = np.linspace(histmin, histmax, 41)
     axx_lim['xval'] = np.linspace(xmin, xmax, 41)
 
@@ -375,13 +353,14 @@ def _get_ax_limits(cfg, trends):
 
 def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
     """Plot probability density function of trends.
-       The probability density function is estimated by using Gaussian kernel density estimation. 
-       The models are weighted by their respective number of realisations.
-       Trends are depicted in a histogram, the probability density function as a curve."""
-    
-    res_ar = dict(xval = axx_lim['xval'])
+       The probability density function is estimated by using Gaussian kernel
+       density estimation. The models are weighted by their respective number
+       of realisations. Trends are depicted in a histogram, the probability
+       density function as a curve."""
+    res_ar = {'xval': axx_lim['xval']}
     res_ar['xhist'] = axx_lim['xhist']
     fig, axx = plt.subplots(figsize=(8, 6))
+    maxh = -1.0
 
     # IPCC colors for CMIP5 and CMIP6 from
     # https://github.com/IPCC-WG1/colormaps/blob/master/
@@ -395,17 +374,19 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
         # yyy_c5, xxx_c5 = np.histogram(artrend_c5, bins=xhist)
         res_ar['kde1_c5'] = stats.gaussian_kde(res_ar['artrend_c5'],
                                                weights=res_ar['weights_c5'],
-                                               bw_method="scott")
-
-        N1, b, p = axx.hist(res_ar['artrend_c5'], bins=res_ar['xhist'], 
-                            density=True,
-                            weights=res_ar['weights_c5'],
-                            edgecolor=(37 / 250.0, 81 / 255.0, 204 / 255.0, 1.0),
-                            facecolor=(37 / 250.0, 81 / 255.0, 204 / 255.0, 0.2))
+                                               bw_method='scott')
+        hbinx1, b, p = axx.hist(res_ar['artrend_c5'], bins=res_ar['xhist'],
+                                density=True,
+                                weights=res_ar['weights_c5'],
+                                edgecolor=(37 / 250.0, 81 /
+                                           255.0, 204 / 255.0, 1.0),
+                                facecolor=(37 / 250.0, 81 /
+                                           255.0, 204 / 255.0, 0.2))
         axx.plot(res_ar['xval'], res_ar['kde1_c5'](res_ar['xval']),
                  color=(37 / 250.0, 81 / 255.0, 204 / 255.0, 1),
                  linewidth=3,
-                 label="CMIP5")
+                 label='CMIP5')
+        maxh = np.max([maxh, np.max(hbinx1)])
         # maxh = np.max(kde1_c5(xhist))
 
     # CMIP6
@@ -417,21 +398,21 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
         # yyy_c6, xxx_c6 = np.histogram(artrend_c6, bins=xhist)
         res_ar['kde1_c6'] = stats.gaussian_kde(res_ar['artrend_c6'],
                                                weights=res_ar['weights_c6'],
-                                               bw_method="scott")
-        N2, b, p = axx.hist(res_ar['artrend_c6'], bins=res_ar['xhist'], 
-                            density=True,
-                            weights=res_ar['weights_c6'],
-                            edgecolor=(204 / 250.0, 35 / 255.0, 35 / 255.0, 1.0),
-                            facecolor=(204 / 250.0, 35 / 255.0, 35 / 255.0, 0.2))
+                                               bw_method='scott')
+        hbinx2, b, p = axx.hist(res_ar['artrend_c6'], bins=res_ar['xhist'],
+                                density=True,
+                                weights=res_ar['weights_c6'],
+                                edgecolor=(204 / 250.0, 35 / 255.0, 35 / 255.0, 1.0),
+                                facecolor=(204 / 250.0, 35 / 255.0, 35 / 255.0, 0.2))
         axx.plot(res_ar['xval'], res_ar['kde1_c6'](res_ar['xval']),
                  color=(204 / 250.0, 35 / 255.0, 35 / 255.0, 1),
                  linewidth=3,
-                 label="CMIP6")
+                 label='CMIP6')
+        maxh = np.max([maxh, np.max(hbinx2)])
         # maxh = np.max(kde1_c6(xhist))
-    
+
     # Find the highest bin in the histograms for the y-axis limit
-    axx_lim['maxh'] = (1.0 + 0.5*axx_lim['factor'])*np.max([np.max(N1),
-                                                        np.max(N2)])
+    axx_lim['maxh'] = maxh * (1.0 + 0.5 * axx_lim['factor'])
     caption = _plot_obs(trends, axx, axx_lim)
     caption = _plot_settings(cfg, axx, fig, 'fig1', period, axx_lim) + caption
     plt.close()
@@ -445,53 +426,53 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
 
     diagnostic_file = get_diagnostic_filename('fig1', cfg)
 
-    logger.info("Saving analysis results to %s", diagnostic_file)
+    logger.info('Saving analysis results to %s', diagnostic_file)
 
     list_dict = {}
-    list_dict["data"] = [res_ar['xhist']]
-    list_dict["name"] = [{'var_name': 'prw_trends_bins',
+    list_dict['data'] = [res_ar['xhist']]
+    list_dict['name'] = [{'var_name': 'prw_trends_bins',
                           'long_name': 'Water Vapor Path Trend bins',
                           'units': 'percent'}]
     if trends['cmip5']:
-        list_dict["data"].append(res_ar['artrend_c5'])
-        list_dict["name"].append({'var_name': 'prw_trends_cmip5',
+        list_dict['data'].append(res_ar['artrend_c5'])
+        list_dict['name'].append({'var_name': 'prw_trends_cmip5',
                                   'long_name': 'Water Vapor Path Trends CMIP5',
                                   'units': 'percent'})
-        list_dict["data"].append(res_ar['weights_c5'])
-        list_dict["name"].append({'var_name': 'data_set_weights',
+        list_dict['data'].append(res_ar['weights_c5'])
+        list_dict['name'].append({'var_name': 'data_set_weights',
                                   'long_name': 'Weights for each data set.',
                                   'units': '1'})
-        list_dict["data"].append(res_ar['kde1_c5'](res_ar['xhist']))
-        list_dict["name"].append({'var_name': 'prw_trend_distribution_cmip5',
+        list_dict['data'].append(res_ar['kde1_c5'](res_ar['xhist']))
+        list_dict['name'].append({'var_name': 'prw_trend_distribution_cmip5',
                                   'long_name': 'Water Vapor Path Trends ' +
                                                'distribution CMIP5',
                                   'units': '1'})
     if trends['cmip6']:
-        list_dict["data"].append(res_ar['artrend_c6'])
-        list_dict["name"].append({'var_name': 'prw_trends_cmip6',
+        list_dict['data'].append(res_ar['artrend_c6'])
+        list_dict['name'].append({'var_name': 'prw_trends_cmip6',
                                   'long_name': 'Water Vapor Path Trends CMIP6',
                                   'units': 'percent'})
-        list_dict["data"].append(res_ar['weights_c6'])
-        list_dict["name"].append({'var_name': 'data_set_weights',
+        list_dict['data'].append(res_ar['weights_c6'])
+        list_dict['name'].append({'var_name': 'data_set_weights',
                                   'long_name': 'Weights for each data set.',
                                   'units': '1'})
-        list_dict["data"].append(res_ar['kde1_c6'](res_ar['xhist']))
-        list_dict["name"].append({'var_name': 'prw_trend_distribution_cmip6',
+        list_dict['data'].append(res_ar['kde1_c6'](res_ar['xhist']))
+        list_dict['name'].append({'var_name': 'prw_trend_distribution_cmip6',
                                   'long_name': 'Water Vapor Path Trends ' +
                                                'distribution CMIP6',
                                   'units': '1'})
 
     if trends['obs']:
         for obsname in trends['obs'].keys():
-            list_dict["data"].append(trends['obs'][obsname])
-            list_dict["name"].append({'var_name': 'prw_trend_' + obsname,
+            list_dict['data'].append(trends['obs'][obsname])
+            list_dict['name'].append({'var_name': 'prw_trend_' + obsname,
                                       'long_name': 'Water Vapor Path Trend ' +
                                                    obsname,
                                       'units': 'percent'})
 
     iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
 
-    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+    logger.info('Recording provenance of %s:\n%s', diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
@@ -499,10 +480,10 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
 
 def _plot_settings(cfg, axx, fig, figname, period, axx_lim):
     """Define Settings for pdf figures."""
-    for spine in ["top", "right"]:
+    for spine in ['top', 'right']:
         axx.spines[spine].set_visible(False)
     axx.legend(loc=1)
-    
+
     if 'ymax' in cfg.keys():
         ymax = cfg['ymax']
     else:
@@ -518,7 +499,7 @@ def _plot_settings(cfg, axx, fig, figname, period, axx_lim):
         add = ' between ' + period['common_lats'] + add
 
     vars = list(extract_variables(cfg).keys())
-    var = " ".join(vars)
+    var = ' '.join(vars)
     if var == 'prw':
         var = ' Water Vapour Path'
     else:
@@ -544,19 +525,19 @@ def _set_extratrends_dict(cfg):
 def _write_list_dict(cfg, trends, res_ar):
     """Collect data for provenance."""
     list_dict = {}
-    list_dict["data"] = [res_ar['xhist']]
-    list_dict["name"] = [{'var_name': 'prw_trends_bins',
+    list_dict['data'] = [res_ar['xhist']]
+    list_dict['name'] = [{'var_name': 'prw_trends_bins',
                           'long_name': 'Water Vapor Path Trend bins',
                           'units': 'percent'}]
 
     for extramodel in cfg['add_model_dist']:
-        list_dict["data"].append(res_ar['artrend'][extramodel])
-        list_dict["name"].append({'var_name': 'prw_trends_' + extramodel,
+        list_dict['data'].append(res_ar['artrend'][extramodel])
+        list_dict['name'].append({'var_name': 'prw_trends_' + extramodel,
                                   'long_name': 'Water Vapor Path Trends ' +
                                                extramodel,
                                   'units': 'percent'})
-        list_dict["data"].append(res_ar['kde1'][extramodel](res_ar['xhist']))
-        list_dict["name"].append({'var_name': 'prw_trend_distribution_' +
+        list_dict['data'].append(res_ar['kde1'][extramodel](res_ar['xhist']))
+        list_dict['name'].append({'var_name': 'prw_trend_distribution_' +
                                               extramodel,
                                   'long_name': 'Water Vapor Path Trends ' +
                                                'distribution ' + extramodel,
@@ -564,8 +545,8 @@ def _write_list_dict(cfg, trends, res_ar):
 
     if trends['obs']:
         for obsname in trends['obs'].keys():
-            list_dict["data"].append(trends['obs'][obsname])
-            list_dict["name"].append({'var_name': 'prw_trend_' + obsname,
+            list_dict['data'].append(trends['obs'][obsname])
+            list_dict['name'].append({'var_name': 'prw_trend_' + obsname,
                                       'long_name': 'Water Vapor Path Trend ' +
                                                    obsname,
                                       'units': 'percent'})
@@ -575,19 +556,19 @@ def _write_list_dict(cfg, trends, res_ar):
 def cube_to_save_vars(list_dict):
     """Create cubes to prepare bar plot data for saving to netCDF."""
     # cubes = iris.cube.CubeList()
-    for iii, var in enumerate(list_dict["data"]):
+    for iii, var in enumerate(list_dict['data']):
         if iii == 0:
             cubes = iris.cube.CubeList([
                 iris.cube.Cube(var,
-                               var_name=list_dict["name"][iii]['var_name'],
-                               long_name=list_dict["name"][iii]['long_name'],
-                               units=list_dict["name"][iii]['units'])])
+                               var_name=list_dict['name'][iii]['var_name'],
+                               long_name=list_dict['name'][iii]['long_name'],
+                               units=list_dict['name'][iii]['units'])])
         else:
             cubes.append(
                 iris.cube.Cube(var,
-                               var_name=list_dict["name"][iii]['var_name'],
-                               long_name=list_dict["name"][iii]['long_name'],
-                               units=list_dict["name"][iii]['units']))
+                               var_name=list_dict['name'][iii]['var_name'],
+                               long_name=list_dict['name'][iii]['long_name'],
+                               units=list_dict['name'][iii]['units']))
 
     return cubes
 
@@ -628,7 +609,7 @@ def main(cfg):
     input_data = cfg['input_data'].values()
 
     if not variables_available(cfg, ['prw']):
-        logger.warning("This diagnostic was written and tested only for prw.")
+        logger.warning('This diagnostic was written and tested only for prw.')
 
     ###########################################################################
     # Read data
