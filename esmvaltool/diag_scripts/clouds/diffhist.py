@@ -69,18 +69,18 @@ from scipy.stats import norm
 #     utils as ut
 # )
 from collections import defaultdict
-from matplotlib.collections import PatchCollection
-from matplotlib.patches import Rectangle
+# from matplotlib.collections import PatchCollection
+# from matplotlib.patches import Rectangle
 
 logger = logging.getLogger(__file__)
 
 
-def load_constrained(meta, comparison_period=None):
-    """Load cube with constraints in meta."""
-    cube = iris.load_cube(meta["filename"], constraint=meta.get("cons", None))
-    if comparison_period is not None:
-        cube = cube[-comparison_period*12:]
-    return cube
+# def load_constrained(meta, comparison_period=None):
+#     """Load cube with constraints in meta."""
+#     cube = iris.load_cube(meta["filename"], constraint=meta.get("cons", None))
+#     if comparison_period is not None:
+#         cube = cube[-comparison_period*12:]
+#     return cube
 
 
 def group_by_exp(cfg, metas, historical_first=False):
@@ -129,25 +129,28 @@ def plot_histogram(cfg, splits, output, group, fit=True):
         split_data = []
         split_weights = []
         for meta in metas:  # merge everything else
+            # labels.append(meta['labels'])
             cube = iris.load_cube(meta["filename"])
             # ut.guess_lat_lon_bounds(cube)
             split_weights.append(area_weights(cube))
             applied_mask = cube.data.filled(np.nan)  # set masked to nan
             split_data.append(applied_mask.ravel())
+
+            colors.append(cfg.get("colors", {}).get(split, split))
         if cfg.get("split_by", "exp") == "exp":
-            colors =  [ "blue", "green"] #!
+            colors =  [ "blue", "green", "orange", "cyan"] #!
             # color = getattr(ipcc_colors, split)
             # colors.append(cfg.get("colors", {}).get(split, color))
         else:
-            colors =  [ "blue", "green"] 
-        # TODO: elif dataset colors
+            colors =  [ "blue", "green", "orange", "cyan"] #!
+        # TODO elif dataset colors
         flat = np.array(split_data).ravel()
         fits.append(norm.fit(flat[~np.isnan(flat)]))  # mu, std
         data.append(flat)
         weights.append(np.array(split_weights).ravel())
     # np_data = np.array(data)
     plot_kwargs = {
-        "bins": np.arange(0, 1e-1, step=5e-3),
+        "bins": np.arange(0, np.max(data), step=np.max(data)/10),
         "label": labels,
         # "color": colors,
         "density": True,
@@ -155,48 +158,51 @@ def plot_histogram(cfg, splits, output, group, fit=True):
         "alpha": 0.75
     }
     n, bins, patches = plt.hist(data, **plot_kwargs, zorder=3)
-    plt.legend()
     # plt.gca().set(**cfg.get("plot_properties", {}))
-    plt.gca().set(ylim=(0, 100))
+    # plt.gca().set(ylim=(0, 100))
+
+    plt.gca().set(xlabel="Precipitation [mm/day]") 
+    plt.gca().set(ylabel='Density') 
     # For log-scale
     # plt.gca().set(xscale='log') 
-    # plt.gca().set(yscale='log')
+    plt.gca().set(yscale='log')
     # To Do: xlabel, ylabel #!
-    roi = cfg.get("highlight_region", [-2, +2])
-    if roi is not None:
-        ylim = plt.gca().get_ylim()[1]
-        plt.gca().patch.set_facecolor('#f2f2f2')
-        rois = PatchCollection(
-            [Rectangle((roi[0], 0), roi[1] - roi[0], ylim)],
-            facecolor="white", edgecolor="white", zorder=0)
-        plt.gca().add_collection(rois)
+    # roi = cfg.get("highlight_region", [-2, +2])
+    # if roi is not None:
+    #     ylim = plt.gca().get_ylim()[1]
+    #     plt.gca().patch.set_facecolor('#f2f2f2')
+    #     rois = PatchCollection(
+    #         [Rectangle((roi[0], 0), roi[1] - roi[0], ylim)],
+    #         facecolor="white", edgecolor="white", zorder=0)
+    #     plt.gca().add_collection(rois)
     basename = f"histogram_{group}"
+    plt.legend(labels)
     plt.savefig(get_plot_filename(basename, cfg))
 
-    # plot normal fit
-    plot_kwargs_fit = {
-        "linewidth": 2,
-        "linestyle": "-",
-        "alpha": 1,
-    }
-    for patch in patches:
-        try:
-            for rect in patch:
-                rect.set_alpha(0.25)
-        except:
-            print('patch is already a rectangle itself')
-            patch.set_alpha(0.25)
-    for iii, fit in enumerate(fits):
-        x = np.linspace(bins[0], bins[-1], 100)
-        p = norm.pdf(x, fit[0], fit[1])
-        plt.plot(x, p, color=colors[iii], **plot_kwargs_fit)
-    fit_line = Line2D([], [], color="black", linestyle="-", alpha=1)
-    handles, labels = plt.gca().get_legend_handles_labels()
-    handles.append(fit_line)
-    plt.legend(handles=handles, labels=labels + ["normal fit"])
+    # # plot normal fit
+    # plot_kwargs_fit = {
+    #     "linewidth": 2,
+    #     "linestyle": "-",
+    #     "alpha": 1,
+    # }
+    # for patch in patches:
+    #     try:
+    #         for rect in patch:
+    #             rect.set_alpha(0.25)
+    #     except:
+    #         print('patch is already a rectangle itself')
+    #         patch.set_alpha(0.25)
+    # for iii, fit in enumerate(fits):
+    #     x = np.linspace(bins[0], bins[-1], 100)
+    #     p = norm.pdf(x, fit[0], fit[1])
+    #     plt.plot(x, p, color=colors[iii], **plot_kwargs_fit)
+    # fit_line = Line2D([], [], color="black", linestyle="-", alpha=1)
+    # handles, labels = plt.gca().get_legend_handles_labels()
+    # handles.append(fit_line)
+    # plt.legend(handles=handles, labels=labels + ["normal fit"])
     # ax.legend(handles, labels)
-    basename = f"histogram_{group}_fit"
-    plt.savefig(get_plot_filename(basename, cfg))
+    # basename = f"histogram_{group}_fit"
+    # plt.savefig(get_plot_filename(basename, cfg))
 
 def main(cfg):
     """Main function."""

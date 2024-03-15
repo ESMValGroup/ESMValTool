@@ -13,8 +13,12 @@ documentation:
 
 
 # Note: the following models are just examples
-ICON_DATASET: &icon
-  - {project: ICON, dataset: ICON, exp: ag_atm_amip_r2b5} # Problem with the grid references in the ICON files!
+ICON1_DATASET: &icon1
+  - {project: ICON, dataset: ICON, exp: ag_atm_amip_r2b5}
+ICON2_DATASET: &icon2
+  - {project: ICON, dataset: ICON, exp: ag_atm_amip_r2b5_cov4_sfs4}
+ICON3_DATASET: &icon3
+  - {project: ICON, dataset: ICON, exp: ag_atm_amip_r2b5_cov7}
 CMIP_DATASET: &cmip
   - {project: CMIP6, dataset: BCC-CSM2-MR, exp: historical, ensemble: r1i1p1f1, grid: gn}
 
@@ -34,6 +38,9 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
+    # # Daily/Monthly mean is necessary if the least frequently written dataset has daily/monthly output
+    # daily_statistics:
+    #   operator: mean
 
   pp_hist_icon:
     convert_units:
@@ -42,7 +49,9 @@ preprocessors:
       target_grid: 2x2
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
-
+    # # Daily/Monthly mean is necessary if the least frequently written dataset has daily/monthly output
+    # daily_statistics:
+    #   operator: mean
 
 diagnostics:
 
@@ -54,18 +63,40 @@ diagnostics:
         preprocessor: pp_hist
         mip: day
         additional_datasets: *cmip
-      pr_icon:
+      pr_icon1:
         <<: *time_period
         short_name: pr
         preprocessor: pp_hist_icon
         mip: day
-        additional_datasets: *icon
+        additional_datasets: *icon1
+      pr_icon2:
+        <<: *time_period
+        short_name: pr
+        preprocessor: pp_hist_icon
+        mip: day
+        additional_datasets: *icon2
+      pr_icon3:
+        <<: *time_period
+        short_name: pr
+        preprocessor: pp_hist_icon
+        mip: day
+        additional_datasets: *icon3
 
     scripts: 
       histogram: 
         script: clouds/diffhist.py
-        split_by: dataset
+        split_by: exp
         plot_global: true
         plot_kwargs:
           alpha: 0.75
         plot_properties:
+        labels: 
+          ag_atm_amip_r2b5: ICON_R2B5
+          historical: BCC-CSM2-MR
+          ag_atm_amip_r2b5_cov4_sfs4: ICON_NN
+          ag_atm_amip_r2b5_cov7: ICON_eq
+        colors: 
+          ag_atm_amip_r2b5: blue
+          historical: green
+          ag_atm_amip_r2b5_cov4_sfs4: orange
+          ag_atm_amip_r2b5_cov7: cyan
