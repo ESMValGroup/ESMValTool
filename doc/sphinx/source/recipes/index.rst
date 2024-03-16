@@ -32,6 +32,7 @@ Atmosphere
    :maxdepth: 1
 
    recipe_miles
+   recipe_climate_patterns
    recipe_clouds
    recipe_cmug_h2o
    recipe_crem
