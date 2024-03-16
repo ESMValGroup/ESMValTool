@@ -405,11 +405,11 @@ diagnostics:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         project: CMIP3
-        exp: 20c3m
+        exp: historical
         ensemble: run1
         mip: A1
-        modeling_realm: atm
-        frequency: mo
+        modeling_realm: atmos
+        frequency: mon
         start_year: 1980
         end_year: 1999
         derive: true
