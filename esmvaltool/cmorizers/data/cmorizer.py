@@ -18,7 +18,7 @@ from esmvalcore._task import write_ncl_settings
 from esmvalcore.config import CFG
 from esmvalcore.config._logging import configure_logging
 
-from esmvaltool.cmorizers.data.utilities import read_cmor_config
+from esmvaltool.cmorizers.data.utilities import read_cmor_config  # TODO: change read_cmor_config to support versions?
 
 logger = logging.getLogger(__name__)
 datasets_file = os.path.join(os.path.dirname(__file__), 'datasets.yml')
@@ -38,8 +38,9 @@ class Formatter():
         self.datasets = []
         self.datasets_info = info
         self.config = ''
+        self.versions = None
 
-    def start(self, command, datasets, config_file, options):
+    def start(self, command, datasets, config_file, versions, options):
         """Read configuration and set up formatter for data processing.
 
         Parameters
@@ -50,6 +51,8 @@ class Formatter():
             List of datasets to process, comma separated
         config_file: str
             Config file to use
+        versions: str
+            List of version for each dataset to process, comma separated
         options: dict()
             Extra options to overwrite config user file
         """
@@ -57,6 +60,16 @@ class Formatter():
             self.datasets = datasets.split(',')
         else:
             self.datasets = datasets
+        
+        if isinstance(versions, str):
+            self.versions = versions.split(',')
+        elif versions is None:
+            self.versions = [None for _ in range(len(self.datasets))]
+
+        if len(self.datasets) is not len(self.versions):
+            raise ValueError(
+                f"Number of versions ({len(self.versions)}) and"
+                f"datasets ({len(self.datasets)}) missmatch")
 
         CFG.load_from_file(config_file)
         CFG.update(options)
@@ -127,9 +140,9 @@ class Formatter():
         logger.info("Downloading original data...")
         # master directory
         failed_datasets = []
-        for dataset in self.datasets:
+        for (dataset, version) in zip(self.datasets, self.versions):
             try:
-                self.download_dataset(dataset, start_date, end_date, overwrite)
+                self.download_dataset(dataset, start_date, end_date, overwrite, version)
             except ValueError:
                 logger.exception('Failed to download %s', dataset)
                 failed_datasets.append(dataset)
@@ -138,7 +151,8 @@ class Formatter():
             return False
         return True
 
-    def download_dataset(self, dataset, start_date, end_date, overwrite):
+    def download_dataset(self, dataset, start_date, end_date, overwrite,
+                         version):
         """Download a single dataset.
 
         Parameters
@@ -151,6 +165,8 @@ class Formatter():
             Last date to download
         overwrite: boolean
             If True, download again existing files
+        version: str
+            Version to download or None
         """
         if not self.has_downloader(dataset):
             raise ValueError(
@@ -166,8 +182,18 @@ class Formatter():
             logger.exception('Could not find cmorizer for %s', dataset)
             raise
 
+        dataset_info = self.datasets_info['datasets'][dataset]
+        if version is not None:
+            try:
+                dataset_info.update(dataset_info['versions'][version])
+            except KeyError:
+                logger.exception(
+                    'Could not find config for version %s of dataset %s', 
+                    version, dataset)
+                raise
+
         downloader.download_dataset(self.config, dataset,
-                                    self.datasets_info['datasets'][dataset],
+                                    dataset_info,
                                     start_date, end_date, overwrite)
         logger.info('%s downloaded', dataset)
 
@@ -194,8 +220,8 @@ class Formatter():
 
         # loop through tier/datasets to be cmorized
         failed_datasets = []
-        for dataset in datasets:
-            if not self.format_dataset(dataset, start, end, install):
+        for (dataset, version) in zip(datasets, self.versions):
+            if not self.format_dataset(dataset, start, end, install, version):
                 failed_datasets.append(dataset)
 
         if failed_datasets:
@@ -226,6 +252,9 @@ class Formatter():
 
     def _assemble_datasets(self):
         """Get my datasets as dictionary keyed on Tier."""
+        # TODO: seems like it creates a list of dataset files not a dict.
+        # TODO: does this just return all files in folder? 
+        # TODO: regardless of matching filename?
         # check for desired datasets only (if any)
         # if not, walk all over rawobs dir
         # assume a RAWOBS/TierX/DATASET input structure
@@ -245,7 +274,7 @@ class Formatter():
 
         return datasets
 
-    def format_dataset(self, dataset, start, end, install):
+    def format_dataset(self, dataset, start, end, install, version):
         """Format a single dataset.
 
         Parameters
@@ -259,11 +288,13 @@ class Formatter():
         install: bool
             If True, automatically moves the data to the final location if
             there is no data there.
+        version: str
+            Version to format or None
         """
         reformat_script_root = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'formatters',
             'datasets', self._dataset_to_module(dataset))
-        tier = self._get_dataset_tier(dataset)
+        tier = self._get_dataset_tier(dataset)  # TODO: can it differ between versions?
         if tier is None:
             logger.error("Data for %s not found. Perhaps you are not"
                          " storing it in a RAWOBS/TierX/%s"
@@ -381,7 +412,8 @@ class Formatter():
             return False
         return True
 
-    def _run_pyt_script(self, in_dir, out_dir, dataset, start, end):
+    def _run_pyt_script(self, in_dir, out_dir, dataset, start, end, 
+                        version=None):
         """Run the Python cmorization mechanism."""
         module_name = ('esmvaltool.cmorizers.data.formatters.datasets.' +
                        dataset.lower().replace("-", "_"))
@@ -389,6 +421,13 @@ class Formatter():
         logger.info("CMORizing dataset %s using Python script %s", dataset,
                     module.__file__)
         cmor_cfg = read_cmor_config(dataset)
+        if version is not None:
+            try:
+                cmor_cfg.update(cmor_cfg['versions'][version])
+            except KeyError:
+                logger.exception("No cmor config for version %s of %s",
+                                 version, dataset)
+                raise
         module.cmorization(in_dir, out_dir, cmor_cfg, self.config, start, end)
         logger.info('CMORization of dataset %s finished!', dataset)
         return True
@@ -408,15 +447,19 @@ class DataCommand():
     def list(self):
         """List all supported datasets."""
         print()
-        print(f'| {"Dataset name":30} | Tier | Auto-download | Last access |')
-        print('-' * 71)
+        print(f'| {"Dataset name":30} | Tier | Auto-download | Last access | Versions |')
+        print('-' * 82)
         for dataset, dataset_info in self._info['datasets'].items():
             date = datetime.datetime.strptime(str(dataset_info['last_access']),
                                               "%Y-%m-%d")
+            versions = " " * 8
+            if "versions" in dataset_info.keys():
+                versions = ','.join(dataset_info['versions'].keys())
             print(f"| {dataset:30} | {dataset_info['tier']:4} "
                   f"| {self._has_downloader(dataset):13} "
-                  f"|  {date.strftime('%Y-%m-%d')} |")
-        print('-' * 71)
+                  f"|  {date.strftime('%Y-%m-%d')} "
+                  f"| {versions} |")
+        print('-' * 82)
 
     def info(self, dataset):
         """Show detailed info about a specific dataset.
@@ -427,11 +470,16 @@ class DataCommand():
             dataset to show
         """
         dataset_info = self._info['datasets'][dataset]
+        
+        versions = " " * 8
+        if "versions" in dataset_info.keys():
+            versions = ','.join(dataset_info['versions'].keys())
         print(dataset)
         print()
         print(f"Tier: {dataset_info['tier']}")
         print(f"Source: {dataset_info['source']}")
         print(f"Automatic download: {self._has_downloader(dataset)}")
+        print(f"Alternative versions: {versions}")
         print("")
         print(dataset_info['info'])
 
@@ -441,6 +489,7 @@ class DataCommand():
                  start=None,
                  end=None,
                  overwrite=False,
+                 versions=None,
                  **kwargs):
         """Download datasets.
 
@@ -458,11 +507,15 @@ class DataCommand():
             are YYYY, YYYYMM and YYYYMMDD.
         overwrite : bool, optional
             If true, download already present data again
+        versions : list(str), optional
+            Specific version to be downloaded, by default None. Must have same
+            length as datasets.
         """
         start = self._parse_date(start)
         end = self._parse_date(end)
 
-        self.formatter.start('download', datasets, config_file, kwargs)
+        self.formatter.start('download', datasets, config_file, versions,
+                             kwargs)
         self.formatter.download(start, end, overwrite)
 
     def format(self,
@@ -471,6 +524,7 @@ class DataCommand():
                start=None,
                end=None,
                install=False,
+               versions=None,
                **kwargs):
         """Format datasets.
 
@@ -488,11 +542,15 @@ class DataCommand():
             are YYYY, YYYYMM and YYYYMMDD.
         install : bool, optional
             If true, move processed data to the folder, by default False
+        versions : list(str), optional
+            Specific versions to be formatted, by default None. Must be of
+            same length as datasets.
         """
         start = self._parse_date(start)
         end = self._parse_date(end)
 
-        self.formatter.start('formatting', datasets, config_file, kwargs)
+        self.formatter.start('formatting', datasets, config_file, versions,
+                             kwargs)
         self.formatter.format(start, end, install)
 
     def prepare(self,
@@ -502,6 +560,7 @@ class DataCommand():
                 end=None,
                 overwrite=False,
                 install=False,
+                versions=None,
                 **kwargs):
         """Download and format a set of datasets.
 
@@ -519,13 +578,17 @@ class DataCommand():
             are YYYY, YYYYMM and YYYYMMDD.
         install : bool, optional
             If true, move processed data to the folder, by default False
+        versions : list(str), optional
+            Specific versions to be formatted, by default None. Must be of
+            same length as datasets.
         overwrite : bool, optional
             If true, download already present data again
         """
         start = self._parse_date(start)
         end = self._parse_date(end)
 
-        self.formatter.start('preparation', datasets, config_file, kwargs)
+        self.formatter.start('preparation', datasets, config_file, versions,
+                             kwargs)
         if self.formatter.download(start, end, overwrite):
             self.formatter.format(start, end, install)
         else:

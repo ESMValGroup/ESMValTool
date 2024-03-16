@@ -14,3 +14,4 @@ dataset:
   latest: int(required=False, min=20150000, max=20210000)
   info: str()
   last_access: day()
+  versions: map(include('dataset', required=True), required=False)
