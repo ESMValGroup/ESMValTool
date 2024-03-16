@@ -4,8 +4,8 @@
 
 [task parameters]
     fast = radiation_budget, albedolandcover, autoassess_landsurface_surfrad
-    medium = ensclus, heatwaves_coldwaves, autoassess_landsurface_soilmoisture,
-           = autoassess_landsurface_permafrost
+    medium = ensclus, heatwaves_coldwaves, autoassess_landsurface_soilmoisture, \
+             autoassess_landsurface_permafrost
 
 
 [scheduling]
