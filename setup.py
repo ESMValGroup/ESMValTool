@@ -25,6 +25,7 @@ REQUIREMENTS = {
         'cdo',
         'cdsapi',
         'cf-units',
+        'cfgrib',
         'cftime',
         'cmocean',
         'dask',
